@@ -271,6 +271,12 @@
         body { background: #fff; }
         .card { box-shadow: none; border-color: #ccc; }
       }
+
+      /* ---- Bilingual support ---- */
+      body.es .en-text { display: none !important; }
+      body.es .es-text { display: inline !important; }
+      span.es-text { display: none; }
+      tspan.es-text { display: none; }
     </style>
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -281,16 +287,38 @@
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
       <div class="hero-emoji">🛏️</div>
-      <h1>Dream Room Designer</h1>
-      <p class="hero-sub">Design your own dream bedroom and calculate its area and flooring costs — step by step.</p>
+      <h1>
+        <span class="en-text">Dream Room Designer</span>
+        <span class="es-text">Diseñador del cuarto de tus sueños</span>
+      </h1>
+      <p class="hero-sub">
+        <span class="en-text">Design your own dream bedroom and calculate its area and flooring costs — step by step.</span>
+        <span class="es-text">Diseña la habitación de tus sueños y calcula su área y costos de piso, paso a paso.</span>
+      </p>
       <div class="hero-tags">
-        <span class="tag gold">Unit 5 · Area</span>
+        <span class="tag gold">
+          <span class="en-text">Unit 5 · Area</span>
+          <span class="es-text">Unidad 5 · Área</span>
+        </span>
         <span class="tag">6.G.1</span>
-        <span class="tag">Version A</span>
+        <span class="tag">
+          <span class="en-text">Version A</span>
+          <span class="es-text">Versión A</span>
+        </span>
       </div>
       <div class="level-bar">
-        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
-        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
+          <span class="en-text">🟢 Level 1 — With Support</span>
+          <span class="es-text">🟢 Nivel 1 — Con apoyo</span>
+        </button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">
+          <span class="en-text">🔵 Level 2 — Challenge</span>
+          <span class="es-text">🔵 Nivel 2 — Desafío</span>
+        </button>
+      </div>
+      <div class="level-bar" style="margin-top: 10px; max-width: 320px;">
+        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
+        <button class="level-btn" id="btn-read" onclick="readAloud()">🔊 Read Aloud</button>
       </div>
     </header>
 
@@ -303,7 +331,10 @@
       <!-- Progress bar -->
       <div class="prog-wrap no-print">
         <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
-        <div class="prog-label" id="progLabel">Step 1 of 6</div>
+        <div class="prog-label" id="progLabel">
+          <span class="en-text">Step 1 of 6</span>
+          <span class="es-text">Paso 1 de 6</span>
+        </div>
       </div>
 
       <!-- ======================================
@@ -314,8 +345,14 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">Key Words</div>
-              <div class="card-sub">Learn these 6 area vocabulary terms before you start</div>
+              <div class="card-title">
+                <span class="en-text">Key Words</span>
+                <span class="es-text">Palabras clave</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Learn these 6 area vocabulary terms before you start</span>
+                <span class="es-text">Aprende estos 6 términos de vocabulario de área antes de comenzar</span>
+              </div>
             </div>
           </div>
 
@@ -325,50 +362,111 @@
           <div class="vocab-grid">
             <div class="vocab-card">
               <div class="vocab-icon">📏</div>
-              <div class="vocab-term">Area</div>
-              <div class="vocab-def">The size of a two-dimensional surface, measured in square units.</div>
-              <div class="vocab-ex">120 sq ft</div>
+              <div class="vocab-term">
+                <span class="en-text">Area</span>
+                <span class="es-text">Área</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The size of a two-dimensional surface, measured in square units.</span>
+                <span class="es-text">El tamaño de una superficie bidimensional, medido en unidades cuadradas.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">120 sq ft</span>
+                <span class="es-text">120 pies²</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">📐</div>
-              <div class="vocab-term">Dimension</div>
-              <div class="vocab-def">A measurement of a side's length, width, or height.</div>
-              <div class="vocab-ex">Length = 12 ft</div>
+              <div class="vocab-term">
+                <span class="en-text">Dimension</span>
+                <span class="es-text">Dimensión</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A measurement of a side's length, width, or height.</span>
+                <span class="es-text">La medida de la longitud, ancho o altura de un lado.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">Length = 12 ft</span>
+                <span class="es-text">Longitud = 12 pies</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">▱</div>
-              <div class="vocab-term">Parallelogram</div>
-              <div class="vocab-def">A quadrilateral with opposite parallel sides. Area = base × height.</div>
-              <div class="vocab-ex">Rectangle is one!</div>
+              <div class="vocab-term">
+                <span class="en-text">Parallelogram</span>
+                <span class="es-text">Paralelogramo</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A quadrilateral with opposite parallel sides. Area = base × height.</span>
+                <span class="es-text">Un cuadrilátero con lados opuestos paralelos. Área = base × altura.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">Rectangle is one!</span>
+                <span class="es-text">¡El rectángulo es uno!</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🔺</div>
-              <div class="vocab-term">Triangle</div>
-              <div class="vocab-def">A 3-sided polygon. Area is exactly half of a parallelogram.</div>
-              <div class="vocab-ex">Area = ½ × b × h</div>
+              <div class="vocab-term">
+                <span class="en-text">Triangle</span>
+                <span class="es-text">Triángulo</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A 3-sided polygon. Area is exactly half of a parallelogram.</span>
+                <span class="es-text">Un polígono de 3 lados. El área es exactamente la mitad de un paralelogramo.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">Area = ½ × b × h</span>
+                <span class="es-text">Área = ½ × b × h</span>
+              </div>
             </div>
             <div class="vocab-card">
-              <div class="vocab-icon font-style: normal;">🪵</div>
-              <div class="vocab-term">Base</div>
-              <div class="vocab-def">The horizontal baseline side of a polygon.</div>
-              <div class="vocab-ex">b = 8 ft</div>
+              <div class="vocab-icon" style="font-style: normal;">🪵</div>
+              <div class="vocab-term">
+                <span class="en-text">Base</span>
+                <span class="es-text">Base</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The horizontal baseline side of a polygon.</span>
+                <span class="es-text">El lado de la línea base horizontal de un polígono.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">b = 8 ft</span>
+                <span class="es-text">b = 8 pies</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">↕️</div>
-              <div class="vocab-term">Height</div>
-              <div class="vocab-def">The perpendicular (90-degree) distance from base to top.</div>
-              <div class="vocab-ex">h = 5 ft</div>
+              <div class="vocab-term">
+                <span class="en-text">Height</span>
+                <span class="es-text">Altura</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The perpendicular (90-degree) distance from base to top.</span>
+                <span class="es-text">La distancia perpendicular (90 grados) desde la base hasta la parte superior.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">h = 5 ft</span>
+                <span class="es-text">h = 5 pies</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct" style="margin-top:20px">
-            ✅ Read each vocab card and study the diagram. When you are ready, click <strong>Next Step</strong>.
+            <span class="en-text">✅ Read each vocab card and study the diagram. When you are ready, click <strong>Next Step</strong>.</span>
+            <span class="es-text">✅ Lee cada tarjeta de vocabulario y estudia el diagrama. Cuando estés listo, haz clic en <strong>Siguiente paso</strong>.</span>
           </div>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" disabled>← Back</button>
-          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
+          <button class="nav-btn ghost" disabled>
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(2)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -380,59 +478,107 @@
           <div class="card-header">
             <div class="card-icon">🛏️</div>
             <div>
-              <div class="card-title">Step 1 — Bedroom Floor Area</div>
-              <div class="card-sub">Calculate the area of your rectangular bedroom</div>
+              <div class="card-title">
+                <span class="en-text">Step 1 — Bedroom Floor Area</span>
+                <span class="es-text">Paso 1 — Área del piso de la habitación</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Calculate the area of your rectangular bedroom</span>
+                <span class="es-text">Calcula el área de tu habitación rectangular</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct">
-            <strong>Your job:</strong> Enter the length and width of your main rectangular bedroom area, then calculate the area using the formula: <strong>Area = length × width (l × w)</strong>.
+            <span class="en-text"><strong>Your job:</strong> Enter the length and width of your main rectangular bedroom area, then calculate the area using the formula: <strong>Area = length × width (l × w)</strong>.</span>
+            <span class="es-text"><strong>Tu tarea:</strong> Ingresa el largo y el ancho de la habitación rectangular principal, luego calcula el área usando la fórmula: <strong>Área = largo × ancho (l × w)</strong>.</span>
           </div>
 
           <!-- Dynamic Rectangle SVG -->
           <svg id="rect-svg" class="visual-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #dae3db;border-radius:12px;">
-            <text x="260" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2818">Bedroom Floor Plan (Rectangle)</text>
+            <text x="260" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2818">
+              <tspan class="en-text">Bedroom Floor Plan (Rectangle)</tspan>
+              <tspan class="es-text">Plano de la habitación (Rectángulo)</tspan>
+            </text>
             <rect x="160" y="45" width="200" height="70" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
-            <text x="260" y="85" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32" id="rect-svg-area">Area = l × w</text>
-            <text x="260" y="130" text-anchor="middle" font-size="11" fill="#5c7062" id="rect-svg-len">Length (l)</text>
-            <text x="145" y="85" text-anchor="end" font-size="11" fill="#5c7062" id="rect-svg-wid">Width (w)</text>
+            <text x="260" y="85" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32" id="rect-svg-area">
+              <tspan class="en-text">Area = l × w</tspan>
+              <tspan class="es-text">Área = l × w</tspan>
+            </text>
+            <text x="260" y="130" text-anchor="middle" font-size="11" fill="#5c7062" id="rect-svg-len">
+              <tspan class="en-text">Length (l)</tspan>
+              <tspan class="es-text">Longitud (l)</tspan>
+            </text>
+            <text x="145" y="85" text-anchor="end" font-size="11" fill="#5c7062" id="rect-svg-wid">
+              <tspan class="en-text">Width (w)</tspan>
+              <tspan class="es-text">Ancho (w)</tspan>
+            </text>
           </svg>
 
           <!-- Level 1 Tip -->
           <div class="instruct lvl1-only">
-            🟢 <strong>Level 1 Tip:</strong> Try friendly whole numbers like a length of 12 ft and a width of 10 ft.
+            <span class="en-text">🟢 <strong>Level 1 Tip:</strong> Try friendly whole numbers like a length of 12 ft and a width of 10 ft.</span>
+            <span class="es-text">🟢 <strong>Consejo del Nivel 1:</strong> Intenta con números enteros sencillos como un largo de 12 pies y un ancho de 10 pies.</span>
           </div>
           <!-- Level 2 Extension -->
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
-            If you double the length of your bedroom, what happens to the area? Explain using your numbers.
-            <label class="lbl" for="lvl2-rect-eq">My explanation:</label>
-            <input type="text" id="lvl2-rect-eq" placeholder="e.g. Doubling the length from 12 to 24 doubles the area from 120 to 240 sq ft." />
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE</span>
+              <span class="es-text">DESAFÍO DE NIVEL 2</span>
+            </span><br>
+            <span class="en-text">If you double the length of your bedroom, what happens to the area? Explain using your numbers.</span>
+            <span class="es-text">Si duplicas el largo de tu habitación, ¿qué le pasa al área? Explica usando tus números.</span>
+            <label class="lbl" for="lvl2-rect-eq">
+              <span class="en-text">My explanation:</span>
+              <span class="es-text">Mi explicación:</span>
+            </label>
+            <input type="text" id="lvl2-rect-eq" data-placeholder-en="e.g. Doubling the length from 12 to 24 doubles the area from 120 to 240 sq ft." data-placeholder-es="ej. Duplicar el largo de 12 a 24 duplica el área de 120 a 240 pies cuadrados." placeholder="e.g. Doubling the length from 12 to 24 doubles the area from 120 to 240 sq ft." />
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="f-length">📏 Bedroom Length (feet)</label>
-              <input type="number" id="f-length" step="any" min="1" placeholder="e.g. 12" oninput="calcFloor()" />
+              <label class="lbl" for="f-length">
+                <span class="en-text">📏 Bedroom Length (feet)</span>
+                <span class="es-text">📏 Largo de la habitación (pies)</span>
+              </label>
+              <input type="number" id="f-length" step="any" min="1" data-placeholder-en="e.g. 12" data-placeholder-es="ej. 12" placeholder="e.g. 12" oninput="calcFloor()" />
             </div>
             <div>
-              <label class="lbl" for="f-width">📐 Bedroom Width (feet)</label>
-              <input type="number" id="f-width" step="any" min="1" placeholder="e.g. 10" oninput="calcFloor()" />
+              <label class="lbl" for="f-width">
+                <span class="en-text">📐 Bedroom Width (feet)</span>
+                <span class="es-text">📐 Ancho de la habitación (pies)</span>
+              </label>
+              <input type="number" id="f-width" step="any" min="1" data-placeholder-en="e.g. 10" data-placeholder-es="ej. 10" placeholder="e.g. 10" oninput="calcFloor()" />
             </div>
           </div>
 
-          <button class="calc-btn" onclick="calcFloor()">🧮 Calculate Bedroom Floor Area</button>
+          <button class="calc-btn" onclick="calcFloor()">
+            <span class="en-text">🧮 Calculate Bedroom Floor Area</span>
+            <span class="es-text">🧮 Calcular el área del piso</span>
+          </button>
           <div class="readout" id="floor-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>To find the area of a rectangle, multiply the length by the width.<br><strong>Example:</strong> Length = 12 ft, Width = 10 ft. Area = 12 × 10 = <strong>120 sq ft</strong>.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">To find the area of a rectangle, multiply the length by the width.<br><strong>Example:</strong> Length = 12 ft, Width = 10 ft. Area = 12 × 10 = <strong>120 sq ft</strong>.</span>
+              <span class="es-text">Para encontrar el área de un rectángulo, multiplica el largo por el ancho.<br><strong>Ejemplo:</strong> Largo = 12 pies, Ancho = 10 pies. Área = 12 × 10 = <strong>120 pies²</strong>.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
-          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(1)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(3)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -444,60 +590,108 @@
           <div class="card-header">
             <div class="card-icon teal">📐</div>
             <div>
-              <div class="card-title">Step 2 — Triangle Reading Nook</div>
-              <div class="card-sub">Calculate the area of a triangular nook or alcove</div>
+              <div class="card-title">
+                <span class="en-text">Step 2 — Triangle Reading Nook</span>
+                <span class="es-text">Paso 2 — Rincón de lectura triangular</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Calculate the area of a triangular nook or alcove</span>
+                <span class="es-text">Calcula el área de un rincón o nicho triangular</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your job:</strong> Enter the base and height of your custom triangular reading nook. Then calculate the area using: <strong>Area = ½ × base × height (½ × b × h)</strong>.
+            <span class="en-text"><strong>Your job:</strong> Enter the base and height of your custom triangular reading nook. Then calculate the area using: <strong>Area = ½ × base × height (½ × b × h)</strong>.</span>
+            <span class="es-text"><strong>Tu tarea:</strong> Ingresa la base y la altura de tu rincón de lectura triangular. Luego calcula el área usando: <strong>Área = ½ × base × altura (½ × b × h)</strong>.</span>
           </div>
 
           <!-- Dynamic Triangle SVG -->
           <svg id="tri-svg" class="visual-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #dae3db;border-radius:12px;">
-            <text x="260" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2818">Reading Nook Blueprint (Triangle)</text>
+            <text x="260" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2818">
+              <tspan class="en-text">Reading Nook Blueprint (Triangle)</tspan>
+              <tspan class="es-text">Plano del rincón de lectura (Triángulo)</tspan>
+            </text>
             <polygon points="190,110 330,110 260,45" fill="#e0f2f1" stroke="#00796b" stroke-width="2"/>
             <line x1="260" y1="45" x2="260" y2="110" stroke="#c45a3c" stroke-width="1.5" stroke-dasharray="3,3"/>
-            <text x="260" y="90" text-anchor="middle" font-size="12" font-weight="bold" fill="#00796b" id="tri-svg-area">Area = ½ × b × h</text>
-            <text x="260" y="125" text-anchor="middle" font-size="11" fill="#5c7062" id="tri-svg-base">Base (b)</text>
-            <text x="272" y="65" text-anchor="start" font-size="11" fill="#c45a3c" id="tri-svg-height">Height (h)</text>
+            <text x="260" y="90" text-anchor="middle" font-size="12" font-weight="bold" fill="#00796b" id="tri-svg-area">
+              <tspan class="en-text">Area = ½ × b × h</tspan>
+              <tspan class="es-text">Área = ½ × b × h</tspan>
+            </text>
+            <text x="260" y="125" text-anchor="middle" font-size="11" fill="#5c7062" id="tri-svg-base">
+              <tspan class="en-text">Base (b)</tspan>
+              <tspan class="es-text">Base (b)</tspan>
+            </text>
+            <text x="272" y="65" text-anchor="start" font-size="11" fill="#c45a3c" id="tri-svg-height">
+              <tspan class="en-text">Height (h)</tspan>
+              <tspan class="es-text">Altura (h)</tspan>
+            </text>
           </svg>
 
           <!-- Level 1 Tip -->
           <div class="instruct teal lvl1-only">
-            🟢 <strong>Level 1 Tip:</strong> Try numbers like a base of 6 ft and a height of 4 ft.
+            <span class="en-text">🟢 <strong>Level 1 Tip:</strong> Try numbers like a base of 6 ft and a height of 4 ft.</span>
+            <span class="es-text">🟢 <strong>Consejo del Nivel 1:</strong> Intenta con números como una base de 6 pies y una altura de 4 pies.</span>
           </div>
           <!-- Level 2 Extension -->
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
-            If you wanted the nook area to be exactly 16 sq ft, and the height was 4 ft, what would the base have to be? Show your equation.
-            <label class="lbl" for="lvl2-nook-eq">My equation &amp; base:</label>
-            <input type="text" id="lvl2-nook-eq" placeholder="e.g. 16 = 0.5 × b × 4  =>  16 = 2b  =>  b = 8 ft" />
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE</span>
+              <span class="es-text">DESAFÍO DE NIVEL 2</span>
+            </span><br>
+            <span class="en-text">If you wanted the nook area to be exactly 16 sq ft, and the height was 4 ft, what would the base have to be? Show your equation.</span>
+            <span class="es-text">Si quisieras que el área del rincón fuera exactamente de 16 pies cuadrados, y la altura fuera de 4 pies, ¿cuál tendría que ser la base? Muestra tu ecuación.</span>
+            <label class="lbl" for="lvl2-nook-eq">
+              <span class="en-text">My equation &amp; base:</span>
+              <span class="es-text">Mi ecuación y base:</span>
+            </label>
+            <input type="text" id="lvl2-nook-eq" data-placeholder-en="e.g. 16 = 0.5 × b × 4  =>  16 = 2b  =>  b = 8 ft" data-placeholder-es="ej. 16 = 0.5 × b × 4  =>  16 = 2b  =>  b = 8 pies" placeholder="e.g. 16 = 0.5 × b × 4  =>  16 = 2b  =>  b = 8 ft" />
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="t-base">🪵 Nook Base (feet)</label>
-              <input type="number" id="t-base" step="any" min="1" placeholder="e.g. 6" oninput="calcNook()" />
+              <label class="lbl" for="t-base">
+                <span class="en-text">🪵 Nook Base (feet)</span>
+                <span class="es-text">🪵 Base del rincón (pies)</span>
+              </label>
+              <input type="number" id="t-base" step="any" min="1" data-placeholder-en="e.g. 6" data-placeholder-es="ej. 6" placeholder="e.g. 6" oninput="calcNook()" />
             </div>
             <div>
-              <label class="lbl" for="t-height">↕️ Nook Height (feet)</label>
-              <input type="number" id="t-height" step="any" min="1" placeholder="e.g. 4" oninput="calcNook()" />
+              <label class="lbl" for="t-height">
+                <span class="en-text">↕️ Nook Height (feet)</span>
+                <span class="es-text">↕️ Altura del rincón (pies)</span>
+              </label>
+              <input type="number" id="t-height" step="any" min="1" data-placeholder-en="e.g. 4" data-placeholder-es="ej. 4" placeholder="e.g. 4" oninput="calcNook()" />
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="calcNook()">📐 Calculate Triangle Nook Area</button>
+          <button class="calc-btn teal" onclick="calcNook()">
+            <span class="en-text">📐 Calculate Triangle Nook Area</span>
+            <span class="es-text">📐 Calcular el área del rincón triangular</span>
+          </button>
           <div class="readout" id="nook-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>To find the area of a triangle, multiply the base by the height, then divide by 2 (or multiply by ½).<br><strong>Example:</strong> Base = 6 ft, Height = 4 ft. Area = ½ × 6 × 4 = 3 × 4 = <strong>12 sq ft</strong>.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">To find the area of a triangle, multiply the base by the height, then divide by 2 (or multiply by ½).<br><strong>Example:</strong> Base = 6 ft, Height = 4 ft. Area = ½ × 6 × 4 = 3 × 4 = <strong>12 sq ft</strong>.</span>
+              <span class="es-text">Para encontrar el área de un triángulo, multiplica la base por la altura, luego divide entre 2 (o multiplica por ½).<br><strong>Ejemplo:</strong> Base = 6 pies, Altura = 4 pies. Área = ½ × 6 × 4 = 3 × 4 = <strong>12 pies²</strong>.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
-          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(2)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(4)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -509,22 +703,35 @@
           <div class="card-header">
             <div class="card-icon gold">💵</div>
             <div>
-              <div class="card-title">Step 3 — Flooring &amp; Costs</div>
-              <div class="card-sub">Sum the composite floor areas and calculate flooring costs</div>
+              <div class="card-title">
+                <span class="en-text">Step 3 — Flooring &amp; Costs</span>
+                <span class="es-text">Paso 3 — Pisos y costos</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Sum the composite floor areas and calculate flooring costs</span>
+                <span class="es-text">Suma las áreas de piso compuestas y calcula los costos de piso</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct gold">
-            <strong>Your job:</strong> We will add the rectangular bedroom area and triangular nook area together. Select your flooring type, set your price per sq ft, and calculate the total cost.
+            <span class="en-text"><strong>Your job:</strong> We will add the rectangular bedroom area and triangular nook area together. Select your flooring type, set your price per sq ft, and calculate the total cost.</span>
+            <span class="es-text"><strong>Tu tarea:</strong> Sumaremos el área rectangular de la habitación y el área triangular del rincón. Selecciona tu tipo de piso, establece tu precio por pie cuadrado y calcula el costo total.</span>
           </div>
 
           <!-- Composite Floor Area SVG -->
           <svg class="visual-svg" viewBox="0 0 520 130" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #dae3db;border-radius:12px;">
-            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2818">Composite Floor Area = Bedroom + Nook</text>
+            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2818">
+              <tspan class="en-text">Composite Floor Area = Bedroom + Nook</tspan>
+              <tspan class="es-text">Área de piso compuesta = Habitación + Rincón</tspan>
+            </text>
             
             <rect x="40" y="40" width="130" height="70" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
             <text x="105" y="65" text-anchor="middle" font-size="18">🛏️</text>
-            <text x="105" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2818">Bedroom</text>
+            <text x="105" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2818">
+              <tspan class="en-text">Bedroom</tspan>
+              <tspan class="es-text">Habitación</tspan>
+            </text>
             <text x="105" y="100" text-anchor="middle" font-size="10" fill="#2e7d32" id="cost-svg-bed-area">0 sq ft</text>
             
             <text x="195" y="80" text-anchor="middle" font-size="22" fill="#2e7d32" font-weight="bold">+</text>
@@ -537,71 +744,158 @@
             
             <rect x="370" y="40" width="120" height="70" rx="8" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
             <text x="430" y="65" text-anchor="middle" font-size="18">🏠</text>
-            <text x="430" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2818">Total Area</text>
+            <text x="430" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2818">
+              <tspan class="en-text">Total Area</tspan>
+              <tspan class="es-text">Área total</tspan>
+            </text>
             <text x="430" y="100" text-anchor="middle" font-size="10" fill="#c9820f" id="cost-svg-total-area">0 sq ft</text>
           </svg>
 
           <!-- Level 1 Tip -->
           <div class="instruct gold lvl1-only">
-            🟢 <strong>Level 1 Tip:</strong> Choose carpet ($3.50/sq ft) for a soft feel, or hardwood ($9.00/sq ft) for a modern look.
+            <span class="en-text">🟢 <strong>Level 1 Tip:</strong> Choose carpet ($3.50/sq ft) for a soft feel, or hardwood ($9.00/sq ft) for a modern look.</span>
+            <span class="es-text">🟢 <strong>Consejo del Nivel 1:</strong> Elige alfombra ($3.50/pie²) para una sensación suave, o madera dura ($9.00/pie²) para un aspecto moderno.</span>
           </div>
           <!-- Level 2 Extension -->
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
-            If you have a strict budget of $1,000 for bedroom flooring, does your choice fit? Calculate your remaining budget or how much extra you need.
-            <label class="lbl" for="lvl2-budget-eq">My budget calculations:</label>
-            <input type="text" id="lvl2-budget-eq" placeholder="e.g. Budget $1,000 − Cost $462 = $538 leftover!" />
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE</span>
+              <span class="es-text">DESAFÍO DE NIVEL 2</span>
+            </span><br>
+            <span class="en-text">If you have a strict budget of $1,000 for bedroom flooring, does your choice fit? Calculate your remaining budget or how much extra you need.</span>
+            <span class="es-text">Si tienes un presupuesto estricto de $1,000 para el piso de la habitación, ¿se ajusta tu elección? Calcula tu presupuesto restante o cuánto dinero extra necesitas.</span>
+            <label class="lbl" for="lvl2-budget-eq">
+              <span class="en-text">My budget calculations:</span>
+              <span class="es-text">Mis cálculos de presupuesto:</span>
+            </label>
+            <input type="text" id="lvl2-budget-eq" data-placeholder-en="e.g. Budget $1,000 − Cost $462 = $538 leftover!" data-placeholder-es="ej. Presupuesto $1,000 − Costo $462 = ¡quedan $538!" placeholder="e.g. Budget $1,000 − Cost $462 = $538 leftover!" />
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="c-total-area">🏠 Total Composite Area (sq ft)</label>
+              <label class="lbl" for="c-total-area">
+                <span class="en-text">🏠 Total Composite Area (sq ft)</span>
+                <span class="es-text">🏠 Área compuesta total (pies²)</span>
+              </label>
               <input type="number" id="c-total-area" readonly disabled style="background:#e8f5e9; font-weight: bold; border-color: var(--blue);" />
             </div>
             <div>
-              <label class="lbl" for="flooring-type">🪵 Select Flooring Type</label>
+              <label class="lbl" for="flooring-type">
+                <span class="en-text">🪵 Select Flooring Type</span>
+                <span class="es-text">🪵 Selecciona el tipo de piso</span>
+              </label>
               <select id="flooring-type" onchange="updateMaterialPrice()">
-                <option value="">-- Choose one --</option>
-                <option value="carpet">Carpet ($2 – $5 per sq ft)</option>
-                <option value="tile">Tile ($4 – $8 per sq ft)</option>
-                <option value="hardwood">Hardwood ($6 – $12 per sq ft)</option>
+                <option value="" data-en="-- Choose one --" data-es="-- Selecciona uno --">-- Choose one --</option>
+                <option value="carpet" data-en="Carpet ($2 – $5 per sq ft)" data-es="Alfombra ($2 – $5 por pie cuadrado)">Carpet ($2 – $5 per sq ft)</option>
+                <option value="tile" data-en="Tile ($4 – $8 per sq ft)" data-es="Baldosa ($4 – $8 por pie cuadrado)">Tile ($4 – $8 per sq ft)</option>
+                <option value="hardwood" data-en="Hardwood ($6 – $12 per sq ft)" data-es="Madera dura ($6 – $12 por pie cuadrado)">Hardwood ($6 – $12 per sq ft)</option>
               </select>
             </div>
             <div>
-              <label class="lbl" for="f-price">💵 Flooring Price per Sq Ft ($)</label>
-              <input type="number" id="f-price" step="0.01" min="0.01" placeholder="e.g. 5.50" oninput="calcFlooring()" />
+              <label class="lbl" for="f-price">
+                <span class="en-text">💵 Flooring Price per Sq Ft ($)</span>
+                <span class="es-text">💵 Precio del piso por pie² ($)</span>
+              </label>
+              <input type="number" id="f-price" step="0.01" min="0.01" data-placeholder-en="e.g. 5.50" data-placeholder-es="ej. 5.50" placeholder="e.g. 5.50" oninput="calcFlooring()" />
             </div>
           </div>
 
-          <button class="calc-btn gold" onclick="calcFlooring()">💵 Calculate Total Flooring Cost</button>
+          <button class="calc-btn gold" onclick="calcFlooring()">
+            <span class="en-text">💵 Calculate Total Flooring Cost</span>
+            <span class="es-text">💵 Calcular costo total del piso</span>
+          </button>
           <div class="readout" id="flooring-out"></div>
 
           <div style="margin-top:22px;">
-            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">🌎 Real-World Flooring Reference Ranges</h3>
-            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">Compare your price per square foot with these standard market price averages:</p>
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">
+              <span class="en-text">🌎 Real-World Flooring Reference Ranges</span>
+              <span class="es-text">🌎 Rangos de precios de pisos en el mundo real</span>
+            </h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">
+              <span class="en-text">Compare your price per square foot with these standard market price averages:</span>
+              <span class="es-text">Compara tu precio por pie cuadrado con estos promedios de precios de mercado estándar:</span>
+            </p>
             <table class="data-table">
               <thead>
-                <tr><th>Flooring Type</th><th>Average Cost Range / Sq Ft</th><th>Best Use Room Type</th></tr>
+                <tr>
+                  <th>
+                    <span class="en-text">Flooring Type</span>
+                    <span class="es-text">Tipo de piso</span>
+                  </th>
+                  <th>
+                    <span class="en-text">Average Cost Range / Sq Ft</span>
+                    <span class="es-text">Rango de costo promedio / pie²</span>
+                  </th>
+                  <th>
+                    <span class="en-text">Best Use Room Type</span>
+                    <span class="es-text">Mejor tipo de habitación para su uso</span>
+                  </th>
+                </tr>
               </thead>
               <tbody>
-                <tr><td>Carpet</td><td>$2.00 – $5.00</td><td>Cozy bedrooms, playrooms</td></tr>
-                <tr><td>Tile</td><td>$4.00 – $8.00</td><td>Bathrooms, entryways, kitchens</td></tr>
-                <tr><td>Hardwood</td><td>$6.00 – $12.00</td><td>Living rooms, premium bedrooms</td></tr>
+                <tr>
+                  <td>
+                    <span class="en-text">Carpet</span>
+                    <span class="es-text">Alfombra</span>
+                  </td>
+                  <td>$2.00 – $5.00</td>
+                  <td>
+                    <span class="en-text">Cozy bedrooms, playrooms</span>
+                    <span class="es-text">Habitaciones acogedoras, salas de juegos</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="en-text">Tile</span>
+                    <span class="es-text">Baldosa / Azulejo</span>
+                  </td>
+                  <td>$4.00 – $8.00</td>
+                  <td>
+                    <span class="en-text">Bathrooms, entryways, kitchens</span>
+                    <span class="es-text">Baños, entradas, cocinas</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="en-text">Hardwood</span>
+                    <span class="es-text">Madera dura</span>
+                  </td>
+                  <td>$6.00 – $12.00</td>
+                  <td>
+                    <span class="en-text">Living rooms, premium bedrooms</span>
+                    <span class="es-text">Salas de estar, habitaciones de primera calidad</span>
+                  </td>
+                </tr>
               </tbody>
             </table>
-            <label class="lbl" for="world-compare">Where does your chosen price per sq ft fit? Write one sentence.</label>
-            <textarea id="world-compare" placeholder="My chosen price of $___ per sq ft fits within the standard range because..."></textarea>
+            <label class="lbl" for="world-compare">
+              <span class="en-text">Where does your chosen price per sq ft fit? Write one sentence.</span>
+              <span class="es-text">¿Dónde encaja el precio por pie cuadrado que elegiste? Escribe una frase.</span>
+            </label>
+            <textarea id="world-compare" data-placeholder-en="My chosen price of $___ per sq ft fits within the standard range because..." data-placeholder-es="Mi precio elegido de $___ por pie² se ajusta al rango estándar porque..." placeholder="My chosen price of $___ per sq ft fits within the standard range because..."></textarea>
           </div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>Total Cost = Total Composite Area × Price per Sq Ft.<br><strong>Example:</strong> Area = 132 sq ft, Price = $3.50/sq ft. Cost = 132 × 3.50 = <strong>$462.00</strong>.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">Total Cost = Total Composite Area × Price per Sq Ft.<br><strong>Example:</strong> Area = 132 sq ft, Price = $3.50/sq ft. Cost = 132 × 3.50 = <strong>$462.00</strong>.</span>
+              <span class="es-text">Costo total = Área compuesta total × Precio por pie².<br><strong>Ejemplo:</strong> Área = 132 pies², Precio = $3.50/pie². Costo = 132 × 3.50 = <strong>$462.00</strong>.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
-          <button class="nav-btn" onclick="goStep(5)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(3)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(5)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -613,61 +907,104 @@
           <div class="card-header">
             <div class="card-icon teal">👥</div>
             <div>
-              <div class="card-title">Step 4 — Compare With a Partner</div>
-              <div class="card-sub">Compare bedroom sizes and costs side-by-side with a classmate</div>
+              <div class="card-title">
+                <span class="en-text">Step 4 — Compare With a Partner</span>
+                <span class="es-text">Paso 4 — Comparar con un compañero</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Compare bedroom sizes and costs side-by-side with a classmate</span>
+                <span class="es-text">Compara los tamaños y costos de las habitaciones lado a lado con un compañero</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your job:</strong> Ask a partner about their dream room. Enter their measurements below, then click Compare to see who designed the larger room or spent more.
+            <span class="en-text"><strong>Your job:</strong> Ask a partner about their dream room. Enter their measurements below, then click Compare to see who designed the larger room or spent more.</span>
+            <span class="es-text"><strong>Tu tarea:</strong> Pregúntale a un compañero sobre la habitación de sus sueños. Ingresa sus medidas a continuación, luego haz clic en Comparar para ver quién diseñó la habitación más grande o gastó más.</span>
           </div>
 
           <!-- Comparison SVG -->
           <svg class="visual-svg" viewBox="0 0 520 100" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #dae3db;border-radius:12px;">
             <text x="140" y="40" text-anchor="middle" font-size="28">🛏️</text>
-            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2818">My Room</text>
+            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2818">
+              <tspan class="en-text">My Room</tspan>
+              <tspan class="es-text">Mi habitación</tspan>
+            </text>
             <text x="140" y="80" text-anchor="middle" font-size="10" fill="#5c7062" id="compare-svg-my">0 sq ft</text>
 
             <rect x="235" y="38" width="50" height="30" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
             <text x="260" y="58" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">VS</text>
 
             <text x="380" y="40" text-anchor="middle" font-size="28">🛏️</text>
-            <text x="380" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2818" id="compare-svg-partner-name">Partner</text>
+            <text x="380" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2818" id="compare-svg-partner-name">
+              <tspan class="en-text">Partner</tspan>
+              <tspan class="es-text">Compañero</tspan>
+            </text>
             <text x="380" y="80" text-anchor="middle" font-size="10" fill="#5c7062" id="compare-svg-partner-area">0 sq ft</text>
           </svg>
 
           <div style="background:var(--teal-lt);border-radius:12px;padding:14px 16px;margin-bottom:18px;">
-            <strong style="font-size:14px;color:var(--teal);">Classmate Interview Questions:</strong>
+            <strong style="font-size:14px;color:var(--teal);">
+              <span class="en-text">Classmate Interview Questions:</span>
+              <span class="es-text">Preguntas de la entrevista al compañero:</span>
+            </strong>
             <ol style="margin-top:8px;font-size:14px;line-height:1.9;padding-left:18px;color:var(--ink);">
-              <li>What is your total composite bedroom area (sq ft)?</li>
-              <li>What is your calculated total flooring cost ($)?</li>
+              <li>
+                <span class="en-text">What is your total composite bedroom area (sq ft)?</span>
+                <span class="es-text">¿Cuál es tu área de habitación compuesta total (pies²)?</span>
+              </li>
+              <li>
+                <span class="en-text">What is your calculated total flooring cost ($)?</span>
+                <span class="es-text">¿Cuál es el costo total del piso calculado ($)?</span>
+              </li>
             </ol>
           </div>
 
-          <label class="lbl" for="p-name">Partner's Name or Initials</label>
-          <input type="text" id="p-name" placeholder="e.g. Emma" />
+          <label class="lbl" for="p-name">
+            <span class="en-text">Partner's Name or Initials</span>
+            <span class="es-text">Nombre o iniciales del compañero</span>
+          </label>
+          <input type="text" id="p-name" data-placeholder-en="e.g. Emma" data-placeholder-es="ej. Emma" placeholder="e.g. Emma" />
 
           <div class="grid2" style="margin-top:4px;">
             <div>
-              <label class="lbl" for="p-area">Partner's Total Room Area (sq ft)</label>
-              <input type="number" id="p-area" min="1" step="any" oninput="comparePeer()" placeholder="e.g. 150" />
+              <label class="lbl" for="p-area">
+                <span class="en-text">Partner's Total Room Area (sq ft)</span>
+                <span class="es-text">Área total de la habitación del compañero (pies²)</span>
+              </label>
+              <input type="number" id="p-area" min="1" step="any" oninput="comparePeer()" data-placeholder-en="e.g. 150" data-placeholder-es="ej. 150" placeholder="e.g. 150" />
             </div>
             <div>
-              <label class="lbl" for="p-cost">Partner's Total Flooring Cost ($)</label>
-              <input type="number" id="p-cost" min="0.01" step="any" oninput="comparePeer()" placeholder="e.g. 525.00" />
+              <label class="lbl" for="p-cost">
+                <span class="en-text">Partner's Total Flooring Cost ($)</span>
+                <span class="es-text">Costo total del piso del compañero ($)</span>
+              </label>
+              <input type="number" id="p-cost" min="0.01" step="any" oninput="comparePeer()" data-placeholder-en="e.g. 525.00" data-placeholder-es="ej. 525.00" placeholder="e.g. 525.00" />
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="comparePeer()">📊 Compare Our Dream Rooms</button>
+          <button class="calc-btn teal" onclick="comparePeer()">
+            <span class="en-text">📊 Compare Our Dream Rooms</span>
+            <span class="es-text">📊 Comparar nuestras habitaciones</span>
+          </button>
           <div class="readout" id="peer-out"></div>
 
-          <label class="lbl" for="peer-reflect" style="margin-top:18px;">Write down your conclusions from this comparison. Who designed the larger room, and how do costs compare?</label>
-          <textarea id="peer-reflect" placeholder="My room is ___ sq ft and Emma's room is ___ sq ft, which means..."></textarea>
+          <label class="lbl" for="peer-reflect" style="margin-top:18px;">
+            <span class="en-text">Write down your conclusions from this comparison. Who designed the larger room, and how do costs compare?</span>
+            <span class="es-text">Escribe tus conclusiones de esta comparación. ¿Quién diseñó la habitación más grande y cómo se comparan los costos?</span>
+          </label>
+          <textarea id="peer-reflect" data-placeholder-en="My room is ___ sq ft and Emma's room is ___ sq ft, which means..." data-placeholder-es="Mi habitación es de ___ pies² y la de Emma es de ___ pies², lo que significa..." placeholder="My room is ___ sq ft and Emma's room is ___ sq ft, which means..."></textarea>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
-          <button class="nav-btn green" onclick="goStep(6)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(4)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="goStep(6)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -679,59 +1016,216 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">Step 5 — Finish &amp; Submit</div>
-              <div class="card-sub">Check off your tasks, review the rubric, and generate your report</div>
+              <div class="card-title">
+                <span class="en-text">Step 5 — Finish &amp; Submit</span>
+                <span class="es-text">Paso 5 — Terminar y enviar</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Check off your tasks, review the rubric, and generate your report</span>
+                <span class="es-text">Marca tus tareas completadas, revisa la rúbrica y genera tu informe</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct green">
-            <strong>Your job:</strong> Write a brief pitch introducing your dream room, complete the project checklist, read your grading rubric, and output your printable final project report!
+            <span class="en-text"><strong>Your job:</strong> Write a brief pitch introducing your dream room, complete the project checklist, read your grading rubric, and output your printable final project report!</span>
+            <span class="es-text"><strong>Tu tarea:</strong> ¡Escribe un breve discurso presentando tu habitación ideal, completa la lista de verificación del proyecto, lee la rúbrica de calificación y genera tu informe final imprimible del proyecto!</span>
           </div>
 
           <!-- Presentation Pitch -->
-          <label class="lbl" for="pitch">✍️ Your Dream Room Presentation Pitch (Use your real calculations!)</label>
-          <textarea id="pitch" placeholder="Welcome! I designed a dream room with a total composite floor area of ___ sq ft. My room consists of a main bedroom of ___ sq ft and a reading nook of ___ sq ft. I selected ___ flooring costing a total of $___..."></textarea>
+          <label class="lbl" for="pitch">
+            <span class="en-text">✍️ Your Dream Room Presentation Pitch (Use your real calculations!)</span>
+            <span class="es-text">✍️ Discurso de presentación de la habitación ideal (¡Usa tus cálculos reales!)</span>
+          </label>
+          <textarea id="pitch" data-placeholder-en="Welcome! I designed a dream room with a total composite floor area of ___ sq ft. My room consists of a main bedroom of ___ sq ft and a reading nook of ___ sq ft. I selected ___ flooring costing a total of $___..." data-placeholder-es="¡Bienvenidos! Diseñé la habitación de mis sueños con un área de piso compuesta total de ___ pies². Mi habitación consta de una habitación principal de ___ pies² y un rincón de lectura de ___ pies². Seleccioné piso de ___ con un costo total de $___..." placeholder="Welcome! I designed a dream room with a total composite floor area of ___ sq ft. My room consists of a main bedroom of ___ sq ft and a reading nook of ___ sq ft. I selected ___ flooring costing a total of $___..."></textarea>
 
           <!-- Checklist -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">✅ Project Checklist — Check off completed tasks</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+            <span class="en-text">✅ Project Checklist — Check off completed tasks</span>
+            <span class="es-text">✅ Lista de verificación — Marca las tareas completadas</span>
+          </h3>
           <ul class="checklist" id="checklist">
-            <li><input type="checkbox" id="ck1" /> I calculated the area of my rectangular bedroom using length × width.</li>
-            <li><input type="checkbox" id="ck2" /> I calculated the area of my triangular reading nook using ½ × base × height.</li>
-            <li><input type="checkbox" id="ck3" /> I added my areas together to find my total composite square footage.</li>
-            <li><input type="checkbox" id="ck4" /> I chose a flooring type and calculated my total cost.</li>
-            <li><input type="checkbox" id="ck5" /> I compared my flooring cost to real average ranges.</li>
-            <li><input type="checkbox" id="ck6" /> I interviewed a partner and compared room sizes and costs.</li>
-            <li><input type="checkbox" id="ck7" /> I wrote a presentation pitch explaining my dream room.</li>
+            <li><input type="checkbox" id="ck1" /> 
+              <span class="en-text">I calculated the area of my rectangular bedroom using length × width.</span>
+              <span class="es-text">Calculé el área de mi habitación rectangular usando largo × ancho.</span>
+            </li>
+            <li><input type="checkbox" id="ck2" /> 
+              <span class="en-text">I calculated the area of my triangular reading nook using ½ × base × height.</span>
+              <span class="es-text">Calculé el área de mi rincón de lectura triangular usando ½ × base × altura.</span>
+            </li>
+            <li><input type="checkbox" id="ck3" /> 
+              <span class="en-text">I added my areas together to find my total composite square footage.</span>
+              <span class="es-text">Sumé mis áreas para encontrar el área compuesta total en pies cuadrados.</span>
+            </li>
+            <li><input type="checkbox" id="ck4" /> 
+              <span class="en-text">I chose a flooring type and calculated my total cost.</span>
+              <span class="es-text">Elegí un tipo de piso y calculé mi costo total.</span>
+            </li>
+            <li><input type="checkbox" id="ck5" /> 
+              <span class="en-text">I compared my flooring cost to real average ranges.</span>
+              <span class="es-text">Comparé el costo de mi piso con los rangos de promedios reales.</span>
+            </li>
+            <li><input type="checkbox" id="ck6" /> 
+              <span class="en-text">I interviewed a partner and compared room sizes and costs.</span>
+              <span class="es-text">Entrevisté a un compañero y comparé tamaños y costos de las habitaciones.</span>
+            </li>
+            <li><input type="checkbox" id="ck7" /> 
+              <span class="en-text">I wrote a presentation pitch explaining my dream room.</span>
+              <span class="es-text">Escribí un discurso de presentación explicando la habitación de mis sueños.</span>
+            </li>
           </ul>
 
           <!-- Rubric -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">📊 Grading Rubric</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+            <span class="en-text">📊 Grading Rubric</span>
+            <span class="es-text">📊 Rúbrica de calificación</span>
+          </h3>
           <table class="rubric">
             <thead>
-              <tr><th>Skill</th><th class="score-4">4 — Expert</th><th class="score-3">3 — Proficient</th><th class="score-2">2 — Developing</th></tr>
+              <tr>
+                <th>
+                  <span class="en-text">Skill</span>
+                  <span class="es-text">Habilidad</span>
+                </th>
+                <th class="score-4">
+                  <span class="en-text">4 — Expert</span>
+                  <span class="es-text">4 — Experto</span>
+                </th>
+                <th class="score-3">
+                  <span class="en-text">3 — Proficient</span>
+                  <span class="es-text">3 — Competente</span>
+                </th>
+                <th class="score-2">
+                  <span class="en-text">2 — Developing</span>
+                  <span class="es-text">2 — En desarrollo</span>
+                </th>
+              </tr>
             </thead>
             <tbody>
-              <tr><td><strong>Area Formulas</strong></td><td>Calculates rectangle &amp; triangle areas perfectly with formulas shown</td><td>Correctly calculates rectangle &amp; triangle areas</td><td>Minor calculation errors with formulas</td></tr>
-              <tr><td><strong>Composite Area</strong></td><td>Accurately adds composite shapes with clear mathematical justification</td><td>Calculates total area correctly</td><td>Errors in adding areas together</td></tr>
-              <tr><td><strong>Cost Calculation</strong></td><td>Flooring cost is correct with clear decimal reasoning</td><td>Correctly multiplies area by unit cost</td><td>Computation errors in cost estimation</td></tr>
-              <tr><td><strong>Comparison</strong></td><td>Reflects deeply on classmate details and average market ranges</td><td>Completes comparison data correctly</td><td>Incomplete comparison details</td></tr>
-              <tr><td><strong>Design Pitch</strong></td><td>Highly persuasive and clear, using all room data correctly</td><td>Includes room dimensions, areas, and costs in pitch</td><td>Written but missing key project values</td></tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Area Formulas</span>
+                  <span class="es-text">Fórmulas de área</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Calculates rectangle &amp; triangle areas perfectly with formulas shown</span>
+                  <span class="es-text">Calcula áreas de rectángulos y triángulos a la perfección mostrando las fórmulas</span>
+                </td>
+                <td>
+                  <span class="en-text">Correctly calculates rectangle &amp; triangle areas</span>
+                  <span class="es-text">Calcula correctamente áreas de rectángulos y triángulos</span>
+                </td>
+                <td>
+                  <span class="en-text">Minor calculation errors with formulas</span>
+                  <span class="es-text">Errores menores de cálculo con fórmulas</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Composite Area</span>
+                  <span class="es-text">Área compuesta</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Accurately adds composite shapes with clear mathematical justification</span>
+                  <span class="es-text">Suma con precisión formas compuestas con una justificación matemática clara</span>
+                </td>
+                <td>
+                  <span class="en-text">Calculates total area correctly</span>
+                  <span class="es-text">Calcula el área total correctamente</span>
+                </td>
+                <td>
+                  <span class="en-text">Errors in adding areas together</span>
+                  <span class="es-text">Errores al sumar las áreas</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Cost Calculation</span>
+                  <span class="es-text">Cálculo del costo</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Flooring cost is correct with clear decimal reasoning</span>
+                  <span class="es-text">El costo del piso es correcto con un razonamiento decimal claro</span>
+                </td>
+                <td>
+                  <span class="en-text">Correctly multiplies area by unit cost</span>
+                  <span class="es-text">Multiplica correctamente el área por el costo unitario</span>
+                </td>
+                <td>
+                  <span class="en-text">Computation errors in cost estimation</span>
+                  <span class="es-text">Errores de cálculo en la estimación de costos</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Comparison</span>
+                  <span class="es-text">Comparación</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Reflects deeply on classmate details and average market ranges</span>
+                  <span class="es-text">Reflexiona profundamente sobre los detalles del compañero y los rangos de mercado promedio</span>
+                </td>
+                <td>
+                  <span class="en-text">Completes comparison data correctly</span>
+                  <span class="es-text">Completa los datos de comparación correctamente</span>
+                </td>
+                <td>
+                  <span class="en-text">Incomplete comparison details</span>
+                  <span class="es-text">Detalles de comparación incompletos</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Design Pitch</span>
+                  <span class="es-text">Discurso del diseño</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Highly persuasive and clear, using all room data correctly</span>
+                  <span class="es-text">Altamente persuasivo y claro, utilizando correctamente todos los datos del cuarto</span>
+                </td>
+                <td>
+                  <span class="en-text">Includes room dimensions, areas, and costs in pitch</span>
+                  <span class="es-text">Incluye dimensiones del cuarto, áreas y costos en el discurso</span>
+                </td>
+                <td>
+                  <span class="en-text">Written but missing key project values</span>
+                  <span class="es-text">Escrito pero faltan valores clave del proyecto</span>
+                </td>
+              </tr>
             </tbody>
           </table>
 
           <!-- Report Generator -->
           <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
-            <button class="calc-btn" onclick="buildReport()">📝 Generate Summary</button>
-            <button class="export-btn" onclick="copyReport()">📋 Copy</button>
-            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
-            <button class="export-btn" onclick="window.print()">🖨️ Print</button>
+            <button class="calc-btn" onclick="buildReport()">
+              <span class="en-text">📝 Generate Summary</span>
+              <span class="es-text">📝 Generar resumen</span>
+            </button>
+            <button class="export-btn" onclick="copyReport()">
+              <span class="en-text">📋 Copy</span>
+              <span class="es-text">📋 Copiar</span>
+            </button>
+            <button class="export-btn" onclick="downloadTxt()">
+              <span class="en-text">⬇️ Download .txt</span>
+              <span class="es-text">⬇️ Descargar .txt</span>
+            </button>
+            <button class="export-btn" onclick="window.print()">
+              <span class="en-text">🖨️ Print</span>
+              <span class="es-text">🖨️ Imprimir</span>
+            </button>
           </div>
           <pre class="report-box" id="reportBox"></pre>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(5)">← Back</button>
-          <button class="nav-btn green" onclick="alert('Congratulations! 🎉 Show this page and your generated report to your teacher.')">🎉 I'm Done!</button>
+          <button class="nav-btn ghost" onclick="goStep(5)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="alert(document.body.classList.contains('es') ? '¡Felicitaciones! 🎉 Muestra esta página y tu informe generado a tu profesor/a.' : 'Congratulations! 🎉 Show this page and your generated report to your teacher.')">
+            <span class="en-text">🎉 I'm Done!</span>
+            <span class="es-text">🎉 ¡Terminé!</span>
+          </button>
         </div>
       </div>
 
@@ -743,19 +1237,20 @@
     <script>
       // ---- State ----
       const STEPS = [
-        { id: 1, label: 'Key Words', icon: '📖' },
-        { id: 2, label: 'Floor Area', icon: '🛏️' },
-        { id: 3, label: 'Triangle Nook', icon: '📐' },
-        { id: 4, label: 'Flooring Costs', icon: '💵' },
-        { id: 5, label: 'Partner Room', icon: '👥' },
-        { id: 6, label: 'Finish', icon: '🏆' },
+        { id: 1, labelEn: 'Key Words', labelEs: 'Palabras clave', icon: '📖' },
+        { id: 2, labelEn: 'Floor Area', labelEs: 'Área del piso', icon: '🛏️' },
+        { id: 3, labelEn: 'Triangle Nook', labelEs: 'Rincón triangular', icon: '📐' },
+        { id: 4, labelEn: 'Flooring Costs', labelEs: 'Costos de piso', icon: '💵' },
+        { id: 5, labelEn: 'Partner Room', labelEs: 'Cuarto de compañero', icon: '👥' },
+        { id: 6, labelEn: 'Finish', labelEs: 'Terminar', icon: '🏆' },
       ];
       let currentStep = 1;
       const visited = new Set([1]);
 
       // ---- Level toggle ----
       function setLevel(n) {
-        document.getElementById('body').className = 'level-' + n;
+        const isEs = document.body.classList.contains('es');
+        document.getElementById('body').className = 'level-' + n + (isEs ? ' es' : '');
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
       }
@@ -763,11 +1258,13 @@
       // ---- Build step trail ----
       function buildTrail() {
         const trail = document.getElementById('stepTrail');
+        const isEs = document.body.classList.contains('es');
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
+          const label = isEs ? s.labelEs : s.labelEn;
           return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
-            <span class="s-label">${s.label}</span>
+            <span class="s-label">${label}</span>
           </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
         }).join('');
       }
@@ -775,19 +1272,34 @@
       // ---- Navigation ----
       function goStep(n) {
         if (n < 1 || n > STEPS.length) return;
+
+        // Cancel reading aloud if running
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+        }
+
         document.getElementById('step-' + currentStep).classList.remove('active');
         currentStep = n;
         visited.add(n);
         document.getElementById('step-' + n).classList.add('active');
         buildTrail();
         updateProgress();
+
+        // Reset read button text
+        const btn = document.getElementById('btn-read');
+        if (btn) {
+          const isEs = document.body.classList.contains('es');
+          btn.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+        }
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
       function updateProgress() {
         const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
         document.getElementById('progFill').style.width = pct + '%';
-        document.getElementById('progLabel').textContent = `Step ${currentStep} of ${STEPS.length}`;
+        const isEs = document.body.classList.contains('es');
+        document.getElementById('progLabel').textContent = isEs ? `Paso ${currentStep} de ${STEPS.length}` : `Step ${currentStep} of ${STEPS.length}`;
       }
 
       // ---- Math helpers ----
@@ -807,18 +1319,25 @@
         const sl = document.getElementById('rect-svg-len');
         const sw = document.getElementById('rect-svg-wid');
         const sa = document.getElementById('rect-svg-area');
-        if (sl && !isNaN(len)) sl.textContent = `Length (l) = ${len} ft`;
-        if (sw && !isNaN(wid)) sw.textContent = `Width (w) = ${wid} ft`;
+        const isEs = document.body.classList.contains('es');
+        
+        if (sl && !isNaN(len)) sl.textContent = isEs ? `Longitud (l) = ${len} pies` : `Length (l) = ${len} ft`;
+        if (sw && !isNaN(wid)) sw.textContent = isEs ? `Ancho (w) = ${wid} pies` : `Width (w) = ${wid} ft`;
         
         if (isNaN(len) || isNaN(wid) || len <= 0 || wid <= 0) return;
         const area = len * wid;
-        if (sa) sa.textContent = `${fmt(area)} sq ft`;
+        if (sa) sa.textContent = isEs ? `${fmt(area)} pies²` : `${fmt(area)} sq ft`;
         
-        showReadout('floor-out', `
+        const html = isEs ? `
+          <strong>Área del piso de la habitación = ${fmt(area)} pies²</strong><br>
+          Cálculo: <strong>${len} pies × ${wid} pies = ${fmt(area)} pies²</strong><br>
+          <small>Fórmula: Área = largo × ancho (l × w)</small>
+        ` : `
           <strong>Bedroom Floor Area = ${fmt(area)} sq ft</strong><br>
           Calculation: <strong>${len} ft × ${wid} ft = ${fmt(area)} sq ft</strong><br>
           <small>Formula: Area = length × width (l × w)</small>
-        `);
+        `;
+        showReadout('floor-out', html);
         recalcTotal();
       }
 
@@ -826,23 +1345,29 @@
       function calcNook() {
         const base = parseFloat(document.getElementById('t-base').value);
         const height = parseFloat(document.getElementById('t-height').value);
+        const isEs = document.body.classList.contains('es');
         
         // Update SVG labels
         const sb = document.getElementById('tri-svg-base');
         const sh = document.getElementById('tri-svg-height');
         const sa = document.getElementById('tri-svg-area');
-        if (sb && !isNaN(base)) sb.textContent = `Base (b) = ${base} ft`;
-        if (sh && !isNaN(height)) sh.textContent = `Height (h) = ${height} ft`;
+        if (sb && !isNaN(base)) sb.textContent = isEs ? `Base (b) = ${base} pies` : `Base (b) = ${base} ft`;
+        if (sh && !isNaN(height)) sh.textContent = isEs ? `Altura (h) = ${height} pies` : `Height (h) = ${height} ft`;
         
         if (isNaN(base) || isNaN(height) || base <= 0 || height <= 0) return;
         const area = 0.5 * base * height;
-        if (sa) sa.textContent = `${fmt(area)} sq ft`;
+        if (sa) sa.textContent = isEs ? `${fmt(area)} pies²` : `${fmt(area)} sq ft`;
         
-        showReadout('nook-out', `
+        const html = isEs ? `
+          <strong>Área del rincón de lectura = ${fmt(area)} pies²</strong><br>
+          Cálculo: <strong>½ × ${base} pies × ${height} pies = ${fmt(area)} pies²</strong><br>
+          <small>Fórmula: Área = ½ × base × altura (½ × b × h)</small>
+        ` : `
           <strong>Reading Nook Area = ${fmt(area)} sq ft</strong><br>
           Calculation: <strong>½ × ${base} ft × ${height} ft = ${fmt(area)} sq ft</strong><br>
           <small>Formula: Area = ½ × base × height (½ × b × h)</small>
-        `);
+        `;
+        showReadout('nook-out', html);
         recalcTotal();
       }
 
@@ -852,6 +1377,7 @@
         const wid = parseFloat(document.getElementById('f-width').value) || 0;
         const base = parseFloat(document.getElementById('t-base').value) || 0;
         const height = parseFloat(document.getElementById('t-height').value) || 0;
+        const isEs = document.body.classList.contains('es');
         
         const rectArea = len * wid;
         const nookArea = 0.5 * base * height;
@@ -861,9 +1387,10 @@
         const svgn = document.getElementById('cost-svg-nook-area');
         const svgt = document.getElementById('cost-svg-total-area');
         
-        if (svgb) svgb.textContent = `${fmt(rectArea)} sq ft`;
-        if (svgn) svgn.textContent = `${fmt(nookArea)} sq ft`;
-        if (svgt) svgt.textContent = `${fmt(totalArea)} sq ft`;
+        const unit = isEs ? 'pies²' : 'sq ft';
+        if (svgb) svgb.textContent = `${fmt(rectArea)} ${unit}`;
+        if (svgn) svgn.textContent = `${fmt(nookArea)} ${unit}`;
+        if (svgt) svgt.textContent = `${fmt(totalArea)} ${unit}`;
         
         document.getElementById('c-total-area').value = fmt(totalArea);
         calcFlooring();
@@ -887,6 +1414,7 @@
         const wid = parseFloat(document.getElementById('f-width').value) || 0;
         const base = parseFloat(document.getElementById('t-base').value) || 0;
         const height = parseFloat(document.getElementById('t-height').value) || 0;
+        const isEs = document.body.classList.contains('es');
         
         const rectArea = len * wid;
         const nookArea = 0.5 * base * height;
@@ -897,11 +1425,16 @@
         
         if (totalArea === 0) return;
         
-        showReadout('flooring-out', `
+        const html = isEs ? `
+          <strong>Costo total del piso = $${totalCost.toFixed(2)}</strong><br>
+          Cálculo: <strong>${fmt(totalArea)} pies² × $${price.toFixed(2)} / pie² = $${totalCost.toFixed(2)}</strong><br>
+          <small>Área total (${fmt(totalArea)} pies²) = Habitación (${fmt(rectArea)} pies²) + Rincón (${fmt(nookArea)} pies²)</small>
+        ` : `
           <strong>Total Flooring Cost = $${totalCost.toFixed(2)}</strong><br>
           Calculation: <strong>${fmt(totalArea)} sq ft × $${price.toFixed(2)} / sq ft = $${totalCost.toFixed(2)}</strong><br>
           <small>Total Area (${fmt(totalArea)} sq ft) = Bedroom (${fmt(rectArea)} sq ft) + Nook (${fmt(nookArea)} sq ft)</small>
-        `);
+        `;
+        showReadout('flooring-out', html);
       }
 
       // ---- Peer Comparison ----
@@ -910,12 +1443,13 @@
         const wid = parseFloat(document.getElementById('f-width').value) || 0;
         const base = parseFloat(document.getElementById('t-base').value) || 0;
         const height = parseFloat(document.getElementById('t-height').value) || 0;
+        const isEs = document.body.classList.contains('es');
         
         const myArea = (len * wid) + (0.5 * base * height);
         const price = parseFloat(document.getElementById('f-price').value) || 0;
         const myCost = myArea * price;
         
-        const pName = document.getElementById('p-name').value || 'Partner';
+        const pName = document.getElementById('p-name').value || (isEs ? 'Compañero' : 'Partner');
         const pArea = parseFloat(document.getElementById('p-area').value);
         const pCost = parseFloat(document.getElementById('p-cost').value);
         
@@ -923,25 +1457,48 @@
         const pSvgName = document.getElementById('compare-svg-partner-name');
         const pSvgArea = document.getElementById('compare-svg-partner-area');
         
-        if (mySvg) mySvg.textContent = `${fmt(myArea)} sq ft`;
-        if (pSvgName) pSvgName.textContent = pName;
-        if (pSvgArea && !isNaN(pArea)) pSvgArea.textContent = `${fmt(pArea)} sq ft`;
+        const unit = isEs ? 'pies²' : 'sq ft';
+        if (mySvg) mySvg.textContent = `${fmt(myArea)} ${unit}`;
+        if (pSvgName) {
+          if (document.getElementById('p-name').value) {
+            pSvgName.textContent = pName;
+          } else {
+            pSvgName.innerHTML = isEs ? `<tspan class="es-text" style="display:inline !important;">Compañero</tspan><tspan class="en-text" style="display:none !important;">Partner</tspan>` : `<tspan class="en-text" style="display:inline !important;">Partner</tspan><tspan class="es-text" style="display:none !important;">Compañero</tspan>`;
+          }
+        }
+        if (pSvgArea && !isNaN(pArea)) pSvgArea.textContent = `${fmt(pArea)} ${unit}`;
         
         if (isNaN(pArea) || isNaN(pCost)) return;
         
         const areaDiff = myArea - pArea;
         const costDiff = myCost - pCost;
         
-        let html = `
-          <strong>Area Comparison:</strong><br>
-          • Your room: <strong>${fmt(myArea)} sq ft</strong><br>
-          • ${pName}'s room: <strong>${fmt(pArea)} sq ft</strong><br>
-          • Difference: <strong>${fmt(Math.abs(areaDiff))} sq ft</strong> (${areaDiff > 0 ? 'Yours is larger' : areaDiff < 0 ? pName + '\'s is larger' : 'Identical size'})<br><br>
-          <strong>Cost Comparison:</strong><br>
-          • Your flooring: <strong>$${myCost.toFixed(2)}</strong><br>
-          • ${pName}'s flooring: <strong>$${pCost.toFixed(2)}</strong><br>
-          • Difference: <strong>$${Math.abs(costDiff).toFixed(2)}</strong> (${costDiff > 0 ? 'Yours is more expensive' : costDiff < 0 ? pName + '\'s is more expensive' : 'Identical cost'})
-        `;
+        let html = '';
+        if (isEs) {
+          const areaRelation = areaDiff > 0 ? 'La tuya es más grande' : areaDiff < 0 ? 'La de ' + pName + ' es más grande' : 'Tamaño idéntico';
+          const costRelation = costDiff > 0 ? 'La tuya es más costosa' : costDiff < 0 ? 'La de ' + pName + ' es más costosa' : 'Costo idéntico';
+          html = `
+            <strong>Comparación de área:</strong><br>
+            • Tu habitación: <strong>${fmt(myArea)} pies²</strong><br>
+            • Habitación de ${pName}: <strong>${fmt(pArea)} pies²</strong><br>
+            • Diferencia: <strong>${fmt(Math.abs(areaDiff))} pies²</strong> (${areaRelation})<br><br>
+            <strong>Comparación de costo:</strong><br>
+            • Tu piso: <strong>$${myCost.toFixed(2)}</strong><br>
+            • Piso de ${pName}: <strong>$${pCost.toFixed(2)}</strong><br>
+            • Diferencia: <strong>$${Math.abs(costDiff).toFixed(2)}</strong> (${costRelation})
+          `;
+        } else {
+          html = `
+            <strong>Area Comparison:</strong><br>
+            • Your room: <strong>${fmt(myArea)} sq ft</strong><br>
+            • ${pName}'s room: <strong>${fmt(pArea)} sq ft</strong><br>
+            • Difference: <strong>${fmt(Math.abs(areaDiff))} sq ft</strong> (${areaDiff > 0 ? 'Yours is larger' : areaDiff < 0 ? pName + '\'s is larger' : 'Identical size'})<br><br>
+            <strong>Cost Comparison:</strong><br>
+            • Your flooring: <strong>$${myCost.toFixed(2)}</strong><br>
+            • ${pName}'s flooring: <strong>$${pCost.toFixed(2)}</strong><br>
+            • Difference: <strong>$${Math.abs(costDiff).toFixed(2)}</strong> (${costDiff > 0 ? 'Yours is more expensive' : costDiff < 0 ? pName + '\'s is more expensive' : 'Identical cost'})
+          `;
+        }
         showReadout('peer-out', html);
       }
 
@@ -951,6 +1508,7 @@
         const wid = parseFloat(document.getElementById('f-width').value) || 0;
         const base = parseFloat(document.getElementById('t-base').value) || 0;
         const height = parseFloat(document.getElementById('t-height').value) || 0;
+        const isEs = document.body.classList.contains('es');
         
         const rectArea = len * wid;
         const nookArea = 0.5 * base * height;
@@ -971,49 +1529,90 @@
         
         const pitch = document.getElementById('pitch').value || '';
         
-        const lines = [
-          '═══ DREAM ROOM DESIGNER — UNIT 5 PROJECT (Version A) ═══',
-          '',
-          '📖 MATH STANDARDS USED: 6.G.1 (Area of Triangles, Rectangles, Composite)',
-          '',
-          '🛏️ STEP 1 — BEDROOM FLOOR AREA',
-          `   Dimensions: Length = ${len || '—'} ft | Width = ${wid || '—'} ft`,
-          `   Area = ${fmt(rectArea)} sq ft`,
-          eqLvl2Rect ? `   Level 2 Extension: ${eqLvl2Rect}` : '',
-          '',
-          '📐 STEP 2 — TRIANGLE READING NOOK',
-          `   Dimensions: Base = ${base || '—'} ft | Height = ${height || '—'} ft`,
-          `   Area = ${fmt(nookArea)} sq ft`,
-          eqLvl2Nook ? `   Level 2 Extension: ${eqLvl2Nook}` : '',
-          '',
-          '💵 STEP 3 — TOTAL FLOORING & COSTS',
-          `   Total Composite Area = ${fmt(totalArea)} sq ft`,
-          `   Material Chosen: ${mat ? mat.toUpperCase() : '—'}`,
-          `   Flooring Cost per sq ft: $${price.toFixed(2)}`,
-          `   Total Flooring Cost = $${totalCost.toFixed(2)}`,
-          worldNote ? `   Real-world comparison: ${worldNote}` : '',
-          eqLvl2Budget ? `   Level 2 Extension: ${eqLvl2Budget}` : '',
-          '',
-          '👥 STEP 4 — PARTNER COMPARISON',
-          `   Partner Name: ${partner}`,
-          `   Partner Room Area: ${pArea} sq ft | Partner Cost: $${pCost}`,
-          peerReflect ? `   Reflection: ${peerReflect}` : '',
-          '',
-          '🏆 STEP 5 — PRESENTATION PITCH',
-          pitch || '(no pitch written)',
-          '',
-          '═══════════════════════════════',
-          `Generated: ${new Date().toLocaleDateString()}`,
-        ].filter(l => l !== '');
+        let lines = [];
+        if (isEs) {
+          const matTranslated = mat === 'carpet' ? 'ALFOMBRA' : mat === 'tile' ? 'BALDOSA' : mat === 'hardwood' ? 'MADERA DURA' : '—';
+          lines = [
+            '═══ DISEÑADOR DEL CUARTO DE TUS SUEÑOS — PROYECTO UNIDAD 5 (Versión A) ═══',
+            '',
+            '📖 ESTÁNDARES MATEMÁTICOS UTILIZADOS: 6.G.1 (Área de triángulos, rectángulos, compuesta)',
+            '',
+            '🛏️ PASO 1 — ÁREA DEL PISO DE LA HABITACIÓN',
+            `   Dimensiones: Largo = ${len || '—'} pies | Ancho = ${wid || '—'} pies`,
+            `   Área = ${fmt(rectArea)} pies²`,
+            eqLvl2Rect ? `   Extensión de Nivel 2: ${eqLvl2Rect}` : '',
+            '',
+            '📐 PASO 2 — RINCÓN DE LECTURA TRIANGULAR',
+            `   Dimensiones: Base = ${base || '—'} pies | Altura = ${height || '—'} pies`,
+            `   Área = ${fmt(nookArea)} pies²`,
+            eqLvl2Nook ? `   Extensión de Nivel 2: ${eqLvl2Nook}` : '',
+            '',
+            '💵 PASO 3 — TOTAL DE PISOS Y COSTOS',
+            `   Área compuesta total = ${fmt(totalArea)} pies²`,
+            `   Material elegido: ${matTranslated}`,
+            `   Costo del piso por pie cuadrado: $${price.toFixed(2)}`,
+            `   Costo total del piso = $${totalCost.toFixed(2)}`,
+            worldNote ? `   Comparación con el mundo real: ${worldNote}` : '',
+            eqLvl2Budget ? `   Extensión de Nivel 2: ${eqLvl2Budget}` : '',
+            '',
+            '👥 PASO 4 — COMPARACIÓN CON COMPAÑERO',
+            `   Nombre del compañero: ${partner}`,
+            `   Área del cuarto del compañero: ${pArea} pies² | Costo del compañero: $${pCost}`,
+            peerReflect ? `   Reflexión: ${peerReflect}` : '',
+            '',
+            '🏆 PASO 5 — DISCURSO DE PRESENTACIÓN',
+            pitch || '(no se escribió el discurso)',
+            '',
+            '═══════════════════════════════',
+            `Generado: ${new Date().toLocaleDateString()}`,
+          ];
+        } else {
+          lines = [
+            '═══ DREAM ROOM DESIGNER — UNIT 5 PROJECT (Version A) ═══',
+            '',
+            '📖 MATH STANDARDS USED: 6.G.1 (Area of Triangles, Rectangles, Composite)',
+            '',
+            '🛏️ STEP 1 — BEDROOM FLOOR AREA',
+            `   Dimensions: Length = ${len || '—'} ft | Width = ${wid || '—'} ft`,
+            `   Area = ${fmt(rectArea)} sq ft`,
+            eqLvl2Rect ? `   Level 2 Extension: ${eqLvl2Rect}` : '',
+            '',
+            '📐 STEP 2 — TRIANGLE READING NOOK',
+            `   Dimensions: Base = ${base || '—'} ft | Height = ${height || '—'} ft`,
+            `   Area = ${fmt(nookArea)} sq ft`,
+            eqLvl2Nook ? `   Level 2 Extension: ${eqLvl2Nook}` : '',
+            '',
+            '💵 STEP 3 — TOTAL FLOORING & COSTS',
+            `   Total Composite Area = ${fmt(totalArea)} sq ft`,
+            `   Material Chosen: ${mat ? mat.toUpperCase() : '—'}`,
+            `   Flooring Cost per sq ft: $${price.toFixed(2)}`,
+            `   Total Flooring Cost = $${totalCost.toFixed(2)}`,
+            worldNote ? `   Real-world comparison: ${worldNote}` : '',
+            eqLvl2Budget ? `   Level 2 Extension: ${eqLvl2Budget}` : '',
+            '',
+            '👥 STEP 4 — PARTNER COMPARISON',
+            `   Partner Name: ${partner}`,
+            `   Partner Room Area: ${pArea} sq ft | Partner Cost: $${pCost}`,
+            peerReflect ? `   Reflection: ${peerReflect}` : '',
+            '',
+            '🏆 STEP 5 — PRESENTATION PITCH',
+            pitch || '(no pitch written)',
+            '',
+            '═══════════════════════════════',
+            `Generated: ${new Date().toLocaleDateString()}`,
+          ];
+        }
         
+        const linesFiltered = lines.filter(l => l !== '');
         const box = document.getElementById('reportBox');
-        box.textContent = lines.join('\n');
+        box.textContent = linesFiltered.join('\n');
         box.classList.add('show');
       }
 
       function copyReport() {
         const txt = document.getElementById('reportBox').textContent;
-        navigator.clipboard?.writeText(txt).then(() => alert('Copied to clipboard!'));
+        const isEs = document.body.classList.contains('es');
+        navigator.clipboard?.writeText(txt).then(() => alert(isEs ? '¡Copiado al portapapeles!' : 'Copied to clipboard!'));
       }
 
       function downloadTxt() {
@@ -1022,6 +1621,91 @@
         a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
         a.download = 'dream-room-plan.txt';
         a.click();
+      }
+
+      // ---- Bilingual Support ----
+      function toggleLanguage() {
+        const isEs = document.body.classList.toggle('es');
+        document.documentElement.lang = isEs ? 'es' : 'en';
+        
+        // Update language button text
+        const btnLang = document.getElementById('btn-lang');
+        if (btnLang) {
+          btnLang.textContent = isEs ? '🌐 Idioma: ES' : '🌐 Language: EN';
+        }
+        
+        // Update read-aloud button text
+        const btnRead = document.getElementById('btn-read');
+        if (btnRead) {
+          if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+          }
+          btnRead.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+        }
+        
+        // Update input place holders and select options
+        document.querySelectorAll('[data-placeholder-en]').forEach(el => {
+          el.placeholder = isEs ? el.getAttribute('data-placeholder-es') : el.getAttribute('data-placeholder-en');
+        });
+        
+        document.querySelectorAll('option[data-en]').forEach(el => {
+          el.textContent = isEs ? el.getAttribute('data-es') : el.getAttribute('data-en');
+        });
+
+        // Rebuild components
+        buildTrail();
+        updateProgress();
+        
+        // Re-run calculations to update dynamic texts & SVGs
+        calcFloor();
+        calcNook();
+        recalcTotal();
+        comparePeer();
+        buildReport();
+      }
+
+      // ---- Read Aloud TTS ----
+      function readAloud() {
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          const btn = document.getElementById('btn-read');
+          const isEs = document.body.classList.contains('es');
+          btn.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+          return;
+        }
+        
+        const activePanel = document.querySelector('.step-panel.active');
+        if (!activePanel) return;
+        
+        const clone = activePanel.cloneNode(true);
+        const isEs = document.body.classList.contains('es');
+        const hiddenSelector = isEs ? '.en-text' : '.es-text';
+        clone.querySelectorAll(hiddenSelector).forEach(el => el.remove());
+        clone.querySelectorAll('svg, button, input, select, textarea, script, style, .nav-row').forEach(el => el.remove());
+        
+        const text = clone.textContent.trim().replace(/\s+/g, ' ');
+        if (!text) return;
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = isEs ? 'es-ES' : 'en-US';
+        
+        const voices = window.speechSynthesis.getVoices();
+        const voice = voices.find(v => v.lang.startsWith(isEs ? 'es' : 'en'));
+        if (voice) {
+          utterance.voice = voice;
+        }
+        
+        const btn = document.getElementById('btn-read');
+        btn.textContent = isEs ? '⏹️ Detener' : '⏹️ Stop';
+        
+        utterance.onend = () => {
+          btn.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+        };
+        utterance.onerror = () => {
+          btn.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+        };
+        
+        window.speechSynthesis.speak(utterance);
       }
 
       // ---- Init ----

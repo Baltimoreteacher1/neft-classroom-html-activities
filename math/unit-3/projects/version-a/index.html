@@ -271,6 +271,10 @@
         body { background: #fff; }
         .card { box-shadow: none; border-color: #ccc; }
       }
+
+      body.es .en-text { display: none !important; }
+      body.es .es-text { display: inline !important; }
+      span.es-text { display: none; }
     </style>
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -281,18 +285,40 @@
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
       <div class="hero-emoji">🥤</div>
-      <h1>Smoothie Bar Designer</h1>
-      <p class="hero-sub">Design your own signature smoothie recipes using ratios and rates — step by step.</p>
+      <h1>
+        <span class="en-text">Smoothie Bar Designer</span>
+        <span class="es-text">Diseñador de barra de batidos</span>
+      </h1>
+      <p class="hero-sub">
+        <span class="en-text">Design your own signature smoothie recipes using ratios and rates — step by step.</span>
+        <span class="es-text">Diseña tus propias recetas de batidos usando razones y tasas paso a paso.</span>
+      </p>
       <div class="hero-tags">
-        <span class="tag gold">Unit 3 · Ratios &amp; Rates</span>
+        <span class="tag gold">
+          <span class="en-text">Unit 3 · Ratios &amp; Rates</span>
+          <span class="es-text">Unidad 3 · Razones y tasas</span>
+        </span>
         <span class="tag">6.RP.1</span>
         <span class="tag">6.RP.2</span>
         <span class="tag">6.RP.3a</span>
-        <span class="tag">Version A</span>
+        <span class="tag">
+          <span class="en-text">Version A</span>
+          <span class="es-text">Versión A</span>
+        </span>
       </div>
       <div class="level-bar">
-        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
-        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
+          <span class="en-text">🟢 Level 1 — With Support</span>
+          <span class="es-text">🟢 Nivel 1 — Con apoyo</span>
+        </button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">
+          <span class="en-text">🔵 Level 2 — Challenge</span>
+          <span class="es-text">🔵 Nivel 2 — Desafío</span>
+        </button>
+      </div>
+      <div class="level-bar" style="margin-top: 10px;">
+        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
+        <button class="level-btn" id="btn-read" onclick="readAloud()">🔊 Read Aloud</button>
       </div>
     </header>
 
@@ -316,8 +342,14 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">Key Words</div>
-              <div class="card-sub">Learn these 4 math words before you begin</div>
+              <div class="card-title">
+                <span class="en-text">Key Words</span>
+                <span class="es-text">Palabras clave</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Learn these 4 math words before you begin</span>
+                <span class="es-text">Aprende estas 4 palabras de matemáticas antes de comenzar</span>
+              </div>
             </div>
           </div>
 
@@ -327,38 +359,81 @@
           <div class="vocab-grid">
             <div class="vocab-card">
               <div class="vocab-icon">⚖️</div>
-              <div class="vocab-term">Ratio</div>
-              <div class="vocab-def">A comparison of two quantities, representing how much of one thing compares to another.</div>
-              <div class="vocab-ex">3 Strawberries : 2 Bananas</div>
+              <div class="vocab-term">
+                <span class="en-text">Ratio</span>
+                <span class="es-text">Razón</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A comparison of two quantities, representing how much of one thing compares to another.</span>
+                <span class="es-text">Una comparación de dos cantidades, que representa cómo se compara una cosa con la otra.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">3 Strawberries : 2 Bananas</span>
+                <span class="es-text">3 fresas : 2 plátanos</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🏷️</div>
-              <div class="vocab-term">Rate</div>
-              <div class="vocab-def">A comparison of two values measured in different units.</div>
-              <div class="vocab-ex">$10 for 5 pounds of fruit</div>
+              <div class="vocab-term">
+                <span class="en-text">Rate</span>
+                <span class="es-text">Tasa</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A comparison of two values measured in different units.</span>
+                <span class="es-text">Una comparación de dos valores medidos en diferentes unidades.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">$10 for 5 pounds of fruit</span>
+                <span class="es-text">$10 por 5 libras de fruta</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">1️⃣</div>
-              <div class="vocab-term">Unit Rate</div>
-              <div class="vocab-def">A rate that compares a quantity to exactly one unit of another quantity.</div>
-              <div class="vocab-ex">$2.00 per lb, or $4 per smoothie</div>
+              <div class="vocab-term">
+                <span class="en-text">Unit Rate</span>
+                <span class="es-text">Tasa unitaria</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A rate that compares a quantity to exactly one unit of another quantity.</span>
+                <span class="es-text">Una tasa que compara una cantidad con exactamente una unidad de otra cantidad.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">$2.00 per lb, or $4 per smoothie</span>
+                <span class="es-text">$2.00 por libra, o $4 por batido</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🟰</div>
-              <div class="vocab-term">Equivalent Ratio</div>
-              <div class="vocab-def">Ratios that show the same relationship, found by multiplying or dividing both parts.</div>
-              <div class="vocab-ex">3:2 is equivalent to 6:4 (both × 2)</div>
+              <div class="vocab-term">
+                <span class="en-text">Equivalent Ratio</span>
+                <span class="es-text">Razón equivalente</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">Ratios that show the same relationship, found by multiplying or dividing both parts.</span>
+                <span class="es-text">Razones que muestran la misma relación, que se encuentran al multiplicar o dividir ambas partes.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">3:2 is equivalent to 6:4 (both × 2)</span>
+                <span class="es-text">3:2 es equivalente a 6:4 (ambos × 2)</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct" style="margin-top:20px">
-            ✅ Read each word card. When you're ready, click <strong>Next Step</strong>.
+            <span class="en-text">✅ Read each word card. When you're ready, click <strong>Next Step</strong>.</span>
+            <span class="es-text">✅ Lee cada tarjeta de palabras. Cuando estés listo, haz clic en <strong>Siguiente paso</strong>.</span>
           </div>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" disabled>← Back</button>
-          <button class="nav-btn" onclick="goStep(1)">Next Step →</button>
+          <button class="nav-btn ghost" disabled>
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(1)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -370,18 +445,25 @@
           <div class="card-header">
             <div class="card-icon">🥤</div>
             <div>
-              <div class="card-title">Step 1 — Create Your Signature Blend</div>
-              <div class="card-sub">Enter recipe amounts and write ratios in 3 ways</div>
+              <div class="card-title">
+                <span class="en-text">Step 1 — Create Your Signature Blend</span>
+                <span class="es-text">Paso 1 — Crea tu mezcla signature</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Enter recipe amounts and write ratios in 3 ways</span>
+                <span class="es-text">Ingresa las cantidades de la receta y escribe razones de 3 maneras</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct">
-            <strong>Your job:</strong> Enter the amounts (in cups) of the two main ingredients you'll use in your signature smoothie. Write the recipe ratio in three different ways.
+            <span class="en-text"><strong>Your job:</strong> Enter the amounts (in cups) of the two main ingredients you'll use in your signature smoothie. Write the recipe ratio in three different ways.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Ingresa las cantidades (en tazas) de los dos ingredientes principales que usarás en tu batido signature. Escribe la razón de la receta de tres maneras diferentes.</span>
           </div>
 
           <!-- Dynamic SVG: Recipe filling visual -->
           <svg id="recipe-svg" class="visual-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #ecdccf;border-radius:12px;">
-            <text x="260" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#3c240f">Your Smoothie Blend Ratio</text>
+            <text id="svg-recipe-title" x="260" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#3c240f">Your Smoothie Blend Ratio</text>
             
             <!-- Ingredient 1 Cup -->
             <g transform="translate(140, 40)">
@@ -407,47 +489,78 @@
 
           <!-- Level 1 hint -->
           <div class="instruct lvl1-only">
-            🟢 <strong>Level 1 tip:</strong> Try using friendly whole numbers like 3 cups strawberries and 2 cups bananas.
+            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try using friendly whole numbers like 3 cups strawberries and 2 cups bananas.</span>
+            <span class="es-text">🟢 <strong>Consejo de nivel 1:</strong> Intenta usar números enteros amigables como 3 tazas de fresas y 2 tazas de plátanos.</span>
           </div>
           <!-- Level 2 hint -->
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
-            Use decimal amounts (e.g. 1.5 cups to 2 cups) and write the equivalent simplified whole-number ratio below!
+            <span class="en-text"><span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>Use decimal amounts (e.g. 1.5 cups to 2 cups) and write the equivalent simplified whole-number ratio below!</span>
+            <span class="es-text"><span class="lvl2-label">DESAFÍO DE NIVEL 2</span><br>¡Usa cantidades decimales (por ejemplo, 1.5 tazas a 2 tazas) y escribe la razón equivalente simplificada de números enteros a continuación!</span>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="r-ing1-name">Ingredient 1 Name</label>
+              <label class="lbl" for="r-ing1-name">
+                <span class="en-text">Ingredient 1 Name</span>
+                <span class="es-text">Nombre del ingrediente 1</span>
+              </label>
               <input type="text" id="r-ing1-name" value="Strawberries" oninput="updateIngredientLabels(); calcRecipeRatio();" />
-              <label class="lbl" for="r-ing1-cups">Ingredient 1 Cups</label>
+              <label class="lbl" for="r-ing1-cups">
+                <span class="en-text">Ingredient 1 Cups</span>
+                <span class="es-text">Tazas del ingrediente 1</span>
+              </label>
               <input type="number" id="r-ing1-cups" min="0.1" step="0.1" value="3" oninput="updateIngredientLabels(); calcRecipeRatio();" />
             </div>
             <div>
-              <label class="lbl" for="r-ing2-name">Ingredient 2 Name</label>
+              <label class="lbl" for="r-ing2-name">
+                <span class="en-text">Ingredient 2 Name</span>
+                <span class="es-text">Nombre del ingrediente 2</span>
+              </label>
               <input type="text" id="r-ing2-name" value="Bananas" oninput="updateIngredientLabels(); calcRecipeRatio();" />
-              <label class="lbl" for="r-ing2-cups">Ingredient 2 Cups</label>
+              <label class="lbl" for="r-ing2-cups">
+                <span class="en-text">Ingredient 2 Cups</span>
+                <span class="es-text">Tazas del ingrediente 2</span>
+              </label>
               <input type="number" id="r-ing2-cups" min="0.1" step="0.1" value="2" oninput="updateIngredientLabels(); calcRecipeRatio();" />
             </div>
           </div>
 
           <div class="lvl2-block lvl2-only">
-            <label class="lbl" for="lvl2-simplified">Your simplified whole-number ratio (e.g. 3 : 4 or 3 to 4)</label>
+            <label class="lbl" for="lvl2-simplified">
+              <span class="en-text">Your simplified whole-number ratio (e.g. 3 : 4 or 3 to 4)</span>
+              <span class="es-text">Tu razón simplificada de números enteros (por ejemplo, 3 : 4 o 3 a 4)</span>
+            </label>
             <input type="text" id="lvl2-simplified" placeholder="e.g. 3 : 4" oninput="calcRecipeRatio()" />
             <div id="lvl2-ratio-feedback" style="font-size: 13px; font-weight: bold; margin-top: 8px;"></div>
           </div>
 
-          <button class="calc-btn" onclick="calcRecipeRatio()">🧮 Write My Ratio</button>
+          <button class="calc-btn" onclick="calcRecipeRatio()">
+            <span class="en-text">🧮 Write My Ratio</span>
+            <span class="es-text">🧮 Escribir mi razón</span>
+          </button>
           <div class="readout" id="ratio-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>Ratios can be written in 3 ways: using the word "to" (a to b), using a colon (a:b), or as a fraction (a/b). Make sure you list your ingredients in the exact order requested!</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">Ratios can be written in 3 ways: using the word "to" (a to b), using a colon (a:b), or as a fraction (a/b). Make sure you list your ingredients in the exact order requested!</span>
+              <span class="es-text">Las razones se pueden escribir de 3 formas: usando la palabra "a" (a a b), usando dos puntos (a:b) o como una fracción (a/b). ¡Asegúrate de enumerar tus ingredientes en el orden exacto solicitado!</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(0)">← Back</button>
-          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(0)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(2)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -459,25 +572,50 @@
           <div class="card-header">
             <div class="card-icon gold">📈</div>
             <div>
-              <div class="card-title">Step 2 — Scale Up Your Recipe</div>
-              <div class="card-sub">Use equivalent ratios to multiply recipe sizes</div>
+              <div class="card-title">
+                <span class="en-text">Step 2 — Scale Up Your Recipe</span>
+                <span class="es-text">Paso 2 — Escala tu receta</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Use equivalent ratios to multiply recipe sizes</span>
+                <span class="es-text">Usa razones equivalentes para multiplicar los tamaños de las recetas</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct gold">
-            <strong>Your job:</strong> Complete the ratio table to scale your recipe for larger groups of smoothies. Multiply both ingredient amounts by the number of smoothies to keep the taste identical!
+            <span class="en-text"><strong>Your job:</strong> Complete the ratio table to scale your recipe for larger groups of smoothies. Multiply both ingredient amounts by the number of smoothies to keep the taste identical!</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Completa la tabla de razones para escalar tu receta para grupos más grandes de batidos. ¡Multiplica las cantidades de ambos ingredientes por el número de batidos para mantener el sabor idéntico!</span>
           </div>
 
           <!-- Scaled table layout -->
           <table class="data-table">
             <thead>
               <tr>
-                <th>Smoothies</th>
-                <th>1 (Base)</th>
-                <th>2 Smoothies</th>
-                <th>5 Smoothies</th>
-                <th>10 Smoothies</th>
-                <th>20 Smoothies</th>
+                <th>
+                  <span class="en-text">Smoothies</span>
+                  <span class="es-text">Batidos</span>
+                </th>
+                <th>
+                  <span class="en-text">1 (Base)</span>
+                  <span class="es-text">1 (Base)</span>
+                </th>
+                <th>
+                  <span class="en-text">2 Smoothies</span>
+                  <span class="es-text">2 batidos</span>
+                </th>
+                <th>
+                  <span class="en-text">5 Smoothies</span>
+                  <span class="es-text">5 batidos</span>
+                </th>
+                <th>
+                  <span class="en-text">10 Smoothies</span>
+                  <span class="es-text">10 batidos</span>
+                </th>
+                <th>
+                  <span class="en-text">20 Smoothies</span>
+                  <span class="es-text">20 batidos</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -501,8 +639,14 @@
           </table>
 
           <div class="lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 FORMULA</span>
-            <p style="font-size: 14px; margin-bottom: 10px;">For <strong>S</strong> smoothies, write a formula for each ingredient using S.</p>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 FORMULA</span>
+              <span class="es-text">FÓRMULA DE NIVEL 2</span>
+            </span>
+            <p style="font-size: 14px; margin-bottom: 10px;">
+              <span class="en-text">For <strong>S</strong> smoothies, write a formula for each ingredient using S.</span>
+              <span class="es-text">Para <strong>S</strong> batidos, escribe una fórmula para cada ingrediente usando S.</span>
+            </p>
             <div class="grid2">
               <div>
                 <label class="lbl" id="lvl2-lbl-f1">Cups of Ingredient 1 = S × </label>
@@ -516,22 +660,30 @@
             <div id="lvl2-formula-feedback" style="font-size: 13px; font-weight: bold; margin-top: 8px;"></div>
           </div>
 
-          <button class="calc-btn gold" onclick="verifyScalingTable()">🧮 Check My Scaling</button>
+          <button class="calc-btn gold" onclick="verifyScalingTable()">
+            <span class="en-text">🧮 Check My Scaling</span>
+            <span class="es-text">🧮 Comprobar mi escala</span>
+          </button>
           <div class="readout" id="scale-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>To find equivalent ratios, multiply both the strawberry cups and the banana cups by the number of smoothies. E.g. for 5 smoothies, strawberries × 5 and bananas × 5.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">To find equivalent ratios, multiply both the strawberry cups and the banana cups by the number of smoothies. E.g. for 5 smoothies, strawberries × 5 and bananas × 5.</span>
+              <span class="es-text">Para encontrar razones equivalentes, multiplica las tazas de fresa y las tazas de plátano por el número de batidos. Por ejemplo, para 5 batidos, fresas × 5 y plátanos × 5.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
-          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
-        </div>
-      </div>
-
-      <!-- ======================================
+          <button class="nav-btn ghost" onclick="goStep(1)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onc      <!-- ======================================
            STEP 3 — UNIT PRICE / BETTER BUY
       ====================================== -->
       <div class="step-panel" id="step-3">
@@ -539,65 +691,150 @@
           <div class="card-header">
             <div class="card-icon teal">💵</div>
             <div>
-              <div class="card-title">Step 3 — Unit Price &amp; Better Buy</div>
-              <div class="card-sub">Calculate price per smoothie and compare bulk fruit deals</div>
+              <div class="card-title">
+                <span class="en-text">Step 3 — Unit Price &amp; Better Buy</span>
+                <span class="es-text">Paso 3 — Precio unitario y mejor compra</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Calculate price per smoothie and compare bulk fruit deals</span>
+                <span class="es-text">Calcula el precio por batido y compara las ofertas de fruta a granel</span>
+              </div>
             </div>
           </div>
 
           <!-- Part 1: Price per smoothie -->
           <div class="instruct teal">
-            <strong>Part A — Price per Smoothie:</strong> Add up your costs for a batch of smoothies, then divide by the number of smoothies to find the unit cost per smoothie.
+            <span class="en-text"><strong>Part A — Price per Smoothie:</strong> Add up your costs for a batch of smoothies, then divide by the number of smoothies to find the unit cost per smoothie.</span>
+            <span class="es-text"><strong>Parte A — Precio por batido:</strong> Suma tus costos para un lote de batidos, luego divide por el número de batidos para encontrar el costo unitario por batido.</span>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="c-fruit">🍓 Fruit/Ingredient Cost ($)</label>
+              <label class="lbl" for="c-fruit">
+                <span class="en-text">🍓 Fruit/Ingredient Cost ($)</span>
+                <span class="es-text">🍓 Costo de frutas/ingredientes ($)</span>
+              </label>
               <input type="number" id="c-fruit" min="0" step="0.01" value="12.00" oninput="calcUnitRates()" />
-              <label class="lbl" for="c-liquids">🥛 Yogurt/Liquid Cost ($)</label>
+              <label class="lbl" for="c-liquids">
+                <span class="en-text">🥛 Yogurt/Liquid Cost ($)</span>
+                <span class="es-text">🥛 Costo de yogur/líquidos ($)</span>
+              </label>
               <input type="number" id="c-liquids" min="0" step="0.01" value="5.00" oninput="calcUnitRates()" />
             </div>
             <div>
-              <label class="lbl" for="c-supplies">🥤 Cups/Straws Cost ($)</label>
+              <label class="lbl" for="c-supplies">
+                <span class="en-text">🥤 Cups/Straws Cost ($)</span>
+                <span class="es-text">🥤 Costo de vasos/popotes ($)</span>
+              </label>
               <input type="number" id="c-supplies" min="0" step="0.01" value="3.00" oninput="calcUnitRates()" />
-              <label class="lbl" for="c-smoothie-count">👥 Smoothies in Batch</label>
+              <label class="lbl" for="c-smoothie-count">
+                <span class="en-text">👥 Smoothies in Batch</span>
+                <span class="es-text">👥 Batidos en el lote</span>
+              </label>
               <input type="number" id="c-smoothie-count" min="1" value="5" oninput="calcUnitRates()" />
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="calcUnitRates()">🧮 Price Per Smoothie</button>
+          <button class="calc-btn teal" onclick="calcUnitRates()">
+            <span class="en-text">🧮 Price Per Smoothie</span>
+            <span class="es-text">🧮 Precio por batido</span>
+          </button>
           <div class="readout" id="smoothie-cost-out"></div>
 
           <!-- Real World Comparison -->
           <div style="margin-top:22px;">
-            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">🌎 Real-World Smoothie Menu Prices</h3>
-            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">See the average retail prices for smoothies in different locations. How does your cost per smoothie compare?</p>
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">
+              <span class="en-text">🌎 Real-World Smoothie Menu Prices</span>
+              <span class="es-text">🌎 Precios del menú de batidos del mundo real</span>
+            </h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">
+              <span class="en-text">See the average retail prices for smoothies in different locations. How does your cost per smoothie compare?</span>
+              <span class="es-text">Mira los precios promedio de venta al por menor de batidos en diferentes lugares. ¿Cómo se compara tu costo por batido?</span>
+            </p>
             <table class="data-table">
               <thead>
-                <tr><th>Location</th><th>Retail Price Per Cup</th><th>Smoothie Style</th></tr>
+                <tr>
+                  <th>
+                    <span class="en-text">Location</span>
+                    <span class="es-text">Ubicación</span>
+                  </th>
+                  <th>
+                    <span class="en-text">Retail Price Per Cup</span>
+                    <span class="es-text">Precio de venta por taza</span>
+                  </th>
+                  <th>
+                    <span class="en-text">Smoothie Style</span>
+                    <span class="es-text">Estilo de batido</span>
+                  </th>
+                </tr>
               </thead>
               <tbody>
-                <tr><td>School Cafeteria</td><td>$2.50 – $3.50</td><td>Basic Blend</td></tr>
-                <tr><td>Local Cafe</td><td>$4.00 – $5.50</td><td>Classic Fruit Blend</td></tr>
-                <tr><td>Organic Juice Bar</td><td>$6.00 – $7.50</td><td>Organic &amp; Premium blend</td></tr>
-                <tr><td>High-End Spa/Gym</td><td>$8.50 – $11.00</td><td>Superfood Protein Shake</td></tr>
+                <tr>
+                  <td>
+                    <span class="en-text">School Cafeteria</span>
+                    <span class="es-text">Cafetería escolar</span>
+                  </td>
+                  <td>$2.50 – $3.50</td>
+                  <td>
+                    <span class="en-text">Basic Blend</span>
+                    <span class="es-text">Mezcla básica</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="en-text">Local Cafe</span>
+                    <span class="es-text">Cafetería local</span>
+                  </td>
+                  <td>$4.00 – $5.50</td>
+                  <td>
+                    <span class="en-text">Classic Fruit Blend</span>
+                    <span class="es-text">Mezcla clásica de frutas</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="en-text">Organic Juice Bar</span>
+                    <span class="es-text">Barra de jugos orgánicos</span>
+                  </td>
+                  <td>$6.00 – $7.50</td>
+                  <td>
+                    <span class="en-text">Organic &amp; Premium blend</span>
+                    <span class="es-text">Mezcla orgánica y premium</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="en-text">High-End Spa/Gym</span>
+                    <span class="es-text">Spa/Gimnasio de alta gama</span>
+                  </td>
+                  <td>$8.50 – $11.00</td>
+                  <td>
+                    <span class="en-text">Superfood Protein Shake</span>
+                    <span class="es-text">Batido de proteínas de superalimentos</span>
+                  </td>
+                </tr>
               </tbody>
             </table>
-            <label class="lbl" for="world-compare">Compare your cost per smoothie to the market prices. What did you notice?</label>
+            <label class="lbl" for="world-compare">
+              <span class="en-text">Compare your cost per smoothie to the market prices. What did you notice?</span>
+              <span class="es-text">Compara tu costo por batido con los precios del mercado. ¿Qué notaste?</span>
+            </label>
             <textarea id="world-compare" placeholder="My cost per smoothie to produce is $___. Compared to retail prices, this is..."></textarea>
           </div>
 
           <!-- Part 2: Bulk deal comparison -->
           <div class="instruct teal" style="margin-top:28px">
-            <strong>Part B — Bulk Ingredient Deals:</strong> Compare two deal options to find the lowest cost per pound (unit rate) and choose the Better Buy.
+            <span class="en-text"><strong>Part B — Bulk Ingredient Deals:</strong> Compare two deal options to find the lowest cost per pound (unit rate) and choose the Better Buy.</span>
+            <span class="es-text"><strong>Parte B — Ofertas de ingredientes a granel:</strong> Compara dos opciones de oferta para encontrar el costo más bajo por libra (tasa unitaria) y elige la mejor compra.</span>
           </div>
 
           <!-- SVG Visual comparing deals -->
           <svg class="visual-svg" viewBox="0 0 520 130" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #ecdccf;border-radius:12px;">
-            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#3c240f">Bulk Ingredient Comparison</text>
+            <text id="svg-bulk-title" x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#3c240f">Bulk Ingredient Comparison</text>
             
             <!-- Deal A Box -->
             <rect x="30" y="45" width="200" height="65" rx="10" fill="#fff3e8" stroke="#e27d22" stroke-width="2"/>
-            <text x="130" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#3c240f">Deal A</text>
+            <text id="svg-deal-a-title" x="130" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#3c240f">Deal A</text>
             <text x="130" y="82" text-anchor="middle" font-size="12" fill="#e27d22" font-weight="bold" id="svg-deal-a-desc">5 lbs for $10.00</text>
             <text x="130" y="98" text-anchor="middle" font-size="11" fill="#726255" id="svg-deal-a-rate">$2.00 per lb</text>
             
@@ -605,7 +842,7 @@
             
             <!-- Deal B Box -->
             <rect x="290" y="45" width="200" height="65" rx="10" fill="#fef8e6" stroke="#cca210" stroke-width="2"/>
-            <text x="390" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#3c240f">Deal B</text>
+            <text id="svg-deal-b-title" x="390" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#3c240f">Deal B</text>
             <text x="390" y="82" text-anchor="middle" font-size="12" fill="#cca210" font-weight="bold" id="svg-deal-b-desc">3 lbs for $7.00</text>
             <text x="390" y="98" text-anchor="middle" font-size="11" fill="#726255" id="svg-deal-b-rate">$2.33 per lb</text>
           </svg>
@@ -613,39 +850,72 @@
           <div class="grid2">
             <div>
               <h4 style="font-size:14px;color:var(--navy);font-weight:bold;" id="deal-lbl-a">Deal A: Bulk Strawberries</h4>
-              <label class="lbl" for="deal-a-lbs">Amount (lbs)</label>
+              <label class="lbl" for="deal-a-lbs">
+                <span class="en-text">Amount (lbs)</span>
+                <span class="es-text">Cantidad (lbs)</span>
+              </label>
               <input type="number" id="deal-a-lbs" value="5" oninput="compareDeals()" />
-              <label class="lbl" for="deal-a-cost">Total Price ($)</label>
+              <label class="lbl" for="deal-a-cost">
+                <span class="en-text">Total Price ($)</span>
+                <span class="es-text">Precio total ($)</span>
+              </label>
               <input type="number" id="deal-a-cost" value="10.00" step="0.01" oninput="compareDeals()" />
             </div>
             <div>
               <h4 style="font-size:14px;color:var(--navy);font-weight:bold;" id="deal-lbl-b">Deal B: Bulk Strawberries</h4>
-              <label class="lbl" for="deal-b-lbs">Amount (lbs)</label>
+              <label class="lbl" for="deal-b-lbs">
+                <span class="en-text">Amount (lbs)</span>
+                <span class="es-text">Cantidad (lbs)</span>
+              </label>
               <input type="number" id="deal-b-lbs" value="3" oninput="compareDeals()" />
-              <label class="lbl" for="deal-b-cost">Total Price ($)</label>
+              <label class="lbl" for="deal-b-cost">
+                <span class="en-text">Total Price ($)</span>
+                <span class="es-text">Precio total ($)</span>
+              </label>
               <input type="number" id="deal-b-cost" value="7.00" step="0.01" oninput="compareDeals()" />
             </div>
           </div>
 
           <div class="lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 VALUE SAVINGS</span>
-            <label class="lbl" for="lvl2-savings">If you buy 15 lbs of fruit, how much money ($) do you save by choosing the Better Buy over the other deal?</label>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 VALUE SAVINGS</span>
+              <span class="es-text">AHORRO DE VALOR DE NIVEL 2</span>
+            </span>
+            <label class="lbl" for="lvl2-savings">
+              <span class="en-text">If you buy 15 lbs of fruit, how much money ($) do you save by choosing the Better Buy over the other deal?</span>
+              <span class="es-text">Si compras 15 libras de fruta, ¿cuánto dinero ($) ahorras al elegir la mejor compra en lugar de la otra oferta?</span>
+            </label>
             <input type="number" id="lvl2-savings" placeholder="e.g. 5.00" step="0.01" oninput="compareDeals()" />
             <div id="lvl2-savings-feedback" style="font-size: 13px; font-weight: bold; margin-top: 8px;"></div>
           </div>
 
-          <button class="calc-btn teal" onclick="compareDeals()">🧮 Find Better Buy</button>
+          <button class="calc-btn teal" onclick="compareDeals()">
+            <span class="en-text">🧮 Find Better Buy</span>
+            <span class="es-text">🧮 Encontrar mejor compra</span>
+          </button>
           <div class="readout" id="deals-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>To find the unit price (price per pound), divide the total price by the number of pounds. The deal with the lower cost per pound is the better buy.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">To find the unit price (price per pound), divide the total price by the number of pounds. The deal with the lower cost per pound is the better buy.</span>
+              <span class="es-text">Para encontrar el precio unitario (precio por libra), divide el precio total por el número de libras. La oferta con el costo por libra más bajo es la mejor compra.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
-          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(2)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(4)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -657,28 +927,38 @@
           <div class="card-header">
             <div class="card-icon teal">👥</div>
             <div>
-              <div class="card-title">Step 4 — Compare With a Partner</div>
-              <div class="card-sub">Interview a classmate and compare recipe blend ratios and unit rates</div>
+              <div class="card-title">
+                <span class="en-text">Step 4 — Compare With a Partner</span>
+                <span class="es-text">Paso 4 — Comparar con un compañero</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Interview a classmate and compare recipe blend ratios and unit rates</span>
+                <span class="es-text">Entrevista a un compañero de clase y compara las razones de mezcla y tasas unitarias</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your job:</strong> Swap plans with a partner. Ask them for their signature recipe ratio and cost per smoothie, fill them in below, and click Compare to analyze.
+            <span class="en-text"><strong>Your job:</strong> Swap plans with a partner. Ask them for their signature recipe ratio and cost per smoothie, fill them in below, and click Compare to analyze.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Intercambia planes con un compañero. Pregúntale la razón de su receta signature y su costo por batido, complétalos a continuación y haz clic en Comparar para analizar.</span>
           </div>
 
           <!-- SVG Partner Compare visual -->
           <svg class="visual-svg" viewBox="0 0 520 100" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #ecdccf;border-radius:12px;">
             <text x="140" y="40" text-anchor="middle" font-size="28">🙋</text>
-            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#3c240f">You</text>
+            <text id="svg-lbl-you" x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#3c240f">You</text>
             
             <rect x="185" y="38" width="150" height="30" rx="8" fill="#fef8e6" stroke="#cca210" stroke-width="1.5"/>
-            <text x="260" y="58" text-anchor="middle" font-size="11" fill="#726255">"What's your ratio?"</text>
+            <text id="svg-partner-quote" x="260" y="58" text-anchor="middle" font-size="11" fill="#726255">"What's your ratio?"</text>
             
             <text x="380" y="40" text-anchor="middle" font-size="28">🙋</text>
-            <text x="380" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#3c240f">Partner</text>
+            <text id="svg-lbl-partner" x="380" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#3c240f">Partner</text>
           </svg>
 
-          <label class="lbl" for="p-name">Partner's Name</label>
+          <label class="lbl" for="p-name">
+            <span class="en-text">Partner's Name</span>
+            <span class="es-text">Nombre del compañero</span>
+          </label>
           <input type="text" id="p-name" value="Alex" oninput="comparePartner()" />
 
           <div class="grid2">
@@ -693,20 +973,35 @@
           </div>
 
           <div>
-            <label class="lbl" for="p-cost">Partner's Cost per Smoothie ($)</label>
+            <label class="lbl" for="p-cost">
+              <span class="en-text">Partner's Cost per Smoothie ($)</span>
+              <span class="es-text">Costo por batido del compañero ($)</span>
+            </label>
             <input type="number" id="p-cost" min="0" step="0.01" value="4.50" oninput="comparePartner()" />
           </div>
 
-          <button class="calc-btn teal" onclick="comparePartner()">📊 Compare Our Smoothie Bars</button>
+          <button class="calc-btn teal" onclick="comparePartner()">
+            <span class="en-text">📊 Compare Our Smoothie Bars</span>
+            <span class="es-text">📊 Comparar nuestras barras de batidos</span>
+          </button>
           <div class="readout" id="peer-out"></div>
 
-          <label class="lbl" for="peer-reflect" style="margin-top:18px;">Reflection: Who has the fruitier ratio or more cost-effective blend? Explain using your numbers.</label>
+          <label class="lbl" for="peer-reflect" style="margin-top:18px;">
+            <span class="en-text">Reflection: Who has the fruitier ratio or more cost-effective blend? Explain using your numbers.</span>
+            <span class="es-text">Reflexión: ¿Quién tiene la razón más frutal o la mezcla más rentable? Explica usando tus números.</span>
+          </label>
           <textarea id="peer-reflect" placeholder="My ratio of strawberries to bananas is ___ : ___, while Alex's ratio is ___ : ___. My cost is $___ per smoothie and..."></textarea>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
-          <button class="nav-btn green" onclick="goStep(5)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(3)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="goStep(5)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 

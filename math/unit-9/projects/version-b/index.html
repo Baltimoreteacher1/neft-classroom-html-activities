@@ -294,6 +294,11 @@
       .graph-point-group:hover circle:first-child { r: 8px; filter: brightness(1.2); }
       .point-hover-trigger { cursor: pointer; }
 
+      /* ---- Bilingual Support ---- */
+      body.es .en-text { display: none !important; }
+      body.es .es-text { display: inline !important; }
+      span.es-text { display: none; }
+
       /* ---- Print ---- */
       @media print {
         .no-print { display: none !important; }
@@ -858,17 +863,7 @@
 
         <div class="nav-row">
           <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
-          <button class="nav-btn green" onclick="alert('Great work! 🎉 Show this page to your teacher.')">🎉 I'm Done!</button>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ====== SCRIPTS ====== -->
-    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-    <script src="/assets/app.js" defer></script>
-    <script>
-      // ---- CONFIG ----
+          <button class="nav-btn green" onclick="alert('Great work! 🎉 Show this page to your teacher      // ---- CONFIG ----
       const CONFIG = {
         minFee: 0,
         maxFee: 100,
@@ -909,12 +904,12 @@
 
       // ---- State ----
       const STEPS = [
-        { id: 0, label: 'Key Words', icon: '📖' },
-        { id: 1, label: 'Plan Equation', icon: '📱' },
-        { id: 2, label: 'Data Table', icon: '📊' },
-        { id: 3, label: 'Graph Cost', icon: '📈' },
-        { id: 4, label: 'Partner Plan', icon: '👥' },
-        { id: 5, label: 'Finish', icon: '🏆' },
+        { id: 0, label_en: 'Key Words', label_es: 'Palabras clave', icon: '📖' },
+        { id: 1, label_en: 'Plan Equation', label_es: 'Ecuación del plan', icon: '📱' },
+        { id: 2, label_en: 'Data Table', label_es: 'Tabla de datos', icon: '📊' },
+        { id: 3, label_en: 'Graph Cost', label_es: 'Graficar costo', icon: '📈' },
+        { id: 4, label_en: 'Partner Plan', label_es: 'Plan de compañero', icon: '👥' },
+        { id: 5, label_en: 'Finish', label_es: 'Finalizar', icon: '🏆' },
       ];
       let currentStep = 0;
       const visited = new Set([0]);
@@ -931,12 +926,14 @@
 
       // ---- Build step trail ----
       function buildTrail() {
+        const isEs = document.body.classList.contains('es');
         const trail = document.getElementById('stepTrail');
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
+          const label = isEs ? s.label_es : s.label_en;
           return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
-            <span class="s-label">${s.label}</span>
+            <span class="s-label">${label}</span>
           </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
         }).join('');
       }
@@ -944,6 +941,14 @@
       // ---- Navigation ----
       function goStep(n) {
         if (n < 0 || n >= STEPS.length) return;
+        
+        // Stop speech if step changes
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          const isEs = document.body.classList.contains('es');
+          document.getElementById('btn-read').textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+        }
+        
         document.getElementById('step-' + currentStep).classList.remove('active');
         currentStep = n;
         visited.add(n);
@@ -977,7 +982,8 @@
           const pRate = parseFloat(document.getElementById('p-rate').value);
           const pFee = parseFloat(document.getElementById('p-fee').value);
           const pName = document.getElementById('p-name').value.trim() || 'Partner';
-          document.getElementById('partner-legend-name').textContent = `${pName}'s Plan`;
+          const isEs = document.body.classList.contains('es');
+          document.getElementById('partner-legend-name').textContent = isEs ? `Plan de ${pName}` : `${pName}'s Plan`;
           if (!isNaN(pRate) && !isNaN(pFee)) {
             drawPlanOnGraph(pRate, pFee, true);
           }
@@ -989,37 +995,40 @@
       function updateProgress() {
         const pct = Math.round((currentStep / (STEPS.length - 1)) * 100);
         document.getElementById('progFill').style.width = pct + '%';
-        document.getElementById('progLabel').textContent = `Step ${currentStep + 1} of ${STEPS.length}`;
+        const isEs = document.body.classList.contains('es');
+        document.getElementById('progLabel').textContent = isEs 
+          ? `Paso ${currentStep + 1} de ${STEPS.length}` 
+          : `Step ${currentStep + 1} of ${STEPS.length}`;
       }
 
       // ---- Math & Parsing Helpers ----
       function checkEquation(eqStr, rate, fee) {
+        const isEs = document.body.classList.contains('es');
         const s = eqStr.trim().toLowerCase().replace(/\s+/g, '');
-        if (!s) return { ok: false, msg: "Please enter an equation." };
+        if (!s) {
+          return { ok: false, msg: isEs ? "Por favor ingresa una ecuación." : "Please enter an equation." };
+        }
         
         if (!s.includes('=')) {
-          return { ok: false, msg: "An equation must contain an equals sign (=)." };
+          return { ok: false, msg: isEs ? "Una ecuación debe contener un signo de igualdad (=)." : "An equation must contain an equals sign (=)." };
         }
         
         const parts = s.split('=');
         if (parts.length !== 2) {
-          return { ok: false, msg: "An equation should have exactly one equals sign." };
+          return { ok: false, msg: isEs ? "Una ecuación debe tener exactamente un signo de igualdad." : "An equation should have exactly one equals sign." };
         }
         
         const left = parts[0];
         const right = parts[1];
         
-        // Left side should be C or y representing Cost
         if (left !== 'c' && left !== 'y') {
-          return { ok: false, msg: "Your equation should start with the dependent variable, e.g. C = ... or y = ..." };
+          return { ok: false, msg: isEs ? "Tu ecuación debe comenzar con la variable dependiente, ej. C = ... o y = ..." : "Your equation should start with the dependent variable, e.g. C = ... or y = ..." };
         }
         
-        // Check the expression on the right
-        // Replace variable g/x with v
         const expr = right.replace(/g/g, 'v').replace(/x/g, 'v');
         
         if (!expr.includes('v')) {
-          return { ok: false, msg: "Your equation must include the independent variable g (or x) for gigabytes." };
+          return { ok: false, msg: isEs ? "Tu ecuación debe incluir la variable independiente g (o x) para los gigabytes." : "Your equation must include the independent variable g (or x) for gigabytes." };
         }
         
         const rClean = rate.toString();
@@ -1037,15 +1046,15 @@
         }
         
         if (expectedPatterns.includes(expr)) {
-          return { ok: true, msg: "Perfect! Your equation models this plan correctly." };
+          return { ok: true, msg: isEs ? "¡Perfecto! Tu ecuación modela este plan correctamente." : "Perfect! Your equation models this plan correctly." };
         } else {
           if (fee > 0 && !expr.includes(fClean)) {
-            return { ok: false, msg: `Don't forget to add your flat fee of $${fee} (e.g. + ${fee}).` };
+            return { ok: false, msg: isEs ? `No olvides sumar tu tarifa fija de $${fee} (ej. + ${fee}).` : `Don't forget to add your flat fee of $${fee} (e.g. + ${fee}).` };
           }
           if (!expr.includes(rClean)) {
-            return { ok: false, msg: `Your cost per gigabyte of $${rate} should be multiplied by g (e.g. ${rate}g).` };
+            return { ok: false, msg: isEs ? `Tu costo por gigabyte de $${rate} debe multiplicarse por g (ej. ${rate}g).` : `Your cost per gigabyte of $${rate} should be multiplied by g (e.g. ${rate}g).` };
           }
-          return { ok: false, msg: `Check your equation. It should be: C = ${rate}g${fee > 0 ? ' + ' + fee : ''}` };
+          return { ok: false, msg: isEs ? `Revisa tu ecuación. Debería ser: C = ${rate}g${fee > 0 ? ' + ' + fee : ''}` : `Check your equation. It should be: C = ${rate}g${fee > 0 ? ' + ' + fee : ''}` };
         }
       }
 
@@ -1078,7 +1087,9 @@
         document.getElementById('table-svg-cost-5').textContent = `5 GB → $${(rate * 5 + fee).toFixed(2)}`;
         
         // Update Step 2 Process column text
-        document.getElementById('t-work-0').innerHTML = fee === 0 ? `$0 base fee` : `$${fee} base fee`;
+        const isEs = document.body.classList.contains('es');
+        const baseFeeStr = isEs ? 'tarifa fija' : 'base fee';
+        document.getElementById('t-work-0').innerHTML = fee === 0 ? `$0 ${baseFeeStr}` : `$${fee} ${baseFeeStr}`;
         document.getElementById('t-work-1').innerHTML = fee === 0 ? `$${rate} &times; 1` : `$${rate} &times; 1 + $${fee}`;
         document.getElementById('t-work-2').innerHTML = fee === 0 ? `$${rate} &times; 2` : `$${rate} &times; 2 + $${fee}`;
         document.getElementById('t-work-5').innerHTML = fee === 0 ? `$${rate} &times; 5` : `$${rate} &times; 5 + $${fee}`;
@@ -1086,6 +1097,7 @@
 
         // Update Step 3 comparison 5 GB text
         document.getElementById('comp-cost-5').textContent = (rate * 5 + fee).toFixed(2);
+        document.getElementById('comp-cost-5-es').textContent = (rate * 5 + fee).toFixed(2);
       }
 
       function updatePlanEquationFeedback() {
@@ -1133,9 +1145,12 @@
       function validateTable() {
         const rate = parseFloat(document.getElementById('plan-rate').value);
         const fee = parseFloat(document.getElementById('plan-fee').value);
+        const isEs = document.body.classList.contains('es');
         
         if (isNaN(rate) || isNaN(fee)) {
-          showReadout('table-out', `<span style="color:var(--coral);"><strong>Error:</strong> Please fill in your flat fee and cost per GB in Step 1 first!</span>`);
+          showReadout('table-out', isEs
+            ? `<span style="color:var(--coral);"><strong>Error:</strong> ¡Por favor ingresa primero tu tarifa fija y costo por GB en el Paso 1!</span>`
+            : `<span style="color:var(--coral);"><strong>Error:</strong> Please fill in your flat fee and cost per GB in Step 1 first!</span>`);
           return;
         }
         
@@ -1183,14 +1198,20 @@
         });
         
         if (allCorrect) {
-          showReadout('table-out', `
+          showReadout('table-out', isEs ? `
+            <span style="color:var(--green); font-weight: bold;">🎉 ¡Todos los valores son correctos!</span><br>
+            Calculaste correctamente el costo mensual para cada nivel de uso de datos. ¡Nota cómo el costo (variable dependiente) aumenta en $${rate} por cada gigabyte adicional (variable independiente) que uses!
+          ` : `
             <span style="color:var(--green); font-weight: bold;">🎉 All values are correct!</span><br>
             You correctly calculated the monthly cost for each data usage tier. Notice how the cost (dependent variable) goes up by $${rate} for every additional gigabyte (independent variable) you use!
           `);
           // Draw the graph immediately
           drawPlanOnGraph(rate, fee, false);
         } else {
-          showReadout('table-out', `
+          showReadout('table-out', isEs ? `
+            <span style="color:var(--coral); font-weight: bold;">⚠️ Algunas entradas son incorrectas.</span><br>
+            Encontramos ${errorCount} valor(es) incorrecto(s). Recuerda, para $${rate}/GB y $${fee} base: <strong>Costo = ${rate} &times; GB + ${fee}</strong>. ¡Inténtalo de nuevo!
+          ` : `
             <span style="color:var(--coral); font-weight: bold;">⚠️ Some entries are incorrect.</span><br>
             We found ${errorCount} incorrect value(s). Remember, for $${rate}/GB and $${fee} base: <strong>Cost = ${rate} &times; GB + ${fee}</strong>. Try again!
           `);
@@ -1285,9 +1306,12 @@
       function validateGraphAnswers() {
         const rate = parseFloat(document.getElementById('plan-rate').value);
         const fee = parseFloat(document.getElementById('plan-fee').value);
+        const isEs = document.body.classList.contains('es');
         
         if (isNaN(rate) || isNaN(fee)) {
-          showReadout('graph-out', `<span style="color:var(--coral);"><strong>Error:</strong> Please complete Steps 1 and 2 first!</span>`);
+          showReadout('graph-out', isEs
+            ? `<span style="color:var(--coral);"><strong>Error:</strong> ¡Por favor completa primero los Pasos 1 y 2!</span>`
+            : `<span style="color:var(--coral);"><strong>Error:</strong> Please complete Steps 1 and 2 first!</span>`);
           return;
         }
         
@@ -1313,17 +1337,30 @@
         q3Select.style.borderColor = q3Correct ? 'var(--green)' : 'var(--coral)';
         
         if (q1Correct && q2Correct && q3Correct) {
-          showReadout('graph-out', `
+          showReadout('graph-out', isEs ? `
+            <span style="color:var(--green); font-weight: bold;">🎉 ¡Todas las respuestas del gráfico son correctas!</span><br>
+            • <strong>intercepto en y:</strong> Identificado correctamente como $${fee} (representado como (0, ${fee})).<br>
+            • <strong>Costo de 8 GB:</strong> Calculado correctamente como $${expectedCost8.toFixed(2)}.<br>
+            • <strong>Proporcionalidad:</strong> Identificado correctamente como <strong>${expectedProp === 'proportional' ? 'proporcional' : 'no proporcional'}</strong>. ${fee === 0 ? "Como no hay una tarifa fija, tu línea comienza en el origen (0,0)." : `Como hay una tarifa fija de $${fee}, tu línea comienza en (0, ${fee}) en lugar del origen.`}
+          ` : `
             <span style="color:var(--green); font-weight: bold;">🎉 All graphing answers are correct!</span><br>
             • <strong>y-intercept:</strong> Correctly identified as $${fee} (represented as (0, ${fee})).<br>
             • <strong>8 GB Cost:</strong> Correctly calculated as $${expectedCost8.toFixed(2)}.<br>
             • <strong>Proportionality:</strong> Correctly identified as <strong>${expectedProp}</strong>. ${fee === 0 ? "Since there is no flat fee, your line starts at the origin (0,0)." : `Since there is a flat fee of $${fee}, your line starts at (0, ${fee}) rather than the origin.`}
           `);
         } else {
-          let msg = `<span style="color:var(--coral); font-weight: bold;">⚠️ Some answers need review:</span><br>`;
-          if (!q1Correct) msg += `• <strong>y-intercept:</strong> The y-intercept is the cost when data is 0 GB. It should equal your flat fee of $${fee}.<br>`;
-          if (!q2Correct) msg += `• <strong>8 GB Cost:</strong> Check your calculations. For 8 GB, your cost is ${rate} &times; 8 + ${fee} = $${expectedCost8.toFixed(2)}.<br>`;
-          if (!q3Correct) msg += `• <strong>Proportionality:</strong> A relationship is proportional only if it starts at (0,0) (no flat fee). Your plan ${fee === 0 ? 'starts at (0,0)' : 'starts at (0,' + fee + ')'}.`;
+          let msg = '';
+          if (isEs) {
+            msg += `<span style="color:var(--coral); font-weight: bold;">⚠️ Algunas respuestas necesitan revisión:</span><br>`;
+            if (!q1Correct) msg += `• <strong>intercepto en y:</strong> El intercepto en y es el costo cuando los datos son 0 GB. Debería ser igual a tu tarifa fija de $${fee}.<br>`;
+            if (!q2Correct) msg += `• <strong>Costo de 8 GB:</strong> Revisa tus cálculos. Para 8 GB, tu costo es ${rate} &times; 8 + ${fee} = $${expectedCost8.toFixed(2)}.<br>`;
+            if (!q3Correct) msg += `• <strong>Proporcionalidad:</strong> Una relación es proporcional solo si comienza en (0,0) (sin tarifa fija). Tu plan ${fee === 0 ? 'comienza en (0,0)' : 'comienza en (0,' + fee + ')'}.`;
+          } else {
+            msg += `<span style="color:var(--coral); font-weight: bold;">⚠️ Some answers need review:</span><br>`;
+            if (!q1Correct) msg += `• <strong>y-intercept:</strong> The y-intercept is the cost when data is 0 GB. It should equal your flat fee of $${fee}.<br>`;
+            if (!q2Correct) msg += `• <strong>8 GB Cost:</strong> Check your calculations. For 8 GB, your cost is ${rate} &times; 8 + ${fee} = $${expectedCost8.toFixed(2)}.<br>`;
+            if (!q3Correct) msg += `• <strong>Proportionality:</strong> A relationship is proportional only if it starts at (0,0) (no flat fee). Your plan ${fee === 0 ? 'starts at (0,0)' : 'starts at (0,' + fee + ')'}.`;
+          }
           showReadout('graph-out', msg);
         }
       }
@@ -1336,14 +1373,19 @@
         const pRate = parseFloat(document.getElementById('p-rate').value);
         const pFee = parseFloat(document.getElementById('p-fee').value);
         const pEqInput = document.getElementById('p-eq-input');
+        const isEs = document.body.classList.contains('es');
         
         if (isNaN(rate) || isNaN(fee)) {
-          showReadout('peer-out', `<span style="color:var(--coral);"><strong>Error:</strong> Please set up your own plan in Step 1 first!</span>`);
+          showReadout('peer-out', isEs
+            ? `<span style="color:var(--coral);"><strong>Error:</strong> ¡Por favor configura primero tu propio plan en el Paso 1!</span>`
+            : `<span style="color:var(--coral);"><strong>Error:</strong> Please set up your own plan in Step 1 first!</span>`);
           return;
         }
         
         if (!pName || isNaN(pRate) || isNaN(pFee)) {
-          showReadout('peer-out', `<span style="color:var(--coral);"><strong>Error:</strong> Please fill in your partner's name, cost per GB, and flat fee.</span>`);
+          showReadout('peer-out', isEs
+            ? `<span style="color:var(--coral);"><strong>Error:</strong> Por favor completa el nombre de tu compañero, el costo por GB y la tarifa fija.</span>`
+            : `<span style="color:var(--coral);"><strong>Error:</strong> Please fill in your partner's name, cost per GB, and flat fee.</span>`);
           return;
         }
         
@@ -1361,11 +1403,17 @@
           const pCost = pRate * g + pFee;
           let cheaper = '';
           if (myCost < pCost) {
-            cheaper = '<span style="color:var(--blue); font-weight:bold;">My Plan</span>';
+            cheaper = isEs 
+              ? '<span style="color:var(--blue); font-weight:bold;">Mi plan</span>' 
+              : '<span style="color:var(--blue); font-weight:bold;">My Plan</span>';
           } else if (pCost < myCost) {
-            cheaper = `<span style="color:var(--teal); font-weight:bold;">${pName}'s Plan</span>`;
+            cheaper = isEs 
+              ? `<span style="color:var(--teal); font-weight:bold;">Plan de ${pName}</span>` 
+              : `<span style="color:var(--teal); font-weight:bold;">${pName}'s Plan</span>`;
           } else {
-            cheaper = '<span style="color:var(--muted); font-weight:bold;">Equal</span>';
+            cheaper = isEs 
+              ? '<span style="color:var(--muted); font-weight:bold;">Iguales</span>' 
+              : '<span style="color:var(--muted); font-weight:bold;">Equal</span>';
           }
           tableHtml += `
             <tr>
@@ -1386,11 +1434,17 @@
         const pCost5 = pRate * 5 + pFee;
         let winnerText = '';
         if (myCost5 < pCost5) {
-          winnerText = `Your plan is cheaper by $${(pCost5 - myCost5).toFixed(2)}!`;
+          winnerText = isEs 
+            ? `¡Tu plan es más barato por $${(pCost5 - myCost5).toFixed(2)}!` 
+            : `Your plan is cheaper by $${(pCost5 - myCost5).toFixed(2)}!`;
         } else if (pCost5 < myCost5) {
-          winnerText = `${pName}'s plan is cheaper by $${(myCost5 - pCost5).toFixed(2)}!`;
+          winnerText = isEs 
+            ? `¡El plan de ${pName} es más barato por $${(myCost5 - pCost5).toFixed(2)}!` 
+            : `${pName}'s plan is cheaper by $${(myCost5 - pCost5).toFixed(2)}!`;
         } else {
-          winnerText = `Both plans cost the exact same!`;
+          winnerText = isEs 
+            ? `¡Ambos planes cuestan exactamente lo mismo!` 
+            : `Both plans cost the exact same!`;
         }
         
         // Intersection analysis
@@ -1399,41 +1453,69 @@
           const intersectG = (pFee - fee) / (rate - pRate);
           const intersectCost = rate * intersectG + fee;
           if (intersectG >= 0 && intersectG <= 20) {
-            intersectionText = `<br>📊 <strong>Break-Even Point:</strong> The plans cost the same ($${intersectCost.toFixed(2)}) at <strong>${intersectG.toFixed(1)} GB</strong>.`;
-            if (rate > pRate) {
-              intersectionText += ` If you use less than ${intersectG.toFixed(1)} GB, your plan is cheaper. If you use more, ${pName}'s plan is cheaper.`;
+            if (isEs) {
+              intersectionText = `<br>📊 <strong>Punto de equilibrio:</strong> Los planes cuestan lo mismo ($${intersectCost.toFixed(2)}) a los <strong>${intersectG.toFixed(1)} GB</strong>.`;
+              if (rate > pRate) {
+                intersectionText += ` Si usas menos de ${intersectG.toFixed(1)} GB, tu plan es más barato. Si usas más, el plan de ${pName} es más barato.`;
+              } else {
+                intersectionText += ` Si usas menos de ${intersectG.toFixed(1)} GB, el plan de ${pName} es más barato. Si usas más, tu plan es más barato.`;
+              }
             } else {
-              intersectionText += ` If you use less than ${intersectG.toFixed(1)} GB, ${pName}'s plan is cheaper. If you use more, your plan is cheaper.`;
+              intersectionText = `<br>📊 <strong>Break-Even Point:</strong> The plans cost the same ($${intersectCost.toFixed(2)}) at <strong>${intersectG.toFixed(1)} GB</strong>.`;
+              if (rate > pRate) {
+                intersectionText += ` If you use less than ${intersectG.toFixed(1)} GB, your plan is cheaper. If you use more, ${pName}'s plan is cheaper.`;
+              } else {
+                intersectionText += ` If you use less than ${intersectG.toFixed(1)} GB, ${pName}'s plan is cheaper. If you use more, your plan is cheaper.`;
+              }
             }
           } else {
-            intersectionText = `<br>📊 <strong>Break-Even Point:</strong> One plan is always cheaper for all normal data usages because it has both a lower flat fee and a lower rate per GB.`;
+            intersectionText = isEs 
+              ? `<br>📊 <strong>Punto de equilibrio:</strong> Un plan siempre es más barato para todos los niveles normales de datos porque tiene tanto una tarifa fija menor como una tarifa por GB menor.`
+              : `<br>📊 <strong>Break-Even Point:</strong> One plan is always cheaper for all normal data usages because it has both a lower flat fee and a lower rate per GB.`;
           }
         } else {
           if (fee === pFee) {
-            intersectionText = `<br>📊 Both plans are identical.`;
+            intersectionText = isEs ? `<br>📊 Ambos planes son idénticos.` : `<br>📊 Both plans are identical.`;
           } else {
-            intersectionText = `<br>📊 One plan is always cheaper because they have the same rate per GB but different flat fees.`;
+            intersectionText = isEs 
+              ? `<br>📊 Un plan siempre es más barato porque tienen la misma tarifa por GB pero diferentes tarifas fijas.` 
+              : `<br>📊 One plan is always cheaper because they have the same rate per GB but different flat fees.`;
           }
         }
         
-        let readoutHtml = `
-          <strong>Side-by-Side Analysis (5 GB):</strong><br>
-          • Your Plan: <strong>$${myCost5.toFixed(2)}</strong><br>
-          • ${pName}'s Plan: <strong>$${pCost5.toFixed(2)}</strong><br>
-          👉 Result: <strong>${winnerText}</strong>
-          ${intersectionText}
-        `;
+        let readoutHtml = '';
+        if (isEs) {
+          readoutHtml = `
+            <strong>Análisis comparativo (5 GB):</strong><br>
+            • Tu plan: <strong>$${myCost5.toFixed(2)}</strong><br>
+            • Plan de ${pName}: <strong>$${pCost5.toFixed(2)}</strong><br>
+            👉 Resultado: <strong>${winnerText}</strong>
+            ${intersectionText}
+          `;
+        } else {
+          readoutHtml = `
+            <strong>Side-by-Side Analysis (5 GB):</strong><br>
+            • Your Plan: <strong>$${myCost5.toFixed(2)}</strong><br>
+            • ${pName}'s Plan: <strong>$${pCost5.toFixed(2)}</strong><br>
+            👉 Result: <strong>${winnerText}</strong>
+            ${intersectionText}
+          `;
+        }
         
         if (!eqCheck.ok) {
-          readoutHtml += `<br><span style="color:var(--coral); font-size:12px;">⚠️ <strong>Partner Equation Tip:</strong> ${eqCheck.msg}</span>`;
+          readoutHtml += isEs 
+            ? `<br><span style="color:var(--coral); font-size:12px;">⚠️ <strong>Consejo para la ecuación del compañero:</strong> ${eqCheck.msg}</span>`
+            : `<br><span style="color:var(--coral); font-size:12px;">⚠️ <strong>Partner Equation Tip:</strong> ${eqCheck.msg}</span>`;
         } else {
-          readoutHtml += `<br><span style="color:var(--green); font-size:12px;">✅ Partner equation validated successfully: ${pEqInput.value}</span>`;
+          readoutHtml += isEs 
+            ? `<br><span style="color:var(--green); font-size:12px;">✅ Ecuación del compañero validada con éxito: ${pEqInput.value}</span>`
+            : `<br><span style="color:var(--green); font-size:12px;">✅ Partner equation validated successfully: ${pEqInput.value}</span>`;
         }
         
         showReadout('peer-out', readoutHtml);
         
         // Update partner legend name
-        document.getElementById('partner-legend-name').textContent = `${pName}'s Plan`;
+        document.getElementById('partner-legend-name').textContent = isEs ? `Plan de ${pName}` : `${pName}'s Plan`;
       }
 
       function validatePeerChoice() {
@@ -1441,6 +1523,7 @@
         const fee = parseFloat(document.getElementById('plan-fee').value);
         const pRate = parseFloat(document.getElementById('p-rate').value);
         const pFee = parseFloat(document.getElementById('p-fee').value);
+        const isEs = document.body.classList.contains('es');
         
         if (isNaN(rate) || isNaN(fee) || isNaN(pRate) || isNaN(pFee)) return;
         
@@ -1458,16 +1541,20 @@
         if (userChoice === correctChoice) {
           selectEl.style.borderColor = 'var(--green)';
           feedback.className = 'feedback ok';
-          feedback.textContent = '✅ Correct comparison!';
+          feedback.textContent = isEs ? '✅ ¡Comparación correcta!' : '✅ Correct comparison!';
         } else {
           selectEl.style.borderColor = 'var(--coral)';
           feedback.className = 'feedback no';
-          feedback.textContent = '❌ That doesn\'t match the costs. Check your table comparison for 5 GB.';
+          feedback.textContent = isEs 
+            ? '❌ Eso no coincide con los costos. Verifica la comparación de tu tabla para 5 GB.'
+            : '❌ That doesn\'t match the costs. Check your table comparison for 5 GB.';
         }
       }
 
       // ---- Step 5: Finalize and Export Report ----
       function buildReport() {
+        const isEs = document.body.classList.contains('es');
+        
         const rate = document.getElementById('plan-rate').value;
         const fee = document.getElementById('plan-fee').value;
         const eq = document.getElementById('plan-eq-input').value;
@@ -1496,8 +1583,14 @@
         
         const isLvl2 = document.getElementById('body').classList.contains('level-2');
         
-        let tableSection = `
-📊 DATA TABLE (Cost vs Data Used):
+        let tableSection = isEs 
+          ? `\n📊 TABLA DE DATOS (Costo vs Datos usados):
+   • 0 GB: $${cost0 || '—'}
+   • 1 GB: $${cost1 || '—'}
+   • 2 GB: $${cost2 || '—'}
+   • 5 GB: $${cost5 || '—'}
+   • 10 GB: $${cost10 || '—'}`
+          : `\n📊 DATA TABLE (Cost vs Data Used):
    • 0 GB: $${cost0 || '—'}
    • 1 GB: $${cost1 || '—'}
    • 2 GB: $${cost2 || '—'}
@@ -1505,45 +1598,89 @@
    • 10 GB: $${cost10 || '—'}`;
          
         if (isLvl2) {
-          tableSection += `
+          if (isEs) {
+            tableSection += `
+   • Coordenadas (g, C):
+     (0, ${document.getElementById('t-pair-0').value || '—'}), (1, ${document.getElementById('t-pair-1').value || '—'}), (2, ${document.getElementById('t-pair-2').value || '—'}), (5, ${document.getElementById('t-pair-5').value || '—'}), (10, ${document.getElementById('t-pair-10').value || '—'})`;
+          } else {
+            tableSection += `
    • Coordinates (g, C):
      (0, ${document.getElementById('t-pair-0').value || '—'}), (1, ${document.getElementById('t-pair-1').value || '—'}), (2, ${document.getElementById('t-pair-2').value || '—'}), (5, ${document.getElementById('t-pair-5').value || '—'}), (10, ${document.getElementById('t-pair-10').value || '—'})`;
+          }
         }
         
-        const lines = [
-          '═══ PHONE PLAN SHOWDOWN — UNIT 9 CULMINATING PROJECT ═══',
-          '',
-          `🏫 LEVEL: ${isLvl2 ? 'Level 2 (Challenge)' : 'Level 1 (With Support)'}`,
-          '📖 STANDARD: 6.EE.9 (Two-Variable Relationships)',
-          '',
-          '📱 STEP 1 — MY PHONE PLAN DESIGN',
-          `   • Cost per GB: $${rate || '—'}/GB`,
-          `   • Flat Monthly Fee: $${fee || '—'}`,
-          `   • Equation: ${eq || '—'}`,
-          tableSection,
-          '',
-          '📈 STEP 3 — GRAPH ANALYSIS',
-          `   • y-intercept: ${yInt || '—'}`,
-          `     Real-world meaning: ${yIntExp || '—'}`,
-          `   • Cost for 8 GB: $${cost8 || '—'}`,
-          `     How to find: ${cost8Exp || '—'}`,
-          `   • Proportionality: ${prop || '—'}`,
-          `     Reasoning: ${propExp || '—'}`,
-          worldComp ? `   • Market comparison: ${worldComp}` : '',
-          '',
-          '👥 STEP 4 — PARTNER COMPARISON',
-          `   • Partner Name: ${pName || '—'}`,
-          `   • Partner Cost per GB: $${pRate || '—'}/GB`,
-          `   • Partner Flat Fee: $${pFee || '—'}`,
-          `   • Partner Equation: ${pEq || '—'}`,
-          pReflect ? `   • Reflection: ${pReflect}` : '',
-          '',
-          '✍️ STEP 5 — MY PRESENTATION PITCH:',
-          pitch || '(no pitch written)',
-          '',
-          '═══════════════════════════════════════════════════════',
-          `Generated: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`,
-        ];
+        let lines = [];
+        if (isEs) {
+          lines = [
+            '═══ ENFRENTAMIENTO DE PLANES DE TELEFONÍA — PROYECTO DE LA UNIDAD 9 ═══',
+            '',
+            `🏫 NIVEL: ${isLvl2 ? 'Nivel 2 (Desafío)' : 'Nivel 1 (Con apoyo)'}`,
+            '📖 ESTÁNDAR: 6.EE.9 (Relaciones de dos variables)',
+            '',
+            '📱 PASO 1 — DISEÑO DE MI PLAN DE TELÉFONO',
+            `   • Costo por GB: $${rate || '—'}/GB`,
+            `   • Tarifa fija mensual: $${fee || '—'}`,
+            `   • Ecuación: ${eq || '—'}`,
+            tableSection,
+            '',
+            '📈 PASO 3 — ANÁLISIS DE GRÁFICO',
+            `   • Intercepto en y: ${yInt || '—'}`,
+            `     Significado en el mundo real: ${yIntExp || '—'}`,
+            `   • Costo para 8 GB: $${cost8 || '—'}`,
+            `     Cómo encontrarlo: ${cost8Exp || '—'}`,
+            `   • Proporcionalidad: ${prop === 'proportional' ? 'Proporcional' : prop === 'non-proportional' ? 'No proporcional' : '—'}`,
+            `     Razonamiento: ${propExp || '—'}`,
+            worldComp ? `   • Comparación con el mercado: ${worldComp}` : '',
+            '',
+            '👥 PASO 4 — COMPARACIÓN CON COMPAÑERO',
+            `   • Nombre del compañero: ${pName || '—'}`,
+            `   • Costo por GB del compañero: $${pRate || '—'}/GB`,
+            `   • Tarifa fija del compañero: $${pFee || '—'}`,
+            `   • Ecuación del compañero: ${pEq || '—'}`,
+            pReflect ? `   • Reflexión: ${pReflect}` : '',
+            '',
+            '✍️ PASO 5 — MI DISCURSO DE PRESENTACIÓN:',
+            pitch || '(no se ha escrito discurso)',
+            '',
+            '═══════════════════════════════════════════════════════',
+            `Generado: ${new Date().toLocaleDateString()} a las ${new Date().toLocaleTimeString()}`,
+          ];
+        } else {
+          lines = [
+            '═══ PHONE PLAN SHOWDOWN — UNIT 9 CULMINATING PROJECT ═══',
+            '',
+            `🏫 LEVEL: ${isLvl2 ? 'Level 2 (Challenge)' : 'Level 1 (With Support)'}`,
+            '📖 STANDARD: 6.EE.9 (Two-Variable Relationships)',
+            '',
+            '📱 STEP 1 — MY PHONE PLAN DESIGN',
+            `   • Cost per GB: $${rate || '—'}/GB`,
+            `   • Flat Monthly Fee: $${fee || '—'}`,
+            `   • Equation: ${eq || '—'}`,
+            tableSection,
+            '',
+            '📈 STEP 3 — GRAPH ANALYSIS',
+            `   • y-intercept: ${yInt || '—'}`,
+            `     Real-world meaning: ${yIntExp || '—'}`,
+            `   • Cost for 8 GB: $${cost8 || '—'}`,
+            `     How to find: ${cost8Exp || '—'}`,
+            `   • Proportionality: ${prop || '—'}`,
+            `     Reasoning: ${propExp || '—'}`,
+            worldComp ? `   • Market comparison: ${worldComp}` : '',
+            '',
+            '👥 STEP 4 — PARTNER COMPARISON',
+            `   • Partner Name: ${pName || '—'}`,
+            `   • Partner Cost per GB: $${pRate || '—'}/GB`,
+            `   • Partner Flat Fee: $${pFee || '—'}`,
+            `   • Partner Equation: ${pEq || '—'}`,
+            pReflect ? `   • Reflection: ${pReflect}` : '',
+            '',
+            '✍️ STEP 5 — MY PRESENTATION PITCH:',
+            pitch || '(no pitch written)',
+            '',
+            '═══════════════════════════════════════════════════════',
+            `Generated: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`,
+          ];
+        }
         
         const box = document.getElementById('reportBox');
         box.textContent = lines.join('\n');
@@ -1551,7 +1688,219 @@
       }
 
       function copyReport() {
+        const isEs = document.body.classList.contains('es');
         const txt = document.getElementById('reportBox').textContent;
+        navigator.clipboard?.writeText(txt).then(() => alert(isEs ? '¡Copiado al portapapeles!' : 'Copied to clipboard!'));
+      }
+
+      function downloadTxt() {
+        const txt = document.getElementById('reportBox').textContent;
+        const a = document.createElement('a');
+        a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
+        a.download = 'phone-plan-showdown.txt';
+        a.click();
+      }
+
+      // ---- Bilingual / Translation Helpers ----
+      function updatePlaceholders(isEs) {
+        document.getElementById('plan-fee').placeholder = isEs ? 'ej. 20' : 'e.g. 20';
+        document.getElementById('plan-rate').placeholder = isEs ? 'ej. 10' : 'e.g. 10';
+        document.getElementById('plan-eq-input').placeholder = isEs ? 'ej. C = 10g + 20' : 'e.g. C = 10g + 20';
+        
+        const gVals = [0, 1, 2, 5, 10];
+        gVals.forEach(g => {
+          document.getElementById(`t-cost-${g}`).placeholder = isEs ? 'Costo' : 'Cost';
+          const pairEl = document.getElementById(`t-pair-${g}`);
+          if (pairEl) {
+            pairEl.placeholder = isEs ? `ej. (${g}, ${g * 10 + 20})` : `e.g. (${g}, ${g * 10 + 20})`;
+          }
+        });
+        
+        document.getElementById('q-y-intercept').placeholder = isEs ? 'ej. (0, 20)' : 'e.g. (0, 20)';
+        document.getElementById('q-y-intercept-explain').placeholder = isEs 
+          ? 'Con 0 GB de datos usados, el costo mensual es... Esta es la tarifa mensual fija.' 
+          : 'At 0 GB of data used, the monthly cost is... This is the flat monthly fee.';
+        document.getElementById('q-cost-8').placeholder = isEs ? 'ej. 100' : 'e.g. 100';
+        document.getElementById('q-cost-8-explain').placeholder = isEs
+          ? 'Usando la ecuación, calculo... En el gráfico, encuentro el 8 en el eje x y lo sigo hacia arriba hasta...'
+          : 'Using the equation, I calculate... On the graph, I find 8 on the x-axis and follow it up to...';
+        document.getElementById('q-proportional-explain').placeholder = isEs
+          ? 'Porque el plan tiene una tarifa mensual fija de... el gráfico comienza en... y no en (0,0).'
+          : 'Because the plan has a flat monthly fee of... the graph starts at... and not at (0,0).';
+        document.getElementById('world-compare').placeholder = isEs
+          ? 'Para 5 GB, mi plan cuesta $___. En comparación con los precios del mercado, esto es... porque...'
+          : 'For 5 GB, my plan costs $___. In comparison to the market prices, this is... because...';
+          
+        document.getElementById('p-name').placeholder = isEs ? 'ej. Alex' : 'e.g. Alex';
+        document.getElementById('p-fee').placeholder = isEs ? 'ej. 30' : 'e.g. 30';
+        document.getElementById('p-rate').placeholder = isEs ? 'ej. 8' : 'e.g. 8';
+        document.getElementById('p-eq-input').placeholder = isEs ? 'ej. C = 8g + 30' : 'e.g. C = 8g + 30';
+        document.getElementById('peer-reflect').placeholder = isEs
+          ? 'Mi plan comienza en $___ (intercepto en y) y sube $___/GB (inclinación). El plan de mi compañero comienza en... Esto significa que mi plan es más barato cuando... pero su plan es más barato cuando...'
+          : 'My plan starts at $___ (y-intercept) and goes up by $___/GB (steepness). My partner\'s plan starts at... This means my plan is cheaper when... but their plan is cheaper when...';
+        document.getElementById('pitch').placeholder = isEs
+          ? '¡Vende tu plan a una familia! Explica cuánto cuesta, por qué elegiste esta tarifa fija y tarifa por GB, y bajo qué uso de datos es la mejor oferta absoluta. ¡Usa tu ecuación, intercepto en y y pendiente en tu explicación!'
+          : 'Pitch your plan to a family! Explain how much it costs, why you chose this flat fee and rate, and under what data usage it is the absolute best deal. Use your equation, y-intercept, and slope in your explanation!';
+      }
+
+      function updateProportionalSelectOptions(isEs) {
+        const sel = document.getElementById('q-proportional');
+        const val = sel.value;
+        sel.innerHTML = isEs ? `
+          <option value="">-- Elige uno --</option>
+          <option value="proportional">Proporcional (comienza en el origen (0,0))</option>
+          <option value="non-proportional">No proporcional (comienza arriba del origen)</option>
+        ` : `
+          <option value="">-- Choose one --</option>
+          <option value="proportional">Proportional (starts at origin (0,0))</option>
+          <option value="non-proportional">Non-Proportional (starts above origin)</option>
+        `;
+        sel.value = val;
+      }
+
+      function updatePeerCompareSelectOptions(isEs) {
+        const sel = document.getElementById('peer-compare-choice');
+        const val = sel.value;
+        sel.innerHTML = isEs ? `
+          <option value="">-- Elige uno --</option>
+          <option value="self">Mi plan</option>
+          <option value="partner">El plan de mi compañero</option>
+          <option value="equal">Cuestan exactamente lo mismo</option>
+        ` : `
+          <option value="">-- Choose one --</option>
+          <option value="self">My Plan</option>
+          <option value="partner">My Partner's Plan</option>
+          <option value="equal">They cost the exact same</option>
+        `;
+        sel.value = val;
+      }
+
+      function finishProject() {
+        const isEs = document.body.classList.contains('es');
+        alert(isEs ? '¡Gran trabajo! 🎉 Muestra esta página a tu maestro.' : 'Great work! 🎉 Show this page to your teacher.');
+      }
+
+      function toggleLanguage() {
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+        }
+        
+        const isEs = document.body.classList.contains('es');
+        if (isEs) {
+          document.body.classList.remove('es');
+          document.getElementById('btn-lang').textContent = '🌐 Language: EN';
+          document.getElementById('btn-read').textContent = '🔊 Read Aloud';
+        } else {
+          document.body.classList.add('es');
+          document.getElementById('btn-lang').textContent = '🌐 Idioma: ES';
+          document.getElementById('btn-read').textContent = '🔊 Leer en voz alta';
+        }
+        
+        updatePlaceholders(!isEs);
+        updateProportionalSelectOptions(!isEs);
+        updatePeerCompareSelectOptions(!isEs);
+        
+        buildTrail();
+        updateProgress();
+        updatePlanVisuals();
+        updatePlanEquationFeedback();
+        
+        const tableOut = document.getElementById('table-out');
+        if (tableOut.classList.contains('show')) {
+          validateTable();
+        }
+        const graphOut = document.getElementById('graph-out');
+        if (graphOut.classList.contains('show')) {
+          validateGraphAnswers();
+        }
+        
+        const pName = document.getElementById('p-name').value.trim();
+        const pRate = parseFloat(document.getElementById('p-rate').value);
+        const pFee = parseFloat(document.getElementById('p-fee').value);
+        if (pName && !isNaN(pRate) && !isNaN(pFee)) {
+          comparePeerPlans();
+        }
+        
+        const reportBox = document.getElementById('reportBox');
+        if (reportBox.classList.contains('show')) {
+          buildReport();
+        }
+      }
+
+      // ---- Read Aloud TTS Support ----
+      let speechUtterance = null;
+      function readAloud() {
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          const isEs = document.body.classList.contains('es');
+          document.getElementById('btn-read').textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+          return;
+        }
+        
+        const isEs = document.body.classList.contains('es');
+        const langCode = isEs ? 'es-ES' : 'en-US';
+        
+        const panel = document.getElementById('step-' + currentStep);
+        if (!panel) return;
+        
+        const selector = isEs ? '.es-text' : '.en-text';
+        const elements = panel.querySelectorAll(selector);
+        
+        let textParts = [];
+        
+        elements.forEach(el => {
+          let isClosedDetails = false;
+          let parent = el.parentElement;
+          while (parent && parent !== panel) {
+            if (parent.tagName.toLowerCase() === 'details' && !parent.open) {
+              isClosedDetails = true;
+              break;
+            }
+            const style = window.getComputedStyle(parent);
+            if (style.display === 'none') {
+              isClosedDetails = true;
+              break;
+            }
+            parent = parent.parentElement;
+          }
+          if (!isClosedDetails) {
+            textParts.push(el.textContent.trim());
+          }
+        });
+        
+        const textToSpeak = textParts.filter(t => t.length > 0).join('. ');
+        if (!textToSpeak) return;
+        
+        speechUtterance = new SpeechSynthesisUtterance(textToSpeak);
+        speechUtterance.lang = langCode;
+        
+        const voices = window.speechSynthesis.getVoices();
+        const voice = voices.find(v => v.lang.startsWith(isEs ? 'es' : 'en'));
+        if (voice) {
+          speechUtterance.voice = voice;
+        }
+        
+        speechUtterance.onend = () => {
+          document.getElementById('btn-read').textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+        };
+        
+        speechUtterance.onerror = () => {
+          document.getElementById('btn-read').textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+        };
+        
+        document.getElementById('btn-read').textContent = isEs ? '⏹️ Detener' : '⏹️ Stop';
+        window.speechSynthesis.speak(speechUtterance);
+      }
+
+      // ---- Init ----
+      validateConfig();
+      selfTest();
+      initCoordinatePlane();
+      updatePlaceholders(false);
+      updateProportionalSelectOptions(false);
+      updatePeerCompareSelectOptions(false);
+      buildTrail();
+      updateProgress();ById('reportBox').textContent;
         navigator.clipboard?.writeText(txt).then(() => alert('Copied to clipboard!'));
       }
 

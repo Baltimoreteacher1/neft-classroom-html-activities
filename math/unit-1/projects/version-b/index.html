@@ -134,6 +134,12 @@
       .vocab-term { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
       .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
       .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
+
+      /* Bilingual Translation Rules */
+      body.es .en-text { display: none !important; }
+      body.es .es-text { display: inline !important; }
+      span.es-text, tspan.es-text { display: none; }
+
       @media print {
         .no-print { display: none !important; }
         .hero { background: var(--navy) !important; }
@@ -149,18 +155,40 @@
 
     <header class="hero no-print">
       <div class="hero-emoji">🤖</div>
-      <h1>Build-a-Bot Budget Lab</h1>
-      <p class="hero-sub">You're the lead engineer! Use real math to build your robotics team — step by step.</p>
+      <h1>
+        <span class="en-text">Build-a-Bot Budget Lab</span>
+        <span class="es-text">Laboratorio de Presupuesto para Construir un Robot</span>
+      </h1>
+      <p class="hero-sub">
+        <span class="en-text">You're the lead engineer! Use real math to build your robotics team — step by step.</span>
+        <span class="es-text">¡Eres el ingeniero principal! Usa matemáticas reales para construir tu equipo de robótica, paso a paso.</span>
+      </p>
       <div class="hero-tags">
-        <span class="tag gold">Unit 1 · Number Sense</span>
+        <span class="tag gold">
+          <span class="en-text">Unit 1 · Number Sense</span>
+          <span class="es-text">Unidad 1 · Sentido Numérico</span>
+        </span>
         <span class="tag">6.NS.2</span>
         <span class="tag">6.NS.3</span>
         <span class="tag">6.NS.4</span>
-        <span class="tag">Version B</span>
+        <span class="tag">
+          <span class="en-text">Version B</span>
+          <span class="es-text">Versión B</span>
+        </span>
       </div>
       <div class="level-bar">
-        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
-        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
+          <span class="en-text">🟢 Level 1 — With Support</span>
+          <span class="es-text">🟢 Nivel 1 — Con Apoyo</span>
+        </button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">
+          <span class="en-text">🔵 Level 2 — Challenge</span>
+          <span class="es-text">🔵 Nivel 2 — Desafío</span>
+        </button>
+      </div>
+      <div class="level-bar" style="margin-top: 10px; max-width: 320px;">
+        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
+        <button class="level-btn" id="btn-read" onclick="readAloud()">🔊 Read Aloud</button>
       </div>
     </header>
 
@@ -177,47 +205,93 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">Key Words</div>
-              <div class="card-sub">Learn these 4 math words before you start building</div>
+              <div class="card-title">
+                <span class="en-text">Key Words</span>
+                <span class="es-text">Palabras Clave</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Learn these 4 math words before you start building</span>
+                <span class="es-text">Aprende estas 4 palabras de matemáticas antes de empezar a construir</span>
+              </div>
             </div>
           </div>
-
-          
 
           <div class="vocab-grid">
             <div class="vocab-card">
               <div class="vocab-icon">🧰</div>
-              <div class="vocab-term">GCF — Greatest Common Factor</div>
-              <div class="vocab-def">The biggest number that divides evenly into two numbers.</div>
-              <div class="vocab-ex">GCF of 18 and 12 = 6 equal tool kits</div>
+              <div class="vocab-term">
+                <span class="en-text">GCF — Greatest Common Factor</span>
+                <span class="es-text">MCD — Máximo Común Divisor</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The biggest number that divides evenly into two numbers.</span>
+                <span class="es-text">El número más grande que divide exactamente a dos números.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">GCF of 18 and 12 = 6 equal tool kits</span>
+                <span class="es-text">MCD de 18 y 12 = 6 kits de herramientas iguales</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🔋</div>
-              <div class="vocab-term">LCM — Least Common Multiple</div>
-              <div class="vocab-def">The smallest number that both numbers fit into evenly.</div>
-              <div class="vocab-ex">LCM of 3 and 4 = 12 hrs until both robots sync</div>
+              <div class="vocab-term">
+                <span class="en-text">LCM — Least Common Multiple</span>
+                <span class="es-text">MCM — Mínimo Común Múltiplo</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The smallest number that both numbers fit into evenly.</span>
+                <span class="es-text">El número más pequeño que contiene a ambos números de forma exacta.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">LCM of 3 and 4 = 12 hrs until both robots sync</span>
+                <span class="es-text">MCM de 3 y 4 = 12 horas hasta que ambos robots se sincronicen</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">💰</div>
-              <div class="vocab-term">Decimal Operations</div>
-              <div class="vocab-def">Adding up parts costs — always line up the decimal point first.</div>
-              <div class="vocab-ex">$34.75 + $12.50 = $47.25</div>
+              <div class="vocab-term">
+                <span class="en-text">Decimal Operations</span>
+                <span class="es-text">Operaciones con Decimales</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">Adding up parts costs — always line up the decimal point first.</span>
+                <span class="es-text">Sumar los costos de las piezas; siempre alinea primero el punto decimal.</span>
+              </div>
+              <div class="vocab-ex">
+                $34.75 + $12.50 = $47.25
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🤖</div>
-              <div class="vocab-term">Division</div>
-              <div class="vocab-def">Splitting a total budget into equal shares across robots.</div>
-              <div class="vocab-ex">$360 / 4 robots = $90 per robot</div>
+              <div class="vocab-term">
+                <span class="en-text">Division</span>
+                <span class="es-text">División</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">Splitting a total budget into equal shares across robots.</span>
+                <span class="es-text">Dividir un presupuesto total en partes iguales entre los robots.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">$360 / 4 robots = $90 per robot</span>
+                <span class="es-text">$360 / 4 robots = $90 por robot</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct" style="margin-top:20px">
-            Read each word card. When you are ready, click <strong>Next Step</strong>.
+            <span class="en-text">Read each word card. When you are ready, click <strong>Next Step</strong>.</span>
+            <span class="es-text">Lee cada tarjeta de palabras. Cuando estés listo, haz clic en <strong>Siguiente Paso</strong>.</span>
           </div>
         </div>
         <div class="nav-row">
-          <button class="nav-btn ghost" disabled>Back</button>
-          <button class="nav-btn" onclick="goStep(2)">Next Step</button>
+          <button class="nav-btn ghost" disabled>
+            <span class="en-text">Back</span>
+            <span class="es-text">Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(2)">
+            <span class="en-text">Next Step</span>
+            <span class="es-text">Siguiente Paso</span>
+          </button>
         </div>
       </div>
 
@@ -227,62 +301,119 @@
           <div class="card-header">
             <div class="card-icon">🧰</div>
             <div>
-              <div class="card-title">Step 1 — Build Equal Tool Kits</div>
-              <div class="card-sub">Use GCF to split cables and sensors into equal kits with no leftovers</div>
+              <div class="card-title">
+                <span class="en-text">Step 1 — Build Equal Tool Kits</span>
+                <span class="es-text">Paso 1 — Construir Kits de Herramientas Iguales</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Use GCF to split cables and sensors into equal kits with no leftovers</span>
+                <span class="es-text">Usa el MCD para dividir cables y sensores en kits iguales sin que sobre nada</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct">
-            <strong>Your job:</strong> You have cables and sensors to pack into equal tool kits. Enter your counts, then find the GCF to see how many equal kits you can make.
+            <span class="en-text"><strong>Your job:</strong> You have cables and sensors to pack into equal tool kits. Enter your counts, then find the GCF to see how many equal kits you can make.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Tienes cables y sensores para empacar en kits de herramientas iguales. Ingresa tus cantidades, luego calcula el MCD para ver cuántos kits iguales puedes hacer.</span>
           </div>
 
           <svg id="gcf-svg" class="visual-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
-            <text x="260" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">GCF: Making Equal Tool Kits</text>
+            <text x="260" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">GCF: Making Equal Tool Kits</tspan>
+              <tspan class="es-text">MCD: Crear Kits de Herramientas Iguales</tspan>
+            </text>
             <rect x="20" y="50" width="210" height="60" rx="8" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="2"/>
-            <text x="125" y="76" text-anchor="middle" font-size="12" fill="#0f2b3c" font-weight="bold">Cables</text>
-            <text x="125" y="98" text-anchor="middle" font-size="11" fill="#1a6fb5" id="gcf-svg-cables">Enter cable count</text>
+            <text x="125" y="76" text-anchor="middle" font-size="12" fill="#0f2b3c" font-weight="bold">
+              <tspan class="en-text">Cables</tspan>
+              <tspan class="es-text">Cables</tspan>
+            </text>
+            <text x="125" y="98" text-anchor="middle" font-size="11" fill="#1a6fb5" id="gcf-svg-cables">
+              <tspan class="en-text">Enter cable count</tspan>
+              <tspan class="es-text">Ingresa cant. de cables</tspan>
+            </text>
             <rect x="290" y="50" width="210" height="60" rx="8" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="2"/>
-            <text x="395" y="76" text-anchor="middle" font-size="12" fill="#0f2b3c" font-weight="bold">Sensors</text>
-            <text x="395" y="98" text-anchor="middle" font-size="11" fill="#0e8a7d" id="gcf-svg-sensors">Enter sensor count</text>
+            <text x="395" y="76" text-anchor="middle" font-size="12" fill="#0f2b3c" font-weight="bold">
+              <tspan class="en-text">Sensors</tspan>
+              <tspan class="es-text">Sensores</tspan>
+            </text>
+            <text x="395" y="98" text-anchor="middle" font-size="11" fill="#0e8a7d" id="gcf-svg-sensors">
+              <tspan class="en-text">Enter sensor count</tspan>
+              <tspan class="es-text">Ingresa cant. de sensores</tspan>
+            </text>
           </svg>
 
           <div class="instruct lvl1-only">
-            🟢 <strong>Level 1 tip:</strong> Try friendly numbers that share factors, like 18 cables and 24 sensors.
+            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try friendly numbers that share factors, like 18 cables and 24 sensors.</span>
+            <span class="es-text">🟢 <strong>Consejo de Nivel 1:</strong> Intenta con números amigables que compartan factores, como 18 cables y 24 sensores.</span>
           </div>
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
-            Use your own numbers — they do not have to be round or easy!
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE</span>
+              <span class="es-text">DESAFÍO DE NIVEL 2</span>
+            </span><br>
+            <span class="en-text">Use your own numbers — they do not have to be round or easy!</span>
+            <span class="es-text">¡Usa tus propios números! ¡No tienen que ser redondos o fáciles!</span>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="g-cables">Number of cables you have</label>
+              <label class="lbl" for="g-cables">
+                <span class="en-text">Number of cables you have</span>
+                <span class="es-text">Número de cables que tienes</span>
+              </label>
               <input type="number" id="g-cables" min="1" placeholder="e.g. 18" oninput="calcGCF()" />
             </div>
             <div>
-              <label class="lbl" for="g-sensors">Number of sensors you have</label>
+              <label class="lbl" for="g-sensors">
+                <span class="en-text">Number of sensors you have</span>
+                <span class="es-text">Número de sensores que tienes</span>
+              </label>
               <input type="number" id="g-sensors" min="1" placeholder="e.g. 24" oninput="calcGCF()" />
             </div>
           </div>
 
-          <button class="calc-btn" onclick="calcGCF()">Find the Most Equal Kits</button>
+          <button class="calc-btn" onclick="calcGCF()">
+            <span class="en-text">Find the Most Equal Kits</span>
+            <span class="es-text">Encontrar la Mayor Cantidad de Kits Iguales</span>
+          </button>
           <div class="readout" id="gcf-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>List all the numbers that divide evenly into each count. The GCF is the biggest number on both lists.<br><strong>Example:</strong> Factors of 18: 1,2,3,6,9,18. Factors of 24: 1,2,3,4,6,8,12,24. Biggest match = <strong>6 kits</strong>.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">List all the numbers that divide evenly into each count. The GCF is the biggest number on both lists.<br><strong>Example:</strong> Factors of 18: 1,2,3,6,9,18. Factors of 24: 1,2,3,4,6,8,12,24. Biggest match = <strong>6 kits</strong>.</span>
+              <span class="es-text">Enumera todos los números que dividen exactamente a cada cantidad. El MCD es el número más grande en ambas listas.<br><strong>Ejemplo:</strong> Factores de 18: 1,2,3,6,9,18. Factores de 24: 1,2,3,4,6,8,12,24. La coincidencia más grande = <strong>6 kits</strong>.</span>
+            </p>
           </details>
 
           <div class="lvl2-block lvl2-only" style="margin-top:18px">
-            <span class="lvl2-label">LEVEL 2 EXTENSION — Distributive Property (6.NS.4)</span>
-            <p style="font-size:14px;margin:6px 0 10px">Rewrite your two counts using the GCF. Example: 18 + 24 = 6 x (3 + 4)</p>
-            <label class="lbl" for="distrib">Your equation: ___ + ___ = GCF x (___ + ___)</label>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 EXTENSION — Distributive Property (6.NS.4)</span>
+              <span class="es-text">EXTENSIÓN DE NIVEL 2 — Propiedad Distributiva (6.NS.4)</span>
+            </span>
+            <p style="font-size:14px;margin:6px 0 10px">
+              <span class="en-text">Rewrite your two counts using the GCF. Example: 18 + 24 = 6 x (3 + 4)</span>
+              <span class="es-text">Escribe de nuevo tus dos cantidades usando el MCD. Ejemplo: 18 + 24 = 6 x (3 + 4)</span>
+            </p>
+            <label class="lbl" for="distrib">
+              <span class="en-text">Your equation: ___ + ___ = GCF x (___ + ___)</span>
+              <span class="es-text">Tu ecuación: ___ + ___ = MCD x (___ + ___)</span>
+            </label>
             <input type="text" id="distrib" placeholder="e.g.  18 + 24 = 6 x (3 + 4)" />
           </div>
         </div>
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(1)">Back</button>
-          <button class="nav-btn" onclick="goStep(3)">Next Step</button>
+          <button class="nav-btn ghost" onclick="goStep(1)">
+            <span class="en-text">Back</span>
+            <span class="es-text">Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(3)">
+            <span class="en-text">Next Step</span>
+            <span class="es-text">Siguiente Paso</span>
+          </button>
         </div>
       </div>
 
@@ -292,58 +423,96 @@
           <div class="card-header">
             <div class="card-icon teal">🔋</div>
             <div>
-              <div class="card-title">Step 2 — Sync the Charging Schedule</div>
-              <div class="card-sub">Use LCM to find when both robots finish charging at the same time</div>
+              <div class="card-title">
+                <span class="en-text">Step 2 — Sync the Charging Schedule</span>
+                <span class="es-text">Paso 2 — Sincronizar el Horario de Carga</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Use LCM to find when both robots finish charging at the same time</span>
+                <span class="es-text">Usa el MCM para encontrar cuándo ambos robots terminan de cargarse al mismo tiempo</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your job:</strong> Two robots charge on different schedules. Find the LCM to discover the first hour when both robots are fully charged at the same time!
+            <span class="en-text"><strong>Your job:</strong> Two robots charge on different schedules. Find the LCM to discover the first hour when both robots are fully charged at the same time!</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Dos robots se cargan con horarios diferentes. ¡Encuentra el MCM para descubrir la primera hora en que ambos robots estén completamente cargados al mismo tiempo!</span>
           </div>
 
           <svg class="visual-svg" viewBox="0 0 520 130" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
-            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">LCM: When do both robots sync?</text>
+            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">LCM: When do both robots sync?</tspan>
+              <tspan class="es-text">MCM: ¿Cuándo se sincronizan ambos robots?</tspan>
+            </text>
             <line x1="30" y1="60" x2="490" y2="60" stroke="#e2e7ec" stroke-width="3"/>
             <circle cx="30"  cy="60" r="7" fill="#1a6fb5"/>
             <circle cx="143" cy="60" r="7" fill="#1a6fb5"/>
             <circle cx="256" cy="60" r="7" fill="#1a6fb5"/>
             <circle cx="369" cy="60" r="7" fill="#1a6fb5"/>
             <circle cx="482" cy="60" r="7" fill="#1a6fb5"/>
-            <text x="260" y="82" text-anchor="middle" font-size="10" fill="#1a6fb5">Robot A — charges every 3 hrs</text>
+            <text x="260" y="82" text-anchor="middle" font-size="10" fill="#1a6fb5">
+              <tspan class="en-text">Robot A — charges every 3 hrs</tspan>
+              <tspan class="es-text">Robot A — se carga cada 3 hrs</tspan>
+            </text>
             <rect x="25"  y="93" width="10" height="10" rx="2" fill="#0e8a7d"/>
             <rect x="175" y="93" width="10" height="10" rx="2" fill="#0e8a7d"/>
             <rect x="325" y="93" width="10" height="10" rx="2" fill="#0e8a7d"/>
             <rect x="475" y="93" width="10" height="10" rx="2" fill="#0e8a7d"/>
-            <text x="260" y="118" text-anchor="middle" font-size="10" fill="#0e8a7d">Robot B — charges every 4 hrs — sync at 12 hrs!</text>
+            <text x="260" y="118" text-anchor="middle" font-size="10" fill="#0e8a7d">
+              <tspan class="en-text">Robot B — charges every 4 hrs — sync at 12 hrs!</tspan>
+              <tspan class="es-text">Robot B — se carga cada 4 hrs — ¡sincronización a las 12 hrs!</tspan>
+            </text>
             <text x="482" y="50" text-anchor="middle" font-size="16">&#x2B50;</text>
           </svg>
 
           <div class="lvl1-only instruct teal">
-            🟢 <strong>Level 1 tip:</strong> Try numbers like 3 and 4 — their LCM is 12.
+            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try numbers like 3 and 4 — their LCM is 12.</span>
+            <span class="es-text">🟢 <strong>Consejo de Nivel 1:</strong> Intenta con números como 3 y 4 — su MCM es 12.</span>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="l-robotA">Robot A charges every ___ hours</label>
+              <label class="lbl" for="l-robotA">
+                <span class="en-text">Robot A charges every ___ hours</span>
+                <span class="es-text">El Robot A se carga cada ___ horas</span>
+              </label>
               <input type="number" id="l-robotA" min="1" placeholder="e.g. 3" oninput="calcLCM()" />
             </div>
             <div>
-              <label class="lbl" for="l-robotB">Robot B charges every ___ hours</label>
+              <label class="lbl" for="l-robotB">
+                <span class="en-text">Robot B charges every ___ hours</span>
+                <span class="es-text">El Robot B se carga cada ___ horas</span>
+              </label>
               <input type="number" id="l-robotB" min="1" placeholder="e.g. 4" oninput="calcLCM()" />
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="calcLCM()">Find the Sync Hour</button>
+          <button class="calc-btn teal" onclick="calcLCM()">
+            <span class="en-text">Find the Sync Hour</span>
+            <span class="es-text">Encontrar la Hora de Sincronización</span>
+          </button>
           <div class="readout" id="lcm-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>List multiples of each number until they share one.<br><strong>Robot A (3):</strong> 3, 6, 9, <strong>12</strong> ... <strong>Robot B (4):</strong> 4, 8, <strong>12</strong> ... LCM = 12 hours.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">List multiples of each number until they share one.<br><strong>Robot A (3):</strong> 3, 6, 9, <strong>12</strong> ... <strong>Robot B (4):</strong> 4, 8, <strong>12</strong> ... LCM = 12 hours.</span>
+              <span class="es-text">Enumera los múltiplos de cada número hasta que compartan uno.<br><strong>Robot A (3):</strong> 3, 6, 9, <strong>12</strong> ... <strong>Robot B (4):</strong> 4, 8, <strong>12</strong> ... MCM = 12 horas.</span>
+            </p>
           </details>
         </div>
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(2)">Back</button>
-          <button class="nav-btn" onclick="goStep(4)">Next Step</button>
+          <button class="nav-btn ghost" onclick="goStep(2)">
+            <span class="en-text">Back</span>
+            <span class="es-text">Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(4)">
+            <span class="en-text">Next Step</span>
+            <span class="es-text">Siguiente Paso</span>
+          </button>
         </div>
       </div>
 
@@ -353,84 +522,183 @@
           <div class="card-header">
             <div class="card-icon gold">💰</div>
             <div>
-              <div class="card-title">Step 3 — Track the Parts Budget</div>
-              <div class="card-sub">Add up parts costs, then divide by number of robots to find cost per robot</div>
+              <div class="card-title">
+                <span class="en-text">Step 3 — Track the Parts Budget</span>
+                <span class="es-text">Paso 3 — Monitorear el Presupuesto de Piezas</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Add up parts costs, then divide by number of robots to find cost per robot</span>
+                <span class="es-text">Suma los costos de las piezas, luego divide entre el número de robots para encontrar el costo por robot</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct gold">
-            <strong>Your job:</strong> Enter what you will spend on motors, sensors, and frames. Add them up, then divide by the number of robots to find the cost per robot.
+            <span class="en-text"><strong>Your job:</strong> Enter what you will spend on motors, sensors, and frames. Add them up, then divide by the number of robots to find the cost per robot.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Ingresa lo que gastarás en motores, sensores y chasis. Súmalos, luego divide entre la cantidad de robots para encontrar el costo por robot.</span>
           </div>
 
           <svg class="visual-svg" viewBox="0 0 520 130" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
-            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Budget = Motors + Sensors + Frames</text>
+            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">Budget = Motors + Sensors + Frames</tspan>
+              <tspan class="es-text">Presupuesto = Motores + Sensores + Chasis</tspan>
+            </text>
             <rect x="20" y="40" width="140" height="70" rx="10" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
             <text x="90" y="66" text-anchor="middle" font-size="20">&#9881;</text>
-            <text x="90" y="86" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Motors</text>
+            <text x="90" y="86" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">Motors</tspan>
+              <tspan class="es-text">Motores</tspan>
+            </text>
             <text x="90" y="102" text-anchor="middle" font-size="10" fill="#c9820f">$___</text>
             <text x="185" y="80" text-anchor="middle" font-size="22" fill="#c9820f" font-weight="bold">+</text>
             <rect x="200" y="40" width="140" height="70" rx="10" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
             <text x="270" y="66" text-anchor="middle" font-size="20">&#128225;</text>
-            <text x="270" y="86" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Sensors</text>
+            <text x="270" y="86" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">Sensors</tspan>
+              <tspan class="es-text">Sensores</tspan>
+            </text>
             <text x="270" y="102" text-anchor="middle" font-size="10" fill="#c9820f">$___</text>
             <text x="365" y="80" text-anchor="middle" font-size="22" fill="#c9820f" font-weight="bold">+</text>
             <rect x="380" y="40" width="130" height="70" rx="10" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
             <text x="445" y="66" text-anchor="middle" font-size="20">&#129470;</text>
-            <text x="445" y="86" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Frames</text>
+            <text x="445" y="86" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">Frames</tspan>
+              <tspan class="es-text">Chasis</tspan>
+            </text>
             <text x="445" y="102" text-anchor="middle" font-size="10" fill="#c9820f">$___</text>
           </svg>
 
           <div class="lvl1-only instruct gold">
-            🟢 <strong>Level 1 tip:</strong> Try round numbers like $60 motors, $35 sensors, $25 frames, 4 robots.
+            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try round numbers like $60 motors, $35 sensors, $25 frames, 4 robots.</span>
+            <span class="es-text">🟢 <strong>Consejo de Nivel 1:</strong> Intenta con números redondos como $60 para motores, $35 para sensores, $25 para chasis, y 4 robots.</span>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="c-motors">Motors cost ($)</label>
+              <label class="lbl" for="c-motors">
+                <span class="en-text">Motors cost ($)</span>
+                <span class="es-text">Costo de motores ($)</span>
+              </label>
               <input type="number" id="c-motors" step="0.01" min="0" placeholder="e.g. 60.00" oninput="calcBudget()" />
             </div>
             <div>
-              <label class="lbl" for="c-sensors">Sensors cost ($)</label>
+              <label class="lbl" for="c-sensors">
+                <span class="en-text">Sensors cost ($)</span>
+                <span class="es-text">Costo de sensores ($)</span>
+              </label>
               <input type="number" id="c-sensors" step="0.01" min="0" placeholder="e.g. 35.00" oninput="calcBudget()" />
             </div>
             <div>
-              <label class="lbl" for="c-frames">Frames cost ($)</label>
+              <label class="lbl" for="c-frames">
+                <span class="en-text">Frames cost ($)</span>
+                <span class="es-text">Costo de chasis ($)</span>
+              </label>
               <input type="number" id="c-frames" step="0.01" min="0" placeholder="e.g. 25.00" oninput="calcBudget()" />
             </div>
             <div>
-              <label class="lbl" for="c-robots">Number of robots</label>
+              <label class="lbl" for="c-robots">
+                <span class="en-text">Number of robots</span>
+                <span class="es-text">Número de robots</span>
+              </label>
               <input type="number" id="c-robots" min="1" placeholder="e.g. 4" oninput="calcBudget()" />
             </div>
           </div>
 
-          <button class="calc-btn gold" onclick="calcBudget()">Calculate Budget and Cost Per Robot</button>
+          <button class="calc-btn gold" onclick="calcBudget()">
+            <span class="en-text">Calculate Budget and Cost Per Robot</span>
+            <span class="es-text">Calcular Presupuesto y Costo por Robot</span>
+          </button>
           <div class="readout" id="budget-out"></div>
 
           <div style="margin-top:22px;">
-            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">Real-World Robotics Kit Prices</h3>
-            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">Here are real robotics kit price ranges. See where your cost per robot lands!</p>
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">
+              <span class="en-text">Real-World Robotics Kit Prices</span>
+              <span class="es-text">Precios de Kits de Robótica del Mundo Real</span>
+            </h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">
+              <span class="en-text">Here are real robotics kit price ranges. See where your cost per robot lands!</span>
+              <span class="es-text">¡Aquí tienes rangos de precios de kits de robótica reales. Observa dónde se ubica tu costo por robot!</span>
+            </p>
             <table class="data-table">
               <thead>
-                <tr><th>Kit Type</th><th>Price Range</th><th>What You Get</th></tr>
+                <tr>
+                  <th>
+                    <span class="en-text">Kit Type</span>
+                    <span class="es-text">Tipo de Kit</span>
+                  </th>
+                  <th>
+                    <span class="en-text">Price Range</span>
+                    <span class="es-text">Rango de Precios</span>
+                  </th>
+                  <th>
+                    <span class="en-text">What You Get</span>
+                    <span class="es-text">Qué Incluye</span>
+                  </th>
+                </tr>
               </thead>
               <tbody>
-                <tr><td>Budget Kit</td><td>$45 – $80</td><td>Basic motors, simple frame, minimal sensors</td></tr>
-                <tr><td>Mid-Range Kit</td><td>$100 – $200</td><td>Multiple sensors, stronger motors, programmable</td></tr>
-                <tr><td>Pro Kit</td><td>$300 – $600</td><td>Advanced AI sensors, metal frame, competition-ready</td></tr>
+                <tr>
+                  <td>
+                    <span class="en-text">Budget Kit</span>
+                    <span class="es-text">Kit Económico</span>
+                  </td>
+                  <td>$45 – $80</td>
+                  <td>
+                    <span class="en-text">Basic motors, simple frame, minimal sensors</span>
+                    <span class="es-text">Motores básicos, chasis simple, sensores mínimos</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="en-text">Mid-Range Kit</span>
+                    <span class="es-text">Kit de Gama Media</span>
+                  </td>
+                  <td>$100 – $200</td>
+                  <td>
+                    <span class="en-text">Multiple sensors, stronger motors, programmable</span>
+                    <span class="es-text">Múltiples sensores, motores más fuertes, programable</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="en-text">Pro Kit</span>
+                    <span class="es-text">Kit Profesional</span>
+                  </td>
+                  <td>$300 – $600</td>
+                  <td>
+                    <span class="en-text">Advanced AI sensors, metal frame, competition-ready</span>
+                    <span class="es-text">Sensores de IA avanzados, chasis metálico, listo para competencia</span>
+                  </td>
+                </tr>
               </tbody>
             </table>
-            <label class="lbl" for="world-compare">Which kit category does your cost per robot match? Write one sentence.</label>
+            <label class="lbl" for="world-compare">
+              <span class="en-text">Which kit category does your cost per robot match? Write one sentence.</span>
+              <span class="es-text">¿Con qué categoría de kit coincide tu costo por robot? Escribe una oración.</span>
+            </label>
             <textarea id="world-compare" placeholder="My cost per robot is $___. This matches the ___ kit because..."></textarea>
           </div>
 
           <details class="hint">
-            <summary>Need a hint for division?</summary>
-            <p>Total Cost / Number of Robots = Cost Per Robot.<br><strong>Example:</strong> $120 / 4 robots = $30.00 per robot.</p>
+            <summary>
+              <span class="en-text">Need a hint for division?</span>
+              <span class="es-text">¿Necesitas una pista para la división?</span>
+            </summary>
+            <p>
+              <span class="en-text">Total Cost / Number of Robots = Cost Per Robot.<br><strong>Example:</strong> $120 / 4 robots = $30.00 per robot.</span>
+              <span class="es-text">Costo Total / Número de Robots = Costo Por Robot.<br><strong>Ejemplo:</strong> $120 / 4 robots = $30.00 por robot.</span>
+            </p>
           </details>
         </div>
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(3)">Back</button>
-          <button class="nav-btn" onclick="goStep(5)">Next Step</button>
+          <button class="nav-btn ghost" onclick="goStep(3)">
+            <span class="en-text">Back</span>
+            <span class="es-text">Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(5)">
+            <span class="en-text">Next Step</span>
+            <span class="es-text">Siguiente Paso</span>
+          </button>
         </div>
       </div>
 
@@ -440,56 +708,105 @@
           <div class="card-header">
             <div class="card-icon teal">👥</div>
             <div>
-              <div class="card-title">Step 4 — Compare With a Partner</div>
-              <div class="card-sub">Interview a classmate and compare your robotics team orders</div>
+              <div class="card-title">
+                <span class="en-text">Step 4 — Compare With a Partner</span>
+                <span class="es-text">Paso 4 — Comparar con un Compañero</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Interview a classmate and compare your robotics team orders</span>
+                <span class="es-text">Entrevista a un compañero de clase y compara los pedidos de tu equipo de robótica</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your job:</strong> Ask a partner these 3 questions. Write their answers below, then press Compare to see the differences.
+            <span class="en-text"><strong>Your job:</strong> Ask a partner these 3 questions. Write their answers below, then press Compare to see the differences.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Hazle a un compañero estas 3 preguntas. Escribe sus respuestas a continuación, luego presiona Comparar para ver las diferencias.</span>
           </div>
 
           <svg class="visual-svg" viewBox="0 0 520 100" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
             <text x="140" y="40" text-anchor="middle" font-size="28">&#128587;</text>
-            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">You</text>
+            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">You</tspan>
+              <tspan class="es-text">Tú</tspan>
+            </text>
             <rect x="185" y="38" width="155" height="30" rx="8" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="1.5"/>
-            <text x="262" y="58" text-anchor="middle" font-size="11" fill="#0e8a7d">"How many kits did you build?"</text>
+            <text x="262" y="58" text-anchor="middle" font-size="11" fill="#0e8a7d">
+              <tspan class="en-text">"How many kits did you build?"</tspan>
+              <tspan class="es-text">"¿Cuántos kits construiste?"</tspan>
+            </text>
             <text x="385" y="40" text-anchor="middle" font-size="28">&#128587;</text>
-            <text x="385" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Partner</text>
+            <text x="385" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">Partner</tspan>
+              <tspan class="es-text">Compañero</tspan>
+            </text>
           </svg>
 
           <div style="background:var(--teal-lt);border-radius:12px;padding:14px 16px;margin-bottom:18px;">
-            <strong style="font-size:14px;color:var(--teal);">Interview Questions — Ask Your Partner:</strong>
+            <strong style="font-size:14px;color:var(--teal);">
+              <span class="en-text">Interview Questions — Ask Your Partner:</span>
+              <span class="es-text">Preguntas de la Entrevista — Hazle a tu Compañero:</span>
+            </strong>
             <ol style="margin-top:8px;font-size:14px;line-height:1.9;padding-left:18px;color:var(--ink);">
-              <li>How many equal tool kits did you build? (GCF result)</li>
-              <li>What is your cost per robot? ($)</li>
-              <li>How much of your total budget is left over?</li>
+              <li>
+                <span class="en-text">How many equal tool kits did you build? (GCF result)</span>
+                <span class="es-text">¿Cuántos kits de herramientas iguales construiste? (Resultado del MCD)</span>
+              </li>
+              <li>
+                <span class="en-text">What is your cost per robot? ($)</span>
+                <span class="es-text">¿Cuál es tu costo por robot? ($)</span>
+              </li>
+              <li>
+                <span class="en-text">How much of your total budget is left over?</span>
+                <span class="es-text">¿Cuánto te sobró de tu presupuesto total?</span>
+              </li>
             </ol>
           </div>
 
-          <label class="lbl" for="p-name">Partner's name or initials</label>
+          <label class="lbl" for="p-name">
+            <span class="en-text">Partner's name or initials</span>
+            <span class="es-text">Nombre o iniciales del compañero</span>
+          </label>
           <input type="text" id="p-name" placeholder="e.g. Jordan" />
 
           <div class="grid2" style="margin-top:4px;">
             <div>
-              <label class="lbl" for="p-kits">Partner's number of tool kits</label>
+              <label class="lbl" for="p-kits">
+                <span class="en-text">Partner's number of tool kits</span>
+                <span class="es-text">Número de kits de herramientas del compañero</span>
+              </label>
               <input type="number" id="p-kits" min="0" oninput="comparePeer()" placeholder="" />
             </div>
             <div>
-              <label class="lbl" for="p-per">Partner's cost per robot ($)</label>
+              <label class="lbl" for="p-per">
+                <span class="en-text">Partner's cost per robot ($)</span>
+                <span class="es-text">Costo por robot del compañero ($)</span>
+              </label>
               <input type="number" id="p-per" step="0.01" min="0" oninput="comparePeer()" placeholder="" />
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="comparePeer()">Compare Our Teams</button>
+          <button class="calc-btn teal" onclick="comparePeer()">
+            <span class="en-text">Compare Our Teams</span>
+            <span class="es-text">Comparar Nuestros Equipos</span>
+          </button>
           <div class="readout" id="peer-out"></div>
 
-          <label class="lbl" for="peer-reflect" style="margin-top:18px;">Whose team used the budget more efficiently? Explain using your numbers.</label>
+          <label class="lbl" for="peer-reflect" style="margin-top:18px;">
+            <span class="en-text">Whose team used the budget more efficiently? Explain using your numbers.</span>
+            <span class="es-text">¿El equipo de quién usó el presupuesto de manera más eficiente? Explica usando tus números.</span>
+          </label>
           <textarea id="peer-reflect" placeholder="My team had ___ kits and $__ per robot. My partner had... I think ___ used the budget more efficiently because..."></textarea>
         </div>
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(4)">Back</button>
-          <button class="nav-btn green" onclick="goStep(6)">Next Step</button>
+          <button class="nav-btn ghost" onclick="goStep(4)">
+            <span class="en-text">Back</span>
+            <span class="es-text">Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="goStep(6)">
+            <span class="en-text">Next Step</span>
+            <span class="es-text">Siguiente Paso</span>
+          </button>
         </div>
       </div>
 
@@ -499,53 +816,213 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">Step 5 — Finish and Submit</div>
-              <div class="card-sub">Write your pitch, check the list, get your score</div>
+              <div class="card-title">
+                <span class="en-text">Step 5 — Finish and Submit</span>
+                <span class="es-text">Paso 5 — Finalizar y Enviar</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Write your pitch, check the list, get your score</span>
+                <span class="es-text">Escribe tu presentación, marca la lista, obtén tu puntuación</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct green">
-            <strong>Your job:</strong> Write 3–5 sentences pitching your robotics team plan using your real numbers. Then check off everything you completed.
+            <span class="en-text"><strong>Your job:</strong> Write 3–5 sentences pitching your robotics team plan using your real numbers. Then check off everything you completed.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Escribe de 3 a 5 oraciones presentando el plan de tu equipo de robótica usando tus números reales. Luego marca todo lo que completaste.</span>
           </div>
 
-          <label class="lbl" for="pitch">Your Robotics Team Pitch (use your real numbers!)</label>
+          <label class="lbl" for="pitch">
+            <span class="en-text">Your Robotics Team Pitch (use your real numbers!)</span>
+            <span class="es-text">Tu Presentación del Equipo de Robótica (¡usa tus números reales!)</span>
+          </label>
           <textarea id="pitch" placeholder="My robotics team plan uses math to keep everything fair and on budget. I built ___ equal tool kits by finding the GCF of ___ cables and ___ sensors. My two robots sync charges every ___ hours (LCM). My total parts budget is $___, which comes out to $___ per robot..."></textarea>
 
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">Checklist — Check off everything you completed</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+            <span class="en-text">Checklist — Check off everything you completed</span>
+            <span class="es-text">Lista de verificación — Marca todo lo que completaste</span>
+          </h3>
           <ul class="checklist" id="checklist">
-            <li><input type="checkbox" id="ck1" /> I found the GCF to build equal tool kits.</li>
-            <li><input type="checkbox" id="ck2" /> I found the LCM to sync the charging schedule.</li>
-            <li><input type="checkbox" id="ck3" /> I calculated my total parts budget and cost per robot.</li>
-            <li><input type="checkbox" id="ck4" /> I compared my cost per robot to the real robotics kit prices.</li>
-            <li><input type="checkbox" id="ck5" /> I interviewed a partner and compared our team orders.</li>
-            <li><input type="checkbox" id="ck6" /> I wrote a pitch using my real numbers.</li>
+            <li>
+              <input type="checkbox" id="ck1" />
+              <span class="en-text">I found the GCF to build equal tool kits.</span>
+              <span class="es-text">Encontré el MCD para construir kits de herramientas iguales.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck2" />
+              <span class="en-text">I found the LCM to sync the charging schedule.</span>
+              <span class="es-text">Encontré el MCM para sincronizar el horario de carga.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck3" />
+              <span class="en-text">I calculated my total parts budget and cost per robot.</span>
+              <span class="es-text">Calculé mi presupuesto total de piezas y el costo por robot.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck4" />
+              <span class="en-text">I compared my cost per robot to the real robotics kit prices.</span>
+              <span class="es-text">Comparé mi costo por robot con los precios de kits de robótica reales.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck5" />
+              <span class="en-text">I interviewed a partner and compared our team orders.</span>
+              <span class="es-text">Entrevisté a un compañero y comparé nuestros pedidos de equipo.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck6" />
+              <span class="en-text">I wrote a pitch using my real numbers.</span>
+              <span class="es-text">Escribí una presentación usando mis números reales.</span>
+            </li>
           </ul>
 
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">How You Are Scored</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+            <span class="en-text">How You Are Scored</span>
+            <span class="es-text">Cómo te Evaluamos</span>
+          </h3>
           <table class="rubric">
             <thead>
-              <tr><th>Skill</th><th class="score-4">4 — Expert</th><th class="score-3">3 — Proficient</th><th class="score-2">2 — Developing</th></tr>
+              <tr>
+                <th>
+                  <span class="en-text">Skill</span>
+                  <span class="es-text">Habilidad</span>
+                </th>
+                <th class="score-4">
+                  <span class="en-text">4 — Expert</span>
+                  <span class="es-text">4 — Experto</span>
+                </th>
+                <th class="score-3">
+                  <span class="en-text">3 — Proficient</span>
+                  <span class="es-text">3 — Competente</span>
+                </th>
+                <th class="score-2">
+                  <span class="en-text">2 — Developing</span>
+                  <span class="es-text">2 — En Desarrollo</span>
+                </th>
+              </tr>
             </thead>
             <tbody>
-              <tr><td><strong>GCF / LCM</strong></td><td>Both correct with explanation</td><td>Both correct</td><td>One correct</td></tr>
-              <tr><td><strong>Decimal Budget</strong></td><td>All costs correct, under budget</td><td>Total is accurate</td><td>Small decimal error</td></tr>
-              <tr><td><strong>Division</strong></td><td>Cost per robot correct + reasoning</td><td>Cost per robot correct</td><td>Setup correct, computation error</td></tr>
-              <tr><td><strong>Comparison</strong></td><td>Compares partner + kit price data with reasoning</td><td>Both comparisons present</td><td>At least one comparison</td></tr>
-              <tr><td><strong>Pitch</strong></td><td>Uses all real numbers, clear reasoning</td><td>Uses most numbers</td><td>Written but incomplete</td></tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">GCF / LCM</span>
+                  <span class="es-text">MCD / MCM</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Both correct with explanation</span>
+                  <span class="es-text">Ambos correctos con explicación</span>
+                </td>
+                <td>
+                  <span class="en-text">Both correct</span>
+                  <span class="es-text">Ambos correctos</span>
+                </td>
+                <td>
+                  <span class="en-text">One correct</span>
+                  <span class="es-text">Uno correcto</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Decimal Budget</span>
+                  <span class="es-text">Presupuesto Decimal</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">All costs correct, under budget</span>
+                  <span class="es-text">Todos los costos correctos, dentro del presupuesto</span>
+                </td>
+                <td>
+                  <span class="en-text">Total is accurate</span>
+                  <span class="es-text">El total es preciso</span>
+                </td>
+                <td>
+                  <span class="en-text">Small decimal error</span>
+                  <span class="es-text">Pequeño error decimal</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Division</span>
+                  <span class="es-text">División</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Cost per robot correct + reasoning</span>
+                  <span class="es-text">Costo por robot correcto + razonamiento</span>
+                </td>
+                <td>
+                  <span class="en-text">Cost per robot correct</span>
+                  <span class="es-text">Costo por robot correcto</span>
+                </td>
+                <td>
+                  <span class="en-text">Setup correct, computation error</span>
+                  <span class="es-text">Planteamiento correcto, error de cálculo</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Comparison</span>
+                  <span class="es-text">Comparación</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Compares partner + kit price data with reasoning</span>
+                  <span class="es-text">Compara con el compañero + datos de precios de kits con razonamiento</span>
+                </td>
+                <td>
+                  <span class="en-text">Both comparisons present</span>
+                  <span class="es-text">Ambas comparaciones presentes</span>
+                </td>
+                <td>
+                  <span class="en-text">At least one comparison</span>
+                  <span class="es-text">Al menos una comparación</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Pitch</span>
+                  <span class="es-text">Presentación</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Uses all real numbers, clear reasoning</span>
+                  <span class="es-text">Usa todos los números reales, razonamiento claro</span>
+                </td>
+                <td>
+                  <span class="en-text">Uses most numbers</span>
+                  <span class="es-text">Usa la mayoría de los números</span>
+                </td>
+                <td>
+                  <span class="en-text">Written but incomplete</span>
+                  <span class="es-text">Escrita pero incompleta</span>
+                </td>
+              </tr>
             </tbody>
           </table>
 
           <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
-            <button class="calc-btn" onclick="buildReport()">Generate Summary</button>
-            <button class="export-btn" onclick="copyReport()">Copy</button>
-            <button class="export-btn" onclick="downloadTxt()">Download .txt</button>
-            <button class="export-btn" onclick="window.print()">Print</button>
+            <button class="calc-btn" onclick="buildReport()">
+              <span class="en-text">Generate Summary</span>
+              <span class="es-text">Generar Resumen</span>
+            </button>
+            <button class="export-btn" onclick="copyReport()">
+              <span class="en-text">Copy</span>
+              <span class="es-text">Copiar</span>
+            </button>
+            <button class="export-btn" onclick="downloadTxt()">
+              <span class="en-text">Download .txt</span>
+              <span class="es-text">Descargar .txt</span>
+            </button>
+            <button class="export-btn" onclick="window.print()">
+              <span class="en-text">Print</span>
+              <span class="es-text">Imprimir</span>
+            </button>
           </div>
           <pre class="report-box" id="reportBox"></pre>
         </div>
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(5)">Back</button>
-          <button class="nav-btn green" onclick="alert('Great work! Show this page to your teacher.')">I am Done!</button>
+          <button class="nav-btn ghost" onclick="goStep(5)">
+            <span class="en-text">Back</span>
+            <span class="es-text">Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="alert(document.body.classList.contains('es') ? '¡Excelente trabajo! Muéstrale esta página a tu profesor.' : 'Great work! Show this page to your teacher.')">
+            <span class="en-text">I am Done!</span>
+            <span class="es-text">¡He terminado!</span>
+          </button>
         </div>
       </div>
 
@@ -555,17 +1032,20 @@
     <script src="/assets/app.js" defer></script>
     <script>
       const STEPS = [
-        { id: 1, label: 'Key Words', icon: '📖' },
-        { id: 2, label: 'Tool Kits', icon: '🧰' },
-        { id: 3, label: 'Charging',  icon: '🔋' },
-        { id: 4, label: 'Budget',    icon: '💰' },
-        { id: 5, label: 'Compare',   icon: '👥' },
-        { id: 6, label: 'Finish',    icon: '🏆' },
+        { id: 1, label: 'Key Words', labelEs: 'Palabras Clave', icon: '📖' },
+        { id: 2, label: 'Tool Kits', labelEs: 'Kits de Herramientas', icon: '🧰' },
+        { id: 3, label: 'Charging',  labelEs: 'Carga', icon: '🔋' },
+        { id: 4, label: 'Budget',    labelEs: 'Presupuesto', icon: '💰' },
+        { id: 5, label: 'Compare',   labelEs: 'Comparar', icon: '👥' },
+        { id: 6, label: 'Finish',    labelEs: 'Finalizar', icon: '🏆' },
       ];
       let currentStep = 1;
       const visited = new Set([1]);
 
       function setLevel(n) {
+        if (window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+        }
         document.getElementById('body').className = 'level-' + n;
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
@@ -573,18 +1053,23 @@
 
       function buildTrail() {
         const trail = document.getElementById('stepTrail');
+        const isEs = document.body.classList.contains('es');
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
           const isDone = visited.has(s.id) && s.id !== currentStep;
+          const label = isEs ? s.labelEs : s.label;
           return '<span class="step-trail-item' + (s.id === currentStep ? ' active' : '') + (isDone ? ' done' : '') + '" onclick="goStep(' + s.id + ')">'
             + '<span class="s-num">' + (isDone ? '&#x2713;' : s.id) + '</span>'
-            + '<span class="s-label">' + s.label + '</span>'
+            + '<span class="s-label">' + label + '</span>'
             + '</span>' + (!isLast ? '<span class="step-arrow">&#x203A;</span>' : '');
         }).join('');
       }
 
       function goStep(n) {
         if (n < 1 || n > STEPS.length) return;
+        if (window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+        }
         document.getElementById('step-' + currentStep).classList.remove('active');
         currentStep = n;
         visited.add(n);
@@ -597,7 +1082,10 @@
       function updateProgress() {
         var pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
         document.getElementById('progFill').style.width = pct + '%';
-        document.getElementById('progLabel').textContent = 'Step ' + currentStep + ' of ' + STEPS.length;
+        const isEs = document.body.classList.contains('es');
+        document.getElementById('progLabel').textContent = isEs 
+          ? 'Paso ' + currentStep + ' de ' + STEPS.length 
+          : 'Step ' + currentStep + ' of ' + STEPS.length;
       }
 
       function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
@@ -618,29 +1106,47 @@
         var b = parseInt(document.getElementById('g-sensors').value);
         var sc = document.getElementById('gcf-svg-cables');
         var ss = document.getElementById('gcf-svg-sensors');
+        const isEs = document.body.classList.contains('es');
         if (sc && !isNaN(a)) sc.textContent = a + ' cables';
-        if (ss && !isNaN(b)) ss.textContent = b + ' sensors';
+        if (ss && !isNaN(b)) ss.textContent = b + (isEs ? ' sensores' : ' sensors');
         if (isNaN(a) || isNaN(b) || a < 1 || b < 1) return;
         var g = gcd(a, b);
-        showReadout('gcf-out',
-          '<strong>GCF of ' + a + ' and ' + b + ' = ' + g + ' equal tool kits</strong><br>' +
-          'Each kit gets <strong>' + Math.floor(a/g) + ' cables</strong> and <strong>' + Math.floor(b/g) + ' sensors</strong>.<br>' +
-          '<small>Factors of ' + a + ': ' + getFactors(a).join(', ') + ' &nbsp;|&nbsp; Factors of ' + b + ': ' + getFactors(b).join(', ') + '</small>'
-        );
+        if (isEs) {
+          showReadout('gcf-out',
+            '<strong>MCD de ' + a + ' y ' + b + ' = ' + g + ' kits de herramientas iguales</strong><br>' +
+            'Cada kit recibe <strong>' + Math.floor(a/g) + ' cables</strong> y <strong>' + Math.floor(b/g) + ' sensores</strong>.<br>' +
+            '<small>Factores de ' + a + ': ' + getFactors(a).join(', ') + ' &nbsp;|&nbsp; Factores de ' + b + ': ' + getFactors(b).join(', ') + '</small>'
+          );
+        } else {
+          showReadout('gcf-out',
+            '<strong>GCF of ' + a + ' and ' + b + ' = ' + g + ' equal tool kits</strong><br>' +
+            'Each kit gets <strong>' + Math.floor(a/g) + ' cables</strong> and <strong>' + Math.floor(b/g) + ' sensors</strong>.<br>' +
+            '<small>Factors of ' + a + ': ' + getFactors(a).join(', ') + ' &nbsp;|&nbsp; Factors of ' + b + ': ' + getFactors(b).join(', ') + '</small>'
+          );
+        }
       }
 
       function calcLCM() {
         var a = parseInt(document.getElementById('l-robotA').value);
         var b = parseInt(document.getElementById('l-robotB').value);
+        const isEs = document.body.classList.contains('es');
         if (isNaN(a) || isNaN(b) || a < 1 || b < 1) return;
         var l = lcm(a, b);
         var am = [], bm = [];
         for (var i = 1; i <= 6; i++) { am.push(a*i); bm.push(b*i); }
-        showReadout('lcm-out',
-          '<strong>LCM of ' + a + ' and ' + b + ' = ' + l + ' hours</strong><br>' +
-          'Both robots will be fully charged at the same time at hour <strong>' + l + '</strong>!<br>' +
-          '<small>Robot A (x' + a + '): ' + am.join(', ') + '... &nbsp;|&nbsp; Robot B (x' + b + '): ' + bm.join(', ') + '...</small>'
-        );
+        if (isEs) {
+          showReadout('lcm-out',
+            '<strong>MCM de ' + a + ' y ' + b + ' = ' + l + ' horas</strong><br>' +
+            '¡Ambos robots estarán completamente cargados al mismo tiempo en la hora <strong>' + l + '</strong>!<br>' +
+            '<small>Robot A (x' + a + '): ' + am.join(', ') + '... &nbsp;|&nbsp; Robot B (x' + b + '): ' + bm.join(', ') + '...</small>'
+          );
+        } else {
+          showReadout('lcm-out',
+            '<strong>LCM of ' + a + ' and ' + b + ' = ' + l + ' hours</strong><br>' +
+            'Both robots will be fully charged at the same time at hour <strong>' + l + '</strong>!<br>' +
+            '<small>Robot A (x' + a + '): ' + am.join(', ') + '... &nbsp;|&nbsp; Robot B (x' + b + '): ' + bm.join(', ') + '...</small>'
+          );
+        }
       }
 
       function calcBudget() {
@@ -649,17 +1155,30 @@
         var frames  = parseFloat(document.getElementById('c-frames').value)  || 0;
         var robots  = parseInt(document.getElementById('c-robots').value);
         var total   = motors + sensors + frames;
+        const isEs = document.body.classList.contains('es');
         if (total === 0) return;
         if (isNaN(robots) || robots < 1) {
-          showReadout('budget-out', '<strong>Total parts cost: $' + total.toFixed(2) + '</strong><br>Enter the number of robots to find cost per robot.');
+          if (isEs) {
+            showReadout('budget-out', '<strong>Costo total de piezas: $' + total.toFixed(2) + '</strong><br>Ingresa el número de robots para encontrar el costo por robot.');
+          } else {
+            showReadout('budget-out', '<strong>Total parts cost: $' + total.toFixed(2) + '</strong><br>Enter the number of robots to find cost per robot.');
+          }
           return;
         }
         var perRobot = total / robots;
-        showReadout('budget-out',
-          '<strong>Total parts cost: $' + total.toFixed(2) + '</strong><br>' +
-          'Cost per robot: <strong>$' + perRobot.toFixed(2) + '</strong> ($' + total.toFixed(2) + ' / ' + robots + ' robots)<br>' +
-          '<small>Motors $' + motors.toFixed(2) + ' + Sensors $' + sensors.toFixed(2) + ' + Frames $' + frames.toFixed(2) + ' = $' + total.toFixed(2) + '</small>'
-        );
+        if (isEs) {
+          showReadout('budget-out',
+            '<strong>Costo total de piezas: $' + total.toFixed(2) + '</strong><br>' +
+            'Costo por robot: <strong>$' + perRobot.toFixed(2) + '</strong> ($' + total.toFixed(2) + ' / ' + robots + ' robots)<br>' +
+            '<small>Motores $' + motors.toFixed(2) + ' + Sensores $' + sensors.toFixed(2) + ' + Chasis $' + frames.toFixed(2) + ' = $' + total.toFixed(2) + '</small>'
+          );
+        } else {
+          showReadout('budget-out',
+            '<strong>Total parts cost: $' + total.toFixed(2) + '</strong><br>' +
+            'Cost per robot: <strong>$' + perRobot.toFixed(2) + '</strong> ($' + total.toFixed(2) + ' / ' + robots + ' robots)<br>' +
+            '<small>Motors $' + motors.toFixed(2) + ' + Sensors $' + sensors.toFixed(2) + ' + Frames $' + frames.toFixed(2) + ' = $' + total.toFixed(2) + '</small>'
+          );
+        }
       }
 
       function comparePeer() {
@@ -675,16 +1194,29 @@
         var pPer  = parseFloat(document.getElementById('p-per').value);
         if (isNaN(pKits) || isNaN(pPer)) return;
         var html = '';
+        const isEs = document.body.classList.contains('es');
+        
         if (myKits !== null) {
           var diff = myKits - pKits;
-          html += '<strong>Tool Kits:</strong> You built <strong>' + myKits + '</strong>, partner built <strong>' + pKits + '</strong> — ' +
-            (diff > 0 ? 'You built ' + diff + ' more.' : diff < 0 ? 'Partner built ' + Math.abs(diff) + ' more.' : 'Same number!');
+          if (isEs) {
+            html += '<strong>Kits de herramientas:</strong> Tú construiste <strong>' + myKits + '</strong>, tu compañero construyó <strong>' + pKits + '</strong> — ' +
+              (diff > 0 ? 'Tú construiste ' + diff + ' más.' : diff < 0 ? 'Tu compañero construyó ' + Math.abs(diff) + ' más.' : '¡La misma cantidad!');
+          } else {
+            html += '<strong>Tool Kits:</strong> You built <strong>' + myKits + '</strong>, partner built <strong>' + pKits + '</strong> — ' +
+              (diff > 0 ? 'You built ' + diff + ' more.' : diff < 0 ? 'Partner built ' + Math.abs(diff) + ' more.' : 'Same number!');
+          }
         }
         if (myPer !== null) {
           var diff2 = (myPer - pPer).toFixed(2);
-          html += '<br><strong>Cost Per Robot:</strong> You: <strong>$' + myPer.toFixed(2) + '</strong>, Partner: <strong>$' + pPer.toFixed(2) + '</strong> — ' +
-            (parseFloat(diff2) < 0 ? 'Your team costs $' + Math.abs(diff2) + ' less per robot.' :
-             parseFloat(diff2) > 0 ? "Partner's team costs $" + Math.abs(diff2) + ' less per robot.' : 'Same cost!');
+          if (isEs) {
+            html += '<br><strong>Costo por robot:</strong> Tú: <strong>$' + myPer.toFixed(2) + '</strong>, Compañero: <strong>$' + pPer.toFixed(2) + '</strong> — ' +
+              (parseFloat(diff2) < 0 ? 'Tu equipo cuesta $' + Math.abs(diff2) + ' menos por robot.' :
+               parseFloat(diff2) > 0 ? 'El equipo de tu compañero cuesta $' + Math.abs(diff2) + ' menos por robot.' : '¡El mismo costo!');
+          } else {
+            html += '<br><strong>Cost Per Robot:</strong> You: <strong>$' + myPer.toFixed(2) + '</strong>, Partner: <strong>$' + pPer.toFixed(2) + '</strong> — ' +
+              (parseFloat(diff2) < 0 ? 'Your team costs $' + Math.abs(diff2) + ' less per robot.' :
+               parseFloat(diff2) > 0 ? "Partner's team costs $" + Math.abs(diff2) + ' less per robot.' : 'Same cost!');
+          }
         }
         if (html) showReadout('peer-out', html);
       }
@@ -706,35 +1238,70 @@
         var perRobot = robots ? (total / parseFloat(robots)).toFixed(2) : '-';
         var g = (cables && sens) ? gcd(parseInt(cables), parseInt(sens)) : '-';
         var l = (robotA && robotB) ? lcm(parseInt(robotA), parseInt(robotB)) : '-';
-        var lines = [
-          '=== BUILD-A-BOT BUDGET LAB -- UNIT 1 PROJECT (Version B) ===',
-          '',
-          'MATH SKILLS USED: GCF, LCM, Decimal Operations, Division',
-          '',
-          'STEP 1 -- EQUAL TOOL KITS (GCF)',
-          '   Cables: ' + (cables || '-') + ' | Sensors: ' + (sens || '-'),
-          '   GCF = ' + g + ' equal tool kits',
-          '',
-          'STEP 2 -- CHARGING SCHEDULE (LCM)',
-          '   Robot A charges every: ' + (robotA || '-') + ' hrs | Robot B charges every: ' + (robotB || '-') + ' hrs',
-          '   LCM = Both robots sync at hour ' + l,
-          '',
-          'STEP 3 -- PARTS BUDGET',
-          '   Motors: $' + (motors || '-') + ' | Sensors: $' + (sensorC || '-') + ' | Frames: $' + (frames || '-'),
-          '   Total: $' + total.toFixed(2) + ' | Robots: ' + (robots || '-'),
-          '   Cost per robot: $' + perRobot,
-          worldNote ? '   Kit comparison note: ' + worldNote : '',
-          '',
-          'STEP 4 -- PARTNER COMPARISON',
-          '   Partner: ' + (partner || '-'),
-          pReflect ? '   Reflection: ' + pReflect : '',
-          '',
-          'MY PITCH:',
-          pitch || '(no pitch written)',
-          '',
-          '===================================',
-          'Generated: ' + new Date().toLocaleDateString(),
-        ];
+        const isEs = document.body.classList.contains('es');
+        var lines;
+        
+        if (isEs) {
+          lines = [
+            '=== LABORATORIO DE PRESUPUESTO PARA CONSTRUIR UN ROBOT -- PROYECTO UNIDAD 1 (Versión B) ===',
+            '',
+            'HABILIDADES MATEMÁTICAS UTILIZADAS: MCD, MCM, Operaciones con Decimales, División',
+            '',
+            'PASO 1 -- KITS DE HERRAMIENTAS IGUALES (MCD)',
+            '   Cables: ' + (cables || '-') + ' | Sensores: ' + (sens || '-'),
+            '   MCD = ' + g + ' kits de herramientas iguales',
+            '',
+            'PASO 2 -- HORARIO DE CARGA (MCM)',
+            '   El Robot A se carga cada: ' + (robotA || '-') + ' hrs | El Robot B se carga cada: ' + (robotB || '-') + ' hrs',
+            '   MCM = Ambos robots se sincronizan en la hora ' + l,
+            '',
+            'PASO 3 -- PRESUPUESTO DE PIEZAS',
+            '   Motores: $' + (motors || '-') + ' | Sensores: $' + (sensorC || '-') + ' | Chasis: $' + (frames || '-'),
+            '   Total: $' + total.toFixed(2) + ' | Robots: ' + (robots || '-'),
+            '   Costo por robot: $' + perRobot,
+            worldNote ? '   Nota de comparación de kit: ' + worldNote : '',
+            '',
+            'PASO 4 -- COMPARACIÓN CON COMPAÑERO',
+            '   Compañero: ' + (partner || '-'),
+            pReflect ? '   Reflexión: ' + pReflect : '',
+            '',
+            'MI PRESENTACIÓN (PITCH):',
+            pitch || '(no se escribió ninguna presentación)',
+            '',
+            '===================================',
+            'Generado: ' + new Date().toLocaleDateString(),
+          ];
+        } else {
+          lines = [
+            '=== BUILD-A-BOT BUDGET LAB -- UNIT 1 PROJECT (Version B) ===',
+            '',
+            'MATH SKILLS USED: GCF, LCM, Decimal Operations, Division',
+            '',
+            'STEP 1 -- EQUAL TOOL KITS (GCF)',
+            '   Cables: ' + (cables || '-') + ' | Sensors: ' + (sens || '-'),
+            '   GCF = ' + g + ' equal tool kits',
+            '',
+            'STEP 2 -- CHARGING SCHEDULE (LCM)',
+            '   Robot A charges every: ' + (robotA || '-') + ' hrs | Robot B charges every: ' + (robotB || '-') + ' hrs',
+            '   LCM = Both robots sync at hour ' + l,
+            '',
+            'STEP 3 -- PARTS BUDGET',
+            '   Motors: $' + (motors || '-') + ' | Sensors: $' + (sensorC || '-') + ' | Frames: $' + (frames || '-'),
+            '   Total: $' + total.toFixed(2) + ' | Robots: ' + (robots || '-'),
+            '   Cost per robot: $' + perRobot,
+            worldNote ? '   Kit comparison note: ' + worldNote : '',
+            '',
+            'STEP 4 -- PARTNER COMPARISON',
+            '   Partner: ' + (partner || '-'),
+            pReflect ? '   Reflection: ' + pReflect : '',
+            '',
+            'MY PITCH:',
+            pitch || '(no pitch written)',
+            '',
+            '===================================',
+            'Generated: ' + new Date().toLocaleDateString(),
+          ];
+        }
         var box = document.getElementById('reportBox');
         box.textContent = lines.join('\n');
         box.classList.add('show');
@@ -742,8 +1309,11 @@
 
       function copyReport() {
         var txt = document.getElementById('reportBox').textContent;
+        const isEs = document.body.classList.contains('es');
         if (navigator.clipboard) {
-          navigator.clipboard.writeText(txt).then(function() { alert('Copied to clipboard!'); });
+          navigator.clipboard.writeText(txt).then(function() { 
+            alert(isEs ? '¡Copiado al portapapeles!' : 'Copied to clipboard!'); 
+          });
         }
       }
 
@@ -755,8 +1325,121 @@
         a.click();
       }
 
-      buildTrail();
-      updateProgress();
+      function toggleLanguage() {
+        if (window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+        }
+        const isEs = document.body.classList.toggle('es');
+        document.getElementById('btn-lang').textContent = isEs ? '🌐 Idioma: ES' : '🌐 Language: EN';
+        document.getElementById('btn-read').textContent = isEs ? '🔊 Leer en Voz Alta' : '🔊 Read Aloud';
+        updateDynamicTexts();
+      }
+
+      function updateDynamicTexts() {
+        const isEs = document.body.classList.contains('es');
+        
+        // Update document title and description
+        document.title = isEs 
+          ? 'Laboratorio de Presupuesto para Construir un Robot — Proyecto Final de la Unidad 1' 
+          : 'Build-a-Bot Budget Lab — Unit 1 Culminating Project';
+        const descEl = document.querySelector('meta[name="description"]');
+        if (descEl) {
+          descEl.content = isEs
+            ? 'Proyecto final de sentido numérico de la Unidad 1. Construye un equipo de robótica usando MCD, MCM, operaciones con decimales y división. Guía simple paso a paso basada en pestañas.'
+            : 'Unit 1 Number Sense culminating project. Build a robotics team using GCF, LCM, decimal operations, and division. Simple step-by-step, tab-based guide.';
+        }
+
+        // Update placeholders
+        document.getElementById('g-cables').placeholder = isEs ? 'ej. 18' : 'e.g. 18';
+        document.getElementById('g-sensors').placeholder = isEs ? 'ej. 24' : 'e.g. 24';
+        
+        const distrib = document.getElementById('distrib');
+        if (distrib) distrib.placeholder = isEs ? 'ej. 18 + 24 = 6 x (3 + 4)' : 'e.g.  18 + 24 = 6 x (3 + 4)';
+        
+        document.getElementById('l-robotA').placeholder = isEs ? 'ej. 3' : 'e.g. 3';
+        document.getElementById('l-robotB').placeholder = isEs ? 'ej. 4' : 'e.g. 4';
+        document.getElementById('c-motors').placeholder = isEs ? 'ej. 60.00' : 'e.g. 60.00';
+        document.getElementById('c-sensors').placeholder = isEs ? 'ej. 35.00' : 'e.g. 35.00';
+        document.getElementById('c-frames').placeholder = isEs ? 'ej. 25.00' : 'e.g. 25.00';
+        document.getElementById('c-robots').placeholder = isEs ? 'ej. 4' : 'e.g. 4';
+        
+        document.getElementById('world-compare').placeholder = isEs 
+          ? 'Mi costo por robot es de $___. Esto coincide con el kit de tipo ___ porque...' 
+          : 'My cost per robot is $___. This matches the ___ kit because...';
+          
+        document.getElementById('p-name').placeholder = isEs ? 'ej. Jordan' : 'e.g. Jordan';
+        
+        document.getElementById('peer-reflect').placeholder = isEs 
+          ? 'Mi equipo tuvo ___ kits y $___ por robot. Mi compañero tuvo... Creo que ___ usó el presupuesto de manera más eficiente porque...' 
+          : 'My team had ___ kits and $__ per robot. My partner had... I think ___ used the budget more efficiently because...';
+          
+        document.getElementById('pitch').placeholder = isEs 
+          ? 'El plan de mi equipo de robótica usa matemáticas para mantener todo justo y dentro del presupuesto. Construí ___ kits de herramientas iguales al encontrar el MCD de ___ cables y ___ sensores. Mis dos robots sincronizan sus cargas cada ___ horas (MCM). Mi presupuesto total de piezas es de $___, lo que equivale a $___ por robot...' 
+          : 'My robotics team plan uses math to keep everything fair and on budget. I built ___ equal tool kits by finding the GCF of ___ cables and ___ sensors. My two robots sync charges every ___ hours (LCM). My total parts budget is $___, which comes out to $___ per robot...';
+          
+        buildTrail();
+        updateProgress();
+        
+        // Re-calculate readouts with active language settings
+        calcGCF();
+        calcLCM();
+        calcBudget();
+        comparePeer();
+      }
+
+      function readAloud() {
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          return;
+        }
+        const isEs = document.body.classList.contains('es');
+        const activePanel = document.querySelector('.step-panel.active');
+        if (!activePanel) return;
+        
+        // Select all elements with class .en-text or .es-text inside the active panel
+        const selector = isEs ? '.es-text' : '.en-text';
+        const spans = activePanel.querySelectorAll(selector);
+        let texts = [];
+        
+        spans.forEach(span => {
+          // Check if parent or grandparent is hidden
+          let parent = span.parentElement;
+          let isHidden = false;
+          while (parent && parent !== activePanel) {
+            const style = window.getComputedStyle(parent);
+            if (style.display === 'none') {
+              isHidden = true;
+              break;
+            }
+            parent = parent.parentElement;
+          }
+          if (!isHidden) {
+            texts.push(span.textContent.trim());
+          }
+        });
+        
+        const fullText = texts.filter(t => t.length > 0).join(' ');
+        if (!fullText) return;
+        
+        const utterance = new SpeechSynthesisUtterance(fullText);
+        utterance.lang = isEs ? 'es-ES' : 'en-US';
+        
+        const btn = document.getElementById('btn-read');
+        const origText = btn.textContent;
+        btn.textContent = isEs ? '⏹️ Detener' : '⏹️ Stop';
+        
+        utterance.onend = function() {
+          btn.textContent = origText;
+        };
+        utterance.onerror = function() {
+          btn.textContent = origText;
+        };
+        
+        window.speechSynthesis.speak(utterance);
+      }
+
+      // Initialize
+      updateDynamicTexts();
     </script>
   </body>
 </html>

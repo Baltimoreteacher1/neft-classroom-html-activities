@@ -256,6 +256,11 @@
       body.level-2 .lvl2-only { display: block; }
       body.level-2 .lvl2-block { border-color: var(--blue); }
 
+      /* ---- Bilingual toggles ---- */
+      body.es .en-text { display: none !important; }
+      body.es .es-text { display: inline !important; }
+      span.es-text { display: none; }
+
       /* ---- Vocab cards ---- */
       .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
       .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
@@ -281,18 +286,40 @@
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
       <div class="hero-emoji">🏆</div>
-      <h1>Sports Stats Scout</h1>
-      <p class="hero-sub">Scout athletes and analyze performance using ratios, rates, and projections.</p>
+      <h1>
+        <span class="en-text">Sports Stats Scout</span>
+        <span class="es-text">Explorador de Estadísticas Deportivas</span>
+      </h1>
+      <p class="hero-sub">
+        <span class="en-text">Scout athletes and analyze performance using ratios, rates, and projections.</span>
+        <span class="es-text">Evalúa atletas y analiza el rendimiento usando razones, tasas y proyecciones.</span>
+      </p>
       <div class="hero-tags">
-        <span class="tag gold">Unit 3 · Ratios &amp; Rates</span>
+        <span class="tag gold">
+          <span class="en-text">Unit 3 · Ratios &amp; Rates</span>
+          <span class="es-text">Unidad 3 · Razones y Tasas</span>
+        </span>
         <span class="tag">6.RP.1</span>
         <span class="tag">6.RP.2</span>
         <span class="tag">6.RP.3a</span>
-        <span class="tag">Version B</span>
+        <span class="tag">
+          <span class="en-text">Version B</span>
+          <span class="es-text">Versión B</span>
+        </span>
       </div>
       <div class="level-bar">
-        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
-        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
+          <span class="en-text">🟢 Level 1 — With Support</span>
+          <span class="es-text">🟢 Nivel 1 — Con Apoyo</span>
+        </button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">
+          <span class="en-text">🔵 Level 2 — Challenge</span>
+          <span class="es-text">🔵 Nivel 2 — Desafío</span>
+        </button>
+      </div>
+      <div class="level-bar" style="margin-top: 10px; max-width: 320px;">
+        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
+        <button class="level-btn" id="btn-read" onclick="readAloud()">🔊 Read Aloud</button>
       </div>
     </header>
 
@@ -316,8 +343,14 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">Key Words</div>
-              <div class="card-sub">Learn these 4 math words before you begin</div>
+              <div class="card-title">
+                <span class="en-text">Key Words</span>
+                <span class="es-text">Palabras Clave</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Learn these 4 math words before you begin</span>
+                <span class="es-text">Aprende estas 4 palabras de matemáticas antes de comenzar</span>
+              </div>
             </div>
           </div>
 
@@ -327,38 +360,81 @@
           <div class="vocab-grid">
             <div class="vocab-card">
               <div class="vocab-icon">🏀</div>
-              <div class="vocab-term">Ratio</div>
-              <div class="vocab-def">A comparison of two numbers or quantities.</div>
-              <div class="vocab-ex">3 basketballs to 2 soccer balls (3:2)</div>
+              <div class="vocab-term">
+                <span class="en-text">Ratio</span>
+                <span class="es-text">Razón</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A comparison of two numbers or quantities.</span>
+                <span class="es-text">Una comparación de dos números o cantidades.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">3 basketballs to 2 soccer balls (3:2)</span>
+                <span class="es-text">3 balones de baloncesto a 2 balones de fútbol (3:2)</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">⏱️</div>
-              <div class="vocab-term">Rate</div>
-              <div class="vocab-def">A ratio that compares two quantities with different units of measure.</div>
-              <div class="vocab-ex">24 points scored in 12 minutes</div>
+              <div class="vocab-term">
+                <span class="en-text">Rate</span>
+                <span class="es-text">Tasa</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A ratio that compares two quantities with different units of measure.</span>
+                <span class="es-text">Una razón que compara dos cantidades con diferentes unidades de medida.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">24 points scored in 12 minutes</span>
+                <span class="es-text">24 puntos anotados en 12 minutos</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🎯</div>
-              <div class="vocab-term">Unit Rate</div>
-              <div class="vocab-def">A rate compared to exactly one unit of the second quantity.</div>
-              <div class="vocab-ex">2 points scored per 1 minute (2:1)</div>
+              <div class="vocab-term">
+                <span class="en-text">Unit Rate</span>
+                <span class="es-text">Tasa Unitaria</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A rate compared to exactly one unit of the second quantity.</span>
+                <span class="es-text">Una tasa comparada con exactamente una unidad de la segunda cantidad.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">2 points scored per 1 minute (2:1)</span>
+                <span class="es-text">2 puntos anotados por 1 minuto (2:1)</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">📈</div>
-              <div class="vocab-term">Projection</div>
-              <div class="vocab-def">Using a constant rate to predict future stats or results.</div>
-              <div class="vocab-ex">2 points/min × 10 mins = 20 points</div>
+              <div class="vocab-term">
+                <span class="en-text">Projection</span>
+                <span class="es-text">Proyección</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">Using a constant rate to predict future stats or results.</span>
+                <span class="es-text">Usar una tasa constante para predecir estadísticas o resultados futuros.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">2 points/min × 10 mins = 20 points</span>
+                <span class="es-text">2 puntos/min × 10 mins = 20 puntos</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct" style="margin-top:20px">
-            ✅ Read each word card. When you're ready, click <strong>Next Step</strong>.
+            <span class="en-text">✅ Read each word card. When you're ready, click <strong>Next Step</strong>.</span>
+            <span class="es-text">✅ Lee cada tarjeta de palabra. Cuando estés listo, haz clic en <strong>Siguiente Paso</strong>.</span>
           </div>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" disabled>← Back</button>
-          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
+          <button class="nav-btn ghost" disabled>
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(2)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente Paso →</span>
+          </button>
         </div>
       </div>
 
@@ -370,13 +446,20 @@
           <div class="card-header">
             <div class="card-icon">🏃</div>
             <div>
-              <div class="card-title">Step 1 — Scoring Unit Rate</div>
-              <div class="card-sub">Find points per minute (unit rate)</div>
+              <div class="card-title">
+                <span class="en-text">Step 1 — Scoring Unit Rate</span>
+                <span class="es-text">Paso 1 — Tasa Unitaria de Anotación</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Find points per minute (unit rate)</span>
+                <span class="es-text">Encuentra los puntos por minuto (tasa unitaria)</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct">
-            <strong>Your job:</strong> Calculate how fast your athlete scores. Enter the athlete's total points and the total minutes they played, then find their scoring unit rate (points per minute).
+            <span class="en-text"><strong>Your job:</strong> Calculate how fast your athlete scores. Enter the athlete's total points and the total minutes they played, then find their scoring unit rate (points per minute).</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Calcula qué tan rápido anota tu atleta. Ingresa los puntos totales del atleta y los minutos totales que jugó, luego encuentra su tasa unitaria de anotación (puntos por minuto).</span>
           </div>
 
           <!-- Scoreboard Visual -->
@@ -390,58 +473,87 @@
             <text x="30" y="40" font-family="monospace" font-size="14" font-weight="bold" fill="#10b981" id="sb-name">SCOUT ATHLETE</text>
             
             <!-- Points counter -->
-            <text x="50" y="62" font-family="sans-serif" font-size="9" font-weight="bold" fill="#a1a1aa">POINTS</text>
+            <text x="50" y="62" font-family="sans-serif" font-size="9" font-weight="bold" fill="#a1a1aa" id="sb-pts-lbl">POINTS</text>
             <rect x="50" y="70" width="80" height="40" rx="4" fill="#000"/>
             <text x="90" y="100" text-anchor="middle" font-family="monospace" font-size="28" font-weight="bold" fill="#f59e0b" id="sb-pts">00</text>
             
             <!-- Minutes counter -->
-            <text x="150" y="62" font-family="sans-serif" font-size="9" font-weight="bold" fill="#a1a1aa">MINUTES</text>
+            <text x="150" y="62" font-family="sans-serif" font-size="9" font-weight="bold" fill="#a1a1aa" id="sb-min-lbl">MINUTES</text>
             <rect x="150" y="70" width="80" height="40" rx="4" fill="#000"/>
             <text x="190" y="100" text-anchor="middle" font-family="monospace" font-size="28" font-weight="bold" fill="#ef4444" id="sb-min">00</text>
             
             <!-- Unit Rate counter -->
-            <text x="300" y="52" font-family="sans-serif" font-size="11" font-weight="bold" fill="#a1a1aa">SCORING UNIT RATE</text>
+            <text x="300" y="52" font-family="sans-serif" font-size="11" font-weight="bold" fill="#a1a1aa" id="sb-rate-lbl">SCORING UNIT RATE</text>
             <rect x="300" y="62" width="180" height="48" rx="6" fill="#000"/>
             <text x="390" y="96" text-anchor="middle" font-family="monospace" font-size="30" font-weight="bold" fill="#10b981" id="sb-rate">0.00</text>
-            <text x="390" y="122" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#a1a1aa">POINTS PER MINUTE</text>
+            <text x="390" y="122" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#a1a1aa" id="sb-ppm-lbl">POINTS PER MINUTE</text>
           </svg>
 
           <!-- Level 1 support hints -->
           <div class="instruct lvl1-only">
-            🟢 <strong>Level 1 tip:</strong> Try friendly numbers, like 60 points in 30 minutes (2 points per minute).
+            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try friendly numbers, like 60 points in 30 minutes (2 points per minute).</span>
+            <span class="es-text">🟢 <strong>Consejo de Nivel 1:</strong> Prueba con números fáciles, como 60 puntos en 30 minutos (2 puntos por minuto).</span>
           </div>
           <!-- Level 2 challenge -->
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
-            Use real stats from a professional or local game (e.g., 23 points in 36 minutes). Write down the division exactly.
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE</span>
+              <span class="es-text">DESAFÍO DE NIVEL 2</span>
+            </span><br>
+            <span class="en-text">Use real stats from a professional or local game (e.g., 23 points in 36 minutes). Write down the division exactly.</span>
+            <span class="es-text">Usa estadísticas reales de un juego profesional o local (por ejemplo, 23 puntos en 36 minutos). Escribe la división exactamente.</span>
           </div>
 
-          <label class="lbl" for="ath-name">Athlete's Name</label>
+          <label class="lbl" for="ath-name">
+            <span class="en-text">Athlete's Name</span>
+            <span class="es-text">Nombre del Atleta</span>
+          </label>
           <input type="text" id="ath-name" placeholder="e.g. Steph Curry" />
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="ath-pts">🏀 Total Points Scored</label>
+              <label class="lbl" for="ath-pts">
+                <span class="en-text">🏀 Total Points Scored</span>
+                <span class="es-text">🏀 Puntos Totales Anotados</span>
+              </label>
               <input type="number" id="ath-pts" min="1" placeholder="e.g. 60" />
             </div>
             <div>
-              <label class="lbl" for="ath-min">⏱️ Total Minutes Played</label>
+              <label class="lbl" for="ath-min">
+                <span class="en-text">⏱️ Total Minutes Played</span>
+                <span class="es-text">⏱️ Minutos Totales Jugados</span>
+              </label>
               <input type="number" id="ath-min" min="1" placeholder="e.g. 30" />
             </div>
           </div>
 
-          <button class="calc-btn" onclick="calcUnitRate()">🧮 Calculate Scoring Unit Rate</button>
+          <button class="calc-btn" onclick="calcUnitRate()">
+            <span class="en-text">🧮 Calculate Scoring Unit Rate</span>
+            <span class="es-text">🧮 Calcular Tasa Unitaria de Anotación</span>
+          </button>
           <div class="readout" id="unit-rate-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>Divide the total points by the total minutes played. This gives you the unit rate (points per 1 minute).<br><strong>Example:</strong> 40 points ÷ 20 minutes = <strong>2 points per minute</strong>.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">Divide the total points by the total minutes played. This gives you the unit rate (points per 1 minute).<br><strong>Example:</strong> 40 points ÷ 20 minutes = <strong>2 points per minute</strong>.</span>
+              <span class="es-text">Divide los puntos totales entre los minutos totales jugados. Esto te da la tasa unitaria (puntos por 1 minuto).<br><strong>Ejemplo:</strong> 40 puntos ÷ 20 minutos = <strong>2 puntos por minuto</strong>.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
-          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(1)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(3)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente Paso →</span>
+          </button>
         </div>
       </div>
 
@@ -453,27 +565,34 @@
           <div class="card-header">
             <div class="card-icon teal">📈</div>
             <div>
-              <div class="card-title">Step 2 — Project Season Performance</div>
-              <div class="card-sub">Predict season stats over 10, 20, 40, and 80 games</div>
+              <div class="card-title">
+                <span class="en-text">Step 2 — Project Season Performance</span>
+                <span class="es-text">Paso 2 — Proyectar el Rendimiento de la Temporada</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Predict season stats over 10, 20, 40, and 80 games</span>
+                <span class="es-text">Predice estadísticas de la temporada en 10, 20, 40 y 80 juegos</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your job:</strong> How many points will your athlete score in a full season? Convert their points per minute to points per game, and then project their performance using a ratio table.
+            <span class="en-text"><strong>Your job:</strong> How many points will your athlete score in a full season? Convert their points per minute to points per game, and then project their performance using a ratio table.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> ¿Cuántos puntos anotará tu atleta en una temporada completa? Convierte sus puntos por minuto a puntos por juego, y luego proyecta su rendimiento usando una tabla de razones.</span>
           </div>
 
           <!-- Double Number Line SVG -->
           <svg id="double-line-svg" class="visual-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
             <!-- Title -->
-            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Equivalent Ratios: Games vs. Projected Points</text>
+            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c" id="dl-title">Equivalent Ratios: Games vs. Projected Points</text>
             
             <!-- Games Axis -->
             <line x1="40" y1="55" x2="450" y2="55" stroke="#1e7d40" stroke-width="3"/>
-            <text x="460" y="59" font-size="10" font-weight="bold" fill="#1e7d40">GAMES</text>
+            <text x="460" y="59" font-size="10" font-weight="bold" fill="#1e7d40" id="dl-games-lbl">GAMES</text>
             
             <!-- Points Axis -->
             <line x1="40" y1="95" x2="450" y2="95" stroke="#c9820f" stroke-width="3"/>
-            <text x="460" y="99" font-size="10" font-weight="bold" fill="#c9820f">POINTS</text>
+            <text x="460" y="99" font-size="10" font-weight="bold" fill="#c9820f" id="dl-pts-lbl">POINTS</text>
             
             <!-- Tic Marks and Labels -->
             <!-- 1 Game -->
@@ -503,33 +622,61 @@
           </svg>
 
           <div class="lvl1-only instruct teal">
-            🟢 <strong>Level 1 tip:</strong> Standard youth games are 20 minutes long. Pro games are 32 minutes (or 48 minutes in the NBA). Try a 20-minute average game length.
+            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Standard youth games are 20 minutes long. Pro games are 32 minutes (or 48 minutes in the NBA). Try a 20-minute average game length.</span>
+            <span class="es-text">🟢 <strong>Consejo de Nivel 1:</strong> Los juegos estándar de jóvenes duran 20 minutos. Los juegos profesionales duran 32 minutos (o 48 minutos en la NBA). Prueba con un promedio de duración de juego de 20 minutos.</span>
           </div>
 
           <div>
-            <label class="lbl" for="proj-mpg">⏱️ Average Minutes Played Per Game</label>
+            <label class="lbl" for="proj-mpg">
+              <span class="en-text">⏱️ Average Minutes Played Per Game</span>
+              <span class="es-text">⏱️ Minutos Promedio Jugados por Juego</span>
+            </label>
             <input type="number" id="proj-mpg" min="1" placeholder="e.g. 20" />
           </div>
 
-          <button class="calc-btn teal" onclick="calcSeasonProject()">🧮 Generate Ratio Table</button>
+          <button class="calc-btn teal" onclick="calcSeasonProject()">
+            <span class="en-text">🧮 Generate Ratio Table</span>
+            <span class="es-text">🧮 Generar Tabla de Razones</span>
+          </button>
           <div class="readout" id="season-out"></div>
 
           <div class="lvl2-block lvl2-only" style="margin-top:18px">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE — Ratio Notation (6.RP.1)</span>
-            <p style="font-size:14px;margin:6px 0 10px">Write your scoring rate as equivalent ratios using ratio notation (points : games).</p>
-            <label class="lbl" for="ratio-eq">Your equation: 1 Game Ratio = 10 Game Ratio = 20 Game Ratio</label>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE — Ratio Notation (6.RP.1)</span>
+              <span class="es-text">DESAFÍO DE NIVEL 2 — Notación de Razón (6.RP.1)</span>
+            </span>
+            <p style="font-size:14px;margin:6px 0 10px">
+              <span class="en-text">Write your scoring rate as equivalent ratios using ratio notation (points : games).</span>
+              <span class="es-text">Escribe tu tasa de anotación como razones equivalentes usando notación de razón (puntos : juegos).</span>
+            </p>
+            <label class="lbl" for="ratio-eq">
+              <span class="en-text">Your equation: 1 Game Ratio = 10 Game Ratio = 20 Game Ratio</span>
+              <span class="es-text">Tu ecuación: Razón de 1 Juego = Razón de 10 Juegos = Razón de 20 Juegos</span>
+            </label>
             <input type="text" id="ratio-eq" placeholder="e.g. 30 : 1 = 300 : 10 = 600 : 20" />
           </div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>First, find the Points Per Game (PPG) by multiplying the points-per-minute (from Step 1) by the minutes per game. Then, multiply the PPG by 10, 20, 40, and 80 to scale the points scored.<br><strong>Example:</strong> If a player averages 1.5 points per minute and plays 20 minutes, they average 30 PPG. Over 10 games, they will score 30 × 10 = 300 points.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">First, find the Points Per Game (PPG) by multiplying the points-per-minute (from Step 1) by the minutes per game. Then, multiply the PPG by 10, 20, 40, and 80 to scale the points scored.<br><strong>Example:</strong> If a player averages 1.5 points per minute and plays 20 minutes, they average 30 PPG. Over 10 games, they will score 30 × 10 = 300 points.</span>
+              <span class="es-text">Primero, encuentra los Puntos Por Juego (PPG) multiplicando los puntos por minuto (del Paso 1) por los minutos por juego. Luego, multiplica el PPG por 10, 20, 40 y 80 para escalar los puntos anotados.<br><strong>Ejemplo:</strong> Si un jugador promedia 1.5 puntos por minuto y juega 20 minutos, promedia 30 PPG. En 10 juegos, anotará 30 × 10 = 300 puntos.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
-          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(2)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(4)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente Paso →</span>
+          </button>
         </div>
       </div>
 
@@ -541,19 +688,26 @@
           <div class="card-header">
             <div class="card-icon gold">⚖️</div>
             <div>
-              <div class="card-title">Step 3 — Compare Player Statistics</div>
-              <div class="card-sub">Find the better average and compare against youth benchmarks</div>
+              <div class="card-title">
+                <span class="en-text">Step 3 — Compare Player Statistics</span>
+                <span class="es-text">Paso 3 — Comparar Estadísticas de Jugadores</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Find the better average and compare against youth benchmarks</span>
+                <span class="es-text">Encuentra el mejor promedio y compáralo con las referencias de jóvenes</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct gold">
-            <strong>Your job:</strong> Compare two players' stats to find who has the better average points per game. Then compare your athlete's rate to real youth averages around the world.
+            <span class="en-text"><strong>Your job:</strong> Compare two players' stats to find who has the better average points per game. Then compare your athlete's rate to real youth averages around the world.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Compara las estadísticas de dos jugadores para encontrar quién tiene el mejor promedio de puntos por juego. Luego compara la tasa de tu atleta con los promedios reales de jóvenes en el mundo.</span>
           </div>
 
           <!-- Bar Chart Comparison SVG -->
           <svg id="compare-svg" class="visual-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
             <!-- Chart Title -->
-            <text x="260" y="22" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Points Per Game (PPG) Comparison</text>
+            <text x="260" y="22" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c" id="comp-title">Points Per Game (PPG) Comparison</text>
             
             <!-- Axis line -->
             <line x1="120" y1="110" x2="480" y2="110" stroke="#cbd5e1" stroke-width="2"/>
@@ -577,50 +731,119 @@
           <!-- Player A / Player B Inputs -->
           <div class="grid2">
             <div>
-              <strong style="color:var(--navy); font-size:14px;">Player 1 (Scouted Player)</strong>
-              <label class="lbl" for="comp-p1-name">Player 1 Name</label>
+              <strong style="color:var(--navy); font-size:14px;">
+                <span class="en-text">Player 1 (Scouted Player)</span>
+                <span class="es-text">Jugador 1 (Atleta Evaluado)</span>
+              </strong>
+              <label class="lbl" for="comp-p1-name">
+                <span class="en-text">Player 1 Name</span>
+                <span class="es-text">Nombre del Jugador 1</span>
+              </label>
               <input type="text" id="comp-p1-name" placeholder="e.g. Steph Curry" />
-              <label class="lbl" for="comp-p1-pts">Total Points</label>
+              <label class="lbl" for="comp-p1-pts">
+                <span class="en-text">Total Points</span>
+                <span class="es-text">Puntos Totales</span>
+              </label>
               <input type="number" id="comp-p1-pts" min="1" placeholder="e.g. 60" />
-              <label class="lbl" for="comp-p1-games">Games Played</label>
+              <label class="lbl" for="comp-p1-games">
+                <span class="en-text">Games Played</span>
+                <span class="es-text">Juegos Jugados</span>
+              </label>
               <input type="number" id="comp-p1-games" min="1" placeholder="e.g. 2" />
             </div>
             <div>
-              <strong style="color:var(--navy); font-size:14px;">Player 2 (Opponent / Peer)</strong>
-              <label class="lbl" for="comp-p2-name">Player 2 Name</label>
+              <strong style="color:var(--navy); font-size:14px;">
+                <span class="en-text">Player 2 (Opponent / Peer)</span>
+                <span class="es-text">Jugador 2 (Oponente / Compañero)</span>
+              </strong>
+              <label class="lbl" for="comp-p2-name">
+                <span class="en-text">Player 2 Name</span>
+                <span class="es-text">Nombre del Jugador 2</span>
+              </label>
               <input type="text" id="comp-p2-name" placeholder="e.g. Aja Wilson" />
-              <label class="lbl" for="comp-p2-pts">Total Points</label>
+              <label class="lbl" for="comp-p2-pts">
+                <span class="en-text">Total Points</span>
+                <span class="es-text">Puntos Totales</span>
+              </label>
               <input type="number" id="comp-p2-pts" min="1" placeholder="e.g. 50" />
-              <label class="lbl" for="comp-p2-games">Games Played</label>
+              <label class="lbl" for="comp-p2-games">
+                <span class="en-text">Games Played</span>
+                <span class="es-text">Juegos Jugados</span>
+              </label>
               <input type="number" id="comp-p2-games" min="1" placeholder="e.g. 2" />
             </div>
           </div>
 
-          <button class="calc-btn gold" onclick="calcCompareAverages()">⚖️ Compare Player Averages</button>
+          <button class="calc-btn gold" onclick="calcCompareAverages()">
+            <span class="en-text">⚖️ Compare Player Averages</span>
+            <span class="es-text">⚖️ Comparar Promedios de Jugadores</span>
+          </button>
           <div class="readout" id="compare-out"></div>
 
           <!-- Youth Player Averages comparison -->
           <div style="margin-top:22px;">
-            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">🌎 Real Youth Player Benchmarks</h3>
-            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">Here are real average points-per-game (PPG) rates for youth league players around the world.</p>
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">
+              <span class="en-text">🌎 Real Youth Player Benchmarks</span>
+              <span class="es-text">🌎 Referencias Reales de Jugadores Jóvenes</span>
+            </h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">
+              <span class="en-text">Here are real average points-per-game (PPG) rates for youth league players around the world.</span>
+              <span class="es-text">Aquí están las tasas reales promedio de puntos por juego (PPG) para jugadores de ligas juveniles de todo el mundo.</span>
+            </p>
             
             <table class="data-table">
               <thead>
-                <tr><th>Youth Player / Country</th><th>Average Points Per Game (PPG)</th></tr>
+                <tr>
+                  <th>
+                    <span class="en-text">Youth Player / Country</span>
+                    <span class="es-text">Jugador Joven / País</span>
+                  </th>
+                  <th>
+                    <span class="en-text">Average Points Per Game (PPG)</span>
+                    <span class="es-text">Promedio de Puntos Por Juego (PPG)</span>
+                  </th>
+                </tr>
               </thead>
               <tbody>
-                <tr><td>Sam · UK</td><td>5.8 PPG</td></tr>
-                <tr><td>Leo · Brazil</td><td>6.2 PPG</td></tr>
-                <tr><td>Diego · Mexico</td><td>6.7 PPG</td></tr>
-                <tr><td>Aiko · Japan</td><td>7.1 PPG</td></tr>
-                <tr><td>Priya · India</td><td>7.4 PPG</td></tr>
-                <tr><td>Maya · USA</td><td>8.5 PPG</td></tr>
-                <tr><td>Nadia · Nigeria</td><td>9.0 PPG</td></tr>
-                <tr><td>Phenom (Outlier)</td><td>22.0 PPG</td></tr>
+                <tr>
+                  <td><span class="en-text">Sam · UK</span><span class="es-text">Sam · Reino Unido</span></td>
+                  <td>5.8 PPG</td>
+                </tr>
+                <tr>
+                  <td><span class="en-text">Leo · Brazil</span><span class="es-text">Leo · Brasil</span></td>
+                  <td>6.2 PPG</td>
+                </tr>
+                <tr>
+                  <td><span class="en-text">Diego · Mexico</span><span class="es-text">Diego · México</span></td>
+                  <td>6.7 PPG</td>
+                </tr>
+                <tr>
+                  <td><span class="en-text">Aiko · Japan</span><span class="es-text">Aiko · Japón</span></td>
+                  <td>7.1 PPG</td>
+                </tr>
+                <tr>
+                  <td><span class="en-text">Priya · India</span><span class="es-text">Priya · India</span></td>
+                  <td>7.4 PPG</td>
+                </tr>
+                <tr>
+                  <td><span class="en-text">Maya · USA</span><span class="es-text">Maya · EE. UU.</span></td>
+                  <td>8.5 PPG</td>
+                </tr>
+                <tr>
+                  <td><span class="en-text">Nadia · Nigeria</span><span class="es-text">Nadia · Nigeria</span></td>
+                  <td>9.0 PPG</td>
+                </tr>
+                <tr>
+                  <td><span class="en-text">Phenom (Outlier)</span><span class="es-text">Phenom (Valor Atípico)</span></td>
+                  <td>22.0 PPG</td>
+                </tr>
               </tbody>
             </table>
 
-            <label class="lbl" for="world-player-select">Select a youth player to compare against:</label>
+            <label class="lbl" for="world-player-select">
+              <span class="en-text">Select a youth player to compare against:</span>
+              <span class="es-text">Selecciona un jugador joven para comparar:</span>
+            </label>
             <select id="world-player-select" onchange="calcCompareAverages()">
               <option value="5.8">Sam · UK (5.8 PPG)</option>
               <option value="6.2">Leo · Brazil (6.2 PPG)</option>
@@ -633,29 +856,54 @@
             </select>
 
             <div class="readout show" id="world-compare-out" style="background:var(--blue-lt); border-color:#c8e6c9; color:var(--navy);">
-              Select a player to compare.
+              <span class="en-text">Select a player to compare.</span>
+              <span class="es-text">Selecciona un jugador para comparar.</span>
             </div>
           </div>
 
           <!-- Level 2 Challenge: Statistics, Mean, and Outlier -->
           <div class="lvl2-block lvl2-only" style="margin-top:18px">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE — Statistics &amp; Outliers (6.SP.5c)</span>
-            <p style="font-size:14px;margin:6px 0 10px">Find the **mean** points per game for the 8 youth players above. Identify which player is an **outlier** and explain how they pull the average up.</p>
-            <label class="lbl" for="world-mean-input">Calculated Mean PPG (including the outlier)</label>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE — Statistics &amp; Outliers (6.SP.5c)</span>
+              <span class="es-text">DESAFÍO DE NIVEL 2 — Estadística y Valores Atípicos (6.SP.5c)</span>
+            </span>
+            <p style="font-size:14px;margin:6px 0 10px">
+              <span class="en-text">Find the **mean** points per game for the 8 youth players above. Identify which player is an **outlier** and explain how they pull the average up.</span>
+              <span class="es-text">Encuentra la **media** de puntos por juego para los 8 jugadores jóvenes anteriores. Identifica qué jugador es un **valor atípico** y explica cómo eleva el promedio.</span>
+            </p>
+            <label class="lbl" for="world-mean-input">
+              <span class="en-text">Calculated Mean PPG (including the outlier)</span>
+              <span class="es-text">Media Calculada de PPG (incluyendo el valor atípico)</span>
+            </label>
             <input type="number" id="world-mean-input" step="0.01" placeholder="e.g. 9.09" />
-            <label class="lbl" for="world-outlier-input">Explain who the outlier is and how they affect the mean</label>
+            <label class="lbl" for="world-outlier-input">
+              <span class="en-text">Explain who the outlier is and how they affect the mean</span>
+              <span class="es-text">Explica quién es el valor atípico y cómo afecta a la media</span>
+            </label>
             <textarea id="world-outlier-input" placeholder="The outlier is Phenom. Their rate is..."></textarea>
           </div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>To compare two averages, divide total points by games played for each player to find their PPG. Subtract the smaller rate from the larger rate to find the difference.<br><strong>Example:</strong> Player A scores 24 points in 2 games (12 PPG). Player B scores 30 points in 3 games (10 PPG). Player A averages 2 more PPG than Player B.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">To compare two averages, divide total points by games played for each player to find their PPG. Subtract the smaller rate from the larger rate to find the difference.<br><strong>Example:</strong> Player A scores 24 points in 2 games (12 PPG). Player B scores 30 points in 3 games (10 PPG). Player A averages 2 more PPG than Player B.</span>
+              <span class="es-text">Para comparar dos promedios, divide los puntos totales entre los juegos jugados de cada jugador para encontrar su PPG. Resta la tasa menor de la tasa mayor para encontrar la diferencia.<br><strong>Ejemplo:</strong> El Jugador A anota 24 puntos en 2 juegos (12 PPG). El Jugador B anota 30 puntos en 3 juegos (10 PPG). El Jugador A promedia 2 PPG más que el Jugador B.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
-          <button class="nav-btn" onclick="goStep(5)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(3)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(5)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente Paso →</span>
+          </button>
         </div>
       </div>
 
@@ -665,70 +913,116 @@
       <div class="step-panel" id="step-5">
         <div class="card">
           <div class="card-header">
-            <div class="card-icon teal">👥</div>
+            <div class="card-icon font">👥</div>
             <div>
-              <div class="card-title">Step 4 — Partner Compare</div>
-              <div class="card-sub">Compare reports with a partner using equivalent ratios</div>
+              <div class="card-title">
+                <span class="en-text">Step 4 — Partner Compare</span>
+                <span class="es-text">Paso 4 — Comparar con un Compañero</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Compare reports with a partner using equivalent ratios</span>
+                <span class="es-text">Compara informes con un compañero usando razones equivalentes</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your job:</strong> Swap scouting reports with a partner. Enter their athlete's stats and choose a common number of games to compare both athletes fairly.
+            <span class="en-text"><strong>Your job:</strong> Swap scouting reports with a partner. Enter their athlete's stats and choose a common number of games to compare both athletes fairly.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Intercambia informes de evaluación con un compañero. Ingresa las estadísticas de su atleta y elige un número común de juegos para comparar a ambos atletas de manera justa.</span>
           </div>
 
           <!-- SVG Visual: Swapping reports -->
           <svg class="visual-svg" viewBox="0 0 520 100" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
             <text x="140" y="40" text-anchor="middle" font-size="28">🙋</text>
-            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">You</text>
+            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c" id="svg-partner-you">You</text>
             
             <rect x="185" y="38" width="150" height="30" rx="8" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="1.5"/>
-            <text x="260" y="58" text-anchor="middle" font-size="11" fill="#0e8a7d">"How many points in 10 games?"</text>
+            <text x="260" y="58" text-anchor="middle" font-size="11" fill="#0e8a7d" id="svg-partner-bubble">"How many points in 10 games?"</text>
             
             <text x="380" y="40" text-anchor="middle" font-size="28">🙋</text>
-            <text x="380" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Partner</text>
+            <text x="380" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c" id="svg-partner-lbl">Partner</text>
           </svg>
 
           <div style="background:var(--teal-lt);border-radius:12px;padding:14px 16px;margin-bottom:18px;">
-            <strong style="font-size:14px;color:var(--teal);">Scout Interview Questions — Ask Your Partner:</strong>
+            <strong style="font-size:14px;color:var(--teal);">
+              <span class="en-text">Scout Interview Questions — Ask Your Partner:</span>
+              <span class="es-text">Preguntas de la Entrevista del Evaluador — Pregúntale a tu Compañero:</span>
+            </strong>
             <ol style="margin-top:8px;font-size:14px;line-height:1.9;padding-left:18px;color:var(--ink);">
-              <li>What is your athlete's name and total points scored?</li>
-              <li>How many games did your athlete play?</li>
-              <li>Scale both athletes' rates to see who scores more over a constant base of games.</li>
+              <li>
+                <span class="en-text">What is your athlete's name and total points scored?</span>
+                <span class="es-text">¿Cuál es el nombre de tu atleta y el total de puntos anotados?</span>
+              </li>
+              <li>
+                <span class="en-text">How many games did your athlete play?</span>
+                <span class="es-text">¿Cuántos juegos jugó tu atleta?</span>
+              </li>
+              <li>
+                <span class="en-text">Scale both athletes' rates to see who scores more over a constant base of games.</span>
+                <span class="es-text">Escala las tasas de ambos atletas para ver quién anota más en una base constante de juegos.</span>
+              </li>
             </ol>
           </div>
 
-          <label class="lbl" for="part-name">Partner's Name</label>
+          <label class="lbl" for="part-name">
+            <span class="en-text">Partner's Name</span>
+            <span class="es-text">Nombre del Compañero</span>
+          </label>
           <input type="text" id="part-name" placeholder="e.g. Alex" />
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="part-ath-name">Partner's Athlete Name</label>
+              <label class="lbl" for="part-ath-name">
+                <span class="en-text">Partner's Athlete Name</span>
+                <span class="es-text">Nombre del Atleta del Compañero</span>
+              </label>
               <input type="text" id="part-ath-name" placeholder="e.g. LeBron" />
             </div>
             <div>
-              <label class="lbl" for="part-pts">Partner's Athlete Total Points</label>
+              <label class="lbl" for="part-pts">
+                <span class="en-text">Partner's Athlete Total Points</span>
+                <span class="es-text">Puntos Totales del Atleta del Compañero</span>
+              </label>
               <input type="number" id="part-pts" min="1" placeholder="e.g. 80" />
             </div>
             <div>
-              <label class="lbl" for="part-games">Partner's Athlete Games Played</label>
+              <label class="lbl" for="part-games">
+                <span class="en-text">Partner's Athlete Games Played</span>
+                <span class="es-text">Juegos Jugados del Atleta del Compañero</span>
+              </label>
               <input type="number" id="part-games" min="1" placeholder="e.g. 4" />
             </div>
             <div>
-              <label class="lbl" for="part-common-games">Common Number of Games to Compare</label>
+              <label class="lbl" for="part-common-games">
+                <span class="en-text">Common Number of Games to Compare</span>
+                <span class="es-text">Número Común de Juegos para Comparar</span>
+              </label>
               <input type="number" id="part-common-games" min="1" placeholder="e.g. 10" />
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="calcPartnerCompare()">📊 Compare Our Athletes</button>
+          <button class="calc-btn teal" onclick="calcPartnerCompare()">
+            <span class="en-text">📊 Compare Our Athletes</span>
+            <span class="es-text">📊 Comparar Nuestros Atletas</span>
+          </button>
           <div class="readout" id="partner-out"></div>
 
-          <label class="lbl" for="part-reflect" style="margin-top:18px;">Whose athlete scores more at the same number of games? Explain using equivalent ratios.</label>
+          <label class="lbl" for="part-reflect" style="margin-top:18px;">
+            <span class="en-text">Whose athlete scores more at the same number of games? Explain using equivalent ratios.</span>
+            <span class="es-text">¿El atleta de quién anota más con el mismo número de juegos? Explica usando razones equivalentes.</span>
+          </label>
           <textarea id="part-reflect" placeholder="My athlete has a rate of ___ PPG, and my partner's has ___ PPG. Scaled to ___ games..."></textarea>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
-          <button class="nav-btn green" onclick="goStep(6)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(4)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="goStep(6)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente Paso →</span>
+          </button>
         </div>
       </div>
 
@@ -740,58 +1034,122 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">Step 5 — Finish &amp; Submit</div>
-              <div class="card-sub">Write your report, check the list, get your score</div>
+              <div class="card-title">
+                <span class="en-text">Step 5 — Finish &amp; Submit</span>
+                <span class="es-text">Paso 5 — Finalizar y Enviar</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Write your report, check the list, get your score</span>
+                <span class="es-text">Escribe tu informe, revisa la lista, obtén tu puntuación</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct green">
-            <strong>Your job:</strong> Write 3–5 sentences describing your athlete's performance, their unit rate, projected season stats, and comparisons.
+            <span class="en-text"><strong>Your job:</strong> Write 3–5 sentences describing your athlete's performance, their unit rate, projected season stats, and comparisons.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Escribe de 3 a 5 oraciones que describan el rendimiento de tu atleta, su tasa unitaria, las estadísticas proyectadas de la temporada y las comparaciones.</span>
           </div>
 
           <!-- Scout report summary -->
-          <label class="lbl" for="pitch">✍️ Scouting Report Summary (use your real math numbers!)</label>
+          <label class="lbl" for="pitch">
+            <span class="en-text">✍️ Scouting Report Summary (use your real math numbers!)</span>
+            <span class="es-text">✍️ Resumen del Informe de Evaluación (¡usa tus números matemáticos reales!)</span>
+          </label>
           <textarea id="pitch" placeholder="My athlete is Steph Curry. They scored 60 points in 30 minutes, which is a unit rate of 2 points per minute. In a game of 30 minutes, they average 60 points..."></textarea>
 
           <!-- Checklist -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">✅ Scout's Checklist — Check off completed tasks</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+            <span class="en-text">✅ Scout's Checklist — Check off completed tasks</span>
+            <span class="es-text">✅ Lista de Verificación del Evaluador — Marca las tareas completadas</span>
+          </h3>
           <ul class="checklist" id="checklist">
-            <li><input type="checkbox" id="ck1" /> I calculated my athlete's points per minute (unit rate).</li>
-            <li><input type="checkbox" id="ck2" /> I completed a ratio table to project season stats.</li>
-            <li><input type="checkbox" id="ck3" /> I compared two players' stats to find the better average.</li>
-            <li><input type="checkbox" id="ck4" /> I compared my athlete to real youth average benchmarks.</li>
-            <li><input type="checkbox" id="ck5" /> I compared my report with a partner using equivalent ratios.</li>
-            <li><input type="checkbox" id="ck6" /> I wrote a detailed scouting summary using my calculations.</li>
+            <li><input type="checkbox" id="ck1" /> <span class="en-text">I calculated my athlete's points per minute (unit rate).</span><span class="es-text">Calculé la tasa unitaria de puntos por minuto de mi atleta.</span></li>
+            <li><input type="checkbox" id="ck2" /> <span class="en-text">I completed a ratio table to project season stats.</span><span class="es-text">Completé una tabla de razones para proyectar las estadísticas de la temporada.</span></li>
+            <li><input type="checkbox" id="ck3" /> <span class="en-text">I compared two players' stats to find the better average.</span><span class="es-text">Comparé las estadísticas de dos jugadores para encontrar el mejor promedio.</span></li>
+            <li><input type="checkbox" id="ck4" /> <span class="en-text">I compared my athlete to real youth average benchmarks.</span><span class="es-text">Comparé a mi atleta con referencias reales del promedio de jóvenes.</span></li>
+            <li><input type="checkbox" id="ck5" /> <span class="en-text">I compared my report with a partner using equivalent ratios.</span><span class="es-text">Comparé mi informe con el de un compañero usando razones equivalentes.</span></li>
+            <li><input type="checkbox" id="ck6" /> <span class="en-text">I wrote a detailed scouting summary using my calculations.</span><span class="es-text">Escribí un resumen detallado de la evaluación usando mis cálculos.</span></li>
           </ul>
 
           <!-- Rubric -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">📊 How You Are Scored</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+            <span class="en-text">📊 How You Are Scored</span>
+            <span class="es-text">📊 Cómo se te Califica</span>
+          </h3>
           <table class="rubric">
             <thead>
-              <tr><th>Skill</th><th class="score-4">4 — Expert</th><th class="score-3">3 — Proficient</th><th class="score-2">2 — Developing</th></tr>
+              <tr>
+                <th><span class="en-text">Skill</span><span class="es-text">Habilidad</span></th>
+                <th class="score-4"><span class="en-text">4 — Expert</span><span class="es-text">4 — Experto</span></th>
+                <th class="score-3"><span class="en-text">3 — Proficient</span><span class="es-text">3 — Competente</span></th>
+                <th class="score-2"><span class="en-text">2 — Developing</span><span class="es-text">2 — En Desarrollo</span></th>
+              </tr>
             </thead>
             <tbody>
-              <tr><td><strong>Unit Rates (6.RP.2)</strong></td><td>Finds points per minute with exact work and unit labeling</td><td>Finds points per minute correctly</td><td>Makes division or setup errors</td></tr>
-              <tr><td><strong>Ratio Tables (6.RP.3a)</strong></td><td>Projects scoring over 10, 20, 40, 80 games using clear multiplication equations</td><td>Fills table correctly using constant rate</td><td>Table has mathematical errors</td></tr>
-              <tr><td><strong>Comparing Statistics</strong></td><td>Compares two player averages and research data with thorough explanation</td><td>Compares two player averages correctly</td><td>Comparison is incomplete or has math errors</td></tr>
-              <tr><td><strong>Partner Comparison</strong></td><td>Scales athlete ratios to a common base of games with clear reasoning</td><td>Finds equivalent points at common base</td><td>Cannot find common base projection</td></tr>
-              <tr><td><strong>Scouting Report</strong></td><td>Report includes all stats and utilizes precise mathematical vocabulary</td><td>Report includes most stats and vocab</td><td>Report is incomplete or lacks math terms</td></tr>
+              <tr>
+                <td><strong><span class="en-text">Unit Rates (6.RP.2)</span><span class="es-text">Tasas Unitarias (6.RP.2)</span></strong></td>
+                <td><span class="en-text">Finds points per minute with exact work and unit labeling</span><span class="es-text">Encuentra los puntos por minuto con el trabajo exacto y etiquetado de unidades</span></td>
+                <td><span class="en-text">Finds points per minute correctly</span><span class="es-text">Encuentra los puntos por minuto correctamente</span></td>
+                <td><span class="en-text">Makes division or setup errors</span><span class="es-text">Comete errores de división o configuración</span></td>
+              </tr>
+              <tr>
+                <td><strong><span class="en-text">Ratio Tables (6.RP.3a)</span><span class="es-text">Tablas de Razones (6.RP.3a)</span></strong></td>
+                <td><span class="en-text">Projects scoring over 10, 20, 40, 80 games using clear multiplication equations</span><span class="es-text">Proyecta la anotación en 10, 20, 40, 80 juegos usando ecuaciones claras de multiplicación</span></td>
+                <td><span class="en-text">Fills table correctly using constant rate</span><span class="es-text">Llena la tabla correctamente usando una tasa constante</span></td>
+                <td><span class="en-text">Table has mathematical errors</span><span class="es-text">La tabla tiene errores matemáticos</span></td>
+              </tr>
+              <tr>
+                <td><strong><span class="en-text">Comparing Statistics</span><span class="es-text">Comparar Estadísticas</span></strong></td>
+                <td><span class="en-text">Compares two player averages and research data with thorough explanation</span><span class="es-text">Compara los promedios de dos jugadores y los datos de investigación con una explicación detallada</span></td>
+                <td><span class="en-text">Compares two player averages correctly</span><span class="es-text">Compara los promedios de dos jugadores correctamente</span></td>
+                <td><span class="en-text">Comparison is incomplete or has math errors</span><span class="es-text">La comparación está incompleta o tiene errores matemáticos</span></td>
+              </tr>
+              <tr>
+                <td><strong><span class="en-text">Partner Comparison</span><span class="es-text">Comparación con Compañero</span></strong></td>
+                <td><span class="en-text">Scales athlete ratios to a common base of games with clear reasoning</span><span class="es-text">Escala las razones del atleta a una base común de juegos con un razonamiento claro</span></td>
+                <td><span class="en-text">Finds equivalent points at common base</span><span class="es-text">Encuentra los puntos equivalentes en la base común</span></td>
+                <td><span class="en-text">Cannot find common base projection</span><span class="es-text">No puede encontrar la proyección de base común</span></td>
+              </tr>
+              <tr>
+                <td><strong><span class="en-text">Scouting Report</span><span class="es-text">Informe de Evaluación</span></strong></td>
+                <td><span class="en-text">Report includes all stats and utilizes precise mathematical vocabulary</span><span class="es-text">El informe incluye todas las estadísticas y utiliza un vocabulario matemático preciso</span></td>
+                <td><span class="en-text">Report includes most stats and vocab</span><span class="es-text">El informe incluye la mayoría de las estadísticas y vocabulario</span></td>
+                <td><span class="en-text">Report is incomplete or lacks math terms</span><span class="es-text">El informe está incompleto o carece de términos matemáticos</span></td>
+              </tr>
             </tbody>
           </table>
 
           <!-- Report + export buttons -->
           <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
-            <button class="calc-btn" onclick="buildReport()">📝 Generate Summary</button>
-            <button class="export-btn" onclick="copyReport()">📋 Copy</button>
-            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
-            <button class="export-btn" onclick="window.print()">🖨️ Print</button>
+            <button class="calc-btn" onclick="buildReport()">
+              <span class="en-text">📝 Generate Summary</span>
+              <span class="es-text">📝 Generar Resumen</span>
+            </button>
+            <button class="export-btn" onclick="copyReport()">
+              <span class="en-text">📋 Copy</span>
+              <span class="es-text">📋 Copiar</span>
+            </button>
+            <button class="export-btn" onclick="downloadTxt()">
+              <span class="en-text">⬇️ Download .txt</span>
+              <span class="es-text">⬇️ Descargar .txt</span>
+            </button>
+            <button class="export-btn" onclick="window.print()">
+              <span class="en-text">🖨️ Print</span>
+              <span class="es-text">🖨️ Imprimir</span>
+            </button>
           </div>
           <pre class="report-box" id="reportBox"></pre>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(5)">← Back</button>
-          <button class="nav-btn green" onclick="alert('Amazing scouting job! 🎉 Show this page to your teacher.')">🎉 I'm Done!</button>
+          <button class="nav-btn ghost" onclick="goStep(5)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="finishProject()">
+            <span class="en-text">🎉 I'm Done!</span>
+            <span class="es-text">🎉 ¡He Terminado!</span>
+          </button>
         </div>
       </div>
 
@@ -810,12 +1168,103 @@
         { id: 5, label: 'Partner Compare', icon: '👥' },
         { id: 6, label: 'Finish', icon: '🏆' },
       ];
+
+      const STEPS_ES = [
+        { id: 1, label: 'Palabras Clave', icon: '📖' },
+        { id: 2, label: 'Tasa Unitaria', icon: '🏃' },
+        { id: 3, label: 'Proyectar Temporada', icon: '📈' },
+        { id: 4, label: 'Comparar Jugadores', icon: '⚖️' },
+        { id: 5, label: 'Comparar Compañero', icon: '👥' },
+        { id: 6, label: 'Finalizar', icon: '🏆' },
+      ];
+
+      const WORLD_PLAYERS = {
+        en: [
+          { value: "5.8", label: "Sam · UK (5.8 PPG)" },
+          { value: "6.2", label: "Leo · Brazil (6.2 PPG)" },
+          { value: "6.7", label: "Diego · Mexico (6.7 PPG)" },
+          { value: "7.1", label: "Aiko · Japan (7.1 PPG)" },
+          { value: "7.4", label: "Priya · India (7.4 PPG)" },
+          { value: "8.5", label: "Maya · USA (8.5 PPG)" },
+          { value: "9.0", label: "Nadia · Nigeria (9.0 PPG)" },
+          { value: "22.0", label: "Phenom · Outlier (22.0 PPG)" }
+        ],
+        es: [
+          { value: "5.8", label: "Sam · Reino Unido (5.8 PPG)" },
+          { value: "6.2", label: "Leo · Brasil (6.2 PPG)" },
+          { value: "6.7", label: "Diego · México (6.7 PPG)" },
+          { value: "7.1", label: "Aiko · Japón (7.1 PPG)" },
+          { value: "7.4", label: "Priya · India (7.4 PPG)" },
+          { value: "8.5", label: "Maya · EE. UU. (8.5 PPG)" },
+          { value: "9.0", label: "Nadia · Nigeria (9.0 PPG)" },
+          { value: "22.0", label: "Phenom · Valor Atípico (22.0 PPG)" }
+        ]
+      };
+
+      const PLACEHOLDERS = {
+        en: {
+          'ath-name': 'e.g. Steph Curry',
+          'ath-pts': 'e.g. 60',
+          'ath-min': 'e.g. 30',
+          'proj-mpg': 'e.g. 20',
+          'ratio-eq': 'e.g. 30 : 1 = 300 : 10 = 600 : 20',
+          'comp-p1-name': 'e.g. Steph Curry',
+          'comp-p1-pts': 'e.g. 60',
+          'comp-p1-games': 'e.g. 2',
+          'comp-p2-name': 'e.g. Aja Wilson',
+          'comp-p2-pts': 'e.g. 50',
+          'comp-p2-games': 'e.g. 2',
+          'part-name': 'e.g. Alex',
+          'part-ath-name': 'e.g. LeBron',
+          'part-pts': 'e.g. 80',
+          'part-games': 'e.g. 4',
+          'part-common-games': 'e.g. 10',
+          'part-reflect': "My athlete has a rate of ___ PPG, and my partner's has ___ PPG. Scaled to ___ games...",
+          'pitch': "My athlete is Steph Curry. They scored 60 points in 30 minutes, which is a unit rate of 2 points per minute. In a game of 30 minutes, they average 60 points...",
+          'world-mean-input': 'e.g. 9.09',
+          'world-outlier-input': 'The outlier is Phenom. Their rate is...'
+        },
+        es: {
+          'ath-name': 'ej. Steph Curry',
+          'ath-pts': 'ej. 60',
+          'ath-min': 'ej. 30',
+          'proj-mpg': 'ej. 20',
+          'ratio-eq': 'ej. 30 : 1 = 300 : 10 = 600 : 20',
+          'comp-p1-name': 'ej. Steph Curry',
+          'comp-p1-pts': 'ej. 60',
+          'comp-p1-games': 'ej. 2',
+          'comp-p2-name': 'ej. Aja Wilson',
+          'comp-p2-pts': 'ej. 50',
+          'comp-p2-games': 'ej. 2',
+          'part-name': 'ej. Alex',
+          'part-ath-name': 'ej. LeBron',
+          'part-pts': 'ej. 80',
+          'part-games': 'ej. 4',
+          'part-common-games': 'ej. 10',
+          'part-reflect': "Mi atleta tiene una tasa de ___ PPG, y el de mi compañero tiene ___ PPG. Escalado a ___ juegos...",
+          'pitch': "Mi atleta es Steph Curry. Anotó 60 puntos en 30 minutos, lo cual es una tasa unitaria de 2 puntos por minuto. En un juego de 30 minutos, promedia 60 puntos...",
+          'world-mean-input': 'ej. 9.09',
+          'world-outlier-input': 'El valor atípico es Phenom. Su tasa es...'
+        }
+      };
+
       let currentStep = 1;
       const visited = new Set([1]);
 
+      function isSpanish() {
+        return document.getElementById('body').classList.contains('es');
+      }
+
       // ---- Level toggle ----
       function setLevel(n) {
-        document.getElementById('body').className = 'level-' + n;
+        const body = document.getElementById('body');
+        if (n === 1) {
+          body.classList.add('level-1');
+          body.classList.remove('level-2');
+        } else {
+          body.classList.add('level-2');
+          body.classList.remove('level-1');
+        }
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
 
@@ -854,11 +1303,13 @@
       // ---- Build step trail ----
       function buildTrail() {
         const trail = document.getElementById('stepTrail');
+        const isEs = isSpanish();
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
+          const label = isEs ? STEPS_ES[i].label : s.label;
           return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
-            <span class="s-label">${s.label}</span>
+            <span class="s-label">${label}</span>
           </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
         }).join('');
       }
@@ -878,12 +1329,16 @@
       function updateProgress() {
         const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
         document.getElementById('progFill').style.width = pct + '%';
-        document.getElementById('progLabel').textContent = `Step ${currentStep} of ${STEPS.length}`;
+        const isEs = isSpanish();
+        const labelText = isEs ? `Paso ${currentStep} de ${STEPS.length}` : `Step ${currentStep} of ${STEPS.length}`;
+        document.getElementById('progLabel').textContent = labelText;
       }
 
       // ---- Calc Step 1: Scoring Unit Rate ----
       function calcUnitRate() {
-        const name = document.getElementById('ath-name').value.trim() || 'SCOUT ATHLETE';
+        const isEs = isSpanish();
+        const defaultName = isEs ? 'ATLETA EVALUADO' : 'SCOUT ATHLETE';
+        const name = document.getElementById('ath-name').value.trim() || defaultName;
         const pts = parseInt(document.getElementById('ath-pts').value);
         const min = parseInt(document.getElementById('ath-min').value);
         
@@ -900,11 +1355,20 @@
         const rate = pts / min;
         document.getElementById('sb-rate').textContent = rate.toFixed(2);
         
-        const html = `
-          <strong>Scoring Unit Rate: ${rate.toFixed(2)} points per minute</strong><br>
-          For every 1 minute of play, the athlete scores <strong>${rate.toFixed(2)} points</strong>.<br>
-          <small>Calculation: ${pts} points ÷ ${min} minutes = ${rate.toFixed(2)} points per minute. This can be written as the ratio <strong>${rate.toFixed(2)}:1</strong>.</small>
-        `;
+        let html;
+        if (isEs) {
+          html = `
+            <strong>Tasa unitaria de anotación: ${rate.toFixed(2)} puntos por minuto</strong><br>
+            Por cada 1 minuto de juego, el atleta anota <strong>${rate.toFixed(2)} puntos</strong>.<br>
+            <small>Cálculo: ${pts} puntos ÷ ${min} minutos = ${rate.toFixed(2)} puntos por minuto. Esto se puede escribir como la razón <strong>${rate.toFixed(2)}:1</strong>.</small>
+          `;
+        } else {
+          html = `
+            <strong>Scoring Unit Rate: ${rate.toFixed(2)} points per minute</strong><br>
+            For every 1 minute of play, the athlete scores <strong>${rate.toFixed(2)} points</strong>.<br>
+            <small>Calculation: ${pts} points ÷ ${min} minutes = ${rate.toFixed(2)} points per minute. This can be written as the ratio <strong>${rate.toFixed(2)}:1</strong>.</small>
+          `;
+        }
         showReadout('unit-rate-out', html);
         
         // Auto-sync names to Step 3 comparison
@@ -918,6 +1382,7 @@
       function calcSeasonProject() {
         const rate = parseFloat(document.getElementById('sb-rate').textContent) || 0.0;
         const mpg = parseFloat(document.getElementById('proj-mpg').value);
+        const isEs = isSpanish();
 
         if (isNaN(mpg) || mpg <= 0 || rate <= 0) {
           document.getElementById('season-out').classList.remove('show');
@@ -933,29 +1398,56 @@
         document.getElementById('dl-pts-40').textContent = (ppg * 40).toFixed(0);
         document.getElementById('dl-pts-80').textContent = (ppg * 80).toFixed(0);
 
-        const row1 = `<tr><td>1 game</td><td><strong>${ppg.toFixed(1)}</strong> points</td><td>Unit Rate</td></tr>`;
-        const row10 = `<tr><td>10 games</td><td><strong>${(ppg * 10).toFixed(0)}</strong> points</td><td>${ppg.toFixed(1)} × 10</td></tr>`;
-        const row20 = `<tr><td>20 games</td><td><strong>${(ppg * 20).toFixed(0)}</strong> points</td><td>${ppg.toFixed(1)} × 20</td></tr>`;
-        const row40 = `<tr><td>40 games</td><td><strong>${(ppg * 40).toFixed(0)}</strong> points</td><td>${ppg.toFixed(1)} × 40</td></tr>`;
-        const row80 = `<tr><td>80 games</td><td><strong>${(ppg * 80).toFixed(0)}</strong> points</td><td>${ppg.toFixed(1)} × 80</td></tr>`;
+        let row1, row10, row20, row40, row80, html;
+        if (isEs) {
+          row1 = `<tr><td>1 juego</td><td><strong>${ppg.toFixed(1)}</strong> puntos</td><td>Tasa Unitaria</td></tr>`;
+          row10 = `<tr><td>10 juegos</td><td><strong>${(ppg * 10).toFixed(0)}</strong> puntos</td><td>${ppg.toFixed(1)} × 10</td></tr>`;
+          row20 = `<tr><td>20 juegos</td><td><strong>${(ppg * 20).toFixed(0)}</strong> puntos</td><td>${ppg.toFixed(1)} × 20</td></tr>`;
+          row40 = `<tr><td>40 juegos</td><td><strong>${(ppg * 40).toFixed(0)}</strong> puntos</td><td>${ppg.toFixed(1)} × 40</td></tr>`;
+          row80 = `<tr><td>80 juegos</td><td><strong>${(ppg * 80).toFixed(0)}</strong> puntos</td><td>${ppg.toFixed(1)} × 80</td></tr>`;
 
-        const html = `
-          <strong>Points Per Game Average: ${ppg.toFixed(2)} PPG</strong><br>
-          <small>Points Per Minute (${rate.toFixed(2)}) × Average Minutes Per Game (${mpg}) = ${ppg.toFixed(2)} points per game.</small>
-          <table class="data-table" style="margin-top:10px;">
-            <thead>
-              <tr><th>Games Played</th><th>Projected points</th><th>Multiplication equation</th></tr>
-            </thead>
-            <tbody>
-              ${row1}
-              ${row10}
-              ${row20}
-              ${row40}
-              ${row80}
-            </tbody>
-          </table>
-          <br>Every row is an <strong>equivalent ratio</strong> of ${ppg.toFixed(1)} : 1 game.
-        `;
+          html = `
+            <strong>Promedio de puntos por juego: ${ppg.toFixed(2)} PPG</strong><br>
+            <small>Puntos por minuto (${rate.toFixed(2)}) × Minutos promedio por juego (${mpg}) = ${ppg.toFixed(2)} puntos por juego.</small>
+            <table class="data-table" style="margin-top:10px;">
+              <thead>
+                <tr><th>Juegos Jugados</th><th>Puntos proyectados</th><th>Ecuación de multiplicación</th></tr>
+              </thead>
+              <tbody>
+                ${row1}
+                ${row10}
+                ${row20}
+                ${row40}
+                ${row80}
+              </tbody>
+            </table>
+            <br>Cada fila es una <strong>razón equivalente</strong> de ${ppg.toFixed(1)} : 1 juego.
+          `;
+        } else {
+          row1 = `<tr><td>1 game</td><td><strong>${ppg.toFixed(1)}</strong> points</td><td>Unit Rate</td></tr>`;
+          row10 = `<tr><td>10 games</td><td><strong>${(ppg * 10).toFixed(0)}</strong> points</td><td>${ppg.toFixed(1)} × 10</td></tr>`;
+          row20 = `<tr><td>20 games</td><td><strong>${(ppg * 20).toFixed(0)}</strong> points</td><td>${ppg.toFixed(1)} × 20</td></tr>`;
+          row40 = `<tr><td>40 games</td><td><strong>${(ppg * 40).toFixed(0)}</strong> points</td><td>${ppg.toFixed(1)} × 40</td></tr>`;
+          row80 = `<tr><td>80 games</td><td><strong>${(ppg * 80).toFixed(0)}</strong> points</td><td>${ppg.toFixed(1)} × 80</td></tr>`;
+
+          html = `
+            <strong>Points Per Game Average: ${ppg.toFixed(2)} PPG</strong><br>
+            <small>Points Per Minute (${rate.toFixed(2)}) × Average Minutes Per Game (${mpg}) = ${ppg.toFixed(2)} points per game.</small>
+            <table class="data-table" style="margin-top:10px;">
+              <thead>
+                <tr><th>Games Played</th><th>Projected points</th><th>Multiplication equation</th></tr>
+              </thead>
+              <tbody>
+                ${row1}
+                ${row10}
+                ${row20}
+                ${row40}
+                ${row80}
+              </tbody>
+            </table>
+            <br>Every row is an <strong>equivalent ratio</strong> of ${ppg.toFixed(1)} : 1 game.
+          `;
+        }
         showReadout('season-out', html);
 
         // Auto-sync Player 1 PPG to Step 3
@@ -969,12 +1461,16 @@
 
       // ---- Calc Step 3: Compare Player Statistics & World average ----
       function calcCompareAverages() {
-        const p1Name = document.getElementById('comp-p1-name').value.trim() || 'Player A';
+        const isEs = isSpanish();
+        const defaultP1 = isEs ? 'Jugador A' : 'Player A';
+        const defaultP2 = isEs ? 'Jugador B' : 'Player B';
+        
+        const p1Name = document.getElementById('comp-p1-name').value.trim() || defaultP1;
         const p1Pts = parseFloat(document.getElementById('comp-p1-pts').value) || 0;
         const p1Games = parseFloat(document.getElementById('comp-p1-games').value) || 1;
         const p1Ppg = p1Pts / p1Games;
 
-        const p2Name = document.getElementById('comp-p2-name').value.trim() || 'Player B';
+        const p2Name = document.getElementById('comp-p2-name').value.trim() || defaultP2;
         const p2Pts = parseFloat(document.getElementById('comp-p2-pts').value) || 0;
         const p2Games = parseFloat(document.getElementById('comp-p2-games').value) || 1;
         const p2Ppg = p2Pts / p2Games;
@@ -1010,40 +1506,71 @@
         // Compare Text Output
         let betterText = '';
         if (p1Ppg > p2Ppg) {
-          betterText = `<strong>${p1Name}</strong> has the better average with <strong>${p1Ppg.toFixed(2)} PPG</strong> vs <strong>${p2Ppg.toFixed(2)} PPG</strong> for ${p2Name} (a difference of ${(p1Ppg - p2Ppg).toFixed(2)} PPG).`;
+          if (isEs) {
+            betterText = `<strong>${p1Name}</strong> tiene el mejor promedio con <strong>${p1Ppg.toFixed(2)} PPG</strong> frente a <strong>${p2Ppg.toFixed(2)} PPG</strong> de ${p2Name} (una diferencia de ${(p1Ppg - p2Ppg).toFixed(2)} PPG).`;
+          } else {
+            betterText = `<strong>${p1Name}</strong> has the better average with <strong>${p1Ppg.toFixed(2)} PPG</strong> vs <strong>${p2Ppg.toFixed(2)} PPG</strong> for ${p2Name} (a difference of ${(p1Ppg - p2Ppg).toFixed(2)} PPG).`;
+          }
         } else if (p2Ppg > p1Ppg) {
-          betterText = `<strong>${p2Name}</strong> has the better average with <strong>${p2Ppg.toFixed(2)} PPG</strong> vs <strong>${p1Ppg.toFixed(2)} PPG</strong> for ${p1Name} (a difference of ${(p2Ppg - p1Ppg).toFixed(2)} PPG).`;
+          if (isEs) {
+            betterText = `<strong>${p2Name}</strong> tiene el mejor promedio con <strong>${p2Ppg.toFixed(2)} PPG</strong> frente a <strong>${p1Ppg.toFixed(2)} PPG</strong> de ${p1Name} (una diferencia de ${(p2Ppg - p1Ppg).toFixed(2)} PPG).`;
+          } else {
+            betterText = `<strong>${p2Name}</strong> has the better average with <strong>${p2Ppg.toFixed(2)} PPG</strong> vs <strong>${p1Ppg.toFixed(2)} PPG</strong> for ${p1Name} (a difference of ${(p2Ppg - p1Ppg).toFixed(2)} PPG).`;
+          }
         } else {
-          betterText = `Both players average exactly the same rate: <strong>${p1Ppg.toFixed(2)} PPG</strong>.`;
+          if (isEs) {
+            betterText = `Ambos jugadores promedian exactamente la misma tasa: <strong>${p1Ppg.toFixed(2)} PPG</strong>.`;
+          } else {
+            betterText = `Both players average exactly the same rate: <strong>${p1Ppg.toFixed(2)} PPG</strong>.`;
+          }
         }
 
-        const html = `
-          <strong>Averages calculated:</strong><br>
-          ${p1Name}: ${p1Pts} points ÷ ${p1Games} games = <strong>${p1Ppg.toFixed(2)} PPG</strong>.<br>
-          ${p2Name}: ${p2Pts} points ÷ ${p2Games} games = <strong>${p2Ppg.toFixed(2)} PPG</strong>.<br><br>
-          ${betterText}
-        `;
+        let html;
+        if (isEs) {
+          html = `
+            <strong>Promedios calculados:</strong><br>
+            ${p1Name}: ${p1Pts} puntos ÷ ${p1Games} juegos = <strong>${p1Ppg.toFixed(2)} PPG</strong>.<br>
+            ${p2Name}: ${p2Pts} puntos ÷ ${p2Games} juegos = <strong>${p2Ppg.toFixed(2)} PPG</strong>.<br><br>
+            ${betterText}
+          `;
+        } else {
+          html = `
+            <strong>Averages calculated:</strong><br>
+            ${p1Name}: ${p1Pts} points ÷ ${p1Games} games = <strong>${p1Ppg.toFixed(2)} PPG</strong>.<br>
+            ${p2Name}: ${p2Pts} points ÷ ${p2Games} games = <strong>${p2Ppg.toFixed(2)} PPG</strong>.<br><br>
+            ${betterText}
+          `;
+        }
         showReadout('compare-out', html);
 
         // Youth compare text
         const diffY = Math.abs(p1Ppg - yVal).toFixed(2);
-        const relY = p1Ppg > yVal ? 'higher' : p1Ppg < yVal ? 'lower' : 'equal';
+        const relY = p1Ppg > yVal ? (isEs ? 'mayor' : 'higher') : p1Ppg < yVal ? (isEs ? 'menor' : 'lower') : (isEs ? 'igual' : 'equal');
         const pctY = Math.round((p1Ppg / yVal) * 100);
-        document.getElementById('world-compare-out').innerHTML = `
-          📊 <strong>Comparison:</strong> Your athlete ${p1Name} (${p1Ppg.toFixed(1)} PPG) is <strong>${relY}</strong> than ${yName} (${yVal.toFixed(1)} PPG) by <strong>${diffY} PPG</strong>.<br>
-          Your athlete scores <strong>${pctY}%</strong> of their scoring rate.
-        `;
+        
+        if (isEs) {
+          document.getElementById('world-compare-out').innerHTML = `
+            📊 <strong>Comparación:</strong> Tu atleta ${p1Name} (${p1Ppg.toFixed(1)} PPG) es <strong>${relY}</strong> que el de ${yName} (${yVal.toFixed(1)} PPG) por <strong>${diffY} PPG</strong>.<br>
+            Tu atleta anota el <strong>${pctY}%</strong> de su tasa de anotación.
+          `;
+        } else {
+          document.getElementById('world-compare-out').innerHTML = `
+            📊 <strong>Comparison:</strong> Your athlete ${p1Name} (${p1Ppg.toFixed(1)} PPG) is <strong>${relY}</strong> than ${yName} (${yVal.toFixed(1)} PPG) by <strong>${diffY} PPG</strong>.<br>
+            Your athlete scores <strong>${pctY}%</strong> of their scoring rate.
+          `;
+        }
       }
 
       // ---- Calc Step 4: Partner Compare ----
       function calcPartnerCompare() {
+        const isEs = isSpanish();
         // Player 1 PPG from Step 2/3
         const p1Pts = parseFloat(document.getElementById('comp-p1-pts').value) || 0;
         const p1Games = parseFloat(document.getElementById('comp-p1-games').value) || 1;
         const myPpg = p1Pts / p1Games;
 
-        const partName = document.getElementById('part-name').value.trim() || 'Partner';
-        const partAth = document.getElementById('part-ath-name').value.trim() || "Partner's Athlete";
+        const partName = document.getElementById('part-name').value.trim() || (isEs ? 'Compañero' : 'Partner');
+        const partAth = document.getElementById('part-ath-name').value.trim() || (isEs ? "Atleta del Compañero" : "Partner's Athlete");
         const partPts = parseFloat(document.getElementById('part-pts').value);
         const partGms = parseFloat(document.getElementById('part-games').value);
         const commonGames = parseFloat(document.getElementById('part-common-games').value);
@@ -1057,15 +1584,33 @@
         const myScaled = myPpg * commonGames;
         const partScaled = partPpg * commonGames;
 
-        const leader = myScaled > partScaled ? "Your athlete" : partScaled > myScaled ? `${partName}'s athlete (${partAth})` : "Both athletes (tie)";
+        let leader = '';
+        if (myScaled > partScaled) {
+          leader = isEs ? "Tu atleta" : "Your athlete";
+        } else if (partScaled > myScaled) {
+          leader = isEs ? `El atleta de ${partName} (${partAth})` : `${partName}'s athlete (${partAth})`;
+        } else {
+          leader = isEs ? "Ambos atletas (empate)" : "Both athletes (tie)";
+        }
+        
         const diff = Math.abs(myScaled - partScaled).toFixed(1);
 
-        const html = `
-          <strong>In a common base of ${commonGames} games:</strong><br>
-          - Your athlete is projected to score <strong>${myScaled.toFixed(1)} points</strong> (${myPpg.toFixed(1)} PPG × ${commonGames} games).<br>
-          - ${partName}'s athlete (${partAth}) is projected to score <strong>${partScaled.toFixed(1)} points</strong> (${partPpg.toFixed(1)} PPG × ${commonGames} games).<br><br>
-          🏆 <strong>Scouting Verdict:</strong> ${leader} scores more at ${commonGames} games by <strong>${diff} points</strong>.
-        `;
+        let html;
+        if (isEs) {
+          html = `
+            <strong>En una base común de ${commonGames} juegos:</strong><br>
+            - Tu atleta está proyectado para anotar <strong>${myScaled.toFixed(1)} puntos</strong> (${myPpg.toFixed(1)} PPG × ${commonGames} juegos).<br>
+            - El atleta de ${partName} (${partAth}) está proyectado para anotar <strong>${partScaled.toFixed(1)} puntos</strong> (${partPpg.toFixed(1)} PPG × ${commonGames} juegos).<br><br>
+            🏆 <strong>Veredicto de Evaluación:</strong> ${leader} anota más en ${commonGames} juegos por <strong>${diff} puntos</strong>.
+          `;
+        } else {
+          html = `
+            <strong>In a common base of ${commonGames} games:</strong><br>
+            - Your athlete is projected to score <strong>${myScaled.toFixed(1)} points</strong> (${myPpg.toFixed(1)} PPG × ${commonGames} games).<br>
+            - ${partName}'s athlete (${partAth}) is projected to score <strong>${partScaled.toFixed(1)} points</strong> (${partPpg.toFixed(1)} PPG × ${commonGames} games).<br><br>
+            🏆 <strong>Scouting Verdict:</strong> ${leader} scores more at ${commonGames} games by <strong>${diff} points</strong>.
+          `;
+        }
         showReadout('partner-out', html);
       }
 
@@ -1108,7 +1653,48 @@
         const partReflect = document.getElementById('part-reflect').value || '(none)';
         
         const pitch = document.getElementById('pitch').value || '(no report written)';
-        
+        const isEs = isSpanish();
+
+        if (isEs) {
+          return [
+            '═══ EXPLORADOR DE ESTADÍSTICAS DEPORTIVAS — PROYECTO UNIDAD 3 ═══',
+            '',
+            '📖 HABILIDADES MATEMÁTICAS UTILIZADAS: Razones, Tasas, Tasas Unitarias, Tablas de Razones',
+            '',
+            '🏃 PASO 1 — TASA UNITARIA DE ANOTACIÓN',
+            `   Nombre del Atleta: ${athName}`,
+            `   Anotó: ${athPts} puntos en ${athMin} minutos`,
+            `   Tasa Unitaria: ${ppm} puntos por minuto`,
+            '',
+            '📈 PASO 2 — PROYECCIÓN DE LA TEMPORADA',
+            `   Minutos Promedio Jugados por Juego: ${mpg} mins`,
+            `   Puntos por Juego Calculados: ${ppg} PPG`,
+            `   Proyección de 10 Juegos: ${(ppg * 10).toFixed(0)} pts`,
+            `   Proyección de 20 Juegos: ${(ppg * 20).toFixed(0)} pts`,
+            `   Proyección de 40 Juegos: ${(ppg * 40).toFixed(0)} pts`,
+            `   Proyección de 80 Juegos: ${(ppg * 80).toFixed(0)} pts`,
+            '',
+            '⚖️ PASO 3 — COMPARACIÓN DE JUGADORES',
+            `   Jugador 1: ${p1Name} (${p1Ppg} PPG)`,
+            `   Jugador 2: ${p2Name} (${p2Ppg} PPG)`,
+            `   Comparado con el atleta juvenil: ${yName}`,
+            '',
+            '👥 PASO 4 — COMPARACIÓN CON COMPAÑERO',
+            `   Nombre del Compañero: ${partName}`,
+            `   Atleta del Compañero: ${partAth} (${partPts} puntos en ${partGames} juegos)`,
+            `   Escalado a ${partCommon} juegos:`,
+            `     - Tu Atleta: ${(ppg * partCommon).toFixed(1)} puntos`,
+            `     - Atleta del Compañero: ${((partPts/partGames) * partCommon).toFixed(1)} puntos`,
+            `   Reflexión: ${partReflect}`,
+            '',
+            '✍️ RESUMEN DEL INFORME DE EVALUACIÓN:',
+            pitch,
+            '',
+            '═══════════════════════════════',
+            `Generado: ${new Date().toLocaleDateString()}`,
+          ].join('\n');
+        }
+
         return [
           '═══ SPORTS STATS SCOUT — UNIT 3 PROJECT ═══',
           '',
@@ -1156,23 +1742,181 @@
 
       function copyReport() {
         const txt = document.getElementById('reportBox').textContent;
+        const isEs = isSpanish();
         if (!txt) {
-          alert('Please generate the summary first!');
+          alert(isEs ? '¡Por favor genera el resumen primero!' : 'Please generate the summary first!');
           return;
         }
-        navigator.clipboard?.writeText(txt).then(() => alert('Copied to clipboard!'));
+        navigator.clipboard?.writeText(txt).then(() => alert(isEs ? '¡Copiado al portapapeles!' : 'Copied to clipboard!'));
       }
 
       function downloadTxt() {
         const txt = document.getElementById('reportBox').textContent;
+        const isEs = isSpanish();
         if (!txt) {
-          alert('Please generate the summary first!');
+          alert(isEs ? '¡Por favor genera el resumen primero!' : 'Please generate the summary first!');
           return;
         }
         const a = document.createElement('a');
         a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
-        a.download = 'sports-scout-report.txt';
+        a.download = isEs ? 'informe-scout-deportes.txt' : 'sports-scout-report.txt';
         a.click();
+      }
+
+      // ---- Bilingual UI dynamically updated elements ----
+      function updateSelectOptions() {
+        const select = document.getElementById('world-player-select');
+        const isEs = isSpanish();
+        const list = isEs ? WORLD_PLAYERS.es : WORLD_PLAYERS.en;
+        const currentVal = select.value;
+        select.innerHTML = list.map(item => {
+          const selected = item.value === currentVal ? ' selected' : '';
+          return `<option value="${item.value}"${selected}>${item.label}</option>`;
+        }).join('');
+      }
+
+      function updatePlaceholders() {
+        const isEs = isSpanish();
+        const dict = isEs ? PLACEHOLDERS.es : PLACEHOLDERS.en;
+        for (const id in dict) {
+          const el = document.getElementById(id);
+          if (el) {
+            el.placeholder = dict[id];
+          }
+        }
+      }
+
+      function updateSVGLabels() {
+        const isEs = isSpanish();
+        
+        // Scoreboard SVG (Step 2)
+        const sbName = document.getElementById('sb-name');
+        if (sbName) {
+          if (sbName.textContent === 'SCOUT ATHLETE' || sbName.textContent === 'ATLETA EVALUADO') {
+            sbName.textContent = isEs ? 'ATLETA EVALUADO' : 'SCOUT ATHLETE';
+          }
+        }
+        const sbPtsLbl = document.getElementById('sb-pts-lbl');
+        if (sbPtsLbl) sbPtsLbl.textContent = isEs ? 'PUNTOS' : 'POINTS';
+        const sbMinLbl = document.getElementById('sb-min-lbl');
+        if (sbMinLbl) sbMinLbl.textContent = isEs ? 'MINUTOS' : 'MINUTES';
+        const sbRateLbl = document.getElementById('sb-rate-lbl');
+        if (sbRateLbl) sbRateLbl.textContent = isEs ? 'TASA UNITARIA DE ANOTACIÓN' : 'SCORING UNIT RATE';
+        const sbPpmLbl = document.getElementById('sb-ppm-lbl');
+        if (sbPpmLbl) sbPpmLbl.textContent = isEs ? 'PUNTOS POR MINUTO' : 'POINTS PER MINUTE';
+
+        // Double Number Line SVG (Step 3)
+        const dlTitle = document.getElementById('dl-title');
+        if (dlTitle) dlTitle.textContent = isEs ? 'Razones Equivalentes: Juegos vs. Puntos Proyectados' : 'Equivalent Ratios: Games vs. Projected Points';
+        const dlGamesLbl = document.getElementById('dl-games-lbl');
+        if (dlGamesLbl) dlGamesLbl.textContent = isEs ? 'JUEGOS' : 'GAMES';
+        const dlPtsLbl = document.getElementById('dl-pts-lbl');
+        if (dlPtsLbl) dlPtsLbl.textContent = isEs ? 'PUNTOS' : 'POINTS';
+
+        // Comparison Chart SVG (Step 4)
+        const compTitle = document.getElementById('comp-title');
+        if (compTitle) compTitle.textContent = isEs ? 'Comparación de Puntos Por Juego (PPG)' : 'Points Per Game (PPG) Comparison';
+        
+        // Partner SVG (Step 5)
+        const svgPartnerYou = document.getElementById('svg-partner-you');
+        if (svgPartnerYou) svgPartnerYou.textContent = isEs ? 'Tú' : 'You';
+        const svgPartnerBubble = document.getElementById('svg-partner-bubble');
+        if (svgPartnerBubble) svgPartnerBubble.textContent = isEs ? '"¿Cuántos puntos en 10 juegos?"' : '"How many points in 10 games?"';
+        const svgPartnerLbl = document.getElementById('svg-partner-lbl');
+        if (svgPartnerLbl) svgPartnerLbl.textContent = isEs ? 'Compañero' : 'Partner';
+      }
+
+      function toggleLanguage() {
+        const body = document.getElementById('body');
+        const isEs = body.classList.toggle('es');
+        
+        const btnLang = document.getElementById('btn-lang');
+        btnLang.innerHTML = isEs ? '🌐 Idioma: ES' : '🌐 Language: EN';
+        
+        if (!window.speechSynthesis.speaking) {
+          updateReadAloudButton(false);
+        }
+
+        updateSelectOptions();
+        updatePlaceholders();
+        updateSVGLabels();
+
+        buildTrail();
+        updateProgress();
+        
+        calcUnitRate();
+        calcSeasonProject();
+        calcCompareAverages();
+        calcPartnerCompare();
+      }
+
+      // ---- Read Aloud TTS ----
+      let currentUtterance = null;
+      function readAloud() {
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          updateReadAloudButton(false);
+          return;
+        }
+
+        const lang = isSpanish() ? 'es-ES' : 'en-US';
+        const langClass = lang === 'es-ES' ? 'es-text' : 'en-text';
+        
+        const activePanel = document.querySelector('.step-panel.active');
+        if (!activePanel) return;
+
+        const elements = activePanel.querySelectorAll(`.${langClass}`);
+        let textParts = [];
+        elements.forEach(el => {
+          if (el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0) {
+            textParts.push(el.textContent.trim());
+          }
+        });
+
+        if (textParts.length === 0) return;
+
+        const textToRead = textParts.join('. ');
+        const utterance = new SpeechSynthesisUtterance(textToRead);
+        utterance.lang = lang;
+        
+        const voices = window.speechSynthesis.getVoices();
+        const matchedVoice = voices.find(v => v.lang.startsWith(lang.split('-')[0]));
+        if (matchedVoice) {
+          utterance.voice = matchedVoice;
+        }
+
+        utterance.onend = () => {
+          updateReadAloudButton(false);
+          currentUtterance = null;
+        };
+
+        utterance.onerror = () => {
+          updateReadAloudButton(false);
+          currentUtterance = null;
+        };
+
+        updateReadAloudButton(true);
+        currentUtterance = utterance;
+        window.speechSynthesis.speak(utterance);
+      }
+
+      function updateReadAloudButton(isPlaying) {
+        const btn = document.getElementById('btn-read');
+        const isEs = isSpanish();
+        if (isPlaying) {
+          btn.innerHTML = isEs ? '⏹️ Detener Voz' : '⏹️ Stop Voice';
+        } else {
+          btn.innerHTML = isEs ? '🔊 Leer en Voz Alta' : '🔊 Read Aloud';
+        }
+      }
+
+      function finishProject() {
+        const isEs = isSpanish();
+        if (isEs) {
+          alert('¡Increíble trabajo de exploración! 🎉 Muestra esta página a tu maestro/a.');
+        } else {
+          alert('Amazing scouting job! 🎉 Show this page to your teacher.');
+        }
       }
 
       // ---- Init ----

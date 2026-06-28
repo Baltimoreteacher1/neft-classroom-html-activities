@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Maker Workshop Cut List — Unit 2 Culminating Project</title>
-    <meta name="description" content="Unit 2 Fraction Division culminating project. Cut ropes, wood strips, and fabric using fraction division. Simple step-by-step, tab-based guide." />
+    <meta name="description" content="Unit 2 <span class="en-text">Fraction Division</span><span class="es-text">División de fracciones</span> culminating project. Cut ropes, wood strips, and fabric using fraction division. Simple step-by-step, tab-based guide." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -260,7 +260,11 @@
       .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
       .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
 
-      /* ---- Print ---- */
+      body.es .en-text { display: none !important; }
+      body.es .es-text { display: inline !important; }
+      span.es-text { display: none; }
+
+      /* ---- <span class="en-text">Print</span><span class="es-text">Imprimir</span> ---- */
       @media print {
         .no-print { display: none !important; }
         .hero { background: var(--navy) !important; }
@@ -277,16 +281,18 @@
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
       <div class="hero-emoji">🔧</div>
-      <h1>Maker Workshop Cut List</h1>
-      <p class="hero-sub">Plan your cuts using division of fractions — step by step.</p>
+      <h1><span class="en-text">Maker Workshop Cut List</span><span class="es-text">Lista de cortes del taller de creadores</span></h1>
+      <p class="hero-sub"><span class="en-text">Plan your cuts using division of fractions — step by step.</span><span class="es-text">Planifica tus cortes usando la división de fracciones, paso a paso.</span></p>
       <div class="hero-tags">
-        <span class="tag gold">Unit 2 · Fraction Division</span>
+        <span class="tag gold"><span class="en-text">Unit 2 · <span class="en-text">Fraction Division</span><span class="es-text">División de fracciones</span></span><span class="es-text">Unidad 2 · División de fracciones</span></span>
         <span class="tag">6.NS.1</span>
-        <span class="tag">Version B</span>
+        <span class="tag gold-lt" style="color:var(--gold); border-color:var(--gold);"><span class="en-text">Version B</span><span class="es-text">Versión B</span></span>
       </div>
       <div class="level-bar">
-        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
-        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)"><span class="en-text">🟢 Level 1 — With Support</span><span class="es-text">🟢 Nivel 1 — Con Apoyo</span></button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)"><span class="en-text">🔵 Level 2 — Challenge</span><span class="es-text">🔵 Nivel 2 — Desafío</span></button>
+        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
+        <button class="level-btn" id="btn-read" onclick="readAloud()">🔊 Read Aloud</button>
       </div>
     </header>
 
@@ -310,8 +316,8 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">Step 0 — Key Words</div>
-              <div class="card-sub">Learn these 4 math words before you begin</div>
+              <div class="card-title"><span class="en-text">Step 0 — Key Words</span><span class="es-text">Paso 0 — Palabras clave</span></div>
+              <div class="card-sub"><span class="en-text">Learn these 4 math words before you begin</span><span class="es-text">Aprende estas 4 palabras matemáticas antes de comenzar</span></div>
             </div>
           </div>
 
@@ -321,32 +327,32 @@
           <div class="vocab-grid">
             <div class="vocab-card">
               <div class="vocab-icon">📏</div>
-              <div class="vocab-term">Dividend — Total Material</div>
-              <div class="vocab-def">The starting length of material that you want to divide or cut.</div>
-              <div class="vocab-ex">Total rope = 3 yards</div>
+              <div class="vocab-term"><span class="en-text">Dividend — Total Material</span><span class="es-text">Dividendo — Material total</span></div>
+              <div class="vocab-def"><span class="en-text">The starting length of material that you want to divide or cut.</span><span class="es-text">La longitud inicial del material que deseas dividir o cortar.</span></div>
+              <div class="vocab-ex"><span class="en-text">Total rope = 3 yards</span><span class="es-text">Cuerda total = 3 yardas</span></div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🪚</div>
-              <div class="vocab-term">Divisor — Piece Size</div>
-              <div class="vocab-def">The length of each individual piece you are cutting off.</div>
-              <div class="vocab-ex">Each piece = 1/2 yard</div>
+              <div class="vocab-term"><span class="en-text">Divisor — Piece Size</span><span class="es-text">Divisor — Tamaño de la pieza</span></div>
+              <div class="vocab-def"><span class="en-text">The length of each individual piece you are cutting off.</span><span class="es-text">La longitud de cada pieza delgada que estás cortando.</span></div>
+              <div class="vocab-ex"><span class="en-text">Each piece = 1/2 yard</span><span class="es-text">Cada pieza = 1/2 yarda</span></div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🧱</div>
-              <div class="vocab-term">Quotient — Total Pieces</div>
-              <div class="vocab-def">The answer: the number of full pieces you can cut from the total.</div>
-              <div class="vocab-ex">3 ÷ 1/2 = 6 pieces</div>
+              <div class="vocab-term"><span class="en-text">Quotient — Total Pieces</span><span class="es-text">Cociente — Piezas totales</span></div>
+              <div class="vocab-def"><span class="en-text">The answer: the number of full pieces you can cut from the total.</span><span class="es-text">La respuesta: el número de piezas completas que puedes cortar del total.</span></div>
+              <div class="vocab-ex"><span class="en-text">3 ÷ 1/2 = 6 pieces</span><span class="es-text">3 ÷ 1/2 = 6 piezas</span></div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🔄</div>
-              <div class="vocab-term">Reciprocal — Flipped Fraction</div>
-              <div class="vocab-def">Flipping a fraction upside down to change division into multiplication.</div>
-              <div class="vocab-ex">Reciprocal of 2/3 is 3/2</div>
+              <div class="vocab-term"><span class="en-text">Reciprocal — Flipped Fraction</span><span class="es-text">Recíproco — Fracción invertida</span></div>
+              <div class="vocab-def"><span class="en-text">Flipping a fraction upside down to change division into multiplication.</span><span class="es-text">Voltear una fracción boca abajo para cambiar la división en multiplicación.</span></div>
+              <div class="vocab-ex"><span class="en-text">Reciprocal of 2/3 is 3/2</span><span class="es-text">El recíproco de 2/3 es 3/2</span></div>
             </div>
           </div>
 
           <div class="instruct" style="margin-top:20px">
-            ✅ Read each word card. When you're ready, click <strong>Next Step</strong>.
+            <span class="en-text">✅ Read each word card. When you're ready, click <strong>Next Step</strong>.</span><span class="es-text">✅ Lee cada tarjeta de palabras. Cuando estés listo, haz clic en <strong>Siguiente paso</strong>.</span>
           </div>
         </div>
 
@@ -364,13 +370,13 @@
           <div class="card-header">
             <div class="card-icon gold">🪢</div>
             <div>
-              <div class="card-title">Step 1 — Rope Cuts</div>
-              <div class="card-sub">Total rope (fraction or whole) ÷ piece length (unit fraction) = number of pieces</div>
+              <div class="card-title"><span class="en-text">Step 1 — Rope Cuts</span><span class="es-text">Paso 1 — Cortes de cuerda</span></div>
+              <div class="card-sub"><span class="en-text">Total rope (fraction or whole) ÷ piece length (unit fraction) = number of pieces</span><span class="es-text">Cuerda total (fracción o entero) ÷ longitud de pieza (fracción unitaria) = número de piezas</span></div>
             </div>
           </div>
 
           <div class="instruct">
-            <strong>Your job:</strong> Enter the total length of rope you have. Then select the length of each piece (a unit fraction like 1/4) to see how many pieces you can cut.
+            <strong><span class="en-text">Your job:</span><span class="es-text">Tu tarea:</span></strong> <span class="en-text">Enter the total length of rope you have. Then select the length of each piece (a unit fraction like 1/4) to see how many pieces you can cut.</span><span class="es-text">Ingresa la longitud total de la cuerda que tienes. Luego selecciona la longitud de cada pieza (una fracción unitaria como 1/4) para ver cuántas piezas puedes cortar.</span>
           </div>
 
           <!-- SVG Visual: Rope cutting diagram -->
@@ -380,24 +386,24 @@
 
           <!-- Level 1 support tip -->
           <div class="instruct lvl1-only">
-            🟢 <strong>Level 1 tip:</strong> Try whole numbers like 4 feet of rope, and a piece length of 1/2 or 1/4 foot.
+            🟢 <strong><span class="en-text">Level 1 tip:</span><span class="es-text">Consejo de Nivel 1:</span></strong> <span class="en-text">Try whole numbers like 4 feet of rope, and a piece length of 1/2 or 1/4 foot.</span><span class="es-text">Prueba con números enteros como 4 pies de cuerda y una longitud de pieza de 1/2 o 1/4 de pie.</span>
           </div>
           <!-- Level 2 challenge tip -->
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
-            Try entering a fraction for the total rope (like 9/4 feet) to see how the reciprocal rule divides fractions!
+            <span class="lvl2-label"><span class="en-text">LEVEL 2 CHALLENGE</span><span class="es-text">DESAFÍO DE NIVEL 2</span></span><br>
+            <span class="en-text">Try entering a fraction for the total rope (like 9/4 feet) to see how the reciprocal rule divides fractions!</span><span class="es-text">¡Intenta ingresar una fracción para la cuerda total (como 9/4 pies) para ver cómo la regla recíproca divide las fracciones!</span>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="rope-type">Choose Input Type for Total Rope</label>
+              <label class="lbl" for="rope-type"><span class="en-text">Choose Input Type for Total Rope</span><span class="es-text">Elige el tipo de entrada para la cuerda total</span></label>
               <select id="rope-type" onchange="toggleRopeInput()">
                 <option value="whole">Whole Number (e.g. 4 feet)</option>
                 <option value="fraction">Fraction (e.g. 9/4 feet)</option>
               </select>
             </div>
             <div>
-              <label class="lbl" for="rope-divisor-den">Piece Length (1 / denominator)</label>
+              <label class="lbl" for="rope-divisor-den"><span class="en-text">Piece Length (1 / denominator)</span><span class="es-text">Longitud de la pieza (1 / denominador)</span></label>
               <select id="rope-divisor-den" onchange="calcRope()">
                 <option value="2">1/2 foot</option>
                 <option value="3">1/3 foot</option>
@@ -411,32 +417,32 @@
 
           <div class="grid2" style="margin-top: 10px;">
             <div id="rope-whole-container" style="width:100%;">
-              <label class="lbl" for="rope-whole">Total Rope Length (feet)</label>
+              <label class="lbl" for="rope-whole"><span class="en-text">Total Rope Length (feet)</span><span class="es-text">Longitud total de la cuerda (pies)</span></label>
               <input type="number" id="rope-whole" min="1" value="4" oninput="calcRope()" />
             </div>
             <div id="rope-frac-container" style="display:none; width:100%;" class="grid2">
               <div>
-                <label class="lbl" for="rope-num">Numerator</label>
+                <label class="lbl" for="rope-num"><span class="en-text">Numerator</span><span class="es-text">Numerador</span></label>
                 <input type="number" id="rope-num" min="1" value="9" oninput="calcRope()" />
               </div>
               <div>
-                <label class="lbl" for="rope-den">Denominator</label>
+                <label class="lbl" for="rope-den"><span class="en-text">Denominator</span><span class="es-text">Denominador</span></label>
                 <input type="number" id="rope-den" min="1" value="4" oninput="calcRope()" />
               </div>
             </div>
           </div>
 
-          <button class="calc-btn" onclick="calcRope()">🪢 Calculate Rope Cuts</button>
+          <button class="calc-btn" onclick="calcRope()"><span class="en-text">🪢 Calculate Rope Cuts</span><span class="es-text">🪢 Calcular cortes de cuerda</span></button>
           <div class="readout" id="rope-out"></div>
 
           <details class="hint">
             <summary>Need a hint?</summary>
-            <p>To divide by a unit fraction (like 1/4), multiply the total length by the reciprocal (4/1 or 4). This shows how many quarters fit into the whole length.<br><strong>Example:</strong> 4 ft ÷ 1/4 ft = 4 × 4 = 16 pieces.</p>
+            <p><span class="en-text">To divide by a unit fraction (like 1/4), multiply the total length by the reciprocal (4/1 or 4). This shows how many quarters fit into the whole length.</span><span class="es-text">Para dividir por una fracción unitaria (como 1/4), multiplica la longitud total por el recíproco (4/1 o 4). Esto muestra cuántos cuartos caben en la longitud entera.</span><br><strong>Example:</strong> <span class="en-text">4 ft ÷ 1/4 ft = 4 × 4 = 16 pieces.</span><span class="es-text">4 ft ÷ 1/4 ft = 4 × 4 = 16 piezas.</span></p>
           </details>
 
           <div class="lvl2-block lvl2-only" style="margin-top:18px">
-            <span class="lvl2-label">LEVEL 2 EXTENSION — Explain the Reciprocal</span>
-            <p style="font-size:14px;margin:6px 0 10px">Why does dividing a number by 1/4 give you the exact same result as multiplying by 4? Explain using a rope model.</p>
+            <span class="lvl2-label"><span class="en-text">LEVEL 2 EXTENSION — Explain the Reciprocal</span><span class="es-text">EXTENSIÓN DE NIVEL 2 — Explica el recíproco</span></span>
+            <p style="font-size:14px;margin:6px 0 10px"><span class="en-text">Why does dividing a number by 1/4 give you the exact same result as multiplying by 4? Explain using a rope model.</span><span class="es-text">¿Por qué dividir un número por 1/4 da exactamente el mismo resultado que multiplicar por 4? Explícalo usando un modelo de cuerda.</span></p>
             <textarea id="rope-reflect" placeholder="Dividing by 1/4 is the same as multiplying by 4 because there are 4 quarter-pieces in every 1 foot..."></textarea>
           </div>
         </div>
@@ -455,13 +461,13 @@
           <div class="card-header">
             <div class="card-icon gold">🪵</div>
             <div>
-              <div class="card-title">Step 2 — Wood Strips</div>
-              <div class="card-sub">Total board (mixed number) ÷ strip length (fraction) = number of strips</div>
+              <div class="card-title"><span class="en-text">Step 2 — Wood Strips</span><span class="es-text">Paso 2 — Tiras de madera</span></div>
+              <div class="card-sub"><span class="en-text">Total board (mixed number) ÷ strip length (fraction) = number of strips</span><span class="es-text">Tabla total (número mixto) ÷ longitud de tira (fracción) = número de tiras</span></div>
             </div>
           </div>
 
           <div class="instruct">
-            <strong>Your job:</strong> Enter your total wood board size as a mixed number (e.g., 4 1/2 feet). Then enter your strip length as a fraction (e.g., 3/4 foot) to see how many strips you can yield.
+            <strong><span class="en-text">Your job:</span><span class="es-text">Tu tarea:</span></strong> <span class="en-text">Enter your total wood board size as a mixed number (e.g., 4 1/2 feet). Then enter your strip length as a fraction (e.g., 3/4 foot) to see how many strips you can yield.</span><span class="es-text">Ingresa el tamaño total de tu tabla de madera como un número mixto (p. ej., 4 1/2 pies). Luego ingresa la longitud de tu tira como una fracción (p. ej., 3/4 de pie) para ver cuántas tiras puedes obtener.</span>
           </div>
 
           <!-- SVG Visual: Board cutting diagram -->
@@ -471,7 +477,7 @@
 
           <!-- Level 1 support tip -->
           <div class="instruct lvl1-only">
-            🟢 <strong>Level 1 tip:</strong> Try 4 1/2 feet (4 whole, 1 numerator, 2 denominator) and cut it into 1/2 or 3/4 foot strips.
+            🟢 <strong><span class="en-text">Level 1 tip:</span><span class="es-text">Consejo de Nivel 1:</span></strong> <span class="en-text">Try 4 1/2 feet (4 whole, 1 numerator, 2 denominator) and cut it into 1/2 or 3/4 foot strips.</span><span class="es-text">Prueba con 4 1/2 pies (4 enteros, 1 numerador, 2 de denominador) y córtalo en tiras de 1/2 o 3/4 de pie.</span>
           </div>
           <!-- Level 2 challenge tip -->
           <div class="instruct lvl2-block lvl2-only">
@@ -482,42 +488,42 @@
           <label class="lbl">Total Wood Board Size (Mixed Number: Whole &amp; Fraction)</label>
           <div class="grid4">
             <div>
-              <span class="frac-label">Whole Feet</span>
+              <span class="frac-label"><span class="en-text">Whole Feet</span><span class="es-text">Pies enteros</span></span>
               <input type="number" id="w-whole" min="0" value="4" oninput="calcWood()" />
             </div>
             <div>
-              <span class="frac-label">Numerator</span>
+              <span class="frac-label"><span class="en-text">Numerator</span><span class="es-text">Numerador</span></span>
               <input type="number" id="w-num" min="0" value="1" oninput="calcWood()" />
             </div>
             <div>
-              <span class="frac-label">Denominator</span>
+              <span class="frac-label"><span class="en-text">Denominator</span><span class="es-text">Denominador</span></span>
               <input type="number" id="w-den" min="1" value="2" oninput="calcWood()" />
             </div>
           </div>
 
-          <label class="lbl" style="margin-top: 20px;">Strip Length (Fraction of a Foot)</label>
+          <label class="lbl" style="margin-top: 20px;"><span class="en-text">Strip Length (Fraction of a Foot)</span><span class="es-text">Longitud de la tira (Fracción de un pie)</span></label>
           <div class="grid2">
             <div>
-              <span class="frac-label">Numerator</span>
+              <span class="frac-label"><span class="en-text">Numerator</span><span class="es-text">Numerador</span></span>
               <input type="number" id="w-strip-num" min="1" value="3" oninput="calcWood()" />
             </div>
             <div>
-              <span class="frac-label">Denominator</span>
+              <span class="frac-label"><span class="en-text">Denominator</span><span class="es-text">Denominador</span></span>
               <input type="number" id="w-strip-den" min="1" value="4" oninput="calcWood()" />
             </div>
           </div>
 
-          <button class="calc-btn" onclick="calcWood()">🪵 Calculate Wood Strips</button>
+          <button class="calc-btn" onclick="calcWood()"><span class="en-text">🪵 Calculate Wood Strips</span><span class="es-text">🪵 Calcular tiras de madera</span></button>
           <div class="readout" id="wood-out"></div>
 
           <details class="hint">
             <summary>Need a hint?</summary>
-            <p>1. Convert the mixed number total to an improper fraction.<br>2. Multiply by the reciprocal of the strip length fraction.<br><strong>Example:</strong> 4 1/2 ft = 9/2 ft. Strip length is 3/4 ft. Reciprocal is 4/3. Multiply: 9/2 × 4/3 = 36/6 = 6 strips.</p>
+            <p><span class="en-text">1. Convert the mixed number total to an improper fraction.</span><span class="es-text">1. Convierte el número mixto total en una fracción impropia.</span><br><span class="en-text">2. Multiply by the reciprocal of the strip length fraction.</span><span class="es-text">2. Multiplica por el recíproco de la fracción de longitud de la tira.</span><br><strong>Example:</strong> <span class="en-text">4 1/2 ft = 9/2 ft. Strip length is 3/4 ft. Reciprocal is 4/3. Multiply: 9/2 × 4/3 = 36/6 = 6 strips.</span><span class="es-text">4 1/2 ft = 9/2 ft. La longitud de la tira es 3/4 ft. El recíproco es 4/3. Multiplica: 9/2 × 4/3 = 36/6 = 6 tiras.</span></p>
           </details>
 
           <div class="lvl2-block lvl2-only" style="margin-top:18px">
-            <span class="lvl2-label">LEVEL 2 EXTENSION — Scrap Wood Calculation</span>
-            <p style="font-size:14px;margin:6px 0 10px">If you cut a board and get 5 2/3 strips, the leftover strip fraction is 2/3. If each strip is 3/4 ft long, explain why the scrap is exactly 1/2 ft long.</p>
+            <span class="lvl2-label"><span class="en-text">LEVEL 2 EXTENSION — ${isEs ? "Residuo" : "Scrap"} Wood Calculation</span><span class="es-text">EXTENSIÓN DE NIVEL 2 — Cálculo de madera residual</span></span>
+            <p style="font-size:14px;margin:6px 0 10px"><span class="en-text">If you cut a board and get 5 2/3 strips, the leftover strip fraction is 2/3. If each strip is 3/4 ft long, explain why the scrap is exactly 1/2 ft long.</span><span class="es-text">Si cortas una tabla y obtienes 5 2/3 tiras, la fracción de tira restante es 2/3. Si cada tira mide 3/4 ft de largo, explica por qué el residuo mide exactamente 1/2 ft de largo.</span></p>
             <textarea id="wood-reflect" placeholder="The leftover represents 2/3 of a strip. Since a full strip is 3/4 feet, the scrap is 2/3 × 3/4 = 6/12 = 1/2 foot."></textarea>
           </div>
         </div>
@@ -537,71 +543,71 @@
             <div class="card-icon gold">🧵</div>
             <div>
               <div class="card-title">Step 3 — Fabric Cuts &amp; Supplies</div>
-              <div class="card-sub">Total fabric ÷ swatch size = number of swatches; scale to supplier rolls</div>
+              <div class="card-sub"><span class="en-text">Total fabric ÷ swatch size = number of swatches; scale to supplier rolls</span><span class="es-text">Tela total ÷ tamaño de muestra = número de muestras; escalar a rollos de proveedor</span></div>
             </div>
           </div>
 
           <div class="instruct">
-            <strong>Your job:</strong> Enter the size of the fabric swatches you want to make. Then, compare how many pieces you get from standard retail rolls and boards versus your workshop's custom sizes.
+            <strong><span class="en-text">Your job:</span><span class="es-text">Tu tarea:</span></strong> <span class="en-text">Enter the size of the fabric swatches you want to make. Then, compare how many pieces you get from standard retail rolls and boards versus your workshop's custom sizes.</span><span class="es-text">Ingresa el tamaño de las muestras de tela que deseas hacer. Luego, compara cuántas piezas obtienes de rollos y tablas comerciales estándar en comparación con los tamaños personalizados de tu taller.</span>
           </div>
 
           <!-- Level 1 support tip -->
           <div class="instruct lvl1-only">
-            🟢 <strong>Level 1 tip:</strong> Enter a fabric swatch size of 2/3 yard to see the division calculations on a 15-yard bolt.
+            🟢 <strong><span class="en-text">Level 1 tip:</span><span class="es-text">Consejo de Nivel 1:</span></strong> <span class="en-text">Enter a fabric swatch size of 2/3 yard to see the division calculations on a 15-yard bolt.</span><span class="es-text">Ingresa un tamaño de muestra de tela de 2/3 de yarda para ver los cálculos de división en un rollo de 15 yardas.</span>
           </div>
           <!-- Level 2 challenge tip -->
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
-            Try fabric swatch sizes that are non-unit fractions, like 3/8 yard, and find the exact scrap fabric left on a 15-yard bolt.
+            <span class="lvl2-label"><span class="en-text">LEVEL 2 CHALLENGE</span><span class="es-text">DESAFÍO DE NIVEL 2</span></span><br>
+            <span class="en-text">Try fabric swatch sizes that are non-unit fractions, like 3/8 yard, and find the exact scrap fabric left on a 15-yard bolt.</span><span class="es-text">Prueba con tamaños de muestra de tela que no sean fracciones unitarias, como 3/8 de yarda, y encuentra la tela sobrante exacta en un rollo de 15 yardas.</span>
           </div>
 
-          <label class="lbl">Fabric Swatch Size (Fraction of a Yard)</label>
+          <label class="lbl"><span class="en-text">Fabric Swatch Size (Fraction of a Yard)</span><span class="es-text">Tamaño de muestra de tela (Fracción de una yarda)</span></label>
           <div class="grid2">
             <div>
-              <span class="frac-label">Numerator</span>
+              <span class="frac-label"><span class="en-text">Numerator</span><span class="es-text">Numerador</span></span>
               <input type="number" id="f-swatch-num" min="1" value="2" oninput="calcFabric()" />
             </div>
             <div>
-              <span class="frac-label">Denominator</span>
+              <span class="frac-label"><span class="en-text">Denominator</span><span class="es-text">Denominador</span></span>
               <input type="number" id="f-swatch-den" min="1" value="3" oninput="calcFabric()" />
             </div>
           </div>
 
-          <button class="calc-btn" onclick="calcFabric()">🧵 Calculate Fabric Cuts</button>
+          <button class="calc-btn" onclick="calcFabric()"><span class="en-text">🧵 Calculate Fabric Cuts</span><span class="es-text">🧵 Calcular cortes de tela</span></button>
           <div class="readout" id="fabric-out"></div>
 
           <!-- Commercial scale table -->
           <div style="margin-top:22px;">
-            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">🏭 Commercial Supply Yield Table</h3>
-            <p style="font-size:14px;color:var(--muted);margin-bottom:10px;">Compare how many total pieces can be harvested from full standard-sized retail supplies using your cut dimensions.</p>
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;"><span class="en-text">🏭 Commercial Supply Yield Table</span><span class="es-text">🏭 Tabla de rendimiento de suministro comercial</span></h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:10px;"><span class="en-text">Compare how many total pieces can be harvested from full standard-sized retail supplies using your cut dimensions.</span><span class="es-text">Compara cuántas piezas totales se pueden cosechar de suministros minoristas de tamaño estándar completo usando tus dimensiones de corte.</span></p>
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Material Type</th>
-                  <th>Standard Supplier Size</th>
-                  <th>Your Piece/Swatch Size</th>
-                  <th>Yield (Full Pieces)</th>
-                  <th>Remaining Scrap</th>
+                  <th><span class="en-text">Material Type</span><span class="es-text">Tipo de material</span></th>
+                  <th><span class="en-text">Standard Supplier Size</span><span class="es-text">Tamaño estándar del proveedor</span></th>
+                  <th><span class="en-text">Your Piece/Swatch Size</span><span class="es-text">Tu tamaño de pieza/muestra</span></th>
+                  <th><span class="en-text">Yield (Full Pieces)</span><span class="es-text">Rendimiento (piezas completas)</span></th>
+                  <th><span class="en-text">Remaining ${isEs ? "Residuo" : "Scrap"}</span><span class="es-text">Residuo restante</span></th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td><strong>🪢 Standard Rope Spool</strong></td>
-                  <td>25 feet</td>
+                  <td><strong><span class="en-text">🪢 Standard Rope Spool</span><span class="es-text">🪢 Carrete de cuerda estándar</span></strong></td>
+                  <td><span class="en-text">25 feet</span><span class="es-text">25 pies</span></td>
                   <td id="td-rope-divisor">1/4 ft</td>
                   <td id="td-rope-yield">—</td>
                   <td id="td-rope-scrap">0 ft</td>
                 </tr>
                 <tr>
-                  <td><strong>🧵 Fabric Bolt</strong></td>
-                  <td>15 yards</td>
+                  <td><strong><span class="en-text">🧵 Fabric Bolt</span><span class="es-text">🧵 Rollo de tela</span></strong></td>
+                  <td><span class="en-text">15 yards</span><span class="es-text">15 yardas</span></td>
                   <td id="td-fabric-divisor">2/3 yd</td>
                   <td id="td-fabric-yield">—</td>
                   <td id="td-fabric-scrap">—</td>
                 </tr>
                 <tr>
-                  <td><strong>🪵 Lumber Board</strong></td>
-                  <td>8 feet</td>
+                  <td><strong><span class="en-text">🪵 Lumber Board</span><span class="es-text">🪵 Tabla de madera</span></strong></td>
+                  <td><span class="en-text">8 feet</span><span class="es-text">8 pies</span></td>
                   <td id="td-wood-divisor">3/4 ft</td>
                   <td id="td-wood-yield">—</td>
                   <td id="td-wood-scrap">—</td>
@@ -609,13 +615,13 @@
               </tbody>
             </table>
 
-            <label class="lbl" for="world-compare" style="margin-top:18px;">Which material yields the most pieces when scaled up? Write a one-sentence reflection.</label>
+            <label class="lbl" for="world-compare" style="margin-top:18px;"><span class="en-text">Which material yields the most pieces when scaled up? Write a one-sentence reflection.</span><span class="es-text">¿Qué material rinde más piezas cuando se escala? Escribe una reflexión de una frase.</span></label>
             <textarea id="world-compare" placeholder="Scaling up shows that the rope yields the most pieces because..."></textarea>
           </div>
 
           <div class="lvl2-block lvl2-only" style="margin-top:18px">
             <span class="lvl2-label">LEVEL 2 EXTENSION — Efficiency &amp; Optimization</span>
-            <p style="font-size:14px;margin:6px 0 10px">If a fabric bolt has 15 yards and your swatches are 2/3 yard, you get 22 swatches and 1/3 yard of scrap. What divisor (swatch size) could you use instead to guarantee exactly zero scrap fabric?</p>
+            <p style="font-size:14px;margin:6px 0 10px">If a fabric bolt has <span class="en-text">15 yards</span><span class="es-text">15 yardas</span> and your swatches are 2/3 yard, you get 22 swatches and 1/3 yard of scrap. What divisor (swatch size) could you use instead to guarantee exactly zero scrap fabric?</p>
             <textarea id="fabric-reflect" placeholder="To guarantee zero scrap fabric, the swatch size divisor must divide 15 evenly. For example, swatches of 3/5 yard or 5/6 yard..."></textarea>
           </div>
         </div>
@@ -634,13 +640,13 @@
           <div class="card-header">
             <div class="card-icon gold">👥</div>
             <div>
-              <div class="card-title">Step 4 — Partner Compare</div>
-              <div class="card-sub">Compare cut lists and yields with a partner</div>
+              <div class="card-title"><span class="en-text">Step 4 — Partner Compare</span><span class="es-text">Paso 4 — Comparar con compañero</span></div>
+              <div class="card-sub"><span class="en-text">Compare cut lists and yields with a partner</span><span class="es-text">Compara listas de corte y rendimientos con un compañero</span></div>
             </div>
           </div>
 
           <div class="instruct">
-            <strong>Your job:</strong> Interview a classmate and write down their yields. Press Compare to see who yielded more pieces and whose cuts are more efficient.
+            <strong><span class="en-text">Your job:</span><span class="es-text">Tu tarea:</span></strong> <span class="en-text">Interview a classmate and write down their yields. Press Compare to see who yielded more pieces and whose cuts are more efficient.</span><span class="es-text">Entrevista a un compañero de clase y escribe sus rendimientos. Presiona Comparar para ver quién obtuvo más piezas y cuyos cortes son más eficientes.</span>
           </div>
 
           <!-- SVG Visual: Comparison diagram -->
@@ -653,28 +659,28 @@
             <text x="380" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#2d1e0f">Partner Workshop</text>
           </svg>
 
-          <label class="lbl" for="p-name">Partner's Name</label>
+          <label class="lbl" for="p-name"><span class="en-text">Partner's Name</span><span class="es-text">Nombre del compañero</span></label>
           <input type="text" id="p-name" value="Alex" />
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="p-rope">Partner's Rope Pieces</label>
+              <label class="lbl" for="p-rope"><span class="en-text">Partner's Rope Pieces</span><span class="es-text">Piezas de cuerda del compañero</span></label>
               <input type="number" id="p-rope" min="0" value="10" oninput="comparePeer()" />
             </div>
             <div>
-              <label class="lbl" for="p-wood">Partner's Wood Strips</label>
+              <label class="lbl" for="p-wood"><span class="en-text">Partner's Wood Strips</span><span class="es-text">Tiras de madera del compañero</span></label>
               <input type="number" id="p-wood" min="0" value="5" oninput="comparePeer()" />
             </div>
           </div>
           <div style="margin-top: 10px;">
-            <label class="lbl" for="p-fabric">Partner's Fabric Swatches</label>
+            <label class="lbl" for="p-fabric"><span class="en-text">Partner's Fabric Swatches</span><span class="es-text">Muestras de tela del compañero</span></label>
             <input type="number" id="p-fabric" min="0" value="20" oninput="comparePeer()" />
           </div>
 
-          <button class="calc-btn" onclick="comparePeer()">📊 Compare Cut Lists</button>
+          <button class="calc-btn" onclick="comparePeer()"><span class="en-text">📊 Compare Cut Lists</span><span class="es-text">📊 Comparar listas de corte</span></button>
           <div class="readout" id="peer-out"></div>
 
-          <label class="lbl" for="peer-reflect" style="margin-top:18px;">Write down whose workshop design yielded more total pieces. Explain why using your mathematical values.</label>
+          <label class="lbl" for="peer-reflect" style="margin-top:18px;"><span class="en-text">Write down whose workshop design yielded more total pieces. Explain why using your mathematical values.</span><span class="es-text">Escribe qué diseño de taller rindió más piezas totales. Explica por qué usando tus valores matemáticos.</span></label>
           <textarea id="peer-reflect" placeholder="My workshop yielded... My partner's workshop... I think... because..."></textarea>
         </div>
 
@@ -693,7 +699,7 @@
             <div class="card-icon green">🏆</div>
             <div>
               <div class="card-title">Step 5 — Finish &amp; Submit</div>
-              <div class="card-sub">Generate your final cut list summary and review your scoring rubric</div>
+              <div class="card-sub"><span class="en-text">Generate your final cut list summary and review your scoring rubric</span><span class="es-text">Genera tu resumen final de la lista de cortes y revisa tu rúbrica de calificación</span></div>
             </div>
           </div>
 
@@ -701,72 +707,72 @@
             <strong>Your job:</strong> Write 3–5 sentences summarizing your workshop cut list and the mathematical patterns you noticed (such as the reciprocal rule).
           </div>
 
-          <label class="lbl" for="pitch">✍️ Final Workshop Cut List Memo</label>
+          <label class="lbl" for="pitch"><span class="en-text">✍️ Final Workshop Cut List Memo</span><span class="es-text">✍️ Memo final de la lista de cortes del taller</span></label>
           <textarea id="pitch" placeholder="To organize my Maker Workshop, I used fraction division (6.NS.1) to split my materials. For the rope, I cut a total of... yielding... For the wood strips, I converted the mixed number to... yielding..."></textarea>
 
           <!-- Checklist -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">✅ Checklist — Check off everything you completed</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;"><span class="en-text">✅ Checklist — Check off everything you completed</span><span class="es-text">✅ Lista de verificación — Marca todo lo que completaste</span></h3>
           <ul class="checklist" id="checklist">
-            <li><input type="checkbox" id="ck1" /> I defined the core terms for fraction division.</li>
-            <li><input type="checkbox" id="ck2" /> I completed the rope division calculations and visual.</li>
-            <li><input type="checkbox" id="ck3" /> I solved the wood board division involving mixed numbers.</li>
-            <li><input type="checkbox" id="ck4" /> I compared fabric cuts to standard commercial sizes.</li>
-            <li><input type="checkbox" id="ck5" /> I compared my results side-by-side with a classmate.</li>
-            <li><input type="checkbox" id="ck6" /> I wrote a workshop memo summarizing my plan.</li>
+            <li><input type="checkbox" id="ck1" /> <span class="en-text">I defined the core terms for fraction division.</span><span class="es-text">Definí los términos principales de la división de fracciones.</span></li>
+            <li><input type="checkbox" id="ck2" /> <span class="en-text">I completed the rope division calculations and visual.</span><span class="es-text">Completé los cálculos de división de cuerda y el visual.</span></li>
+            <li><input type="checkbox" id="ck3" /> <span class="en-text">I solved the wood board division involving mixed numbers.</span><span class="es-text">Resolví la división de la tabla de madera que involucra números mixtos.</span></li>
+            <li><input type="checkbox" id="ck4" /> <span class="en-text">I compared fabric cuts to standard commercial sizes.</span><span class="es-text">Comparé los cortes de tela con los tamaños comerciales estándar.</span></li>
+            <li><input type="checkbox" id="ck5" /> <span class="en-text">I compared my results side-by-side with a classmate.</span><span class="es-text">Comparé mis resultados lado a lado con un compañero de clase.</span></li>
+            <li><input type="checkbox" id="ck6" /> <span class="en-text">I wrote a workshop memo summarizing my plan.</span><span class="es-text">Escribí un memorando de taller que resume mi plan.</span></li>
           </ul>
 
           <!-- Rubric -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">📊 Scoring Rubric</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;"><span class="en-text">📊 Scoring Rubric</span><span class="es-text">📊 Rúbrica de calificación</span></h3>
           <table class="rubric">
             <thead>
               <tr>
-                <th>Skill</th>
-                <th class="score-4">4 — Expert</th>
-                <th class="score-3">3 — Proficient</th>
-                <th class="score-2">2 — Developing</th>
+                <th><span class="en-text">Skill</span><span class="es-text">Habilidad</span></th>
+                <th class="score-4"><span class="en-text">4 — Expert</span><span class="es-text">4 — Experto</span></th>
+                <th class="score-3"><span class="en-text">3 — Proficient</span><span class="es-text">3 — Competente</span></th>
+                <th class="score-2"><span class="en-text">2 — Developing</span><span class="es-text">2 — En desarrollo</span></th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><strong>Fraction Division</strong></td>
-                <td>Both division models set up and solved with clear improper/reciprocal steps.</td>
-                <td>Both division models solved correctly.</td>
-                <td>Setup is correct, but made calculation or representation errors.</td>
+                <td><strong><span class="en-text">Fraction Division</span><span class="es-text">División de fracciones</span></strong></td>
+                <td><span class="en-text">Both division models set up and solved with clear improper/reciprocal steps.</span><span class="es-text">Ambos modelos de división configurados y resueltos con pasos claros impropios/recíprocos.</span></td>
+                <td><span class="en-text">Both division models solved correctly.</span><span class="es-text">Ambos modelos de división resueltos correctamente.</span></td>
+                <td><span class="en-text">Setup is correct, but made calculation or representation errors.</span><span class="es-text">La configuración es correcta, pero cometió errores de cálculo o representación.</span></td>
               </tr>
               <tr>
-                <td><strong>Scrap &amp; Remainders</strong></td>
-                <td>Correctly calculates and explains the physical scrap lengths in feet/yards.</td>
-                <td>Correctly identifies whole-number pieces and fraction leftovers.</td>
-                <td>Confuses the fraction of a piece with the physical length of scrap.</td>
+                <td><strong>${isEs ? "Residuo" : "Scrap"} &amp; Remainders</strong></td>
+                <td><span class="en-text">Correctly calculates and explains the physical scrap lengths in feet/yards.</span><span class="es-text">Calcula y explica correctamente las longitudes de madera sobrante física en pies/yardas.</span></td>
+                <td><span class="en-text">Correctly identifies whole-number pieces and fraction leftovers.</span><span class="es-text">Identifica correctamente las piezas de número entero y las fracciones sobrantes.</span></td>
+                <td><span class="en-text">Confuses the fraction of a piece with the physical length of scrap.</span><span class="es-text">Confunde la fracción de una pieza con la longitud física del residuo.</span></td>
               </tr>
               <tr>
-                <td><strong>Commercial Scale</strong></td>
-                <td>Accurately scales up to 25ft, 15yd, and 8ft sizes, showing perfect yields and waste.</td>
-                <td>Completes comparison table with valid computations.</td>
-                <td>Comparison table contains arithmetic errors or is incomplete.</td>
+                <td><strong><span class="en-text">Commercial Scale</span><span class="es-text">Escala comercial</span></strong></td>
+                <td><span class="en-text">Accurately scales up to 25ft, 15yd, and 8ft sizes, showing perfect yields and waste.</span><span class="es-text">Escala con precisión a tamaños de 25 pies, 15 yardas y 8 pies, mostrando rendimientos y desperdicios perfectos.</span></td>
+                <td><span class="en-text">Completes comparison table with valid computations.</span><span class="es-text">Completa la tabla de comparación con cálculos válidos.</span></td>
+                <td><span class="en-text">Comparison table contains arithmetic errors or is incomplete.</span><span class="es-text">La tabla de comparación contiene errores aritméticos o está incompleta.</span></td>
               </tr>
               <tr>
                 <td><strong>Reflection</strong></td>
-                <td>Provides deep comparisons and explains how smaller divisors generate larger quotients.</td>
-                <td>Compares lists and writes reflection sentences.</td>
-                <td>Reflections are very short or lack mathematical backing.</td>
+                <td><span class="en-text">Provides deep comparisons and explains how smaller divisors generate larger quotients.</span><span class="es-text">Proporciona comparaciones profundas y explica cómo los divisores más pequeños generan cocientes más grandes.</span></td>
+                <td><span class="en-text">Compares lists and writes reflection sentences.</span><span class="es-text">Compara listas y escribe oraciones de reflexión.</span></td>
+                <td><span class="en-text">Reflections are very short or lack mathematical backing.</span><span class="es-text">Las reflexiones son muy cortas o carecen de respaldo matemático.</span></td>
               </tr>
             </tbody>
           </table>
 
           <!-- Report generating buttons -->
           <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
-            <button class="calc-btn" onclick="buildReport()">📝 Generate Summary</button>
-            <button class="export-btn" onclick="copyReport()">📋 Copy</button>
-            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
-            <button class="export-btn" onclick="window.print()">🖨️ Print</button>
+            <button class="calc-btn" onclick="buildReport()">📝 <span class="en-text">Generate Summary</span><span class="es-text">Generar resumen</span></button>
+            <button class="export-btn" onclick="copyReport()">📋 <span class="en-text">Copy</span><span class="es-text">Copiar</span></button>
+            <button class="export-btn" onclick="downloadTxt()">⬇️ <span class="en-text">Download .txt</span><span class="es-text">Descargar .txt</span></button>
+            <button class="export-btn" onclick="window.print()">🖨️ <span class="en-text">Print</span><span class="es-text">Imprimir</span></button>
           </div>
           <pre class="report-box" id="reportBox"></pre>
         </div>
 
         <div class="nav-row">
           <button class="nav-btn ghost" onclick="goStep(5)">← Back</button>
-          <button class="nav-btn green" onclick="alert('Congratulations! 🎉 Show your cut list report to your teacher.')">🎉 I'm Done!</button>
+          <button class="nav-btn green" onclick="alert('Congratulations! 🎉 Show your cut list report to your teacher.')"><span class="en-text">🎉 I'm Done!</span><span class="es-text">🎉 ¡Terminé!</span></button>
         </div>
       </div>
 
@@ -802,11 +808,21 @@
       // ---- Build step trail ----
       function buildTrail() {
         const trail = document.getElementById('stepTrail');
+        const isEs = document.body.classList.contains('es');
+        const stepLabels = {
+          1: { en: 'Key Words', es: 'Palabras clave' },
+          2: { en: 'Rope Cuts', es: 'Cortes de cuerda' },
+          3: { en: 'Wood Strips', es: 'Tiras de madera' },
+          4: { en: 'Fabric Cuts', es: 'Cortes de tela' },
+          5: { en: 'Compare', es: 'Comparar' },
+          6: { en: 'Finish', es: 'Finalizar' }
+        };
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
+          const label = stepLabels[s.id][isEs ? 'es' : 'en'];
           return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
-            <span class="s-label">${s.label}</span>
+            <span class="s-label">${label}</span>
           </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
         }).join('');
       }
@@ -826,7 +842,8 @@
       function updateProgress() {
         const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
         document.getElementById('progFill').style.width = pct + '%';
-        document.getElementById('progLabel').textContent = `Step ${currentStep} of ${STEPS.length}`;
+        const isEs = document.body.classList.contains('es');
+        document.getElementById('progLabel').textContent = isEs ? `Paso ${currentStep} de ${STEPS.length}` : `Step ${currentStep} of ${STEPS.length}`;
       }
 
       // ---- Math helpers ----
@@ -875,16 +892,23 @@
         const wholePieces = Math.floor(qVal);
         const remNum = qNum % qDen;
         
+        const isEs = document.body.classList.contains('es');
         let quotientStr = '';
         if (remNum === 0) {
-          quotientStr = `<strong>${wholePieces} pieces</strong>`;
+          quotientStr = isEs ? `<strong>${wholePieces} piezas</strong>` : `<strong>${wholePieces} pieces</strong>`;
         } else {
           const commonG = gcd(remNum, qDen);
-          quotientStr = `<strong>${wholePieces} and ${remNum/commonG}/${qDen/commonG} pieces</strong> (or ${wholePieces} full pieces + a leftover)`;
+          quotientStr = isEs ? `<strong>${wholePieces} y ${remNum/commonG}/${qDen/commonG} piezas</strong> (o ${wholePieces} piezas completas + un sobrante)` : `<strong>${wholePieces} and ${remNum/commonG}/${qDen/commonG} pieces</strong> (or ${wholePieces} full pieces + a leftover)`;
         }
 
         const rec = divDen + '/1';
-        showReadout('rope-out', `
+        showReadout('rope-out', isEs ? `
+          <strong>Longitud total de cuerda:</strong> ${type === 'whole' ? num : num + '/' + den} pies<br>
+          <strong>Longitud de pieza:</strong> 1/${divDen} pie<br>
+          <strong>División:</strong> ${type === 'whole' ? num : num + '/' + den} ÷ 1/${divDen} = ${type === 'whole' ? num : num + '/' + den} × ${rec} = <strong>${qNum}/${qDen}</strong><br>
+          <strong>Resultado:</strong> ${quotientStr}<br>
+          <small>Multiplicar por el recíproco ${rec} muestra que hay ${divDen} cuartos de pieza en cada pie entero.</small>
+        ` : `
           <strong>Total Rope Length:</strong> ${type === 'whole' ? num : num + '/' + den} feet<br>
           <strong>Piece Length:</strong> 1/${divDen} foot<br>
           <strong>Division:</strong> ${type === 'whole' ? num : num + '/' + den} ÷ 1/${divDen} = ${type === 'whole' ? num : num + '/' + den} × ${rec} = <strong>${qNum}/${qDen}</strong><br>
@@ -897,7 +921,7 @@
       }
 
       function updateRopeSVG(totalVal, divDen, wholePieces, qVal) {
-        const svg = document.getElementById('rope-svg');
+        const svg = document.getElementById('rope-svg'); const isEs = document.body.classList.contains('es');
         if (!svg) return;
         
         const width = 440;
@@ -905,7 +929,7 @@
         const scale = width / maxVal;
         
         let html = `
-          <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#2d1e0f">Rope Cutting Visualizer</text>
+          <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#2d1e0f">${isEs ? "Visualizador de corte de cuerda" : "Rope Cutting Visualizer"}</text>
         `;
         
         const ropeLength = totalVal * scale;
@@ -944,7 +968,7 @@
         }
         
         html += `
-          <text x="260" y="118" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e7d40">Yields ${wholePieces} full piece(s) of 1/${divDen} ft</text>
+          <text x="260" y="118" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e7d40">${isEs ? "Rinde " + wholePieces + " piezas completas de 1/" + divDen + " ft" : "Yields " + wholePieces + " full piece(s) of 1/" + divDen + " ft"}</text>
         `;
         
         svg.innerHTML = html;
@@ -971,14 +995,15 @@
         const fullStrips = Math.floor(rawVal);
         const remStripsNum = resNum % resDen;
         
+        const isEs = document.body.classList.contains('es');
         let resultStr = '';
         if (remStripsNum === 0) {
-          resultStr = `<strong>${fullStrips} strips</strong>`;
+          resultStr = isEs ? `<strong>${fullStrips} tiras</strong>` : `<strong>${fullStrips} strips</strong>`;
         } else {
           const commonG = gcd(remStripsNum, resDen);
           const reducedNum = remStripsNum / commonG;
           const reducedDen = resDen / commonG;
-          resultStr = `<strong>${fullStrips} and ${reducedNum}/${reducedDen} strips</strong>`;
+          resultStr = isEs ? `<strong>${fullStrips} y ${reducedNum}/${reducedDen} tiras</strong>` : `<strong>${fullStrips} and ${reducedNum}/${reducedDen} strips</strong>`;
           
           const scrapNum = impNum * sDen - fullStrips * sNum * impDen;
           const scrapDen = impDen * sDen;
@@ -986,12 +1011,18 @@
           const fScNum = scrapNum / scG;
           const fScDen = scrapDen / scG;
           if (fScNum > 0) {
-            resultStr += ` (gives <strong>${fullStrips} full strips</strong> + <strong>${fScNum}/${fScDen} ft</strong> of scrap wood)`;
+            resultStr += isEs ? ` (da <strong>${fullStrips} tiras completas</strong> + <strong>${fScNum}/${fScDen} pies</strong> de madera sobrante)` : ` (gives <strong>${fullStrips} full strips</strong> + <strong>${fScNum}/${fScDen} ft</strong> of scrap wood)`;
           }
         }
 
         const rec = sDen + '/' + sNum;
-        showReadout('wood-out', `
+        showReadout('wood-out', isEs ? `
+          <strong>Tabla total:</strong> ${whole > 0 ? whole + ' ' : ''}${num > 0 ? num + '/' + den : ''} pies (equivale a <strong>${impNum}/${impDen} ft</strong>)<br>
+          <strong>Tamaño de tira:</strong> ${sNum}/${sDen} pie<br>
+          <strong>División:</strong> ${impNum}/${impDen} ÷ ${sNum}/${sDen} = ${impNum}/${impDen} × ${rec} = <strong>${resNum}/${resDen}</strong><br>
+          <strong>Resultado:</strong> ${resultStr}<br>
+          <small>Fórmula: Multiplicar por el recíproco del divisor (${rec}).</small>
+        ` : `
           <strong>Total Board:</strong> ${whole > 0 ? whole + ' ' : ''}${num > 0 ? num + '/' + den : ''} feet (equals <strong>${impNum}/${impDen} ft</strong>)<br>
           <strong>Strip Size:</strong> ${sNum}/${sDen} foot<br>
           <strong>Division:</strong> ${impNum}/${impDen} ÷ ${sNum}/${sDen} = ${impNum}/${impDen} × ${rec} = <strong>${resNum}/${resDen}</strong><br>
@@ -1004,7 +1035,7 @@
       }
 
       function updateWoodSVG(whole, num, den, sNum, sDen, fullStrips, rawVal) {
-        const svg = document.getElementById('wood-svg');
+        const svg = document.getElementById('wood-svg'); const isEs = document.body.classList.contains('es');
         if (!svg) return;
         
         const totalVal = whole + (num / den);
@@ -1015,7 +1046,7 @@
         const scale = width / maxVal;
         
         let html = `
-          <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#2d1e0f">Wood Board Cutting Visualizer</text>
+          <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#2d1e0f">${isEs ? "Visualizador de corte de tabla de madera" : "Wood Board Cutting Visualizer"}</text>
         `;
         
         const boardLength = totalVal * scale;
@@ -1034,11 +1065,11 @@
         
         const usedLength = fullStrips * stepSize;
         if (boardLength > usedLength + 1) {
-          const xScrap = 40 + usedLength;
-          const wScrap = boardLength - usedLength;
+          const x${isEs ? "Residuo" : "Scrap"} = 40 + usedLength;
+          const w${isEs ? "Residuo" : "Scrap"} = boardLength - usedLength;
           html += `
-            <rect x="${xScrap}" y="51" width="${wScrap}" height="34" fill="#fdeee9" stroke="#c45a3c" stroke-width="1"/>
-            <text x="${xScrap + wScrap/2}" y="72" text-anchor="middle" font-size="9" fill="#c45a3c" font-weight="bold">Scrap</text>
+            <rect x="${x${isEs ? "Residuo" : "Scrap"}}" y="51" width="${w${isEs ? "Residuo" : "Scrap"}}" height="34" fill="#fdeee9" stroke="#c45a3c" stroke-width="1"/>
+            <text x="${x${isEs ? "Residuo" : "Scrap"} + w${isEs ? "Residuo" : "Scrap"}/2}" y="72" text-anchor="middle" font-size="9" fill="#c45a3c" font-weight="bold">${isEs ? "Residuo" : "Scrap"}</text>
           `;
         }
         
@@ -1057,7 +1088,7 @@
 
       // ---- Fabric Cuts ----
       function calcFabric() {
-        const fNum = parseInt(document.getElementById('f-swatch-num').value) || 0;
+        const fNum = parseInt(document.getElementById('f-swatch-num').value) || 0; const isEs = document.body.classList.contains('es');
         const fDen = parseInt(document.getElementById('f-swatch-den').value) || 1;
         
         if (fNum <= 0 || fDen <= 0) return;
@@ -1091,7 +1122,7 @@
 
         const rec = fDen + '/' + fNum;
         showReadout('fabric-out', `
-          <strong>Total Bolt Size:</strong> 15 yards<br>
+          <strong>Total Bolt Size:</strong> <span class="en-text">15 yards</span><span class="es-text">15 yardas</span><br>
           <strong>Swatch Size:</strong> ${fNum}/${fDen} yard<br>
           <strong>Division:</strong> 15 ÷ ${fNum}/${fDen} = 15 × ${rec} = <strong>${resNum}/${resDen}</strong><br>
           <strong>Result:</strong> ${resultStr}<br>
@@ -1101,32 +1132,32 @@
       }
 
       function updateComparisonTableWrapper() {
-        const fNum = parseInt(document.getElementById('f-swatch-num').value) || 0;
+        const fNum = parseInt(document.getElementById('f-swatch-num').value) || 0; const isEs = document.body.classList.contains('es');
         const fDen = parseInt(document.getElementById('f-swatch-den').value) || 1;
         
         const ropeDivDen = parseInt(document.getElementById('rope-divisor-den').value) || 4;
         const ropeYield = 25 * ropeDivDen;
         
         let fabricYieldStr = '—';
-        let fabricScrapStr = '—';
+        let fabric${isEs ? "Residuo" : "Scrap"}Str = '—';
         if (fNum && fDen) {
           const rawVal = (15 * fDen) / fNum;
           const full = Math.floor(rawVal);
           const rem = (15 * fDen) % fNum;
           if (rem === 0) {
-            fabricYieldStr = `${full} swatches`;
-            fabricScrapStr = `0 yd`;
+            fabricYieldStr = isEs ? `${full} muestras` : `${full} swatches`;
+            fabric${isEs ? "Residuo" : "Scrap"}Str = `0 yd`;
           } else {
             const cg = gcd(rem, fNum);
-            fabricYieldStr = `${full} ${rem/cg}/${fNum/cg} swatches`;
+            fabricYieldStr = isEs ? `${full} ${rem/cg}/${fNum/cg} muestras` : `${full} ${rem/cg}/${fNum/cg} swatches`;
             const scrapNum = 15 * fDen - full * fNum;
             const scG = gcd(scrapNum, fDen);
-            fabricScrapStr = `${scrapNum/scG}/${fDen/scG} yd`;
+            fabric${isEs ? "Residuo" : "Scrap"}Str = `${scrapNum/scG}/${fDen/scG} yd`;
           }
         }
         
         let woodYieldStr = '—';
-        let woodScrapStr = '—';
+        let wood${isEs ? "Residuo" : "Scrap"}Str = '—';
         const wSNum = parseInt(document.getElementById('w-strip-num').value) || 3;
         const wSDen = parseInt(document.getElementById('w-strip-den').value) || 4;
         
@@ -1135,28 +1166,28 @@
           const wFull = Math.floor(rawWVal);
           const wRem = (8 * wSDen) % wSNum;
           if (wRem === 0) {
-            woodYieldStr = `${wFull} strips`;
-            woodScrapStr = `0 ft`;
+            woodYieldStr = isEs ? `${wFull} tiras` : `${wFull} strips`;
+            wood${isEs ? "Residuo" : "Scrap"}Str = `0 ft`;
           } else {
             const cg = gcd(wRem, wSNum);
-            woodYieldStr = `${wFull} ${wRem/cg}/${wSNum/cg} strips`;
+            woodYieldStr = isEs ? `${wFull} ${wRem/cg}/${wSNum/cg} tiras` : `${wFull} ${wRem/cg}/${wSNum/cg} strips`;
             const scrapNum = 8 * wSDen - wFull * wSNum;
             const scG = gcd(scrapNum, wSDen);
-            woodScrapStr = `${scrapNum/scG}/${wSDen/scG} ft`;
+            wood${isEs ? "Residuo" : "Scrap"}Str = `${scrapNum/scG}/${wSDen/scG} ft`;
           }
         }
         
         document.getElementById('td-rope-divisor').textContent = `1/${ropeDivDen} ft`;
-        document.getElementById('td-rope-yield').textContent = `${ropeYield} pieces`;
+        document.getElementById('td-rope-yield').textContent = isEs ? `${ropeYield} piezas` : `${ropeYield} pieces`;
         document.getElementById('td-rope-scrap').textContent = `0 ft`;
         
         document.getElementById('td-fabric-divisor').textContent = fNum ? `${fNum}/${fDen} yd` : '—';
         document.getElementById('td-fabric-yield').innerHTML = fNum ? `<strong>${fabricYieldStr}</strong>` : '—';
-        document.getElementById('td-fabric-scrap').textContent = fNum ? fabricScrapStr : '—';
+        document.getElementById('td-fabric-scrap').textContent = fNum ? fabric${isEs ? "Residuo" : "Scrap"}Str : '—';
         
         document.getElementById('td-wood-divisor').textContent = `${wSNum}/${wSDen} ft`;
         document.getElementById('td-wood-yield').innerHTML = `<strong>${woodYieldStr}</strong>`;
-        document.getElementById('td-wood-scrap').textContent = woodScrapStr;
+        document.getElementById('td-wood-scrap').textContent = wood${isEs ? "Residuo" : "Scrap"}Str;
       }
 
       // ---- Partner Compare ----
@@ -1177,7 +1208,7 @@
         const wSDen = parseInt(document.getElementById('w-strip-den').value) || 4;
         const myWoodVal = wSNum > 0 ? ((wWhole * wDen + wNum) * wSDen) / (wDen * wSNum) : 0;
         
-        const fNum = parseInt(document.getElementById('f-swatch-num').value) || 0;
+        const fNum = parseInt(document.getElementById('f-swatch-num').value) || 0; const isEs = document.body.classList.contains('es');
         const fDen = parseInt(document.getElementById('f-swatch-den').value) || 1;
         const myFabricVal = fNum > 0 ? (15 * fDen) / fNum : 0;
 
@@ -1266,7 +1297,7 @@
         const lines = [
           '═══ MAKER WORKSHOP CUT LIST — UNIT 2 PROJECT (Version B) ═══',
           '',
-          '🪚 MATH STANDARDS: 6.NS.1 (Fraction Division)',
+          '🪚 MATH STANDARDS: 6.NS.1 (<span class="en-text">Fraction Division</span><span class="es-text">División de fracciones</span>)',
           '',
           '🪢 STEP 1 — ROPE CUTS',
           `   Total Rope: ${ropeTotal || '—'} | Piece Size: 1/${rDivDen} ft`,
@@ -1317,4 +1348,104 @@
       calcRope();
       calcWood();
       calcFabric();
+
+      function toggleLanguage() {
+        const isEs = document.body.classList.toggle('es');
+        const btn = document.getElementById('btn-lang');
+        if (btn) btn.textContent = isEs ? '🌐 Idioma: ES' : '🌐 Language: EN';
+        
+        // Update input placeholders dynamically
+        const placeholders = {
+          'p-name': { en: "Partner's Name", es: "Nombre del compañero" },
+          'p-rope': { en: "Partner's Rope Pieces", es: "Piezas de cuerda del compañero" },
+          'p-wood': { en: "Partner's Wood Strips", es: "Tiras de madera del compañero" },
+          'p-fabric': { en: "Partner's Fabric Swatches", es: "Muestras de tela del compañero" },
+          'peer-reflect': { en: "Explain your workshop comparison details...", es: "Explica los detalles de la comparación de tu taller..." },
+          'pitch': { en: "Write your workshop summary memo...", es: "Escribe el memorándum de resumen de tu taller..." },
+          'world-compare': { en: "Explain which supply is most efficient...", es: "Explica qué suministro es más eficiente..." }
+        };
+        for (const [id, langObj] of Object.entries(placeholders)) {
+          const el = document.getElementById(id);
+          if (el) el.placeholder = isEs ? langObj.es : langObj.en;
+        }
+
+        // Update select option translations
+        const ropeType = document.getElementById('rope-type');
+        if (ropeType) {
+          ropeType.options[0].textContent = isEs ? 'Número entero (p. ej. 4 pies)' : 'Whole Number (e.g. 4 feet)';
+          ropeType.options[1].textContent = isEs ? 'Fracción (p. ej. 9/4 pies)' : 'Fraction (e.g. 9/4 feet)';
+        }
+
+        // Update step trail
+        buildTrail();
+        updateProgress();
+        
+        // Recalculate everything to update output readouts
+        calcRope();
+        calcWood();
+        calcFabric();
+        comparePeer();
+        buildReport();
+      }
+
+      function readAloud() {
+        const btn = document.getElementById('btn-read');
+        if (!btn) return;
+        
+        if (window.speechSynthesis && window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          btn.textContent = document.body.classList.contains('es') ? '🔊 Leer en Voz Alta' : '🔊 Read Aloud';
+          return;
+        }
+        
+        const isEs = document.body.classList.contains('es');
+        btn.textContent = isEs ? '⏹️ Detener' : '⏹️ Stop';
+        
+        // Extract readable text from the current active step panel
+        const activePanel = document.querySelector('.step-panel.active');
+        if (!activePanel) return;
+        
+        // Find all visible text elements inside active panel
+        const textElements = [];
+        const selector = isEs ? '.es-text' : '.en-text';
+        activePanel.querySelectorAll(selector).forEach(el => {
+          if (el.offsetParent !== null) { // element is visible
+            textElements.push(el.textContent.trim());
+          }
+        });
+        
+        if (textElements.length === 0) {
+          // Fallback to general text if spans not found
+          activePanel.querySelectorAll('.card-title, .card-sub, .instruct, .vocab-term, .vocab-def, .vocab-ex, label, summary, p').forEach(el => {
+            if (el.offsetParent !== null && !el.closest('.no-print') && !el.closest('svg')) {
+              textElements.push(el.textContent.trim());
+            }
+          });
+        }
+        
+        const textToSpeak = textElements.join('. ');
+        const utterance = new SpeechSynthesisUtterance(textToSpeak);
+        utterance.lang = isEs ? 'es-ES' : 'en-US';
+        utterance.rate = 0.9;
+        
+        utterance.onend = () => {
+          btn.textContent = isEs ? '🔊 Leer en Voz Alta' : '🔊 Read Aloud';
+        };
+        
+        utterance.onerror = () => {
+          btn.textContent = isEs ? '🔊 Leer en Voz Alta' : '🔊 Read Aloud';
+        };
+        
+        window.speechSynthesis.speak(utterance);
+      }
+      
+      // Stop speech on page navigation
+      const originalGoStep = goStep;
+      goStep = function(n) {
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+        const btn = document.getElementById('btn-read');
+        if (btn) btn.textContent = document.body.classList.contains('es') ? '🔊 Leer en Voz Alta' : '🔊 Read Aloud';
+        originalGoStep(n);
+      };
+
     </script>

@@ -31,6 +31,11 @@
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
 
+      /* ---- Translation Classes ---- */
+      body.es .en-text { display: none !important; }
+      body.es .es-text { display: inline !important; }
+      span.es-text { display: none; }
+
       /* ---- Hero ---- */
       .hero {
         background: linear-gradient(135deg, #0f2d4a 0%, #0284c7 60%, #0d9488 100%);
@@ -45,7 +50,7 @@
       .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 50px; padding: 4px 13px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
       .tag.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
 
-      /* ---- Level selector ---- */
+      /* ---- Level selector & language/TTS bar ---- */
       .level-bar {
         display: flex; gap: 10px; justify-content: center;
         background: rgba(255,255,255,.10); border-radius: 50px;
@@ -177,7 +182,7 @@
         color: var(--blue); list-style: none; display: inline-flex;
         align-items: center; gap: 5px;
       }
-      details.hint summary::before { content: "💡"; }
+      details.hint summary::before { content: "💡 "; }
       details.hint p { font-size: 14px; color: var(--muted); margin-top: 8px; padding: 10px 12px; background: var(--blue-lt); border-radius: 8px; }
 
       /* ---- Level 2 extension ---- */
@@ -285,17 +290,39 @@
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
       <div class="hero-emoji">🐟</div>
-      <h1>Aquarium Build Lab</h1>
-      <p class="hero-sub">Design your own custom glass aquarium tank — step by step.</p>
+      <h1>
+        <span class="en-text">Aquarium Build Lab</span>
+        <span class="es-text">Laboratorio de Construcción de Acuario</span>
+      </h1>
+      <p class="hero-sub">
+        <span class="en-text">Design your own custom glass aquarium tank — step by step.</span>
+        <span class="es-text">Diseña tu propio tanque de acuario de vidrio personalizado, paso a paso.</span>
+      </p>
       <div class="hero-tags">
-        <span class="tag gold">Unit 10 · Volume &amp; Surface Area</span>
+        <span class="tag gold">
+          <span class="en-text">Unit 10 · Volume &amp; Surface Area</span>
+          <span class="es-text">Unidad 10 · Volumen y Área de Superficie</span>
+        </span>
         <span class="tag">6.G.2</span>
         <span class="tag">6.G.4</span>
-        <span class="tag">Version B</span>
+        <span class="tag">
+          <span class="en-text">Version B</span>
+          <span class="es-text">Versión B</span>
+        </span>
       </div>
       <div class="level-bar">
-        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
-        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
+          <span class="en-text">🟢 Level 1 — With Support</span>
+          <span class="es-text">🟢 Nivel 1 — Con Soporte</span>
+        </button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">
+          <span class="en-text">🔵 Level 2 — Challenge</span>
+          <span class="es-text">🔵 Nivel 2 — Desafío</span>
+        </button>
+      </div>
+      <div class="level-bar" style="margin-top: 10px; max-width: 400px;">
+        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
+        <button class="level-btn" id="btn-read" onclick="readAloud()">🔊 Read Aloud</button>
       </div>
     </header>
 
@@ -319,8 +346,14 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">Key Words</div>
-              <div class="card-sub">Learn these 5 math words before you begin</div>
+              <div class="card-title">
+                <span class="en-text">Key Words</span>
+                <span class="es-text">Palabras Clave</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Learn these 5 math words before you begin</span>
+                <span class="es-text">Aprende estas 5 palabras de matemáticas antes de comenzar</span>
+              </div>
             </div>
           </div>
 
@@ -330,44 +363,90 @@
           <div class="vocab-grid">
             <div class="vocab-card">
               <div class="vocab-icon">🧊</div>
-              <div class="vocab-term">Volume</div>
-              <div class="vocab-def">The amount of 3-D space inside a solid shape, measured in unit cubes.</div>
+              <div class="vocab-term">
+                <span class="en-text">Volume</span>
+                <span class="es-text">Volumen</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The amount of 3-D space inside a solid shape, measured in unit cubes.</span>
+                <span class="es-text">La cantidad de espacio tridimensional dentro de una forma sólida, medida en unidades cúbicas.</span>
+              </div>
               <div class="vocab-ex">V = l &times; w &times; h</div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">📐</div>
-              <div class="vocab-term">Surface Area</div>
-              <div class="vocab-def">The total area of the outside faces of a shape. Our open tank has only 5 faces.</div>
+              <div class="vocab-term">
+                <span class="en-text">Surface Area</span>
+                <span class="es-text">Área de Superficie</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The total area of the outside faces of a shape. Our open tank has only 5 faces.</span>
+                <span class="es-text">El área total de las caras exteriores de una forma. Nuestro tanque abierto tiene solo 5 caras.</span>
+              </div>
               <div class="vocab-ex">SA = lw + 2lh + 2wh</div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">📦</div>
-              <div class="vocab-term">Rectangular Prism</div>
-              <div class="vocab-def">A box shape with 6 flat faces. Our custom tank is open on top, showing 5 faces.</div>
-              <div class="vocab-ex">A standard fish tank</div>
+              <div class="vocab-term">
+                <span class="en-text">Rectangular Prism</span>
+                <span class="es-text">Prisma Rectangular</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A box shape with 6 flat faces. Our custom tank is open on top, showing 5 faces.</span>
+                <span class="es-text">Una forma de caja con 6 caras planas. Nuestro tanque personalizado está abierto en la parte superior, mostrando 5 caras.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">A standard fish tank</span>
+                <span class="es-text">Una pecera estándar</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🗺️</div>
-              <div class="vocab-term">Net</div>
-              <div class="vocab-def">A flat 2-D shape pattern that folds up to make a 3-D box prism.</div>
-              <div class="vocab-ex">Unfolded tank blueprint</div>
+              <div class="vocab-term">
+                <span class="en-text">Net</span>
+                <span class="es-text">Red (Despliegue)</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A flat 2-D shape pattern that folds up to make a 3-D box prism.</span>
+                <span class="es-text">Un patrón plano de forma bidimensional que se pliega para formar una caja tridimensional.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">Unfolded tank blueprint</span>
+                <span class="es-text">Plano del tanque desplegado</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">⬜</div>
-              <div class="vocab-term">Cubic Unit</div>
-              <div class="vocab-def">A 1&times;1&times;1 cube (like 1 cubic inch) used to measure space capacity.</div>
-              <div class="vocab-ex">1 cubic inch (in&sup3;)</div>
+              <div class="vocab-term">
+                <span class="en-text">Cubic Unit</span>
+                <span class="es-text">Unidad Cúbica</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A 1&times;1&times;1 cube (like 1 cubic inch) used to measure space capacity.</span>
+                <span class="es-text">Un cubo de 1&times;1&times;1 (como 1 pulgada cúbica) que se usa para medir la capacidad de espacio.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">1 cubic inch (in&sup3;)</span>
+                <span class="es-text">1 pulgada cúbica (in&sup3;)</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct" style="margin-top:20px">
-            ✅ Read each vocabulary word card. When you're ready, click <strong>Next Step</strong> to begin your aquarium design!
+            <span class="en-text">✅ Read each vocabulary word card. When you're ready, click <strong>Next Step</strong> to begin your aquarium design!</span>
+            <span class="es-text">✅ Lee cada tarjeta de vocabulario. Cuando estés listo, haz clic en <strong>Siguiente Paso</strong> para comenzar el diseño de tu acuario!</span>
           </div>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" disabled>← Back</button>
-          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
+          <button class="nav-btn ghost" disabled>
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(2)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente Paso →</span>
+          </button>
         </div>
       </div>
 
@@ -379,13 +458,20 @@
           <div class="card-header">
             <div class="card-icon">🧊</div>
             <div>
-              <div class="card-title">Step 1 — Aquarium Volume</div>
-              <div class="card-sub">Enter dimensions and calculate how much water the tank holds</div>
+              <div class="card-title">
+                <span class="en-text">Step 1 — Aquarium Volume</span>
+                <span class="es-text">Paso 1 — Volumen del Acuario</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Enter dimensions and calculate how much water the tank holds</span>
+                <span class="es-text">Ingresa las dimensiones y calcula cuánta agua cabe en el tanque</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct">
-            <strong>Your job:</strong> Pick where your aquarium will sit. Measure the space, then decide the dimensions (length, width, and height) in inches. Calculate the total volume in cubic inches, and convert it to gallons.
+            <span class="en-text"><strong>Your job:</strong> Pick where your aquarium will sit. Measure the space, then decide the dimensions (length, width, and height) in inches. Calculate the total volume in cubic inches, and convert it to gallons.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Elige dónde se colocará tu acuario. Mide el espacio, luego decide las dimensiones (largo, ancho y alto) en pulgadas. Calcula el volumen total en pulgadas cúbicas y conviértelo a galones.</span>
           </div>
 
           <!-- Dynamic 3D Aquarium Volume SVG -->
@@ -393,44 +479,73 @@
 
           <!-- Level 1 instructions -->
           <div class="instruct lvl1-only">
-            🟢 <strong>Level 1 tip:</strong> Try friendly whole numbers like 20 inches length, 10 inches width, and 12 inches height.
+            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try friendly whole numbers like 20 inches length, 10 inches width, and 12 inches height.</span>
+            <span class="es-text">🟢 <strong>Consejo del Nivel 1:</strong> Intenta con números enteros sencillos como 20 pulgadas de largo, 10 pulgadas de ancho y 12 pulgadas de alto.</span>
           </div>
           <!-- Level 2 instructions -->
           <div class="instruct lvl2-block lvl2-only">
             <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
-            Feel free to use decimal dimensions (like 20.5 inches length or 12.25 inches height) for custom precision!
+            <span class="en-text">Feel free to use decimal dimensions (like 20.5 inches length or 12.25 inches height) for custom precision!</span>
+            <span class="es-text">¡Siéntete libre de usar dimensiones decimales (como 20.5 pulgadas de largo o 12.25 pulgadas de alto) para precisión personalizada!</span>
           </div>
 
-          <label class="lbl" for="spaceName">📌 What real-world space will the tank sit on?</label>
+          <label class="lbl" for="spaceName">
+            <span class="en-text">📌 What real-world space will the tank sit on?</span>
+            <span class="es-text">📌 ¿En qué espacio del mundo real se colocará el tanque?</span>
+          </label>
           <input type="text" id="spaceName" name="spaceName" data-save placeholder="e.g. classroom shelf" oninput="recalcAll()" />
 
           <div class="grid3" style="margin-top: 10px;">
             <div>
-              <label class="lbl" for="t-length">Length (inches)</label>
+              <label class="lbl" for="t-length">
+                <span class="en-text">Length (inches)</span>
+                <span class="es-text">Largo (pulgadas)</span>
+              </label>
               <input type="number" id="t-length" name="t-length" step="any" min="1" data-save placeholder="e.g. 20" oninput="recalcAll()" />
             </div>
             <div>
-              <label class="lbl" for="t-width">Width (inches)</label>
+              <label class="lbl" for="t-width">
+                <span class="en-text">Width (inches)</span>
+                <span class="es-text">Ancho (pulgadas)</span>
+              </label>
               <input type="number" id="t-width" name="t-width" step="any" min="1" data-save placeholder="e.g. 10" oninput="recalcAll()" />
             </div>
             <div>
-              <label class="lbl" for="t-height">Height (inches)</label>
+              <label class="lbl" for="t-height">
+                <span class="en-text">Height (inches)</span>
+                <span class="es-text">Alto (pulgadas)</span>
+              </label>
               <input type="number" id="t-height" name="t-height" step="any" min="1" data-save placeholder="e.g. 12" oninput="recalcAll()" />
             </div>
           </div>
 
-          <button class="calc-btn" onclick="calcVolume()">🧮 Calculate Tank Volume</button>
+          <button class="calc-btn" onclick="calcVolume()">
+            <span class="en-text">🧮 Calculate Tank Volume</span>
+            <span class="es-text">🧮 Calcular Volumen del Tanque</span>
+          </button>
           <div class="readout" id="volume-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>To find the volume of a rectangular prism, multiply length &times; width &times; height ($V = l \times w \times h$). Since 1 gallon of water fills exactly 231 cubic inches, divide your total volume by 231 to find the volume in gallons.<br><strong>Example:</strong> 20 in &times; 10 in &times; 12 in = 2,400 cubic inches. Then 2,400 &divide; 231 &asymp; 10.4 gallons.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">To find the volume of a rectangular prism, multiply length &times; width &times; height ($V = l \times w \times h$). Since 1 gallon of water fills exactly 231 cubic inches, divide your total volume by 231 to find the volume in gallons.<br><strong>Example:</strong> 20 in &times; 10 in &times; 12 in = 2,400 cubic inches. Then 2,400 &divide; 231 &asymp; 10.4 gallons.</span>
+              <span class="es-text">Para encontrar el volumen de un prisma rectangular, multiplica largo &times; ancho &times; alto ($V = l \times w \times h$). Dado que 1 galón de agua llena exactamente 231 pulgadas cúbicas, divide tu volumen total por 231 para encontrar el volumen en galones.<br><strong>Ejemplo:</strong> 20 pulg &times; 10 pulg &times; 12 pulg = 2,400 pulgadas cúbicas. Luego 2,400 &divide; 231 &asymp; 10.4 galones.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
-          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(1)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(3)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente Paso →</span>
+          </button>
         </div>
       </div>
 
@@ -442,13 +557,20 @@
           <div class="card-header">
             <div class="card-icon teal">📐</div>
             <div>
-              <div class="card-title">Step 2 — Glass Surface Area</div>
-              <div class="card-sub">Calculate the total glass surface area for 5 faces (open top)</div>
+              <div class="card-title">
+                <span class="en-text">Step 2 — Glass Surface Area</span>
+                <span class="es-text">Paso 2 — Área de Superficie del Vidrio</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Calculate the total glass surface area for 5 faces (open top)</span>
+                <span class="es-text">Calcula el área total de superficie de vidrio para 5 caras (parte superior abierta)</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your job:</strong> Since the tank has an open top, we only need glass for <strong>5 faces</strong> (the bottom, the front, the back, and the two sides). Calculate the surface area of your tank in square inches.
+            <span class="en-text"><strong>Your job:</strong> Since the tank has an open top, we only need glass for <strong>5 faces</strong> (the bottom, the front, the back, and the two sides). Calculate the surface area of your tank in square inches.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Dado que el tanque tiene la parte superior abierta, solo necesitamos vidrio para <strong>5 caras</strong> (el fondo, el frente, la parte trasera y los dos lados). Calcula el área de superficie de tu tanque en pulgadas cuadradas.</span>
           </div>
 
           <!-- Dynamic flat net SVG -->
@@ -456,33 +578,57 @@
 
           <!-- Level 1 helper -->
           <div class="instruct lvl1-only instruct-teal" style="background: var(--teal-lt); border-color: var(--teal);">
-            🟢 <strong>Level 1 tip:</strong> Find the area of the bottom, front/back, and sides separately, then add them together. Do not include the top!
+            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Find the area of the bottom, front/back, and sides separately, then add them together. Do not include the top!</span>
+            <span class="es-text">🟢 <strong>Consejo del Nivel 1:</strong> Encuentra el área del fondo, del frente/atrás y de los lados por separado, luego súmalas. ¡No incluyas la parte superior!</span>
           </div>
 
           <!-- Level 2 helper -->
           <div class="instruct lvl2-block lvl2-only">
             <span class="lvl2-label">LEVEL 2 CHALLENGE — Distributive Property (6.G.4)</span><br>
-            Write an expression showing how you can group the calculations using the distributive property: $lw + 2h(l + w)$.
-            <label class="lbl" for="distrib-eq">Your equation: Bottom + 2 &times; Height &times; (Length + Width)</label>
+            <span class="en-text">Write an expression showing how you can group the calculations using the distributive property: $lw + 2h(l + w)$.</span>
+            <span class="es-text">Escribe una expresión que muestre cómo puedes agrupar los cálculos usando la propiedad distributiva: $lw + 2h(l + w)$.</span>
+            <label class="lbl" for="distrib-eq">
+              <span class="en-text">Your equation: Bottom + 2 &times; Height &times; (Length + Width)</span>
+              <span class="es-text">Tu ecuación: Fondo + 2 &times; Alto &times; (Largo + Ancho)</span>
+            </label>
             <input type="text" id="distrib-eq" name="distrib-eq" data-save placeholder="e.g. 200 + 24(20 + 10)" />
           </div>
 
-          <button class="calc-btn teal" onclick="calcSurfaceArea()">🧮 Calculate Glass Surface Area</button>
+          <button class="calc-btn teal" onclick="calcSurfaceArea()">
+            <span class="en-text">🧮 Calculate Glass Surface Area</span>
+            <span class="es-text">🧮 Calcular Área de Superficie del Vidrio</span>
+          </button>
           <div class="readout" id="sa-out" style="background: var(--navy);"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>Compute the area of the 5 rectangles on the net:<br>
-            - Bottom face: Length &times; Width ($l \times w$)<br>
-            - Front &amp; Back faces: 2 &times; Length &times; Height ($2lh$)<br>
-            - Left &amp; Right faces: 2 &times; Width &times; Height ($2wh$)<br>
-            Sum: $SA = lw + 2lh + 2wh$.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">Compute the area of the 5 rectangles on the net:<br>
+              - Bottom face: Length &times; Width ($l \times w$)<br>
+              - Front &amp; Back faces: 2 &times; Length &times; Height ($2lh$)<br>
+              - Left &amp; Right faces: 2 &times; Width &times; Height ($2wh$)<br>
+              Sum: $SA = lw + 2lh + 2wh$.</span>
+              <span class="es-text">Calcula el área de los 5 rectángulos en el desarrollo plano:<br>
+              - Cara del fondo: Largo &times; Ancho ($l \times w$)<br>
+              - Caras del frente y de atrás: 2 &times; Largo &times; Alto ($2lh$)<br>
+              - Caras izquierda y derecha: 2 &times; Ancho &times; Alto ($2wh$)<br>
+              Suma: $SA = lw + 2lh + 2wh$.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
-          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(2)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(4)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente Paso →</span>
+          </button>
         </div>
       </div>
 
@@ -494,69 +640,151 @@
           <div class="card-header">
             <div class="card-icon gold">💵</div>
             <div>
-              <div class="card-title">Step 3 — Material &amp; Accessory Costs</div>
-              <div class="card-sub">Find the cost of glass and accessories, then compare to retail prices</div>
+              <div class="card-title">
+                <span class="en-text">Step 3 — Material &amp; Accessory Costs</span>
+                <span class="es-text">Paso 3 — Costos de Materiales y Accesorios</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Find the cost of glass and accessories, then compare to retail prices</span>
+                <span class="es-text">Calcula el costo del vidrio y los accesorios, luego compáralo con los precios de venta al por menor</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct gold">
-            <strong>Your job:</strong> Calculate the glass cost based on your surface area and add accessory costs (filter, pump, substrate, decorations) to find the total budget.
+            <span class="en-text"><strong>Your job:</strong> Calculate the glass cost based on your surface area and add accessory costs (filter, pump, substrate, decorations) to find the total budget.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Calcula el costo del vidrio según el área de superficie y agrega los costos de los accesorios (filtro, bomba, sustrato, decoraciones) para encontrar el presupuesto total.</span>
           </div>
 
           <!-- Cost Breakdown SVG -->
           <svg id="cost-svg" class="visual-svg" width="520" height="120" viewBox="0 0 520 120" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;"></svg>
 
           <div class="lvl1-only instruct gold">
-            🟢 <strong>Level 1 default settings:</strong> Glass material costs **$0.15 per square inch**. Accessory bundle is **$35.00**.
+            <span class="en-text">🟢 <strong>Level 1 default settings:</strong> Glass material costs **$0.15 per square inch**. Accessory bundle is **$35.00**.</span>
+            <span class="es-text">🟢 <strong>Configuraciones predeterminadas del Nivel 1:</strong> El material de vidrio cuesta **$0.15 por pulgada cuadrada**. El paquete de accesorios cuesta **$35.00**.</span>
           </div>
 
           <div class="lvl2-block lvl2-only">
             <span class="lvl2-label">LEVEL 2 CUSTOMIZATION</span><br>
-            Customize your cost parameters to reflect real-world material rates.
+            <span class="en-text">Customize your cost parameters to reflect real-world material rates.</span>
+            <span class="es-text">¡Personaliza tus parámetros de costo para reflejar las tarifas de materiales del mundo real!</span>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="gc-rate">Glass Price ($ per sq inch)</label>
+              <label class="lbl" for="gc-rate">
+                <span class="en-text">Glass Price ($ per sq inch)</span>
+                <span class="es-text">Precio del Vidrio ($ por pulgada cuadrada)</span>
+              </label>
               <input type="number" id="gc-rate" name="gc-rate" step="0.01" min="0.01" value="0.15" data-save oninput="recalcAll()" />
             </div>
             <div>
-              <label class="lbl" for="ac-cost">Accessories Cost ($)</label>
+              <label class="lbl" for="ac-cost">
+                <span class="en-text">Accessories Cost ($)</span>
+                <span class="es-text">Costo de Accesorios ($)</span>
+              </label>
               <input type="number" id="ac-cost" name="ac-cost" step="0.01" min="0" value="35.00" data-save oninput="recalcAll()" />
             </div>
           </div>
 
-          <button class="calc-btn gold" onclick="calcCost()">💵 Calculate Total Cost</button>
+          <button class="calc-btn gold" onclick="calcCost()">
+            <span class="en-text">💵 Calculate Total Cost</span>
+            <span class="es-text">💵 Calcular Costo Total</span>
+          </button>
           <div class="readout" id="cost-out"></div>
 
           <!-- Real-world retail prices table -->
           <div style="margin-top:22px;">
-            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">🌎 Real Aquarium Retail Prices</h3>
-            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">Below are typical retail prices for standard pre-built aquariums in stores:</p>
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">
+              <span class="en-text">🌎 Real Aquarium Retail Prices</span>
+              <span class="es-text">🌎 Precios de Venta al por Menor de Acuarios Reales</span>
+            </h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">
+              <span class="en-text">Below are typical retail prices for standard pre-built aquariums in stores:</span>
+              <span class="es-text">A continuación se presentan los precios de venta típicos para acuarios estándar prefabricados en tiendas:</span>
+            </p>
             <table class="data-table">
               <thead>
-                <tr><th>Tank Size</th><th>Retail Price Range</th><th>Setup Included</th></tr>
+                <tr>
+                  <th>
+                    <span class="en-text">Tank Size</span>
+                    <span class="es-text">Tamaño del Tanque</span>
+                  </th>
+                  <th>
+                    <span class="en-text">Retail Price Range</span>
+                    <span class="es-text">Rango de Precios Minoristas</span>
+                  </th>
+                  <th>
+                    <span class="en-text">Setup Included</span>
+                    <span class="es-text">Instalación Incluida</span>
+                  </th>
+                </tr>
               </thead>
               <tbody>
-                <tr><td>10 Gallons</td><td>$25 – $50</td><td>Basic starter set</td></tr>
-                <tr><td>20 Gallons</td><td>$50 – $100</td><td>Mid-size standard tank</td></tr>
-                <tr><td>55 Gallons</td><td>$150 – $300</td><td>Large display aquarium</td></tr>
+                <tr>
+                  <td>
+                    <span class="en-text">10 Gallons</span>
+                    <span class="es-text">10 Galones</span>
+                  </td>
+                  <td>$25 – $50</td>
+                  <td>
+                    <span class="en-text">Basic starter set</span>
+                    <span class="es-text">Juego de inicio básico</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="en-text">20 Gallons</span>
+                    <span class="es-text">20 Galones</span>
+                  </td>
+                  <td>$50 – $100</td>
+                  <td>
+                    <span class="en-text">Mid-size standard tank</span>
+                    <span class="es-text">Tanque estándar mediano</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="en-text">55 Gallons</span>
+                    <span class="es-text">55 Galones</span>
+                  </td>
+                  <td>$150 – $300</td>
+                  <td>
+                    <span class="en-text">Large display aquarium</span>
+                    <span class="es-text">Acuario de exhibición grande</span>
+                  </td>
+                </tr>
               </tbody>
             </table>
             
-            <label class="lbl" for="world-compare">How does your custom tank cost and size compare to store prices? Write 1–2 sentences.</label>
+            <label class="lbl" for="world-compare">
+              <span class="en-text">How does your custom tank cost and size compare to store prices? Write 1–2 sentences.</span>
+              <span class="es-text">¿Cómo se compara el costo y el tamaño de tu tanque personalizado con los precios de las tiendas? Escribe 1 o 2 oraciones.</span>
+            </label>
             <textarea id="world-compare" name="world-compare" data-save placeholder="My tank capacity is ___ gallons and total build cost is $___. Compared to store retail prices, this is..."></textarea>
           </div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>Glass Cost = Surface Area &times; Glass Price per sq inch. Total Cost = Glass Cost + Accessories Cost.<br><strong>Example:</strong> 920 sq in &times; $0.15 = $138.00 glass cost. $138.00 + $35.00 accessories = $173.00 total cost.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">Glass Cost = Surface Area &times; Glass Price per sq inch. Total Cost = Glass Cost + Accessories Cost.<br><strong>Example:</strong> 920 sq in &times; $0.15 = $138.00 glass cost. $138.00 + $35.00 accessories = $173.00 total cost.</span>
+              <span class="es-text">Costo del Vidrio = Área de Superficie &times; Precio del Vidrio por pulgada cuadrada. Costo Total = Costo del Vidrio + Costo de Accesorios.<br><strong>Ejemplo:</strong> 920 pulgadas cuadradas &times; $0.15 = $138.00 de costo del vidrio. $138.00 + $35.00 de accesorios = $173.00 de costo total.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
-          <button class="nav-btn" onclick="goStep(5)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(4)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(5)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente Paso →</span>
+          </button>
         </div>
       </div>
 
@@ -568,42 +796,70 @@
           <div class="card-header">
             <div class="card-icon teal">👥</div>
             <div>
-              <div class="card-title">Step 4 — Compare with a Partner</div>
-              <div class="card-sub">Compare tank capacities and costs side-by-side with a classmate</div>
+              <div class="card-title">
+                <span class="en-text">Step 4 — Compare with a Partner</span>
+                <span class="es-text">Paso 4 — Comparar con un Compañero</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Compare tank capacities and costs side-by-side with a classmate</span>
+                <span class="es-text">Compara las capacidades y los costos del tanque lado a lado con un compañero de clase</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your job:</strong> Interview a classmate and record their design's volume and total cost below, then click Compare to inspect details.
+            <span class="en-text"><strong>Your job:</strong> Interview a classmate and record their design's volume and total cost below, then click Compare to inspect details.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Entrevista a un compañero de clase y registra el volumen y el costo total de su diseño a continuación, luego haz clic en Comparar para inspeccionar los detalles.</span>
           </div>
 
           <!-- Partner Comparison SVG -->
           <svg id="partner-svg" class="visual-svg" width="520" height="120" viewBox="0 0 520 120" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;"></svg>
 
-          <label class="lbl" for="p-name">Classmate's Name</label>
+          <label class="lbl" for="p-name">
+            <span class="en-text">Classmate's Name</span>
+            <span class="es-text">Nombre del Compañero</span>
+          </label>
           <input type="text" id="p-name" name="p-name" data-save placeholder="e.g. Alex" />
 
           <div class="grid2" style="margin-top:4px;">
             <div>
-              <label class="lbl" for="p-volume">Partner's Tank Capacity (Gallons)</label>
+              <label class="lbl" for="p-volume">
+                <span class="en-text">Partner's Tank Capacity (Gallons)</span>
+                <span class="es-text">Capacidad del Tanque del Compañero (Galones)</span>
+              </label>
               <input type="number" id="p-volume" name="p-volume" step="any" min="0.1" data-save oninput="comparePartner()" placeholder="e.g. 15" />
             </div>
             <div>
-              <label class="lbl" for="p-cost">Partner's Total Cost ($)</label>
+              <label class="lbl" for="p-cost">
+                <span class="en-text">Partner's Total Cost ($)</span>
+                <span class="es-text">Costo Total del Compañero ($)</span>
+              </label>
               <input type="number" id="p-cost" name="p-cost" step="any" min="0" data-save oninput="comparePartner()" placeholder="e.g. 75.00" />
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="comparePartner()">📊 Compare Our Tanks</button>
+          <button class="calc-btn teal" onclick="comparePartner()">
+            <span class="en-text">📊 Compare Our Tanks</span>
+            <span class="es-text">📊 Comparar Nuestros Tanques</span>
+          </button>
           <div class="readout" id="peer-out" style="background: var(--navy);"></div>
 
-          <label class="lbl" for="peer-reflect" style="margin-top:18px;">Who designed a more cost-effective tank? Explain using your numbers.</label>
+          <label class="lbl" for="peer-reflect" style="margin-top:18px;">
+            <span class="en-text">Who designed a more cost-effective tank? Explain using your numbers.</span>
+            <span class="es-text">¿Quién diseñó un tanque más rentable? Explícalo usando tus números.</span>
+          </label>
           <textarea id="peer-reflect" name="peer-reflect" data-save placeholder="My tank holds ___ gallons and costs $___. My partner's tank holds... I think..."></textarea>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
-          <button class="nav-btn green" onclick="goStep(6)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(4)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="goStep(6)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente Paso →</span>
+          </button>
         </div>
       </div>
 
@@ -615,84 +871,216 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">Step 5 — Presentation &amp; Report</div>
-              <div class="card-sub">Write your pitch, review the grading rubric, and download your report</div>
+              <div class="card-title">
+                <span class="en-text">Step 5 — Presentation &amp; Report</span>
+                <span class="es-text">Paso 5 — Presentación e Informe</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Write your pitch, review the grading rubric, and download your report</span>
+                <span class="es-text">Escribe tu presentación, revisa la rúbrica de calificación y descarga tu informe</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct green">
-            <strong>Your job:</strong> Write 3–5 sentences pitching your custom aquarium plan to the school principal or science department. Detail your dimensions, volume, surface area, and total cost!
+            <span class="en-text"><strong>Your job:</strong> Write 3–5 sentences pitching your custom aquarium plan to the school principal or science department. Detail your dimensions, volume, surface area, and total cost!</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Escribe de 3 a 5 oraciones presentando tu plan de acuario personalizado al director de la escuela o al departamento de ciencias. ¡Detalla tus dimensiones, volumen, área de superficie y costo total!</span>
           </div>
 
           <!-- Presentation Pitch -->
-          <label class="lbl" for="pitch">✍️ Your Aquarium Pitch (incorporate your mathematical data!)</label>
+          <label class="lbl" for="pitch">
+            <span class="en-text">✍️ Your Aquarium Pitch (incorporate your mathematical data!)</span>
+            <span class="es-text">✍️ Tu Presentación del Acuario (¡incorpora tus datos matemáticos!)</span>
+          </label>
           <textarea id="pitch" name="pitch" data-save placeholder="Welcome to my Aquarium Design Presentation! My aquarium is custom-designed for my desk. It is a rectangular prism that is..."></textarea>
 
           <!-- Checklist -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">✅ Project Checklist — Check off completed tasks</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+            <span class="en-text">✅ Project Checklist — Check off completed tasks</span>
+            <span class="es-text">✅ Lista de Verificación del Proyecto — Marca las tareas completadas</span>
+          </h3>
           <ul class="checklist" id="checklist">
-            <li><input type="checkbox" id="ck1" name="ck1" data-save onchange="autoSave()" /> I calculated the aquarium volume in cubic inches.</li>
-            <li><input type="checkbox" id="ck2" name="ck2" data-save onchange="autoSave()" /> I converted the volume to gallons (divided by 231).</li>
-            <li><input type="checkbox" id="ck3" name="ck3" data-save onchange="autoSave()" /> I calculated the glass surface area for 5 faces (no top).</li>
-            <li><input type="checkbox" id="ck4" name="ck4" data-save onchange="autoSave()" /> I calculated the glass cost and accessory costs.</li>
-            <li><input type="checkbox" id="ck5" name="ck5" data-save onchange="autoSave()" /> I compared my design to real-world tank prices.</li>
-            <li><input type="checkbox" id="ck6" name="ck6" data-save onchange="autoSave()" /> I compared my tank side-by-side with a partner's tank.</li>
-            <li><input type="checkbox" id="ck7" name="ck7" data-save onchange="autoSave()" /> I wrote a presentation pitch using my actual calculations.</li>
+            <li><input type="checkbox" id="ck1" name="ck1" data-save onchange="autoSave()" /> 
+              <span class="en-text">I calculated the aquarium volume in cubic inches.</span>
+              <span class="es-text">Calculé el volumen del acuario en pulgadas cúbicas.</span>
+            </li>
+            <li><input type="checkbox" id="ck2" name="ck2" data-save onchange="autoSave()" /> 
+              <span class="en-text">I converted the volume to gallons (divided by 231).</span>
+              <span class="es-text">Convertí el volumen a galones (dividido por 231).</span>
+            </li>
+            <li><input type="checkbox" id="ck3" name="ck3" data-save onchange="autoSave()" /> 
+              <span class="en-text">I calculated the glass surface area for 5 faces (no top).</span>
+              <span class="es-text">Calculé el área de superficie del vidrio para 5 caras (sin parte superior).</span>
+            </li>
+            <li><input type="checkbox" id="ck4" name="ck4" data-save onchange="autoSave()" /> 
+              <span class="en-text">I calculated the glass cost and accessory costs.</span>
+              <span class="es-text">Calculé el costo del vidrio y los costos de los accesorios.</span>
+            </li>
+            <li><input type="checkbox" id="ck5" name="ck5" data-save onchange="autoSave()" /> 
+              <span class="en-text">I compared my design to real-world tank prices.</span>
+              <span class="es-text">Comparé mi diseño con los precios de acuarios del mundo real.</span>
+            </li>
+            <li><input type="checkbox" id="ck6" name="ck6" data-save onchange="autoSave()" /> 
+              <span class="en-text">I compared my tank side-by-side with a partner's tank.</span>
+              <span class="es-text">Comparé mi tanque lado a lado con el de un compañero.</span>
+            </li>
+            <li><input type="checkbox" id="ck7" name="ck7" data-save onchange="autoSave()" /> 
+              <span class="en-text">I wrote a presentation pitch using my actual calculations.</span>
+              <span class="es-text">Escribí un discurso de presentación utilizando mis cálculos reales.</span>
+            </li>
           </ul>
 
           <!-- Rubric -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">📊 Grading Rubric</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+            <span class="en-text">📊 Grading Rubric</span>
+            <span class="es-text">📊 Rúbrica de Calificación</span>
+          </h3>
           <table class="rubric">
             <thead>
-              <tr><th>Skill</th><th class="score-4">4 — Expert</th><th class="score-3">3 — Proficient</th><th class="score-2">2 — Developing</th></tr>
+              <tr>
+                <th>
+                  <span class="en-text">Skill</span>
+                  <span class="es-text">Habilidad</span>
+                </th>
+                <th class="score-4">
+                  <span class="en-text">4 — Expert</span>
+                  <span class="es-text">4 — Experto</span>
+                </th>
+                <th class="score-3">
+                  <span class="en-text">3 — Proficient</span>
+                  <span class="es-text">3 — Competente</span>
+                </th>
+                <th class="score-2">
+                  <span class="en-text">2 — Developing</span>
+                  <span class="es-text">2 — En Desarrollo</span>
+                </th>
+              </tr>
             </thead>
             <tbody>
               <tr>
-                <td><strong>Volume &amp; Gallons (6.G.2)</strong></td>
-                <td>Calculations are correct, clear explanation of volume as packing cubes.</td>
-                <td>Calculations are correct.</td>
-                <td>Small math or conversion error.</td>
+                <td><strong>
+                  <span class="en-text">Volume &amp; Gallons (6.G.2)</span>
+                  <span class="es-text">Volumen y Galones (6.G.2)</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Calculations are correct, clear explanation of volume as packing cubes.</span>
+                  <span class="es-text">Los cálculos son correctos, explicación clara del volumen como cubos de empaque.</span>
+                </td>
+                <td>
+                  <span class="en-text">Calculations are correct.</span>
+                  <span class="es-text">Los cálculos son correctos.</span>
+                </td>
+                <td>
+                  <span class="en-text">Small math or conversion error.</span>
+                  <span class="es-text">Pequeño error de cálculo o conversión.</span>
+                </td>
               </tr>
               <tr>
-                <td><strong>Glass Surface Area (6.G.4)</strong></td>
-                <td>Perfect calculation for 5 faces, showing formula or net logic.</td>
-                <td>Calculates 5 faces correctly.</td>
-                <td>Included the top (6 faces) or made a calculation error.</td>
+                <td><strong>
+                  <span class="en-text">Glass Surface Area (6.G.4)</span>
+                  <span class="es-text">Área de Superficie del Vidrio (6.G.4)</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Perfect calculation for 5 faces, showing formula or net logic.</span>
+                  <span class="es-text">Cálculo perfecto para 5 caras, mostrando fórmula o lógica del desarrollo plano.</span>
+                </td>
+                <td>
+                  <span class="en-text">Calculates 5 faces correctly.</span>
+                  <span class="es-text">Calcula 5 caras correctamente.</span>
+                </td>
+                <td>
+                  <span class="en-text">Included the top (6 faces) or made a calculation error.</span>
+                  <span class="es-text">Incluyó la parte superior (6 caras) o cometió un error de cálculo.</span>
+                </td>
               </tr>
               <tr>
-                <td><strong>Total Cost &amp; Budget</strong></td>
-                <td>Calculates glass and accessory costs correctly, fits budget constraints.</td>
-                <td>Total cost is correct.</td>
-                <td>Math error in multiplying or adding.</td>
+                <td><strong>
+                  <span class="en-text">Total Cost &amp; Budget</span>
+                  <span class="es-text">Costo Total y Presupuesto</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Calculates glass and accessory costs correctly, fits budget constraints.</span>
+                  <span class="es-text">Calcula los costos de vidrio y accesorios correctamente, se ajusta a las limitaciones presupuestarias.</span>
+                </td>
+                <td>
+                  <span class="en-text">Total cost is correct.</span>
+                  <span class="es-text">El costo total es correcto.</span>
+                </td>
+                <td>
+                  <span class="en-text">Math error in multiplying or adding.</span>
+                  <span class="es-text">Error matemático al multiplicar o sumar.</span>
+                </td>
               </tr>
               <tr>
-                <td><strong>Comparisons</strong></td>
-                <td>Deep comparisons to real-world table and partner (calculating cost per gallon).</td>
-                <td>Basic comparison to store table and partner.</td>
-                <td>Only compared one or left incomplete.</td>
+                <td><strong>
+                  <span class="en-text">Comparisons</span>
+                  <span class="es-text">Comparaciones</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Deep comparisons to real-world table and partner (calculating cost per gallon).</span>
+                  <span class="es-text">Comparaciones profundas con la tabla del mundo real y el compañero (calculando el costo por galón).</span>
+                </td>
+                <td>
+                  <span class="en-text">Basic comparison to store table and partner.</span>
+                  <span class="es-text">Comparación básica con la tabla de la tienda y el compañero.</span>
+                </td>
+                <td>
+                  <span class="en-text">Only compared one or left incomplete.</span>
+                  <span class="es-text">Solo comparó uno o quedó incompleto.</span>
+                </td>
               </tr>
               <tr>
-                <td><strong>Pitch &amp; Presentation</strong></td>
-                <td>Convincing pitch using all real project measurements and costs.</td>
-                <td>Pitch is complete with most numbers.</td>
-                <td>Incomplete pitch or lacks math data.</td>
+                <td><strong>
+                  <span class="en-text">Pitch &amp; Presentation</span>
+                  <span class="es-text">Presentación y Discurso</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Convincing pitch using all real project measurements and costs.</span>
+                  <span class="es-text">Discurso con el que convencer utilizando todas las medidas y costos reales del proyecto.</span>
+                </td>
+                <td>
+                  <span class="en-text">Pitch is complete with most numbers.</span>
+                  <span class="es-text">La presentación está completa con la mayoría de los números.</span>
+                </td>
+                <td>
+                  <span class="en-text">Incomplete pitch or lacks math data.</span>
+                  <span class="es-text">Presentación incompleta o carece de datos matemáticos.</span>
+                </td>
               </tr>
             </tbody>
           </table>
 
           <!-- Report Generator -->
           <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
-            <button class="calc-btn" onclick="buildReport()">📝 Generate Summary</button>
-            <button class="export-btn" onclick="copyReport()">📋 Copy</button>
-            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
-            <button class="export-btn" onclick="window.print()">🖨️ Print</button>
+            <button class="calc-btn" onclick="buildReport()">
+              <span class="en-text">📝 Generate Summary</span>
+              <span class="es-text">📝 Generar Resumen</span>
+            </button>
+            <button class="export-btn" onclick="copyReport()">
+              <span class="en-text">📋 Copy</span>
+              <span class="es-text">📋 Copiar</span>
+            </button>
+            <button class="export-btn" onclick="downloadTxt()">
+              <span class="en-text">⬇️ Download .txt</span>
+              <span class="es-text">⬇️ Descargar .txt</span>
+            </button>
+            <button class="export-btn" onclick="window.print()">
+              <span class="en-text">🖨️ Print</span>
+              <span class="es-text">🖨️ Imprimir</span>
+            </button>
           </div>
           <pre class="report-box" id="reportBox"></pre>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(5)">← Back</button>
-          <button class="nav-btn green" onclick="alert('Amazing work! 🎉 Show this page and your generated report to your teacher.')">🎉 I'm Done!</button>
+          <button class="nav-btn ghost" onclick="goStep(5)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="onDoneClick()">
+            <span class="en-text">🎉 I'm Done!</span>
+            <span class="es-text">🎉 ¡He terminado!</span>
+          </button>
         </div>
       </div>
 
@@ -745,19 +1133,22 @@
 
       // ---- State ----
       const STEPS = [
-        { id: 1, label: 'Key Words', icon: '📖' },
-        { id: 2, label: 'Aquarium Volume', icon: '🧊' },
-        { id: 3, label: 'Glass Area', icon: '📐' },
-        { id: 4, label: 'Total Cost', icon: '💵' },
-        { id: 5, label: 'Partner Tank', icon: '👥' },
-        { id: 6, label: 'Finish', icon: '🏆' },
+        { id: 1, labelEn: 'Key Words', labelEs: 'Palabras Clave', icon: '📖' },
+        { id: 2, labelEn: 'Aquarium Volume', labelEs: 'Volumen del Acuario', icon: '🧊' },
+        { id: 3, labelEn: 'Glass Area', labelEs: 'Área del Vidrio', icon: '📐' },
+        { id: 4, labelEn: 'Total Cost', labelEs: 'Costo Total', icon: '💵' },
+        { id: 5, labelEn: 'Partner Tank', labelEs: 'Tanque del Compañero', icon: '👥' },
+        { id: 6, labelEn: 'Finish', labelEs: 'Finalizar', icon: '🏆' },
       ];
       let currentStep = 1;
       const visited = new Set([1]);
 
       // ---- Level toggle ----
       function setLevel(n) {
-        document.getElementById('body').className = 'level-' + n;
+        const body = document.getElementById('body');
+        const isEs = body.classList.contains('es');
+        body.className = 'level-' + n + (isEs ? ' es' : '');
+        
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
         
@@ -766,7 +1157,7 @@
         const w = document.getElementById('t-width').value;
         const h = document.getElementById('t-height').value;
         if (!l && !w && !h) {
-          document.getElementById('spaceName').value = "classroom shelf";
+          document.getElementById('spaceName').value = isEs ? "repisa del salón" : "classroom shelf";
           document.getElementById('t-length').value = "20";
           document.getElementById('t-width').value = "10";
           document.getElementById('t-height').value = "12";
@@ -781,12 +1172,14 @@
       function buildTrail() {
         const trail = document.getElementById('stepTrail');
         if (!trail) return;
+        const isEs = document.getElementById('body').classList.contains('es');
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
           const displayNum = s.id - 1;
+          const label = isEs ? s.labelEs : s.labelEn;
           return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : displayNum}</span>
-            <span class="s-label">${s.label}</span>
+            <span class="s-label">${label}</span>
           </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
         }).join('');
       }
@@ -808,8 +1201,11 @@
         const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
         const fill = document.getElementById('progFill');
         const lbl = document.getElementById('progLabel');
+        const isEs = document.getElementById('body').classList.contains('es');
         if (fill) fill.style.width = pct + '%';
-        if (lbl) lbl.textContent = `Step ${currentStep - 1} of 5`;
+        if (lbl) {
+          lbl.textContent = isEs ? `Paso ${currentStep - 1} de 5` : `Step ${currentStep - 1} of 5`;
+        }
       }
 
       // ---- Recalc All ----
@@ -856,14 +1252,25 @@
         
         const vol = l * w * h;
         const gal = vol / CONFIG.gallonConversionFactor;
+        const isEs = document.getElementById('body').classList.contains('es');
         
-        volOut.innerHTML = `
-          <strong>Aquarium Volume Details:</strong><br>
-          • Formula: Volume = Length &times; Width &times; Height<br>
-          • Volume = ${l} &times; ${w} &times; ${h} = <strong>${vol.toLocaleString(undefined, {maximumFractionDigits: 2})} cubic inches</strong>.<br>
-          • Capacity = Volume &divide; 231<br>
-          • Capacity = <strong>${gal.toFixed(1)} gallons</strong>.
-        `;
+        if (isEs) {
+          volOut.innerHTML = `
+            <strong>Detalles del Volumen del Acuario:</strong><br>
+            • Fórmula: Volumen = Largo &times; Ancho &times; Alto<br>
+            • Volumen = ${l} &times; ${w} &times; ${h} = <strong>${vol.toLocaleString(undefined, {maximumFractionDigits: 2})} pulgadas cúbicas</strong>.<br>
+            • Capacidad = Volumen &divide; 231<br>
+            • Capacidad = <strong>${gal.toFixed(1)} galones</strong>.
+          `;
+        } else {
+          volOut.innerHTML = `
+            <strong>Aquarium Volume Details:</strong><br>
+            • Formula: Volume = Length &times; Width &times; Height<br>
+            • Volume = ${l} &times; ${w} &times; ${h} = <strong>${vol.toLocaleString(undefined, {maximumFractionDigits: 2})} cubic inches</strong>.<br>
+            • Capacity = Volume &divide; 231<br>
+            • Capacity = <strong>${gal.toFixed(1)} gallons</strong>.
+          `;
+        }
         volOut.classList.add('show');
         
         drawAquariumVolumeSVG();
@@ -887,14 +1294,25 @@
         const frontBackArea = 2 * l * h;
         const sideArea = 2 * w * h;
         const totalSA = bottomArea + frontBackArea + sideArea;
+        const isEs = document.getElementById('body').classList.contains('es');
         
-        saOut.innerHTML = `
-          <strong>Glass Surface Area Details:</strong><br>
-          • Bottom Face (L &times; W): ${l} &times; ${w} = <strong>${bottomArea.toLocaleString(undefined, {maximumFractionDigits: 2})} sq in</strong><br>
-          • Front & Back (2 &times; L &times; H): 2 &times; (${l} &times; ${h}) = <strong>${frontBackArea.toLocaleString(undefined, {maximumFractionDigits: 2})} sq in</strong><br>
-          • Left & Right (2 &times; W &times; H): 2 &times; (${w} &times; ${h}) = <strong>${sideArea.toLocaleString(undefined, {maximumFractionDigits: 2})} sq in</strong><br>
-          • Total Surface Area (5 Faces): <strong>${totalSA.toLocaleString(undefined, {maximumFractionDigits: 2})} sq in</strong>.
-        `;
+        if (isEs) {
+          saOut.innerHTML = `
+            <strong>Detalles del Área de Superficie del Vidrio:</strong><br>
+            • Cara del Fondo (Largo &times; Ancho): ${l} &times; ${w} = <strong>${bottomArea.toLocaleString(undefined, {maximumFractionDigits: 2})} pulg²</strong><br>
+            • Frente y Atrás (2 &times; Largo &times; Alto): 2 &times; (${l} &times; ${h}) = <strong>${frontBackArea.toLocaleString(undefined, {maximumFractionDigits: 2})} pulg²</strong><br>
+            • Izquierda y Derecha (2 &times; Ancho &times; Alto): 2 &times; (${w} &times; ${h}) = <strong>${sideArea.toLocaleString(undefined, {maximumFractionDigits: 2})} pulg²</strong><br>
+            • Área de Superficie Total (5 Caras): <strong>${totalSA.toLocaleString(undefined, {maximumFractionDigits: 2})} pulg²</strong>.
+          `;
+        } else {
+          saOut.innerHTML = `
+            <strong>Glass Surface Area Details:</strong><br>
+            • Bottom Face (L &times; W): ${l} &times; ${w} = <strong>${bottomArea.toLocaleString(undefined, {maximumFractionDigits: 2})} sq in</strong><br>
+            • Front & Back (2 &times; L &times; H): 2 &times; (${l} &times; ${h}) = <strong>${frontBackArea.toLocaleString(undefined, {maximumFractionDigits: 2})} sq in</strong><br>
+            • Left & Right (2 &times; W &times; H): 2 &times; (${w} &times; ${h}) = <strong>${sideArea.toLocaleString(undefined, {maximumFractionDigits: 2})} sq in</strong><br>
+            • Total Surface Area (5 Faces): <strong>${totalSA.toLocaleString(undefined, {maximumFractionDigits: 2})} sq in</strong>.
+          `;
+        }
         saOut.classList.add('show');
         
         drawNetSVG();
@@ -916,13 +1334,23 @@
         const acc = parseFloat(document.getElementById('ac-cost').value) || CONFIG.defaultAccessories;
         const glassCost = myData.sa * rate;
         const total = glassCost + acc;
+        const isEs = document.getElementById('body').classList.contains('es');
         
-        costOut.innerHTML = `
-          <strong>Total Cost Breakdown:</strong><br>
-          • Glass Cost: ${myData.sa.toLocaleString(undefined, {maximumFractionDigits:2})} sq in &times; $${rate.toFixed(2)}/sq in = <strong>$${glassCost.toFixed(2)}</strong><br>
-          • Accessory Cost (Filter, gravel, pump, fish): <strong>$${acc.toFixed(2)}</strong><br>
-          • Total Project Cost: $${glassCost.toFixed(2)} + $${acc.toFixed(2)} = <strong>$${total.toFixed(2)}</strong>.
-        `;
+        if (isEs) {
+          costOut.innerHTML = `
+            <strong>Desglose del Costo Total:</strong><br>
+            • Costo del Vidrio: ${myData.sa.toLocaleString(undefined, {maximumFractionDigits:2})} pulg² &times; $${rate.toFixed(2)}/pulg² = <strong>$${glassCost.toFixed(2)}</strong><br>
+            • Costo de Accesorios (Filtro, grava, bomba, peces): <strong>$${acc.toFixed(2)}</strong><br>
+            • Costo Total del Proyecto: $${glassCost.toFixed(2)} + $${acc.toFixed(2)} = <strong>$${total.toFixed(2)}</strong>.
+          `;
+        } else {
+          costOut.innerHTML = `
+            <strong>Total Cost Breakdown:</strong><br>
+            • Glass Cost: ${myData.sa.toLocaleString(undefined, {maximumFractionDigits:2})} sq in &times; $${rate.toFixed(2)}/sq in = <strong>$${glassCost.toFixed(2)}</strong><br>
+            • Accessory Cost (Filter, gravel, pump, fish): <strong>$${acc.toFixed(2)}</strong><br>
+            • Total Project Cost: $${glassCost.toFixed(2)} + $${acc.toFixed(2)} = <strong>$${total.toFixed(2)}</strong>.
+          `;
+        }
         costOut.classList.add('show');
         
         drawCostSVG(glassCost, acc);
@@ -946,24 +1374,43 @@
         
         const volDiff = myData.gal - pVol;
         const costDiff = myData.cost - pCost;
+        const isEs = document.getElementById('body').classList.contains('es');
         
-        let html = `<strong>Comparison Results with ${pName}:</strong><br>`;
-        html += `• <strong>Volume:</strong> You: <strong>${myData.gal.toFixed(1)} gal</strong> | ${pName}: <strong>${pVol.toFixed(1)} gal</strong><br>`;
-        html += `  <em>${volDiff > 0 ? 'Your tank holds ' + volDiff.toFixed(1) + ' more gallons.' : volDiff < 0 ? 'Partner\'s tank holds ' + Math.abs(volDiff).toFixed(1) + ' more gallons.' : 'Both tanks have the same capacity!'}</em><br>`;
-        html += `• <strong>Total Cost:</strong> You: <strong>$${myData.cost.toFixed(2)}</strong> | ${pName}: <strong>$${pCost.toFixed(2)}</strong><br>`;
-        html += `  <em>${costDiff < 0 ? 'Your build is $' + Math.abs(costDiff).toFixed(2) + ' cheaper.' : costDiff > 0 ? 'Partner\'s build is $' + Math.abs(costDiff).toFixed(2) + ' cheaper.' : 'Both builds cost the exact same!'}</em>`;
+        let html = '';
+        if (isEs) {
+          html += `<strong>Resultados de la Comparación con ${pName}:</strong><br>`;
+          html += `• <strong>Volumen:</strong> Tú: <strong>${myData.gal.toFixed(1)} gal</strong> | ${pName}: <strong>${pVol.toFixed(1)} gal</strong><br>`;
+          html += `  <em>${volDiff > 0 ? 'Tu tanque tiene ' + volDiff.toFixed(1) + ' galones más.' : volDiff < 0 ? 'El tanque de tu compañero tiene ' + Math.abs(volDiff).toFixed(1) + ' galones más.' : '¡Ambos tanques tienen la misma capacidad!'}</em><br>`;
+          html += `• <strong>Costo Total:</strong> Tú: <strong>$${myData.cost.toFixed(2)}</strong> | ${pName}: <strong>$${pCost.toFixed(2)}</strong><br>`;
+          html += `  <em>${costDiff < 0 ? 'Tu construcción es $' + Math.abs(costDiff).toFixed(2) + ' más barata.' : costDiff > 0 ? 'La construcción de tu compañero es $' + Math.abs(costDiff).toFixed(2) + ' más barata.' : '¡Ambas construcciones cuestan exactamente lo mismo!'}</em>`;
+        } else {
+          html += `<strong>Comparison Results with ${pName}:</strong><br>`;
+          html += `• <strong>Volume:</strong> You: <strong>${myData.gal.toFixed(1)} gal</strong> | ${pName}: <strong>${pVol.toFixed(1)} gal</strong><br>`;
+          html += `  <em>${volDiff > 0 ? 'Your tank holds ' + volDiff.toFixed(1) + ' more gallons.' : volDiff < 0 ? 'Partner\'s tank holds ' + Math.abs(volDiff).toFixed(1) + ' more gallons.' : 'Both tanks have the same capacity!'}</em><br>`;
+          html += `• <strong>Total Cost:</strong> You: <strong>$${myData.cost.toFixed(2)}</strong> | ${pName}: <strong>$${pCost.toFixed(2)}</strong><br>`;
+          html += `  <em>${costDiff < 0 ? 'Your build is $' + Math.abs(costDiff).toFixed(2) + ' cheaper.' : costDiff > 0 ? 'Partner\'s build is $' + Math.abs(costDiff).toFixed(2) + ' cheaper.' : 'Both builds cost the exact same!'}</em>`;
+        }
         
         // Level 2 Unit Rate Cost Per Gallon
         const myUnit = myData.cost / myData.gal;
         const pUnit = pCost / pVol;
         const unitDiff = myUnit - pUnit;
         
-        html += `<div class="lvl2-only" style="margin-top: 10px; border-top: 1px dashed var(--line); padding-top: 8px;">`;
-        html += `  <strong>🔵 Level 2 Unit Rate Analysis:</strong><br>`;
-        html += `  • Your cost per gallon: <strong>$${myUnit.toFixed(2)} / gallon</strong><br>`;
-        html += `  • ${pName}'s cost per gallon: <strong>$${pUnit.toFixed(2)} / gallon</strong><br>`;
-        html += `  • <em>${unitDiff < 0 ? 'Your design is more cost-effective by $' + Math.abs(unitDiff).toFixed(2) + ' less per gallon!' : unitDiff > 0 ? pName + '\'s design is more cost-effective by $' + Math.abs(unitDiff).toFixed(2) + ' less per gallon!' : 'Both designs have the exact same cost-effectiveness!'}</em>`;
-        html += `</div>`;
+        if (isEs) {
+          html += `<div class="lvl2-only" style="margin-top: 10px; border-top: 1px dashed var(--line); padding-top: 8px;">`;
+          html += `  <strong>🔵 Análisis de Tasa Unitaria Nivel 2:</strong><br>`;
+          html += `  • Tu costo por galón: <strong>$${myUnit.toFixed(2)} / galón</strong><br>`;
+          html += `  • Costo por galón de ${pName}: <strong>$${pUnit.toFixed(2)} / galón</strong><br>`;
+          html += `  • <em>${unitDiff < 0 ? '¡Tu diseño es más rentable por $' + Math.abs(unitDiff).toFixed(2) + ' menos por galón!' : unitDiff > 0 ? '¡El diseño de ' + pName + ' es más rentable por $' + Math.abs(unitDiff).toFixed(2) + ' menos por galón!' : '¡Ambos diseños tienen exactamente la misma rentabilidad!'}</em>`;
+          html += `</div>`;
+        } else {
+          html += `<div class="lvl2-only" style="margin-top: 10px; border-top: 1px dashed var(--line); padding-top: 8px;">`;
+          html += `  <strong>🔵 Level 2 Unit Rate Analysis:</strong><br>`;
+          html += `  • Your cost per gallon: <strong>$${myUnit.toFixed(2)} / gallon</strong><br>`;
+          html += `  • ${pName}'s cost per gallon: <strong>$${pUnit.toFixed(2)} / gallon</strong><br>`;
+          html += `  • <em>${unitDiff < 0 ? 'Your design is more cost-effective by $' + Math.abs(unitDiff).toFixed(2) + ' less per gallon!' : unitDiff > 0 ? pName + '\'s design is more cost-effective by $' + Math.abs(unitDiff).toFixed(2) + ' less per gallon!' : 'Both designs have the exact same cost-effectiveness!'}</em>`;
+          html += `</div>`;
+        }
         
         peerOut.innerHTML = html;
         peerOut.classList.add('show');
@@ -993,10 +1440,14 @@
         const sd = w * scale;
         const dx = sd * 0.707;
         const dy = -sd * 0.707;
+        const isEs = document.getElementById('body').classList.contains('es');
+        
+        const titleText = isEs ? `Forma del Acuario 3D (${isExample ? 'Ejemplo' : 'Tu Tanque'})` : `3D Aquarium Shape (${isExample ? 'Example' : 'Your Tank'})`;
+        const openTopText = isEs ? "PARTE SUPERIOR ABIERTA (Sin Tapa)" : "OPEN TOP (No Lid)";
 
         svg.innerHTML = `
           <rect x="0" y="0" width="520" height="180" fill="none" />
-          <text x="260" y="22" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2d4a">3D Aquarium Shape (${isExample ? 'Example' : 'Your Tank'})</text>
+          <text x="260" y="22" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2d4a">${titleText}</text>
           
           <!-- Back faces/inside lines in dashed -->
           <line x1="${originX + dx}" y1="${originY + dy}" x2="${originX + dx + sw}" y2="${originY + dy}" stroke="#cbd5e1" stroke-dasharray="3,3" stroke-width="1.5" />
@@ -1016,10 +1467,10 @@
           <polygon points="${originX},${originY-sh} ${originX+sw},${originY-sh} ${originX+sw+dx},${originY+dy-sh} ${originX+dx},${originY+dy-sh}" fill="rgba(255, 255, 255, 0.1)" stroke="#0ea5e9" stroke-dasharray="4,2" stroke-width="1.5" />
 
           <!-- Labels -->
-          <text x="${originX + sw/2}" y="${originY + 16}" text-anchor="middle" font-size="11" font-weight="bold" fill="#0ea5e9">${l} in</text>
-          <text x="${originX + sw + dx/2 + 8}" y="${originY + dy/2 + 4}" font-size="11" font-weight="bold" fill="#0ea5e9">${w} in</text>
-          <text x="${originX - 8}" y="${originY - sh/2}" text-anchor="end" font-size="11" font-weight="bold" fill="#0ea5e9">${h} in</text>
-          <text x="${originX + sw/2 + dx/2}" y="${originY - sh - 10}" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d9488">OPEN TOP (No Lid)</text>
+          <text x="${originX + sw/2}" y="${originY + 16}" text-anchor="middle" font-size="11" font-weight="bold" fill="#0ea5e9">${l} ${isEs ? 'pulg' : 'in'}</text>
+          <text x="${originX + sw + dx/2 + 8}" y="${originY + dy/2 + 4}" font-size="11" font-weight="bold" fill="#0ea5e9">${w} ${isEs ? 'pulg' : 'in'}</text>
+          <text x="${originX - 8}" y="${originY - sh/2}" text-anchor="end" font-size="11" font-weight="bold" fill="#0ea5e9">${h} ${isEs ? 'pulg' : 'in'}</text>
+          <text x="${originX + sw/2 + dx/2}" y="${originY - sh - 10}" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d9488">${openTopText}</text>
         `;
       }
 
@@ -1051,34 +1502,42 @@
 
         const bx = cx - sw/2;
         const by = cy - sd/2;
+        const isEs = document.getElementById('body').classList.contains('es');
+        
+        const titleText = isEs ? "Despliegue del Vidrio del Acuario (5 Caras)" : "Aquarium Glass Net (5 Faces)";
+        const bottomText = isEs ? `Fondo: ${l}&quot; &times; ${w}&quot;` : `Bottom: ${l}&quot; &times; ${w}&quot;`;
+        const sideText = isEs ? `Lat: ${w}&quot;&times;${h}&quot;` : `Side: ${w}&quot;&times;${h}&quot;`;
+        const frontText = isEs ? `Frente: ${l}&quot;&times;${h}&quot;` : `Front: ${l}&quot;&times;${h}&quot;`;
+        const backText = isEs ? `Atrás: ${l}&quot;&times;${h}&quot;` : `Back: ${l}&quot;&times;${h}&quot;`;
+        const openTopText = isEs ? "Parte superior abierta (Sin vidrio)" : "Open Top (No glass)";
 
         svg.innerHTML = `
           <rect x="0" y="0" width="520" height="180" fill="none" />
-          <text x="260" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2d4a">Aquarium Glass Net (5 Faces)</text>
+          <text x="260" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2d4a">${titleText}</text>
           
           <!-- Bottom face (L x W) -->
           <rect x="${bx}" y="${by}" width="${sw}" height="${sd}" fill="rgba(14, 148, 136, 0.2)" stroke="#0ea5e9" stroke-width="1.5" />
-          <text x="${cx}" y="${cy + 4}" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2d4a">Bottom: ${l}&quot; &times; ${w}&quot;</text>
+          <text x="${cx}" y="${cy + 4}" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2d4a">${bottomText}</text>
 
           <!-- Left face (W x H) -->
           <rect x="${bx - sd}" y="${by}" width="${sd}" height="${sh}" transform="rotate(-90 ${bx} ${by})" fill="rgba(14, 148, 136, 0.1)" stroke="#0ea5e9" stroke-width="1.5" />
-          <text x="${bx - sd/2}" y="${cy + 4}" text-anchor="middle" font-size="9" fill="#0d9488">Side: ${w}&quot;&times;${h}&quot;</text>
+          <text x="${bx - sd/2}" y="${cy + 4}" text-anchor="middle" font-size="9" fill="#0d9488">${sideText}</text>
 
           <!-- Right face (W x H) -->
           <rect x="${bx + sw}" y="${by}" width="${sd}" height="${sh}" transform="rotate(90 ${bx + sw} ${by})" fill="rgba(14, 148, 136, 0.1)" stroke="#0ea5e9" stroke-width="1.5" />
-          <text x="${bx + sw + sd/2}" y="${cy + 4}" text-anchor="middle" font-size="9" fill="#0d9488">Side: ${w}&quot;&times;${h}&quot;</text>
+          <text x="${bx + sw + sd/2}" y="${cy + 4}" text-anchor="middle" font-size="9" fill="#0d9488">${sideText}</text>
 
           <!-- Front face (L x H) -->
           <rect x="${bx}" y="${by - sh}" width="${sw}" height="${sh}" fill="rgba(14, 148, 136, 0.1)" stroke="#0ea5e9" stroke-width="1.5" />
-          <text x="${cx}" y="${by - sh/2 + 4}" text-anchor="middle" font-size="9" fill="#0d9488">Front: ${l}&quot;&times;${h}&quot;</text>
+          <text x="${cx}" y="${by - sh/2 + 4}" text-anchor="middle" font-size="9" fill="#0d9488">${frontText}</text>
 
           <!-- Back face (L x H) -->
           <rect x="${bx}" y="${by + sd}" width="${sw}" height="${sh}" fill="rgba(14, 148, 136, 0.1)" stroke="#0ea5e9" stroke-width="1.5" />
-          <text x="${cx}" y="${by + sd + sh/2 + 4}" text-anchor="middle" font-size="9" fill="#0d9488">Back: ${l}&quot;&times;${h}&quot;</text>
+          <text x="${cx}" y="${by + sd + sh/2 + 4}" text-anchor="middle" font-size="9" fill="#0d9488">${backText}</text>
 
           <!-- Dashed Open Top Face (L x W) to show it's missing -->
           <rect x="${bx}" y="${by - sh - sd}" width="${sw}" height="${sd}" fill="none" stroke="#cbd5e1" stroke-dasharray="3,3" stroke-width="1.5" />
-          <text x="${cx}" y="${by - sh - sd/2 + 4}" text-anchor="middle" font-size="8" fill="#94a3b8" font-style="italic">Open Top (No glass)</text>
+          <text x="${cx}" y="${by - sh - sd/2 + 4}" text-anchor="middle" font-size="8" fill="#94a3b8" font-style="italic">${openTopText}</text>
         `;
       }
 
@@ -1087,19 +1546,27 @@
         const svg = document.getElementById('cost-svg');
         if (!svg) return;
         const total = glass + acc;
+        const isEs = document.getElementById('body').classList.contains('es');
+        
         if (total === 0) {
+          const noDataText = isEs ? "Ingresa las dimensiones y calcula el costo para ver el desglose." : "Enter dimensions and calculate cost to view breakdown.";
           svg.innerHTML = `
             <rect x="0" y="0" width="520" height="120" fill="none" />
-            <text x="260" y="60" text-anchor="middle" font-size="12" fill="#5e6e7e">Enter dimensions and calculate cost to view breakdown.</text>
+            <text x="260" y="60" text-anchor="middle" font-size="12" fill="#5e6e7e">${noDataText}</text>
           `;
           return;
         }
         const glassPct = (glass / total) * 100;
         const accPct = (acc / total) * 100;
         
+        const titleText = isEs ? "Desglose de Costos: Vidrio vs. Accesorios" : "Cost Breakdown: Glass vs. Accessories";
+        const glassLabelText = isEs ? `Vidrio: $${glass.toFixed(2)} (${glassPct.toFixed(0)}%)` : `Glass: $${glass.toFixed(2)} (${glassPct.toFixed(0)}%)`;
+        const accLabelText = isEs ? `Accesorios: $${acc.toFixed(2)} (${accPct.toFixed(0)}%)` : `Accessories: $${acc.toFixed(2)} (${accPct.toFixed(0)}%)`;
+        const totalLabelText = isEs ? `Costo Total del Proyecto: $${total.toFixed(2)}` : `Total Project Cost: $${total.toFixed(2)}`;
+
         svg.innerHTML = `
           <rect x="0" y="0" width="520" height="120" fill="none" />
-          <text x="260" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2d4a">Cost Breakdown: Glass vs. Accessories</text>
+          <text x="260" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2d4a">${titleText}</text>
           
           <!-- Cost bar -->
           <rect x="30" y="45" width="460" height="24" rx="6" fill="#cbd5e1" />
@@ -1109,9 +1576,9 @@
           <rect x="${30 + 460 * (glassPct/100)}" y="45" width="${460 * (accPct/100)}" height="24" rx="6" fill="#0d9488" />
           
           <!-- Labels -->
-          <text x="30" y="95" font-size="11" font-weight="bold" fill="#0ea5e9">Glass: $${glass.toFixed(2)} (${glassPct.toFixed(0)}%)</text>
-          <text x="490" y="95" text-anchor="end" font-size="11" font-weight="bold" fill="#0d9488">Accessories: $${acc.toFixed(2)} (${accPct.toFixed(0)}%)</text>
-          <text x="260" y="115" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2d4a">Total Project Cost: $${total.toFixed(2)}</text>
+          <text x="30" y="95" font-size="11" font-weight="bold" fill="#0ea5e9">${glassLabelText}</text>
+          <text x="490" y="95" text-anchor="end" font-size="11" font-weight="bold" fill="#0d9488">${accLabelText}</text>
+          <text x="260" y="115" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2d4a">${totalLabelText}</text>
         `;
       }
 
@@ -1119,10 +1586,13 @@
       function drawPartnerSVG(myVol, myCost, pVol, pCost, pName) {
         const svg = document.getElementById('partner-svg');
         if (!svg) return;
+        const isEs = document.getElementById('body').classList.contains('es');
+        
         if (myVol === 0 || pVol === 0 || myCost === 0 || pCost === 0) {
+          const noDataText = isEs ? "Ingresa los datos del compañero y haz clic en Comparar para ver el gráfico comparativo." : "Enter partner data and click Compare to view side-by-side chart.";
           svg.innerHTML = `
             <rect x="0" y="0" width="520" height="120" fill="none" />
-            <text x="260" y="60" text-anchor="middle" font-size="12" fill="#5e6e7e">Enter partner data and click Compare to view side-by-side chart.</text>
+            <text x="260" y="60" text-anchor="middle" font-size="12" fill="#5e6e7e">${noDataText}</text>
           `;
           return;
         }
@@ -1135,12 +1605,16 @@
         const myCostW = (myCost / maxCost) * 160;
         const pCostW = (pCost / maxCost) * 160;
         
+        const volTitle = isEs ? "Volumen (Galones)" : "Volume (Gallons)";
+        const costTitle = isEs ? "Costo Total ($)" : "Total Cost ($)";
+        const youLabel = isEs ? "Tú" : "You";
+
         svg.innerHTML = `
           <rect x="0" y="0" width="520" height="120" fill="none" />
           
           <!-- Volume Section (Left) -->
-          <text x="110" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2d4a">Volume (Gallons)</text>
-          <text x="20" y="50" font-size="10" fill="#5e6e7e">You</text>
+          <text x="110" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2d4a">${volTitle}</text>
+          <text x="20" y="50" font-size="10" fill="#5e6e7e">${youLabel}</text>
           <rect x="60" y="40" width="${myVolW}" height="14" rx="3" fill="#0ea5e9" />
           <text x="${70 + myVolW}" y="51" font-size="10" font-weight="bold" fill="#0ea5e9">${myVol.toFixed(1)} gal</text>
           
@@ -1149,8 +1623,8 @@
           <text x="${70 + pVolW}" y="81" font-size="10" font-weight="bold" fill="#475569">${pVol.toFixed(1)} gal</text>
           
           <!-- Cost Section (Right) -->
-          <text x="380" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2d4a">Total Cost ($)</text>
-          <text x="290" y="50" font-size="10" fill="#5e6e7e">You</text>
+          <text x="380" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2d4a">${costTitle}</text>
+          <text x="290" y="50" font-size="10" fill="#5e6e7e">${youLabel}</text>
           <rect x="330" y="40" width="${myCostW}" height="14" rx="3" fill="#0d9488" />
           <text x="${340 + myCostW}" y="51" font-size="10" font-weight="bold" fill="#0d9488">$${myCost.toFixed(2)}</text>
           
@@ -1186,54 +1660,103 @@
         
         const formattedVol = vol.toLocaleString(undefined, {maximumFractionDigits: 2});
         const formattedGal = gal.toFixed(1);
-
-        const lines = [
-          '═══ 🐟 AQUARIUM BUILD LAB — UNIT 10 CULMINATING PROJECT ═══',
-          '',
-          '📖 MATH STANDARDS: 6.G.2 (Volume), 6.G.4 (Surface Area & Nets)',
-          '',
-          '📐 STEP 1 — TANK DIMENSIONS',
-          `   Target Space: ${spaceName || '(not entered)'}`,
-          `   Length: ${l > 0 ? l + ' in' : '—'}`,
-          `   Width: ${w > 0 ? w + ' in' : '—'}`,
-          `   Height: ${h > 0 ? h + ' in' : '—'}`,
-          '',
-          '🧊 STEP 2 — AQUARIUM VOLUME',
-          `   Volume: ${l > 0 ? formattedVol + ' cubic inches' : '—'}`,
-          `   Gallon Capacity: ${l > 0 ? formattedGal + ' gallons' : '—'}`,
-          '   (Conversion Rate: 1 gallon = 231 cubic inches)',
-          '',
-          '📐 STEP 3 — GLASS SURFACE AREA',
-          `   Bottom Face Area: ${l > 0 ? (l * w).toLocaleString(undefined, {maximumFractionDigits:2}) + ' sq in' : '—'}`,
-          `   Front & Back Faces Area (2 faces): ${l > 0 ? (2 * l * h).toLocaleString(undefined, {maximumFractionDigits:2}) + ' sq in' : '—'}`,
-          `   Left & Right Faces Area (2 faces): ${l > 0 ? (2 * w * h).toLocaleString(undefined, {maximumFractionDigits:2}) + ' sq in' : '—'}`,
-          `   Total Glass Surface Area (5 faces): ${l > 0 ? sa.toLocaleString(undefined, {maximumFractionDigits:2}) + ' sq in' : '—'}`,
-          '',
-          '💵 STEP 4 — BUDGET & COSTS',
-          `   Glass Material Rate: $${rate.toFixed(2)} per sq inch`,
-          `   Glass Cost: $${glassCost.toFixed(2)}`,
-          `   Accessory Bundle Cost: $${acc.toFixed(2)}`,
-          `   Total Project Cost: $${totalCost.toFixed(2)}`,
-          worldNote ? `   Real-World Comparison: ${worldNote}` : '',
-          '',
-          '👥 STEP 5 — PARTNER COMPARISON',
-          `   Partner Name: ${partnerName || '—'}`,
-          pVol > 0 ? `   Partner Volume: ${pVol.toFixed(1)} gallons` : '',
-          pCost > 0 ? `   Partner Cost: $${pCost.toFixed(2)}` : '',
-          (pVol > 0 && gal > 0) ? `   Your Cost per Gallon: $${(totalCost / gal).toFixed(2)} / gal` : '',
-          (pVol > 0 && pCost > 0) ? `   Partner Cost per Gallon: $${(pCost / pVol).toFixed(2)} / gal` : '',
-          peerReflect ? `   Reflection: ${peerReflect}` : '',
-          '',
-          '🏆 STEP 6 — DESIGN PRESENTATION PITCH',
-          pitch || '(no pitch written)',
-          '',
-          '═══════════════════════════════════════════════════════',
-          `Generated: ${new Date().toLocaleDateString()}`
-        ].filter(line => line !== '');
+        
+        const isEs = document.getElementById('body').classList.contains('es');
+        
+        let lines = [];
+        if (isEs) {
+          lines = [
+            '═══ 🐟 LAB DE CONSTRUCCIÓN DE ACUARIO — PROYECTO CULMINANTE UNIDAD 10 ═══',
+            '',
+            '📖 ESTÁNDARES DE MATEMÁTICAS: 6.G.2 (Volumen), 6.G.4 (Área de Superficie y Desarrollos)',
+            '',
+            '📐 PASO 1 — DIMENSIONES DEL TANQUE',
+            `   Espacio de Destino: ${spaceName || '(no ingresado)'}`,
+            `   Largo: ${l > 0 ? l + ' pulg' : '—'}`,
+            `   Ancho: ${w > 0 ? w + ' pulg' : '—'}`,
+            `   Alto: ${h > 0 ? h + ' pulg' : '—'}`,
+            '',
+            '🧊 PASO 2 — VOLUMEN DEL ACUARIO',
+            `   Volumen: ${l > 0 ? formattedVol + ' pulgadas cúbicas' : '—'}`,
+            `   Capacidad en Galones: ${l > 0 ? formattedGal + ' galones' : '—'}`,
+            '   (Tasa de Conversión: 1 galón = 231 pulgadas cúbicas)',
+            '',
+            '📐 PASO 3 — ÁREA DE SUPERFICIE DEL VIDRIO',
+            `   Área de la Cara del Fondo: ${l > 0 ? (l * w).toLocaleString(undefined, {maximumFractionDigits:2}) + ' pulg²' : '—'}`,
+            `   Área del Frente y Atrás (2 caras): ${l > 0 ? (2 * l * h).toLocaleString(undefined, {maximumFractionDigits:2}) + ' pulg²' : '—'}`,
+            `   Área Lateral Izquierda y Derecha (2 caras): ${l > 0 ? (2 * w * h).toLocaleString(undefined, {maximumFractionDigits:2}) + ' pulg²' : '—'}`,
+            `   Área Total de Superficie de Vidrio (5 caras): ${l > 0 ? sa.toLocaleString(undefined, {maximumFractionDigits:2}) + ' pulg²' : '—'}`,
+            '',
+            '💵 PASO 4 — PRESUPUESTO Y COSTOS',
+            `   Tarifa del Material de Vidrio: $${rate.toFixed(2)} por pulgada cuadrada`,
+            `   Costo del Vidrio: $${glassCost.toFixed(2)}`,
+            `   Costo del Paquete de Accesorios: $${acc.toFixed(2)}`,
+            `   Costo Total del Proyecto: $${totalCost.toFixed(2)}`,
+            worldNote ? `   Comparación con el Mundo Real: ${worldNote}` : '',
+            '',
+            '👥 PASO 5 — COMPARACIÓN CON COMPAÑERO',
+            `   Nombre del Compañero: ${partnerName || '—'}`,
+            pVol > 0 ? `   Volumen del Compañero: ${pVol.toFixed(1)} galones` : '',
+            pCost > 0 ? `   Costo del Compañero: $${pCost.toFixed(2)}` : '',
+            (pVol > 0 && gal > 0) ? `   Tu Costo por Galón: $${(totalCost / gal).toFixed(2)} / gal` : '',
+            (pVol > 0 && pCost > 0) ? `   Costo por Galón del Compañero: $${(pCost / pVol).toFixed(2)} / gal` : '',
+            peerReflect ? `   Reflexión: ${peerReflect}` : '',
+            '',
+            '🏆 PASO 6 — DISCURSO DE PRESENTACIÓN DEL DISEÑO',
+            pitch || '(sin discurso escrito)',
+            '',
+            '═══════════════════════════════════════════════════════',
+            `Generado: ${new Date().toLocaleDateString()}`
+          ];
+        } else {
+          lines = [
+            '═══ 🐟 AQUARIUM BUILD LAB — UNIT 10 CULMINATING PROJECT ═══',
+            '',
+            '📖 MATH STANDARDS: 6.G.2 (Volume), 6.G.4 (Surface Area & Nets)',
+            '',
+            '📐 STEP 1 — TANK DIMENSIONS',
+            `   Target Space: ${spaceName || '(not entered)'}`,
+            `   Length: ${l > 0 ? l + ' in' : '—'}`,
+            `   Width: ${w > 0 ? w + ' in' : '—'}`,
+            `   Height: ${h > 0 ? h + ' in' : '—'}`,
+            '',
+            '🧊 STEP 2 — AQUARIUM VOLUME',
+            `   Volume: ${l > 0 ? formattedVol + ' cubic inches' : '—'}`,
+            `   Gallon Capacity: ${l > 0 ? formattedGal + ' gallons' : '—'}`,
+            '   (Conversion Rate: 1 gallon = 231 cubic inches)',
+            '',
+            '📐 STEP 3 — GLASS SURFACE AREA',
+            `   Bottom Face Area: ${l > 0 ? (l * w).toLocaleString(undefined, {maximumFractionDigits:2}) + ' sq in' : '—'}`,
+            `   Front & Back Faces Area (2 faces): ${l > 0 ? (2 * l * h).toLocaleString(undefined, {maximumFractionDigits:2}) + ' sq in' : '—'}`,
+            `   Left & Right Faces Area (2 faces): ${l > 0 ? (2 * w * h).toLocaleString(undefined, {maximumFractionDigits:2}) + ' sq in' : '—'}`,
+            `   Total Glass Surface Area (5 faces): ${l > 0 ? sa.toLocaleString(undefined, {maximumFractionDigits:2}) + ' sq in' : '—'}`,
+            '',
+            '💵 STEP 4 — BUDGET & COSTS',
+            `   Glass Material Rate: $${rate.toFixed(2)} per sq inch`,
+            `   Glass Cost: $${glassCost.toFixed(2)}`,
+            `   Accessory Bundle Cost: $${acc.toFixed(2)}`,
+            `   Total Project Cost: $${totalCost.toFixed(2)}`,
+            worldNote ? `   Real-World Comparison: ${worldNote}` : '',
+            '',
+            '👥 STEP 5 — PARTNER COMPARISON',
+            `   Partner Name: ${partnerName || '—'}`,
+            pVol > 0 ? `   Partner Volume: ${pVol.toFixed(1)} gallons` : '',
+            pCost > 0 ? `   Partner Cost: $${pCost.toFixed(2)}` : '',
+            (pVol > 0 && gal > 0) ? `   Your Cost per Gallon: $${(totalCost / gal).toFixed(2)} / gal` : '',
+            (pVol > 0 && pCost > 0) ? `   Partner Cost per Gallon: $${(pCost / pVol).toFixed(2)} / gal` : '',
+            peerReflect ? `   Reflection: ${peerReflect}` : '',
+            '',
+            '🏆 STEP 6 — DESIGN PRESENTATION PITCH',
+            pitch || '(no pitch written)',
+            '',
+            '═══════════════════════════════════════════════════════',
+            `Generated: ${new Date().toLocaleDateString()}`
+          ];
+        }
         
         const box = document.getElementById('reportBox');
         if (box) {
-          box.textContent = lines.join('\n');
+          box.textContent = lines.filter(line => line !== '').join('\n');
           box.classList.add('show');
         }
       }
@@ -1241,7 +1764,10 @@
       function copyReport() {
         const txt = document.getElementById('reportBox').textContent;
         if (!txt) return;
-        navigator.clipboard?.writeText(txt).then(() => alert('Copied to clipboard!'));
+        const isEs = document.getElementById('body').classList.contains('es');
+        navigator.clipboard?.writeText(txt).then(() => {
+          alert(isEs ? '¡Copiado al portapapeles!' : 'Copied to clipboard!');
+        });
       }
 
       function downloadTxt() {
@@ -1251,6 +1777,165 @@
         a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
         a.download = 'aquarium-build-plan.txt';
         a.click();
+      }
+
+      // ---- Done Button Localized Handler ----
+      function onDoneClick() {
+        const isEs = document.getElementById('body').classList.contains('es');
+        alert(isEs ? '¡Increíble trabajo! 🎉 Muestra esta página y tu informe generado a tu maestro.' : 'Amazing work! 🎉 Show this page and your generated report to your teacher.');
+      }
+
+      // ---- Bilingual & TTS functions ----
+      function toggleLanguage() {
+        const body = document.getElementById('body');
+        const isEs = body.classList.toggle('es');
+        
+        const btnLang = document.getElementById('btn-lang');
+        if (btnLang) {
+          btnLang.textContent = isEs ? "🌐 Idioma: ES" : "🌐 Language: EN";
+        }
+        
+        const btnRead = document.getElementById('btn-read');
+        if (btnRead) {
+          btnRead.textContent = isEs ? "🔊 Leer en Voz Alta" : "🔊 Read Aloud";
+        }
+        
+        const placeholders = {
+          'spaceName': isEs ? "ej. repisa del salón" : "e.g. classroom shelf",
+          't-length': isEs ? "ej. 20" : "e.g. 20",
+          't-width': isEs ? "ej. 10" : "e.g. 10",
+          't-height': isEs ? "ej. 12" : "e.g. 12",
+          'distrib-eq': isEs ? "ej. 200 + 24(20 + 10)" : "e.g. 200 + 24(20 + 10)",
+          'world-compare': isEs ? "La capacidad de mi tanque es de ___ galones y el costo total de construcción es de $___. Comparado con los precios minoristas de las tiendas, esto es..." : "My tank capacity is ___ gallons and total build cost is $___. Compared to store retail prices, this is...",
+          'p-name': isEs ? "ej. Alex" : "e.g. Alex",
+          'p-volume': isEs ? "ej. 15" : "e.g. 15",
+          'p-cost': isEs ? "ej. 75.00" : "e.g. 75.00",
+          'peer-reflect': isEs ? "Mi tanque tiene capacidad para ___ galones y cuesta $___. El tanque de mi compañero tiene capacidad para... Creo que..." : "My tank holds ___ gallons and costs $___. My partner's tank holds... I think...",
+          'pitch': isEs ? "¡Bienvenido a mi Presentación de Diseño de Acuario! Mi acuario está diseñado a medida para mi escritorio. Es un prisma rectangular que mide..." : "Welcome to my Aquarium Design Presentation! My aquarium is custom-designed for my desk. It is a rectangular prism that is..."
+        };
+        
+        for (const [id, txt] of Object.entries(placeholders)) {
+          const el = document.getElementById(id);
+          if (el) el.placeholder = txt;
+        }
+
+        buildTrail();
+        updateProgress();
+        recalcAll();
+        autoSave();
+      }
+
+      function readAloud() {
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          return;
+        }
+        
+        const isEs = document.getElementById('body').classList.contains('es');
+        const activePanel = document.querySelector('.step-panel.active');
+        if (!activePanel) return;
+        
+        let texts = [];
+        
+        const titleEl = activePanel.querySelector('.card-title');
+        const subEl = activePanel.querySelector('.card-sub');
+        const instructs = activePanel.querySelectorAll('.instruct');
+        
+        if (titleEl) {
+          texts.push(getVisibleText(titleEl, isEs));
+        }
+        if (subEl) {
+          texts.push(getVisibleText(subEl, isEs));
+        }
+        
+        instructs.forEach(ins => {
+          if (isElementVisible(ins)) {
+            texts.push(getVisibleText(ins, isEs));
+          }
+        });
+        
+        const vocabCards = activePanel.querySelectorAll('.vocab-card');
+        vocabCards.forEach(card => {
+          const term = card.querySelector('.vocab-term');
+          const def = card.querySelector('.vocab-def');
+          const ex = card.querySelector('.vocab-ex');
+          if (term) texts.push(getVisibleText(term, isEs));
+          if (def) texts.push(getVisibleText(def, isEs));
+          if (ex) texts.push(getVisibleText(ex, isEs));
+        });
+        
+        const labels = activePanel.querySelectorAll('label.lbl');
+        labels.forEach(lbl => {
+          if (isElementVisible(lbl)) {
+            texts.push(getVisibleText(lbl, isEs));
+          }
+        });
+        
+        const hintSummary = activePanel.querySelector('details.hint summary');
+        const hintP = activePanel.querySelector('details.hint p');
+        if (hintSummary && isElementVisible(hintSummary)) {
+          texts.push(getVisibleText(hintSummary, isEs));
+        }
+        if (hintP && isElementVisible(hintP)) {
+          texts.push(getVisibleText(hintP, isEs));
+        }
+        
+        if (currentStep === 6) {
+          const rubricTitle = activePanel.querySelector('h3');
+          if (rubricTitle) texts.push(getVisibleText(rubricTitle, isEs));
+          
+          const checklistItems = activePanel.querySelectorAll('.checklist li');
+          checklistItems.forEach(li => {
+            texts.push(getVisibleText(li, isEs));
+          });
+        }
+
+        const fullText = texts.filter(t => t.trim().length > 0).join('. ');
+        if (!fullText) return;
+        
+        const utterance = new SpeechSynthesisUtterance(fullText);
+        utterance.lang = isEs ? 'es-ES' : 'en-US';
+        
+        const btnRead = document.getElementById('btn-read');
+        const originalHtml = btnRead.innerHTML;
+        btnRead.innerHTML = isEs ? '⏹️ Detener' : '⏹️ Stop';
+        
+        utterance.onend = () => {
+          btnRead.innerHTML = originalHtml;
+        };
+        utterance.onerror = () => {
+          btnRead.innerHTML = originalHtml;
+        };
+        
+        window.speechSynthesis.speak(utterance);
+      }
+
+      function getVisibleText(element, isEs) {
+        const targetClass = isEs ? '.es-text' : '.en-text';
+        const matches = element.querySelectorAll(targetClass);
+        if (matches.length > 0) {
+          return Array.from(matches).map(m => m.textContent).join(' ');
+        }
+        if (element.classList.contains('en-text') && isEs) return '';
+        if (element.classList.contains('es-text') && !isEs) return '';
+        return element.textContent;
+      }
+
+      function isElementVisible(element) {
+        const body = document.getElementById('body');
+        const isL1 = body.classList.contains('level-1');
+        const isL2 = body.classList.contains('level-2');
+        
+        if (element.classList.contains('lvl1-only') && !isL1) return false;
+        if (element.classList.contains('lvl2-only') && !isL2) return false;
+        
+        let parent = element.parentElement;
+        while (parent) {
+          if (parent.classList.contains('lvl1-only') && !isL1) return false;
+          if (parent.classList.contains('lvl2-only') && !isL2) return false;
+          parent = parent.parentElement;
+        }
+        return true;
       }
 
       // ---- Auto-save / Auto-load ----
@@ -1272,6 +1957,7 @@
           }
         });
         data.level = document.getElementById('body').classList.contains('level-2') ? 2 : 1;
+        data.lang = document.getElementById('body').classList.contains('es') ? 'es' : 'en';
         data.currentStep = currentStep;
         localStorage.setItem('u10ProjectB_backup', JSON.stringify(data));
       }
@@ -1281,14 +1967,43 @@
           const raw = localStorage.getItem('u10ProjectB_backup');
           if (!raw) return;
           const data = JSON.parse(raw);
+          
+          if (data.lang === 'es') {
+            const body = document.getElementById('body');
+            body.classList.add('es');
+            const btnLang = document.getElementById('btn-lang');
+            if (btnLang) btnLang.textContent = "🌐 Idioma: ES";
+            const btnRead = document.getElementById('btn-read');
+            if (btnRead) btnRead.textContent = "🔊 Leer en Voz Alta";
+            
+            // Set placeholders for Spanish
+            const placeholders = {
+              'spaceName': "ej. repisa del salón",
+              't-length': "ej. 20",
+              't-width': "ej. 10",
+              't-height': "ej. 12",
+              'distrib-eq': "ej. 200 + 24(20 + 10)",
+              'world-compare': "La capacidad de mi tanque es de ___ galones y el costo total de construcción es de $___. Comparado con los precios minoristas de las tiendas, esto es...",
+              'p-name': "ej. Alex",
+              'p-volume': "ej. 15",
+              'p-cost': "ej. 75.00",
+              'peer-reflect': "Mi tanque tiene capacidad para ___ galones y cuesta $___. El tanque de mi compañero tiene capacidad para... Creo que...",
+              'pitch': "¡Bienvenido a mi Presentación de Diseño de Acuario! Mi acuario está diseñado a medida para mi escritorio. Es un prisma rectangular que mide..."
+            };
+            for (const [id, txt] of Object.entries(placeholders)) {
+              const el = document.getElementById(id);
+              if (el) el.placeholder = txt;
+            }
+          }
+          
           if (data.level) setLevel(data.level);
           if (data.currentStep) {
             currentStep = data.currentStep;
-            visited.add(currentStep);
+            visited.add(data.currentStep);
           }
           
           Object.keys(data).forEach(key => {
-            if (key === 'level' || key === 'currentStep') return;
+            if (key === 'level' || key === 'currentStep' || key === 'lang') return;
             const el = document.getElementById(key);
             if (el) {
               if (el.type === 'checkbox') {

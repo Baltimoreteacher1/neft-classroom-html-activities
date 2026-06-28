@@ -45,7 +45,7 @@
       .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 50px; padding: 4px 13px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
       .tag.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
 
-      /* ---- Level selector ---- */
+      /* ---- Level selector / Accessibility ---- */
       .level-bar {
         display: flex; gap: 10px; justify-content: center;
         background: rgba(255,255,255,.10); border-radius: 50px;
@@ -56,6 +56,7 @@
         border: 2px solid rgba(255,255,255,.30); border-radius: 50px;
         padding: 7px 16px; font-size: 13px; font-weight: 700;
         cursor: pointer; font-family: inherit; transition: all .2s;
+        display: flex; align-items: center; justify-content: center;
       }
       .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; }
 
@@ -142,7 +143,11 @@
       input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
       textarea { min-height: 90px; resize: vertical; }
       .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+      .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) {
+        .grid2 { grid-template-columns: 1fr; }
+        .grid3 { grid-template-columns: 1fr; }
+      }
 
       /* ---- Calc button & readout ---- */
       .calc-btn {
@@ -261,6 +266,15 @@
         body { background: #fff; }
         .card { box-shadow: none; border-color: #ccc; }
       }
+
+      /* ---- Bilingual Support CSS ---- */
+      body.es .en-text { display: none !important; }
+      body.es .es-text { display: inline !important; }
+      span.es-text { display: none; }
+      
+      /* Support SVG text translation */
+      body.es text.es-text { display: block !important; }
+      text.es-text { display: none; }
     </style>
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -271,16 +285,38 @@
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
       <div class="hero-emoji">🎨</div>
-      <h1>Room Makeover Budget</h1>
-      <p class="hero-sub">Plan a room makeover by calculating floor area, paint coverage, and total costs.</p>
+      <h1>
+        <span class="en-text">Room Makeover Budget</span>
+        <span class="es-text">Presupuesto de remodelación del cuarto</span>
+      </h1>
+      <p class="hero-sub">
+        <span class="en-text">Plan a room makeover by calculating floor area, paint coverage, and total costs.</span>
+        <span class="es-text">Planifica la remodelación de un cuarto calculando el área del piso, la cobertura de pintura y los costos totales.</span>
+      </p>
       <div class="hero-tags">
-        <span class="tag gold">Unit 5 · Geometry</span>
+        <span class="tag gold">
+          <span class="en-text">Unit 5 · Geometry</span>
+          <span class="es-text">Unidad 5 · Geometría</span>
+        </span>
         <span class="tag">6.G.1</span>
-        <span class="tag">Version B</span>
+        <span class="tag">
+          <span class="en-text">Version B</span>
+          <span class="es-text">Versión B</span>
+        </span>
       </div>
       <div class="level-bar">
-        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
-        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
+          <span class="en-text">🟢 Level 1 — With Support</span>
+          <span class="es-text">🟢 Nivel 1 — Con apoyo</span>
+        </button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">
+          <span class="en-text">🔵 Level 2 — Challenge</span>
+          <span class="es-text">🔵 Nivel 2 — Desafío</span>
+        </button>
+      </div>
+      <div class="level-bar" style="margin-top: 10px; max-width: 320px;">
+        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
+        <button class="level-btn" id="btn-read" onclick="readAloud()">🔊 Read Aloud</button>
       </div>
     </header>
 
@@ -304,8 +340,14 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">Key Words</div>
-              <div class="card-sub">Learn these 4 math words before you begin</div>
+              <div class="card-title">
+                <span class="en-text">Key Words</span>
+                <span class="es-text">Palabras clave</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Learn these 4 math words before you begin</span>
+                <span class="es-text">Aprende estas 4 palabras de matemáticas antes de comenzar</span>
+              </div>
             </div>
           </div>
 
@@ -315,38 +357,81 @@
           <div class="vocab-grid">
             <div class="vocab-card">
               <div class="vocab-icon">📐</div>
-              <div class="vocab-term">Area</div>
-              <div class="vocab-def">The amount of flat space inside a 2D shape. Measured in square units.</div>
-              <div class="vocab-ex">Floor = Length × Width</div>
+              <div class="vocab-term">
+                <span class="en-text">Area</span>
+                <span class="es-text">Área</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The amount of flat space inside a 2D shape. Measured in square units.</span>
+                <span class="es-text">La cantidad de espacio plano dentro de una figura bidimensional (2D). Se mide en unidades cuadradas.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">Floor = Length × Width</span>
+                <span class="es-text">Piso = Largo × Ancho</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🧩</div>
-              <div class="vocab-term">Composite Figure</div>
-              <div class="vocab-def">A larger shape made by putting together smaller basic shapes.</div>
-              <div class="vocab-ex">Room floor + closet extension</div>
+              <div class="vocab-term">
+                <span class="en-text">Composite Figure</span>
+                <span class="es-text">Figura compuesta</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A larger shape made by putting together smaller basic shapes.</span>
+                <span class="es-text">Una figura más grande formada al unir figuras básicas más pequeñas.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">Room floor + closet extension</span>
+                <span class="es-text">Piso del cuarto + extensión del armario</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🎨</div>
-              <div class="vocab-term">Wall Area</div>
-              <div class="vocab-def">The surface area of the walls, calculated by multiplying wall height by perimeter.</div>
-              <div class="vocab-ex">2 × (L + W) × Height</div>
+              <div class="vocab-term">
+                <span class="en-text">Wall Area</span>
+                <span class="es-text">Área de las paredes</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The surface area of the walls, calculated by multiplying wall height by perimeter.</span>
+                <span class="es-text">El área de superficie de las paredes, calculada multiplicando la altura de la pared por el perímetro.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">2 × (L + W) × Height</span>
+                <span class="es-text">2 × (L + A) × Altura</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">📦</div>
-              <div class="vocab-term">Net / Surface Coverage</div>
-              <div class="vocab-def">A flat 2D pattern showing all outer surfaces of a 3D object unfolded.</div>
-              <div class="vocab-ex">Unfolding walls flat to measure paint</div>
+              <div class="vocab-term">
+                <span class="en-text">Net / Surface Coverage</span>
+                <span class="es-text">Red / Cobertura de superficie</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A flat 2D pattern showing all outer surfaces of a 3D object unfolded.</span>
+                <span class="es-text">Un patrón plano bidimensional (2D) que muestra todas las superficies externas de un objeto tridimensional (3D) desplegado.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">Unfolding walls flat to measure paint</span>
+                <span class="es-text">Desplegar las paredes en plano para medir la pintura</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct" style="margin-top:20px">
-            ✅ Read each word card. When you're ready, click <strong>Next Step</strong>.
+            <span class="en-text">✅ Read each word card. When you're ready, click <strong>Next Step</strong>.</span>
+            <span class="es-text">✅ Lee cada tarjeta de palabras. Cuando estés listo, haz clic en <strong>Siguiente paso</strong>.</span>
           </div>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" disabled>← Back</button>
-          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
+          <button class="nav-btn ghost" disabled>
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(2)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -358,13 +443,20 @@
           <div class="card-header">
             <div class="card-icon">📐</div>
             <div>
-              <div class="card-title">Step 1 — Room Floor Area</div>
-              <div class="card-sub">Calculate the total area of your rectangular floor plan</div>
+              <div class="card-title">
+                <span class="en-text">Step 1 — Room Floor Area</span>
+                <span class="es-text">Paso 1 — Área del piso del cuarto</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Calculate the total area of your rectangular floor plan</span>
+                <span class="es-text">Calcula el área total del plano rectangular de tu piso</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct">
-            <strong>Your job:</strong> Plan the dimensions of your room's floor. Multiply the length by the width to calculate the total floor area in square feet.
+            <span class="en-text"><strong>Your job:</strong> Plan the dimensions of your room's floor. Multiply the length by the width to calculate the total floor area in square feet.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Planifica las dimensiones del piso de tu cuarto. Multiplica el largo por el ancho para calcular el área total del piso en pies cuadrados.</span>
           </div>
 
           <!-- SVG: Floor layout -->
@@ -377,40 +469,71 @@
 
           <!-- Level 1 tip -->
           <div class="instruct lvl1-only">
-            🟢 <strong>Level 1 tip:</strong> Try friendly round numbers like 15 ft length and 12 ft width.
+            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try friendly round numbers like 15 ft length and 12 ft width.</span>
+            <span class="es-text">🟢 <strong>Consejo de Nivel 1:</strong> Intenta usar números enteros sencillos como 15 pies de largo y 12 pies de ancho.</span>
           </div>
 
           <!-- Level 2 challenge -->
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE — L-Shaped Composite Floor</span>
-            <p style="font-size:14px;margin:6px 0 10px">If your room has an L-shaped floor plan with a main area of 12 ft by 15 ft and a closet extension of 4 ft by 5 ft, what is the total area? Explain how you split the shape and computed the sum.</p>
-            <label class="lbl" for="composite-floor-ans">Your calculation &amp; explanation:</label>
-            <textarea id="composite-floor-ans" placeholder="To find the composite area, I split it into..."></textarea>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE — L-Shaped Composite Floor</span>
+              <span class="es-text">DESAFÍO DE NIVEL 2 — Piso compuesto en forma de L</span>
+            </span>
+            <p style="font-size:14px;margin:6px 0 10px">
+              <span class="en-text">If your room has an L-shaped floor plan with a main area of 12 ft by 15 ft and a closet extension of 4 ft by 5 ft, what is the total area? Explain how you split the shape and computed the sum.</span>
+              <span class="es-text">Si tu habitación tiene un plano en forma de L con un área principal de 12 pies por 15 pies y una extensión de armario de 4 pies por 5 pies, ¿cuál es el área total? Explica cómo dividiste la figura y calculaste la suma.</span>
+            </p>
+            <label class="lbl" for="composite-floor-ans">
+              <span class="en-text">Your calculation &amp; explanation:</span>
+              <span class="es-text">Tu cálculo y explicación:</span>
+            </label>
+            <textarea id="composite-floor-ans" placeholder="To find the composite area, I split it into..." data-placeholder-en="To find the composite area, I split it into..." data-placeholder-es="Para encontrar el área compuesta, la dividí en..."></textarea>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="floor-length">📏 Floor Length (ft)</label>
-              <input type="number" id="floor-length" min="1" placeholder="e.g. 15" oninput="recalcAll()" />
+              <label class="lbl" for="floor-length">
+                <span class="en-text">📏 Floor Length (ft)</span>
+                <span class="es-text">📏 Largo del piso (pies)</span>
+              </label>
+              <input type="number" id="floor-length" min="1" placeholder="e.g. 15" data-placeholder-en="e.g. 15" data-placeholder-es="ej. 15" oninput="recalcAll()" />
             </div>
             <div>
-              <label class="lbl" for="floor-width">📐 Floor Width (ft)</label>
-              <input type="number" id="floor-width" min="1" placeholder="e.g. 12" oninput="recalcAll()" />
+              <label class="lbl" for="floor-width">
+                <span class="en-text">📐 Floor Width (ft)</span>
+                <span class="es-text">📐 Ancho del piso (pies)</span>
+              </label>
+              <input type="number" id="floor-width" min="1" placeholder="e.g. 12" data-placeholder-en="e.g. 12" data-placeholder-es="ej. 12" oninput="recalcAll()" />
             </div>
           </div>
 
-          <button class="calc-btn" onclick="calcFloor()">🧮 Calculate Floor Area</button>
+          <button class="calc-btn" onclick="calcFloor()">
+            <span class="en-text">🧮 Calculate Floor Area</span>
+            <span class="es-text">🧮 Calcular área del piso</span>
+          </button>
           <div class="readout" id="floor-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>Area of a rectangle = Length × Width.<br><strong>Example:</strong> A room that is 10 ft long and 10 ft wide has an area of 10 × 10 = 100 square feet.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">Area of a rectangle = Length × Width.<br><strong>Example:</strong> A room that is 10 ft long and 10 ft wide has an area of 10 × 10 = 100 square feet.</span>
+              <span class="es-text">Área de un rectángulo = Largo × Ancho.<br><strong>Ejemplo:</strong> Un cuarto que tiene 10 pies de largo y 10 pies de ancho tiene un área de 10 × 10 = 100 pies cuadrados.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
-          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(1)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(3)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -422,76 +545,122 @@
           <div class="card-header">
             <div class="card-icon teal">🎨</div>
             <div>
-              <div class="card-title">Step 2 — Wall Paint Coverage</div>
-              <div class="card-sub">Find wall area, subtract window/door areas, and compute gallons of paint</div>
+              <div class="card-title">
+                <span class="en-text">Step 2 — Wall Paint Coverage</span>
+                <span class="es-text">Paso 2 — Cobertura de pintura de paredes</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Find wall area, subtract window/door areas, and compute gallons of paint</span>
+                <span class="es-text">Calcula el área de la pared, resta ventanas/puertas y calcula los galones de pintura</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your job:</strong> Calculate the area of the 4 walls of your room. Find the total perimeter of the floor, multiply it by the wall height, and then subtract any windows or doors. Finally, find how many whole gallons of paint you need (1 gallon covers ~350 sq ft).
+            <span class="en-text"><strong>Your job:</strong> Calculate the area of the 4 walls of your room. Find the total perimeter of the floor, multiply it by the wall height, and then subtract any windows or doors. Finally, find how many whole gallons of paint you need (1 gallon covers ~350 sq ft).</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Calcula el área de las 4 paredes de tu cuarto. Encuentra el perímetro total del piso, multiplícalo por la altura de la pared y luego resta ventanas o puertas. Finalmente, calcula cuántos galones enteros de pintura necesitas (1 galón cubre ~350 pies²).</span>
           </div>
 
           <!-- SVG: Wall layout -->
           <svg class="visual-svg" viewBox="0 0 520 150" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
             <rect x="40" y="20" width="440" height="110" fill="#f1f5f9" stroke="#4f46e5" stroke-width="2"/>
-            <text x="260" y="15" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e1b4b">Wall Area = (Length × Height) − Openings</text>
+            <text x="260" y="15" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e1b4b" class="en-text">Wall Area = (Length × Height) − Openings</text>
+            <text x="260" y="15" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e1b4b" class="es-text">Área de paredes = (Largo × Altura) − Aberturas</text>
             <rect x="100" y="45" width="50" height="50" fill="#e0e7ff" stroke="#4f46e5" stroke-width="1.5"/>
             <line x1="125" y1="45" x2="125" y2="95" stroke="#4f46e5" stroke-width="1"/>
             <line x1="100" y1="70" x2="150" y2="70" stroke="#4f46e5" stroke-width="1"/>
-            <text x="125" y="112" text-anchor="middle" font-size="10" fill="#475569">Window</text>
+            <text x="125" y="112" text-anchor="middle" font-size="10" fill="#475569" class="en-text">Window</text>
+            <text x="125" y="112" text-anchor="middle" font-size="10" fill="#475569" class="es-text">Ventana</text>
             <rect x="340" y="45" width="40" height="85" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
             <circle cx="372" cy="85" r="2.5" fill="#d97706"/>
-            <text x="360" y="40" text-anchor="middle" font-size="10" fill="#475569">Door</text>
+            <text x="360" y="40" text-anchor="middle" font-size="10" fill="#475569" class="en-text">Door</text>
+            <text x="360" y="40" text-anchor="middle" font-size="10" fill="#475569" class="es-text">Puerta</text>
             <line x1="25" y1="20" x2="25" y2="130" stroke="#475569" stroke-width="1"/>
             <polygon points="25,20 22,27 28,27" fill="#475569"/>
             <polygon points="25,130 22,123 28,123" fill="#475569"/>
-            <text x="15" y="78" text-anchor="middle" font-size="10" fill="#475569" transform="rotate(-90 15 78)">Height</text>
+            <text x="15" y="78" text-anchor="middle" font-size="10" fill="#475569" transform="rotate(-90 15 78)" class="en-text">Height</text>
+            <text x="15" y="78" text-anchor="middle" font-size="10" fill="#475569" transform="rotate(-90 15 78)" class="es-text">Altura</text>
             <line x1="40" y1="140" x2="480" y2="140" stroke="#475569" stroke-width="1"/>
             <polygon points="40,140 47,137 47,143" fill="#475569"/>
             <polygon points="480,140 473,137 473,143" fill="#475569"/>
-            <text x="260" y="148" text-anchor="middle" font-size="10" fill="#475569">Length or Width</text>
+            <text x="260" y="148" text-anchor="middle" font-size="10" fill="#475569" class="en-text">Length or Width</text>
+            <text x="260" y="148" text-anchor="middle" font-size="10" fill="#475569" class="es-text">Largo o Ancho</text>
           </svg>
 
           <!-- Level 1 tip -->
           <div class="instruct lvl1-only teal">
-            🟢 <strong>Level 1 tip:</strong> Try standard room metrics: Height = 8 ft, Window Area = 30 sq ft, Door Area = 20 sq ft.
+            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try standard room metrics: Height = 8 ft, Window Area = 30 sq ft, Door Area = 20 sq ft.</span>
+            <span class="es-text">🟢 <strong>Consejo de Nivel 1:</strong> Intenta usar medidas estándar: Altura = 8 pies, Área de ventanas = 30 pies², Área de puertas = 20 pies².</span>
           </div>
 
           <!-- Level 2 challenge -->
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE — Two Coats of Paint</span>
-            <p style="font-size:14px;margin:6px 0 10px">If you want to apply two complete coats of paint to all walls, how would your calculations change? How many total whole gallons would you need to buy?</p>
-            <label class="lbl" for="two-coats-reflect">Explain the double-coverage calculation:</label>
-            <textarea id="two-coats-reflect" placeholder="To apply two coats of paint..."></textarea>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE — Two Coats of Paint</span>
+              <span class="es-text">DESAFÍO DE NIVEL 2 — Dos capas de pintura</span>
+            </span>
+            <p style="font-size:14px;margin:6px 0 10px">
+              <span class="en-text">If you want to apply two complete coats of paint to all walls, how would your calculations change? How many total whole gallons would you need to buy?</span>
+              <span class="es-text">Si quieres aplicar dos capas completas de pintura en todas las paredes, ¿cómo cambiarían tus cálculos? ¿Cuántos galones enteros en total necesitarías comprar?</span>
+            </p>
+            <label class="lbl" for="two-coats-reflect">
+              <span class="en-text">Explain the double-coverage calculation:</span>
+              <span class="es-text">Explica el cálculo de doble cobertura:</span>
+            </label>
+            <textarea id="two-coats-reflect" placeholder="To apply two coats of paint..." data-placeholder-en="To apply two coats of paint..." data-placeholder-es="Para aplicar dos capas de pintura..."></textarea>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="wall-height">↕️ Wall Height (ft)</label>
-              <input type="number" id="wall-height" min="1" placeholder="e.g. 8" oninput="recalcAll()" />
+              <label class="lbl" for="wall-height">
+                <span class="en-text">↕️ Wall Height (ft)</span>
+                <span class="es-text">↕️ Altura de pared (pies)</span>
+              </label>
+              <input type="number" id="wall-height" min="1" placeholder="e.g. 8" data-placeholder-en="e.g. 8" data-placeholder-es="ej. 8" oninput="recalcAll()" />
             </div>
             <div>
-              <label class="lbl" for="window-area">🪟 Total Windows Area to Subtract (sq ft)</label>
-              <input type="number" id="window-area" min="0" placeholder="e.g. 30" oninput="recalcAll()" />
+              <label class="lbl" for="window-area">
+                <span class="en-text">🪟 Total Windows Area to Subtract (sq ft)</span>
+                <span class="es-text">🪟 Área total de ventanas a restar (pies²)</span>
+              </label>
+              <input type="number" id="window-area" min="0" placeholder="e.g. 30" data-placeholder-en="e.g. 30" data-placeholder-es="ej. 30" oninput="recalcAll()" />
             </div>
             <div>
-              <label class="lbl" for="door-area">🚪 Total Doors Area to Subtract (sq ft)</label>
-              <input type="number" id="door-area" min="0" placeholder="e.g. 20" oninput="recalcAll()" />
+              <label class="lbl" for="door-area">
+                <span class="en-text">🚪 Total Doors Area to Subtract (sq ft)</span>
+                <span class="es-text">🚪 Área total de puertas a restar (pies²)</span>
+              </label>
+              <input type="number" id="door-area" min="0" placeholder="e.g. 20" data-placeholder-en="e.g. 20" data-placeholder-es="ej. 20" oninput="recalcAll()" />
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="calcPaint()">🎨 Calculate Paint Needed</button>
+          <button class="calc-btn teal" onclick="calcPaint()">
+            <span class="en-text">🎨 Calculate Paint Needed</span>
+            <span class="es-text">🎨 Calcular pintura necesaria</span>
+          </button>
           <div class="readout" id="paint-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>1. Find gross wall area: 2 × (Length + Width) × Height.<br>2. Subtract window + door area to find Net Area.<br>3. Divide Net Area by 350, then round UP to find whole gallons to buy.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">1. Find gross wall area: 2 × (Length + Width) × Height.<br>2. Subtract window + door area to find Net Area.<br>3. Divide Net Area by 350, then round UP to find whole gallons to buy.</span>
+              <span class="es-text">1. Calcula el área bruta de las paredes: 2 × (Largo + Ancho) × Altura.<br>2. Resta el área de ventanas + puertas para obtener el Área neta.<br>3. Divide el Área neta entre 350, y redondea hacia ARRIBA al siguiente entero para obtener los galones a comprar.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
-          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(2)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(4)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -503,93 +672,190 @@
           <div class="card-header">
             <div class="card-icon gold">💵</div>
             <div>
-              <div class="card-title">Step 3 — Paint &amp; Flooring Cost</div>
-              <div class="card-sub">Choose materials, calculate total cost, and compare with average budgets</div>
+              <div class="card-title">
+                <span class="en-text">Step 3 — Paint &amp; Flooring Cost</span>
+                <span class="es-text">Paso 3 — Costo de piso y pintura</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Choose materials, calculate total cost, and compare with average budgets</span>
+                <span class="es-text">Elige materiales, calcula el costo total y compara con presupuestos promedio</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct gold">
-            <strong>Your job:</strong> Select your flooring type and paint quality. Calculate the total cost and check where your makeover falls compared to typical real-world ranges.
+            <span class="en-text"><strong>Your job:</strong> Select your flooring type and paint quality. Calculate the total cost and check where your makeover falls compared to typical real-world ranges.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Selecciona tu tipo de piso y calidad de pintura. Calcula el costo total y evalúa en qué rango real se sitúa tu remodelación.</span>
           </div>
 
           <!-- SVG: Cost visual -->
           <svg class="visual-svg" viewBox="0 0 520 120" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
-            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e1b4b">Total Cost = Flooring Cost + Paint Cost</text>
+            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e1b4b" class="en-text">Total Cost = Flooring Cost + Paint Cost</text>
+            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e1b4b" class="es-text">Costo total = Costo de piso + Costo de pintura</text>
             <rect x="40" y="40" width="180" height="60" rx="10" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
-            <text x="130" y="65" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e1b4b">Flooring Cost</text>
-            <text x="130" y="85" text-anchor="middle" font-size="11" fill="#4f46e5">Area × Price/sq ft</text>
+            <text x="130" y="65" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e1b4b" class="en-text">Flooring Cost</text>
+            <text x="130" y="65" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e1b4b" class="es-text">Costo de piso</text>
+            <text x="130" y="85" text-anchor="middle" font-size="11" fill="#4f46e5" class="en-text">Area × Price/sq ft</text>
+            <text x="130" y="85" text-anchor="middle" font-size="11" fill="#4f46e5" class="es-text">Área × Precio/pie²</text>
             <text x="260" y="75" text-anchor="middle" font-size="22" fill="#7c3aed" font-weight="bold">+</text>
             <rect x="300" y="40" width="180" height="60" rx="10" fill="#f3e8ff" stroke="#7c3aed" stroke-width="2"/>
-            <text x="390" y="65" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e1b4b">Paint Cost</text>
-            <text x="390" y="85" text-anchor="middle" font-size="11" fill="#7c3aed">Gallons × Price/gal</text>
+            <text x="390" y="65" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e1b4b" class="en-text">Paint Cost</text>
+            <text x="390" y="65" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e1b4b" class="es-text">Costo de pintura</text>
+            <text x="390" y="85" text-anchor="middle" font-size="11" fill="#7c3aed" class="en-text">Gallons × Price/gal</text>
+            <text x="390" y="85" text-anchor="middle" font-size="11" fill="#7c3aed" class="es-text">Galones × Precio/gal</text>
           </svg>
 
           <!-- Level 2 challenge -->
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE — Budget Strategy ($1,500 limit)</span>
-            <p style="font-size:14px;margin:6px 0 10px">If you have a strict limit of $1,500 for the makeover, what materials would you choose? Explain your optimization strategy.</p>
-            <label class="lbl" for="budget-strategy">Describe your strategy:</label>
-            <textarea id="budget-strategy" placeholder="To stay under $1,500, I will select..."></textarea>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE — Budget Strategy ($1,500 limit)</span>
+              <span class="es-text">DESAFÍO DE NIVEL 2 — Estrategia de presupuesto (límite $1,500)</span>
+            </span>
+            <p style="font-size:14px;margin:6px 0 10px">
+              <span class="en-text">If you have a strict limit of $1,500 for the makeover, what materials would you choose? Explain your optimization strategy.</span>
+              <span class="es-text">Si tienes un límite estricto de $1,500 para la remodelación, ¿qué materiales elegirías? Explica tu estrategia de optimización.</span>
+            </p>
+            <label class="lbl" for="budget-strategy">
+              <span class="en-text">Describe your strategy:</span>
+              <span class="es-text">Describe tu estrategia:</span>
+            </label>
+            <textarea id="budget-strategy" placeholder="To stay under $1,500, I will select..." data-placeholder-en="To stay under $1,500, I will select..." data-placeholder-es="Para mantenerme bajo los $1,500, elegiré..."></textarea>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="flooring-select">🪵 Flooring Type</label>
+              <label class="lbl" for="flooring-select">
+                <span class="en-text">🪵 Flooring Type</span>
+                <span class="es-text">🪵 Tipo de piso</span>
+              </label>
               <select id="flooring-select" onchange="onFlooringChange()">
-                <option value="3.50">Carpet ($3.50 per sq ft)</option>
-                <option value="5.00">Laminate Wood ($5.00 per sq ft)</option>
-                <option value="9.00">Hardwood ($9.00 per sq ft)</option>
-                <option value="12.00">Ceramic Tile ($12.00 per sq ft)</option>
-                <option value="custom" class="lvl2-only">Custom Price (Level 2)</option>
+                <option value="3.50" data-placeholder-en="Carpet ($3.50 per sq ft)" data-placeholder-es="Alfombra ($3.50 por pie²)">Carpet ($3.50 per sq ft)</option>
+                <option value="5.00" data-placeholder-en="Laminate Wood ($5.00 per sq ft)" data-placeholder-es="Madera laminada ($5.00 por pie²)">Laminate Wood ($5.00 per sq ft)</option>
+                <option value="9.00" data-placeholder-en="Hardwood ($9.00 per sq ft)" data-placeholder-es="Madera noble ($9.00 por pie²)">Hardwood ($9.00 per sq ft)</option>
+                <option value="12.00" data-placeholder-en="Ceramic Tile ($12.00 per sq ft)" data-placeholder-es="Baldosa cerámica ($12.00 por pie²)">Ceramic Tile ($12.00 per sq ft)</option>
+                <option value="custom" class="lvl2-only" data-placeholder-en="Custom Price (Level 2)" data-placeholder-es="Precio personalizado (Nivel 2)">Custom Price (Level 2)</option>
               </select>
               <div id="custom-flooring-wrap" style="display:none;margin-top:8px;">
-                <label class="lbl" for="custom-flooring-price">Custom Flooring Price ($/sq ft)</label>
-                <input type="number" id="custom-flooring-price" step="0.01" min="0" oninput="recalcAll()" placeholder="e.g. 7.50">
+                <label class="lbl" for="custom-flooring-price">
+                  <span class="en-text">Custom Flooring Price ($/sq ft)</span>
+                  <span class="es-text">Precio de piso personalizado ($/pie²)</span>
+                </label>
+                <input type="number" id="custom-flooring-price" step="0.01" min="0" oninput="recalcAll()" placeholder="e.g. 7.50" data-placeholder-en="e.g. 7.50" data-placeholder-es="ej. 7.50">
               </div>
             </div>
             <div>
-              <label class="lbl" for="paint-select">🎨 Paint Quality</label>
+              <label class="lbl" for="paint-select">
+                <span class="en-text">🎨 Paint Quality</span>
+                <span class="es-text">🎨 Calidad de pintura</span>
+              </label>
               <select id="paint-select" onchange="onPaintChange()">
-                <option value="25.00">Budget Paint ($25.00 per gallon)</option>
-                <option value="45.00">Standard Paint ($45.00 per gallon)</option>
-                <option value="75.00">Premium Paint ($75.00 per gallon)</option>
-                <option value="custom" class="lvl2-only">Custom Price (Level 2)</option>
+                <option value="25.00" data-placeholder-en="Budget Paint ($25.00 per gallon)" data-placeholder-es="Pintura económica ($25.00 por galón)">Budget Paint ($25.00 per gallon)</option>
+                <option value="45.00" data-placeholder-en="Standard Paint ($45.00 per gallon)" data-placeholder-es="Pintura estándar ($45.00 por galón)">Standard Paint ($45.00 per gallon)</option>
+                <option value="75.00" data-placeholder-en="Premium Paint ($75.00 per gallon)" data-placeholder-es="Pintura premium ($75.00 por galón)">Premium Paint ($75.00 per gallon)</option>
+                <option value="custom" class="lvl2-only" data-placeholder-en="Custom Price (Level 2)" data-placeholder-es="Precio personalizado (Nivel 2)">Custom Price (Level 2)</option>
               </select>
               <div id="custom-paint-wrap" style="display:none;margin-top:8px;">
-                <label class="lbl" for="custom-paint-price">Custom Paint Price ($/gallon)</label>
-                <input type="number" id="custom-paint-price" step="0.01" min="0" oninput="recalcAll()" placeholder="e.g. 35.00">
+                <label class="lbl" for="custom-paint-price">
+                  <span class="en-text">Custom Paint Price ($/gallon)</span>
+                  <span class="es-text">Precio de pintura personalizado ($/galón)</span>
+                </label>
+                <input type="number" id="custom-paint-price" step="0.01" min="0" oninput="recalcAll()" placeholder="e.g. 35.00" data-placeholder-en="e.g. 35.00" data-placeholder-es="ej. 35.00">
               </div>
             </div>
           </div>
 
-          <button class="calc-btn gold" onclick="calcCost()">💵 Calculate Total Makeover Cost</button>
+          <button class="calc-btn gold" onclick="calcCost()">
+            <span class="en-text">💵 Calculate Total Makeover Cost</span>
+            <span class="es-text">💵 Calcular costo total de remodelación</span>
+          </button>
           <div class="readout" id="cost-out"></div>
 
           <div style="margin-top:22px;">
-            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">🌎 Real Room Makeover Cost Ranges</h3>
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">
+              <span class="en-text">🌎 Real Room Makeover Cost Ranges</span>
+              <span class="es-text">🌎 Rangos de costos de remodelación reales</span>
+            </h3>
             <table class="data-table">
               <thead>
-                <tr><th>Makeover Level</th><th>Typical Cost Range</th><th>Details</th></tr>
+                <tr>
+                  <th>
+                    <span class="en-text">Makeover Level</span>
+                    <span class="es-text">Nivel de remodelación</span>
+                  </th>
+                  <th>
+                    <span class="en-text">Typical Cost Range</span>
+                    <span class="es-text">Rango de costo típico</span>
+                  </th>
+                  <th>
+                    <span class="en-text">Details</span>
+                    <span class="es-text">Detalles</span>
+                  </th>
+                </tr>
               </thead>
               <tbody>
-                <tr><td>Low Makeover</td><td>$1,000 – $2,000</td><td>DIY paint, budget carpet or vinyl flooring</td></tr>
-                <tr><td>Mid-Range Makeover</td><td>$2,500 – $5,000</td><td>Professional paint, laminate/engineered wood</td></tr>
-                <tr><td>High-End Makeover</td><td>$6,000+</td><td>Designer materials, premium hardwood or tile, custom labor</td></tr>
+                <tr>
+                  <td>
+                    <span class="en-text">Low Makeover</span>
+                    <span class="es-text">Remodelación económica</span>
+                  </td>
+                  <td>$1,000 – $2,000</td>
+                  <td>
+                    <span class="en-text">DIY paint, budget carpet or vinyl flooring</span>
+                    <span class="es-text">Pintura propia (DIY), alfombra económica o piso de vinilo</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="en-text">Mid-Range Makeover</span>
+                    <span class="es-text">Remodelación intermedia</span>
+                  </td>
+                  <td>$2,500 – $5,000</td>
+                  <td>
+                    <span class="en-text">Professional paint, laminate/engineered wood</span>
+                    <span class="es-text">Pintura profesional, madera laminada o tecnológica</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="en-text">High-End Makeover</span>
+                    <span class="es-text">Remodelación de alta gama</span>
+                  </td>
+                  <td>$6,000+</td>
+                  <td>
+                    <span class="en-text">Designer materials, premium hardwood or tile, custom labor</span>
+                    <span class="es-text">Materiales de diseño, madera noble o baldosas de lujo, mano de obra profesional</span>
+                  </td>
+                </tr>
               </tbody>
             </table>
-            <label class="lbl" for="world-compare">Where does your makeover cost fit? Write one sentence comparing your cost to these average ranges.</label>
-            <textarea id="world-compare" placeholder="My total makeover cost is $___. This falls into the... because..."></textarea>
+            <label class="lbl" for="world-compare">
+              <span class="en-text">Where does your makeover cost fit? Write one sentence comparing your cost to these average ranges.</span>
+              <span class="es-text">¿En qué rango encaja el costo de tu remodelación? Escribe una oración comparando tu costo con estos rangos promedio.</span>
+            </label>
+            <textarea id="world-compare" placeholder="My total makeover cost is $___. This falls into the... because..." data-placeholder-en="My total makeover cost is $___. This falls into the... because..." data-placeholder-es="Mi costo total de remodelación es $___. Esto cae en el rango de... porque..."></textarea>
           </div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>Flooring Cost = Floor Area × Flooring Price.<br>Paint Cost = Paint Gallons × Paint Price.<br>Total Cost = Flooring Cost + Paint Cost.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">Flooring Cost = Floor Area × Flooring Price.<br>Paint Cost = Paint Gallons × Paint Price.<br>Total Cost = Flooring Cost + Paint Cost.</span>
+              <span class="es-text">Costo de piso = Área de piso × Precio de piso.<br>Costo de pintura = Galones de pintura × Precio de pintura.<br>Costo total = Costo de piso + Costo de pintura.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
-          <button class="nav-btn" onclick="goStep(5)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(3)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(5)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -601,61 +867,104 @@
           <div class="card-header">
             <div class="card-icon teal">👥</div>
             <div>
-              <div class="card-title">Step 4 — Partner Comparison</div>
-              <div class="card-sub">Compare your room makeover plan with a classmate</div>
+              <div class="card-title">
+                <span class="en-text">Step 4 — Partner Comparison</span>
+                <span class="es-text">Paso 4 — Comparación con compañero</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Compare your room makeover plan with a classmate</span>
+                <span class="es-text">Compara el plan de remodelación de tu cuarto con el de un compañero de clase</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your job:</strong> Ask a partner for their measurements and costs. Write their answers below, then press Compare to see the mathematical differences.
+            <span class="en-text"><strong>Your job:</strong> Ask a partner for their measurements and costs. Write their answers below, then press Compare to see the mathematical differences.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Pídele a un compañero sus medidas y costos. Escribe sus respuestas a continuación, luego presiona Comparar para ver las diferencias matemáticas.</span>
           </div>
 
           <!-- SVG: Interview visual -->
           <svg class="visual-svg" viewBox="0 0 520 100" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
             <text x="140" y="40" text-anchor="middle" font-size="28">🙋</text>
-            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e1b4b">You</text>
+            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e1b4b" class="en-text">You</text>
+            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e1b4b" class="es-text">Tú</text>
             <rect x="185" y="38" width="150" height="30" rx="8" fill="#f3e8ff" stroke="#7c3aed" stroke-width="1.5"/>
-            <text x="260" y="58" text-anchor="middle" font-size="11" fill="#7c3aed">"What is your total cost?"</text>
+            <text x="260" y="58" text-anchor="middle" font-size="11" fill="#7c3aed" class="en-text">"What is your total cost?"</text>
+            <text x="260" y="58" text-anchor="middle" font-size="11" fill="#7c3aed" class="es-text">"¿Cuál es tu costo total?"</text>
             <text x="380" y="40" text-anchor="middle" font-size="28">🙋</text>
-            <text x="380" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e1b4b">Partner</text>
+            <text x="380" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e1b4b" class="en-text">Partner</text>
+            <text x="380" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e1b4b" class="es-text">Compañero</text>
           </svg>
 
           <!-- Level 2 challenge -->
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE — Cost Efficiency Reflection</span>
-            <p style="font-size:14px;margin:6px 0 10px">Calculate your total cost per square foot of floor space (Total Cost ÷ Floor Area). Compare it to your partner's cost per square foot. What does this tell you about the efficiency of your material choices?</p>
-            <label class="lbl" for="efficiency-reflect">Explain cost efficiency comparison:</label>
-            <textarea id="efficiency-reflect" placeholder="My cost per square foot is... My partner's is... This shows that..."></textarea>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE — Cost Efficiency Reflection</span>
+              <span class="es-text">DESAFÍO DE NIVEL 2 — Reflexión de rentabilidad</span>
+            </span>
+            <p style="font-size:14px;margin:6px 0 10px">
+              <span class="en-text">Calculate your total cost per square foot of floor space (Total Cost ÷ Floor Area). Compare it to your partner's cost per square foot. What does this tell you about the efficiency of your material choices?</span>
+              <span class="es-text">Calcula tu costo total por pie cuadrado de espacio de piso (Costo total ÷ Área del piso). Compáralo con el costo por pie cuadrado de tu compañero. ¿Qué te dice esto sobre la rentabilidad de tu elección de materiales?</span>
+            </p>
+            <label class="lbl" for="efficiency-reflect">
+              <span class="en-text">Explain cost efficiency comparison:</span>
+              <span class="es-text">Explica la comparación de rentabilidad:</span>
+            </label>
+            <textarea id="efficiency-reflect" placeholder="My cost per square foot is... My partner's is... This shows that..." data-placeholder-en="My cost per square foot is... My partner's is... This shows that..." data-placeholder-es="Mi costo por pie cuadrado es... El de mi compañero es... Esto demuestra que..."></textarea>
           </div>
 
-          <label class="lbl" for="p-name">Partner's name or initials</label>
-          <input type="text" id="p-name" placeholder="e.g. Alex" oninput="recalcAll()" />
+          <label class="lbl" for="p-name">
+            <span class="en-text">Partner's name or initials</span>
+            <span class="es-text">Nombre o iniciales del compañero</span>
+          </label>
+          <input type="text" id="p-name" placeholder="e.g. Alex" data-placeholder-en="e.g. Alex" data-placeholder-es="ej. Alex" oninput="recalcAll()" />
 
           <div class="grid3">
             <div>
-              <label class="lbl" for="p-area">Partner's Floor Area (sq ft)</label>
-              <input type="number" id="p-area" min="0" oninput="recalcAll()" placeholder="e.g. 150" />
+              <label class="lbl" for="p-area">
+                <span class="en-text">Partner's Floor Area (sq ft)</span>
+                <span class="es-text">Área de piso del compañero (pies²)</span>
+              </label>
+              <input type="number" id="p-area" min="0" oninput="recalcAll()" placeholder="e.g. 150" data-placeholder-en="e.g. 150" data-placeholder-es="ej. 150" />
             </div>
             <div>
-              <label class="lbl" for="p-gallons">Partner's Paint Gallons</label>
-              <input type="number" id="p-gallons" min="0" oninput="recalcAll()" placeholder="e.g. 3" />
+              <label class="lbl" for="p-gallons">
+                <span class="en-text">Partner's Paint Gallons</span>
+                <span class="es-text">Galones de pintura del compañero</span>
+              </label>
+              <input type="number" id="p-gallons" min="0" oninput="recalcAll()" placeholder="e.g. 3" data-placeholder-en="e.g. 3" data-placeholder-es="ej. 3" />
             </div>
             <div>
-              <label class="lbl" for="p-cost">Partner's Total Cost ($)</label>
-              <input type="number" id="p-cost" step="0.01" min="0" oninput="recalcAll()" placeholder="e.g. 1250" />
+              <label class="lbl" for="p-cost">
+                <span class="en-text">Partner's Total Cost ($)</span>
+                <span class="es-text">Costo total del compañero ($)</span>
+              </label>
+              <input type="number" id="p-cost" step="0.01" min="0" oninput="recalcAll()" placeholder="e.g. 1250" data-placeholder-en="e.g. 1250" data-placeholder-es="ej. 1250" />
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="comparePeer()">📊 Compare Our Plans</button>
+          <button class="calc-btn teal" onclick="comparePeer()">
+            <span class="en-text">📊 Compare Our Plans</span>
+            <span class="es-text">📊 Comparar nuestros planes</span>
+          </button>
           <div class="readout" id="peer-out"></div>
 
-          <label class="lbl" for="peer-reflect" style="margin-top:18px;">Who planned more budget-friendly? Explain using your calculations.</label>
-          <textarea id="peer-reflect" placeholder="My plan had ___ sq ft and $___ total. My partner had... I think..."></textarea>
+          <label class="lbl" for="peer-reflect" style="margin-top:18px;">
+            <span class="en-text">Who planned more budget-friendly? Explain using your calculations.</span>
+            <span class="es-text">¿Quién planificó de manera más económica? Explica usando tus cálculos.</span>
+          </label>
+          <textarea id="peer-reflect" placeholder="My plan had ___ sq ft and $___ total. My partner had... I think..." data-placeholder-en="My plan had ___ sq ft and $___ total. My partner had... I think..." data-placeholder-es="Mi plan tenía ___ pies² y un total de $___. Mi compañero tenía... Creo que..."></textarea>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
-          <button class="nav-btn green" onclick="goStep(6)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(4)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="goStep(6)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -667,59 +976,223 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">Step 5 — Finish &amp; Submit</div>
-              <div class="card-sub">Write your pitch, check the list, and review the rubric</div>
+              <div class="card-title">
+                <span class="en-text">Step 5 — Finish &amp; Submit</span>
+                <span class="es-text">Paso 5 — Terminar y entregar</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Write your pitch, check the list, and review the rubric</span>
+                <span class="es-text">Escribe tu propuesta, marca la lista y revisa la rúbrica</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct green">
-            <strong>Your job:</strong> Write 3–5 sentences pitching your room makeover proposal using your real numbers. Then check off the checklist, review the rubric, and generate your report.
+            <span class="en-text"><strong>Your job:</strong> Write 3–5 sentences pitching your room makeover proposal using your real numbers. Then check off the checklist, review the rubric, and generate your report.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Escribe una propuesta de 3 a 5 oraciones promocionando tu proyecto de remodelación usando tus números reales. Luego marca la lista de verificación, revisa la rúbrica y genera tu informe.</span>
           </div>
 
           <!-- Pitch -->
-          <label class="lbl" for="pitch">✍️ Your Room Makeover Proposal Pitch (use your real math!)</label>
-          <textarea id="pitch" oninput="recalcAll()" placeholder="My room makeover proposal is a smart choice because... The floor area is ___ sq ft, which will look great with ___ flooring. I will paint the walls using ___ gallons of paint..."></textarea>
+          <label class="lbl" for="pitch">
+            <span class="en-text">✍️ Your Room Makeover Proposal Pitch (use your real math!)</span>
+            <span class="es-text">✍️ Tu propuesta de remodelación del cuarto (¡usa matemáticas reales!)</span>
+          </label>
+          <textarea id="pitch" oninput="recalcAll()" placeholder="My room makeover proposal is a smart choice because... The floor area is ___ sq ft, which will look great with ___ flooring. I will paint the walls using ___ gallons of paint..." data-placeholder-en="My room makeover proposal is a smart choice because... The floor area is ___ sq ft, which will look great with ___ flooring. I will paint the walls using ___ gallons of paint..." data-placeholder-es="Mi propuesta de remodelación es una gran opción porque... El área del piso es de ___ pies², lo que se verá genial con el piso de ___. Pintaré las paredes usando ___ galones de pintura..."></textarea>
 
           <!-- Checklist -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">✅ Checklist — Check off everything you completed</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+            <span class="en-text">✅ Checklist — Check off everything you completed</span>
+            <span class="es-text">✅ Lista de verificación — Marca todo lo que completaste</span>
+          </h3>
           <ul class="checklist" id="checklist">
-            <li><input type="checkbox" id="ck1" /> I calculated the floor area using length × width.</li>
-            <li><input type="checkbox" id="ck2" /> I calculated the wall paint area by subtracting window/door areas.</li>
-            <li><input type="checkbox" id="ck3" /> I found the total gallons of paint needed (rounding up to whole gallons).</li>
-            <li><input type="checkbox" id="ck4" /> I calculated the total flooring and paint costs.</li>
-            <li><input type="checkbox" id="ck5" /> I compared my project cost to the real-world average room makeover ranges.</li>
-            <li><input type="checkbox" id="ck6" /> I compared my design and budget details with a partner.</li>
-            <li><input type="checkbox" id="ck7" /> I wrote a pitch for my design proposal using my calculations.</li>
+            <li>
+              <input type="checkbox" id="ck1" />
+              <span class="en-text">I calculated the floor area using length × width.</span>
+              <span class="es-text">Calculé el área del piso usando largo × ancho.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck2" />
+              <span class="en-text">I calculated the wall paint area by subtracting window/door areas.</span>
+              <span class="es-text">Calculé el área de pintura de las paredes restando ventanas/puertas.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck3" />
+              <span class="en-text">I found the total gallons of paint needed (rounding up to whole gallons).</span>
+              <span class="es-text">Obtuve los galones de pintura totales necesarios (redondeando hacia arriba).</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck4" />
+              <span class="en-text">I calculated the total flooring and paint costs.</span>
+              <span class="es-text">Calculé los costos totales de piso y pintura.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck5" />
+              <span class="en-text">I compared my project cost to the real-world average room makeover ranges.</span>
+              <span class="es-text">Comparé el costo de mi proyecto con los rangos promedio del mundo real.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck6" />
+              <span class="en-text">I compared my design and budget details with a partner.</span>
+              <span class="es-text">Comparé los detalles de mi diseño y presupuesto con los de un compañero.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck7" />
+              <span class="en-text">I wrote a pitch for my design proposal using my calculations.</span>
+              <span class="es-text">Escribí una propuesta de presentación para mi diseño usando mis cálculos.</span>
+            </li>
           </ul>
 
           <!-- Rubric -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">📊 How You Are Scored</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+            <span class="en-text">📊 How You Are Scored</span>
+            <span class="es-text">📊 Cómo se te califica</span>
+          </h3>
           <table class="rubric">
             <thead>
-              <tr><th>Skill</th><th class="score-4">4 — Expert</th><th class="score-3">3 — Proficient</th><th class="score-2">2 — Developing</th></tr>
+              <tr>
+                <th>
+                  <span class="en-text">Skill</span>
+                  <span class="es-text">Habilidad</span>
+                </th>
+                <th class="score-4">
+                  <span class="en-text">4 — Expert</span>
+                  <span class="es-text">4 — Experto</span>
+                </th>
+                <th class="score-3">
+                  <span class="en-text">3 — Proficient</span>
+                  <span class="es-text">3 — Competente</span>
+                </th>
+                <th class="score-2">
+                  <span class="en-text">2 — Developing</span>
+                  <span class="es-text">2 — En desarrollo</span>
+                </th>
+              </tr>
             </thead>
             <tbody>
-              <tr><td><strong>Floor &amp; Wall Area (6.G.1)</strong></td><td>Both floor and net wall area calculations are completely correct with detailed work shown.</td><td>Both calculations are correct but showing less detail.</td><td>One calculation is correct or minor computation errors.</td></tr>
-              <tr><td><strong>Paint Gallons</strong></td><td>Paint gallons needed are calculated correctly and correctly rounded up to the next whole gallon with clear explanation.</td><td>Gallons are calculated correctly but not rounded to whole units.</td><td>Significant errors in paint coverage logic.</td></tr>
-              <tr><td><strong>Makeover Budgeting</strong></td><td>Total flooring and paint costs are perfectly accurate based on choices, with excellent explanation of custom values (Level 2).</td><td>Total costs are accurate.</td><td>Computation errors in multiplication or addition.</td></tr>
-              <tr><td><strong>Comparisons</strong></td><td>Deep mathematical comparison of partner data and real-world ranges.</td><td>Both comparisons present.</td><td>Only one comparison completed.</td></tr>
-              <tr><td><strong>Proposal Pitch</strong></td><td>Uses all calculated math values to write a compelling, logical pitch.</td><td>Uses most numbers in the pitch.</td><td>Pitch is incomplete or doesn't use math data.</td></tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Floor &amp; Wall Area (6.G.1)</span>
+                  <span class="es-text">Área de piso y pared (6.G.1)</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Both floor and net wall area calculations are completely correct with detailed work shown.</span>
+                  <span class="es-text">Tanto el cálculo de piso como de pared neta son correctos y muestran trabajo detallado.</span>
+                </td>
+                <td>
+                  <span class="en-text">Both calculations are correct but showing less detail.</span>
+                  <span class="es-text">Ambos cálculos son correctos pero muestran menos detalle.</span>
+                </td>
+                <td>
+                  <span class="en-text">One calculation is correct or minor computation errors.</span>
+                  <span class="es-text">Un cálculo es correcto o hay errores menores de cálculo.</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Paint Gallons</span>
+                  <span class="es-text">Galones de pintura</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Paint gallons needed are calculated correctly and correctly rounded up to the next whole gallon with clear explanation.</span>
+                  <span class="es-text">Los galones necesarios se calculan correctamente y se redondean al siguiente entero con explicación clara.</span>
+                </td>
+                <td>
+                  <span class="en-text">Gallons are calculated correctly but not rounded to whole units.</span>
+                  <span class="es-text">Los galones se calcularon bien pero no se redondearon a enteros.</span>
+                </td>
+                <td>
+                  <span class="en-text">Significant errors in paint coverage logic.</span>
+                  <span class="es-text">Errores significativos en la lógica de cobertura de pintura.</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Makeover Budgeting</span>
+                  <span class="es-text">Presupuesto de remodelación</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Total flooring and paint costs are perfectly accurate based on choices, with excellent explanation of custom values (Level 2).</span>
+                  <span class="es-text">Los costos de piso y pintura son exactos según elecciones, con excelente explicación de valores propios (Nivel 2).</span>
+                </td>
+                <td>
+                  <span class="en-text">Total costs are accurate.</span>
+                  <span class="es-text">Los costos totales son exactos.</span>
+                </td>
+                <td>
+                  <span class="en-text">Computation errors in multiplication or addition.</span>
+                  <span class="es-text">Errores de cálculo en multiplicación o suma.</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Comparisons</span>
+                  <span class="es-text">Comparaciones</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Deep mathematical comparison of partner data and real-world ranges.</span>
+                  <span class="es-text">Comparación matemática profunda de datos del compañero y rangos reales.</span>
+                </td>
+                <td>
+                  <span class="en-text">Both comparisons present.</span>
+                  <span class="es-text">Ambas comparaciones están presentes.</span>
+                </td>
+                <td>
+                  <span class="en-text">Only one comparison completed.</span>
+                  <span class="es-text">Solo se completó una comparación.</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Proposal Pitch</span>
+                  <span class="es-text">Propuesta de presentación</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Uses all calculated math values to write a compelling, logical pitch.</span>
+                  <span class="es-text">Usa todos los valores matemáticos calculados para una propuesta lógica y atractiva.</span>
+                </td>
+                <td>
+                  <span class="en-text">Uses most numbers in the pitch.</span>
+                  <span class="es-text">Usa la mayoría de los números en la propuesta.</span>
+                </td>
+                <td>
+                  <span class="en-text">Pitch is incomplete or doesn't use math data.</span>
+                  <span class="es-text">La propuesta está incompleta o no usa datos matemáticos.</span>
+                </td>
+              </tr>
             </tbody>
           </table>
 
           <!-- Report + export -->
           <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
-            <button class="calc-btn" onclick="buildReport()">📝 Generate Summary</button>
-            <button class="export-btn" onclick="copyReport()">📋 Copy</button>
-            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
-            <button class="export-btn" onclick="window.print()">🖨️ Print</button>
+            <button class="calc-btn" onclick="buildReport()">
+              <span class="en-text">📝 Generate Summary</span>
+              <span class="es-text">📝 Generar resumen</span>
+            </button>
+            <button class="export-btn" onclick="copyReport()">
+              <span class="en-text">📋 Copy</span>
+              <span class="es-text">📋 Copiar</span>
+            </button>
+            <button class="export-btn" onclick="downloadTxt()">
+              <span class="en-text">⬇️ Download .txt</span>
+              <span class="es-text">⬇️ Descargar .txt</span>
+            </button>
+            <button class="export-btn" onclick="window.print()">
+              <span class="en-text">🖨️ Print</span>
+              <span class="es-text">🖨️ Imprimir</span>
+            </button>
           </div>
           <pre class="report-box" id="reportBox"></pre>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(5)">← Back</button>
-          <button class="nav-btn green" onclick="alert('Great work! 🎉 Show this page to your teacher.')">🎉 I'm Done!</button>
+          <button class="nav-btn ghost" onclick="goStep(5)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="const isEs = document.body.classList.contains('es'); alert(isEs ? '¡Excelente trabajo! 🎉 Muestra esta página a tu profesor.' : 'Great work! 🎉 Show this page to your teacher.')">
+            <span class="en-text">🎉 I'm Done!</span>
+            <span class="es-text">🎉 ¡Terminé!</span>
+          </button>
         </div>
       </div>
 
@@ -731,18 +1204,21 @@
     <script>
       // ---- State ----
       const STEPS = [
-        { id: 1, label: 'Key Words', icon: '📖' },
-        { id: 2, label: 'Floor Area', icon: '📐' },
-        { id: 3, label: 'Wall Paint', icon: '🎨' },
-        { id: 4, label: 'Costs & Budget', icon: '💵' },
-        { id: 5, label: 'Compare', icon: '👥' },
-        { id: 6, label: 'Finish', icon: '🏆' },
+        { id: 1, labelEn: 'Key Words', labelEs: 'Palabras clave', icon: '📖' },
+        { id: 2, labelEn: 'Floor Area', labelEs: 'Área del piso', icon: '📐' },
+        { id: 3, labelEn: 'Wall Paint', labelEs: 'Pintura de paredes', icon: '🎨' },
+        { id: 4, labelEn: 'Costs & Budget', labelEs: 'Costos y presupuesto', icon: '💵' },
+        { id: 5, labelEn: 'Compare', labelEs: 'Comparar', icon: '👥' },
+        { id: 6, labelEn: 'Finish', labelEs: 'Terminar', icon: '🏆' },
       ];
       let currentStep = 1;
       const visited = new Set([1]);
 
       // ---- Level toggle ----
       function setLevel(n) {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
         document.getElementById('body').className = 'level-' + n;
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
@@ -752,11 +1228,14 @@
       // ---- Build step trail ----
       function buildTrail() {
         const trail = document.getElementById('stepTrail');
+        const isEs = document.body.classList.contains('es');
+        
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
+          const label = isEs ? s.labelEs : s.labelEn;
           return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
-            <span class="s-label">${s.label}</span>
+            <span class="s-label">${label}</span>
           </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
         }).join('');
       }
@@ -764,6 +1243,9 @@
       // ---- Navigation ----
       function goStep(n) {
         if (n < 1 || n > STEPS.length) return;
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
         document.getElementById('step-' + currentStep).classList.remove('active');
         currentStep = n;
         visited.add(n);
@@ -777,7 +1259,114 @@
       function updateProgress() {
         const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
         document.getElementById('progFill').style.width = pct + '%';
-        document.getElementById('progLabel').textContent = `Step ${currentStep} of ${STEPS.length}`;
+        const isEs = document.body.classList.contains('es');
+        const progressText = isEs 
+          ? `Paso ${currentStep} de ${STEPS.length}` 
+          : `Step ${currentStep} of ${STEPS.length}`;
+        document.getElementById('progLabel').textContent = progressText;
+      }
+
+      // ---- Language toggle ----
+      function toggleLanguage() {
+        const isEs = document.body.classList.toggle('es');
+        
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
+        
+        // Update language button text
+        const btnLang = document.getElementById('btn-lang');
+        if (btnLang) {
+          btnLang.textContent = isEs ? '🌐 Idioma: ES' : '🌐 Language: EN';
+        }
+        
+        // Update read aloud button text
+        const btnRead = document.getElementById('btn-read');
+        if (btnRead) {
+          btnRead.classList.remove('active');
+          btnRead.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+        }
+        
+        // Update placeholders and option textcontent
+        document.querySelectorAll('[data-placeholder-en]').forEach(el => {
+          const text = isEs ? el.getAttribute('data-placeholder-es') : el.getAttribute('data-placeholder-en');
+          if (el.tagName === 'OPTION') {
+            el.textContent = text;
+          } else {
+            el.placeholder = text;
+          }
+        });
+        
+        buildTrail();
+        updateProgress();
+        recalcAll();
+      }
+
+      // ---- Read Aloud TTS Support ----
+      function readAloud() {
+        if ('speechSynthesis' in window) {
+          if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+            return;
+          }
+          
+          const isEs = document.body.classList.contains('es');
+          const activePanel = document.getElementById('step-' + currentStep);
+          if (!activePanel) return;
+          
+          const textParts = [];
+          const elements = activePanel.querySelectorAll('.card-title, .card-sub, .instruct, label.lbl, details.hint summary, details.hint p, .checklist li');
+          
+          elements.forEach(el => {
+            // Check if element is currently visible (ignore hidden blocks)
+            if (el.offsetParent === null) return;
+            
+            let part = "";
+            const langSelector = isEs ? '.es-text' : '.en-text';
+            const langSpans = el.querySelectorAll(langSelector);
+            
+            if (langSpans.length > 0) {
+              const spanTexts = Array.from(langSpans).map(s => s.innerText || s.textContent);
+              part = spanTexts.join(" ");
+            } else {
+              if (!el.querySelector('.en-text, .es-text')) {
+                part = el.innerText || el.textContent;
+              }
+            }
+            
+            part = part.trim();
+            if (part) {
+              textParts.push(part);
+            }
+          });
+          
+          const textToSpeak = textParts.join(". ");
+          
+          if (textToSpeak) {
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            utterance.lang = isEs ? 'es-ES' : 'en-US';
+            
+            const btnRead = document.getElementById('btn-read');
+            if (btnRead) {
+              btnRead.classList.add('active');
+              btnRead.textContent = isEs ? '🛑 Detener' : '🛑 Stop Reading';
+            }
+            
+            const resetBtn = () => {
+              if (btnRead) {
+                btnRead.classList.remove('active');
+                btnRead.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+              }
+            };
+            
+            utterance.onend = resetBtn;
+            utterance.onerror = resetBtn;
+            
+            window.speechSynthesis.speak(utterance);
+          }
+        } else {
+          alert("Web Speech API is not supported in this browser.");
+        }
       }
 
       // ---- Math helpers ----
@@ -816,9 +1405,11 @@
         const sw = document.getElementById('floor-svg-width');
         const sa = document.getElementById('floor-svg-area');
         
-        if (sl) sl.textContent = !isNaN(l) ? l + ' ft' : 'Length (L)';
-        if (sw) sw.textContent = !isNaN(w) ? w + ' ft' : 'Width (W)';
-        if (sa) sa.textContent = (!isNaN(l) && !isNaN(w)) ? (l * w).toFixed(1) + ' sq ft' : 'Area = L × W';
+        const isEs = document.body.classList.contains('es');
+        
+        if (sl) sl.textContent = !isNaN(l) ? l + (isEs ? ' pies' : ' ft') : (isEs ? 'Largo (L)' : 'Length (L)');
+        if (sw) sw.textContent = !isNaN(w) ? w + (isEs ? ' pies' : ' ft') : (isEs ? 'Ancho (A)' : 'Width (W)');
+        if (sa) sa.textContent = (!isNaN(l) && !isNaN(w)) ? (l * w).toFixed(1) + (isEs ? ' pies²' : ' sq ft') : (isEs ? 'Área = L × A' : 'Area = L × W');
 
         if (isNaN(l) || isNaN(w) || l <= 0 || w <= 0) {
           document.getElementById('floor-out').classList.remove('show');
@@ -826,11 +1417,19 @@
         }
         
         const area = l * w;
-        showReadout('floor-out', `
-          <strong>Floor Area = ${fmt(area)} sq ft</strong><br>
-          Calculation: <strong>${fmt(l)} ft × ${fmt(w)} ft = ${fmt(area)} sq ft</strong>.<br>
-          <small>This is the total floor space that will need flooring material.</small>
-        `);
+        if (isEs) {
+          showReadout('floor-out', `
+            <strong>Área del piso = ${fmt(area)} pies²</strong><br>
+            Cálculo: <strong>${fmt(l)} pies × ${fmt(w)} pies = ${fmt(area)} pies²</strong>.<br>
+            <small>Este es el espacio total del piso que necesitará material de cobertura.</small>
+          `);
+        } else {
+          showReadout('floor-out', `
+            <strong>Floor Area = ${fmt(area)} sq ft</strong><br>
+            Calculation: <strong>${fmt(l)} ft × ${fmt(w)} ft = ${fmt(area)} sq ft</strong>.<br>
+            <small>This is the total floor space that will need flooring material.</small>
+          `);
+        }
       }
 
       function calcPaint() {
@@ -840,8 +1439,13 @@
         const win = parseFloat(document.getElementById('window-area').value) || 0;
         const door = parseFloat(document.getElementById('door-area').value) || 0;
 
+        const isEs = document.body.classList.contains('es');
+
         if (isNaN(l) || isNaN(w)) {
-          showReadout('paint-out', `<strong>Error:</strong> Please go back to Step 1 and enter your Floor Length and Width first.`);
+          const errMsg = isEs 
+            ? `<strong>Error:</strong> Por favor regresa al Paso 1 e ingresa primero el Largo y Ancho del piso.`
+            : `<strong>Error:</strong> Please go back to Step 1 and enter your Floor Length and Width first.`;
+          showReadout('paint-out', errMsg);
           return;
         }
         if (isNaN(h) || h <= 0) {
@@ -854,25 +1458,39 @@
         const netWallArea = grossWallArea - win - door;
         
         if (netWallArea <= 0) {
-          showReadout('paint-out', `<strong>Error:</strong> Subtracted area (windows + doors) cannot be larger than the total wall area (${fmt(grossWallArea)} sq ft).`);
+          const errMsg = isEs
+            ? `<strong>Error:</strong> El área restada (ventanas + puertas) no puede ser mayor que el área total de la pared (${fmt(grossWallArea)} pies²).`
+            : `<strong>Error:</strong> Subtracted area (windows + doors) cannot be larger than the total wall area (${fmt(grossWallArea)} sq ft).`;
+          showReadout('paint-out', errMsg);
           return;
         }
 
         const paintNeeded = netWallArea / 350;
         const gallonsToBuy = Math.ceil(paintNeeded);
 
-        showReadout('paint-out', `
-          <strong>Gross Wall Area:</strong> 2 × (${fmt(l)} + ${fmt(w)}) × ${fmt(h)} = <strong>${fmt(grossWallArea)} sq ft</strong><br>
-          <strong>Net Paintable Area:</strong> ${fmt(grossWallArea)} − ${fmt(win)} (windows) − ${fmt(door)} (doors) = <strong>${fmt(netWallArea)} sq ft</strong><br>
-          Paint Needed: You need <strong>${paintNeeded.toFixed(2)} gallons</strong> (covers 350 sq ft/gal).<br>
-          Gallons to Buy: <strong>${gallonsToBuy} whole gallons</strong> (rounded up).
-        `);
+        if (isEs) {
+          showReadout('paint-out', `
+            <strong>Área bruta de la pared:</strong> 2 × (${fmt(l)} + ${fmt(w)}) × ${fmt(h)} = <strong>${fmt(grossWallArea)} pies²</strong><br>
+            <strong>Área neta pintable:</strong> ${fmt(grossWallArea)} − ${fmt(win)} (ventanas) − ${fmt(door)} (puertas) = <strong>${fmt(netWallArea)} pies²</strong><br>
+            Pintura necesaria: Necesitas <strong>${paintNeeded.toFixed(2)} galones</strong> (cubre 350 pies²/galón).<br>
+            Galones a comprar: <strong>${gallonsToBuy} galones enteros</strong> (redondeado hacia arriba).
+          `);
+        } else {
+          showReadout('paint-out', `
+            <strong>Gross Wall Area:</strong> 2 × (${fmt(l)} + ${fmt(w)}) × ${fmt(h)} = <strong>${fmt(grossWallArea)} sq ft</strong><br>
+            <strong>Net Paintable Area:</strong> ${fmt(grossWallArea)} − ${fmt(win)} (windows) − ${fmt(door)} (doors) = <strong>${fmt(netWallArea)} sq ft</strong><br>
+            Paint Needed: You need <strong>${paintNeeded.toFixed(2)} gallons</strong> (covers 350 sq ft/gal).<br>
+            Gallons to Buy: <strong>${gallonsToBuy} whole gallons</strong> (rounded up).
+          `);
+        }
       }
 
       function calcCost() {
         const l = parseFloat(document.getElementById('floor-length').value);
         const w = parseFloat(document.getElementById('floor-width').value);
         const floorArea = l * w;
+
+        const isEs = document.body.classList.contains('es');
 
         // Resolve flooring price
         const flooringSel = document.getElementById('flooring-select').value;
@@ -896,7 +1514,10 @@
         }
 
         if (isNaN(floorArea) || isNaN(h)) {
-          showReadout('cost-out', `<strong>Error:</strong> Please make sure you completed the Floor Area and Wall Paint steps first.`);
+          const errMsg = isEs
+            ? `<strong>Error:</strong> Por favor asegúrate de haber completado los pasos del Área de piso y Pintura de paredes primero.`
+            : `<strong>Error:</strong> Please make sure you completed the Floor Area and Wall Paint steps first.`;
+          showReadout('cost-out', errMsg);
           return;
         }
 
@@ -905,19 +1526,37 @@
         const totalCost = flooringCost + paintCost;
 
         let rangeStr = '';
-        if (totalCost < 1000) rangeStr = 'below the typical Low Makeover range';
-        else if (totalCost <= 2000) rangeStr = 'within the typical Low Makeover range ($1,000 – $2,000)';
-        else if (totalCost < 2500) rangeStr = 'between Low and Mid-Range Makeover ranges';
-        else if (totalCost <= 5000) rangeStr = 'within the typical Mid-Range Makeover range ($2,500 – $5,000)';
-        else if (totalCost < 6000) rangeStr = 'between Mid-Range and High-End Makeover ranges';
-        else rangeStr = 'within the typical High-End Makeover range ($6,000+)';
+        if (isEs) {
+          if (totalCost < 1000) rangeStr = 'por debajo del rango típico de Remodelación económica';
+          else if (totalCost <= 2000) rangeStr = 'dentro del rango típico de Remodelación económica ($1,000 – $2,000)';
+          else if (totalCost < 2500) rangeStr = 'entre el rango económico y el de Remodelación intermedia';
+          else if (totalCost <= 5000) rangeStr = 'dentro del rango típico de Remodelación intermedia ($2,500 – $5,000)';
+          else if (totalCost < 6000) rangeStr = 'entre el rango de Remodelación intermedia y el de Alta gama';
+          else rangeStr = 'dentro del rango típico de Remodelación de alta gama ($6,000+)';
+        } else {
+          if (totalCost < 1000) rangeStr = 'below the typical Low Makeover range';
+          else if (totalCost <= 2000) rangeStr = 'within the typical Low Makeover range ($1,000 – $2,000)';
+          else if (totalCost < 2500) rangeStr = 'between Low and Mid-Range Makeover ranges';
+          else if (totalCost <= 5000) rangeStr = 'within the typical Mid-Range Makeover range ($2,500 – $5,000)';
+          else if (totalCost < 6000) rangeStr = 'between Mid-Range and High-End Makeover ranges';
+          else rangeStr = 'within the typical High-End Makeover range ($6,000+)';
+        }
 
-        showReadout('cost-out', `
-          Flooring Cost: ${fmt(floorArea)} sq ft × $${fmt(flooringPrice)}/sq ft = <strong>$${fmt(flooringCost)}</strong><br>
-          Paint Cost: ${gallonsToBuy} gallons × $${fmt(paintPrice)}/gallon = <strong>$${fmt(paintCost)}</strong><br>
-          Total Makeover Cost: $${fmt(flooringCost)} + $${fmt(paintCost)} = <strong>$${fmt(totalCost)}</strong><br>
-          <small>Your total cost is <strong>${rangeStr}</strong>.</small>
-        `);
+        if (isEs) {
+          showReadout('cost-out', `
+            Costo de piso: ${fmt(floorArea)} pies² × $${fmt(flooringPrice)}/pie² = <strong>$${fmt(flooringCost)}</strong><br>
+            Costo de pintura: ${gallonsToBuy} galones × $${fmt(paintPrice)}/galón = <strong>$${fmt(paintCost)}</strong><br>
+            Costo total de remodelación: $${fmt(flooringCost)} + $${fmt(paintCost)} = <strong>$${fmt(totalCost)}</strong><br>
+            <small>Tu costo total está <strong>${rangeStr}</strong>.</small>
+          `);
+        } else {
+          showReadout('cost-out', `
+            Flooring Cost: ${fmt(floorArea)} sq ft × $${fmt(flooringPrice)}/sq ft = <strong>$${fmt(flooringCost)}</strong><br>
+            Paint Cost: ${gallonsToBuy} gallons × $${fmt(paintPrice)}/gallon = <strong>$${fmt(paintCost)}</strong><br>
+            Total Makeover Cost: $${fmt(flooringCost)} + $${fmt(paintCost)} = <strong>$${fmt(totalCost)}</strong><br>
+            <small>Your total cost is <strong>${rangeStr}</strong>.</small>
+          `);
+        }
       }
 
       function comparePeer() {
@@ -931,6 +1570,8 @@
         const grossWallArea = 2 * (l + w) * h;
         const netWallArea = grossWallArea - win - door;
         const gallonsToBuy = Math.ceil(netWallArea / 350) || 0;
+
+        const isEs = document.body.classList.contains('es');
 
         // Resolve flooring price
         const flooringSel = document.getElementById('flooring-select').value;
@@ -948,7 +1589,7 @@
 
         const totalCost = (floorArea * flooringPrice) + (gallonsToBuy * paintPrice);
 
-        const partnerName = document.getElementById('p-name').value || 'Partner';
+        const partnerName = document.getElementById('p-name').value || (isEs ? 'Compañero' : 'Partner');
         const pArea = parseFloat(document.getElementById('p-area').value);
         const pGallons = parseInt(document.getElementById('p-gallons').value);
         const pCost = parseFloat(document.getElementById('p-cost').value);
@@ -960,42 +1601,83 @@
 
         let html = '';
         
-        // Floor Area diff
-        if (!isNaN(floorArea)) {
-          const areaDiff = floorArea - pArea;
-          html += `<strong>Floor Area:</strong> You: <strong>${fmt(floorArea)} sq ft</strong> | ${partnerName}: <strong>${fmt(pArea)} sq ft</strong> — `;
-          if (areaDiff > 0) {
-            html += `Your floor is <strong>${fmt(areaDiff)} sq ft larger</strong>.<br>`;
-          } else if (areaDiff < 0) {
-            html += `${partnerName}'s floor is <strong>${fmt(Math.abs(areaDiff))} sq ft larger</strong>.<br>`;
-          } else {
-            html += `Your floors have the exact same area!<br>`;
+        if (isEs) {
+          // Floor Area diff
+          if (!isNaN(floorArea)) {
+            const areaDiff = floorArea - pArea;
+            html += `<strong>Área del piso:</strong> Tú: <strong>${fmt(floorArea)} pies²</strong> | ${partnerName}: <strong>${fmt(pArea)} pies²</strong> — `;
+            if (areaDiff > 0) {
+              html += `Tu piso es <strong>${fmt(areaDiff)} pies² más grande</strong>.<br>`;
+            } else if (areaDiff < 0) {
+              html += `El piso de ${partnerName} es <strong>${fmt(Math.abs(areaDiff))} pies² más grande</strong>.<br>`;
+            } else {
+              html += `¡Sus pisos tienen exactamente la misma área!<br>`;
+            }
           }
-        }
 
-        // Paint Gallons diff
-        if (!isNaN(gallonsToBuy)) {
-          const paintDiff = gallonsToBuy - pGallons;
-          html += `<strong>Paint Needed:</strong> You: <strong>${gallonsToBuy} gallons</strong> | ${partnerName}: <strong>${pGallons} gallons</strong> — `;
-          if (paintDiff > 0) {
-            html += `You need <strong>${paintDiff} more gallons</strong>.<br>`;
-          } else if (paintDiff < 0) {
-            html += `${partnerName} needs <strong>${Math.abs(paintDiff)} more gallons</strong>.<br>`;
-          } else {
-            html += `You need the exact same amount of paint!<br>`;
+          // Paint Gallons diff
+          if (!isNaN(gallonsToBuy)) {
+            const paintDiff = gallonsToBuy - pGallons;
+            html += `<strong>Pintura necesaria:</strong> Tú: <strong>${gallonsToBuy} galones</strong> | ${partnerName}: <strong>${pGallons} galones</strong> — `;
+            if (paintDiff > 0) {
+              html += `Necesitas <strong>${paintDiff} galones más</strong>.<br>`;
+            } else if (paintDiff < 0) {
+              html += `${partnerName} necesita <strong>${Math.abs(paintDiff)} galones más</strong>.<br>`;
+            } else {
+              html += `¡Necesitan la misma cantidad de pintura!<br>`;
+            }
           }
-        }
 
-        // Total Cost diff
-        if (!isNaN(totalCost)) {
-          const costDiff = totalCost - pCost;
-          html += `<strong>Total Makeover Cost:</strong> You: <strong>$${fmt(totalCost)}</strong> | ${partnerName}: <strong>$${fmt(pCost)}</strong> — `;
-          if (costDiff > 0) {
-            html += `Your makeover costs <strong>$${fmt(costDiff)} more</strong>.<br>`;
-          } else if (costDiff < 0) {
-            html += `${partnerName}'s makeover costs <strong>$${fmt(Math.abs(costDiff))} more</strong>.<br>`;
-          } else {
-            html += `Your room makeovers have the exact same total cost!<br>`;
+          // Total Cost diff
+          if (!isNaN(totalCost)) {
+            const costDiff = totalCost - pCost;
+            html += `<strong>Costo total de remodelación:</strong> Tú: <strong>$${fmt(totalCost)}</strong> | ${partnerName}: <strong>$${fmt(pCost)}</strong> — `;
+            if (costDiff > 0) {
+              html += `Tu remodelación cuesta <strong>$${fmt(costDiff)} más</strong>.<br>`;
+            } else if (costDiff < 0) {
+              html += `La remodelación de ${partnerName} cuesta <strong>$${fmt(Math.abs(costDiff))} más</strong>.<br>`;
+            } else {
+              html += `¡Sus remodelaciones tienen exactamente el mismo costo total!<br>`;
+            }
+          }
+        } else {
+          // Floor Area diff
+          if (!isNaN(floorArea)) {
+            const areaDiff = floorArea - pArea;
+            html += `<strong>Floor Area:</strong> You: <strong>${fmt(floorArea)} sq ft</strong> | ${partnerName}: <strong>${fmt(pArea)} sq ft</strong> — `;
+            if (areaDiff > 0) {
+              html += `Your floor is <strong>${fmt(areaDiff)} sq ft larger</strong>.<br>`;
+            } else if (areaDiff < 0) {
+              html += `${partnerName}'s floor is <strong>${fmt(Math.abs(areaDiff))} sq ft larger</strong>.<br>`;
+            } else {
+              html += `Your floors have the exact same area!<br>`;
+            }
+          }
+
+          // Paint Gallons diff
+          if (!isNaN(gallonsToBuy)) {
+            const paintDiff = gallonsToBuy - pGallons;
+            html += `<strong>Paint Needed:</strong> You: <strong>${gallonsToBuy} gallons</strong> | ${partnerName}: <strong>${pGallons} gallons</strong> — `;
+            if (paintDiff > 0) {
+              html += `You need <strong>${paintDiff} more gallons</strong>.<br>`;
+            } else if (paintDiff < 0) {
+              html += `${partnerName} needs <strong>${Math.abs(paintDiff)} more gallons</strong>.<br>`;
+            } else {
+              html += `You need the exact same amount of paint!<br>`;
+            }
+          }
+
+          // Total Cost diff
+          if (!isNaN(totalCost)) {
+            const costDiff = totalCost - pCost;
+            html += `<strong>Total Makeover Cost:</strong> You: <strong>$${fmt(totalCost)}</strong> | ${partnerName}: <strong>$${fmt(pCost)}</strong> — `;
+            if (costDiff > 0) {
+              html += `Your makeover costs <strong>$${fmt(costDiff)} more</strong>.<br>`;
+            } else if (costDiff < 0) {
+              html += `${partnerName}'s makeover costs <strong>$${fmt(Math.abs(costDiff))} more</strong>.<br>`;
+            } else {
+              html += `Your room makeovers have the exact same total cost!<br>`;
+            }
           }
         }
 
@@ -1015,13 +1697,17 @@
         const netWallArea = grossWallArea - win - door;
         const gallonsToBuy = Math.ceil(netWallArea / 350) || 0;
 
+        const isEs = document.body.classList.contains('es');
+
         // Resolve flooring price
         const flooringSel = document.getElementById('flooring-select').value;
         let flooringPrice = parseFloat(flooringSel);
         let flooringName = document.getElementById('flooring-select').options[document.getElementById('flooring-select').selectedIndex].text;
         if (flooringSel === 'custom') {
           flooringPrice = parseFloat(document.getElementById('custom-flooring-price').value) || 0;
-          flooringName = `Custom Flooring ($${fmt(flooringPrice)}/sq ft)`;
+          flooringName = isEs 
+            ? `Piso personalizado ($${fmt(flooringPrice)}/pie²)` 
+            : `Custom Flooring ($${fmt(flooringPrice)}/sq ft)`;
         }
 
         // Resolve paint price
@@ -1030,7 +1716,9 @@
         let paintName = document.getElementById('paint-select').options[document.getElementById('paint-select').selectedIndex].text;
         if (paintSel === 'custom') {
           paintPrice = parseFloat(document.getElementById('custom-paint-price').value) || 0;
-          paintName = `Custom Paint ($${fmt(paintPrice)}/gallon)`;
+          paintName = isEs 
+            ? `Pintura personalizada ($${fmt(paintPrice)}/galón)`
+            : `Custom Paint ($${fmt(paintPrice)}/gallon)`;
         }
 
         const flooringCost = floorArea * flooringPrice;
@@ -1052,7 +1740,44 @@
         const budgetStrategy = isLevel2 ? document.getElementById('budget-strategy').value : '';
         const efficiencyReflect = isLevel2 ? document.getElementById('efficiency-reflect').value : '';
 
-        const lines = [
+        const lines = isEs ? [
+          '═══ PRESUPUESTO DE REMODELACIÓN — PROYECTO UNIDAD 5 (Versión B) ═══',
+          '',
+          '📐 HABILIDADES MATEMÁTICAS UTILIZADAS: Área de polígonos, Figuras compuestas, Cobertura de superficie',
+          `   Nivel: ${isLevel2 ? 'Nivel 2 — Desafío' : 'Nivel 1 — Con apoyo'}`,
+          '',
+          '📐 PASO 1 — ÁREA DEL PISO',
+          `   Dimensiones del piso: ${l ? l + ' pies' : '—'} × ${w ? w + ' pies' : '—'}`,
+          `   Área del piso = ${floorArea ? fmt(floorArea) + ' pies²' : '—'}`,
+          isLevel2 && compFloorAns ? `   Desafío de piso compuesto en forma de L: ${compFloorAns}` : '',
+          '',
+          '🎨 PASO 2 — COBERTURA DE PINTURA DE PAREDES',
+          `   Altura de la pared: ${h ? h + ' pies' : '—'}`,
+          `   Restando: Ventanas = ${win} pies² | Puertas = ${door} pies²`,
+          `   Área bruta de la pared = ${grossWallArea ? fmt(grossWallArea) + ' pies²' : '—'}`,
+          `   Área neta pintable = ${netWallArea ? fmt(netWallArea) + ' pies²' : '—'}`,
+          `   Galones necesarios = ${gallonsToBuy} galones`,
+          isLevel2 && twoCoatsAns ? `   Desafío de dos capas de pintura: ${twoCoatsAns}` : '',
+          '',
+          '💵 PASO 3 — COSTOS DE REMODELACIÓN',
+          `   Piso: ${flooringName} = $${flooringCost ? fmt(flooringCost) : '—'}`,
+          `   Pintura: ${paintName} = $${paintCost ? fmt(paintCost) : '—'}`,
+          `   Costo total de remodelación = $${totalCost ? fmt(totalCost) : '—'}`,
+          worldNote ? `   Comparación en el mundo real: ${worldNote}` : '',
+          isLevel2 && budgetStrategy ? `   Estrategia de presupuesto (límite de $1,500): ${budgetStrategy}` : '',
+          '',
+          '👥 PASO 4 — COMPARACIÓN CON COMPAÑERO',
+          `   Compañero: ${partner || '—'}`,
+          `   Área del piso del compañero: ${pArea || '—'} pies² | Galones: ${pGallons || '—'} | Costo: $${pCost || '—'}`,
+          pReflect ? `   Reflexión: ${pReflect}` : '',
+          isLevel2 && efficiencyReflect ? `   Reflexión de rentabilidad: ${efficiencyReflect}` : '',
+          '',
+          '✍️ MI PROPUESTA DE REMODELACIÓN:',
+          pitch || '(no se ha escrito propuesta)',
+          '',
+          '═══════════════════════════════',
+          `Generado: ${new Date().toLocaleDateString()}`,
+        ] : [
           '═══ ROOM MAKEOVER BUDGET — UNIT 5 PROJECT (Version B) ═══',
           '',
           '📐 MATH SKILLS USED: Area of Polygons, Composite Figures, Surface Coverage',
@@ -1089,16 +1814,19 @@
           '',
           '═══════════════════════════════',
           `Generated: ${new Date().toLocaleDateString()}`,
-        ].filter(line => line !== '');
+        ];
 
         const box = document.getElementById('reportBox');
-        box.textContent = lines.join('\n');
+        box.textContent = lines.filter(line => line !== '').join('\n');
         box.classList.add('show');
       }
 
       function copyReport() {
         const txt = document.getElementById('reportBox').textContent;
-        navigator.clipboard?.writeText(txt).then(() => alert('Copied to clipboard!'));
+        navigator.clipboard?.writeText(txt).then(() => {
+          const isEs = document.body.classList.contains('es');
+          alert(isEs ? '¡Copiado al portapapeles!' : 'Copied to clipboard!');
+        });
       }
 
       function downloadTxt() {

@@ -271,6 +271,11 @@
         body { background: #fff; }
         .card { box-shadow: none; border-color: #ccc; }
       }
+
+      /* ---- Bilingual Translations Styling ---- */
+      body.es .en-text { display: none !important; }
+      body.es .es-text { display: inline !important; }
+      span.es-text, tspan.es-text { display: none; }
     </style>
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -281,19 +286,41 @@
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
       <div class="hero-emoji">📱</div>
-      <h1>App Pricing Engine</h1>
-      <p class="hero-sub">Design pricing and hosting tiers for a mobile app using expressions and exponents.</p>
+      <h1>
+        <span class="en-text">App Pricing Engine</span>
+        <span class="es-text">Motor de precios de aplicaciones</span>
+      </h1>
+      <p class="hero-sub">
+        <span class="en-text">Design pricing and hosting tiers for a mobile app using expressions and exponents.</span>
+        <span class="es-text">Diseña niveles de precios y alojamiento para una aplicación móvil usando expresiones y exponentes.</span>
+      </p>
       <div class="hero-tags">
-        <span class="tag gold">Unit 6 · Expressions</span>
+        <span class="tag gold">
+          <span class="en-text">Unit 6 · Expressions</span>
+          <span class="es-text">Unidad 6 · Expresiones</span>
+        </span>
         <span class="tag">6.EE.1</span>
         <span class="tag">6.EE.2</span>
         <span class="tag">6.EE.3</span>
         <span class="tag">6.EE.4</span>
-        <span class="tag">Version B</span>
+        <span class="tag">
+          <span class="en-text">Version B</span>
+          <span class="es-text">Versión B</span>
+        </span>
       </div>
       <div class="level-bar">
-        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
-        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
+          <span class="en-text">🟢 Level 1 — With Support</span>
+          <span class="es-text">🟢 Nivel 1 — Con apoyo</span>
+        </button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">
+          <span class="en-text">🔵 Level 2 — Challenge</span>
+          <span class="es-text">🔵 Nivel 2 — Desafío</span>
+        </button>
+      </div>
+      <div class="level-bar" style="margin-top: 10px; max-width: 325px;">
+        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
+        <button class="level-btn" id="btn-read" onclick="readAloud()">🔊 Read Aloud</button>
       </div>
     </header>
 
@@ -317,8 +344,14 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">Key Words</div>
-              <div class="card-sub">Learn these 5 algebraic words before you begin</div>
+              <div class="card-title">
+                <span class="en-text">Key Words</span>
+                <span class="es-text">Palabras clave</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Learn these 5 algebraic words before you begin</span>
+                <span class="es-text">Aprende estas 5 palabras algebraicas antes de comenzar</span>
+              </div>
             </div>
           </div>
 
@@ -328,44 +361,93 @@
           <div class="vocab-grid">
             <div class="vocab-card">
               <div class="vocab-icon">🧩</div>
-              <div class="vocab-term">Expression</div>
-              <div class="vocab-def">A mathematical phrase combining numbers, variables, and operators.</div>
+              <div class="vocab-term">
+                <span class="en-text">Expression</span>
+                <span class="es-text">Expresión</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A mathematical phrase combining numbers, variables, and operators.</span>
+                <span class="es-text">Una frase matemática que combina números, variables y operadores.</span>
+              </div>
               <div class="vocab-ex">3.99s + 8.99p</div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🔤</div>
-              <div class="vocab-term">Variable</div>
-              <div class="vocab-def">A letter used to represent an unknown or changing number value.</div>
-              <div class="vocab-ex">s (standard) or p (premium)</div>
+              <div class="vocab-term">
+                <span class="en-text">Variable</span>
+                <span class="es-text">Variable</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A letter used to represent an unknown or changing number value.</span>
+                <span class="es-text">Una letra utilizada para representar un valor numérico desconocido o cambiante.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">s (standard) or p (premium)</span>
+                <span class="es-text">s (estándar) o p (premium)</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">⬆️</div>
-              <div class="vocab-term">Exponent</div>
-              <div class="vocab-def">A number showing how many times to multiply the base by itself.</div>
-              <div class="vocab-ex">2^m (doubles every month)</div>
+              <div class="vocab-term">
+                <span class="en-text">Exponent</span>
+                <span class="es-text">Exponente</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A number showing how many times to multiply the base by itself.</span>
+                <span class="es-text">Un número que muestra cuántas veces se debe multiplicar la base por sí misma.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">2^m (doubles every month)</span>
+                <span class="es-text">2^m (se duplica cada mes)</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">📌</div>
-              <div class="vocab-term">Constant</div>
-              <div class="vocab-def">A fixed value that stays the exact same in an expression.</div>
-              <div class="vocab-ex">$15 setup fee</div>
+              <div class="vocab-term">
+                <span class="en-text">Constant</span>
+                <span class="es-text">Constante</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A fixed value that stays the exact same in an expression.</span>
+                <span class="es-text">Un valor fijo que permanece exactamente igual en una expresión.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">$15 setup fee</span>
+                <span class="es-text">tarifa de configuración de $15</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🧮</div>
-              <div class="vocab-term">Evaluate</div>
-              <div class="vocab-def">Replacing variables with numbers to calculate the final answer.</div>
-              <div class="vocab-ex">If s=100, 3s = $300</div>
+              <div class="vocab-term">
+                <span class="en-text">Evaluate</span>
+                <span class="es-text">Evaluar</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">Replacing variables with numbers to calculate the final answer.</span>
+                <span class="es-text">Reemplazar variables con números para calcular la respuesta final.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">If s=100, 3s = $300</span>
+                <span class="es-text">Si s=100, 3s = $300</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct" style="margin-top:20px">
-            ✅ Read each vocabulary card and study the diagram. When you're ready, click <strong>Next Step</strong>.
+            <span class="en-text">✅ Read each vocabulary card and study the diagram. When you're ready, click <strong>Next Step</strong>.</span>
+            <span class="es-text">✅ Lee cada tarjeta de vocabulario y estudia el diagrama. Cuando estés listo, haz clic en <strong>Siguiente paso</strong>.</span>
           </div>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" disabled>← Back</button>
-          <button class="nav-btn" onclick="goStep(1)">Next Step →</button>
+          <button class="nav-btn ghost" disabled>
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(1)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -377,80 +459,137 @@
           <div class="card-header">
             <div class="card-icon">📱</div>
             <div>
-              <div class="card-title">Step 1 — Subscription Revenue</div>
-              <div class="card-sub">Write and evaluate revenue expressions for standard and premium tiers</div>
+              <div class="card-title">
+                <span class="en-text">Step 1 — Subscription Revenue</span>
+                <span class="es-text">Paso 1 — Ingresos por suscripción</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Write and evaluate revenue expressions for standard and premium tiers</span>
+                <span class="es-text">Escribe y evalúa expresiones de ingresos para los niveles estándar y premium</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct">
-            <strong>Your job:</strong> Plan the monthly pricing structure for standard subscribers (s) and premium subscribers (p). Enter your prices and user counts below to evaluate the expression: <strong>as + bp</strong>.
+            <span class="en-text"><strong>Your job:</strong> Plan the monthly pricing structure for standard subscribers (s) and premium subscribers (p). Enter your prices and user counts below to evaluate the expression: <strong>as + bp</strong>.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Planifica la estructura de precios mensuales para suscriptores estándar (s) y suscriptores premium (p). Ingresa tus precios y recuento de usuarios a continuación para evaluar la expresión: <strong>as + bp</strong>.</span>
           </div>
 
           <!-- SVG Visual: Subscription Revenue expression flow -->
           <svg class="visual-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
-            <text x="260" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Subscription Revenue Expression: Price_s(s) + Price_p(p)</text>
+            <text x="260" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">Subscription Revenue Expression: Price_s(s) + Price_p(p)</tspan>
+              <tspan class="es-text">Expresión de ingresos por suscripción: Precio_s(s) + Precio_p(p)</tspan>
+            </text>
             
             <!-- Standard box -->
             <rect x="25" y="45" width="200" height="70" rx="8" fill="#e8f2fc" stroke="#0e8a7d" stroke-width="2"/>
-            <text x="125" y="68" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Standard Plan 📱</text>
+            <text x="125" y="68" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">Standard Plan 📱</tspan>
+              <tspan class="es-text">Plan estándar 📱</tspan>
+            </text>
             <text id="svg-std-expr" x="125" y="95" text-anchor="middle" font-size="12" fill="#0e8a7d" font-weight="bold">3.99 &times; s</text>
             
             <text x="260" y="85" text-anchor="middle" font-size="24" font-weight="bold" fill="#0e8a7d">+</text>
             
             <!-- Premium box -->
             <rect x="295" y="45" width="200" height="70" rx="8" fill="#e4f5f3" stroke="#1a6fb5" stroke-width="2"/>
-            <text x="395" y="68" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Premium Plan ⭐</text>
+            <text x="395" y="68" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">Premium Plan ⭐</tspan>
+              <tspan class="es-text">Plan premium ⭐</tspan>
+            </text>
             <text id="svg-prem-expr" x="395" y="95" text-anchor="middle" font-size="12" fill="#1a6fb5" font-weight="bold">8.99 &times; p</text>
           </svg>
 
           <!-- Level 1 hint -->
           <div class="instruct lvl1-only">
-            🟢 <strong>Level 1 tip:</strong> Try standard price $3.00, premium price $8.00. For subscribers, use 100 standard and 50 premium.
+            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try standard price $3.00, premium price $8.00. For subscribers, use 100 standard and 50 premium.</span>
+            <span class="es-text">🟢 <strong>Consejo del Nivel 1:</strong> Prueba con un precio estándar de $3.00, y premium de $8.00. Para suscriptores, usa 100 estándar y 50 premium.</span>
           </div>
           <!-- Level 2 hint -->
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
-            Use decimal pricing values (like $3.99 and $8.99). You will identify coefficients and variables.
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE</span>
+              <span class="es-text">DESAFÍO DE NIVEL 2</span>
+            </span><br>
+            <span class="en-text">Use decimal pricing values (like $3.99 and $8.99). You will identify coefficients and variables.</span>
+            <span class="es-text">Usa valores de precios decimales (como $3.99 y $8.99). Identificarás los coeficientes y las variables.</span>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="r-std-price">💲 Standard subscriber price ($/month)</label>
+              <label class="lbl" for="r-std-price">
+                <span class="en-text">💲 Standard subscriber price ($/month)</span>
+                <span class="es-text">💲 Precio de suscriptor estándar ($/mes)</span>
+              </label>
               <input type="number" id="r-std-price" min="0" step="0.01" placeholder="e.g. 3.99" value="3.99" oninput="calcRevenue()" />
             </div>
             <div>
-              <label class="lbl" for="r-prem-price">💲 Premium subscriber price ($/month)</label>
+              <label class="lbl" for="r-prem-price">
+                <span class="en-text">💲 Premium subscriber price ($/month)</span>
+                <span class="es-text">💲 Precio de suscriptor premium ($/mes)</span>
+              </label>
               <input type="number" id="r-prem-price" min="0" step="0.01" placeholder="e.g. 8.99" value="8.99" oninput="calcRevenue()" />
             </div>
             <div>
-              <label class="lbl" for="r-std-sub">👥 Number of standard subscribers (s)</label>
+              <label class="lbl" for="r-std-sub">
+                <span class="en-text">👥 Number of standard subscribers (s)</span>
+                <span class="es-text">👥 Número de suscriptores estándar (s)</span>
+              </label>
               <input type="number" id="r-std-sub" min="0" placeholder="e.g. 100" value="100" oninput="calcRevenue()" />
             </div>
             <div>
-              <label class="lbl" for="r-prem-sub">👥 Number of premium subscribers (p)</label>
+              <label class="lbl" for="r-prem-sub">
+                <span class="en-text">👥 Number of premium subscribers (p)</span>
+                <span class="es-text">👥 Número de suscriptores premium (p)</span>
+              </label>
               <input type="number" id="r-prem-sub" min="0" placeholder="e.g. 50" value="50" oninput="calcRevenue()" />
             </div>
           </div>
 
-          <button class="calc-btn" onclick="calcRevenue()">🧮 Evaluate Subscription Revenue</button>
+          <button class="calc-btn" onclick="calcRevenue()">
+            <span class="en-text">🧮 Evaluate Subscription Revenue</span>
+            <span class="es-text">🧮 Evaluar ingresos por suscripción</span>
+          </button>
           <div class="readout" id="revenue-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>Multiply standard price by standard subscribers (as), then multiply premium price by premium subscribers (bp), and add the two amounts together.<br><strong>Example:</strong> ($3.00 × 100) + ($8.00 × 50) = $300.00 + $400.00 = <strong>$700.00</strong>.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">Multiply standard price by standard subscribers (as), then multiply premium price by premium subscribers (bp), and add the two amounts together.<br><strong>Example:</strong> ($3.00 × 100) + ($8.00 × 50) = $300.00 + $400.00 = <strong>$700.00</strong>.</span>
+              <span class="es-text">Multiplica el precio estándar por los suscriptores estándar (as), luego multiplica el precio premium por los suscriptores premium (bp) y suma ambas cantidades.<br><strong>Ejemplo:</strong> ($3.00 × 100) + ($8.00 × 50) = $300.00 + $400.00 = <strong>$700.00</strong>.</span>
+            </p>
           </details>
 
           <div class="lvl2-block lvl2-only" style="margin-top:18px">
-            <span class="lvl2-label">LEVEL 2 EXTENSION — Identifying Parts (6.EE.2.b)</span>
-            <p style="font-size:14px;margin:6px 0 10px">In your revenue expression, identify the coefficients and write what they represent in real life.</p>
-            <label class="lbl" for="r-parts-explain">Your analysis:</label>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 EXTENSION — Identifying Parts (6.EE.2.b)</span>
+              <span class="es-text">EXTENSIÓN DE NIVEL 2 — Identificación de partes (6.EE.2.b)</span>
+            </span>
+            <p style="font-size:14px;margin:6px 0 10px">
+              <span class="en-text">In your revenue expression, identify the coefficients and write what they represent in real life.</span>
+              <span class="es-text">En tu expresión de ingresos, identifica los coeficientes y escribe lo que representan en la vida real.</span>
+            </p>
+            <label class="lbl" for="r-parts-explain">
+              <span class="en-text">Your analysis:</span>
+              <span class="es-text">Tu análisis:</span>
+            </label>
             <input type="text" id="r-parts-explain" placeholder="The coefficients are... and they represent..." />
           </div>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(0)">← Back</button>
-          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(0)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(2)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -462,13 +601,20 @@
           <div class="card-header">
             <div class="card-icon teal">⚡</div>
             <div>
-              <div class="card-title">Step 2 — Server Cost Exponent</div>
-              <div class="card-sub">Model cloud hosting costs that double monthly using exponents</div>
+              <div class="card-title">
+                <span class="en-text">Step 2 — Server Cost Exponent</span>
+                <span class="es-text">Paso 2 — Exponente de costo de servidor</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Model cloud hosting costs that double monthly using exponents</span>
+                <span class="es-text">Modela los costos de alojamiento en la nube que se duplican mensualmente usando exponentes</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your job:</strong> Your app hosting costs double every month. The cost is modeled by: <strong>C &times; 2^m</strong>, where C is the starting base cost multiplier and m is the month. Evaluate costs for Month 1 through Month 5.
+            <span class="en-text"><strong>Your job:</strong> Your app hosting costs double every month. The cost is modeled by: <strong>C &times; 2^m</strong>, where C is the starting base cost multiplier and m is the month. Evaluate costs for Month 1 through Month 5.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Los costos de alojamiento de tu aplicación se duplican cada mes. El costo está modelado por: <strong>C &times; 2^m</strong>, donde C es el multiplicador de costo base inicial y m es el mes. Evalúa los costos desde el Mes 1 hasta el Mes 5.</span>
           </div>
 
           <!-- SVG Visual: Exponential growth bar chart -->
@@ -478,44 +624,79 @@
 
           <!-- Level 1 hint -->
           <div class="instruct lvl1-only">
-            🟢 <strong>Level 1 tip:</strong> Keep the base multiplier at $1.00. Exponents mean repeated multiplication: 2^3 = 2 &times; 2 &times; 2 = $8.00.
+            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Keep the base multiplier at $1.00. Exponents mean repeated multiplication: 2^3 = 2 &times; 2 &times; 2 = $8.00.</span>
+            <span class="es-text">🟢 <strong>Consejo del Nivel 1:</strong> Mantén el multiplicador base en $1.00. Los exponentes significan multiplicación repetida: 2^3 = 2 &times; 2 &times; 2 = $8.00.</span>
           </div>
           <!-- Level 2 hint -->
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
-            Change the starting cost multiplier C to another number (e.g. $5.00) and evaluate how hosting costs grow.
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE</span>
+              <span class="es-text">DESAFÍO DE NIVEL 2</span>
+            </span><br>
+            <span class="en-text">Change the starting cost multiplier C to another number (e.g. $5.00) and evaluate how hosting costs grow.</span>
+            <span class="es-text">Cambia el multiplicador de costo inicial C a otro número (por ejemplo, $5.00) y evalúa cómo crecen los costos de alojamiento.</span>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="s-multiplier">💵 Starting cost multiplier C ($)</label>
+              <label class="lbl" for="s-multiplier">
+                <span class="en-text">💵 Starting cost multiplier C ($)</span>
+                <span class="es-text">💵 Multiplicador de costo inicial C ($)</span>
+              </label>
               <input type="number" id="s-multiplier" min="0.01" step="0.01" placeholder="e.g. 1.00" value="1.00" oninput="calcServerCost()" />
             </div>
             <div>
-              <label class="lbl" for="s-month">📅 Target evaluation month m</label>
+              <label class="lbl" for="s-month">
+                <span class="en-text">📅 Target evaluation month m</span>
+                <span class="es-text">📅 Mes de evaluación objetivo m</span>
+              </label>
               <input type="number" id="s-month" min="1" max="10" placeholder="e.g. 5" value="5" oninput="calcServerCost()" />
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="calcServerCost()">⚡ Evaluate Server Cost</button>
+          <button class="calc-btn teal" onclick="calcServerCost()">
+            <span class="en-text">⚡ Evaluate Server Cost</span>
+            <span class="es-text">⚡ Evaluar costo del servidor</span>
+          </button>
           <div class="readout" id="server-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>An exponent shows how many times a base is multiplied by itself. 2^5 = 2 &times; 2 &times; 2 &times; 2 &times; 2 = 32. Multiply this by your multiplier C.<br><strong>Example:</strong> For C = $1.50 and month 5: $1.50 &times; 32 = <strong>$48.00</strong>.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">An exponent shows how many times a base is multiplied by itself. 2^5 = 2 &times; 2 &times; 2 &times; 2 &times; 2 = 32. Multiply this by your multiplier C.<br><strong>Example:</strong> For C = $1.50 and month 5: $1.50 &times; 32 = <strong>$48.00</strong>.</span>
+              <span class="es-text">Un exponente muestra cuántas veces se multiplica una base por sí misma. 2^5 = 2 &times; 2 &times; 2 &times; 2 &times; 2 = 32. Multiplica esto por tu multiplicador C.<br><strong>Ejemplo:</strong> Para C = $1.50 y el mes 5: $1.50 &times; 32 = <strong>$48.00</strong>.</span>
+            </p>
           </details>
 
           <div class="lvl2-block lvl2-only" style="margin-top:18px">
-            <span class="lvl2-label">LEVEL 2 EXTENSION — Exponent Growth (6.EE.1)</span>
-            <p style="font-size:14px;margin:6px 0 10px">Write the algebraic expression for server cost if hosting costs tripled every month instead of doubling.</p>
-            <label class="lbl" for="s-triple-expr">Your expression (use C and m):</label>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 EXTENSION — Exponent Growth (6.EE.1)</span>
+              <span class="es-text">EXTENSIÓN DE NIVEL 2 — Crecimiento exponencial (6.EE.1)</span>
+            </span>
+            <p style="font-size:14px;margin:6px 0 10px">
+              <span class="en-text">Write the algebraic expression for server cost if hosting costs tripled every month instead of doubling.</span>
+              <span class="es-text">Escribe la expresión algebraica para el costo del servidor si los costos de alojamiento se triplicaran cada mes en lugar de duplicarse.</span>
+            </p>
+            <label class="lbl" for="s-triple-expr">
+              <span class="en-text">Your expression (use C and m):</span>
+              <span class="es-text">Tu expresión (usa C y m):</span>
+            </label>
             <input type="text" id="s-triple-expr" placeholder="e.g. C * 3^m" />
           </div>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
-          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(1)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(3)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -527,13 +708,20 @@
           <div class="card-header">
             <div class="card-icon gold">📈</div>
             <div>
-              <div class="card-title">Step 3 — Net Profit &amp; Benchmarks</div>
-              <div class="card-sub">Subtract server costs from revenue and compare to industry tiers</div>
+              <div class="card-title">
+                <span class="en-text">Step 3 — Net Profit &amp; Benchmarks</span>
+                <span class="es-text">Paso 3 — Ganancia neta y referencias</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Subtract server costs from revenue and compare to industry tiers</span>
+                <span class="es-text">Resta los costos del servidor de los ingresos y compáralos con los niveles de la industria</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct gold">
-            <strong>Your job:</strong> Net Profit is what your business keeps after paying costs. Calculate Month 5 Net Profit: <strong>Net Profit = Revenue - Server Cost</strong>. Then, analyze how your app compares to benchmarks.
+            <span class="en-text"><strong>Your job:</strong> Net Profit is what your business keeps after paying costs. Calculate Month 5 Net Profit: <strong>Net Profit = Revenue - Server Cost</strong>. Then, analyze how your app compares to benchmarks.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> La ganancia neta es lo que conserva tu negocio después de pagar los costos. Calcula la ganancia neta del Mes 5: <strong>Ganancia neta = Ingresos - Costo de servidor</strong>. Luego, analiza cómo se compara tu aplicación con los valores de referencia.</span>
           </div>
 
           <!-- SVG Visual: Side by side comparison -->
@@ -541,37 +729,114 @@
             <!-- Rendered programmatically -->
           </svg>
 
-          <button class="calc-btn gold" onclick="calcNetProfit()">📊 Calculate Month 5 Net Profit</button>
+          <button class="calc-btn gold" onclick="calcNetProfit()">
+            <span class="en-text">📊 Calculate Month 5 Net Profit</span>
+            <span class="es-text">📊 Calcular ganancia neta del Mes 5</span>
+          </button>
           <div class="readout" id="profit-out"></div>
 
           <!-- Real-world comparison table -->
           <div style="margin-top:22px;">
-            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">📊 Average App Monthly Revenue Tiers</h3>
-            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">Compare your app's Month 5 Net Profit to these average industry tiers:</p>
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">
+              <span class="en-text">📊 Average App Monthly Revenue Tiers</span>
+              <span class="es-text">📊 Niveles promedio de ingresos mensuales de aplicaciones</span>
+            </h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">
+              <span class="en-text">Compare your app's Month 5 Net Profit to these average industry tiers:</span>
+              <span class="es-text">Compara la ganancia neta del Mes 5 de tu aplicación con estos niveles promedio de la industria:</span>
+            </p>
             <table class="data-table">
               <thead>
-                <tr><th>Tier Classification</th><th>Net Profit / Month</th><th>App Example Profile</th></tr>
+                <tr>
+                  <th>
+                    <span class="en-text">Tier Classification</span>
+                    <span class="es-text">Clasificación del nivel</span>
+                  </th>
+                  <th>
+                    <span class="en-text">Net Profit / Month</span>
+                    <span class="es-text">Ganancia neta / Mes</span>
+                  </th>
+                  <th>
+                    <span class="en-text">App Example Profile</span>
+                    <span class="es-text">Perfil de aplicación de ejemplo</span>
+                  </th>
+                </tr>
               </thead>
               <tbody>
-                <tr><td>Tier 1: Hobbyist App</td><td>$500 – $2,000</td><td>Single developer, side project</td></tr>
-                <tr><td>Tier 2: Independent Startup</td><td>$2,000 – $5,000</td><td>Small team, self-funded app</td></tr>
-                <tr><td>Tier 3: Established App</td><td>$5,000 – $15,000</td><td>Growing startup, full-time company</td></tr>
-                <tr><td>Tier 4: Industry Leader</td><td>$15,000+</td><td>Top charts, venture capital backed</td></tr>
+                <tr>
+                  <td>
+                    <span class="en-text">Tier 1: Hobbyist App</span>
+                    <span class="es-text">Nivel 1: Aplicación de aficionado</span>
+                  </td>
+                  <td>$500 – $2,000</td>
+                  <td>
+                    <span class="en-text">Single developer, side project</span>
+                    <span class="es-text">Desarrollador único, proyecto paralelo</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="en-text">Tier 2: Independent Startup</span>
+                    <span class="es-text">Nivel 2: Startup independiente</span>
+                  </td>
+                  <td>$2,000 – $5,000</td>
+                  <td>
+                    <span class="en-text">Small team, self-funded app</span>
+                    <span class="es-text">Equipo pequeño, aplicación autofinanciada</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="en-text">Tier 3: Established App</span>
+                    <span class="es-text">Nivel 3: Aplicación establecida</span>
+                  </td>
+                  <td>$5,000 – $15,000</td>
+                  <td>
+                    <span class="en-text">Growing startup, full-time company</span>
+                    <span class="es-text">Startup en crecimiento, empresa de tiempo completo</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="en-text">Tier 4: Industry Leader</span>
+                    <span class="es-text">Nivel 4: Líder de la industria</span>
+                  </td>
+                  <td>$15,000+</td>
+                  <td>
+                    <span class="en-text">Top charts, venture capital backed</span>
+                    <span class="es-text">Primeros puestos, respaldada por capital de riesgo</span>
+                  </td>
+                </tr>
               </tbody>
             </table>
-            <label class="lbl" for="p-tier-reflect">Where does your app's net profit fit? Write a sentence comparing your profit to these tiers.</label>
+            <label class="lbl" for="p-tier-reflect">
+              <span class="en-text">Where does your app's net profit fit? Write a sentence comparing your profit to these tiers.</span>
+              <span class="es-text">¿Dónde encaja la ganancia neta de tu aplicación? Escribe una oración comparando tu ganancia con estos niveles.</span>
+            </label>
             <textarea id="p-tier-reflect" placeholder="My app's net profit is $___ in Month 5. Compared to average app tiers, my app falls under..."></textarea>
           </div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>Subtract the Month 5 Server Cost (evaluated in Step 2) from your Subscription Revenue (evaluated in Step 1).<br><strong>Example:</strong> $848.50 (Revenue) - $32.00 (Server cost) = <strong>$816.50 Net Profit</strong> (Tier 1 Hobbyist App).</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">Subtract the Month 5 Server Cost (evaluated in Step 2) from your Subscription Revenue (evaluated in Step 1).<br><strong>Example:</strong> $848.50 (Revenue) - $32.00 (Server cost) = <strong>$816.50 Net Profit</strong> (Tier 1 Hobbyist App).</span>
+              <span class="es-text">Resta el costo del servidor del Mes 5 (evaluado en el Paso 2) de tus ingresos por suscripción (evaluados en el Paso 1).<br><strong>Ejemplo:</strong> $848.50 (Ingresos) - $32.00 (Costo de servidor) = <strong>$816.50 Ganancia neta</strong> (Nivel 1 Aplicación de aficionado).</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
-          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(2)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(4)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -583,13 +848,20 @@
           <div class="card-header">
             <div class="card-icon teal">👥</div>
             <div>
-              <div class="card-title">Step 4 — Compare With a Partner</div>
-              <div class="card-sub">Trade plans with a classmate and compare Month 5 profits</div>
+              <div class="card-title">
+                <span class="en-text">Step 4 — Compare With a Partner</span>
+                <span class="es-text">Paso 4 — Comparar con un compañero</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Trade plans with a classmate and compare Month 5 profits</span>
+                <span class="es-text">Intercambia planes con un compañero y compara las ganancias del Mes 5</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your job:</strong> Interview a classmate and ask for their subscription prices, subscriber counts, and server multiplier. Enter them below to compare your app plans on a balance scale!
+            <span class="en-text"><strong>Your job:</strong> Interview a classmate and ask for their subscription prices, subscriber counts, and server multiplier. Enter them below to compare your app plans on a balance scale!</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Entrevista a un compañero de clase y pídele sus precios de suscripción, recuento de suscriptores y multiplicador del servidor. ¡Ingrésalos a continuación para comparar sus planes de aplicaciones en una balanza!</span>
           </div>
 
           <!-- SVG Visual: Balance scale -->
@@ -598,57 +870,108 @@
           </svg>
 
           <div style="background:var(--teal-lt);border-radius:12px;padding:14px 16px;margin-bottom:18px;">
-            <strong style="font-size:14px;color:var(--blue);">Classmate Interview Questions:</strong>
+            <strong style="font-size:14px;color:var(--blue);">
+              <span class="en-text">Classmate Interview Questions:</span>
+              <span class="es-text">Preguntas para la entrevista al compañero:</span>
+            </strong>
             <ol style="margin-top:8px;font-size:14px;line-height:1.9;padding-left:18px;color:var(--ink);">
-              <li>What are your standard and premium subscription prices?</li>
-              <li>How many standard (s) and premium (p) subscribers do you have?</li>
-              <li>What is your server cost multiplier (C)?</li>
+              <li>
+                <span class="en-text">What are your standard and premium subscription prices?</span>
+                <span class="es-text">¿Cuáles son tus precios de suscripción estándar y premium?</span>
+              </li>
+              <li>
+                <span class="en-text">How many standard (s) and premium (p) subscribers do you have?</span>
+                <span class="es-text">¿Cuántos suscriptores estándar (s) y premium (p) tienes?</span>
+              </li>
+              <li>
+                <span class="en-text">What is your server cost multiplier (C)?</span>
+                <span class="es-text">¿Cuál es tu multiplicador de costo de servidor (C)?</span>
+              </li>
             </ol>
           </div>
 
-          <label class="lbl" for="p-name">Partner's name or initials</label>
+          <label class="lbl" for="p-name">
+            <span class="en-text">Partner's name or initials</span>
+            <span class="es-text">Nombre o iniciales del compañero</span>
+          </label>
           <input type="text" id="p-name" placeholder="e.g. Alex" oninput="calcPartnerCompare()" />
 
           <div class="grid2" style="margin-top:4px;">
             <div>
-              <label class="lbl" for="p-std-price">Partner Standard Price ($)</label>
+              <label class="lbl" for="p-std-price">
+                <span class="en-text">Partner Standard Price ($)</span>
+                <span class="es-text">Precio estándar del compañero ($)</span>
+              </label>
               <input type="number" id="p-std-price" min="0" step="0.01" placeholder="e.g. 2.99" oninput="calcPartnerCompare()" />
             </div>
             <div>
-              <label class="lbl" for="p-prem-price">Partner Premium Price ($)</label>
+              <label class="lbl" for="p-prem-price">
+                <span class="en-text">Partner Premium Price ($)</span>
+                <span class="es-text">Precio premium del compañero ($)</span>
+              </label>
               <input type="number" id="p-prem-price" min="0" step="0.01" placeholder="e.g. 7.99" oninput="calcPartnerCompare()" />
             </div>
             <div>
-              <label class="lbl" for="p-std-sub">Partner Standard Subscribers</label>
+              <label class="lbl" for="p-std-sub">
+                <span class="en-text">Partner Standard Subscribers</span>
+                <span class="es-text">Suscriptores estándar del compañero</span>
+              </label>
               <input type="number" id="p-std-sub" min="0" placeholder="e.g. 120" oninput="calcPartnerCompare()" />
             </div>
             <div>
-              <label class="lbl" for="p-prem-sub">Partner Premium Subscribers</label>
+              <label class="lbl" for="p-prem-sub">
+                <span class="en-text">Partner Premium Subscribers</span>
+                <span class="es-text">Suscriptores premium del compañero</span>
+              </label>
               <input type="number" id="p-prem-sub" min="0" placeholder="e.g. 60" oninput="calcPartnerCompare()" />
             </div>
             <div>
-              <label class="lbl" for="p-s-multiplier">Partner Server Multiplier ($)</label>
+              <label class="lbl" for="p-s-multiplier">
+                <span class="en-text">Partner Server Multiplier ($)</span>
+                <span class="es-text">Multiplicador de servidor del compañero ($)</span>
+              </label>
               <input type="number" id="p-s-multiplier" min="0.01" step="0.01" placeholder="e.g. 1.00" value="1.00" oninput="calcPartnerCompare()" />
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="calcPartnerCompare()">📊 Compare Our App Plans</button>
+          <button class="calc-btn teal" onclick="calcPartnerCompare()">
+            <span class="en-text">📊 Compare Our App Plans</span>
+            <span class="es-text">📊 Comparar nuestros planes de aplicaciones</span>
+          </button>
           <div class="readout" id="partner-out"></div>
 
-          <label class="lbl" for="p-reflect" style="margin-top:18px;">Which app was more profitable in Month 5? Explain why using both of your numbers.</label>
+          <label class="lbl" for="p-reflect" style="margin-top:18px;">
+            <span class="en-text">Which app was more profitable in Month 5? Explain why using both of your numbers.</span>
+            <span class="es-text">¿Qué aplicación fue más rentable en el Mes 5? Explica por qué usando los números de ambos.</span>
+          </label>
           <textarea id="p-reflect" placeholder="My app profit was $___ and my partner's profit was $___. My partner's app was... because..."></textarea>
 
           <div class="lvl2-block lvl2-only" style="margin-top:18px">
-            <span class="lvl2-label">LEVEL 2 EXTENSION — Combined Equations (6.EE.3)</span>
-            <p style="font-size:14px;margin:6px 0 10px">Write a single combined algebraic expression representing the total combined profit of both apps in Month 5.</p>
-            <label class="lbl" for="p-combined-expr">Combined profit expression:</label>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 EXTENSION — Combined Equations (6.EE.3)</span>
+              <span class="es-text">EXTENSIÓN DE NIVEL 2 — Ecuaciones combinadas (6.EE.3)</span>
+            </span>
+            <p style="font-size:14px;margin:6px 0 10px">
+              <span class="en-text">Write a single combined algebraic expression representing the total combined profit of both apps in Month 5.</span>
+              <span class="es-text">Escribe una sola expresión algebraica combinada que represente la ganancia total combinada de ambas aplicaciones en el Mes 5.</span>
+            </p>
+            <label class="lbl" for="p-combined-expr">
+              <span class="en-text">Combined profit expression:</span>
+              <span class="es-text">Expresión de ganancia combinada:</span>
+            </label>
             <input type="text" id="p-combined-expr" placeholder="e.g. (3.99s1 + 8.99p1 - C1*32) + (p_std*s2 + p_prem*p2 - C2*32)" />
           </div>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
-          <button class="nav-btn green" onclick="goStep(5)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(3)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="goStep(5)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -660,58 +983,218 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">Step 5 — Finish &amp; Submit</div>
-              <div class="card-sub">Write your pricing memo, check off the list, and review your score</div>
+              <div class="card-title">
+                <span class="en-text">Step 5 — Finish &amp; Submit</span>
+                <span class="es-text">Paso 5 — Finalizar y enviar</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Write your pricing memo, check off the list, and review your score</span>
+                <span class="es-text">Escribe tu informe de precios, marca la lista y revisa tu puntuación</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct green">
-            <strong>Your job:</strong> Write a 3–5 sentence pricing pitch/memo outlining your pricing strategy. Check off all elements you completed, then export your report.
+            <span class="en-text"><strong>Your job:</strong> Write a 3–5 sentence pricing pitch/memo outlining your pricing strategy. Check off all elements you completed, then export your report.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Escribe una propuesta/informe de precios de 3 a 5 oraciones que resuma tu estrategia de precios. Marca todos los elementos que completaste y luego exporta tu informe.</span>
           </div>
 
           <!-- Pitch -->
-          <label class="lbl" for="pitch">✍️ Your App Pricing Memo Pitch (use your calculated numbers!)</label>
+          <label class="lbl" for="pitch">
+            <span class="en-text">✍️ Your App Pricing Memo Pitch (use your calculated numbers!)</span>
+            <span class="es-text">✍️ Tu propuesta de informe de precios de la aplicación (¡usa tus números calculados!)</span>
+          </label>
           <textarea id="pitch" placeholder="My app plan uses mathematical expressions to model revenue and host costs. Standard subscription is $... and premium is $... With ... standard and ... premium subscribers, our Month 5 revenue is $... Server costs double monthly, reaching $... leaving a Month 5 Net Profit of $..."></textarea>
 
           <!-- Checklist -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">✅ Analyst Checklist — Check off completed items</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+            <span class="en-text">✅ Analyst Checklist — Check off completed items</span>
+            <span class="es-text">✅ Lista de control del analista: marca los elementos completados</span>
+          </h3>
           <ul class="checklist" id="checklist">
-            <li><input type="checkbox" id="ck1" /> I wrote and evaluated subscription revenue as <strong>as + bp</strong>.</li>
-            <li><input type="checkbox" id="ck2" /> I modeled monthly server cost growth using the exponent expression <strong>C &times; 2^m</strong>.</li>
-            <li><input type="checkbox" id="ck3" /> I calculated my Month 5 Net Profit by subtracting server costs from revenue.</li>
-            <li><input type="checkbox" id="ck4" /> I compared my net profit to real app monthly revenue benchmarks.</li>
-            <li><input type="checkbox" id="ck5" /> I swapped plans with a classmate and compared our Month 5 outcomes.</li>
-            <li><input type="checkbox" id="ck6" /> I wrote a pricing memo pitch summarizing my business decisions with math reasoning.</li>
+            <li>
+              <input type="checkbox" id="ck1" />
+              <span class="en-text">I wrote and evaluated subscription revenue as <strong>as + bp</strong>.</span>
+              <span class="es-text">Escribí y evalué los ingresos por suscripción como <strong>as + bp</strong>.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck2" />
+              <span class="en-text">I modeled monthly server cost growth using the exponent expression <strong>C &times; 2^m</strong>.</span>
+              <span class="es-text">Modelé el crecimiento mensual del costo del servidor usando la expresión exponencial <strong>C &times; 2^m</strong>.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck3" />
+              <span class="en-text">I calculated my Month 5 Net Profit by subtracting server costs from revenue.</span>
+              <span class="es-text">Calculé mi ganancia neta del Mes 5 restando los costos de servidor de los ingresos.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck4" />
+              <span class="en-text">I compared my net profit to real app monthly revenue benchmarks.</span>
+              <span class="es-text">Comparé mi ganancia neta con los niveles de referencia de ingresos mensuales de aplicaciones reales.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck5" />
+              <span class="en-text">I swapped plans with a classmate and compared our Month 5 outcomes.</span>
+              <span class="es-text">Intercambié planes con un compañero y comparé nuestros resultados del Mes 5.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck6" />
+              <span class="en-text">I wrote a pricing memo pitch summarizing my business decisions with math reasoning.</span>
+              <span class="es-text">Escribí una propuesta de informe de precios que resume mis decisiones comerciales con razonamiento matemático.</span>
+            </li>
           </ul>
 
           <!-- Rubric -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">📊 Project Rubric — How You Are Scored</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+            <span class="en-text">📊 Project Rubric — How You Are Scored</span>
+            <span class="es-text">📊 Rúbrica del proyecto: cómo se te califica</span>
+          </h3>
           <table class="rubric">
             <thead>
-              <tr><th>Math Skill</th><th class="score-4">4 — Expert</th><th class="score-3">3 — Proficient</th><th class="score-2">2 — Developing</th></tr>
+              <tr>
+                <th>
+                  <span class="en-text">Math Skill</span>
+                  <span class="es-text">Habilidad matemática</span>
+                </th>
+                <th class="score-4">
+                  <span class="en-text">4 — Expert</span>
+                  <span class="es-text">4 — Experto</span>
+                </th>
+                <th class="score-3">
+                  <span class="en-text">3 — Proficient</span>
+                  <span class="es-text">3 — Competente</span>
+                </th>
+                <th class="score-2">
+                  <span class="en-text">2 — Developing</span>
+                  <span class="es-text">2 — En desarrollo</span>
+                </th>
+              </tr>
             </thead>
             <tbody>
-              <tr><td><strong>Revenue (6.EE.2)</strong></td><td>Expression correct with parts named and evaluated</td><td>Expression and evaluation correct</td><td>Evaluation contains calculation errors</td></tr>
-              <tr><td><strong>Exponents (6.EE.1)</strong></td><td>Cost exponent evaluated correctly with expansion</td><td>Cost exponent evaluated correctly</td><td>Wrong base or arithmetic errors</td></tr>
-              <tr><td><strong>Net Profit (6.EE.2.c)</strong></td><td>Net Profit correct with benchmark comparison</td><td>Net Profit correct</td><td>Formula set up wrong</td></tr>
-              <tr><td><strong>Comparison</strong></td><td>Compares classmate and benchmark data with detail</td><td>Classmate comparison done</td><td>Comparison attempted but incomplete</td></tr>
-              <tr><td><strong>Pricing Pitch</strong></td><td>Memo uses all real numbers, clear reasoning</td><td>Memo uses most numbers</td><td>Memo is vague or incomplete</td></tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Revenue (6.EE.2)</span>
+                  <span class="es-text">Ingresos (6.EE.2)</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Expression correct with parts named and evaluated</span>
+                  <span class="es-text">Expresión correcta con partes nombradas y evaluadas</span>
+                </td>
+                <td>
+                  <span class="en-text">Expression and evaluation correct</span>
+                  <span class="es-text">Expresión y evaluación correctas</span>
+                </td>
+                <td>
+                  <span class="en-text">Evaluation contains calculation errors</span>
+                  <span class="es-text">La evaluación contiene errores de cálculo</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Exponents (6.EE.1)</span>
+                  <span class="es-text">Exponentes (6.EE.1)</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Cost exponent evaluated correctly with expansion</span>
+                  <span class="es-text">Exponente de costo evaluado correctamente con desarrollo</span>
+                </td>
+                <td>
+                  <span class="en-text">Cost exponent evaluated correctly</span>
+                  <span class="es-text">Exponente de costo evaluado correctamente</span>
+                </td>
+                <td>
+                  <span class="en-text">Wrong base or arithmetic errors</span>
+                  <span class="es-text">Base incorrecta o errores aritméticos</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Net Profit (6.EE.2.c)</span>
+                  <span class="es-text">Ganancia neta (6.EE.2.c)</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Net Profit correct with benchmark comparison</span>
+                  <span class="es-text">Ganancia neta correcta con comparación con referencias</span>
+                </td>
+                <td>
+                  <span class="en-text">Net Profit correct</span>
+                  <span class="es-text">Ganancia neta correcta</span>
+                </td>
+                <td>
+                  <span class="en-text">Formula set up wrong</span>
+                  <span class="es-text">Fórmula planteada incorrectamente</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Comparison</span>
+                  <span class="es-text">Comparación</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Compares classmate and benchmark data with detail</span>
+                  <span class="es-text">Compara detalladamente los datos del compañero y de referencia</span>
+                </td>
+                <td>
+                  <span class="en-text">Classmate comparison done</span>
+                  <span class="es-text">Comparación con compañero realizada</span>
+                </td>
+                <td>
+                  <span class="en-text">Comparison attempted but incomplete</span>
+                  <span class="es-text">Comparación intentada pero incompleta</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>
+                  <span class="en-text">Pricing Pitch</span>
+                  <span class="es-text">Propuesta de precios</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Memo uses all real numbers, clear reasoning</span>
+                  <span class="es-text">El informe usa todos los números reales, razonamiento claro</span>
+                </td>
+                <td>
+                  <span class="en-text">Memo uses most numbers</span>
+                  <span class="es-text">El informe usa la mayoría de los números</span>
+                </td>
+                <td>
+                  <span class="en-text">Memo is vague or incomplete</span>
+                  <span class="es-text">El informe es vago o incompleto</span>
+                </td>
+              </tr>
             </tbody>
           </table>
 
           <!-- Report + export -->
           <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
-            <button class="calc-btn" onclick="buildReport()">📝 Generate Summary</button>
-            <button class="export-btn" onclick="copyReport()">📋 Copy</button>
-            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
-            <button class="export-btn" onclick="window.print()">🖨️ Print</button>
+            <button class="calc-btn" onclick="buildReport()">
+              <span class="en-text">📝 Generate Summary</span>
+              <span class="es-text">📝 Generar resumen</span>
+            </button>
+            <button class="export-btn" onclick="copyReport()">
+              <span class="en-text">📋 Copy</span>
+              <span class="es-text">📋 Copiar</span>
+            </button>
+            <button class="export-btn" onclick="downloadTxt()">
+              <span class="en-text">⬇️ Download .txt</span>
+              <span class="es-text">⬇️ Descargar .txt</span>
+            </button>
+            <button class="export-btn" onclick="window.print()">
+              <span class="en-text">🖨️ Print</span>
+              <span class="es-text">🖨️ Imprimir</span>
+            </button>
           </div>
           <pre class="report-box" id="reportBox"></pre>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
-          <button class="nav-btn green" onclick="alert('Great work! 🎉 Show this page to your teacher.')">🎉 I'm Done!</button>
+          <button class="nav-btn ghost" onclick="goStep(4)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="onDoneClicked()">
+            <span class="en-text">🎉 I'm Done!</span>
+            <span class="es-text">🎉 ¡He terminado!</span>
+          </button>
         </div>
       </div>
 
@@ -723,31 +1206,33 @@
     <script>
       // ---- State ----
       const STEPS = [
-        { id: 0, label: 'Key Words', icon: '📖' },
-        { id: 1, label: 'Subscription Revenue', icon: '📱' },
-        { id: 2, label: 'Server Cost Exponent', icon: '⚡' },
-        { id: 3, label: 'Net Profit', icon: '📈' },
-        { id: 4, label: 'Partner App', icon: '👥' },
-        { id: 5, label: 'Finish', icon: '🏆' },
+        { id: 0, labelEn: 'Key Words', labelEs: 'Palabras clave', icon: '📖' },
+        { id: 1, labelEn: 'Subscription Revenue', labelEs: 'Ingresos por suscripción', icon: '📱' },
+        { id: 2, labelEn: 'Server Cost Exponent', labelEs: 'Exponente de costo de servidor', icon: '⚡' },
+        { id: 3, labelEn: 'Net Profit', labelEs: 'Ganancia neta', icon: '📈' },
+        { id: 4, labelEn: 'Partner App', labelEs: 'Aplicación del compañero', icon: '👥' },
+        { id: 5, labelEn: 'Finish', labelEs: 'Finalizar', icon: '🏆' },
       ];
       let currentStep = 0;
       const visited = new Set([0]);
 
       // ---- Level toggle ----
       function setLevel(n) {
-        document.getElementById('body').className = 'level-' + n;
+        document.getElementById('body').className = 'level-' + n + (document.body.classList.contains('es') ? ' es' : '');
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
       }
 
       // ---- Build step trail ----
       function buildTrail() {
+        const isEs = document.body.classList.contains('es');
         const trail = document.getElementById('stepTrail');
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
+          const label = isEs ? s.labelEs : s.labelEn;
           return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id + 1}</span>
-            <span class="s-label">${s.label}</span>
+            <span class="s-label">${label}</span>
           </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
         }).join('');
       }
@@ -755,6 +1240,15 @@
       // ---- Navigation ----
       function goStep(n) {
         if (n < 0 || n >= STEPS.length) return;
+        if (window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+        }
+        // reset the read button text
+        const readBtn = document.getElementById('btn-read');
+        if (readBtn) {
+          const isEs = document.body.classList.contains('es');
+          readBtn.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+        }
         document.getElementById('step-' + currentStep).classList.remove('active');
         currentStep = n;
         visited.add(n);
@@ -767,13 +1261,150 @@
       function updateProgress() {
         const pct = Math.round((currentStep / (STEPS.length - 1)) * 100);
         document.getElementById('progFill').style.width = pct + '%';
-        document.getElementById('progLabel').textContent = `Step ${currentStep + 1} of ${STEPS.length}`;
+        const isEs = document.body.classList.contains('es');
+        const text = isEs 
+          ? `Paso ${currentStep + 1} de ${STEPS.length}` 
+          : `Step ${currentStep + 1} of ${STEPS.length}`;
+        document.getElementById('progLabel').textContent = text;
       }
 
       function showReadout(id, html) {
         const el = document.getElementById(id);
         el.innerHTML = html;
         el.classList.add('show');
+      }
+
+      // ---- Language Translation and TTS Accessibility ----
+      function toggleLanguage() {
+        if (window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+        }
+        const body = document.getElementById('body');
+        const isEs = body.classList.toggle('es');
+        const langBtn = document.getElementById('btn-lang');
+        const readBtn = document.getElementById('btn-read');
+        if (isEs) {
+          langBtn.textContent = '🌐 Idioma: ES';
+          readBtn.textContent = '🔊 Leer en voz alta';
+        } else {
+          langBtn.textContent = '🌐 Language: EN';
+          readBtn.textContent = '🔊 Read Aloud';
+        }
+        buildTrail();
+        updateProgress();
+        updatePlaceholders(isEs);
+        recalcAll();
+      }
+
+      function updatePlaceholders(isEs) {
+        const partsExplain = document.getElementById('r-parts-explain');
+        if (partsExplain) {
+          partsExplain.placeholder = isEs 
+            ? "Los coeficientes son... y representan..." 
+            : "The coefficients are... and they represent...";
+        }
+        
+        const tripleExpr = document.getElementById('s-triple-expr');
+        if (tripleExpr) {
+          tripleExpr.placeholder = isEs 
+            ? "ej. C * 3^m" 
+            : "e.g. C * 3^m";
+        }
+        
+        const tierReflect = document.getElementById('p-tier-reflect');
+        if (tierReflect) {
+          tierReflect.placeholder = isEs 
+            ? "La ganancia neta de mi aplicación es de $___ en el Mes 5. En comparación con los niveles promedio de aplicaciones, mi aplicación entra en..." 
+            : "My app's net profit is $___ in Month 5. Compared to average app tiers, my app falls under...";
+        }
+
+        const pName = document.getElementById('p-name');
+        if (pName) {
+          pName.placeholder = isEs 
+            ? "ej. Alejandro" 
+            : "e.g. Alex";
+        }
+        
+        const pReflect = document.getElementById('p-reflect');
+        if (pReflect) {
+          pReflect.placeholder = isEs 
+            ? "La ganancia de mi aplicación fue de $___ y la de mi compañero fue de $___. La aplicación de mi compañero fue... porque..." 
+            : "My app profit was $___ and my partner's profit was $___. My partner's app was... because...";
+        }
+
+        const combinedExpr = document.getElementById('p-combined-expr');
+        if (combinedExpr) {
+          combinedExpr.placeholder = isEs
+            ? "ej. (3.99s1 + 8.99p1 - C1*32) + (p_std*s2 + p_prem*p2 - C2*32)"
+            : "e.g. (3.99s1 + 8.99p1 - C1*32) + (p_std*s2 + p_prem*p2 - C2*32)";
+        }
+        
+        const pitch = document.getElementById('pitch');
+        if (pitch) {
+          pitch.placeholder = isEs 
+            ? "El plan de mi aplicación utiliza expresiones matemáticas para modelar los ingresos y los costos de alojamiento. La suscripción estándar es de $... y la premium es de $... Con ... suscriptores estándar y ... premium, nuestros ingresos del Mes 5 son de $... Los costos del servidor se duplican mensualmente, alcanzando los $... lo que deja una Ganancia neta en el Mes 5 de $..." 
+            : "My app plan uses mathematical expressions to model revenue and host costs. Standard subscription is $... and premium is $... With ... standard and ... premium subscribers, our Month 5 revenue is $... Server costs double monthly, reaching $... leaving a Month 5 Net Profit of $...";
+        }
+      }
+
+      let currentUtterance = null;
+      function readAloud() {
+        if (window.speechSynthesis) {
+          if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+            const readBtn = document.getElementById('btn-read');
+            const isEs = document.body.classList.contains('es');
+            readBtn.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+            return;
+          }
+        }
+
+        const isEs = document.body.classList.contains('es');
+        const activePanel = document.getElementById('step-' + currentStep);
+        if (!activePanel) return;
+
+        // Collect all text from en-text or es-text inside the active panel
+        const selector = isEs ? '.es-text' : '.en-text';
+        const elements = activePanel.querySelectorAll(selector);
+        
+        let textParts = [];
+        
+        elements.forEach(el => {
+          if (el.offsetWidth > 0 || el.offsetHeight > 0 || el.tagName === 'SPAN' || el.tagName === 'DIV' || el.tagName === 'P' || el.tagName === 'STRONG' || el.tagName === 'TSPAN') {
+            textParts.push(el.textContent.trim());
+          }
+        });
+
+        const textToSpeak = textParts.filter(t => t.length > 0).join('... ');
+        if (!textToSpeak) return;
+
+        if (window.speechSynthesis) {
+          const utterance = new SpeechSynthesisUtterance(textToSpeak);
+          utterance.lang = isEs ? 'es-ES' : 'en-US';
+          
+          const readBtn = document.getElementById('btn-read');
+          utterance.onstart = () => {
+            readBtn.textContent = isEs ? '⏹️ Detener' : '⏹️ Stop';
+          };
+          utterance.onend = () => {
+            readBtn.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+          };
+          utterance.onerror = () => {
+            readBtn.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+          };
+
+          currentUtterance = utterance;
+          window.speechSynthesis.speak(utterance);
+        }
+      }
+
+      function onDoneClicked() {
+        const isEs = document.body.classList.contains('es');
+        if (isEs) {
+          alert('¡Buen trabajo! 🎉 Muestra esta página a tu profesor.');
+        } else {
+          alert('Great work! 🎉 Show this page to your teacher.');
+        }
       }
 
       // ---- Math Calculations & SVG Rendering ----
@@ -792,13 +1423,21 @@
         }
         
         const rev = stdPrice * stdSub + premPrice * premSub;
-        showReadout('revenue-out', `
+        const isEs = document.body.classList.contains('es');
+        const readoutHtml = isEs ? `
+          <strong>Expresión de ingresos: ${stdPrice.toFixed(2)}s + ${premPrice.toFixed(2)}p</strong><br>
+          Evaluación para s = <strong>${stdSub}</strong> y p = <strong>${premSub}</strong>:<br>
+          ${stdPrice.toFixed(2)} &times; (${stdSub}) + ${premPrice.toFixed(2)} &times; (${premSub})<br>
+          = $${(stdPrice * stdSub).toFixed(2)} + $${(premPrice * premSub).toFixed(2)}<br>
+          = Ingresos totales: <strong>$${rev.toFixed(2)}</strong>
+        ` : `
           <strong>Revenue Expression: ${stdPrice.toFixed(2)}s + ${premPrice.toFixed(2)}p</strong><br>
           Evaluation for s = <strong>${stdSub}</strong> and p = <strong>${premSub}</strong>:<br>
           ${stdPrice.toFixed(2)} &times; (${stdSub}) + ${premPrice.toFixed(2)} &times; (${premSub})<br>
           = $${(stdPrice * stdSub).toFixed(2)} + $${(premPrice * premSub).toFixed(2)}<br>
           = Total Revenue: <strong>$${rev.toFixed(2)}</strong>
-        `);
+        `;
+        showReadout('revenue-out', readoutHtml);
       }
 
       function drawRevenueSVG() {
@@ -823,7 +1462,17 @@
         }
         
         const targetCost = mult * Math.pow(2, m);
-        showReadout('server-out', `
+        const isEs = document.body.classList.contains('es');
+        const readoutHtml = isEs ? `
+          <strong>Expresión de costo de servidor: ${mult.toFixed(2)} &times; 2^m</strong><br>
+          Valores para los meses 1-5:<br>
+          Mes 1: ${mult.toFixed(2)} &times; 2^1 = <strong>$${(mult * 2).toFixed(2)}</strong><br>
+          Mes 2: ${mult.toFixed(2)} &times; 2^2 = <strong>$${(mult * 4).toFixed(2)}</strong><br>
+          Mes 3: ${mult.toFixed(2)} &times; 2^3 = <strong>$${(mult * 8).toFixed(2)}</strong><br>
+          Mes 4: ${mult.toFixed(2)} &times; 2^4 = <strong>$${(mult * 16).toFixed(2)}</strong><br>
+          Mes 5: ${mult.toFixed(2)} &times; 2^5 = <strong>$${(mult * 32).toFixed(2)}</strong><br>
+          Costo de servidor del mes objetivo ${m}: <strong>$${targetCost.toFixed(2)}</strong>
+        ` : `
           <strong>Server Cost Expression: ${mult.toFixed(2)} &times; 2^m</strong><br>
           Values for Months 1-5:<br>
           Month 1: ${mult.toFixed(2)} &times; 2^1 = <strong>$${(mult * 2).toFixed(2)}</strong><br>
@@ -832,7 +1481,8 @@
           Month 4: ${mult.toFixed(2)} &times; 2^4 = <strong>$${(mult * 16).toFixed(2)}</strong><br>
           Month 5: ${mult.toFixed(2)} &times; 2^5 = <strong>$${(mult * 32).toFixed(2)}</strong><br>
           Target Month ${m} Server Cost: <strong>$${targetCost.toFixed(2)}</strong>
-        `);
+        `;
+        showReadout('server-out', readoutHtml);
       }
 
       function drawServerCostSVG() {
@@ -844,31 +1494,36 @@
         const maxVal = Math.max(...vals, 1);
         const heights = vals.map(v => (v / maxVal) * 80);
         
+        const isEs = document.body.classList.contains('es');
+        const titleText = isEs 
+          ? `Crecimiento exponencial del servidor: ${mult.toFixed(2)} &times; 2^m`
+          : `Exponential Server Growth: ${mult.toFixed(2)} &times; 2^m`;
+        
         svg.innerHTML = `
-          <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Exponential Server Growth: ${mult.toFixed(2)} &times; 2^m</text>
+          <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">${titleText}</text>
           
           <line x1="50" y1="40" x2="480" y2="40" stroke="#f1f5f9" stroke-width="1"/>
           <line x1="50" y1="80" x2="480" y2="80" stroke="#f1f5f9" stroke-width="1"/>
           <line x1="50" y1="120" x2="480" y2="120" stroke="#e2e8f0" stroke-width="1.5"/>
           
           <rect x="80" y="${120 - heights[0]}" width="40" height="${heights[0]}" rx="3" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="1.5"/>
-          <text x="100" y="135" text-anchor="middle" font-size="10" fill="#5e6e7e">M1</text>
+          <text x="100" y="135" text-anchor="middle" font-size="10" fill="#5e6e7e">${isEs ? 'Mes 1' : 'M1'}</text>
           <text x="100" y="${115 - heights[0]}" text-anchor="middle" font-size="9" font-weight="bold" fill="#1a6fb5">$${vals[0].toFixed(2)}</text>
           
           <rect x="160" y="${120 - heights[1]}" width="40" height="${heights[1]}" rx="3" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="1.5"/>
-          <text x="180" y="135" text-anchor="middle" font-size="10" fill="#5e6e7e">M2</text>
+          <text x="180" y="135" text-anchor="middle" font-size="10" fill="#5e6e7e">${isEs ? 'Mes 2' : 'M2'}</text>
           <text x="180" y="${115 - heights[1]}" text-anchor="middle" font-size="9" font-weight="bold" fill="#1a6fb5">$${vals[1].toFixed(2)}</text>
           
           <rect x="240" y="${120 - heights[2]}" width="40" height="${heights[2]}" rx="3" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="1.5"/>
-          <text x="260" y="135" text-anchor="middle" font-size="10" fill="#5e6e7e">M3</text>
+          <text x="260" y="135" text-anchor="middle" font-size="10" fill="#5e6e7e">${isEs ? 'Mes 3' : 'M3'}</text>
           <text x="260" y="${115 - heights[2]}" text-anchor="middle" font-size="9" font-weight="bold" fill="#1a6fb5">$${vals[2].toFixed(2)}</text>
           
           <rect x="320" y="${120 - heights[3]}" width="40" height="${heights[3]}" rx="3" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="1.5"/>
-          <text x="340" y="135" text-anchor="middle" font-size="10" fill="#5e6e7e">M4</text>
+          <text x="340" y="135" text-anchor="middle" font-size="10" fill="#5e6e7e">${isEs ? 'Mes 4' : 'M4'}</text>
           <text x="340" y="${115 - heights[3]}" text-anchor="middle" font-size="9" font-weight="bold" fill="#1a6fb5">$${vals[3].toFixed(2)}</text>
           
           <rect x="400" y="${120 - heights[4]}" width="40" height="${heights[4]}" rx="3" fill="#0e8a7d" stroke="#0e8a7d" stroke-width="1.5"/>
-          <text x="420" y="135" text-anchor="middle" font-size="10" fill="#5e6e7e">M5</text>
+          <text x="420" y="135" text-anchor="middle" font-size="10" fill="#5e6e7e">${isEs ? 'Mes 5' : 'M5'}</text>
           <text x="420" y="${115 - heights[4]}" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d">$${vals[4].toFixed(2)}</text>
         `;
       }
@@ -886,12 +1541,19 @@
         
         drawProfitSVG();
         
-        showReadout('profit-out', `
+        const isEs = document.body.classList.contains('es');
+        const readoutHtml = isEs ? `
+          Ingresos por suscripción del mes 5 (del Paso 1): <strong>$${rev.toFixed(2)}</strong><br>
+          Costo de servidor del mes 5 (del Paso 2: 2^5 = 32): <strong>$${cost.toFixed(2)}</strong><br>
+          Ganancia neta = Ingresos - Costo de servidor:<br>
+          $${rev.toFixed(2)} - $${cost.toFixed(2)} = <strong>$${profit.toFixed(2)}</strong>
+        ` : `
           Month 5 Subscription Revenue (from Step 1): <strong>$${rev.toFixed(2)}</strong><br>
           Month 5 Server Cost (from Step 2: 2^5 = 32): <strong>$${cost.toFixed(2)}</strong><br>
           Net Profit = Revenue - Server Cost:<br>
           $${rev.toFixed(2)} - $${cost.toFixed(2)} = <strong>$${profit.toFixed(2)}</strong>
-        `);
+        `;
+        showReadout('profit-out', readoutHtml);
       }
 
       function drawProfitSVG() {
@@ -928,21 +1590,23 @@
           profitStroke = '#c45a3c';
         }
         
+        const isEs = document.body.classList.contains('es');
+        
         svg.innerHTML = `
-          <text x="260" y="22" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Month 5 Financial Breakdown</text>
+          <text x="260" y="22" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">${isEs ? 'Desglose financiero del mes 5' : 'Month 5 Financial Breakdown'}</text>
           
           <line x1="40" y1="${yBase}" x2="480" y2="${yBase}" stroke="#e2e7ec" stroke-width="2"/>
           
           <rect x="70" y="${yBase - revH}" width="80" height="${revH}" rx="4" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="1.5"/>
-          <text x="110" y="112" text-anchor="middle" font-size="10" fill="#5e6e7e" font-weight="600">Revenue</text>
+          <text x="110" y="112" text-anchor="middle" font-size="10" fill="#5e6e7e" font-weight="600">${isEs ? 'Ingresos' : 'Revenue'}</text>
           <text x="110" y="${yBase - revH - 6}" text-anchor="middle" font-size="9" font-weight="bold" fill="#1a6fb5">$${rev.toFixed(2)}</text>
           
           <rect x="220" y="${yBase - costH}" width="80" height="${costH}" rx="4" fill="#fdf3e0" stroke="#c9820f" stroke-width="1.5"/>
-          <text x="260" y="112" text-anchor="middle" font-size="10" fill="#5e6e7e" font-weight="600">Server Cost</text>
+          <text x="260" y="112" text-anchor="middle" font-size="10" fill="#5e6e7e" font-weight="600">${isEs ? 'Costo de servidor' : 'Server Cost'}</text>
           <text x="260" y="${yBase - costH - 6}" text-anchor="middle" font-size="9" font-weight="bold" fill="#c9820f">$${cost.toFixed(2)}</text>
           
           <rect x="370" y="${profitY}" width="80" height="${profitH}" rx="4" fill="${profitFill}" stroke="${profitStroke}" stroke-width="1.5"/>
-          <text x="410" y="112" text-anchor="middle" font-size="10" fill="#5e6e7e" font-weight="600">Net Profit</text>
+          <text x="410" y="112" text-anchor="middle" font-size="10" fill="#5e6e7e" font-weight="600">${isEs ? 'Ganancia neta' : 'Net Profit'}</text>
           <text x="410" y="${profitY - 6}" text-anchor="middle" font-size="9" font-weight="bold" fill="${profitStroke}">$${profit.toFixed(2)}</text>
         `;
       }
@@ -980,7 +1644,16 @@
         const diffServerCost = myServerCost - partnerServerCost;
         const diffProfit = myProfit - partnerProfit;
         
-        showReadout('partner-out', `
+        const isEs = document.body.classList.contains('es');
+        const readoutHtml = isEs ? `
+          <strong>Comparación del mes 5:</strong><br>
+          • <strong>Ingresos:</strong> Tú $${myRevenue.toFixed(2)} vs ${pName} $${partnerRevenue.toFixed(2)} 
+            (${diffRevenue >= 0 ? 'Tú ganas $' + diffRevenue.toFixed(2) + ' más' : pName + ' gana $' + Math.abs(diffRevenue).toFixed(2) + ' más'})<br>
+          • <strong>Costo de servidor:</strong> Tú $${myServerCost.toFixed(2)} vs ${pName} $${partnerServerCost.toFixed(2)}
+            (${diffServerCost <= 0 ? 'Tus servidores cuestan $' + Math.abs(diffServerCost).toFixed(2) + ' menos' : 'Los servidores de ' + pName + ' cuestan $' + diffServerCost.toFixed(2) + ' menos'})<br>
+          • <strong>Ganancia neta:</strong> Tú $${myProfit.toFixed(2)} vs ${pName} $${partnerProfit.toFixed(2)}
+            (${diffProfit >= 0 ? 'Te quedas con $' + diffProfit.toFixed(2) + ' más' : pName + ' se queda con $' + Math.abs(diffProfit).toFixed(2) + ' más'})
+        ` : `
           <strong>Month 5 Comparison:</strong><br>
           • <strong>Revenue:</strong> You $${myRevenue.toFixed(2)} vs ${pName} $${partnerRevenue.toFixed(2)} 
             (${diffRevenue >= 0 ? 'You make $' + diffRevenue.toFixed(2) + ' more' : pName + ' makes $' + Math.abs(diffRevenue).toFixed(2) + ' more'})<br>
@@ -988,7 +1661,8 @@
             (${diffServerCost <= 0 ? 'Your servers cost $' + Math.abs(diffServerCost).toFixed(2) + ' less' : pName + '\'s servers cost $' + diffServerCost.toFixed(2) + ' less'})<br>
           • <strong>Net Profit:</strong> You $${myProfit.toFixed(2)} vs ${pName} $${partnerProfit.toFixed(2)}
             (${diffProfit >= 0 ? 'You keep $' + diffProfit.toFixed(2) + ' more' : pName + ' keeps $' + Math.abs(diffProfit).toFixed(2) + ' more'})
-        `);
+        `;
+        showReadout('partner-out', readoutHtml);
       }
 
       function drawPartnerSVG() {
@@ -1009,10 +1683,12 @@
         const svg = document.getElementById('partner-svg');
         if (!svg) return;
         
+        const isEs = document.body.classList.contains('es');
+        
         if (isNaN(pStdPrice) || isNaN(pPremPrice) || isNaN(pStdSub) || isNaN(pPremSub)) {
           svg.innerHTML = `
             <text x="260" y="70" text-anchor="middle" font-size="13" fill="#5e6e7e" font-style="italic">
-              Enter your partner's numbers below to balance the scale
+              ${isEs ? 'Ingresa los números de tu compañero abajo para equilibrar la balanza' : "Enter your partner's numbers below to balance the scale"}
             </text>
           `;
           return;
@@ -1028,9 +1704,15 @@
           angle = Math.min(15, (Math.abs(diff) / Math.max(partnerProfit, 1)) * 15);
         }
         
+        const statusText = diff === 0 
+          ? (isEs ? '⚖️ ¡Ambos planes están perfectamente equilibrados!' : '⚖️ Both plans are perfectly balanced!')
+          : diff > 0 
+            ? (isEs ? '📈 ¡Tu aplicación es más rentable!' : '📈 Your app is more profitable!')
+            : (isEs ? `📈 ¡La aplicación de ${pName} es más rentable!` : `📈 ${pName}'s app is more profitable!`);
+        
         svg.innerHTML = `
           <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">
-            ⚖️ Net Profit Comparison (Month 5)
+            ${isEs ? '⚖️ Comparación de ganancias netas (Mes 5)' : '⚖️ Net Profit Comparison (Month 5)'}
           </text>
           
           <g transform="translate(260, 105)">
@@ -1044,7 +1726,7 @@
               <!-- Left pan (Mine) -->
               <line x1="-100" y1="0" x2="-100" y2="25" stroke="#5e6e7e" stroke-width="1.5" />
               <path d="M -125 25 L -75 25 L -85 32 L -115 32 Z" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="1.5" />
-              <text x="-100" y="45" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a6fb5">Mine: $${myProfit.toFixed(2)}</text>
+              <text x="-100" y="45" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a6fb5">${isEs ? 'Mío' : 'Mine'}: $${myProfit.toFixed(2)}</text>
               
               <!-- Right pan (Partner) -->
               <line x1="100" y1="0" x2="100" y2="25" stroke="#5e6e7e" stroke-width="1.5" />
@@ -1054,7 +1736,7 @@
           </g>
           
           <text x="260" y="48" text-anchor="middle" font-size="11" font-weight="bold" fill="${diff === 0 ? '#1e7d40' : '#c9820f'}">
-            ${diff === 0 ? '⚖️ Both plans are perfectly balanced!' : diff > 0 ? '📈 Your app is more profitable!' : `📈 ${pName}'s app is more profitable!`}
+            ${statusText}
           </text>
         `;
       }
@@ -1065,6 +1747,7 @@
         calcNetProfit();
         calcPartnerCompare();
         updateProgress();
+        updatePlaceholders(document.body.classList.contains('es'));
       }
 
       // ---- Report ----
@@ -1095,7 +1778,43 @@
         const partnerServerCostM5 = parseFloat(pMultiplier) * 32;
         const partnerProfit = partnerRevenue - partnerServerCostM5;
 
-        const lines = [
+        const isEs = document.body.classList.contains('es');
+        
+        const lines = isEs ? [
+          '═══ MOTOR DE PRECIOS DE APLICACIONES — PROYECTO UNIDAD 6 (Versión B) ═══',
+          '',
+          '📖 HABILIDADES MATEMÁTICAS UTILIZADAS: Expresiones, Exponentes, Sustitución, Ganancia neta',
+          '',
+          '📱 PASO 1 — INGRESOS POR SUSCRIPCIÓN',
+          `   Estándar: $${stdPrice}/mes × ${stdSub} suscriptores`,
+          `   Premium: $${premPrice}/mes × ${premSub} suscriptores`,
+          `   Expresión de ingresos = ${stdPrice}s + ${premPrice}p`,
+          `   Ingresos totales = $${myRevenue.toFixed(2)}`,
+          '',
+          '⚡ PASO 2 — EXPONENTE DE COSTO DE SERVIDOR',
+          `   Costo base de servidor: $${multiplier}`,
+          `   Expresión de costo de servidor = ${multiplier} × 2^m`,
+          `   Costo de servidor del mes 5 (2^5 = 32) = $${myServerCostM5.toFixed(2)}`,
+          `   Costo de servidor del mes objetivo ${targetMonth} = $${(parseFloat(multiplier) * Math.pow(2, parseInt(targetMonth))).toFixed(2)}`,
+          '',
+          '📈 PASO 3 — GANANCIA NETA',
+          `   Fórmula: Ganancia neta = Ingresos - Costo de servidor del mes 5`,
+          `   Ganancia neta = $${myRevenue.toFixed(2)} - $${myServerCostM5.toFixed(2)} = $${myProfit.toFixed(2)}`,
+          `   Reflexión sobre los niveles de referencia: ${reflectTiers}`,
+          '',
+          '👥 PASO 4 — COMPARACIÓN CON COMPAÑERO',
+          `   Nombre del compañero: ${pName}`,
+          `   Expresión de ingresos del compañero: ${pStdPrice}s + ${pPremPrice}p`,
+          `   Ingresos del compañero: $${partnerRevenue.toFixed(2)} | Costo de servidor: $${partnerServerCostM5.toFixed(2)}`,
+          `   Ganancia neta del compañero: $${partnerProfit.toFixed(2)}`,
+          `   Reflexión de comparación: ${reflectPartner}`,
+          '',
+          '✍️ MI INFORME / PROPUESTA DE PRECIOS:',
+          pitch,
+          '',
+          '═══════════════════════════════',
+          `Generado: ${new Date().toLocaleDateString()}`,
+        ] : [
           '═══ APP PRICING ENGINE — UNIT 6 PROJECT (Version B) ═══',
           '',
           '📖 MATH SKILLS USED: Expressions, Exponents, Substitution, Net Profit',
@@ -1138,22 +1857,24 @@
 
       function copyReport() {
         const txt = document.getElementById('reportBox').textContent;
+        const isEs = document.body.classList.contains('es');
         if (!txt) {
-          alert('Please click Generate Summary first.');
+          alert(isEs ? 'Por favor, primero haz clic en Generar resumen.' : 'Please click Generate Summary first.');
           return;
         }
-        navigator.clipboard?.writeText(txt).then(() => alert('Copied to clipboard!'));
+        navigator.clipboard?.writeText(txt).then(() => alert(isEs ? '¡Copiado al portapapeles!' : 'Copied to clipboard!'));
       }
 
       function downloadTxt() {
         const txt = document.getElementById('reportBox').textContent;
+        const isEs = document.body.classList.contains('es');
         if (!txt) {
-          alert('Please click Generate Summary first.');
+          alert(isEs ? 'Por favor, primero haz clic en Generar resumen.' : 'Please click Generate Summary first.');
           return;
         }
         const a = document.createElement('a');
         a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
-        a.download = 'app-pricing-analysis.txt';
+        a.download = isEs ? 'analisis-precios-aplicacion.txt' : 'app-pricing-analysis.txt';
         a.click();
       }
 

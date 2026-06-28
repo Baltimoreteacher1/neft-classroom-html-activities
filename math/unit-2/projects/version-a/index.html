@@ -49,7 +49,7 @@
       .level-bar {
         display: flex; gap: 10px; justify-content: center;
         background: rgba(255,255,255,.10); border-radius: 50px;
-        padding: 6px 10px; max-width: 400px; margin: 0 auto;
+        padding: 6px 10px; max-width: 680px; margin: 0 auto;
       }
       .level-btn {
         flex: 1; background: transparent; color: rgba(255,255,255,.75);
@@ -257,6 +257,10 @@
       .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
       .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
 
+      body.es .en-text { display: none !important; }
+      body.es .es-text { display: inline !important; }
+      span.es-text { display: none; }
+
       /* ---- Print ---- */
       @media print {
         .no-print { display: none !important; }
@@ -274,16 +278,18 @@
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
       <div class="hero-emoji">🧁</div>
-      <h1>Recipe Remix Bakery</h1>
-      <p class="hero-sub">Run your own bakery by using fraction division to scale recipes — step by step.</p>
+      <h1><span class="en-text">Recipe Remix Bakery</span><span class="es-text">Pastelería Recipe Remix</span></h1>
+      <p class="hero-sub"><span class="en-text">Run your own bakery by using fraction division to scale recipes — step by step.</span><span class="es-text">Dirige tu propia pastelería usando la división de fracciones para escalar recetas, paso a paso.</span></p>
       <div class="hero-tags">
-        <span class="tag gold">Unit 2 · Fractions</span>
+        <span class="tag gold"><span class="en-text">Unit 2 · Fractions</span><span class="es-text">Unidad 2 · Fracciones</span></span>
         <span class="tag">6.NS.1</span>
-        <span class="tag">Version A</span>
+        <span class="tag"><span class="en-text">Version A</span><span class="es-text">Versión A</span></span>
       </div>
       <div class="level-bar">
-        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
-        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)"><span class="en-text">🟢 Level 1 — With Support</span><span class="es-text">🟢 Nivel 1 — Con Apoyo</span></button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)"><span class="en-text">🔵 Level 2 — Challenge</span><span class="es-text">🔵 Nivel 2 — Desafío</span></button>
+        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
+        <button class="level-btn" id="btn-read" onclick="readAloud()">🔊 Read Aloud</button>
       </div>
     </header>
 
@@ -307,8 +313,8 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">Key Words</div>
-              <div class="card-sub">Learn these 4 math words before you begin</div>
+              <div class="card-title"><span class="en-text">Key Words</span><span class="es-text">Palabras Clave</span></div>
+              <div class="card-sub"><span class="en-text">Learn these 4 math words before you begin</span><span class="es-text">Aprende estas 4 palabras matemáticas antes de comenzar</span></div>
             </div>
           </div>
 
@@ -318,38 +324,39 @@
           <div class="vocab-grid">
             <div class="vocab-card">
               <div class="vocab-icon">🧁</div>
-              <div class="vocab-term">Fraction</div>
-              <div class="vocab-def">A number representing part of a whole, written with a numerator over a denominator.</div>
-              <div class="vocab-ex">e.g., 3/4 cup sugar</div>
+              <div class="vocab-term"><span class="en-text">Fraction</span><span class="es-text">Fracción</span></div>
+              <div class="vocab-def"><span class="en-text">A number representing part of a whole, written with a numerator over a denominator.</span><span class="es-text">Un número que representa parte de un todo, escrito con un numerador sobre un denominador.</span></div>
+              <div class="vocab-ex"><span class="en-text">e.g., 3/4 cup sugar</span><span class="es-text">ej. 3/4 taza de azúcar</span></div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🥄</div>
-              <div class="vocab-term">Unit Fraction</div>
-              <div class="vocab-def">A fraction where the top number (numerator) is exactly 1, representing one equal piece.</div>
-              <div class="vocab-ex">e.g., 1/8 cup serving size</div>
+              <div class="vocab-term"><span class="en-text">Unit Fraction</span><span class="es-text">Fracción Unitaria</span></div>
+              <div class="vocab-def"><span class="en-text">A fraction where the top number (numerator) is exactly 1, representing one equal piece.</span><span class="es-text">Una fracción donde el número superior (numerador) es exactamente 1, representando una parte igual.</span></div>
+              <div class="vocab-ex"><span class="en-text">e.g., 1/8 cup serving size</span><span class="es-text">ej. tamaño de porción de 1/8 taza</span></div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🥖</div>
-              <div class="vocab-term">Mixed Number</div>
-              <div class="vocab-def">A value combining a whole number and a proper fraction.</div>
-              <div class="vocab-ex">e.g., 2 1/2 feet of dough</div>
+              <div class="vocab-term"><span class="en-text">Mixed Number</span><span class="es-text">Número Mixto</span></div>
+              <div class="vocab-def"><span class="en-text">A value combining a whole number and a proper fraction.</span><span class="es-text">Un valor que combina un número entero y una fracción propia.</span></div>
+              <div class="vocab-ex"><span class="en-text">e.g., 2 1/2 feet of dough</span><span class="es-text">ej. 2 1/2 pies de masa</span></div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">➗</div>
-              <div class="vocab-term">Quotient</div>
-              <div class="vocab-def">The final answer when you divide. In fraction division, it shows "how many groups fit in".</div>
-              <div class="vocab-ex">e.g., 3/4 ÷ 1/8 = 6 portions</div>
+              <div class="vocab-term"><span class="en-text">Quotient</span><span class="es-text">Cociente</span></div>
+              <div class="vocab-def"><span class="en-text">The final answer when you divide. In fraction division, it shows "how many groups fit in".</span><span class="es-text">La respuesta final cuando divides. En la división de fracciones, muestra "cuántos grupos caben".</span></div>
+              <div class="vocab-ex"><span class="en-text">e.g., 3/4 ÷ 1/8 = 6 portions</span><span class="es-text">ej. 3/4 ÷ 1/8 = 6 porciones</span></div>
             </div>
           </div>
 
           <div class="instruct" style="margin-top:20px">
-            ✅ Read each math vocabulary card. Review the visual diagram above, then click <strong>Next Step</strong> to start portioning recipe ingredients.
+            <span class="en-text">✅ Read each math vocabulary card. Review the visual diagram above, then click <strong>Next Step</strong> to start portioning recipe ingredients.</span>
+            <span class="es-text">✅ Lee cada tarjeta de vocabulario matemático. Revisa el diagrama visual de arriba, luego haz clic en <strong>Siguiente Paso</strong> para comenzar a racionar los ingredientes de la receta.</span>
           </div>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" disabled>← Back</button>
-          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
+          <button class="nav-btn ghost" disabled><span class="en-text">← Back</span><span class="es-text">← Atrás</span></button>
+          <button class="nav-btn" onclick="goStep(2)"><span class="en-text">Next Step →</span><span class="es-text">Siguiente Paso →</span></button>
         </div>
       </div>
 
@@ -361,13 +368,14 @@
           <div class="card-header">
             <div class="card-icon">🧁</div>
             <div>
-              <div class="card-title">Step 1 — Portion Control</div>
-              <div class="card-sub">Divide a recipe amount by a portion serving size</div>
+              <div class="card-title"><span class="en-text">Step 1 — Portion Control</span><span class="es-text">Paso 1 — Control de Porciones</span></div>
+              <div class="card-sub"><span class="en-text">Divide a recipe amount by a portion serving size</span><span class="es-text">Divide la cantidad de una receta por el tamaño de porción de servicio</span></div>
             </div>
           </div>
 
           <div class="instruct">
-            <strong>Your job:</strong> Enter or select the total amount of an ingredient you have (dividend) and divide it by the portion size (divisor). Find the quotient to see how many portions you can serve.
+            <span class="en-text"><strong>Your job:</strong> Enter or select the total amount of an ingredient you have (dividend) and divide it by the portion size (divisor). Find the quotient to see how many portions you can serve.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Ingresa o selecciona la cantidad total de un ingrediente que tienes (dividendo) y divídela por el tamaño de la porción (divisor). Encuentra el cociente para ver cuántas porciones puedes servir.</span>
           </div>
 
           <!-- Dynamic SVG visual -->
@@ -377,19 +385,24 @@
 
           <!-- Level 1 instructions -->
           <div class="instruct lvl1-only">
-            🟢 <strong>Level 1 support:</strong> Choose a friendly combination like 3/4 cup sugar divided by 1/8 cup servings. Check the visual model above to see how exactly 6 servings fit!
+            <span class="en-text">🟢 <strong>Level 1 support:</strong> Choose a friendly combination like 3/4 cup sugar divided by 1/8 cup servings. Check the visual model above to see how exactly 6 servings fit!</span>
+            <span class="es-text">🟢 <strong>Apoyo de Nivel 1:</strong> Elige una combinación sencilla como 3/4 de taza de azúcar dividida por porciones de 1/8 de taza. ¡Revisa el modelo visual de arriba para ver cómo caben exactamente 6 porciones!</span>
           </div>
           <!-- Level 2 challenge instructions -->
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
-            Enter any custom fraction division below! (e.g. 5/6 cup total ÷ 1/3 cup serving size). Try unusual fractions to see the exact quotient and step-by-step reciprocal multiplication.
+            <span class="lvl2-label"><span class="en-text">LEVEL 2 CHALLENGE</span><span class="es-text">DESAFÍO DE NIVEL 2</span></span><br>
+            <span class="en-text">Enter any custom fraction division below! (e.g. 5/6 cup total ÷ 1/3 cup serving size). Try unusual fractions to see the exact quotient and step-by-step reciprocal multiplication.</span>
+            <span class="es-text">¡Ingresa cualquier división de fracciones personalizada a continuación! (por ejemplo, 5/6 de taza total ÷ 1/3 de taza de tamaño de porción). Intenta con fracciones inusuales para ver el cociente exacto y la multiplicación recíproca paso a paso.</span>
           </div>
 
           <!-- Inputs -->
           <div class="grid2">
             <!-- Level 1 selectors -->
             <div class="lvl1-only">
-              <label class="lbl" for="p1-dividend">🥣 Total Recipe Ingredient Amount (Cup)</label>
+              <label class="lbl" for="p1-dividend">
+                <span class="en-text">🥣 Total Recipe Ingredient Amount (Cup)</span>
+                <span class="es-text">🥣 Cantidad Total de Ingredientes de la Receta (Taza)</span>
+              </label>
               <select id="p1-dividend" onchange="calcPortions()">
                 <option value="3/4">3/4 cup (sugar)</option>
                 <option value="1/2">1/2 cup (butter)</option>
@@ -398,7 +411,10 @@
               </select>
             </div>
             <div class="lvl1-only">
-              <label class="lbl" for="p1-divisor">🥄 Portion Serving Size (Cup)</label>
+              <label class="lbl" for="p1-divisor">
+                <span class="en-text">🥄 Portion Serving Size (Cup)</span>
+                <span class="es-text">🥄 Tamaño de Porción de Servicio (Taza)</span>
+              </label>
               <select id="p1-divisor" onchange="calcPortions()">
                 <option value="1/8">1/8 cup portion</option>
                 <option value="1/4">1/4 cup portion</option>
@@ -409,46 +425,69 @@
 
             <!-- Level 2 inputs -->
             <div class="lvl2-only">
-              <label class="lbl">🥣 Total Recipe Amount (Dividend)</label>
+              <label class="lbl">
+                <span class="en-text">🥣 Total Recipe Amount (Dividend)</span>
+                <span class="es-text">🥣 Cantidad Total de la Receta (Dividendo)</span>
+              </label>
               <div class="grid2" style="margin-top:0;">
                 <div>
                   <input type="number" id="p1-div-num" min="1" placeholder="Numerator" oninput="calcPortions()">
-                  <div style="font-size:11px;color:var(--muted);text-align:center;">Numerator</div>
+                  <div style="font-size:11px;color:var(--muted);text-align:center;">
+                    <span class="en-text">Numerator</span>
+                    <span class="es-text">Numerador</span>
+                  </div>
                 </div>
                 <div>
                   <input type="number" id="p1-div-den" min="1" placeholder="Denominator" oninput="calcPortions()">
-                  <div style="font-size:11px;color:var(--muted);text-align:center;">Denominator</div>
+                  <div style="font-size:11px;color:var(--muted);text-align:center;">
+                    <span class="en-text">Denominator</span>
+                    <span class="es-text">Denominador</span>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="lvl2-only">
-              <label class="lbl">🥄 Portion Serving Size (Divisor)</label>
+              <label class="lbl">
+                <span class="en-text">🥄 Portion Serving Size (Divisor)</span>
+                <span class="es-text">🥄 Tamaño de Porción de Servicio (Divisor)</span>
+              </label>
               <div class="grid2" style="margin-top:0;">
                 <div>
                   <input type="number" id="p1-div-num2" min="1" placeholder="Numerator" oninput="calcPortions()">
-                  <div style="font-size:11px;color:var(--muted);text-align:center;">Numerator</div>
+                  <div style="font-size:11px;color:var(--muted);text-align:center;">
+                    <span class="en-text">Numerator</span>
+                    <span class="es-text">Numerador</span>
+                  </div>
                 </div>
                 <div>
                   <input type="number" id="p1-div-den2" min="1" placeholder="Denominator" oninput="calcPortions()">
-                  <div style="font-size:11px;color:var(--muted);text-align:center;">Denominator</div>
+                  <div style="font-size:11px;color:var(--muted);text-align:center;">
+                    <span class="en-text">Denominator</span>
+                    <span class="es-text">Denominador</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <button class="calc-btn" onclick="calcPortions()">🧮 Scale Portions</button>
+          <button class="calc-btn" onclick="calcPortions()">
+            <span class="en-text">🧮 Scale Portions</span>
+            <span class="es-text">🧮 Escalar Porciones</span>
+          </button>
           <div class="readout" id="portion-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>To divide fractions, multiply the first fraction (dividend) by the reciprocal of the second fraction (divisor).<br>
-            <strong>Formula:</strong> A/B ÷ C/D = A/B × D/C = (A × D) / (B × C).</p>
+            <summary><span class="en-text">Need a hint?</span><span class="es-text">¿Necesitas una sugerencia?</span></summary>
+            <p>
+              <span class="en-text">To divide fractions, multiply the first fraction (dividend) by the reciprocal of the second fraction (divisor).<br><strong>Formula:</strong> A/B ÷ C/D = A/B × D/C = (A × D) / (B × C).</span>
+              <span class="es-text">Para dividir fracciones, multiplica la primera fracción (dividendo) por el recíproco de la segunda fracción (divisor).<br><strong>Fórmula:</strong> A/B ÷ C/D = A/B × D/C = (A × D) / (B × C).</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
-          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(1)"><span class="en-text">← Back</span><span class="es-text">← Atrás</span></button>
+          <button class="nav-btn" onclick="goStep(3)"><span class="en-text">Next Step →</span><span class="es-text">Siguiente Paso →</span></button>
         </div>
       </div>
 

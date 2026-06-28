@@ -49,7 +49,7 @@
       .level-bar {
         display: flex; gap: 10px; justify-content: center;
         background: rgba(255,255,255,.10); border-radius: 50px;
-        padding: 6px 10px; max-width: 400px; margin: 0 auto;
+        padding: 6px 10px; max-width: 400px; margin: 0 auto 10px;
       }
       .level-btn {
         flex: 1; background: transparent; color: rgba(255,255,255,.75);
@@ -271,6 +271,11 @@
         body { background: #fff; }
         .card { box-shadow: none; border-color: #ccc; }
       }
+
+      /* ---- Bilingual Support CSS ---- */
+      body.es .en-text { display: none !important; }
+      body.es .es-text { display: inline !important; }
+      span.es-text { display: none; }
     </style>
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -281,16 +286,32 @@
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
       <div class="hero-emoji">📈</div>
-      <h1>Streaming Channel Growth Lab</h1>
-      <p class="hero-sub">Design a streaming channel, write its growth equation, and model variables on tables and graphs.</p>
+      <h1>
+        <span class="en-text">Streaming Channel Growth Lab</span>
+        <span class="es-text">Laboratorio de crecimiento de canal de streaming</span>
+      </h1>
+      <p class="hero-sub">
+        <span class="en-text">Design a streaming channel, write its growth equation, and model variables on tables and graphs.</span>
+        <span class="es-text">Diseña un canal de streaming, escribe su ecuación de crecimiento y modela variables en tablas y gráficas.</span>
+      </p>
       <div class="hero-tags">
-        <span class="tag gold">Unit 9 · Two-Variable Relationships</span>
+        <span class="tag gold">
+          <span class="en-text">Unit 9 · Two-Variable Relationships</span>
+          <span class="es-text">Unidad 9 · Relaciones de dos variables</span>
+        </span>
         <span class="tag">6.EE.9</span>
-        <span class="tag">Version A</span>
+        <span class="tag">
+          <span class="en-text">Version A</span>
+          <span class="es-text">Versión A</span>
+        </span>
       </div>
       <div class="level-bar">
         <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
         <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
+      </div>
+      <div class="level-bar" style="margin-top: 10px;">
+        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
+        <button class="level-btn" id="btn-read" onclick="readAloud()">🔊 Read Aloud</button>
       </div>
     </header>
 
@@ -314,8 +335,14 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">Key Words</div>
-              <div class="card-sub">Learn these 5 vocabulary terms before you begin</div>
+              <div class="card-title">
+                <span class="en-text">Key Words</span>
+                <span class="es-text">Palabras clave</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Learn these 5 vocabulary terms before you begin</span>
+                <span class="es-text">Aprende estos 5 términos de vocabulario antes de comenzar</span>
+              </div>
             </div>
           </div>
 
@@ -325,44 +352,96 @@
           <div class="vocab-grid">
             <div class="vocab-card">
               <div class="vocab-icon">🎮</div>
-              <div class="vocab-term">Independent Variable (x)</div>
-              <div class="vocab-def">The input variable that changes independently. In this lab, it is the number of weeks.</div>
-              <div class="vocab-ex">x = Time (Weeks)</div>
+              <div class="vocab-term">
+                <span class="en-text">Independent Variable (x)</span>
+                <span class="es-text">Variable independiente (x)</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The input variable that changes independently. In this lab, it is the number of weeks.</span>
+                <span class="es-text">La variable de entrada que cambia de forma independiente. En este laboratorio, es el número de semanas.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">x = Time (Weeks)</span>
+                <span class="es-text">x = Tiempo (Semanas)</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">📊</div>
-              <div class="vocab-term">Dependent Variable (y)</div>
-              <div class="vocab-def">The output variable that depends on the independent variable. In this lab, it is total subscribers.</div>
-              <div class="vocab-ex">y = Total Subscribers</div>
+              <div class="vocab-term">
+                <span class="en-text">Dependent Variable (y)</span>
+                <span class="es-text">Variable dependiente (y)</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The output variable that depends on the independent variable. In this lab, it is total subscribers.</span>
+                <span class="es-text">La variable de salida que depende de la variable independiente. En este laboratorio, es el total de suscriptores.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">y = Total Subscribers</span>
+                <span class="es-text">y = Total de suscriptores</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">⚡</div>
-              <div class="vocab-term">Constant of Proportionality (k)</div>
-              <div class="vocab-def">The constant rate at which the variables are related. Here, the weekly subscriber growth rate.</div>
-              <div class="vocab-ex">k = New Subs / Week</div>
+              <div class="vocab-term">
+                <span class="en-text">Constant of Proportionality (k)</span>
+                <span class="es-text">Constante de proporcionalidad (k)</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The constant rate at which the variables are related. Here, the weekly subscriber growth rate.</span>
+                <span class="es-text">La tasa constante a la que se relacionan las variables. Aquí, la tasa de crecimiento semanal de suscriptores.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">k = New Subs / Week</span>
+                <span class="es-text">k = Nuevos suscriptores / Semana</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">📐</div>
-              <div class="vocab-term">Equation</div>
-              <div class="vocab-def">A mathematical sentence showing y is equal to the rate k multiplied by the input x.</div>
-              <div class="vocab-ex">y = kx (e.g. y = 15x)</div>
+              <div class="vocab-term">
+                <span class="en-text">Equation</span>
+                <span class="es-text">Ecuación</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A mathematical sentence showing y is equal to the rate k multiplied by the input x.</span>
+                <span class="es-text">Una oración matemática que muestra que y es igual a la tasa k multiplicada por la entrada x.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">y = kx (e.g. y = 15x)</span>
+                <span class="es-text">y = kx (por ejemplo, y = 15x)</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">📍</div>
-              <div class="vocab-term">Coordinate Point</div>
-              <div class="vocab-def">An ordered pair (x, y) representing a week and the corresponding total subscribers.</div>
-              <div class="vocab-ex">Point: (3, 45)</div>
+              <div class="vocab-term">
+                <span class="en-text">Coordinate Point</span>
+                <span class="es-text">Punto de coordenadas</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">An ordered pair (x, y) representing a week and the corresponding total subscribers.</span>
+                <span class="es-text">Un par ordenado (x, y) que representa una semana y el total correspondiente de suscriptores.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">Point: (3, 45)</span>
+                <span class="es-text">Punto: (3, 45)</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct" style="margin-top:20px">
-            ✅ Read each math vocabulary word card and examine the graph diagram. When you're ready, click <strong>Next Step</strong>.
+            <span class="en-text">✅ Read each math vocabulary word card and examine the graph diagram. When you're ready, click <strong>Next Step</strong>.</span>
+            <span class="es-text">✅ Lee cada tarjeta de vocabulario matemático y examina la gráfica. Cuando estés listo, haz clic en <strong>Siguiente paso</strong>.</span>
           </div>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" disabled>← Back</button>
-          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
+          <button class="nav-btn ghost" disabled>
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(2)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -374,72 +453,140 @@
           <div class="card-header">
             <div class="card-icon pink">⚡</div>
             <div>
-              <div class="card-title">Step 1 — Write Your Equation</div>
-              <div class="card-sub">Identify variables and set your weekly growth rate</div>
+              <div class="card-title">
+                <span class="en-text">Step 1 — Write Your Equation</span>
+                <span class="es-text">Paso 1 — Escribe tu ecuación</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Identify variables and set your weekly growth rate</span>
+                <span class="es-text">Identifica las variables y establece tu tasa de crecimiento semanal</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct pink">
-            <strong>Your job:</strong> Enter a name for your streaming channel, pick a realistic weekly growth rate (k), and identify your independent and dependent variables.
+            <span class="en-text"><strong>Your job:</strong> Enter a name for your streaming channel, pick a realistic weekly growth rate (k), and identify your independent and dependent variables.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Ingresa un nombre para tu canal de streaming, elige una tasa de crecimiento semanal realista (k) e identifica tus variables independientes y dependientes.</span>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="c-topic">📺 Channel Topic / Name</label>
+              <label class="lbl" for="c-topic">
+                <span class="en-text">📺 Channel Topic / Name</span>
+                <span class="es-text">📺 Tema / Nombre del canal</span>
+              </label>
               <input type="text" id="c-topic" placeholder="e.g. Gaming Hub, Cooking Master, Guitar Lessons" />
             </div>
             <div>
-              <label class="lbl" for="c-rate">⚡ Weekly Growth Rate (k) — New subscribers per week</label>
+              <label class="lbl" for="c-rate">
+                <span class="en-text">⚡ Weekly Growth Rate (k) — New subscribers per week</span>
+                <span class="es-text">⚡ Tasa de crecimiento semanal (k) — Nuevos suscriptores por semana</span>
+              </label>
               <input type="number" id="c-rate" min="1" max="1000" placeholder="e.g. 15" oninput="updateTablePlaceholders()" />
             </div>
           </div>
 
           <!-- Level 1 Hint -->
           <div class="instruct lvl1-only" style="margin-top:14px;">
-            🟢 <strong>Level 1 Tip:</strong> Try picking a friendly growth rate like 15 or 25 subscribers per week.
+            <span class="en-text">🟢 <strong>Level 1 Tip:</strong> Try picking a friendly growth rate like 15 or 25 subscribers per week.</span>
+            <span class="es-text">🟢 <strong>Consejo del Nivel 1:</strong> Intenta elegir una tasa de crecimiento sencilla como 15 o 25 suscriptores por semana.</span>
           </div>
 
           <!-- Level 2 head start -->
           <div class="lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE</span>
-            <p style="font-size:14px;margin-bottom:8px;">Include a "head start" of starting subscribers before Week 1 (y-intercept, b). Your equation will be in the form <strong>y = kx + b</strong>.</p>
-            <label class="lbl" for="c-start">🚀 Head Start Subscribers (b)</label>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE</span>
+              <span class="es-text">DESAFÍO DEL NIVEL 2</span>
+            </span>
+            <p style="font-size:14px;margin-bottom:8px;">
+              <span class="en-text">Include a "head start" of starting subscribers before Week 1 (y-intercept, b). Your equation will be in the form <strong>y = kx + b</strong>.</span>
+              <span class="es-text">Incluye una "ventaja inicial" de suscriptores iniciales antes de la Semana 1 (intersección y, b). Tu ecuación estará en la forma <strong>y = kx + b</strong>.</span>
+            </p>
+            <label class="lbl" for="c-start">
+              <span class="en-text">🚀 Head Start Subscribers (b)</span>
+              <span class="es-text">🚀 Ventaja inicial de suscriptores (b)</span>
+            </label>
             <input type="number" id="c-start" min="0" placeholder="e.g. 50" oninput="updateTablePlaceholders()" />
           </div>
 
           <div class="grid2" style="margin-top: 14px;">
             <div>
-              <label class="lbl" for="v-indep">🧠 Which is the Independent Variable (x)?</label>
+              <label class="lbl" for="v-indep">
+                <span class="en-text">🧠 Which is the Independent Variable (x)?</span>
+                <span class="es-text">🧠 ¿Cuál es la variable independiente (x)?</span>
+              </label>
               <select id="v-indep">
-                <option value="">-- Select Variable --</option>
-                <option value="weeks">Time in Weeks</option>
-                <option value="subs">Total Subscribers</option>
-                <option value="rate">Weekly Growth Rate</option>
+                <option value="">
+                  <span class="en-text">-- Select Variable --</span>
+                  <span class="es-text">-- Seleccionar variable --</span>
+                </option>
+                <option value="weeks">
+                  <span class="en-text">Time in Weeks</span>
+                  <span class="es-text">Tiempo en semanas</span>
+                </option>
+                <option value="subs">
+                  <span class="en-text">Total Subscribers</span>
+                  <span class="es-text">Total de suscriptores</span>
+                </option>
+                <option value="rate">
+                  <span class="en-text">Weekly Growth Rate</span>
+                  <span class="es-text">Tasa de crecimiento semanal</span>
+                </option>
               </select>
             </div>
             <div>
-              <label class="lbl" for="v-dep">📊 Which is the Dependent Variable (y)?</label>
+              <label class="lbl" for="v-dep">
+                <span class="en-text">📊 Which is the Dependent Variable (y)?</span>
+                <span class="es-text">📊 ¿Cuál es la variable dependiente (y)?</span>
+              </label>
               <select id="v-dep">
-                <option value="">-- Select Variable --</option>
-                <option value="weeks">Time in Weeks</option>
-                <option value="subs">Total Subscribers</option>
-                <option value="rate">Weekly Growth Rate</option>
+                <option value="">
+                  <span class="en-text">-- Select Variable --</span>
+                  <span class="es-text">-- Seleccionar variable --</span>
+                </option>
+                <option value="weeks">
+                  <span class="en-text">Time in Weeks</span>
+                  <span class="es-text">Tiempo en semanas</span>
+                </option>
+                <option value="subs">
+                  <span class="en-text">Total Subscribers</span>
+                  <span class="es-text">Total de suscriptores</span>
+                </option>
+                <option value="rate">
+                  <span class="en-text">Weekly Growth Rate</span>
+                  <span class="es-text">Tasa de crecimiento semanal</span>
+                </option>
               </select>
             </div>
           </div>
 
-          <button class="calc-btn pink" onclick="verifyEquation()">⚡ Verify My Equation</button>
+          <button class="calc-btn pink" onclick="verifyEquation()">
+            <span class="en-text">⚡ Verify My Equation</span>
+            <span class="es-text">⚡ Verificar mi ecuación</span>
+          </button>
           <div class="readout" id="eq-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>Remember that the **Independent Variable (x)** changes on its own (Time in Weeks), and the **Dependent Variable (y)** depends on the input (Total Subscribers). The equation is written as **y = kx** where **k** is your weekly rate.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">Remember that the **Independent Variable (x)** changes on its own (Time in Weeks), and the **Dependent Variable (y)** depends on the input (Total Subscribers). The equation is written as **y = kx** where **k** is your weekly rate.</span>
+              <span class="es-text">Recuerda que la **variable independiente (x)** cambia por sí misma (Tiempo en semanas) y la **variable dependiente (y)** depende de la entrada (Total de suscriptores). La ecuación se escribe como **y = kx** donde **k** es tu tasa semanal.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
-          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(1)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(3)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -451,22 +598,41 @@
           <div class="card-header">
             <div class="card-icon">📊</div>
             <div>
-              <div class="card-title">Step 2 — Build Your Data Table</div>
-              <div class="card-sub">Evaluate y for each week from 0 to 5 using your equation</div>
+              <div class="card-title">
+                <span class="en-text">Step 2 — Build Your Data Table</span>
+                <span class="es-text">Paso 2 — Crea tu tabla de datos</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Evaluate y for each week from 0 to 5 using your equation</span>
+                <span class="es-text">Evalúa y para cada semana de 0 a 5 usando tu ecuación</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct">
-            <strong>Your job:</strong> Calculate the total subscriber count for each week from 0 to 5 based on your growth equation. Write the resulting values and the ordered coordinate pairs (x, y).
+            <span class="en-text"><strong>Your job:</strong> Calculate the total subscriber count for each week from 0 to 5 based on your growth equation. Write the resulting values and the ordered coordinate pairs (x, y).</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Calcula el recuento total de suscriptores para cada semana de 0 a 5 basándote en tu ecuación de crecimiento. Escribe los valores resultantes y los pares ordenados de coordenadas (x, y).</span>
           </div>
 
           <table class="data-table">
             <thead>
               <tr>
-                <th style="width: 20%;">Week (x) [Independent]</th>
-                <th style="width: 30%;">Calculation (k × x)</th>
-                <th style="width: 25%;">Total Subscribers (y) [Dependent]</th>
-                <th style="width: 25%;">Coordinate Pair (x, y)</th>
+                <th style="width: 20%;">
+                  <span class="en-text">Week (x) [Independent]</span>
+                  <span class="es-text">Semana (x) [Independiente]</span>
+                </th>
+                <th style="width: 30%;">
+                  <span class="en-text">Calculation (k × x)</span>
+                  <span class="es-text">Cálculo (k × x)</span>
+                </th>
+                <th style="width: 25%;">
+                  <span class="en-text">Total Subscribers (y) [Dependent]</span>
+                  <span class="es-text">Total de suscriptores (y) [Dependiente]</span>
+                </th>
+                <th style="width: 25%;">
+                  <span class="en-text">Coordinate Pair (x, y)</span>
+                  <span class="es-text">Par de coordenadas (x, y)</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -509,18 +675,33 @@
             </tbody>
           </table>
 
-          <button class="calc-btn" onclick="checkTable()">🧮 Check My Table</button>
+          <button class="calc-btn" onclick="checkTable()">
+            <span class="en-text">🧮 Check My Table</span>
+            <span class="es-text">🧮 Comprobar mi tabla</span>
+          </button>
           <div class="readout" id="table-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>For each week **x**, multiply it by your weekly growth rate **k**${document.getElementById('body')?.className === 'level-2' ? ' and add your head start b' : ''}. Format coordinate pairs exactly as **(x, y)** with no spaces. E.g. **(2,30)**.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">For each week **x**, multiply it by your weekly growth rate **k**${document.getElementById('body')?.className === 'level-2' ? ' and add your head start b' : ''}. Format coordinate pairs exactly as **(x, y)** with no spaces. E.g. **(2,30)**.</span>
+              <span class="es-text">Para cada semana **x**, multiplícala por tu tasa de crecimiento semanal **k**${document.getElementById('body')?.className === 'level-2' ? ' y suma tu ventaja inicial b' : ''}. Escribe los pares ordenados exactamente como **(x, y)** sin espacios. Ej. **(2,30)**.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
-          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(2)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(4)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -532,13 +713,20 @@
           <div class="card-header">
             <div class="card-icon gold">📈</div>
             <div>
-              <div class="card-title">Step 3 — Read &amp; Analyze Your Graph</div>
-              <div class="card-sub">Plot points and compare against real growth tiers</div>
+              <div class="card-title">
+                <span class="en-text">Step 3 — Read &amp; Analyze Your Graph</span>
+                <span class="es-text">Paso 3 — Lee y analiza tu gráfica</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Plot points and compare against real growth tiers</span>
+                <span class="es-text">Dibuja los puntos y compáralos con los niveles de crecimiento reales</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct gold">
-            <strong>Your job:</strong> Analyze the graph of your channel growth below and compare your metrics to real-world creator standards.
+            <span class="en-text"><strong>Your job:</strong> Analyze the graph of your channel growth below and compare your metrics to real-world creator standards.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Analiza la gráfica del crecimiento de tu canal a continuación y compara tus métricas con los estándares de creadores del mundo real.</span>
           </div>
 
           <!-- Dynamic Graph SVG container -->
@@ -547,67 +735,127 @@
           </div>
 
           <div style="margin-top:20px;">
-            <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin-bottom:6px;">🌎 Real-World Creator Growth Tiers</h3>
-            <p style="font-size:14px;color:var(--muted);margin-bottom:8px;">Real-world average monthly growth rates for streaming channels and creators:</p>
+            <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin-bottom:6px;">
+              <span class="en-text">🌎 Real-World Creator Growth Tiers</span>
+              <span class="es-text">🌎 Niveles de crecimiento de creadores en el mundo real</span>
+            </h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:8px;">
+              <span class="en-text">Real-world average monthly growth rates for streaming channels and creators:</span>
+              <span class="es-text">Tasas promedio de crecimiento mensual en el mundo real para canales de streaming y creadores:</span>
+            </p>
             
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Growth Tier</th>
-                  <th>Monthly Growth Rate</th>
-                  <th>Estimated Weekly Rate</th>
-                  <th>Description</th>
+                  <th>
+                    <span class="en-text">Growth Tier</span>
+                    <span class="es-text">Nivel de crecimiento</span>
+                  </th>
+                  <th>
+                    <span class="en-text">Monthly Growth Rate</span>
+                    <span class="es-text">Tasa de crecimiento mensual</span>
+                  </th>
+                  <th>
+                    <span class="en-text">Estimated Weekly Rate</span>
+                    <span class="es-text">Tasa semanal estimada</span>
+                  </th>
+                  <th>
+                    <span class="en-text">Description</span>
+                    <span class="es-text">Descripción</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td><strong>🎮 Hobbyist Creator</strong></td>
+                  <td><strong>
+                    <span class="en-text">🎮 Hobbyist Creator</span>
+                    <span class="es-text">🎮 Creador aficionado</span>
+                  </strong></td>
                   <td>10 – 50 / month</td>
                   <td>2 – 12 / week</td>
-                  <td>Growing as a fun hobby or side project.</td>
+                  <td>
+                    <span class="en-text">Growing as a fun hobby or side project.</span>
+                    <span class="es-text">Crece como un pasatiempo divertido o proyecto secundario.</span>
+                  </td>
                 </tr>
                 <tr>
-                  <td><strong>✨ Rising Star</strong></td>
+                  <td><strong>
+                    <span class="en-text">✨ Rising Star</span>
+                    <span class="es-text">✨ Estrella en ascenso</span>
+                  </strong></td>
                   <td>50 – 500 / month</td>
                   <td>12 – 115 / week</td>
-                  <td>Gaining active momentum and community.</td>
+                  <td>
+                    <span class="en-text">Gaining active momentum and community.</span>
+                    <span class="es-text">Ganando impulso activo y comunidad.</span>
+                  </td>
                 </tr>
                 <tr>
-                  <td><strong>👔 Professional Creator</strong></td>
+                  <td><strong>
+                    <span class="en-text">👔 Professional Creator</span>
+                    <span class="es-text">👔 Creador profesional</span>
+                  </strong></td>
                   <td>500 – 2,000 / month</td>
                   <td>115 – 460 / week</td>
-                  <td>Full-time streaming career benchmark.</td>
+                  <td>
+                    <span class="en-text">Full-time streaming career benchmark.</span>
+                    <span class="es-text">Punto de referencia para una carrera de streaming a tiempo completo.</span>
+                  </td>
                 </tr>
                 <tr>
-                  <td><strong>🔥 Viral Sensation</strong></td>
+                  <td><strong>
+                    <span class="en-text">🔥 Viral Sensation</span>
+                    <span class="es-text">🔥 Sensación viral</span>
+                  </strong></td>
                   <td>2,000+ / month</td>
                   <td>460+ / week</td>
-                  <td>Exponential viral growth.</td>
+                  <td>
+                    <span class="en-text">Exponential viral growth.</span>
+                    <span class="es-text">Crecimiento viral exponencial.</span>
+                  </td>
                 </tr>
               </tbody>
             </table>
 
             <div id="tier-callout" class="instruct gold" style="margin-top:16px;"></div>
 
-            <label class="lbl" for="world-reflect">🌎 Real-World Reflection: How realistic is your weekly growth rate for a brand new channel?</label>
+            <label class="lbl" for="world-reflect">
+              <span class="en-text">🌎 Real-World Reflection: How realistic is your weekly growth rate for a brand new channel?</span>
+              <span class="es-text">🌎 Reflexión sobre el mundo real: ¿Qué tan realista es tu tasa de crecimiento semanal para un canal completamente nuevo?</span>
+            </label>
             <textarea id="world-reflect" placeholder="Compare your rate to the tiers above..."></textarea>
           </div>
 
           <div style="margin-top:20px;">
-            <label class="lbl" for="q-origin">📍 Origin Analysis: What does the coordinate point (0,0) (or (0,b) for Level 2) represent in your channel plan?</label>
+            <label class="lbl" for="q-origin">
+              <span class="en-text">📍 Origin Analysis: What does the coordinate point (0,0) (or (0,b) for Level 2) represent in your channel plan?</span>
+              <span class="es-text">📍 Análisis del origen: ¿Qué representa el punto de coordenadas (0,0) (o (0,b) para el Nivel 2) en el plan de tu canal?</span>
+            </label>
             <textarea id="q-origin" placeholder="At Week 0..."></textarea>
 
-            <label class="lbl" for="q-steepness">📐 Slope Analysis: How does your growth rate k affect the steepness of the line? What would happen if your rate doubled?</label>
+            <label class="lbl" for="q-steepness">
+              <span class="en-text">📐 Slope Analysis: How does your growth rate k affect the steepness of the line? What would happen if your rate doubled?</span>
+              <span class="es-text">📐 Análisis de la pendiente: ¿Cómo afecta tu tasa de crecimiento k a la inclinación de la línea? ¿Qué pasaría si tu tasa se duplicara?</span>
+            </label>
             <textarea id="q-steepness" placeholder="The constant rate k represents..."></textarea>
 
-            <label class="lbl" for="q-milestone">🎯 Milestone Calculation: Show how to calculate the number of weeks required to reach 1,000 subscribers.</label>
+            <label class="lbl" for="q-milestone">
+              <span class="en-text">🎯 Milestone Calculation: Show how to calculate the number of weeks required to reach 1,000 subscribers.</span>
+              <span class="es-text">🎯 Cálculo del hito: Muestra cómo calcular el número de semanas requeridas para alcanzar 1,000 suscriptores.</span>
+            </label>
             <textarea id="q-milestone" placeholder="To reach 1,000 subscribers, I would..."></textarea>
           </div>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
-          <button class="nav-btn" onclick="goStep(5)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(3)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(5)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -619,44 +867,75 @@
           <div class="card-header">
             <div class="card-icon pink">👥</div>
             <div>
-              <div class="card-title">Step 4 — Compare With a Partner</div>
-              <div class="card-sub">Interview a classmate and compare your subscriber growth equations</div>
+              <div class="card-title">
+                <span class="en-text">Step 4 — Compare With a Partner</span>
+                <span class="es-text">Paso 4 — Comparar con un compañero</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Interview a classmate and compare your subscriber growth equations</span>
+                <span class="es-text">Entrevista a un compañero de clase y compara sus ecuaciones de crecimiento de suscriptores</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct pink">
-            <strong>Your job:</strong> Find a classmate, exchange your channel details, and compare your equations side-by-side.
+            <span class="en-text"><strong>Your job:</strong> Find a classmate, exchange your channel details, and compare your equations side-by-side.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Busca a un compañero de clase, intercambia los detalles de tu canal y compara tus ecuaciones una al lado de la otra.</span>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="p-name">👤 Partner's Name</label>
+              <label class="lbl" for="p-name">
+                <span class="en-text">👤 Partner's Name</span>
+                <span class="es-text">👤 Nombre del compañero</span>
+              </label>
               <input type="text" id="p-name" placeholder="e.g. Taylor" />
             </div>
             <div>
-              <label class="lbl" for="p-rate">⚡ Partner's Weekly Growth Rate (kp)</label>
+              <label class="lbl" for="p-rate">
+                <span class="en-text">⚡ Partner's Weekly Growth Rate (kp)</span>
+                <span class="es-text">⚡ Tasa de crecimiento semanal del compañero (kp)</span>
+              </label>
               <input type="number" id="p-rate" min="1" placeholder="e.g. 20" />
             </div>
           </div>
 
           <div class="lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE</span>
-            <label class="lbl" for="p-start">🚀 Partner's Starting Subscribers (bp)</label>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE</span>
+              <span class="es-text">DESAFÍO DEL NIVEL 2</span>
+            </span>
+            <label class="lbl" for="p-start">
+              <span class="en-text">🚀 Partner's Starting Subscribers (bp)</span>
+              <span class="es-text">🚀 Suscriptores iniciales del compañero (bp)</span>
+            </label>
             <input type="number" id="p-start" min="0" placeholder="e.g. 30" />
           </div>
 
-          <button class="calc-btn pink" onclick="comparePeer()">📊 Compare Our Channels</button>
+          <button class="calc-btn pink" onclick="comparePeer()">
+            <span class="en-text">📊 Compare Our Channels</span>
+            <span class="es-text">📊 Comparar nuestros canales</span>
+          </button>
           <div class="readout" id="peer-out"></div>
 
           <div style="margin-top:18px;">
-            <label class="lbl" for="peer-reflect">👥 Peer Reflection: Explain whose line is steeper on the graph and what that means mathematically.</label>
+            <label class="lbl" for="peer-reflect">
+              <span class="en-text">👥 Peer Reflection: Explain whose line is steeper on the graph and what that means mathematically.</span>
+              <span class="es-text">👥 Reflexión del compañero: Explica qué línea es más inclinada en la gráfica y qué significa esto matemáticamente.</span>
+            </label>
             <textarea id="peer-reflect" placeholder="My partner's growth rate is ___ which is..."></textarea>
           </div>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
-          <button class="nav-btn green" onclick="goStep(6)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(4)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="goStep(6)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -668,87 +947,211 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">Step 5 — Presentation Pitch &amp; Submit</div>
-              <div class="card-sub">Create your channel presentation pitch, verify checklist, and print your report</div>
+              <div class="card-title">
+                <span class="en-text">Step 5 — Presentation Pitch &amp; Submit</span>
+                <span class="es-text">Paso 5 — Presentación del discurso y envío</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Create your channel presentation pitch, verify checklist, and print your report</span>
+                <span class="es-text">Crea el discurso de presentación de tu canal, verifica la lista de verificación e imprime tu informe</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct green">
-            <strong>Your job:</strong> Draft a 60-second elevator pitch explaining your channel's value proposition, growth rate, and milestone forecast to a potential brand sponsor.
+            <span class="en-text"><strong>Your job:</strong> Draft a 60-second elevator pitch explaining your channel's value proposition, growth rate, and milestone forecast to a potential brand sponsor.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Redacta un discurso de presentación de 60 segundos explicando la propuesta de valor de tu canal, la tasa de crecimiento y el pronóstico de hitos a un patrocinador de marca potencial.</span>
           </div>
 
-          <label class="lbl" for="pitch">✍️ Sponsor Pitch (Write 3–5 sentences using your actual growth metrics)</label>
+          <label class="lbl" for="pitch">
+            <span class="en-text">✍️ Sponsor Pitch (Write 3–5 sentences using your actual growth metrics)</span>
+            <span class="es-text">✍️ Discurso para patrocinador (Escribe de 3 a 5 oraciones usando tus métricas de crecimiento reales)</span>
+          </label>
           <textarea id="pitch" placeholder="Hello! I run a streaming channel called... In the first 5 weeks, we grew to... My growth rate is..."></textarea>
 
           <!-- Checklist -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">✅ Completion Checklist</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+            <span class="en-text">✅ Completion Checklist</span>
+            <span class="es-text">✅ Lista de verificación de finalización</span>
+          </h3>
           <ul class="checklist" id="checklist">
-            <li><input type="checkbox" id="ck1" /> I identified my independent (x) and dependent (y) variables.</li>
-            <li><input type="checkbox" id="ck2" /> I wrote my subscriber growth equation.</li>
-            <li><input type="checkbox" id="ck3" /> I built and checked my week 0 to 5 data table.</li>
-            <li><input type="checkbox" id="ck4" /> I analyzed my graph and identified my growth tier.</li>
-            <li><input type="checkbox" id="ck5" /> I compared equations and rates with a partner.</li>
-            <li><input type="checkbox" id="ck6" /> I wrote a sponsor pitch using my actual metrics.</li>
+            <li><input type="checkbox" id="ck1" /> <span>
+              <span class="en-text">I identified my independent (x) and dependent (y) variables.</span>
+              <span class="es-text">Identifiqué mis variables independiente (x) y dependiente (y).</span>
+            </span></li>
+            <li><input type="checkbox" id="ck2" /> <span>
+              <span class="en-text">I wrote my subscriber growth equation.</span>
+              <span class="es-text">Escribí mi ecuación de crecimiento de suscriptores.</span>
+            </span></li>
+            <li><input type="checkbox" id="ck3" /> <span>
+              <span class="en-text">I built and checked my week 0 to 5 data table.</span>
+              <span class="es-text">Creé y comprobé mi tabla de datos de las semanas 0 a 5.</span>
+            </span></li>
+            <li><input type="checkbox" id="ck4" /> <span>
+              <span class="en-text">I analyzed my graph and identified my growth tier.</span>
+              <span class="es-text">Analicé mi gráfica e identifiqué mi nivel de crecimiento.</span>
+            </span></li>
+            <li><input type="checkbox" id="ck5" /> <span>
+              <span class="en-text">I compared equations and rates with a partner.</span>
+              <span class="es-text">Comparé ecuaciones y tasas con un compañero.</span>
+            </span></li>
+            <li><input type="checkbox" id="ck6" /> <span>
+              <span class="en-text">I wrote a sponsor pitch using my actual metrics.</span>
+              <span class="es-text">Escribí un discurso para patrocinador usando mis métricas reales.</span>
+            </span></li>
           </ul>
 
           <!-- Rubric -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">📊 Scoring Rubric</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+            <span class="en-text">📊 Scoring Rubric</span>
+            <span class="es-text">📊 Rúbrica de evaluación</span>
+          </h3>
           <table class="rubric">
             <thead>
               <tr>
-                <th>Skill</th>
-                <th class="score-4">4 — Expert</th>
-                <th class="score-3">3 — Proficient</th>
-                <th class="score-2">2 — Developing</th>
+                <th>
+                  <span class="en-text">Skill</span>
+                  <span class="es-text">Habilidad</span>
+                </th>
+                <th class="score-4">
+                  <span class="en-text">4 — Expert</span>
+                  <span class="es-text">4 — Experto</span>
+                </th>
+                <th class="score-3">
+                  <span class="en-text">3 — Proficient</span>
+                  <span class="es-text">3 — Competente</span>
+                </th>
+                <th class="score-2">
+                  <span class="en-text">2 — Developing</span>
+                  <span class="es-text">2 — En desarrollo</span>
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><strong>Variables &amp; Equations (6.EE.9)</strong></td>
-                <td>Accurately identifies variables and constructs equations with full conceptual reasoning.</td>
-                <td>Correctly identifies variables and writes y = kx equation.</td>
-                <td>Switches variables or writes incorrect equation.</td>
+                <td><strong>
+                  <span class="en-text">Variables &amp; Equations (6.EE.9)</span>
+                  <span class="es-text">Variables y ecuaciones (6.EE.9)</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Accurately identifies variables and constructs equations with full conceptual reasoning.</span>
+                  <span class="es-text">Identifica con precisión las variables y construye ecuaciones con un razonamiento conceptual completo.</span>
+                </td>
+                <td>
+                  <span class="en-text">Correctly identifies variables and writes y = kx equation.</span>
+                  <span class="es-text">Identifica correctamente las variables y escribe la ecuación y = kx.</span>
+                </td>
+                <td>
+                  <span class="en-text">Switches variables or writes incorrect equation.</span>
+                  <span class="es-text">Intercambia las variables o escribe una ecuación incorrecta.</span>
+                </td>
               </tr>
               <tr>
-                <td><strong>Data Table (6.EE.9)</strong></td>
-                <td>Complete table with 100% correct calculations and coordinate pairs.</td>
-                <td>Table is complete with mostly correct calculations.</td>
-                <td>Table contains multiple calculation errors.</td>
+                <td><strong>
+                  <span class="en-text">Data Table (6.EE.9)</span>
+                  <span class="es-text">Tabla de datos (6.EE.9)</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Complete table with 100% correct calculations and coordinate pairs.</span>
+                  <span class="es-text">Tabla completa con cálculos y pares de coordenadas 100% correctos.</span>
+                </td>
+                <td>
+                  <span class="en-text">Table is complete with mostly correct calculations.</span>
+                  <span class="es-text">La tabla está completa con cálculos mayormente correctos.</span>
+                </td>
+                <td>
+                  <span class="en-text">Table contains multiple calculation errors.</span>
+                  <span class="es-text">La tabla contiene múltiples errores de cálculo.</span>
+                </td>
               </tr>
               <tr>
-                <td><strong>Graph Analysis (6.EE.9)</strong></td>
-                <td>Accurately interprets coordinates, origin, and rate steepness.</td>
-                <td>Answers most graph analysis questions correctly.</td>
-                <td>Struggles to interpret the origin or rate of change.</td>
+                <td><strong>
+                  <span class="en-text">Graph Analysis (6.EE.9)</span>
+                  <span class="es-text">Análisis de la gráfica (6.EE.9)</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Accurately interprets coordinates, origin, and rate steepness.</span>
+                  <span class="es-text">Interpreta con precisión las coordenadas, el origen y la inclinación de la tasa.</span>
+                </td>
+                <td>
+                  <span class="en-text">Answers most graph analysis questions correctly.</span>
+                  <span class="es-text">Responde correctamente a la mayoría de las preguntas de análisis de la gráfica.</span>
+                </td>
+                <td>
+                  <span class="en-text">Struggles to interpret the origin or rate of change.</span>
+                  <span class="es-text">Tiene dificultades para interpretar el origen o la tasa de cambio.</span>
+                </td>
               </tr>
               <tr>
-                <td><strong>Partner Comparison</strong></td>
-                <td>Thoroughly compares growth equations, steepness, and projections.</td>
-                <td>Completes comparison data and reflects on differences.</td>
-                <td>Comparison is incomplete or missing.</td>
+                <td><strong>
+                  <span class="en-text">Partner Comparison</span>
+                  <span class="es-text">Comparación con un compañero</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Thoroughly compares growth equations, steepness, and projections.</span>
+                  <span class="es-text">Compara detalladamente las ecuaciones de crecimiento, la inclinación y las proyecciones.</span>
+                </td>
+                <td>
+                  <span class="en-text">Completes comparison data and reflects on differences.</span>
+                  <span class="es-text">Completa los datos de comparación y reflexiona sobre las diferencias.</span>
+                </td>
+                <td>
+                  <span class="en-text">Comparison is incomplete or missing.</span>
+                  <span class="es-text">La comparación está incompleta o falta.</span>
+                </td>
               </tr>
               <tr>
-                <td><strong>Presentation Pitch</strong></td>
-                <td>Compelling pitch using actual rates and forecasts to attract sponsors.</td>
-                <td>Writes basic pitch using some channel metrics.</td>
-                <td>Pitch is missing or does not use mathematical evidence.</td>
+                <td><strong>
+                  <span class="en-text">Presentation Pitch</span>
+                  <span class="es-text">Discurso de presentación</span>
+                </strong></td>
+                <td>
+                  <span class="en-text">Compelling pitch using actual rates and forecasts to attract sponsors.</span>
+                  <span class="es-text">Discurso convincente usando tasas y pronósticos reales para atraer patrocinadores.</span>
+                </td>
+                <td>
+                  <span class="en-text">Writes basic pitch using some channel metrics.</span>
+                  <span class="es-text">Escribe un discurso básico usando algunas métricas del canal.</span>
+                </td>
+                <td>
+                  <span class="en-text">Pitch is missing or does not use mathematical evidence.</span>
+                  <span class="es-text">El discurso falta o no utiliza evidencia matemática.</span>
+                </td>
               </tr>
             </tbody>
           </table>
 
           <!-- Action buttons -->
           <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
-            <button class="calc-btn" onclick="buildReport()">📝 Generate Summary</button>
-            <button class="export-btn" onclick="copyReport()">📋 Copy</button>
-            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
-            <button class="export-btn" onclick="window.print()">🖨️ Print</button>
+            <button class="calc-btn" onclick="buildReport()">
+              <span class="en-text">📝 Generate Summary</span>
+              <span class="es-text">📝 Generar resumen</span>
+            </button>
+            <button class="export-btn" onclick="copyReport()">
+              <span class="en-text">📋 Copy</span>
+              <span class="es-text">📋 Copiar</span>
+            </button>
+            <button class="export-btn" onclick="downloadTxt()">
+              <span class="en-text">⬇️ Download .txt</span>
+              <span class="es-text">⬇️ Descargar .txt</span>
+            </button>
+            <button class="export-btn" onclick="window.print()">
+              <span class="en-text">🖨️ Print</span>
+              <span class="es-text">🖨️ Imprimir</span>
+            </button>
           </div>
           <pre class="report-box" id="reportBox"></pre>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(5)">← Back</button>
-          <button class="nav-btn green" onclick="alert('Congratulations! 🎉 Show this completed wizard and your generated growth report to your teacher.')">🎉 Complete Wizard</button>
+          <button class="nav-btn ghost" onclick="goStep(5)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="completeWizard()">
+            <span class="en-text">🎉 Complete Wizard</span>
+            <span class="es-text">🎉 Completar asistente</span>
+          </button>
         </div>
       </div>
 
@@ -799,6 +1202,14 @@
         { id: 5, label: 'Compare', icon: '👥' },
         { id: 6, label: 'Finish', icon: '🏆' },
       ];
+      const STEPS_ES = {
+        'Key Words': 'Palabras clave',
+        'Equation': 'Ecuación',
+        'Data Table': 'Tabla de datos',
+        'Read Graph': 'Analizar gráfica',
+        'Compare': 'Comparar',
+        'Finish': 'Finalizar'
+      };
       let currentStep = 1;
       const visited = new Set([1]);
 
@@ -814,12 +1225,14 @@
 
       // ---- Build step trail ----
       function buildTrail() {
+        const isEs = document.body.classList.contains('es');
         const trail = document.getElementById('stepTrail');
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
+          const label = isEs ? (STEPS_ES[s.label] || s.label) : s.label;
           return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id - 1}</span>
-            <span class="s-label">${s.label}</span>
+            <span class="s-label">${label}</span>
           </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
         }).join('');
       }
@@ -843,9 +1256,11 @@
       }
 
       function updateProgress() {
+        const isEs = document.body.classList.contains('es');
         const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
         document.getElementById('progFill').style.width = pct + '%';
-        document.getElementById('progLabel').textContent = `Step ${currentStep - 1} of 5`;
+        const stepNum = currentStep - 1;
+        document.getElementById('progLabel').textContent = isEs ? `Paso ${stepNum} de 5` : `Step ${stepNum} of 5`;
       }
 
       // ---- Math helpers ----
@@ -880,35 +1295,59 @@
         
         const vIndep = document.getElementById('v-indep').value;
         const vDep = document.getElementById('v-dep').value;
+        const isEs = document.body.classList.contains('es');
         
         if (isNaN(k) || k < 1) {
-          showReadout('eq-out', `<strong style="color:var(--coral);">⚠️ Error:</strong> Please enter a weekly growth rate of at least 1 subscriber per week.`);
+          const errMsg = isEs 
+            ? `<strong style="color:var(--coral);">⚠️ Error:</strong> Por favor ingresa una tasa de crecimiento semanal de al menos 1 suscriptor por semana.`
+            : `<strong style="color:var(--coral);">⚠️ Error:</strong> Please enter a weekly growth rate of at least 1 subscriber per week.`;
+          showReadout('eq-out', errMsg);
           return;
         }
         
         if (vIndep === "" || vDep === "") {
-          showReadout('eq-out', `<strong style="color:var(--coral);">⚠️ Error:</strong> Please identify both the Independent (x) and Dependent (y) variables.`);
+          const errMsg = isEs
+            ? `<strong style="color:var(--coral);">⚠️ Error:</strong> Por favor identifica las variables independiente (x) y dependiente (y).`
+            : `<strong style="color:var(--coral);">⚠️ Error:</strong> Please identify both the Independent (x) and Dependent (y) variables.`;
+          showReadout('eq-out', errMsg);
           return;
         }
         
         if (vIndep !== "weeks" || vDep !== "subs") {
-          showReadout('eq-out', `
-            <strong style="color:var(--coral);">❌ Variables are Incorrect</strong><br>
-            Remember: The independent variable (x) is what changes on its own (Time in Weeks). The dependent variable (y) depends on the input (Total Subscribers). Try switching them!
-          `);
+          const errMsg = isEs
+            ? `
+              <strong style="color:var(--coral);">❌ Las variables son incorrectas</strong><br>
+              Recuerda: La variable independiente (x) es la que cambia por sí misma (Tiempo en semanas). La variable dependiente (y) depende de la entrada (Total de suscriptores). ¡Intenta intercambiarlas!
+            `
+            : `
+              <strong style="color:var(--coral);">❌ Variables are Incorrect</strong><br>
+              Remember: The independent variable (x) is what changes on its own (Time in Weeks). The dependent variable (y) depends on the input (Total Subscribers). Try switching them!
+            `;
+          showReadout('eq-out', errMsg);
           return;
         }
         
         const eqStr = lvl === 1 ? `y = ${k}x` : `y = ${k}x + ${b}`;
-        showReadout('eq-out', `
-          <strong style="color:var(--green-lt); background:var(--green); padding:2px 6px; border-radius:4px;">✅ Equation Verified!</strong><br>
-          Your equation is: <strong style="font-size:18px;color:#fbcfe8;">${eqStr}</strong><br>
-          - <strong>x</strong> represents Time in Weeks<br>
-          - <strong>y</strong> represents Total Subscribers<br>
-          - <strong>${k}</strong> is the growth rate per week.<br>
-          ${lvl === 2 ? `- <strong>${b}</strong> is the starting head start subscribers.<br>` : ''}
-          <small style="color:var(--muted);display:block;margin-top:6px;">This equation shows a ${lvl === 1 ? 'proportional' : 'non-proportional'} relationship because it ${lvl === 1 ? 'starts at (0,0)' : 'starts at (0,' + b + ') instead of (0,0)'}.</small>
-        `);
+        const okMsg = isEs
+          ? `
+            <strong style="color:var(--green-lt); background:var(--green); padding:2px 6px; border-radius:4px;">✅ ¡Ecuación verificada!</strong><br>
+            Tu ecuación es: <strong style="font-size:18px;color:#fbcfe8;">${eqStr}</strong><br>
+            - <strong>x</strong> representa el Tiempo en Semanas<br>
+            - <strong>y</strong> representa el Total de Suscriptores<br>
+            - <strong>${k}</strong> es la tasa de crecimiento por semana.<br>
+            ${lvl === 2 ? `- <strong>${b}</strong> es la ventaja inicial de suscriptores.<br>` : ''}
+            <small style="color:var(--muted);display:block;margin-top:6px;">Esta ecuación muestra una relación ${lvl === 1 ? 'proporcional' : 'no proporcional'} porque ${lvl === 1 ? 'comienza en (0,0)' : 'comienza en (0,' + b + ') en lugar de (0,0)'}.</small>
+          `
+          : `
+            <strong style="color:var(--green-lt); background:var(--green); padding:2px 6px; border-radius:4px;">✅ Equation Verified!</strong><br>
+            Your equation is: <strong style="font-size:18px;color:#fbcfe8;">${eqStr}</strong><br>
+            - <strong>x</strong> represents Time in Weeks<br>
+            - <strong>y</strong> represents Total Subscribers<br>
+            - <strong>${k}</strong> is the growth rate per week.<br>
+            ${lvl === 2 ? `- <strong>${b}</strong> is the starting head start subscribers.<br>` : ''}
+            <small style="color:var(--muted);display:block;margin-top:6px;">This equation shows a ${lvl === 1 ? 'proportional' : 'non-proportional'} relationship because it ${lvl === 1 ? 'starts at (0,0)' : 'starts at (0,' + b + ') instead of (0,0)'}.</small>
+          `;
+        showReadout('eq-out', okMsg);
         
         updateTablePlaceholders();
       }
@@ -918,6 +1357,7 @@
         const k = parseInt(document.getElementById('c-rate').value) || CONFIG.defaultGrowthRate;
         const lvl = document.getElementById('body').className === 'level-2' ? 2 : 1;
         const b = lvl === 2 ? (parseInt(document.getElementById('c-start').value) || 0) : 0;
+        const isEs = document.body.classList.contains('es');
         
         let errors = [];
         for (let w = 0; w <= 5; w++) {
@@ -934,19 +1374,19 @@
           
           let rowErr = [];
           if (isNaN(userVal)) {
-            rowErr.push("missing subscribers");
+            rowErr.push(isEs ? "faltan suscriptores" : "missing subscribers");
           } else if (userVal !== expectedVal) {
-            rowErr.push(`incorrect subscribers (expected ${expectedVal})`);
+            rowErr.push(isEs ? `suscriptores incorrectos (se esperaba ${expectedVal})` : `incorrect subscribers (expected ${expectedVal})`);
           }
           
           if (!userPair) {
-            rowErr.push("missing coordinate pair");
+            rowErr.push(isEs ? "falta el par de coordenadas" : "missing coordinate pair");
           } else if (userPair !== expectedPair) {
-            rowErr.push(`incorrect coordinate pair (expected ${expectedPair})`);
+            rowErr.push(isEs ? `par de coordenadas incorrecto (se esperaba ${expectedPair})` : `incorrect coordinate pair (expected ${expectedPair})`);
           }
           
           if (rowErr.length > 0) {
-            errors.push(`Week ${w}: ${rowErr.join(', ')}`);
+            errors.push(isEs ? `Semana ${w}: ${rowErr.join(', ')}` : `Week ${w}: ${rowErr.join(', ')}`);
             subInput.style.borderColor = 'var(--coral)';
             pairInput.style.borderColor = 'var(--coral)';
           } else {
@@ -956,7 +1396,14 @@
         }
         
         if (errors.length > 0) {
-          showReadout('table-out', `
+          showReadout('table-out', isEs ? `
+            <strong style="color:var(--coral);">⚠️ Falló la verificación de la tabla</strong><br>
+            Por favor revisa las siguientes filas:<br>
+            <ul style="margin-left:20px;margin-top:6px;font-size:14px;color:#fecdd3;">
+              ${errors.map(e => `<li>${e}</li>`).join('')}
+            </ul>
+            <span style="font-size:13px;color:var(--muted);display:block;margin-top:8px;">Pista: Multiplica tu tasa de crecimiento semanal <strong>${k}</strong> por el número de semana <strong>x</strong>${lvl === 2 ? ` y suma tus suscriptores iniciales <strong>${b}</strong>` : ''}.</span>
+          ` : `
             <strong style="color:var(--coral);">⚠️ Table Verification Failed</strong><br>
             Please check the following rows:<br>
             <ul style="margin-left:20px;margin-top:6px;font-size:14px;color:#fecdd3;">
@@ -965,7 +1412,10 @@
             <span style="font-size:13px;color:var(--muted);display:block;margin-top:8px;">Hint: Multiply your weekly growth rate <strong>${k}</strong> by the week number <strong>x</strong>${lvl === 2 ? ` and add your starting subscribers <strong>${b}</strong>` : ''}.</span>
           `);
         } else {
-          showReadout('table-out', `
+          showReadout('table-out', isEs ? `
+            <strong style="color:var(--green-lt); background:var(--green); padding:2px 6px; border-radius:4px;">✅ ¡Verificación de la tabla aprobada!</strong><br>
+            ¡Excelente trabajo! Todos tus recuentos de suscriptores y pares de coordenadas calculados son 100% correctos.
+          ` : `
             <strong style="color:var(--green-lt); background:var(--green); padding:2px 6px; border-radius:4px;">✅ Table Verification Passed!</strong><br>
             Excellent job! All of your calculated subscriber counts and coordinate pairs are 100% correct.
           `);
@@ -981,6 +1431,13 @@
         const maxVal = k * 5 + b;
         const roundedMax = Math.ceil(maxVal / 10) * 10 || 10;
         
+        const isEs = document.body.classList.contains('es');
+        const graphTitle = isEs ? "Gráfica de crecimiento del canal de streaming" : "Streaming Channel Growth Graph";
+        const weeksLabel = isEs ? "Semanas (x, Variable independiente)" : "Weeks (x, Independent Variable)";
+        const subsLabel = isEs ? "Suscriptores (y, Variable dependiente)" : "Subscribers (y, Dependent Variable)";
+        const propLegend = isEs ? `y = ${k}x (Prop)` : `y = ${k}x (Prop)`;
+        const nonPropLegend = isEs ? `y = ${k}x + ${b} (No prop)` : `y = ${k}x + ${b} (Non-Prop)`;
+
         let svg = `<svg class="visual-svg" width="520" height="280" viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">`;
         
         svg += `<style>
@@ -1000,7 +1457,7 @@
           </marker>
         </defs>`;
         
-        svg += `<text x="260" y="25" text-anchor="middle" class="title-label">Streaming Channel Growth Graph</text>`;
+        svg += `<text x="260" y="25" text-anchor="middle" class="title-label">${graphTitle}</text>`;
         
         const padLeft = 60;
         const padRight = 40;
@@ -1026,8 +1483,8 @@
         svg += `<line x1="${padLeft}" y1="${280 - padBottom}" x2="${520 - padRight + 15}" y2="${280 - padBottom}" class="axis" marker-end="url(#arrow)" />`;
         svg += `<line x1="${padLeft}" y1="${280 - padBottom}" x2="${padLeft}" y2="${padTop - 15}" class="axis" marker-end="url(#arrow)" />`;
         
-        svg += `<text x="${padLeft + graphW/2}" y="${280 - padBottom + 36}" text-anchor="middle" class="title-label" style="fill: var(--purple); font-size:11px;">Weeks (x, Independent Variable)</text>`;
-        svg += `<text x="${16}" y="${padTop + graphH/2}" text-anchor="middle" class="title-label" style="fill: var(--pink); font-size:11px;" transform="rotate(-90 16 ${padTop + graphH/2})">Subscribers (y, Dependent Variable)</text>`;
+        svg += `<text x="${padLeft + graphW/2}" y="${280 - padBottom + 36}" text-anchor="middle" class="title-label" style="fill: var(--purple); font-size:11px;">${weeksLabel}</text>`;
+        svg += `<text x="${16}" y="${padTop + graphH/2}" text-anchor="middle" class="title-label" style="fill: var(--pink); font-size:11px;" transform="rotate(-90 16 ${padTop + graphH/2})">${subsLabel}</text>`;
         
         let pointsProp = [];
         for (let w = 0; w <= 5; w++) {
@@ -1071,9 +1528,9 @@
           
           svg += `<rect x="360" y="45" width="110" height="40" rx="5" fill="#f8fafc" stroke="#e2e7ec" stroke-width="1"/>`;
           svg += `<line x1="365" y1="55" x2="385" y2="55" class="prop-line" stroke-dasharray="2,2" stroke-width="2" opacity="0.7"/>`;
-          svg += `<text x="390" y="58" class="axis-label" style="font-size:8px;">y = ${k}x (Prop)</text>`;
+          svg += `<text x="390" y="58" class="axis-label" style="font-size:8px;">${propLegend}</text>`;
           svg += `<line x1="365" y1="72" x2="385" y2="72" class="nonprop-line" stroke-width="2"/>`;
-          svg += `<text x="390" y="75" class="axis-label" style="font-size:8px;">y = ${k}x + ${b} (Non-Prop)</text>`;
+          svg += `<text x="390" y="75" class="axis-label" style="font-size:8px;">${nonPropLegend}</text>`;
         }
         
         svg += `</svg>`;
@@ -1083,32 +1540,47 @@
       function calculateTier() {
         const k = parseInt(document.getElementById('c-rate').value) || CONFIG.defaultGrowthRate;
         const monthly = k * 4.33;
+        const isEs = document.body.classList.contains('es');
+        
         let tier = "";
         let tierDesc = "";
         let emoji = "";
         
         if (monthly < 50) {
-          tier = "Hobbyist Creator";
-          tierDesc = "Your channel is growing steadily at a hobbyist pace. Great for beginning creators!";
+          tier = isEs ? "Creador aficionado" : "Hobbyist Creator";
+          tierDesc = isEs 
+            ? "Tu canal está creciendo de manera constante a un ritmo de aficionado. ¡Excelente para creadores principiantes!"
+            : "Your channel is growing steadily at a hobbyist pace. Great for beginning creators!";
           emoji = "🎮";
         } else if (monthly < 500) {
-          tier = "Rising Star";
-          tierDesc = "You are a Rising Star! Building a dedicated community week over week.";
+          tier = isEs ? "Estrella en ascenso" : "Rising Star";
+          tierDesc = isEs 
+            ? "¡Eres una estrella en ascenso! Construyendo una comunidad dedicada semana tras semana."
+            : "You are a Rising Star! Building a dedicated community week over week.";
           emoji = "✨";
         } else if (monthly < 2000) {
-          tier = "Professional Creator";
-          tierDesc = "Professional benchmark! High weekly demands matching full-time creators.";
+          tier = isEs ? "Creador profesional" : "Professional Creator";
+          tierDesc = isEs 
+            ? "¡Punto de referencia profesional! Altas exigencias semanales que coinciden con creadores a tiempo completo."
+            : "Professional benchmark! High weekly demands matching full-time creators.";
           emoji = "👔";
         } else {
-          tier = "Viral Sensation";
-          tierDesc = "Viral growth! Exponential metrics, attract sponsors rapidly.";
+          tier = isEs ? "Sensación viral" : "Viral Sensation";
+          tierDesc = isEs 
+            ? "¡Crecimiento viral! Métricas exponenciales, atrae patrocinadores rápidamente."
+            : "Viral growth! Exponential metrics, attract sponsors rapidly.";
           emoji = "🔥";
         }
         
+        const tierHeader = isEs ? `Nivel de crecimiento: ${tier}` : `Growth Tier: ${tier}`;
+        const tierBody = isEs 
+          ? `Tu tasa semanal de <strong>${k} suscriptores/semana</strong> es aproximadamente <strong>${Math.round(monthly)} suscriptores/mes</strong>.`
+          : `Your weekly rate of <strong>${k} subscribers/week</strong> is approximately <strong>${Math.round(monthly)} subscribers/month</strong>.`;
+
         document.getElementById('tier-callout').innerHTML = `
           <div style="font-size:24px;margin-bottom:6px;">${emoji}</div>
-          <strong style="font-size:16px;color:var(--navy);">Growth Tier: ${tier}</strong><br>
-          Your weekly rate of <strong>${k} subscribers/week</strong> is approximately <strong>${Math.round(monthly)} subscribers/month</strong>.<br>
+          <strong style="font-size:16px;color:var(--navy);">${tierHeader}</strong><br>
+          ${tierBody}<br>
           <p style="font-size:14px;color:var(--muted);margin-top:6px;font-style:italic;">${tierDesc}</p>
         `;
       }
@@ -1119,23 +1591,33 @@
         const lvl = document.getElementById('body').className === 'level-2' ? 2 : 1;
         const b = lvl === 2 ? (parseInt(document.getElementById('c-start').value) || 0) : 0;
         
-        const pName = document.getElementById('p-name').value || 'Partner';
+        const pName = document.getElementById('p-name').value || (document.body.classList.contains('es') ? 'Compañero' : 'Partner');
         const kp = parseInt(document.getElementById('p-rate').value);
         const bp = lvl === 2 ? (parseInt(document.getElementById('p-start').value) || 0) : 0;
+        const isEs = document.body.classList.contains('es');
         
         if (isNaN(kp) || kp < 1) {
-          showReadout('peer-out', `<strong style="color:var(--coral);">⚠️ Error:</strong> Please enter your partner's weekly growth rate to run comparison.`);
+          const errMsg = isEs 
+            ? `<strong style="color:var(--coral);">⚠️ Error:</strong> Por favor ingresa la tasa de crecimiento semanal de tu compañero para realizar la comparación.`
+            : `<strong style="color:var(--coral);">⚠️ Error:</strong> Please enter your partner's weekly growth rate to run comparison.`;
+          showReadout('peer-out', errMsg);
           return;
         }
         
         const diffK = Math.abs(k - kp);
         let speedText = '';
         if (k > kp) {
-          speedText = `Your channel is growing faster than <strong>${pName}</strong> by <strong>${diffK}</strong> subscribers per week.`;
+          speedText = isEs 
+            ? `Tu canal está creciendo más rápido que el de <strong>${pName}</strong> por <strong>${diffK}</strong> suscriptores por semana.`
+            : `Your channel is growing faster than <strong>${pName}</strong> by <strong>${diffK}</strong> subscribers per week.`;
         } else if (kp > k) {
-          speedText = `<strong>${pName}</strong>'s channel is growing faster than yours by <strong>${diffK}</strong> subscribers per week.`;
+          speedText = isEs 
+            ? `El canal de <strong>${pName}</strong> está creciendo más rápido que el tuyo por <strong>${diffK}</strong> suscriptores por semana.`
+            : `<strong>${pName}</strong>'s channel is growing faster than yours by <strong>${diffK}</strong> subscribers per week.`;
         } else {
-          speedText = `Both channels are growing at the exact same rate!`;
+          speedText = isEs 
+            ? `¡Ambos canales están creciendo exactamente al mismo ritmo!`
+            : `Both channels are growing at the exact same rate!`;
         }
         
         const myW5 = k * 5 + b;
@@ -1145,11 +1627,23 @@
         const myWeeks = k > 0 ? ((milestone - b) / k).toFixed(1) : 'Infinity';
         const peerWeeks = kp > 0 ? ((milestone - bp) / kp).toFixed(1) : 'Infinity';
         
-        let milestoneText = `To reach <strong>${milestone.toLocaleString()}</strong> subscribers:<br>
-          - Your channel will take <strong>${myWeeks}</strong> weeks.<br>
-          - <strong>${pName}</strong>'s channel will take <strong>${peerWeeks}</strong> weeks.`;
+        let milestoneText = isEs 
+          ? `Para alcanzar <strong>${milestone.toLocaleString()}</strong> suscriptores:<br>
+            - Tu canal tardará <strong>${myWeeks}</strong> semanas.<br>
+            - El canal de <strong>${pName}</strong> tardará <strong>${peerWeeks}</strong> semanas.`
+          : `To reach <strong>${milestone.toLocaleString()}</strong> subscribers:<br>
+            - Your channel will take <strong>${myWeeks}</strong> weeks.<br>
+            - <strong>${pName}</strong>'s channel will take <strong>${peerWeeks}</strong> weeks.`;
           
-        let html = `
+        let html = isEs ? `
+          <strong>📊 Resultados de la comparación con el compañero:</strong><br>
+          ${speedText}<br>
+          ${milestoneText}<br><br>
+          <strong>Comparación en la Semana 5:</strong><br>
+          - Tú: <strong>${myW5}</strong> suscriptores.<br>
+          - <strong>${pName}</strong>: <strong>${peerW5}</strong> suscriptores.<br>
+          <div id="partner-graph-container" style="margin-top:14px;"></div>
+        ` : `
           <strong>📊 Partner Comparison Results:</strong><br>
           ${speedText}<br>
           ${milestoneText}<br><br>
@@ -1178,6 +1672,13 @@
         const maxVal = Math.max(myMax, peerMax);
         const roundedMax = Math.ceil(maxVal / 10) * 10 || 10;
         
+        const isEs = document.body.classList.contains('es');
+        const graphTitle = isEs ? "Comparación de crecimiento del canal" : "Channel Growth Comparison";
+        const weeksLabel = isEs ? "Semanas (x)" : "Weeks (x)";
+        const subsLabel = isEs ? "Suscriptores (y)" : "Subscribers (y)";
+        const youLegend = isEs ? `Tú (k=${k})` : `You (k=${k})`;
+        const partnerLegend = isEs ? `Compañero (k=${kp})` : `Partner (k=${kp})`;
+
         let svg = `<svg class="visual-svg" width="520" height="280" viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">`;
         
         svg += `<style>
@@ -1197,7 +1698,7 @@
           </marker>
         </defs>`;
         
-        svg += `<text x="260" y="25" text-anchor="middle" class="title-label">Channel Growth Comparison</text>`;
+        svg += `<text x="260" y="25" text-anchor="middle" class="title-label">${graphTitle}</text>`;
         
         const padLeft = 60;
         const padRight = 40;
@@ -1223,8 +1724,8 @@
         svg += `<line x1="${padLeft}" y1="${280 - padBottom}" x2="${520 - padRight + 15}" y2="${280 - padBottom}" class="axis" marker-end="url(#arrow)" />`;
         svg += `<line x1="${padLeft}" y1="${280 - padBottom}" x2="${padLeft}" y2="${padTop - 15}" class="axis" marker-end="url(#arrow)" />`;
         
-        svg += `<text x="${padLeft + graphW/2}" y="${280 - padBottom + 36}" text-anchor="middle" class="title-label" style="fill: var(--purple); font-size:11px;">Weeks (x)</text>`;
-        svg += `<text x="${16}" y="${padTop + graphH/2}" text-anchor="middle" class="title-label" style="fill: var(--pink); font-size:11px;" transform="rotate(-90 16 ${padTop + graphH/2})">Subscribers (y)</text>`;
+        svg += `<text x="${padLeft + graphW/2}" y="${280 - padBottom + 36}" text-anchor="middle" class="title-label" style="fill: var(--purple); font-size:11px;">${weeksLabel}</text>`;
+        svg += `<text x="${16}" y="${padTop + graphH/2}" text-anchor="middle" class="title-label" style="fill: var(--pink); font-size:11px;" transform="rotate(-90 16 ${padTop + graphH/2})">${subsLabel}</text>`;
         
         let myPoints = [];
         for (let w = 0; w <= 5; w++) {
@@ -1260,9 +1761,9 @@
         
         svg += `<rect x="360" y="45" width="110" height="40" rx="5" fill="#f8fafc" stroke="#e2e7ec" stroke-width="1"/>`;
         svg += `<line x1="365" y1="55" x2="385" y2="55" class="my-line" stroke-width="2"/>`;
-        svg += `<text x="390" y="58" class="axis-label" style="font-size:8px; font-weight:bold;">You (k=${k})</text>`;
+        svg += `<text x="390" y="58" class="axis-label" style="font-size:8px; font-weight:bold;">${youLegend}</text>`;
         svg += `<line x1="365" y1="72" x2="385" y2="72" class="peer-line" stroke-width="2"/>`;
-        svg += `<text x="390" y="75" class="axis-label" style="font-size:8px; font-weight:bold;">Partner (k=${kp})</text>`;
+        svg += `<text x="390" y="75" class="axis-label" style="font-size:8px; font-weight:bold;">${partnerLegend}</text>`;
         
         svg += `</svg>`;
         document.getElementById('partner-graph-container').innerHTML = svg;
@@ -1270,7 +1771,8 @@
 
       // ---- Report Generator ----
       function buildReport() {
-        const chTopic = document.getElementById('c-topic')?.value || 'My Streaming Channel';
+        const isEs = document.body.classList.contains('es');
+        const chTopic = document.getElementById('c-topic')?.value || (isEs ? 'Mi canal de streaming' : 'My Streaming Channel');
         const k = parseInt(document.getElementById('c-rate').value) || CONFIG.defaultGrowthRate;
         const lvl = document.getElementById('body').className === 'level-2' ? 2 : 1;
         const b = lvl === 2 ? (parseInt(document.getElementById('c-start').value) || 0) : 0;
@@ -1280,7 +1782,7 @@
         const qGraphMilestone = document.getElementById('q-milestone')?.value || '';
         const worldReflect = document.getElementById('world-reflect')?.value || '';
         
-        const pName = document.getElementById('p-name')?.value || 'Partner';
+        const pName = document.getElementById('p-name')?.value || (isEs ? 'Compañero' : 'Partner');
         const kp = parseInt(document.getElementById('p-rate').value) || 0;
         const bp = lvl === 2 ? (parseInt(document.getElementById('p-start').value) || 0) : 0;
         const pReflect = document.getElementById('peer-reflect')?.value || '';
@@ -1296,9 +1798,48 @@
         const myMilestone = k > 0 ? ((CONFIG.targetMilestone - b) / k).toFixed(1) : '—';
         const peerMilestone = kp > 0 ? ((CONFIG.targetMilestone - bp) / kp).toFixed(1) : '—';
         
-        const lines = [
+        const levelLabel = isEs 
+          ? `Nivel: Nivel ${lvl} (${lvl === 1 ? 'Con apoyo' : 'Desafío'})`
+          : `Level: Level ${lvl} (${lvl === 1 ? 'With Support' : 'Challenge'})`;
+
+        const lines = isEs ? [
+          `═══ LABORATORIO DE CRECIMIENTO DEL CANAL DE STREAMING — PROYECTO DE LA UNIDAD 9 (Versión A) ═══`,
+          levelLabel,
+          `Tema del canal: ${chTopic}`,
+          ``,
+          `⚡ PASO 1 — ESCRIBE TU ECUACIÓN`,
+          `   Tasa de crecimiento semanal (k): ${k} suscriptores/semana`,
+          lvl === 2 ? `   Suscriptores iniciales (b): ${b} suscriptores` : null,
+          `   Ecuación de crecimiento: ${myEq}`,
+          `   Variable independiente (x): Tiempo en semanas`,
+          `   Variable dependiente (y): Total de suscriptores`,
+          ``,
+          `📊 PASO 2 — TABLA DE DATOS (Semanas 0 a 5)`,
+          lvl === 1 
+            ? `   Semana 0: 0 sus. | Semana 1: ${k} sus. | Semana 2: ${2*k} sus. | Semana 3: ${3*k} sus. | Semana 4: ${4*k} sus. | Semana 5: ${5*k} sus.`
+            : `   Semana 0: ${b} sus. | Semana 1: ${k+b} sus. | Semana 2: ${2*k+b} sus. | Semana 3: ${3*k+b} sus. | Semana 4: ${4*k+b} sus. | Semana 5: ${5*k+b} sus.`,
+          ``,
+          `📈 PASO 3 — ANÁLISIS DE LA GRÁFICA`,
+          `   Origen / Punto de inicio: ${qGraphOrigin}`,
+          `   Inclinación de la línea: ${qGraphSteep}`,
+          `   Cálculo del hito (1,000 sus.): ${qGraphMilestone}`,
+          `   Comparación con niveles de crecimiento reales: ${worldReflect}`,
+          ``,
+          `👥 PASO 4 — COMPARACIÓN CON EL COMPAÑERO`,
+          `   Nombre del compañero: ${pName}`,
+          `   Ecuación del compañero: ${peerEq}`,
+          `   Suscriptores en la semana 5: Tú (${myW5}) vs. ${pName} (${peerW5})`,
+          `   Semanas para 1,000 suscriptores: Tú (${myMilestone} semanas) vs. ${pName} (${peerMilestone} semanas)`,
+          `   Reflexión: ${pReflect}`,
+          ``,
+          `🏆 PASO 5 — DISCURSO DE PRESENTACIÓN PARA EL PATROCINADOR`,
+          pitch || '(no se escribió ningún discurso)',
+          ``,
+          `═══════════════════════════════`,
+          `Generado: ${new Date().toLocaleDateString()}`
+        ] : [
           `═══ STREAMING CHANNEL GROWTH LAB — UNIT 9 PROJECT (Version A) ═══`,
-          `Level: Level ${lvl} (${lvl === 1 ? 'With Support' : 'Challenge'})`,
+          levelLabel,
           `Channel Topic: ${chTopic}`,
           ``,
           `⚡ STEP 1 — WRITE YOUR EQUATION`,
@@ -1331,10 +1872,10 @@
           ``,
           `═══════════════════════════════`,
           `Generated: ${new Date().toLocaleDateString()}`
-        ].filter(l => l !== null);
+        ];
         
         const box = document.getElementById('reportBox');
-        box.textContent = lines.join('\n');
+        box.textContent = lines.filter(l => l !== null).join('\n');
         box.classList.add('show');
       }
 
@@ -1349,6 +1890,144 @@
         a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
         a.download = 'streaming-channel-growth-report.txt';
         a.click();
+      }
+
+      // ---- Bilingual & TTS Support Functions ----
+      function toggleLanguage() {
+        const isEs = document.body.classList.toggle('es');
+        
+        // Update language button text
+        const btnLang = document.getElementById('btn-lang');
+        if (btnLang) {
+          btnLang.innerHTML = isEs ? '🌐 Idioma: ES' : '🌐 Language: EN';
+        }
+        
+        const btnRead = document.getElementById('btn-read');
+        if (btnRead) {
+          // If speaking, cancel it and reset text
+          if (window.speechSynthesis && window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+            isSpeaking = false;
+          }
+          btnRead.innerHTML = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+        }
+
+        // Update dynamically generated elements and placeholders
+        updateDynamicLanguageTexts();
+      }
+
+      function updateDynamicLanguageTexts() {
+        const isEs = document.body.classList.contains('es');
+        
+        const placeholders = {
+          'c-topic': isEs ? 'por ejemplo, Centro de videojuegos, Maestro de cocina, Lecciones de guitarra' : 'e.g. Gaming Hub, Cooking Master, Guitar Lessons',
+          'c-rate': isEs ? 'por ejemplo, 15' : 'e.g. 15',
+          'c-start': isEs ? 'por ejemplo, 50' : 'e.g. 50',
+          'world-reflect': isEs ? 'Compara tu tasa con los niveles de arriba...' : 'Compare your rate to the tiers above...',
+          'q-origin': isEs ? 'En la semana 0...' : 'At Week 0...',
+          'q-steepness': isEs ? 'La tasa constante k representa...' : 'The constant rate k represents...',
+          'q-milestone': isEs ? 'Para llegar a 1,000 suscriptores, yo...' : 'To reach 1,000 subscribers, I would...',
+          'p-name': isEs ? 'por ejemplo, Taylor' : 'e.g. Taylor',
+          'p-rate': isEs ? 'por ejemplo, 20' : 'e.g. 20',
+          'p-start': isEs ? 'por ejemplo, 30' : 'e.g. 30',
+          'peer-reflect': isEs ? 'La tasa de crecimiento de mi compañero es ___ la cual es...' : "My partner's growth rate is ___ which is...",
+          'pitch': isEs ? '¡Hola! Dirijo un canal de streaming llamado... En las primeras 5 semanas, crecimos a... Mi tasa de crecimiento es...' : 'Hello! I run a streaming channel called... In the first 5 weeks, we grew to... My growth rate is...'
+        };
+        
+        for (const [id, text] of Object.entries(placeholders)) {
+          const el = document.getElementById(id);
+          if (el) el.placeholder = text;
+        }
+
+        const btnLv1 = document.getElementById('btn-lv1');
+        const btnLv2 = document.getElementById('btn-lv2');
+        if (btnLv1) {
+          btnLv1.innerHTML = isEs ? '🟢 Nivel 1 — Con apoyo' : '🟢 Level 1 — With Support';
+        }
+        if (btnLv2) {
+          btnLv2.innerHTML = isEs ? '🔵 Nivel 2 — Desafío' : '🔵 Level 2 — Challenge';
+        }
+
+        updateTablePlaceholders();
+        drawGraph();
+        calculateTier();
+        if (document.getElementById('partner-graph-container')) {
+          drawPartnerGraph();
+        }
+        buildTrail();
+        updateProgress();
+      }
+
+      let isSpeaking = false;
+      let speechUtterance = null;
+
+      function readAloud() {
+        if (!window.speechSynthesis) {
+          alert("Sorry, your browser does not support the Web Speech API.");
+          return;
+        }
+
+        const btnRead = document.getElementById('btn-read');
+        const isEs = document.body.classList.contains('es');
+
+        if (isSpeaking) {
+          window.speechSynthesis.cancel();
+          isSpeaking = false;
+          if (btnRead) btnRead.innerHTML = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+          return;
+        }
+
+        const activePanel = document.querySelector('.step-panel.active');
+        if (!activePanel) return;
+
+        // Clone the active step panel to parse text content safely
+        const tempDiv = activePanel.cloneNode(true);
+        
+        // Remove input controls, SVGs, styles, buttons, navigation and hints
+        const selectorsToRemove = ['input', 'select', 'textarea', 'button', 'details', 'svg', 'style', 'script', '.nav-row', '.no-print'];
+        selectorsToRemove.forEach(selector => {
+          tempDiv.querySelectorAll(selector).forEach(el => el.remove());
+        });
+
+        // Filter text spans by active language
+        if (isEs) {
+          tempDiv.querySelectorAll('.en-text').forEach(el => el.remove());
+        } else {
+          tempDiv.querySelectorAll('.es-text').forEach(el => el.remove());
+        }
+
+        let text = tempDiv.textContent.trim().replace(/\s+/g, ' ');
+        if (!text) {
+          text = isEs ? "No hay texto visible para leer." : "No visible text to read.";
+        }
+
+        speechUtterance = new SpeechSynthesisUtterance(text);
+        speechUtterance.lang = isEs ? 'es-ES' : 'en-US';
+
+        speechUtterance.onend = () => {
+          isSpeaking = false;
+          if (btnRead) btnRead.innerHTML = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+        };
+
+        speechUtterance.onerror = () => {
+          isSpeaking = false;
+          if (btnRead) btnRead.innerHTML = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+        };
+
+        isSpeaking = true;
+        if (btnRead) btnRead.innerHTML = isEs ? '⏹️ Detener' : '⏹️ Stop Aloud';
+        
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(speechUtterance);
+      }
+
+      function completeWizard() {
+        const isEs = document.body.classList.contains('es');
+        if (isEs) {
+          alert('¡Felicidades! 🎉 Muestra este asistente completado y tu informe de crecimiento generado a tu profesor(a).');
+        } else {
+          alert('Congratulations! 🎉 Show this completed wizard and your generated growth report to your teacher.');
+        }
       }
 
       // ---- Init ----

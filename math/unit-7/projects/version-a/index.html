@@ -373,6 +373,9 @@
         body { background: #fff; }
         .card { box-shadow: none; border-color: #ccc; }
       }
+      body.es .en-text { display: none !important; }
+      body.es .es-text { display: inline !important; }
+      span.es-text { display: none; }
     </style>
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -383,17 +386,36 @@
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
       <div class="hero-emoji">🎡</div>
-      <h1>Theme Park Map Designer</h1>
-      <p class="hero-sub">Design your own theme park map on a coordinate plane — step by step.</p>
+      <h1>
+        <span class="en-text">Theme Park Map Designer</span>
+        <span class="es-text">Diseñador de Mapas de Parque de Atracciones</span>
+      </h1>
+      <p class="hero-sub">
+        <span class="en-text">Design your own theme park map on a coordinate plane — step by step.</span>
+        <span class="es-text">Diseña tu propio mapa de parque de atracciones en un plano cartesiano, paso a paso.</span>
+      </p>
       <div class="hero-tags">
-        <span class="tag gold">Unit 7 · Geometry &amp; Coordinate Plane</span>
+        <span class="tag gold">
+          <span class="en-text">Unit 7 · Geometry &amp; Coordinate Plane</span>
+          <span class="es-text">Unidad 7 · Geometría y Plano Cartesiano</span>
+        </span>
         <span class="tag">6.NS.6</span>
         <span class="tag">6.NS.8</span>
         <span class="tag">Version A</span>
       </div>
+      <div class="level-bar" style="margin-bottom: 10px;">
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
+          🟢 <span class="en-text">Level 1 — With Support</span>
+          <span class="es-text">Nivel 1 — Con Apoyo</span>
+        </button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">
+          🔵 <span class="en-text">Level 2 — Challenge</span>
+          <span class="es-text">Nivel 2 — Reto</span>
+        </button>
+      </div>
       <div class="level-bar">
-        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
-        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
+        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
+        <button class="level-btn" id="btn-read" onclick="readAloud()">🔊 Read Aloud</button>
       </div>
     </header>
 
@@ -417,8 +439,14 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">Key Words</div>
-              <div class="card-sub">Learn these 6 math words before you begin</div>
+              <div class="card-title">
+                <span class="en-text">Key Words</span>
+                <span class="es-text">Palabras Clave</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Learn these 6 math words before you begin</span>
+                <span class="es-text">Aprende estas 6 palabras matemáticas antes de comenzar</span>
+              </div>
             </div>
           </div>
 
@@ -428,50 +456,111 @@
           <div class="vocab-grid">
             <div class="vocab-card">
               <div class="vocab-icon">🌐</div>
-              <div class="vocab-term">Coordinate Plane</div>
-              <div class="vocab-def">A 2D grid formed by a horizontal line (x-axis) and a vertical line (y-axis) intersecting.</div>
-              <div class="vocab-ex">Perfect for layouts and maps.</div>
+              <div class="vocab-term">
+                <span class="en-text">Coordinate Plane</span>
+                <span class="es-text">Plano Cartesiano</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A 2D grid formed by a horizontal line (x-axis) and a vertical line (y-axis) intersecting.</span>
+                <span class="es-text">Una cuadrícula bidimensional formada por la intersección de una línea horizontal (eje x) y una línea vertical (eje y).</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">Perfect for layouts and maps.</span>
+                <span class="es-text">Perfecto para diseños y mapas.</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">📍</div>
-              <div class="vocab-term">Ordered Pair</div>
-              <div class="vocab-def">A pair of numbers (x, y) that names a precise location on the coordinate plane.</div>
-              <div class="vocab-ex">Example: Roller Coaster at (3, −4)</div>
+              <div class="vocab-term">
+                <span class="en-text">Ordered Pair</span>
+                <span class="es-text">Par Ordenado</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">A pair of numbers (x, y) that names a precise location on the coordinate plane.</span>
+                <span class="es-text">Un par de números (x, y) que indica una ubicación precisa en el plano cartesiano.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">Example: Roller Coaster at (3, −4)</span>
+                <span class="es-text">Ejemplo: Montaña Rusa en (3, −4)</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">📐</div>
-              <div class="vocab-term">Quadrant</div>
-              <div class="vocab-def">One of the four quarters of the coordinate plane, labeled I, II, III, and IV.</div>
-              <div class="vocab-ex">Quadrant signs: I(+,+), II(-,+), III(-,-), IV(+,-)</div>
+              <div class="vocab-term">
+                <span class="en-text">Quadrant</span>
+                <span class="es-text">Cuadrante</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">One of the four quarters of the coordinate plane, labeled I, II, III, and IV.</span>
+                <span class="es-text">Uno de los cuatro sectores del plano cartesiano, etiquetados como I, II, III y IV.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">Quadrant signs: I(+,+), II(-,+), III(-,-), IV(+,-)</span>
+                <span class="es-text">Signos de cuadrante: I(+,+), II(-,+), III(-,-), IV(+,-)</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🍕</div>
-              <div class="vocab-term">Origin</div>
-              <div class="vocab-def">The point where the x-axis and y-axis cross. The coordinates are always (0, 0).</div>
-              <div class="vocab-ex">Located right in the center.</div>
+              <div class="vocab-term">
+                <span class="en-text">Origin</span>
+                <span class="es-text">Origen</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The point where the x-axis and y-axis cross. The coordinates are always (0, 0).</span>
+                <span class="es-text">El punto donde se cruzan el eje x y el eje y. Las coordenadas siempre son (0, 0).</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">Located right in the center.</span>
+                <span class="es-text">Ubicado justo en el centro.</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">↔️</div>
-              <div class="vocab-term">x-axis</div>
-              <div class="vocab-def">The horizontal number line on a coordinate plane. Numbers go left (-) and right (+).</div>
-              <div class="vocab-ex">The first coordinate in (x, y).</div>
+              <div class="vocab-term">
+                <span class="en-text">x-axis</span>
+                <span class="es-text">Eje x</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The horizontal number line on a coordinate plane. Numbers go left (-) and right (+).</span>
+                <span class="es-text">La recta numérica horizontal en un plano cartesiano. Los números van a la izquierda (-) y a la derecha (+).</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">The first coordinate in (x, y).</span>
+                <span class="es-text">La primera coordenada en (x, y).</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">↕️</div>
-              <div class="vocab-term">y-axis</div>
-              <div class="vocab-def">The vertical number line on a coordinate plane. Numbers go down (-) and up (+).</div>
-              <div class="vocab-ex">The second coordinate in (x, y).</div>
+              <div class="vocab-term">
+                <span class="en-text">y-axis</span>
+                <span class="es-text">Eje y</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The vertical number line on a coordinate plane. Numbers go down (-) and up (+).</span>
+                <span class="es-text">La recta numérica vertical en un plano cartesiano. Los números van hacia abajo (-) y hacia arriba (+).</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">The second coordinate in (x, y).</span>
+                <span class="es-text">La segunda coordenada en (x, y).</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct" style="margin-top:20px">
-            ✅ Read each math word card. When you're ready, click <strong>Next Step</strong>.
+            <span class="en-text">✅ Read each math word card. When you're ready, click <strong>Next Step</strong>.</span>
+            <span class="es-text">✅ Lee cada tarjeta de palabras matemáticas. Cuando estés listo, haz clic en <strong>Siguiente Paso</strong>.</span>
           </div>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" disabled>← Back</button>
-          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
+          <button class="nav-btn ghost" disabled>
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(2)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente Paso →</span>
+          </button>
         </div>
       </div>
 
@@ -483,13 +572,20 @@
           <div class="card-header">
             <div class="card-icon">🎡</div>
             <div>
-              <div class="card-title">Step 1 — Plot Attractions</div>
-              <div class="card-sub">Choose locations for 5 main attractions on your map</div>
+              <div class="card-title">
+                <span class="en-text">Step 1 — Plot Attractions</span>
+                <span class="es-text">Paso 1 — Ubicar Atracciones</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Choose locations for 5 main attractions on your map</span>
+                <span class="es-text">Elige las ubicaciones para 5 atracciones principales en tu mapa</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct">
-            <strong>Your job:</strong> Enter coordinates `(x, y)` between −10 and 10 for 5 attractions. Then, identify which quadrant or axis each attraction lies on.
+            <span class="en-text"><strong>Your job:</strong> Enter coordinates `(x, y)` between −10 and 10 for 5 attractions. Then, identify which quadrant or axis each attraction lies on.</span>
+            <span class="es-text"><strong>Tu tarea:</strong> Ingresa las coordenadas `(x, y)` entre −10 y 10 para 5 atracciones. Luego, identifica en qué cuadrante o eje se encuentra cada atracción.</span>
           </div>
 
           <!-- Interactive Grid SVG -->
@@ -497,19 +593,41 @@
 
           <!-- Level 1 Support -->
           <div class="instruct lvl1-only">
-            🟢 <strong>Level 1 Support:</strong> Need some inspiration? Click <button class="export-btn" style="padding:2px 8px; font-size:11px;" onclick="loadExamples()">Use Example Coordinates</button> to plot a pre-designed layout!
+            <span class="en-text">🟢 <strong>Level 1 Support:</strong> Need some inspiration? Click <button class="export-btn" style="padding:2px 8px; font-size:11px;" onclick="loadExamples()">Use Example Coordinates</button> to plot a pre-designed layout!</span>
+            <span class="es-text">🟢 <strong>Soporte de Nivel 1:</strong> ¿Necesitas algo de inspiración? ¡Haz clic en <button class="export-btn" style="padding:2px 8px; font-size:11px;" onclick="loadExamples()">Usar Coordenadas de Ejemplo</button> para trazar un diseño prediseñado!</span>
           </div>
 
           <!-- Level 2 Extension -->
           <div class="lvl2-block lvl2-only" id="l2-constraints-box">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE — Layout Requirements</span>
-            <p style="font-size:13px; margin-bottom:8px;">Make sure your map satisfies the following layout requirements:</p>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE — Layout Requirements</span>
+              <span class="es-text">RETO DE NIVEL 2 — Requisitos de Diseño</span>
+            </span>
+            <p style="font-size:13px; margin-bottom:8px;">
+              <span class="en-text">Make sure your map satisfies the following layout requirements:</span>
+              <span class="es-text">Asegúrate de que tu mapa cumpla con los siguientes requisitos de diseño:</span>
+            </p>
             <ul style="list-style:none; font-size:13px; padding-left:4px;" id="l2-checklist">
-              <li id="req-q1">❌ At least 1 attraction in Quadrant I</li>
-              <li id="req-q2">❌ At least 1 attraction in Quadrant II</li>
-              <li id="req-q3">❌ At least 1 attraction in Quadrant III</li>
-              <li id="req-q4">❌ At least 1 attraction in Quadrant IV</li>
-              <li id="req-axis">❌ At least 1 attraction directly on an Axis</li>
+              <li id="req-q1">
+                <span class="en-text">❌ At least 1 attraction in Quadrant I</span>
+                <span class="es-text">❌ Al menos 1 atracción en el Cuadrante I</span>
+              </li>
+              <li id="req-q2">
+                <span class="en-text">❌ At least 1 attraction in Quadrant II</span>
+                <span class="es-text">❌ Al menos 1 atracción en el Cuadrante II</span>
+              </li>
+              <li id="req-q3">
+                <span class="en-text">❌ At least 1 attraction in Quadrant III</span>
+                <span class="es-text">❌ Al menos 1 atracción en el Cuadrante III</span>
+              </li>
+              <li id="req-q4">
+                <span class="en-text">❌ At least 1 attraction in Quadrant IV</span>
+                <span class="es-text">❌ Al menos 1 atracción en el Cuadrante IV</span>
+              </li>
+              <li id="req-axis">
+                <span class="en-text">❌ At least 1 attraction directly on an Axis</span>
+                <span class="es-text">❌ Al menos 1 atracción directamente en un Eje</span>
+              </li>
             </ul>
           </div>
 
@@ -527,16 +645,7 @@
                   <label>y: <input type="number" id="attr1-y" min="-10" max="10" step="1" placeholder="0" oninput="updatePlot()" /></label>
                 </div>
                 <div class="coord-quad-group">
-                  <select id="attr1-quad" onchange="updatePlot()">
-                    <option value="">Select location...</option>
-                    <option value="I">Quadrant I (+, +)</option>
-                    <option value="II">Quadrant II (-, +)</option>
-                    <option value="III">Quadrant III (-, -)</option>
-                    <option value="IV">Quadrant IV (+, -)</option>
-                    <option value="x">x-axis</option>
-                    <option value="y">y-axis</option>
-                    <option value="origin">Origin (0, 0)</option>
-                  </select>
+                  <select id="attr1-quad" onchange="updatePlot()"></select>
                   <span id="attr1-feedback" class="feedback-badge"></span>
                 </div>
               </div>
@@ -554,16 +663,7 @@
                   <label>y: <input type="number" id="attr2-y" min="-10" max="10" step="1" placeholder="0" oninput="updatePlot()" /></label>
                 </div>
                 <div class="coord-quad-group">
-                  <select id="attr2-quad" onchange="updatePlot()">
-                    <option value="">Select location...</option>
-                    <option value="I">Quadrant I (+, +)</option>
-                    <option value="II">Quadrant II (-, +)</option>
-                    <option value="III">Quadrant III (-, -)</option>
-                    <option value="IV">Quadrant IV (+, -)</option>
-                    <option value="x">x-axis</option>
-                    <option value="y">y-axis</option>
-                    <option value="origin">Origin (0, 0)</option>
-                  </select>
+                  <select id="attr2-quad" onchange="updatePlot()"></select>
                   <span id="attr2-feedback" class="feedback-badge"></span>
                 </div>
               </div>
@@ -581,16 +681,7 @@
                   <label>y: <input type="number" id="attr3-y" min="-10" max="10" step="1" placeholder="0" oninput="updatePlot()" /></label>
                 </div>
                 <div class="coord-quad-group">
-                  <select id="attr3-quad" onchange="updatePlot()">
-                    <option value="">Select location...</option>
-                    <option value="I">Quadrant I (+, +)</option>
-                    <option value="II">Quadrant II (-, +)</option>
-                    <option value="III">Quadrant III (-, -)</option>
-                    <option value="IV">Quadrant IV (+, -)</option>
-                    <option value="x">x-axis</option>
-                    <option value="y">y-axis</option>
-                    <option value="origin">Origin (0, 0)</option>
-                  </select>
+                  <select id="attr3-quad" onchange="updatePlot()"></select>
                   <span id="attr3-feedback" class="feedback-badge"></span>
                 </div>
               </div>
@@ -608,16 +699,7 @@
                   <label>y: <input type="number" id="attr4-y" min="-10" max="10" step="1" placeholder="0" oninput="updatePlot()" /></label>
                 </div>
                 <div class="coord-quad-group">
-                  <select id="attr4-quad" onchange="updatePlot()">
-                    <option value="">Select location...</option>
-                    <option value="I">Quadrant I (+, +)</option>
-                    <option value="II">Quadrant II (-, +)</option>
-                    <option value="III">Quadrant III (-, -)</option>
-                    <option value="IV">Quadrant IV (+, -)</option>
-                    <option value="x">x-axis</option>
-                    <option value="y">y-axis</option>
-                    <option value="origin">Origin (0, 0)</option>
-                  </select>
+                  <select id="attr4-quad" onchange="updatePlot()"></select>
                   <span id="attr4-feedback" class="feedback-badge"></span>
                 </div>
               </div>
@@ -635,16 +717,7 @@
                   <label>y: <input type="number" id="attr5-y" min="-10" max="10" step="1" placeholder="0" oninput="updatePlot()" /></label>
                 </div>
                 <div class="coord-quad-group">
-                  <select id="attr5-quad" onchange="updatePlot()">
-                    <option value="">Select location...</option>
-                    <option value="I">Quadrant I (+, +)</option>
-                    <option value="II">Quadrant II (-, +)</option>
-                    <option value="III">Quadrant III (-, -)</option>
-                    <option value="IV">Quadrant IV (+, -)</option>
-                    <option value="x">x-axis</option>
-                    <option value="y">y-axis</option>
-                    <option value="origin">Origin (0, 0)</option>
-                  </select>
+                  <select id="attr5-quad" onchange="updatePlot()"></select>
                   <span id="attr5-feedback" class="feedback-badge"></span>
                 </div>
               </div>
@@ -652,18 +725,23 @@
           </div>
 
           <details class="hint">
-            <summary>Need a hint about signs and quadrants?</summary>
-            <p>Remember:<br>• Quadrant I: x is positive, y is positive (+, +)<br>• Quadrant II: x is negative, y is positive (−, +)<br>• Quadrant III: x is negative, y is negative (−, −)<br>• Quadrant IV: x is positive, y is negative (+, −)<br>• On an axis: if x is 0, the point is on the y-axis; if y is 0, the point is on the x-axis.</p>
+            <summary>
+              <span class="en-text">Need a hint about signs and quadrants?</span>
+              <span class="es-text">¿Necesitas una pista sobre signos y cuadrantes?</span>
+            </summary>
+            <p>
+              <span class="en-text">Remember:<br>• Quadrant I: x is positive, y is positive (+, +)<br>• Quadrant II: x is negative, y is positive (−, +)<br>• Quadrant III: x is negative, y is negative (−, −)<br>• Quadrant IV: x is positive, y is negative (+, −)<br>• On an axis: if x is 0, the point is on the y-axis; if y is 0, the point is on the x-axis.</span>
+              <span class="es-text">Recuerda:<br>• Cuadrante I: x es positivo, y es positivo (+, +)<br>• Cuadrante II: x es negativo, y es positivo (−, +)<br>• Cuadrante III: x es negativo, y es negativo (−, −)<br>• Cuadrante IV: x es positivo, y es negativo (+, −)<br>• En un eje: si x es 0, el punto está en el eje y; si y es 0, el punto está en el eje x.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
-          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
-        </div>
-      </div>
-
-      <!-- ======================================
+          <button class="nav-btn ghost" onclick="goStep(1)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <!-- ======================================
            STEP 3 — ATTRACTION DISTANCE
       ====================================== -->
       <div class="step-panel" id="step-3">
@@ -671,13 +749,20 @@
           <div class="card-header">
             <div class="card-icon teal">📏</div>
             <div>
-              <div class="card-title">Step 2 — Attraction Distance</div>
-              <div class="card-sub">Find the distance between attractions sharing an axis</div>
+              <div class="card-title">
+                <span class="en-text">Step 2 — Attraction Distance</span>
+                <span class="es-text">Paso 2 — Distancia entre Atracciones</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Find the distance between attractions sharing an axis</span>
+                <span class="es-text">Encuentra la distancia entre atracciones que comparten un eje</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your job:</strong> Pick two attractions that share an axis (same x-coordinate or same y-coordinate), and use absolute values to calculate the distance between them.
+            <span class="en-text"><strong>Your job:</strong> Pick two attractions that share an axis (same x-coordinate or same y-coordinate), and use absolute values to calculate the distance between them.</span>
+            <span class="es-text"><strong>Tu tarea:</strong> Elige dos atracciones que compartan un eje (misma coordenada x o misma coordenada y), y usa valores absolutos para calcular la distancia entre ellas.</span>
           </div>
 
           <!-- Dynamic Distance SVG -->
@@ -685,42 +770,38 @@
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="dist-A">Point A (Attraction)</label>
-              <select id="dist-A" onchange="loadDistancePoints()">
-                <option value="">Select Attraction A...</option>
-                <option value="1">1. Ferris Wheel</option>
-                <option value="2">2. Roller Coaster</option>
-                <option value="3">3. Water Slide</option>
-                <option value="4">4. Bumper Cars</option>
-                <option value="5">5. Food Court</option>
-                <option value="custom">-- Use Custom Coordinates --</option>
-              </select>
+              <label class="lbl" for="dist-A">
+                <span class="en-text">Point A (Attraction)</span>
+                <span class="es-text">Punto A (Atracción)</span>
+              </label>
+              <select id="dist-A" onchange="loadDistancePoints()"></select>
             </div>
             <div>
-              <label class="lbl" for="dist-B">Point B (Attraction)</label>
-              <select id="dist-B" onchange="loadDistancePoints()">
-                <option value="">Select Attraction B...</option>
-                <option value="1">1. Ferris Wheel</option>
-                <option value="2">2. Roller Coaster</option>
-                <option value="3">3. Water Slide</option>
-                <option value="4">4. Bumper Cars</option>
-                <option value="5">5. Food Court</option>
-                <option value="custom">-- Use Custom Coordinates --</option>
-              </select>
+              <label class="lbl" for="dist-B">
+                <span class="en-text">Point B (Attraction)</span>
+                <span class="es-text">Punto B (Atracción)</span>
+              </label>
+              <select id="dist-B" onchange="loadDistancePoints()"></select>
             </div>
           </div>
 
           <!-- Coordinates Display -->
           <div class="grid2" style="margin-top:10px;">
             <div>
-              <label class="lbl">Point A coordinates</label>
+              <label class="lbl">
+                <span class="en-text">Point A coordinates</span>
+                <span class="es-text">Coordenadas del Punto A</span>
+              </label>
               <div class="grid2">
                 <input type="number" id="dist-a-x" min="-10" max="10" placeholder="x1" oninput="runDistanceCalc()" />
                 <input type="number" id="dist-a-y" min="-10" max="10" placeholder="y1" oninput="runDistanceCalc()" />
               </div>
             </div>
             <div>
-              <label class="lbl">Point B coordinates</label>
+              <label class="lbl">
+                <span class="en-text">Point B coordinates</span>
+                <span class="es-text">Coordenadas del Punto B</span>
+              </label>
               <div class="grid2">
                 <input type="number" id="dist-b-x" min="-10" max="10" placeholder="x2" oninput="runDistanceCalc()" />
                 <input type="number" id="dist-b-y" min="-10" max="10" placeholder="y2" oninput="runDistanceCalc()" />
@@ -730,24 +811,25 @@
 
           <!-- Distance Equation Inputs -->
           <div id="dist-calc-section" style="margin-top: 15px;">
-            <label class="lbl" for="dist-shared-axis">Which axis do they share?</label>
-            <select id="dist-shared-axis" onchange="runDistanceCalc()">
-              <option value="">Select shared axis...</option>
-              <option value="x">They share the same x-coordinate (vertical line)</option>
-              <option value="y">They share the same y-coordinate (horizontal line)</option>
-            </select>
+            <label class="lbl" for="dist-shared-axis">
+              <span class="en-text">Which axis do they share?</span>
+              <span class="es-text">¿Qué eje comparten?</span>
+            </label>
+            <select id="dist-shared-axis" onchange="runDistanceCalc()"></select>
 
             <div class="grid2" style="margin-top:14px;">
               <div>
-                <label class="lbl" for="dist-q-rel">Are they in the same quadrant or different quadrants?</label>
-                <select id="dist-q-rel" onchange="runDistanceCalc()">
-                  <option value="">Select relative location...</option>
-                  <option value="diff">Different Quadrants (add their absolute values)</option>
-                  <option value="same">Same Quadrant (subtract their absolute values)</option>
-                </select>
+                <label class="lbl" for="dist-q-rel">
+                  <span class="en-text">Are they in the same quadrant or different quadrants?</span>
+                  <span class="es-text">¿Están en el mismo cuadrante o en cuadrantes diferentes?</span>
+                </label>
+                <select id="dist-q-rel" onchange="runDistanceCalc()"></select>
               </div>
               <div>
-                <label class="lbl" for="dist-val1">Enter absolute values (e.g. |5| and |-2|)</label>
+                <label class="lbl" for="dist-val1">
+                  <span class="en-text">Enter absolute values (e.g. |5| and |-2|)</span>
+                  <span class="es-text">Ingresa los valores absolutos (ej. |5| y |-2|)</span>
+                </label>
                 <div class="grid2">
                   <input type="number" id="dist-val1" min="0" placeholder="|coord 1|" oninput="runDistanceCalc()" />
                   <input type="number" id="dist-val2" min="0" placeholder="|coord 2|" oninput="runDistanceCalc()" />
@@ -755,45 +837,81 @@
               </div>
             </div>
 
-            <label class="lbl" for="dist-student-ans">Math sentence &amp; Final Distance (units)</label>
+            <label class="lbl" for="dist-student-ans">
+              <span class="en-text">Math sentence &amp; Final Distance (units)</span>
+              <span class="es-text">Enunciado matemático y Distancia Final (unidades)</span>
+            </label>
             <div class="grid2">
               <input type="text" id="dist-equation" placeholder="e.g. 5 + 2 = 7" oninput="runDistanceCalc()" />
               <input type="number" id="dist-student-ans" min="0" placeholder="Distance (units)" oninput="runDistanceCalc()" />
             </div>
 
-            <button class="calc-btn teal" onclick="runDistanceCalc()">📏 Calculate &amp; Verify Distance</button>
+            <button class="calc-btn teal" onclick="runDistanceCalc()">
+              <span class="en-text">📏 Calculate &amp; Verify Distance</span>
+              <span class="es-text">📏 Calcular y Verificar Distancia</span>
+            </button>
             <div class="readout" id="dist-out"></div>
           </div>
 
           <!-- Level 2 extension -->
           <div class="lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE — Diagonal Distance (Pythagoras Preview)</span>
-            <p style="font-size:14px; margin-bottom:10px;">Select two attractions that do <strong>not</strong> share an axis (diagonal line). Count the grid units of the horizontal and vertical legs, then estimate the straight-line diagonal distance.</p>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE — Diagonal Distance (Pythagoras Preview)</span>
+              <span class="es-text">RETO DE NIVEL 2 — Distancia Diagonal (Introducción a Pitágoras)</span>
+            </span>
+            <p style="font-size:14px; margin-bottom:10px;">
+              <span class="en-text">Select two attractions that do <strong>not</strong> share an axis (diagonal line). Count the grid units of the horizontal and vertical legs, then estimate the straight-line diagonal distance.</span>
+              <span class="es-text">Selecciona dos atracciones que <strong>no</strong> compartan un eje (línea diagonal). Cuenta las unidades de cuadrícula de los catetos horizontal y vertical, luego estima la distancia diagonal en línea recta.</span>
+            </p>
             <div class="grid2">
               <div>
-                <label class="lbl" for="diag-leg-x">Horizontal leg length |Δx|</label>
+                <label class="lbl" for="diag-leg-x">
+                  <span class="en-text">Horizontal leg length |Δx|</span>
+                  <span class="es-text">Longitud del cateto horizontal |Δx|</span>
+                </label>
                 <input type="number" id="diag-leg-x" min="0" placeholder="e.g. 3" oninput="calcDiagonal()" />
               </div>
               <div>
-                <label class="lbl" for="diag-leg-y">Vertical leg length |Δy|</label>
+                <label class="lbl" for="diag-leg-y">
+                  <span class="en-text">Vertical leg length |Δy|</span>
+                  <span class="es-text">Longitud del cateto vertical |Δy|</span>
+                </label>
                 <input type="number" id="diag-leg-y" min="0" placeholder="e.g. 4" oninput="calcDiagonal()" />
               </div>
             </div>
-            <label class="lbl" for="diag-student-ans">Your estimated diagonal distance</label>
+            <label class="lbl" for="diag-student-ans">
+              <span class="en-text">Your estimated diagonal distance</span>
+              <span class="es-text">Tu distancia diagonal estimada</span>
+            </label>
             <input type="number" id="diag-student-ans" min="0" step="0.1" placeholder="e.g. 5.0" oninput="calcDiagonal()" />
-            <button class="calc-btn" onclick="calcDiagonal()">📐 Verify Diagonal Distance</button>
+            <button class="calc-btn" onclick="calcDiagonal()">
+              <span class="en-text">📐 Verify Diagonal Distance</span>
+              <span class="es-text">📐 Verificar Distancia Diagonal</span>
+            </button>
             <div class="readout" id="diag-out"></div>
           </div>
 
           <details class="hint">
-            <summary>Need a distance hint?</summary>
-            <p><strong>Different Quadrants:</strong> If points are on opposite sides of an axis, we ADD their distances from the axis (add their absolute values).<br>Example: (3, 5) and (3, −2). The shared coordinate is x = 3. The y-coordinates are 5 and −2. Distance = |5| + |−2| = 5 + 2 = 7 units.<br><br><strong>Same Quadrant:</strong> If points are on the same side of an axis, we SUBTRACT their distances from the axis (subtract their absolute values, larger minus smaller).<br>Example: (3, 5) and (3, 2). Distance = |5| − |2| = 5 − 2 = 3 units.</p>
+            <summary>
+              <span class="en-text">Need a distance hint?</span>
+              <span class="es-text">¿Necesitas una pista sobre la distancia?</span>
+            </summary>
+            <p>
+              <span class="en-text"><strong>Different Quadrants:</strong> If points are on opposite sides of an axis, we ADD their distances from the axis (add their absolute values).<br>Example: (3, 5) and (3, −2). The shared coordinate is x = 3. The y-coordinates are 5 and −2. Distance = |5| + |−2| = 5 + 2 = 7 units.<br><br><strong>Same Quadrant:</strong> If points are on the same side of an axis, we SUBTRACT their distances from the axis (subtract their absolute values, larger minus smaller).<br>Example: (3, 5) and (3, 2). Distance = |5| − |2| = 5 − 2 = 3 units.</span>
+              <span class="es-text"><strong>Diferentes Cuadrantes:</strong> Si los puntos están en lados opuestos de un eje, SUMAMOS sus distancias al eje (sumamos sus valores absolutos).<br>Ejemplo: (3, 5) y (3, −2). La coordenada compartida es x = 3. Las coordenadas y son 5 y −2. Distancia = |5| + |−2| = 5 + 2 = 7 unidades.<br><br><strong>Mismo Cuadrante:</strong> Si los puntos están en el mismo lado de un eje, RESTAMOS sus distancias al eje (restamos sus valores absolutos, el mayor menos el menor).<br>Ejemplo: (3, 5) y (3, 2). Distancia = |5| − |2| = 5 − 2 = 3 unidades.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
-          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(2)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(4)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente Paso →</span>
+          </button>
         </div>
       </div>
 
@@ -805,117 +923,221 @@
           <div class="card-header">
             <div class="card-icon">🪞</div>
             <div>
-              <div class="card-title">Step 3 — Park Reflections</div>
-              <div class="card-sub">Flip attractions over the axes and calculate real scale</div>
+              <div class="card-title">
+                <span class="en-text">Step 3 — Park Reflections</span>
+                <span class="es-text">Paso 3 — Reflejos en el Parque</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Flip attractions over the axes and calculate real scale</span>
+                <span class="es-text">Refleja atracciones sobre los ejes y calcula la escala real</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct">
-            <strong>Your job:</strong> Mirror an attraction over the x-axis or y-axis. Find the new coordinates. Then, measure your total park width in miles and compare it to real theme parks.
+            <span class="en-text"><strong>Your job:</strong> Mirror an attraction over the x-axis or y-axis. Find the new coordinates. Then, measure your total park width in miles and compare it to real theme parks.</span>
+            <span class="es-text"><strong>Tu tarea:</strong> Refleja una atracción sobre el eje x o el eje y. Encuentra las nuevas coordenadas. Luego, mide el ancho total de tu parque en millas y compáralo con parques de atracciones reales.</span>
           </div>
 
           <!-- Reflection SVG -->
           <svg id="reflection-svg" class="grid-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"></svg>
 
           <!-- Part A: Reflect attraction -->
-          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-bottom:10px;">🪞 Part A: Reflect an Attraction</h3>
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-bottom:10px;">
+            <span class="en-text">🪞 Part A: Reflect an Attraction</span>
+            <span class="es-text">🪞 Parte A: Reflejar una Atracción</span>
+          </h3>
           <div class="grid2">
             <div>
-              <label class="lbl" for="ref-source">Select attraction to reflect</label>
-              <select id="ref-source" onchange="loadReflectionPoint()">
-                <option value="">Select...</option>
-                <option value="1">1. Ferris Wheel</option>
-                <option value="2">2. Roller Coaster</option>
-                <option value="3">3. Water Slide</option>
-                <option value="4">4. Bumper Cars</option>
-                <option value="5">5. Food Court</option>
-              </select>
+              <label class="lbl" for="ref-source">
+                <span class="en-text">Select attraction to reflect</span>
+                <span class="es-text">Selecciona la atracción a reflejar</span>
+              </label>
+              <select id="ref-source" onchange="loadReflectionPoint()"></select>
             </div>
             <div>
-              <label class="lbl" for="ref-axis">Reflect over which axis?</label>
-              <select id="ref-axis" onchange="runReflectionCalc()">
-                <option value="">Select axis...</option>
-                <option value="x">x-axis (flip vertically)</option>
-                <option value="y">y-axis (flip horizontally)</option>
-                <option class="lvl2-only" value="both">Both axes (180° rotation)</option>
-              </select>
+              <label class="lbl" for="ref-axis">
+                <span class="en-text">Reflect over which axis?</span>
+                <span class="es-text">¿Reflejar sobre qué eje?</span>
+              </label>
+              <select id="ref-axis" onchange="runReflectionCalc()"></select>
             </div>
           </div>
 
           <div style="background:var(--bg); border-radius:10px; padding:12px; margin-top:12px; font-size:14px;">
-            Original Coordinates: <strong id="ref-orig-display">(—, —)</strong>
+            <span class="en-text">Original Coordinates:</span>
+            <span class="es-text">Coordenadas Originales:</span>
+            <strong id="ref-orig-display">(—, —)</strong>
           </div>
 
-          <label class="lbl">Predicted Reflected Coordinates</label>
+          <label class="lbl">
+            <span class="en-text">Predicted Reflected Coordinates</span>
+            <span class="es-text">Coordenadas Reflejadas Predichas</span>
+          </label>
           <div class="grid2">
             <input type="number" id="ref-pred-x" min="-10" max="10" placeholder="Reflected x" oninput="runReflectionCalc()" />
             <input type="number" id="ref-pred-y" min="-10" max="10" placeholder="Reflected y" oninput="runReflectionCalc()" />
           </div>
 
-          <button class="calc-btn" onclick="runReflectionCalc()">🪞 Reflect &amp; Verify</button>
+          <button class="calc-btn" onclick="runReflectionCalc()">
+            <span class="en-text">🪞 Reflect &amp; Verify</span>
+            <span class="es-text">🪞 Reflejar y Verificar</span>
+          </button>
           <div class="readout" id="ref-out"></div>
 
           <!-- Part B: Real theme park scale -->
-          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-top:24px; margin-bottom:10px;">🌎 Part B: Real Theme Park Scale</h3>
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-top:24px; margin-bottom:10px;">
+            <span class="en-text">🌎 Part B: Real Theme Park Scale</span>
+            <span class="es-text">🌎 Parte B: Escala Real de Parques de Atracciones</span>
+          </h3>
           <p style="font-size:14px; color:var(--muted); margin-bottom:10px;">
-            In your design, <strong>1 grid unit = 0.1 miles</strong> in real life. Let's find your park's width and see what kind of park it is!
+            <span class="en-text">In your design, <strong>1 grid unit = 0.1 miles</strong> in real life. Let's find your park's width and see what kind of park it is!</span>
+            <span class="es-text">En tu diseño, <strong>1 unidad de cuadrícula = 0.1 millas</strong> en la vida real. ¡Encontremos el ancho de tu parque y veamos qué tipo de parque es!</span>
           </p>
 
           <table class="data-table">
             <thead>
-              <tr><th>Park Type</th><th>Real Width (approx)</th><th>Walk Experience</th></tr>
+              <tr>
+                <th>
+                  <span class="en-text">Park Type</span>
+                  <span class="es-text">Tipo de Parque</span>
+                </th>
+                <th>
+                  <span class="en-text">Real Width (approx)</span>
+                  <span class="es-text">Ancho Real (aprox.)</span>
+                </th>
+                <th>
+                  <span class="en-text">Walk Experience</span>
+                  <span class="es-text">Experiencia de Caminata</span>
+                </th>
+              </tr>
             </thead>
             <tbody>
-              <tr><td>Local County Fair</td><td>0.05 – 0.1 miles</td><td>Small carnival, walks in under 3 minutes</td></tr>
-              <tr><td>Regional Theme Park</td><td>0.2 – 0.4 miles</td><td>Medium-sized amusement park (6-minute walk)</td></tr>
-              <tr><td>Major Theme Park (Disney/Universal)</td><td>0.5 – 1.5 miles</td><td>Sprawling destination, can take 20 minutes to cross</td></tr>
+              <tr>
+                <td>
+                  <span class="en-text">Local County Fair</span>
+                  <span class="es-text">Feria Local del Condado</span>
+                </td>
+                <td>
+                  <span class="en-text">0.05 – 0.1 miles</span>
+                  <span class="es-text">0.05 – 0.1 millas</span>
+                </td>
+                <td>
+                  <span class="en-text">Small carnival, walks in under 3 minutes</span>
+                  <span class="es-text">Carnaval pequeño, se recorre en menos de 3 minutos</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="en-text">Regional Theme Park</span>
+                  <span class="es-text">Parque de Atracciones Regional</span>
+                </td>
+                <td>
+                  <span class="en-text">0.2 – 0.4 miles</span>
+                  <span class="es-text">0.2 – 0.4 millas</span>
+                </td>
+                <td>
+                  <span class="en-text">Medium-sized amusement park (6-minute walk)</span>
+                  <span class="es-text">Parque de atracciones mediano (caminata de 6 minutos)</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="en-text">Major Theme Park (Disney/Universal)</span>
+                  <span class="es-text">Parque Temático Mayor (Disney/Universal)</span>
+                </td>
+                <td>
+                  <span class="en-text">0.5 – 1.5 miles</span>
+                  <span class="es-text">0.5 – 1.5 millas</span>
+                </td>
+                <td>
+                  <span class="en-text">Sprawling destination, can take 20 minutes to cross</span>
+                  <span class="es-text">Destino extenso, puede tomar 20 minutos cruzarlo</span>
+                </td>
+              </tr>
             </tbody>
           </table>
 
           <div class="grid2" style="margin-top:14px;">
             <div>
-              <label class="lbl" for="scale-min-x">Leftmost attraction coordinate (lowest x)</label>
+              <label class="lbl" for="scale-min-x">
+                <span class="en-text">Leftmost attraction coordinate (lowest x)</span>
+                <span class="es-text">Coordenada de la atracción más a la izquierda (x mínimo)</span>
+              </label>
               <input type="number" id="scale-min-x" min="-10" max="10" placeholder="Min x" oninput="runScaleCalc()" />
             </div>
             <div>
-              <label class="lbl" for="scale-max-x">Rightmost attraction coordinate (highest x)</label>
+              <label class="lbl" for="scale-max-x">
+                <span class="en-text">Rightmost attraction coordinate (highest x)</span>
+                <span class="es-text">Coordenada de la atracción más a la derecha (x máximo)</span>
+              </label>
               <input type="number" id="scale-max-x" min="-10" max="10" placeholder="Max x" oninput="runScaleCalc()" />
             </div>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="scale-width-units">Calculated Width (grid units)</label>
+              <label class="lbl" for="scale-width-units">
+                <span class="en-text">Calculated Width (grid units)</span>
+                <span class="es-text">Ancho Calculado (unidades de cuadrícula)</span>
+              </label>
               <input type="number" id="scale-width-units" min="0" placeholder="Width (units)" oninput="runScaleCalc()" />
             </div>
             <div>
-              <label class="lbl" for="scale-width-miles">Calculated Width (miles)</label>
+              <label class="lbl" for="scale-width-miles">
+                <span class="en-text">Calculated Width (miles)</span>
+                <span class="es-text">Ancho Calculado (millas)</span>
+              </label>
               <input type="number" id="scale-width-miles" step="0.01" min="0" placeholder="Width (miles)" oninput="runScaleCalc()" />
             </div>
           </div>
 
-          <button class="calc-btn gold" onclick="runScaleCalc()">🌎 Verify Theme Park Scale</button>
+          <button class="calc-btn gold" onclick="runScaleCalc()">
+            <span class="en-text">🌎 Verify Theme Park Scale</span>
+            <span class="es-text">🌎 Verificar la Escala del Parque de Atracciones</span>
+          </button>
           <div class="readout" id="scale-out"></div>
 
-          <label class="lbl" for="scale-reflect">Write 1-2 sentences comparing your park's scale to a real theme park or county fair.</label>
+          <label class="lbl" for="scale-reflect">
+            <span class="en-text">Write 1-2 sentences comparing your park's scale to a real theme park or county fair.</span>
+            <span class="es-text">Escribe 1 o 2 oraciones comparando la escala de tu parque con un parque de atracciones real o una feria del condado.</span>
+          </label>
           <textarea id="scale-reflect" placeholder="My theme park is ___ miles wide, which is closest to a... This means..."></textarea>
 
           <!-- Level 2 Coaster challenge -->
           <div class="lvl2-block lvl2-only" style="margin-top:18px">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE — Coaster Height drop</span>
-            <label class="lbl" for="l2-coaster-ans">A roller coaster drops from +52 meters (above ground) to −13 meters (underground tunnel). Show how you use absolute values to calculate the total drop height.</label>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE — Coaster Height drop</span>
+              <span class="es-text">RETO DE NIVEL 2 — Caída de Altura de la Montaña Rusa</span>
+            </span>
+            <label class="lbl" for="l2-coaster-ans">
+              <span class="en-text">A roller coaster drops from +52 meters (above ground) to −13 meters (underground tunnel). Show how you use absolute values to calculate the total drop height.</span>
+              <span class="es-text">Una montaña rusa cae desde +52 metros (sobre el suelo) hasta −13 metros (túnel subterráneo). Muestra cómo usas los valores absolutos para calcular la altura total de la caída.</span>
+            </label>
             <textarea id="l2-coaster-ans" placeholder="Write your absolute value equation (e.g. |52| + |-13| = ...) and explain your reasoning."></textarea>
           </div>
 
           <details class="hint">
-            <summary>Need a reflection hint?</summary>
-            <p><strong>Reflection Rules:</strong><br>• Across the <strong>x-axis</strong>: Flip over the horizontal line. Keep the x-coordinate, negate the y-coordinate. `(x, y) → (x, −y)`<br>• Across the <strong>y-axis</strong>: Flip over the vertical line. Negate the x-coordinate, keep the y-coordinate. `(x, y) → (−x, y)`<br><br><strong>Width Calculation:</strong> Distance = |Max x − Min x|. Miles = Distance × 0.1.</p>
+            <summary>
+              <span class="en-text">Need a reflection hint?</span>
+              <span class="es-text">¿Necesitas una pista sobre reflejos?</span>
+            </summary>
+            <p>
+              <span class="en-text"><strong>Reflection Rules:</strong><br>• Across the <strong>x-axis</strong>: Flip over the horizontal line. Keep the x-coordinate, negate the y-coordinate. `(x, y) → (x, −y)`<br>• Across the <strong>y-axis</strong>: Flip over the vertical line. Negate the x-coordinate, keep the y-coordinate. `(x, y) → (−x, y)`<br><br><strong>Width Calculation:</strong> Distance = |Max x − Min x|. Miles = Distance × 0.1.</span>
+              <span class="es-text"><strong>Reglas de Reflejo:</strong><br>• A través del <strong>eje x</strong>: Refleja sobre la línea horizontal. Mantén la coordenada x, cambia el signo de la coordenada y. `(x, y) → (x, −y)`<br>• A través del <strong>eje y</strong>: Refleja sobre la línea vertical. Cambia el signo de la coordenada x, mantén la coordenada y. `(x, y) → (−x, y)`<br><br><strong>Cálculo de Ancho:</strong> Distancia = |Max x − Min x|. Millas = Distancia × 0.1.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
-          <button class="nav-btn" onclick="goStep(5)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(3)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(5)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente Paso →</span>
+          </button>
         </div>
       </div>
 
@@ -927,31 +1149,44 @@
           <div class="card-header">
             <div class="card-icon teal">👥</div>
             <div>
-              <div class="card-title">Step 4 — Partner Park</div>
-              <div class="card-sub">Compare layout blueprints with a classmate</div>
+              <div class="card-title">
+                <span class="en-text">Step 4 — Partner Park</span>
+                <span class="es-text">Paso 4 — Parque de un Compañero</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Compare layout blueprints with a classmate</span>
+                <span class="es-text">Compara los planos de diseño con un compañero de clase</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your job:</strong> Partner with a classmate. Share your attraction coordinates and record their layout. Compare how spread out your parks are.
+            <span class="en-text"><strong>Your job:</strong> Partner with a classmate. Share your attraction coordinates and record their layout. Compare how spread out your parks are.</span>
+            <span class="es-text"><strong>Tu tarea:</strong> Trabaja con un compañero de clase. Comparte las coordenadas de tus atracciones y registra su diseño. Comparen qué tan extendidos están sus parques.</span>
           </div>
 
-          <label class="lbl" for="p-name">Classmate's Name</label>
+          <label class="lbl" for="p-name">
+            <span class="en-text">Classmate's Name</span>
+            <span class="es-text">Nombre del Compañero</span>
+          </label>
           <input type="text" id="p-name" placeholder="e.g. Alex" />
 
           <!-- Partner Coordinates Inputs -->
-          <h3 style="font-size:15px; font-weight:800; color:var(--navy); margin-top:16px; margin-bottom:8px;">📍 Partner Attraction Coordinates</h3>
+          <h3 style="font-size:15px; font-weight:800; color:var(--navy); margin-top:16px; margin-bottom:8px;">
+            <span class="en-text">📍 Partner Attraction Coordinates</span>
+            <span class="es-text">📍 Coordenadas de las Atracciones del Compañero</span>
+          </h3>
           
           <div class="grid2">
             <div>
-              <label class="lbl">🎡 Ferris Wheel (x, y)</label>
+              <label class="lbl">🎡 <span class="en-text">Ferris Wheel (x, y)</span><span class="es-text">Noria (x, y)</span></label>
               <div class="grid2">
                 <input type="number" id="p-attr1-x" min="-10" max="10" placeholder="x" oninput="runPartnerComparison()" />
                 <input type="number" id="p-attr1-y" min="-10" max="10" placeholder="y" oninput="runPartnerComparison()" />
               </div>
             </div>
             <div>
-              <label class="lbl">🎢 Roller Coaster (x, y)</label>
+              <label class="lbl">🎢 <span class="en-text">Roller Coaster (x, y)</span><span class="es-text">Montaña Rusa (x, y)</span></label>
               <div class="grid2">
                 <input type="number" id="p-attr2-x" min="-10" max="10" placeholder="x" oninput="runPartnerComparison()" />
                 <input type="number" id="p-attr2-y" min="-10" max="10" placeholder="y" oninput="runPartnerComparison()" />
@@ -961,14 +1196,14 @@
 
           <div class="grid2">
             <div>
-              <label class="lbl">🌊 Water Slide (x, y)</label>
+              <label class="lbl">🌊 <span class="en-text">Water Slide (x, y)</span><span class="es-text">Tobogán de Agua (x, y)</span></label>
               <div class="grid2">
                 <input type="number" id="p-attr3-x" min="-10" max="10" placeholder="x" oninput="runPartnerComparison()" />
                 <input type="number" id="p-attr3-y" min="-10" max="10" placeholder="y" oninput="runPartnerComparison()" />
               </div>
             </div>
             <div>
-              <label class="lbl">🚗 Bumper Cars (x, y)</label>
+              <label class="lbl">🚗 <span class="en-text">Bumper Cars (x, y)</span><span class="es-text">Autos Chocadores (x, y)</span></label>
               <div class="grid2">
                 <input type="number" id="p-attr4-x" min="-10" max="10" placeholder="x" oninput="runPartnerComparison()" />
                 <input type="number" id="p-attr4-y" min="-10" max="10" placeholder="y" oninput="runPartnerComparison()" />
@@ -977,23 +1212,35 @@
           </div>
 
           <div>
-            <label class="lbl">🍟 Food Court (x, y)</label>
+            <label class="lbl">🍟 <span class="en-text">Food Court (x, y)</span><span class="es-text">Plaza de Comidas (x, y)</span></label>
             <div class="grid2">
               <input type="number" id="p-attr5-x" min="-10" max="10" placeholder="x" oninput="runPartnerComparison()" style="max-width:200px" />
               <input type="number" id="p-attr5-y" min="-10" max="10" placeholder="y" oninput="runPartnerComparison()" style="max-width:200px" />
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="runPartnerComparison()">📊 Compare Our Blueprints</button>
+          <button class="calc-btn teal" onclick="runPartnerComparison()">
+            <span class="en-text">📊 Compare Our Blueprints</span>
+            <span class="es-text">📊 Comparar Nuestros Planos</span>
+          </button>
           <div class="readout" id="partner-out"></div>
 
-          <label class="lbl" for="partner-reflect" style="margin-top:18px;">Reflection: Whose theme park is more spread out? Compare your layout and distances to your classmate's.</label>
+          <label class="lbl" for="partner-reflect" style="margin-top:18px;">
+            <span class="en-text">Reflection: Whose theme park is more spread out? Compare your layout and distances to your classmate's.</span>
+            <span class="es-text">Reflexión: ¿El parque de quién está más extendido? Compara tu diseño y distancias con los de tu compañero.</span>
+          </label>
           <textarea id="partner-reflect" placeholder="My park's maximum width is ___ units, while my partner's is ___ units. I think..."></textarea>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
-          <button class="nav-btn green" onclick="goStep(6)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(4)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="goStep(6)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente Paso →</span>
+          </button>
         </div>
       </div>
 
@@ -1005,59 +1252,163 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">Step 5 — Finish &amp; Submit</div>
-              <div class="card-sub">Pitch your proposal, check requirements, and generate summary</div>
+              <div class="card-title">
+                <span class="en-text">Step 5 — Finish &amp; Submit</span>
+                <span class="es-text">Paso 5 — Terminar y Enviar</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Pitch your proposal, check requirements, and generate summary</span>
+                <span class="es-text">Presenta tu propuesta, verifica los requisitos y genera el resumen</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct green">
-            <strong>Your job:</strong> Write a 3–5 sentence proposal pitch for your theme park design. Verify your checklist, review the grading rubric, and download your final blueprint report.
+            <span class="en-text"><strong>Your job:</strong> Write a 3–5 sentence proposal pitch for your theme park design. Verify your checklist, review the grading rubric, and download your final blueprint report.</span>
+            <span class="es-text"><strong>Tu tarea:</strong> Escribe una propuesta de 3 a 5 oraciones para el diseño de tu parque de atracciones. Verifica tu lista de verificación, revisa la rúbrica de calificación y descarga tu informe final del plano.</span>
           </div>
 
           <!-- Proposal Pitch -->
-          <label class="lbl" for="pitch">✍️ Theme Park Map Proposal Pitch (use your real design coordinates and math!)</label>
+          <label class="lbl" for="pitch">
+            <span class="en-text">✍️ Theme Park Map Proposal Pitch (use your real design coordinates and math!)</span>
+            <span class="es-text">✍️ Propuesta del Mapa del Parque de Atracciones (¡usa tus coordenadas y matemáticas de diseño reales!)</span>
+          </label>
           <textarea id="pitch" placeholder="Welcome to my theme park design! I plotted my 5 attractions in different quadrants to balance the park. My Roller Coaster is at (..., ...) and my Food Court is at (..., ...). Since they share an axis, the absolute value distance between them is ... units. The total scale width of my park is ... miles, making it closest in size to..."></textarea>
 
           <!-- Checklist -->
-          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin:22px 0 6px;">✅ Requirement Checklist</h3>
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin:22px 0 6px;">
+            <span class="en-text">✅ Requirement Checklist</span>
+            <span class="es-text">✅ Lista de Verificación de Requisitos</span>
+          </h3>
           <ul class="checklist" id="checklist">
-            <li><input type="checkbox" id="ck1" /> I plotted 5 distinct attractions with coordinates between −10 and 10.</li>
-            <li><input type="checkbox" id="ck2" /> I correctly identified the quadrant or axis location for all attractions.</li>
-            <li><input type="checkbox" id="ck3" /> I calculated distance on the same axis using absolute values.</li>
-            <li><input type="checkbox" id="ck4" /> I reflected coordinates over the axis and found the correct signs.</li>
-            <li><input type="checkbox" id="ck5" /> I measured my park's width in units and miles (real scale).</li>
-            <li><input type="checkbox" id="ck6" /> I shared layouts with a classmate and compared layout maps.</li>
-            <li><input type="checkbox" id="ck7" /> I wrote a proposal pitch describing the math and layout of my theme park.</li>
+            <li>
+              <input type="checkbox" id="ck1" />
+              <span class="en-text">I plotted 5 distinct attractions with coordinates between −10 and 10.</span>
+              <span class="es-text">Ubiqué 5 atracciones distintas con coordenadas entre −10 y 10.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck2" />
+              <span class="en-text">I correctly identified the quadrant or axis location for all attractions.</span>
+              <span class="es-text">Identifiqué correctamente la ubicación del cuadrante o eje de todas las atracciones.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck3" />
+              <span class="en-text">I calculated distance on the same axis using absolute values.</span>
+              <span class="es-text">Calculé la distancia en el mismo eje usando valores absolutos.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck4" />
+              <span class="en-text">I reflected coordinates over the axis and found the correct signs.</span>
+              <span class="es-text">Reflejé las coordenadas sobre el eje y encontré los signos correctos.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck5" />
+              <span class="en-text">I measured my park's width in units and miles (real scale).</span>
+              <span class="es-text">Medí el ancho de mi parque en unidades y millas (escala real).</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck6" />
+              <span class="en-text">I shared layouts with a classmate and compared layout maps.</span>
+              <span class="es-text">Compartí diseños con un compañero y comparé los mapas de diseño.</span>
+            </li>
+            <li>
+              <input type="checkbox" id="ck7" />
+              <span class="en-text">I wrote a proposal pitch describing the math and layout of my theme park.</span>
+              <span class="es-text">Escribí una propuesta describiendo las matemáticas y el diseño de mi parque de atracciones.</span>
+            </li>
           </ul>
 
           <!-- Rubric -->
-          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin:22px 0 6px;">📊 Scoring Rubric</h3>
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin:22px 0 6px;">
+            <span class="en-text">📊 Scoring Rubric</span>
+            <span class="es-text">📊 Rúbrica de Calificación</span>
+          </h3>
           <table class="rubric">
             <thead>
-              <tr><th>Criteria</th><th class="score-4">4 — Expert</th><th class="score-3">3 — Proficient</th><th class="score-2">2 — Developing</th></tr>
+              <tr>
+                <th>
+                  <span class="en-text">Criteria</span>
+                  <span class="es-text">Criterio</span>
+                </th>
+                <th class="score-4">
+                  <span class="en-text">4 — Expert</span>
+                  <span class="es-text">4 — Experto</span>
+                </th>
+                <th class="score-3">
+                  <span class="en-text">3 — Proficient</span>
+                  <span class="es-text">3 — Competente</span>
+                </th>
+                <th class="score-2">
+                  <span class="en-text">2 — Developing</span>
+                  <span class="es-text">2 — En Desarrollo</span>
+                </th>
+              </tr>
             </thead>
             <tbody>
-              <tr><td><strong>Coordinate Plotting (6.NS.6)</strong></td><td>All 5 points plotted correctly with quadrant/axis labeled accurately.</td><td>4 points correct with quadrant/axis labeled.</td><td>3 or fewer points correct.</td></tr>
-              <tr><td><strong>Distance on Axis (6.NS.8)</strong></td><td>Distance formula shown correctly using absolute values with no errors.</td><td>Distance calculated correctly, minor formula layout error.</td><td>Distance computed incorrectly or counted squares only.</td></tr>
-              <tr><td><strong>Reflections (6.NS.6)</strong></td><td>Reflected point and coordinates correct; math sign logic explained fully.</td><td>Reflected coordinates correct, minor sign confusion.</td><td>Reflected point located in wrong quadrant.</td></tr>
-              <tr><td><strong>Scale &amp; Comparison</strong></td><td>Park scale converted correctly to miles and compared with detail to real parks.</td><td>Scale conversion done correctly.</td><td>Scale conversion incorrect.</td></tr>
-              <tr><td><strong>Proposal Pitch</strong></td><td>Proposal is persuasive, complete, and integrates actual coordinates and scale.</td><td>Proposal is written, includes coordinates.</td><td>Proposal is incomplete.</td></tr>
+              <tr>
+                <td><strong><span class="en-text">Coordinate Plotting (6.NS.6)</span><span class="es-text">Ubicación de Coordenadas (6.NS.6)</span></strong></td>
+                <td><span class="en-text">All 5 points plotted correctly with quadrant/axis labeled accurately.</span><span class="es-text">Los 5 puntos fueron ubicados correctamente con el cuadrante/eje etiquetado con precisión.</span></td>
+                <td><span class="en-text">4 points correct with quadrant/axis labeled.</span><span class="es-text">4 puntos correctos con el cuadrante/eje etiquetado.</span></td>
+                <td><span class="en-text">3 or fewer points correct.</span><span class="es-text">3 o menos puntos correctos.</span></td>
+              </tr>
+              <tr>
+                <td><strong><span class="en-text">Distance on Axis (6.NS.8)</span><span class="es-text">Distancia en un Eje (6.NS.8)</span></strong></td>
+                <td><span class="en-text">Distance formula shown correctly using absolute values with no errors.</span><span class="es-text">Fórmula de distancia mostrada correctamente usando valores absolutos sin errores.</span></td>
+                <td><span class="en-text">Distance calculated correctly, minor formula layout error.</span><span class="es-text">Distancia calculada correctamente, error menor en el diseño de la fórmula.</span></td>
+                <td><span class="en-text">Distance computed incorrectly or counted squares only.</span><span class="es-text">Distancia calculada incorrectamente o solo se contaron las cuadrículas.</span></td>
+              </tr>
+              <tr>
+                <td><strong><span class="en-text">Reflections (6.NS.6)</span><span class="es-text">Reflejos (6.NS.6)</span></strong></td>
+                <td><span class="en-text">Reflected point and coordinates correct; math sign logic explained fully.</span><span class="es-text">Punto reflejado y coordenadas correctas; lógica de signos matemáticos explicada por completo.</span></td>
+                <td><span class="en-text">Reflected coordinates correct, minor sign confusion.</span><span class="es-text">Coordenadas reflejadas correctas, confusión menor de signos.</span></td>
+                <td><span class="en-text">Reflected point located in wrong quadrant.</span><span class="es-text">Punto reflejado ubicado en el cuadrante incorrecto.</span></td>
+              </tr>
+              <tr>
+                <td><strong><span class="en-text">Scale &amp; Comparison</span><span class="es-text">Escala y Comparación</span></strong></td>
+                <td><span class="en-text">Park scale converted correctly to miles and compared with detail to real parks.</span><span class="es-text">Escala del parque convertida correctamente a millas y comparada con detalle con parques reales.</span></td>
+                <td><span class="en-text">Scale conversion done correctly.</span><span class="es-text">Conversión de escala realizada correctamente.</span></td>
+                <td><span class="en-text">Scale conversion incorrect.</span><span class="es-text">Conversión de escala incorrecta.</span></td>
+              </tr>
+              <tr>
+                <td><strong><span class="en-text">Proposal Pitch</span><span class="es-text">Propuesta de Presentación</span></strong></td>
+                <td><span class="en-text">Proposal is persuasive, complete, and integrates actual coordinates and scale.</span><span class="es-text">La propuesta es persuasiva, completa e integra las coordenadas y escala reales.</span></td>
+                <td><span class="en-text">Proposal is written, includes coordinates.</span><span class="es-text">La propuesta está escrita e incluye coordenadas.</span></td>
+                <td><span class="en-text">Proposal is incomplete.</span><span class="es-text">La propuesta está incompleta.</span></td>
+              </tr>
             </tbody>
           </table>
 
           <!-- Report Generator -->
           <div class="nav-row no-print" style="margin-top:22px; flex-wrap:wrap; justify-content:flex-start; gap:8px;">
-            <button class="calc-btn" onclick="buildReport()">📝 Generate Blueprint Summary</button>
-            <button class="export-btn" onclick="copyReport()">📋 Copy Summary</button>
-            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
-            <button class="export-btn" onclick="window.print()">🖨️ Print Page</button>
+            <button class="calc-btn" onclick="buildReport()">
+              <span class="en-text">📝 Generate Blueprint Summary</span>
+              <span class="es-text">📝 Generar Resumen del Plano</span>
+            </button>
+            <button class="export-btn" onclick="copyReport()">
+              <span class="en-text">📋 Copy Summary</span>
+              <span class="es-text">📋 Copiar Resumen</span>
+            </button>
+            <button class="export-btn" onclick="downloadTxt()">
+              <span class="en-text">⬇️ Download .txt</span>
+              <span class="es-text">⬇️ Descargar .txt</span>
+            </button>
+            <button class="export-btn" onclick="window.print()">
+              <span class="en-text">🖨️ Print Page</span>
+              <span class="es-text">🖨️ Imprimir Página</span>
+            </button>
           </div>
           <pre class="report-box" id="reportBox"></pre>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(5)">← Back</button>
-          <button class="nav-btn green" onclick="alert('Congratulations! 🎉 Show your theme park map proposal and blueprint report to your teacher.')">🎉 I'm Finished!</button>
+          <button class="nav-btn ghost" onclick="goStep(5)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="finishProject()">
+            <span class="en-text">🎉 I'm Finished!</span>
+            <span class="es-text">🎉 ¡He terminado!</span>
+          </button>
         </div>
       </div>
 
@@ -1068,17 +1419,28 @@
     <script src="/assets/app.js" defer></script>
     <script>
       // ---- State Variables ----
-      const STEPS = [
-        { id: 1, label: 'Key Words', icon: '📖' },
-        { id: 2, label: 'Plot Attractions', icon: '🎡' },
-        { id: 3, label: 'Attraction Distance', icon: '📏' },
-        { id: 4, label: 'Park Reflections', icon: '🪞' },
-        { id: 5, label: 'Partner Park', icon: '👥' },
-        { id: 6, label: 'Finish', icon: '🏆' },
-      ];
+      const STEPS_LANG = {
+        en: [
+          { id: 1, label: 'Key Words', icon: '📖' },
+          { id: 2, label: 'Plot Attractions', icon: '🎡' },
+          { id: 3, label: 'Attraction Distance', icon: '📏' },
+          { id: 4, label: 'Park Reflections', icon: '🪞' },
+          { id: 5, label: 'Partner Park', icon: '👥' },
+          { id: 6, label: 'Finish', icon: '🏆' }
+        ],
+        es: [
+          { id: 1, label: 'Palabras Clave', icon: '📖' },
+          { id: 2, label: 'Ubicar Atracciones', icon: '🎡' },
+          { id: 3, label: 'Distancia entre Atracciones', icon: '📏' },
+          { id: 4, label: 'Reflejos en el Parque', icon: '🪞' },
+          { id: 5, label: 'Parque del Compañero', icon: '👥' },
+          { id: 6, label: 'Terminar', icon: '🏆' }
+        ]
+      };
       let currentStep = 1;
       const visited = new Set([1]);
       let activeLevel = 1;
+      let STEPS = STEPS_LANG.en;
 
       // ---- Level Toggle Function ----
       function setLevel(n) {
@@ -1106,6 +1468,13 @@
       // ---- Navigate to Step ----
       function goStep(n) {
         if (n < 1 || n > STEPS.length) return;
+        
+        if (window.speechSynthesis && window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          const isEs = document.body.classList.contains('es');
+          document.getElementById('btn-read').textContent = isEs ? "🔊 Leer en Voz Alta" : "🔊 Read Aloud";
+        }
+
         document.getElementById('step-' + currentStep).classList.remove('active');
         currentStep = n;
         visited.add(n);
@@ -1129,7 +1498,10 @@
       function updateProgress() {
         const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
         document.getElementById('progFill').style.width = pct + '%';
-        document.getElementById('progLabel').textContent = `Step ${currentStep} of ${STEPS.length}`;
+        const isEs = document.body.classList.contains('es');
+        document.getElementById('progLabel').textContent = isEs 
+          ? `Paso ${currentStep} de ${STEPS.length}` 
+          : `Step ${currentStep} of ${STEPS.length}`;
       }
 
       // ---- Helper Maths ----
@@ -1146,7 +1518,14 @@
 
       // ---- Step 1: Pre-fill Example Coordinates ----
       function loadExamples() {
-        const examples = [
+        const isEs = document.body.classList.contains('es');
+        const examples = isEs ? [
+          { name: "Noria", x: 3, y: 5, quad: "I" },
+          { name: "Montaña Rusa", x: -6, y: 3, quad: "II" },
+          { name: "Tobogán de Agua", x: -5, y: -4, quad: "III" },
+          { name: "Autos Chocadores", x: 7, y: -4, quad: "IV" },
+          { name: "Plaza de Comidas", x: 3, y: -2, quad: "IV" }
+        ] : [
           { name: "Ferris Wheel", x: 3, y: 5, quad: "I" },
           { name: "Roller Coaster", x: -6, y: 3, quad: "II" },
           { name: "Water Slide", x: -5, y: -4, quad: "III" },
@@ -1162,6 +1541,7 @@
           document.getElementById(`attr${i}-quad`).value = ex.quad;
         }
         updatePlot();
+        updateDropdownLanguages(); // Update selects with new names
       }
 
       // ---- Step 1: Update Plot and Validate Quadrants ----
@@ -1169,6 +1549,7 @@
         drawInteractiveGrid();
         
         let hasQ1 = false, hasQ2 = false, hasQ3 = false, hasQ4 = false, hasAxis = false;
+        const isEs = document.body.classList.contains('es');
         
         for (let i = 1; i <= 5; i++) {
           const xVal = parseFloat(document.getElementById(`attr${i}-x`).value);
@@ -1192,10 +1573,10 @@
           
           if (badge) {
             if (selected === correct) {
-              badge.textContent = "✅ Correct!";
+              badge.textContent = isEs ? "✅ ¡Correcto!" : "✅ Correct!";
               badge.className = "feedback-badge correct";
             } else {
-              badge.textContent = "❌ Check signs!";
+              badge.textContent = isEs ? "❌ ¡Verifica los signos!" : "❌ Check signs!";
               badge.className = "feedback-badge incorrect";
             }
           }
@@ -1203,19 +1584,29 @@
         
         // Update Level 2 Requirements Visual Checklists
         if (activeLevel === 2) {
-          document.getElementById("req-q1").innerHTML = hasQ1 ? "✅ Quadrant I is plotted!" : "❌ At least 1 attraction in Quadrant I";
+          document.getElementById("req-q1").innerHTML = hasQ1 
+            ? (isEs ? "✅ ¡Cuadrante I está ubicado!" : "✅ Quadrant I is plotted!") 
+            : (isEs ? "❌ Al menos 1 atracción en el Cuadrante I" : "❌ At least 1 attraction in Quadrant I");
           document.getElementById("req-q1").style.color = hasQ1 ? "var(--green)" : "var(--coral)";
           
-          document.getElementById("req-q2").innerHTML = hasQ2 ? "✅ Quadrant II is plotted!" : "❌ At least 1 attraction in Quadrant II";
+          document.getElementById("req-q2").innerHTML = hasQ2 
+            ? (isEs ? "✅ ¡Cuadrante II está ubicado!" : "✅ Quadrant II is plotted!") 
+            : (isEs ? "❌ Al menos 1 atracción en el Cuadrante II" : "❌ At least 1 attraction in Quadrant II");
           document.getElementById("req-q2").style.color = hasQ2 ? "var(--green)" : "var(--coral)";
           
-          document.getElementById("req-q3").innerHTML = hasQ3 ? "✅ Quadrant III is plotted!" : "❌ At least 1 attraction in Quadrant III";
+          document.getElementById("req-q3").innerHTML = hasQ3 
+            ? (isEs ? "✅ ¡Cuadrante III está ubicado!" : "✅ Quadrant III is plotted!") 
+            : (isEs ? "❌ Al menos 1 atracción en el Cuadrante III" : "❌ At least 1 attraction in Quadrant III");
           document.getElementById("req-q3").style.color = hasQ3 ? "var(--green)" : "var(--coral)";
           
-          document.getElementById("req-q4").innerHTML = hasQ4 ? "✅ Quadrant IV is plotted!" : "❌ At least 1 attraction in Quadrant IV";
+          document.getElementById("req-q4").innerHTML = hasQ4 
+            ? (isEs ? "✅ ¡Cuadrante IV está ubicado!" : "✅ Quadrant IV is plotted!") 
+            : (isEs ? "❌ Al menos 1 atracción en el Cuadrante IV" : "❌ At least 1 attraction in Quadrant IV");
           document.getElementById("req-q4").style.color = hasQ4 ? "var(--green)" : "var(--coral)";
           
-          document.getElementById("req-axis").innerHTML = hasAxis ? "✅ Attraction plotted on an Axis!" : "❌ At least 1 attraction directly on an Axis";
+          document.getElementById("req-axis").innerHTML = hasAxis 
+            ? (isEs ? "✅ ¡Atracción ubicada en un Eje!" : "✅ Attraction plotted on an Axis!") 
+            : (isEs ? "❌ Al menos 1 atracción directamente en un Eje" : "❌ At least 1 attraction directly on an Axis");
           document.getElementById("req-axis").style.color = hasAxis ? "var(--green)" : "var(--coral)";
           
           const box = document.getElementById("l2-constraints-box");
@@ -1270,8 +1661,9 @@
         
         // Plotted points
         const colors = ['#1a6fb5', '#c45a3c', '#0e8a7d', '#6d3fc0', '#1e7d40'];
+        const isEs = document.body.classList.contains('es');
         for (let i = 1; i <= 5; i++) {
-          const name = document.getElementById(`attr${i}-name`).value || `Attraction ${i}`;
+          const name = document.getElementById(`attr${i}-name`).value || (isEs ? `Atracción ${i}` : `Attraction ${i}`);
           const xVal = parseFloat(document.getElementById(`attr${i}-x`).value);
           const yVal = parseFloat(document.getElementById(`attr${i}-y`).value);
           
@@ -1311,6 +1703,7 @@
 
       // ---- Step 2: Calculate Distance and Show Readout ----
       function runDistanceCalc() {
+        const isEs = document.body.classList.contains('es');
         const x1 = parseFloat(document.getElementById("dist-a-x").value);
         const y1 = parseFloat(document.getElementById("dist-a-y").value);
         const x2 = parseFloat(document.getElementById("dist-b-x").value);
@@ -1334,7 +1727,9 @@
         drawDistanceGrid(x1, y1, x2, y2, colA, colB);
         
         if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2)) {
-          readout.innerHTML = "Please enter complete coordinates for both Point A and Point B.";
+          readout.innerHTML = isEs 
+            ? "Por favor ingresa las coordenadas completas tanto para el Punto A como para el Punto B."
+            : "Please enter complete coordinates for both Point A and Point B.";
           readout.classList.remove("show");
           return;
         }
@@ -1344,7 +1739,9 @@
         let sharesY = (y1 === y2);
         
         if (!sharesX && !sharesY) {
-          readout.innerHTML = `<span style="color:var(--coral);">⚠️ <strong>Warning:</strong> The selected points do not share an axis (they have different x and different y coordinates). Please choose points that lie on the same horizontal or vertical line to use the absolute value method.</span>`;
+          readout.innerHTML = isEs
+            ? `<span style="color:var(--coral);">⚠️ <strong>Advertencia:</strong> Los puntos seleccionados no comparten un eje (tienen diferentes coordenadas x y y). Por favor elige puntos que estén en la misma línea horizontal o vertical para usar el método del valor absoluto.</span>`
+            : `<span style="color:var(--coral);">⚠️ <strong>Warning:</strong> The selected points do not share an axis (they have different x and different y coordinates). Please choose points that lie on the same horizontal or vertical line to use the absolute value method.</span>`;
           readout.classList.add("show");
           return;
         }
@@ -1358,10 +1755,12 @@
         
         if (sharedAxis) {
           if ((sharedAxis === "x" && !sharesX) || (sharedAxis === "y" && !sharesY)) {
-            response += "❌ Look closer! Check which coordinates are identical. ";
+            response += isEs 
+              ? "❌ ¡Mira más de cerca! Verifica qué coordenadas son idénticas. "
+              : "❌ Look closer! Check which coordinates are identical. ";
             isCorrect = false;
           } else {
-            response += "✔️ Shared axis line is correct. ";
+            response += isEs ? "✔️ El eje compartido es correcto. " : "✔️ Shared axis line is correct. ";
           }
         }
         
@@ -1369,10 +1768,12 @@
           const trueDiffQuad = sharesX ? (Math.sign(y1) !== Math.sign(y2) && y1 !== 0 && y2 !== 0) : (Math.sign(x1) !== Math.sign(x2) && x1 !== 0 && x2 !== 0);
           const expectedRel = trueDiffQuad ? "diff" : "same";
           if (qRel !== expectedRel) {
-            response += "❌ Relative quadrant placement check failed. Check if their coordinate values cross over 0. ";
+            response += isEs
+              ? "❌ La verificación de ubicación relativa del cuadrante falló. Revisa si cruzan el 0. "
+              : "❌ Relative quadrant placement check failed. Check if their coordinate values cross over 0. ";
             isCorrect = false;
           } else {
-            response += "✔️ Quadrant relation checked. ";
+            response += isEs ? "✔️ Relación de cuadrante verificada. " : "✔️ Quadrant relation checked. ";
           }
         }
         
@@ -1380,30 +1781,43 @@
           const coordAVal = sharesX ? y1 : x1;
           const coordBVal = sharesX ? y2 : x2;
           if (val1 !== Math.abs(coordAVal) || val2 !== Math.abs(coordBVal)) {
-            response += "❌ Check your absolute values. The distance from 0 is always positive. ";
+            response += isEs
+              ? "❌ Verifica tus valores absolutos. La distancia desde 0 siempre es positiva. "
+              : "❌ Check your absolute values. The distance from 0 is always positive. ";
             isCorrect = false;
           } else {
-            response += "✔️ Absolute values correct. ";
+            response += isEs ? "✔️ Valores absolutos correctos. " : "✔️ Absolute values correct. ";
           }
         }
         
         if (!isNaN(studentAns)) {
           if (studentAns !== trueDist) {
-            response += `❌ Calculated distance mismatch. Expected ${trueDist} units. `;
+            response += isEs
+              ? `❌ Discrepancia en la distancia calculada. Se esperaban ${trueDist} unidades. `
+              : `❌ Calculated distance mismatch. Expected ${trueDist} units. `;
             isCorrect = false;
           } else {
-            response += "✔️ Final distance calculation matches! ";
+            response += isEs ? "✔️ ¡El cálculo de la distancia final coincide! " : "✔️ Final distance calculation matches! ";
           }
         }
         
         if (isCorrect) {
-          readout.innerHTML = `
+          const axisEquation = sharesX ? 'x = ' + x1 : 'y = ' + y1;
+          const signSymbol = sharesX ? (Math.sign(y1) !== Math.sign(y2) ? '+' : '-') : (Math.sign(x1) !== Math.sign(x2) ? '+' : '-');
+          const valA = sharesX ? y1 : x1;
+          const valB = sharesX ? y2 : x2;
+          
+          readout.innerHTML = isEs ? `
             <strong>${response}</strong><br>
-            Point A (${x1}, ${y1}) and Point B (${x2}, ${y2}) share the line where <strong>${sharesX ? 'x = ' + x1 : 'y = ' + y1}</strong>.<br>
-            Math proof: |${sharesX ? y1 : x1}| ${sharesX ? (Math.sign(y1) !== Math.sign(y2) ? '+' : '-') : (Math.sign(x1) !== Math.sign(x2) ? '+' : '-')} |${sharesX ? y2 : x2}| = <strong>${trueDist} units</strong> in distance.
+            El Punto A (${x1}, ${y1}) y el Punto B (${x2}, ${y2}) comparten la línea donde <strong>${axisEquation}</strong>.<br>
+            Prueba matemática: |${valA}| ${signSymbol} |${valB}| = <strong>${trueDist} unidades</strong> de distancia.
+          ` : `
+            <strong>${response}</strong><br>
+            Point A (${x1}, ${y1}) and Point B (${x2}, ${y2}) share the line where <strong>${axisEquation}</strong>.<br>
+            Math proof: |${valA}| ${signSymbol} |${valB}| = <strong>${trueDist} units</strong> in distance.
           `;
         } else {
-          readout.innerHTML = `<strong>Feedback:</strong> ${response}`;
+          readout.innerHTML = `<strong>${isEs ? 'Retroalimentación' : 'Feedback'}:</strong> ${response}`;
         }
         readout.classList.add("show");
       }
@@ -1453,13 +1867,16 @@
 
       // ---- Step 2 Level 2: Pythagorean Diagonal calculations ----
       function calcDiagonal() {
+        const isEs = document.body.classList.contains('es');
         const dx = parseFloat(document.getElementById("diag-leg-x").value);
         const dy = parseFloat(document.getElementById("diag-leg-y").value);
         const ans = parseFloat(document.getElementById("diag-student-ans").value);
         const readout = document.getElementById("diag-out");
         
         if (isNaN(dx) || isNaN(dy)) {
-          readout.innerHTML = "Enter both horizontal |Δx| and vertical |Δy| legs first.";
+          readout.innerHTML = isEs
+            ? "Ingresa primero los catetos horizontal |Δx| y vertical |Δy|."
+            : "Enter both horizontal |Δx| and vertical |Δy| legs first.";
           readout.classList.remove("show");
           return;
         }
@@ -1467,14 +1884,20 @@
         const diagSq = (dx * dx) + (dy * dy);
         const diagVal = Math.sqrt(diagSq);
         
-        let report = `Diagonal legs: horizontal = ${dx}, vertical = ${dy}.<br>Legs squared sum: ${dx}² + ${dy}² = ${dx*dx} + ${dy*dy} = <strong>${diagSq}</strong>.`;
+        let report = isEs
+          ? `Catetos diagonales: horizontal = ${dx}, vertical = ${dy}.<br>Suma de catetos al cuadrado: ${dx}² + ${dy}² = ${dx*dx} + ${dy*dy} = <strong>${diagSq}</strong>.`
+          : `Diagonal legs: horizontal = ${dx}, vertical = ${dy}.<br>Legs squared sum: ${dx}² + ${dy}² = ${dx*dx} + ${dy*dy} = <strong>${diagSq}</strong>.`;
         
         if (!isNaN(ans)) {
           const diff = Math.abs(ans - diagVal);
           if (diff < 0.25) {
-            report += `<br><span style="color:var(--green)">✔️ <strong>Correct estimate!</strong> The exact straight-line distance is √${diagSq} ≈ <strong>${diagVal.toFixed(2)} units</strong>.</span>`;
+            report += isEs
+              ? `<br><span style="color:var(--green)">✔️ <strong>¡Estimación correcta!</strong> La distancia exacta en línea recta es √${diagSq} ≈ <strong>${diagVal.toFixed(2)} unidades</strong>.</span>`
+              : `<br><span style="color:var(--green)">✔️ <strong>Correct estimate!</strong> The exact straight-line distance is √${diagSq} ≈ <strong>${diagVal.toFixed(2)} units</strong>.</span>`;
           } else {
-            report += `<br><span style="color:var(--coral)">❌ Mismatch. Check your diagonal value. √${diagSq} is approximately <strong>${diagVal.toFixed(1)}</strong>.</span>`;
+            report += isEs
+              ? `<br><span style="color:var(--coral)">❌ Discrepancia. Verifica tu valor diagonal. √${diagSq} es aproximadamente <strong>${diagVal.toFixed(1)}</strong>.</span>`
+              : `<br><span style="color:var(--coral)">❌ Mismatch. Check your diagonal value. √${diagSq} is approximately <strong>${diagVal.toFixed(1)}</strong>.</span>`;
           }
         }
         
@@ -1506,6 +1929,7 @@
 
       // ---- Step 3: Verify and Plot Reflection ----
       function runReflectionCalc() {
+        const isEs = document.body.classList.contains('es');
         const id = document.getElementById("ref-source").value;
         const axis = document.getElementById("ref-axis").value;
         const predX = parseFloat(document.getElementById("ref-pred-x").value);
@@ -1521,7 +1945,9 @@
         const y = parseFloat(document.getElementById(`attr${id}-y`).value);
         
         if (isNaN(x) || isNaN(y)) {
-          readout.innerHTML = "Plotted coordinates for this attraction are invalid.";
+          readout.innerHTML = isEs
+            ? "Las coordenadas trazadas para esta atracción no son válidas."
+            : "Plotted coordinates for this attraction are invalid.";
           readout.classList.add("show");
           drawReflectionGrid(NaN, NaN, "", NaN, NaN);
           return;
@@ -1534,26 +1960,26 @@
         
         if (axis === "x") {
           expectedY = -y;
-          axisName = "x-axis";
+          axisName = isEs ? "eje x" : "x-axis";
         } else if (axis === "y") {
           expectedX = -x;
-          axisName = "y-axis";
+          axisName = isEs ? "eje y" : "y-axis";
         } else if (axis === "both") {
           expectedX = -x;
           expectedY = -y;
-          axisName = "both axes";
+          axisName = isEs ? "ambos ejes" : "both axes";
         }
         
         drawReflectionGrid(x, y, axis, predX, predY);
         
         if (!axis) {
-          readout.innerHTML = "Please select an axis of reflection.";
+          readout.innerHTML = isEs ? "Por favor selecciona un eje de reflejo." : "Please select an axis of reflection.";
           readout.classList.remove("show");
           return;
         }
         
         if (isNaN(predX) || isNaN(predY)) {
-          readout.innerHTML = "Enter your predicted reflected coordinates.";
+          readout.innerHTML = isEs ? "Ingresa tus coordenadas reflejadas predichas." : "Enter your predicted reflected coordinates.";
           readout.classList.remove("show");
           return;
         }
@@ -1562,19 +1988,30 @@
         if (isCorrect) {
           let mathReason = "";
           if (axis === "x") {
-            mathReason = `Reflecting over the <strong>x-axis</strong> flips the point vertically. The x coordinate stays the same (${x}), and the y coordinate changes sign: ${y} → ${expectedY}.`;
+            mathReason = isEs
+              ? `Reflejar sobre el <strong>eje x</strong> voltea el punto verticalmente. La coordenada x se mantiene igual (${x}), y el signo de la coordenada y cambia: ${y} → ${expectedY}.`
+              : `Reflecting over the <strong>x-axis</strong> flips the point vertically. The x coordinate stays the same (${x}), and the y coordinate changes sign: ${y} → ${expectedY}.`;
           } else if (axis === "y") {
-            mathReason = `Reflecting over the <strong>y-axis</strong> flips the point horizontally. The y coordinate stays the same (${y}), and the x coordinate changes sign: ${x} → ${expectedX}.`;
+            mathReason = isEs
+              ? `Reflejar sobre el <strong>eje y</strong> voltea el punto horizontalmente. La coordenada y se mantiene igual (${y}), y el signo de la coordenada x cambia: ${x} → ${expectedX}.`
+              : `Reflecting over the <strong>y-axis</strong> flips the point horizontally. The y coordinate stays the same (${y}), and the x coordinate changes sign: ${x} → ${expectedX}.`;
           } else if (axis === "both") {
-            mathReason = `Reflecting over <strong>both axes</strong> flips signs for both coordinates: (${x}, ${y}) → (${expectedX}, ${expectedY}). This is equivalent to a 180° rotation around the origin!`;
+            mathReason = isEs
+              ? `Reflejar sobre <strong>ambos ejes</strong> cambia los signos de ambas coordenadas: (${x}, ${y}) → (${expectedX}, ${expectedY}). ¡Esto equivale a una rotación de 180° alrededor del origen!`
+              : `Reflecting over <strong>both axes</strong> flips signs for both coordinates: (${x}, ${y}) → (${expectedX}, ${expectedY}). This is equivalent to a 180° rotation around the origin!`;
           }
           
-          readout.innerHTML = `
+          readout.innerHTML = isEs ? `
+            <span style="color:var(--green)">✔️ <strong>¡Predicción correcta!</strong></span> Punto Reflejado: <strong>(${expectedX}, ${expectedY})</strong>.<br>
+            <small>${mathReason}</small>
+          ` : `
             <span style="color:var(--green)">✔️ <strong>Correct prediction!</strong></span> Reflected Point: <strong>(${expectedX}, ${expectedY})</strong>.<br>
             <small>${mathReason}</small>
           `;
         } else {
-          readout.innerHTML = `<span style="color:var(--coral)">❌ <strong>Incorrect prediction.</strong></span> Mirroring coordinates over the ${axisName} did not match your inputs. Look closely at the grid visual.`;
+          readout.innerHTML = isEs
+            ? `<span style="color:var(--coral)">❌ <strong>Predicción incorrecta.</strong></span> Reflejar las coordenadas sobre el ${axisName} no coincidió con tus valores de entrada. Observa la cuadrícula visual de cerca.`
+            : `<span style="color:var(--coral)">❌ <strong>Incorrect prediction.</strong></span> Mirroring coordinates over the ${axisName} did not match your inputs. Look closely at the grid visual.`;
         }
         readout.classList.add("show");
       }
@@ -1611,17 +2048,21 @@
         html += `<text x="142" y="8" font-size="10" font-weight="bold" fill="var(--navy)">y</text>`;
         
         if (!isNaN(x) && !isNaN(y)) {
+          const isEs = document.body.classList.contains('es');
+          const labelOrig = isEs ? "Original" : "Original";
+          const labelRef = isEs ? "Reflejado" : "Reflected";
+          
           const cxOriginal = center + x * scale;
           const cyOriginal = center - y * scale;
           html += `<circle cx="${cxOriginal}" cy="${cyOriginal}" r="6" fill="var(--blue)" stroke="#fff" stroke-width="1.5" />`;
-          html += `<text x="${cxOriginal + 8}" y="${cyOriginal - 4}" font-size="9" font-weight="bold" fill="var(--navy)" style="paint-order: stroke; stroke: white; stroke-width: 2px;">Original (${x}, ${y})</text>`;
+          html += `<text x="${cxOriginal + 8}" y="${cyOriginal - 4}" font-size="9" font-weight="bold" fill="var(--navy)" style="paint-order: stroke; stroke: white; stroke-width: 2px;">${labelOrig} (${x}, ${y})</text>`;
           
           if (!isNaN(xRef) && !isNaN(yRef)) {
             const cxRef = center + xRef * scale;
             const cyRef = center - yRef * scale;
             html += `<line x1="${cxOriginal}" y1="${cyOriginal}" x2="${cxRef}" y2="${cyRef}" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 4" />`;
             html += `<circle cx="${cxRef}" cy="${cyRef}" r="6" fill="var(--green)" stroke="#fff" stroke-width="1.5" />`;
-            html += `<text x="${cxRef + 8}" y="${cyRef - 4}" font-size="9" font-weight="bold" fill="var(--navy)" style="paint-order: stroke; stroke: white; stroke-width: 2px;">Reflected (${xRef}, ${yRef})</text>`;
+            html += `<text x="${cxRef + 8}" y="${cyRef - 4}" font-size="9" font-weight="bold" fill="var(--navy)" style="paint-order: stroke; stroke: white; stroke-width: 2px;">${labelRef} (${xRef}, ${yRef})</text>`;
           }
         }
         svg.innerHTML = html;
@@ -1629,6 +2070,7 @@
 
       // ---- Step 3 Part B: Scale Calculation verification ----
       function runScaleCalc() {
+        const isEs = document.body.classList.contains('es');
         const minX = parseFloat(document.getElementById("scale-min-x").value);
         const maxX = parseFloat(document.getElementById("scale-max-x").value);
         const widthUnits = parseFloat(document.getElementById("scale-width-units").value);
@@ -1636,7 +2078,9 @@
         const readout = document.getElementById("scale-out");
         
         if (isNaN(minX) || isNaN(maxX)) {
-          readout.innerHTML = "Enter both leftmost and rightmost x-coordinates first.";
+          readout.innerHTML = isEs
+            ? "Ingresa primero las coordenadas x más a la izquierda y más a la derecha."
+            : "Enter both leftmost and rightmost x-coordinates first.";
           readout.classList.remove("show");
           return;
         }
@@ -1649,47 +2093,63 @@
         
         if (!isNaN(widthUnits)) {
           if (widthUnits !== expectedUnits) {
-            status += `❌ Unit width mismatch. Expected |${maxX} - (${minX})| = ${expectedUnits} grid units. `;
+            status += isEs
+              ? `❌ Discrepancia de ancho de unidad. Se esperaba |${maxX} - (${minX})| = ${expectedUnits} unidades de cuadrícula. `
+              : `❌ Unit width mismatch. Expected |${maxX} - (${minX})| = ${expectedUnits} grid units. `;
             correct = false;
           } else {
-            status += "✔️ Unit width correct. ";
+            status += isEs ? "✔️ Ancho de unidad correcto. " : "✔️ Unit width correct. ";
           }
         }
         
         if (!isNaN(widthMiles)) {
           if (Math.abs(widthMiles - expectedMiles) > 0.05) {
-            status += `❌ Mile scale conversion mismatch. Expected ${expectedMiles} miles. `;
+            status += isEs
+              ? `❌ Discrepancia de conversión de escala de millas. Se esperaba ${expectedMiles} millas. `
+              : `❌ Mile scale conversion mismatch. Expected ${expectedMiles} miles. `;
             correct = false;
           } else {
-            status += "✔️ Mile scale conversion correct. ";
+            status += isEs ? "✔️ Conversión de escala de millas correcta. " : "✔️ Mile scale conversion correct. ";
           }
         }
         
         if (correct) {
           let parkMatch = "";
           if (expectedMiles <= 0.15) {
-            parkMatch = "<strong>Local County Fair</strong> (takes 2-3 mins to walk across)";
+            parkMatch = isEs 
+              ? "<strong>Feria Local del Condado</strong> (toma 2 o 3 minutos caminar a través de ella)" 
+              : "<strong>Local County Fair</strong> (takes 2-3 mins to walk across)";
           } else if (expectedMiles <= 0.45) {
-            parkMatch = "<strong>Regional Theme Park</strong> (medium-sized amusement park)";
+            parkMatch = isEs
+              ? "<strong>Parque de Atracciones Regional</strong> (parque de atracciones mediano)"
+              : "<strong>Regional Theme Park</strong> (medium-sized amusement park)";
           } else {
-            parkMatch = "<strong>Major Destination Theme Park</strong> (sprawling Disney/Universal scale!)";
+            parkMatch = isEs
+              ? "<strong>Parque Temático de Destino Mayor</strong> (¡escala extensa de Disney/Universal!)"
+              : "<strong>Major Destination Theme Park</strong> (sprawling Disney/Universal scale!)";
           }
           
-          readout.innerHTML = `
+          readout.innerHTML = isEs ? `
+            <strong>${status}</strong><br>
+            Ancho horizontal del parque: <strong>${expectedUnits} unidades de cuadrícula</strong>.<br>
+            En escala real (1 unidad = 0.1 millas): ${expectedUnits} × 0.1 = <strong>${expectedMiles} millas</strong> de ancho.<br>
+            Este diseño es más cercano en tamaño a una: ${parkMatch}.
+          ` : `
             <strong>${status}</strong><br>
             Park Horizontal Width: <strong>${expectedUnits} grid units</strong>.<br>
             In Real Scale (1 unit = 0.1 miles): ${expectedUnits} × 0.1 = <strong>${expectedMiles} miles</strong> wide.<br>
             This layout is closest in size to a: ${parkMatch}.
           `;
         } else {
-          readout.innerHTML = `<strong>Feedback:</strong> ${status}`;
+          readout.innerHTML = `<strong>${isEs ? 'Retroalimentación' : 'Feedback'}:</strong> ${status}`;
         }
         readout.classList.add("show");
       }
 
       // ---- Step 4: Classmate Comparison Calculation ----
       function runPartnerComparison() {
-        const partnerName = document.getElementById("p-name").value || "Classmate";
+        const isEs = document.body.classList.contains('es');
+        const partnerName = document.getElementById("p-name").value || (isEs ? "Compañero" : "Classmate");
         const readout = document.getElementById("partner-out");
         
         // Find my max width
@@ -1717,13 +2177,17 @@
         }
         
         if (myValidPoints === 0) {
-          readout.innerHTML = "You need to plot your own attractions on Step 1 first!";
+          readout.innerHTML = isEs
+            ? "¡Primero debes ubicar tus propias atracciones en el Paso 1!"
+            : "You need to plot your own attractions on Step 1 first!";
           readout.classList.add("show");
           return;
         }
         
         if (pValidPoints < 2) {
-          readout.innerHTML = "Please enter coordinates for at least two of your partner's attractions to compare.";
+          readout.innerHTML = isEs
+            ? "Por favor ingresa las coordenadas de al menos dos de las atracciones de tu compañero para comparar."
+            : "Please enter coordinates for at least two of your partner's attractions to compare.";
           readout.classList.add("show");
           return;
         }
@@ -1731,18 +2195,28 @@
         const myWidth = myMaxX - myMinX;
         const pWidth = pMaxX - pMinX;
         
-        let report = `
+        let report = isEs ? `
+          <strong>Comparación de planos con ${partnerName}:</strong><br>
+          • El ancho horizontal de tu mapa: <strong>${myWidth} unidades</strong> (${(myWidth*0.1).toFixed(2)} millas).<br>
+          • El ancho horizontal del mapa de ${partnerName}: <strong>${pWidth} unidades</strong> (${(pWidth*0.1).toFixed(2)} millas).<br>
+        ` : `
           <strong>Blueprint comparison with ${partnerName}:</strong><br>
           • Your map horizontal width: <strong>${myWidth} units</strong> (${(myWidth*0.1).toFixed(2)} miles).<br>
           • ${partnerName}'s map horizontal width: <strong>${pWidth} units</strong> (${(pWidth*0.1).toFixed(2)} miles).<br>
         `;
         
         if (myWidth > pWidth) {
-          report += `Your park is more spread out than ${partnerName}'s park by <strong>${myWidth - pWidth} grid units</strong>!`;
+          report += isEs
+            ? `¡Tu parque está más extendido que el parque de ${partnerName} por <strong>${myWidth - pWidth} unidades de cuadrícula</strong>!`
+            : `Your park is more spread out than ${partnerName}'s park by <strong>${myWidth - pWidth} grid units</strong>!`;
         } else if (pWidth > myWidth) {
-          report += `${partnerName}'s park is more spread out than your park by <strong>${pWidth - myWidth} grid units</strong>!`;
+          report += isEs
+            ? `¡El parque de ${partnerName} está más extendido que tu parque por <strong>${pWidth - myWidth} unidades de cuadrícula</strong>!`
+            : `${partnerName}'s park is more spread out than your park by <strong>${pWidth - myWidth} grid units</strong>!`;
         } else {
-          report += "Both of your blueprints have the exact same horizontal width!";
+          report += isEs
+            ? "¡Ambos planos tienen exactamente el mismo ancho horizontal!"
+            : "Both of your blueprints have the exact same horizontal width!";
         }
         
         readout.innerHTML = report;
@@ -1751,27 +2225,29 @@
 
       // ---- Step 5: Generate proposals & summary reports ----
       function buildReport() {
-        const p1Name = document.getElementById("attr1-name").value;
+        const isEs = document.body.classList.contains('es');
+        
+        const p1Name = document.getElementById("attr1-name").value || (isEs ? "Atracción 1" : "Attraction 1");
         const p1x = document.getElementById("attr1-x").value;
         const p1y = document.getElementById("attr1-y").value;
         const p1q = document.getElementById("attr1-quad").value;
         
-        const p2Name = document.getElementById("attr2-name").value;
+        const p2Name = document.getElementById("attr2-name").value || (isEs ? "Atracción 2" : "Attraction 2");
         const p2x = document.getElementById("attr2-x").value;
         const p2y = document.getElementById("attr2-y").value;
         const p2q = document.getElementById("attr2-quad").value;
         
-        const p3Name = document.getElementById("attr3-name").value;
+        const p3Name = document.getElementById("attr3-name").value || (isEs ? "Atracción 3" : "Attraction 3");
         const p3x = document.getElementById("attr3-x").value;
         const p3y = document.getElementById("attr3-y").value;
         const p3q = document.getElementById("attr3-quad").value;
         
-        const p4Name = document.getElementById("attr4-name").value;
+        const p4Name = document.getElementById("attr4-name").value || (isEs ? "Atracción 4" : "Attraction 4");
         const p4x = document.getElementById("attr4-x").value;
         const p4y = document.getElementById("attr4-y").value;
         const p4q = document.getElementById("attr4-quad").value;
         
-        const p5Name = document.getElementById("attr5-name").value;
+        const p5Name = document.getElementById("attr5-name").value || (isEs ? "Atracción 5" : "Attraction 5");
         const p5x = document.getElementById("attr5-x").value;
         const p5y = document.getElementById("attr5-y").value;
         const p5q = document.getElementById("attr5-quad").value;
@@ -1779,8 +2255,8 @@
         // Distance
         const distASelect = document.getElementById("dist-A").value;
         const distBSelect = document.getElementById("dist-B").value;
-        const distA = distASelect ? (distASelect === "custom" ? "Custom Point A" : document.getElementById(`attr${distASelect}-name`).value) : "—";
-        const distB = distBSelect ? (distBSelect === "custom" ? "Custom Point B" : document.getElementById(`attr${distBSelect}-name`).value) : "—";
+        const distA = distASelect ? (distASelect === "custom" ? (isEs ? "Punto A Personalizado" : "Custom Point A") : document.getElementById(`attr${distASelect}-name`).value) : "—";
+        const distB = distBSelect ? (distBSelect === "custom" ? (isEs ? "Punto B Personalizado" : "Custom Point B") : document.getElementById(`attr${distBSelect}-name`).value) : "—";
         const dAx = document.getElementById("dist-a-x").value;
         const dAy = document.getElementById("dist-a-y").value;
         const dBx = document.getElementById("dist-b-x").value;
@@ -1802,7 +2278,7 @@
         const sReflect = document.getElementById("scale-reflect").value;
         
         // Peer Comparison
-        const pName = document.getElementById("p-name").value || "Classmate";
+        const pName = document.getElementById("p-name").value || (isEs ? "Compañero" : "Classmate");
         const pReflect = document.getElementById("partner-reflect").value;
         
         // Pitch
@@ -1811,17 +2287,49 @@
         // Level 2 drop coaster
         const l2Coaster = document.getElementById("l2-coaster-ans").value;
 
-        const lines = [
+        const lines = isEs ? [
+          '═══ INFORME DEL PLANO DEL PARQUE DE ATRACCIONES — PROYECTO FINAL DE LA UNIDAD 7 ═══',
+          `Generado: ${new Date().toLocaleDateString()}`,
+          `Nivel de pista: Nivel ${activeLevel}`,
+          '',
+          '📍 PASO 1 — ATRACCIONES UBICADAS',
+          `  1. ${p1Name}: (${p1x || '—'}, ${p1y || '—'}) en Ubicación: ${p1q || '—'}`,
+          `  2. ${p2Name}: (${p2x || '—'}, ${p2y || '—'}) en Ubicación: ${p2q || '—'}`,
+          `  3. ${p3Name}: (${p3x || '—'}, ${p3y || '—'}) en Ubicación: ${p3q || '—'}`,
+          `  4. ${p4Name}: (${p4x || '—'}, ${p4y || '—'}) en Ubicación: ${p4q || '—'}`,
+          `  5. ${p5Name}: (${p5x || '—'}, ${p5y || '—'}) en Ubicación: ${p5q || '—'}`,
+          '',
+          '📏 PASO 2 — CÁLCULOS DE DISTANCIA DEL EJE',
+          `  Atracciones Seleccionadas: ${distA} (${dAx}, ${dAy}) y ${distB} (${dBx}, ${dBy})`,
+          `  Distancia Calculada: ${distVal || '—'} unidades usando valores absolutos`,
+          activeLevel === 2 ? `  Catetos Pitagóricos Nivel 2: |Δx| = ${document.getElementById("diag-leg-x").value || '—'}, |Δy| = ${document.getElementById("diag-leg-y").value || '—'}, diagonal estimada: ${document.getElementById("diag-student-ans").value || '—'} unidades` : '',
+          '',
+          '🪞 PASO 3 — REFLEJOS EN EL PARQUE Y ESCALA',
+          `  Reflejado: ${refSrcName} sobre el ${refAxis || '—'}`,
+          `  Coordenadas Reflejadas: (${rx || '—'}, ${ry || '—'})`,
+          `  Ancho del Parque: ${sUnits || '—'} unidades | Ancho de escala en el mundo real: ${sMiles || '—'} millas`,
+          sReflect ? `  Declaración de comparación: ${sReflect}` : '',
+          activeLevel === 2 && l2Coaster ? `  Caída de la montaña rusa Nivel 2: ${l2Coaster}` : '',
+          '',
+          '👥 PASO 4 — ESTUDIO DEL PLANO CON UN COMPAÑERO',
+          `  Compañero: ${pName}`,
+          pReflect ? `  Notas de reflexión sobre el diseño: ${pReflect}` : '',
+          '',
+          '✍️ PASO 5 — PROPUESTA DEL PARQUE DE ATRACCIONES',
+          pitch || '(No se ha escrito ninguna propuesta aún)',
+          '',
+          '═══════════════════════════════════════════════════════════'
+        ] : [
           '═══ THEME PARK BLUEPRINT REPORT — UNIT 7 CULMINATING PROJECT ═══',
           `Generated: ${new Date().toLocaleDateString()}`,
           `Theme track: Level ${activeLevel}`,
           '',
           '📍 STEP 1 — PLOTTED ATTRACTIONS',
-          `  1. ${p1Name || 'Attraction 1'}: (${p1x || '—'}, ${p1y || '—'}) in Location: ${p1q || '—'}`,
-          `  2. ${p2Name || 'Attraction 2'}: (${p2x || '—'}, ${p2y || '—'}) in Location: ${p2q || '—'}`,
-          `  3. ${p3Name || 'Attraction 3'}: (${p3x || '—'}, ${p3y || '—'}) in Location: ${p3q || '—'}`,
-          `  4. ${p4Name || 'Attraction 4'}: (${p4x || '—'}, ${p4y || '—'}) in Location: ${p4q || '—'}`,
-          `  5. ${p5Name || 'Attraction 5'}: (${p5x || '—'}, ${p5y || '—'}) in Location: ${p5q || '—'}`,
+          `  1. ${p1Name}: (${p1x || '—'}, ${p1y || '—'}) in Location: ${p1q || '—'}`,
+          `  2. ${p2Name}: (${p2x || '—'}, ${p2y || '—'}) in Location: ${p2q || '—'}`,
+          `  3. ${p3Name}: (${p3x || '—'}, ${p3y || '—'}) in Location: ${p3q || '—'}`,
+          `  4. ${p4Name}: (${p4x || '—'}, ${p4y || '—'}) in Location: ${p4q || '—'}`,
+          `  5. ${p5Name}: (${p5x || '—'}, ${p5y || '—'}) in Location: ${p5q || '—'}`,
           '',
           '📏 STEP 2 — AXIS DISTANCE CALCULATIONS',
           `  Selected Attractions: ${distA} (${dAx}, ${dAy}) & ${distB} (${dBx}, ${dBy})`,
@@ -1843,35 +2351,262 @@
           pitch || '(No proposal pitch written yet)',
           '',
           '═══════════════════════════════════════════════════════════'
-        ].filter(l => l !== '');
+        ];
         
         const box = document.getElementById("reportBox");
-        box.textContent = lines.join('\n');
+        box.textContent = lines.filter(l => l !== '').join('\n');
         box.classList.add("show");
       }
 
       function copyReport() {
+        const isEs = document.body.classList.contains('es');
         const txt = document.getElementById('reportBox').textContent;
         if (!txt) {
-          alert("Generate the report summary first!");
+          alert(isEs ? "¡Genera primero el resumen del informe!" : "Generate the report summary first!");
           return;
         }
-        navigator.clipboard?.writeText(txt).then(() => alert('Summary copied to clipboard!'));
+        navigator.clipboard?.writeText(txt).then(() => alert(isEs ? '¡Resumen copiado al portapapeles!' : 'Summary copied to clipboard!'));
       }
 
       function downloadTxt() {
+        const isEs = document.body.classList.contains('es');
         const txt = document.getElementById('reportBox').textContent;
         if (!txt) {
-          alert("Generate the report summary first!");
+          alert(isEs ? "¡Genera primero el resumen del informe!" : "Generate the report summary first!");
           return;
         }
         const a = document.createElement('a');
         a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
-        a.download = 'theme-park-blueprint-report.txt';
+        a.download = isEs ? 'informe-plano-parque-atracciones.txt' : 'theme-park-blueprint-report.txt';
         a.click();
       }
 
+      function finishProject() {
+        const isEs = document.body.classList.contains('es');
+        alert(isEs
+          ? '¡Felicitaciones! 🎉 Muestra la propuesta de mapa del parque de atracciones y el informe del plano a tu maestro.'
+          : 'Congratulations! 🎉 Show your theme park map proposal and blueprint report to your teacher.'
+        );
+      }
+
+      function updateDropdownLanguages() {
+        const isEs = document.body.classList.contains('es');
+        
+        // Update attr1-quad through attr5-quad selects
+        for (let i = 1; i <= 5; i++) {
+          const select = document.getElementById(`attr${i}-quad`);
+          if (select) {
+            const selectedValue = select.value;
+            select.innerHTML = isEs ? `
+              <option value="">Seleccionar ubicación...</option>
+              <option value="I">Cuadrante I (+, +)</option>
+              <option value="II">Cuadrante II (-, +)</option>
+              <option value="III">Cuadrante III (-, -)</option>
+              <option value="IV">Cuadrante IV (+, -)</option>
+              <option value="x">Eje x</option>
+              <option value="y">Eje y</option>
+              <option value="origin">Origen (0, 0)</option>
+            ` : `
+              <option value="">Select location...</option>
+              <option value="I">Quadrant I (+, +)</option>
+              <option value="II">Quadrant II (-, +)</option>
+              <option value="III">Quadrant III (-, -)</option>
+              <option value="IV">Quadrant IV (+, -)</option>
+              <option value="x">x-axis</option>
+              <option value="y">y-axis</option>
+              <option value="origin">Origin (0, 0)</option>
+            `;
+            select.value = selectedValue;
+          }
+        }
+
+        // Update dist-A and dist-B selects
+        const distASelect = document.getElementById("dist-A");
+        const distBSelect = document.getElementById("dist-B");
+        if (distASelect && distBSelect) {
+          const valA = distASelect.value;
+          const valB = distBSelect.value;
+          
+          const name1 = document.getElementById("attr1-name").value || (isEs ? "Atracción 1" : "Attraction 1");
+          const name2 = document.getElementById("attr2-name").value || (isEs ? "Atracción 2" : "Attraction 2");
+          const name3 = document.getElementById("attr3-name").value || (isEs ? "Atracción 3" : "Attraction 3");
+          const name4 = document.getElementById("attr4-name").value || (isEs ? "Atracción 4" : "Attraction 4");
+          const name5 = document.getElementById("attr5-name").value || (isEs ? "Atracción 5" : "Attraction 5");
+
+          const optionsHTML_A = isEs ? `
+            <option value="">Seleccionar Atracción A...</option>
+            <option value="1">1. ${name1}</option>
+            <option value="2">2. ${name2}</option>
+            <option value="3">3. ${name3}</option>
+            <option value="4">4. ${name4}</option>
+            <option value="5">5. ${name5}</option>
+            <option value="custom">-- Usar Coordenadas Personalizadas --</option>
+          ` : `
+            <option value="">Select Attraction A...</option>
+            <option value="1">1. ${name1}</option>
+            <option value="2">2. ${name2}</option>
+            <option value="3">3. ${name3}</option>
+            <option value="4">4. ${name4}</option>
+            <option value="5">5. ${name5}</option>
+            <option value="custom">-- Use Custom Coordinates --</option>
+          `;
+
+          const optionsHTML_B = isEs ? `
+            <option value="">Seleccionar Atracción B...</option>
+            <option value="1">1. ${name1}</option>
+            <option value="2">2. ${name2}</option>
+            <option value="3">3. ${name3}</option>
+            <option value="4">4. ${name4}</option>
+            <option value="5">5. ${name5}</option>
+            <option value="custom">-- Usar Coordenadas Personalizadas --</option>
+          ` : `
+            <option value="">Select Attraction B...</option>
+            <option value="1">1. ${name1}</option>
+            <option value="2">2. ${name2}</option>
+            <option value="3">3. ${name3}</option>
+            <option value="4">4. ${name4}</option>
+            <option value="5">5. ${name5}</option>
+            <option value="custom">-- Use Custom Coordinates --</option>
+          `;
+
+          distASelect.innerHTML = optionsHTML_A;
+          distBSelect.innerHTML = optionsHTML_B;
+          distASelect.value = valA;
+          distBSelect.value = valB;
+        }
+
+        // Update dist-shared-axis select
+        const distSharedAxis = document.getElementById("dist-shared-axis");
+        if (distSharedAxis) {
+          const valShared = distSharedAxis.value;
+          distSharedAxis.innerHTML = isEs ? `
+            <option value="">Seleccionar eje compartido...</option>
+            <option value="x">Comparten la misma coordenada x (línea vertical)</option>
+            <option value="y">Comparten la misma coordenada y (línea horizontal)</option>
+          ` : `
+            <option value="">Select shared axis...</option>
+            <option value="x">They share the same x-coordinate (vertical line)</option>
+            <option value="y">They share the same y-coordinate (horizontal line)</option>
+          `;
+          distSharedAxis.value = valShared;
+        }
+
+        // Update dist-q-rel select
+        const distQRel = document.getElementById("dist-q-rel");
+        if (distQRel) {
+          const valQ = distQRel.value;
+          distQRel.innerHTML = isEs ? `
+            <option value="">Seleccionar ubicación relativa...</option>
+            <option value="diff">Diferentes Cuadrantes (sumar sus valores absolutos)</option>
+            <option value="same">Mismo Cuadrante (restar sus valores absolutos)</option>
+          ` : `
+            <option value="">Select relative location...</option>
+            <option value="diff">Different Quadrants (add their absolute values)</option>
+            <option value="same">Same Quadrant (subtract their absolute values)</option>
+          `;
+          distQRel.value = valQ;
+        }
+
+        // Update ref-source select
+        const refSource = document.getElementById("ref-source");
+        if (refSource) {
+          const valRef = refSource.value;
+          const name1 = document.getElementById("attr1-name").value || (isEs ? "Atracción 1" : "Attraction 1");
+          const name2 = document.getElementById("attr2-name").value || (isEs ? "Atracción 2" : "Attraction 2");
+          const name3 = document.getElementById("attr3-name").value || (isEs ? "Atracción 3" : "Attraction 3");
+          const name4 = document.getElementById("attr4-name").value || (isEs ? "Atracción 4" : "Attraction 4");
+          const name5 = document.getElementById("attr5-name").value || (isEs ? "Atracción 5" : "Attraction 5");
+
+          refSource.innerHTML = isEs ? `
+            <option value="">Seleccionar...</option>
+            <option value="1">1. ${name1}</option>
+            <option value="2">2. ${name2}</option>
+            <option value="3">3. ${name3}</option>
+            <option value="4">4. ${name4}</option>
+            <option value="5">5. ${name5}</option>
+          ` : `
+            <option value="">Select...</option>
+            <option value="1">1. ${name1}</option>
+            <option value="2">2. ${name2}</option>
+            <option value="3">3. ${name3}</option>
+            <option value="4">4. ${name4}</option>
+            <option value="5">5. ${name5}</option>
+          `;
+          refSource.value = valRef;
+        }
+
+        // Update ref-axis select
+        const refAxis = document.getElementById("ref-axis");
+        if (refAxis) {
+          const valAxis = refAxis.value;
+          refAxis.innerHTML = isEs ? `
+            <option value="">Seleccionar eje...</option>
+            <option value="x">eje x (reflejar verticalmente)</option>
+            <option value="y">eje y (reflejar horizontalmente)</option>
+            <option class="lvl2-only" value="both">Ambos ejes (rotación de 180°)</option>
+          ` : `
+            <option value="">Select axis...</option>
+            <option value="x">x-axis (flip vertically)</option>
+            <option value="y">y-axis (flip horizontally)</option>
+            <option class="lvl2-only" value="both">Both axes (180° rotation)</option>
+          `;
+          refAxis.value = valAxis;
+        }
+      }
+
+      function updatePlaceholders() {
+        const isEs = document.body.classList.contains('es');
+        
+        // Update attraction names if they are still at their default values
+        const defaultsEN = ["Ferris Wheel", "Roller Coaster", "Water Slide", "Bumper Cars", "Food Court"];
+        const defaultsES = ["Noria", "Montaña Rusa", "Tobogán de Agua", "Autos Chocadores", "Plaza de Comidas"];
+        
+        for (let i = 1; i <= 5; i++) {
+          const input = document.getElementById(`attr${i}-name`);
+          if (input) {
+            const val = input.value.trim();
+            if (isEs) {
+              const idx = defaultsEN.indexOf(val);
+              if (idx !== -1) input.value = defaultsES[idx];
+            } else {
+              const idx = defaultsES.indexOf(val);
+              if (idx !== -1) input.value = defaultsEN[idx];
+            }
+          }
+        }
+        
+        const pitchInput = document.getElementById("pitch");
+        if (pitchInput) {
+          pitchInput.placeholder = isEs
+            ? "¡Bienvenido al diseño de mi parque de atracciones! Ubiqué mis 5 atracciones en diferentes cuadrantes para equilibrar el parque. Mi Montaña Rusa está en (..., ...) y mi Plaza de Comidas está en (..., ...). Dado que comparten un eje, la distancia del valor absoluto entre ellas es ... unidades. El ancho total a escala de mi parque es ... millas, lo que lo hace más cercano en tamaño a..."
+            : "Welcome to my theme park design! I plotted my 5 attractions in different quadrants to balance the park. My Roller Coaster is at (..., ...) and my Food Court is at (..., ...). Since they share an axis, the absolute value distance between them is ... units. The total scale width of my park is ... miles, making it closest in size to...";
+        }
+        
+        const scaleReflect = document.getElementById("scale-reflect");
+        if (scaleReflect) {
+          scaleReflect.placeholder = isEs
+            ? "Mi parque de atracciones tiene ___ millas de ancho, lo que se aproxima más a... Esto significa que..."
+            : "My theme park is ___ miles wide, which is closest to a... This means...";
+        }
+        
+        const partnerReflect = document.getElementById("partner-reflect");
+        if (partnerReflect) {
+          partnerReflect.placeholder = isEs
+            ? "El ancho horizontal máximo de mi parque es ___ unidades, mientras que el de mi compañero es ___ unidades. Creo que..."
+            : "My park's maximum width is ___ units, while my partner's is ___ units. I think...";
+        }
+        
+        const l2CoasterAns = document.getElementById("l2-coaster-ans");
+        if (l2CoasterAns) {
+          l2CoasterAns.placeholder = isEs
+            ? "Escribe tu ecuación de valor absoluto (ej. |52| + |-13| = ...) y explica tu razonamiento."
+            : "Write your absolute value equation (e.g. |52| + |-13| = ...) and explain your reasoning.";
+        }
+      }
+
       // ---- Init Lifecycle ----
+      updateDropdownLanguages();
+      updatePlaceholders();
       buildTrail();
       updateProgress();
       updatePlot();

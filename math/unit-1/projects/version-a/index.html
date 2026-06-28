@@ -271,6 +271,11 @@
         body { background: #fff; }
         .card { box-shadow: none; border-color: #ccc; }
       }
+
+      /* ---- Bilingual Support ---- */
+      body.es .en-text { display: none !important; }
+      body.es .es-text { display: inline !important; }
+      span.es-text, tspan.es-text { display: none; }
     </style>
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -281,18 +286,43 @@
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
       <div class="hero-emoji">🎉</div>
-      <h1>Block Party Planner</h1>
-      <p class="hero-sub">Plan your own block party using real math — step by step.</p>
+      <h1>
+        <span class="en-text">Block Party Planner</span>
+        <span class="es-text">Planificador de fiesta de cuadra</span>
+      </h1>
+      <p class="hero-sub">
+        <span class="en-text">Plan your own block party using real math — step by step.</span>
+        <span class="es-text">Planifica tu propia fiesta de cuadra usando matemáticas reales, paso a paso.</span>
+      </p>
       <div class="hero-tags">
-        <span class="tag gold">Unit 1 · Number Sense</span>
+        <span class="tag gold">
+          <span class="en-text">Unit 1 · Number Sense</span>
+          <span class="es-text">Unidad 1 · Sentido numérico</span>
+        </span>
         <span class="tag">6.NS.2</span>
         <span class="tag">6.NS.3</span>
         <span class="tag">6.NS.4</span>
-        <span class="tag">Version A</span>
+        <span class="tag">
+          <span class="en-text">Version A</span>
+          <span class="es-text">Versión A</span>
+        </span>
       </div>
       <div class="level-bar">
-        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
-        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
+          <span class="en-text">🟢 Level 1 — With Support</span>
+          <span class="es-text">🟢 Nivel 1 — Con apoyo</span>
+        </button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">
+          <span class="en-text">🔵 Level 2 — Challenge</span>
+          <span class="es-text">🔵 Nivel 2 — Desafío</span>
+        </button>
+      </div>
+      <div class="level-bar" style="margin-top: 10px;">
+        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
+        <button class="level-btn" id="btn-read" onclick="readAloud()">
+          <span class="en-text">🔊 Read Aloud</span>
+          <span class="es-text">🔊 Leer en voz alta</span>
+        </button>
       </div>
     </header>
 
@@ -316,49 +346,94 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">Key Words</div>
-              <div class="card-sub">Learn these 4 math words before you begin</div>
+              <div class="card-title">
+                <span class="en-text">Key Words</span>
+                <span class="es-text">Palabras clave</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Learn these 4 math words before you begin</span>
+                <span class="es-text">Aprende estas 4 palabras matemáticas antes de comenzar</span>
+              </div>
             </div>
           </div>
 
           <!-- SVG Visual: vocab diagram -->
-          
 
           <div class="vocab-grid">
             <div class="vocab-card">
               <div class="vocab-icon">🎁</div>
-              <div class="vocab-term">GCF — Greatest Common Factor</div>
-              <div class="vocab-def">The biggest number that divides evenly into two numbers.</div>
-              <div class="vocab-ex">GCF of 12 and 18 = 6</div>
+              <div class="vocab-term">
+                <span class="en-text">GCF — Greatest Common Factor</span>
+                <span class="es-text">MCD — Máximo Común Divisor</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The biggest number that divides evenly into two numbers.</span>
+                <span class="es-text">El número más grande que divide exactamente a dos números.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">GCF of 12 and 18 = 6</span>
+                <span class="es-text">MCD de 12 y 18 = 6</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">⏱️</div>
-              <div class="vocab-term">LCM — Least Common Multiple</div>
-              <div class="vocab-def">The smallest number that both numbers fit into evenly.</div>
-              <div class="vocab-ex">LCM of 4 and 6 = 12</div>
+              <div class="vocab-term">
+                <span class="en-text">LCM — Least Common Multiple</span>
+                <span class="es-text">MCM — Mínimo Común Múltiplo</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The smallest number that both numbers fit into evenly.</span>
+                <span class="es-text">El número más pequeño que es múltiplo de ambos números.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">LCM of 4 and 6 = 12</span>
+                <span class="es-text">MCM de 4 y 6 = 12</span>
+              </div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">💵</div>
-              <div class="vocab-term">Decimal Operations</div>
-              <div class="vocab-def">Adding or subtracting money amounts — line up the decimal point first.</div>
+              <div class="vocab-term">
+                <span class="en-text">Decimal Operations</span>
+                <span class="es-text">Operaciones con decimales</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">Adding or subtracting money amounts — line up the decimal point first.</span>
+                <span class="es-text">Sumar o restar cantidades de dinero; alinea el punto decimal primero.</span>
+              </div>
               <div class="vocab-ex">$12.50 + $7.25 = $19.75</div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">➗</div>
-              <div class="vocab-term">Division</div>
-              <div class="vocab-def">Splitting a total into equal groups to find cost per person.</div>
-              <div class="vocab-ex">$240 ÷ 8 guests = $30 each</div>
+              <div class="vocab-term">
+                <span class="en-text">Division</span>
+                <span class="es-text">División</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">Splitting a total into equal groups to find cost per person.</span>
+                <span class="es-text">Dividir un total en grupos iguales para encontrar el costo por persona.</span>
+              </div>
+              <div class="vocab-ex">
+                <span class="en-text">$240 ÷ 8 guests = $30 each</span>
+                <span class="es-text">$240 ÷ 8 invitados = $30 cada uno</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct" style="margin-top:20px">
-            ✅ Read each word card. When you're ready, click <strong>Next Step</strong>.
+            <span class="en-text">✅ Read each word card. When you're ready, click <strong>Next Step</strong>.</span>
+            <span class="es-text">✅ Lee cada tarjeta de palabras. Cuando estés listo, haz clic en <strong>Siguiente paso</strong>.</span>
           </div>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" disabled>← Back</button>
-          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
+          <button class="nav-btn ghost" disabled>
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(2)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -370,66 +445,123 @@
           <div class="card-header">
             <div class="card-icon">🎁</div>
             <div>
-              <div class="card-title">Step 1 — Build the Goodie Bags</div>
-              <div class="card-sub">Use GCF to make equal bags with no leftovers</div>
+              <div class="card-title">
+                <span class="en-text">Step 1 — Build the Goodie Bags</span>
+                <span class="es-text">Paso 1 — Preparar las bolsas de regalos</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Use GCF to make equal bags with no leftovers</span>
+                <span class="es-text">Usa el MCD para hacer bolsas iguales sin que sobre nada</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct">
-            <strong>Your job:</strong> You have stickers and granola bars to pack into equal goodie bags. Enter your numbers, then find the GCF to see how many equal bags you can make.
+            <span class="en-text"><strong>Your job:</strong> You have stickers and granola bars to pack into equal goodie bags. Enter your numbers, then find the GCF to see how many equal bags you can make.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Tienes pegatinas y barras de granola para empacar en bolsas de regalos iguales. Ingresa tus números y luego encuentra el MCD para ver cuántas bolsas iguales puedes hacer.</span>
           </div>
 
           <!-- SVG: GCF visual -->
           <svg id="gcf-svg" class="visual-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
-            <text x="260" y="50" text-anchor="middle" font-size="15" font-weight="bold" fill="#0f2b3c">GCF: Finding the Most Equal Bags</text>
+            <text x="260" y="50" text-anchor="middle" font-size="15" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">GCF: Finding the Most Equal Bags</tspan>
+              <tspan class="es-text">MCD: Encontrar la mayor cantidad de bolsas iguales</tspan>
+            </text>
             <rect x="20" y="70" width="200" height="50" rx="8" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="2"/>
-            <text x="120" y="92" text-anchor="middle" font-size="12" fill="#0f2b3c" font-weight="bold">🔖 Stickers</text>
-            <text x="120" y="110" text-anchor="middle" font-size="12" fill="#1a6fb5" id="gcf-svg-a">Enter sticker count →</text>
+            <text x="120" y="92" text-anchor="middle" font-size="12" fill="#0f2b3c" font-weight="bold">
+              <tspan class="en-text">🔖 Stickers</tspan>
+              <tspan class="es-text">🔖 Pegatinas</tspan>
+            </text>
+            <text x="120" y="110" text-anchor="middle" font-size="12" fill="#1a6fb5" id="gcf-svg-a">
+              <tspan class="en-text">Enter sticker count →</tspan>
+              <tspan class="es-text">Ingresar cantidad de pegatinas →</tspan>
+            </text>
             <rect x="300" y="70" width="200" height="50" rx="8" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="2"/>
-            <text x="400" y="92" text-anchor="middle" font-size="12" fill="#0f2b3c" font-weight="bold">🍫 Granola Bars</text>
-            <text x="400" y="110" text-anchor="middle" font-size="12" fill="#0e8a7d" id="gcf-svg-b">Enter bar count →</text>
+            <text x="400" y="92" text-anchor="middle" font-size="12" fill="#0f2b3c" font-weight="bold">
+              <tspan class="en-text">🍫 Granola Bars</tspan>
+              <tspan class="es-text">🍫 Barras de granola</tspan>
+            </text>
+            <text x="400" y="110" text-anchor="middle" font-size="12" fill="#0e8a7d" id="gcf-svg-b">
+              <tspan class="en-text">Enter bar count →</tspan>
+              <tspan class="es-text">Ingresar cantidad de barras →</tspan>
+            </text>
           </svg>
 
           <!-- Level 1 hint -->
           <div class="instruct lvl1-only">
-            🟢 <strong>Level 1 tip:</strong> Try friendly numbers that share factors, like 24 stickers and 36 granola bars.
+            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try friendly numbers that share factors, like 24 stickers and 36 granola bars.</span>
+            <span class="es-text">🟢 <strong>Consejo del Nivel 1:</strong> Prueba con números amigables que compartan factores, como 24 pegatinas y 36 barras de granola.</span>
           </div>
           <!-- Level 2 hint -->
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
-            Use your own numbers — they don't have to be round or easy!
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE</span>
+              <span class="es-text">RETO DE NIVEL 2</span>
+            </span><br>
+            <span class="en-text">Use your own numbers — they don't have to be round or easy!</span>
+            <span class="es-text">¡Usa tus propios números; no tienen que ser redondos ni fáciles!</span>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="g-stickers">🔖 Number of stickers you have</label>
+              <label class="lbl" for="g-stickers">
+                <span class="en-text">🔖 Number of stickers you have</span>
+                <span class="es-text">🔖 Cantidad de pegatinas que tienes</span>
+              </label>
               <input type="number" id="g-stickers" min="1" placeholder="e.g. 24" oninput="calcGCF()" />
             </div>
             <div>
-              <label class="lbl" for="g-bars">🍫 Number of granola bars you have</label>
+              <label class="lbl" for="g-bars">
+                <span class="en-text">🍫 Number of granola bars you have</span>
+                <span class="es-text">🍫 Cantidad de barras de granola que tienes</span>
+              </label>
               <input type="number" id="g-bars" min="1" placeholder="e.g. 36" oninput="calcGCF()" />
             </div>
           </div>
 
-          <button class="calc-btn" onclick="calcGCF()">🧮 Find the Most Equal Bags</button>
+          <button class="calc-btn" onclick="calcGCF()">
+            <span class="en-text">🧮 Find the Most Equal Bags</span>
+            <span class="es-text">🧮 Encontrar la mayor cantidad de bolsas iguales</span>
+          </button>
           <div class="readout" id="gcf-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>List all the numbers that divide evenly into each count. The GCF is the biggest number on both lists.<br><strong>Example:</strong> Factors of 12: 1,2,3,4,6,12. Factors of 18: 1,2,3,6,9,18. Biggest match = <strong>6 bags</strong>.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">List all the numbers that divide evenly into each count. The GCF is the biggest number on both lists.<br><strong>Example:</strong> Factors of 12: 1,2,3,4,6,12. Factors of 18: 1,2,3,6,9,18. Biggest match = <strong>6 bags</strong>.</span>
+              <span class="es-text">Haz una lista de todos los números que dividen exactamente a cada cantidad. El MCD es el número más grande en ambas listas.<br><strong>Ejemplo:</strong> Factores de 12: 1,2,3,4,6,12. Factores de 18: 1,2,3,6,9,18. El mayor coincidente = <strong>6 bolsas</strong>.</span>
+            </p>
           </details>
 
           <div class="lvl2-block lvl2-only" style="margin-top:18px">
-            <span class="lvl2-label">LEVEL 2 EXTENSION — Distributive Property (6.NS.4)</span>
-            <p style="font-size:14px;margin:6px 0 10px">Rewrite your two counts using the GCF. Example: 24 + 36 = 12 × (2 + 3)</p>
-            <label class="lbl" for="distrib">Your equation: ___ + ___ = GCF × (___ + ___)</label>
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 EXTENSION — Distributive Property (6.NS.4)</span>
+              <span class="es-text">EXTENSIÓN DE NIVEL 2 — Propiedad distributiva (6.NS.4)</span>
+            </span>
+            <p style="font-size:14px;margin:6px 0 10px">
+              <span class="en-text">Rewrite your two counts using the GCF. Example: 24 + 36 = 12 × (2 + 3)</span>
+              <span class="es-text">Reescribe tus dos cantidades usando el MCD. Ejemplo: 24 + 36 = 12 × (2 + 3)</span>
+            </p>
+            <label class="lbl" for="distrib">
+              <span class="en-text">Your equation: ___ + ___ = GCF × (___ + ___)</span>
+              <span class="es-text">Tu ecuación: ___ + ___ = MCD × (___ + ___)</span>
+            </label>
             <input type="text" id="distrib" placeholder="e.g.  24 + 36 = 12 × (2 + 3)" />
           </div>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
-          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(1)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(3)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -441,18 +573,28 @@
           <div class="card-header">
             <div class="card-icon teal">⏱️</div>
             <div>
-              <div class="card-title">Step 2 — Sync the Entertainment</div>
-              <div class="card-sub">Use LCM to find when both events happen at the same time</div>
+              <div class="card-title">
+                <span class="en-text">Step 2 — Sync the Entertainment</span>
+                <span class="es-text">Paso 2 — Sincronizar el entretenimiento</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Use LCM to find when both events happen at the same time</span>
+                <span class="es-text">Usa el MCM para encontrar cuándo ocurren ambos eventos al mismo tiempo</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your job:</strong> The music plays every few minutes and the bubble machine runs every few minutes. Find the LCM to discover when both happen at the exact same moment!
+            <span class="en-text"><strong>Your job:</strong> The music plays every few minutes and the bubble machine runs every few minutes. Find the LCM to discover when both happen at the exact same moment!</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> La música suena cada pocos minutos y la máquina de burbujas funciona cada pocos minutos. ¡Encuentra el MCM para descubrir cuándo ocurren ambos en el mismo instante!</span>
           </div>
 
           <!-- SVG: Timeline visual -->
           <svg class="visual-svg" viewBox="0 0 520 120" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
-            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">LCM: When do both events line up?</text>
+            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">LCM: When do both events line up?</tspan>
+              <tspan class="es-text">MCM: ¿Cuándo se alinean ambos eventos?</tspan>
+            </text>
             <!-- Timeline -->
             <line x1="30" y1="55" x2="490" y2="55" stroke="#e2e7ec" stroke-width="3"/>
             <!-- Music markers (every 4) -->
@@ -462,44 +604,72 @@
             <circle cx="294" cy="55" r="7" fill="#1a6fb5"/>
             <circle cx="382" cy="55" r="7" fill="#1a6fb5"/>
             <circle cx="470" cy="55" r="7" fill="#1a6fb5"/>
-            <text x="260" y="78" text-anchor="middle" font-size="10" fill="#1a6fb5">🎵 Music (every 4 min)</text>
+            <text x="260" y="78" text-anchor="middle" font-size="10" fill="#1a6fb5">
+              <tspan class="en-text">🎵 Music (every 4 min)</tspan>
+              <tspan class="es-text">🎵 Música (cada 4 min)</tspan>
+            </text>
             <!-- Bubble markers (every 6) -->
             <rect x="25" y="88" width="10" height="10" rx="2" fill="#0e8a7d"/>
             <rect x="157" y="88" width="10" height="10" rx="2" fill="#0e8a7d"/>
             <rect x="289" y="88" width="10" height="10" rx="2" fill="#0e8a7d"/>
             <rect x="421" y="88" width="10" height="10" rx="2" fill="#0e8a7d"/>
-            <text x="260" y="112" text-anchor="middle" font-size="10" fill="#0e8a7d">🫧 Bubbles (every 6 min) — meet at 12 min!</text>
+            <text x="260" y="112" text-anchor="middle" font-size="10" fill="#0e8a7d">
+              <tspan class="en-text">🫧 Bubbles (every 6 min) — meet at 12 min!</tspan>
+              <tspan class="es-text">🫧 Burbujas (cada 6 min) — ¡se encuentran a los 12 min!</tspan>
+            </text>
             <!-- Star at LCM -->
             <text x="294" y="46" text-anchor="middle" font-size="16">⭐</text>
           </svg>
 
           <div class="lvl1-only instruct teal">
-            🟢 <strong>Level 1 tip:</strong> Try numbers like 4 and 6 — their LCM is 12.
+            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try numbers like 4 and 6 — their LCM is 12.</span>
+            <span class="es-text">🟢 <strong>Consejo del Nivel 1:</strong> Prueba con números como 4 y 6; su MCM es 12.</span>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="l-music">🎵 Music plays every ___ minutes</label>
+              <label class="lbl" for="l-music">
+                <span class="en-text">🎵 Music plays every ___ minutes</span>
+                <span class="es-text">🎵 La música suena cada ___ minutos</span>
+              </label>
               <input type="number" id="l-music" min="1" placeholder="e.g. 4" oninput="calcLCM()" />
             </div>
             <div>
-              <label class="lbl" for="l-bubble">🫧 Bubble machine runs every ___ minutes</label>
+              <label class="lbl" for="l-bubble">
+                <span class="en-text">🫧 Bubble machine runs every ___ minutes</span>
+                <span class="es-text">🫧 La máquina de burbujas funciona cada ___ minutos</span>
+              </label>
               <input type="number" id="l-bubble" min="1" placeholder="e.g. 6" oninput="calcLCM()" />
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="calcLCM()">⭐ Find the Big Moment</button>
+          <button class="calc-btn teal" onclick="calcLCM()">
+            <span class="en-text">⭐ Find the Big Moment</span>
+            <span class="es-text">⭐ Encontrar el gran momento</span>
+          </button>
           <div class="readout" id="lcm-out"></div>
 
           <details class="hint">
-            <summary>Need a hint?</summary>
-            <p>List multiples of each number until they share one.<br><strong>Music (4):</strong> 4, 8, <strong>12</strong>… <strong>Bubbles (6):</strong> 6, <strong>12</strong>… LCM = 12 minutes.</p>
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text">List multiples of each number until they share one.<br><strong>Music (4):</strong> 4, 8, <strong>12</strong>… <strong>Bubbles (6):</strong> 6, <strong>12</strong>… LCM = 12 minutes.</span>
+              <span class="es-text">Haz una lista de los múltiplos de cada número hasta que compartan uno.<br><strong>Música (4):</strong> 4, 8, <strong>12</strong>… <strong>Burbujas (6):</strong> 6, <strong>12</strong>… MCM = 12 minutos.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
-          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(2)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(4)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -511,88 +681,194 @@
           <div class="card-header">
             <div class="card-icon gold">💵</div>
             <div>
-              <div class="card-title">Step 3 — Track Your Budget</div>
-              <div class="card-sub">Add up costs, then divide to find cost per guest</div>
+              <div class="card-title">
+                <span class="en-text">Step 3 — Track Your Budget</span>
+                <span class="es-text">Paso 3 — Monitorear tu presupuesto</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Add up costs, then divide to find cost per guest</span>
+                <span class="es-text">Suma los costos y luego divide para encontrar el costo por invitado</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct gold">
-            <strong>Your job:</strong> Enter what you'll spend on food, decorations, and activities. Add them up, then divide by the number of guests to find the cost per person.
+            <span class="en-text"><strong>Your job:</strong> Enter what you'll spend on food, decorations, and activities. Add them up, then divide by the number of guests to find the cost per person.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Ingresa lo que gastarás en comida, decoraciones y actividades. Súmalos y luego divídelos por el número de invitados para encontrar el costo por persona.</span>
           </div>
 
           <!-- SVG: Budget visual -->
           <svg class="visual-svg" viewBox="0 0 520 130" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
-            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Budget = Food + Decorations + Activities</text>
+            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">Budget = Food + Decorations + Activities</tspan>
+              <tspan class="es-text">Presupuesto = Comida + Decoraciones + Actividades</tspan>
+            </text>
             <rect x="20" y="40" width="140" height="70" rx="10" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
             <text x="90" y="65" text-anchor="middle" font-size="20">🍔</text>
-            <text x="90" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Food</text>
+            <text x="90" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">Food</tspan>
+              <tspan class="es-text">Comida</tspan>
+            </text>
             <text x="90" y="102" text-anchor="middle" font-size="10" fill="#c9820f">$___</text>
             <text x="185" y="80" text-anchor="middle" font-size="22" fill="#c9820f" font-weight="bold">+</text>
             <rect x="200" y="40" width="140" height="70" rx="10" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
             <text x="270" y="65" text-anchor="middle" font-size="20">🎈</text>
-            <text x="270" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Decorations</text>
+            <text x="270" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">Decorations</tspan>
+              <tspan class="es-text">Decoraciones</tspan>
+            </text>
             <text x="270" y="102" text-anchor="middle" font-size="10" fill="#c9820f">$___</text>
             <text x="365" y="80" text-anchor="middle" font-size="22" fill="#c9820f" font-weight="bold">+</text>
             <rect x="380" y="40" width="130" height="70" rx="10" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
             <text x="445" y="65" text-anchor="middle" font-size="20">🎮</text>
-            <text x="445" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Activities</text>
+            <text x="445" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">Activities</tspan>
+              <tspan class="es-text">Actividades</tspan>
+            </text>
             <text x="445" y="102" text-anchor="middle" font-size="10" fill="#c9820f">$___</text>
           </svg>
 
           <div class="lvl1-only instruct gold">
-            🟢 <strong>Level 1 tip:</strong> Try round numbers like $80 food, $40 decorations, $30 activities, 25 guests.
+            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try round numbers like $80 food, $40 decorations, $30 activities, 25 guests.</span>
+            <span class="es-text">🟢 <strong>Consejo del Nivel 1:</strong> Prueba con números redondos como $80 en comida, $40 en decoraciones, $30 en actividades, 25 invitados.</span>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="c-food">🍔 Food cost ($)</label>
+              <label class="lbl" for="c-food">
+                <span class="en-text">🍔 Food cost ($)</span>
+                <span class="es-text">🍔 Costo de comida ($)</span>
+              </label>
               <input type="number" id="c-food" step="0.01" min="0" placeholder="e.g. 80.00" oninput="calcBudget()" />
             </div>
             <div>
-              <label class="lbl" for="c-deco">🎈 Decorations cost ($)</label>
+              <label class="lbl" for="c-deco">
+                <span class="en-text">🎈 Decorations cost ($)</span>
+                <span class="es-text">🎈 Costo de decoraciones ($)</span>
+              </label>
               <input type="number" id="c-deco" step="0.01" min="0" placeholder="e.g. 40.00" oninput="calcBudget()" />
             </div>
             <div>
-              <label class="lbl" for="c-act">🎮 Activities cost ($)</label>
+              <label class="lbl" for="c-act">
+                <span class="en-text">🎮 Activities cost ($)</span>
+                <span class="es-text">🎮 Costo de actividades ($)</span>
+              </label>
               <input type="number" id="c-act" step="0.01" min="0" placeholder="e.g. 30.00" oninput="calcBudget()" />
             </div>
             <div>
-              <label class="lbl" for="c-guests">👥 Number of guests</label>
+              <label class="lbl" for="c-guests">
+                <span class="en-text">👥 Number of guests</span>
+                <span class="es-text">👥 Número de invitados</span>
+              </label>
               <input type="number" id="c-guests" min="1" placeholder="e.g. 25" oninput="calcBudget()" />
             </div>
           </div>
 
-          <button class="calc-btn gold" onclick="calcBudget()">💵 Calculate Budget &amp; Cost Per Guest</button>
+          <button class="calc-btn gold" onclick="calcBudget()">
+            <span class="en-text">💵 Calculate Budget &amp; Cost Per Guest</span>
+            <span class="es-text">💵 Calcular presupuesto y costo por invitado</span>
+          </button>
           <div class="readout" id="budget-out"></div>
 
           <!-- Real-world comparison — data built in, no research required -->
           <div style="margin-top:22px;">
-            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">🌎 Real-World Comparison</h3>
-            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">Here are real average cookout costs per guest in different U.S. cities. See where your number falls!</p>
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">
+              <span class="en-text">🌎 Real-World Comparison</span>
+              <span class="es-text">🌎 Comparación del mundo real</span>
+            </h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">
+              <span class="en-text">Here are real average cookout costs per guest in different U.S. cities. See where your number falls!</span>
+              <span class="es-text">¡Aquí están los costos promedio reales de una comida al aire libre por invitado en diferentes ciudades de EE. UU. Mira dónde se ubica tu número!</span>
+            </p>
             <table class="data-table">
               <thead>
-                <tr><th>City</th><th>Cost Per Guest (avg)</th><th>Party Style</th></tr>
+                <tr>
+                  <th>
+                    <span class="en-text">City</span>
+                    <span class="es-text">Ciudad</span>
+                  </th>
+                  <th>
+                    <span class="en-text">Cost Per Guest (avg)</span>
+                    <span class="es-text">Costo por invitado (prom.)</span>
+                  </th>
+                  <th>
+                    <span class="en-text">Party Style</span>
+                    <span class="es-text">Estilo de fiesta</span>
+                  </th>
+                </tr>
               </thead>
               <tbody>
-                <tr><td>Small town</td><td>$8 – $12</td><td>Backyard cookout</td></tr>
-                <tr><td>Mid-size city</td><td>$14 – $20</td><td>Neighborhood block party</td></tr>
-                <tr><td>Large city</td><td>$22 – $35</td><td>Urban block party</td></tr>
-                <tr><td>NYC / LA</td><td>$38 – $60</td><td>Premium event</td></tr>
+                <tr>
+                  <td>
+                    <span class="en-text">Small town</span>
+                    <span class="es-text">Pueblo pequeño</span>
+                  </td>
+                  <td>$8 – $12</td>
+                  <td>
+                    <span class="en-text">Backyard cookout</span>
+                    <span class="es-text">Comida en el patio</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="en-text">Mid-size city</span>
+                    <span class="es-text">Ciudad mediana</span>
+                  </td>
+                  <td>$14 – $20</td>
+                  <td>
+                    <span class="en-text">Neighborhood block party</span>
+                    <span class="es-text">Fiesta de barrio vecinal</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="en-text">Large city</span>
+                    <span class="es-text">Gran ciudad</span>
+                  </td>
+                  <td>$22 – $35</td>
+                  <td>
+                    <span class="en-text">Urban block party</span>
+                    <span class="es-text">Fiesta de cuadra urbana</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>NYC / LA</td>
+                  <td>$38 – $60</td>
+                  <td>
+                    <span class="en-text">Premium event</span>
+                    <span class="es-text">Evento premium</span>
+                  </td>
+                </tr>
               </tbody>
             </table>
-            <label class="lbl" for="world-compare">Where does your cost per guest fit? Write one sentence.</label>
+            <label class="lbl" for="world-compare">
+              <span class="en-text">Where does your cost per guest fit? Write one sentence.</span>
+              <span class="es-text">¿Dónde encaja tu costo por invitado? Escribe una oración.</span>
+            </label>
             <textarea id="world-compare" placeholder="My cost per guest is $___. Compared to real cookouts, this is..."></textarea>
           </div>
 
           <details class="hint">
-            <summary>Need a hint for division?</summary>
-            <p>Total Cost ÷ Number of Guests = Cost Per Guest.<br><strong>Example:</strong> $150 ÷ 25 guests = $6.00 per guest.</p>
+            <summary>
+              <span class="en-text">Need a hint for division?</span>
+              <span class="es-text">¿Necesitas una pista para la división?</span>
+            </summary>
+            <p>
+              <span class="en-text">Total Cost ÷ Number of Guests = Cost Per Guest.<br><strong>Example:</strong> $150 ÷ 25 guests = $6.00 per guest.</span>
+              <span class="es-text">Costo total ÷ Número de invitados = Costo por invitado.<br><strong>Ejemplo:</strong> $150 ÷ 25 invitados = $6.00 por invitado.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
-          <button class="nav-btn" onclick="goStep(5)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(3)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(5)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -604,58 +880,107 @@
           <div class="card-header">
             <div class="card-icon teal">👥</div>
             <div>
-              <div class="card-title">Step 4 — Compare With a Partner</div>
-              <div class="card-sub">Interview a classmate and compare your block party plans</div>
+              <div class="card-title">
+                <span class="en-text">Step 4 — Compare With a Partner</span>
+                <span class="es-text">Paso 4 — Comparar con un compañero</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Interview a classmate and compare your block party plans</span>
+                <span class="es-text">Entrevista a un compañero de clase y compara tus planes de fiesta de cuadra</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your job:</strong> Ask a partner these 3 questions. Write their answers below, then press Compare to see the differences.
+            <span class="en-text"><strong>Your job:</strong> Ask a partner these 3 questions. Write their answers below, then press Compare to see the differences.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Hazle estas 3 preguntas a un compañero. Escribe sus respuestas a continuación, luego presiona Comparar para ver las diferencias.</span>
           </div>
 
           <!-- SVG: Interview visual -->
           <svg class="visual-svg" viewBox="0 0 520 100" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
             <text x="140" y="40" text-anchor="middle" font-size="28">🙋</text>
-            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">You</text>
+            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">You</tspan>
+              <tspan class="es-text">Tú</tspan>
+            </text>
             <rect x="185" y="38" width="150" height="30" rx="8" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="1.5"/>
-            <text x="260" y="59" text-anchor="middle" font-size="12" fill="#0e8a7d">"How many bags did you make?"</text>
+            <text x="260" y="59" text-anchor="middle" font-size="12" fill="#0e8a7d">
+              <tspan class="en-text">"How many bags did you make?"</tspan>
+              <tspan class="es-text">"¿Cuántas bolsas hiciste?"</tspan>
+            </text>
             <text x="380" y="40" text-anchor="middle" font-size="28">🙋</text>
-            <text x="380" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Partner</text>
+            <text x="380" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">
+              <tspan class="en-text">Partner</tspan>
+              <tspan class="es-text">Compañero</tspan>
+            </text>
           </svg>
 
           <div style="background:var(--teal-lt);border-radius:12px;padding:14px 16px;margin-bottom:18px;">
-            <strong style="font-size:14px;color:var(--teal);">Interview Questions — Ask Your Partner:</strong>
+            <strong style="font-size:14px;color:var(--teal);">
+              <span class="en-text">Interview Questions — Ask Your Partner:</span>
+              <span class="es-text">Preguntas de la entrevista — Pregúntale a tu compañero:</span>
+            </strong>
             <ol style="margin-top:8px;font-size:14px;line-height:1.9;padding-left:18px;color:var(--ink);">
-              <li>How many equal goodie bags did you make? (GCF)</li>
-              <li>What is your cost per guest? ($)</li>
-              <li>How much of your budget is left over?</li>
+              <li>
+                <span class="en-text">How many equal goodie bags did you make? (GCF)</span>
+                <span class="es-text">¿Cuántas bolsas de regalos iguales hiciste? (MCD)</span>
+              </li>
+              <li>
+                <span class="en-text">What is your cost per guest? ($)</span>
+                <span class="es-text">¿Cuál es tu costo por invitado? ($)</span>
+              </li>
+              <li>
+                <span class="en-text">How much of your budget is left over?</span>
+                <span class="es-text">¿Cuánto de tu presupuesto te queda de sobra?</span>
+              </li>
             </ol>
           </div>
 
-          <label class="lbl" for="p-name">Partner's name or initials</label>
+          <label class="lbl" for="p-name">
+            <span class="en-text">Partner's name or initials</span>
+            <span class="es-text">Nombre o iniciales del compañero</span>
+          </label>
           <input type="text" id="p-name" placeholder="e.g. Alex" />
 
           <div class="grid2" style="margin-top:4px;">
             <div>
-              <label class="lbl" for="p-bags">Partner's number of bags</label>
+              <label class="lbl" for="p-bags">
+                <span class="en-text">Partner's number of bags</span>
+                <span class="es-text">Número de bolsas del compañero</span>
+              </label>
               <input type="number" id="p-bags" min="0" oninput="comparePeer()" placeholder="" />
             </div>
             <div>
-              <label class="lbl" for="p-per">Partner's cost per guest ($)</label>
+              <label class="lbl" for="p-per">
+                <span class="en-text">Partner's cost per guest ($)</span>
+                <span class="es-text">Costo por invitado del compañero ($)</span>
+              </label>
               <input type="number" id="p-per" step="0.01" min="0" oninput="comparePeer()" placeholder="" />
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="comparePeer()">📊 Compare Our Plans</button>
+          <button class="calc-btn teal" onclick="comparePeer()">
+            <span class="en-text">📊 Compare Our Plans</span>
+            <span class="es-text">📊 Comparar nuestros planes</span>
+          </button>
           <div class="readout" id="peer-out"></div>
 
-          <label class="lbl" for="peer-reflect" style="margin-top:18px;">Who planned more carefully? Explain using your numbers.</label>
+          <label class="lbl" for="peer-reflect" style="margin-top:18px;">
+            <span class="en-text">Who planned more carefully? Explain using your numbers.</span>
+            <span class="es-text">¿Quién planificó con más cuidado? Explica usando tus números.</span>
+          </label>
           <textarea id="peer-reflect" placeholder="My plan had ___ bags and $__ per guest. My partner had... I think ___ planned more carefully because..."></textarea>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
-          <button class="nav-btn green" onclick="goStep(6)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(4)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="goStep(6)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
         </div>
       </div>
 
@@ -667,58 +992,179 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">Step 5 — Finish &amp; Submit</div>
-              <div class="card-sub">Write your pitch, check the list, get your score</div>
+              <div class="card-title">
+                <span class="en-text">Step 5 — Finish &amp; Submit</span>
+                <span class="es-text">Paso 5 — Terminar y entregar</span>
+              </div>
+              <div class="card-sub">
+                <span class="en-text">Write your pitch, check the list, get your score</span>
+                <span class="es-text">Escribe tu presentación, revisa la lista, obtén tu puntaje</span>
+              </div>
             </div>
           </div>
 
           <div class="instruct green">
-            <strong>Your job:</strong> Write 3–5 sentences pitching your block party plan using your real numbers. Then check off everything you did.
+            <span class="en-text"><strong>Your job:</strong> Write 3–5 sentences pitching your block party plan using your real numbers. Then check off everything you did.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> Escribe de 3 a 5 oraciones presentando tu plan de fiesta de cuadra usando tus números reales. Luego marca todo lo que hiciste.</span>
           </div>
 
           <!-- Pitch -->
-          <label class="lbl" for="pitch">✍️ Your Block Party Pitch (use your real numbers!)</label>
+          <label class="lbl" for="pitch">
+            <span class="en-text">✍️ Your Block Party Pitch (use your real numbers!)</span>
+            <span class="es-text">✍️ Tu presentación de la fiesta de cuadra (¡usa tus números reales!)</span>
+          </label>
           <textarea id="pitch" placeholder="My block party plan uses math to make it fair and fun. I made ___ equal goodie bags by finding the GCF of ___ and ___. My cost per guest is $___..."></textarea>
 
           <!-- Checklist -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">✅ Checklist — Check off everything you completed</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+            <span class="en-text">✅ Checklist — Check off everything you completed</span>
+            <span class="es-text">✅ Lista de verificación — Marca todo lo que hayas completado</span>
+          </h3>
           <ul class="checklist" id="checklist">
-            <li><input type="checkbox" id="ck1" /> I found the GCF to make equal goodie bags.</li>
-            <li><input type="checkbox" id="ck2" /> I found the LCM to sync the entertainment.</li>
-            <li><input type="checkbox" id="ck3" /> I calculated my total budget and cost per guest.</li>
-            <li><input type="checkbox" id="ck4" /> I compared my cost to the real-world city data.</li>
-            <li><input type="checkbox" id="ck5" /> I interviewed a partner and compared plans.</li>
-            <li><input type="checkbox" id="ck6" /> I wrote a pitch using my real numbers.</li>
+            <li><input type="checkbox" id="ck1" /> <span class="en-text">I found the GCF to make equal goodie bags.</span><span class="es-text">Encontré el MCD para hacer bolsas de regalos iguales.</span></li>
+            <li><input type="checkbox" id="ck2" /> <span class="en-text">I found the LCM to sync the entertainment.</span><span class="es-text">Encontré el MCM para sincronizar el entretenimiento.</span></li>
+            <li><input type="checkbox" id="ck3" /> <span class="en-text">I calculated my total budget and cost per guest.</span><span class="es-text">Calculé mi presupuesto total y el costo por invitado.</span></li>
+            <li><input type="checkbox" id="ck4" /> <span class="en-text">I compared my cost to the real-world city data.</span><span class="es-text">Comparé mi costo con los datos de ciudades del mundo real.</span></li>
+            <li><input type="checkbox" id="ck5" /> <span class="en-text">I interviewed a partner and compared plans.</span><span class="es-text">Entrevisté a un compañero y comparé planes.</span></li>
+            <li><input type="checkbox" id="ck6" /> <span class="en-text">I wrote a pitch using my real numbers.</span><span class="es-text">Escribí una presentación usando mis números reales.</span></li>
           </ul>
 
           <!-- Rubric -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">📊 How You Are Scored</h3>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+            <span class="en-text">📊 How You Are Scored</span>
+            <span class="es-text">📊 Cómo se te califica</span>
+          </h3>
           <table class="rubric">
             <thead>
-              <tr><th>Skill</th><th class="score-4">4 — Expert</th><th class="score-3">3 — Proficient</th><th class="score-2">2 — Developing</th></tr>
+              <tr>
+                <th>
+                  <span class="en-text">Skill</span>
+                  <span class="es-text">Habilidad</span>
+                </th>
+                <th class="score-4">
+                  <span class="en-text">4 — Expert</span>
+                  <span class="es-text">4 — Experto</span>
+                </th>
+                <th class="score-3">
+                  <span class="en-text">3 — Proficient</span>
+                  <span class="es-text">3 — Competente</span>
+                </th>
+                <th class="score-2">
+                  <span class="en-text">2 — Developing</span>
+                  <span class="es-text">2 — En desarrollo</span>
+                </th>
+              </tr>
             </thead>
             <tbody>
-              <tr><td><strong>GCF / LCM</strong></td><td>Both correct with explanation</td><td>Both correct</td><td>One correct</td></tr>
-              <tr><td><strong>Decimal Budget</strong></td><td>All costs correct, within budget</td><td>Total is accurate</td><td>Small decimal error</td></tr>
-              <tr><td><strong>Division</strong></td><td>Cost per guest correct + reasoning</td><td>Cost per guest correct</td><td>Setup correct, computation error</td></tr>
-              <tr><td><strong>Comparison</strong></td><td>Compares partner + city data with reasoning</td><td>Both comparisons present</td><td>At least one comparison</td></tr>
-              <tr><td><strong>Pitch</strong></td><td>Uses all real numbers, clear reasoning</td><td>Uses most numbers</td><td>Written but incomplete</td></tr>
+              <tr>
+                <td><strong>GCF / LCM</strong></td>
+                <td>
+                  <span class="en-text">Both correct with explanation</span>
+                  <span class="es-text">Ambos correctos con explicación</span>
+                </td>
+                <td>
+                  <span class="en-text">Both correct</span>
+                  <span class="es-text">Ambos correctos</span>
+                </td>
+                <td>
+                  <span class="en-text">One correct</span>
+                  <span class="es-text">Uno correcto</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Decimal Budget</strong></td>
+                <td>
+                  <span class="en-text">All costs correct, within budget</span>
+                  <span class="es-text">Todos los costos correctos, dentro del presupuesto</span>
+                </td>
+                <td>
+                  <span class="en-text">Total is accurate</span>
+                  <span class="es-text">El total es preciso</span>
+                </td>
+                <td>
+                  <span class="en-text">Small decimal error</span>
+                  <span class="es-text">Pequeño error decimal</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Division</strong></td>
+                <td>
+                  <span class="en-text">Cost per guest correct + reasoning</span>
+                  <span class="es-text">Costo por invitado correcto + razonamiento</span>
+                </td>
+                <td>
+                  <span class="en-text">Cost per guest correct</span>
+                  <span class="es-text">Costo por invitado correcto</span>
+                </td>
+                <td>
+                  <span class="en-text">Setup correct, computation error</span>
+                  <span class="es-text">Configuración correcta, error de cálculo</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Comparison</strong></td>
+                <td>
+                  <span class="en-text">Compares partner + city data with reasoning</span>
+                  <span class="es-text">Compara datos de compañero y ciudad con razonamiento</span>
+                </td>
+                <td>
+                  <span class="en-text">Both comparisons present</span>
+                  <span class="es-text">Ambas comparaciones presentes</span>
+                </td>
+                <td>
+                  <span class="en-text">At least one comparison</span>
+                  <span class="es-text">Al menos una comparación</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Pitch</strong></td>
+                <td>
+                  <span class="en-text">Uses all real numbers, clear reasoning</span>
+                  <span class="es-text">Usa todos los números reales, razonamiento claro</span>
+                </td>
+                <td>
+                  <span class="en-text">Uses most numbers</span>
+                  <span class="es-text">Usa la mayoría de los números</span>
+                </td>
+                <td>
+                  <span class="en-text">Written but incomplete</span>
+                  <span class="es-text">Escrito pero incompleto</span>
+                </td>
+              </tr>
             </tbody>
           </table>
 
           <!-- Report + export -->
           <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
-            <button class="calc-btn" onclick="buildReport()">📝 Generate Summary</button>
-            <button class="export-btn" onclick="copyReport()">📋 Copy</button>
-            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
-            <button class="export-btn" onclick="window.print()">🖨️ Print</button>
+            <button class="calc-btn" onclick="buildReport()">
+              <span class="en-text">📝 Generate Summary</span>
+              <span class="es-text">📝 Generar resumen</span>
+            </button>
+            <button class="export-btn" onclick="copyReport()">
+              <span class="en-text">📋 Copy</span>
+              <span class="es-text">📋 Copiar</span>
+            </button>
+            <button class="export-btn" onclick="downloadTxt()">
+              <span class="en-text">⬇️ Download .txt</span>
+              <span class="es-text">⬇️ Descargar .txt</span>
+            </button>
+            <button class="export-btn" onclick="window.print()">
+              <span class="en-text">🖨️ Print</span>
+              <span class="es-text">🖨️ Imprimir</span>
+            </button>
           </div>
           <pre class="report-box" id="reportBox"></pre>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(5)">← Back</button>
-          <button class="nav-btn green" onclick="alert('Great work! 🎉 Show this page to your teacher.')">🎉 I'm Done!</button>
+          <button class="nav-btn ghost" onclick="goStep(5)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn green" onclick="finishProject()">
+            🎉 <span class="en-text">I'm Done!</span>
+            <span class="es-text">¡Terminé!</span>
+          </button>
         </div>
       </div>
 
@@ -730,21 +1176,111 @@
     <script>
       // ---- State ----
       const STEPS = [
-        { id: 1, label: 'Key Words', icon: '📖' },
-        { id: 2, label: 'Goodie Bags', icon: '🎁' },
-        { id: 3, label: 'Entertainment', icon: '⏱️' },
-        { id: 4, label: 'Budget', icon: '💵' },
-        { id: 5, label: 'Compare', icon: '👥' },
-        { id: 6, label: 'Finish', icon: '🏆' },
+        { id: 1, label: 'Key Words', labelEs: 'Palabras clave', icon: '📖' },
+        { id: 2, label: 'Goodie Bags', labelEs: 'Bolsas de regalos', icon: '🎁' },
+        { id: 3, label: 'Entertainment', labelEs: 'Entretenimiento', icon: '⏱️' },
+        { id: 4, label: 'Budget', labelEs: 'Presupuesto', icon: '💵' },
+        { id: 5, label: 'Compare', labelEs: 'Comparar', icon: '👥' },
+        { id: 6, label: 'Finish', labelEs: 'Terminar', icon: '🏆' },
       ];
       let currentStep = 1;
       const visited = new Set([1]);
 
       // ---- Level toggle ----
       function setLevel(n) {
-        document.getElementById('body').className = 'level-' + n;
+        const body = document.getElementById('body');
+        const isEs = body.classList.contains('es');
+        body.className = 'level-' + n + (isEs ? ' es' : '');
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
+      }
+
+      // ---- Language toggle ----
+      function toggleLanguage() {
+        const body = document.getElementById('body');
+        body.classList.toggle('es');
+        const isEs = body.classList.contains('es');
+        
+        // Update language button
+        const btn = document.getElementById('btn-lang');
+        if (btn) {
+          btn.innerHTML = isEs ? '🌐 Idioma: ES' : '🌐 Language: EN';
+        }
+        
+        // Update placeholders
+        const placeholders = {
+          'g-stickers': { en: 'e.g. 24', es: 'p. ej. 24' },
+          'g-bars': { en: 'e.g. 36', es: 'p. ej. 36' },
+          'distrib': { en: 'e.g.  24 + 36 = 12 × (2 + 3)', es: 'p. ej.  24 + 36 = 12 × (2 + 3)' },
+          'l-music': { en: 'e.g. 4', es: 'p. ej. 4' },
+          'l-bubble': { en: 'e.g. 6', es: 'p. ej. 6' },
+          'c-food': { en: 'e.g. 80.00', es: 'p. ej. 80.00' },
+          'c-deco': { en: 'e.g. 40.00', es: 'p. ej. 40.00' },
+          'c-act': { en: 'e.g. 30.00', es: 'p. ej. 30.00' },
+          'c-guests': { en: 'e.g. 25', es: 'p. ej. 25' },
+          'world-compare': { 
+            en: 'My cost per guest is $___. Compared to real cookouts, this is...', 
+            es: 'Mi costo por invitado es $___. Comparado con las comidas al aire libre reales, esto es...' 
+          },
+          'p-name': { en: 'e.g. Alex', es: 'p. ej. Alex' },
+          'peer-reflect': { 
+            en: 'My plan had ___ bags and $__ per guest. My partner had... I think ___ planned more carefully because...', 
+            es: 'Mi plan tenía ___ bolsas y $___ por invitado. Mi compañero tenía... Creo que ___ planificó con más cuidado porque...' 
+          },
+          'pitch': { 
+            en: 'My block party plan uses math to make it fair and fun. I made ___ equal goodie bags by finding the GCF of ___ and ___. My cost per guest is $___...', 
+            es: 'Mi plan de fiesta de cuadra usa matemáticas para que sea justa y divertida. Hice ___ bolsas de regalos iguales al encontrar el MCD de ___ y ___. Mi costo por invitado es $___...' 
+          }
+        };
+
+        for (const [id, value] of Object.entries(placeholders)) {
+          const el = document.getElementById(id);
+          if (el) {
+            el.placeholder = isEs ? value.es : value.en;
+          }
+        }
+        
+        // Refresh trail and progress to apply translations
+        buildTrail();
+        updateProgress();
+      }
+
+      // ---- Read Aloud ----
+      function readAloud() {
+        if (!window.speechSynthesis) {
+          alert('Speech synthesis not supported in this browser.');
+          return;
+        }
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          return;
+        }
+        
+        const body = document.getElementById('body');
+        const isEs = body.classList.contains('es');
+        const selector = isEs ? '.es-text' : '.en-text';
+        
+        const activePanel = document.querySelector('.step-panel.active');
+        if (!activePanel) return;
+        
+        const textElements = activePanel.querySelectorAll(selector);
+        let textToRead = Array.from(textElements)
+          .map(el => el.textContent.trim())
+          .filter(txt => txt.length > 0)
+          .join('. ');
+        
+        if (!textToRead) return;
+        
+        const utterance = new SpeechSynthesisUtterance(textToRead);
+        utterance.lang = isEs ? 'es-ES' : 'en-US';
+        
+        const voices = window.speechSynthesis.getVoices();
+        const preferredVoice = voices.find(voice => voice.lang.startsWith(isEs ? 'es' : 'en'));
+        if (preferredVoice) {
+          utterance.voice = preferredVoice;
+        }
+        
+        window.speechSynthesis.speak(utterance);
       }
 
       // ---- Build step trail ----
@@ -754,7 +1290,7 @@
           const isLast = i === STEPS.length - 1;
           return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
-            <span class="s-label">${s.label}</span>
+            <span class="s-label"><span class="en-text">${s.label}</span><span class="es-text">${s.labelEs}</span></span>
           </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
         }).join('');
       }
@@ -774,7 +1310,7 @@
       function updateProgress() {
         const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
         document.getElementById('progFill').style.width = pct + '%';
-        document.getElementById('progLabel').textContent = `Step ${currentStep} of ${STEPS.length}`;
+        document.getElementById('progLabel').innerHTML = `<span class="en-text">Step ${currentStep} of ${STEPS.length}</span><span class="es-text">Paso ${currentStep} de ${STEPS.length}</span>`;
       }
 
       // ---- Math helpers ----
@@ -799,14 +1335,21 @@
         // Update SVG labels
         const sa = document.getElementById('gcf-svg-a');
         const sb = document.getElementById('gcf-svg-b');
-        if (sa && !isNaN(a)) sa.textContent = a + ' stickers';
-        if (sb && !isNaN(b)) sb.textContent = b + ' granola bars';
+        if (sa && !isNaN(a)) {
+          sa.innerHTML = `<tspan class="en-text">${a} stickers</tspan><tspan class="es-text">${a} pegatinas</tspan>`;
+        }
+        if (sb && !isNaN(b)) {
+          sb.innerHTML = `<tspan class="en-text">${b} granola bars</tspan><tspan class="es-text">${b} barras de granola</tspan>`;
+        }
         if (isNaN(a) || isNaN(b) || a < 1 || b < 1) return;
         const g = gcd(a, b);
         showReadout('gcf-out', `
-          <strong>GCF of ${a} and ${b} = ${g} bags</strong><br>
+          <span class="en-text"><strong>GCF of ${a} and ${b} = ${g} bags</strong><br>
           Each bag gets <strong>${Math.floor(a/g)} stickers</strong> and <strong>${Math.floor(b/g)} granola bars</strong>.<br>
-          <small>Factors of ${a}: ${getFactors(a).join(', ')} &nbsp;|&nbsp; Factors of ${b}: ${getFactors(b).join(', ')}</small>
+          <small>Factors of ${a}: ${getFactors(a).join(', ')} &nbsp;|&nbsp; Factors of ${b}: ${getFactors(b).join(', ')}</small></span>
+          <span class="es-text"><strong>MCD de ${a} y ${b} = ${g} bolsas</strong><br>
+          Cada bolsa recibe <strong>${Math.floor(a/g)} pegatinas</strong> y <strong>${Math.floor(b/g)} barras de granola</strong>.<br>
+          <small>Factores de ${a}: ${getFactors(a).join(', ')} &nbsp;|&nbsp; Factores de ${b}: ${getFactors(b).join(', ')}</small></span>
         `);
       }
 
@@ -819,9 +1362,12 @@
         const musMultiples = Array.from({length:5}, (_,i) => a*(i+1));
         const bubMultiples = Array.from({length:5}, (_,i) => b*(i+1));
         showReadout('lcm-out', `
-          <strong>LCM of ${a} and ${b} = ${l} minutes</strong><br>
+          <span class="en-text"><strong>LCM of ${a} and ${b} = ${l} minutes</strong><br>
           Both events happen at the same time at minute <strong>${l}</strong> — that's the big moment!<br>
-          <small>Music (×${a}): ${musMultiples.join(', ')}… &nbsp;|&nbsp; Bubbles (×${b}): ${bubMultiples.join(', ')}…</small>
+          <small>Music (×${a}): ${musMultiples.join(', ')}… &nbsp;|&nbsp; Bubbles (×${b}): ${bubMultiples.join(', ')}…</small></span>
+          <span class="es-text"><strong>MCM de ${a} y ${b} = ${l} minutos</strong><br>
+          Ambos eventos ocurren al mismo tiempo en el minuto <strong>${l}</strong> — ¡ese es el gran momento!<br>
+          <small>Música (×${a}): ${musMultiples.join(', ')}… &nbsp;|&nbsp; Burbujas (×${b}): ${bubMultiples.join(', ')}…</small></span>
         `);
       }
 
@@ -834,14 +1380,20 @@
         const total = food + deco + act;
         if (total === 0) return;
         if (isNaN(guests) || guests < 1) {
-          showReadout('budget-out', `<strong>Total cost: $${total.toFixed(2)}</strong><br>Enter the number of guests to find cost per guest.`);
+          showReadout('budget-out', `
+            <span class="en-text"><strong>Total cost: $${total.toFixed(2)}</strong><br>Enter the number of guests to find cost per guest.</span>
+            <span class="es-text"><strong>Costo total: $${total.toFixed(2)}</strong><br>Ingresa el número de invitados para encontrar el costo por invitado.</span>
+          `);
           return;
         }
         const perGuest = total / guests;
         showReadout('budget-out', `
-          <strong>Total cost: $${total.toFixed(2)}</strong><br>
+          <span class="en-text"><strong>Total cost: $${total.toFixed(2)}</strong><br>
           Cost per guest: <strong>$${perGuest.toFixed(2)}</strong> (${total.toFixed(2)} ÷ ${guests} guests)<br>
-          <small>Food $${food.toFixed(2)} + Decorations $${deco.toFixed(2)} + Activities $${act.toFixed(2)} = $${total.toFixed(2)}</small>
+          <small>Food $${food.toFixed(2)} + Decorations $${deco.toFixed(2)} + Activities $${act.toFixed(2)} = $${total.toFixed(2)}</small></span>
+          <span class="es-text"><strong>Costo total: $${total.toFixed(2)}</strong><br>
+          Costo por invitado: <strong>$${perGuest.toFixed(2)}</strong> (${total.toFixed(2)} ÷ ${guests} invitados)<br>
+          <small>Comida $${food.toFixed(2)} + Decoraciones $${deco.toFixed(2)} + Actividades $${act.toFixed(2)} = $${total.toFixed(2)}</small></span>
         `);
       }
 
@@ -863,17 +1415,24 @@
         let html = '';
         if (myBags !== null) {
           const diff = myBags - pBags;
-          html += `<strong>Goodie Bags:</strong> You made <strong>${myBags}</strong>, partner made <strong>${pBags}</strong> — ${diff > 0 ? 'You made ' + diff + ' more.' : diff < 0 ? 'Partner made ' + Math.abs(diff) + ' more.' : 'Same!'}`;
+          html += `
+            <span class="en-text"><strong>Goodie Bags:</strong> You made <strong>${myBags}</strong>, partner made <strong>${pBags}</strong> — ${diff > 0 ? 'You made ' + diff + ' more.' : diff < 0 ? 'Partner made ' + Math.abs(diff) + ' more.' : 'Same!'}</span>
+            <span class="es-text"><strong>Bolsas de regalos:</strong> Hiciste <strong>${myBags}</strong>, tu compañero hizo <strong>${pBags}</strong> — ${diff > 0 ? 'Hiciste ' + diff + ' más.' : diff < 0 ? 'Tu compañero hizo ' + Math.abs(diff) + ' más.' : '¡Igual!'}</span>
+          `;
         }
         if (myPer !== null) {
           const diff2 = (myPer - pPer).toFixed(2);
-          html += `<br><strong>Cost Per Guest:</strong> You: <strong>$${myPer.toFixed(2)}</strong>, Partner: <strong>$${pPer.toFixed(2)}</strong> — ${parseFloat(diff2) < 0 ? 'Your party costs $' + Math.abs(diff2) + ' less per guest.' : parseFloat(diff2) > 0 ? 'Partner\'s party costs $' + Math.abs(diff2) + ' less per guest.' : 'Same cost!'}`;
+          html += `
+            <span class="en-text"><br><strong>Cost Per Guest:</strong> You: <strong>$${myPer.toFixed(2)}</strong>, Partner: <strong>$${pPer.toFixed(2)}</strong> — ${parseFloat(diff2) < 0 ? 'Your party costs $' + Math.abs(diff2) + ' less per guest.' : parseFloat(diff2) > 0 ? 'Partner\'s party costs $' + Math.abs(diff2) + ' less per guest.' : 'Same cost!'}</span>
+            <span class="es-text"><br><strong>Costo por invitado:</strong> Tú: <strong>$${myPer.toFixed(2)}</strong>, Compañero: <strong>$${pPer.toFixed(2)}</strong> — ${parseFloat(diff2) < 0 ? 'Tu fiesta cuesta $' + Math.abs(diff2) + ' menos por invitado.' : parseFloat(diff2) > 0 ? 'La fiesta de tu compañero cuesta $' + Math.abs(diff2) + ' menos por invitado.' : '¡Mismo costo!'}</span>
+          `;
         }
         if (html) showReadout('peer-out', html);
       }
 
       // ---- Report ----
       function buildReport() {
+        const isEs = document.getElementById('body').classList.contains('es');
         const gcfA = document.getElementById('g-stickers').value;
         const gcfB = document.getElementById('g-bars').value;
         const lcmA = document.getElementById('l-music').value;
@@ -890,43 +1449,81 @@
         const perGuest = guests ? (total/parseFloat(guests)).toFixed(2) : '—';
         const g = (gcfA && gcfB) ? gcd(parseInt(gcfA), parseInt(gcfB)) : '—';
         const l = (lcmA && lcmB) ? lcm(parseInt(lcmA), parseInt(lcmB)) : '—';
-        const lines = [
-          '═══ BLOCK PARTY PLANNER — UNIT 1 PROJECT (Version A) ═══',
-          '',
-          '📖 MATH SKILLS USED: GCF, LCM, Decimal Operations, Division',
-          '',
-          '🎁 STEP 1 — GOODIE BAGS (GCF)',
-          `   Stickers: ${gcfA || '—'} | Granola Bars: ${gcfB || '—'}`,
-          `   GCF = ${g} bags`,
-          '',
-          '⏱️ STEP 2 — ENTERTAINMENT SYNC (LCM)',
-          `   Music every: ${lcmA || '—'} min | Bubbles every: ${lcmB || '—'} min`,
-          `   LCM = Both events meet at minute ${l}`,
-          '',
-          '💵 STEP 3 — BUDGET',
-          `   Food: $${food || '—'} | Decorations: $${deco || '—'} | Activities: $${act || '—'}`,
-          `   Total: $${total.toFixed(2)} | Guests: ${guests || '—'}`,
-          `   Cost per guest: $${perGuest}`,
-          worldNote ? `   Real-world comparison: ${worldNote}` : '',
-          '',
-          '👥 STEP 4 — PARTNER COMPARISON',
-          `   Partner: ${partner || '—'}`,
-          pReflect ? `   Reflection: ${pReflect}` : '',
-          '',
-          '✍️ MY PITCH:',
-          pitch || '(no pitch written)',
-          '',
-          '═══════════════════════════════',
-          `Generated: ${new Date().toLocaleDateString()}`,
-        ].filter(l => l !== false);
+        
+        let lines = [];
+        if (isEs) {
+          lines = [
+            '═══ PLANIFICADOR DE FIESTA DE CUADRA — PROYECTO UNIDAD 1 (Versión A) ═══',
+            '',
+            '📖 HABILIDADES MATEMÁTICAS USADAS: MCD, MCM, Operaciones con decimales, División',
+            '',
+            '🎁 PASO 1 — BOLSAS DE REGALOS (MCD)',
+            `   Pegatinas: ${gcfA || '—'} | Barras de granola: ${gcfB || '—'}`,
+            `   MCD = ${g} bolsas`,
+            '',
+            '⏱️ PASO 2 — SINCRONIZAR ENTRETENIMIENTO (MCM)',
+            `   Música cada: ${lcmA || '—'} min | Burbujas cada: ${lcmB || '—'} min`,
+            `   MCM = Ambos eventos se encuentran en el minuto ${l}`,
+            '',
+            '💵 PASO 3 — PRESUPUESTO',
+            `   Comida: $${food || '—'} | Decoraciones: $${deco || '—'} | Actividades: $${act || '—'}`,
+            `   Total: $${total.toFixed(2)} | Invitados: ${guests || '—'}`,
+            `   Costo por invitado: $${perGuest}`,
+            worldNote ? `   Comparación del mundo real: ${worldNote}` : '',
+            '',
+            '👥 PASO 4 — COMPARACIÓN CON COMPAÑERO',
+            `   Compañero: ${partner || '—'}`,
+            pReflect ? `   Reflexión: ${pReflect}` : '',
+            '',
+            '✍️ MI PRESENTACIÓN:',
+            pitch || '(no se escribió presentación)',
+            '',
+            '═══════════════════════════════',
+            `Generado: ${new Date().toLocaleDateString()}`,
+          ];
+        } else {
+          lines = [
+            '═══ BLOCK PARTY PLANNER — UNIT 1 PROJECT (Version A) ═══',
+            '',
+            '📖 MATH SKILLS USED: GCF, LCM, Decimal Operations, Division',
+            '',
+            '🎁 STEP 1 — GOODIE BAGS (GCF)',
+            `   Stickers: ${gcfA || '—'} | Granola Bars: ${gcfB || '—'}`,
+            `   GCF = ${g} bags`,
+            '',
+            '⏱️ STEP 2 — ENTERTAINMENT SYNC (LCM)',
+            `   Music every: ${lcmA || '—'} min | Bubbles every: ${lcmB || '—'} min`,
+            `   LCM = Both events meet at minute ${l}`,
+            '',
+            '💵 STEP 3 — BUDGET',
+            `   Food: $${food || '—'} | Decorations: $${deco || '—'} | Activities: $${act || '—'}`,
+            `   Total: $${total.toFixed(2)} | Guests: ${guests || '—'}`,
+            `   Cost per guest: $${perGuest}`,
+            worldNote ? `   Real-world comparison: ${worldNote}` : '',
+            '',
+            '👥 STEP 4 — PARTNER COMPARISON',
+            `   Partner: ${partner || '—'}`,
+            pReflect ? `   Reflection: ${pReflect}` : '',
+            '',
+            '✍️ MY PITCH:',
+            pitch || '(no pitch written)',
+            '',
+            '═══════════════════════════════',
+            `Generated: ${new Date().toLocaleDateString()}`,
+          ];
+        }
+        lines = lines.filter(l => l !== false);
         const box = document.getElementById('reportBox');
         box.textContent = lines.join('\n');
         box.classList.add('show');
       }
 
       function copyReport() {
+        const isEs = document.getElementById('body').classList.contains('es');
         const txt = document.getElementById('reportBox').textContent;
-        navigator.clipboard?.writeText(txt).then(() => alert('Copied to clipboard!'));
+        navigator.clipboard?.writeText(txt).then(() => {
+          alert(isEs ? '¡Copiado al portapapeles!' : 'Copied to clipboard!');
+        });
       }
 
       function downloadTxt() {
@@ -935,6 +1532,15 @@
         a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
         a.download = 'block-party-plan.txt';
         a.click();
+      }
+
+      function finishProject() {
+        const isEs = document.getElementById('body').classList.contains('es');
+        if (isEs) {
+          alert('¡Excelente trabajo! 🎉 Muestra esta página a tu maestro.');
+        } else {
+          alert('Great work! 🎉 Show this page to your teacher.');
+        }
       }
 
       // ---- Init ----

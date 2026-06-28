@@ -285,6 +285,9 @@
         body { background: #fff; }
         .card { box-shadow: none; border-color: #ccc; }
       }
+      body.es .en-text { display: none !important; }
+      body.es .es-text { display: inline !important; }
+      span.es-text { display: none; }
     </style>
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -295,19 +298,23 @@
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
       <div class="hero-emoji">🎮</div>
-      <h1>Game Studio Scoring Engine</h1>
-      <p class="hero-sub">Design your own video game scoring system using exponents and variables — step by step.</p>
+      <h1><span class="en-text">Game Studio Scoring Engine</span><span class="es-text">Motor de puntuación de estudio de juegos</span></h1>
+      <p class="hero-sub"><span class="en-text">Design your own video game scoring system using exponents and variables — step by step.</span><span class="es-text">Diseña tu propio sistema de puntuación de videojuegos usando exponentes y variables, paso a paso.</span></p>
       <div class="hero-tags">
-        <span class="tag gold">Unit 6 · Expressions</span>
+        <span class="tag gold"><span class="en-text">Unit 6 · Expressions</span><span class="es-text">Unidad 6 · Expresiones</span></span>
         <span class="tag">6.EE.1</span>
         <span class="tag">6.EE.2</span>
         <span class="tag">6.EE.3</span>
         <span class="tag">6.EE.4</span>
-        <span class="tag">Version A</span>
+        <span class="tag"><span class="en-text">Version A</span><span class="es-text">Versión A</span></span>
       </div>
       <div class="level-bar">
-        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
-        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)"><span class="en-text">🟢 Level 1 — With Support</span><span class="es-text">🟢 Nivel 1 — Con apoyo</span></button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)"><span class="en-text">🔵 Level 2 — Challenge</span><span class="es-text">🔵 Nivel 2 — Desafío</span></button>
+      </div>
+      <div class="level-bar" style="margin-top: 10px; max-width: 320px;">
+        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
+        <button class="level-btn" id="btn-read" onclick="readAloud()">🔊 Read Aloud</button>
       </div>
     </header>
 
@@ -331,62 +338,59 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">Key Words</div>
-              <div class="card-sub">Learn these 6 algebraic vocabulary words before you begin</div>
+              <div class="card-title"><span class="en-text">Key Words</span><span class="es-text">Palabras clave</span></div>
+              <div class="card-sub"><span class="en-text">Learn these 6 algebraic vocabulary words before you begin</span><span class="es-text">Aprende estas 6 palabras del vocabulario algebraico antes de comenzar</span></div>
             </div>
           </div>
-
-          <!-- SVG Visual: labeled algebraic expression -->
-          
 
           <!-- Vocabulary Grid -->
           <div class="vocab-grid">
             <div class="vocab-card">
               <div class="vocab-icon">🔤</div>
-              <div class="vocab-term">Variable</div>
-              <div class="vocab-def">A letter or symbol that stands for a number that can change.</div>
-              <div class="vocab-ex">e.g. <em>p</em> for points, <em>b</em> for bonuses.</div>
+              <div class="vocab-term"><span class="en-text">Variable</span><span class="es-text">Variable</span></div>
+              <div class="vocab-def"><span class="en-text">A letter or symbol that stands for a number that can change.</span><span class="es-text">Una letra o símbolo que representa un número que puede cambiar.</span></div>
+              <div class="vocab-ex"><span class="en-text">e.g. <em>p</em> for points, <em>b</em> for bonuses.</span><span class="es-text">por ejemplo, <em>p</em> para puntos, <em>b</em> para bonificaciones.</span></div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">⬆️</div>
-              <div class="vocab-term">Exponent</div>
-              <div class="vocab-def">A number showing how many times a base is multiplied by itself.</div>
-              <div class="vocab-ex">e.g. In 2<sup>3</sup>, the exponent is 3 (2×2×2).</div>
+              <div class="vocab-term"><span class="en-text">Exponent</span><span class="es-text">Exponente</span></div>
+              <div class="vocab-def"><span class="en-text">A number showing how many times a base is multiplied by itself.</span><span class="es-text">Un número que muestra cuántas veces se multiplica una base por sí misma.</span></div>
+              <div class="vocab-ex"><span class="en-text">e.g. In 2<sup>3</sup>, the exponent is 3 (2×2×2).</span><span class="es-text">por ejemplo, En 2<sup>3</sup>, el exponente es 3 (2×2×2).</span></div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🧱</div>
-              <div class="vocab-term">Expression</div>
-              <div class="vocab-def">A mathematical phrase with numbers, variables, and operators.</div>
-              <div class="vocab-ex">e.g. 10p + 5b has no equals sign.</div>
+              <div class="vocab-term"><span class="en-text">Expression</span><span class="es-text">Expresión</span></div>
+              <div class="vocab-def"><span class="en-text">A mathematical phrase with numbers, variables, and operators.</span><span class="es-text">Una frase matemática con números, variables y operadores.</span></div>
+              <div class="vocab-ex"><span class="en-text">e.g. 10p + 5b has no equals sign.</span><span class="es-text">por ejemplo, 10p + 5b no tiene signo de igual.</span></div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">🟰</div>
-              <div class="vocab-term">Equivalent Expression</div>
-              <div class="vocab-def">Two expressions that always equal the same value when evaluated.</div>
-              <div class="vocab-ex">e.g. 2(5p + 3b) = 10p + 6b.</div>
+              <div class="vocab-term"><span class="en-text">Equivalent Expression</span><span class="es-text">Expresión equivalente</span></div>
+              <div class="vocab-def"><span class="en-text">Two expressions that always equal the same value when evaluated.</span><span class="es-text">Dos expresiones que siempre son iguales al mismo valor cuando se evalúan.</span></div>
+              <div class="vocab-ex"><span class="en-text">e.g. 2(5p + 3b) = 10p + 6b.</span><span class="es-text">por ejemplo, 2(5p + 3b) = 10p + 6b.</span></div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">📌</div>
-              <div class="vocab-term">Constant</div>
-              <div class="vocab-def">A fixed number that never changes value in an expression.</div>
-              <div class="vocab-ex">e.g. In 10p + 50, the constant is 50.</div>
+              <div class="vocab-term"><span class="en-text">Constant</span><span class="es-text">Constante</span></div>
+              <div class="vocab-def"><span class="en-text">A fixed number that never changes value in an expression.</span><span class="es-text">Un número fijo que nunca cambia de valor en una expresión.</span></div>
+              <div class="vocab-ex"><span class="en-text">e.g. In 10p + 50, the constant is 50.</span><span class="es-text">por ejemplo, In 10p + 50, la constante es 50.</span></div>
             </div>
             <div class="vocab-card">
               <div class="vocab-icon">✖️</div>
-              <div class="vocab-term">Coefficient</div>
-              <div class="vocab-def">The number in front of and multiplying a variable term.</div>
-              <div class="vocab-ex">e.g. In 10p, the coefficient is 10.</div>
+              <div class="vocab-term"><span class="en-text">Coefficient</span><span class="es-text">Coeficiente</span></div>
+              <div class="vocab-def"><span class="en-text">The number in front of and multiplying a variable term.</span><span class="es-text">El número que está delante de una variable y la multiplica.</span></div>
+              <div class="vocab-ex"><span class="en-text">e.g. In 10p, the coefficient is 10.</span><span class="es-text">por ejemplo, En 10p, el coeficiente es 10.</span></div>
             </div>
           </div>
 
           <div class="instruct" style="margin-top:20px">
-            ✅ Read each math vocabulary card and study the algebraic expression diagram. Click <strong>Next Step</strong> to build your scoring formula.
+            <span class="en-text">✅ Read each math vocabulary card and study the algebraic expression diagram. Click <strong>Next Step</strong> to build your scoring formula.</span><span class="es-text">✅ Lee cada tarjeta de vocabulario matemático y estudia el diagrama de expresión algebraica. Haz clic en <strong>Siguiente paso</strong> para construir tu fórmula de puntuación.</span>
           </div>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" disabled>← Back</button>
-          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
+          <button class="nav-btn ghost" disabled><span class="en-text">← Back</span><span class="es-text">← Atrás</span></button>
+          <button class="nav-btn" onclick="goStep(2)"><span class="en-text">Next Step →</span><span class="es-text">Siguiente paso →</span></button>
         </div>
       </div>
 
@@ -398,95 +402,95 @@
           <div class="card-header">
             <div class="card-icon">🎮</div>
             <div>
-              <div class="card-title">Step 1 — Base Score Formula</div>
-              <div class="card-sub">Design your base scoring system using coefficients and variables</div>
+              <div class="card-title"><span class="en-text">Step 1 — Base Score Formula</span><span class="es-text">Paso 1 — Fórmula de puntuación base</span></div>
+              <div class="card-sub"><span class="en-text">Design your base scoring system using coefficients and variables</span><span class="es-text">Diseña tu sistema de puntuación base usando coeficientes y variables</span></div>
             </div>
           </div>
 
           <div class="instruct">
-            <strong>Your Scenario:</strong> As a game designer, you decide how many points each basic action is worth. Let's make a formula for the <strong>Base Score</strong> where <em>p</em> represents the number of points and <em>b</em> represents the number of bonuses a player gets.
+            <span class="en-text"><strong>Your Scenario:</strong> As a game designer, you decide how many points each basic action is worth. Let's make a formula for the <strong>Base Score</strong> where <em>p</em> represents the number of points and <em>b</em> represents the number of bonuses a player gets.</span><span class="es-text"><strong>Tu escenario:</strong> Como diseñador de juegos, tú decides cuántos puntos vale cada acción básica. Hagamos una fórmula para la <strong>Puntuación base</strong> donde <em>p</em> representa el número de puntos y <em>b</em> representa el número de bonificaciones que obtiene un jugador.</span>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="g-title">🕹️ Video Game Title</label>
-              <input type="text" id="g-title" placeholder="e.g. Pixel Quest" value="Pixel Quest" oninput="calcBaseScore()" />
+              <label class="lbl" for="g-title"><span class="en-text">🕹️ Video Game Title</span><span class="es-text">🕹️ Título del videojuego</span></label>
+              <input type="text" id="g-title" placeholder="e.g. Pixel Quest" data-placeholder-en="e.g. Pixel Quest" data-placeholder-es="ej. Búsqueda de Píxeles" value="Pixel Quest" oninput="calcBaseScore()" />
             </div>
             <div>
-              <label class="lbl" for="g-pt-rate">➕ Points Coefficient (value per point action)</label>
-              <input type="number" id="g-pt-rate" min="1" placeholder="e.g. 10" value="10" oninput="calcBaseScore()" />
+              <label class="lbl" for="g-pt-rate"><span class="en-text">➕ Points Coefficient (value per point action)</span><span class="es-text">➕ Coeficiente de puntos (valor por acción de punto)</span></label>
+              <input type="number" id="g-pt-rate" min="1" placeholder="e.g. 10" data-placeholder-en="e.g. 10" data-placeholder-es="ej. 10" value="10" oninput="calcBaseScore()" />
             </div>
             <div>
-              <label class="lbl" for="g-bn-rate">🎁 Bonus Coefficient (value per bonus item)</label>
-              <input type="number" id="g-bn-rate" min="1" placeholder="e.g. 5" value="5" oninput="calcBaseScore()" />
+              <label class="lbl" for="g-bn-rate"><span class="en-text">🎁 Bonus Coefficient (value per bonus item)</span><span class="es-text">🎁 Coeficiente de bonificación (valor por elemento de bonificación)</span></label>
+              <input type="number" id="g-bn-rate" min="1" placeholder="e.g. 5" data-placeholder-en="e.g. 5" data-placeholder-es="ej. 5" value="5" oninput="calcBaseScore()" />
             </div>
             <div class="lvl2-only">
-              <label class="lbl" for="g-constant">📌 Starting Constant (flat initial score bonus)</label>
-              <input type="number" id="g-constant" min="0" placeholder="e.g. 50" value="0" oninput="calcBaseScore()" />
+              <label class="lbl" for="g-constant"><span class="en-text">📌 Starting Constant (flat initial score bonus)</span><span class="es-text">📌 Constante inicial (bonificación de puntuación inicial fija)</span></label>
+              <input type="number" id="g-constant" min="0" placeholder="e.g. 50" data-placeholder-en="e.g. 50" data-placeholder-es="ej. 50" value="0" oninput="calcBaseScore()" />
             </div>
           </div>
 
           <!-- Formula Box Readout -->
           <div style="background:var(--blue-lt); border-radius:12px; padding:16px; margin-top:18px; text-align:center; border: 1.5px solid var(--blue);">
-            <span style="font-size:12px; font-weight:800; letter-spacing:.05em; color:var(--blue); text-transform:uppercase;">Your Base Score Formula</span>
+            <span style="font-size:12px; font-weight:800; letter-spacing:.05em; color:var(--blue); text-transform:uppercase;"><span class="en-text">Your Base Score Formula</span><span class="es-text">Tu fórmula de puntuación base</span></span>
             <div id="base-formula-display" style="font-size:24px; font-weight:800; color:var(--navy); margin-top:4px;">10p + 5b</div>
-            <span style="font-size:13px; color:var(--muted);">(where <em>p</em> = points earned, <em>b</em> = bonuses collected)</span>
+            <span style="font-size:13px; color:var(--muted);"><span class="en-text">(where <em>p</em> = points earned, <em>b</em> = bonuses collected)</span><span class="es-text">(donde <em>p</em> = puntos obtenidos, <em>b</em> = bonificaciones recolectadas)</span></span>
           </div>
 
           <!-- Level 1 Instruction -->
           <div class="instruct lvl1-only" style="margin-top:18px;">
-            🟢 <strong>Level 1 Tip:</strong> Try setting Points Coefficient to <strong>10</strong> and Bonus Coefficient to <strong>5</strong>. Your base score formula will be: <code style="font-weight:700;">10p + 5b</code>.
+            <span class="en-text">🟢 <strong>Level 1 Tip:</strong> Try setting Points Coefficient to <strong>10</strong> and Bonus Coefficient to <strong>5</strong>. Your base score formula will be: <code style="font-weight:700;">10p + 5b</code>.</span><span class="es-text">🟢 <strong>Consejo del Nivel 1:</strong> Intenta establecer el Coeficiente de puntos en <strong>10</strong> y el Coeficiente de bonificación en <strong>5</strong>. Tu fórmula de puntuación base será: <code style="font-weight:700;">10p + 5b</code>.</span>
           </div>
           <!-- Level 2 Extension -->
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
-            You can customize both coefficients and add a flat starting score <strong>Constant</strong> (e.g. 50 points). Your formula will be: <code style="font-weight:700;">(Rate)p + (Rate)b + Constant</code>.
+            <span class="lvl2-label"><span class="en-text">LEVEL 2 CHALLENGE</span><span class="es-text">DESAFÍO DE NIVEL 2</span></span><br>
+            <span class="en-text">You can customize both coefficients and add a flat starting score <strong>Constant</strong> (e.g. 50 points). Your formula will be: <code style="font-weight:700;">(Rate)p + (Rate)b + Constant</code>.</span><span class="es-text">Puedes personalizar ambos coeficientes y agregar una <strong>Constante</strong> de puntuación inicial fija (por ejemplo, 50 puntos). Tu fórmula será: <code style="font-weight:700;">(Tasa)p + (Tasa)b + Constante</code>.</span>
           </div>
 
           <!-- Evaluation Tasks -->
-          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-top:22px;">🧮 Evaluate Your Base Score</h3>
-          <p style="font-size:14px; color:var(--muted); margin-bottom:12px;">Evaluate your base score formula for the specific values below. Plug the numbers in and calculate the score.</p>
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-top:22px;"><span class="en-text">🧮 Evaluate Your Base Score</span><span class="es-text">🧮 Evalúa tu puntuación base</span></h3>
+          <p style="font-size:14px; color:var(--muted); margin-bottom:12px;"><span class="en-text">Evaluate your base score formula for the specific values below. Plug the numbers in and calculate the score.</span><span class="es-text">Evalúa tu fórmula de puntuación base para los valores específicos a continuación. Sustituye los números y calcula la puntuación.</span></p>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="eval-a">Setup A: Evaluate for <span style="color:var(--blue); font-weight:bold;">p = 50</span> and <span style="color:var(--teal); font-weight:bold;">b = 10</span></label>
-              <input type="number" id="eval-a" placeholder="Enter your calculated score" oninput="calcBaseScore()" />
+              <label class="lbl" for="eval-a"><span class="en-text">Setup A: Evaluate for <span style="color:var(--blue); font-weight:bold;">p = 50</span> and <span style="color:var(--teal); font-weight:bold;">b = 10</span></span><span class="es-text">Configuración A: Evaluar para <span style="color:var(--blue); font-weight:bold;">p = 50</span> y <span style="color:var(--teal); font-weight:bold;">b = 10</span></span></label>
+              <input type="number" id="eval-a" placeholder="Enter your calculated score" data-placeholder-en="Enter your calculated score" data-placeholder-es="Ingresa tu puntuación calculada" oninput="calcBaseScore()" />
               <span id="eval-a-feedback" class="feedback"></span>
             </div>
             <div>
-              <label class="lbl" for="eval-b">Setup B: Evaluate for <span style="color:var(--blue); font-weight:bold;">p = 100</span> and <span style="color:var(--teal); font-weight:bold;">b = 20</span></label>
-              <input type="number" id="eval-b" placeholder="Enter your calculated score" oninput="calcBaseScore()" />
+              <label class="lbl" for="eval-b"><span class="en-text">Setup B: Evaluate for <span style="color:var(--blue); font-weight:bold;">p = 100</span> and <span style="color:var(--teal); font-weight:bold;">b = 20</span></span><span class="es-text">Configuración B: Evaluar para <span style="color:var(--blue); font-weight:bold;">p = 100</span> y <span style="color:var(--teal); font-weight:bold;">b = 20</span></span></label>
+              <input type="number" id="eval-b" placeholder="Enter your calculated score" data-placeholder-en="Enter your calculated score" data-placeholder-es="Ingresa tu puntuación calculada" oninput="calcBaseScore()" />
               <span id="eval-b-feedback" class="feedback"></span>
             </div>
           </div>
 
           <!-- Interactive Testing Engine -->
           <div style="margin-top:22px; border-top: 1px solid var(--line); padding-top:20px;">
-            <h3 style="font-size:15px; font-weight:800; color:var(--navy); margin-bottom:6px;">🎮 Live Scoring Engine Simulator</h3>
-            <p style="font-size:14px; color:var(--muted); margin-bottom:10px;">Enter any values for points and bonuses to see your scoring engine output in real time.</p>
+            <h3 style="font-size:15px; font-weight:800; color:var(--navy); margin-bottom:6px;"><span class="en-text">🎮 Live Scoring Engine Simulator</span><span class="es-text">🎮 Simulador del motor de puntuación en vivo</span></h3>
+            <p style="font-size:14px; color:var(--muted); margin-bottom:10px;"><span class="en-text">Enter any values for points and bonuses to see your scoring engine output in real time.</span><span class="es-text">Ingresa cualquier valor para puntos y bonificaciones para ver la salida de tu motor de puntuación en tiempo real.</span></p>
             <div class="grid2">
               <div>
-                <label class="lbl" for="calc-p">Points (p)</label>
+                <label class="lbl" for="calc-p"><span class="en-text">Points (p)</span><span class="es-text">Puntos (p)</span></label>
                 <input type="number" id="calc-p" value="10" min="0" oninput="runTestEngine()" />
               </div>
               <div>
-                <label class="lbl" for="calc-b">Bonuses (b)</label>
+                <label class="lbl" for="calc-b"><span class="en-text">Bonuses (b)</span><span class="es-text">Bonificaciones (b)</span></label>
                 <input type="number" id="calc-b" value="3" min="0" oninput="runTestEngine()" />
               </div>
             </div>
-            <button class="calc-btn" onclick="runTestEngine()">🧮 Run Scoring Engine</button>
+            <button class="calc-btn" onclick="runTestEngine()"><span class="en-text">🧮 Run Scoring Engine</span><span class="es-text">🧮 Ejecutar motor de puntuación</span></button>
             <div class="readout" id="calc-base-out"></div>
           </div>
 
           <details class="hint">
-            <summary>Need a hint for evaluating expressions?</summary>
-            <p>Substitute the variables with numbers and follow the Order of Operations (PEMDAS).<br><strong>Example:</strong> For formula 10p + 5b when p = 50 and b = 10:<br>10 × 50 + 5 × 10 = 500 + 50 = <strong>550</strong>.</p>
+            <summary><span class="en-text">Need a hint for evaluating expressions?</span><span class="es-text">¿Necesitas una pista para evaluar expresiones?</span></summary>
+            <p><span class="en-text">Substitute the variables with numbers and follow the Order of Operations (PEMDAS).<br><strong>Example:</strong> For formula 10p + 5b when p = 50 and b = 10:<br>10 × 50 + 5 × 10 = 500 + 50 = <strong>550</strong>.</span><span class="es-text">Sustituye las variables por números y sigue el Orden de las operaciones (PEMDAS).<br><strong>Ejemplo:</strong> Para la fórmula 10p + 5b cuando p = 50 y b = 10:<br>10 × 50 + 5 × 10 = 500 + 50 = <strong>550</strong>.</span></p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
-          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(1)"><span class="en-text">← Back</span><span class="es-text">← Atrás</span></button>
+          <button class="nav-btn" onclick="goStep(3)"><span class="en-text">Next Step →</span><span class="es-text">Siguiente paso →</span></button>
         </div>
       </div>
 
@@ -498,73 +502,77 @@
           <div class="card-header">
             <div class="card-icon teal">⚡</div>
             <div>
-              <div class="card-title">Step 2 — Level Exponent Multipliers</div>
-              <div class="card-sub">Multiply game scores using exponential level scaling (6.EE.1)</div>
+              <div class="card-title"><span class="en-text">Step 2 — Level Exponent Multipliers</span><span class="es-text">Paso 2 — Multiplicadores de exponentes de nivel</span></div>
+              <div class="card-sub"><span class="en-text">Multiply game scores using exponential level scaling (6.EE.1)</span><span class="es-text">Multiplica las puntuaciones del juego usando escalado de nivel exponencial (6.EE.1)</span></div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>The Concept:</strong> As players level up, they deserve bigger scores! We model this with a <strong>Level Multiplier</strong> equal to: <code style="font-weight:700;">Base<sup>Level</sup></code> (or <code style="font-weight:700;">B<sup>n</sup></code>, where <em>B</em> is the multiplier base and <em>n</em> is the level).
+            <span class="en-text"><strong>The Concept:</strong> As players level up, they deserve bigger scores! We model this with a <strong>Level Multiplier</strong> equal to: <code style="font-weight:700;">Base<sup>Level</sup></code> (or <code style="font-weight:700;">B<sup>n</sup></code>, where <em>B</em> is the multiplier base and <em>n</em> is the level).</span><span class="es-text"><strong>El concepto:</strong> ¡A medida que los jugadores suben de nivel, merecen puntuaciones más grandes! Modelamos esto con un <strong>Multiplicador de nivel</strong> igual a: <code style="font-weight:700;">Base<sup>Nivel</sup></code> (o <code style="font-weight:700;">B<sup>n</sup></code>, donde <em>B</em> es la base del multiplicador y <em>n</em> es el nivel).</span>
           </div>
 
           <!-- Multiplier base choice (Level 2 only) -->
           <div class="lvl2-only" style="margin-bottom:18px;">
-            <label class="lbl" for="g-exp-base">⚙️ Choose your game's exponent multiplier base (B)</label>
+            <label class="lbl" for="g-exp-base"><span class="en-text">⚙️ Choose your game's exponent multiplier base (B)</span><span class="es-text">⚙️ Elige la base del multiplicador de exponente de tu juego (B)</span></label>
             <select id="g-exp-base" onchange="calcMultipliers()">
-              <option value="2" selected>2 (Doubles each level: 2^n)</option>
-              <option value="3">3 (Triples each level: 3^n)</option>
-              <option value="4">4 (Quadruples each level: 4^n)</option>
+              <option value="2" selected data-text-en="2 (Doubles each level: 2^n)" data-text-es="2 (Se duplica cada nivel: 2^n)">2 (Doubles each level: 2^n)</option>
+              <option value="3" data-text-en="3 (Triples each level: 3^n)" data-text-es="3 (Se triplica cada nivel: 3^n)">3 (Triples each level: 3^n)</option>
+              <option value="4" data-text-en="4 (Quadruples each level: 4^n)" data-text-es="4 (Se cuadruplica cada nivel: 4^n)">4 (Quadruples each level: 4^n)</option>
             </select>
           </div>
 
           <div class="instruct lvl1-only">
-            🟢 <strong>Level 1 Multiplier:</strong> Your multiplier base is fixed at <strong>2</strong>. Your multiplier is <strong>2<sup>n</sup></strong> where <em>n</em> represents the level.
+            <span class="en-text">🟢 <strong>Level 1 Multiplier:</strong> Your multiplier base is fixed at <strong>2</strong>. Your multiplier is <strong>2<sup>n</sup></strong> where <em>n</em> represents the level.</span><span class="es-text">🟢 <strong>Multiplicador del Nivel 1:</strong> La base del multiplicador está fija en <strong>2</strong>. Tu multiplicador es <strong>2<sup>n</sup></strong> donde <em>n</em> representa el nivel.</span>
           </div>
           <div class="instruct lvl2-block lvl2-only">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
-            Select a base of <strong>3</strong> or <strong>4</strong> to make levels scale up even faster!
+            <span class="lvl2-label"><span class="en-text">LEVEL 2 CHALLENGE</span><span class="es-text">DESAFÍO DE NIVEL 2</span></span><br>
+            <span class="en-text">Select a base of <strong>3</strong> or <strong>4</strong> to make levels scale up even faster!</span><span class="es-text">¡Selecciona una base de <strong>3</strong> o <strong>4</strong> para que los niveles aumenten aún más rápido!</span>
           </div>
 
-          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-top:20px; margin-bottom:6px;">📈 Exponent Table</h3>
-          <p style="font-size:14px; color:var(--muted); margin-bottom:12px;">Evaluate the multiplier value for levels 2, 3, 4, and 5 by calculating the power.</p>
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-top:20px; margin-bottom:6px;">
+            <span class="en-text">📈 Exponent Table</span><span class="es-text">📈 Tabla de exponentes</span>
+          </h3>
+          <p style="font-size:14px; color:var(--muted); margin-bottom:12px;">
+            <span class="en-text">Evaluate the multiplier value for levels 2, 3, 4, and 5 by calculating the power.</span><span class="es-text">Evalúa el valor del multiplicador para los niveles 2, 3, 4 y 5 calculando la potencia.</span>
+          </p>
 
           <table class="data-table">
             <thead>
               <tr>
-                <th>Level (n)</th>
-                <th>Exponential Form</th>
-                <th>Expanded Form</th>
-                <th>Multiplier Value (Evaluate)</th>
-                <th>Feedback</th>
+                <th><span class="en-text">Level (n)</span><span class="es-text">Nivel (n)</span></th>
+                <th><span class="en-text">Exponential Form</span><span class="es-text">Forma exponencial</span></th>
+                <th><span class="en-text">Expanded Form</span><span class="es-text">Forma expandida</span></th>
+                <th><span class="en-text">Multiplier Value (Evaluate)</span><span class="es-text">Valor del multiplicador (Evaluar)</span></th>
+                <th><span class="en-text">Feedback</span><span class="es-text">Retroalimentación</span></th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>Level 2</td>
+                <td><span class="en-text">Level 2</span><span class="es-text">Nivel 2</span></td>
                 <td><span class="formula-m-base">2</span><sup>2</sup></td>
                 <td><span class="formula-m-exp2">2 × 2</span></td>
-                <td><input type="number" id="eval-m-l2" style="width:120px; padding:6px 10px;" placeholder="e.g. 4" oninput="calcMultipliers()" /></td>
+                <td><input type="number" id="eval-m-l2" style="width:120px; padding:6px 10px;" placeholder="e.g. 4" data-placeholder-en="e.g. 4" data-placeholder-es="ej. 4" oninput="calcMultipliers()" /></td>
                 <td><span id="eval-m-l2-feedback" class="feedback"></span></td>
               </tr>
               <tr>
-                <td>Level 3</td>
+                <td><span class="en-text">Level 3</span><span class="es-text">Nivel 3</span></td>
                 <td><span class="formula-m-base">2</span><sup>3</sup></td>
                 <td><span class="formula-m-exp3">2 × 2 × 2</span></td>
-                <td><input type="number" id="eval-m-l3" style="width:120px; padding:6px 10px;" placeholder="e.g. 8" oninput="calcMultipliers()" /></td>
+                <td><input type="number" id="eval-m-l3" style="width:120px; padding:6px 10px;" placeholder="e.g. 8" data-placeholder-en="e.g. 8" data-placeholder-es="ej. 8" oninput="calcMultipliers()" /></td>
                 <td><span id="eval-m-l3-feedback" class="feedback"></span></td>
               </tr>
               <tr>
-                <td>Level 4</td>
+                <td><span class="en-text">Level 4</span><span class="es-text">Nivel 4</span></td>
                 <td><span class="formula-m-base">2</span><sup>4</sup></td>
                 <td><span class="formula-m-exp4">2 × 2 × 2 × 2</span></td>
-                <td><input type="number" id="eval-m-l4" style="width:120px; padding:6px 10px;" placeholder="e.g. 16" oninput="calcMultipliers()" /></td>
+                <td><input type="number" id="eval-m-l4" style="width:120px; padding:6px 10px;" placeholder="e.g. 16" data-placeholder-en="e.g. 16" data-placeholder-es="ej. 16" oninput="calcMultipliers()" /></td>
                 <td><span id="eval-m-l4-feedback" class="feedback"></span></td>
               </tr>
               <tr>
-                <td>Level 5</td>
+                <td><span class="en-text">Level 5</span><span class="es-text">Nivel 5</span></td>
                 <td><span class="formula-m-base">2</span><sup>5</sup></td>
                 <td><span class="formula-m-exp5">2 × 2 × 2 × 2 × 2</span></td>
-                <td><input type="number" id="eval-m-l5" style="width:120px; padding:6px 10px;" placeholder="e.g. 32" oninput="calcMultipliers()" /></td>
+                <td><input type="number" id="eval-m-l5" style="width:120px; padding:6px 10px;" placeholder="e.g. 32" data-placeholder-en="e.g. 32" data-placeholder-es="ej. 32" oninput="calcMultipliers()" /></td>
                 <td><span id="eval-m-l5-feedback" class="feedback"></span></td>
               </tr>
             </tbody>
@@ -572,36 +580,44 @@
 
           <!-- Total Score Calculator -->
           <div style="margin-top:24px; border-top:1px solid var(--line); padding-top:20px;">
-            <h3 style="font-size:15px; font-weight:800; color:var(--navy); margin-bottom:6px;">⚡ Total Score Calculator</h3>
-            <p style="font-size:14px; color:var(--muted); margin-bottom:10px;">Total Score is calculated by multiplying: <strong style="color:var(--blue);">Total Score = Base Score × Level Multiplier</strong>.</p>
+            <h3 style="font-size:15px; font-weight:800; color:var(--navy); margin-bottom:6px;">
+              <span class="en-text">⚡ Total Score Calculator</span><span class="es-text">⚡ Calculadora de puntuación total</span>
+            </h3>
+            <p style="font-size:14px; color:var(--muted); margin-bottom:10px;">
+              <span class="en-text">Total Score is calculated by multiplying: <strong style="color:var(--blue);">Total Score = Base Score × Level Multiplier</strong>.</span><span class="es-text">La puntuación total se calcula multiplicando: <strong style="color:var(--blue);">Puntuación total = Puntuación base × Multiplicador de nivel</strong>.</span>
+            </p>
             <div class="grid2">
               <div>
-                <label class="lbl" for="calc-base-val">Base Score</label>
+                <label class="lbl" for="calc-base-val"><span class="en-text">Base Score</span><span class="es-text">Puntuación base</span></label>
                 <input type="number" id="calc-base-val" value="500" min="1" oninput="runTotalScoreEngine()" />
               </div>
               <div>
-                <label class="lbl" for="calc-lvl-val">Level reached (n)</label>
+                <label class="lbl" for="calc-lvl-val"><span class="en-text">Level reached (n)</span><span class="es-text">Nivel alcanzado (n)</span></label>
                 <select id="calc-lvl-val" onchange="runTotalScoreEngine()">
-                  <option value="2">Level 2</option>
-                  <option value="3" selected>Level 3</option>
-                  <option value="4">Level 4</option>
-                  <option value="5">Level 5</option>
+                  <option value="2" data-text-en="Level 2" data-text-es="Nivel 2">Level 2</option>
+                  <option value="3" selected data-text-en="Level 3" data-text-es="Nivel 3">Level 3</option>
+                  <option value="4" data-text-en="Level 4" data-text-es="Nivel 4">Level 4</option>
+                  <option value="5" data-text-en="Level 5" data-text-es="Nivel 5">Level 5</option>
                 </select>
               </div>
             </div>
-            <button class="calc-btn teal" onclick="runTotalScoreEngine()">⚡ Calculate Total Score</button>
+            <button class="calc-btn teal" onclick="runTotalScoreEngine()">
+              <span class="en-text">⚡ Calculate Total Score</span><span class="es-text">⚡ Calcular puntuación total</span>
+            </button>
             <div class="readout" id="calc-total-out"></div>
           </div>
 
           <details class="hint">
-            <summary>Need a hint on exponents?</summary>
-            <p>An exponent tells you how many times to multiply the base by itself.<br><strong>Example (base 2):</strong> 2<sup>3</sup> = 2 × 2 × 2 = 8 (NOT 2 × 3 = 6).<br><strong>Example (base 3):</strong> 3<sup>3</sup> = 3 × 3 × 3 = 27.</p>
+            <summary><span class="en-text">Need a hint on exponents?</span><span class="es-text">¿Necesitas una pista sobre los exponentes?</span></summary>
+            <p>
+              <span class="en-text">An exponent tells you how many times to multiply the base by itself.<br><strong>Example (base 2):</strong> 2<sup>3</sup> = 2 × 2 × 2 = 8 (NOT 2 × 3 = 6).<br><strong>Example (base 3):</strong> 3<sup>3</sup> = 3 × 3 × 3 = 27.</span><span class="es-text">Un exponente te indica cuántas veces debes multiplicar la base por sí misma.<br><strong>Ejemplo (base 2):</strong> 2<sup>3</sup> = 2 × 2 × 2 = 8 (NO 2 × 3 = 6).<br><strong>Ejemplo (base 3):</strong> 3<sup>3</sup> = 3 × 3 × 3 = 27.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
-          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(2)"><span class="en-text">← Back</span><span class="es-text">← Atrás</span></button>
+          <button class="nav-btn" onclick="goStep(4)"><span class="en-text">Next Step →</span><span class="es-text">Siguiente paso →</span></button>
         </div>
       </div>
 
@@ -613,129 +629,149 @@
           <div class="card-header">
             <div class="card-icon gold">🟰</div>
             <div>
-              <div class="card-title">Step 3 — Equivalent Expressions</div>
-              <div class="card-sub">Simplify code using the distributive property and check equivalence (6.EE.3/4)</div>
+              <div class="card-title"><span class="en-text">Step 3 — Equivalent Expressions</span><span class="es-text">Paso 3 — Expresiones equivalentes</span></div>
+              <div class="card-sub"><span class="en-text">Simplify code using the distributive property and check equivalence (6.EE.3/4)</span><span class="es-text">Simplifica el código usando la propiedad distributiva y verifica la equivalencia (6.EE.3/4)</span></div>
             </div>
           </div>
 
           <div class="instruct gold">
-            <strong>The Concept:</strong> Video game engines need to run fast. Sometimes, rewriting expressions in a factored form using the <strong>Distributive Property</strong> helps clean up calculations. Two expressions are <strong>equivalent</strong> if they give the same answer for any values of the variables.
+            <span class="en-text"><strong>The Concept:</strong> Video game engines need to run fast. Sometimes, rewriting expressions in a factored form using the <strong>Distributive Property</strong> helps clean up calculations. Two expressions are <strong>equivalent</strong> if they give the same answer for any values of the variables.</span><span class="es-text"><strong>El concepto:</strong> Los motores de videojuegos deben ejecutarse rápido. A veces, reescribir expresiones en una forma factorizada usando la <strong>Propiedad distributiva</strong> ayuda a limpiar los cálculos. Dos expresiones son <strong>equivalentes</strong> si dan el mismo resultado para cualquier valor de las variables.</span>
           </div>
 
           <!-- Section 1: Equivalence Challenges -->
-          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-bottom:6px;">🧩 Equivalence Challenges</h3>
-          <p style="font-size:14px; color:var(--muted); margin-bottom:12px;">Test if these expressions are equivalent by plugging in the values <strong style="color:var(--blue);">p = 3</strong> and <strong style="color:var(--teal);">b = 2</strong>. Evaluate both sides, then choose if they are equivalent.</p>
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-bottom:6px;">
+            <span class="en-text">🧩 Equivalence Challenges</span><span class="es-text">🧩 Desafíos de equivalencia</span>
+          </h3>
+          <p style="font-size:14px; color:var(--muted); margin-bottom:12px;">
+            <span class="en-text">Test if these expressions are equivalent by plugging in the values <strong style="color:var(--blue);">p = 3</strong> and <strong style="color:var(--teal);">b = 2</strong>. Evaluate both sides, then choose if they are equivalent.</span><span class="es-text">Prueba si estas expresiones son equivalentes sustituyendo los valores <strong style="color:var(--blue);">p = 3</strong> y <strong style="color:var(--teal);">b = 2</strong>. Evalúa ambos lados, luego elige si son equivalentes.</span>
+          </p>
 
           <!-- Challenge 1 -->
           <div class="equiv-card">
-            <div style="font-weight:700; font-size:14px; color:var(--navy);">Challenge 1: Factor out a constant</div>
+            <div style="font-weight:700; font-size:14px; color:var(--navy);">
+              <span class="en-text">Challenge 1: Factor out a constant</span><span class="es-text">Desafío 1: Factorizar una constante</span>
+            </div>
             <div class="equiv-expr">3(2p + 4b) &nbsp; vs &nbsp; 6p + 12b</div>
             <div class="grid2">
               <div>
-                <label class="lbl" for="eq1-left">Evaluate Left: 3(2(3) + 4(2))</label>
-                <input type="number" id="eq1-left" placeholder="e.g. 42" oninput="validateEquiv()" />
+                <label class="lbl" for="eq1-left"><span class="en-text">Evaluate Left: 3(2(3) + 4(2))</span><span class="es-text">Evaluar izquierda: 3(2(3) + 4(2))</span></label>
+                <input type="number" id="eq1-left" placeholder="e.g. 42" data-placeholder-en="e.g. 42" data-placeholder-es="ej. 42" oninput="validateEquiv()" />
                 <span id="eq1-left-feedback" class="feedback"></span>
               </div>
               <div>
-                <label class="lbl" for="eq1-right">Evaluate Right: 6(3) + 12(2)</label>
-                <input type="number" id="eq1-right" placeholder="e.g. 42" oninput="validateEquiv()" />
+                <label class="lbl" for="eq1-right"><span class="en-text">Evaluate Right: 6(3) + 12(2)</span><span class="es-text">Evaluar derecha: 6(3) + 12(2)</span></label>
+                <input type="number" id="eq1-right" placeholder="e.g. 42" data-placeholder-en="e.g. 42" data-placeholder-es="ej. 42" oninput="validateEquiv()" />
                 <span id="eq1-right-feedback" class="feedback"></span>
               </div>
             </div>
-            <label class="lbl" for="eq1-ans">Are they equivalent expressions?</label>
+            <label class="lbl" for="eq1-ans"><span class="en-text">Are they equivalent expressions?</span><span class="es-text">¿Son expresiones equivalentes?</span></label>
             <select id="eq1-ans" onchange="validateEquiv()">
-              <option value="">-- Choose one --</option>
-              <option value="Yes">Yes, they are equivalent</option>
-              <option value="No">No, they are not equivalent</option>
+              <option value="" data-text-en="-- Choose one --" data-text-es="-- Elige una opción --">-- Choose one --</option>
+              <option value="Yes" data-text-en="Yes, they are equivalent" data-text-es="Sí, son equivalentes">Yes, they are equivalent</option>
+              <option value="No" data-text-en="No, they are not equivalent" data-text-es="No, no son equivalentes">No, they are not equivalent</option>
             </select>
             <span id="eq1-ans-feedback" class="feedback"></span>
           </div>
 
           <!-- Challenge 2 -->
           <div class="equiv-card">
-            <div style="font-weight:700; font-size:14px; color:var(--navy);">Challenge 2: Forgetting to distribute</div>
+            <div style="font-weight:700; font-size:14px; color:var(--navy);">
+              <span class="en-text">Challenge 2: Forgetting to distribute</span><span class="es-text">Desafío 2: Olvidar distribuir</span>
+            </div>
             <div class="equiv-expr">4(p + 3b) &nbsp; vs &nbsp; 4p + 3b</div>
             <div class="grid2">
               <div>
-                <label class="lbl" for="eq2-left">Evaluate Left: 4(3 + 3(2))</label>
-                <input type="number" id="eq2-left" placeholder="e.g. 36" oninput="validateEquiv()" />
+                <label class="lbl" for="eq2-left"><span class="en-text">Evaluate Left: 4(3 + 3(2))</span><span class="es-text">Evaluar izquierda: 4(3 + 3(2))</span></label>
+                <input type="number" id="eq2-left" placeholder="e.g. 36" data-placeholder-en="e.g. 36" data-placeholder-es="ej. 36" oninput="validateEquiv()" />
                 <span id="eq2-left-feedback" class="feedback"></span>
               </div>
               <div>
-                <label class="lbl" for="eq2-right">Evaluate Right: 4(3) + 3(2)</label>
-                <input type="number" id="eq2-right" placeholder="e.g. 18" oninput="validateEquiv()" />
+                <label class="lbl" for="eq2-right"><span class="en-text">Evaluate Right: 4(3) + 3(2)</span><span class="es-text">Evaluar derecha: 4(3) + 3(2)</span></label>
+                <input type="number" id="eq2-right" placeholder="e.g. 18" data-placeholder-en="e.g. 18" data-placeholder-es="ej. 18" oninput="validateEquiv()" />
                 <span id="eq2-right-feedback" class="feedback"></span>
               </div>
             </div>
-            <label class="lbl" for="eq2-ans">Are they equivalent expressions?</label>
+            <label class="lbl" for="eq2-ans"><span class="en-text">Are they equivalent expressions?</span><span class="es-text">¿Son expresiones equivalentes?</span></label>
             <select id="eq2-ans" onchange="validateEquiv()">
-              <option value="">-- Choose one --</option>
-              <option value="Yes">Yes, they are equivalent</option>
-              <option value="No">No, they are not equivalent</option>
+              <option value="" data-text-en="-- Choose one --" data-text-es="-- Elige una opción --">-- Choose one --</option>
+              <option value="Yes" data-text-en="Yes, they are equivalent" data-text-es="Sí, son equivalentes">Yes, they are equivalent</option>
+              <option value="No" data-text-en="No, they are not equivalent" data-text-es="No, no son equivalentes">No, they are not equivalent</option>
             </select>
             <span id="eq2-ans-feedback" class="feedback"></span>
           </div>
 
           <!-- Challenge 3 -->
           <div class="equiv-card">
-            <div style="font-weight:700; font-size:14px; color:var(--navy);">Challenge 3: Distributing with constants</div>
+            <div style="font-weight:700; font-size:14px; color:var(--navy);">
+              <span class="en-text">Challenge 3: Distributing with constants</span><span class="es-text">Desafío 3: Distribuir con constantes</span>
+            </div>
             <div class="equiv-expr">5(2p + b + 8) &nbsp; vs &nbsp; 10p + 5b + 40</div>
             <div class="grid2">
               <div>
-                <label class="lbl" for="eq3-left">Evaluate Left: 5(2(3) + 2 + 8)</label>
-                <input type="number" id="eq3-left" placeholder="e.g. 80" oninput="validateEquiv()" />
+                <label class="lbl" for="eq3-left"><span class="en-text">Evaluate Left: 5(2(3) + 2 + 8)</span><span class="es-text">Evaluar izquierda: 5(2(3) + 2 + 8)</span></label>
+                <input type="number" id="eq3-left" placeholder="e.g. 80" data-placeholder-en="e.g. 80" data-placeholder-es="ej. 80" oninput="validateEquiv()" />
                 <span id="eq3-left-feedback" class="feedback"></span>
               </div>
               <div>
-                <label class="lbl" for="eq3-right">Evaluate Right: 10(3) + 5(2) + 40</label>
-                <input type="number" id="eq3-right" placeholder="e.g. 80" oninput="validateEquiv()" />
+                <label class="lbl" for="eq3-right"><span class="en-text">Evaluate Right: 10(3) + 5(2) + 40</span><span class="es-text">Evaluar derecha: 10(3) + 5(2) + 40</span></label>
+                <input type="number" id="eq3-right" placeholder="e.g. 80" data-placeholder-en="e.g. 80" data-placeholder-es="ej. 80" oninput="validateEquiv()" />
                 <span id="eq3-right-feedback" class="feedback"></span>
               </div>
             </div>
-            <label class="lbl" for="eq3-ans">Are they equivalent expressions?</label>
+            <label class="lbl" for="eq3-ans"><span class="en-text">Are they equivalent expressions?</span><span class="es-text">¿Son expresiones equivalentes?</span></label>
             <select id="eq3-ans" onchange="validateEquiv()">
-              <option value="">-- Choose one --</option>
-              <option value="Yes">Yes, they are equivalent</option>
-              <option value="No">No, they are not equivalent</option>
+              <option value="" data-text-en="-- Choose one --" data-text-es="-- Elige una opción --">-- Choose one --</option>
+              <option value="Yes" data-text-en="Yes, they are equivalent" data-text-es="Sí, son equivalentes">Yes, they are equivalent</option>
+              <option value="No" data-text-en="No, they are not equivalent" data-text-es="No, no son equivalentes">No, they are not equivalent</option>
             </select>
             <span id="eq3-ans-feedback" class="feedback"></span>
           </div>
 
           <!-- Differentiated Section -->
           <div class="lvl1-only" style="margin-top:22px;">
-            <h3 style="font-size:15px; font-weight:800; color:var(--navy); margin-bottom:6px;">✍️ Property Explanation</h3>
-            <label class="lbl" for="dist-explain">Look at the formula 2(5p + 3b) = 10p + 6b. Explain how the distributive property was used to rewrite it.</label>
-            <textarea id="dist-explain" placeholder="Explain in your own words how the outside factor multiplies the inside terms..."></textarea>
+            <h3 style="font-size:15px; font-weight:800; color:var(--navy); margin-bottom:6px;">
+              <span class="en-text">✍️ Property Explanation</span><span class="es-text">✍️ Explicación de la propiedad</span>
+            </h3>
+            <label class="lbl" for="dist-explain">
+              <span class="en-text">Look at the formula 2(5p + 3b) = 10p + 6b. Explain how the distributive property was used to rewrite it.</span><span class="es-text">Mira la fórmula 2(5p + 3b) = 10p + 6b. Explica cómo se utilizó la propiedad distributiva para reescribirla.</span>
+            </label>
+            <textarea id="dist-explain" placeholder="Explain in your own words how the outside factor multiplies the inside terms..." data-placeholder-en="Explain in your own words how the outside factor multiplies the inside terms..." data-placeholder-es="Explica en tus propias palabras cómo el factor externo multiplica los términos internos..."></textarea>
           </div>
 
           <div class="lvl2-block lvl2-only" style="margin-top:22px;">
-            <span class="lvl2-label">LEVEL 2 CHALLENGE — Factor Your Scoring Engine</span>
-            <p style="font-size:14px; margin-bottom:10px;">Factor the point and bonus terms of your formula. Find the GCF of your Point Rate and Bonus Rate, then write the equivalent factored expression.</p>
+            <span class="lvl2-label"><span class="en-text">LEVEL 2 CHALLENGE — Factor Your Scoring Engine</span><span class="es-text">DESAFÍO DE NIVEL 2 — Factoriza tu motor de puntuación</span></span>
+            <p style="font-size:14px; margin-bottom:10px;">
+              <span class="en-text">Factor the point and bonus terms of your formula. Find the GCF of your Point Rate and Bonus Rate, then write the equivalent factored expression.</span><span class="es-text">Factoriza los términos de puntos y bonificaciones de tu fórmula. Encuentra el MCD (Máximo Común Divisor) de tu Tasa de puntos y Tasa de bonificación, luego escribe la expresión factorizada equivalente.</span>
+            </p>
             <div style="background:var(--blue-lt); padding:10px; border-radius:8px; font-weight:700; margin-bottom:12px; font-size:14px;">
-              Your current formula: <span id="dist-my-formula" style="color:var(--blue)">10p + 5b</span>
+              <span class="en-text">Your current formula:</span><span class="es-text">Tu fórmula actual:</span> <span id="dist-my-formula" style="color:var(--blue)">10p + 5b</span>
             </div>
-            <label class="lbl">Factored Form: GCF × ( ___ p + ___ b )</label>
+            <label class="lbl">
+              <span class="en-text">Factored Form: GCF × ( ___ p + ___ b )</span><span class="es-text">Forma factorizada: MCD × ( ___ p + ___ b )</span>
+            </label>
             <div style="display:flex; align-items:center; gap:8px; max-width:400px; margin-top:6px;">
-              <input type="number" id="dist-out" placeholder="GCF" style="width:70px; text-align:center;" oninput="validateFactoring()" />
+              <input type="number" id="dist-out" placeholder="GCF" data-placeholder-en="GCF" data-placeholder-es="MCD" style="width:70px; text-align:center;" oninput="validateFactoring()" />
               <span style="font-size:20px; font-weight:bold;">(</span>
-              <input type="number" id="dist-in1" placeholder="coeff" style="width:70px; text-align:center;" oninput="validateFactoring()" />
+              <input type="number" id="dist-in1" placeholder="coeff" data-placeholder-en="coeff" data-placeholder-es="coef" style="width:70px; text-align:center;" oninput="validateFactoring()" />
               <span style="font-size:16px; font-weight:bold;">p</span>
               <span style="font-size:20px; font-weight:bold;">+</span>
-              <input type="number" id="dist-in2" placeholder="coeff" style="width:70px; text-align:center;" oninput="validateFactoring()" />
+              <input type="number" id="dist-in2" placeholder="coeff" data-placeholder-en="coeff" data-placeholder-es="coef" style="width:70px; text-align:center;" oninput="validateFactoring()" />
               <span style="font-size:16px; font-weight:bold;">b )</span>
             </div>
             <span id="factoring-feedback" class="feedback"></span>
           </div>
 
           <details class="hint">
-            <summary>Need a hint on equivalent expressions?</summary>
-            <p>To check if expressions are equivalent, expand or simplify them using properties:<br><strong>3(2p + 4b)</strong> = 3 × 2p + 3 × 4b = <strong>6p + 12b</strong>. Since they simplify to the same form, they are equivalent.<br>To evaluate for p=3 and b=2: 6(3) + 12(2) = 18 + 24 = 42.</p>
+            <summary><span class="en-text">Need a hint on equivalent expressions?</span><span class="es-text">¿Necesitas una pista sobre expresiones equivalentes?</span></summary>
+            <p>
+              <span class="en-text">To check if expressions are equivalent, expand or simplify them using properties:<br><strong>3(2p + 4b)</strong> = 3 × 2p + 3 × 4b = <strong>6p + 12b</strong>. Since they simplify to the same form, they are equivalent.<br>To evaluate for p=3 and b=2: 6(3) + 12(2) = 18 + 24 = 42.</span><span class="es-text">Para verificar si las expresiones son equivalentes, expándelas o simplifícalas usando propiedades:<br><strong>3(2p + 4b)</strong> = 3 × 2p + 3 × 4b = <strong>6p + 12b</strong>. Dado que se simplifican a la misma forma, son equivalentes.<br>Para evaluar para p=3 y b=2: 6(3) + 12(2) = 18 + 24 = 42.</span>
+            </p>
           </details>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
-          <button class="nav-btn" onclick="goStep(5)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(3)"><span class="en-text">← Back</span><span class="es-text">← Atrás</span></button>
+          <button class="nav-btn" onclick="goStep(5)"><span class="en-text">Next Step →</span><span class="es-text">Siguiente paso →</span></button>
         </div>
       </div>
 
@@ -747,44 +783,48 @@
           <div class="card-header">
             <div class="card-icon teal">👥</div>
             <div>
-              <div class="card-title">Step 4 — Partner High Score Duel</div>
-              <div class="card-sub">Trade formulas with a classmate and evaluate a high score match</div>
+              <div class="card-title"><span class="en-text">Step 4 — Partner High Score Duel</span><span class="es-text">Paso 4 — Duelo de puntuación más alta con compañero</span></div>
+              <div class="card-sub"><span class="en-text">Trade formulas with a classmate and evaluate a high score match</span><span class="es-text">Intercambia fórmulas con un compañero de clase y evalúa una partida de puntuación alta</span></div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <strong>Your Task:</strong> Connect with a partner. Exchange your game coefficients (rates) and calculate who gets the higher score during a legendary match: <strong style="color:var(--blue);">p = 80</strong> points, <strong style="color:var(--teal);">b = 15</strong> bonuses, played on <strong style="color:var(--navy);">Level 3</strong>.
+            <span class="en-text"><strong>Your Task:</strong> Connect with a partner. Exchange your game coefficients (rates) and calculate who gets the higher score during a legendary match: <strong style="color:var(--blue);">p = 80</strong> points, <strong style="color:var(--teal);">b = 15</strong> bonuses, played on <strong style="color:var(--navy);">Level 3</strong>.</span><span class="es-text"><strong>Tu tarea:</strong> Conéctate con un compañero. Intercambien sus coeficientes de juego (tasas) y calculen quién obtiene la puntuación más alta durante una partida legendaria: <strong style="color:var(--blue);">p = 80</strong> puntos, <strong style="color:var(--teal);">b = 15</strong> bonificaciones, jugada en el <strong style="color:var(--navy);">Nivel 3</strong>.</span>
           </div>
 
           <div class="grid2">
             <div>
-              <label class="lbl" for="p-name">👤 Partner's Name</label>
-              <input type="text" id="p-name" placeholder="e.g. Alex" oninput="comparePartner()" />
+              <label class="lbl" for="p-name"><span class="en-text">👤 Partner's Name</span><span class="es-text">👤 Nombre del compañero</span></label>
+              <input type="text" id="p-name" placeholder="e.g. Alex" data-placeholder-en="e.g. Alex" data-placeholder-es="ej. Alex" oninput="comparePartner()" />
             </div>
             <div>
-              <label class="lbl" for="p-pt-rate">➕ Partner's Points Rate</label>
-              <input type="number" id="p-pt-rate" min="1" placeholder="e.g. 8" value="8" oninput="comparePartner()" />
+              <label class="lbl" for="p-pt-rate"><span class="en-text">➕ Partner's Points Rate</span><span class="es-text">➕ Tasa de puntos del compañero</span></label>
+              <input type="number" id="p-pt-rate" min="1" placeholder="e.g. 8" data-placeholder-en="e.g. 8" data-placeholder-es="ej. 8" value="8" oninput="comparePartner()" />
             </div>
             <div>
-              <label class="lbl" for="p-bn-rate">🎁 Partner's Bonus Rate</label>
-              <input type="number" id="p-bn-rate" min="1" placeholder="e.g. 6" value="6" oninput="comparePartner()" />
+              <label class="lbl" for="p-bn-rate"><span class="en-text">🎁 Partner's Bonus Rate</span><span class="es-text">🎁 Tasa de bonificación del compañero</span></label>
+              <input type="number" id="p-bn-rate" min="1" placeholder="e.g. 6" data-placeholder-en="e.g. 6" data-placeholder-es="ej. 6" value="6" oninput="comparePartner()" />
             </div>
             <div class="lvl2-only">
-              <label class="lbl" for="p-exp-base">⚙️ Partner's Multiplier Base (Level 2 only)</label>
+              <label class="lbl" for="p-exp-base"><span class="en-text">⚙️ Partner's Multiplier Base (Level 2 only)</span><span class="es-text">⚙️ Base del multiplicador del compañero (Nivel 2 solamente)</span></label>
               <input type="number" id="p-exp-base" min="2" max="4" value="2" oninput="comparePartner()" />
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="comparePartner()">📊 Run Score Duel</button>
+          <button class="calc-btn teal" onclick="comparePartner()">
+            <span class="en-text">📊 Run Score Duel</span><span class="es-text">📊 Ejecutar duelo de puntuaciones</span>
+          </button>
           <div class="readout" id="peer-out"></div>
 
-          <label class="lbl" for="peer-reflect" style="margin-top:18px;">✍️ Reflection: Compare the two scoring models</label>
-          <textarea id="peer-reflect" placeholder="My engine scored ___ points and my partner's engine scored ___ points. My engine is faster/slower at scaling because..."></textarea>
+          <label class="lbl" for="peer-reflect" style="margin-top:18px;">
+            <span class="en-text">✍️ Reflection: Compare the two scoring models</span><span class="es-text">✍️ Reflexión: Compara los dos modelos de puntuación</span>
+          </label>
+          <textarea id="peer-reflect" placeholder="My engine scored ___ points and my partner's engine scored ___ points. My engine is faster/slower at scaling because..." data-placeholder-en="My engine scored ___ points and my partner's engine scored ___ points. My engine is faster/slower at scaling because..." data-placeholder-es="Mi motor obtuvo ___ puntos y el de mi compañero obtuvo ___ puntos. Mi motor escala más rápido/lento porque..."></textarea>
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
-          <button class="nav-btn green" onclick="goStep(6)">Next Step →</button>
+          <button class="nav-btn ghost" onclick="goStep(4)"><span class="en-text">← Back</span><span class="es-text">← Atrás</span></button>
+          <button class="nav-btn green" onclick="goStep(6)"><span class="en-text">Next Step →</span><span class="es-text">Siguiente paso →</span></button>
         </div>
       </div>
 
@@ -796,114 +836,122 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">Step 5 — Submit Design &amp; Generate Report</div>
-              <div class="card-sub">Pitch your video game scoring engine and review requirements</div>
+              <div class="card-title"><span class="en-text">Step 5 — Submit Design &amp; Generate Report</span><span class="es-text">Paso 5 — Enviar diseño y generar informe</span></div>
+              <div class="card-sub"><span class="en-text">Pitch your video game scoring engine and review requirements</span><span class="es-text">Presenta tu motor de puntuación de videojuegos y revisa los requisitos</span></div>
             </div>
           </div>
 
           <div class="instruct green">
-            <strong>Your Pitch:</strong> Explain your game concept and justify your math choices. Write 3–5 sentences describing how variables, coefficients, and exponents make your scoring engine fun and balanced.
+            <span class="en-text"><strong>Your Pitch:</strong> Explain your game concept and justify your math choices. Write 3–5 sentences describing how variables, coefficients, and exponents make your scoring engine fun and balanced.</span><span class="es-text"><strong>Tu presentación:</strong> Explica el concepto de tu juego y justifica tus elecciones matemáticas. Escribe de 3 a 5 oraciones que describan cómo las variables, coeficientes y exponentes hacen que tu motor de puntuación sea divertido y equilibrado.</span>
           </div>
 
           <!-- Pitch -->
-          <label class="lbl" for="pitch">✍️ Game Design Pitch (Include your game coefficients and Level 5 multiplier!)</label>
-          <textarea id="pitch" placeholder="Welcome to my video game! In my game, players get points and collect bonuses. The base scoring formula is... By Level 5, the score multiplier reaches... The game is balanced because..."></textarea>
+          <label class="lbl" for="pitch">
+            <span class="en-text">✍️ Game Design Pitch (Include your game coefficients and Level 5 multiplier!)</span><span class="es-text">✍️ Presentación del diseño del juego (¡Incluye los coeficientes de tu juego y el multiplicador del Nivel 5!)</span>
+          </label>
+          <textarea id="pitch" placeholder="Welcome to my video game! In my game, players get points and collect bonuses. The base scoring formula is... By Level 5, the score multiplier reaches... The game is balanced because..." data-placeholder-en="Welcome to my video game! In my game, players get points and collect bonuses. The base scoring formula is... By Level 5, the score multiplier reaches... The game is balanced because..." data-placeholder-es="¡Bienvenido a mi videojuego! En mi juego, los jugadores obtienen puntos y recolectan bonificaciones. La fórmula de puntuación base es... Para el Nivel 5, el multiplicador de puntuación alcanza... El juego está equilibrado porque..."></textarea>
 
           <!-- Checklist -->
-          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-top:22px; margin-bottom:6px;">✅ Scoring Engine Checklist</h3>
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-top:22px; margin-bottom:6px;">
+            <span class="en-text">✅ Scoring Engine Checklist</span><span class="es-text">✅ Lista de verificación del motor de puntuación</span>
+          </h3>
           <ul class="checklist" id="checklist">
-            <li><input type="checkbox" id="ck1" /> I defined variables and chose points and bonus rates for my game.</li>
-            <li><input type="checkbox" id="ck2" /> I evaluated my base score formula for specific player achievements.</li>
-            <li><input type="checkbox" id="ck3" /> I calculated level multiplier powers using exponents.</li>
-            <li><input type="checkbox" id="ck4" /> I verified expression equivalence using properties and substitution.</li>
-            <li><input type="checkbox" id="ck5" /> I simulated a partner duel and compared scoring metrics.</li>
-            <li><input type="checkbox" id="ck6" /> I wrote a design pitch incorporating my exact math values.</li>
+            <li><input type="checkbox" id="ck1" /> <span class="en-text">I defined variables and chose points and bonus rates for my game.</span><span class="es-text">Definí variables y elegí las tasas de puntos y bonificaciones para mi juego.</span></li>
+            <li><input type="checkbox" id="ck2" /> <span class="en-text">I evaluated my base score formula for specific player achievements.</span><span class="es-text">Evalué mi fórmula de puntuación base para logros específicos del jugador.</span></li>
+            <li><input type="checkbox" id="ck3" /> <span class="en-text">I calculated level multiplier powers using exponents.</span><span class="es-text">Calculé las potencias del multiplicador de nivel usando exponentes.</span></li>
+            <li><input type="checkbox" id="ck4" /> <span class="en-text">I verified expression equivalence using properties and substitution.</span><span class="es-text">Verifiqué la equivalencia de expresiones usando propiedades y sustitución.</span></li>
+            <li><input type="checkbox" id="ck5" /> <span class="en-text">I simulated a partner duel and compared scoring metrics.</span><span class="es-text">Simulé un duelo de compañeros y comparé las métricas de puntuación.</span></li>
+            <li><input type="checkbox" id="ck6" /> <span class="en-text">I wrote a design pitch incorporating my exact math values.</span><span class="es-text">Escribí una presentación de diseño que incorpora mis valores matemáticos exactos.</span></li>
           </ul>
 
           <!-- Rubric -->
-          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-top:22px; margin-bottom:6px;">📊 Scoring Rubric</h3>
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-top:22px; margin-bottom:6px;">
+            <span class="en-text">📊 Scoring Rubric</span><span class="es-text">📊 Rúbrica de evaluación</span>
+          </h3>
           <table class="rubric">
             <thead>
               <tr>
-                <th>Target Standard</th>
-                <th class="score-4">4 — Expert</th>
-                <th class="score-3">3 — Proficient</th>
-                <th class="score-2">2 — Developing</th>
+                <th><span class="en-text">Target Standard</span><span class="es-text">Estándar objetivo</span></th>
+                <th class="score-4"><span class="en-text">4 — Expert</span><span class="es-text">4 — Experto</span></th>
+                <th class="score-3"><span class="en-text">3 — Proficient</span><span class="es-text">3 — Competente</span></th>
+                <th class="score-2"><span class="en-text">2 — Developing</span><span class="es-text">2 — En desarrollo</span></th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><strong>Exponents (6.EE.1)</strong></td>
-                <td>Exponents correctly evaluated for all levels; explains growth.</td>
-                <td>Powers correctly evaluated (e.g. 2^n).</td>
-                <td>Minor calculation errors in exponents.</td>
+                <td><strong><span class="en-text">Exponents (6.EE.1)</span><span class="es-text">Exponentes (6.EE.1)</span></strong></td>
+                <td><span class="en-text">Exponents correctly evaluated for all levels; explains growth.</span><span class="es-text">Exponentes evaluados correctamente para todos los niveles; explica el crecimiento.</span></td>
+                <td><span class="en-text">Powers correctly evaluated (e.g. 2^n).</span><span class="es-text">Potencias evaluadas correctamente (ej. 2^n).</span></td>
+                <td><span class="en-text">Minor calculation errors in exponents.</span><span class="es-text">Errores menores de cálculo en exponentes.</span></td>
               </tr>
               <tr>
-                <td><strong>Expressions (6.EE.2)</strong></td>
-                <td>Accurately writes formula, substitutes values, and evaluates correctly.</td>
-                <td>Formula is correct; substitution has 1 error.</td>
-                <td>Formula is incomplete or values not evaluated.</td>
+                <td><strong><span class="en-text">Expressions (6.EE.2)</span><span class="es-text">Expresiones (6.EE.2)</span></strong></td>
+                <td><span class="en-text">Accurately writes formula, substitutes values, and evaluates correctly.</span><span class="es-text">Escribe la fórmula con precisión, sustituye los valores y evalúa correctamente.</span></td>
+                <td><span class="en-text">Formula is correct; substitution has 1 error.</span><span class="es-text">La fórmula es correcta; la sustitución tiene 1 error.</span></td>
+                <td><span class="en-text">Formula is incomplete or values not evaluated.</span><span class="es-text">La fórmula está incompleta o los valores no se evaluaron.</span></td>
               </tr>
               <tr>
-                <td><strong>Equivalent (6.EE.3/4)</strong></td>
-                <td>Verifies equivalence for all challenges and factors own correctly.</td>
-                <td>Correctly identifies equivalence via substitution.</td>
-                <td>Equivalent concepts are incomplete.</td>
+                <td><strong><span class="en-text">Equivalent (6.EE.3/4)</span><span class="es-text">Equivalent (6.EE.3/4)</span></strong></td>
+                <td><span class="en-text">Verifies equivalence for all challenges and factors own correctly.</span><span class="es-text">Verifica la equivalencia para todos los desafíos y factoriza el propio correctamente.</span></td>
+                <td><span class="en-text">Correctly identifies equivalence via substitution.</span><span class="es-text">Identifica correctamente la equivalencia mediante sustitución.</span></td>
+                <td><span class="en-text">Equivalent concepts are incomplete.</span><span class="es-text">Los conceptos equivalentes están incompletos.</span></td>
               </tr>
               <tr>
-                <td><strong>Comparison (Model)</strong></td>
-                <td>Compares engines, calculates duel score, and reflects thoughtfully.</td>
-                <td>Calculates duel scores correctly.</td>
-                <td>Scores missing or reflection incomplete.</td>
+                <td><strong><span class="en-text">Comparison (Model)</span><span class="es-text">Comparación (Modelo)</span></strong></td>
+                <td><span class="en-text">Compares engines, calculates duel score, and reflects thoughtfully.</span><span class="es-text">Compara motores, calcula la puntuación del duelo y reflexiona reflexivamente.</span></td>
+                <td><span class="en-text">Calculates duel scores correctly.</span><span class="es-text">Calcula correctamente las puntuaciones del duelo.</span></td>
+                <td><span class="en-text">Scores missing or reflection incomplete.</span><span class="es-text">Faltan puntuaciones o la reflexión está incompleta.</span></td>
               </tr>
               <tr>
-                <td><strong>Game Pitch</strong></td>
-                <td>Engaging description incorporating exact scoring math parameters.</td>
-                <td>Describes game scoring with some math support.</td>
-                <td>Incomplete description or missing numbers.</td>
+                <td><strong><span class="en-text">Game Pitch</span><span class="es-text">Presentación del juego</span></strong></td>
+                <td><span class="en-text">Engaging description incorporating exact scoring math parameters.</span><span class="es-text">Descripción atractiva que incorpora parámetros matemáticos de puntuación exactos.</span></td>
+                <td><span class="en-text">Describes game scoring with some math support.</span><span class="es-text">Describe la puntuación del juego con algún apoyo matemático.</span></td>
+                <td><span class="en-text">Incomplete description or missing numbers.</span><span class="es-text">Descripción incompleta o faltan números.</span></td>
               </tr>
             </tbody>
           </table>
 
           <!-- Report Generator -->
           <div class="nav-row no-print" style="margin-top:22px; flex-wrap:wrap; justify-content:flex-start; gap:8px;">
-            <button class="calc-btn" onclick="buildReport()">📝 Generate Summary</button>
-            <button class="export-btn" onclick="copyReport()">📋 Copy Report</button>
-            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
-            <button class="export-btn" onclick="window.print()">🖨️ Print Project</button>
+            <button class="calc-btn" onclick="buildReport()">
+              <span class="en-text">📝 Generate Summary</span><span class="es-text">📝 Generar resumen</span>
+            </button>
+            <button class="export-btn" onclick="copyReport()">
+              <span class="en-text">📋 Copy Report</span><span class="es-text">📋 Copiar informe</span>
+            </button>
+            <button class="export-btn" onclick="downloadTxt()">
+              <span class="en-text">⬇️ Download .txt</span><span class="es-text">⬇️ Descargar .txt</span>
+            </button>
+          <button class="export-btn" onclick="window.print()">
+              <span class="en-text">🖨️ Print Project</span><span class="es-text">🖨️ Imprimir proyecto</span>
+            </button>
           </div>
           <pre class="report-box" id="reportBox"></pre>
         </div>
-
-        <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(5)">← Back</button>
-          <button class="nav-btn green" onclick="alert('Congratulations! 🎉 Show this page and your generated report to your teacher.')">🎉 Project Finished!</button>
-        </div>
-      </div>
-
-    </div><!-- end wizard -->
-
-    <!-- ====== SCRIPTS ====== -->
-    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-    <script src="/assets/app.js" defer></script>
     <script>
       // ---- State ----
       const STEPS = [
-        { id: 1, label: 'Key Words', icon: '📖' },
-        { id: 2, label: 'Base Score', icon: '🎮' },
-        { id: 3, label: 'Multipliers', icon: '⚡' },
-        { id: 4, label: 'Equivalent', icon: '🟰' },
-        { id: 5, label: 'Partner Score', icon: '👥' },
-        { id: 6, label: 'Finish', icon: '🏆' },
+        { id: 1, label: 'Key Words', labelEs: 'Palabras clave', icon: '📖' },
+        { id: 2, label: 'Base Score', labelEs: 'Puntaje base', icon: '🎮' },
+        { id: 3, label: 'Multipliers', labelEs: 'Multiplicadores', icon: '⚡' },
+        { id: 4, label: 'Equivalent', labelEs: 'Equivalente', icon: '🟰' },
+        { id: 5, label: 'Partner Score', labelEs: 'Duelo con compañero', icon: '👥' },
+        { id: 6, label: 'Finish', labelEs: 'Terminar', icon: '🏆' },
       ];
       let currentStep = 1;
       let level = 1;
       const visited = new Set([1]);
+      let speechUtterance = null;
 
       // ---- Level toggle ----
       function setLevel(n) {
         level = n;
-        document.getElementById('body').className = 'level-' + n;
+        const bodyEl = document.getElementById('body') || document.body;
+        const isEs = bodyEl.classList.contains('es');
+        bodyEl.className = 'level-' + n;
+        if (isEs) {
+          bodyEl.classList.add('es');
+        }
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
         
@@ -920,13 +968,15 @@
 
       // ---- Build step trail ----
       function buildTrail() {
+        const body = document.getElementById('body') || document.body;
+        const isEs = body.classList.contains('es');
         const trail = document.getElementById('stepTrail');
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
-          const displayLabel = i === 0 ? 'Step 0: ' + s.label : `Step ${i}: ` + s.label;
+          const label = isEs ? s.labelEs : s.label;
           return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : i}</span>
-            <span class="s-label">${s.label}</span>
+            <span class="s-label">${label}</span>
           </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
         }).join('');
       }
@@ -945,10 +995,136 @@
       }
 
       function updateProgress() {
+        const body = document.getElementById('body') || document.body;
+        const isEs = body.classList.contains('es');
         const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
         document.getElementById('progFill').style.width = pct + '%';
         const stepNum = currentStep - 1;
-        document.getElementById('progLabel').textContent = `Step ${stepNum} of 5`;
+        document.getElementById('progLabel').textContent = isEs 
+          ? `Paso ${stepNum} de 5` 
+          : `Step ${stepNum} of 5`;
+      }
+
+      // ---- Bilingual Language Toggle ----
+      function toggleLanguage() {
+        const body = document.getElementById('body') || document.body;
+        const isEs = body.classList.toggle('es');
+        
+        // Update the language button text
+        const btnLang = document.getElementById('btn-lang');
+        if (btnLang) {
+          btnLang.textContent = isEs ? '🌐 Idioma: ES' : '🌐 Language: EN';
+        }
+        
+        // Update Read Aloud button text
+        const btnRead = document.getElementById('btn-read');
+        if (btnRead) {
+          const synth = window.speechSynthesis;
+          if (synth && synth.speaking) {
+            btnRead.textContent = isEs ? '⏹️ Detener lectura' : '⏹️ Stop Reading';
+          } else {
+            btnRead.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+          }
+        }
+        
+        // Update inputs, placeholders, select texts
+        updatePlaceholders(isEs);
+        
+        // Re-build step trail
+        buildTrail();
+        updateProgress();
+        
+        // Re-run test and scoring calculations
+        recalcAll();
+      }
+
+      function updatePlaceholders(isEs) {
+        document.querySelectorAll('input[data-placeholder-en], textarea[data-placeholder-en]').forEach(el => {
+          el.placeholder = isEs ? el.getAttribute('data-placeholder-es') : el.getAttribute('data-placeholder-en');
+        });
+        document.querySelectorAll('option[data-text-en]').forEach(el => {
+          el.textContent = isEs ? el.getAttribute('data-text-es') : el.getAttribute('data-text-en');
+        });
+      }
+
+      // ---- Read Aloud TTS ----
+      function getVisibleText(element, isEs) {
+        let text = "";
+        function traverse(node) {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            const style = window.getComputedStyle(node);
+            if (style.display === 'none' || style.visibility === 'hidden' || node.offsetParent === null) {
+              return;
+            }
+            if (node.tagName === 'SCRIPT' || node.tagName === 'STYLE' || node.tagName === 'INPUT' || node.tagName === 'TEXTAREA' || node.tagName === 'SELECT' || node.tagName === 'BUTTON') {
+              return;
+            }
+            if (node.classList.contains('en-text') && isEs) return;
+            if (node.classList.contains('es-text') && !isEs) return;
+            
+            for (let child of node.childNodes) {
+              traverse(child);
+            }
+          } else if (node.nodeType === Node.TEXT_NODE) {
+            const val = node.nodeValue.trim();
+            if (val) {
+              text += val + " ";
+            }
+          }
+        }
+        traverse(element);
+        return text.trim();
+      }
+
+      function readAloud() {
+        const synth = window.speechSynthesis;
+        if (!synth) {
+          alert("Web Speech API is not supported in this browser.");
+          return;
+        }
+
+        const btnRead = document.getElementById('btn-read');
+        const body = document.getElementById('body') || document.body;
+        const isEs = body.classList.contains('es');
+
+        if (synth.speaking) {
+          synth.cancel();
+          btnRead.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+          btnRead.classList.remove('speaking');
+          return;
+        }
+
+        const activePanel = document.querySelector('.step-panel.active');
+        if (!activePanel) return;
+
+        const textToSpeak = getVisibleText(activePanel, isEs);
+        if (!textToSpeak) return;
+
+        speechUtterance = new SpeechSynthesisUtterance(textToSpeak);
+        speechUtterance.lang = isEs ? 'es-ES' : 'en-US';
+
+        speechUtterance.onend = () => {
+          btnRead.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+          btnRead.classList.remove('speaking');
+        };
+
+        speechUtterance.onerror = () => {
+          btnRead.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+          btnRead.classList.remove('speaking');
+        };
+
+        btnRead.textContent = isEs ? '⏹️ Detener lectura' : '⏹️ Stop Reading';
+        btnRead.classList.add('speaking');
+        synth.speak(speechUtterance);
+      }
+
+      function finishProject() {
+        const body = document.getElementById('body') || document.body;
+        const isEs = body.classList.contains('es');
+        const msg = isEs 
+          ? '¡Felicitaciones! 🎉 Muestra esta página y tu informe generado a tu profesor.' 
+          : 'Congratulations! 🎉 Show this page and your generated report to your teacher.';
+        alert(msg);
       }
 
       // ---- Math helpers ----
@@ -973,6 +1149,8 @@
 
       // ---- Step 1 (Base Score) ----
       function calcBaseScore() {
+        const body = document.getElementById('body') || document.body;
+        const isEs = body.classList.contains('es');
         const ptRate = parseInt(document.getElementById('g-pt-rate').value) || 10;
         const bnRate = parseInt(document.getElementById('g-bn-rate').value) || 5;
         const constant = level === 2 ? (parseInt(document.getElementById('g-constant').value) || 0) : 0;
@@ -1001,10 +1179,12 @@
         if (evalA.value !== '') {
           const userVal = parseInt(evalA.value);
           if (userVal === targetA) {
-            evalAFeedback.textContent = "Correct!";
+            evalAFeedback.textContent = isEs ? "¡Correcto!" : "Correct!";
             evalAFeedback.className = "feedback correct";
           } else {
-            evalAFeedback.textContent = `Try again. Evaluated as: ${ptRate}×50 + ${bnRate}×10${constant ? ' + ' + constant : ''}`;
+            evalAFeedback.textContent = isEs
+              ? `Inténtalo de nuevo. Evaluado como: ${ptRate}×50 + ${bnRate}×10${constant ? ' + ' + constant : ''}`
+              : `Try again. Evaluated as: ${ptRate}×50 + ${bnRate}×10${constant ? ' + ' + constant : ''}`;
             evalAFeedback.className = "feedback incorrect";
           }
         } else {
@@ -1017,10 +1197,12 @@
         if (evalB.value !== '') {
           const userVal = parseInt(evalB.value);
           if (userVal === targetB) {
-            evalBFeedback.textContent = "Correct!";
+            evalBFeedback.textContent = isEs ? "¡Correcto!" : "Correct!";
             evalBFeedback.className = "feedback correct";
           } else {
-            evalBFeedback.textContent = `Try again. Evaluated as: ${ptRate}×100 + ${bnRate}×20${constant ? ' + ' + constant : ''}`;
+            evalBFeedback.textContent = isEs
+              ? `Inténtalo de nuevo. Evaluado como: ${ptRate}×100 + ${bnRate}×20${constant ? ' + ' + constant : ''}`
+              : `Try again. Evaluated as: ${ptRate}×100 + ${bnRate}×20${constant ? ' + ' + constant : ''}`;
             evalBFeedback.className = "feedback incorrect";
           }
         } else {
@@ -1032,6 +1214,8 @@
       }
 
       function runTestEngine() {
+        const body = document.getElementById('body') || document.body;
+        const isEs = body.classList.contains('es');
         const ptRate = parseInt(document.getElementById('g-pt-rate').value) || 10;
         const bnRate = parseInt(document.getElementById('g-bn-rate').value) || 5;
         const constant = level === 2 ? (parseInt(document.getElementById('g-constant').value) || 0) : 0;
@@ -1039,14 +1223,23 @@
         const b = parseInt(document.getElementById('calc-b').value) || 0;
 
         const total = ptRate * p + bnRate * b + constant;
-        showReadout('calc-base-out', `
-          <strong>Base Score = ${total} points</strong><br>
-          <small>Breakdown: ${ptRate} × (${p} points) + ${bnRate} × (${b} bonuses)${constant ? ' + ' + constant + ' (constant)' : ''} = ${total}</small>
-        `);
+        if (isEs) {
+          showReadout('calc-base-out', `
+            <strong>Puntuación base = ${total} puntos</strong><br>
+            <small>Desglose: ${ptRate} × (${p} puntos) + ${bnRate} × (${b} bonificaciones)${constant ? ' + ' + constant + ' (constante)' : ''} = ${total}</small>
+          `);
+        } else {
+          showReadout('calc-base-out', `
+            <strong>Base Score = ${total} points</strong><br>
+            <small>Breakdown: ${ptRate} × (${p} points) + ${bnRate} × (${b} bonuses)${constant ? ' + ' + constant + ' (constant)' : ''} = ${total}</small>
+          `);
+        }
       }
 
       // ---- Step 2 (Multipliers) ----
       function calcMultipliers() {
+        const body = document.getElementById('body') || document.body;
+        const isEs = body.classList.contains('es');
         const expBase = level === 2 ? (parseInt(document.getElementById('g-exp-base').value) || 2) : 2;
 
         // Update display text for exponents base
@@ -1070,10 +1263,12 @@
           if (valEl.value !== '') {
             const userVal = parseInt(valEl.value);
             if (userVal === targets['l' + i]) {
-              feedbackEl.textContent = "Correct!";
+              feedbackEl.textContent = isEs ? "¡Correcto!" : "Correct!";
               feedbackEl.className = "feedback correct";
             } else {
-              feedbackEl.textContent = `Try again. Compute ${expBase} raised to power of ${i}.`;
+              feedbackEl.textContent = isEs
+                ? `Inténtalo de nuevo. Calcula ${expBase} elevado a la potencia de ${i}.`
+                : `Try again. Compute ${expBase} raised to power of ${i}.`;
               feedbackEl.className = "feedback incorrect";
             }
           } else {
@@ -1086,6 +1281,8 @@
       }
 
       function runTotalScoreEngine() {
+        const body = document.getElementById('body') || document.body;
+        const isEs = body.classList.contains('es');
         const expBase = level === 2 ? (parseInt(document.getElementById('g-exp-base').value) || 2) : 2;
         const baseVal = parseInt(document.getElementById('calc-base-val').value) || 500;
         const selectedLvl = parseInt(document.getElementById('calc-lvl-val').value) || 3;
@@ -1093,10 +1290,17 @@
         const multiplier = Math.pow(expBase, selectedLvl);
         const total = baseVal * multiplier;
 
-        showReadout('calc-total-out', `
-          <strong>Total Score = ${total} points</strong><br>
-          <small>Formula: Base Score × Exponent Multiplier = ${baseVal} × ${multiplier} (${expBase}<sup>${selectedLvl}</sup>) = ${total}</small>
-        `);
+        if (isEs) {
+          showReadout('calc-total-out', `
+            <strong>Puntuación total = ${total} puntos</strong><br>
+            <small>Fórmula: Puntuación base × Multiplicador de nivel = ${baseVal} × ${multiplier} (${expBase}<sup>${selectedLvl}</sup>) = ${total}</small>
+          `);
+        } else {
+          showReadout('calc-total-out', `
+            <strong>Total Score = ${total} points</strong><br>
+            <small>Formula: Base Score × Exponent Multiplier = ${baseVal} × ${multiplier} (${expBase}<sup>${selectedLvl}</sup>) = ${total}</small>
+          `);
+        }
       }
 
       // ---- Step 3 (Equivalent Expressions) ----
@@ -1110,6 +1314,8 @@
       }
 
       function validateChallenge(num, targetLeft, targetRight, targetAns) {
+        const body = document.getElementById('body') || document.body;
+        const isEs = body.classList.contains('es');
         const leftEl = document.getElementById(`eq${num}-left`);
         const rightEl = document.getElementById(`eq${num}-right`);
         const ansEl = document.getElementById(`eq${num}-ans`);
@@ -1120,10 +1326,10 @@
 
         if (leftEl.value !== '') {
           if (parseInt(leftEl.value) === targetLeft) {
-            leftFb.textContent = "Correct!";
+            leftFb.textContent = isEs ? "¡Correcto!" : "Correct!";
             leftFb.className = "feedback correct";
           } else {
-            leftFb.textContent = "Incorrect value.";
+            leftFb.textContent = isEs ? "Valor incorrecto." : "Incorrect value.";
             leftFb.className = "feedback incorrect";
           }
         } else {
@@ -1132,10 +1338,10 @@
 
         if (rightEl.value !== '') {
           if (parseInt(rightEl.value) === targetRight) {
-            rightFb.textContent = "Correct!";
+            rightFb.textContent = isEs ? "¡Correcto!" : "Correct!";
             rightFb.className = "feedback correct";
           } else {
-            rightFb.textContent = "Incorrect value.";
+            rightFb.textContent = isEs ? "Valor incorrecto." : "Incorrect value.";
             rightFb.className = "feedback incorrect";
           }
         } else {
@@ -1144,10 +1350,10 @@
 
         if (ansEl.value !== '') {
           if (ansEl.value === targetAns) {
-            ansFb.textContent = "Correct equivalence check!";
+            ansFb.textContent = isEs ? "¡Verificación de equivalencia correcta!" : "Correct equivalence check!";
             ansFb.className = "feedback correct";
           } else {
-            ansFb.textContent = "Incorrect choice.";
+            ansFb.textContent = isEs ? "Elección incorrecta." : "Incorrect choice.";
             ansFb.className = "feedback incorrect";
           }
         } else {
@@ -1157,6 +1363,8 @@
 
       function validateFactoring() {
         if (level !== 2) return;
+        const body = document.getElementById('body') || document.body;
+        const isEs = body.classList.contains('es');
         const ptRate = parseInt(document.getElementById('g-pt-rate').value) || 10;
         const bnRate = parseInt(document.getElementById('g-bn-rate').value) || 5;
 
@@ -1176,10 +1384,14 @@
           const userIn2 = parseInt(in2El.value);
 
           if (userOut === gcfVal && userIn1 === correctIn1 && userIn2 === correctIn2) {
-            fbEl.textContent = `Correct Factoring! ${ptRate}p + ${bnRate}b = ${gcfVal}(${correctIn1}p + ${correctIn2}b)`;
+            fbEl.textContent = isEs
+              ? `¡Factorización correcta! ${ptRate}p + ${bnRate}b = ${gcfVal}(${correctIn1}p + ${correctIn2}b)`
+              : `Correct Factoring! ${ptRate}p + ${bnRate}b = ${gcfVal}(${correctIn1}p + ${correctIn2}b)`;
             fbEl.className = "feedback correct";
           } else {
-            fbEl.textContent = `Incorrect factoring. Check the GCF of ${ptRate} and ${bnRate}.`;
+            fbEl.textContent = isEs
+              ? `Factorización incorrecta. Comprueba el MCD de ${ptRate} y ${bnRate}.`
+              : `Incorrect factoring. Check the GCF of ${ptRate} and ${bnRate}.`;
             fbEl.className = "feedback incorrect";
           }
         } else {
@@ -1190,7 +1402,9 @@
 
       // ---- Step 4 (Partner Score) ----
       function comparePartner() {
-        const pName = document.getElementById('p-name').value || 'Classmate';
+        const body = document.getElementById('body') || document.body;
+        const isEs = body.classList.contains('es');
+        const pName = document.getElementById('p-name').value || (isEs ? 'Compañero' : 'Classmate');
         const pPtRate = parseInt(document.getElementById('p-pt-rate').value) || 8;
         const pBnRate = parseInt(document.getElementById('p-bn-rate').value) || 6;
         const pExpBase = level === 2 ? (parseInt(document.getElementById('p-exp-base').value) || 2) : 2;
@@ -1210,20 +1424,21 @@
         const pMult = Math.pow(pExpBase, 3);
         const pTotal = pBase * pMult;
 
+        const myHeaderName = isEs ? 'Tú' : 'You';
         let resultHtml = `
           <table class="data-table" style="margin-bottom:12px;">
             <thead>
               <tr>
-                <th>Player</th>
-                <th>Base Score Formula</th>
-                <th>Base Score (p=80, b=15)</th>
-                <th>Level 3 Multiplier (Base<sup>3</sup>)</th>
-                <th>Total score</th>
+                <th>${isEs ? 'Jugador' : 'Player'}</th>
+                <th>${isEs ? 'Fórmula base' : 'Base Score Formula'}</th>
+                <th>${isEs ? 'Puntaje base (p=80, b=15)' : 'Base Score (p=80, b=15)'}</th>
+                <th>${isEs ? 'Multiplicador Nivel 3 (Base³)' : 'Level 3 Multiplier (Base³)'}</th>
+                <th>${isEs ? 'Puntuación total' : 'Total score'}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><strong>You</strong></td>
+                <td><strong>${myHeaderName}</strong></td>
                 <td>${myPtRate}p + ${myBnRate}b${myConstant ? ' + ' + myConstant : ''}</td>
                 <td>${myBase}</td>
                 <td>${myMult} (${myExpBase}<sup>3</sup>)</td>
@@ -1241,11 +1456,17 @@
         `;
 
         if (myTotal > pTotal) {
-          resultHtml += `🏆 <strong>You win!</strong> Your scoring engine scored <strong>${myTotal - pTotal}</strong> more points than ${pName}.`;
+          resultHtml += isEs
+            ? `🏆 <strong>¡Ganaste!</strong> Tu motor de puntuación obtuvo <strong>${myTotal - pTotal}</strong> puntos más que ${pName}.`
+            : `🏆 <strong>You win!</strong> Your scoring engine scored <strong>${myTotal - pTotal}</strong> more points than ${pName}.`;
         } else if (pTotal > myTotal) {
-          resultHtml += `🎮 <strong>${pName} wins!</strong> Their scoring engine scored <strong>${pTotal - myTotal}</strong> more points than you.`;
+          resultHtml += isEs
+            ? `🎮 <strong>¡Ganó ${pName}!</strong> Su motor de puntuación obtuvo <strong>${pTotal - myTotal}</strong> puntos más que tú.`
+            : `🎮 <strong>${pName} wins!</strong> Their scoring engine scored <strong>${pTotal - myTotal}</strong> more points than you.`;
         } else {
-          resultHtml += `🤝 <strong>It's a tie!</strong> Both scoring engines scored exactly <strong>${myTotal}</strong> points.`;
+          resultHtml += isEs
+            ? `🤝 <strong>¡Es un empate!</strong> Ambos motores de puntuación obtuvieron exactamente <strong>${myTotal}</strong> puntos.`
+            : `🤝 <strong>It's a tie!</strong> Both scoring engines scored exactly <strong>${myTotal}</strong> points.`;
         }
 
         showReadout('peer-out', resultHtml);
@@ -1253,6 +1474,8 @@
 
       // ---- Step 5 (Finish/Report) ----
       function buildReport() {
+        const body = document.getElementById('body') || document.body;
+        const isEs = body.classList.contains('es');
         const gameTitle = document.getElementById('g-title').value || 'My Game';
         const myPtRate = parseInt(document.getElementById('g-pt-rate').value) || 10;
         const myBnRate = parseInt(document.getElementById('g-bn-rate').value) || 5;
@@ -1295,17 +1518,21 @@
 
         let propertySection = '';
         if (level === 1) {
-          propertySection = `   Distributive Explanation: ${document.getElementById('dist-explain').value || '—'}`;
+          propertySection = isEs
+            ? `   Explicación de la propiedad distributiva: ${document.getElementById('dist-explain').value || '—'}`
+            : `   Distributive Explanation: ${document.getElementById('dist-explain').value || '—'}`;
         } else {
           const userG = document.getElementById('dist-out').value || '—';
           const userIn1 = document.getElementById('dist-in1').value || '—';
           const userIn2 = document.getElementById('dist-in2').value || '—';
           const correctG = gcd(myPtRate, myBnRate);
-          propertySection = `   Factored Expression: ${userG}(${userIn1}p + ${userIn2}b) [Target: ${correctG}(${myPtRate/correctG}p + ${myBnRate/correctG}b)]`;
+          propertySection = isEs
+            ? `   Expresión factorizada: ${userG}(${userIn1}p + ${userIn2}b) [Objetivo: ${correctG}(${myPtRate/correctG}p + ${myBnRate/correctG}b)]`
+            : `   Factored Expression: ${userG}(${userIn1}p + ${userIn2}b) [Target: ${correctG}(${myPtRate/correctG}p + ${myBnRate/correctG}b)]`;
         }
 
         // Duel
-        const pName = document.getElementById('p-name').value || 'Classmate';
+        const pName = document.getElementById('p-name').value || (isEs ? 'Compañero' : 'Classmate');
         const pPtRate = parseInt(document.getElementById('p-pt-rate').value) || 8;
         const pBnRate = parseInt(document.getElementById('p-bn-rate').value) || 6;
         const pExpBase = level === 2 ? (parseInt(document.getElementById('p-exp-base').value) || 2) : 2;
@@ -1318,11 +1545,51 @@
         const pMult = Math.pow(pExpBase, 3);
         const pTotal = pBase * pMult;
 
-        const winner = myTotal > pTotal ? 'You won!' : pTotal > myTotal ? `${pName} won!` : "It's a tie!";
+        const winner = myTotal > pTotal 
+          ? (isEs ? '¡Tú ganaste!' : 'You won!') 
+          : pTotal > myTotal 
+            ? (isEs ? `¡${pName} ganó!` : `${pName} won!`) 
+            : (isEs ? "¡Es un empate!" : "It's a tie!");
+            
         const pReflect = document.getElementById('peer-reflect').value || '—';
         const pitch = document.getElementById('pitch').value || '—';
 
-        const lines = [
+        const lines = isEs ? [
+          '═══ MOTOR DE PUNTUACIÓN DE ESTUDIO DE JUEGOS — PROYECTO UNIDAD 6 (Versión A) ═══',
+          '',
+          '📖 ESTÁNDARES MATEMÁTICOS: 6.EE.1, 6.EE.2, 6.EE.3, 6.EE.4',
+          `Título del juego: ${gameTitle}`,
+          `Modo de nivel: Nivel ${level} (${level === 1 ? 'Con apoyo' : 'Desafío'})`,
+          `Fórmula de puntuación base: ${baseFormula}`,
+          '',
+          '📊 PASO 1 — PRUEBAS DE EVALUACIÓN',
+          `   Configuración A (p=50, b=10)   -> Ingresado: ${userEvalA} | Correcto: ${correctEvalA}`,
+          `   Configuración B (p=100, b=20)  -> Ingresado: ${userEvalB} | Correcto: ${correctEvalB}`,
+          '',
+          '⚡ PASO 2 — MULTIPLICADOR DE NIVEL (Base ' + myExpBase + '^n)',
+          `   Multiplicador Nivel 2 -> Ingresado: ${userM2} | Correcto: ${correctM2}`,
+          `   Multiplicador Nivel 3 -> Ingresado: ${userM3} | Correcto: ${correctM3}`,
+          `   Multiplicador Nivel 4 -> Ingresado: ${userM4} | Correcto: ${correctM4}`,
+          `   Multiplicador Nivel 5 -> Ingresado: ${userM5} | Correcto: ${correctM5}`,
+          '',
+          '🟰 PASO 3 — EXPRESIONES EQUIVALENTES',
+          `   Desafío 1 [3(2p+4b) vs 6p+12b] -> Izq: ${userEq1Left} | Der: ${userEq1Right} | Equiv: ${userEq1Ans} (Objetivo: 42/42/Yes)`,
+          `   Desafío 2 [4(p+3b) vs 4p+3b]   -> Izq: ${userEq2Left} | Der: ${userEq2Right} | Equiv: ${userEq2Ans} (Objetivo: 36/18/No)`,
+          `   Desafío 3 [5(2p+b+8) vs 10p+5b+40] -> Izq: ${userEq3Left} | Der: ${userEq3Right} | Equiv: ${userEq3Ans} (Objetivo: 80/80/Yes)`,
+          propertySection,
+          '',
+          '👥 PASO 4 — DUELO DE PUNTUACIÓN CON COMPAÑERO (en p=80, b=15, Nivel 3)',
+          `   Nombre del compañero: ${pName} | Fórmula: ${pPtRate}p + ${pBnRate}b | Base: ${pExpBase}`,
+          `   Tu puntuación: ${myTotal} puntos | Puntuación del compañero: ${pTotal} puntos`,
+          `   Resultado: ${winner}`,
+          `   Reflexión: ${pReflect}`,
+          '',
+          '✍️ PASO 5 — PRESENTACIÓN DEL DISEÑO',
+          pitch,
+          '',
+          '═══════════════════════════════',
+          `Generado: ${new Date().toLocaleString()}`,
+        ] : [
           '═══ GAME STUDIO SCORING ENGINE — UNIT 6 PROJECT (Version A) ═══',
           '',
           '📖 MATH STANDARDS: 6.EE.1, 6.EE.2, 6.EE.3, 6.EE.4',
@@ -1369,22 +1636,26 @@
 
       function copyReport() {
         const txt = document.getElementById('reportBox').textContent;
+        const body = document.getElementById('body') || document.body;
+        const isEs = body.classList.contains('es');
         if (!txt) {
-          alert('Please click "Generate Summary" first.');
+          alert(isEs ? 'Por favor, haz clic en "Generar resumen" primero.' : 'Please click "Generate Summary" first.');
           return;
         }
-        navigator.clipboard?.writeText(txt).then(() => alert('Copied report to clipboard!'));
+        navigator.clipboard?.writeText(txt).then(() => alert(isEs ? '¡Informe copiado al portapapeles!' : 'Copied report to clipboard!'));
       }
 
       function downloadTxt() {
         const txt = document.getElementById('reportBox').textContent;
+        const body = document.getElementById('body') || document.body;
+        const isEs = body.classList.contains('es');
         if (!txt) {
-          alert('Please click "Generate Summary" first.');
+          alert(isEs ? 'Por favor, haz clic en "Generar resumen" primero.' : 'Please click "Generate Summary" first.');
           return;
         }
         const a = document.createElement('a');
         a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
-        a.download = 'game-scoring-engine-plan.txt';
+        a.download = isEs ? 'plan-del-motor-de-puntuacion.txt' : 'game-scoring-engine-plan.txt';
         a.click();
       }
 
