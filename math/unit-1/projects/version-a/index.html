@@ -1233,6 +1233,31 @@
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <script src="/assets/app.js" defer></script>
     <script>
+      const PRESETS = {"g-stickers": 24, "g-bars": 36, "l-music": 5, "l-bubble": 7};
+      function handleLevelPreset(n) {
+        try {
+          if (n === 1) {
+            for (const [id, val] of Object.entries(PRESETS)) {
+              const el = document.getElementById(id);
+              if (el && !el.value) {
+                el.value = val;
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+            }
+          } else if (n === 2) {
+            for (const [id, val] of Object.entries(PRESETS)) {
+              const el = document.getElementById(id);
+              if (el && String(el.value) === String(val)) {
+                el.value = '';
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+            }
+          }
+        } catch(e) {}
+      }
+
       function playConfetti() {
         try {
           const container = document.createElement('div');
@@ -1296,7 +1321,8 @@
         body.className = 'level-' + n + (isEs ? ' es' : '');
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
-      }
+      
+        handleLevelPreset(n);}
 
       // ---- Language toggle ----
       function toggleLanguage() {
@@ -1435,6 +1461,11 @@
       function calcGCF() {
         const a = parseInt(document.getElementById('g-stickers').value);
         const b = parseInt(document.getElementById('g-bars').value);
+        const studentVal = parseInt(document.getElementById('student-gcf-input').value);
+        const body = document.getElementById('body') || document.body;
+        const isLevel2 = body.classList.contains('level-2');
+        const isEs = body.classList.contains('es');
+
         // Update SVG labels
         const sa = document.getElementById('gcf-svg-a');
         const sb = document.getElementById('gcf-svg-b');
@@ -1446,32 +1477,108 @@
         }
         if (isNaN(a) || isNaN(b) || a < 1 || b < 1) return;
         const g = gcd(a, b);
-        showReadout('gcf-out', `
-          <span class="en-text"><strong>GCF of ${a} and ${b} = ${g} bags</strong><br>
-          Each bag gets <strong>${Math.floor(a/g)} stickers</strong> and <strong>${Math.floor(b/g)} granola bars</strong>.<br>
-          <small>Factors of ${a}: ${getFactors(a).join(', ')} &nbsp;|&nbsp; Factors of ${b}: ${getFactors(b).join(', ')}</small></span>
-          <span class="es-text"><strong>MCD de ${a} y ${b} = ${g} bolsas</strong><br>
-          Cada bolsa recibe <strong>${Math.floor(a/g)} pegatinas</strong> y <strong>${Math.floor(b/g)} barras de granola</strong>.<br>
-          <small>Factores de ${a}: ${getFactors(a).join(', ')} &nbsp;|&nbsp; Factores de ${b}: ${getFactors(b).join(', ')}</small></span>
-        `);
+
+        if (isNaN(studentVal)) {
+          showReadout('gcf-out', isEs
+            ? '<span style="color:var(--orange); font-weight:600;">✍️ Ingresa tu respuesta del MCD arriba para verificar tu cálculo.</span>'
+            : '<span style="color:var(--orange); font-weight:600;">✍️ Enter your GCF answer above to verify your calculation.</span>'
+          );
+          return;
+        }
+
+        let feedback = '';
+        if (studentVal === g) {
+          feedback = isEs
+            ? `<strong><span style="color:var(--green)">✅ ¡Correcto!</span> MCD de ${a} y ${b} = ${g} bolsas iguales</strong><br>Cada bolsa recibe <strong>${Math.floor(a/g)} pegatinas</strong> y <strong>${Math.floor(b/g)} barras de granola</strong>.`
+            : `<strong><span style="color:var(--green)">✅ Correct!</span> GCF of ${a} and ${b} = ${g} equal bags</strong><br>Each bag gets <strong>${Math.floor(a/g)} stickers</strong> and <strong>${Math.floor(b/g)} granola bars</strong>.`;
+          
+          if (!isLevel2) {
+            feedback += `<br><small>${isEs ? 'Factores' : 'Factors'} of ${a}: ${getFactors(a).join(', ')} &nbsp;|&nbsp; ${isEs ? 'Factores' : 'Factors'} of ${b}: ${getFactors(b).join(', ')}</small>`;
+          } else {
+            // Level 2 distributive property check
+            const distribVal = document.getElementById('distrib').value.trim();
+            if (!distribVal) {
+              feedback += isEs
+                ? '<br><span style="color:var(--orange)"><small>✍️ Completa la extensión del MCD abajo usando la propiedad distributiva.</small></span>'
+                : '<br><span style="color:var(--orange)"><small>✍️ Complete the GCF extension below using the distributive property.</small></span>';
+            } else {
+              const clean = distribVal.replace(/\s+/g, '');
+              const match = clean.match(/^(\d+)[\*x]?\((\d+)\+(\d+)\)$/);
+              if (match) {
+                const sg = parseInt(match[1]);
+                const sa_term = parseInt(match[2]);
+                const sb_term = parseInt(match[3]);
+                if (sg === g && sa_term === (a/g) && sb_term === (b/g)) {
+                  feedback += isEs
+                    ? '<br><span style="color:var(--green)"><strong>✅ MCD de la propiedad distributiva correcto!</strong></span>'
+                    : '<br><span style="color:var(--green)"><strong>✅ Correct Distributive Property GCF!</strong></span>';
+                } else {
+                  feedback += isEs
+                    ? `<br><span style="color:var(--coral)">❌ Aún no es correcto. Debería ser: ${g}(${a/g} + ${b/g})</span>`
+                    : `<br><span style="color:var(--coral)">❌ Not quite correct. Should match: ${g}(${a/g} + ${b/g})</span>`;
+                }
+              } else {
+                feedback += isEs
+                  ? '<br><span style="color:var(--coral)">❌ Formato incorrecto. Ejemplo: 12*(2+3) o 12(2+3)</span>'
+                  : '<br><span style="color:var(--coral)">❌ Incorrect format. Example: 12*(2+3) or 12(2+3)</span>';
+              }
+            }
+          }
+        } else {
+          feedback = isEs
+            ? `<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto. Inténtalo de nuevo.</span>`
+            : `<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet. Try again!</span>`;
+          if (!isLevel2) {
+            feedback += `<br><small>${isEs ? 'Factores' : 'Factors'} of ${a}: ${getFactors(a).slice(0, 3).join(', ')}... &nbsp;|&nbsp; ${isEs ? 'Factores' : 'Factors'} of ${b}: ${getFactors(b).slice(0, 3).join(', ')}...</small>`;
+          }
+        }
+
+        showReadout('gcf-out', feedback);
       }
 
       // ---- LCM ----
       function calcLCM() {
         const a = parseInt(document.getElementById('l-music').value);
         const b = parseInt(document.getElementById('l-bubble').value);
+        const studentVal = parseInt(document.getElementById('student-lcm-input').value);
+        const body = document.getElementById('body') || document.body;
+        const isLevel2 = body.classList.contains('level-2');
+        const isEs = body.classList.contains('es');
+
         if (isNaN(a) || isNaN(b) || a < 1 || b < 1) return;
         const l = lcm(a, b);
-        const musMultiples = Array.from({length:5}, (_,i) => a*(i+1));
-        const bubMultiples = Array.from({length:5}, (_,i) => b*(i+1));
-        showReadout('lcm-out', `
-          <span class="en-text"><strong>LCM of ${a} and ${b} = ${l} minutes</strong><br>
-          Both events happen at the same time at minute <strong>${l}</strong> — that's the big moment!<br>
-          <small>Music (×${a}): ${musMultiples.join(', ')}… &nbsp;|&nbsp; Bubbles (×${b}): ${bubMultiples.join(', ')}…</small></span>
-          <span class="es-text"><strong>MCM de ${a} y ${b} = ${l} minutos</strong><br>
-          Ambos eventos ocurren al mismo tiempo en el minuto <strong>${l}</strong> — ¡ese es el gran momento!<br>
-          <small>Música (×${a}): ${musMultiples.join(', ')}… &nbsp;|&nbsp; Burbujas (×${b}): ${bubMultiples.join(', ')}…</small></span>
-        `);
+
+        if (isNaN(studentVal)) {
+          showReadout('lcm-out', isEs
+            ? '<span style="color:var(--orange); font-weight:600;">✍️ Ingresa tu respuesta del MCM arriba para verificar tu cálculo.</span>'
+            : '<span style="color:var(--orange); font-weight:600;">✍️ Enter your LCM answer above to verify your calculation.</span>'
+          );
+          return;
+        }
+
+        let feedback = '';
+        if (studentVal === l) {
+          feedback = isEs
+            ? `<strong><span style="color:var(--green)">✅ ¡Correcto!</span> MCM de ${a} y ${b} = ${l} minutos</strong><br>Ambos eventos ocurren al mismo tiempo en el minuto <strong>${l}</strong>.`
+            : `<strong><span style="color:var(--green)">✅ Correct!</span> LCM of ${a} and ${b} = ${l} minutes</strong><br>Both events happen at the same time at minute <strong>${l}</strong>.`;
+          
+          if (!isLevel2) {
+            const musMultiples = Array.from({length:5}, (_,i) => a*(i+1));
+            const bubMultiples = Array.from({length:5}, (_,i) => b*(i+1));
+            feedback += `<br><small>Música (×${a}): ${musMultiples.join(', ')}… &nbsp;|&nbsp; Burbujas (×${b}): ${bubMultiples.join(', ')}…</small>`;
+          }
+        } else {
+          feedback = isEs
+            ? `<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto. Inténtalo de nuevo.</span>`
+            : `<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet. Try again!</span>`;
+          if (!isLevel2) {
+            const musMultiples = Array.from({length:3}, (_,i) => a*(i+1));
+            const bubMultiples = Array.from({length:3}, (_,i) => b*(i+1));
+            feedback += `<br><small>Música: ${musMultiples.join(', ')}… &nbsp;|&nbsp; Burbujas: ${bubMultiples.join(', ')}…</small>`;
+          }
+        }
+
+        showReadout('lcm-out', feedback);
       }
 
       // ---- Budget ----

@@ -898,6 +898,31 @@
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <script src="/assets/app.js" defer></script>
     <script>
+      const PRESETS = {"wood-len": 8, "piece-len": 1.5};
+      function handleLevelPreset(n) {
+        try {
+          if (n === 1) {
+            for (const [id, val] of Object.entries(PRESETS)) {
+              const el = document.getElementById(id);
+              if (el && !el.value) {
+                el.value = val;
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+            }
+          } else if (n === 2) {
+            for (const [id, val] of Object.entries(PRESETS)) {
+              const el = document.getElementById(id);
+              if (el && String(el.value) === String(val)) {
+                el.value = '';
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+            }
+          }
+        } catch(e) {}
+      }
+
       function playConfetti() {
         try {
           const container = document.createElement('div');
@@ -984,7 +1009,8 @@
           const sliceParts = document.getElementById('p3-slice').value.split('/');
           document.getElementById('p3-slice-num').value = parseInt(sliceParts[0]);
           document.getElementById('p3-slice-den').value = parseInt(sliceParts[1]);
-        } else {
+        
+        handleLevelPreset(n);} else {
           // Sync L2 -> L1 (fallback to defaults if invalid options)
           const n1 = parseInt(document.getElementById('p1-div-num').value);
           const d1 = parseInt(document.getElementById('p1-div-den').value);

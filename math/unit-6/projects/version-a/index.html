@@ -979,6 +979,31 @@
           <pre class="report-box" id="reportBox"></pre>
         </div>
     <script>
+      const PRESETS = {"g-pt-rate": 10, "g-bn-rate": 5};
+      function handleLevelPreset(n) {
+        try {
+          if (n === 1) {
+            for (const [id, val] of Object.entries(PRESETS)) {
+              const el = document.getElementById(id);
+              if (el && !el.value) {
+                el.value = val;
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+            }
+          } else if (n === 2) {
+            for (const [id, val] of Object.entries(PRESETS)) {
+              const el = document.getElementById(id);
+              if (el && String(el.value) === String(val)) {
+                el.value = '';
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+            }
+          }
+        } catch(e) {}
+      }
+
       function playConfetti() {
         try {
           const container = document.createElement('div');
@@ -1045,7 +1070,8 @@
         bodyEl.className = 'level-' + n;
         if (isEs) {
           bodyEl.classList.add('es');
-        }
+        
+        handleLevelPreset(n);}
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
         

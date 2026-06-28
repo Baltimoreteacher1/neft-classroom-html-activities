@@ -821,6 +821,31 @@
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <script src="/assets/app.js" defer></script>
     <script>
+      const PRESETS = {"total-boards": 12, "cut-len": 2.25};
+      function handleLevelPreset(n) {
+        try {
+          if (n === 1) {
+            for (const [id, val] of Object.entries(PRESETS)) {
+              const el = document.getElementById(id);
+              if (el && !el.value) {
+                el.value = val;
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+            }
+          } else if (n === 2) {
+            for (const [id, val] of Object.entries(PRESETS)) {
+              const el = document.getElementById(id);
+              if (el && String(el.value) === String(val)) {
+                el.value = '';
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+            }
+          }
+        } catch(e) {}
+      }
+
       function playConfetti() {
         try {
           const container = document.createElement('div');
@@ -886,7 +911,8 @@
         calcRope();
         calcWood();
         calcFabric();
-      }
+      
+        handleLevelPreset(n);}
 
       // ---- Build step trail ----
       function buildTrail() {

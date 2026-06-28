@@ -1090,6 +1090,31 @@
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <script src="/assets/app.js" defer></script>
     <script>
+      const PRESETS = {"g-cables": 16, "g-sensors": 24, "l-robotA": 6, "l-robotB": 8};
+      function handleLevelPreset(n) {
+        try {
+          if (n === 1) {
+            for (const [id, val] of Object.entries(PRESETS)) {
+              const el = document.getElementById(id);
+              if (el && !el.value) {
+                el.value = val;
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+            }
+          } else if (n === 2) {
+            for (const [id, val] of Object.entries(PRESETS)) {
+              const el = document.getElementById(id);
+              if (el && String(el.value) === String(val)) {
+                el.value = '';
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+            }
+          }
+        } catch(e) {}
+      }
+
       function playConfetti() {
         try {
           const container = document.createElement('div');
@@ -1148,7 +1173,8 @@
       function setLevel(n) {
         if (window.speechSynthesis) {
           window.speechSynthesis.cancel();
-        }
+        
+        handleLevelPreset(n);}
         document.getElementById('body').className = 'level-' + n;
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
@@ -1210,7 +1236,9 @@
         var studentVal = parseInt(document.getElementById('student-gcf-input').value);
         var sc = document.getElementById('gcf-svg-cables');
         var ss = document.getElementById('gcf-svg-sensors');
-        const isEs = document.body.classList.contains('es');
+        const body = document.getElementById('body') || document.body;
+        const isLevel2 = body.classList.contains('level-2');
+        const isEs = body.classList.contains('es');
         if (sc && !isNaN(a)) sc.textContent = a + ' cables';
         if (ss && !isNaN(b)) ss.textContent = b + (isEs ? ' sensores' : ' sensors');
         if (isNaN(a) || isNaN(b) || a < 1 || b < 1) return;
@@ -1219,42 +1247,69 @@
         if (isNaN(studentVal)) {
           if (isEs) {
             showReadout('gcf-out',
-              '<span style="color:var(--orange); font-weight:600;">✍️ Ingresa tu respuesta del MCD arriba para verificar tu cálculo.</span><br>' +
-              '<small>Pista: Enumera los factores de ' + a + ' y ' + b + ' para encontrar la mayor cantidad de kits iguales.</small>'
+              '<span style="color:var(--orange); font-weight:600;">✍️ Ingresa tu respuesta del MCD arriba para verificar tu cálculo.</span>'
             );
           } else {
             showReadout('gcf-out',
-              '<span style="color:var(--orange); font-weight:600;">✍️ Enter your GCF answer above to verify your calculation.</span><br>' +
-              '<small>Hint: List the factors of ' + a + ' and ' + b + ' to find the largest number of equal kits.</small>'
+              '<span style="color:var(--orange); font-weight:600;">✍️ Enter your GCF answer above to verify your calculation.</span>'
             );
           }
           return;
         }
 
         if (studentVal === g) {
+          let feedback = '';
           if (isEs) {
-            showReadout('gcf-out',
-              '<strong><span style="color:var(--green)">✅ ¡Correcto!</span> MCD de ' + a + ' y ' + b + ' = ' + g + ' kits de herramientas iguales</strong><br>' +
-              'Cada kit recibe <strong>' + Math.floor(a/g) + ' cables</strong> y <strong>' + Math.floor(b/g) + ' sensores</strong>.<br>' +
-              '<small>Factores de ' + a + ': ' + getFactors(a).join(', ') + ' &nbsp;|&nbsp; Factores de ' + b + ': ' + getFactors(b).join(', ') + '</small>'
-            );
+            feedback = '<strong><span style="color:var(--green)">✅ ¡Correcto!</span> MCD de ' + a + ' y ' + b + ' = ' + g + ' kits de herramientas iguales</strong><br>' +
+              'Cada kit recibe <strong>' + Math.floor(a/g) + ' cables</strong> y <strong>' + Math.floor(b/g) + ' sensores</strong>.';
           } else {
-            showReadout('gcf-out',
-              '<strong><span style="color:var(--green)">✅ Correct!</span> GCF of ' + a + ' and ' + b + ' = ' + g + ' equal tool kits</strong><br>' +
-              'Each kit gets <strong>' + Math.floor(a/g) + ' cables</strong> and <strong>' + Math.floor(b/g) + ' sensors</strong>.<br>' +
-              '<small>Factors of ' + a + ': ' + getFactors(a).join(', ') + ' &nbsp;|&nbsp; Factors of ' + b + ': ' + getFactors(b).join(', ') + '</small>'
-            );
+            feedback = '<strong><span style="color:var(--green)">✅ Correct!</span> GCF of ' + a + ' and ' + b + ' = ' + g + ' equal tool kits</strong><br>' +
+              'Each kit gets <strong>' + Math.floor(a/g) + ' cables</strong> and <strong>' + Math.floor(b/g) + ' sensors</strong>.';
           }
+
+          if (!isLevel2) {
+            feedback += '<br><small>' + (isEs ? 'Factores' : 'Factors') + ' of ' + a + ': ' + getFactors(a).join(', ') + ' &nbsp;|&nbsp; ' + (isEs ? 'Factores' : 'Factors') + ' of ' + b + ': ' + getFactors(b).join(', ') + '</small>';
+          } else {
+            // Level 2 distributive property check
+            const distribVal = document.getElementById('distrib').value.trim();
+            if (!distribVal) {
+              feedback += isEs
+                ? '<br><span style="color:var(--orange)"><small>✍️ Completa la extensión del MCD abajo usando la propiedad distributiva.</small></span>'
+                : '<br><span style="color:var(--orange)"><small>✍️ Complete the GCF extension below using the distributive property.</small></span>';
+            } else {
+              const clean = distribVal.replace(/\s+/g, '');
+              const match = clean.match(/^(\d+)[\*x]?\((\d+)\+(\d+)\)$/);
+              if (match) {
+                const sg = parseInt(match[1]);
+                const sa_term = parseInt(match[2]);
+                const sb_term = parseInt(match[3]);
+                if (sg === g && sa_term === (a/g) && sb_term === (b/g)) {
+                  feedback += isEs
+                    ? '<br><span style="color:var(--green)"><strong>✅ MCD de la propiedad distributiva correcto!</strong></span>'
+                    : '<br><span style="color:var(--green)"><strong>✅ Correct Distributive Property GCF!</strong></span>';
+                } else {
+                  feedback += isEs
+                    ? `<br><span style="color:var(--coral)">❌ Aún no es correcto. Debería ser: ${g}(${a/g} + ${b/g})</span>`
+                    : `<br><span style="color:var(--coral)">❌ Not quite correct. Should match: ${g}(${a/g} + ${b/g})</span>`;
+                }
+              } else {
+                feedback += isEs
+                  ? '<br><span style="color:var(--coral)">❌ Formato incorrecto. Ejemplo: 8*(2+3) o 8(2+3)</span>'
+                  : '<br><span style="color:var(--coral)">❌ Incorrect format. Example: 8*(2+3) or 8(2+3)</span>';
+              }
+            }
+          }
+          showReadout('gcf-out', feedback);
         } else {
           if (isEs) {
             showReadout('gcf-out',
-              '<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto. Inténtalo de nuevo.</span><br>' +
-              '<small>Factores de ' + a + ': ' + getFactors(a).slice(0, 3).join(', ') + '... &nbsp;|&nbsp; Factores de ' + b + ': ' + getFactors(b).slice(0, 3).join(', ') + '...</small>'
+              '<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto. Inténtalo de nuevo.</span>' +
+              (!isLevel2 ? '<br><small>Factores de ' + a + ': ' + getFactors(a).slice(0, 3).join(', ') + '... &nbsp;|&nbsp; Factores de ' + b + ': ' + getFactors(b).slice(0, 3).join(', ') + '...</small>' : '')
             );
           } else {
             showReadout('gcf-out',
-              '<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet. Try again!</span><br>' +
-              '<small>Factors of ' + a + ': ' + getFactors(a).slice(0, 3).join(', ') + '... &nbsp;|&nbsp; Factors of ' + b + ': ' + getFactors(b).slice(0, 3).join(', ') + '...</small>'
+              '<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet. Try again!</span>' +
+              (!isLevel2 ? '<br><small>Factors of ' + a + ': ' + getFactors(a).slice(0, 3).join(', ') + '... &nbsp;|&nbsp; Factors of ' + b + ': ' + getFactors(b).slice(0, 3).join(', ') + '...</small>' : '')
             );
           }
         }
@@ -1271,50 +1326,40 @@
         if (isNaN(studentVal)) {
           if (isEs) {
             showReadout('lcm-out',
-              '<span style="color:var(--orange); font-weight:600;">✍️ Ingresa tu respuesta del MCM arriba para verificar tu cálculo.</span><br>' +
-              '<small>Pista: Enumera los múltiplos de ' + a + ' y ' + b + ' para encontrar la primera hora en que ambos se sincronizan.</small>'
+              '<span style="color:var(--orange); font-weight:600;">✍️ Ingresa tu respuesta del MCM arriba para verificar tu cálculo.</span>'
             );
           } else {
             showReadout('lcm-out',
-              '<span style="color:var(--orange); font-weight:600;">✍️ Enter your LCM answer above to verify your calculation.</span><br>' +
-              '<small>Hint: List the multiples of ' + a + ' and ' + b + ' to find the first hour both sync.</small>'
+              '<span style="color:var(--orange); font-weight:600;">✍️ Enter your LCM answer above to verify your calculation.</span>'
             );
           }
           return;
         }
 
         if (studentVal === l) {
-          var am = [], bm = [];
-          for (var i = 1; i <= Math.min(Math.ceil(l/a), 10); i++) { am.push(a*i); }
-          for (var i = 1; i <= Math.min(Math.ceil(l/b), 10); i++) { bm.push(b*i); }
           if (isEs) {
             showReadout('lcm-out',
               '<strong><span style="color:var(--green)">✅ ¡Correcto!</span> MCM de ' + a + ' y ' + b + ' = ' + l + ' horas</strong><br>' +
-              '¡Ambos robots estarán completamente cargados al mismo tiempo en la hora <strong>' + l + '</strong>!<br>' +
-              '<small>Robot A (x' + a + '): ' + am.join(', ') + '... &nbsp;|&nbsp; Robot B (x' + b + '): ' + bm.join(', ') + '...</small>'
+              '¡Ambos robots estarán completamente cargados al mismo tiempo en la hora <strong>' + l + '</strong>!' +
+              (!isLevel2 ? '<br><small>Robot A (x' + a + '): ' + Array.from({length:5}, (_,i) => a*(i+1)).join(', ') + '... &nbsp;|&nbsp; Robot B (x' + b + '): ' + Array.from({length:5}, (_,i) => b*(i+1)).join(', ') + '...</small>' : '')
             );
           } else {
             showReadout('lcm-out',
               '<strong><span style="color:var(--green)">✅ Correct!</span> LCM of ' + a + ' and ' + b + ' = ' + l + ' hours</strong><br>' +
-              'Both robots will be fully charged at the same time at hour <strong>' + l + '</strong>!<br>' +
-              '<small>Robot A (x' + a + '): ' + am.join(', ') + '... &nbsp;|&nbsp; Robot B (x' + b + '): ' + bm.join(', ') + '...</small>'
+              'Both robots will be fully charged at the same time at hour <strong>' + l + '</strong>!' +
+              (!isLevel2 ? '<br><small>Robot A (x' + a + '): ' + Array.from({length:5}, (_,i) => a*(i+1)).join(', ') + '... &nbsp;|&nbsp; Robot B (x' + b + '): ' + Array.from({length:5}, (_,i) => b*(i+1)).join(', ') + '...</small>' : '')
             );
           }
         } else {
-          var amLimit = Math.min(Math.ceil(l/a) - 1, 5);
-          var bmLimit = Math.min(Math.ceil(l/b) - 1, 5);
-          var am = [], bm = [];
-          for (var i = 1; i <= Math.max(amLimit, 1); i++) { am.push(a*i); }
-          for (var i = 1; i <= Math.max(bmLimit, 1); i++) { bm.push(b*i); }
           if (isEs) {
             showReadout('lcm-out',
-              '<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto. Inténtalo de nuevo.</span><br>' +
-              '<small>Múltiplos de Robot A: ' + am.join(', ') + '... &nbsp;|&nbsp; Múltiplos de Robot B: ' + bm.join(', ') + '...</small>'
+              '<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto. Inténtalo de nuevo.</span>' +
+              (!isLevel2 ? '<br><small>Múltiplos de Robot A: ' + Array.from({length:3}, (_,i) => a*(i+1)).join(', ') + '... &nbsp;|&nbsp; Múltiplos de Robot B: ' + Array.from({length:3}, (_,i) => b*(i+1)).join(', ') + '...</small>' : '')
             );
           } else {
             showReadout('lcm-out',
-              '<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet. Try again!</span><br>' +
-              '<small>Robot A multiples: ' + am.join(', ') + '... &nbsp;|&nbsp; Robot B multiples: ' + bm.join(', ') + '...</small>'
+              '<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet. Try again!</span>' +
+              (!isLevel2 ? '<br><small>Robot A multiples: ' + Array.from({length:3}, (_,i) => a*(i+1)).join(', ') + '... &nbsp;|&nbsp; Robot B multiples: ' + Array.from({length:3}, (_,i) => b*(i+1)).join(', ') + '...</small>' : '')
             );
           }
         }
