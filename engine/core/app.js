@@ -478,15 +478,17 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // 1. Accessibility Controls
     const a11yBar = document.createElement("div");
     a11yBar.id = "lesson-a11y-bar";
-    a11yBar.style.cssText = "display:flex; gap:8px; padding:8px 12px; margin-bottom:12px; flex-wrap:wrap; justify-content:center; border-bottom:1px solid rgba(255,255,255,0.1);";
+    a11yBar.style.cssText =
+      "display:flex; gap:8px; padding:8px 12px; margin-bottom:12px; flex-wrap:wrap; justify-content:center; border-bottom:1px solid rgba(255,255,255,0.1);";
     a11yBar.innerHTML = `
       <button class="pub-btn" id="btn-lesson-read" type="button" style="padding:4px 8px; font-size:11px; flex:1; min-width:80px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:6px; cursor:pointer;">🔊 Read Aloud</button>
       <button class="pub-btn" id="btn-lesson-contrast" type="button" style="padding:4px 8px; font-size:11px; flex:1; min-width:80px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:6px; cursor:pointer;">🌓 Contrast: NORM</button>
       <button class="pub-btn" id="btn-lesson-draw" type="button" style="padding:4px 8px; font-size:11px; flex:1; min-width:80px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:6px; cursor:pointer;">✏️ Draw: OFF</button>
     `;
-    
+
     // Insert into sidebar before student-info or progress
-    const sidebarProgress = sidebar.querySelector(".sidebar-progress") || sidebar.querySelector(".student-info");
+    const sidebarProgress =
+      sidebar.querySelector(".sidebar-progress") || sidebar.querySelector(".student-info");
     if (sidebarProgress) {
       sidebarProgress.parentNode.insertBefore(a11yBar, sidebarProgress);
     } else {
@@ -513,13 +515,19 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       }
       readBtn.textContent = "⏹️ Stop";
       readBtn.style.background = "#ef4444";
-      
+
       const texts = [];
-      document.querySelectorAll(".section-title, .section-desc, p, li, h1, h2, h3, .problem-prompt").forEach(el => {
-        if (el.offsetParent !== null && !el.closest("#lesson-a11y-bar") && !el.closest(".sidebar")) {
-          texts.push(el.textContent.trim());
-        }
-      });
+      document
+        .querySelectorAll(".section-title, .section-desc, p, li, h1, h2, h3, .problem-prompt")
+        .forEach((el) => {
+          if (
+            el.offsetParent !== null &&
+            !el.closest("#lesson-a11y-bar") &&
+            !el.closest(".sidebar")
+          ) {
+            texts.push(el.textContent.trim());
+          }
+        });
       const speechText = texts.slice(0, 8).join(". ");
       const utterance = new SpeechSynthesisUtterance(speechText);
       utterance.onend = () => {
@@ -532,7 +540,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // 4. Whiteboard Canvas Drawing Overlay
     const canvas = document.createElement("canvas");
     canvas.id = "lesson-drawing-canvas";
-    canvas.style.cssText = "position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:9998; display:none;";
+    canvas.style.cssText =
+      "position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:9998; display:none;";
     main.append(canvas);
 
     const ctx = canvas.getContext("2d");
@@ -545,7 +554,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       canvas.height = main.clientHeight;
     }
     window.addEventListener("resize", resizeCanvas);
-    
+
     // Drawing event listeners
     canvas.addEventListener("pointerdown", (e) => {
       drawing = true;
@@ -564,13 +573,18 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       ctx.stroke();
     });
 
-    canvas.addEventListener("pointerup", () => { drawing = false; });
-    canvas.addEventListener("pointerleave", () => { drawing = false; });
+    canvas.addEventListener("pointerup", () => {
+      drawing = false;
+    });
+    canvas.addEventListener("pointerleave", () => {
+      drawing = false;
+    });
 
     // Drawing Tool controls HUD
     const drawHud = document.createElement("div");
     drawHud.id = "lesson-draw-hud";
-    drawHud.style.cssText = "position:fixed; bottom:24px; left:270px; background:rgba(15,23,42,0.9); border:1px solid rgba(255,255,255,0.15); border-radius:30px; padding:6px 12px; display:none; gap:8px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.25);";
+    drawHud.style.cssText =
+      "position:fixed; bottom:24px; left:270px; background:rgba(15,23,42,0.9); border:1px solid rgba(255,255,255,0.15); border-radius:30px; padding:6px 12px; display:none; gap:8px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.25);";
     drawHud.innerHTML = `
       <button class="color-btn" data-color="#ef4444" style="width:20px; height:20px; border-radius:50%; border:2px solid #fff; background:#ef4444; cursor:pointer; padding:0;"></button>
       <button class="color-btn" data-color="#3b82f6" style="width:20px; height:20px; border-radius:50%; border:none; background:#3b82f6; cursor:pointer; padding:0;"></button>
@@ -581,11 +595,11 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     document.body.append(drawHud);
 
     // Color controls wiring
-    drawHud.querySelectorAll(".color-btn").forEach(btn => {
+    drawHud.querySelectorAll(".color-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         color = btn.dataset.color;
         width = color.startsWith("rgba") ? 12 : 3; // Highlighter width is larger
-        drawHud.querySelectorAll(".color-btn").forEach(b => b.style.border = "none");
+        drawHud.querySelectorAll(".color-btn").forEach((b) => (b.style.border = "none"));
         btn.style.border = "2px solid #fff";
       });
     });
@@ -606,7 +620,6 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       if (active) resizeCanvas();
     });
   })();
-
 
   mountTeacherPanel(root, config, state);
 
