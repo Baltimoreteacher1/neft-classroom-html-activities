@@ -6,13 +6,16 @@
  *   - Pointer parallax on data-parallax elements.
  *   - 🌐 English/Spanish Bilingual support with auto-dictionary translations.
  *   - 🔊 Text-to-Speech (TTS) Read Aloud accessibility tools.
- *   - 🔑 Hidden Teacher Cheats & Diagnostics Console (Auto-Win, Unlimited Lives, Freeze Timer).
+ *   - 🔑 Hidden Teacher Cheats & Diagnostics Console.
  *   - 🎉 Auto-Confetti celebration on win screen.
  *   - 🌎 Enterprise LMS Integration Bridge (SCORM 1.2 / SCORM 2004 / postMessage API).
+ *   - 🔊 Programmatic Web Audio Synthesizer (Success / Error chimes).
+ *   - 🌓 High-Contrast Accessibility Theme.
+ *   - ⌨️ Keyboard Navigation & Controls Guide.
  */
 (function () {
   "use strict";
-  if (window.GameFX && window.GameFX.bilingual) return;
+  if (window.GameFX && window.GameFX.soundInjected) return;
 
   var reduce = !!(
     window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -20,9 +23,9 @@
 
   var COLORS = ["#1aa179", "#f0a400", "#3b7dd8", "#e0542f", "#9b5de5"];
   var SUCCESS_CLASS = /(^|\s)(right|correct|is-correct|is-right|ok|success|won|gfx-correct)(\s|$)/i;
+  var WRONG_CLASS = /(^|\s)(wrong|incorrect|is-incorrect|is-wrong|fail|error|gfx-wrong)(\s|$)/i;
   var INTERACTIVE = /(^|\s)(opt|option|choice|answer|tile|card|btn|cell|key)(\s|$)/i;
 
-  // Bilingual translation dictionary for common game UI phrases
   var DICT = {
     es: {
       "start game": "iniciar juego",
@@ -56,14 +59,13 @@
     }
   };
 
-  // Keep track of original text node values to allow reverting back to English
   var textRegistry = new WeakMap();
 
   function translateDOM(isEs) {
     document.body.classList.toggle('es', isEs);
     
     function walk(node) {
-      if (node.nodeType === 3) { // Text node
+      if (node.nodeType === 3) {
         var val = node.nodeValue.trim();
         if (!val) return;
         
@@ -76,7 +78,7 @@
           var translated = original;
           for (var en in DICT.es) {
             var es = DICT.es[en];
-            var re = new RegExp('\' + en + '\', 'gi');
+            var re = new RegExp('\\b' + en + '\\b', 'gi');
             translated = translated.replace(re, es);
           }
           node.nodeValue = translated;
@@ -87,6 +89,7 @@
         node.nodeType === 1 && 
         node.id !== "game-pub-toolbar" && 
         node.id !== "teacher-cheat-console" &&
+        node.id !== "game-controls-dialog" &&
         node.tagName !== "SCRIPT" &&
         node.tagName !== "STYLE"
       ) {
@@ -147,6 +150,63 @@
     el.classList.add("gfx-pop");
   }
 
+  // --- Programmatic Audio Synthesizer (Web Audio API) ---
+  var AudioSynth = {
+    muted: false,
+    ctx: null,
+    init: function() {
+      if (this.ctx) return;
+      try {
+        var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new AudioContextClass();
+      } catch(e) {}
+    },
+    playSuccess: function() {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+      try {
+        var osc = this.ctx.createOscillator();
+        var gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        
+        var t = this.ctx.currentTime;
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, t); // C5
+        osc.frequency.exponentialRampToValueAtTime(1046.50, t + 0.15); // C6
+        
+        gain.gain.setValueAtTime(0.12, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+        
+        osc.start(t);
+        osc.stop(t + 0.25);
+      } catch(e) {}
+    },
+    playError: function() {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+      try {
+        var osc = this.ctx.createOscillator();
+        var gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        
+        var t = this.ctx.currentTime;
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, t);
+        osc.frequency.exponentialRampToValueAtTime(85, t + 0.2);
+        
+        gain.gain.setValueAtTime(0.1, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+        
+        osc.start(t);
+        osc.stop(t + 0.25);
+      } catch(e) {}
+    }
+  };
+
   // --- TTS Read Aloud ---
   function readAloud() {
     var btn = document.getElementById('btn-game-read');
@@ -161,7 +221,6 @@
     var isEs = document.body.classList.contains('es');
     btn.textContent = isEs ? '⏹️ Detener' : '⏹️ Stop';
 
-    // Walk DOM to extract readable text
     var texts = [];
     var selectors = [
       '.target', '.nums', '.prompt', '.question', '.card-title', 
@@ -171,7 +230,7 @@
     
     selectors.forEach(function(sel) {
       document.querySelectorAll(sel).forEach(function(el) {
-        if (el.offsetParent !== null && !el.closest('#game-pub-toolbar') && !el.closest('#teacher-cheat-console')) {
+        if (el.offsetParent !== null && !el.closest('#game-pub-toolbar') && !el.closest('#teacher-cheat-console') && !el.closest('#game-controls-dialog')) {
           texts.push(el.textContent.trim());
         }
       });
@@ -337,7 +396,6 @@
       return null;
     },
     reportScore: function(score, maxScore, stars) {
-      // 1. Report to SCORM LMS
       var scorm = this.getAPI();
       if (scorm) {
         try {
@@ -359,7 +417,6 @@
         }
       }
       
-      // 2. Report via postMessage (LTI frames)
       if (window.parent && window.parent !== window) {
         try {
           window.parent.postMessage({
@@ -393,7 +450,8 @@
     burst: burst,
     pop: pop,
     reduce: reduce,
-    bilingual: true
+    bilingual: true,
+    soundInjected: true
   };
 
   // Make globals for buttons
@@ -404,6 +462,24 @@
     if (btn) btn.textContent = isEs ? '🌐 Idioma: ES' : '🌐 Language: EN';
   };
   window.readGameAloud = readAloud;
+  
+  window.toggleGameSound = function() {
+    AudioSynth.muted = !AudioSynth.muted;
+    var btn = document.getElementById('btn-game-sound');
+    if (btn) btn.textContent = AudioSynth.muted ? '🔇 Sound: OFF' : '🔊 Sound: ON';
+  };
+  
+  window.toggleGameContrast = function() {
+    var hc = document.body.classList.toggle('high-contrast');
+    var btn = document.getElementById('btn-game-contrast');
+    if (btn) btn.textContent = hc ? '🌓 Contrast: HIGH' : '🌓 Contrast: NORM';
+  };
+  
+  window.toggleControlsDialog = function() {
+    var el = document.getElementById('game-controls-dialog');
+    if (el) el.classList.toggle('show');
+  };
+
   window.toggleCheatConsole = function() {
     var el = document.getElementById('teacher-cheat-console');
     if (el) el.classList.toggle('show');
@@ -423,16 +499,18 @@
   ready(function () {
     if (reduce || !document.body) return;
 
-    // Initialize iframe height auto-resizer for LMS
     LMSBridge.initResizeHelper();
 
-    // 1. Inject Floating Bilingual & TTS Toolbar
+    // 1. Inject Floating Bilingual, Sound, Contrast, Controls & TTS Toolbar
     var toolbar = document.createElement('div');
     toolbar.id = 'game-pub-toolbar';
     toolbar.className = 'no-print';
     toolbar.innerHTML = `
       <button class="pub-btn" id="btn-game-lang" onclick="toggleGameLanguage()">🌐 Language: EN</button>
       <button class="pub-btn" id="btn-game-read" onclick="readGameAloud()">🔊 Read</button>
+      <button class="pub-btn" id="btn-game-sound" onclick="toggleGameSound()">🔊 Sound: ON</button>
+      <button class="pub-btn" id="btn-game-contrast" onclick="toggleGameContrast()">🌓 Contrast: NORM</button>
+      <button class="pub-btn" id="btn-game-controls" onclick="toggleControlsDialog()">⌨️ Controls</button>
     `;
     document.body.appendChild(toolbar);
 
@@ -452,7 +530,27 @@
     `;
     document.body.appendChild(consoleDiv);
 
-    // 3. Listen for Ctrl+Shift+T or triple click on game title / header
+    // 3. Inject Keyboard Controls Dialog
+    var controlsDiv = document.createElement('div');
+    controlsDiv.id = 'game-controls-dialog';
+    controlsDiv.className = 'no-print';
+    controlsDiv.innerHTML = `
+      <h4>
+        <span>⌨️ Keyboard Navigation & Controls</span>
+        <button class="close-btn" onclick="toggleControlsDialog()">×</button>
+      </h4>
+      <p style="font-size:12px;margin:0 0 8px;line-height:1.4;color:#e2e8f0;">Use the following keystrokes to play this activity:</p>
+      <ul style="font-size:11px;color:#94a3b8;padding-left:16px;margin:0;line-height:1.6;">
+        <li><strong>Tab</strong> : Move focus between options and interactive tiles.</li>
+        <li><strong>Enter / Space</strong> : Select a focused option or button.</li>
+        <li><strong>Arrow Keys (Left/Right)</strong> : Slide, navigate, or direct standard horizontal mechanics.</li>
+        <li><strong>Escape</strong> : Close overlays or return to the main menu.</li>
+      </ul>
+      <button class="cheat-btn" style="text-align:center;margin-top:12px;background:#0284c7;color:#fff;" onclick="toggleControlsDialog()">Close</button>
+    `;
+    document.body.appendChild(controlsDiv);
+
+    // 4. Listen for Ctrl+Shift+T or triple click on game title / header
     document.addEventListener('keydown', function(e) {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
         e.preventDefault();
@@ -473,15 +571,18 @@
       });
     }
 
-    // 4. Auto-confetti and LMS score reporting listener
+    // 5. Auto-confetti and LMS score reporting listener
     var observer = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
         if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
           var target = mutation.target;
-          if (target.classList.contains('game-over') || target.classList.contains('won') || target.classList.contains('success')) {
+          var isWin = target.classList.contains('game-over') || target.classList.contains('won') || target.classList.contains('success');
+          var isWrong = target.classList.contains('wrong') || target.classList.contains('incorrect') || target.classList.contains('fail');
+          
+          if (isWin) {
             playConfetti();
+            AudioSynth.playSuccess();
             
-            // Extract score and report
             var finalScore = 0;
             var finalStars = 3;
             if (typeof window.S !== 'undefined') {
@@ -500,36 +601,38 @@
               }
             }
             LMSBridge.reportScore(finalScore, null, finalStars);
+          } else if (isWrong) {
+            AudioSynth.playError();
           }
         }
       });
     });
     observer.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class'] });
 
-    // Success sparkles observer
+    // Success sparkles observer with synthesized sound trigger
     try {
       if (window.MutationObserver) {
         var fired = typeof WeakSet === "function" ? new WeakSet() : null;
         var obs = new MutationObserver(function (muts) {
           for (var i = 0; i < muts.length; i++) {
             var t = muts[i].target;
-            if (
-              !t ||
-              t.nodeType !== 1 ||
-              typeof t.className !== "string" ||
-              !SUCCESS_CLASS.test(t.className)
-            )
-              continue;
-            var isInteractive =
-              t.tagName === "BUTTON" ||
-              t.getAttribute("role") === "button" ||
-              INTERACTIVE.test(t.className);
-            if (!isInteractive) continue;
-            if (fired) {
-              if (fired.has(t)) continue;
-              fired.add(t);
+            if (!t || t.nodeType !== 1 || typeof t.className !== "string") continue;
+            
+            var isCorrect = SUCCESS_CLASS.test(t.className);
+            var isIncorrect = WRONG_CLASS.test(t.className);
+            
+            if (isCorrect) {
+              var isInteractive = t.tagName === "BUTTON" || t.getAttribute("role") === "button" || INTERACTIVE.test(t.className);
+              if (!isInteractive) continue;
+              if (fired) {
+                if (fired.has(t)) continue;
+                fired.add(t);
+              }
+              celebrate(t);
+              AudioSynth.playSuccess();
+            } else if (isIncorrect) {
+              AudioSynth.playError();
             }
-            celebrate(t);
           }
         });
         obs.observe(document.body, {
