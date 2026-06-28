@@ -11,7 +11,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta
       name="description"
-      content="Math Workbench — an interactive whiteboard for Grade 6 math. Draggable numbers and symbols, freehand writing, separator and cross-out lines, 2D and 3D shapes, and a full formula reference for PreK–Algebra math."
+      content="Math Workbench — a guided, accessible Grade 6 math workspace with publisher-style problem templates, draggable models, freehand writing, scaffolded support cards, calculator, and a PreK–Algebra reference bank."
     />
     <title>Math Workbench — Mr. Neft's Math Class</title>
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
@@ -37,6 +37,9 @@
         --line-2: #e8eef6;
         --paper: #ffffff;
         --bg: #eef3f9;
+        --cream: #fffaf0;
+        --cream-line: #eadfc9;
+        --indigo: #25345d;
         --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
         --shadow: 0 6px 20px rgba(15, 23, 42, 0.1);
         --shadow-lg: 0 18px 50px rgba(15, 23, 42, 0.18);
@@ -174,6 +177,16 @@
       .tbtn.solid:hover {
         background: var(--teal-d);
         color: #fff;
+      }
+      .tbtn.premium {
+        background: linear-gradient(135deg, var(--indigo), var(--teal));
+        border-color: transparent;
+        color: #fff;
+        box-shadow: 0 8px 22px rgba(32, 95, 166, 0.22);
+      }
+      .tbtn.premium:hover {
+        color: #fff;
+        filter: brightness(1.04);
       }
       .tbtn.ghost {
         border-color: transparent;
@@ -869,12 +882,6 @@
           center 0;
         background-repeat: repeat, repeat, no-repeat, no-repeat;
       }
-      .bg-opt .sw.numline {
-        background-image: linear-gradient(#14223a 2px, transparent 2px);
-        background-size: 100% 50%;
-        background-position: 0 center;
-        background-repeat: no-repeat;
-      }
       #bgLayer {
         position: absolute;
         inset: 0;
@@ -886,6 +893,133 @@
         inset: 0;
         width: 100%;
         height: 100%;
+      }
+      .guide-drawer {
+        position: absolute;
+        top: 14px;
+        left: calc(var(--rail-w) + 14px);
+        z-index: 24;
+        width: min(420px, calc(100vw - var(--rail-w) - 28px));
+        max-height: calc(100% - 28px);
+        overflow-y: auto;
+        background:
+          linear-gradient(180deg, rgba(255, 250, 240, 0.97), #ffffff 72%),
+          radial-gradient(
+            circle at 14% 0%,
+            rgba(217, 119, 6, 0.12),
+            transparent 32%
+          );
+        border: 1px solid var(--cream-line);
+        border-radius: 18px;
+        box-shadow: var(--shadow-lg);
+        padding: 16px;
+        transform: translateX(-10px);
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          opacity 0.16s,
+          transform 0.16s;
+      }
+      .guide-drawer.open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(0);
+      }
+      .guide-head {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .guide-badge {
+        flex: none;
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        background: linear-gradient(135deg, var(--indigo), var(--green));
+        font-size: 1.35rem;
+        box-shadow: var(--shadow-sm);
+      }
+      .guide-head h2 {
+        margin: 0;
+        font-size: 1.12rem;
+        line-height: 1.1;
+        font-weight: 900;
+      }
+      .guide-head p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.35;
+        font-weight: 700;
+      }
+      .guide-close {
+        margin-left: auto;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--muted);
+        font-size: 1.25rem;
+        font-weight: 900;
+      }
+      .guide-section-title {
+        margin: 14px 0 8px;
+        font-size: 0.7rem;
+        font-weight: 900;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--green-d);
+      }
+      .template-grid,
+      .support-grid {
+        display: grid;
+        gap: 9px;
+      }
+      .template-card,
+      .support-card {
+        width: 100%;
+        text-align: left;
+        border: 1.5px solid var(--line);
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 12px;
+        padding: 12px;
+        color: var(--ink);
+        display: grid;
+        gap: 5px;
+        transition:
+          border-color 0.12s,
+          box-shadow 0.16s,
+          transform 0.08s;
+      }
+      .template-card:hover,
+      .support-card:hover {
+        border-color: var(--teal);
+        box-shadow: var(--shadow);
+        transform: translateY(-1px);
+      }
+      .template-card b,
+      .support-card b {
+        font-size: 0.95rem;
+        font-weight: 900;
+      }
+      .template-card span,
+      .support-card span {
+        color: var(--muted);
+        font-size: 0.78rem;
+        line-height: 1.35;
+        font-weight: 700;
+      }
+      .template-card small {
+        color: var(--green-d);
+        font-size: 0.68rem;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
       }
       /* The canvas fills the whole multi-page sheet and scrolls natively with
          the paper, ink, and objects — so there is no scroll-sync math and a
@@ -1180,6 +1314,69 @@
       }
       .formulaobj sub {
         font-size: 0.62em;
+      }
+      .guideobj {
+        width: min(560px, calc(100vw - 120px));
+        background:
+          linear-gradient(180deg, rgba(255, 250, 240, 0.98), #fff),
+          radial-gradient(
+            circle at top right,
+            rgba(44, 125, 107, 0.12),
+            transparent 38%
+          );
+        border: 1.5px solid var(--cream-line);
+        border-left: 7px solid var(--amber);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        padding: 15px 17px;
+        font-family: "Atkinson Hyperlegible", "Nunito", sans-serif;
+        color: var(--ink);
+      }
+      .guideobj .go-kicker {
+        margin: 0 0 5px;
+        color: var(--green-d);
+        font-size: 0.68rem;
+        font-weight: 900;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+      .guideobj .go-title {
+        margin: 0 0 8px;
+        font-size: 1.18rem;
+        line-height: 1.18;
+        font-weight: 900;
+      }
+      .guideobj .go-prompt {
+        margin: 0 0 10px;
+        color: var(--ink);
+        font-size: 0.94rem;
+        line-height: 1.4;
+        font-weight: 700;
+      }
+      .guideobj ol,
+      .guideobj ul {
+        margin: 0;
+        padding-left: 1.15rem;
+        display: grid;
+        gap: 5px;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.35;
+        font-weight: 700;
+      }
+      .guideobj .go-footer {
+        margin-top: 11px;
+        border-top: 1px solid var(--cream-line);
+        padding-top: 9px;
+        color: var(--green-d);
+        font-size: 0.8rem;
+        line-height: 1.35;
+        font-weight: 800;
+      }
+      .workbook-print-head {
+        display: none;
+        position: relative;
+        z-index: 5;
       }
       .ifr {
         display: inline-flex;
@@ -1580,7 +1777,7 @@
         text-align: center;
         color: #6b7c93;
         pointer-events: none;
-        z-index: 0;
+        z-index: 4;
         max-width: 420px;
         padding: 0 20px;
       }
@@ -1991,10 +2188,29 @@
           display: none;
         }
         .tbtn {
-          padding: 0 11px;
+          width: 44px;
+          height: 44px;
+          justify-content: center;
+          padding: 0;
         }
         .flyout {
           width: min(280px, calc(100vw - var(--rail-w) - 14px));
+        }
+        .guide-drawer {
+          left: calc(var(--rail-w) + 8px);
+          width: calc(100vw - var(--rail-w) - 16px);
+          top: 8px;
+          max-height: calc(100% - 16px);
+          border-radius: 15px;
+        }
+        .guideobj {
+          width: min(460px, calc(100vw - 96px));
+        }
+        .modal {
+          align-self: start;
+          margin-top: 12px;
+          max-height: calc(100dvh - 32px);
+          padding: 20px 22px 22px;
         }
         .tool {
           max-height: 50px;
@@ -2086,10 +2302,50 @@
         .obj-tools,
         .rs,
         .bg-dock,
+        .guide-drawer,
         .numline-head,
         .tool-head,
         .empty-hint {
           display: none !important;
+        }
+        .workbook-print-head {
+          display: grid;
+          grid-template-columns: 1.2fr 0.8fr 0.8fr;
+          gap: 10px;
+          align-items: end;
+          margin: 0 0 16px;
+          padding: 14px 16px;
+          border: 2px solid #14223a;
+          border-radius: 12px;
+          background: #fff;
+          break-inside: avoid;
+          font-family: "Atkinson Hyperlegible", "Nunito", sans-serif;
+        }
+        .workbook-print-head h2 {
+          grid-column: 1 / -1;
+          margin: 0 0 3px;
+          font-size: 18pt;
+          line-height: 1.05;
+        }
+        .workbook-print-head p {
+          margin: 0;
+          font-size: 9pt;
+          font-weight: 700;
+          color: #33485f;
+        }
+        .print-field {
+          border-bottom: 1.5px solid #14223a;
+          min-height: 24px;
+          font-size: 9pt;
+          font-weight: 800;
+          color: #33485f;
+        }
+        .print-field span {
+          display: block;
+          font-size: 7pt;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #5b6b82;
         }
         .app {
           height: auto;
@@ -2141,6 +2397,14 @@
           >
             <span class="i">🧮</span><span class="txt">Calculator</span>
           </button>
+          <button
+            class="tbtn premium"
+            id="guideBtn"
+            title="Open guided problem templates and support cards"
+            aria-expanded="false"
+          >
+            <span class="i">◆</span><span class="txt">Guided Practice</span>
+          </button>
           <button class="tbtn" id="undoBtn" title="Undo (Ctrl+Z)" disabled>
             <span class="i">↶</span><span class="txt">Undo</span>
           </button>
@@ -2172,7 +2436,7 @@
       </header>
 
       <!-- ===================== Stage ===================== -->
-      <div class="stage">
+      <main class="stage" aria-label="Math Workbench canvas and tools">
         <!-- Tool rail -->
         <nav class="rail" id="rail" aria-label="Tools">
           <div class="op-quick" role="group" aria-label="Insert an operation">
@@ -2268,13 +2532,83 @@
         <section class="flyout" id="flyout" aria-label="Tool options"></section>
 
         <!-- Workspace (scrolls vertically across multiple whiteboard pages) -->
-        <div class="workspace" id="workspace">
+        <div
+          class="workspace"
+          id="workspace"
+          role="region"
+          aria-label="Scrollable whiteboard workspace"
+          tabindex="0"
+        >
           <div class="sheet" id="sheet">
+            <section class="workbook-print-head" aria-hidden="true">
+              <h2>Math Workbench Student Page</h2>
+              <p>
+                Show your model, your math, and one sentence explaining your
+                reasoning.
+              </p>
+              <div class="print-field"><span>Name</span></div>
+              <div class="print-field"><span>Date</span></div>
+              <div class="print-field"><span>Class / Skill</span></div>
+            </section>
             <div id="bgLayer" aria-hidden="true"></div>
             <canvas id="board"></canvas>
             <div id="overlay"></div>
+            <div class="empty-hint" id="emptyHint">
+              <div class="big" aria-hidden="true">◆</div>
+              <h2>Start with a guided math workspace</h2>
+              <p>
+                Choose a template, then write, drag, draw, and explain your
+                thinking.
+              </p>
+              <p class="starter-lbl">Fast start</p>
+              <div class="starter-row" id="starterRow">
+                <button class="starter" data-starter="equation">
+                  Equation steps
+                </button>
+                <button class="starter" data-starter="ratio">
+                  Ratio table
+                </button>
+                <button class="starter" data-starter="grid">
+                  Coordinate grid
+                </button>
+                <button class="starter" data-starter="fraction">
+                  Fraction frame
+                </button>
+              </div>
+            </div>
           </div>
         </div>
+
+        <aside
+          class="guide-drawer"
+          id="guideDrawer"
+          aria-label="Guided practice templates"
+          aria-hidden="true"
+          inert
+        >
+          <div class="guide-head">
+            <span class="guide-badge" aria-hidden="true">◆</span>
+            <div>
+              <h2>Guided Practice Studio</h2>
+              <p>
+                Stamp a publisher-style workspace, then use the board to show
+                thinking.
+              </p>
+            </div>
+            <button
+              class="guide-close"
+              id="guideClose"
+              type="button"
+              aria-label="Close guided practice"
+            >
+              ×
+            </button>
+          </div>
+          <p class="guide-section-title">Problem templates</p>
+          <div class="template-grid" id="templateGrid"></div>
+          <p class="guide-section-title">Student supports</p>
+          <div class="support-grid" id="supportGrid"></div>
+        </aside>
 
         <!-- Background side dock -->
         <div class="bg-dock" id="bgDock">
@@ -2306,9 +2640,6 @@
             <button class="bg-opt" data-bg="coord" role="menuitem">
               <span class="sw coord"></span> Coordinate plane
             </button>
-            <button class="bg-opt" data-bg="numline" role="menuitem">
-              <span class="sw numline"></span> Number line
-            </button>
           </div>
         </div>
 
@@ -2316,11 +2647,9 @@
         <div
           class="page-tabs"
           id="pageTabs"
-          role="tablist"
           aria-label="Whiteboard pages"
-          aria-orientation="vertical"
         >
-          <div class="page-tabs-list" id="pageTabsList"></div>
+          <div class="page-tabs-list" id="pageTabsList" tabindex="0"></div>
           <button
             class="page-tab-add"
             id="addPageBtn"
@@ -2338,7 +2667,7 @@
             🗑
           </button>
         </div>
-      </div>
+      </main>
 
       <!-- ===================== Formula dock ===================== -->
       <footer class="dock" id="dock">
@@ -2347,8 +2676,8 @@
             ><span class="ic">📚</span> Formula &amp; Reference Bank</span
           >
           <span class="sub"
-            >PreK&nbsp;–&nbsp;Algebra · open a category, then tap a card to drop
-            it on the board</span
+            >PreK&nbsp;–&nbsp;Algebra · open a category, then tap a card to
+            drop it on the board</span
           >
           <button class="dock-toggle" id="dockToggle">
             <span id="dockToggleIc">▴</span>
@@ -2369,12 +2698,22 @@
         role="dialog"
         aria-modal="true"
         aria-labelledby="helpTitle"
+        tabindex="-1"
       >
         <h2 id="helpTitle">How to use the Math Workbench</h2>
         <p class="lead">
-          Everything you need to work out a problem — all in one place.
+          Pick a guided template, show your model, and explain your thinking —
+          all in one place.
         </p>
         <ul>
+          <li>
+            <span class="k">◆</span
+            ><span
+              ><b>Start with Guided Practice.</b> Choose an equation, ratio,
+              geometry, coordinate, data, or word-problem workspace. Each one
+              drops the model and writing frames you need.</span
+            >
+          </li>
           <li>
             <span class="k">✏️</span
             ><span
@@ -2692,7 +3031,6 @@
         canvas.style.height = cssH + "px";
         renderCanvas();
         if (state.bg === "coord") buildCoordBg();
-        else if (state.bg === "numline") buildNumberLineBg();
       }
       function renderCanvas() {
         // Clear by the canvas's own device-pixel size (fast, never triggers
@@ -2779,11 +3117,8 @@
           btn.className = "page-tab" + (i === notebook.active ? " active" : "");
           btn.textContent = i + 1;
           btn.title = "Go to page " + (i + 1);
-          btn.setAttribute("role", "tab");
-          btn.setAttribute(
-            "aria-selected",
-            i === notebook.active ? "true" : "false",
-          );
+          btn.setAttribute("aria-label", "Go to page " + (i + 1));
+          btn.setAttribute("aria-current", i === notebook.active ? "page" : "false");
           btn.addEventListener("click", () => switchBoard(i));
           list.appendChild(btn);
         });
@@ -3013,7 +3348,7 @@
       }
 
       /* ----------------------- Object model ----------------------- */
-      function makeObject(type, props) {
+      function newBoardObject(type, props) {
         const r = workspace.getBoundingClientRect();
         const o = Object.assign(
           {
@@ -3033,6 +3368,10 @@
           },
           props || {},
         );
+        return o;
+      }
+      function makeObject(type, props) {
+        const o = newBoardObject(type, props);
         state.objects.push(o);
         growToFit();
         renderAll();
@@ -3104,8 +3443,6 @@
         const bgLayer = $("#bgLayer");
         if (state.bg === "coord") {
           buildCoordBg();
-        } else if (state.bg === "numline") {
-          buildNumberLineBg();
         } else {
           bgLayer.innerHTML = "";
           if (state.bg && state.bg !== "blank")
@@ -3214,102 +3551,24 @@
           x +
           '" y="' +
           y +
-          '" font-family="Atkinson Hyperlegible, Nunito, sans-serif" font-size="14" font-weight="800" fill="#11243d" stroke="#ffffff" stroke-width="3.5" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">' +
+          '" font-family="Atkinson Hyperlegible, Nunito, sans-serif" font-size="11" font-weight="700" fill="#33485f">' +
           t +
           "</text>";
         const maxX = Math.floor((w - cx) / u);
         const minX = -Math.floor(cx / u);
         for (let n = minX; n <= maxX; n++) {
           if (n === 0) continue;
-          g += lab(cx + n * u, cy + 17, n);
+          g += lab(cx + n * u - 3, cy + 15, n);
         }
         const maxY = Math.floor(cy / u);
         const minY = -Math.floor((h - cy) / u);
         for (let n = minY; n <= maxY; n++) {
           if (n === 0) continue;
-          g += lab(cx - 13, cy - n * u + 5, n);
+          g += lab(cx + 6, cy - n * u + 4, n);
         }
-        g += lab(cx - 11, cy + 17, "0");
+        g += lab(cx + 6, cy + 15, "0");
         // Lock the plane to the first screenful (explicit px size) so it is not
         // stretched down the full multi-page sheet by the 100%-sized #bgLayer.
-        bgLayer.innerHTML =
-          '<svg viewBox="0 0 ' +
-          w +
-          " " +
-          h +
-          '" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:' +
-          w +
-          "px;height:" +
-          h +
-          'px">' +
-          g +
-          "</svg>";
-      }
-
-      // Horizontal number line background (integers, ticks, arrows, clear labels).
-      function buildNumberLineBg() {
-        const bgLayer = $("#bgLayer");
-        const r = workspace.getBoundingClientRect();
-        const w = Math.max(100, Math.round(r.width));
-        const h = Math.max(100, Math.round(r.height));
-        const u = 44; // pixels per unit — wider spacing for a clear number line
-        const cx = Math.round(w / 2);
-        const y = Math.round(h * 0.32); // sit in the upper third, room to work below
-        let g =
-          '<line x1="0" y1="' +
-          y +
-          '" x2="' +
-          w +
-          '" y2="' +
-          y +
-          '" stroke="#14223a" stroke-width="2.5"/>' +
-          '<polygon points="' +
-          w +
-          "," +
-          y +
-          " " +
-          (w - 12) +
-          "," +
-          (y - 7) +
-          " " +
-          (w - 12) +
-          "," +
-          (y + 7) +
-          '" fill="#14223a"/>' +
-          '<polygon points="0,' +
-          y +
-          " 12," +
-          (y - 7) +
-          " 12," +
-          (y + 7) +
-          '" fill="#14223a"/>';
-        const lab = (x, t) =>
-          '<text x="' +
-          x +
-          '" y="' +
-          (y + 30) +
-          '" font-family="Atkinson Hyperlegible, Nunito, sans-serif" font-size="15" font-weight="800" fill="#11243d" stroke="#ffffff" stroke-width="3.5" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">' +
-          t +
-          "</text>";
-        const maxN = Math.floor((w - cx) / u);
-        const minN = -Math.floor(cx / u);
-        for (let n = minN; n <= maxN; n++) {
-          const x = cx + n * u;
-          const big = n === 0;
-          g +=
-            '<line x1="' +
-            x +
-            '" y1="' +
-            (y - (big ? 12 : 9)) +
-            '" x2="' +
-            x +
-            '" y2="' +
-            (y + (big ? 12 : 9)) +
-            '" stroke="#14223a" stroke-width="' +
-            (big ? 2.5 : 1.8) +
-            '"/>';
-          g += lab(x, n);
-        }
         bgLayer.innerHTML =
           '<svg viewBox="0 0 ' +
           w +
@@ -3510,6 +3769,7 @@
           t.spellcheck = false;
           t.textContent = o.text || "";
           if (o.color) t.style.color = o.color;
+          if (o.size) t.style.fontSize = o.size;
           bindEditable(t, (v) => (o.text = v));
           inner.appendChild(t);
           toolOpts = { color: penColor };
@@ -3605,6 +3865,31 @@
           f.className = "formulaobj";
           f.innerHTML = o.html;
           inner.appendChild(f);
+          toolOpts = { resize: true };
+        } else if (o.type === "guide") {
+          const g = document.createElement("div");
+          g.className = "guideobj";
+          const steps = (o.steps || [])
+            .map((s) => "<li>" + s + "</li>")
+            .join("");
+          const listTag = o.bullets ? "ul" : "ol";
+          g.innerHTML =
+            '<p class="go-kicker">' +
+            (o.kicker || "Guided workspace") +
+            '</p><div class="go-title">' +
+            (o.title || "Math task") +
+            '</div><p class="go-prompt">' +
+            (o.prompt || "") +
+            "</p>" +
+            "<" +
+            listTag +
+            ">" +
+            steps +
+            "</" +
+            listTag +
+            ">" +
+            (o.footer ? '<div class="go-footer">' + o.footer + "</div>" : "");
+          inner.appendChild(g);
           toolOpts = { resize: true };
         } else if (o.type === "numline") {
           inner.appendChild(buildNumLine(o));
@@ -6155,7 +6440,7 @@
       ];
 
       /* ===================================================================
-         FORMULA & REFERENCE BANK  (PreK – Algebra)
+         FORMULA & REFERENCE BANK  (PreK – Grade 6)
          =================================================================== */
       const TOPICS = [
         {
@@ -7113,6 +7398,387 @@
         rsz = setTimeout(applySheet, 210);
       });
 
+      /* ----------------------- Guided templates ----------------------- */
+      const GUIDE_TEMPLATES = [
+        {
+          id: "equation",
+          tag: "Expressions & equations",
+          title: "Equation Solver Workspace",
+          desc: "Step boxes, balance language, and a check-your-answer frame.",
+          bg: "lined",
+          items(x, y) {
+            return [
+              {
+                type: "guide",
+                x,
+                y,
+                title: "Solve an equation with inverse operations",
+                prompt:
+                  "Write the equation, isolate the variable, and check by substituting your answer.",
+                steps: [
+                  "Circle the variable term.",
+                  "Undo addition or subtraction first.",
+                  "Undo multiplication or division.",
+                  "Substitute your solution back into the original equation.",
+                ],
+                footer:
+                  "Sentence frame: The solution is ___ because when I substitute it, both sides equal ___.",
+              },
+              {
+                type: "text",
+                x: x + 18,
+                y: y + 235,
+                size: "1.15rem",
+                text: "Original equation: ____________________",
+              },
+              {
+                type: "text",
+                x: x + 18,
+                y: y + 292,
+                size: "1.15rem",
+                text: "Step 1: ______________________________",
+              },
+              {
+                type: "text",
+                x: x + 18,
+                y: y + 349,
+                size: "1.15rem",
+                text: "Step 2: ______________________________",
+              },
+              {
+                type: "formula",
+                x: x + 18,
+                y: y + 410,
+                html: "<b>Check:</b>&nbsp; Replace the variable with your answer.",
+              },
+            ];
+          },
+        },
+        {
+          id: "ratio",
+          tag: "Ratios & proportions",
+          title: "Ratio Table + Double Number Line",
+          desc: "Two linked models for equivalent ratios and unit rate.",
+          bg: "grid",
+          items(x, y) {
+            return [
+              {
+                type: "guide",
+                x,
+                y,
+                title: "Represent a ratio two ways",
+                prompt:
+                  "Use the table and number line to show the same relationship.",
+                steps: [
+                  "Label both quantities.",
+                  "Find the multiplier between columns.",
+                  "Identify the unit rate.",
+                  "Write one sentence explaining what the ratio means.",
+                ],
+                footer:
+                  "Math talk: For every ___, there are ___. The unit rate is ___.",
+              },
+              { type: "ratiotable", x: x + 30, y: y + 238, cols: 4 },
+              { type: "dblnumline", x: x + 30, y: y + 390, intervals: 4 },
+            ];
+          },
+        },
+        {
+          id: "geometry",
+          tag: "Geometry",
+          title: "Area / Perimeter Model",
+          desc: "Diagram, formula card, measurements, and final claim.",
+          bg: "graphfine",
+          items(x, y) {
+            return [
+              {
+                type: "guide",
+                x,
+                y,
+                title: "Model area and perimeter",
+                prompt:
+                  "Draw or drag a shape, label measurements, choose the formula, and explain the units.",
+                steps: [
+                  "Mark the base, height, length, width, or radius.",
+                  "Write the formula before substituting numbers.",
+                  "Include square units for area or units for perimeter.",
+                ],
+                footer:
+                  "Sentence frame: I used ___ because the figure is ___. My answer is ___ units.",
+              },
+              {
+                type: "shape2d",
+                x: x + 48,
+                y: y + 240,
+                shape: "rectangle",
+                label: "label measurements",
+              },
+              {
+                type: "formula",
+                x: x + 250,
+                y: y + 255,
+                html: "<b>Area:</b>&nbsp; A = l × w<br><b>Perimeter:</b>&nbsp; P = 2(l + w)",
+              },
+              {
+                type: "text",
+                x: x + 30,
+                y: y + 405,
+                size: "1.1rem",
+                text: "Substitution: __________________________",
+              },
+            ];
+          },
+        },
+        {
+          id: "coordinate",
+          tag: "Coordinate plane",
+          title: "Graph + Explain Coordinates",
+          desc: "Coordinate grid with ordered-pair reading support.",
+          bg: "coord",
+          items(x, y) {
+            return [
+              {
+                type: "guide",
+                x,
+                y,
+                title: "Graph ordered pairs",
+                prompt:
+                  "Plot each point, name its quadrant, and describe the movement from the origin.",
+                steps: [
+                  "Move left/right first for x.",
+                  "Move up/down second for y.",
+                  "Write the ordered pair as (x, y).",
+                  "Check the quadrant or axis.",
+                ],
+                footer:
+                  "Language frame: From the origin, I moved ___ on the x-axis and ___ on the y-axis.",
+              },
+              { type: "coordgrid", x: x + 28, y: y + 245, min: -5, max: 5 },
+              {
+                type: "text",
+                x: x + 330,
+                y: y + 275,
+                size: "1.05rem",
+                text: "Points:\nA (__, __)\nB (__, __)\nC (__, __)",
+              },
+            ];
+          },
+        },
+        {
+          id: "statistics",
+          tag: "Statistics",
+          title: "Data Display + Claim",
+          desc: "Dot plot, distribution language, and evidence sentence.",
+          bg: "dot",
+          items(x, y) {
+            return [
+              {
+                type: "guide",
+                x,
+                y,
+                title: "Analyze a data set",
+                prompt:
+                  "Build the display, describe the center and spread, then write a claim with evidence.",
+                steps: [
+                  "Add dots for each data value.",
+                  "Look for clusters, gaps, peaks, and outliers.",
+                  "Estimate the center.",
+                  "Support your claim with at least two data details.",
+                ],
+                footer:
+                  "Claim frame: The data show ___ because ___ and ___.",
+              },
+              { type: "dotplot", x: x + 24, y: y + 245, min: 0, max: 10, counts: {} },
+              { type: "boxplot", x: x + 24, y: y + 405 },
+            ];
+          },
+        },
+        {
+          id: "word",
+          tag: "Word problems",
+          title: "Read, Model, Solve, Explain",
+          desc: "A full problem-solving organizer with ESOL-friendly language.",
+          bg: "lined",
+          items(x, y) {
+            return [
+              {
+                type: "guide",
+                x,
+                y,
+                title: "Turn a story problem into math",
+                prompt:
+                  "Use the organizer to identify what is known, what is unknown, and which operation fits.",
+                steps: [
+                  "Underline the question.",
+                  "List the important numbers and units.",
+                  "Choose a model: tape diagram, table, number line, or equation.",
+                  "Solve and explain what the answer means in the story.",
+                ],
+                footer:
+                  "TWR frame: I know ___. I need to find ___. I used ___ because ___.",
+              },
+              { type: "tape", x: x + 28, y: y + 250, parts: 4 },
+              {
+                type: "text",
+                x: x + 28,
+                y: y + 360,
+                size: "1.05rem",
+                text: "Known: ______________________\nUnknown: ____________________\nOperation/model: _____________",
+              },
+            ];
+          },
+        },
+      ];
+      const SUPPORT_CARDS = [
+        {
+          id: "hint",
+          title: "Hint Ladder",
+          desc: "A three-step nudge students can use before asking for help.",
+          item: {
+            type: "guide",
+            kicker: "Student support",
+            title: "Hint ladder",
+            prompt: "Try these before you ask for the answer.",
+            bullets: true,
+            steps: [
+              "What is the question asking?",
+              "Which model matches the problem?",
+              "What can you do first without solving the whole thing?",
+            ],
+            footer: "Teacher check: I tried a model, a label, or a sentence first.",
+          },
+        },
+        {
+          id: "vocab",
+          title: "Math Vocabulary Card",
+          desc: "Academic language frame for multilingual learners.",
+          item: {
+            type: "guide",
+            kicker: "Vocabulary",
+            title: "Word / Meaning / Example",
+            prompt: "Use this card for one important math word.",
+            bullets: true,
+            steps: [
+              "Word: __________",
+              "Student-friendly meaning: __________",
+              "Example or picture: __________",
+              "In Spanish or home language: __________",
+            ],
+          },
+        },
+        {
+          id: "explain",
+          title: "Explain Your Reasoning",
+          desc: "TWR sentence stems for a complete math response.",
+          item: {
+            type: "guide",
+            kicker: "Written response",
+            title: "Explain your reasoning",
+            prompt: "Write a complete math explanation.",
+            bullets: true,
+            steps: [
+              "First, I noticed ___.",
+              "I used ___ because ___.",
+              "My work shows ___.",
+              "So my answer is ___ because ___.",
+            ],
+          },
+        },
+      ];
+      function guideOrigin() {
+        const left = Math.max(22, Math.min(86, workspace.clientWidth * 0.07));
+        const currentViewTop = workspace.scrollTop + 42;
+        const nextOpenLine =
+          state.objects.length || state.strokes.length
+            ? contentBottom() + 44
+            : currentViewTop;
+        return { x: left, y: Math.max(currentViewTop, nextOpenLine) };
+      }
+      function stampObjects(items, label, bg) {
+        deselect();
+        const made = items.map((it) => newBoardObject(it.type, it));
+        state.objects.push(...made);
+        if (bg) state.bg = bg;
+        growToFit();
+        renderAll();
+        if (made.length) selectObject(made[0].id);
+        pushHistory();
+        closeGuideDrawer();
+        showToast(label + " added");
+      }
+      function stampTemplate(id) {
+        const template = GUIDE_TEMPLATES.find((t) => t.id === id);
+        if (!template) return;
+        const p = guideOrigin();
+        stampObjects(template.items(p.x, p.y), template.title, template.bg);
+      }
+      function stampSupport(id) {
+        const support = SUPPORT_CARDS.find((s) => s.id === id);
+        if (!support) return;
+        const p = guideOrigin();
+        stampObjects(
+          [Object.assign({}, support.item, { x: p.x, y: p.y })],
+          support.title,
+        );
+      }
+      function renderGuideDrawer() {
+        const templateGrid = $("#templateGrid");
+        if (templateGrid) {
+          templateGrid.innerHTML = "";
+          GUIDE_TEMPLATES.forEach((t) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "template-card";
+            b.dataset.template = t.id;
+            b.innerHTML =
+              "<small>" +
+              t.tag +
+              "</small><b>" +
+              t.title +
+              "</b><span>" +
+              t.desc +
+              "</span>";
+            b.addEventListener("click", () => stampTemplate(t.id));
+            templateGrid.appendChild(b);
+          });
+        }
+        const supportGrid = $("#supportGrid");
+        if (supportGrid) {
+          supportGrid.innerHTML = "";
+          SUPPORT_CARDS.forEach((s) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "support-card";
+            b.dataset.support = s.id;
+            b.innerHTML = "<b>" + s.title + "</b><span>" + s.desc + "</span>";
+            b.addEventListener("click", () => stampSupport(s.id));
+            supportGrid.appendChild(b);
+          });
+        }
+      }
+      function openGuideDrawer() {
+        const drawer = $("#guideDrawer");
+        drawer.classList.add("open");
+        drawer.setAttribute("aria-hidden", "false");
+        drawer.inert = false;
+        $("#guideBtn").setAttribute("aria-expanded", "true");
+        closeFlyout();
+        $("#bgPanel").classList.remove("open");
+      }
+      function closeGuideDrawer() {
+        const drawer = $("#guideDrawer");
+        if (!drawer) return;
+        drawer.classList.remove("open");
+        drawer.setAttribute("aria-hidden", "true");
+        drawer.inert = true;
+        const btn = $("#guideBtn");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+      }
+      function toggleGuideDrawer() {
+        const drawer = $("#guideDrawer");
+        drawer.classList.contains("open") ? closeGuideDrawer() : openGuideDrawer();
+      }
+
       /* ----------------------- Top-bar actions ----------------------- */
       $("#undoBtn").addEventListener("click", undo);
       $("#redoBtn").addEventListener("click", redo);
@@ -7130,6 +7796,11 @@
         e.stopPropagation();
         toggleBgPanel();
       });
+      $("#guideBtn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleGuideDrawer();
+      });
+      $("#guideClose").addEventListener("click", closeGuideDrawer);
       $$(".bg-opt").forEach((b) => {
         b.addEventListener("click", () => {
           state.bg = b.dataset.bg;
@@ -7140,6 +7811,8 @@
       document.addEventListener("pointerdown", (e) => {
         if (!e.target.closest("#bgDock") && !e.target.closest("#bgTopBtn"))
           bgPanel.classList.remove("open");
+        if (!e.target.closest("#guideDrawer") && !e.target.closest("#guideBtn"))
+          closeGuideDrawer();
       });
       $("#clearBtn").addEventListener("click", () => {
         if (!state.objects.length && !state.strokes.length) return;
@@ -7167,8 +7840,8 @@
         helpReturnFocus = document.activeElement;
         const m = $("#helpModal");
         m.classList.add("open");
-        const close = $("#helpClose");
-        if (close) close.focus();
+        const dialog = $(".modal", m);
+        if (dialog) dialog.focus({ preventScroll: true });
       }
       function closeHelp() {
         $("#helpModal").classList.remove("open");
@@ -7227,6 +7900,7 @@
         if (k === "escape") {
           deselect();
           closeFlyout();
+          closeGuideDrawer();
           $("#bgPanel").classList.remove("open");
           if ($("#helpModal").classList.contains("open")) closeHelp();
           return;
@@ -7274,9 +7948,22 @@
         }
         const board = $("#board");
         if (board) board.setAttribute("aria-label", "Drawing area");
-        $("#rail").setAttribute("role", "toolbar");
+        $$(".opq").forEach((b) => {
+          if (!b.getAttribute("aria-label") && b.title)
+            b.setAttribute("aria-label", b.title);
+        });
+        $$(".bg-opt").forEach((b) => {
+          if (!b.getAttribute("aria-label"))
+            b.setAttribute("aria-label", "Use " + b.textContent.trim());
+        });
+        const dockToggle = $("#dockToggle");
+        if (dockToggle) dockToggle.setAttribute("aria-label", "Show or hide formula bank");
+        const bgTab = $("#bgTab");
+        if (bgTab) bgTab.setAttribute("aria-label", "Change paper background");
         // One-tap starter templates on the empty board.
         const starters = {
+          equation: () => stampTemplate("equation"),
+          ratio: () => stampTemplate("ratio"),
           grid: () => makeObject("coordgrid", { min: -5, max: 5 }),
           numline: () => makeObject("numline", { min: -10, max: 10 }),
           division: SPAWN_TOOLS.division,
@@ -7292,6 +7979,7 @@
       function init() {
         document.body.dataset.level = currentLevel;
         hideDockTabs();
+        renderGuideDrawer();
         renderTabs();
         renderFormulas();
         setupAccessibility();
@@ -7315,14 +8003,11 @@
         pushHistory();
         updateUndoButtons();
         updateEmpty();
-        // first-visit help, or deep link via #help
+        // Open help only when explicitly deep-linked, so the top tools remain
+        // immediately usable for first-time students.
         try {
-          if (
-            location.hash === "#help" ||
-            !localStorage.getItem("neft.mathWorkbench.seen")
-          ) {
+          if (location.hash === "#help") {
             openHelp();
-            localStorage.setItem("neft.mathWorkbench.seen", "1");
           }
         } catch (e) {}
       }
@@ -7359,7 +8044,6 @@
         </div>
       </div>
       <div class="calc-body">
-        <!-- Simple calculator (default view) -->
         <div id="calcBasic" class="calc-basic">
           <div class="calc-display">
             <div id="calcExpr" class="calc-expr"></div>
@@ -7406,13 +8090,12 @@
             </button>
           </div>
         </div>
-        <!-- Graphing calculator (GeoGebra), loaded on demand -->
         <div id="calcGraphWrap" class="calc-applet-wrap" hidden>
           <div id="ggbCalc"></div>
           <div id="calcLoading" class="calc-loading">Loading calculator…</div>
         </div>
       </div>
-      <div class="calc-modes" role="tablist" aria-label="Calculator mode">
+      <div class="calc-modes" role="group" aria-label="Calculator mode">
         <button type="button" class="calc-mode is-active" data-mode="basic">
           Basic
         </button>
@@ -7433,12 +8116,14 @@
         border-radius: 14px;
         box-shadow: 0 18px 50px rgba(18, 53, 91, 0.28);
         overflow: hidden;
-        font-family: system-ui, sans-serif;
+        font-family:
+          "Atkinson Hyperlegible",
+          "Nunito",
+          sans-serif;
         display: flex;
         flex-direction: column;
         max-height: 90vh;
       }
-      /* Must beat ".calc-panel { display:flex }" so the X / toggle actually hides it. */
       .calc-panel[hidden] {
         display: none !important;
       }
@@ -7486,22 +8171,19 @@
         height: 560px;
         max-width: 94vw;
       }
-      .calc-applet-wrap[hidden] {
+      .calc-applet-wrap[hidden],
+      .calc-basic[hidden] {
         display: none !important;
       }
       #ggbCalc {
         width: 100%;
         height: 100%;
       }
-      /* ---- Simple (basic) calculator ---- */
       .calc-basic {
         padding: 12px;
         display: flex;
         flex-direction: column;
         gap: 10px;
-      }
-      .calc-basic[hidden] {
-        display: none !important;
       }
       .calc-display {
         background: #0f1f33;
@@ -7570,7 +8252,6 @@
         filter: brightness(1.06);
         background: linear-gradient(135deg, #12355b, #1fa6a2);
       }
-      /* ---- Mode switcher (bottom) ---- */
       .calc-modes {
         display: flex;
         gap: 6px;
@@ -7682,7 +8363,6 @@
         function open() {
           panel.hidden = false;
           btn && btn.setAttribute("aria-pressed", "true");
-          // Always reopen on the basic calculator, even if graphing was used last.
           setMode("basic");
         }
         function close() {
@@ -7695,7 +8375,6 @@
           });
         if (closeBtn) closeBtn.addEventListener("click", close);
 
-        // ---- Mode switching: simple basic calc (default) vs GeoGebra graphing.
         var basicWrap = document.getElementById("calcBasic"),
           graphWrap = document.getElementById("calcGraphWrap"),
           modeBtns = panel.querySelectorAll(".calc-mode"),
@@ -7716,12 +8395,11 @@
             setMode(this.getAttribute("data-mode"));
           });
 
-        // ---- Basic calculator engine (button-driven, no free-text input). ----
         var exprEl = document.getElementById("calcExpr"),
           outEl = document.getElementById("calcOut"),
           keysEl = document.querySelector(".calc-keys"),
-          buf = "", // evaluable string: digits, ., + - * /
-          justEq = false; // true right after "="; next digit starts fresh
+          buf = "",
+          justEq = false;
         var SYM = { "*": " × ", "/": " ÷ ", "+": " + ", "-": " − " };
         function fmt(n) {
           if (!isFinite(n)) return "Error";
@@ -7729,13 +8407,12 @@
           return String(r);
         }
         function evalBuf(s) {
-          // Strip a trailing operator so live preview stays valid.
           var clean = s.replace(/[+\-*/.]\s*$/, "");
           if (!clean) return null;
-          if (!/^[0-9+\-*/.]+$/.test(clean)) return null; // safety guard
+          if (!/^[0-9+\-*/.]+$/.test(clean)) return null;
           try {
             var v = Function('"use strict";return (' + clean + ")")();
-            return typeof v === "number" ? v : null; // may be Infinity/NaN
+            return typeof v === "number" ? v : null;
           } catch (e) {
             return null;
           }
@@ -7770,8 +8447,7 @@
             justEq = false;
           }
           var num = lastNumber(buf);
-          if (num === "0")
-            buf = buf.slice(0, -1) + d; // replace a lone zero (no "05")
+          if (num === "0") buf = buf.slice(0, -1) + d;
           else buf += d;
           render();
         }
@@ -7787,7 +8463,7 @@
           render();
         }
         function pressOp(op) {
-          justEq = false; // keep the result and continue the calculation
+          justEq = false;
           if (!buf) {
             if (op === "-") {
               buf = "-";
@@ -7795,7 +8471,7 @@
             }
             return;
           }
-          if (/[+\-*/]$/.test(buf)) buf = buf.slice(0, -1); // replace operator
+          if (/[+\-*/]$/.test(buf)) buf = buf.slice(0, -1);
           buf += op;
           render();
         }
@@ -7858,7 +8534,6 @@
             }
             if (act === "clear") return clearAll();
           });
-
         if (resetBtn)
           resetBtn.addEventListener("click", function () {
             if (mode === "graphing") {
@@ -7869,7 +8544,7 @@
               clearAll();
             }
           });
-        // Drag by the header.
+
         var drag = false,
           sx = 0,
           sy = 0,
