@@ -16,7 +16,18 @@ function corsFor(request) {
   const origin = request.headers.get("Origin");
   let allow = "null";
   try {
-    if (origin && new URL(origin).host === new URL(request.url).host) allow = origin;
+    if (origin) {
+      const originHost = new URL(origin).host;
+      const requestHost = new URL(request.url).host;
+      if (
+        originHost === requestHost ||
+        originHost.endsWith(".eduwonderlab.com") ||
+        originHost.endsWith(".pages.dev") ||
+        originHost === "eduwonderlab.com"
+      ) {
+        allow = origin;
+      }
+    }
   } catch {}
   return {
     "access-control-allow-origin": allow,

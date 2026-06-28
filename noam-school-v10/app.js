@@ -304,6 +304,7 @@
         breakMin: 5,
         homeOrder: CARDS.map((x) => x[0]),
         hiddenCards: [],
+        settingsLocked: false,
         // Reminder times (24h "HH:MM") for the local notification scheduler.
         morningBriefingTime: "07:15",
         leaveByTime: "",
@@ -364,6 +365,7 @@
     s.welcomeDismissed = !!(x.settings?.welcomeDismissed ?? base.settings.welcomeDismissed);
     s.sync = { ...base.settings.sync, ...(x.settings?.sync || {}) };
     s.themeGradient = String(x.settings?.themeGradient || "");
+    s.settingsLocked = !!x.settings?.settingsLocked;
     s.customThemeColor1 = String(x.settings?.customThemeColor1 || "#0d324d");
     s.customThemeColor2 = String(x.settings?.customThemeColor2 || "#7f5a83");
     let order = Array.isArray(s.homeOrder)
@@ -2976,8 +2978,14 @@ Due May 31"></textarea>
       const lvl = Math.floor(pts / 100) + 1;
       const themeBtn = (val, label) =>
         `<button data-act="set-theme" data-arg="${val}" aria-pressed="${s.theme === val}">${label}</button>`;
+      
+      const lockBanner = s.settingsLocked
+        ? `<div style="background:#1e293b; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:12px; margin-bottom:12px; color:#94a3b8; font-size:0.8rem; display:flex; align-items:center; gap:8px;">🔒 Settings are locked. Toggle 'Lock Settings & Layout' below to make changes.</div>`
+        : "";
+
       return (
         backHeader("Settings", "more") +
+        lockBanner +
         card(
           "appearance",
           "Look & feel",
@@ -3019,6 +3027,7 @@ Due May 31"></textarea>
           <div class="field"><label>Text size — ${Math.round(s.fontScale * 100)}%</label><input type="range" min="0.9" max="1.5" step="0.05" value="${s.fontScale}" data-bind="fontScale"></div>
           <div class="toggle-row"><div class="label"><b>Readable font & spacing</b><small>Easier-to-read letters with more space</small></div><label class="seg"><button data-act="toggle" data-arg="readable" aria-pressed="${s.readable}">${s.readable ? "On" : "Off"}</button></label></div>
           <div class="toggle-row"><div class="label"><b>Reduce motion</b><small>Turn off animations</small></div><label class="seg"><button data-act="toggle" data-arg="motion" aria-pressed="${s.motion === "off"}">${s.motion === "off" ? "On" : "Off"}</button></label></div>
+          <div class="toggle-row" style="border-top: 1px dashed var(--border); margin-top: 8px; padding-top: 8px;"><div class="label"><b>🔒 Lock Settings &amp; Layout</b><small>Freeze color themes, sliders, and profiles to prevent accidental changes</small></div><label class="seg"><button data-act="toggle" data-arg="settingsLocked" aria-pressed="${s.settingsLocked}">${s.settingsLocked ? "Locked" : "Unlocked"}</button></label></div>
         `,
         ) +
         card(
@@ -5817,6 +5826,19 @@ Due May 31"></textarea>
       toast("Times saved 🕗");
     },
     toggle: (_, arg) => {
+      if (arg === "settingsLocked") {
+        state.settings.settingsLocked = !state.settings.settingsLocked;
+        save();
+        render();
+        toast(state.settings.settingsLocked ? "Settings Locked 🔒" : "Settings Unlocked 🔓");
+        return;
+      }
+      
+      if (state.settings.settingsLocked) {
+        toast("🔒 Settings are locked. Toggle 'Lock Settings' to edit.");
+        return;
+      }
+      
       if (arg === "readable")
         state.settings.readable = !state.settings.readable;
       if (arg === "motion")
@@ -6329,6 +6351,21 @@ ${name}`;
       // Don't hijack <summary> toggles or real links
       if (btn.tagName === "A") return;
       ev.preventDefault();
+      
+      // Reject theme/accent/profile edits if settings are locked
+      if (
+        state.settings.settingsLocked &&
+        act !== "toggle" &&
+        [
+          "set-theme", "set-accent", "set-gradient-theme", 
+          "apply-custom-gradient", "update-custom-gradient",
+          "save-reminder-times", "save-google-id", "save-profile"
+        ].includes(act)
+      ) {
+        toast("🔒 Settings are locked. Toggle 'Lock Settings' to edit.");
+        return;
+      }
+      
       ACTIONS[act](btn.dataset.id, btn.dataset.arg, ev, btn.dataset.sid);
     });
 
@@ -6454,6 +6491,13 @@ ${name}`;
 
     // range/live binds and theme picker
     document.addEventListener("input", (ev) => {
+      if (state.settings.settingsLocked) {
+        ev.preventDefault();
+        // Restore slider/input values from state
+        render();
+        toast("🔒 Settings are locked. Toggle 'Lock Settings' to edit.");
+        return;
+      }
       if (ev.target.dataset.act === "update-custom-gradient") {
         const c1 = $("#customColor1")?.value || "#0d324d";
         const c2 = $("#customColor2")?.value || "#7f5a83";
