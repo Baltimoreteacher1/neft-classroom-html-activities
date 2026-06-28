@@ -1465,6 +1465,50 @@
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <script src="/assets/app.js" defer></script>
     <script>
+      function playConfetti() {
+        try {
+          const container = document.createElement('div');
+          container.style.position = 'fixed';
+          container.style.top = '0';
+          container.style.left = '0';
+          container.style.width = '100vw';
+          container.style.height = '100vh';
+          container.style.pointerEvents = 'none';
+          container.style.zIndex = '9999';
+          document.body.appendChild(container);
+          
+          const colors = ['#f43f5e', '#3b82f6', '#10b981', '#eab308', '#a855f7', '#f97316'];
+          for (let i = 0; i < 80; i++) {
+            const el = document.createElement('div');
+            el.style.position = 'absolute';
+            el.style.width = Math.random() * 8 + 6 + 'px';
+            el.style.height = Math.random() * 8 + 6 + 'px';
+            el.style.background = colors[Math.floor(Math.random() * colors.length)];
+            el.style.borderRadius = Math.random() > 0.5 ? '50%' : '0%';
+            
+            el.style.bottom = '-10px';
+            el.style.left = Math.random() * 100 + 'vw';
+            
+            container.appendChild(el);
+            
+            const duration = Math.random() * 2 + 1.5;
+            const horizontalShift = (Math.random() - 0.5) * 200;
+            const rotation = Math.random() * 720;
+            
+            el.animate([
+              { transform: 'translate(0, 0) rotate(0deg)', opacity: '1' },
+              { transform: `translate(${horizontalShift}px, -110vh) rotate(${rotation}deg)`, opacity: '0' }
+            ], {
+              duration: duration * 1000,
+              easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)',
+              fill: 'forwards'
+            });
+          }
+          
+          setTimeout(() => container.remove(), 4000);
+        } catch (e) {}
+      }
+
       // ---- State Variables ----
       const STEPS_LANG = {
         en: [
@@ -2272,6 +2316,7 @@
 
       // ---- Step 5: Generate proposals & summary reports ----
       function buildReport() {
+        playConfetti();
         const isEs = document.body.classList.contains('es');
         
         const p1Name = document.getElementById("attr1-name").value || (isEs ? "Atracción 1" : "Attraction 1");
