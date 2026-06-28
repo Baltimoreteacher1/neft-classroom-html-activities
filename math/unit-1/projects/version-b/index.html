@@ -372,6 +372,13 @@
             </div>
           </div>
 
+          <div class="student-calc-section" style="margin-top:15px; margin-bottom:15px; padding:12px; background:rgba(0,0,0,0.02); border:1px dashed #cbd5e1; border-radius:8px;">
+            <label class="lbl" for="student-gcf-input">
+              <span class="en-text"><strong>Your Answer:</strong> How many equal kits can you make? (Enter GCF)</span>
+              <span class="es-text"><strong>Tu Respuesta:</strong> ¿Cuántos kits iguales puedes hacer? (Ingresa MCD)</span>
+            </label>
+            <input type="number" id="student-gcf-input" min="1" placeholder="" oninput="calcGCF()" />
+          </div>
           <button class="calc-btn" onclick="calcGCF()">
             <span class="en-text">Find the Most Equal Kits</span>
             <span class="es-text">Encontrar la Mayor Cantidad de Kits Iguales</span>
@@ -487,6 +494,13 @@
             </div>
           </div>
 
+          <div class="student-calc-section" style="margin-top:15px; margin-bottom:15px; padding:12px; background:rgba(0,0,0,0.02); border:1px dashed #cbd5e1; border-radius:8px;">
+            <label class="lbl" for="student-lcm-input">
+              <span class="en-text"><strong>Your Answer:</strong> What is the first hour both robots sync? (Enter LCM)</span>
+              <span class="es-text"><strong>Tu Respuesta:</strong> ¿Cuál es la primera hora en que ambos robots se sincronizan? (Ingresa MCM)</span>
+            </label>
+            <input type="number" id="student-lcm-input" min="1" placeholder="" oninput="calcLCM()" />
+          </div>
           <button class="calc-btn teal" onclick="calcLCM()">
             <span class="en-text">Find the Sync Hour</span>
             <span class="es-text">Encontrar la Hora de Sincronización</span>
@@ -1104,6 +1118,7 @@
       function calcGCF() {
         var a = parseInt(document.getElementById('g-cables').value);
         var b = parseInt(document.getElementById('g-sensors').value);
+        var studentVal = parseInt(document.getElementById('student-gcf-input').value);
         var sc = document.getElementById('gcf-svg-cables');
         var ss = document.getElementById('gcf-svg-sensors');
         const isEs = document.body.classList.contains('es');
@@ -1111,41 +1126,108 @@
         if (ss && !isNaN(b)) ss.textContent = b + (isEs ? ' sensores' : ' sensors');
         if (isNaN(a) || isNaN(b) || a < 1 || b < 1) return;
         var g = gcd(a, b);
-        if (isEs) {
-          showReadout('gcf-out',
-            '<strong>MCD de ' + a + ' y ' + b + ' = ' + g + ' kits de herramientas iguales</strong><br>' +
-            'Cada kit recibe <strong>' + Math.floor(a/g) + ' cables</strong> y <strong>' + Math.floor(b/g) + ' sensores</strong>.<br>' +
-            '<small>Factores de ' + a + ': ' + getFactors(a).join(', ') + ' &nbsp;|&nbsp; Factores de ' + b + ': ' + getFactors(b).join(', ') + '</small>'
-          );
+
+        if (isNaN(studentVal)) {
+          if (isEs) {
+            showReadout('gcf-out',
+              '<span style="color:var(--orange); font-weight:600;">✍️ Ingresa tu respuesta del MCD arriba para verificar tu cálculo.</span><br>' +
+              '<small>Pista: Enumera los factores de ' + a + ' y ' + b + ' para encontrar la mayor cantidad de kits iguales.</small>'
+            );
+          } else {
+            showReadout('gcf-out',
+              '<span style="color:var(--orange); font-weight:600;">✍️ Enter your GCF answer above to verify your calculation.</span><br>' +
+              '<small>Hint: List the factors of ' + a + ' and ' + b + ' to find the largest number of equal kits.</small>'
+            );
+          }
+          return;
+        }
+
+        if (studentVal === g) {
+          if (isEs) {
+            showReadout('gcf-out',
+              '<strong><span style="color:var(--green)">✅ ¡Correcto!</span> MCD de ' + a + ' y ' + b + ' = ' + g + ' kits de herramientas iguales</strong><br>' +
+              'Cada kit recibe <strong>' + Math.floor(a/g) + ' cables</strong> y <strong>' + Math.floor(b/g) + ' sensores</strong>.<br>' +
+              '<small>Factores de ' + a + ': ' + getFactors(a).join(', ') + ' &nbsp;|&nbsp; Factores de ' + b + ': ' + getFactors(b).join(', ') + '</small>'
+            );
+          } else {
+            showReadout('gcf-out',
+              '<strong><span style="color:var(--green)">✅ Correct!</span> GCF of ' + a + ' and ' + b + ' = ' + g + ' equal tool kits</strong><br>' +
+              'Each kit gets <strong>' + Math.floor(a/g) + ' cables</strong> and <strong>' + Math.floor(b/g) + ' sensors</strong>.<br>' +
+              '<small>Factors of ' + a + ': ' + getFactors(a).join(', ') + ' &nbsp;|&nbsp; Factors of ' + b + ': ' + getFactors(b).join(', ') + '</small>'
+            );
+          }
         } else {
-          showReadout('gcf-out',
-            '<strong>GCF of ' + a + ' and ' + b + ' = ' + g + ' equal tool kits</strong><br>' +
-            'Each kit gets <strong>' + Math.floor(a/g) + ' cables</strong> and <strong>' + Math.floor(b/g) + ' sensors</strong>.<br>' +
-            '<small>Factors of ' + a + ': ' + getFactors(a).join(', ') + ' &nbsp;|&nbsp; Factors of ' + b + ': ' + getFactors(b).join(', ') + '</small>'
-          );
+          if (isEs) {
+            showReadout('gcf-out',
+              '<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto. Inténtalo de nuevo.</span><br>' +
+              '<small>Factores de ' + a + ': ' + getFactors(a).slice(0, 3).join(', ') + '... &nbsp;|&nbsp; Factores de ' + b + ': ' + getFactors(b).slice(0, 3).join(', ') + '...</small>'
+            );
+          } else {
+            showReadout('gcf-out',
+              '<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet. Try again!</span><br>' +
+              '<small>Factors of ' + a + ': ' + getFactors(a).slice(0, 3).join(', ') + '... &nbsp;|&nbsp; Factors of ' + b + ': ' + getFactors(b).slice(0, 3).join(', ') + '...</small>'
+            );
+          }
         }
       }
 
       function calcLCM() {
         var a = parseInt(document.getElementById('l-robotA').value);
         var b = parseInt(document.getElementById('l-robotB').value);
+        var studentVal = parseInt(document.getElementById('student-lcm-input').value);
         const isEs = document.body.classList.contains('es');
         if (isNaN(a) || isNaN(b) || a < 1 || b < 1) return;
         var l = lcm(a, b);
-        var am = [], bm = [];
-        for (var i = 1; i <= 6; i++) { am.push(a*i); bm.push(b*i); }
-        if (isEs) {
-          showReadout('lcm-out',
-            '<strong>MCM de ' + a + ' y ' + b + ' = ' + l + ' horas</strong><br>' +
-            '¡Ambos robots estarán completamente cargados al mismo tiempo en la hora <strong>' + l + '</strong>!<br>' +
-            '<small>Robot A (x' + a + '): ' + am.join(', ') + '... &nbsp;|&nbsp; Robot B (x' + b + '): ' + bm.join(', ') + '...</small>'
-          );
+
+        if (isNaN(studentVal)) {
+          if (isEs) {
+            showReadout('lcm-out',
+              '<span style="color:var(--orange); font-weight:600;">✍️ Ingresa tu respuesta del MCM arriba para verificar tu cálculo.</span><br>' +
+              '<small>Pista: Enumera los múltiplos de ' + a + ' y ' + b + ' para encontrar la primera hora en que ambos se sincronizan.</small>'
+            );
+          } else {
+            showReadout('lcm-out',
+              '<span style="color:var(--orange); font-weight:600;">✍️ Enter your LCM answer above to verify your calculation.</span><br>' +
+              '<small>Hint: List the multiples of ' + a + ' and ' + b + ' to find the first hour both sync.</small>'
+            );
+          }
+          return;
+        }
+
+        if (studentVal === l) {
+          var am = [], bm = [];
+          for (var i = 1; i <= Math.min(Math.ceil(l/a), 10); i++) { am.push(a*i); }
+          for (var i = 1; i <= Math.min(Math.ceil(l/b), 10); i++) { bm.push(b*i); }
+          if (isEs) {
+            showReadout('lcm-out',
+              '<strong><span style="color:var(--green)">✅ ¡Correcto!</span> MCM de ' + a + ' y ' + b + ' = ' + l + ' horas</strong><br>' +
+              '¡Ambos robots estarán completamente cargados al mismo tiempo en la hora <strong>' + l + '</strong>!<br>' +
+              '<small>Robot A (x' + a + '): ' + am.join(', ') + '... &nbsp;|&nbsp; Robot B (x' + b + '): ' + bm.join(', ') + '...</small>'
+            );
+          } else {
+            showReadout('lcm-out',
+              '<strong><span style="color:var(--green)">✅ Correct!</span> LCM of ' + a + ' and ' + b + ' = ' + l + ' hours</strong><br>' +
+              'Both robots will be fully charged at the same time at hour <strong>' + l + '</strong>!<br>' +
+              '<small>Robot A (x' + a + '): ' + am.join(', ') + '... &nbsp;|&nbsp; Robot B (x' + b + '): ' + bm.join(', ') + '...</small>'
+            );
+          }
         } else {
-          showReadout('lcm-out',
-            '<strong>LCM of ' + a + ' and ' + b + ' = ' + l + ' hours</strong><br>' +
-            'Both robots will be fully charged at the same time at hour <strong>' + l + '</strong>!<br>' +
-            '<small>Robot A (x' + a + '): ' + am.join(', ') + '... &nbsp;|&nbsp; Robot B (x' + b + '): ' + bm.join(', ') + '...</small>'
-          );
+          var amLimit = Math.min(Math.ceil(l/a) - 1, 5);
+          var bmLimit = Math.min(Math.ceil(l/b) - 1, 5);
+          var am = [], bm = [];
+          for (var i = 1; i <= Math.max(amLimit, 1); i++) { am.push(a*i); }
+          for (var i = 1; i <= Math.max(bmLimit, 1); i++) { bm.push(b*i); }
+          if (isEs) {
+            showReadout('lcm-out',
+              '<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto. Inténtalo de nuevo.</span><br>' +
+              '<small>Múltiplos de Robot A: ' + am.join(', ') + '... &nbsp;|&nbsp; Múltiplos de Robot B: ' + bm.join(', ') + '...</small>'
+            );
+          } else {
+            showReadout('lcm-out',
+              '<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet. Try again!</span><br>' +
+              '<small>Robot A multiples: ' + am.join(', ') + '... &nbsp;|&nbsp; Robot B multiples: ' + bm.join(', ') + '...</small>'
+            );
+          }
         }
       }
 
