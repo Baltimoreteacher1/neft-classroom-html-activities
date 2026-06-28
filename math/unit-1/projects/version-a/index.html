@@ -1862,6 +1862,68 @@
         }
       });
       
+      
+      window.exportStudentBackup = function() {
+        try {
+          const state = window.NeftSaveResume ? window.NeftSaveResume.getState() : null;
+          const inputs = {};
+          document.querySelectorAll('input, textarea, select').forEach(el => {
+            if (el.id) inputs[el.id] = el.value;
+          });
+          const metadata = {
+            studentName: document.getElementById('student-name')?.value || 'Student',
+            section: document.getElementById('class-period')?.value || 'Class',
+            activityId: window.NeftSaveResumeConfig?.activityId || 'project',
+            activityTitle: document.title,
+            timestamp: new Date().toISOString(),
+            inputs: inputs,
+            state: state
+          };
+          
+          const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(metadata, null, 2));
+          const dlAnchor = document.createElement('a');
+          dlAnchor.setAttribute("href", dataStr);
+          dlAnchor.setAttribute("download", `${metadata.studentName.replace(/\s+/g, '_')}_${metadata.activityId}_backup.json`);
+          document.body.appendChild(dlAnchor);
+          dlAnchor.click();
+          dlAnchor.remove();
+        } catch(e) {
+          alert("Export failed: " + e.message);
+        }
+      };
+      
+      window.triggerImportStudentBackup = function() {
+        document.getElementById('student-backup-file-input').click();
+      };
+      
+      window.importStudentBackup = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            const data = JSON.parse(e.target.result);
+            if (data && data.inputs) {
+              for (const [id, val] of Object.entries(data.inputs)) {
+                const el = document.getElementById(id);
+                if (el) {
+                  el.value = val;
+                  el.dispatchEvent(new Event('input', { bubbles: true }));
+                  el.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+              }
+              alert("Successfully imported student backup!");
+              if (typeof updateGradingAnswers === 'function') updateGradingAnswers();
+            } else {
+              alert("Invalid backup file structure.");
+            }
+          } catch(err) {
+            alert("Error parsing backup file: " + err.message);
+          }
+        };
+        reader.readAsText(file);
+      };
+
       document.addEventListener('DOMContentLoaded', function() {
         const titleEl = document.querySelector('.hero h1');
         if (titleEl) {
@@ -1897,6 +1959,11 @@
         <tbody id="teacher-answers-body"></tbody>
       </table>
       <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
+      <div style="display:flex;gap:6px;margin-top:6px;">
+        <button class="prefill-btn" style="margin-top:0;background:#059669;" onclick="exportStudentBackup()">📥 Export JSON</button>
+        <button class="prefill-btn" style="margin-top:0;background:#7c3aed;" onclick="triggerImportStudentBackup()">📤 Import JSON</button>
+      </div>
+      <input type="file" id="student-backup-file-input" style="display:none;" onchange="importStudentBackup(event)" accept=".json" />
     </div>
 
   </body>

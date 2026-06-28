@@ -55,6 +55,8 @@
           ↻ Refresh
         </button>
         <button class="dash-btn" id="btn-print" type="button">⎙ Print</button>
+        <button class="dash-btn" id="btn-import-backups" type="button" onclick="triggerBackupImport()">📂 Import Backups</button>
+        <input type="file" id="file-import-backups" multiple accept=".json" style="display:none;" onchange="handleBackupImport(event)" />
         <button class="dash-btn primary" id="btn-export" type="button">
           ⤓ Export CSV
         </button>
@@ -169,6 +171,38 @@
        * ================================================================== */
       (function () {
         var LS_PREFIX = "nsr:";
+        
+        window.triggerBackupImport = function() {
+          document.getElementById('file-import-backups').click();
+        };
+        
+        window.handleBackupImport = function(event) {
+          var files = event.target.files;
+          if (!files.length) return;
+          var loaded = 0;
+          Array.prototype.forEach.call(files, function(file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+              try {
+                var data = JSON.parse(e.target.result);
+                if (data && (data.activityId || data.studentName)) {
+                  var code = data.code || ('IMP-' + Math.random().toString(36).substring(2, 6).toUpperCase());
+                  var key = "nsr:rec:" + code;
+                  localStorage.setItem(key, JSON.stringify(data));
+                  loaded++;
+                }
+              } catch(err) {
+                console.error("Error parsing backup file", err);
+              }
+              if (loaded === files.length) {
+                alert("Successfully imported " + loaded + " student backup(s)!");
+                window.location.reload();
+              }
+            };
+            reader.readAsText(file);
+          });
+        };
+
 
         /* ---------- tiny safe helpers ---------- */
         function safe(fn, fallback) {
