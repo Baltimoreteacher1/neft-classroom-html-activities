@@ -29,8 +29,52 @@ a:focus-visible,
 }
 @keyframes gfxPop {
   40% {
-    transform: scale(1.2);
+    transform: scale(1.25);
   }
+}
+
+/* Touch Ripple Visual FX */
+.gfx-ripple {
+  position: fixed;
+  z-index: 9999;
+  border: 3px solid #38bdf8;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
+}
+
+/* Combo Streak Multiplier overlay HUD */
+#game-combo-hud {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  border: 2px solid #fff;
+  border-radius: 30px;
+  padding: 8px 24px;
+  color: #fff;
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 900;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 20px rgba(239, 68, 68, 0.4);
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s;
+  will-change: transform, opacity;
+}
+#game-combo-hud.show {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+#game-combo-hud.show.pop {
+  animation: comboPop 0.3s ease;
+}
+@keyframes comboPop {
+  50% { transform: translateX(-50%) scale(1.3); }
 }
 
 [data-parallax] [data-parallax-layer],
@@ -149,7 +193,8 @@ body.high-contrast select {
 
 @media (prefers-reduced-motion: reduce) {
   .gfx-spark,
-  .gfx-pop {
+  .gfx-pop,
+  .gfx-ripple {
     animation: none !important;
     display: none !important;
   }
