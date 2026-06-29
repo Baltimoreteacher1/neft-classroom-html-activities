@@ -4,20 +4,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
-    <title>Practice Arcade — Arcade Review Lab</title>
-    <meta name="description" content="Arcade math review simulator — shoots down answers to practice problems." />
+    <title>Practice Arcade — Review Lab</title>
+    <meta
+      name="description"
+      content="A calm, self-paced review lab that turns each lesson's practice into real interactive challenges — sort into bins, match pairs, choose the answer, and spot the mistake. No timers, no twitch."
+    />
     <style>
-      html, body {
-        width: 100%;
-        height: 100%;
+      * {
         margin: 0;
         padding: 0;
-        background: #0b0f19;
+        box-sizing: border-box;
+      }
+      body {
+        background: #0f172a;
         overflow: hidden;
         font-family: "Segoe UI", system-ui, sans-serif;
       }
       canvas {
         display: block;
+        margin: 0 auto;
+      }
+      canvas:focus-visible {
+        outline: 3px solid #38bdf8;
+        outline-offset: 4px;
       }
       #loader {
         position: fixed;
@@ -36,20 +45,39 @@
       .spinner {
         width: 40px;
         height: 40px;
-        border: 4px solid rgba(255,255,255,0.1);
+        border: 4px solid rgba(255, 255, 255, 0.1);
         border-top-color: #38bdf8;
         border-radius: 50%;
         animation: spin 1s linear infinite;
       }
       @keyframes spin {
-        100% { transform: rotate(360deg); }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .spinner {
+          animation: none;
+        }
+      }
+      /* Screen-reader live region (mirrors the prompt + result). */
+      #pa-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
     </style>
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
     <script>
       if (typeof Phaser === "undefined") {
         document.write(
-          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>'
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
         );
       }
     </script>
@@ -63,391 +91,937 @@
   <body>
     <div id="loader">
       <div class="spinner"></div>
-      <div id="loader-text">Loading Practice Arcade...</div>
+      <div id="loader-text">Loading Practice Arcade…</div>
     </div>
-    
-    <script>
-      // Practice Arcade — Universal Review Game
-      // Dynamically extracts practice questions from lesson config.json and runs a Phaser 3 Meteor Smasher game.
-      
-      const W = 1024;
-      const H = 768;
-      let questions = [];
-      let activeLesson = "1-1";
-      let lessonTitle = "Lesson";
+    <div id="pa-sr" role="status" aria-live="polite"></div>
 
-      // 1. Read URL params and fetch config
+    <script>
+      // ── PRACTICE ARCADE — REVIEW LAB ──────────────────────────────────────
+      // Universal per-lesson review game. Reads ?lesson=<id>, fetches that
+      // lesson's /lessons/<id>/config.json, and turns each practice item into a
+      // REAL interactive challenge matched to its type — sort into bins, match
+      // pairs, choose the answer, spot the mistake. Calm and self-paced: no
+      // timers, no falling targets, no aiming. Wrong MATH (not slow reflexes)
+      // costs a life, and every miss shows the explanation so it teaches.
+      const W = 960,
+        H = 720;
+      const MAX_ROUNDS = 8;
+      const PALETTE = {
+        bg: 0x0f172a,
+        panel: 0x1e293b,
+        panelLine: 0x38bdf8,
+        tile: 0x334155,
+        tileHi: 0x475569,
+        good: 0x10b981,
+        bad: 0xef4444,
+        accent: 0x38bdf8,
+        gold: 0xfacc15,
+      };
+
+      let rounds = [];
+      let lessonTitle = "Lesson";
+      let activeLesson = "1-1";
+
+      function srSay(msg) {
+        const el = document.getElementById("pa-sr");
+        if (el) el.textContent = msg;
+      }
+      function shuffle(a) {
+        const r = a.slice();
+        for (let i = r.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [r[i], r[j]] = [r[j], r[i]];
+        }
+        return r;
+      }
+      // Tiny WebAudio blips (guarded; silent if no context / muted).
+      const SFX = {
+        ctx: null,
+        on: true,
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+        },
+        beep(f, d, type = "sine", v = 0.15) {
+          if (!this.ctx || !this.on) return;
+          try {
+            const o = this.ctx.createOscillator(),
+              g = this.ctx.createGain();
+            o.type = type;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + d,
+            );
+            o.connect(g);
+            g.connect(this.ctx.destination);
+            o.start();
+            o.stop(this.ctx.currentTime + d);
+          } catch (e) {}
+        },
+        good() {
+          this.beep(660, 0.1);
+          this.beep(880, 0.14);
+        },
+        bad() {
+          this.beep(200, 0.25, "sawtooth");
+        },
+        pick() {
+          this.beep(520, 0.05, "square", 0.08);
+        },
+        win() {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => this.beep(f, 0.2), i * 110),
+          );
+        },
+      };
+
+      // ── Load lesson config and build the round list ──────────────────────
       async function loadLessonConfig() {
         const params = new URLSearchParams(window.location.search);
         activeLesson = params.get("lesson") || "1-1";
-        
         try {
-          const res = await fetch(`/lessons/${encodeURIComponent(activeLesson)}/config.json`);
+          const res = await fetch(
+            `/lessons/${encodeURIComponent(activeLesson)}/config.json`,
+          );
           if (!res.ok) throw new Error("Config not found");
           const data = await res.json();
-          
           lessonTitle = data.title || "Lesson";
           document.title = `${lessonTitle} — Practice Arcade`;
-          
-          // Gather multiple choice questions
-          const opt = data.practice?.optional || [];
-          opt.forEach(prob => {
-            if (prob.type === "multiple-choice" && prob.stem && prob.choices) {
-              questions.push({
-                prompt: prob.stem,
-                choices: prob.choices,
-                correctIndex: prob.correctIndex || 0
-              });
-            }
+          const opt = (data.practice && data.practice.optional) || [];
+          opt.forEach((it) => {
+            const r = buildRound(it);
+            if (r) rounds.push(r);
           });
-        } catch(e) {
-          console.warn("Could not load lesson config, falling back to dummy questions", e);
+        } catch (e) {
+          console.warn("Could not load lesson config; using fallback.", e);
         }
-        
-        // Fallback questions if none found
-        if (questions.length === 0) {
-          questions = [
-            {
-              prompt: "Select the option that evaluates to 12.",
-              choices: ["6 + 6", "10 - 2", "5 * 3", "20 / 4"],
-              correctIndex: 0
-            },
-            {
-              prompt: "Which number is a prime number?",
-              choices: ["15", "21", "29", "35"],
-              correctIndex: 2
-            },
-            {
-              prompt: "What is the GCF of 12 and 18?",
-              choices: ["2", "3", "6", "12"],
-              correctIndex: 2
-            }
-          ];
-        }
-        
-        // Hide loader and launch Phaser
-        document.getElementById("loader").style.display = "none";
-        initGame();
-      }
+        if (rounds.length === 0) rounds = fallbackRounds();
+        rounds = rounds.slice(0, MAX_ROUNDS);
 
-      function initGame() {
-        const config = {
+        document.getElementById("loader").style.display = "none";
+        window.paGame = new Phaser.Game({
           type: Phaser.AUTO,
           width: W,
           height: H,
+          backgroundColor: "#0f172a",
+          parent: document.body,
           scale: {
             mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH
+            autoCenter: Phaser.Scale.CENTER_BOTH,
           },
-          backgroundColor: '#0b0f19',
-          parent: document.body,
-          physics: {
-            default: 'arcade',
-            arcade: { gravity: { y: 0 }, debug: false }
-          },
-          scene: [BootScene, PlayScene, WinScene]
-        };
-        window.game = new Phaser.Game(config);
+          scene: [TitleScene, PlayScene, ResultScene],
+        });
+        window.paGame.events.once("ready", () => {
+          try {
+            const cv = window.paGame.canvas;
+            cv.setAttribute("role", "application");
+            cv.setAttribute(
+              "aria-label",
+              lessonTitle +
+                " practice review. Each round is a sort, match, choose, or " +
+                "spot-the-mistake challenge. Use a pointer or the number and " +
+                "arrow keys; no timer.",
+            );
+            cv.setAttribute("aria-roledescription", "math review game");
+            if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
+          } catch (e) {}
+        });
       }
 
-      // --- Phaser Scenes ---
+      // Normalize a config practice item into a round descriptor the engine
+      // can render. Returns null for unsupported / malformed items.
+      function buildRound(it) {
+        if (!it || !it.type) return null;
+        if (it.type === "multiple-choice") {
+          if (!it.stem || !Array.isArray(it.choices) || it.choices.length < 2)
+            return null;
+          return {
+            kind: "choose",
+            prompt: it.stem,
+            choices: it.choices,
+            correctIndex: it.correctIndex || 0,
+            why: it.explanation || "",
+          };
+        }
+        if (it.type === "drag-sort") {
+          if (!Array.isArray(it.items) || !Array.isArray(it.categories))
+            return null;
+          return {
+            kind: "sort",
+            prompt: it.instructions || "Sort each tile into the right bin.",
+            items: it.items
+              .filter((x) => x && x.text != null && x.category != null)
+              .map((x) => ({ text: String(x.text), category: x.category })),
+            categories: it.categories.map((c) => ({
+              id: c.id,
+              label: c.label || c.id,
+            })),
+            why: "",
+          };
+        }
+        if (it.type === "matching-game") {
+          if (!Array.isArray(it.pairs) || it.pairs.length < 2) return null;
+          return {
+            kind: "match",
+            prompt: it.instructions || "Match each card to its partner.",
+            pairs: it.pairs
+              .filter((p) => p && p.term != null && p.match != null)
+              .slice(0, 5)
+              .map((p) => ({ term: String(p.term), match: String(p.match) })),
+            why: "",
+          };
+        }
+        if (it.type === "error-analysis") {
+          if (!Array.isArray(it.workedExample) || it.errorStep == null)
+            return null;
+          return {
+            kind: "fixit",
+            prompt: it.title || "Find the step with the mistake.",
+            steps: it.workedExample.map((s) => ({
+              label: s.label || "",
+              work: s.work || "",
+            })),
+            errorStep: it.errorStep,
+            why: it.correctWork || "",
+          };
+        }
+        return null;
+      }
 
-      class BootScene extends Phaser.Scene {
-        constructor() { super('BootScene'); }
-        preload() {
-          // Programmatic graphics generation so no external assets are required
-          const canvas = this.textures.createCanvas('ship', 48, 48);
-          const ctx = canvas.context;
-          ctx.fillStyle = '#0ea5e9';
-          ctx.beginPath();
-          ctx.moveTo(24, 0);
-          ctx.lineTo(48, 48);
-          ctx.lineTo(24, 36);
-          ctx.lineTo(0, 48);
-          ctx.closePath();
-          ctx.fill();
-          canvas.refresh();
-          
-          const laser = this.textures.createCanvas('laser', 8, 24);
-          const lCtx = laser.context;
-          lCtx.fillStyle = '#f43f5e';
-          lCtx.fillRect(0, 0, 8, 24);
-          laser.refresh();
+      function fallbackRounds() {
+        return [
+          {
+            kind: "choose",
+            prompt: "Which number is prime?",
+            choices: ["15", "21", "29", "35"],
+            correctIndex: 2,
+            why: "29 has only the factors 1 and 29, so it is prime.",
+          },
+          {
+            kind: "choose",
+            prompt: "What is the GCF of 12 and 18?",
+            choices: ["2", "3", "6", "12"],
+            correctIndex: 2,
+            why: "The greatest factor shared by 12 and 18 is 6.",
+          },
+        ];
+      }
+
+      // ── TITLE ────────────────────────────────────────────────────────────
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
         }
         create() {
-          this.scene.start('PlayScene');
+          drawStars(this);
+          this.add
+            .text(W / 2, 150, "PRACTICE ARCADE", {
+              fontFamily: "Nunito, Segoe UI, sans-serif",
+              fontSize: "52px",
+              fontStyle: "bold",
+              color: "#38bdf8",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 210, lessonTitle, {
+              fontFamily: "Nunito, Segoe UI, sans-serif",
+              fontSize: "26px",
+              color: "#e2e8f0",
+              align: "center",
+              wordWrap: { width: W - 160 },
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              W / 2,
+              300,
+              rounds.length +
+                " review challenge" +
+                (rounds.length === 1 ? "" : "s") +
+                ": sort, match, choose, and fix mistakes.\n" +
+                "Take your time — there is no timer. Tap, or use the number\n" +
+                "and arrow keys. A wrong answer costs a heart and shows why.",
+              {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "18px",
+                color: "#94a3b8",
+                align: "center",
+              },
+            )
+            .setOrigin(0.5);
+
+          const start = () => {
+            SFX.init();
+            SFX.pick();
+            this.scene.start("Play");
+          };
+          makeButton(this, W / 2, 430, 260, 64, "START ▶", start);
+          this.input.keyboard.on("keydown-SPACE", start);
+          this.input.keyboard.on("keydown-ENTER", start);
+
+          makeLink(this, W / 2, 560, "← Back to lessons", () => {
+            window.location.href = "/curriculum/";
+          });
+          srSay(
+            lessonTitle +
+              " Practice Arcade. " +
+              rounds.length +
+              " challenges. Press Start.",
+          );
         }
       }
 
+      // ── PLAY (router over the round list) ─────────────────────────────────
       class PlayScene extends Phaser.Scene {
-        constructor() { super('PlayScene'); }
+        constructor() {
+          super("Play");
+        }
         create() {
-          this.qIdx = 0;
+          this.reduce = !!(
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          );
+          this.idx = 0;
           this.score = 0;
           this.lives = 3;
           this.streak = 0;
-          this.transitioning = false;
-          
-          // Space Background Stars
-          this.stars = this.add.graphics();
-          this.stars.fillStyle(0xffffff, 0.4);
-          for(let i=0; i<80; i++) {
-            this.stars.fillCircle(Phaser.Math.Between(0, W), Phaser.Math.Between(0, H), Phaser.Math.Between(1, 3));
-          }
+          this.correctCount = 0;
+          drawStars(this);
 
-          // UI Headers
-          this.titleText = this.add.text(24, 24, `${lessonTitle.toUpperCase()} — ARCADE`, { font: 'bold 28px Nunito, sans-serif', fill: '#38bdf8' });
-          this.scoreText = this.add.text(24, 68, 'Score: 0', { font: 'bold 30px Nunito, sans-serif', fill: '#ffffff' });
-          
-          // Lives UI
-          this.livesGroup = this.add.group();
-          this.updateLivesUI();
+          // HUD
+          const hud = {
+            fontFamily: "Nunito, Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+          };
+          this.titleText = this.add.text(20, 16, lessonTitle.toUpperCase(), {
+            ...hud,
+            color: "#38bdf8",
+          });
+          this.scoreText = this.add.text(20, 44, "Score: 0", {
+            ...hud,
+            color: "#ffffff",
+          });
+          this.progressText = this.add
+            .text(W / 2, 16, "", { ...hud, color: "#94a3b8" })
+            .setOrigin(0.5, 0);
+          this.streakText = this.add
+            .text(W / 2, 44, "", { ...hud, color: "#facc15" })
+            .setOrigin(0.5, 0);
+          this.livesText = this.add
+            .text(W - 20, 16, "", {
+              ...hud,
+              fontSize: "22px",
+              color: "#ef4444",
+            })
+            .setOrigin(1, 0);
 
-          // Spaceship
-          this.player = this.physics.add.sprite(W/2, H - 80, 'ship').setCollideWorldBounds(true);
-          this.player.setDrag(800);
-          
-          // Controls
-          this.cursors = this.input.keyboard.createCursorKeys();
-          
-          // Answer group
-          this.meteors = this.physics.add.group();
-          
-          // Lasers
-          this.lasers = this.physics.add.group();
-
-          // Question Prompt Panel
+          // Prompt panel
           this.promptPanel = this.add.graphics();
-          this.promptPanel.fillStyle(0x1e293b, 0.95);
-          this.promptPanel.lineStyle(3, 0x38bdf8, 0.8);
-          this.promptPanel.fillRoundedRect(60, 110, W - 120, 150, 16);
-          this.promptPanel.strokeRoundedRect(60, 110, W - 120, 150, 16);
+          this.promptText = this.add
+            .text(W / 2, 130, "", {
+              fontFamily: "Nunito, Segoe UI, sans-serif",
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#ffffff",
+              align: "center",
+              wordWrap: { width: W - 200 },
+            })
+            .setOrigin(0.5);
 
-          this.promptText = this.add.text(W/2, 185, '', {
-            font: 'bold 36px Nunito, sans-serif',
-            fill: '#ffffff',
-            align: 'center',
-            wordWrap: { width: W - 180 }
-          }).setOrigin(0.5);
+          // Feedback line
+          this.feedback = this.add
+            .text(W / 2, H - 38, "", {
+              fontFamily: "Nunito, Segoe UI, sans-serif",
+              fontSize: "18px",
+              fontStyle: "bold",
+              color: "#facc15",
+              align: "center",
+              wordWrap: { width: W - 120 },
+            })
+            .setOrigin(0.5)
+            .setAlpha(0);
 
-          // Bullet overlaps
-          this.physics.add.overlap(this.lasers, this.meteors, this.hitMeteor, null, this);
-          this.physics.add.overlap(this.player, this.meteors, this.playerHit, null, this);
-
-          // Keyboard Listener
-          this.input.keyboard.on('keydown-SPACE', this.shootLaser, this);
-
-          // Touch Pointer Listeners
-          this.input.on('pointermove', (pointer) => {
-            if (pointer.isDown) {
-              this.player.x = Phaser.Math.Clamp(pointer.x, 24, W - 24);
-            }
-          });
-          this.input.on('pointerdown', (pointer) => {
-            this.player.x = Phaser.Math.Clamp(pointer.x, 24, W - 24);
-            this.shootLaser();
-          });
-
-          this.loadQuestion();
+          // Layer that holds per-round interactive objects (cleared each round)
+          this.layer = this.add.container(0, 0);
+          this.locked = false;
+          this.updateHUD();
+          this.startRound();
         }
 
-        update() {
-          if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-400);
-          } else if (this.cursors.right.isDown) {
-            this.player.setVelocityX(400);
-          } else {
-            if (!this.input.activePointer.isDown) {
-              this.player.setVelocityX(0);
-            }
-          }
-
-          this.stars.y = (this.stars.y + 0.5) % H;
-
-          // Update labels to follow falling meteors and check for off-screen bounds
-          let missedCorrect = false;
-          const activeMeteors = this.meteors.getChildren();
-          for (let i = activeMeteors.length - 1; i >= 0; i--) {
-            const met = activeMeteors[i];
-            if (met.label && met.active) {
-              met.label.x = met.x;
-              met.label.y = met.y;
-            }
-            if (met.y > H + 40) {
-              if (met.isCorrect) {
-                missedCorrect = true;
-              }
-              if (met.label) met.label.destroy();
-              met.destroy();
-            }
-          }
-
-          if (missedCorrect) {
-            if (this.transitioning) return;
-            this.transitioning = true;
-            this.streak = 0;
-            document.body.classList.add('gfx-wrong');
-            setTimeout(() => document.body.classList.remove('gfx-wrong'), 200);
-            this.lives--;
-            this.updateLivesUI();
-            if (this.lives <= 0) {
-              this.meteors.getChildren().forEach(m => {
-                if (m.label) m.label.destroy();
-              });
-              this.meteors.clear(true, true);
-              this.scene.start('WinScene', { score: this.score, gameover: true });
-            } else {
-              this.loadQuestion();
-            }
-          }
-        }
-
-        updateLivesUI() {
-          this.livesGroup.clear(true, true);
-          for(let i=0; i<this.lives; i++) {
-            const heart = this.add.text(W - 160 + (i * 36), 24, '❤️', { font: '28px Arial' });
-            this.livesGroup.add(heart);
-          }
-        }
-
-        loadQuestion() {
-          this.transitioning = false;
-          this.promptPanel.setVisible(true);
-          this.promptText.setVisible(true);
-          
-          if (this.qIdx >= questions.length) {
-            this.meteors.getChildren().forEach(met => {
-              if (met.label) met.label.destroy();
-            });
-            this.meteors.clear(true, true);
-            this.scene.start('WinScene', { score: this.score });
+        startRound() {
+          this.layer.removeAll(true);
+          // Clear stale per-round key handlers so they can't fire on the
+          // destroyed tiles of a previous round.
+          this.input.keyboard.removeAllListeners();
+          this.feedback.setAlpha(0);
+          this.locked = false;
+          if (this.idx >= rounds.length) {
+            this.finish(true);
             return;
           }
+          const r = rounds[this.idx];
+          this.progressText.setText(
+            "Round " + (this.idx + 1) + " / " + rounds.length,
+          );
+          // Prompt panel sized to text
+          this.promptText.setText(r.prompt);
+          const ph = Math.max(70, this.promptText.height + 30);
+          this.promptPanel.clear();
+          this.promptPanel.fillStyle(PALETTE.panel, 0.95);
+          this.promptPanel.lineStyle(2, PALETTE.panelLine, 0.8);
+          this.promptPanel.fillRoundedRect(80, 92, W - 160, ph, 14);
+          this.promptPanel.strokeRoundedRect(80, 92, W - 160, ph, 14);
+          this.promptText.setY(92 + ph / 2);
+          srSay("Round " + (this.idx + 1) + ". " + r.prompt);
 
-          const q = questions[this.qIdx];
-          this.promptText.setText(q.prompt);
-
-          // Clear any active labels and sprites to prevent overlapping text from previous questions
-          this.meteors.getChildren().forEach(met => {
-            if (met.label) met.label.destroy();
-          });
-          this.meteors.clear(true, true);
-
-          const laneWidth = (W - 200) / q.choices.length;
-          q.choices.forEach((choice, index) => {
-            const x = 150 + (index * laneWidth) + (laneWidth / 2);
-            const y = 300;
-            
-            const met = this.physics.add.sprite(x, y, null);
-            met.setCircle(32);
-            met.setImmovable(true);
-            met.setVelocityY(80 + (this.qIdx * 15)); // Faster, playable velocity
-            
-            met.answerText = choice;
-            met.isCorrect = (index === q.correctIndex);
-            
-            const label = this.add.text(x, y, choice, {
-              font: 'bold 34px Nunito, sans-serif',
-              fill: '#ffffff',
-              backgroundPadding: 16,
-              backgroundColor: '#334155'
-            }).setOrigin(0.5);
-            
-            met.label = label;
-            this.meteors.add(met);
-          });
+          const kind = r.kind;
+          if (kind === "sort") this.renderSort(r);
+          else if (kind === "match") this.renderMatch(r);
+          else if (kind === "fixit") this.renderFixit(r);
+          else this.renderChoose(r);
         }
 
-        shootLaser() {
-          const l = this.physics.add.sprite(this.player.x, this.player.y - 30, 'laser');
-          l.setVelocityY(-600);
-          this.lasers.add(l);
-          if (window.AudioSynth) window.AudioSynth.playTone(600, 'sine', 0.08, 0.05);
-        }
-
-        hitMeteor(laser, meteor) {
-          if (this.transitioning) return;
-          this.transitioning = true;
-
-          laser.destroy();
-          if (meteor.label) meteor.label.destroy();
-          
-          const exp = this.add.graphics();
-          exp.fillStyle(meteor.isCorrect ? 0x10b981 : 0xef4444, 0.8);
-          for(let i=0; i<12; i++) {
-            exp.fillCircle(meteor.x + Phaser.Math.Between(-30, 30), meteor.y + Phaser.Math.Between(-30, 30), Phaser.Math.Between(2, 6));
-          }
-          this.time.delayedCall(400, () => exp.destroy());
-
-          if (meteor.isCorrect) {
-            this.score += 1000 + (this.streak * 200);
-            this.scoreText.setText(`Score: ${this.score}`);
+        // resolve a round: correct true/false, plus optional explanation
+        resolve(correct, why) {
+          if (this.locked) return;
+          this.locked = true;
+          const w = why || rounds[this.idx].why || "";
+          if (correct) {
+            SFX.good();
             this.streak++;
-            
-            document.body.classList.add('gfx-correct');
-            setTimeout(() => document.body.classList.remove('gfx-correct'), 200);
-
-            this.qIdx++;
-            meteor.destroy();
-            this.loadQuestion();
+            this.correctCount++;
+            this.score += 100 + Math.min(this.streak, 5) * 20;
+            this.flashEdge(PALETTE.good);
+            this.feedback
+              .setColor("#34d399")
+              .setText("Correct! " + w)
+              .setAlpha(1);
+            srSay("Correct. " + w);
           } else {
+            SFX.bad();
             this.streak = 0;
-            document.body.classList.add('gfx-wrong');
-            setTimeout(() => document.body.classList.remove('gfx-wrong'), 200);
-
             this.lives--;
-            this.updateLivesUI();
-            meteor.destroy();
-            
-            if (this.lives <= 0) {
-              this.meteors.getChildren().forEach(m => {
-                if (m.label) m.label.destroy();
-              });
-              this.meteors.clear(true, true);
-              this.scene.start('WinScene', { score: this.score, gameover: true });
-            } else {
-              this.loadQuestion();
-            }
+            this.flashEdge(PALETTE.bad);
+            this.feedback
+              .setColor("#fca5a5")
+              .setText(w ? "Not quite — " + w : "Not quite.")
+              .setAlpha(1);
+            srSay("Not quite. " + w);
+          }
+          this.updateHUD();
+          const dwell = correct ? 1100 : 1900;
+          if (this.lives <= 0) {
+            this.time.delayedCall(dwell, () => this.finish(false));
+            return;
+          }
+          this.idx++;
+          this.time.delayedCall(dwell, () => this.startRound());
+        }
+
+        finish(won) {
+          this.scene.start("Result", {
+            score: this.score,
+            correct: this.correctCount,
+            total: rounds.length,
+            won,
+          });
+        }
+
+        updateHUD() {
+          this.scoreText.setText("Score: " + this.score);
+          this.streakText.setText(
+            this.streak > 1 ? "🔥 Streak " + this.streak : "",
+          );
+          this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
+        }
+
+        flashEdge(color) {
+          if (this.reduce) return;
+          const r = this.add
+            .rectangle(W / 2, H / 2, W, H, color, 0.22)
+            .setDepth(50);
+          this.tweens.add({
+            targets: r,
+            alpha: 0,
+            duration: 350,
+            onComplete: () => r.destroy(),
+          });
+        }
+
+        // ── Renderer: CHOOSE (multiple-choice / generic select) ────────────
+        renderChoose(r) {
+          const startY = 92 + Math.max(70, this.promptText.height + 30) + 50;
+          const tileW = Math.min(560, W - 200);
+          const gap = 66;
+          r.choices.forEach((c, i) => {
+            const y = startY + i * gap;
+            const t = this.makeTile(W / 2, y, tileW, 52, i + 1 + ".  " + c);
+            this.layer.add(t.parts);
+            t.bg.on(
+              "pointerover",
+              () => !this.locked && t.bg.setFillStyle(PALETTE.tileHi),
+            );
+            t.bg.on(
+              "pointerout",
+              () => !this.locked && t.bg.setFillStyle(PALETTE.tile),
+            );
+            t.bg.on("pointerdown", () => this.pickChoice(r, i, t));
+            this.input.keyboard.on("keydown-" + keyName(i + 1), () =>
+              this.pickChoice(r, i, t),
+            );
+          });
+        }
+        pickChoice(r, i, t) {
+          if (this.locked) return;
+          SFX.pick();
+          const ok = i === r.correctIndex;
+          t.bg.setFillStyle(ok ? PALETTE.good : PALETTE.bad);
+          this.resolve(ok, r.why);
+        }
+
+        // ── Renderer: SORT (drag-sort into category bins) ──────────────────
+        renderSort(r) {
+          const cats = r.categories;
+          const binW = Math.min(260, (W - 120) / cats.length - 20);
+          const binH = 150;
+          const binY = H - 130;
+          const totalW = cats.length * binW + (cats.length - 1) * 24;
+          let bx = (W - totalW) / 2 + binW / 2;
+          this.bins = [];
+          cats.forEach((c) => {
+            const g = this.add.graphics();
+            g.fillStyle(PALETTE.panel, 0.9);
+            g.lineStyle(2, PALETTE.accent, 0.7);
+            g.fillRoundedRect(bx - binW / 2, binY - binH / 2, binW, binH, 12);
+            g.strokeRoundedRect(bx - binW / 2, binY - binH / 2, binW, binH, 12);
+            const lbl = this.add
+              .text(bx, binY - binH / 2 + 18, c.label, {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "16px",
+                fontStyle: "bold",
+                color: "#7dd3fc",
+                align: "center",
+                wordWrap: { width: binW - 16 },
+              })
+              .setOrigin(0.5, 0);
+            this.layer.add(g);
+            this.layer.add(lbl);
+            this.bins.push({
+              id: c.id,
+              x: bx,
+              y: binY,
+              w: binW,
+              h: binH,
+              count: 0,
+            });
+            bx += binW + 24;
+          });
+
+          // Items in a row near the top of the play area
+          const items = shuffle(r.items);
+          const rowY = 92 + Math.max(70, this.promptText.height + 30) + 46;
+          const perRow = Math.min(items.length, 6);
+          const spacing = Math.min(150, (W - 120) / perRow);
+          let ix = (W - (perRow - 1) * spacing) / 2;
+          this.sortTiles = [];
+          this.sortHi = 0;
+          items.forEach((it, i) => {
+            const col = i % perRow;
+            const row = Math.floor(i / perRow);
+            const x = ix + col * spacing;
+            const y = rowY + row * 60;
+            const t = this.makeTile(x, y, spacing - 18, 46, it.text);
+            t.homeX = x;
+            t.homeY = y;
+            t.data = it;
+            t.assigned = null;
+            this.layer.add(t.parts);
+            this.input.setDraggable(t.bg);
+            t.bg.on("drag", (p, dx, dy) => {
+              if (this.locked || t.assigned) return;
+              t.parts.x = dx - x;
+              t.parts.y = dy - y;
+            });
+            t.bg.on("dragend", () => this.dropTile(t));
+            this.sortTiles.push(t);
+          });
+          this.highlightSort();
+
+          // Keyboard: number keys 1..N drop the highlighted tile into bin N
+          this.bins.forEach((b, bi) => {
+            this.input.keyboard.on("keydown-" + keyName(bi + 1), () => {
+              const t = this.sortTiles[this.sortHi];
+              if (t && !t.assigned) this.assignTile(t, bi);
+            });
+          });
+          // Keyboard users confirm with Enter (the CHECK button is pointer-only).
+          this.input.keyboard.on("keydown-ENTER", () => this.checkSort(r));
+
+          const cb = makeButton(
+            this,
+            W / 2,
+            binY - binH / 2 - 28,
+            160,
+            42,
+            "CHECK ✓",
+            () => this.checkSort(r),
+          );
+          this.layer.add(cb.bg);
+          this.layer.add(cb.t);
+        }
+        highlightSort() {
+          if (!this.sortTiles) return;
+          // advance highlight to first unassigned
+          let n = this.sortTiles.findIndex((t) => !t.assigned);
+          this.sortHi = n < 0 ? 0 : n;
+          this.sortTiles.forEach((t, i) =>
+            t.bg.setStrokeStyle(
+              i === this.sortHi && !t.assigned ? 3 : 0,
+              0xfacc15,
+            ),
+          );
+        }
+        dropTile(t) {
+          // find bin under the tile's current position
+          const gx = t.homeX + t.parts.x;
+          const gy = t.homeY + t.parts.y;
+          let target = -1;
+          this.bins.forEach((b, bi) => {
+            if (Math.abs(gx - b.x) <= b.w / 2 && Math.abs(gy - b.y) <= b.h / 2)
+              target = bi;
+          });
+          if (target >= 0) this.assignTile(t, target);
+          else {
+            // snap home
+            t.parts.x = 0;
+            t.parts.y = 0;
+          }
+        }
+        assignTile(t, bi) {
+          if (t.assigned) return;
+          SFX.pick();
+          const b = this.bins[bi];
+          t.assigned = b.id;
+          const slot = b.count++;
+          const tx = b.x - b.w / 2 + 14 + (slot % 2) * (b.w / 2);
+          const ty = b.y - b.h / 2 + 44 + Math.floor(slot / 2) * 30;
+          t.parts.x = tx - t.homeX;
+          t.parts.y = ty - t.homeY;
+          this.input.setDraggable(t.bg, false);
+          this.highlightSort();
+        }
+        checkSort(r) {
+          if (this.locked) return;
+          const unplaced = this.sortTiles.filter((t) => !t.assigned);
+          if (unplaced.length) {
+            this.feedback
+              .setColor("#fca5a5")
+              .setText("Place every tile in a bin first.")
+              .setAlpha(1);
+            srSay("Place every tile in a bin first.");
+            return;
+          }
+          const allRight = this.sortTiles.every(
+            (t) => t.assigned === t.data.category,
+          );
+          this.sortTiles.forEach((t) =>
+            t.bg.setFillStyle(
+              t.assigned === t.data.category ? PALETTE.good : PALETTE.bad,
+            ),
+          );
+          this.resolve(
+            allRight,
+            allRight ? "" : "Check each tile's bin and try the next round.",
+          );
+        }
+
+        // ── Renderer: MATCH (connect terms to partners) ────────────────────
+        renderMatch(r) {
+          const pairs = r.pairs;
+          const topY = 92 + Math.max(70, this.promptText.height + 30) + 40;
+          const gap = Math.min(74, (H - topY - 80) / pairs.length);
+          const leftX = W / 2 - 200;
+          const rightX = W / 2 + 200;
+          const terms = pairs.map((p, i) => ({ ...p, i }));
+          const matches = shuffle(pairs.map((p, i) => ({ ...p, i })));
+          this.matchSel = null;
+          this.matchLeft = [];
+          this.matchRight = [];
+          this.matchRemaining = pairs.length;
+
+          terms.forEach((p, row) => {
+            const y = topY + row * gap;
+            const t = this.makeTile(leftX, y, 280, 48, p.term);
+            t.pairId = p.i;
+            t.side = "L";
+            this.layer.add(t.parts);
+            t.bg.on("pointerdown", () => this.matchTap(t));
+            this.matchLeft.push(t);
+          });
+          matches.forEach((p, row) => {
+            const y = topY + row * gap;
+            const t = this.makeTile(rightX, y, 280, 48, p.match);
+            t.pairId = p.i;
+            t.side = "R";
+            this.layer.add(t.parts);
+            t.bg.on("pointerdown", () => this.matchTap(t));
+            this.matchRight.push(t);
+          });
+        }
+        matchTap(t) {
+          if (this.locked || t.done) return;
+          SFX.pick();
+          if (!this.matchSel) {
+            this.matchSel = t;
+            t.bg.setFillStyle(PALETTE.accent);
+            return;
+          }
+          if (this.matchSel === t) {
+            this.matchSel = null;
+            t.bg.setFillStyle(PALETTE.tile);
+            return;
+          }
+          if (this.matchSel.side === t.side) {
+            // re-select within same column
+            this.matchSel.bg.setFillStyle(PALETTE.tile);
+            this.matchSel = t;
+            t.bg.setFillStyle(PALETTE.accent);
+            return;
+          }
+          // attempt a pair
+          const a = this.matchSel,
+            b = t;
+          if (a.pairId === b.pairId) {
+            a.bg.setFillStyle(PALETTE.good);
+            b.bg.setFillStyle(PALETTE.good);
+            a.done = b.done = true;
+            a.bg.disableInteractive();
+            b.bg.disableInteractive();
+            this.matchSel = null;
+            this.matchRemaining--;
+            this.score += 20;
+            this.updateHUD();
+            if (this.matchRemaining <= 0)
+              this.resolve(true, "All pairs matched!");
+          } else {
+            a.bg.setFillStyle(PALETTE.bad);
+            b.bg.setFillStyle(PALETTE.bad);
+            this.matchSel = null;
+            const aa = a,
+              bb = b;
+            this.time.delayedCall(420, () => {
+              if (!aa.done) aa.bg.setFillStyle(PALETTE.tile);
+              if (!bb.done) bb.bg.setFillStyle(PALETTE.tile);
+            });
+            this.resolve(false, "That pair did not match.");
           }
         }
 
-        playerHit(player, meteor) {
-          this.hitMeteor(this.physics.add.sprite(0,0,null), meteor);
+        // ── Renderer: FIXIT (spot the step with the mistake) ───────────────
+        renderFixit(r) {
+          const topY = 92 + Math.max(70, this.promptText.height + 30) + 36;
+          const gap = Math.min(72, (H - topY - 70) / r.steps.length);
+          r.steps.forEach((s, i) => {
+            const y = topY + i * gap;
+            const label = (s.label ? s.label + ":  " : "") + s.work;
+            const t = this.makeTile(
+              W / 2,
+              y,
+              W - 220,
+              50,
+              i + 1 + ".  " + label,
+              "16px",
+            );
+            this.layer.add(t.parts);
+            t.bg.on(
+              "pointerover",
+              () => !this.locked && t.bg.setFillStyle(PALETTE.tileHi),
+            );
+            t.bg.on(
+              "pointerout",
+              () => !this.locked && t.bg.setFillStyle(PALETTE.tile),
+            );
+            t.bg.on("pointerdown", () => this.pickFix(r, i, t));
+            this.input.keyboard.on("keydown-" + keyName(i + 1), () =>
+              this.pickFix(r, i, t),
+            );
+          });
+        }
+        pickFix(r, i, t) {
+          if (this.locked) return;
+          SFX.pick();
+          const ok = i === r.errorStep;
+          t.bg.setFillStyle(ok ? PALETTE.good : PALETTE.bad);
+          this.resolve(ok, r.why);
+        }
+
+        // ── Shared tile factory: returns {parts(container), bg, label} ─────
+        makeTile(x, y, w, h, text, fontSize) {
+          const c = this.add.container(x, y);
+          const bg = this.add
+            .rectangle(0, 0, w, h, PALETTE.tile)
+            .setInteractive({ useHandCursor: true });
+          const label = this.add
+            .text(0, 0, text, {
+              fontFamily: "Nunito, Segoe UI, sans-serif",
+              fontSize: fontSize || "18px",
+              color: "#ffffff",
+              align: "center",
+              wordWrap: { width: w - 20 },
+            })
+            .setOrigin(0.5);
+          c.add(bg);
+          c.add(label);
+          return { parts: c, bg, label, homeX: x, homeY: y };
         }
       }
 
-      class WinScene extends Phaser.Scene {
-        constructor() { super('WinScene'); }
-        init(data) {
-          this.finalScore = data.score;
-          this.gameover = data.gameover;
+      // ── RESULT ────────────────────────────────────────────────────────────
+      class ResultScene extends Phaser.Scene {
+        constructor() {
+          super("Result");
+        }
+        init(d) {
+          this.d = d;
         }
         create() {
-          this.add.text(W/2, H/2 - 120, this.gameover ? 'GAME OVER' : 'VICTORY!', {
-            font: 'bold 64px Nunito, sans-serif',
-            fill: this.gameover ? '#ef4444' : '#10b981'
-          }).setOrigin(0.5);
+          drawStars(this);
+          const d = this.d;
+          const ratio = d.total ? d.correct / d.total : 0;
+          const stars = ratio >= 0.85 ? 3 : ratio >= 0.5 ? 2 : 1;
+          this.add
+            .text(W / 2, 150, d.won ? "REVIEW COMPLETE!" : "OUT OF HEARTS", {
+              fontFamily: "Nunito, Segoe UI, sans-serif",
+              fontSize: "46px",
+              fontStyle: "bold",
+              color: d.won ? "#34d399" : "#fca5a5",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 230, "★".repeat(stars) + "☆".repeat(3 - stars), {
+              fontSize: "52px",
+              color: "#facc15",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              W / 2,
+              310,
+              "Score " +
+                d.score +
+                "\n" +
+                d.correct +
+                " of " +
+                d.total +
+                " correct",
+              {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "24px",
+                color: "#e2e8f0",
+                align: "center",
+              },
+            )
+            .setOrigin(0.5);
+          if (d.won) SFX.win();
 
-          this.add.text(W/2, H/2 - 10, `Final Score: ${this.finalScore}`, {
-            font: 'bold 36px Nunito, sans-serif',
-            fill: '#ffffff'
-          }).setOrigin(0.5);
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: lessonTitle + " — Practice Arcade",
+                score: d.score,
+                stars,
+                lesson: activeLesson,
+                problemsAttempted: d.total,
+              });
+          } catch (e) {}
+          srSay(
+            (d.won ? "Review complete. " : "Out of hearts. ") +
+              d.correct +
+              " of " +
+              d.total +
+              " correct. " +
+              stars +
+              " stars.",
+          );
 
-          const btn = this.add.text(W/2, H/2 + 100, 'PLAY AGAIN', {
-            font: 'bold 28px Nunito, sans-serif',
-            fill: '#0f172a',
-            backgroundColor: '#38bdf8',
-            padding: { x: 30, y: 15 }
-          }).setOrigin(0.5).setInteractive();
-
-          btn.on('pointerdown', () => {
-            window.location.reload();
+          makeButton(this, W / 2, 420, 220, 56, "PLAY AGAIN 🔁", () =>
+            window.location.reload(),
+          );
+          makeLink(this, W / 2, 510, "← Back to lessons", () => {
+            window.location.href = "/curriculum/";
           });
-
-          if (!this.gameover) {
-            document.body.classList.add('won');
-          }
         }
+      }
+
+      // ── Shared helpers (scene-agnostic) ───────────────────────────────────
+      function drawStars(scene) {
+        const reduce =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const g = scene.add.graphics();
+        g.fillStyle(0xffffff, 0.35);
+        const n = reduce ? 40 : 90;
+        for (let i = 0; i < n; i++)
+          g.fillCircle(
+            Phaser.Math.Between(0, W),
+            Phaser.Math.Between(0, H),
+            Phaser.Math.Between(1, 2),
+          );
+      }
+      function makeButton(scene, x, y, w, h, text, onClick) {
+        const bg = scene.add
+          .rectangle(x, y, w, h, 0x2563eb)
+          .setStrokeStyle(2, 0x38bdf8)
+          .setInteractive({ useHandCursor: true });
+        const t = scene.add
+          .text(x, y, text, {
+            fontFamily: "Nunito, Segoe UI, sans-serif",
+            fontSize: "22px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        bg.on("pointerover", () => bg.setFillStyle(0x3b82f6));
+        bg.on("pointerout", () => bg.setFillStyle(0x2563eb));
+        bg.on("pointerdown", onClick);
+        return { bg, t };
+      }
+      function makeLink(scene, x, y, text, onClick) {
+        const t = scene.add
+          .text(x, y, text, {
+            fontFamily: "Nunito, Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#7dd3fc",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        t.on("pointerover", () => t.setColor("#bae6fd"));
+        t.on("pointerout", () => t.setColor("#7dd3fc"));
+        t.on("pointerdown", onClick);
+        return t;
+      }
+      // Map a 1-9 number to Phaser's digit key-code name (keydown-ONE … NINE).
+      function keyName(n) {
+        const names = [
+          "",
+          "ONE",
+          "TWO",
+          "THREE",
+          "FOUR",
+          "FIVE",
+          "SIX",
+          "SEVEN",
+          "EIGHT",
+          "NINE",
+        ];
+        return names[n] || "ONE";
       }
 
       window.addEventListener("DOMContentLoaded", loadLessonConfig);
