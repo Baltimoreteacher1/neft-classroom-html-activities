@@ -6488,6 +6488,38 @@ Due May 31"></textarea>
       };
     }
 
+    // 14. Merge readingProgress and bookTransition
+    {
+      const mergedReading = { ...(local.readingProgress || {}) };
+      for (const [dayId, remProg] of Object.entries(remote.readingProgress || {})) {
+        const locProg = mergedReading[dayId];
+        if (!locProg) {
+          mergedReading[dayId] = remProg;
+        } else {
+          const locLen = (locProg.gist || "").length + (locProg.evidence || "").length + (locProg.response || "").length;
+          const remLen = (remProg.gist || "").length + (remProg.evidence || "").length + (remProg.response || "").length;
+          if (remProg.done && !locProg.done) {
+            mergedReading[dayId] = remProg;
+          } else if (!remProg.done && locProg.done) {
+            // keep local
+          } else if (remLen > locLen) {
+            mergedReading[dayId] = remProg;
+          }
+        }
+      }
+      merged.readingProgress = mergedReading;
+
+      const lt = local.bookTransition || {};
+      const rt = remote.bookTransition || {};
+      const remoteIsNewer = (remote.updatedAt || 0) > (local.updatedAt || 0);
+      merged.bookTransition = {
+        finishedB: remoteIsNewer ? (rt.finishedB || lt.finishedB || "") : (lt.finishedB || rt.finishedB || ""),
+        responseB: lt.responseB || rt.responseB || false,
+        startC: remoteIsNewer ? (rt.startC || lt.startC || "") : (lt.startC || rt.startC || ""),
+        rememberText: (rt.rememberText || "").length > (lt.rememberText || "").length ? (rt.rememberText || "") : (lt.rememberText || "")
+      };
+    }
+
     merged.updatedAt = Date.now();
     return merged;
   }
