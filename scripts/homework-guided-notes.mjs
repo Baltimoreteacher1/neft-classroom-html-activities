@@ -1389,6 +1389,32 @@ export function renderCheckTab(quickCheckIntro, warmupHtml, challengeHtml = "", 
 // Math Workbench tab — embeds the shared whiteboard so families can show their
 // work without leaving the homework page. The iframe is lazy-loaded on first
 // open (see HOMEWORK_TABS_JS) so it never slows down the rest of the page.
+// Practice Arcade for tonight's lesson — links to the shared per-lesson game
+// engine (math/games/practice-arcade). Iframe is lazy-loaded on first open so
+// the Phaser game never slows down the rest of the homework page.
+export function renderArcadeTabPanel(lessonId) {
+  const url = `/math/games/practice-arcade/?lesson=${encodeURIComponent(lessonId)}`;
+  return `
+    <div ${tabPanelAttrs("arcade", true)}>
+      <section class="guided-section card section-arcade" aria-label="Practice Arcade">
+        <h2 class="section-title">🕹️ Practice Arcade / Sala de juegos</h2>
+        <p class="bilingual-block">
+          <span class="lang-en">A quick, no-timer review game for tonight's lesson — sort, match, and choose. A wrong answer just gives a hint and lets your student try again.</span>
+          <span class="lang-es" lang="es">Un juego de repaso sin reloj para la lección de hoy — clasificar, emparejar y elegir. Si se equivocan, reciben una pista y pueden intentar de nuevo.</span>
+        </p>
+        <p class="workbench-openrow">
+          <a class="btn btn-secondary" href="${url}" target="_blank" rel="noopener">
+            <span class="lang-en">↗ Play full screen</span>
+            <span class="lang-es" lang="es">↗ Jugar en pantalla completa</span>
+          </a>
+        </p>
+        <div class="workbench-frame-wrap">
+          <iframe class="arcade-frame" data-src="${url}" title="Practice Arcade" loading="lazy"></iframe>
+        </div>
+      </section>
+    </div>`;
+}
+
 export function renderWorkbenchTab() {
   return `
     <div ${tabPanelAttrs("workbench", true)}>
@@ -1504,6 +1530,7 @@ export function renderDoneTab() {
 
 const HOMEWORK_TABS = [
   { id: "learn", icon: "📖", en: "Learn", es: "Aprender" },
+  { id: "arcade", icon: "🕹️", en: "Arcade", es: "Sala de juegos" },
   { id: "words", icon: "📚", en: "Words", es: "Palabras" },
   { id: "together", icon: "🤝", en: "Together", es: "Juntos" },
   { id: "check", icon: "✅", en: "Check", es: "Repaso" },
@@ -1591,6 +1618,10 @@ function switchHomeworkTab(tabId) {
   if (tabId === 'workbench') {
     var wf = document.querySelector('.workbench-frame');
     if (wf && !wf.getAttribute('src') && wf.dataset.src) wf.setAttribute('src', wf.dataset.src);
+  }
+  if (tabId === 'arcade') {
+    var af = document.querySelector('.arcade-frame');
+    if (af && !af.getAttribute('src') && af.dataset.src) af.setAttribute('src', af.dataset.src);
   }
   const activeBtn = document.getElementById('hw_tab_' + tabId);
   if (activeBtn) {
@@ -2222,7 +2253,7 @@ body.help-modal-open { overflow: hidden; }
   border: 2px solid var(--teal); border-radius: var(--radius-md); overflow: hidden;
   background: var(--white);
 }
-.workbench-frame { display: block; width: 100%; height: 72vh; min-height: 480px; border: 0; }
+.workbench-frame, .arcade-frame { display: block; width: 100%; height: 72vh; min-height: 480px; border: 0; }
 
 .more-practice {
   margin-top: 20px; border: 2px solid var(--teal); border-radius: var(--radius-md);

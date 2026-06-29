@@ -9,6 +9,7 @@ import {
   renderQuickCheckIntro,
   renderHomeworkTabs,
   renderLearnTab,
+  renderArcadeTabPanel,
   renderWordsTab,
   renderTogetherTab,
   renderCheckTab,
@@ -874,6 +875,7 @@ function generateHtml(lessonId, config) {
 
   const tabPanels = [
     renderLearnTab(config),
+    renderArcadeTabPanel(lessonId),
     renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
     renderTogetherTab(config),
     renderCheckTab(quickCheckIntroHtml, warmupHtml, challengeHtml, morePracticeHtml),
