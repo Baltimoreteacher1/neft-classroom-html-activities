@@ -334,16 +334,37 @@
           };
         }
         if (it.type === "drag-sort") {
-          if (!Array.isArray(it.items) || !Array.isArray(it.categories))
-            return null;
+          if (!Array.isArray(it.categories)) return null;
+          let items = it.items;
+          let cats = it.categories;
+          // Tolerate the alternate schema where items are nested inside each
+          // category ({categories:[{label, items:[...]}]}) instead of a flat
+          // items[] with a category field. Flatten it into the standard shape.
+          if (!Array.isArray(items)) {
+            const nested = cats.some((c) => Array.isArray(c.items));
+            if (!nested) return null;
+            // A single nested category is an ORDERING task, not a sort — skip it
+            // (it would collapse to one trivial bin); needs a dedicated mode.
+            if (cats.length < 2) return null;
+            items = [];
+            cats.forEach((c) => {
+              const id = c.id || c.label;
+              (c.items || []).forEach((x) => {
+                const text = typeof x === "string" ? x : x && x.text;
+                if (text != null)
+                  items.push({ text: String(text), category: id });
+              });
+            });
+          }
+          if (!Array.isArray(items)) return null;
           return {
             kind: "sort",
             prompt: it.instructions || "Sort each tile into the right bin.",
-            items: it.items
+            items: items
               .filter((x) => x && x.text != null && x.category != null)
               .map((x) => ({ text: String(x.text), category: x.category })),
-            categories: it.categories.map((c) => ({
-              id: c.id,
+            categories: cats.map((c) => ({
+              id: c.id || c.label,
               label: c.label || c.id,
             })),
             why: "",
@@ -594,6 +615,7 @@
           this.input.keyboard.removeAllListeners();
           this.feedback.setAlpha(0);
           this.locked = false;
+          this.revealCorrect = null;
           if (this.idx >= rounds.length) {
             this.finish(true);
             return;
@@ -632,21 +654,20 @@
             this.correctCount++;
             const gained = 100 + Math.min(this.streak, 5) * 20;
             this.score += gained;
-            // Juice: chord, particle burst, camera pop, rising XP, mascot cheer.
+            // Juice escalates with the streak: more particles, bigger shake,
+            // a second burst + confetti once it's rolling.
             JUICE.audio.correct(this.streak);
-            JUICE.burst(
-              this,
-              cx,
-              cy,
-              [0x34d399, this.th.accentN, 0xffffff],
-              20,
-            );
-            JUICE.shake(this, 0.005);
-            JUICE.floatText(this, cx, cy - 30, "+" + gained, "#34d399");
+            const n = 18 + Math.min(this.streak, 6) * 4;
+            JUICE.burst(this, cx, cy, [0x34d399, this.th.accentN, 0xffffff], n);
+            if (this.streak >= 5)
+              JUICE.burst(this, cx, cy + 60, [0xfacc15, 0xffffff], 16);
+            JUICE.shake(this, 0.005 + Math.min(this.streak, 5) * 0.001);
+            JUICE.floatText(this, cx, cy - 30, "+" + gained, "#34d399", 40);
             this.mascotReact(true);
+            this.mascotSay(this.streak >= 3 ? "🔥 On fire!" : "Nice!");
             const xp = 10 + Math.min(this.streak, 5) * 2;
             JUICE.award(xp, "practice-arcade");
-            if (this.streak >= 3) JUICE.confetti(this, 1);
+            if (this.streak >= 2) JUICE.confetti(this, 1);
             this.flashEdge(PALETTE.good);
             this.feedback
               .setColor("#34d399")
@@ -659,6 +680,7 @@
             JUICE.audio.wrong();
             JUICE.shake(this, 0.009);
             this.mascotReact(false);
+            this.mascotSay("Hmm, look again 👀");
             this.flashEdge(PALETTE.bad);
             this.feedback
               .setColor("#fca5a5")
@@ -668,13 +690,75 @@
           }
           this.updateHUD();
           this.advanceJourney();
-          const dwell = correct ? 1100 : 1900;
-          if (this.lives <= 0) {
-            this.time.delayedCall(dwell, () => this.finish(false));
-            return;
+
+          // Advance to the next round (or end). For wrong answers we pause on a
+          // teaching card the student dismisses, so the explanation is actually
+          // read; correct answers flow on quickly.
+          const advance = () => {
+            if (this.lives <= 0) {
+              this.finish(false);
+              return;
+            }
+            this.idx++;
+            this.startRound();
+          };
+          if (correct) {
+            this.time.delayedCall(1100, advance);
+          } else {
+            if (this.revealCorrect) {
+              try {
+                this.revealCorrect();
+              } catch (e) {}
+            }
+            JUICE.floatText(this, W - 44, 30, "−1 ❤", "#fca5a5", 22);
+            this.showTeach(w, advance);
           }
-          this.idx++;
-          this.time.delayedCall(dwell, () => this.startRound());
+        }
+
+        // Teaching card shown after a wrong answer: a dimmed backdrop, the
+        // explanation in large type, and a Continue control (tap / Enter / Space).
+        // Auto-dismisses after a generous beat as a fallback.
+        showTeach(why, onContinue) {
+          const ov = this.add.container(0, 0).setDepth(90);
+          const dim = this.add
+            .rectangle(W / 2, H / 2, W, H, 0x0a0f1f, 0.72)
+            .setInteractive();
+          const panel = this.add.graphics();
+          panel.fillStyle(0x14213a, 0.98);
+          panel.lineStyle(3, 0xfca5a5, 0.9);
+          panel.fillRoundedRect(120, 230, W - 240, 260, 18);
+          panel.strokeRoundedRect(120, 230, W - 240, 260, 18);
+          const head = this.add
+            .text(W / 2, 280, "Not quite — here's why", {
+              fontFamily: "Nunito, Segoe UI, sans-serif",
+              fontSize: "24px",
+              fontStyle: "bold",
+              color: "#fca5a5",
+            })
+            .setOrigin(0.5);
+          const body = this.add
+            .text(W / 2, 360, why || "Take another look at the example.", {
+              fontFamily: "Nunito, Segoe UI, sans-serif",
+              fontSize: "20px",
+              color: "#e2e8f0",
+              align: "center",
+              wordWrap: { width: W - 320 },
+            })
+            .setOrigin(0.5);
+          ov.add([dim, panel, head, body]);
+          const done = () => {
+            this.input.keyboard.off("keydown-ENTER", done);
+            this.input.keyboard.off("keydown-SPACE", done);
+            ov.destroy();
+            onContinue();
+          };
+          const btn = makeButton(this, W / 2, 452, 220, 50, "Continue →", done);
+          ov.add([btn.bg, btn.t]);
+          this.input.keyboard.on("keydown-ENTER", done);
+          this.input.keyboard.on("keydown-SPACE", done);
+          this.time.delayedCall(8000, () => {
+            if (ov.active) done();
+          });
         }
 
         finish(won) {
@@ -713,10 +797,12 @@
           const startY = 92 + Math.max(70, this.promptText.height + 30) + 50;
           const tileW = Math.min(560, W - 200);
           const gap = 66;
+          const tiles = [];
           r.choices.forEach((c, i) => {
             const y = startY + i * gap;
             const t = this.makeTile(W / 2, y, tileW, 52, i + 1 + ".  " + c);
             this.layer.add(t.parts);
+            tiles.push(t);
             t.bg.on(
               "pointerover",
               () => !this.locked && t.bg.setFillStyle(PALETTE.tileHi),
@@ -730,6 +816,18 @@
               this.pickChoice(r, i, t),
             );
           });
+          // On a miss, flash the correct choice green so the answer is visible.
+          this.revealCorrect = () => {
+            const ct = tiles[r.correctIndex];
+            if (ct) ct.bg.setFillStyle(PALETTE.good);
+          };
+          // Screen-reader: read out the options after the prompt.
+          srSay(
+            rounds[this.idx].prompt +
+              ". Options: " +
+              r.choices.map((c, i) => i + 1 + ", " + c).join("; ") +
+              ". Press a number to choose.",
+          );
         }
         pickChoice(r, i, t) {
           if (this.locked) return;
@@ -776,6 +874,25 @@
             });
             bx += binW + 24;
           });
+
+          // Visible hint so the keyboard path (and drag) is discoverable.
+          const hint = this.add
+            .text(
+              W / 2,
+              binY - binH / 2 - 56,
+              "Drag a tile into a bin — or press a bin number (1–" +
+                cats.length +
+                ") for the highlighted tile, then Enter to check.",
+              {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "13px",
+                color: "#94a3b8",
+                align: "center",
+                wordWrap: { width: W - 160 },
+              },
+            )
+            .setOrigin(0.5);
+          this.layer.add(hint);
 
           // Items in a row near the top of the play area
           const items = shuffle(r.items);
@@ -859,14 +976,25 @@
         }
         assignTile(t, bi) {
           if (t.assigned) return;
-          SFX.pick();
+          JUICE.audio.pop();
           const b = this.bins[bi];
           t.assigned = b.id;
           const slot = b.count++;
           const tx = b.x - b.w / 2 + 14 + (slot % 2) * (b.w / 2);
           const ty = b.y - b.h / 2 + 44 + Math.floor(slot / 2) * 30;
-          t.parts.x = tx - t.homeX;
-          t.parts.y = ty - t.homeY;
+          // Snap with a springy tween so the drop has weight.
+          if (JUICE.reduceMotion) {
+            t.parts.x = tx - t.homeX;
+            t.parts.y = ty - t.homeY;
+          } else {
+            this.tweens.add({
+              targets: t.parts,
+              x: tx - t.homeX,
+              y: ty - t.homeY,
+              duration: 220,
+              ease: "Back.Out",
+            });
+          }
           this.input.setDraggable(t.bg, false);
           this.highlightSort();
         }
@@ -908,25 +1036,58 @@
           this.matchLeft = [];
           this.matchRight = [];
           this.matchRemaining = pairs.length;
+          const LETTERS = ["A", "B", "C", "D", "E", "F", "G"];
 
           terms.forEach((p, row) => {
             const y = topY + row * gap;
-            const t = this.makeTile(leftX, y, 280, 48, p.term);
+            const t = this.makeTile(
+              leftX,
+              y,
+              280,
+              48,
+              row + 1 + ".  " + p.term,
+            );
             t.pairId = p.i;
             t.side = "L";
+            t.expect = p.match; // value-based comparison (duplicate-text safe)
             this.layer.add(t.parts);
             t.bg.on("pointerdown", () => this.matchTap(t));
             this.matchLeft.push(t);
+            this.input.keyboard.on("keydown-" + keyName(row + 1), () => {
+              if (!this.matchSel || this.matchSel.side === "R")
+                this.matchTap(t);
+            });
           });
           matches.forEach((p, row) => {
             const y = topY + row * gap;
-            const t = this.makeTile(rightX, y, 280, 48, p.match);
+            const t = this.makeTile(
+              rightX,
+              y,
+              280,
+              48,
+              LETTERS[row] + ".  " + p.match,
+            );
             t.pairId = p.i;
             t.side = "R";
+            t.val = p.match;
             this.layer.add(t.parts);
             t.bg.on("pointerdown", () => this.matchTap(t));
             this.matchRight.push(t);
+            if (LETTERS[row])
+              this.input.keyboard.on("keydown-" + LETTERS[row], () => {
+                if (this.matchSel && this.matchSel.side === "L")
+                  this.matchTap(t);
+              });
           });
+          // Screen-reader roster + instructions for keyboard users.
+          srSay(
+            rounds[this.idx].prompt +
+              ". Left cards: " +
+              terms.map((p, i) => i + 1 + " " + p.term).join("; ") +
+              ". Right cards: " +
+              matches.map((p, i) => LETTERS[i] + " " + p.match).join("; ") +
+              ". Press a number to pick a left card, then a letter to pick its match.",
+          );
         }
         matchTap(t) {
           if (this.locked || t.done) return;
@@ -948,10 +1109,12 @@
             t.bg.setFillStyle(PALETTE.accent);
             return;
           }
-          // attempt a pair
+          // attempt a pair — compare by VALUE so duplicate match text still works
           const a = this.matchSel,
             b = t;
-          if (a.pairId === b.pairId) {
+          const Ltile = a.side === "L" ? a : b;
+          const Rtile = a.side === "L" ? b : a;
+          if (Ltile.expect === Rtile.val) {
             a.bg.setFillStyle(PALETTE.good);
             b.bg.setFillStyle(PALETTE.good);
             a.done = b.done = true;
@@ -960,6 +1123,7 @@
             this.matchSel = null;
             this.matchRemaining--;
             this.score += 20;
+            JUICE.audio.pop();
             this.updateHUD();
             if (this.matchRemaining <= 0)
               this.resolve(true, "All pairs matched!");
@@ -981,6 +1145,7 @@
         renderFixit(r) {
           const topY = 92 + Math.max(70, this.promptText.height + 30) + 36;
           const gap = Math.min(72, (H - topY - 70) / r.steps.length);
+          const tiles = [];
           r.steps.forEach((s, i) => {
             const y = topY + i * gap;
             const label = (s.label ? s.label + ":  " : "") + s.work;
@@ -993,6 +1158,7 @@
               "16px",
             );
             this.layer.add(t.parts);
+            tiles.push(t);
             t.bg.on(
               "pointerover",
               () => !this.locked && t.bg.setFillStyle(PALETTE.tileHi),
@@ -1006,6 +1172,21 @@
               this.pickFix(r, i, t),
             );
           });
+          this.revealCorrect = () => {
+            const ct = tiles[r.errorStep];
+            if (ct) ct.bg.setFillStyle(PALETTE.good);
+          };
+          srSay(
+            rounds[this.idx].prompt +
+              ". Steps: " +
+              r.steps
+                .map(
+                  (s, i) =>
+                    i + 1 + ", " + ((s.label ? s.label + " " : "") + s.work),
+                )
+                .join("; ") +
+              ". Press the number of the step with the mistake.",
+          );
         }
         pickFix(r, i, t) {
           if (this.locked) return;
@@ -1045,14 +1226,42 @@
         mascotReact(good) {
           if (!this.mascotObj) return;
           if (JUICE.reduceMotion) return;
+          const lift = good ? -26 - Math.min(this.streak, 5) * 4 : 12;
           this.tweens.add({
             targets: this.mascotObj,
-            y: this.mascotObj.y + (good ? -26 : 12),
+            y: this.mascotObj.y + lift,
             angle: good ? 0 : -12,
-            scale: good ? 1.25 : 0.92,
+            scale: good ? 1.25 + Math.min(this.streak, 5) * 0.05 : 0.92,
             yoyo: true,
             duration: good ? 260 : 200,
             ease: "Quad.Out",
+          });
+        }
+        // Short speech bubble above the mascot — gives it personality.
+        mascotSay(text) {
+          if (!this.mascotObj) return;
+          if (this.mascotBubble) this.mascotBubble.destroy();
+          const bx = this.mascotObj.x + 70,
+            by = this.journeyY + 4;
+          const c = this.add.container(bx, by).setDepth(40);
+          const label = this.add
+            .text(0, 0, text, {
+              fontFamily: "Nunito, Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#0a0f1f",
+            })
+            .setOrigin(0, 0.5);
+          const pad = 8;
+          const bg = this.add
+            .rectangle(-pad, 0, label.width + pad * 2, 28, 0xffffff, 0.95)
+            .setOrigin(0, 0.5);
+          c.add([bg, label]);
+          this.mascotBubble = c;
+          if (!JUICE.reduceMotion) JUICE.popIn(this, c);
+          this.time.delayedCall(1400, () => {
+            if (c.active) c.destroy();
+            if (this.mascotBubble === c) this.mascotBubble = null;
           });
         }
       }
@@ -1078,12 +1287,27 @@
               color: d.won ? "#34d399" : "#fca5a5",
             })
             .setOrigin(0.5);
-          this.add
-            .text(W / 2, 230, "★".repeat(stars) + "☆".repeat(3 - stars), {
-              fontSize: "52px",
-              color: "#facc15",
-            })
-            .setOrigin(0.5);
+          // Stars pop in one at a time with a "collect" blip for a payoff beat.
+          for (let i = 0; i < 3; i++) {
+            const earned = i < stars;
+            const star = this.add
+              .text(W / 2 - 60 + i * 60, 230, earned ? "★" : "☆", {
+                fontSize: "56px",
+                color: earned ? "#facc15" : "#475569",
+              })
+              .setOrigin(0.5);
+            if (earned && !JUICE.reduceMotion) {
+              star.setScale(0);
+              this.tweens.add({
+                targets: star,
+                scale: 1,
+                ease: "Back.Out",
+                duration: 320,
+                delay: 300 + i * 320,
+                onStart: () => JUICE.audio.pop(),
+              });
+            }
+          }
           this.add
             .text(
               W / 2,
