@@ -28,15 +28,26 @@ const JSON_HEADERS = {
 const DEFAULT_MODEL = "gemini-flash-latest"; // alias -> current stable Flash (avoids deprecation 404s)
 const WORKERS_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct";
 
-const CAP = { turns: 12, text: 1500, output: 500, image: 8_000_000 };
+const CAP = { turns: 12, text: 1500, output: 1500, image: 8_000_000 };
 const RATE = { windowMs: 60_000, max: 25, hits: new Map() };
 
-const SYSTEM_PROMPT = [
+const SYSTEM_PROMPT_HINT = [
   "You are a warm, patient homework helper for a middle-school student (about 7th grade) who has trouble focusing.",
   "Goals: keep them calm, build confidence, and help them think — do NOT just give final answers to graded problems.",
   "When they ask for an answer, give a hint or the next small step and ask a guiding question instead.",
   "It is fine to fully explain concepts, vocabulary, and how-to steps in simple words.",
   "Style: short replies (2-5 sentences), friendly, plain language, one idea at a time. Use an occasional emoji.",
+  "Use LaTeX notation for ALL mathematical formulas, fractions, symbols, and equations (e.g. use \\times for multiplication, \\div for division, and fractions written in LaTeX like \\frac{a}{b}). Wrap inline math in \\( ... \\) and block/display math in \\[ ... \\]. Do not use raw programming characters like * or / for calculations.",
+  "Never discuss anything unsafe or inappropriate; gently steer back to schoolwork and feelings about it.",
+].join(" ");
+
+const SYSTEM_PROMPT_SOLVE = [
+  "You are a warm, patient homework helper for a middle-school student (about 7th grade) who has trouble focusing.",
+  "The student wants the FULL ANSWER and a step-by-step solution.",
+  "State the final answer clearly in bold at the beginning.",
+  "Then explain the complete step-by-step calculation procedure using clear LaTeX math formatting.",
+  "Style: friendly, plain language. Use an occasional emoji.",
+  "Use LaTeX notation for ALL mathematical formulas, fractions, symbols, and equations (e.g. use \\times for multiplication, \\div for division, and fractions written in LaTeX like \\frac{a}{b}). Wrap inline math in \\( ... \\) and block/display math in \\[ ... \\]. Do not use raw programming characters like * or / for calculations.",
   "Never discuss anything unsafe or inappropriate; gently steer back to schoolwork and feelings about it.",
 ].join(" ");
 
@@ -99,6 +110,9 @@ export async function onRequestPost({ request, env }) {
     return json({ error: "Bad request" }, 400);
   }
 
+  const mode = clampStr(body && body.mode, 20) || "hint";
+  const systemPrompt = mode === "solve" ? SYSTEM_PROMPT_SOLVE : SYSTEM_PROMPT_HINT;
+
   const messages = sanitizeMessages(body && body.messages);
   if (!messages.length) return json({ error: "No message" }, 400);
   if (messages[messages.length - 1].role !== "user")
@@ -138,7 +152,7 @@ export async function onRequestPost({ request, env }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          systemInstruction: { parts: [{ text: systemPrompt }] },
           contents,
           generationConfig: {
             maxOutputTokens: CAP.output,
@@ -185,7 +199,7 @@ export async function onRequestPost({ request, env }) {
     try {
       const out = await env.AI.run(WORKERS_AI_MODEL, {
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: systemPrompt },
           ...messages.map((m) => ({
             role: m.role === "model" ? "assistant" : "user",
             content: m.text,

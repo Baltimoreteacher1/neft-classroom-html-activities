@@ -7,6 +7,42 @@
 (() => {
   "use strict";
 
+  function ensureKaTeX(callback) {
+    if (window.renderMathInElement) {
+      callback();
+      return;
+    }
+    if (!document.querySelector('link[href*="katex"]')) {
+      var link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css";
+      link.crossOrigin = "anonymous";
+      document.head.appendChild(link);
+    }
+    var script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js";
+    script.crossOrigin = "anonymous";
+    script.onload = function () {
+      var ext = document.createElement("script");
+      ext.src = "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js";
+      ext.crossOrigin = "anonymous";
+      ext.onload = callback;
+      document.head.appendChild(ext);
+    };
+    document.head.appendChild(script);
+  }
+
+  function formatAiReply(text) {
+    if (!text) return "";
+    var temp = document.createElement("div");
+    temp.textContent = text;
+    var safe = temp.innerHTML;
+    safe = safe.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    safe = safe.replace(/\*(.*?)\*/g, "<em>$1</em>");
+    safe = safe.replace(/\n/g, "<br>");
+    return safe;
+  }
+
   let deviceId = "";
   function getDeviceName() {
     const ua = navigator.userAgent;
@@ -396,6 +432,8 @@
         // [{ id, weekKey(Mon YYYY-MM-DD), amount, paidAt(ISO), breakdown:{} }]
         payouts: [],
       },
+      readingProgress: {},
+      bookTransition: { finishedB: "", responseB: false, startC: "", rememberText: "" },
       updatedAt: Date.now(),
     };
   }
@@ -481,6 +519,8 @@
         x.reflections && typeof x.reflections === "object" ? x.reflections : {},
       deletedIds:
         x.deletedIds && typeof x.deletedIds === "object" ? x.deletedIds : {},
+      readingProgress: x.readingProgress && typeof x.readingProgress === "object" ? x.readingProgress : {},
+      bookTransition: x.bookTransition && typeof x.bookTransition === "object" ? x.bookTransition : { finishedB: "", responseB: false, startC: "", rememberText: "" },
       garden:
         x.garden && typeof x.garden === "object"
           ? {
@@ -969,9 +1009,36 @@
     a[field] = (a[field] || 0) + by;
   }
 
-  // ---------------------------------------------------------------------------
-  // App shell / routing
-  // ---------------------------------------------------------------------------
+  const READING_DAYS = [
+    { id: "day1", date: "6/29", dayName: "Mon", book: "Blood on the River", read: "Chapter 13", prompt: "What changes after Wingfield is arrested?" },
+    { id: "day2", date: "6/30", dayName: "Tue", book: "Blood on the River", read: "Chapter 14", prompt: "Smith leaves; what happens to the settlement?" },
+    { id: "day3", date: "7/1", dayName: "Wed", book: "Blood on the River", read: "Chapter 15", prompt: "Why is Smith in danger again?" },
+    { id: "day4", date: "7/2", dayName: "Thu", book: "Blood on the River", read: "Chapter 16", prompt: "Summarize the rescue/interruption." },
+    { id: "day5", date: "7/3", dayName: "Fri", book: "Blood on the River", read: "Chapter 17", prompt: "Cause/effect: new supplies, new people, fire." },
+    { id: "day6", date: "7/6", dayName: "Mon", book: "Blood on the River", read: "Chapter 18", prompt: "Track leadership: How does Smith become president?" },
+    { id: "day7", date: "7/7", dayName: "Tue", book: "Blood on the River", read: "Chapter 19", prompt: "Quote focus: \"He that will not work shall not eat.\"" },
+    { id: "day8", date: "7/8", dayName: "Wed", book: "Blood on the River", read: "Chapter 20", prompt: "Compare English goals vs. Powhatan goals." },
+    { id: "day9", date: "7/9", dayName: "Thu", book: "Blood on the River", read: "Chapter 21", prompt: "Track: conflict, ceremony, marriage, loss." },
+    { id: "day10", date: "7/10", dayName: "Fri", book: "Blood on the River", read: "Chapter 22", prompt: "Explain how Samuel changes while living with the Warraskoyack." },
+    { id: "day11", date: "7/13", dayName: "Mon", book: "Blood on the River", read: "Chapter 23", prompt: "Conflict map: What do the newcomers do, and why does it matter?" },
+    { id: "day12", date: "7/14", dayName: "Tue", book: "Blood on the River", read: "Chapter 24", prompt: "Identify the turning point for Captain Smith." },
+    { id: "day13", date: "7/15", dayName: "Wed", book: "Blood on the River", read: "Chapter 25", prompt: "Decision check: Why does Samuel take action?" },
+    { id: "day14", date: "7/16", dayName: "Thu", book: "Blood on the River", read: "Chapter 26", prompt: "Summarize the attack and its consequences." },
+    { id: "day15", date: "7/17", dayName: "Fri", book: "Blood on the River", read: "Chapter 27", prompt: "Point Comfort: What safety does Samuel find?" },
+    { id: "day16", date: "7/20", dayName: "Mon", book: "Blood on the River", read: "Chapter 28", prompt: "Endgame: What is resolved? What still feels unsettled?" },
+    { id: "day17", date: "7/21", dayName: "Tue", book: "Blood on the River", read: "Chapter 29 + wrap-up", prompt: "Final response: How has Samuel changed from Chapter 1 to the end?" },
+    // The Crossover
+    { id: "day18", date: "7/22", dayName: "Wed", book: "The Crossover", read: "Warm-Up pp. 1-20", prompt: "Meet Josh/Filthy McNasty; track voice, rhythm, and family." },
+    { id: "day19", date: "7/23", dayName: "Thu", book: "The Crossover", read: "First Quarter, Part 1 pp. 21-54", prompt: "Track: basketball as family language." },
+    { id: "day20", date: "7/24", dayName: "Fri", book: "The Crossover", read: "First Quarter, Part 2 pp. 55-86", prompt: "Explain how JB and Josh’s relationship starts to shift." },
+    { id: "day21", date: "7/27", dayName: "Mon", book: "The Crossover", read: "Second Quarter, Part 1 pp. 87-110", prompt: "Track tension: jealousy, consequences, and choices." },
+    { id: "day22", date: "7/28", dayName: "Tue", book: "The Crossover", read: "Second Quarter, Part 2 pp. 111-134", prompt: "Cause/effect: What mistake changes things?" },
+    { id: "day23", date: "7/29", dayName: "Wed", book: "The Crossover", read: "Third Quarter, Part 1 pp. 135-165", prompt: "Track emotions: guilt, family pressure, and Dad’s health." },
+    { id: "day24", date: "7/30", dayName: "Thu", book: "The Crossover", read: "Third Quarter, Part 2 pp. 166-196", prompt: "Explain how the author builds worry and urgency." },
+    { id: "day25", date: "7/31", dayName: "Fri", book: "The Crossover", read: "Fourth Quarter pp. 197-222", prompt: "Track the climax: what changes for the family?" },
+    { id: "day26", date: "8/3", dayName: "Mon", book: "The Crossover", read: "Overtime + final reflection pp. 223-237", prompt: "Final response: What does Josh learn about love, loss, and family?" }
+  ];
+
   const TABS = [
     ["home", "Now", "🎯"],
     ["today", "Today", "📅"],
@@ -982,6 +1049,7 @@
     ["routines", "Routines", "🔁"],
     ["calming", "Calming", "🧘"],
     ["ai", "Academic Help", "🤖"],
+    ["reading", "Reading", "📚"],
     ["more", "More", "⋯"],
   ];
   let view = "home";
@@ -2611,6 +2679,23 @@
     $("#main").innerHTML = (VIEWS[view] || VIEWS.home)();
     renderTabbar();
     updateHeaderStatus();
+    if (view === "ai") {
+      ensureKaTeX(function () {
+        const scrollEl = $("#aiScroll");
+        if (scrollEl) {
+          try {
+            window.renderMathInElement(scrollEl, {
+              delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+              ]
+            });
+          } catch (e) {}
+        }
+      });
+    }
   }
 
   function renderTabbar() {
@@ -3616,6 +3701,125 @@
       `;
     },
 
+    reading() {
+      const completedDays = Object.values(state.readingProgress || {}).filter((x) => x.done).length;
+      const totalDays = READING_DAYS.length;
+      const percent = totalDays ? Math.round((completedDays / totalDays) * 100) : 0;
+      const transition = state.bookTransition || { finishedB: "", responseB: false, startC: "", rememberText: "" };
+      
+      let html = `
+        <div class="view-head">
+          <h2 class="view-title">📚 Summer Reading</h2>
+          <p class="meta">June 29 - August 3, 2026</p>
+        </div>
+        
+        <div class="card status-card" style="margin-bottom: 16px; background: linear-gradient(135deg, var(--teal) 0%, var(--teal-bright) 100%); color: white; border: none;">
+          <div class="head">
+            <div>
+              <h3 style="color: white; margin: 0;">Overall Progress</h3>
+              <p style="color: rgba(255,255,255,0.85); font-size: 0.88rem; margin: 4px 0 0 0;">Keep up the great reading habit!</p>
+            </div>
+            <div style="font-size: 1.5rem; font-weight: 800;">${completedDays} / ${totalDays} Days</div>
+          </div>
+          <div class="progress-bar-container" style="background: rgba(255,255,255,0.25); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 12px;">
+            <div class="progress-bar-fill" style="background: white; width: ${percent}%; height: 100%; transition: width 0.3s ease;"></div>
+          </div>
+          <div style="text-align: right; font-size: 0.75rem; margin-top: 4px; color: rgba(255,255,255,0.9); font-weight: 600;">${percent}% Completed</div>
+        </div>
+        
+        <div class="note" style="margin-bottom: 16px;">
+          📖 <b>Daily Student Routine:</b> (1) Read the assigned pages. (2) Check "Done". (3) Write 1-2 sentence gist. (4) Note one quote/evidence detail. (5) Answer the focus question.
+        </div>
+      `;
+
+      const botrDays = READING_DAYS.filter(d => d.book === "Blood on the River");
+      const tcDays = READING_DAYS.filter(d => d.book === "The Crossover");
+
+      const renderDayRow = (d) => {
+        const prog = state.readingProgress[d.id] || { done: false, gist: "", evidence: "", response: "" };
+        const isExpanded = state.expandedReadingDay === d.id;
+        
+        return `
+          <div class="card reading-day-card ${prog.done ? 'done-day' : ''}" style="margin-bottom: 10px; border-left: 4px solid ${d.book === 'Blood on the River' ? '#147c78' : '#c0473a'};">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;">
+              <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                <input type="checkbox" style="width: 20px; height: 20px; cursor: pointer; flex-shrink: 0;" data-act="toggle-reading-done" data-id="${d.id}" ${prog.done ? 'checked' : ''}>
+                <div style="cursor: pointer; flex: 1;" data-act="toggle-reading-expand" data-id="${d.id}">
+                  <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--muted); letter-spacing: 0.5px;">${d.dayName} ${d.date}</div>
+                  <div style="font-size: 0.95rem; font-weight: 700; margin: 2px 0;">${esc(d.read)}</div>
+                  <div style="font-size: 0.85rem; color: var(--text); opacity: 0.85;"><b>Focus:</b> ${esc(d.prompt)}</div>
+                </div>
+              </div>
+              <button class="btn sm icon-only" data-act="toggle-reading-expand" data-id="${d.id}" style="background: none; border: none; font-size: 1rem;" aria-label="Toggle details">
+                ${isExpanded ? '▲' : '▼'}
+              </button>
+            </div>
+            
+            ${isExpanded ? `
+              <div class="reading-details" style="margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); display: flex; flex-direction: column; gap: 10px;">
+                <div class="field">
+                  <label style="font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase;">1. Gist (1-2 sentences)</label>
+                  <textarea data-reading-field="gist" data-id="${d.id}" placeholder="Write the main idea of this reading..." style="width:100%; min-height: 48px; font-size: 0.88rem; padding: 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--text);">${esc(prog.gist)}</textarea>
+                </div>
+                <div class="field">
+                  <label style="font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase;">2. Evidence (One quote or key detail)</label>
+                  <textarea data-reading-field="evidence" data-id="${d.id}" placeholder="Write a quote or specific detail as evidence..." style="width:100%; min-height: 48px; font-size: 0.88rem; padding: 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--text);">${esc(prog.evidence)}</textarea>
+                </div>
+                <div class="field">
+                  <label style="font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase;">3. Response (Answer the focus question)</label>
+                  <textarea data-reading-field="response" data-id="${d.id}" placeholder="Write your response to the focus question..." style="width:100%; min-height: 56px; font-size: 0.88rem; padding: 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--text);">${esc(prog.response)}</textarea>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--muted); text-align: right; font-style: italic;">✍️ Changes save automatically</div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      };
+
+      html += `<div class="section-title" style="color: #147c78; font-size: 1.1rem; border-bottom: 2px solid #147c78; padding-bottom: 4px; margin: 20px 0 10px 0;">📚 Book 1: Blood on the River</div>`;
+      html += botrDays.map(renderDayRow).join("");
+
+      html += `
+        <div class="card transition-card" style="margin: 20px 0; border: 2px dashed #d99028; background: color-mix(in srgb, #d99028 8%, var(--paper)); padding: 16px; border-radius: 12px;">
+          <h3 style="color: #d99028; margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px;">🔄 Book Transition Space</h3>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="field">
+                <label style="font-size: 0.75rem; font-weight: 800;">I finished Blood on the River on:</label>
+                <input type="text" data-transition-field="finishedB" placeholder="e.g. July 21" value="${esc(transition.finishedB)}" style="width:100%; padding: 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--text);">
+              </div>
+              <div class="field">
+                <label style="font-size: 0.75rem; font-weight: 800;">The Crossover begins on:</label>
+                <input type="text" data-transition-field="startC" placeholder="e.g. July 22" value="${esc(transition.startC)}" style="width:100%; padding: 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--text);">
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin: 4px 0;">
+              <input type="checkbox" data-transition-check="responseB" style="width:18px; height:18px;" ${transition.responseB ? 'checked' : ''}>
+              <label style="font-size: 0.88rem; font-weight: 700; cursor: pointer;">Final Response Completed</label>
+            </div>
+            <div class="field">
+              <label style="font-size: 0.75rem; font-weight: 800;">One thing I want to remember from Blood on the River before starting The Crossover:</label>
+              <textarea data-transition-field="rememberText" placeholder="Write down your thoughts..." style="width:100%; min-height: 56px; padding: 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--text);">${esc(transition.rememberText)}</textarea>
+            </div>
+          </div>
+        </div>
+      `;
+
+      html += `<div class="section-title" style="color: #c0473a; font-size: 1.1rem; border-bottom: 2px solid #c0473a; padding-bottom: 4px; margin: 20px 0 10px 0;">🏀 Book 2: The Crossover</div>`;
+      html += tcDays.map(renderDayRow).join("");
+
+      html += `
+        <div class="card catchup-card" style="margin: 20px 0 80px 0; background: var(--paper); border: 1px solid var(--line);">
+          <h4 style="margin: 0 0 8px 0; color: var(--navy);">📅 Built-In Catch-Up Days</h4>
+          <p style="font-size: 0.88rem; color: var(--muted); margin: 0; line-height: 1.4;">
+            No required weekend reading is assigned. Use <b>July 4-5, July 11-12, July 18-19, July 25-26, and August 1-2</b> for catch-up, rereading, annotations, or missed responses.
+          </p>
+        </div>
+      `;
+
+      return html;
+    },
+
     more() {
       const grid = (items) =>
         `<div class="grid g2">${items
@@ -3846,6 +4050,7 @@
     },
 
     ai() {
+      const mode = window._aiMode = window._aiMode || "hint";
       const msgs = AI_CHAT.length
         ? AI_CHAT.map(
             (m) =>
@@ -3859,7 +4064,7 @@
                   m.image +
                   '" alt="attached picture">'
                 : "") +
-              esc(m.text) +
+              (m.role === "user" ? esc(m.text) : formatAiReply(m.text)) +
               "</span></div>",
           ).join("")
         : '<div class="ai-empty">' +
@@ -3891,7 +4096,7 @@
           ? '<button class="btn sm" data-act="ai-clear">Clear</button>'
           : "") +
         "</div>" +
-        '<p class="view-intro">A friendly helper for homework. Tap a button, type a question, or add a picture of your work — it gives hints, not just answers.</p>' +
+        '<p class="view-intro">A friendly helper for homework. Tap a button, type a question, or add a picture of your work.</p>' +
         '<a class="btn navy block" href="https://eduwonderlab.com/curriculum/math-workbench/" target="_blank" rel="noopener">📐 Open Math Workbench</a>' +
         // Ask first (chips + input), then the conversation grows below it.
         '<div class="ai-chips">' +
@@ -3902,6 +4107,14 @@
             aiImage.dataUrl +
             '" alt="picture to send"><button class="btn sm" data-act="ai-remove-image">✕ Remove picture</button></div>'
           : "") +
+        '<div class="seg" id="aiModeSeg" style="margin-bottom: 12px; display: flex; gap: 8px;">' +
+        '<button class="btn block" data-act="ai-mode" data-arg="hint" aria-pressed="' +
+        (mode !== "solve") +
+        '">🧭 Hints Mode</button>' +
+        '<button class="btn block" data-act="ai-mode" data-arg="solve" aria-pressed="' +
+        (mode === "solve") +
+        '">✨ Solve Mode</button>' +
+        '</div>' +
         '<div class="ai-inputbar"><button class="btn ai-attach-btn" data-act="ai-attach" aria-label="Add a picture" title="Add a picture">📷</button><input id="aiInput" placeholder="Ask for help…" aria-label="Ask for help" ' +
         (aiBusy ? "disabled" : "") +
         '><button class="btn primary" data-act="ai-send" ' +
@@ -7983,6 +8196,28 @@ Due May 31"></textarea>
       aiImage = null;
       render();
     },
+    "ai-mode": (_, arg) => {
+      window._aiMode = arg;
+      render();
+    },
+    "toggle-reading-expand": (id) => {
+      state.expandedReadingDay = state.expandedReadingDay === id ? null : id;
+      render();
+    },
+    "toggle-reading-done": (id) => {
+      state.readingProgress = state.readingProgress || {};
+      state.readingProgress[id] = state.readingProgress[id] || { done: false, gist: "", evidence: "", response: "" };
+      const done = !state.readingProgress[id].done;
+      state.readingProgress[id].done = done;
+      if (done) {
+        addPoints(5);
+        bumpActivity("tasks");
+        triggerConfetti();
+        toast("+5 Points! 📚");
+      }
+      save();
+      render();
+    },
     "ai-send": async () => {
       const inp = $("#aiInput");
       const text = (inp?.value || "").trim();
@@ -8002,6 +8237,7 @@ Due May 31"></textarea>
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            mode: window._aiMode || "hint",
             messages: AI_CHAT.slice(-12).map((m) => ({
               role: m.role,
               text: m.text,
@@ -8969,6 +9205,29 @@ ${name}`;
 
     // range/live binds and theme picker
     document.addEventListener("input", (ev) => {
+      if (ev.target.dataset.readingField) {
+        const id = ev.target.dataset.id;
+        const field = ev.target.dataset.readingField;
+        state.readingProgress = state.readingProgress || {};
+        state.readingProgress[id] = state.readingProgress[id] || { done: false, gist: "", evidence: "", response: "" };
+        state.readingProgress[id][field] = ev.target.value;
+        save();
+        return;
+      }
+      if (ev.target.dataset.transitionField) {
+        const field = ev.target.dataset.transitionField;
+        state.bookTransition = state.bookTransition || { finishedB: "", responseB: false, startC: "", rememberText: "" };
+        state.bookTransition[field] = ev.target.value;
+        save();
+        return;
+      }
+      if (ev.target.dataset.transitionCheck) {
+        const field = ev.target.dataset.transitionCheck;
+        state.bookTransition = state.bookTransition || { finishedB: "", responseB: false, startC: "", rememberText: "" };
+        state.bookTransition[field] = ev.target.checked;
+        save();
+        return;
+      }
       if (ev.target.dataset.act === "update-custom-gradient") {
         const c1 = $("#customColor1")?.value || "#0d324d";
         const c2 = $("#customColor2")?.value || "#7f5a83";
@@ -9074,20 +9333,15 @@ ${name}`;
           return;
         }
         if (
-          ["1", "2", "3", "4", "5", "6"].includes(ev.key) &&
+          ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].includes(ev.key) &&
           document.activeElement.tagName !== "INPUT" &&
           document.activeElement.tagName !== "TEXTAREA"
         ) {
           ev.preventDefault();
-          const tabs = [
-            "home",
-            "today",
-            "tasks",
-            "calendar",
-            "routines",
-            "more",
-          ];
-          setView(tabs[Number(ev.key) - 1]);
+          const idx = ev.key === "0" ? 9 : Number(ev.key) - 1;
+          if (idx < TABS.length) {
+            setView(TABS[idx][0]);
+          }
           return;
         }
         return;
@@ -9168,14 +9422,7 @@ ${name}`;
         const diffX = touchEndX - touchStartX;
         const diffY = touchEndY - touchStartY;
         if (Math.abs(diffX) > 80 && Math.abs(diffY) < 40) {
-          const tabsOrder = [
-            "home",
-            "today",
-            "tasks",
-            "calendar",
-            "routines",
-            "more",
-          ];
+          const tabsOrder = TABS.map(t => t[0]);
           const currentIdx = tabsOrder.indexOf(view);
           if (currentIdx !== -1) {
             if (diffX < 0) {
