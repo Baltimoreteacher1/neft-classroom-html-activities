@@ -845,6 +845,15 @@
               h: binH,
               count: 0,
             });
+            // Touch-friendly: an invisible tappable zone over the box so a
+            // student can TAP a tile then TAP a box to place it (canvas
+            // touch-drag is unreliable on some classroom tablets/Chromebooks).
+            const bi = this.bins.length - 1;
+            const zone = this.add
+              .zone(bx, binY, binW, binH)
+              .setInteractive({ useHandCursor: true });
+            zone.on("pointerup", () => this.placeHighlighted(bi));
+            this.layer.add(zone);
             bx += binW + 24;
           });
 
@@ -853,9 +862,10 @@
             .text(
               W / 2,
               binY - binH / 2 - 56,
-              "Drag a tile into a bin — or press a bin number (1–" +
+              "Tap a number, then tap a box to place it — or drag it. " +
+                "(Keys 1–" +
                 cats.length +
-                ") for the highlighted tile, then Enter to check.",
+                " work too.) Then press CHECK.",
               {
                 fontFamily: "Nunito, Segoe UI, sans-serif",
                 fontSize: "13px",
@@ -916,16 +926,24 @@
               t.parts.setDepth(0);
               this.dropTile(t);
             });
+            // Tap (not a drag) selects the tile so it can be placed by tapping a
+            // box or pressing its number — a reliable path on touch devices.
+            t.parts.on("pointerup", (p) => {
+              if (t.assigned) return;
+              const moved =
+                Phaser.Math.Distance.Between(p.downX, p.downY, p.upX, p.upY) >
+                12;
+              if (!moved) this.selectSortTile(t);
+            });
             this.sortTiles.push(t);
           });
           this.highlightSort();
 
           // Keyboard: number keys 1..N drop the highlighted tile into bin N
           this.bins.forEach((b, bi) => {
-            this.input.keyboard.on("keydown-" + keyName(bi + 1), () => {
-              const t = this.sortTiles[this.sortHi];
-              if (t && !t.assigned) this.assignTile(t, bi);
-            });
+            this.input.keyboard.on("keydown-" + keyName(bi + 1), () =>
+              this.placeHighlighted(bi),
+            );
           });
           // Keyboard users confirm with Enter (the CHECK button is pointer-only).
           this.input.keyboard.on("keydown-ENTER", () => this.checkSort(r));
@@ -949,10 +967,28 @@
           this.sortHi = n < 0 ? 0 : n;
           this.sortTiles.forEach((t, i) =>
             t.bg.setStrokeStyle(
-              i === this.sortHi && !t.assigned ? 3 : 0,
+              i === this.sortHi && !t.assigned ? 4 : 0,
               0xfacc15,
             ),
           );
+        }
+        // Tap-select a tile: make it the active (highlighted) one so a bin tap
+        // or number key places it. Mirrors the keyboard highlight state.
+        selectSortTile(t) {
+          const i = this.sortTiles.indexOf(t);
+          if (i < 0 || t.assigned) return;
+          this.sortHi = i;
+          this.sortTiles.forEach((tt, j) =>
+            tt.bg.setStrokeStyle(j === i && !tt.assigned ? 4 : 0, 0xfacc15),
+          );
+          if (typeof srSay === "function")
+            srSay(t.data.text + " selected. Tap a box to place it.");
+        }
+        // Place the currently highlighted tile into bin index bi. Shared by the
+        // bin tap zones and the 1–N number keys.
+        placeHighlighted(bi) {
+          const t = this.sortTiles[this.sortHi];
+          if (t && !t.assigned) this.assignTile(t, bi);
         }
         dropTile(t) {
           // The container is positioned in absolute (layer) space while dragging.
