@@ -45,6 +45,9 @@
   function voice(freq, dur, type, vol, when) {
     var c = ctx();
     if (!c || muted()) return;
+    // Self-heal: if the context is still suspended (autoplay policy), resume it
+    // so the first gesture-triggered sound is not silently dropped.
+    if (c.state === "suspended") c.resume().catch(function () {});
     try {
       var t0 = (when || c.currentTime) + 0.0001;
       var o = c.createOscillator();
@@ -95,10 +98,12 @@
       voice(620, 0.14, "sine", 0.04);
     },
     fanfare: function () {
+      // Schedule from the audio clock (drift-free vs. setTimeout on tablets).
+      var c = ctx();
+      if (!c) return;
+      var t0 = c.currentTime;
       [523.25, 659.25, 783.99, 1046.5, 1318.51].forEach(function (f, i) {
-        setTimeout(function () {
-          voice(f, 0.3, "sine", 0.16);
-        }, i * 110);
+        voice(f, 0.3, "sine", 0.16, t0 + i * 0.11);
       });
     },
     // Gentle, slow ambient arpeggio so it never distracts.
@@ -338,12 +343,12 @@
       scene.cameras.main.shake(180, amount || 0.006);
     } catch (e) {}
   }
-  function floatText(scene, x, y, text, color) {
+  function floatText(scene, x, y, text, color, size) {
     try {
       var t = scene.add
         .text(x, y, text, {
           fontFamily: "Nunito, Segoe UI, sans-serif",
-          fontSize: "28px",
+          fontSize: (size || 28) + "px",
           fontStyle: "bold",
           color: color || "#fde047",
           stroke: "#0a0f1f",
@@ -351,11 +356,22 @@
         })
         .setOrigin(0.5)
         .setDepth(80);
+      // Brief pop before the rise, so earned XP reads as "earned".
+      if (!reduce) {
+        t.setScale(0.5);
+        scene.tweens.add({
+          targets: t,
+          scale: 1,
+          duration: 160,
+          ease: "Back.Out",
+        });
+      }
       scene.tweens.add({
         targets: t,
-        y: y - (reduce ? 20 : 64),
+        y: y - (reduce ? 20 : 70),
         alpha: { from: 1, to: 0 },
-        duration: reduce ? 500 : 950,
+        duration: reduce ? 500 : 1300,
+        delay: reduce ? 0 : 150,
         ease: "Quad.Out",
         onComplete: function () {
           t.destroy();
