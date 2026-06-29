@@ -41,7 +41,6 @@ export const DENY_PREFIXES = [
   "/personal/",
   "/futures/",
   "/noam-bar-mitzvah/",
-  "/noam-school-v10/",
   "/living-school/",
   "/directory/",
   "/results-worker/",

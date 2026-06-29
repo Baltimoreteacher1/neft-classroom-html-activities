@@ -223,8 +223,6 @@ const TOP_SKIP = new Set([
   "curriculum", // data/generator inputs, not a student page
   "math", // handled above
   "lessons", // handled above
-  // Excluded by task constraints / another process touches these:
-  "noam-school-v10",
 ]);
 
 /**

@@ -64,8 +64,10 @@ These are independent activities/tools that live at the repo root. Categories
   `neft-data-studio/`.
 - **Family / personal** — `personal/`, `noam-bar-mitzvah/`.
 
-> `noam-school-v10/` and `functions/` are touched by other processes — treat as
-> off-limits for this org layer.
+> `noam-school-v10/` was removed 2026-06-29 (stale copy of the live Focus School
+> app, which is now `focus-school/` → noam.eduwonderlab.com). The
+> `/noam-school-v10/*` URL still 301-redirects there for old links.
+> `functions/` is touched by other processes — treat as off-limits for this org layer.
 
 ---
 
