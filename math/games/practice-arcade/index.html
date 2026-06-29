@@ -181,28 +181,62 @@
         },
       };
 
-      // ── Load lesson config and build the round list ──────────────────────
+      // ── Load content and build the round list ────────────────────────────
+      // Three modes (in priority order):
+      //   ?lessons=4-1,4-2   → cumulative review across the listed lessons
+      //   ?unit=4            → cumulative review across every lesson in unit 4
+      //   ?lesson=4-3        → single-lesson review (default)
       async function loadLessonConfig() {
         const params = new URLSearchParams(window.location.search);
-        activeLesson = params.get("lesson") || "1-1";
-        try {
-          const res = await fetch(
-            `/lessons/${encodeURIComponent(activeLesson)}/config.json`,
-          );
-          if (!res.ok) throw new Error("Config not found");
-          const data = await res.json();
-          lessonTitle = data.title || "Lesson";
-          document.title = `${lessonTitle} — Practice Arcade`;
-          const opt = (data.practice && data.practice.optional) || [];
-          opt.forEach((it) => {
-            const r = buildRound(it);
-            if (r) rounds.push(r);
-          });
-        } catch (e) {
-          console.warn("Could not load lesson config; using fallback.", e);
+        const unit = params.get("unit");
+        const lessonsParam = params.get("lessons");
+        let ids;
+        let isGroup = true;
+        if (lessonsParam) {
+          ids = lessonsParam
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+        } else if (unit) {
+          // Probe N-1 … N-9; missing lessons 404 and are skipped.
+          ids = [];
+          for (let k = 1; k <= 9; k++) ids.push(unit + "-" + k);
+        } else {
+          ids = [params.get("lesson") || "1-1"];
+          isGroup = false;
         }
+
+        const firstTitles = [];
+        for (const id of ids) {
+          try {
+            const res = await fetch(
+              `/lessons/${encodeURIComponent(id)}/config.json`,
+            );
+            if (!res.ok) continue;
+            const data = await res.json();
+            if (data.title) firstTitles.push(data.title);
+            const opt = (data.practice && data.practice.optional) || [];
+            opt.forEach((it) => {
+              const r = buildRound(it);
+              if (r) rounds.push(r);
+            });
+          } catch (e) {
+            /* skip unreachable lesson */
+          }
+        }
+
+        if (isGroup) {
+          rounds = shuffle(rounds);
+          lessonTitle = unit ? "Unit " + unit + " Review" : "Mixed Review";
+          activeLesson = unit ? "unit-" + unit : ids.join(",");
+        } else {
+          lessonTitle = firstTitles[0] || "Lesson";
+          activeLesson = ids[0];
+        }
+        document.title = `${lessonTitle} — Practice Arcade`;
+
         if (rounds.length === 0) rounds = fallbackRounds();
-        rounds = rounds.slice(0, MAX_ROUNDS);
+        rounds = rounds.slice(0, isGroup ? 12 : MAX_ROUNDS);
 
         document.getElementById("loader").style.display = "none";
         window.paGame = new Phaser.Game({
