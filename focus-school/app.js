@@ -3483,7 +3483,7 @@
       const next = sortByUrgency(
         open.filter((a) => daysUntil(a.due) > 0 && daysUntil(a.due) <= 7),
       ).slice(0, 3);
-      const routine = pickRoutineForNow();
+      const routine = routineForHome();
       const map = {
         glance: glanceCard(),
         payday: paydayCard(),
@@ -4852,6 +4852,24 @@ Due May 31"></textarea>
   }
   function pickRoutineForNow(now = new Date()) {
     return routineWindowFor(now)?.routine || null;
+  }
+  // Which routine the HOME card shows. During a window: that window's routine.
+  // Outside windows: if a routine was started earlier today but isn't finished,
+  // keep showing it (with its checked steps) so progress never appears to reset
+  // before the next day — only midnight (a new day key) or a manual "Reset for
+  // today" clears it. Falls back to null (→ "next routine" card) when nothing is
+  // in progress or the started routine is already complete.
+  function routineForHome(now = new Date()) {
+    const active = routineWindowFor(now)?.routine;
+    if (active) return active;
+    const log = state.routineLog[ymd(now)] || {};
+    for (let i = ROUTINE_WINDOWS.length - 1; i >= 0; i--) {
+      const r = routineForWindow(ROUTINE_WINDOWS[i], now);
+      if (!r) continue;
+      const done = log[r.id] || [];
+      if (done.length && done.length < r.items.length) return r;
+    }
+    return null;
   }
   function nextRoutineWindow(now = new Date()) {
     for (let dayOffset = 0; dayOffset < 8; dayOffset++) {
@@ -9681,7 +9699,9 @@ ${name}`;
       nextRoutineWindow,
       normalize,
       pickRoutineForNow,
+      routineForHome,
       seed,
+      state,
     });
   }
 

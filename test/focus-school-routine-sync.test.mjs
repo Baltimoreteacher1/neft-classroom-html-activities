@@ -139,4 +139,55 @@ const at = (hour, minute = 0, day = 1) => {
   ok("mergeStates preserves live routine checklist progress from both devices");
 }
 
-console.log(`\nfocus-school-routine-sync: ${passed}/4 checks passed`);
+{
+  // Home card keeps a started-but-unfinished routine visible after its window,
+  // so checked steps never appear to reset before the next day.
+  const ymd = (d) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+      d.getDate(),
+    ).padStart(2, "0")}`;
+  const at = (hour, minute = 0, day = 1) => {
+    const d = new Date("2026-06-29T00:00:00");
+    d.setDate(d.getDate() + (day - d.getDay()));
+    d.setHours(hour, minute, 0, 0);
+    return d;
+  };
+  const morning = api.state.routines.find((r) => r.name === "Morning Launch");
+  assert.ok(morning && morning.items.length, "seed has a Morning Launch routine");
+  const now = at(10, 0, 1); // Monday 10:00 — after the morning window
+  const key = ymd(now);
+
+  // active window always shows the window routine
+  assert.equal(
+    api.routineForHome(at(7, 0, 1))?.name,
+    "Morning Launch",
+    "active window shows the window routine",
+  );
+
+  // started but unfinished → stays visible after the window
+  api.state.routineLog[key] = { [morning.id]: [morning.items[0].id] };
+  assert.equal(
+    api.routineForHome(now)?.name,
+    "Morning Launch",
+    "started routine stays on home after its window",
+  );
+
+  // completed → yields to the next routine (returns null here)
+  api.state.routineLog[key][morning.id] = morning.items.map((it) => it.id);
+  assert.equal(
+    api.routineForHome(now),
+    null,
+    "completed routine no longer pins the home card",
+  );
+
+  // nothing started → null (next-routine card)
+  api.state.routineLog[key] = {};
+  assert.equal(
+    api.routineForHome(now),
+    null,
+    "no progress → home shows the next routine instead",
+  );
+  ok("Home routine card persists checked progress until the next day");
+}
+
+console.log(`\nfocus-school-routine-sync: ${passed}/5 checks passed`);
