@@ -48,6 +48,24 @@ check(
 check(/id="curr-search"/.test(html), "missing the lesson search control (#curr-search)");
 check(/mailbox-feature/.test(html), "missing the Student Digital Mailbox featured card");
 
+// Review-game link integrity — locks the 2026-06-29 regression where the
+// End-of-Unit entry (lessonId "") produced /practice-arcade/?lesson= (empty),
+// which silently fell back to lesson 1-1 for every unit. Two invariants:
+//   1. No practice-arcade link is built with a HARD-CODED empty query param
+//      (?lesson="/?unit=" closed immediately, not concatenated with a value).
+//   2. The End-of-Unit branch that builds the ?unit=N cumulative-review link
+//      still exists (so the fix can't be dropped without tripping this).
+const emptyArcadeParam = /practice-arcade\/\?(?:lesson|unit)="(?!\s*\+)/.test(html);
+check(
+  !emptyArcadeParam,
+  'a practice-arcade link has an empty/hard-coded query param ' +
+    '(?lesson="/?unit=" not concatenated with a value) — the empty-?lesson= bug class',
+);
+check(
+  /practice-arcade\/\?unit="\s*\+/.test(html),
+  "missing the End-of-Unit ?unit=N review-game link construction",
+);
+
 if (failures.length) {
   console.error("✗ Curriculum Hub lock FAILED — the hub looks clobbered/stripped:");
   failures.forEach((f) => console.error("   • " + f));
