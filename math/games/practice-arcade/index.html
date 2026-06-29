@@ -186,6 +186,7 @@
           this.score = 0;
           this.lives = 3;
           this.streak = 0;
+          this.transitioning = false;
           
           // Space Background Stars
           this.stars = this.add.graphics();
@@ -282,6 +283,8 @@
           }
 
           if (missedCorrect) {
+            if (this.transitioning) return;
+            this.transitioning = true;
             this.streak = 0;
             document.body.classList.add('gfx-wrong');
             setTimeout(() => document.body.classList.remove('gfx-wrong'), 200);
@@ -308,6 +311,7 @@
         }
 
         loadQuestion() {
+          this.transitioning = false;
           this.promptPanel.setVisible(true);
           this.promptText.setVisible(true);
           
@@ -362,8 +366,11 @@
         }
 
         hitMeteor(laser, meteor) {
+          if (this.transitioning) return;
+          this.transitioning = true;
+
           laser.destroy();
-          meteor.label.destroy();
+          if (meteor.label) meteor.label.destroy();
           
           const exp = this.add.graphics();
           exp.fillStyle(meteor.isCorrect ? 0x10b981 : 0xef4444, 0.8);
