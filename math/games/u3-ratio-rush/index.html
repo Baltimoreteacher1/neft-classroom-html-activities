@@ -1296,13 +1296,13 @@
         // for less scaffolding.
         const support = this.track === 1;
         this.topLine.anchor.x = tickX(p.a);
-        this.topLine.anchor.setAlpha(support ? 0.6 : 0.22);
+        this.topLine.anchor.setAlpha(support ? 0.6 : 0.5);
         this.topLine.anchorLbl.x = tickX(p.a);
         this.topLine.anchorLbl
           .setText(support ? p.a + "" : "")
           .setVisible(support);
         this.botLine.anchor.x = tickX(p.b);
-        this.botLine.anchor.setAlpha(support ? 0.6 : 0.22);
+        this.botLine.anchor.setAlpha(support ? 0.6 : 0.5);
         this.botLine.anchorLbl.x = tickX(p.b);
         this.botLine.anchorLbl
           .setText(support ? p.b + "" : "")
@@ -1625,7 +1625,9 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        const again = () => this.scene.start("Game");
+        // Return to the level picker (consistent with the other games) so a
+        // student can switch Level 1 / Level 2 on replay.
+        const again = () => this.scene.start("Pick");
         btn.on("pointerover", () => btn.setFillStyle(0x27a883));
         btn.on("pointerout", () => btn.setFillStyle(0x1f8a6b));
         btn.on("pointerdown", again);

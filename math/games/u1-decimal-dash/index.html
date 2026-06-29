@@ -918,6 +918,7 @@
         this.sel = 0; // index of the currently selected marker
         this.beads = [];
         this.ghosts = [];
+        this._lastSaid = null; // debounce: last marker value announced to SR
       };
 
       GameScene.prototype.create = function () {
@@ -1185,7 +1186,18 @@
       GameScene.prototype.setBeadIndex = function (b, idx) {
         b.idx = Phaser.Math.Clamp(idx, 0, TICKS);
         b.c.x = tickX(b.idx);
-        if (this.beads[this.sel] === b) this.updateReadout();
+        if (this.beads[this.sel] === b) {
+          this.updateReadout();
+          // Announce the marker's value to screen readers (debounced by value
+          // so dragging/nudging doesn't spam the live region).
+          if (this.problem) {
+            const val = rstr(this.problem.range, b.idx);
+            if (val !== this._srVal) {
+              this._srVal = val;
+              srSay("Marker at " + val + ".");
+            }
+          }
+        }
       };
 
       GameScene.prototype.buildBeads = function () {
