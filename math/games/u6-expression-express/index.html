@@ -1422,6 +1422,15 @@
         if (!st.filled) {
           this.readout.setColor("#c8a0e0");
           this.readout.setText(expr + "  = ?");
+          // Announce the in-progress build to screen-reader users (WCAG: the
+          // #ee-sr live region must actually be populated as tiles change).
+          srSay(
+            "Building: " +
+              (expr.trim() ? expr : "empty") +
+              ". Goal " +
+              (this.problem ? this.problem.goal : "") +
+              ".",
+          );
           return;
         }
         const hit = st.value === this.problem.goal;
@@ -1430,6 +1439,15 @@
           ? "  →  " + st.parts.map((p) => p.sub).join(" ")
           : "";
         this.readout.setText(expr + sub + "  =  " + st.value);
+        srSay(
+          expr +
+            " equals " +
+            st.value +
+            ". Goal " +
+            this.problem.goal +
+            ". " +
+            (hit ? "Matches — lock it in." : ""),
+        );
       };
 
       GameScene.prototype.showHint = function () {
