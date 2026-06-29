@@ -87,6 +87,10 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
+    <!-- Student Passport (meta-progression: lifetime XP / streak / badges) -->
+    <link rel="stylesheet" href="/assets/lesson-passport.css" />
+    <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
+    <script src="/assets/game-juice.js"></script>
   </head>
   <body>
     <div id="loader">
@@ -121,6 +125,39 @@
       let rounds = [];
       let lessonTitle = "Lesson";
       let activeLesson = "1-1";
+      let themeId = "default"; // lesson config "theme" id → palette
+      let mascot = "🎮"; // lesson config "themeEmoji" → guide character
+
+      // Resolve the shared game-feel layer; provide safe no-op fallbacks so the
+      // game still runs if /assets/game-juice.js failed to load.
+      const JUICE = window.GameJuice || {
+        reduceMotion: false,
+        audio: {
+          unlock() {},
+          tap() {},
+          pop() {},
+          correct() {},
+          wrong() {},
+          whoosh() {},
+          fanfare() {},
+          musicStart() {},
+          musicStop() {},
+        },
+        theme: () => ({
+          accent: "#38bdf8",
+          accentN: 0x38bdf8,
+          tileN: 0x334155,
+          botN: 0x1e293b,
+        }),
+        bgGradient() {},
+        popIn() {},
+        tilePop() {},
+        burst() {},
+        confetti() {},
+        shake() {},
+        floatText() {},
+        award() {},
+      };
 
       function srSay(msg) {
         const el = document.getElementById("pa-sr");
@@ -207,6 +244,7 @@
         }
 
         const firstTitles = [];
+        let gotTheme = false;
         for (const id of ids) {
           try {
             const res = await fetch(
@@ -215,6 +253,12 @@
             if (!res.ok) continue;
             const data = await res.json();
             if (data.title) firstTitles.push(data.title);
+            // Use the first lesson's theme as the visual identity for the run.
+            if (!gotTheme) {
+              if (data.theme) themeId = data.theme;
+              if (data.themeEmoji) mascot = data.themeEmoji;
+              gotTheme = true;
+            }
             const opt = (data.practice && data.practice.optional) || [];
             opt.forEach((it) => {
               const r = buildRound(it);
@@ -224,6 +268,12 @@
             /* skip unreachable lesson */
           }
         }
+
+        // Recolor the shared palette to the lesson's theme.
+        const TH = JUICE.theme(themeId);
+        PALETTE.tile = TH.tileN;
+        PALETTE.accent = TH.accentN;
+        PALETTE.bg = TH.botN;
 
         if (isGroup) {
           rounds = shuffle(rounds);
@@ -392,7 +442,8 @@
 
           const start = () => {
             SFX.init();
-            SFX.pick();
+            JUICE.audio.unlock();
+            JUICE.audio.whoosh();
             this.scene.start("Play");
           };
           makeButton(this, W / 2, 430, 260, 64, "START ▶", start);
@@ -426,7 +477,11 @@
           this.lives = 3;
           this.streak = 0;
           this.correctCount = 0;
+          this.th = JUICE.theme(themeId);
           drawStars(this);
+          // Audio + ambient music (unlocked by the Start tap on the Title scene).
+          JUICE.audio.unlock();
+          JUICE.audio.musicStart();
 
           // HUD
           const hud = {
@@ -434,11 +489,14 @@
             fontSize: "18px",
             fontStyle: "bold",
           };
-          this.titleText = this.add.text(20, 16, lessonTitle.toUpperCase(), {
+          // Left HUD starts at x≈110 to clear the Student Passport pill (a
+          // fixed DOM element the lesson-passport layer parks in the corner).
+          this.titleText = this.add.text(110, 14, lessonTitle.toUpperCase(), {
             ...hud,
-            color: "#38bdf8",
+            fontSize: "16px",
+            color: this.th.accent,
           });
-          this.scoreText = this.add.text(20, 44, "Score: 0", {
+          this.scoreText = this.add.text(110, 40, "Score: 0", {
             ...hud,
             color: "#ffffff",
           });
@@ -482,11 +540,51 @@
             .setOrigin(0.5)
             .setAlpha(0);
 
+          // Journey track: a goal flag the mascot walks toward, one step per round.
+          this.journeyY = 74;
+          this.add
+            .line(
+              0,
+              0,
+              120,
+              this.journeyY,
+              W - 70,
+              this.journeyY,
+              this.th.accentN,
+              0.4,
+            )
+            .setOrigin(0, 0)
+            .setLineWidth(2);
+          this.add.text(W - 60, this.journeyY - 12, "🏁", { fontSize: "22px" });
+          this.mascotObj = this.add
+            .text(120, this.journeyY, mascot, { fontSize: "40px" })
+            .setOrigin(0.5);
+
           // Layer that holds per-round interactive objects (cleared each round)
           this.layer = this.add.container(0, 0);
           this.locked = false;
           this.updateHUD();
           this.startRound();
+        }
+
+        // Slide the mascot along the journey track toward the goal flag.
+        advanceJourney() {
+          if (!this.mascotObj) return;
+          const total = Math.max(1, rounds.length);
+          const x0 = 120,
+            x1 = W - 90;
+          const done = Math.min(this.idx + 1, total);
+          const tx = x0 + ((x1 - x0) * done) / total;
+          if (JUICE.reduceMotion) {
+            this.mascotObj.x = tx;
+            return;
+          }
+          this.tweens.add({
+            targets: this.mascotObj,
+            x: tx,
+            duration: 500,
+            ease: "Quad.InOut",
+          });
         }
 
         startRound() {
@@ -527,11 +625,28 @@
           if (this.locked) return;
           this.locked = true;
           const w = why || rounds[this.idx].why || "";
+          const cx = W / 2,
+            cy = 300;
           if (correct) {
-            SFX.good();
             this.streak++;
             this.correctCount++;
-            this.score += 100 + Math.min(this.streak, 5) * 20;
+            const gained = 100 + Math.min(this.streak, 5) * 20;
+            this.score += gained;
+            // Juice: chord, particle burst, camera pop, rising XP, mascot cheer.
+            JUICE.audio.correct(this.streak);
+            JUICE.burst(
+              this,
+              cx,
+              cy,
+              [0x34d399, this.th.accentN, 0xffffff],
+              20,
+            );
+            JUICE.shake(this, 0.005);
+            JUICE.floatText(this, cx, cy - 30, "+" + gained, "#34d399");
+            this.mascotReact(true);
+            const xp = 10 + Math.min(this.streak, 5) * 2;
+            JUICE.award(xp, "practice-arcade");
+            if (this.streak >= 3) JUICE.confetti(this, 1);
             this.flashEdge(PALETTE.good);
             this.feedback
               .setColor("#34d399")
@@ -539,9 +654,11 @@
               .setAlpha(1);
             srSay("Correct. " + w);
           } else {
-            SFX.bad();
             this.streak = 0;
             this.lives--;
+            JUICE.audio.wrong();
+            JUICE.shake(this, 0.009);
+            this.mascotReact(false);
             this.flashEdge(PALETTE.bad);
             this.feedback
               .setColor("#fca5a5")
@@ -550,6 +667,7 @@
             srSay("Not quite. " + w);
           }
           this.updateHUD();
+          this.advanceJourney();
           const dwell = correct ? 1100 : 1900;
           if (this.lives <= 0) {
             this.time.delayedCall(dwell, () => this.finish(false));
@@ -560,6 +678,7 @@
         }
 
         finish(won) {
+          JUICE.audio.musicStop();
           this.scene.start("Result", {
             score: this.score,
             correct: this.correctCount,
@@ -913,7 +1032,28 @@
             .setOrigin(0.5);
           c.add(bg);
           c.add(label);
+          // Juice: tiles pop in on arrival and squash on tap for tactile feel.
+          JUICE.popIn(this, c, Math.random() * 120);
+          bg.on("pointerdown", () => {
+            JUICE.tilePop(this, c);
+            JUICE.audio.tap();
+          });
           return { parts: c, bg, label, homeX: x, homeY: y };
+        }
+
+        // Mascot guide reacts to answers (cheer up / dip down).
+        mascotReact(good) {
+          if (!this.mascotObj) return;
+          if (JUICE.reduceMotion) return;
+          this.tweens.add({
+            targets: this.mascotObj,
+            y: this.mascotObj.y + (good ? -26 : 12),
+            angle: good ? 0 : -12,
+            scale: good ? 1.25 : 0.92,
+            yoyo: true,
+            duration: good ? 260 : 200,
+            ease: "Quad.Out",
+          });
         }
       }
 
@@ -963,7 +1103,23 @@
               },
             )
             .setOrigin(0.5);
-          if (d.won) SFX.win();
+          // Celebration + meta-progression payout.
+          if (d.won) {
+            JUICE.audio.fanfare();
+            JUICE.confetti(this, 1);
+          } else {
+            JUICE.audio.wrong();
+          }
+          const bonusXp = d.correct * 10 + (d.won ? 50 : 0) + stars * 15;
+          JUICE.award(bonusXp, "practice-arcade-complete");
+          this.add
+            .text(W / 2, 360, "+" + bonusXp + " XP", {
+              fontFamily: "Nunito, Segoe UI, sans-serif",
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#fde047",
+            })
+            .setOrigin(0.5);
 
           try {
             window.EduPulse &&
@@ -996,6 +1152,8 @@
 
       // ── Shared helpers (scene-agnostic) ───────────────────────────────────
       function drawStars(scene) {
+        // Themed vertical gradient behind everything, then a soft star field.
+        JUICE.bgGradient(scene, JUICE.theme(themeId));
         const reduce =
           window.matchMedia &&
           window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1063,5 +1221,7 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
+    <!-- Student Passport (meta-progression pill; boots itself, award() guarded) -->
+    <script src="/assets/lesson-passport.js" defer></script>
   </body>
 </html>
