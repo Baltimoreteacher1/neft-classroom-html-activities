@@ -110,16 +110,21 @@
       const W = 960,
         H = 720;
       const MAX_ROUNDS = 8;
+      // Bright, high-contrast, kid-friendly palette. Vivid indigo/violet field
+      // with saturated tiles + cyan accent so white text stays legible. A fixed
+      // scheme (not the per-lesson dark theme) guarantees consistent contrast;
+      // per-lesson identity comes from the mascot emoji instead of color.
       const PALETTE = {
-        bg: 0x0f172a,
-        panel: 0x1e293b,
-        panelLine: 0x38bdf8,
-        tile: 0x334155,
-        tileHi: 0x475569,
-        good: 0x10b981,
-        bad: 0xef4444,
-        accent: 0x38bdf8,
-        gold: 0xfacc15,
+        bgTop: 0x6366f1, // indigo-500  (gradient top)
+        bgBot: 0x7c3aed, // violet-600  (gradient bottom)
+        panel: 0x312e81, // indigo-900 panel, reads under white text
+        panelLine: 0x67e8f9, // cyan-300 border
+        tile: 0x4f46e5, // indigo-600 tile
+        tileHi: 0x6366f1, // indigo-500 hover
+        good: 0x10b981, // emerald-500
+        bad: 0xf43f5e, // rose-500
+        accent: 0x22d3ee, // cyan-400
+        gold: 0xfacc15, // amber-300
       };
 
       let rounds = [];
@@ -269,11 +274,9 @@
           }
         }
 
-        // Recolor the shared palette to the lesson's theme.
-        const TH = JUICE.theme(themeId);
-        PALETTE.tile = TH.tileN;
-        PALETTE.accent = TH.accentN;
-        PALETTE.bg = TH.botN;
+        // NOTE: the palette is intentionally a fixed bright scheme — we no
+        // longer recolor it from the per-lesson (dark) theme, which produced
+        // the muddy low-contrast look. Per-lesson identity = the mascot emoji.
 
         if (isGroup) {
           rounds = shuffle(rounds);
@@ -293,7 +296,7 @@
           type: Phaser.AUTO,
           width: W,
           height: H,
-          backgroundColor: "#0f172a",
+          backgroundColor: "#6366f1",
           parent: document.body,
           scale: {
             mode: Phaser.Scale.FIT,
@@ -451,11 +454,12 @@
                 (rounds.length === 1 ? "" : "s") +
                 ": sort, match, choose, and fix mistakes.\n" +
                 "Take your time — there is no timer. Tap, or use the number\n" +
-                "and arrow keys. A wrong answer costs a heart and shows why.",
+                "and arrow keys. Wrong? No problem — you get a hint and can\n" +
+                "try again until you've got it.",
               {
                 fontFamily: "Nunito, Segoe UI, sans-serif",
                 fontSize: "18px",
-                color: "#94a3b8",
+                color: "#e0e7ff",
                 align: "center",
               },
             )
@@ -495,9 +499,9 @@
           );
           this.idx = 0;
           this.score = 0;
-          this.lives = 3;
           this.streak = 0;
-          this.correctCount = 0;
+          this.correctCount = 0; // first-try solves (drives stars)
+          this.tries = 0; // attempts on the current round
           this.th = JUICE.theme(themeId);
           drawStars(this);
           // Audio + ambient music (unlocked by the Start tap on the Title scene).
@@ -522,16 +526,18 @@
             color: "#ffffff",
           });
           this.progressText = this.add
-            .text(W / 2, 16, "", { ...hud, color: "#94a3b8" })
+            .text(W / 2, 16, "", { ...hud, color: "#e0e7ff" })
             .setOrigin(0.5, 0);
           this.streakText = this.add
             .text(W / 2, 44, "", { ...hud, color: "#facc15" })
             .setOrigin(0.5, 0);
+          // No-fail arcade: instead of hearts, show first-try solves as a
+          // positive streak-of-mastery counter.
           this.livesText = this.add
             .text(W - 20, 16, "", {
               ...hud,
-              fontSize: "22px",
-              color: "#ef4444",
+              fontSize: "20px",
+              color: "#fde047",
             })
             .setOrigin(1, 0);
 
@@ -615,6 +621,7 @@
           this.input.keyboard.removeAllListeners();
           this.feedback.setAlpha(0);
           this.locked = false;
+          this.tries = 0;
           this.revealCorrect = null;
           if (this.idx >= rounds.length) {
             this.finish(true);
@@ -642,123 +649,71 @@
           else this.renderChoose(r);
         }
 
-        // resolve a round: correct true/false, plus optional explanation
+        // Resolve a round. Correct → reward + advance. Wrong → NO penalty and
+        // NO advance: the student gets a hint and tries again until they solve
+        // it (calm, no-fail practice). First-try solves drive the star score.
         resolve(correct, why) {
           if (this.locked) return;
-          this.locked = true;
           const w = why || rounds[this.idx].why || "";
           const cx = W / 2,
             cy = 300;
           if (correct) {
-            this.streak++;
-            this.correctCount++;
-            const gained = 100 + Math.min(this.streak, 5) * 20;
+            this.locked = true;
+            const firstTry = this.tries === 0;
+            this.streak = firstTry ? this.streak + 1 : 0;
+            if (firstTry) this.correctCount++;
+            const gained =
+              (firstTry ? 100 : 40) + Math.min(this.streak, 5) * 20;
             this.score += gained;
             // Juice escalates with the streak: more particles, bigger shake,
             // a second burst + confetti once it's rolling.
             JUICE.audio.correct(this.streak);
             const n = 18 + Math.min(this.streak, 6) * 4;
-            JUICE.burst(this, cx, cy, [0x34d399, this.th.accentN, 0xffffff], n);
+            JUICE.burst(this, cx, cy, [0x34d399, PALETTE.accent, 0xffffff], n);
             if (this.streak >= 5)
               JUICE.burst(this, cx, cy + 60, [0xfacc15, 0xffffff], 16);
             JUICE.shake(this, 0.005 + Math.min(this.streak, 5) * 0.001);
             JUICE.floatText(this, cx, cy - 30, "+" + gained, "#34d399", 40);
             this.mascotReact(true);
-            this.mascotSay(this.streak >= 3 ? "🔥 On fire!" : "Nice!");
+            this.mascotSay(
+              firstTry
+                ? this.streak >= 3
+                  ? "🔥 On fire!"
+                  : "Nice!"
+                : "Got it! 🎉",
+            );
             const xp = 10 + Math.min(this.streak, 5) * 2;
             JUICE.award(xp, "practice-arcade");
             if (this.streak >= 2) JUICE.confetti(this, 1);
             this.flashEdge(PALETTE.good);
             this.feedback
-              .setColor("#34d399")
-              .setText("Correct! " + w)
+              .setColor("#86efac")
+              .setText((firstTry ? "Correct! " : "Yes! ") + w)
               .setAlpha(1);
             srSay("Correct. " + w);
+            this.updateHUD();
+            this.advanceJourney();
+            this.time.delayedCall(1100, () => {
+              this.idx++;
+              this.startRound();
+            });
           } else {
+            // Wrong: encourage + hint, keep the round open for another attempt.
+            this.tries++;
             this.streak = 0;
-            this.lives--;
             JUICE.audio.wrong();
-            JUICE.shake(this, 0.009);
+            JUICE.shake(this, 0.006);
             this.mascotReact(false);
-            this.mascotSay("Hmm, look again 👀");
+            this.mascotSay(
+              this.tries >= 2 ? "Use the hint 👀" : "Try again 👀",
+            );
             this.flashEdge(PALETTE.bad);
-            this.feedback
-              .setColor("#fca5a5")
-              .setText(w ? "Not quite — " + w : "Not quite.")
-              .setAlpha(1);
-            srSay("Not quite. " + w);
+            const msg =
+              this.tries >= 2 && w ? "Hint: " + w : "Not quite — try again!";
+            this.feedback.setColor("#fde68a").setText(msg).setAlpha(1);
+            srSay("Not quite. Try again. " + (this.tries >= 2 ? w : ""));
+            this.updateHUD();
           }
-          this.updateHUD();
-          this.advanceJourney();
-
-          // Advance to the next round (or end). For wrong answers we pause on a
-          // teaching card the student dismisses, so the explanation is actually
-          // read; correct answers flow on quickly.
-          const advance = () => {
-            if (this.lives <= 0) {
-              this.finish(false);
-              return;
-            }
-            this.idx++;
-            this.startRound();
-          };
-          if (correct) {
-            this.time.delayedCall(1100, advance);
-          } else {
-            if (this.revealCorrect) {
-              try {
-                this.revealCorrect();
-              } catch (e) {}
-            }
-            JUICE.floatText(this, W - 44, 30, "−1 ❤", "#fca5a5", 22);
-            this.showTeach(w, advance);
-          }
-        }
-
-        // Teaching card shown after a wrong answer: a dimmed backdrop, the
-        // explanation in large type, and a Continue control (tap / Enter / Space).
-        // Auto-dismisses after a generous beat as a fallback.
-        showTeach(why, onContinue) {
-          const ov = this.add.container(0, 0).setDepth(90);
-          const dim = this.add
-            .rectangle(W / 2, H / 2, W, H, 0x0a0f1f, 0.72)
-            .setInteractive();
-          const panel = this.add.graphics();
-          panel.fillStyle(0x14213a, 0.98);
-          panel.lineStyle(3, 0xfca5a5, 0.9);
-          panel.fillRoundedRect(120, 230, W - 240, 260, 18);
-          panel.strokeRoundedRect(120, 230, W - 240, 260, 18);
-          const head = this.add
-            .text(W / 2, 280, "Not quite — here's why", {
-              fontFamily: "Nunito, Segoe UI, sans-serif",
-              fontSize: "24px",
-              fontStyle: "bold",
-              color: "#fca5a5",
-            })
-            .setOrigin(0.5);
-          const body = this.add
-            .text(W / 2, 360, why || "Take another look at the example.", {
-              fontFamily: "Nunito, Segoe UI, sans-serif",
-              fontSize: "20px",
-              color: "#e2e8f0",
-              align: "center",
-              wordWrap: { width: W - 320 },
-            })
-            .setOrigin(0.5);
-          ov.add([dim, panel, head, body]);
-          const done = () => {
-            this.input.keyboard.off("keydown-ENTER", done);
-            this.input.keyboard.off("keydown-SPACE", done);
-            ov.destroy();
-            onContinue();
-          };
-          const btn = makeButton(this, W / 2, 452, 220, 50, "Continue →", done);
-          ov.add([btn.bg, btn.t]);
-          this.input.keyboard.on("keydown-ENTER", done);
-          this.input.keyboard.on("keydown-SPACE", done);
-          this.time.delayedCall(8000, () => {
-            if (ov.active) done();
-          });
         }
 
         finish(won) {
@@ -776,7 +731,9 @@
           this.streakText.setText(
             this.streak > 1 ? "🔥 Streak " + this.streak : "",
           );
-          this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
+          this.livesText.setText(
+            "⭐ " + this.correctCount + " / " + rounds.length,
+          );
         }
 
         flashEdge(color) {
@@ -834,6 +791,11 @@
           SFX.pick();
           const ok = i === r.correctIndex;
           t.bg.setFillStyle(ok ? PALETTE.good : PALETTE.bad);
+          // Wrong pick: flash red, then reset so the student can try again.
+          if (!ok)
+            this.time.delayedCall(620, () => {
+              if (!this.locked) t.bg.setFillStyle(PALETTE.tile);
+            });
           this.resolve(ok, r.why);
         }
 
@@ -886,7 +848,7 @@
               {
                 fontFamily: "Nunito, Segoe UI, sans-serif",
                 fontSize: "13px",
-                color: "#94a3b8",
+                color: "#e0e7ff",
                 align: "center",
                 wordWrap: { width: W - 160 },
               },
@@ -913,13 +875,30 @@
             t.data = it;
             t.assigned = null;
             this.layer.add(t.parts);
-            this.input.setDraggable(t.bg);
-            t.bg.on("drag", (p, dx, dy) => {
-              if (this.locked || t.assigned) return;
-              t.parts.x = dx - x;
-              t.parts.y = dy - y;
+            // Drag the whole tile (the container), not its child rect — dragging
+            // a container child is the Phaser pitfall that broke this before.
+            // Disable the child's input so the container owns the pointer.
+            t.bg.disableInteractive();
+            t.parts.setInteractive(
+              new Phaser.Geom.Rectangle(
+                -t.parts.width / 2,
+                -t.parts.height / 2,
+                t.parts.width,
+                t.parts.height,
+              ),
+              Phaser.Geom.Rectangle.Contains,
+            );
+            this.input.setDraggable(t.parts);
+            t.parts.on("dragstart", () => t.parts.setDepth(20));
+            t.parts.on("drag", (p, dx, dy) => {
+              if (t.assigned) return;
+              t.parts.x = dx;
+              t.parts.y = dy;
             });
-            t.bg.on("dragend", () => this.dropTile(t));
+            t.parts.on("dragend", () => {
+              t.parts.setDepth(0);
+              this.dropTile(t);
+            });
             this.sortTiles.push(t);
           });
           this.highlightSort();
@@ -959,9 +938,9 @@
           );
         }
         dropTile(t) {
-          // find bin under the tile's current position
-          const gx = t.homeX + t.parts.x;
-          const gy = t.homeY + t.parts.y;
+          // The container is positioned in absolute (layer) space while dragging.
+          const gx = t.parts.x;
+          const gy = t.parts.y;
           let target = -1;
           this.bins.forEach((b, bi) => {
             if (Math.abs(gx - b.x) <= b.w / 2 && Math.abs(gy - b.y) <= b.h / 2)
@@ -969,9 +948,9 @@
           });
           if (target >= 0) this.assignTile(t, target);
           else {
-            // snap home
-            t.parts.x = 0;
-            t.parts.y = 0;
+            // snap back home
+            t.parts.x = t.homeX;
+            t.parts.y = t.homeY;
           }
         }
         assignTile(t, bi) {
@@ -982,20 +961,21 @@
           const slot = b.count++;
           const tx = b.x - b.w / 2 + 14 + (slot % 2) * (b.w / 2);
           const ty = b.y - b.h / 2 + 44 + Math.floor(slot / 2) * 30;
-          // Snap with a springy tween so the drop has weight.
+          t.binSlot = { bi, slot }; // remembered so a wrong check can free it
+          // Snap with a springy tween so the drop has weight (absolute coords).
           if (JUICE.reduceMotion) {
-            t.parts.x = tx - t.homeX;
-            t.parts.y = ty - t.homeY;
+            t.parts.x = tx;
+            t.parts.y = ty;
           } else {
             this.tweens.add({
               targets: t.parts,
-              x: tx - t.homeX,
-              y: ty - t.homeY,
+              x: tx,
+              y: ty,
               duration: 220,
               ease: "Back.Out",
             });
           }
-          this.input.setDraggable(t.bg, false);
+          this.input.setDraggable(t.parts, false);
           this.highlightSort();
         }
         checkSort(r) {
@@ -1003,7 +983,7 @@
           const unplaced = this.sortTiles.filter((t) => !t.assigned);
           if (unplaced.length) {
             this.feedback
-              .setColor("#fca5a5")
+              .setColor("#fde68a")
               .setText("Place every tile in a bin first.")
               .setAlpha(1);
             srSay("Place every tile in a bin first.");
@@ -1017,10 +997,35 @@
               t.assigned === t.data.category ? PALETTE.good : PALETTE.bad,
             ),
           );
+          if (allRight) {
+            this.resolve(true, "");
+            return;
+          }
+          // Wrong: keep the correctly-placed tiles, send the misplaced (red)
+          // ones home and make them draggable again for another try.
           this.resolve(
-            allRight,
-            allRight ? "" : "Check each tile's bin and try the next round.",
+            false,
+            "Move the red tiles to the right bin, then check.",
           );
+          this.time.delayedCall(720, () => {
+            if (this.locked) return;
+            this.sortTiles.forEach((t) => {
+              if (t.assigned !== t.data.category) {
+                if (t.binSlot)
+                  this.bins[t.binSlot.bi].count = Math.max(
+                    0,
+                    this.bins[t.binSlot.bi].count - 1,
+                  );
+                t.assigned = null;
+                t.binSlot = null;
+                t.bg.setFillStyle(PALETTE.tile);
+                t.parts.x = t.homeX;
+                t.parts.y = t.homeY;
+                this.input.setDraggable(t.parts, true);
+              }
+            });
+            this.highlightSort();
+          });
         }
 
         // ── Renderer: MATCH (connect terms to partners) ────────────────────
@@ -1193,20 +1198,30 @@
           SFX.pick();
           const ok = i === r.errorStep;
           t.bg.setFillStyle(ok ? PALETTE.good : PALETTE.bad);
+          // Wrong step: flash red, then reset so the student can try again.
+          if (!ok)
+            this.time.delayedCall(620, () => {
+              if (!this.locked) t.bg.setFillStyle(PALETTE.tile);
+            });
           this.resolve(ok, r.why);
         }
 
         // ── Shared tile factory: returns {parts(container), bg, label} ─────
         makeTile(x, y, w, h, text, fontSize) {
           const c = this.add.container(x, y);
+          // Size the container so it can be made interactive/draggable as a
+          // whole (sort mode); a bright border defines the tile on the vivid bg.
+          c.setSize(w, h);
           const bg = this.add
             .rectangle(0, 0, w, h, PALETTE.tile)
+            .setStrokeStyle(2, PALETTE.panelLine, 0.55)
             .setInteractive({ useHandCursor: true });
           const label = this.add
             .text(0, 0, text, {
               fontFamily: "Nunito, Segoe UI, sans-serif",
               fontSize: fontSize || "18px",
               color: "#ffffff",
+              fontStyle: "bold",
               align: "center",
               wordWrap: { width: w - 20 },
             })
@@ -1376,14 +1391,24 @@
 
       // ── Shared helpers (scene-agnostic) ───────────────────────────────────
       function drawStars(scene) {
-        // Themed vertical gradient behind everything, then a soft star field.
-        JUICE.bgGradient(scene, JUICE.theme(themeId));
+        // Bright vertical gradient (indigo → violet) painted directly, so the
+        // look no longer depends on the muted per-lesson theme. A soft field of
+        // white dots adds a little sparkle without lowering contrast.
+        const bg = scene.add.graphics();
+        bg.fillGradientStyle(
+          PALETTE.bgTop,
+          PALETTE.bgTop,
+          PALETTE.bgBot,
+          PALETTE.bgBot,
+          1,
+        );
+        bg.fillRect(0, 0, W, H);
         const reduce =
           window.matchMedia &&
           window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         const g = scene.add.graphics();
-        g.fillStyle(0xffffff, 0.35);
-        const n = reduce ? 40 : 90;
+        g.fillStyle(0xffffff, 0.28);
+        const n = reduce ? 36 : 80;
         for (let i = 0; i < n; i++)
           g.fillCircle(
             Phaser.Math.Between(0, W),
