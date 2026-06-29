@@ -8189,6 +8189,30 @@
               // Combine activities and projects
               var allActs = lesson.activities.concat(lesson.projects || []);
 
+              // Universal review-game link. Added once, centrally, so it shows
+              // in BOTH the visible outline list and the phase dropdowns.
+              // End-of-Unit → unit-cumulative review (?unit=N, "Unit Review
+              // Game"); a regular lesson → that lesson's arcade (?lesson=ID).
+              // "Arcade" is the per-lesson name, so end-of-unit avoids it.
+              var hasArcade = allActs.some(function (it) {
+                return (it.href || "").indexOf("practice-arcade") > -1;
+              });
+              if (!hasArcade) {
+                if (lesson.isEndOfUnit && lesson.unitInteger) {
+                  allActs.push({
+                    text: "🎮 Unit Review Game",
+                    href:
+                      "/math/games/practice-arcade/?unit=" + lesson.unitInteger,
+                  });
+                } else if (lesson.lessonId) {
+                  allActs.push({
+                    text: "⚙️ Practice Arcade Game",
+                    href:
+                      "/math/games/practice-arcade/?lesson=" + lesson.lessonId,
+                  });
+                }
+              }
+
               // Sort each activity into a phase bucket:
               // 0 = Pre-Lesson, 1 = Lesson, 2 = Post-Lesson.
               var phaseBuckets = [[], [], [], []];
@@ -8202,35 +8226,6 @@
               // opens it. Empty phases are disabled with a "— None —" label.
               phaseSelects.forEach(function (sel, pIdx) {
                 var items = phaseBuckets[pIdx];
-
-                // Inject universal Practice Arcade Game option for Games dropdown (pIdx === 3)
-                if (pIdx === 3) {
-                  items = items.slice();
-                  var hasArcade = items.some(function (it) {
-                    return it.href.indexOf("practice-arcade") > -1;
-                  });
-                  if (!hasArcade) {
-                    if (lesson.isEndOfUnit && lesson.unitInteger) {
-                      // End-of-Unit entry: cumulative review across the whole
-                      // unit (?unit=N), not a single lesson. "Arcade" is the
-                      // per-lesson name, so this end-of-unit option is labeled
-                      // "Unit Review Game" instead.
-                      items.push({
-                        text: "🎮 Unit Review Game",
-                        href:
-                          "/math/games/practice-arcade/?unit=" +
-                          lesson.unitInteger,
-                      });
-                    } else if (lesson.lessonId) {
-                      items.push({
-                        text: "⚙️ Practice Arcade Game",
-                        href:
-                          "/math/games/practice-arcade/?lesson=" +
-                          lesson.lessonId,
-                      });
-                    }
-                  }
-                }
 
                 sel.innerHTML = "";
                 var placeholder = document.createElement("option");
@@ -8492,18 +8487,62 @@
     <script src="/assets/futures-lab.js?v=20260619" defer></script>
     <script src="/assets/gradebook-embed.js?v=20260624" defer></script>
 
-    <!-- Tools bar: lift the featured tool cards out of the narrow left rail
-         into a full-width strip across the top so all stay visible and tidy.
-         Additive + fail-safe: if this script does not run, the cards simply
-         remain visible in their original place (never hidden). -->
+    <!-- Curriculum-first layout pass:
+         (1) The featured tool cards are collapsed into a thin "Classroom Tools
+             & Apps" bar at the very top, so the curriculum itself is the first
+             thing visible — tools stay one tap away without a wall of cards.
+         (2) The redundant per-phase dropdowns are hidden; the always-visible
+             grouped outline list is the single way to open any resource.
+         Additive + fail-safe: if this script does not run, the cards and the
+         dropdowns simply remain visible in their original place. -->
     <style>
+      /* Hidden redundant phase dropdowns — the visible outline list below the
+         lesson already lists every resource as a one-tap link. */
+      .phase-selectors {
+        display: none !important;
+      }
+      .hub-toolbox {
+        max-width: 1180px;
+        margin: 14px auto 0;
+        padding: 0 clamp(18px, 4vw, 36px);
+        box-sizing: border-box;
+      }
+      .hub-toolbox > summary {
+        list-style: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font:
+          700 0.98rem/1.2 "Nunito",
+          system-ui,
+          sans-serif;
+        color: #1e3a5f;
+        background: #eef3fb;
+        border: 1px solid #d3e0f2;
+        border-radius: 12px;
+        padding: 12px 18px;
+      }
+      .hub-toolbox > summary::-webkit-details-marker {
+        display: none;
+      }
+      .hub-toolbox > summary::after {
+        content: "▸";
+        margin-left: auto;
+        transition: transform 0.15s ease;
+      }
+      .hub-toolbox[open] > summary::after {
+        transform: rotate(90deg);
+      }
+      .hub-toolbox > summary:focus-visible {
+        outline: 3px solid #2563eb;
+        outline-offset: 2px;
+      }
       .curriculum-tools-bar {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
         gap: 12px;
-        max-width: 1180px;
-        margin: 0 auto;
-        padding: 16px clamp(18px, 4vw, 36px) 0;
+        margin: 12px 0 0;
         box-sizing: border-box;
       }
       .curriculum-tools-bar .mf-text {
@@ -8522,7 +8561,15 @@
         var fg = wrap.querySelector(".hub-side > .features-grid");
         if (!fg) return;
         fg.classList.add("curriculum-tools-bar");
-        wrap.parentNode.insertBefore(fg, wrap);
+        // Wrap the tool cards in a collapsed <details> so the curriculum is the
+        // first thing on the page; teachers/students expand for the apps.
+        var box = document.createElement("details");
+        box.className = "hub-toolbox";
+        var sum = document.createElement("summary");
+        sum.innerHTML = "🧰 Classroom Tools &amp; Apps";
+        box.appendChild(sum);
+        box.appendChild(fg);
+        wrap.parentNode.insertBefore(box, wrap);
       })();
     </script>
   </body>
