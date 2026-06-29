@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
-    <title>Percent Power — Coin Catcher | Math Games</title>
+    <title>Percent Power — Bar Model Builder | Math Games</title>
     <meta
       name="description"
-      content="A 2D catch-and-sort game for Grade 6 lessons 4.1-4.5 (6.RP.3c): catch the correct percent of a number, sale price, and percent-decimal equivalent as values rain down."
+      content="A build-it math game for Grade 6 lessons 4.1-4.5 (6.RP.3c): shade a percent bar to show a percent of a number, a sale price, or a decimal — drag the handle or nudge by 5%, then lock in your answer."
     />
     <style>
       * {
@@ -122,9 +122,9 @@
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated spark-field (behind the Phaser canvas). -->
     <div id="pp-bg" data-parallax aria-hidden="true">
@@ -202,17 +202,37 @@
       })();
     </script>
     <script>
-      // ── PERCENT POWER — COIN CATCHER ──
+      // ── PERCENT POWER — BAR MODEL BUILDER ──
       // Phaser 3 — Grade 6 Math — Percent of a number, sale price, %↔decimal
-      // Mechanic: a cart you steer left/right at the bottom of the screen.
-      // Coins rain down, each stamped with a candidate value. Catch the coin
-      // that correctly answers the current percent problem; let the wrong ones
-      // fall past (or catch a wrong one and lose a life). Difficulty rises by
-      // level: faster coins, tighter cart, harder problem types.
+      // Mechanic (math-as-mechanic, no reflex/timer): the bar IS the whole.
+      // Drag the handle (or nudge ±5% with ← → / A D) to SHADE a percent, then
+      // press Lock In. Two live readouts — the percent and the part it equals —
+      // update as you move, so the percent↔part relationship is the action.
+      // A wrong shade (wrong math) costs a life and the marker animates to the
+      // correct spot to teach. Difficulty rises by level: more framings (find
+      // the part → decimal → find the percent → sale price).
 
       const W = 820,
         H = 600;
-      const LS_KEY = "pp_coin_catcher_highscore";
+      const LS_KEY = "pp_bar_builder_highscore";
+      // Percent-bar geometry in game space. Phaser Scale.FIT maps pointer
+      // coordinates into this space, so drag math works at any screen size.
+      const BAR_X0 = 130,
+        BAR_X1 = 690,
+        BAR_Y = 360,
+        BAR_H = 72;
+      const BAR_W = BAR_X1 - BAR_X0;
+      function pctToX(p) {
+        return BAR_X0 + (BAR_W * p) / 100;
+      }
+      function xToPct(x) {
+        // Snap to 5% increments; targets are always 5% multiples → exact match.
+        return Phaser.Math.Clamp(
+          Math.round(((x - BAR_X0) / BAR_W) * 20) * 5,
+          0,
+          100,
+        );
+      }
 
       // ── Audio (tiny WebAudio blips; gracefully no-op without a context) ──
       const SFX = {
@@ -288,150 +308,83 @@
         if (el) el.textContent = msg;
       }
 
-      // ── Problem generator ───────────────────────────────────────────────
-      // Returns { prompt, answer (string, canonical), why, label, options:[strings] }
-      // Three skill modes scale with level:
-      //   level 1-2: percent of a number    (6.RP.3c)
-      //   level 3-4: sale price after discount
-      //   level 5+ : percent ↔ decimal      (mixed back in lower modes too)
-      // All numeric answers are whole; equivalence answers compared as strings.
-      const FRIENDLY = [10, 20, 25, 50, 75];
-      function pctOfNumber() {
-        // Choose pct + base so the part is a whole number.
-        let pct, base, ans;
-        do {
-          pct = FRIENDLY[randInt(0, FRIENDLY.length - 1)];
-          base = randInt(2, 20) * 10; // multiples of 10 up to 200
-          ans = (pct / 100) * base;
-        } while (!Number.isInteger(ans));
-        const correct = String(ans);
-        const distract = new Set([correct]);
-        const pool = [
-          ans + 5,
-          ans - 5,
-          ans * 2,
-          Math.round(ans / 2),
-          ans + 10,
-          ans + base - ans, // = base
-        ];
-        const opts = [correct];
-        for (const v of shuffle(pool)) {
-          if (opts.length >= 4) break;
-          if (v > 0 && Number.isInteger(v) && !distract.has(String(v))) {
-            distract.add(String(v));
-            opts.push(String(v));
-          }
-        }
-        let g = 1;
-        while (opts.length < 4 && g < 40) {
-          const v = ans + g * 3;
-          if (v > 0 && !distract.has(String(v))) {
-            distract.add(String(v));
-            opts.push(String(v));
-          }
-          g++;
-        }
-        return {
-          prompt: pct + "% of " + base,
-          answer: correct,
-          label: "Find the part",
-          why: pct + "% of " + base + " = " + ans + ".",
-          options: shuffle(opts.slice(0, 4)),
-        };
+      // ── Problem generator (bar model) ───────────────────────────────────
+      // Every problem reduces to one tactile action: set the bar to a target
+      // percent (a multiple of 5). Returns
+      //   { kind, label, prompt, whole, targetPct, why }
+      // Four framings scale with level so the same action teaches percent of a
+      // number (both directions), %↔decimal, and sale price:
+      //   level 1-2 : find the part   ("Shade 75% of 20")
+      //   level 3   : + decimal → bar ("Shade the bar to show 0.25")
+      //   level 4-5 : + find percent  ("How much of 20 is 15? Shade it.")
+      //   level 6+  : + sale price    ("$20, 25% off — shade what you PAY")
+      const PCTS = [10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90];
+      function pickWholeFor(pct) {
+        // A whole that makes the part a whole number, kept student-friendly.
+        const bases = [10, 20, 40, 50, 60, 80, 100, 200];
+        const ok = bases.filter((b) => Number.isInteger((pct / 100) * b));
+        return ok[randInt(0, ok.length - 1)];
       }
-      function salePrice() {
-        let price, disc, sale;
-        do {
-          disc = FRIENDLY[randInt(0, FRIENDLY.length - 1)];
-          price = randInt(2, 20) * 10;
-          sale = price - (disc / 100) * price;
-        } while (!Number.isInteger(sale) || sale <= 0);
-        const correct = String(sale);
-        const savings = price - sale;
-        const distract = new Set([correct]);
-        const pool = [price, savings, sale + 10, sale - 10, sale + 5];
-        const opts = [correct];
-        for (const v of shuffle(pool)) {
-          if (opts.length >= 4) break;
-          if (v > 0 && Number.isInteger(v) && !distract.has(String(v))) {
-            distract.add(String(v));
-            opts.push(String(v));
-          }
-        }
-        let g = 1;
-        while (opts.length < 4 && g < 40) {
-          const v = sale + g * 4;
-          if (v > 0 && !distract.has(String(v))) {
-            distract.add(String(v));
-            opts.push(String(v));
-          }
-          g++;
-        }
-        return {
-          prompt: "$" + price + ", " + disc + "% off",
-          answer: correct,
-          label: "Sale price ($)",
-          why:
-            disc +
-            "% of $" +
-            price +
-            " = $" +
-            savings +
-            "; sale = $" +
-            sale +
-            ".",
-          options: shuffle(opts.slice(0, 4)),
-        };
-      }
-      function pctDecimal() {
-        // Compare as strings to avoid float pitfalls.
-        const bank = [
-          { p: "10%", d: "0.1" },
-          { p: "20%", d: "0.2" },
-          { p: "25%", d: "0.25" },
-          { p: "50%", d: "0.5" },
-          { p: "75%", d: "0.75" },
-          { p: "5%", d: "0.05" },
-          { p: "1%", d: "0.01" },
-          { p: "30%", d: "0.3" },
-          { p: "40%", d: "0.4" },
-          { p: "60%", d: "0.6" },
-        ];
-        const item = bank[randInt(0, bank.length - 1)];
-        const toDecimal = Math.random() < 0.5;
-        let prompt, answer, wrongs;
-        if (toDecimal) {
-          prompt = item.p + " as a decimal";
-          answer = item.d;
-          // Plausible wrong decimal forms (string-built, never NaN).
-          wrongs = shuffle(
-            bank.filter((b) => b.d !== item.d).map((b) => b.d),
-          ).slice(0, 3);
+      function barProblem(level) {
+        const pct = PCTS[randInt(0, PCTS.length - 1)];
+        const whole = pickWholeFor(pct);
+        const part = (pct / 100) * whole;
+        const dec = String(pct / 100);
+        let kind;
+        if (level <= 2) kind = "part";
+        else if (level === 3) kind = Math.random() < 0.6 ? "part" : "decimal";
+        else if (level <= 5) {
+          const r = Math.random();
+          kind = r < 0.4 ? "part" : r < 0.7 ? "decimal" : "percent";
         } else {
-          prompt = item.d + " as a percent";
-          answer = item.p;
-          wrongs = shuffle(
-            bank.filter((b) => b.p !== item.p).map((b) => b.p),
-          ).slice(0, 3);
+          const r = Math.random();
+          kind =
+            r < 0.3
+              ? "part"
+              : r < 0.5
+                ? "decimal"
+                : r < 0.75
+                  ? "percent"
+                  : "sale";
+        }
+        if (kind === "decimal")
+          return {
+            kind,
+            targetPct: pct,
+            whole,
+            label: "Decimal → bar",
+            prompt: "Shade the bar to show " + dec,
+            why: dec + " = " + pct + "%.",
+          };
+        if (kind === "percent")
+          return {
+            kind,
+            targetPct: pct,
+            whole,
+            label: "Find the percent",
+            prompt: "How much of " + whole + " is " + part + "? Shade it.",
+            why: part + " out of " + whole + " = " + pct + "%.",
+          };
+        if (kind === "sale") {
+          const paid = 100 - pct;
+          const paidVal = (paid / 100) * whole;
+          return {
+            kind,
+            targetPct: paid,
+            whole,
+            label: "Sale price",
+            prompt: "$" + whole + ", " + pct + "% off — shade what you PAY",
+            why: pct + "% off → you pay " + paid + "% = $" + paidVal + ".",
+          };
         }
         return {
-          prompt: prompt,
-          answer: answer,
-          label: "Equivalent value",
-          why: item.p + " = " + item.d + ".",
-          options: shuffle([answer, ...wrongs]),
+          kind: "part",
+          targetPct: pct,
+          whole,
+          label: "Find the part",
+          prompt: "Shade " + pct + "% of " + whole,
+          why: pct + "% of " + whole + " = " + part + ".",
         };
-      }
-      function makeProblem(level) {
-        // Weighted by level so coverage rises in difficulty.
-        let roll;
-        if (level <= 2) roll = Math.random() < 0.75 ? 0 : 2;
-        else if (level <= 4)
-          roll = Math.random() < 0.6 ? 1 : Math.random() < 0.5 ? 0 : 2;
-        else roll = randInt(0, 2);
-        if (roll === 0) return pctOfNumber();
-        if (roll === 1) return salePrice();
-        return pctDecimal();
       }
 
       const config = {
@@ -518,7 +471,7 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 175, "Coin Catcher", {
+          .text(cx, 175, "Bar Model Builder", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "26px",
             color: "#8fd6a0",
@@ -528,7 +481,7 @@
           .text(
             cx,
             230,
-            "A problem appears at the top. Steer your cart to CATCH the\ncoin showing the correct answer — let wrong coins fall!",
+            "Shade the bar to BUILD the answer. Drag the handle (or use\n← →) to set the percent, watch the part update, then Lock In!",
             {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "16px",
@@ -538,11 +491,16 @@
           )
           .setOrigin(0.5);
         this.add
-          .text(cx, 295, "← → or A/D to move · 6.RP.3c · Lessons 4.1–4.5", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "14px",
-            color: "#7fae8c",
-          })
+          .text(
+            cx,
+            295,
+            "Drag or ← → / A·D by 5% · 6.RP.3c · Lessons 4.1–4.5",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              color: "#7fae8c",
+            },
+          )
           .setOrigin(0.5);
 
         const hs = localStorage.getItem(LS_KEY);
@@ -599,7 +557,7 @@
         hub.on("pointerover", () => hub.setColor("#ffd24a"));
         hub.on("pointerout", () => hub.setColor("#7fae8c"));
         hub.on("pointerdown", () => (window.location.href = "/math/games/"));
-        srSay("Percent Power Coin Catcher. Press Start to play.");
+        srSay("Percent Power Bar Model Builder. Press Start to play.");
       };
 
       // ── VOCAB GATE ──
@@ -753,18 +711,16 @@
         this.level = 1;
         this.solved = 0; // problems answered correctly
         this.target = 10; // win condition: solve this many problems
-        this.coins = [];
         this.problem = null;
         this.locked = false;
-        this.fallSpeed = 90; // px/s baseline
+        this.dragging = false;
+        this.markerPct = 50; // current shaded percent (multiple of 5)
       };
 
       GameScene.prototype.create = function () {
         this.add.rectangle(W / 2, H / 2, W, H, 0x122413);
-        // Floor / catch line.
-        this.add.rectangle(W / 2, H - 18, W, 4, 0x2d874b, 0.6);
 
-        // HUD
+        // HUD (same layout as the shell's other games)
         const hudStyle = {
           fontFamily: "Segoe UI, sans-serif",
           fontSize: "18px",
@@ -800,35 +756,124 @@
           })
           .setOrigin(0.5);
         this.bannerText = this.add
-          .text(W / 2, 108, "", {
+          .text(W / 2, 110, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "36px",
+            fontSize: "28px",
             fontStyle: "bold",
             color: "#ffffff",
+            align: "center",
+            wordWrap: { width: W - 80 },
           })
           .setOrigin(0.5);
 
         this.feedback = this.add
-          .text(W / 2, 150, "", {
+          .text(W / 2, 168, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
+            fontSize: "17px",
             fontStyle: "bold",
             color: "#ffd24a",
             stroke: "#0a160b",
             strokeThickness: 3,
+            align: "center",
+            wordWrap: { width: W - 80 },
           })
           .setOrigin(0.5)
           .setAlpha(0);
 
-        // Cart (player)
-        this.cartW = 120;
-        this.cart = this.add.rectangle(W / 2, H - 40, this.cartW, 26, 0xd4952a);
-        this.cart.setStrokeStyle(3, 0xffe07a);
-        this.cartGlow = this.add
-          .text(this.cart.x, this.cart.y, "🛒", { fontSize: "26px" })
+        // Live readouts — the heart of the mechanic: the percent and the part
+        // it equals, both updating as the bar is shaded.
+        this.pctReadout = this.add
+          .text(W / 2, 232, "50%", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "56px",
+            color: "#ffd24a",
+            stroke: "#0a160b",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.partReadout = this.add
+          .text(W / 2, 282, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "22px",
+            fontStyle: "bold",
+            color: "#8fd6a0",
+          })
           .setOrigin(0.5);
 
-        // Particles
+        // Bar track + tenth ticks + end labels (0 … whole)
+        this.add
+          .rectangle(BAR_X0, BAR_Y, BAR_W, BAR_H, 0x0c2532)
+          .setOrigin(0, 0.5)
+          .setStrokeStyle(2, 0x2d874b);
+        for (let i = 1; i < 10; i++) {
+          this.add
+            .rectangle(pctToX(i * 10), BAR_Y, 2, BAR_H, 0x1f4a2c)
+            .setOrigin(0.5);
+        }
+        this.fill = this.add
+          .rectangle(BAR_X0, BAR_Y, BAR_W / 2, BAR_H, 0x2d874b)
+          .setOrigin(0, 0.5);
+        this.add
+          .text(BAR_X0, BAR_Y + BAR_H / 2 + 12, "0", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#bfe0c8",
+          })
+          .setOrigin(0, 0);
+        this.endR = this.add
+          .text(BAR_X1, BAR_Y + BAR_H / 2 + 12, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#bfe0c8",
+          })
+          .setOrigin(1, 0);
+
+        // Handle (large touch target) + knob
+        this.handle = this.add
+          .rectangle(pctToX(50), BAR_Y, 14, BAR_H + 30, 0xffe07a)
+          .setStrokeStyle(2, 0xb87b1d)
+          .setDepth(10);
+        this.knob = this.add
+          .circle(pctToX(50), BAR_Y - BAR_H / 2 - 22, 16, 0xffd24a)
+          .setStrokeStyle(3, 0xb87b1d)
+          .setDepth(10);
+
+        // Lock-in button
+        this.lockBtn = this.add
+          .rectangle(W / 2, 482, 240, 54, 0x2d874b)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(W / 2, 482, "LOCK IN ✓", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "22px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.lockBtn.on("pointerover", () =>
+          this.lockBtn.setFillStyle(0x36a35b),
+        );
+        this.lockBtn.on("pointerout", () =>
+          this.lockBtn.setFillStyle(0x2d874b),
+        );
+        this.lockBtn.on("pointerdown", () => this.lockIn());
+
+        // Hint
+        this.add
+          .text(
+            W / 2,
+            532,
+            "Drag the handle or press ← → (A·D) to adjust by 5%. Enter = lock in.",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              color: "#7fae8c",
+              align: "center",
+            },
+          )
+          .setOrigin(0.5);
+
+        // Particles + red flash (reused from the shell)
         this.burst = this.add
           .particles(0, 0, "spark", {
             speed: { min: 80, max: 240 },
@@ -840,182 +885,122 @@
             tint: [0xffd24a, 0x8fd6a0, 0xffffff],
           })
           .setDepth(20);
-
         this.redFlash = this.add
           .rectangle(W / 2, H / 2, W, H, 0xff3333, 0)
           .setDepth(30);
 
-        // Input
-        this.cursors = this.input.keyboard.createCursorKeys();
-        this.keyA = this.input.keyboard.addKey(
-          Phaser.Input.Keyboard.KeyCodes.A,
-        );
-        this.keyD = this.input.keyboard.addKey(
-          Phaser.Input.Keyboard.KeyCodes.D,
-        );
-        // Pointer steering (drag / move): cart follows pointer X.
-        this.pointerX = null;
-        this.input.on("pointermove", (p) => {
-          this.pointerX = p.x;
-        });
+        // Input: drag on the bar band; arrows / A·D nudge ±5%; Enter/Space lock.
+        const inBand = (y) => Math.abs(y - BAR_Y) <= BAR_H / 2 + 40;
         this.input.on("pointerdown", (p) => {
-          this.pointerX = p.x;
+          if (this.locked) return;
+          if (inBand(p.y)) {
+            this.dragging = true;
+            this.setMarker(xToPct(p.x));
+          }
         });
+        this.input.on("pointermove", (p) => {
+          if (this.dragging && !this.locked) this.setMarker(xToPct(p.x));
+        });
+        this.input.on("pointerup", () => {
+          this.dragging = false;
+        });
+        const nudge = (d) => {
+          if (this.locked) return;
+          this.setMarker(this.markerPct + d);
+          SFX.coin();
+        };
+        this.input.keyboard.on("keydown-LEFT", () => nudge(-5));
+        this.input.keyboard.on("keydown-RIGHT", () => nudge(5));
+        this.input.keyboard.on("keydown-A", () => nudge(-5));
+        this.input.keyboard.on("keydown-D", () => nudge(5));
+        this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
+        this.input.keyboard.on("keydown-SPACE", () => this.lockIn());
 
         this.cameras.main.fadeIn(400);
         this.newProblem();
       };
 
+      GameScene.prototype.setMarker = function (pct) {
+        this.markerPct = Phaser.Math.Clamp(pct, 0, 100);
+        const x = pctToX(this.markerPct);
+        this.fill.width = (BAR_W * this.markerPct) / 100;
+        this.handle.x = x;
+        this.knob.x = x;
+        this.pctReadout.setText(this.markerPct + "%");
+        if (this.problem) {
+          const part = (this.problem.whole * this.markerPct) / 100;
+          const partStr = Number.isInteger(part)
+            ? String(part)
+            : part.toFixed(1);
+          this.partReadout.setText(
+            "= " + partStr + " of " + this.problem.whole,
+          );
+        }
+      };
+
       GameScene.prototype.newProblem = function () {
         this.locked = false;
-        this.clearCoins();
-        this.problem = makeProblem(this.level);
+        this.problem = barProblem(this.level);
         this.bannerLabel.setText(this.problem.label);
-        this.bannerText.setText(this.problem.prompt + " = ?");
+        this.bannerText.setText(this.problem.prompt);
+        this.endR.setText(String(this.problem.whole));
+        this.fill.setFillStyle(0x2d874b);
+        this.setMarker(50);
         srSay(
           this.problem.label +
             ": " +
             this.problem.prompt +
-            ". Catch the correct coin.",
+            ". Drag the handle to shade your answer, then lock it in.",
         );
-        // Spawn one coin per option, spaced across the width, staggered in Y.
-        const lanes = shuffle([0, 1, 2, 3]);
-        const margin = 90;
-        const span = (W - 2 * margin) / 3;
-        this.problem.options.forEach((opt, i) => {
-          const lane = lanes[i];
-          const x = margin + span * lane + randInt(-20, 20);
-          const y = -40 - i * 130; // staggered entry
-          this.spawnCoin(x, y, opt);
-        });
       };
 
-      GameScene.prototype.spawnCoin = function (x, y, value) {
-        const c = this.add.circle(x, y, 30, 0xffd24a);
-        c.setStrokeStyle(3, 0xb87b1d);
-        const t = this.add
-          .text(x, y, value, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
-            fontStyle: "bold",
-            color: "#5a3a08",
-          })
-          .setOrigin(0.5);
-        this.coins.push({ c, t, value, caught: false });
-      };
-
-      GameScene.prototype.clearCoins = function () {
-        this.coins.forEach((co) => {
-          co.c.destroy();
-          co.t.destroy();
-        });
-        this.coins = [];
-      };
-
-      GameScene.prototype.update = function (time, delta) {
-        const dt = delta / 1000;
-        // Cart movement.
-        const speed = 420;
-        let vx = 0;
-        if (this.cursors.left.isDown || this.keyA.isDown) vx = -speed;
-        else if (this.cursors.right.isDown || this.keyD.isDown) vx = speed;
-        if (vx !== 0) {
-          this.cart.x += vx * dt;
-          this.pointerX = null; // keyboard overrides pointer follow
-        } else if (this.pointerX !== null) {
-          this.cart.x += (this.pointerX - this.cart.x) * Math.min(1, dt * 12);
-        }
-        const half = this.cartW / 2;
-        this.cart.x = Phaser.Math.Clamp(this.cart.x, half, W - half);
-        this.cartGlow.x = this.cart.x;
-
-        if (this.locked) return;
-
-        // Coin falling + collision.
-        const fall = this.fallSpeed + (this.level - 1) * 16;
-        for (const co of this.coins) {
-          if (co.caught) continue;
-          co.c.y += fall * dt;
-          co.t.y = co.c.y;
-          // Catch: coin overlaps cart top band.
-          if (
-            co.c.y >= this.cart.y - 26 &&
-            co.c.y <= this.cart.y + 26 &&
-            Math.abs(co.c.x - this.cart.x) <= half + 26
-          ) {
-            this.catchCoin(co);
-            return;
-          }
-          // Fell past the floor.
-          if (co.c.y > H + 40) {
-            co.caught = true;
-            co.c.setVisible(false);
-            co.t.setVisible(false);
-            if (co.value === this.problem.answer) {
-              // Missed the correct coin → counts as a miss.
-              this.handleMiss();
-              return;
-            }
-          }
-        }
-        // If all coins gone and correct never caught, advance with a miss-safety.
-        if (this.coins.every((co) => co.caught)) {
-          // already handled by miss/catch; nothing pending
-        }
-      };
-
-      GameScene.prototype.catchCoin = function (co) {
+      GameScene.prototype.lockIn = function () {
+        if (this.locked || !this.problem) return;
         this.locked = true;
-        co.caught = true;
-        SFX.coin();
-        const correct = co.value === this.problem.answer;
+        const correct = this.markerPct === this.problem.targetPct;
         if (correct) {
           SFX.good();
           this.solved++;
           this.streak++;
           const bonus = Math.min(this.streak, 5) * 5;
           this.score += 20 + bonus;
-          this.burst.setPosition(co.c.x, co.c.y);
+          this.fill.setFillStyle(0x36a35b);
+          this.burst.setPosition(pctToX(this.markerPct), BAR_Y);
           this.burst.explode(16);
-          this.flash(co.c.x, co.c.y, "+1 ✓", "#8fd6a0");
+          this.flash(W / 2, 200, "Correct! ✓", "#8fd6a0");
           this.feedback.setText("Correct! " + this.problem.why).setAlpha(1);
           srSay("Correct. " + this.problem.why);
+          this.afterAttempt(true);
         } else {
           SFX.bad();
           this.streak = 0;
           this.lives--;
           this.flashRed();
-          this.flash(co.c.x, co.c.y, "✗", "#ff8f8f");
-          this.feedback
-            .setText("Not quite — answer was " + this.problem.answer)
-            .setAlpha(1);
-          srSay(
-            "Wrong coin. The correct answer was " +
-              this.problem.answer +
-              ". " +
-              this.problem.why,
-          );
+          this.fill.setFillStyle(0xc23b3b);
+          this.feedback.setText("Not quite — " + this.problem.why).setAlpha(1);
+          srSay("Not quite. " + this.problem.why);
+          // Teach: show the correct shade and glide the handle to it, then go on.
+          const ghost = this.add
+            .rectangle(
+              BAR_X0,
+              BAR_Y,
+              (BAR_W * this.problem.targetPct) / 100,
+              BAR_H,
+              0x8fd6a0,
+              0.35,
+            )
+            .setOrigin(0, 0.5)
+            .setDepth(5);
+          this.tweens.add({
+            targets: [this.handle, this.knob],
+            x: pctToX(this.problem.targetPct),
+            duration: this.reduceMotion ? 0 : 600,
+            onComplete: () => {
+              ghost.destroy();
+              this.afterAttempt(false);
+            },
+          });
         }
-        co.c.destroy();
-        co.t.destroy();
-        this.afterAttempt(correct);
-      };
-
-      GameScene.prototype.handleMiss = function () {
-        this.locked = true;
-        SFX.miss();
-        this.streak = 0;
-        this.lives--;
-        this.flashRed();
-        this.feedback
-          .setText("Missed it! Answer was " + this.problem.answer)
-          .setAlpha(1);
-        srSay(
-          "You missed the correct coin. The answer was " +
-            this.problem.answer +
-            ".",
-        );
-        this.afterAttempt(false);
       };
 
       GameScene.prototype.afterAttempt = function (correct) {
@@ -1082,7 +1067,6 @@
 
       GameScene.prototype.endGame = function (won) {
         this.locked = true;
-        this.clearCoins();
         this.time.delayedCall(500, () => {
           this.scene.start("Result", {
             score: this.score,
@@ -1230,9 +1214,10 @@
           cv.setAttribute("role", "application");
           cv.setAttribute(
             "aria-label",
-            "Percent Power Coin Catcher math game. A percent problem appears " +
-              "at the top; steer the cart with the left and right arrow keys " +
-              "or A and D to catch the coin showing the correct answer.",
+            "Percent Power Bar Model Builder math game. A percent problem " +
+              "appears at the top; drag the handle, or use the left and right " +
+              "arrow keys or A and D, to shade the bar to the correct percent, " +
+              "then press Lock In, Enter, or Space.",
           );
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
@@ -1255,8 +1240,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>
