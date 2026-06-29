@@ -837,6 +837,7 @@
           const choose = () => {
             ffTier = tier;
             SFX.coin();
+            srSay("Level " + tier + ", " + sub + " selected.");
             JUICE.burst(this, x, 330, [0xffd24a, 0xff7ba8, 0xffffff], 16);
             this.time.delayedCall(150, () => this.scene.start("Game"));
           };
@@ -1172,6 +1173,7 @@
         if (this.shaded > total) this.shaded = total;
         SFX.cut();
         this.drawBar();
+        this.announceModel();
       };
 
       GameScene.prototype.setShaded = function (s) {
@@ -1184,6 +1186,7 @@
         this.refreshFills();
         const last = this.cellRects[this.shaded - 1];
         if (last) JUICE.tilePop(this, last);
+        this.announceModel();
       };
 
       GameScene.prototype.tapCell = function (i) {
@@ -1265,12 +1268,28 @@
         }
       };
 
+      // Debounced screen-reader announce of the current built model. Fires only
+      // when the spoken text actually changes (so repeat keys/steps don't spam),
+      // and a short timer coalesces rapid cut/shade changes into one utterance.
+      GameScene.prototype.announceModel = function () {
+        const total = this.wholes * this.parts;
+        const unit = this.wholes === 1 ? "parts" : "pieces";
+        const msg = this.shaded + " of " + total + " " + unit + " shaded.";
+        if (msg === this._lastModelSay) return;
+        this._lastModelSay = msg;
+        clearTimeout(this._modelSayTimer);
+        this._modelSayTimer = setTimeout(function () {
+          srSay(msg);
+        }, 280);
+      };
+
       GameScene.prototype.newProblem = function () {
         this.locked = false;
         this.problem = fracProblem(this.level, this.tier);
         this.wholes = this.problem.wholes;
         this.parts = 2;
         this.shaded = 0;
+        this._lastModelSay = null;
         this.bannerLabel.setText(this.problem.label);
         this.bannerText.setText(this.problem.prompt);
         // Level 1 (support) gets an extra plain-language coaching line; Level 2
