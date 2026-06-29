@@ -882,6 +882,18 @@
           center 0;
         background-repeat: repeat, repeat, no-repeat, no-repeat;
       }
+      .bg-opt .sw.numberline {
+        background-image:
+          linear-gradient(#14223a 2px, transparent 2px),
+          linear-gradient(90deg, rgba(32, 95, 166, 0.6) 1.4px, transparent 1.4px);
+        background-size:
+          100% 50%,
+          7px 100%;
+        background-position:
+          0 center,
+          center 0;
+        background-repeat: no-repeat, repeat-x;
+      }
       #bgLayer {
         position: absolute;
         inset: 0;
@@ -2640,6 +2652,9 @@
             <button class="bg-opt" data-bg="coord" role="menuitem">
               <span class="sw coord"></span> Coordinate plane
             </button>
+            <button class="bg-opt" data-bg="numberline" role="menuitem">
+              <span class="sw numberline"></span> Number line
+            </button>
           </div>
         </div>
 
@@ -3031,6 +3046,7 @@
         canvas.style.height = cssH + "px";
         renderCanvas();
         if (state.bg === "coord") buildCoordBg();
+        else if (state.bg === "numberline") buildNumberLineBg();
       }
       function renderCanvas() {
         // Clear by the canvas's own device-pixel size (fast, never triggers
@@ -3443,6 +3459,8 @@
         const bgLayer = $("#bgLayer");
         if (state.bg === "coord") {
           buildCoordBg();
+        } else if (state.bg === "numberline") {
+          buildNumberLineBg();
         } else {
           bgLayer.innerHTML = "";
           if (state.bg && state.bg !== "blank")
@@ -3569,6 +3587,113 @@
         g += lab(cx + 6, cy + 15, "0");
         // Lock the plane to the first screenful (explicit px size) so it is not
         // stretched down the full multi-page sheet by the 100%-sized #bgLayer.
+        bgLayer.innerHTML =
+          '<svg viewBox="0 0 ' +
+          w +
+          " " +
+          h +
+          '" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:' +
+          w +
+          "px;height:" +
+          h +
+          'px">' +
+          g +
+          "</svg>";
+      }
+
+      // Full-width horizontal number line background, -25 to 25.
+      function buildNumberLineBg() {
+        const bgLayer = $("#bgLayer");
+        const r = workspace.getBoundingClientRect();
+        const w = Math.max(100, Math.round(r.width));
+        const h = Math.max(100, Math.round(r.height));
+        const MIN = -25,
+          MAX = 25;
+        const range = MAX - MIN;
+        const margin = 48;
+        const usable = Math.max(40, w - margin * 2);
+        const u = usable / range;
+        const cy = Math.round(h / 2);
+        const xFor = (n) => Math.round(margin + (n - MIN) * u);
+        const axisColor = "#14223a";
+        const tickColor = "rgba(32,95,166,0.7)";
+        const aL = xFor(MIN) - 16,
+          aR = xFor(MAX) + 16;
+        let g = "";
+        // main axis
+        g +=
+          '<line x1="' +
+          aL +
+          '" y1="' +
+          cy +
+          '" x2="' +
+          aR +
+          '" y2="' +
+          cy +
+          '" stroke="' +
+          axisColor +
+          '" stroke-width="2.5"/>';
+        // arrowheads (both ends)
+        g +=
+          '<polygon points="' +
+          aR +
+          "," +
+          cy +
+          " " +
+          (aR - 11) +
+          "," +
+          (cy - 7) +
+          " " +
+          (aR - 11) +
+          "," +
+          (cy + 7) +
+          '" fill="' +
+          axisColor +
+          '"/>' +
+          '<polygon points="' +
+          aL +
+          "," +
+          cy +
+          " " +
+          (aL + 11) +
+          "," +
+          (cy - 7) +
+          " " +
+          (aL + 11) +
+          "," +
+          (cy + 7) +
+          '" fill="' +
+          axisColor +
+          '"/>';
+        const lab = (x, y, t) =>
+          '<text x="' +
+          x +
+          '" y="' +
+          y +
+          '" text-anchor="middle" font-family="Atkinson Hyperlegible, Nunito, sans-serif" font-size="12" font-weight="700" fill="#33485f">' +
+          t +
+          "</text>";
+        // ticks every integer; labels + taller ticks every 5
+        for (let n = MIN; n <= MAX; n++) {
+          const x = xFor(n);
+          const major = n % 5 === 0;
+          const half = major ? 13 : 7;
+          g +=
+            '<line x1="' +
+            x +
+            '" y1="' +
+            (cy - half) +
+            '" x2="' +
+            x +
+            '" y2="' +
+            (cy + half) +
+            '" stroke="' +
+            (major ? axisColor : tickColor) +
+            '" stroke-width="' +
+            (major ? 2 : 1) +
+            '"/>';
+          if (major) g += lab(x, cy + 30, n);
+        }
         bgLayer.innerHTML =
           '<svg viewBox="0 0 ' +
           w +
@@ -8584,6 +8709,20 @@
             head.releasePointerCapture(e.pointerId);
           } catch (_) {}
         });
+      })();
+    </script>
+    <script>
+      // The brand logo links "home". On the class site that's the Curriculum
+      // Hub; when this Workbench is served on the Focus School domain (noam),
+      // home is the planner app instead, so it never 404s off-domain.
+      (function () {
+        if (location.hostname === "noam.eduwonderlab.com") {
+          var bl = document.querySelector(".home-link");
+          if (bl) {
+            bl.setAttribute("href", "/");
+            bl.setAttribute("title", "Back to Focus School");
+          }
+        }
       })();
     </script>
   </body>

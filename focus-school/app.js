@@ -4097,7 +4097,7 @@
           : "") +
         "</div>" +
         '<p class="view-intro">A friendly helper for homework. Tap a button, type a question, or add a picture of your work.</p>' +
-        '<a class="btn navy block" href="https://eduwonderlab.com/curriculum/math-workbench/" target="_blank" rel="noopener">📐 Open Math Workbench</a>' +
+        '<a class="btn navy block" href="/curriculum/math-workbench/" target="_blank" rel="noopener">📐 Open Math Workbench</a>' +
         // Ask first (chips + input), then the conversation grows below it.
         '<div class="ai-chips">' +
         chipGroups +
