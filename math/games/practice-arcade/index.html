@@ -195,8 +195,8 @@
           }
 
           // UI Headers
-          this.titleText = this.add.text(24, 24, `${lessonTitle.toUpperCase()} — ARCADE`, { font: 'bold 22px Nunito, sans-serif', fill: '#38bdf8' });
-          this.scoreText = this.add.text(24, 58, 'Score: 0', { font: 'bold 24px Nunito, sans-serif', fill: '#ffffff' });
+          this.titleText = this.add.text(24, 24, `${lessonTitle.toUpperCase()} — ARCADE`, { font: 'bold 28px Nunito, sans-serif', fill: '#38bdf8' });
+          this.scoreText = this.add.text(24, 68, 'Score: 0', { font: 'bold 30px Nunito, sans-serif', fill: '#ffffff' });
           
           // Lives UI
           this.livesGroup = this.add.group();
@@ -219,14 +219,14 @@
           this.promptPanel = this.add.graphics();
           this.promptPanel.fillStyle(0x1e293b, 0.95);
           this.promptPanel.lineStyle(3, 0x38bdf8, 0.8);
-          this.promptPanel.fillRoundedRect(80, 90, W - 160, 120, 16);
-          this.promptPanel.strokeRoundedRect(80, 90, W - 160, 120, 16);
+          this.promptPanel.fillRoundedRect(60, 110, W - 120, 150, 16);
+          this.promptPanel.strokeRoundedRect(60, 110, W - 120, 150, 16);
 
-          this.promptText = this.add.text(W/2, 150, '', {
-            font: 'bold 26px Nunito, sans-serif',
+          this.promptText = this.add.text(W/2, 185, '', {
+            font: 'bold 36px Nunito, sans-serif',
             fill: '#ffffff',
             align: 'center',
-            wordWrap: { width: W - 220 }
+            wordWrap: { width: W - 180 }
           }).setOrigin(0.5);
 
           // Bullet overlaps
@@ -324,9 +324,9 @@
             met.isCorrect = (index === q.correctIndex);
             
             const label = this.add.text(x, y, choice, {
-              font: 'bold 24px Nunito, sans-serif',
+              font: 'bold 34px Nunito, sans-serif',
               fill: '#ffffff',
-              backgroundPadding: 12,
+              backgroundPadding: 16,
               backgroundColor: '#334155'
             }).setOrigin(0.5);
             
@@ -393,21 +393,21 @@
           this.gameover = data.gameover;
         }
         create() {
-          this.add.text(W/2, H/2 - 100, this.gameover ? 'GAME OVER' : 'VICTORY!', {
-            font: 'bold 48px Nunito, sans-serif',
+          this.add.text(W/2, H/2 - 120, this.gameover ? 'GAME OVER' : 'VICTORY!', {
+            font: 'bold 64px Nunito, sans-serif',
             fill: this.gameover ? '#ef4444' : '#10b981'
           }).setOrigin(0.5);
 
-          this.add.text(W/2, H/2, `Final Score: ${this.finalScore}`, {
-            font: '24px Nunito, sans-serif',
+          this.add.text(W/2, H/2 - 10, `Final Score: ${this.finalScore}`, {
+            font: 'bold 36px Nunito, sans-serif',
             fill: '#ffffff'
           }).setOrigin(0.5);
 
-          const btn = this.add.text(W/2, H/2 + 80, 'PLAY AGAIN', {
-            font: 'bold 20px Nunito, sans-serif',
+          const btn = this.add.text(W/2, H/2 + 100, 'PLAY AGAIN', {
+            font: 'bold 28px Nunito, sans-serif',
             fill: '#0f172a',
             backgroundColor: '#38bdf8',
-            padding: { x: 20, y: 10 }
+            padding: { x: 30, y: 15 }
           }).setOrigin(0.5).setInteractive();
 
           btn.on('pointerdown', () => {
