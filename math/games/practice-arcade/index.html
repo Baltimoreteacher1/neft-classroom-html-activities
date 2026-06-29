@@ -237,8 +237,13 @@
           this.input.keyboard.on('keydown-SPACE', this.shootLaser, this);
 
           // Touch Pointer Listeners
+          this.input.on('pointermove', (pointer) => {
+            if (pointer.isDown) {
+              this.player.x = Phaser.Math.Clamp(pointer.x, 24, W - 24);
+            }
+          });
           this.input.on('pointerdown', (pointer) => {
-            this.physics.moveToObject(this.player, pointer, 300);
+            this.player.x = Phaser.Math.Clamp(pointer.x, 24, W - 24);
             this.shootLaser();
           });
 
@@ -251,7 +256,9 @@
           } else if (this.cursors.right.isDown) {
             this.player.setVelocityX(400);
           } else {
-            this.player.setVelocityX(0);
+            if (!this.input.activePointer.isDown) {
+              this.player.setVelocityX(0);
+            }
           }
 
           this.stars.y = (this.stars.y + 0.5) % H;
@@ -281,6 +288,10 @@
             this.lives--;
             this.updateLivesUI();
             if (this.lives <= 0) {
+              this.meteors.getChildren().forEach(m => {
+                if (m.label) m.label.destroy();
+              });
+              this.meteors.clear(true, true);
               this.scene.start('WinScene', { score: this.score, gameover: true });
             } else {
               this.loadQuestion();
@@ -301,6 +312,10 @@
           this.promptText.setVisible(true);
           
           if (this.qIdx >= questions.length) {
+            this.meteors.getChildren().forEach(met => {
+              if (met.label) met.label.destroy();
+            });
+            this.meteors.clear(true, true);
             this.scene.start('WinScene', { score: this.score });
             return;
           }
@@ -308,6 +323,10 @@
           const q = questions[this.qIdx];
           this.promptText.setText(q.prompt);
 
+          // Clear any active labels and sprites to prevent overlapping text from previous questions
+          this.meteors.getChildren().forEach(met => {
+            if (met.label) met.label.destroy();
+          });
           this.meteors.clear(true, true);
 
           const laneWidth = (W - 200) / q.choices.length;
@@ -318,7 +337,7 @@
             const met = this.physics.add.sprite(x, y, null);
             met.setCircle(32);
             met.setImmovable(true);
-            met.setVelocityY(20 + (this.qIdx * 5));
+            met.setVelocityY(80 + (this.qIdx * 15)); // Faster, playable velocity
             
             met.answerText = choice;
             met.isCorrect = (index === q.correctIndex);
@@ -374,6 +393,10 @@
             meteor.destroy();
             
             if (this.lives <= 0) {
+              this.meteors.getChildren().forEach(m => {
+                if (m.label) m.label.destroy();
+              });
+              this.meteors.clear(true, true);
               this.scene.start('WinScene', { score: this.score, gameover: true });
             } else {
               this.loadQuestion();
