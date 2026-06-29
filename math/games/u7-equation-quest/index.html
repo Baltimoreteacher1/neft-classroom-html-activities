@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
-    <title>Equation Quest — Rune Leap | Math Games</title>
+    <title>Equation Quest — Balance Scale | Math Games</title>
     <meta
       name="description"
-      content="A 2D platform-leap game for Grade 6 lessons 7.1-7.7 (6.EE.7): solve one-step equations and leap onto the rune stone showing the correct value of x."
+      content="A build-it math game for Grade 6 lessons 7.1-7.7 (6.EE.7): keep the balance scale even by doing the SAME inverse operation to both sides until x is alone, then read and lock in its whole-number value."
     />
     <style>
       * {
@@ -53,10 +53,10 @@
         will-change: transform;
         transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
       }
-      .eq-rune {
+      .eq-spark {
         position: absolute;
         border-radius: 50%;
-        background: #9af0c8;
+        background: #8ff0c4;
         opacity: 0.5;
         animation: eqTwinkle var(--tw, 3s) ease-in-out infinite;
       }
@@ -76,7 +76,7 @@
           transition: none !important;
           transform: none !important;
         }
-        .eq-rune {
+        .eq-spark {
           animation: none !important;
           opacity: 0.4 !important;
         }
@@ -107,7 +107,7 @@
       window.addEventListener("load", function () {
         if (typeof Phaser === "undefined") {
           document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#9af0c8">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#8ff0c4">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
         }
       });
     </script>
@@ -118,18 +118,22 @@
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- Student Passport (meta-progression: lifetime XP / streak / badges) -->
+    <link rel="stylesheet" href="/assets/lesson-passport.css" />
+    <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
+    <script src="/assets/game-juice.js"></script>
+  </head>
   <body>
-    <!-- Decorative animated rune-field (behind the Phaser canvas). -->
+    <!-- Decorative animated spark-field (behind the Phaser canvas). -->
     <div id="eq-bg" data-parallax aria-hidden="true">
       <div id="eq-bg-layer" data-parallax-layer></div>
     </div>
-    <!-- Screen-reader live region: mirrors the current equation + result. -->
+    <!-- Screen-reader live region: mirrors the current problem + result. -->
     <div id="eq-sr" role="status" aria-live="polite"></div>
     <script>
-      // Decorative rune-field builder (reduced-motion safe; pointer-neutral).
+      // Decorative spark-field builder (reduced-motion safe; pointer-neutral).
       (function () {
         "use strict";
         var reduceMQ =
@@ -146,8 +150,8 @@
           var n = reduce ? 16 : 34;
           for (var i = 0; i < n; i++) {
             var s = document.createElement("div");
-            s.className = "eq-rune";
-            var sz = rnd(1.5, 4);
+            s.className = "eq-spark";
+            var sz = rnd(2, 5);
             s.style.width = s.style.height = sz.toFixed(1) + "px";
             s.style.left = rnd(0, 100).toFixed(2) + "%";
             s.style.top = rnd(0, 100).toFixed(2) + "%";
@@ -198,20 +202,22 @@
       })();
     </script>
     <script>
-      // ── EQUATION QUEST — RUNE LEAP ──
-      // Phaser 3 — Grade 6 Math — One-step equations (6.EE.7).
-      // Mechanic: a one-step equation glows at the top. Three rune stones —
-      // one per lane, each carved with a candidate value of x — float at the
-      // far side of a chasm. Move the hero left/right to pick a lane, then
-      // LEAP (Space/Up). Land on the stone with the correct x to cross; leap
-      // onto a wrong stone and it crumbles, costing a life. Higher levels add
-      // multiplication/division equations and a shrinking aim window.
+      // ── EQUATION QUEST — BALANCE SCALE ──
+      // Phaser 3 — Grade 6 Math — Solving one- and two-step equations (6.EE.7).
+      // Mechanic (math-as-mechanic, no reflex/timer): the scale IS the equation.
+      // The left pan shows the left side as x-boxes + unit weights; the right pan
+      // shows units. You apply the SAME inverse operation to BOTH sides
+      // (− a, + a, or ÷ k) to peel weights away until a single x is alone, then
+      // read its value and Lock In. An illegal move (one that would unbalance the
+      // scale or make a fraction) gently tilts the beam and is refused — no life
+      // lost. A wrong final value, or running out of moves, costs a life and the
+      // correct sequence is shown to teach. Every value is a whole number.
 
       const W = 820,
         H = 600;
-      const LS_KEY = "eq_rune_leap_highscore";
-      const LANES = 3;
+      const LS_KEY = "eq_balance_scale_highscore";
 
+      // ── Audio (tiny WebAudio blips; gracefully no-op without a context) ──
       const SFX = {
         ctx: null,
         init() {
@@ -238,29 +244,19 @@
             o.stop(c.currentTime + d);
           } catch (e) {}
         },
-        step() {
-          this.play("square", 440, 0.04, 0.06);
+        tap() {
+          this.play("square", 540, 0.05, 0.08);
         },
-        jump() {
-          this.play("sine", 520, 0.12, 0.14);
-          this.play("sine", 760, 0.1, 0.1);
+        move() {
+          this.play("sine", 420, 0.08, 0.1);
+          this.play("sine", 560, 0.08, 0.08);
         },
-        good() {
-          this.play("sine", 660, 0.1, 0.25);
-          this.play("sine", 880, 0.14, 0.2);
-        },
-        bad() {
-          this.play("sawtooth", 200, 0.25, 0.18);
-          this.play("sawtooth", 150, 0.3, 0.14);
+        tilt() {
+          this.play("triangle", 240, 0.18, 0.12);
         },
         level() {
           [523, 659, 784, 1047].forEach((f, i) =>
             setTimeout(() => this.play("sine", f, 0.15, 0.22), i * 70),
-          );
-        },
-        win() {
-          [523, 659, 784, 1047, 1318].forEach((f, i) =>
-            setTimeout(() => this.play("sine", f, 0.25, 0.25), i * 110),
           );
         },
         lose() {
@@ -270,124 +266,109 @@
         },
       };
 
+      // Resolve the shared game-feel layer; provide safe no-op fallbacks so the
+      // game still runs if /assets/game-juice.js failed to load.
+      const JUICE = window.GameJuice || {
+        reduceMotion: false,
+        audio: {
+          unlock() {},
+          tap() {},
+          pop() {},
+          correct() {},
+          wrong() {},
+          whoosh() {},
+          fanfare() {},
+          musicStart() {},
+          musicStop() {},
+        },
+        theme: () => ({
+          accent: "#3fbf8f",
+          accentN: 0x3fbf8f,
+          tileN: 0x0e3326,
+          botN: 0x0c281d,
+        }),
+        bgGradient() {},
+        popIn() {},
+        tilePop() {},
+        burst() {},
+        confetti() {},
+        shake() {},
+        floatText() {},
+        award() {},
+      };
+
       function randInt(a, b) {
         return Math.floor(Math.random() * (b - a + 1)) + a;
-      }
-      function shuffle(a) {
-        const r = [...a];
-        for (let i = r.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [r[i], r[j]] = [r[j], r[i]];
-        }
-        return r;
       }
       function srSay(msg) {
         const el = document.getElementById("eq-sr");
         if (el) el.textContent = msg;
       }
 
-      // ── One-step equation generator ────────────────────────────────────
-      // Returns { prompt, answer(int x), why, options:[ints length=3] }
-      // Forms (rising by level), all with whole-number solutions:
-      //   1-2: x + a = b   and   x − a = b
-      //   3-4: add/subtract + a·x = b (where b is a multiple of a)
-      //   5+ : all of the above + x / a = b  (mixed)
-      // The solution is generated FIRST as a known integer, then the equation
-      // is built around it, so x is always an exact whole number.
-      function genAddSub() {
-        const x = randInt(1, 20);
-        if (Math.random() < 0.5) {
-          const a = randInt(1, 15);
-          const b = x + a;
-          return {
-            prompt: "x + " + a + " = " + b,
-            answer: x,
-            why: "x = " + b + " − " + a + " = " + x + ".",
-          };
-        } else {
-          const a = randInt(1, 15);
-          const b = x - a; // could be negative; rebuild so b>=0 by ordering
-          if (b < 0) {
-            // ensure x - a >= 0 by swapping to a smaller a
-            const a2 = randInt(1, x);
-            const b2 = x - a2;
+      // ── Problem generator ────────────────────────────────────────────────
+      // Returns { A, B, C, s, minMoves, banner, hint, solveHint } describing
+      //   A·x + B = C   (solution s, always a whole number).
+      // Level 1 (support): one-step — x + a = b (A=1) or a·x = b (B=0).
+      // Level 2 (enrichment): two-step — a·x + b = c, bigger numbers.
+      function makeProblem(level) {
+        if (level === 1) {
+          if (Math.random() < 0.5) {
+            // x + a = b
+            const a = randInt(2, 9),
+              s = randInt(1, 9);
             return {
-              prompt: "x − " + a2 + " = " + b2,
-              answer: x,
-              why: "x = " + b2 + " + " + a2 + " = " + x + ".",
+              A: 1,
+              B: a,
+              C: a + s,
+              s,
+              minMoves: 1,
+              banner: "x + " + a + " = " + (a + s),
+              hint:
+                "Inverse of + " +
+                a +
+                " is − " +
+                a +
+                ". Subtract " +
+                a +
+                " from both sides.",
+              solveHint: "Subtract " + a + " from both sides → x = " + s,
             };
           }
+          // a·x = b
+          const a = randInt(2, 5),
+            s = randInt(1, 9);
           return {
-            prompt: "x − " + a + " = " + b,
-            answer: x,
-            why: "x = " + b + " + " + a + " = " + x + ".",
+            A: a,
+            B: 0,
+            C: a * s,
+            s,
+            minMoves: 1,
+            banner: a + "x = " + a * s,
+            hint:
+              "Inverse of × " +
+              a +
+              " is ÷ " +
+              a +
+              ". Divide both sides by " +
+              a +
+              ".",
+            solveHint: "Divide both sides by " + a + " → x = " + s,
           };
         }
-      }
-      function genMul() {
-        const x = randInt(2, 12);
-        const a = randInt(2, 9);
-        const b = a * x;
+        // Level 2: a·x + b = c
+        const a = randInt(2, 6),
+          s = randInt(1, 9),
+          b = randInt(2, 12);
+        const c = a * s + b;
         return {
-          prompt: a + "x = " + b,
-          answer: x,
-          why: "x = " + b + " ÷ " + a + " = " + x + ".",
-        };
-      }
-      function genDiv() {
-        const x = randInt(2, 12);
-        const a = randInt(2, 6);
-        const b = x; // x / a = b  ⇒  b = x/a ⇒ make dividend = x*a, quotient x
-        // Use form x / a = b where dividend D and D/a = b. Pick b then D=a*b.
-        const bb = randInt(2, 9);
-        const D = a * bb;
-        return {
-          prompt: "x ÷ " + a + " = " + bb,
-          answer: D,
-          why: "x = " + bb + " × " + a + " = " + D + ".",
-        };
-      }
-      function makeEquation(level) {
-        let base;
-        if (level <= 2) base = genAddSub();
-        else if (level <= 4)
-          base = Math.random() < 0.5 ? genAddSub() : genMul();
-        else {
-          const r = randInt(0, 2);
-          base = r === 0 ? genAddSub() : r === 1 ? genMul() : genDiv();
-        }
-        const ans = base.answer;
-        // Build exactly 3 distinct positive-integer rune values incl. answer.
-        const seen = new Set([ans]);
-        const opts = [ans];
-        const pool = [
-          ans + randInt(1, 5),
-          ans - randInt(1, 5),
-          ans + randInt(6, 12),
-          ans * 2,
-          Math.max(1, ans - randInt(6, 10)),
-        ];
-        for (const v of shuffle(pool)) {
-          if (opts.length >= 3) break;
-          if (v > 0 && Number.isInteger(v) && !seen.has(v)) {
-            seen.add(v);
-            opts.push(v);
-          }
-        }
-        let g = 1;
-        while (opts.length < 3 && g < 50) {
-          const v = ans + g;
-          if (v > 0 && !seen.has(v)) {
-            seen.add(v);
-            opts.push(v);
-          }
-          g++;
-        }
-        return {
-          prompt: base.prompt,
-          answer: ans,
-          why: base.why,
-          options: shuffle(opts.slice(0, 3)),
+          A: a,
+          B: b,
+          C: c,
+          s,
+          minMoves: 2,
+          banner: a + "x + " + b + " = " + c,
+          hint: "Two steps: first clear the number, then divide by the coefficient.",
+          solveHint: "Subtract " + b + ", then divide by " + a + " → x = " + s,
         };
       }
 
@@ -398,36 +379,52 @@
         parent: document.body,
         backgroundColor: "#0c281d",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [BootScene, TitleScene, VocabScene, GameScene, ResultScene],
+        scene: [
+          BootScene,
+          TitleScene,
+          VocabScene,
+          LevelScene,
+          GameScene,
+          ResultScene,
+        ],
       };
 
-      // ── Words to know first (vocab gate) ──────────────────────────────────
-      // Repo rule: term + student-facing (Level-1) definition + image/emoji
-      // shown BEFORE play. Topic: one-step equations (6.EE.7). The game does
-      // not track replay, so the gate shows before every quest.
-      const VOCAB_TERMS = [
+      // ── Cross-scene state ──
+      let eqVocabSeen = false; // vocab gate: shown once per page session
+      let eqLevel = 1; // 1 = support, 2 = enrichment (chosen in LevelScene)
+
+      // Key words for THIS game's topic (solving equations). Each has a
+      // student-facing (Level 1) definition and an emoji so a visual always
+      // shows even with no network/images.
+      const EQ_VOCAB = [
         {
           term: "Equation",
           emoji: "⚖️",
-          def: "A math sentence that says two sides are equal, with an = sign. Example: x + 5 = 9.",
+          def: "A math sentence saying two sides are equal, like 2x + 3 = 11.",
         },
         {
           term: "Variable",
           emoji: "🔤",
-          def: "A letter, like x, that stands for a number you don't know yet.",
+          def: "A letter, like x, that stands for a number you do not know yet.",
         },
         {
-          term: "Solve",
-          emoji: "🔍",
-          def: "To find the number the variable stands for so both sides stay equal.",
+          term: "Balance",
+          emoji: "🟰",
+          def: "Both sides stay equal. Do the SAME thing to both sides to keep it fair.",
         },
         {
           term: "Inverse operation",
-          emoji: "🔁",
-          def: "The opposite move that undoes another. Add undoes subtract; multiply undoes divide.",
+          emoji: "🔄",
+          def: "The opposite move that undoes another. − undoes +; ÷ undoes ×.",
+        },
+        {
+          term: "Solution",
+          emoji: "🎯",
+          def: "The value of x that makes the equation true once x is all alone.",
         },
       ];
 
+      // ── BOOT ──
       function BootScene() {
         Phaser.Scene.call(this, "Boot");
       }
@@ -439,13 +436,14 @@
         g.fillCircle(4, 4, 4);
         g.generateTexture("dot", 8, 8);
         g.clear();
-        g.fillStyle(0x9af0c8);
-        g.fillRect(0, 0, 10, 10);
-        g.generateTexture("dust", 10, 10);
+        g.fillStyle(0x8ff0c4);
+        g.fillCircle(5, 5, 5);
+        g.generateTexture("spark", 10, 10);
         g.destroy();
         this.scene.start("Title");
       };
 
+      // ── TITLE ──
       function TitleScene() {
         Phaser.Scene.call(this, "Title");
       }
@@ -457,49 +455,44 @@
         this.add
           .text(cx, 116, "EQUATION QUEST", {
             fontFamily: "Impact, sans-serif",
-            fontSize: "54px",
-            color: "#3fbf8f",
+            fontSize: "62px",
+            color: "#ffd24a",
             stroke: "#061410",
             strokeThickness: 6,
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 168, "Rune Leap", {
+          .text(cx, 170, "Balance Scale", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "26px",
-            color: "#9af0c8",
+            color: "#8ff0c4",
           })
           .setOrigin(0.5);
         this.add
           .text(
             cx,
-            230,
-            "Solve the equation for x, then move and LEAP onto the rune\nstone carved with the correct value of x!",
+            228,
+            "Keep the scale even! Do the SAME inverse operation to BOTH\nsides until x is alone — then read its value and Lock In.",
             {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "16px",
-              color: "#cdeede",
+              color: "#bfe0c8",
               align: "center",
             },
           )
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            285,
-            "← → move · SPACE / ↑ leap · 6.EE.7 · Lessons 7.1–7.7",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "14px",
-              color: "#7fc0a0",
-            },
-          )
+          .text(cx, 292, "6.EE.7 · Lessons 7.1–7.7 · Solve equations", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#6fae8c",
+          })
           .setOrigin(0.5);
 
         const hs = localStorage.getItem(LS_KEY);
         if (hs)
           this.add
-            .text(cx, 320, "High Score: " + hs, {
+            .text(cx, 330, "High Score: " + hs, {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "16px",
               color: "#ffd24a",
@@ -508,12 +501,12 @@
             .setOrigin(0.5);
 
         const btn = this.add
-          .rectangle(cx, 392, 240, 58, 0x2d874b)
+          .rectangle(cx, 400, 240, 58, 0x2d874b)
           .setInteractive({ useHandCursor: true });
         const btnT = this.add
-          .text(cx, 392, "BEGIN QUEST ▶", {
+          .text(cx, 400, "START ▶", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "22px",
+            fontSize: "24px",
             fontStyle: "bold",
             color: "#ffffff",
           })
@@ -528,8 +521,10 @@
         });
         const start = () => {
           SFX.init();
-          SFX.jump();
-          this.scene.start("Vocab");
+          SFX.tap();
+          JUICE.audio.unlock();
+          // Vocab gate before the first play; on a replay jump to level select.
+          this.scene.start(eqVocabSeen ? "Level" : "Vocab");
         };
         btn.on("pointerover", () => btn.setFillStyle(0x36a35b));
         btn.on("pointerout", () => btn.setFillStyle(0x2d874b));
@@ -538,22 +533,21 @@
         this.input.keyboard.on("keydown-ENTER", start);
 
         const hub = this.add
-          .text(cx, 535, "← Back to Math Games", {
+          .text(cx, 540, "← Back to Math Games", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "15px",
-            color: "#7fc0a0",
+            color: "#6fae8c",
           })
           .setOrigin(0.5)
           .setInteractive({ useHandCursor: true });
-        hub.on("pointerover", () => hub.setColor("#3fbf8f"));
-        hub.on("pointerout", () => hub.setColor("#7fc0a0"));
+        hub.on("pointerover", () => hub.setColor("#ffd24a"));
+        hub.on("pointerout", () => hub.setColor("#6fae8c"));
         hub.on("pointerdown", () => (window.location.href = "/math/games/"));
-        srSay("Equation Quest Rune Leap. Press Start to play.");
+        srSay("Equation Quest Balance Scale. Press Start to play.");
       };
 
-      // ── VocabScene — "Words to know first" gate, shown before play ────────
-      // Card per term: emoji image + term + Level-1 definition. Back/Next to
-      // step through; the last step leaps into the Game. Keyboard + pointer.
+      // ── VOCAB GATE ──
+      // Repo rule: term + Level-1 definition + image/emoji shown BEFORE play.
       function VocabScene() {
         Phaser.Scene.call(this, "Vocab");
       }
@@ -561,156 +555,241 @@
       VocabScene.prototype.constructor = VocabScene;
       VocabScene.prototype.init = function () {
         this.idx = 0;
-        this.parts = [];
       };
       VocabScene.prototype.create = function () {
-        this.add.rectangle(W / 2, H / 2, W, H, 0x0c281d);
         const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x0c281d);
         this.add
           .text(cx, 70, "WORDS TO KNOW FIRST", {
             fontFamily: "Impact, sans-serif",
             fontSize: "34px",
-            color: "#3fbf8f",
+            color: "#ffd24a",
             stroke: "#061410",
             strokeThickness: 5,
           })
           .setOrigin(0.5);
-        this.add
-          .text(cx, 110, "Learn these before you leap. (No answers given!)", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "15px",
-            color: "#9af0c8",
-          })
-          .setOrigin(0.5);
 
-        // Card frame.
         this.add
-          .rectangle(cx, 320, 560, 320, 0x102f22)
-          .setStrokeStyle(3, 0x3fbf8f);
+          .rectangle(cx, 320, 560, 320, 0x0e3326)
+          .setStrokeStyle(2, 0x2d874b);
 
         this.stepText = this.add
-          .text(cx, 192, "", {
+          .text(cx, 185, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "13px",
-            color: "#7fc0a0",
+            fontSize: "14px",
             fontStyle: "bold",
+            color: "#6fae8c",
           })
           .setOrigin(0.5);
         this.emojiText = this.add
-          .text(cx, 244, "", { fontSize: "72px" })
+          .text(cx, 250, "", { fontSize: "76px" })
           .setOrigin(0.5);
         this.termText = this.add
-          .text(cx, 310, "", {
+          .text(cx, 330, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "30px",
+            fontSize: "32px",
             fontStyle: "bold",
             color: "#ffffff",
           })
           .setOrigin(0.5);
         this.defText = this.add
-          .text(cx, 372, "", {
+          .text(cx, 400, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "17px",
-            color: "#cdeede",
+            fontSize: "18px",
+            color: "#bfe0c8",
             align: "center",
             wordWrap: { width: 500 },
           })
           .setOrigin(0.5);
 
-        // Progress dots.
-        this.dots = [];
-        const dn = VOCAB_TERMS.length;
-        const dStart = cx - (dn - 1) * 11;
-        for (let i = 0; i < dn; i++) {
-          this.dots.push(this.add.circle(dStart + i * 22, 442, 5, 0x1d5a3c));
-        }
-
-        // Back button.
-        this.backBtn = this.add
-          .rectangle(cx - 130, 500, 150, 50, 0x1a3a2a)
+        const nextBtn = this.add
+          .rectangle(cx + 90, 510, 220, 52, 0x2d874b)
           .setInteractive({ useHandCursor: true });
-        this.backText = this.add
-          .text(cx - 130, 500, "← Back", {
+        const nextT = this.add
+          .text(cx + 90, 510, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
-            fontStyle: "bold",
-            color: "#cdeede",
-          })
-          .setOrigin(0.5);
-        this.backBtn.on("pointerover", () =>
-          this.backBtn.setFillStyle(0x244c39),
-        );
-        this.backBtn.on("pointerout", () =>
-          this.backBtn.setFillStyle(0x1a3a2a),
-        );
-        this.backBtn.on("pointerdown", () => this.go(-1));
-
-        // Next / Start button.
-        this.nextBtn = this.add
-          .rectangle(cx + 130, 500, 200, 50, 0x2d874b)
-          .setInteractive({ useHandCursor: true });
-        this.nextText = this.add
-          .text(cx + 130, 500, "Next →", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
+            fontSize: "20px",
             fontStyle: "bold",
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        this.nextBtn.on("pointerover", () =>
-          this.nextBtn.setFillStyle(0x36a35b),
-        );
-        this.nextBtn.on("pointerout", () =>
-          this.nextBtn.setFillStyle(0x2d874b),
-        );
-        this.nextBtn.on("pointerdown", () => this.go(1));
+        nextBtn.on("pointerover", () => nextBtn.setFillStyle(0x36a35b));
+        nextBtn.on("pointerout", () => nextBtn.setFillStyle(0x2d874b));
+        nextBtn.on("pointerdown", () => this.advance());
+        this.nextBtn = nextBtn;
+        this.nextT = nextT;
 
-        this.input.keyboard.on("keydown-SPACE", () => this.go(1));
-        this.input.keyboard.on("keydown-ENTER", () => this.go(1));
-        this.input.keyboard.on("keydown-RIGHT", () => this.go(1));
-        this.input.keyboard.on("keydown-LEFT", () => this.go(-1));
+        const backBtn = this.add
+          .rectangle(cx - 120, 510, 130, 52, 0x123a48)
+          .setInteractive({ useHandCursor: true });
+        const backT = this.add
+          .text(cx - 120, 510, "← Back", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#9fc6cf",
+          })
+          .setOrigin(0.5);
+        backBtn.on("pointerover", () => backBtn.setFillStyle(0x1c4c5c));
+        backBtn.on("pointerout", () => backBtn.setFillStyle(0x123a48));
+        backBtn.on("pointerdown", () => this.goBack());
+        this.backBtn = backBtn;
+        this.backT = backT;
 
-        this.render();
+        this.input.keyboard.on("keydown-SPACE", () => this.advance());
+        this.input.keyboard.on("keydown-ENTER", () => this.advance());
+        this.input.keyboard.on("keydown-RIGHT", () => this.advance());
+        this.input.keyboard.on("keydown-LEFT", () => this.goBack());
+
+        this.renderCard();
       };
-      VocabScene.prototype.go = function (dir) {
-        const next = this.idx + dir;
-        if (next < 0) return;
-        if (next >= VOCAB_TERMS.length) {
-          SFX.jump();
-          this.scene.start("Game");
-          return;
-        }
-        this.idx = next;
-        SFX.step();
-        this.render();
-      };
-      VocabScene.prototype.render = function () {
-        const t = VOCAB_TERMS[this.idx];
-        const last = this.idx === VOCAB_TERMS.length - 1;
+      VocabScene.prototype.renderCard = function () {
+        const v = EQ_VOCAB[this.idx];
+        const last = this.idx === EQ_VOCAB.length - 1;
         this.stepText.setText(
-          "Word " + (this.idx + 1) + " of " + VOCAB_TERMS.length,
+          "Key word " + (this.idx + 1) + " of " + EQ_VOCAB.length,
         );
-        this.emojiText.setText(t.emoji);
-        this.termText.setText(t.term);
-        this.defText.setText(t.def);
-        this.nextText.setText(last ? "Start playing ▶" : "Next →");
-        this.backBtn.setVisible(this.idx > 0);
-        this.backText.setVisible(this.idx > 0);
-        this.dots.forEach((d, i) =>
-          d.setFillStyle(i === this.idx ? 0x3fbf8f : 0x1d5a3c),
+        this.emojiText.setText(v.emoji);
+        this.termText.setText(v.term);
+        this.defText.setText(v.def);
+        this.nextT.setText(last ? "Choose a level ▶" : "Next →");
+        const showBack = this.idx > 0;
+        this.backBtn.setVisible(showBack);
+        this.backT.setVisible(showBack);
+        srSay(v.term + ". " + v.def);
+      };
+      VocabScene.prototype.advance = function () {
+        if (this.idx < EQ_VOCAB.length - 1) {
+          this.idx++;
+          this.renderCard();
+        } else {
+          eqVocabSeen = true;
+          this.scene.start("Level");
+        }
+      };
+      VocabScene.prototype.goBack = function () {
+        if (this.idx > 0) {
+          this.idx--;
+          this.renderCard();
+        }
+      };
+
+      // ── LEVEL SELECT ──
+      // Required: two choices "Level 1" (support) and "Level 2" (enrichment).
+      // The choice drives the generator and on-screen scaffolding, and shows in
+      // the HUD during play.
+      function LevelScene() {
+        Phaser.Scene.call(this, "Level");
+      }
+      LevelScene.prototype = Object.create(Phaser.Scene.prototype);
+      LevelScene.prototype.constructor = LevelScene;
+      LevelScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x0c281d);
+        this.add
+          .text(cx, 92, "CHOOSE YOUR LEVEL", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "40px",
+            color: "#ffd24a",
+            stroke: "#061410",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 142, "You can switch any time you play again.", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#bfe0c8",
+          })
+          .setOrigin(0.5);
+
+        const makeCard = (x, lvl, title, lines, accent) => {
+          const card = this.add
+            .rectangle(x, 350, 320, 300, 0x0e3326)
+            .setStrokeStyle(3, accent)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(x, 235, title, {
+              fontFamily: "Impact, sans-serif",
+              fontSize: "34px",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(x, 300, lines, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#bfe0c8",
+              align: "center",
+              lineSpacing: 8,
+              wordWrap: { width: 280 },
+            })
+            .setOrigin(0.5);
+          const pill = this.add
+            .rectangle(x, 440, 200, 50, 0x2d874b)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(x, 440, "Play " + title, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              fontStyle: "bold",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          const pick = () => {
+            SFX.init();
+            SFX.tap();
+            JUICE.audio.unlock();
+            eqLevel = lvl;
+            this.scene.start("Game");
+          };
+          [card, pill].forEach((o) => {
+            o.on("pointerover", () => {
+              card.setFillStyle(0x14432f);
+              pill.setFillStyle(0x36a35b);
+            });
+            o.on("pointerout", () => {
+              card.setFillStyle(0x0e3326);
+              pill.setFillStyle(0x2d874b);
+            });
+            o.on("pointerdown", pick);
+          });
+          return pick;
+        };
+
+        const pick1 = makeCard(
+          cx - 180,
+          1,
+          "Level 1",
+          "Support\n\nOne-step equations\nx + a = b  or  a·x = b\nSmall numbers\nInverse-operation hint",
+          0x3fbf8f,
         );
+        const pick2 = makeCard(
+          cx + 180,
+          2,
+          "Level 2",
+          "Enrichment\n\nTwo-step equations\na·x + b = c\nBigger numbers\nFewer hints",
+          0xffd24a,
+        );
+
+        this.input.keyboard.on("keydown-ONE", pick1);
+        this.input.keyboard.on("keydown-TWO", pick2);
+        this.input.keyboard.on("keydown-LEFT", pick1);
+        this.input.keyboard.on("keydown-RIGHT", pick2);
+
+        this.add
+          .text(cx, 540, "Press 1 or 2 (or tap a card) to begin.", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#6fae8c",
+          })
+          .setOrigin(0.5);
         srSay(
-          "Key word " +
-            (this.idx + 1) +
-            " of " +
-            VOCAB_TERMS.length +
-            ". " +
-            t.term +
-            ". " +
-            t.def,
+          "Choose your level. Press 1 for Level 1 support, or 2 for Level 2 enrichment.",
         );
       };
 
+      // ── GAME ──
       function GameScene() {
         Phaser.Scene.call(this, "Game");
       }
@@ -718,325 +797,544 @@
       GameScene.prototype.constructor = GameScene;
 
       GameScene.prototype.init = function () {
-        this.reduceMotion = !!(
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        );
+        this.reduceMotion =
+          JUICE.reduceMotion ||
+          !!(
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          );
         this.score = 0;
         this.lives = 3;
         this.streak = 0;
-        this.level = 1;
+        this.level = eqLevel;
         this.solved = 0;
-        this.target = 10;
-        this.lane = 1;
-        this.stones = null;
+        this.target = 10; // win: solve this many equations
+        // Equation state A·x + B = C and its solution s.
+        this.A = 1;
+        this.B = 0;
+        this.C = 0;
+        this.s = 0;
+        this.movesLeft = 0;
         this.locked = false;
-        this.problem = null;
-        this.jumping = false;
-      };
-
-      GameScene.prototype.laneX = function (i) {
-        const margin = 160;
-        const span = (W - 2 * margin) / (LANES - 1);
-        return margin + span * i;
+        this.opType = "sub"; // 'sub' | 'add' | 'div'
+        this.opAmt = 1;
+        this.dyn = []; // dynamic scale items, rebuilt each redraw
+        this.lockTween = null;
+        // Balance geometry (game space; Scale.FIT maps pointers in).
+        this.pivotX = W / 2;
+        this.pivotY = 215;
+        this.panDX = 180; // pan offset from pivot
       };
 
       GameScene.prototype.create = function () {
         this.add.rectangle(W / 2, H / 2, W, H, 0x0c281d);
-        // Chasm
-        this.add.rectangle(W / 2, H - 30, W, 60, 0x05130d);
-        // Start ledge (where hero stands)
-        this.startY = 360;
-        this.stoneY = 230;
 
-        const hudStyle = {
+        // HUD
+        const hud = {
           fontFamily: "Segoe UI, sans-serif",
           fontSize: "18px",
           fontStyle: "bold",
         };
         this.scoreText = this.add.text(16, 12, "Score: 0", {
-          ...hudStyle,
-          color: "#9af0c8",
+          ...hud,
+          color: "#8ff0c4",
         });
         this.livesText = this.add.text(16, 36, "❤❤❤", {
-          ...hudStyle,
+          ...hud,
           color: "#ff8f8f",
         });
         this.streakText = this.add
-          .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#ffd24a" })
+          .text(W - 16, 12, "Streak: 0", { ...hud, color: "#ffd24a" })
           .setOrigin(1, 0);
         this.levelText = this.add
-          .text(W - 16, 36, "Level 1", { ...hudStyle, color: "#cdeede" })
+          .text(W - 16, 36, "Level " + this.level, {
+            ...hud,
+            color: "#bfe0c8",
+          })
           .setOrigin(1, 0);
         this.progressText = this.add
-          .text(W / 2, 12, "0 / " + this.target, {
-            ...hudStyle,
-            color: "#cdeede",
-          })
+          .text(W / 2, 12, "0 / " + this.target, { ...hud, color: "#bfe0c8" })
           .setOrigin(0.5, 0);
 
-        // Equation banner
-        this.add
-          .text(W / 2, 76, "Solve for x:", {
+        // Problem banner (the ORIGINAL equation to solve)
+        this.bannerLabel = this.add
+          .text(W / 2, 66, "Solve for x", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "14px",
-            color: "#7fc0a0",
+            color: "#6fae8c",
           })
           .setOrigin(0.5);
         this.bannerText = this.add
-          .text(W / 2, 110, "", {
-            fontFamily: "Segoe UI, sans-serif",
+          .text(W / 2, 96, "", {
+            fontFamily: "Impact, sans-serif",
             fontSize: "40px",
+            color: "#ffffff",
+            stroke: "#061410",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5);
+
+        // Hint / feedback line
+        this.feedback = this.add
+          .text(W / 2, 138, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#8ff0c4",
+            align: "center",
+            wordWrap: { width: W - 80 },
+          })
+          .setOrigin(0.5);
+
+        // Balance scale group (everything that should tilt together).
+        this.scaleGroup = this.add.container(this.pivotX, this.pivotY);
+        // Beam
+        this.beam = this.add.rectangle(0, 0, 380, 14, 0x8a5a2b);
+        this.beam.setStrokeStyle(2, 0x5e3c1c);
+        this.scaleGroup.add(this.beam);
+        // Center cap
+        this.scaleGroup.add(this.add.circle(0, 0, 10, 0xffd24a));
+        // Hangers + platforms (both pans)
+        [-this.panDX, this.panDX].forEach((dx) => {
+          const hanger = this.add.rectangle(dx, 22, 4, 44, 0x5e3c1c);
+          this.scaleGroup.add(hanger);
+          const plat = this.add.rectangle(dx, 112, 156, 10, 0x6b4420);
+          plat.setStrokeStyle(2, 0x47300f);
+          this.scaleGroup.add(plat);
+        });
+        // Fulcrum (drawn outside the tilting group so the base stays put)
+        const tri = this.add.triangle(
+          this.pivotX,
+          this.pivotY + 4,
+          0,
+          -8,
+          -30,
+          78,
+          30,
+          78,
+          0x5e3c1c,
+        );
+        tri.setStrokeStyle(2, 0x47300f);
+        this.add.rectangle(this.pivotX, this.pivotY + 86, 120, 10, 0x47300f);
+
+        // Live symbolic readouts under each pan (the value you can read off).
+        const exprStyle = {
+          fontFamily: "Segoe UI, sans-serif",
+          fontSize: "24px",
+          fontStyle: "bold",
+          color: "#ffffff",
+        };
+        this.leftExpr = this.add
+          .text(this.pivotX - this.panDX, this.pivotY + 112, "", exprStyle)
+          .setOrigin(0.5);
+        this.rightExpr = this.add
+          .text(this.pivotX + this.panDX, this.pivotY + 112, "", exprStyle)
+          .setOrigin(0.5);
+        this.add
+          .text(this.pivotX, this.pivotY + 112, "=", exprStyle)
+          .setOrigin(0.5);
+
+        // Moves-left readout
+        this.movesText = this.add
+          .text(W / 2, 358, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            fontStyle: "bold",
+            color: "#bfe0c8",
+          })
+          .setOrigin(0.5);
+
+        // ── Operation controls ──
+        this.add
+          .text(150, 392, "Do to BOTH sides:", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#6fae8c",
+          })
+          .setOrigin(0, 0.5);
+        this.chips = {};
+        const chipDefs = [
+          ["sub", "−", 150],
+          ["add", "+", 206],
+          ["div", "÷", 262],
+        ];
+        chipDefs.forEach((def) => {
+          const type = def[0],
+            glyph = def[1],
+            x = def[2];
+          const r = this.add
+            .rectangle(x, 424, 48, 44, 0x123a48)
+            .setStrokeStyle(2, 0x2d874b)
+            .setInteractive({ useHandCursor: true });
+          const t = this.add
+            .text(x, 424, glyph, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "26px",
+              fontStyle: "bold",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          r.on("pointerdown", () => this.setOp(type));
+          this.chips[type] = { rect: r, txt: t };
+        });
+
+        // Amount stepper
+        const minus = this.add
+          .rectangle(360, 424, 40, 44, 0x2d874b)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(360, 424, "◀", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        minus.on("pointerdown", () => this.bumpAmt(-1));
+        this.amtBox = this.add
+          .rectangle(412, 424, 56, 44, 0x0e3326)
+          .setStrokeStyle(2, 0xffd24a);
+        this.amtText = this.add
+          .text(412, 424, "1", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "26px",
+            color: "#ffd24a",
+          })
+          .setOrigin(0.5);
+        const plus = this.add
+          .rectangle(464, 424, 40, 44, 0x2d874b)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(464, 424, "▶", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        plus.on("pointerdown", () => this.bumpAmt(1));
+
+        // Apply button
+        this.applyBtn = this.add
+          .rectangle(620, 424, 170, 44, 0x2563a8)
+          .setStrokeStyle(2, 0x7dd3fc)
+          .setInteractive({ useHandCursor: true });
+        this.applyText = this.add
+          .text(620, 424, "Apply", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
             fontStyle: "bold",
             color: "#ffffff",
           })
           .setOrigin(0.5);
+        this.applyBtn.on("pointerover", () =>
+          this.applyBtn.setFillStyle(0x2f74c2),
+        );
+        this.applyBtn.on("pointerout", () =>
+          this.applyBtn.setFillStyle(0x2563a8),
+        );
+        this.applyBtn.on("pointerdown", () => this.applyOp());
 
-        this.feedback = this.add
-          .text(W / 2, 156, "", {
+        // Lock-in button (armed only when x is alone)
+        this.lockBtn = this.add
+          .rectangle(W / 2, 486, 280, 50, 0x335544)
+          .setStrokeStyle(2, 0x2d874b)
+          .setInteractive({ useHandCursor: true });
+        this.lockText = this.add
+          .text(W / 2, 486, "LOCK IN ✓", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "17px",
+            fontSize: "20px",
             fontStyle: "bold",
-            color: "#ffd24a",
-            stroke: "#061410",
-            strokeThickness: 3,
-            align: "center",
-            wordWrap: { width: 620 },
+            color: "#cfe9da",
           })
-          .setOrigin(0.5)
-          .setAlpha(0);
+          .setOrigin(0.5);
+        this.lockBtn.on("pointerdown", () => this.lockIn());
 
-        // Hero on the start ledge.
-        this.heroLedge = this.add.rectangle(
-          this.laneX(this.lane),
-          this.startY + 40,
-          120,
-          18,
-          0x1d5a3c,
-        );
-        this.hero = this.add.rectangle(
-          this.laneX(this.lane),
-          this.startY,
-          34,
-          44,
-          0x3fbf8f,
-        );
-        this.hero.setStrokeStyle(3, 0xcdeede);
-        this.heroEmoji = this.add
-          .text(this.laneX(this.lane), this.startY, "🧝", { fontSize: "30px" })
+        // Keyboard help
+        this.add
+          .text(
+            W / 2,
+            528,
+            "↑↓ pick operation · ←→ change amount · Space = Apply · Enter = Lock In",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "13px",
+              color: "#6fae8c",
+              align: "center",
+            },
+          )
+          .setOrigin(0.5);
+        this.add
+          .text(
+            W / 2,
+            550,
+            "Blue □ = one x · Gold ■ = a 1 weight · Tall gold = a 10",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "12px",
+              color: "#4f8c6c",
+            },
+          )
           .setOrigin(0.5);
 
-        // Particles
+        // Effects
         this.burst = this.add
-          .particles(0, 0, "dust", {
-            speed: { min: 70, max: 230 },
+          .particles(0, 0, "spark", {
+            speed: { min: 80, max: 240 },
             angle: { min: 0, max: 360 },
             scale: { start: 1.2, end: 0 },
-            lifespan: 650,
+            lifespan: 600,
             emitting: false,
             quantity: 16,
-            tint: [0x3fbf8f, 0x9af0c8, 0xffd24a, 0xffffff],
+            tint: [0xffd24a, 0x8ff0c4, 0xffffff],
           })
           .setDepth(20);
-
         this.redFlash = this.add
           .rectangle(W / 2, H / 2, W, H, 0xff3333, 0)
           .setDepth(30);
 
-        // Input
-        this.cursors = this.input.keyboard.createCursorKeys();
-        this.input.keyboard.on("keydown-LEFT", () => this.moveLane(-1));
-        this.input.keyboard.on("keydown-RIGHT", () => this.moveLane(1));
-        this.input.keyboard.on("keydown-A", () => this.moveLane(-1));
-        this.input.keyboard.on("keydown-D", () => this.moveLane(1));
-        this.input.keyboard.on("keydown-SPACE", () => this.leap());
-        this.input.keyboard.on("keydown-UP", () => this.leap());
-        this.input.keyboard.on("keydown-W", () => this.leap());
-        // Pointer: tap a stone to move under it; tap again (or tap same lane) to leap.
-        this.input.on("pointerdown", (p) => {
-          let best = 0,
-            bd = Infinity;
-          for (let i = 0; i < LANES; i++) {
-            const d = Math.abs(p.x - this.laneX(i));
-            if (d < bd) {
-              bd = d;
-              best = i;
-            }
-          }
-          if (best === this.lane) this.leap();
-          else this.setLane(best);
+        // Keyboard
+        const order = ["sub", "add", "div"];
+        this.input.keyboard.on("keydown-UP", () => {
+          const i = order.indexOf(this.opType);
+          this.setOp(order[(i + order.length - 1) % order.length]);
         });
+        this.input.keyboard.on("keydown-DOWN", () => {
+          const i = order.indexOf(this.opType);
+          this.setOp(order[(i + 1) % order.length]);
+        });
+        this.input.keyboard.on("keydown-LEFT", () => this.bumpAmt(-1));
+        this.input.keyboard.on("keydown-RIGHT", () => this.bumpAmt(1));
+        this.input.keyboard.on("keydown-SPACE", () => this.applyOp());
+        this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
 
         this.cameras.main.fadeIn(400);
         this.newProblem();
       };
 
-      GameScene.prototype.moveLane = function (dir) {
-        if (this.jumping || this.locked) return;
-        this.setLane(Phaser.Math.Clamp(this.lane + dir, 0, LANES - 1));
+      // Current solved-state check: a single bare x on the left.
+      GameScene.prototype.isIsolated = function () {
+        return this.A === 1 && this.B === 0;
       };
-      GameScene.prototype.setLane = function (i) {
-        if (this.jumping || this.locked) return;
-        if (i === this.lane) return;
-        this.lane = i;
-        SFX.step();
-        const x = this.laneX(i);
-        this.hero.x = x;
-        this.heroEmoji.x = x;
-        this.heroLedge.x = x;
+
+      GameScene.prototype.leftExprStr = function () {
+        const coef = this.A === 1 ? "x" : this.A + "x";
+        return this.B > 0 ? coef + " + " + this.B : coef;
       };
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
-        this.jumping = false;
-        this.clearStones();
-        // Reset hero to start ledge.
-        this.lane = 1;
-        const sx = this.laneX(this.lane);
-        this.hero.setPosition(sx, this.startY);
-        this.heroEmoji.setPosition(sx, this.startY);
-        this.heroLedge.setPosition(sx, this.startY + 40);
-
-        this.problem = makeEquation(this.level);
-        this.bannerText.setText(this.problem.prompt);
+        const p = makeProblem(this.level);
+        this.A = p.A;
+        this.B = p.B;
+        this.C = p.C;
+        this.s = p.s;
+        this.problem = p;
+        this.movesLeft = p.minMoves + 2; // generous buffer; "out of moves" = loss
+        this.opAmt = 1;
+        this.bannerText.setText(p.banner);
+        // Level 1 shows the specific inverse-operation hint; Level 2 a shorter,
+        // dimmer strategy nudge (fewer hints).
+        this.feedback
+          .setText(this.level === 1 ? "💡 " + p.hint : p.hint)
+          .setColor(this.level === 1 ? "#8ff0c4" : "#4f8c6c");
+        this.setOp("sub");
+        this.drawScale();
+        this.updateLock();
+        this.updateMoves();
         srSay(
-          "Solve " +
-            this.problem.prompt +
-            " for x. Move and leap onto the correct rune stone.",
+          "Level " +
+            this.level +
+            ". Solve " +
+            p.banner +
+            ". Do the same operation to both sides until x is alone, then lock in its value.",
         );
+      };
 
-        const vals = this.problem.options;
-        this.stones = [];
-        for (let i = 0; i < LANES; i++) {
-          const x = this.laneX(i);
-          const stone = this.add.rectangle(x, this.stoneY, 96, 60, 0x16402c);
-          stone.setStrokeStyle(3, 0x3fbf8f);
-          const txt = this.add
-            .text(x, this.stoneY, "x = " + vals[i], {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "20px",
-              fontStyle: "bold",
-              color: "#ffffff",
-            })
-            .setOrigin(0.5);
-          // Gentle bob so the stones feel alive (skipped under reduced motion).
-          if (!this.reduceMotion) {
-            this.tweens.add({
-              targets: [stone, txt],
-              y: this.stoneY - 8,
-              duration: 1400 + i * 160,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut",
-            });
-          }
-          this.stones.push({ stone, txt, value: vals[i] });
+      // ── Operation UI ──
+      GameScene.prototype.setOp = function (type) {
+        this.opType = type;
+        if (type === "div" && this.opAmt < 2) this.opAmt = 2;
+        Object.keys(this.chips).forEach((k) => {
+          const sel = k === type;
+          this.chips[k].rect.setFillStyle(sel ? 0x2d874b : 0x123a48);
+          this.chips[k].rect.setStrokeStyle(2, sel ? 0xffd24a : 0x2d874b);
+        });
+        this.refreshAmt();
+        SFX.tap();
+      };
+      GameScene.prototype.bumpAmt = function (d) {
+        const min = this.opType === "div" ? 2 : 1;
+        const max = this.opType === "div" ? 12 : 20;
+        this.opAmt = Phaser.Math.Clamp(this.opAmt + d, min, max);
+        this.refreshAmt();
+        SFX.move();
+      };
+      GameScene.prototype.refreshAmt = function () {
+        this.amtText.setText(String(this.opAmt));
+        let lab;
+        if (this.opType === "sub")
+          lab = "Apply: − " + this.opAmt + " from both";
+        else if (this.opType === "add")
+          lab = "Apply: + " + this.opAmt + " to both";
+        else lab = "Apply: ÷ both by " + this.opAmt;
+        this.applyText.setText(lab);
+      };
+      GameScene.prototype.updateMoves = function () {
+        this.movesText.setText("Moves left: " + this.movesLeft);
+        this.movesText.setColor(this.movesLeft <= 1 ? "#ffb38a" : "#bfe0c8");
+      };
+      GameScene.prototype.updateLock = function () {
+        const armed = this.isIsolated();
+        this.lockBtn.setFillStyle(armed ? 0x2d874b : 0x335544);
+        this.lockBtn.setStrokeStyle(2, armed ? 0xffd24a : 0x2d874b);
+        this.lockText
+          .setText(armed ? "LOCK IN:  x = " + this.C : "LOCK IN ✓")
+          .setColor(armed ? "#ffffff" : "#cfe9da");
+        if (this.lockTween) {
+          this.lockTween.remove();
+          this.lockTween = null;
+          this.lockBtn.setScale(1);
+          this.lockText.setScale(1);
+        }
+        if (armed && !this.reduceMotion) {
+          this.lockTween = this.tweens.add({
+            targets: [this.lockBtn, this.lockText],
+            scaleX: 1.05,
+            scaleY: 1.05,
+            duration: 600,
+            yoyo: true,
+            repeat: -1,
+          });
         }
       };
 
-      GameScene.prototype.clearStones = function () {
-        if (this.stones)
-          this.stones.forEach((s) => {
-            this.tweens.killTweensOf([s.stone, s.txt]);
-            s.stone.destroy();
-            s.txt.destroy();
-          });
-        this.stones = null;
+      // ── Apply the chosen operation to BOTH sides ──
+      GameScene.prototype.applyOp = function () {
+        if (this.locked) return;
+        const n = this.opAmt,
+          t = this.opType;
+        let legal = false;
+        if (t === "sub") {
+          legal = this.B - n >= 0 && this.C - n >= 0;
+          if (legal) {
+            this.B -= n;
+            this.C -= n;
+          }
+        } else if (t === "add") {
+          legal = this.C + n <= 99;
+          if (legal) {
+            this.B += n;
+            this.C += n;
+          }
+        } else {
+          // div: must divide A, B, and C exactly (whole numbers, true balance)
+          legal =
+            n >= 2 && this.A % n === 0 && this.B % n === 0 && this.C % n === 0;
+          if (legal) {
+            this.A /= n;
+            this.B /= n;
+            this.C /= n;
+          }
+        }
+        if (!legal) {
+          this.tiltScale();
+          SFX.tilt();
+          this.feedback
+            .setText(
+              "⚖️ That would unbalance the scale — try a different move.",
+            )
+            .setColor("#ffb38a");
+          srSay("That move would unbalance the scale. Try a different one.");
+          return;
+        }
+        // Legal move
+        this.movesLeft--;
+        SFX.move();
+        JUICE.audio.whoosh();
+        this.drawScale();
+        this.updateLock();
+        this.updateMoves();
+        if (this.isIsolated()) {
+          this.feedback
+            .setText("✅ x is alone! Read the value, then Lock In.")
+            .setColor("#8ff0c4");
+          srSay("x is alone. It equals " + this.C + ". Press Lock In.");
+        } else if (this.movesLeft <= 0) {
+          this.loseRound("Out of moves!");
+        } else {
+          this.feedback
+            .setText("Now: " + this.leftExprStr() + " = " + this.C)
+            .setColor("#bfe0c8");
+        }
       };
 
-      GameScene.prototype.leap = function () {
-        if (this.jumping || this.locked || !this.stones) return;
-        this.jumping = true;
-        SFX.jump();
-        const targetStone = this.stones[this.lane];
-        const startX = this.hero.x,
-          startY = this.startY;
-        const endX = targetStone.stone.x,
-          endY = this.stoneY - 38;
-        const dur = this.reduceMotion ? 200 : 480;
-        // Arc the hero up to the chosen stone.
-        this.tweens.add({
-          targets: [this.hero, this.heroEmoji],
-          x: endX,
-          duration: dur,
-          ease: "Sine.easeInOut",
-        });
-        // Vertical arc via a manual tween on a proxy value.
-        const peak = (startY + endY) / 2 - 90;
-        const proxy = { t: 0 };
-        this.tweens.add({
-          targets: proxy,
-          t: 1,
-          duration: dur,
-          ease: "Linear",
-          onUpdate: () => {
-            const t = proxy.t;
-            // quadratic bezier: start -> peak -> end
-            const y =
-              (1 - t) * (1 - t) * startY +
-              2 * (1 - t) * t * peak +
-              t * t * endY;
-            this.hero.y = y;
-            this.heroEmoji.y = y;
-          },
-          onComplete: () => this.land(targetStone),
-        });
-      };
-
-      GameScene.prototype.land = function (stone) {
-        this.locked = true;
-        const correct = stone.value === this.problem.answer;
-        if (correct) {
-          SFX.good();
+      // ── Lock in the answer ──
+      GameScene.prototype.lockIn = function () {
+        if (this.locked) return;
+        if (this.isIsolated()) {
+          // Balance is always preserved by legal ops, so an isolated x is the
+          // true solution.
+          this.locked = true;
+          if (this.lockTween) {
+            this.lockTween.remove();
+            this.lockTween = null;
+          }
+          JUICE.audio.correct(this.streak);
           this.solved++;
           this.streak++;
           const bonus = Math.min(this.streak, 5) * 5;
-          this.score += 25 + bonus;
-          this.burst.setPosition(stone.stone.x, stone.stone.y);
-          this.burst.explode(18);
-          this.flash(stone.stone.x, this.stoneY - 70, "+1 ✓", "#3fbf8f");
-          this.feedback.setText("Correct! " + this.problem.why).setAlpha(1);
-          srSay("Correct. " + this.problem.why);
-        } else {
-          SFX.bad();
-          this.streak = 0;
-          this.lives--;
-          this.flashRed();
-          this.flash(stone.stone.x, this.stoneY - 70, "✗", "#ff8f8f");
-          // Crumble the wrong stone.
-          if (!this.reduceMotion) {
-            this.tweens.add({
-              targets: [stone.stone, stone.txt, this.hero, this.heroEmoji],
-              y: "+=120",
-              alpha: 0,
-              duration: 400,
-            });
-          }
+          const eff = this.movesLeft * 5;
+          const gained = 20 + bonus + eff;
+          this.score += gained;
+          const cx = this.pivotX + this.panDX,
+            cy = this.pivotY;
+          this.burst.setPosition(cx, cy);
+          this.burst.explode(16);
+          JUICE.burst(this, cx, cy, [0x36a35b, 0x8ff0c4, 0xffffff], 16);
+          JUICE.shake(this, 0.005);
+          JUICE.floatText(this, W / 2, 200, "+" + gained, "#8ff0c4", 38);
+          JUICE.award(gained, "u7-equation-quest");
+          if (this.streak >= 2) JUICE.confetti(this, 1);
           this.feedback
-            .setText(
-              "The stone crumbled! x = " +
-                this.problem.answer +
-                ".  " +
-                this.problem.why,
-            )
-            .setAlpha(1);
-          srSay(
-            "Wrong stone. The correct value was x = " +
-              this.problem.answer +
-              ". " +
-              this.problem.why,
+            .setText("Correct! x = " + this.s + ". " + this.problem.solveHint)
+            .setColor("#8ff0c4");
+          srSay("Correct. x equals " + this.s + ".");
+          this.afterAttempt(true);
+        } else {
+          // Claiming a value before x is alone = a wrong final value.
+          this.loseRound(
+            "x is not alone yet — that value is not the solution.",
           );
         }
-        this.afterAttempt();
       };
 
-      GameScene.prototype.afterAttempt = function () {
-        const newLevel = Math.min(8, 1 + Math.floor(this.solved / 3));
-        if (newLevel > this.level) {
-          this.level = newLevel;
-          SFX.level();
-          this.flash(W / 2, 200, "LEVEL " + this.level + "!", "#ffd24a");
+      GameScene.prototype.loseRound = function (reason) {
+        if (this.locked) return;
+        this.locked = true;
+        if (this.lockTween) {
+          this.lockTween.remove();
+          this.lockTween = null;
         }
+        JUICE.audio.wrong();
+        SFX.tilt();
+        this.streak = 0;
+        this.lives--;
+        this.flashRed();
+        JUICE.shake(this, 0.009);
+        this.feedback
+          .setText(reason + "  ➜  " + this.problem.solveHint)
+          .setColor("#ffb38a");
+        srSay(reason + " The answer is x equals " + this.s + ".");
+        // Teach: show the fully-solved state (x = s) so the correct result is
+        // visible before moving on.
+        this.A = 1;
+        this.B = 0;
+        this.C = this.s;
+        this.drawScale();
+        this.updateLock();
+        this.afterAttempt(false);
+      };
+
+      GameScene.prototype.afterAttempt = function (correct) {
         this.updateHUD();
         if (this.lives <= 0) {
           this.endGame(false);
@@ -1046,38 +1344,101 @@
           this.endGame(true);
           return;
         }
-        this.time.delayedCall(1100, () => {
-          this.feedback.setAlpha(0);
-          this.hero.setAlpha(1);
-          this.heroEmoji.setAlpha(1);
-          this.newProblem();
-        });
+        this.time.delayedCall(correct ? 1100 : 1700, () => this.newProblem());
       };
 
-      GameScene.prototype.flash = function (x, y, text, color) {
-        const ft = this.add
-          .text(x, y, text, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "26px",
-            fontStyle: "bold",
-            color: color,
-            stroke: "#061410",
-            strokeThickness: 4,
-          })
-          .setOrigin(0.5)
-          .setDepth(40);
+      // ── Balance rendering ──
+      GameScene.prototype.drawScale = function () {
+        this.dyn.forEach((d) => d.destroy());
+        this.dyn = [];
+        // Left pan: A x-boxes + B unit weights; right pan: C unit weights.
+        this.placePan(-this.panDX, this.A, this.B);
+        this.placePan(this.panDX, 0, this.C);
+        this.leftExpr.setText(this.leftExprStr());
+        this.rightExpr.setText(String(this.C));
+        this.scaleGroup.setRotation(0);
+      };
+
+      // Draws one pan's contents into the (tilting) scale group, in container-
+      // local coordinates relative to the pivot.
+      GameScene.prototype.placePan = function (cx, xCount, unitVal) {
+        const add = (obj) => {
+          this.scaleGroup.add(obj);
+          this.dyn.push(obj);
+        };
+        const xbox = (x, y) => {
+          const r = this.add.rectangle(x, y, 26, 26, 0x4f9cff);
+          r.setStrokeStyle(2, 0x1f5fae);
+          add(r);
+          add(
+            this.add
+              .text(x, y, "x", {
+                fontFamily: "Impact, sans-serif",
+                fontSize: "18px",
+                color: "#ffffff",
+              })
+              .setOrigin(0.5),
+          );
+        };
+        const ten = (x, y) => {
+          const r = this.add.rectangle(x, y, 16, 26, 0xffd24a);
+          r.setStrokeStyle(2, 0xb8881d);
+          add(r);
+          add(
+            this.add
+              .text(x, y, "10", {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "9px",
+                fontStyle: "bold",
+                color: "#5a3c00",
+              })
+              .setOrigin(0.5),
+          );
+        };
+        const one = (x, y) => {
+          const r = this.add.rectangle(x, y, 13, 13, 0xffe07a);
+          r.setStrokeStyle(1, 0xb8881d);
+          add(r);
+        };
+        // Generic centered-row placement.
+        const row = (count, size, gap, perRow, baseY, rowGap, fn) => {
+          for (let i = 0; i < count; i++) {
+            const r = Math.floor(i / perRow);
+            const inRow = Math.min(perRow, count - r * perRow);
+            const totalW = inRow * size + (inRow - 1) * gap;
+            const startX = cx - totalW / 2 + size / 2;
+            const col = i % perRow;
+            fn(startX + col * (size + gap), baseY + r * (size + rowGap));
+          }
+        };
+        // x-boxes (top rows)
+        row(xCount, 26, 6, 4, 24, 2, xbox);
+        // unit weights: tens row, then ones row
+        const tens = Math.floor(unitVal / 10),
+          ones = unitVal % 10;
+        row(tens, 16, 5, 6, 80, 0, ten);
+        row(ones, 13, 4, 9, 100, 0, one);
+      };
+
+      GameScene.prototype.tiltScale = function () {
+        if (this.reduceMotion) {
+          this.scaleGroup.setRotation(0);
+          this.flashRed(0.18);
+          return;
+        }
         this.tweens.add({
-          targets: ft,
-          y: y - 50,
-          alpha: { from: 1, to: 0 },
-          duration: this.reduceMotion ? 500 : 900,
-          onComplete: () => ft.destroy(),
+          targets: this.scaleGroup,
+          rotation: 0.06,
+          duration: 140,
+          yoyo: true,
+          ease: "Sine.InOut",
+          onComplete: () => this.scaleGroup.setRotation(0),
         });
       };
 
-      GameScene.prototype.flashRed = function () {
-        if (this.reduceMotion) return;
-        this.redFlash.setAlpha(0.35);
+      GameScene.prototype.flashRed = function (a) {
+        if (this.reduceMotion && a == null) return;
+        this.redFlash.setAlpha(a == null ? 0.32 : a);
         this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 350 });
       };
 
@@ -1091,17 +1452,18 @@
 
       GameScene.prototype.endGame = function (won) {
         this.locked = true;
-        this.clearStones();
         this.time.delayedCall(600, () => {
           this.scene.start("Result", {
             score: this.score,
             solved: this.solved,
             target: this.target,
-            won: won,
+            level: this.level,
+            won,
           });
         });
       };
 
+      // ── RESULT ──
       function ResultScene() {
         Phaser.Scene.call(this, "Result");
       }
@@ -1125,21 +1487,24 @@
         }
 
         this.add
-          .text(cx, 110, d.won ? "QUEST COMPLETE!" : "OUT OF LIVES", {
+          .text(cx, 110, d.won ? "BALANCE MASTER!" : "OUT OF LIVES", {
             fontFamily: "Impact, sans-serif",
-            fontSize: "46px",
-            color: d.won ? "#3fbf8f" : "#ff8f8f",
+            fontSize: "48px",
+            color: d.won ? "#8ff0c4" : "#ff8f8f",
             stroke: "#061410",
             strokeThickness: 5,
           })
           .setOrigin(0.5);
+
+        const starStr = "★".repeat(stars) + "☆".repeat(3 - stars);
         this.add
-          .text(cx, 185, "★".repeat(stars) + "☆".repeat(3 - stars), {
+          .text(cx, 185, starStr, {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "48px",
             color: "#ffd24a",
           })
           .setOrigin(0.5);
+
         this.add
           .text(cx, 255, "Score: " + d.score, {
             fontFamily: "Segoe UI, sans-serif",
@@ -1152,11 +1517,17 @@
           .text(
             cx,
             295,
-            "Solved " + d.solved + " of " + d.target + " equations",
+            "Solved " +
+              d.solved +
+              " of " +
+              d.target +
+              " equations (Level " +
+              d.level +
+              ")",
             {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "18px",
-              color: "#cdeede",
+              color: "#bfe0c8",
             },
           )
           .setOrigin(0.5);
@@ -1168,9 +1539,11 @@
           })
           .setOrigin(0.5);
 
-        if (d.won) SFX.win();
+        if (d.won) JUICE.audio.fanfare();
         else SFX.lose();
+        if (d.won) JUICE.confetti(this, 1);
 
+        // EduPulse reporting (guarded; safe no-op without bridge).
         try {
           window.EduPulse &&
             EduPulse.record({
@@ -1191,7 +1564,7 @@
         );
 
         const btn = this.add
-          .rectangle(cx, 400, 220, 54, 0x2d874b)
+          .rectangle(cx, 400, 240, 54, 0x2d874b)
           .setInteractive({ useHandCursor: true });
         const btnT = this.add
           .text(cx, 400, "PLAY AGAIN 🔁", {
@@ -1201,7 +1574,7 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        const again = () => this.scene.start("Game");
+        const again = () => this.scene.start("Level");
         btn.on("pointerover", () => btn.setFillStyle(0x36a35b));
         btn.on("pointerout", () => btn.setFillStyle(0x2d874b));
         btn.on("pointerdown", again);
@@ -1212,17 +1585,19 @@
           .text(cx, 480, "← Back to Math Games", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "15px",
-            color: "#7fc0a0",
+            color: "#6fae8c",
           })
           .setOrigin(0.5)
           .setInteractive({ useHandCursor: true });
-        hub.on("pointerover", () => hub.setColor("#3fbf8f"));
-        hub.on("pointerout", () => hub.setColor("#7fc0a0"));
+        hub.on("pointerover", () => hub.setColor("#ffd24a"));
+        hub.on("pointerout", () => hub.setColor("#6fae8c"));
         hub.on("pointerdown", () => (window.location.href = "/math/games/"));
       };
 
+      // ── Launch ──
       const eqGame = new Phaser.Game(config);
 
+      // Canvas accessibility (additive; no gameplay change).
       eqGame.events.once("ready", function () {
         try {
           const cv = eqGame.canvas;
@@ -1230,9 +1605,11 @@
           cv.setAttribute("role", "application");
           cv.setAttribute(
             "aria-label",
-            "Equation Quest Rune Leap math game. Solve the one-step equation " +
-              "for x, move with the left and right arrow keys, and press space " +
-              "to leap onto the rune stone showing the correct value of x.",
+            "Equation Quest Balance Scale math game. An equation appears at the " +
+              "top. Use the up and down arrows to pick an operation, the left " +
+              "and right arrows to set the amount, and press Space to apply it " +
+              "to both sides of the scale. Keep the scale balanced until x is " +
+              "alone, then press Enter to lock in its value.",
           );
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
@@ -1255,8 +1632,10 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- Student Passport (meta-progression pill; boots itself, award() guarded) -->
+    <script src="/assets/lesson-passport.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

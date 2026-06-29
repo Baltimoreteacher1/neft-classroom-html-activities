@@ -59,6 +59,21 @@ if [ ! -f "$WT/$APP_DIR/index.html" ] || [ ! -f "$WT/$APP_DIR/app.js" ]; then
 	exit 1
 fi
 
+# --- vendor the Math Workbench so it serves on noam's OWN domain -------------
+# Single source of truth lives at curriculum/math-workbench/; copy it (and the
+# favicon it references) into the app at deploy time so the in-app "Open Math
+# Workbench" button stays on noam.eduwonderlab.com instead of bouncing to
+# eduwonderlab.com (which is behind Basic Auth). The Workbench's brand link is
+# host-aware, so "home" points back to the planner on this domain.
+if [ -f "$WT/curriculum/math-workbench/index.html" ]; then
+	echo "▶ Vendoring Math Workbench into $APP_DIR/curriculum/math-workbench/…"
+	mkdir -p "$WT/$APP_DIR/curriculum/math-workbench" "$WT/$APP_DIR/assets"
+	cp -R "$WT/curriculum/math-workbench/." "$WT/$APP_DIR/curriculum/math-workbench/"
+	[ -f "$WT/assets/favicon.svg" ] && cp "$WT/assets/favicon.svg" "$WT/$APP_DIR/assets/favicon.svg"
+else
+	echo "⚠ curriculum/math-workbench/ not found in origin/main — skipping vendor." >&2
+fi
+
 # --- cache hygiene check ----------------------------------------------------
 live_sw="$(curl -fsS "$LIVE/sw.js" 2>/dev/null | grep -oE 'focus-school-v[0-9]+' | head -1 || true)"
 new_sw="$(grep -oE 'focus-school-v[0-9]+' "$WT/$APP_DIR/sw.js" | head -1 || true)"
