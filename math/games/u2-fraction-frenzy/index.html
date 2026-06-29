@@ -2,12 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
-    <title>Fraction Frenzy — Lessons 2.1–2.5 Game | Neft Teacher</title>
+    <title>Fraction Frenzy — Partition &amp; Shade | Math Games</title>
     <meta
       name="description"
-      content="A 2D aim-and-pop bubble shooter for Grade 6 lessons 2.1–2.5: dividing fractions (6.NS.1). Aim the cannon and pop the bubble with the correct quotient."
+      content="A build-it math game for Grade 6 lessons 2.1-2.5 (6.NS.1): cut a bar into equal parts and shade it to model a fraction, an equivalent fraction, or to count how many unit fractions fit in a whole — no timer, no reflex, wrong math shows the correct model so it teaches."
     />
     <style>
       * {
@@ -15,11 +15,7 @@
         padding: 0;
         box-sizing: border-box;
       }
-      html, body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
+      body {
         background: #2a1326;
         overflow: hidden;
         font-family: "Segoe UI", system-ui, sans-serif;
@@ -51,11 +47,17 @@
           #1c0c19 100%
         );
       }
+      #fr-bg-layer {
+        position: absolute;
+        inset: -6% -6%;
+        will-change: transform;
+        transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+      }
       .fr-mote {
         position: absolute;
         border-radius: 50%;
         background: #ffd0e0;
-        opacity: 0.4;
+        opacity: 0.45;
         animation: frTwinkle var(--tw, 3s) ease-in-out infinite;
       }
       @keyframes frTwinkle {
@@ -70,9 +72,13 @@
         }
       }
       @media (prefers-reduced-motion: reduce) {
+        #fr-bg-layer {
+          transition: none !important;
+          transform: none !important;
+        }
         .fr-mote {
           animation: none !important;
-          opacity: 0.35 !important;
+          opacity: 0.4 !important;
         }
       }
       #fr-sr {
@@ -85,109 +91,6 @@
         clip: rect(0, 0, 0, 0);
         white-space: nowrap;
         border: 0;
-      }
-      /* ── Vocab gate (shown BEFORE the game boots) ── */
-      #fr-vocab {
-        position: fixed;
-        inset: 0;
-        z-index: 50;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 16px;
-        overflow-y: auto;
-        background: rgba(28, 12, 25, 0.96);
-        font-family: "Segoe UI", system-ui, sans-serif;
-      }
-      #fr-vocab .fr-vcard {
-        background: #3a1834;
-        border: 1px solid #6b3050;
-        border-radius: 18px;
-        padding: 22px 22px 24px;
-        max-width: 560px;
-        width: 100%;
-        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
-        margin: auto;
-      }
-      #fr-vocab h2 {
-        color: #ff7ba8;
-        font-size: 1.5rem;
-        font-weight: 800;
-        margin-bottom: 2px;
-      }
-      #fr-vocab .fr-vsub {
-        color: #c890a8;
-        font-size: 0.9rem;
-        margin-bottom: 14px;
-      }
-      #fr-vocab .fr-vlist {
-        display: grid;
-        gap: 12px;
-        margin-bottom: 18px;
-      }
-      #fr-vocab .fr-vrow {
-        display: flex;
-        gap: 14px;
-        align-items: center;
-        background: #2a1326;
-        border: 1px solid #6b3050;
-        border-radius: 12px;
-        padding: 12px 14px;
-      }
-      #fr-vocab .fr-vimg {
-        flex: 0 0 auto;
-        width: 58px;
-        height: 58px;
-        border-radius: 12px;
-        background: #4a2244;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 34px;
-        line-height: 1;
-      }
-      #fr-vocab .fr-vhtml, body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        flex: 1 1 auto;
-        min-width: 0;
-      }
-      #fr-vocab .fr-vterm {
-        color: #ffb648;
-        font-weight: 800;
-        font-size: 1.05rem;
-      }
-      #fr-vocab .fr-vdef {
-        color: #f0d7e2;
-        font-size: 0.95rem;
-        line-height: 1.45;
-        margin-top: 2px;
-      }
-      #fr-vocab .fr-vgo {
-        width: 100%;
-        font:
-          800 1.1rem "Segoe UI",
-          system-ui,
-          sans-serif;
-        cursor: pointer;
-        border: none;
-        border-radius: 12px;
-        padding: 16px 22px;
-        color: #fff3ec;
-        background: #c45a3c;
-        transition:
-          background 0.12s,
-          transform 0.12s;
-      }
-      #fr-vocab .fr-vgo:hover {
-        background: #d86c4c;
-        transform: translateY(-1px);
-      }
-      #fr-vocab .fr-vgo:focus-visible {
-        outline: 3px solid #ffb648;
-        outline-offset: 3px;
       }
     </style>
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
@@ -215,73 +118,114 @@
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- Student Passport (meta-progression: lifetime XP / streak / badges) -->
+    <link rel="stylesheet" href="/assets/lesson-passport.css" />
+    <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
+    <script src="/assets/game-juice.js"></script>
+  </head>
   <body>
-    <div id="fr-bg" aria-hidden="true"></div>
-    <div id="fr-sr" role="status" aria-live="polite"></div>
-
-    <!-- VOCAB GATE — term + Level-1 definition + image/emoji, shown BEFORE play -->
-    <div
-      id="fr-vocab"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="fr-vocab-h"
-    >
-      <div class="fr-vcard">
-        <h2 id="fr-vocab-h">Words to know first</h2>
-        <p class="fr-vsub">Dividing fractions · Lessons 2.1–2.5 · 6.NS.1</p>
-        <div class="fr-vlist" id="fr-vocab-list"></div>
-        <button class="fr-vgo" id="fr-vocab-go" type="button">
-          I'm ready — load the cannon ▶
-        </button>
-      </div>
+    <!-- Decorative animated mote-field (behind the Phaser canvas). -->
+    <div id="fr-bg" data-parallax aria-hidden="true">
+      <div id="fr-bg-layer" data-parallax-layer></div>
     </div>
-
+    <!-- Screen-reader live region: mirrors the current problem + result. -->
+    <div id="fr-sr" role="status" aria-live="polite"></div>
     <script>
+      // Decorative mote-field builder (reduced-motion safe; pointer-neutral).
       (function () {
-        var host = document.getElementById("fr-bg");
-        if (!host) return;
-        var reduce =
+        "use strict";
+        var reduceMQ =
           window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        var n = reduce ? 10 : 26;
-        for (var i = 0; i < n; i++) {
-          var d = document.createElement("div");
-          d.className = "fr-mote";
-          var sz = 2 + Math.random() * 4;
-          d.style.width = d.style.height = sz.toFixed(1) + "px";
-          d.style.left = (Math.random() * 100).toFixed(2) + "%";
-          d.style.top = (Math.random() * 100).toFixed(2) + "%";
-          d.style.setProperty("--tw", (2 + Math.random() * 4).toFixed(2) + "s");
-          d.style.animationDelay = "-" + (Math.random() * 4).toFixed(2) + "s";
-          host.appendChild(d);
+          window.matchMedia("(prefers-reduced-motion: reduce)");
+        var layer = document.getElementById("fr-bg-layer");
+        if (!layer) return;
+        function rnd(a, b) {
+          return a + Math.random() * (b - a);
         }
+        function build() {
+          layer.textContent = "";
+          var reduce = !!(reduceMQ && reduceMQ.matches);
+          var n = reduce ? 16 : 34;
+          for (var i = 0; i < n; i++) {
+            var s = document.createElement("div");
+            s.className = "fr-mote";
+            var sz = rnd(2, 5);
+            s.style.width = s.style.height = sz.toFixed(1) + "px";
+            s.style.left = rnd(0, 100).toFixed(2) + "%";
+            s.style.top = rnd(0, 100).toFixed(2) + "%";
+            s.style.setProperty("--tw", rnd(2.2, 5).toFixed(2) + "s");
+            s.style.animationDelay = "-" + rnd(0, 4).toFixed(2) + "s";
+            layer.appendChild(s);
+          }
+        }
+        build();
+        var driver = false;
+        function onMove(e) {
+          var dx = e.clientX / (window.innerWidth || 1) - 0.5;
+          var dy = e.clientY / (window.innerHeight || 1) - 0.5;
+          layer.style.transform =
+            "translate3d(" +
+            (dx * 20).toFixed(2) +
+            "px," +
+            (dy * 12).toFixed(2) +
+            "px,0)";
+        }
+        function attach() {
+          if (driver || (reduceMQ && reduceMQ.matches)) return;
+          driver = true;
+          window.addEventListener("pointermove", onMove, { passive: true });
+        }
+        function detach() {
+          if (!driver) return;
+          driver = false;
+          window.removeEventListener("pointermove", onMove);
+          layer.style.transform = "";
+        }
+        attach();
+        if (reduceMQ) {
+          var onChange = function () {
+            build();
+            if (reduceMQ.matches) detach();
+            else attach();
+          };
+          if (reduceMQ.addEventListener)
+            reduceMQ.addEventListener("change", onChange);
+          else if (reduceMQ.addListener) reduceMQ.addListener(onChange);
+        }
+        var rt;
+        window.addEventListener("resize", function () {
+          clearTimeout(rt);
+          rt = setTimeout(build, 200);
+        });
       })();
     </script>
     <script>
-      // ════════════════════════════════════════════════════════════════════
-      // FRACTION FRENZY — Bubble Popper  ·  Grade 6  ·  6.NS.1
-      // Lessons 2.1–2.5: dividing fractions (keep-change-flip).
-      //
-      // MECHANIC: A cannon sits at the bottom center. Three answer "bubbles"
-      //   drift across the upper screen. Read the division problem, ROTATE the
-      //   cannon (← → / A D) so its aim line points at the bubble with the
-      //   correct quotient, then FIRE (Space / Up / tap a bubble). The shell
-      //   flies along the aim; popping the right bubble = correct, popping a
-      //   wrong one = miss (lose a life). Bubbles drift faster each round.
-      //
-      // FLOAT SAFETY: answers are integers or "1/d" reciprocal strings produced
-      //   directly from integer arithmetic; correctness is a STRING comparison,
-      //   so no float equality is ever used.
-      // ════════════════════════════════════════════════════════════════════
-      const LS_KEY = "fr_fraction_frenzy_highscore";
-      const W = 800,
-        H = 600;
-      const ACTIVITY_TITLE = "Fraction Frenzy — Lessons 2.1–2.5";
-      const STANDARD = "6.NS.1";
+      // ── FRACTION FRENZY — PARTITION & SHADE ──
+      // Phaser 3 — Grade 6 Math — Fractions & dividing by unit fractions (6.NS.1)
+      // Mechanic (math-as-mechanic, no reflex/timer): the bar IS one whole.
+      // You first CUT the bar into N equal parts with the −/+ steppers (or ← →),
+      // then SHADE parts by tapping them (or ↑ ↓) to BUILD the target fraction.
+      // Higher levels switch to a measurement model — wholes split into unit
+      // fractions, "how many 1/4 fit in 2?" — so the same cut-and-shade action
+      // teaches modeling, equivalence, and dividing by a unit fraction.
+      // Lock In checks BOTH the cut count and the shaded count. A wrong build
+      // (wrong math) costs a life, then the bar snaps to the correct model to
+      // teach, and play continues.
 
+      const W = 820,
+        H = 600;
+      const LS_KEY = "ff_partition_shade_highscore";
+      // Shade-bar geometry in game space. Phaser Scale.FIT maps pointer
+      // coordinates into this space, so taps land on the right cell at any size.
+      const BAR_X0 = 110,
+        BAR_X1 = 710,
+        BAR_Y = 372,
+        BAR_H = 86;
+      const BAR_W = BAR_X1 - BAR_X0;
+
+      // ── Audio (tiny WebAudio blips; gracefully no-op without a context) ──
       const SFX = {
         ctx: null,
         init() {
@@ -292,7 +236,7 @@
               )();
             } catch (e) {}
         },
-        play(t, f, d, v = 0.2) {
+        play(t, f, d, v = 0.18) {
           if (!this.ctx) return;
           try {
             const c = this.ctx,
@@ -308,183 +252,196 @@
             o.stop(c.currentTime + d);
           } catch (e) {}
         },
-        noise(d, v = 0.1) {
-          if (!this.ctx) return;
-          try {
-            const c = this.ctx,
-              n = c.sampleRate * d,
-              buf = c.createBuffer(1, n, c.sampleRate),
-              dt = buf.getChannelData(0);
-            for (let i = 0; i < n; i++) dt[i] = Math.random() * 2 - 1;
-            const s = c.createBufferSource();
-            s.buffer = buf;
-            const g = c.createGain();
-            g.gain.setValueAtTime(v, c.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
-            s.connect(g);
-            g.connect(c.destination);
-            s.start();
-            s.stop(c.currentTime + d);
-          } catch (e) {}
+        good() {
+          this.play("sine", 660, 0.1, 0.25);
+          this.play("sine", 880, 0.14, 0.2);
         },
-        fire() {
-          this.play("square", 300, 0.08, 0.12);
+        bad() {
+          this.play("sawtooth", 200, 0.25, 0.18);
+          this.play("sawtooth", 150, 0.3, 0.14);
         },
-        pop() {
-          this.play("sine", 720, 0.1, 0.3);
-          this.play("sine", 1080, 0.13, 0.22);
+        cut() {
+          this.play("square", 880, 0.05, 0.07);
         },
-        miss() {
-          this.noise(0.18, 0.12);
-          this.play("sawtooth", 170, 0.28, 0.16);
+        coin() {
+          this.play("square", 1040, 0.05, 0.08);
         },
-        rotate() {
-          this.play("triangle", 360, 0.03, 0.04);
-        },
-        tick() {
-          this.play("square", 600, 0.03, 0.07);
-        },
-        streak(n) {
-          [523, 659, 784, 988, 1175]
-            .slice(0, Math.min(n, 5))
-            .forEach((f, i) =>
-              setTimeout(() => this.play("sine", f, 0.12, 0.2), i * 55),
-            );
-        },
-        levelUp() {
+        level() {
           [523, 659, 784, 1047].forEach((f, i) =>
             setTimeout(() => this.play("sine", f, 0.15, 0.22), i * 70),
           );
         },
         win() {
           [523, 659, 784, 1047, 1318].forEach((f, i) =>
-            setTimeout(() => this.play("sine", f, 0.22, 0.28), i * 110),
+            setTimeout(() => this.play("sine", f, 0.25, 0.25), i * 110),
           );
         },
         lose() {
-          [400, 350, 300, 200].forEach((f, i) =>
-            setTimeout(() => this.play("sawtooth", f, 0.28, 0.15), i * 170),
+          [400, 330, 260, 200].forEach((f, i) =>
+            setTimeout(() => this.play("sawtooth", f, 0.3, 0.14), i * 170),
           );
         },
+      };
+
+      // Resolve the shared game-feel layer; provide safe no-op fallbacks so the
+      // game still runs if /assets/game-juice.js failed to load.
+      const JUICE = window.GameJuice || {
+        reduceMotion: false,
+        audio: { unlock() {} },
+        theme: () => ({}),
+        bgGradient() {},
+        popIn() {},
+        tilePop() {},
+        burst() {},
+        confetti() {},
+        shake() {},
+        floatText() {},
+        award() {},
       };
 
       function randInt(a, b) {
         return Math.floor(Math.random() * (b - a + 1)) + a;
       }
-      function shuffle(a) {
-        const r = a.slice();
-        for (let i = r.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [r[i], r[j]] = [r[j], r[i]];
-        }
-        return r;
+      function srSay(msg) {
+        const el = document.getElementById("fr-sr");
+        if (el) el.textContent = msg;
       }
 
-      // Build 3 distinct bubble labels with exactly one correct.
-      // makeWrong returns a label STRING already.
-      function buildBubbles(correctLabel, makeWrong) {
-        const set = new Set([correctLabel]);
-        let guard = 0;
-        while (set.size < 3 && guard++ < 200) {
-          const w = makeWrong();
-          if (w && w !== correctLabel) set.add(w);
-        }
-        const labels = shuffle(Array.from(set));
-        return { labels: labels, correctIndex: labels.indexOf(correctLabel) };
-      }
-
-      // round 1: whole ÷ unit fraction = integer  (n ÷ 1/d = n·d)
-      // round 2: fraction ÷ unit fraction = integer  ((a/b) ÷ 1/d = a·d/b, d multiple of b)
-      // round 3: unit fraction ÷ whole = unit fraction  (1/b ÷ n = 1/(b·n))
-      function genQuestion(round) {
-        if (round === 1) {
-          const n = randInt(2, 6),
-            d = randInt(2, 5);
-          const ans = n * d;
-          const g = buildBubbles(String(ans), () => {
-            const step = randInt(1, 3) * (Math.random() < 0.5 ? 1 : -1);
-            let w = ans + step * d;
-            if (w <= 0 || w === ans) w = ans + randInt(1, 3);
-            return String(w);
-          });
+      // ── Problem generator (partition & shade) ───────────────────────────
+      // Every problem reduces to one tactile action: cut the bar into the right
+      // number of equal parts and shade the right number of them. Returns
+      //   { kind, label, prompt, why, wholes, targetParts, targetShaded }
+      // Two chosen TIERS drive the math, and the in-run stage (1-8) ramps within:
+      //   tier 1 (support)    : modeling only, friendly denominators 2–4.
+      //   tier 2 (enrichment) : larger denominators + equivalent + dividing by a
+      //                         unit fraction, mixed in sooner.
+      function fracProblem(stage, tier) {
+        // ── Tier 1 (support): model proper fractions only, denominators 2–4. ──
+        if (tier === 1) {
+          const d = randInt(2, stage <= 2 ? 3 : 4);
+          const n = randInt(1, d - 1);
           return {
-            tag: "Whole ÷ Unit Fraction",
-            prompt: n + " ÷ 1/" + d,
-            why: n + " ÷ 1/" + d + " = " + n + " × " + d + " = " + ans + ".",
-            bubbles: g.labels,
-            correctIndex: g.correctIndex,
+            kind: "model",
+            label: "Model the fraction",
+            wholes: 1,
+            targetParts: d,
+            targetShaded: n,
+            prompt:
+              "Model " +
+              n +
+              "/" +
+              d +
+              ": cut the bar into " +
+              d +
+              " equal parts, then shade " +
+              n +
+              ".",
+            why: n + "/" + d + " means " + n + " of " + d + " equal parts.",
           };
         }
-        if (round === 2) {
-          const b = randInt(2, 4);
-          const a = randInt(1, b - 1); // proper fraction (b>=2 so b-1>=1)
-          const mult = randInt(1, 4),
-            d = b * mult; // d is a multiple of b -> integer answer
-          const ans = (a * d) / b; // guaranteed integer
-          const g = buildBubbles(String(ans), () => {
-            const delta = randInt(1, 4);
-            let w = Math.random() < 0.5 ? ans + delta : ans - delta;
-            if (w <= 0 || w === ans) w = ans + randInt(1, 4);
-            return String(w);
-          });
+
+        // ── Tier 2 (enrichment): model + equivalent + divide by a unit fraction.
+        let kind;
+        if (stage <= 1) kind = Math.random() < 0.6 ? "model" : "equiv";
+        else if (stage <= 3) {
+          const r = Math.random();
+          kind = r < 0.4 ? "model" : r < 0.7 ? "equiv" : "divide";
+        } else {
+          const r = Math.random();
+          kind = r < 0.3 ? "model" : r < 0.55 ? "equiv" : "divide";
+        }
+
+        if (kind === "equiv") {
+          const bases = [
+            [1, 2],
+            [1, 3],
+            [2, 3],
+            [1, 4],
+            [3, 4],
+            [1, 5],
+            [2, 5],
+          ];
+          const pick = bases[randInt(0, bases.length - 1)];
+          const n = pick[0],
+            d = pick[1];
+          const maxM = Math.max(2, Math.floor(8 / d));
+          const m = randInt(2, maxM);
+          const d2 = d * m,
+            n2 = n * m;
           return {
-            tag: "Fraction ÷ Unit Fraction",
-            prompt: a + "/" + b + " ÷ 1/" + d,
-            why:
-              a +
+            kind,
+            label: "Equivalent fraction",
+            wholes: 1,
+            targetParts: d2,
+            targetShaded: n2,
+            prompt:
+              "Show a fraction equal to " +
+              n +
               "/" +
-              b +
+              d +
+              " using " +
+              d2 +
+              " equal parts.",
+            why: n + "/" + d + " = " + n2 + "/" + d2 + ".",
+          };
+        }
+
+        if (kind === "divide") {
+          const wholes = randInt(1, 3);
+          let d = randInt(2, 4);
+          while (wholes * d > 12) d--;
+          if (d < 2) d = 2;
+          const ans = wholes * d;
+          return {
+            kind,
+            label: "Divide by a unit fraction",
+            wholes,
+            targetParts: d,
+            targetShaded: ans,
+            prompt:
+              "How many 1/" +
+              d +
+              " are in " +
+              wholes +
+              "? Cut each whole into " +
+              d +
+              ", then shade them all to count.",
+            why:
+              wholes +
               " ÷ 1/" +
               d +
               " = " +
-              a +
-              "/" +
-              b +
-              " × " +
-              d +
-              " = " +
               ans +
+              " — that many 1/" +
+              d +
+              " pieces fit in " +
+              wholes +
               ".",
-            bubbles: g.labels,
-            correctIndex: g.correctIndex,
           };
         }
-        // round 3
-        const b = randInt(2, 6),
-          n = randInt(2, 5);
-        const denom = b * n;
-        const correct = "1/" + denom;
-        const g = buildBubbles(correct, () => {
-          const delta = randInt(1, 5);
-          let dd = Math.random() < 0.5 ? denom + delta : denom - delta;
-          if (dd <= 1 || dd === denom) dd = denom + randInt(1, 5);
-          return "1/" + dd;
-        });
-        return {
-          tag: "Unit Fraction ÷ Whole",
-          prompt: "1/" + b + " ÷ " + n,
-          why:
-            "1/" +
-            b +
-            " ÷ " +
-            n +
-            " = 1/(" +
-            b +
-            "×" +
-            n +
-            ") = 1/" +
-            denom +
-            ".",
-          bubbles: g.labels,
-          correctIndex: g.correctIndex,
-        };
-      }
 
-      function srSay(msg) {
-        try {
-          const el = document.getElementById("fr-sr");
-          if (el) el.textContent = msg;
-        } catch (e) {}
+        // model (enrichment: bigger denominators)
+        const dmax = stage <= 2 ? 6 : 8;
+        const d = randInt(3, dmax);
+        const n = randInt(1, d - 1);
+        return {
+          kind: "model",
+          label: "Model the fraction",
+          wholes: 1,
+          targetParts: d,
+          targetShaded: n,
+          prompt:
+            "Model " +
+            n +
+            "/" +
+            d +
+            ": cut the bar into " +
+            d +
+            " equal parts, then shade " +
+            n +
+            ".",
+          why: n + "/" + d + " means " + n + " of " + d + " equal parts.",
+        };
       }
 
       const config = {
@@ -494,829 +451,1122 @@
         parent: document.body,
         backgroundColor: "#2a1326",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [],
+        scene: [
+          BootScene,
+          TitleScene,
+          VocabScene,
+          LevelScene,
+          GameScene,
+          ResultScene,
+        ],
       };
 
-      class BootScene extends Phaser.Scene {
-        constructor() {
-          super("Boot");
-        }
-        create() {
-          const g = this.make.graphics({ add: false });
-          g.fillStyle(0xffffff);
-          g.fillRect(0, 0, 7, 4);
-          g.generateTexture("confetti", 7, 4);
-          g.clear();
-          g.fillStyle(0xffffff);
-          g.fillCircle(4, 4, 4);
-          g.generateTexture("spark", 8, 8);
-          g.clear();
-          g.fillStyle(0xffe08a);
-          g.fillCircle(7, 7, 7);
-          g.generateTexture("shell", 14, 14);
-          g.destroy();
-          this.scene.start("Title");
-        }
+      // Chosen tier (repo rule: Level 1 = support, Level 2 = enrichment; never
+      // the word "ESOL"). Set on the Level Select screen; drives the generator,
+      // the scaffolding hints, and the HUD badge. Defaults to support.
+      let ffTier = 1;
+
+      // ── Vocab gate state (repo rule: term + Level-1 definition + image/emoji
+      // shown BEFORE the first round). Shown by default; skippable only on a
+      // replay within the same page session. ──
+      let ffVocabSeen = false;
+
+      // Key words for THIS game's topic (fractions, equal parts, unit
+      // fractions). Each has a student-facing (Level 1) definition and an emoji
+      // so a visual always shows even with no network/images.
+      const FF_VOCAB = [
+        {
+          term: "Fraction",
+          emoji: "🍕",
+          def: "A number for part of a whole. 3/4 means 3 out of 4 equal parts.",
+        },
+        {
+          term: "Numerator",
+          emoji: "⬆️",
+          def: "The TOP number of a fraction. It tells how many parts you have.",
+        },
+        {
+          term: "Denominator",
+          emoji: "⬇️",
+          def: "The BOTTOM number. It tells how many equal parts the whole is cut into.",
+        },
+        {
+          term: "Equal parts",
+          emoji: "✂️",
+          def: "The same-size pieces a whole is cut into. 4 equal parts means each piece is the same size.",
+        },
+        {
+          term: "Unit fraction",
+          emoji: "1️⃣",
+          def: "A fraction with 1 on top, like 1/4. It is ONE equal part of the whole.",
+        },
+      ];
+
+      // ── BOOT ──
+      function BootScene() {
+        Phaser.Scene.call(this, "Boot");
       }
+      BootScene.prototype = Object.create(Phaser.Scene.prototype);
+      BootScene.prototype.constructor = BootScene;
+      BootScene.prototype.create = function () {
+        const g = this.make.graphics({ add: false });
+        g.fillStyle(0xffffff);
+        g.fillCircle(4, 4, 4);
+        g.generateTexture("dot", 8, 8);
+        g.clear();
+        g.fillStyle(0xffd0e0);
+        g.fillCircle(5, 5, 5);
+        g.generateTexture("spark", 10, 10);
+        g.destroy();
+        this.scene.start("Title");
+      };
 
-      class TitleScene extends Phaser.Scene {
-        constructor() {
-          super("Title");
-        }
-        create() {
-          const cx = W / 2;
-          this.reduce =
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          this.add.rectangle(cx, H / 2, W, H, 0x2a1326);
-          this.add
-            .text(cx, 120, "FRACTION", {
-              fontSize: "62px",
-              fontFamily: "Impact, sans-serif",
-              color: "#ff7ba8",
-              stroke: "#1c0c19",
-              strokeThickness: 6,
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(cx, 186, "FRENZY", {
-              fontSize: "62px",
-              fontFamily: "Impact, sans-serif",
-              color: "#ffb648",
-              stroke: "#1c0c19",
-              strokeThickness: 6,
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(cx, 244, "Bubble Popper  ·  Lessons 2.1–2.5  ·  6.NS.1", {
-              fontSize: "15px",
-              color: "#e0a8c0",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(
-              cx,
-              300,
-              "Divide the fractions, AIM the cannon at the bubble with\nthe correct quotient, and fire to pop it!",
-              { fontSize: "15px", color: "#c890a8", align: "center" },
-            )
-            .setOrigin(0.5);
-          this.add
-            .text(
-              cx,
-              356,
-              "← → or A/D to aim   ·   Space/↑ to fire   ·   tap a bubble",
-              {
-                fontSize: "14px",
-                color: "#b380a0",
-              },
-            )
-            .setOrigin(0.5);
-
-          const hs = localStorage.getItem(LS_KEY);
-          if (hs)
-            this.add
-              .text(cx, 392, "HIGH SCORE: " + hs, {
-                fontSize: "15px",
-                color: "#ffb648",
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5);
-
-          const btn = this.add
-            .rectangle(cx, 450, 260, 56, 0xc45a3c)
-            .setInteractive({ useHandCursor: true });
-          const btnT = this.add
-            .text(cx, 450, "LOAD CANNON ▶", {
-              fontSize: "22px",
-              fontStyle: "bold",
-              color: "#fff3ec",
-            })
-            .setOrigin(0.5);
-          if (!this.reduce)
-            this.tweens.add({
-              targets: [btn, btnT],
-              scaleX: 1.05,
-              scaleY: 1.05,
-              duration: 800,
-              yoyo: true,
-              repeat: -1,
-            });
-          const go = () => {
-            SFX.init();
-            SFX.tick();
-            this.cameras.main.fadeOut(300);
-            this.time.delayedCall(300, () => this.scene.start("Game"));
-          };
-          btn.on("pointerover", () => btn.setFillStyle(0xd86c4c));
-          btn.on("pointerout", () => btn.setFillStyle(0xc45a3c));
-          btn.on("pointerdown", go);
-          this.input.keyboard.on("keydown-SPACE", go);
-          this.input.keyboard.on("keydown-ENTER", go);
-
-          const hub = this.add
-            .text(cx, 555, "← Back to Games hub", {
-              fontSize: "15px",
-              fontStyle: "bold",
-              color: "#b380a0",
-            })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true });
-          hub.on("pointerover", () => hub.setColor("#ffb648"));
-          hub.on("pointerout", () => hub.setColor("#b380a0"));
-          hub.on("pointerdown", () => (window.location.href = "/math/games/"));
-
-          this.cameras.main.fadeIn(400);
-        }
+      // ── TITLE ──
+      function TitleScene() {
+        Phaser.Scene.call(this, "Title");
       }
-
-      class GameScene extends Phaser.Scene {
-        constructor() {
-          super("Game");
-        }
-        init() {
-          this.reduce =
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          this.score = 0;
-          this.lives = 3;
-          this.streak = 0;
-          this.maxStreak = 0;
-          this.correct = 0;
-          this.qIndex = 0;
-          this.TOTAL = 12;
-          this.level = 1;
-          this.busy = false;
-          this.aim = -Math.PI / 2; // straight up
-          this.bubbles = [];
-          this.shell = null;
-        }
-        roundFor(i) {
-          return i < 4 ? 1 : i < 8 ? 2 : 3;
-        }
-        create() {
-          const cx = W / 2;
-          this.cannonX = cx;
-          this.cannonY = H - 40;
-          this.add.rectangle(cx, H / 2, W, H, 0x2a1326);
-
-          // HUD
-          this.add.rectangle(cx, 24, W, 48, 0x1c0c19, 0.92).setDepth(8);
-          this.scoreText = this.add
-            .text(16, 12, "Score: 0", {
-              fontSize: "20px",
-              color: "#ff7ba8",
-              fontStyle: "bold",
-            })
-            .setDepth(9);
-          this.livesText = this.add
-            .text(W - 16, 12, "❤❤❤", { fontSize: "20px", color: "#ff6b8a" })
-            .setOrigin(1, 0)
-            .setDepth(9);
-          this.streakText = this.add
-            .text(cx, 12, "Streak: 0", {
+      TitleScene.prototype = Object.create(Phaser.Scene.prototype);
+      TitleScene.prototype.constructor = TitleScene;
+      TitleScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x2a1326);
+        this.add
+          .text(cx, 118, "FRACTION FRENZY", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "62px",
+            color: "#ff7ba8",
+            stroke: "#1c0c19",
+            strokeThickness: 6,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 173, "Partition & Shade", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "26px",
+            color: "#f0aec8",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            230,
+            "CUT the bar into equal parts, then SHADE it to BUILD the\nfraction. Tap parts to shade, use −/+ to change the cuts, Lock In!",
+            {
+              fontFamily: "Segoe UI, sans-serif",
               fontSize: "16px",
-              color: "#ffb648",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5, 0)
-            .setDepth(9);
-
-          // prompt
-          this.add.rectangle(cx, 78, 360, 56, 0x1c0c19, 0.92).setDepth(8);
-          this.tagText = this.add
-            .text(cx, 62, "", { fontSize: "13px", color: "#e0a8c0" })
-            .setOrigin(0.5)
-            .setDepth(9);
-          this.promptText = this.add
-            .text(cx, 86, "", {
-              fontSize: "28px",
-              color: "#ffffff",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5)
-            .setDepth(9);
-          this.qnumText = this.add
-            .text(cx, 112, "", { fontSize: "12px", color: "#c890a8" })
-            .setOrigin(0.5)
-            .setDepth(9);
-
-          // Cannon base + barrel
-          this.add
-            .circle(this.cannonX, this.cannonY, 34, 0x6b3050)
-            .setDepth(10);
-          this.barrel = this.add
-            .rectangle(this.cannonX, this.cannonY, 18, 56, 0xffb648)
-            .setOrigin(0.5, 1)
-            .setDepth(11);
-          this.barrel.rotation = this.aim + Math.PI / 2;
-          // aim guide line
-          this.aimLine = this.add.graphics().setDepth(9);
-
-          // particles
-          this.confetti = this.add
-            .particles(0, 0, "confetti", {
-              speed: { min: 80, max: 280 },
-              angle: { min: 0, max: 360 },
-              scale: { start: 1.4, end: 0.2 },
-              rotate: { min: 0, max: 360 },
-              lifespan: 1100,
-              gravityY: 240,
-              emitting: false,
-              quantity: 22,
-              tint: [0xff7ba8, 0xffb648, 0xc45a3c, 0x9fd6ff],
-            })
-            .setDepth(40);
-          this.popParticles = this.add
-            .particles(0, 0, "spark", {
-              speed: { min: 60, max: 220 },
-              scale: { start: 1.4, end: 0 },
-              lifespan: 500,
-              emitting: false,
-              quantity: 16,
-              tint: [0xff7ba8, 0xffb648, 0xffffff],
-            })
-            .setDepth(40);
-          this.redFlash = this.add
-            .rectangle(cx, H / 2, W, H, 0xff3355, 0)
-            .setDepth(35);
-          this.feedback = this.add
-            .text(cx, 150, "", {
-              fontSize: "16px",
-              color: "#fff",
-              fontStyle: "bold",
+              color: "#e7c4d4",
               align: "center",
-              wordWrap: { width: W - 80 },
-            })
-            .setOrigin(0.5)
-            .setAlpha(0)
-            .setDepth(20);
+            },
+          )
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            295,
+            "Tap or ← → cut · ↑ ↓ shade · 6.NS.1 · Lessons 2.1–2.5",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              color: "#c890a8",
+            },
+          )
+          .setOrigin(0.5);
 
-          // input
-          this.cursors = this.input.keyboard.createCursorKeys();
-          this.keyA = this.input.keyboard.addKey("A");
-          this.keyD = this.input.keyboard.addKey("D");
-          this.input.keyboard.on("keydown-SPACE", () => this.fire());
-          this.input.keyboard.on("keydown-UP", () => this.fire());
-          this.input.on("pointerdown", (p) => {
-            // tapping a bubble fires directly at it
-            let hit = -1;
-            this.bubbles.forEach((b, i) => {
-              if (!b.alive) return;
-              const dx = b.sprite.x - p.worldX,
-                dy = b.sprite.y - p.worldY;
-              if (dx * dx + dy * dy <= 48 * 48) hit = i;
-            });
-            if (hit >= 0) {
-              this.aim = Math.atan2(
-                this.bubbles[hit].sprite.y - this.cannonY,
-                this.bubbles[hit].sprite.x - this.cannonX,
-              );
-              this.fire();
-            } else {
-              // aim toward pointer, then fire
-              this.aim = Math.atan2(
-                p.worldY - this.cannonY,
-                p.worldX - this.cannonX,
-              );
-              this.fire();
-            }
-          });
-
-          this.nextQuestion();
-          this.cameras.main.fadeIn(350);
-        }
-
-        nextQuestion() {
-          if (this.qIndex >= this.TOTAL || this.lives <= 0) {
-            this.endGame();
-            return;
-          }
-          const round = this.roundFor(this.qIndex);
-          if (round !== this.level && this.qIndex > 0) SFX.levelUp();
-          this.level = round;
-          this.q = genQuestion(round);
-          this.qIndex++;
-          this.busy = false;
-
-          this.tagText.setText(this.q.tag);
-          this.promptText.setText(this.q.prompt + " = ?");
-          this.qnumText.setText(this.qIndex + " / " + this.TOTAL);
-          this.feedback.setAlpha(0);
-
-          srSay(
-            this.q.tag +
-              ". " +
-              this.q.prompt +
-              " equals what? Bubbles: " +
-              this.q.bubbles.join(", ") +
-              ". Aim the cannon and fire at the correct one.",
-          );
-
-          // spawn bubbles in 3 horizontal slots, drifting
-          this.bubbles.forEach((b) => b.sprite.destroy());
-          this.bubbles = [];
-          const slotX = [W * 0.25, W * 0.5, W * 0.75];
-          const drift = (28 + (this.level - 1) * 22) / 1000; // px/ms
-          for (let i = 0; i < 3; i++) {
-            const c = this.add
-              .container(slotX[i], 200 + (i % 2) * 40)
-              .setDepth(14);
-            const circle = this.add.graphics();
-            circle.fillStyle(0x6b3050, 0.92);
-            circle.fillCircle(0, 0, 42);
-            circle.lineStyle(3, 0xff7ba8, 0.9);
-            circle.strokeCircle(0, 0, 42);
-            c.add(circle);
-            c.add(
-              this.add
-                .text(0, 0, this.q.bubbles[i], {
-                  fontSize: "26px",
-                  color: "#ffffff",
-                  fontStyle: "bold",
-                })
-                .setOrigin(0.5),
-            );
-            this.bubbles.push({
-              sprite: c,
-              alive: true,
-              label: this.q.bubbles[i],
-              correct: i === this.q.correctIndex,
-              vx: (i % 2 === 0 ? 1 : -1) * drift,
-            });
-          }
-          if (this.shell) {
-            this.shell.destroy();
-            this.shell = null;
-          }
-        }
-
-        update(time, delta) {
-          // aim rotation (held keys)
-          let rotated = false;
-          const rs = 0.0028 * delta;
-          if (this.cursors.left.isDown || this.keyA.isDown) {
-            this.aim -= rs;
-            rotated = true;
-          }
-          if (this.cursors.right.isDown || this.keyD.isDown) {
-            this.aim += rs;
-            rotated = true;
-          }
-          // clamp aim to upper hemisphere so you can always reach bubbles
-          this.aim = Phaser.Math.Clamp(this.aim, -Math.PI + 0.25, -0.25);
-          this.barrel.rotation = this.aim + Math.PI / 2;
-
-          // draw aim guide
-          this.aimLine.clear();
-          this.aimLine.lineStyle(2, 0xffb648, 0.45);
-          this.aimLine.lineBetween(
-            this.cannonX,
-            this.cannonY - 30,
-            this.cannonX + Math.cos(this.aim) * 520,
-            this.cannonY - 30 + Math.sin(this.aim) * 520,
-          );
-
-          // drift bubbles (only while not resolving)
-          if (!this.busy) {
-            this.bubbles.forEach((b) => {
-              if (!b.alive) return;
-              b.sprite.x += b.vx * delta;
-              if (b.sprite.x < 70) {
-                b.sprite.x = 70;
-                b.vx = Math.abs(b.vx);
-              }
-              if (b.sprite.x > W - 70) {
-                b.sprite.x = W - 70;
-                b.vx = -Math.abs(b.vx);
-              }
-            });
-          }
-
-          // shell flight
-          if (this.shell) {
-            this.shell.x += this.shellVX * delta;
-            this.shell.y += this.shellVY * delta;
-            // off screen miss
-            if (
-              this.shell.y < -20 ||
-              this.shell.x < -20 ||
-              this.shell.x > W + 20
-            ) {
-              this.shell.destroy();
-              this.shell = null;
-              if (!this.busy) this.resolveMiss(null);
-            } else {
-              // check collision with bubbles
-              for (let i = 0; i < this.bubbles.length; i++) {
-                const b = this.bubbles[i];
-                if (!b.alive) continue;
-                const dx = b.sprite.x - this.shell.x,
-                  dy = b.sprite.y - this.shell.y;
-                if (dx * dx + dy * dy <= 46 * 46) {
-                  this.shell.destroy();
-                  this.shell = null;
-                  this.resolveHit(i);
-                  break;
-                }
-              }
-            }
-          }
-        }
-
-        fire() {
-          if (this.busy || this.shell) return;
-          SFX.init();
-          SFX.fire();
-          const sp = 0.6; // px/ms
-          this.shell = this.add
-            .image(
-              this.cannonX + Math.cos(this.aim) * 32,
-              this.cannonY - 30 + Math.sin(this.aim) * 32,
-              "shell",
-            )
-            .setDepth(16);
-          this.shellVX = Math.cos(this.aim) * sp;
-          this.shellVY = Math.sin(this.aim) * sp;
-        }
-
-        resolveHit(i) {
-          this.busy = true;
-          const b = this.bubbles[i];
-          b.alive = false;
-          SFX.init();
-          this.popParticles.emitParticleAt(b.sprite.x, b.sprite.y);
-          if (!this.reduce)
-            this.tweens.add({
-              targets: b.sprite,
-              scale: { from: 1, to: 1.6 },
-              alpha: 0,
-              duration: 200,
-              onComplete: () => b.sprite.setVisible(false),
-            });
-          else b.sprite.setVisible(false);
-
-          if (b.correct) {
-            this.correct++;
-            this.streak++;
-            this.maxStreak = Math.max(this.maxStreak, this.streak);
-            const gained = 10 + Math.min(this.streak, 5) * 2;
-            this.score += gained;
-            SFX.pop();
-            if (this.streak >= 3) SFX.streak(this.streak);
-            this.confetti.emitParticleAt(b.sprite.x, b.sprite.y);
-            this.flash(
-              "✓ +" +
-                gained +
-                (this.streak > 1 ? "   🔥 ×" + this.streak : "") +
-                "   " +
-                this.q.why,
-              "#9fffc0",
-            );
-            srSay("Correct! " + this.q.why);
-            try {
-              if (window.GameFX && GameFX.celebrate && this.streak >= 3)
-                GameFX.celebrate(document.querySelector("canvas"));
-            } catch (e) {}
-            this.updateHUD();
-            this.time.delayedCall(950, () => this.nextQuestion());
-          } else {
-            this.resolveMiss(i);
-          }
-        }
-
-        resolveMiss(i) {
-          this.busy = true;
-          this.streak = 0;
-          this.lives--;
-          SFX.init();
-          SFX.miss();
-          this.doRedFlash();
-          this.flash("✗ " + this.q.why + "  (−1 ❤)", "#ff9ab0");
-          srSay("Missed. " + this.q.why);
-          // highlight correct bubble
-          const cb = this.bubbles[this.q.correctIndex];
-          if (cb && cb.alive)
-            this.tweens.add({
-              targets: cb.sprite,
-              scale: { from: 1, to: 1.3 },
-              duration: 300,
-              yoyo: true,
-              repeat: 1,
-            });
-          this.updateHUD();
-          this.time.delayedCall(1600, () => this.nextQuestion());
-        }
-
-        flash(msg, color) {
-          this.feedback.setText(msg).setColor(color).setAlpha(1).setScale(0.85);
-          this.tweens.add({
-            targets: this.feedback,
-            scale: 1,
-            duration: this.reduce ? 1 : 220,
-            ease: "Back.easeOut",
-          });
-        }
-        doRedFlash() {
-          if (this.reduce) return;
-          this.redFlash.setAlpha(0.35);
-          this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 350 });
-        }
-        updateHUD() {
-          this.scoreText.setText("Score: " + this.score);
-          this.streakText.setText("Streak: " + this.streak);
-          this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
-        }
-        endGame() {
-          this.scene.start("Result", {
-            score: this.score,
-            correct: this.correct,
-            attempted: this.qIndex,
-            maxStreak: this.maxStreak,
-            outOfLives: this.lives <= 0,
-          });
-        }
-      }
-
-      class ResultScene extends Phaser.Scene {
-        constructor() {
-          super("Result");
-        }
-        init(data) {
-          this.d = data;
-        }
-        create() {
-          const cx = W / 2;
-          const d = this.d;
-          this.reduce =
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          this.add.rectangle(cx, H / 2, W, H, 0x2a1326);
-          const pct = d.attempted ? (d.correct / d.attempted) * 100 : 0;
-          const stars = pct >= 90 ? 3 : pct >= 65 ? 2 : pct >= 40 ? 1 : 0;
-          const won = !d.outOfLives;
-          if (stars >= 2) SFX.win();
-          else SFX.lose();
-
+        const hs = localStorage.getItem(LS_KEY);
+        if (hs)
           this.add
-            .text(cx, 70, won ? "ALL POPPED!" : "OUT OF LIVES", {
-              fontSize: "38px",
+            .text(cx, 330, "High Score: " + hs, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#ffd24a",
               fontStyle: "bold",
-              color: won ? "#ff7ba8" : "#ff6b8a",
-              stroke: "#1c0c19",
-              strokeThickness: 4,
             })
             .setOrigin(0.5);
 
-          for (let i = 0; i < 3; i++) {
-            const sx = cx - 70 + i * 70;
-            this.add
-              .text(sx, 150, "☆", { fontSize: "54px", color: "#503040" })
-              .setOrigin(0.5);
-            if (i < stars) {
-              const s = this.add
-                .text(sx, 150, "★", { fontSize: "54px", color: "#ffb648" })
-                .setOrigin(0.5)
-                .setScale(0);
-              this.tweens.add({
-                targets: s,
-                scale: 1,
-                duration: this.reduce ? 1 : 380,
-                delay: 250 + i * 220,
-                ease: "Back.easeOut",
-              });
-            }
-          }
-
-          const prevHigh = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
-          const isNewHigh = d.score > prevHigh;
-          if (isNewHigh && d.score > 0)
-            localStorage.setItem(LS_KEY, String(d.score));
-
-          const stats = [
-            ["Final Score", String(d.score)],
-            ["Bubbles Popped", d.correct + " / " + d.attempted],
-            ["Accuracy", Math.round(pct) + "%"],
-            ["Best Streak", "×" + d.maxStreak],
-          ];
-          stats.forEach((s, i) => {
-            const y = 230 + i * 42;
-            this.add.rectangle(cx, y, 380, 34, 0x1c0c19, 0.85);
-            this.add
-              .text(cx - 165, y, s[0], { fontSize: "15px", color: "#c890a8" })
-              .setOrigin(0, 0.5);
-            this.add
-              .text(cx + 165, y, s[1], {
-                fontSize: "17px",
-                color: "#ff7ba8",
-                fontStyle: "bold",
-              })
-              .setOrigin(1, 0.5);
-          });
-
-          if (isNewHigh && d.score > 0)
-            this.add
-              .text(cx, 415, "★ NEW HIGH SCORE! ★", {
-                fontSize: "18px",
-                color: "#ffb648",
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5);
-
-          try {
-            window.EduPulse &&
-              EduPulse.record({
-                activityTitle: ACTIVITY_TITLE,
-                score: d.score,
-                stars: stars,
-                problemsCorrect: d.correct,
-                problemsAttempted: d.attempted,
-                percent: Math.round(pct),
-                standard: STANDARD,
-              });
-          } catch (e) {}
-
-          srSay(
-            (won ? "All popped. " : "Out of lives. ") +
-              "Score " +
-              d.score +
-              ", " +
-              d.correct +
-              " of " +
-              d.attempted +
-              " correct, " +
-              stars +
-              " stars.",
-          );
-
-          const retry = this.add
-            .rectangle(cx - 95, 470, 170, 46, 0xc45a3c)
-            .setInteractive({ useHandCursor: true });
-          this.add
-            .text(cx - 95, 470, "PLAY AGAIN", {
-              fontSize: "17px",
-              fontStyle: "bold",
-              color: "#fff3ec",
-            })
-            .setOrigin(0.5);
-          retry.on("pointerover", () => retry.setFillStyle(0xd86c4c));
-          retry.on("pointerout", () => retry.setFillStyle(0xc45a3c));
-          retry.on("pointerdown", () => {
-            SFX.tick();
-            this.scene.start("Game");
-          });
-
-          const hub = this.add
-            .rectangle(cx + 95, 470, 170, 46, 0x4a2240)
-            .setInteractive({ useHandCursor: true });
-          this.add
-            .text(cx + 95, 470, "ALL GAMES", {
-              fontSize: "17px",
-              fontStyle: "bold",
-              color: "#e0a8c0",
-            })
-            .setOrigin(0.5);
-          hub.on("pointerover", () => hub.setFillStyle(0x5c2c50));
-          hub.on("pointerout", () => hub.setFillStyle(0x4a2240));
-          hub.on("pointerdown", () => (window.location.href = "/math/games/"));
-
-          this.input.keyboard.on("keydown-SPACE", () =>
-            this.scene.start("Game"),
-          );
-
-          if (won && stars >= 2 && !this.reduce) {
-            const p = this.add
-              .particles(0, 0, "confetti", {
-                speed: { min: 60, max: 240 },
-                angle: { min: 0, max: 360 },
-                scale: { start: 1.4, end: 0 },
-                rotate: { min: 0, max: 360 },
-                lifespan: 1500,
-                gravityY: 160,
-                quantity: 20,
-                tint: [0xff7ba8, 0xffb648, 0xc45a3c, 0x9fd6ff],
-              })
-              .setDepth(40);
-            for (let i = 0; i < 5; i++)
-              this.time.delayedCall(i * 280, () =>
-                p.emitParticleAt(randInt(120, W - 120), randInt(40, 140)),
-              );
-          }
-          this.cameras.main.fadeIn(400);
-        }
-      }
-
-      config.scene = [BootScene, TitleScene, GameScene, ResultScene];
-
-      // ── Boot the Phaser game (called AFTER the vocab gate is dismissed) ──
-      function bootGame() {
-        const game = new Phaser.Game(config);
-
-        game.events.once("ready", function () {
-          try {
-            const cv = game.canvas;
-            if (!cv) return;
-            cv.setAttribute("role", "application");
-            cv.setAttribute(
-              "aria-label",
-              "Fraction Frenzy bubble-popper math game. Divide the fractions, then " +
-                "aim the cannon with the arrow keys or A and D and press Space or Up " +
-                "to fire at the bubble showing the correct quotient. Press Space to " +
-                "start.",
-            );
-            cv.setAttribute("aria-roledescription", "math game");
-            if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
-            cv.addEventListener("pointerdown", function () {
-              try {
-                cv.focus();
-              } catch (e) {}
-            });
-          } catch (e) {}
+        const btn = this.add
+          .rectangle(cx, 400, 240, 58, 0xb83a6e)
+          .setInteractive({ useHandCursor: true });
+        const btnT = this.add
+          .text(cx, 400, "START ▶", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "24px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.tweens.add({
+          targets: [btn, btnT],
+          scaleX: 1.05,
+          scaleY: 1.05,
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
         });
+        const start = () => {
+          SFX.init();
+          SFX.coin();
+          try {
+            JUICE.audio.unlock();
+          } catch (e) {}
+          // Show the vocab gate before the first round; on a replay (already
+          // seen this session) jump straight to the game.
+          this.scene.start(ffVocabSeen ? "Level" : "Vocab");
+        };
+        btn.on("pointerover", () => btn.setFillStyle(0xd24a82));
+        btn.on("pointerout", () => btn.setFillStyle(0xb83a6e));
+        btn.on("pointerdown", start);
+        this.input.keyboard.on("keydown-SPACE", start);
+        this.input.keyboard.on("keydown-ENTER", start);
+
+        const hub = this.add
+          .text(cx, 540, "← Back to Math Games", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            color: "#c890a8",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        hub.on("pointerover", () => hub.setColor("#ffd24a"));
+        hub.on("pointerout", () => hub.setColor("#c890a8"));
+        hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+        srSay("Fraction Frenzy, Partition and Shade. Press Start to play.");
+      };
+
+      // ── VOCAB GATE ──
+      // Repo rule: term + Level-1 definition + image/emoji shown BEFORE play.
+      // One card per key word; Back / Next; last card starts the game. No
+      // answers or giveaways are shown here — only the vocabulary.
+      function VocabScene() {
+        Phaser.Scene.call(this, "Vocab");
       }
+      VocabScene.prototype = Object.create(Phaser.Scene.prototype);
+      VocabScene.prototype.constructor = VocabScene;
+      VocabScene.prototype.init = function () {
+        this.idx = 0;
+      };
+      VocabScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x2a1326);
+        this.add
+          .text(cx, 70, "WORDS TO KNOW FIRST", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "34px",
+            color: "#ff7ba8",
+            stroke: "#1c0c19",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
 
-      // ════════════════════════════════════════════════════════════════════
-      // VOCAB GATE — repo rule: term + Level-1 definition + image/emoji shown
-      // BEFORE play. The 4 key words for dividing fractions (6.NS.1). Default
-      // shown; the gate appears once per page load, ahead of the Phaser flow
-      // (in-game "Play again" replays inside Phaser and is not re-gated).
-      // ════════════════════════════════════════════════════════════════════
-      (function vocabGate() {
-        const VOCAB = [
-          {
-            term: "Dividend",
-            emoji: "🍕",
-            def: "The amount you START with — the number being split up. In 3 ÷ 1/4, the dividend is 3.",
-          },
-          {
-            term: "Divisor",
-            emoji: "✂️",
-            def: "The size of EACH piece you split into. In 3 ÷ 1/4, the divisor is 1/4.",
-          },
-          {
-            term: "Reciprocal",
-            emoji: "🔄",
-            def: "A fraction flipped upside down. The reciprocal of 1/4 is 4. To divide, you flip the divisor and multiply.",
-          },
-          {
-            term: "Quotient",
-            emoji: "🎯",
-            def: "The ANSWER to a division problem — how many pieces you get. 3 ÷ 1/4 = 12, so 12 is the quotient.",
-          },
-        ];
+        // Card surface.
+        this.add
+          .rectangle(cx, 320, 560, 320, 0x3a1834)
+          .setStrokeStyle(2, 0x6b3050);
 
-        const overlay = document.getElementById("fr-vocab");
-        const list = document.getElementById("fr-vocab-list");
-        const goBtn = document.getElementById("fr-vocab-go");
-        if (!overlay || !list || !goBtn) {
-          bootGame();
-          return;
+        this.stepText = this.add
+          .text(cx, 185, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            fontStyle: "bold",
+            color: "#c890a8",
+          })
+          .setOrigin(0.5);
+        this.emojiText = this.add
+          .text(cx, 250, "", { fontSize: "76px" })
+          .setOrigin(0.5);
+        this.termText = this.add
+          .text(cx, 330, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "32px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.defText = this.add
+          .text(cx, 400, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            color: "#e7c4d4",
+            align: "center",
+            wordWrap: { width: 500 },
+          })
+          .setOrigin(0.5);
+
+        // Next / Start button.
+        const nextBtn = this.add
+          .rectangle(cx + 90, 510, 220, 52, 0xb83a6e)
+          .setInteractive({ useHandCursor: true });
+        const nextT = this.add
+          .text(cx + 90, 510, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        nextBtn.on("pointerover", () => nextBtn.setFillStyle(0xd24a82));
+        nextBtn.on("pointerout", () => nextBtn.setFillStyle(0xb83a6e));
+        nextBtn.on("pointerdown", () => this.advance());
+        this.nextBtn = nextBtn;
+        this.nextT = nextT;
+
+        // Back button (hidden on the first card).
+        const backBtn = this.add
+          .rectangle(cx - 120, 510, 130, 52, 0x4a2244)
+          .setInteractive({ useHandCursor: true });
+        const backT = this.add
+          .text(cx - 120, 510, "← Back", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#e0a8c4",
+          })
+          .setOrigin(0.5);
+        backBtn.on("pointerover", () => backBtn.setFillStyle(0x5e2c56));
+        backBtn.on("pointerout", () => backBtn.setFillStyle(0x4a2244));
+        backBtn.on("pointerdown", () => this.goBack());
+        this.backBtn = backBtn;
+        this.backT = backT;
+
+        this.input.keyboard.on("keydown-SPACE", () => this.advance());
+        this.input.keyboard.on("keydown-ENTER", () => this.advance());
+        this.input.keyboard.on("keydown-RIGHT", () => this.advance());
+        this.input.keyboard.on("keydown-LEFT", () => this.goBack());
+
+        this.renderCard();
+      };
+      VocabScene.prototype.renderCard = function () {
+        const v = FF_VOCAB[this.idx];
+        const last = this.idx === FF_VOCAB.length - 1;
+        this.stepText.setText(
+          "Key word " + (this.idx + 1) + " of " + FF_VOCAB.length,
+        );
+        this.emojiText.setText(v.emoji);
+        this.termText.setText(v.term);
+        this.defText.setText(v.def);
+        this.nextT.setText(last ? "Start playing ▶" : "Next →");
+        const showBack = this.idx > 0;
+        this.backBtn.setVisible(showBack);
+        this.backT.setVisible(showBack);
+        srSay(v.term + ". " + v.def);
+      };
+      VocabScene.prototype.advance = function () {
+        if (this.idx < FF_VOCAB.length - 1) {
+          this.idx++;
+          this.renderCard();
+        } else {
+          ffVocabSeen = true;
+          this.scene.start("Level");
         }
+      };
+      VocabScene.prototype.goBack = function () {
+        if (this.idx > 0) {
+          this.idx--;
+          this.renderCard();
+        }
+      };
 
-        const esc = (s) =>
-          String(s).replace(
-            /[&<>"']/g,
-            (c) =>
-              ({
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#39;",
-              })[c],
-          );
+      // ── LEVEL SELECT ──
+      // Exactly two choices (repo rule: Level 1 = support, Level 2 = enrichment;
+      // never "ESOL"). The pick sets ffTier, which drives the math + scaffolding.
+      function LevelScene() {
+        Phaser.Scene.call(this, "Level");
+      }
+      LevelScene.prototype = Object.create(Phaser.Scene.prototype);
+      LevelScene.prototype.constructor = LevelScene;
+      LevelScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x2a1326);
+        this.add
+          .text(cx, 80, "CHOOSE YOUR LEVEL", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "40px",
+            color: "#ff7ba8",
+            stroke: "#1c0c19",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            128,
+            "Pick the one that fits you. You can change it next time.",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#e7c4d4",
+            },
+          )
+          .setOrigin(0.5);
 
-        list.innerHTML = VOCAB.map(
-          (v) =>
-            '<div class="fr-vrow">' +
-            '<div class="fr-vimg" aria-hidden="true">' +
-            esc(v.emoji) +
-            "</div>" +
-            '<div class="fr-vbody">' +
-            '<div class="fr-vterm">' +
-            esc(v.term) +
-            "</div>" +
-            '<div class="fr-vdef">' +
-            esc(v.def) +
-            "</div>" +
-            "</div>" +
-            "</div>",
-        ).join("");
+        // Card factory: a big, friendly, fully-tappable choice card.
+        const makeCard = (x, tier, title, sub, lines, fill, hover) => {
+          const card = this.add
+            .rectangle(x, 330, 320, 280, fill)
+            .setStrokeStyle(3, 0xffd24a)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(x, 230, tier === 1 ? "🌱" : "🚀", { fontSize: "60px" })
+            .setOrigin(0.5);
+          this.add
+            .text(x, 300, title, {
+              fontFamily: "Impact, sans-serif",
+              fontSize: "30px",
+              color: "#ffffff",
+              stroke: "#1c0c19",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(x, 334, sub, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#ffe08a",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(x, 392, lines, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              color: "#f3dbe6",
+              align: "center",
+              wordWrap: { width: 280 },
+              lineSpacing: 4,
+            })
+            .setOrigin(0.5);
+          const choose = () => {
+            ffTier = tier;
+            SFX.coin();
+            JUICE.burst(this, x, 330, [0xffd24a, 0xff7ba8, 0xffffff], 16);
+            this.time.delayedCall(150, () => this.scene.start("Game"));
+          };
+          card.on("pointerover", () => card.setFillStyle(hover));
+          card.on("pointerout", () => card.setFillStyle(fill));
+          card.on("pointerdown", choose);
+          return choose;
+        };
 
-        srSay(
-          "Words to know first before playing Fraction Frenzy: " +
-            VOCAB.map((v) => v.term + ", " + v.def).join(" ") +
-            " Press the button when you are ready to play.",
+        const chooseL1 = makeCard(
+          cx - 175,
+          1,
+          "LEVEL 1",
+          "Support",
+          "Build fractions on the bar.\nSimple parts (2–4).\nExtra tips on screen.",
+          0x2d6e44,
+          0x36874f,
+        );
+        const chooseL2 = makeCard(
+          cx + 175,
+          2,
+          "LEVEL 2",
+          "Enrichment",
+          "Bigger denominators, equal\nfractions, and dividing by\nunit fractions. Fewer hints.",
+          0xb83a6e,
+          0xd24a82,
         );
 
-        function start() {
-          goBtn.removeEventListener("click", start);
-          overlay.parentNode && overlay.parentNode.removeChild(overlay);
-          bootGame();
+        // Keyboard: 1 / ← chooses Level 1, 2 / → chooses Level 2; Enter = Level 1.
+        this.input.keyboard.on("keydown-ONE", chooseL1);
+        this.input.keyboard.on("keydown-LEFT", chooseL1);
+        this.input.keyboard.on("keydown-TWO", chooseL2);
+        this.input.keyboard.on("keydown-RIGHT", chooseL2);
+        this.input.keyboard.on("keydown-ENTER", chooseL1);
+        this.input.keyboard.on("keydown-SPACE", chooseL1);
+        srSay(
+          "Choose your level. Level 1 is support with simpler fractions. " +
+            "Level 2 is enrichment with bigger denominators and dividing fractions.",
+        );
+      };
+
+      // ── GAME ──
+      function GameScene() {
+        Phaser.Scene.call(this, "Game");
+      }
+      GameScene.prototype = Object.create(Phaser.Scene.prototype);
+      GameScene.prototype.constructor = GameScene;
+
+      GameScene.prototype.init = function () {
+        this.reduceMotion = !!(
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        );
+        this.tier = ffTier; // 1 = support, 2 = enrichment (from Level Select)
+        this.score = 0;
+        this.lives = 3;
+        this.streak = 0;
+        this.level = 1; // in-run difficulty stage (ramps 1→8)
+        this.solved = 0; // problems answered correctly
+        this.target = 10; // win condition: solve this many problems
+        this.problem = null;
+        this.locked = false;
+        this.wholes = 1; // how many whole-units the bar represents
+        this.parts = 2; // equal parts PER whole (the cut count)
+        this.shaded = 0; // shaded pieces, contiguous from the left
+        this.cellRects = [];
+        this.dividers = [];
+      };
+
+      GameScene.prototype.create = function () {
+        this.add.rectangle(W / 2, H / 2, W, H, 0x2a1326);
+
+        // HUD (same layout as the shell's other games)
+        const hudStyle = {
+          fontFamily: "Segoe UI, sans-serif",
+          fontSize: "18px",
+          fontStyle: "bold",
+        };
+        this.scoreText = this.add.text(16, 12, "Score: 0", {
+          ...hudStyle,
+          color: "#f0aec8",
+        });
+        this.livesText = this.add.text(16, 36, "❤❤❤", {
+          ...hudStyle,
+          color: "#ff8f8f",
+        });
+        this.streakText = this.add
+          .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#ffd24a" })
+          .setOrigin(1, 0);
+        // Tier badge (chosen Level 1 / Level 2) — always visible in the HUD.
+        this.tierText = this.add
+          .text(
+            W - 16,
+            36,
+            this.tier === 1 ? "Level 1 · Support" : "Level 2 · Enrichment",
+            { ...hudStyle, color: this.tier === 1 ? "#8fd6a0" : "#ff9ec4" },
+          )
+          .setOrigin(1, 0);
+        this.progressText = this.add
+          .text(W / 2, 12, "0 / " + this.target, {
+            ...hudStyle,
+            color: "#e7c4d4",
+          })
+          .setOrigin(0.5, 0);
+        // In-run difficulty stage (separate from the chosen Level tier).
+        this.stageText = this.add
+          .text(W / 2, 36, "Stage 1", {
+            ...hudStyle,
+            fontSize: "14px",
+            color: "#c890a8",
+          })
+          .setOrigin(0.5, 0);
+
+        // Problem banner
+        this.bannerLabel = this.add
+          .text(W / 2, 66, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#c890a8",
+          })
+          .setOrigin(0.5);
+        this.bannerText = this.add
+          .text(W / 2, 100, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "24px",
+            fontStyle: "bold",
+            color: "#ffffff",
+            align: "center",
+            wordWrap: { width: W - 100 },
+          })
+          .setOrigin(0.5);
+
+        this.feedback = this.add
+          .text(W / 2, 150, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "17px",
+            fontStyle: "bold",
+            color: "#ffd24a",
+            stroke: "#1c0c19",
+            strokeThickness: 3,
+            align: "center",
+            wordWrap: { width: W - 80 },
+          })
+          .setOrigin(0.5)
+          .setAlpha(0);
+
+        // Scaffold tip — extra coaching shown only for Level 1 (support).
+        this.tipText = this.add
+          .text(W / 2, 132, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "13px",
+            fontStyle: "bold",
+            color: "#ffe08a",
+            align: "center",
+            wordWrap: { width: W - 120 },
+          })
+          .setOrigin(0.5);
+
+        // Live readout — the heart of the mechanic: the fraction you have built
+        // so far, updating as you cut and shade.
+        this.fracReadout = this.add
+          .text(W / 2, 200, "0 / 2", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "46px",
+            color: "#ffd24a",
+            stroke: "#1c0c19",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.shadeReadout = this.add
+          .text(W / 2, 242, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#8fd6a0",
+          })
+          .setOrigin(0.5);
+
+        // Cut steppers (− parts +)
+        this.minusBtn = this.add
+          .rectangle(W / 2 - 165, 295, 50, 50, 0x6b3050)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(W / 2 - 165, 293, "−", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "30px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.plusBtn = this.add
+          .rectangle(W / 2 + 165, 295, 50, 50, 0x6b3050)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(W / 2 + 165, 293, "+", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "28px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.partsLabel = this.add
+          .text(W / 2, 295, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.minusBtn.on("pointerover", () =>
+          this.minusBtn.setFillStyle(0x844066),
+        );
+        this.minusBtn.on("pointerout", () =>
+          this.minusBtn.setFillStyle(0x6b3050),
+        );
+        this.minusBtn.on("pointerdown", () => this.setParts(this.parts - 1));
+        this.plusBtn.on("pointerover", () =>
+          this.plusBtn.setFillStyle(0x844066),
+        );
+        this.plusBtn.on("pointerout", () =>
+          this.plusBtn.setFillStyle(0x6b3050),
+        );
+        this.plusBtn.on("pointerdown", () => this.setParts(this.parts + 1));
+
+        // Below-bar shade hint
+        this.add
+          .text(
+            W / 2,
+            BAR_Y + BAR_H / 2 + 22,
+            "Tap a part to shade · ↑ ↓ to change shaded",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "13px",
+              color: "#c890a8",
+            },
+          )
+          .setOrigin(0.5);
+
+        // Lock-in button
+        this.lockBtn = this.add
+          .rectangle(W / 2, 488, 240, 52, 0x2d874b)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(W / 2, 488, "LOCK IN ✓", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "22px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.lockBtn.on("pointerover", () =>
+          this.lockBtn.setFillStyle(0x36a35b),
+        );
+        this.lockBtn.on("pointerout", () =>
+          this.lockBtn.setFillStyle(0x2d874b),
+        );
+        this.lockBtn.on("pointerdown", () => this.lockIn());
+
+        // Hint
+        this.add
+          .text(
+            W / 2,
+            536,
+            "Cut: − + or ← → (A·D)   ·   Shade: tap or ↑ ↓ (W·S)   ·   Enter = Lock In",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "13px",
+              color: "#c890a8",
+              align: "center",
+            },
+          )
+          .setOrigin(0.5);
+
+        // Particles + red flash
+        this.burst = this.add
+          .particles(0, 0, "spark", {
+            speed: { min: 80, max: 240 },
+            angle: { min: 0, max: 360 },
+            scale: { start: 1.2, end: 0 },
+            lifespan: 600,
+            emitting: false,
+            quantity: 16,
+            tint: [0xffd24a, 0x8fd6a0, 0xff7ba8, 0xffffff],
+          })
+          .setDepth(20);
+        this.redFlash = this.add
+          .rectangle(W / 2, H / 2, W, H, 0xff3333, 0)
+          .setDepth(30);
+
+        // Keyboard: ← → / A·D change the cut; ↑ ↓ / W·S change shaded; Enter/Space lock.
+        this.input.keyboard.on("keydown-LEFT", () =>
+          this.setParts(this.parts - 1),
+        );
+        this.input.keyboard.on("keydown-RIGHT", () =>
+          this.setParts(this.parts + 1),
+        );
+        this.input.keyboard.on("keydown-A", () =>
+          this.setParts(this.parts - 1),
+        );
+        this.input.keyboard.on("keydown-D", () =>
+          this.setParts(this.parts + 1),
+        );
+        this.input.keyboard.on("keydown-UP", () =>
+          this.setShaded(this.shaded + 1),
+        );
+        this.input.keyboard.on("keydown-DOWN", () =>
+          this.setShaded(this.shaded - 1),
+        );
+        this.input.keyboard.on("keydown-W", () =>
+          this.setShaded(this.shaded + 1),
+        );
+        this.input.keyboard.on("keydown-S", () =>
+          this.setShaded(this.shaded - 1),
+        );
+        this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
+        this.input.keyboard.on("keydown-SPACE", () => this.lockIn());
+
+        this.cameras.main.fadeIn(400);
+        this.newProblem();
+      };
+
+      // Max cuts per whole so the total piece count stays readable/tappable.
+      GameScene.prototype.maxParts = function () {
+        return this.wholes === 1 ? 12 : Math.floor(12 / this.wholes);
+      };
+
+      GameScene.prototype.setParts = function (p) {
+        if (this.locked) return;
+        const np = Phaser.Math.Clamp(p, 1, this.maxParts());
+        if (np === this.parts) return;
+        this.parts = np;
+        const total = this.wholes * this.parts;
+        if (this.shaded > total) this.shaded = total;
+        SFX.cut();
+        this.drawBar();
+      };
+
+      GameScene.prototype.setShaded = function (s) {
+        if (this.locked) return;
+        const total = this.wholes * this.parts;
+        const ns = Phaser.Math.Clamp(s, 0, total);
+        if (ns === this.shaded) return;
+        this.shaded = ns;
+        SFX.coin();
+        this.refreshFills();
+        const last = this.cellRects[this.shaded - 1];
+        if (last) JUICE.tilePop(this, last);
+      };
+
+      GameScene.prototype.tapCell = function (i) {
+        if (this.locked) return;
+        // Tapping the last shaded cell un-shades it; otherwise shade up to it.
+        const target = this.shaded === i + 1 ? i : i + 1;
+        this.setShaded(target);
+      };
+
+      // Rebuild the whole bar (call when the cut count or whole count changes).
+      GameScene.prototype.drawBar = function () {
+        this.cellRects.forEach((r) => r.destroy());
+        this.dividers.forEach((r) => r.destroy());
+        this.cellRects = [];
+        this.dividers = [];
+        const total = this.wholes * this.parts;
+        const cw = BAR_W / total;
+        for (let i = 0; i < total; i++) {
+          const x = BAR_X0 + i * cw;
+          const on = i < this.shaded;
+          const rect = this.add
+            .rectangle(x, BAR_Y, cw, BAR_H, on ? 0x2d874b : 0x3a1834)
+            .setOrigin(0, 0.5)
+            .setStrokeStyle(1, 0x6b3050)
+            .setInteractive({ useHandCursor: true })
+            .setDepth(2);
+          rect._idx = i;
+          rect.on("pointerdown", () => this.tapCell(i));
+          this.cellRects.push(rect);
         }
-        goBtn.addEventListener("click", start);
-        goBtn.focus();
-      })();
+        // Thick gold dividers between wholes (only when more than one whole).
+        for (let w = 1; w < this.wholes; w++) {
+          const x = BAR_X0 + (BAR_W / this.wholes) * w;
+          this.dividers.push(
+            this.add
+              .rectangle(x, BAR_Y, 5, BAR_H + 16, 0xffd24a)
+              .setOrigin(0.5)
+              .setDepth(6),
+          );
+        }
+        // Outer frame.
+        this.dividers.push(
+          this.add
+            .rectangle(BAR_X0, BAR_Y, BAR_W, BAR_H)
+            .setOrigin(0, 0.5)
+            .setStrokeStyle(3, 0xb83a6e)
+            .setDepth(7),
+        );
+        this.updateReadout();
+      };
+
+      // Cheap path: only the shade state changed, so recolor cells in place.
+      GameScene.prototype.refreshFills = function () {
+        this.cellRects.forEach((r, i) =>
+          r.setFillStyle(i < this.shaded ? 0x2d874b : 0x3a1834),
+        );
+        this.updateReadout();
+      };
+
+      GameScene.prototype.updateReadout = function () {
+        const total = this.wholes * this.parts;
+        if (this.wholes === 1) {
+          this.fracReadout.setText(this.shaded + " / " + this.parts);
+          this.shadeReadout.setText(
+            this.shaded + " of " + total + " parts shaded",
+          );
+          this.partsLabel.setText("Cut into " + this.parts);
+        } else {
+          this.fracReadout.setText(this.shaded + " pieces");
+          this.shadeReadout.setText(
+            this.shaded +
+              " of " +
+              total +
+              " pieces shaded  (1/" +
+              this.parts +
+              " each)",
+          );
+          this.partsLabel.setText("Cut each into " + this.parts);
+        }
+      };
+
+      GameScene.prototype.newProblem = function () {
+        this.locked = false;
+        this.problem = fracProblem(this.level, this.tier);
+        this.wholes = this.problem.wholes;
+        this.parts = 2;
+        this.shaded = 0;
+        this.bannerLabel.setText(this.problem.label);
+        this.bannerText.setText(this.problem.prompt);
+        // Level 1 (support) gets an extra plain-language coaching line; Level 2
+        // (enrichment) runs without it.
+        if (this.tier === 1) {
+          this.tipText.setText(
+            "Tip: the BOTTOM number tells how many parts to cut, the TOP tells how many to shade.",
+          );
+        } else {
+          this.tipText.setText("");
+        }
+        this.drawBar();
+        JUICE.popIn(this, this.fracReadout);
+        srSay(
+          this.problem.label +
+            ": " +
+            this.problem.prompt +
+            " Cut the bar and shade it, then lock it in.",
+        );
+      };
+
+      GameScene.prototype.lockIn = function () {
+        if (this.locked || !this.problem) return;
+        this.locked = true;
+        const p = this.problem;
+        const correct =
+          this.parts === p.targetParts && this.shaded === p.targetShaded;
+        if (correct) {
+          SFX.good();
+          this.solved++;
+          this.streak++;
+          const bonus = Math.min(this.streak, 5) * 5;
+          const gained = 20 + bonus;
+          this.score += gained;
+          this.flash(W / 2, 170, "Correct! ✓", "#8fd6a0");
+          this.feedback.setText("Correct! " + p.why).setAlpha(1);
+          this.burst.setPosition(W / 2, BAR_Y);
+          this.burst.explode(16);
+          JUICE.burst(this, W / 2, BAR_Y, [0x2d874b, 0xffd24a, 0xff7ba8], 18);
+          JUICE.floatText(this, W / 2, 150, "+" + gained, "#8fd6a0", 36);
+          JUICE.award(gained, "u2-fraction-frenzy");
+          if (this.streak >= 2) JUICE.confetti(this, 1);
+          srSay("Correct. " + p.why);
+          this.afterAttempt(true);
+        } else {
+          SFX.bad();
+          this.streak = 0;
+          this.lives--;
+          this.flashRed();
+          JUICE.shake(this, 0.008);
+          this.feedback.setText("Not quite — " + p.why).setAlpha(1);
+          srSay("Not quite. " + p.why);
+          // Teach: snap the bar to the correct cut + shading, pulse it, go on.
+          this.parts = p.targetParts;
+          this.shaded = p.targetShaded;
+          this.drawBar();
+          if (!this.reduceMotion) {
+            this.tweens.add({
+              targets: this.cellRects,
+              scaleY: 1.12,
+              yoyo: true,
+              duration: 220,
+            });
+          }
+          this.time.delayedCall(700, () => this.afterAttempt(false));
+        }
+      };
+
+      GameScene.prototype.afterAttempt = function (correct) {
+        // Difficulty stage rises every 3 correct (separate from the chosen tier).
+        const newStage = Math.min(8, 1 + Math.floor(this.solved / 3));
+        if (newStage > this.level) {
+          this.level = newStage;
+          SFX.level();
+          this.flash(W / 2, 200, "STAGE " + this.level + "!", "#ffd24a");
+        }
+        this.updateHUD();
+        if (this.lives <= 0) {
+          this.endGame(false);
+          return;
+        }
+        if (this.solved >= this.target) {
+          this.endGame(true);
+          return;
+        }
+        this.time.delayedCall(900, () => {
+          this.feedback.setAlpha(0);
+          this.newProblem();
+        });
+      };
+
+      GameScene.prototype.flash = function (x, y, text, color) {
+        const ft = this.add
+          .text(x, y, text, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "26px",
+            fontStyle: "bold",
+            color: color,
+            stroke: "#1c0c19",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5)
+          .setDepth(40);
+        this.tweens.add({
+          targets: ft,
+          y: y - 50,
+          alpha: { from: 1, to: 0 },
+          duration: this.reduceMotion ? 500 : 900,
+          onComplete: () => ft.destroy(),
+        });
+      };
+
+      GameScene.prototype.flashRed = function () {
+        if (this.reduceMotion) return;
+        this.redFlash.setAlpha(0.35);
+        this.tweens.add({
+          targets: this.redFlash,
+          alpha: 0,
+          duration: 350,
+        });
+      };
+
+      GameScene.prototype.updateHUD = function () {
+        this.scoreText.setText("Score: " + this.score);
+        this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
+        this.streakText.setText("Streak: " + this.streak);
+        this.stageText.setText("Stage " + this.level);
+        this.progressText.setText(this.solved + " / " + this.target);
+      };
+
+      GameScene.prototype.endGame = function (won) {
+        this.locked = true;
+        this.time.delayedCall(500, () => {
+          this.scene.start("Result", {
+            score: this.score,
+            solved: this.solved,
+            target: this.target,
+            won: won,
+          });
+        });
+      };
+
+      // ── RESULT ──
+      function ResultScene() {
+        Phaser.Scene.call(this, "Result");
+      }
+      ResultScene.prototype = Object.create(Phaser.Scene.prototype);
+      ResultScene.prototype.constructor = ResultScene;
+      ResultScene.prototype.init = function (data) {
+        this.data2 = data;
+      };
+      ResultScene.prototype.create = function () {
+        const d = this.data2;
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x2a1326);
+        // Stars from accuracy/score.
+        const stars =
+          d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        // High score
+        let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+        if (d.score > hs) {
+          hs = d.score;
+          try {
+            localStorage.setItem(LS_KEY, String(hs));
+          } catch (e) {}
+        }
+
+        this.add
+          .text(cx, 110, d.won ? "FRACTION MASTER!" : "OUT OF LIVES", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "48px",
+            color: d.won ? "#8fd6a0" : "#ff8f8f",
+            stroke: "#1c0c19",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+
+        const starStr = "★".repeat(stars) + "☆".repeat(3 - stars);
+        this.add
+          .text(cx, 185, starStr, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "48px",
+            color: "#ffd24a",
+          })
+          .setOrigin(0.5);
+
+        this.add
+          .text(cx, 255, "Score: " + d.score, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "30px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            295,
+            "Built " + d.solved + " of " + d.target + " fractions",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              color: "#e7c4d4",
+            },
+          )
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 325, "High Score: " + hs, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#ffd24a",
+          })
+          .setOrigin(0.5);
+
+        if (d.won) SFX.win();
+        else SFX.lose();
+
+        // EduPulse reporting (guarded; safe no-op without bridge).
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: document.title,
+              score: d.score,
+              stars: stars,
+              standard: "6.NS.1",
+              problemsAttempted: d.solved,
+            });
+        } catch (e) {}
+        srSay(
+          (d.won ? "You won! " : "Game over. ") +
+            "Final score " +
+            d.score +
+            ", " +
+            stars +
+            " stars.",
+        );
+
+        const btn = this.add
+          .rectangle(cx, 400, 220, 54, 0xb83a6e)
+          .setInteractive({ useHandCursor: true });
+        const btnT = this.add
+          .text(cx, 400, "PLAY AGAIN 🔁", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        const again = () => this.scene.start("Level");
+        btn.on("pointerover", () => btn.setFillStyle(0xd24a82));
+        btn.on("pointerout", () => btn.setFillStyle(0xb83a6e));
+        btn.on("pointerdown", again);
+        this.input.keyboard.on("keydown-SPACE", again);
+        this.input.keyboard.on("keydown-ENTER", again);
+
+        const hub = this.add
+          .text(cx, 480, "← Back to Math Games", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            color: "#c890a8",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        hub.on("pointerover", () => hub.setColor("#ffd24a"));
+        hub.on("pointerout", () => hub.setColor("#c890a8"));
+        hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+      };
+
+      // ── Launch ──
+      const ffGame = new Phaser.Game(config);
+
+      // Canvas accessibility (additive; no gameplay change).
+      ffGame.events.once("ready", function () {
+        try {
+          const cv = ffGame.canvas;
+          if (!cv) return;
+          cv.setAttribute("role", "application");
+          cv.setAttribute(
+            "aria-label",
+            "Fraction Frenzy Partition and Shade math game. A fraction problem " +
+              "appears at the top; cut the bar into equal parts using the minus " +
+              "and plus buttons or the left and right arrow keys, shade parts by " +
+              "tapping them or using the up and down arrow keys, then press Lock " +
+              "In, Enter, or Space.",
+          );
+          cv.setAttribute("aria-roledescription", "math game");
+          if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
+          cv.addEventListener("pointerdown", function () {
+            try {
+              cv.focus({ preventScroll: true });
+            } catch (e) {
+              cv.focus();
+            }
+          });
+        } catch (e) {}
+      });
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
@@ -1327,8 +1577,10 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- Student Passport (meta-progression layer) -->
+    <script src="/assets/lesson-passport.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
-    <title>Area Attack — Brick Cannon | Math Games</title>
+    <title>Area Attack — Decompose &amp; Tile | Math Games</title>
     <meta
       name="description"
-      content="A 2D aim-and-launch game for Grade 6 lessons 5.1-5.5 (6.G.1): compute the area of rectangles, parallelograms, triangles, and trapezoids, then fire a brick at the floating target with the correct area."
+      content="A calm build-it math game for Grade 6 lessons 5.1-5.5 (6.G.1): cover a shape on a unit grid by laying rectangles of tiles, watch the area count grow, then lock in when your tiles exactly cover the figure. Level 1 = rectangles; Level 2 = decompose L-shapes."
     />
     <style>
       * {
@@ -15,12 +15,8 @@
         padding: 0;
         box-sizing: border-box;
       }
-      html, body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        background: #0a1626;
+      body {
+        background: #0a161e;
         overflow: hidden;
         font-family: "Segoe UI", system-ui, sans-serif;
       }
@@ -31,7 +27,7 @@
         z-index: 1;
       }
       canvas:focus-visible {
-        outline: 3px solid #4488ff;
+        outline: 3px solid #5fd0ef;
         outline-offset: 4px;
         border-radius: 8px;
       }
@@ -46,9 +42,9 @@
         pointer-events: none;
         background: radial-gradient(
           130% 90% at 50% 0%,
-          #14304f 0%,
-          #0c1c30 55%,
-          #060f1a 100%
+          #143947 0%,
+          #0e2531 55%,
+          #08141b 100%
         );
       }
       #aa-bg-layer {
@@ -57,22 +53,22 @@
         will-change: transform;
         transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
       }
-      .aa-star {
+      .aa-spark {
         position: absolute;
-        border-radius: 50%;
-        background: #bcd8ff;
-        opacity: 0.5;
+        border-radius: 2px;
+        background: #5fd0ef;
+        opacity: 0.4;
         animation: aaTwinkle var(--tw, 3s) ease-in-out infinite;
       }
       @keyframes aaTwinkle {
         0%,
         100% {
-          opacity: 0.15;
+          opacity: 0.12;
           transform: scale(0.8);
         }
         50% {
-          opacity: 0.75;
-          transform: scale(1.2);
+          opacity: 0.6;
+          transform: scale(1.15);
         }
       }
       @media (prefers-reduced-motion: reduce) {
@@ -80,9 +76,9 @@
           transition: none !important;
           transform: none !important;
         }
-        .aa-star {
+        .aa-spark {
           animation: none !important;
-          opacity: 0.4 !important;
+          opacity: 0.35 !important;
         }
       }
       #aa-sr {
@@ -111,7 +107,7 @@
       window.addEventListener("load", function () {
         if (typeof Phaser === "undefined") {
           document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#bcd8ff">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#5fd0ef">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
         }
       });
     </script>
@@ -122,18 +118,22 @@
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- Student Passport (meta-progression: lifetime XP / streak / badges) -->
+    <link rel="stylesheet" href="/assets/lesson-passport.css" />
+    <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
+    <script src="/assets/game-juice.js"></script>
+  </head>
   <body>
-    <!-- Decorative animated star-field (behind the Phaser canvas). -->
+    <!-- Decorative animated spark-field (behind the Phaser canvas). -->
     <div id="aa-bg" data-parallax aria-hidden="true">
       <div id="aa-bg-layer" data-parallax-layer></div>
     </div>
-    <!-- Screen-reader live region: mirrors the current shape + result. -->
+    <!-- Screen-reader live region: mirrors the current problem + result. -->
     <div id="aa-sr" role="status" aria-live="polite"></div>
     <script>
-      // Decorative star-field builder (reduced-motion safe; pointer-neutral).
+      // Decorative spark-field builder (reduced-motion safe; pointer-neutral).
       (function () {
         "use strict";
         var reduceMQ =
@@ -150,8 +150,8 @@
           var n = reduce ? 16 : 34;
           for (var i = 0; i < n; i++) {
             var s = document.createElement("div");
-            s.className = "aa-star";
-            var sz = rnd(1.5, 4);
+            s.className = "aa-spark";
+            var sz = rnd(2, 5);
             s.style.width = s.style.height = sz.toFixed(1) + "px";
             s.style.left = rnd(0, 100).toFixed(2) + "%";
             s.style.top = rnd(0, 100).toFixed(2) + "%";
@@ -202,19 +202,55 @@
       })();
     </script>
     <script>
-      // ── AREA ATTACK — BRICK CANNON ──
-      // Phaser 3 — Grade 6 Math — Area of rectangles, parallelograms,
-      // triangles, trapezoids (6.G.1).
-      // Mechanic: a shape (with labeled dimensions) is drawn at the bottom.
-      // Three or four answer-targets drift across the sky. Aim the cannon
-      // (rotate left/right) and fire a brick at the target that shows the
-      // shape's correct area. Hit the right one = build a tower; hit a wrong
-      // one or miss everything = lose a life. Targets move faster each level.
+      // ── AREA ATTACK — DECOMPOSE & TILE ──
+      // Phaser 3 — Grade 6 Math — Area of rectangles & composite figures.
+      // Mechanic (math-as-mechanic, calm, NO timer / NO reflex): a target shape
+      // is OUTLINED on a unit grid. The student COVERS it by drawing rectangles
+      // of unit tiles — drag from one cell to another (or arrow a cursor and
+      // press F to set corner A then corner B). A live readout shows the total
+      // tiles placed = the current area. Lock In checks the tiles EXACTLY cover
+      // the target (no gaps, no overflow) and the area count is right.
+      // Wrong math costs a life: the gaps and overflow flash and the correct
+      // area + the formula are shown, so a miss teaches. Two levels:
+      //   Level 1 (support)    — small rectangles, base/height labels, hints.
+      //   Level 2 (enrichment) — larger L-shapes you must DECOMPOSE, fewer labels.
 
       const W = 820,
         H = 600;
-      const LS_KEY = "aa_brick_cannon_highscore";
+      const LS_KEY = "aa_tile_highscore";
 
+      // ── Unit grid geometry in game space. Phaser Scale.FIT maps pointer
+      // coordinates into this space, so cell math works at any screen size. ──
+      const COLS = 11,
+        ROWS = 8,
+        CELL = 38;
+      const GRID_X0 = 70,
+        GRID_Y0 = 170;
+      const GRID_W = COLS * CELL,
+        GRID_H = ROWS * CELL;
+      function cellPX(c) {
+        return GRID_X0 + c * CELL;
+      }
+      function cellPY(r) {
+        return GRID_Y0 + r * CELL;
+      }
+      function inGrid(x, y) {
+        return (
+          x >= GRID_X0 &&
+          x < GRID_X0 + GRID_W &&
+          y >= GRID_Y0 &&
+          y < GRID_Y0 + GRID_H
+        );
+      }
+      function colFromX(x) {
+        return Phaser.Math.Clamp(Math.floor((x - GRID_X0) / CELL), 0, COLS - 1);
+      }
+      function rowFromY(y) {
+        return Phaser.Math.Clamp(Math.floor((y - GRID_Y0) / CELL), 0, ROWS - 1);
+      }
+      const keyRC = (c, r) => c + "," + r;
+
+      // ── Audio (tiny WebAudio blips; gracefully no-op without a context) ──
       const SFX = {
         ctx: null,
         init() {
@@ -241,9 +277,6 @@
             o.stop(c.currentTime + d);
           } catch (e) {}
         },
-        fire() {
-          this.play("square", 180, 0.08, 0.12);
-        },
         good() {
           this.play("sine", 660, 0.1, 0.25);
           this.play("sine", 880, 0.14, 0.2);
@@ -252,10 +285,14 @@
           this.play("sawtooth", 200, 0.25, 0.18);
           this.play("sawtooth", 150, 0.3, 0.14);
         },
-        level() {
-          [523, 659, 784, 1047].forEach((f, i) =>
-            setTimeout(() => this.play("sine", f, 0.15, 0.22), i * 70),
-          );
+        miss() {
+          this.play("triangle", 240, 0.16, 0.12);
+        },
+        place() {
+          this.play("square", 520, 0.05, 0.07);
+        },
+        coin() {
+          this.play("square", 1040, 0.05, 0.08);
         },
         win() {
           [523, 659, 784, 1047, 1318].forEach((f, i) =>
@@ -269,107 +306,134 @@
         },
       };
 
+      // Resolve the shared game-feel layer; provide safe no-op fallbacks so the
+      // game still runs if /assets/game-juice.js failed to load.
+      const JUICE = window.GameJuice || {
+        reduceMotion: false,
+        audio: {
+          unlock() {},
+          tap() {},
+          pop() {},
+          correct() {},
+          wrong() {},
+          whoosh() {},
+          fanfare() {},
+          musicStart() {},
+          musicStop() {},
+        },
+        theme: () => ({
+          accent: "#5fd0ef",
+          accentN: 0x5fd0ef,
+          tileN: 0x17506a,
+          botN: 0x0e2531,
+        }),
+        bgGradient() {},
+        popIn() {},
+        tilePop() {},
+        burst() {},
+        confetti() {},
+        shake() {},
+        floatText() {},
+        award() {},
+      };
+
       function randInt(a, b) {
         return Math.floor(Math.random() * (b - a + 1)) + a;
-      }
-      function shuffle(a) {
-        const r = [...a];
-        for (let i = r.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [r[i], r[j]] = [r[j], r[i]];
-        }
-        return r;
       }
       function srSay(msg) {
         const el = document.getElementById("aa-sr");
         if (el) el.textContent = msg;
       }
 
-      // ── Shape generator ────────────────────────────────────────────────
-      // Returns { type, prompt, formula, area(int), shapeData, options:[ints] }
-      // Dimensions chosen so every area is a whole number (triangle/trapezoid
-      // use even products → integer area). Level controls which types appear.
-      function generateShape(level) {
-        const types =
-          level <= 2
-            ? ["rectangle", "parallelogram"]
-            : level <= 4
-              ? ["rectangle", "parallelogram", "triangle"]
-              : ["rectangle", "parallelogram", "triangle", "trapezoid"];
-        const type = types[randInt(0, types.length - 1)];
-        const maxDim = level <= 2 ? 12 : level <= 4 ? 16 : 22;
-        const minDim = 3;
-
-        let prompt, formula, area, shapeData;
-        if (type === "rectangle") {
-          const b = randInt(minDim, maxDim),
-            h = randInt(minDim, maxDim);
-          area = b * h;
-          prompt = "Rectangle  base " + b + ",  height " + h;
-          formula = "A = b × h";
-          shapeData = { type, b, h };
-        } else if (type === "parallelogram") {
-          const b = randInt(minDim, maxDim),
-            h = randInt(minDim, maxDim);
-          area = b * h;
-          prompt = "Parallelogram  base " + b + ",  height " + h;
-          formula = "A = b × h";
-          shapeData = { type, b, h };
-        } else if (type === "triangle") {
-          // Force integer area: ensure b*h is even.
-          let b = randInt(minDim, maxDim),
-            h = randInt(minDim, maxDim);
-          if ((b * h) % 2 !== 0) h = h + 1; // bump height so product even
-          area = (b * h) / 2;
-          prompt = "Triangle  base " + b + ",  height " + h;
-          formula = "A = ½ × b × h";
-          shapeData = { type, b, h };
-        } else {
-          // Trapezoid: (b1+b2)*h/2; force (b1+b2)*h even for integer area.
-          let b1 = randInt(minDim, maxDim),
-            b2 = randInt(minDim, maxDim),
-            h = randInt(minDim, maxDim);
-          if (((b1 + b2) * h) % 2 !== 0) h = h + 1;
-          area = ((b1 + b2) * h) / 2;
-          prompt = "Trapezoid  bases " + b1 + " & " + b2 + ",  height " + h;
-          formula = "A = ½ (b₁ + b₂) × h";
-          shapeData = { type, b1, b2, h };
+      // ── Problem generator (grid shapes) ─────────────────────────────────
+      // Returns { level, kind, cells(Set "c,r"), area, oc, or, w, h, cw, ch,
+      //           label, prompt, why }. Always on integer cells so an exact
+      //           tile-cover is possible.
+      function makeProblem(level) {
+        if (level === 1) {
+          const w = randInt(2, 6),
+            h = randInt(2, 5);
+          const oc = randInt(0, COLS - w),
+            or = randInt(0, ROWS - h);
+          const cells = new Set();
+          for (let r = 0; r < h; r++)
+            for (let c = 0; c < w; c++) cells.add(keyRC(oc + c, or + r));
+          return {
+            level: 1,
+            kind: "rect",
+            cells,
+            area: w * h,
+            oc,
+            or,
+            w,
+            h,
+            label: "Find the area",
+            prompt: "Cover the rectangle with tiles, then Lock In.",
+            why:
+              "Area = base × height = " +
+              w +
+              " × " +
+              h +
+              " = " +
+              w * h +
+              " square units.",
+          };
         }
-
-        // Build 4 distinct positive integer options including the area.
-        const seen = new Set([area]);
-        const opts = [area];
-        // Common misconception distractors (forgot ½, used perimeter, etc.).
-        const pool = [
-          area * 2,
-          Math.round(area / 2),
-          area + randInt(2, 9),
-          area - randInt(2, 9),
-          area + randInt(10, 20),
-        ];
-        for (const v of shuffle(pool)) {
-          if (opts.length >= 4) break;
-          if (v > 0 && Number.isInteger(v) && !seen.has(v)) {
-            seen.add(v);
-            opts.push(v);
-          }
-        }
-        let g = 1;
-        while (opts.length < 4 && g < 60) {
-          const v = area + g;
-          if (v > 0 && !seen.has(v)) {
-            seen.add(v);
-            opts.push(v);
-          }
-          g++;
-        }
+        // Level 2 — an L-shape: a W×H block with one corner notched out, so it
+        // can only be covered by 2+ rectangles (forces decomposition).
+        const Wc = randInt(4, 7),
+          Hc = randInt(4, 6);
+        const cw = randInt(1, Wc - 1),
+          ch = randInt(1, Hc - 1);
+        const corner = randInt(0, 3); // 0 TL, 1 TR, 2 BL, 3 BR
+        const oc = randInt(0, COLS - Wc),
+          or = randInt(0, ROWS - Hc);
+        const removed = (c, r) => {
+          const left = c < cw,
+            right = c >= Wc - cw,
+            top = r < ch,
+            bot = r >= Hc - ch;
+          if (corner === 0) return left && top;
+          if (corner === 1) return right && top;
+          if (corner === 2) return left && bot;
+          return right && bot;
+        };
+        const cells = new Set();
+        for (let r = 0; r < Hc; r++)
+          for (let c = 0; c < Wc; c++)
+            if (!removed(c, r)) cells.add(keyRC(oc + c, or + r));
+        const area = Wc * Hc - cw * ch;
+        const r1 = Wc * (Hc - ch),
+          r2 = (Wc - cw) * ch;
         return {
-          type,
-          prompt,
-          formula,
+          level: 2,
+          kind: "ell",
+          cells,
           area,
-          shapeData,
-          options: shuffle(opts.slice(0, 4)),
+          oc,
+          or,
+          w: Wc,
+          h: Hc,
+          cw,
+          ch,
+          label: "Decompose & find the area",
+          prompt: "Cover the L-shape with rectangles, then Lock In.",
+          why:
+            "Break it into 2 rectangles: " +
+            Wc +
+            "×" +
+            (Hc - ch) +
+            " + " +
+            (Wc - cw) +
+            "×" +
+            ch +
+            " = " +
+            r1 +
+            " + " +
+            r2 +
+            " = " +
+            area +
+            " square units.",
         };
       }
 
@@ -378,44 +442,57 @@
         width: W,
         height: H,
         parent: document.body,
-        backgroundColor: "#0c1c30",
+        backgroundColor: "#0e2531",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [BootScene, TitleScene, VocabScene, GameScene, ResultScene],
+        scene: [
+          BootScene,
+          TitleScene,
+          VocabScene,
+          LevelScene,
+          GameScene,
+          ResultScene,
+        ],
       };
 
-      // ── Vocab gate data ────────────────────────────────────────────────
-      // Repo rule: term + student-facing (Level-1) definition + IMAGE/emoji
-      // shown BEFORE the first round. Topic: area of rectangles,
-      // parallelograms, triangles, trapezoids (6.G.1). No giveaways: these
-      // teach the words, not the answers.
+      // ── Vocab gate state (repo rule: term + Level-1 definition + image/emoji
+      // shown BEFORE the first round). Shown by default; skippable only on a
+      // replay within the same page session. ──
+      let aaVocabSeen = false;
+      // Chosen difficulty (set on the Level Select screen). 1 = support, 2 = enrichment.
+      let aaLevel = 1;
+
+      // Key words for THIS game's topic (area on a unit grid). Each has a
+      // student-facing (Level 1) definition and an emoji so a visual always
+      // shows even with no network/images.
       const AA_VOCAB = [
         {
           term: "Area",
-          def: "The amount of flat space inside a shape. We measure it in square units.",
           emoji: "🟦",
+          def: "The amount of flat space a shape covers, counted in square units.",
+        },
+        {
+          term: "Square unit",
+          emoji: "⬜",
+          def: "One little square on the grid. Area is how many of these fit inside a shape.",
         },
         {
           term: "Base",
-          def: "One flat side of a shape that we measure along the bottom.",
-          emoji: "📏",
+          emoji: "↔️",
+          def: "How wide a shape is — the number of squares across one row.",
         },
         {
           term: "Height",
-          def: "How tall the shape is, measured straight up from the base (a right angle to it).",
-          emoji: "📐",
+          emoji: "↕️",
+          def: "How tall a shape is — the number of squares up and down.",
         },
         {
-          term: "Parallelogram",
-          def: "A four-sided shape with two pairs of parallel sides, like a slanted rectangle.",
-          emoji: "▱",
-        },
-        {
-          term: "Trapezoid",
-          def: "A four-sided shape with exactly one pair of parallel sides (two different bases).",
-          emoji: "🔻",
+          term: "Decompose",
+          emoji: "✂️",
+          def: "Break a tricky shape into rectangles, find each area, then add them up.",
         },
       ];
 
+      // ── BOOT ──
       function BootScene() {
         Phaser.Scene.call(this, "Boot");
       }
@@ -427,13 +504,14 @@
         g.fillCircle(4, 4, 4);
         g.generateTexture("dot", 8, 8);
         g.clear();
-        g.fillStyle(0xff8844);
-        g.fillRect(0, 0, 14, 14);
-        g.generateTexture("chunk", 14, 14);
+        g.fillStyle(0x5fd0ef);
+        g.fillCircle(5, 5, 5);
+        g.generateTexture("spark", 10, 10);
         g.destroy();
         this.scene.start("Title");
       };
 
+      // ── TITLE ──
       function TitleScene() {
         Phaser.Scene.call(this, "Title");
       }
@@ -441,41 +519,41 @@
       TitleScene.prototype.constructor = TitleScene;
       TitleScene.prototype.create = function () {
         const cx = W / 2;
-        this.add.rectangle(cx, H / 2, W, H, 0x0c1c30);
+        this.add.rectangle(cx, H / 2, W, H, 0x0e2531);
         this.add
-          .text(cx, 120, "AREA ATTACK", {
+          .text(cx, 118, "AREA ATTACK", {
             fontFamily: "Impact, sans-serif",
             fontSize: "64px",
-            color: "#4488ff",
-            stroke: "#060f1a",
+            color: "#5fd0ef",
+            stroke: "#08141b",
             strokeThickness: 6,
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 175, "Brick Cannon", {
+          .text(cx, 173, "Decompose & Tile", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "26px",
-            color: "#88ccaa",
+            color: "#7ee0ad",
           })
           .setOrigin(0.5);
         this.add
           .text(
             cx,
-            235,
-            "Find the area of the shape, then AIM the cannon and FIRE\na brick at the target with the matching area!",
+            232,
+            "Cover the shape with tiles to BUILD its area. Drag rectangles\nof squares (or arrow a cursor + F), then Lock In — no timer, take your time.",
             {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "16px",
-              color: "#cfe0f0",
+              color: "#bcd8e2",
               align: "center",
             },
           )
           .setOrigin(0.5);
         this.add
-          .text(cx, 295, "← → aim · SPACE fire · 6.G.1 · Lessons 5.1–5.5", {
+          .text(cx, 295, "Tile the grid · 6.G.1 · Lessons 5.1–5.5", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "14px",
-            color: "#7fa0c0",
+            color: "#6fa6b6",
           })
           .setOrigin(0.5);
 
@@ -485,13 +563,13 @@
             .text(cx, 330, "High Score: " + hs, {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "16px",
-              color: "#ffd24a",
+              color: "#5fd0ef",
               fontStyle: "bold",
             })
             .setOrigin(0.5);
 
         const btn = this.add
-          .rectangle(cx, 400, 240, 58, 0x1a6fb5)
+          .rectangle(cx, 400, 240, 58, 0x1f8f6e)
           .setInteractive({ useHandCursor: true });
         const btnT = this.add
           .text(cx, 400, "START ▶", {
@@ -511,12 +589,14 @@
         });
         const start = () => {
           SFX.init();
-          SFX.fire();
-          // Start -> Vocab -> Play: show the key words before the first round.
-          this.scene.start("Vocab");
+          SFX.coin();
+          JUICE.audio.unlock();
+          // Show the vocab gate before the first round; on a replay (already
+          // seen this session) jump straight to Level Select.
+          this.scene.start(aaVocabSeen ? "Level" : "Vocab");
         };
-        btn.on("pointerover", () => btn.setFillStyle(0x2484d0));
-        btn.on("pointerout", () => btn.setFillStyle(0x1a6fb5));
+        btn.on("pointerover", () => btn.setFillStyle(0x26a884));
+        btn.on("pointerout", () => btn.setFillStyle(0x1f8f6e));
         btn.on("pointerdown", start);
         this.input.keyboard.on("keydown-SPACE", start);
         this.input.keyboard.on("keydown-ENTER", start);
@@ -525,21 +605,19 @@
           .text(cx, 540, "← Back to Math Games", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "15px",
-            color: "#7fa0c0",
+            color: "#6fa6b6",
           })
           .setOrigin(0.5)
           .setInteractive({ useHandCursor: true });
-        hub.on("pointerover", () => hub.setColor("#4488ff"));
-        hub.on("pointerout", () => hub.setColor("#7fa0c0"));
+        hub.on("pointerover", () => hub.setColor("#5fd0ef"));
+        hub.on("pointerout", () => hub.setColor("#6fa6b6"));
         hub.on("pointerdown", () => (window.location.href = "/math/games/"));
-        srSay("Area Attack Brick Cannon. Press Start to play.");
+        srSay("Area Attack, Decompose and Tile. Press Start to play.");
       };
 
-      // ── VOCAB GATE SCENE ───────────────────────────────────────────────
-      // Shown once before the first round (Title -> Vocab -> Game). The
-      // player steps through each key word (term + Level-1 definition + emoji)
-      // and then begins play. Replays go Result -> Game directly, so this
-      // intro only appears before the first round (no repeat-on-replay).
+      // ── VOCAB GATE ──
+      // Repo rule: term + Level-1 definition + image/emoji shown BEFORE play.
+      // One card per key word; Back / Next; last card goes to Level Select.
       function VocabScene() {
         Phaser.Scene.call(this, "Vocab");
       }
@@ -547,121 +625,275 @@
       VocabScene.prototype.constructor = VocabScene;
       VocabScene.prototype.init = function () {
         this.idx = 0;
-        this.cardItems = [];
       };
       VocabScene.prototype.create = function () {
         const cx = W / 2;
-        this.add.rectangle(cx, H / 2, W, H, 0x0c1c30);
+        this.add.rectangle(cx, H / 2, W, H, 0x0e2531);
         this.add
           .text(cx, 70, "WORDS TO KNOW FIRST", {
             fontFamily: "Impact, sans-serif",
-            fontSize: "38px",
-            color: "#4488ff",
-            stroke: "#060f1a",
+            fontSize: "34px",
+            color: "#5fd0ef",
+            stroke: "#08141b",
             strokeThickness: 5,
           })
           .setOrigin(0.5);
-        this.add
-          .text(cx, 110, "Learn these, then aim and fire!", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            color: "#88ccaa",
-          })
-          .setOrigin(0.5);
 
-        // Card background panel.
+        // Card surface.
         this.add
-          .rectangle(cx, 320, 560, 320, 0x12355b)
-          .setStrokeStyle(2, 0x4488ff);
+          .rectangle(cx, 320, 560, 320, 0x0c2230)
+          .setStrokeStyle(2, 0x1f8f6e);
 
         this.stepText = this.add
-          .text(cx, 190, "", {
+          .text(cx, 185, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "13px",
+            fontSize: "14px",
             fontStyle: "bold",
-            color: "#7fa0c0",
+            color: "#6fa6b6",
           })
           .setOrigin(0.5);
         this.emojiText = this.add
-          .text(cx, 250, "", { fontSize: "72px" })
+          .text(cx, 250, "", { fontSize: "76px" })
           .setOrigin(0.5);
         this.termText = this.add
-          .text(cx, 320, "", {
-            fontFamily: "Impact, sans-serif",
-            fontSize: "34px",
-            color: "#ffd24a",
-          })
-          .setOrigin(0.5);
-        this.defText = this.add
-          .text(cx, 390, "", {
+          .text(cx, 330, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
-            color: "#cfe0f0",
-            align: "center",
-            wordWrap: { width: 500 },
-            lineSpacing: 4,
-          })
-          .setOrigin(0.5);
-
-        // Next / Start button.
-        const btn = this.add
-          .rectangle(cx, 500, 260, 56, 0x1a6fb5)
-          .setInteractive({ useHandCursor: true });
-        const btnT = this.add
-          .text(cx, 500, "", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "22px",
+            fontSize: "32px",
             fontStyle: "bold",
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        this.btn = btn;
-        this.btnT = btnT;
-        btn.on("pointerover", () => btn.setFillStyle(0x2484d0));
-        btn.on("pointerout", () => btn.setFillStyle(0x1a6fb5));
-        btn.on("pointerdown", () => this.advance());
+        this.defText = this.add
+          .text(cx, 400, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            color: "#bcd8e2",
+            align: "center",
+            wordWrap: { width: 500 },
+          })
+          .setOrigin(0.5);
+
+        // Next / Continue button.
+        const nextBtn = this.add
+          .rectangle(cx + 90, 510, 220, 52, 0x1f8f6e)
+          .setInteractive({ useHandCursor: true });
+        const nextT = this.add
+          .text(cx + 90, 510, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        nextBtn.on("pointerover", () => nextBtn.setFillStyle(0x26a884));
+        nextBtn.on("pointerout", () => nextBtn.setFillStyle(0x1f8f6e));
+        nextBtn.on("pointerdown", () => this.advance());
+        this.nextBtn = nextBtn;
+        this.nextT = nextT;
+
+        // Back button (hidden on the first card).
+        const backBtn = this.add
+          .rectangle(cx - 120, 510, 130, 52, 0x183a48)
+          .setInteractive({ useHandCursor: true });
+        const backT = this.add
+          .text(cx - 120, 510, "← Back", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#9fc6cf",
+          })
+          .setOrigin(0.5);
+        backBtn.on("pointerover", () => backBtn.setFillStyle(0x224c5c));
+        backBtn.on("pointerout", () => backBtn.setFillStyle(0x183a48));
+        backBtn.on("pointerdown", () => this.goBack());
+        this.backBtn = backBtn;
+        this.backT = backT;
+
         this.input.keyboard.on("keydown-SPACE", () => this.advance());
         this.input.keyboard.on("keydown-ENTER", () => this.advance());
         this.input.keyboard.on("keydown-RIGHT", () => this.advance());
+        this.input.keyboard.on("keydown-LEFT", () => this.goBack());
 
-        // Skip-all link (still compliant: vocab is shown by default; this is
-        // an explicit student choice, not an auto-skip).
-        const skip = this.add
-          .text(cx, 555, "Skip to game ▸", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "14px",
-            color: "#7fa0c0",
-          })
-          .setOrigin(0.5)
-          .setInteractive({ useHandCursor: true });
-        skip.on("pointerover", () => skip.setColor("#4488ff"));
-        skip.on("pointerout", () => skip.setColor("#7fa0c0"));
-        skip.on("pointerdown", () => this.scene.start("Game"));
-
-        this.render();
+        this.renderCard();
       };
-      VocabScene.prototype.render = function () {
+      VocabScene.prototype.renderCard = function () {
         const v = AA_VOCAB[this.idx];
         const last = this.idx === AA_VOCAB.length - 1;
         this.stepText.setText(
-          "Word " + (this.idx + 1) + " of " + AA_VOCAB.length,
+          "Key word " + (this.idx + 1) + " of " + AA_VOCAB.length,
         );
         this.emojiText.setText(v.emoji);
         this.termText.setText(v.term);
         this.defText.setText(v.def);
-        this.btnT.setText(last ? "START PLAYING ▶" : "NEXT →");
+        this.nextT.setText(last ? "Continue ▶" : "Next →");
+        const showBack = this.idx > 0;
+        this.backBtn.setVisible(showBack);
+        this.backT.setVisible(showBack);
         srSay(v.term + ". " + v.def);
       };
       VocabScene.prototype.advance = function () {
-        SFX.fire();
         if (this.idx < AA_VOCAB.length - 1) {
           this.idx++;
-          this.render();
+          this.renderCard();
         } else {
-          this.scene.start("Game");
+          aaVocabSeen = true;
+          this.scene.start("Level");
+        }
+      };
+      VocabScene.prototype.goBack = function () {
+        if (this.idx > 0) {
+          this.idx--;
+          this.renderCard();
         }
       };
 
+      // ── LEVEL SELECT ──
+      // Exactly two choices (never the word "ESOL"): Level 1 = support,
+      // Level 2 = enrichment. The choice drives the generator + scaffolding and
+      // is shown in the HUD during play.
+      function LevelScene() {
+        Phaser.Scene.call(this, "Level");
+      }
+      LevelScene.prototype = Object.create(Phaser.Scene.prototype);
+      LevelScene.prototype.constructor = LevelScene;
+      LevelScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x0e2531);
+        this.add
+          .text(cx, 90, "CHOOSE YOUR LEVEL", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "40px",
+            color: "#5fd0ef",
+            stroke: "#08141b",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            145,
+            "You can pick either one. Both teach area on the grid.",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#bcd8e2",
+            },
+          )
+          .setOrigin(0.5);
+
+        this.makeCard(
+          cx - 195,
+          0x1f8f6e,
+          0x26a884,
+          "Level 1",
+          "Support",
+          ["Rectangles only", "Grid + base/height", "labels & extra hints"],
+          1,
+        );
+        this.makeCard(
+          cx + 195,
+          0x2a6fae,
+          0x3585c9,
+          "Level 2",
+          "Enrichment",
+          ["L-shapes to decompose", "Larger figures", "fewer labels"],
+          2,
+        );
+
+        this.add
+          .text(
+            cx,
+            548,
+            "Click a card, or press 1 or 2.   ← Back to Math Games",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              color: "#6fa6b6",
+            },
+          )
+          .setOrigin(0.5);
+
+        this.input.keyboard.on("keydown-ONE", () => this.choose(1));
+        this.input.keyboard.on("keydown-TWO", () => this.choose(2));
+        this.input.keyboard.on("keydown-NUMPAD_ONE", () => this.choose(1));
+        this.input.keyboard.on("keydown-NUMPAD_TWO", () => this.choose(2));
+        srSay(
+          "Choose your level. Level 1 is support with rectangles. " +
+            "Level 2 is enrichment with L-shapes to decompose. Press 1 or 2.",
+        );
+      };
+      LevelScene.prototype.makeCard = function (
+        x,
+        fill,
+        hi,
+        title,
+        tag,
+        lines,
+        lvl,
+      ) {
+        const cardY = 350;
+        const card = this.add
+          .rectangle(x, cardY, 320, 290, 0x0c2230)
+          .setStrokeStyle(3, fill)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(x, cardY - 105, title, {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "44px",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(x, cardY - 60, tag.toUpperCase(), {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#7ee0ad",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(x, cardY + 5, lines.join("\n"), {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "17px",
+            color: "#bcd8e2",
+            align: "center",
+            lineSpacing: 8,
+          })
+          .setOrigin(0.5);
+        const pickBtn = this.add
+          .rectangle(x, cardY + 105, 200, 46, fill)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(x, cardY + 105, "Play " + title + " ▶", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        const over = () => {
+          card.setFillStyle(0x113040);
+          pickBtn.setFillStyle(hi);
+        };
+        const out = () => {
+          card.setFillStyle(0x0c2230);
+          pickBtn.setFillStyle(fill);
+        };
+        [card, pickBtn].forEach((o) => {
+          o.on("pointerover", over);
+          o.on("pointerout", out);
+          o.on("pointerdown", () => this.choose(lvl));
+        });
+      };
+      LevelScene.prototype.choose = function (lvl) {
+        aaLevel = lvl;
+        SFX.init();
+        SFX.coin();
+        JUICE.audio.unlock();
+        this.scene.start("Game");
+      };
+
+      // ── GAME ──
       function GameScene() {
         Phaser.Scene.call(this, "Game");
       }
@@ -676,21 +908,23 @@
         this.score = 0;
         this.lives = 3;
         this.streak = 0;
-        this.level = 1;
-        this.solved = 0;
-        this.target = 10;
-        this.angle = -90; // degrees, straight up
-        this.targets = [];
-        this.brick = null; // active projectile
-        this.locked = false;
+        this.level = aaLevel; // chosen difficulty (1 or 2), shown in HUD
+        this.solved = 0; // problems answered correctly
+        this.target = 10; // win condition: solve this many problems
         this.problem = null;
+        this.locked = false;
+        this.dragging = false;
+        this.placed = []; // list of {c0,r0,c1,r1} rectangles laid down
+        this.covered = []; // ROWS×COLS boolean cover grid
+        this.cur = { c: 0, r: 0 }; // keyboard cursor cell
+        this.cornerA = null; // first keyboard corner (null until set)
+        this.kbActive = false; // show cursor only after keyboard use
       };
 
       GameScene.prototype.create = function () {
-        this.add.rectangle(W / 2, H / 2, W, H, 0x0c1c30);
-        // Ground
-        this.add.rectangle(W / 2, H - 12, W, 24, 0x16345a);
+        this.add.rectangle(W / 2, H / 2, W, H, 0x0e2531);
 
+        // HUD (same layout family as the shell's other games)
         const hudStyle = {
           fontFamily: "Segoe UI, sans-serif",
           fontSize: "18px",
@@ -698,337 +932,550 @@
         };
         this.scoreText = this.add.text(16, 12, "Score: 0", {
           ...hudStyle,
-          color: "#88ccaa",
+          color: "#7ee0ad",
         });
         this.livesText = this.add.text(16, 36, "❤❤❤", {
           ...hudStyle,
           color: "#ff8f8f",
         });
         this.streakText = this.add
-          .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#ffd24a" })
+          .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#5fd0ef" })
           .setOrigin(1, 0);
         this.levelText = this.add
-          .text(W - 16, 36, "Level 1", { ...hudStyle, color: "#cfe0f0" })
+          .text(W - 16, 36, "Level " + this.level, {
+            ...hudStyle,
+            color: "#bcd8e2",
+          })
           .setOrigin(1, 0);
         this.progressText = this.add
           .text(W / 2, 12, "0 / " + this.target, {
             ...hudStyle,
-            color: "#cfe0f0",
+            color: "#bcd8e2",
           })
           .setOrigin(0.5, 0);
 
-        // Shape panel (bottom-left)
-        this.shapeG = this.add.graphics();
-        this.promptText = this.add
-          .text(150, 470, "", {
+        // Problem banner
+        this.bannerLabel = this.add
+          .text(W / 2, 66, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "15px",
+            fontSize: "14px",
+            color: "#6fa6b6",
+          })
+          .setOrigin(0.5);
+        this.bannerText = this.add
+          .text(W / 2, 96, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "22px",
             fontStyle: "bold",
             color: "#ffffff",
             align: "center",
-            wordWrap: { width: 260 },
-          })
-          .setOrigin(0.5);
-        this.formulaText = this.add
-          .text(150, 510, "", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "14px",
-            color: "#88ccaa",
+            wordWrap: { width: W - 60 },
           })
           .setOrigin(0.5);
 
         this.feedback = this.add
-          .text(W / 2, 90, "", {
+          .text(W / 2, 132, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            fontStyle: "bold",
+            color: "#5fd0ef",
+            stroke: "#08141b",
+            strokeThickness: 3,
+            align: "center",
+            wordWrap: { width: W - 60 },
+          })
+          .setOrigin(0.5)
+          .setAlpha(0)
+          .setDepth(40);
+
+        // Grid layers (depth-ordered; redrawn as needed).
+        this.gStatic = this.add.graphics().setDepth(1); // panel + gridlines (once)
+        this.gTargetFill = this.add.graphics().setDepth(2); // blueprint fill (per problem)
+        this.gCover = this.add.graphics().setDepth(3); // placed tiles
+        this.gFlash = this.add.graphics().setDepth(4); // gaps / overflow on a miss
+        this.gOutline = this.add.graphics().setDepth(5); // bold shape outline
+        this.gPreview = this.add.graphics().setDepth(6); // drag / corner preview
+        this.gCursor = this.add.graphics().setDepth(7); // keyboard cursor
+        this.labels = []; // base/height text labels (Level 1)
+        this.drawStaticGrid();
+
+        // ── Right-hand control panel ──
+        const px = 665;
+        this.add
+          .rectangle(px, 320, 250, 300, 0x0c2230)
+          .setStrokeStyle(2, 0x1f8f6e);
+        this.add
+          .text(px, 188, "AREA", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#bcd8e2",
+            letterSpacing: 2,
+          })
+          .setOrigin(0.5);
+        this.areaNum = this.add
+          .text(px, 246, "0", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "68px",
+            color: "#5fd0ef",
+            stroke: "#08141b",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.areaUnit = this.add
+          .text(px, 296, "square units", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#7ee0ad",
+          })
+          .setOrigin(0.5);
+
+        // Lock In button
+        this.lockBtn = this.add
+          .rectangle(px, 362, 210, 52, 0x1f8f6e)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(px, 362, "LOCK IN ✓", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "22px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.lockBtn.on("pointerover", () =>
+          this.lockBtn.setFillStyle(0x26a884),
+        );
+        this.lockBtn.on("pointerout", () =>
+          this.lockBtn.setFillStyle(0x1f8f6e),
+        );
+        this.lockBtn.on("pointerdown", () => this.lockIn());
+
+        // Undo + Clear buttons (simple recovery from mistakes)
+        this.undoBtn = this.add
+          .rectangle(px, 422, 210, 42, 0x2a6fae)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(px, 422, "↶ Undo", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "18px",
             fontStyle: "bold",
-            color: "#ffd24a",
-            stroke: "#060f1a",
-            strokeThickness: 3,
-            align: "center",
-            wordWrap: { width: 600 },
+            color: "#ffffff",
           })
-          .setOrigin(0.5)
-          .setAlpha(0);
-
-        // Cannon at bottom-center
-        this.cannonX = W / 2 + 230;
-        this.cannonY = H - 24;
-        this.add.circle(this.cannonX, this.cannonY, 26, 0x2d5a8c);
-        this.barrel = this.add.rectangle(
-          this.cannonX,
-          this.cannonY,
-          60,
-          16,
-          0x4488ff,
+          .setOrigin(0.5);
+        this.undoBtn.on("pointerover", () =>
+          this.undoBtn.setFillStyle(0x3585c9),
         );
-        this.barrel.setOrigin(0, 0.5);
-        this.barrel.setStrokeStyle(2, 0xbcd8ff);
+        this.undoBtn.on("pointerout", () =>
+          this.undoBtn.setFillStyle(0x2a6fae),
+        );
+        this.undoBtn.on("pointerdown", () => this.undo());
 
-        // Particles
-        this.burst = this.add
-          .particles(0, 0, "chunk", {
-            speed: { min: 80, max: 260 },
-            angle: { min: 0, max: 360 },
-            scale: { start: 1, end: 0 },
-            rotate: { min: 0, max: 360 },
-            lifespan: 700,
-            emitting: false,
-            quantity: 18,
-            gravityY: 240,
-            tint: [0xff8844, 0x4488ff, 0xffd24a, 0x88ccaa],
+        this.clearBtn = this.add
+          .rectangle(px, 474, 210, 42, 0x6b3030)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(px, 474, "✕ Clear", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#ffffff",
           })
-          .setDepth(20);
+          .setOrigin(0.5);
+        this.clearBtn.on("pointerover", () =>
+          this.clearBtn.setFillStyle(0x8a3d3d),
+        );
+        this.clearBtn.on("pointerout", () =>
+          this.clearBtn.setFillStyle(0x6b3030),
+        );
+        this.clearBtn.on("pointerdown", () => this.clearTiles());
 
+        // Hint
+        this.hint = this.add
+          .text(
+            W / 2,
+            552,
+            "Drag across the grid to lay tiles. Keys: arrows move, F set corner, U undo, C clear, Enter lock in.",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "13px",
+              color: "#6fa6b6",
+              align: "center",
+            },
+          )
+          .setOrigin(0.5);
+
+        // Red flash overlay (reused from the shell)
         this.redFlash = this.add
           .rectangle(W / 2, H / 2, W, H, 0xff3333, 0)
           .setDepth(30);
 
-        // Input
-        this.cursors = this.input.keyboard.createCursorKeys();
-        this.keyA = this.input.keyboard.addKey(
-          Phaser.Input.Keyboard.KeyCodes.A,
-        );
-        this.keyD = this.input.keyboard.addKey(
-          Phaser.Input.Keyboard.KeyCodes.D,
-        );
-        this.input.keyboard.on("keydown-SPACE", () => this.fire());
-        // Pointer: aim toward pointer, click to fire.
-        this.input.on("pointermove", (p) => {
-          this.aimAt(p.x, p.y);
-        });
+        // ── Input: drag a rectangle of tiles on the grid ──
         this.input.on("pointerdown", (p) => {
-          this.aimAt(p.x, p.y);
-          this.fire();
+          if (this.locked || !inGrid(p.x, p.y)) return;
+          this.dragging = true;
+          this.dragC0 = colFromX(p.x);
+          this.dragR0 = rowFromY(p.y);
+          this.dragC1 = this.dragC0;
+          this.dragR1 = this.dragR0;
+          this.drawPreview();
         });
+        this.input.on("pointermove", (p) => {
+          if (!this.dragging || this.locked) return;
+          this.dragC1 = colFromX(p.x);
+          this.dragR1 = rowFromY(p.y);
+          this.drawPreview();
+        });
+        this.input.on("pointerup", () => {
+          if (!this.dragging) return;
+          this.dragging = false;
+          this.commitRect(this.dragC0, this.dragR0, this.dragC1, this.dragR1);
+          this.gPreview.clear();
+        });
+
+        // ── Input: keyboard cursor ──
+        const moveCur = (dc, dr) => {
+          if (this.locked) return;
+          this.kbActive = true;
+          this.cur.c = Phaser.Math.Clamp(this.cur.c + dc, 0, COLS - 1);
+          this.cur.r = Phaser.Math.Clamp(this.cur.r + dr, 0, ROWS - 1);
+          this.drawCursor();
+          this.drawPreview();
+          SFX.miss();
+        };
+        this.input.keyboard.on("keydown-LEFT", () => moveCur(-1, 0));
+        this.input.keyboard.on("keydown-RIGHT", () => moveCur(1, 0));
+        this.input.keyboard.on("keydown-UP", () => moveCur(0, -1));
+        this.input.keyboard.on("keydown-DOWN", () => moveCur(0, 1));
+        this.input.keyboard.on("keydown-F", () => {
+          if (this.locked) return;
+          this.kbActive = true;
+          if (!this.cornerA) {
+            this.cornerA = { c: this.cur.c, r: this.cur.r };
+            SFX.place();
+          } else {
+            this.commitRect(
+              this.cornerA.c,
+              this.cornerA.r,
+              this.cur.c,
+              this.cur.r,
+            );
+            this.cornerA = null;
+          }
+          this.drawCursor();
+          this.drawPreview();
+        });
+        this.input.keyboard.on("keydown-U", () => this.undo());
+        this.input.keyboard.on("keydown-C", () => this.clearTiles());
+        this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
+        this.input.keyboard.on("keydown-SPACE", () => this.lockIn());
 
         this.cameras.main.fadeIn(400);
         this.newProblem();
       };
 
-      GameScene.prototype.aimAt = function (x, y) {
-        const a =
-          (Math.atan2(y - this.cannonY, x - this.cannonX) * 180) / Math.PI;
-        // Clamp to upper hemisphere (between -170 and -10 degrees).
-        this.angle = Phaser.Math.Clamp(a, -170, -10);
+      // Static panel + gridlines (drawn once).
+      GameScene.prototype.drawStaticGrid = function () {
+        const g = this.gStatic;
+        g.clear();
+        g.fillStyle(0x0c2230, 1).fillRect(GRID_X0, GRID_Y0, GRID_W, GRID_H);
+        g.lineStyle(1, 0x1b3543, 1);
+        for (let c = 0; c <= COLS; c++) {
+          g.lineBetween(cellPX(c), GRID_Y0, cellPX(c), GRID_Y0 + GRID_H);
+        }
+        for (let r = 0; r <= ROWS; r++) {
+          g.lineBetween(GRID_X0, cellPY(r), GRID_X0 + GRID_W, cellPY(r));
+        }
+        g.lineStyle(2, 0x2a4d5c, 1).strokeRect(
+          GRID_X0,
+          GRID_Y0,
+          GRID_W,
+          GRID_H,
+        );
+      };
+
+      // Target blueprint (faint fill) + bold outline + Level-1 labels.
+      GameScene.prototype.drawTarget = function () {
+        const p = this.problem;
+        const fill = this.gTargetFill;
+        const out = this.gOutline;
+        fill.clear();
+        out.clear();
+        fill.fillStyle(0x17506a, 0.45);
+        p.cells.forEach((k) => {
+          const [c, r] = k.split(",").map(Number);
+          fill.fillRect(cellPX(c) + 1, cellPY(r) + 1, CELL - 2, CELL - 2);
+        });
+        // Bold outline: stroke each cell edge that borders a non-target cell.
+        out.lineStyle(4, 0x5fd0ef, 1);
+        p.cells.forEach((k) => {
+          const [c, r] = k.split(",").map(Number);
+          const x = cellPX(c),
+            y = cellPY(r);
+          if (!p.cells.has(keyRC(c, r - 1))) out.lineBetween(x, y, x + CELL, y);
+          if (!p.cells.has(keyRC(c, r + 1)))
+            out.lineBetween(x, y + CELL, x + CELL, y + CELL);
+          if (!p.cells.has(keyRC(c - 1, r))) out.lineBetween(x, y, x, y + CELL);
+          if (!p.cells.has(keyRC(c + 1, r)))
+            out.lineBetween(x + CELL, y, x + CELL, y + CELL);
+        });
+
+        // Clear old labels, then add base/height labels (Level 1 only).
+        this.labels.forEach((t) => t.destroy());
+        this.labels = [];
+        if (p.level === 1) {
+          const baseX = cellPX(p.oc + p.w / 2);
+          const baseY = cellPY(p.or + p.h) + 12;
+          this.labels.push(
+            this.add
+              .text(baseX, baseY, "base = " + p.w, {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "14px",
+                fontStyle: "bold",
+                color: "#7ee0ad",
+              })
+              .setOrigin(0.5, 0)
+              .setDepth(6),
+          );
+          const htX = cellPX(p.oc) - 8;
+          const htY = cellPY(p.or + p.h / 2);
+          this.labels.push(
+            this.add
+              .text(htX, htY, "height\n= " + p.h, {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "13px",
+                fontStyle: "bold",
+                color: "#7ee0ad",
+                align: "right",
+              })
+              .setOrigin(1, 0.5)
+              .setDepth(6),
+          );
+        }
+      };
+
+      GameScene.prototype.recompute = function () {
+        // Rebuild the cover grid from the list of placed rectangles.
+        this.covered = [];
+        for (let r = 0; r < ROWS; r++)
+          this.covered.push(new Array(COLS).fill(false));
+        this.placed.forEach((rc) => {
+          const c0 = Math.min(rc.c0, rc.c1),
+            c1 = Math.max(rc.c0, rc.c1);
+          const r0 = Math.min(rc.r0, rc.r1),
+            r1 = Math.max(rc.r0, rc.r1);
+          for (let r = r0; r <= r1; r++)
+            for (let c = c0; c <= c1; c++) this.covered[r][c] = true;
+        });
+        this.drawCover();
+      };
+
+      GameScene.prototype.coveredCount = function () {
+        let n = 0;
+        for (let r = 0; r < ROWS; r++)
+          for (let c = 0; c < COLS; c++) if (this.covered[r][c]) n++;
+        return n;
+      };
+
+      GameScene.prototype.drawCover = function () {
+        const g = this.gCover;
+        g.clear();
+        g.fillStyle(0x2fae73, 0.85);
+        g.lineStyle(1, 0x176b46, 1);
+        for (let r = 0; r < ROWS; r++)
+          for (let c = 0; c < COLS; c++)
+            if (this.covered[r][c]) {
+              g.fillRect(cellPX(c) + 1, cellPY(r) + 1, CELL - 2, CELL - 2);
+              g.strokeRect(cellPX(c) + 1, cellPY(r) + 1, CELL - 2, CELL - 2);
+            }
+        const n = this.coveredCount();
+        this.areaNum.setText(String(n));
+      };
+
+      GameScene.prototype.drawPreview = function () {
+        const g = this.gPreview;
+        g.clear();
+        let c0, r0, c1, r1;
+        if (this.dragging) {
+          c0 = this.dragC0;
+          r0 = this.dragR0;
+          c1 = this.dragC1;
+          r1 = this.dragR1;
+        } else if (this.cornerA) {
+          c0 = this.cornerA.c;
+          r0 = this.cornerA.r;
+          c1 = this.cur.c;
+          r1 = this.cur.r;
+        } else {
+          return;
+        }
+        const cc0 = Math.min(c0, c1),
+          cc1 = Math.max(c0, c1);
+        const rr0 = Math.min(r0, r1),
+          rr1 = Math.max(r0, r1);
+        g.fillStyle(0x5fd0ef, 0.3);
+        g.lineStyle(2, 0x5fd0ef, 0.9);
+        const x = cellPX(cc0),
+          y = cellPY(rr0);
+        const w = (cc1 - cc0 + 1) * CELL,
+          h = (rr1 - rr0 + 1) * CELL;
+        g.fillRect(x, y, w, h);
+        g.strokeRect(x, y, w, h);
+      };
+
+      GameScene.prototype.drawCursor = function () {
+        const g = this.gCursor;
+        g.clear();
+        if (!this.kbActive || this.locked) return;
+        if (this.cornerA) {
+          g.fillStyle(0xffd24a, 0.4);
+          g.fillRect(
+            cellPX(this.cornerA.c) + 2,
+            cellPY(this.cornerA.r) + 2,
+            CELL - 4,
+            CELL - 4,
+          );
+        }
+        g.lineStyle(3, 0xffd24a, 1);
+        g.strokeRect(
+          cellPX(this.cur.c) + 2,
+          cellPY(this.cur.r) + 2,
+          CELL - 4,
+          CELL - 4,
+        );
+      };
+
+      GameScene.prototype.commitRect = function (c0, r0, c1, r1) {
+        this.placed.push({ c0, r0, c1, r1 });
+        this.recompute();
+        SFX.place();
+        JUICE.audio.pop();
+        const cx = cellPX((Math.min(c0, c1) + Math.max(c0, c1) + 1) / 2);
+        const cy = cellPY((Math.min(r0, r1) + Math.max(r0, r1) + 1) / 2);
+        JUICE.tilePop(this, this.gCover);
+        JUICE.burst(this, cx, cy, [0x2fae73, 0x5fd0ef, 0xffffff], 8);
+      };
+
+      GameScene.prototype.undo = function () {
+        if (this.locked || !this.placed.length) return;
+        this.placed.pop();
+        this.recompute();
+        this.gFlash.clear();
+        SFX.miss();
+      };
+
+      GameScene.prototype.clearTiles = function () {
+        if (this.locked || !this.placed.length) return;
+        this.placed = [];
+        this.recompute();
+        this.gFlash.clear();
+        SFX.miss();
       };
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
-        this.brick = null;
-        this.clearTargets();
-        this.problem = generateShape(this.level);
-        this.drawShape();
-        this.promptText.setText(this.problem.prompt);
-        this.formulaText.setText(this.problem.formula + " = ? sq units");
+        this.placed = [];
+        this.cornerA = null;
+        this.cur = { c: 0, r: 0 };
+        this.problem = makeProblem(this.level);
+        this.bannerLabel.setText(this.problem.label);
+        this.bannerText.setText(this.problem.prompt);
+        this.gFlash.clear();
+        this.drawTarget();
+        this.recompute();
+        this.drawCursor();
         srSay(
-          this.problem.prompt +
+          this.problem.label +
             ". " +
-            this.problem.formula +
-            ". Aim and fire at the correct area.",
+            this.problem.prompt +
+            " A " +
+            (this.problem.kind === "rect" ? "rectangle" : "L-shape") +
+            " is outlined on the grid. Lay tiles to cover it exactly, then lock in.",
         );
-
-        // Spawn drifting targets across the sky.
-        const ys = shuffle([130, 180, 230, 280]);
-        const dir = [];
-        this.problem.options.forEach((opt, i) => {
-          const fromLeft = Math.random() < 0.5;
-          const x = fromLeft ? -40 : W + 40;
-          const y = ys[i];
-          const speed =
-            (40 + (this.level - 1) * 10 + randInt(0, 20)) * (fromLeft ? 1 : -1);
-          const circ = this.add.circle(x, y, 34, 0x16345a);
-          circ.setStrokeStyle(3, 0x4488ff);
-          const txt = this.add
-            .text(x, y, String(opt), {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "20px",
-              fontStyle: "bold",
-              color: "#ffffff",
-            })
-            .setOrigin(0.5);
-          this.targets.push({ circ, txt, value: opt, vx: speed });
-        });
       };
 
-      GameScene.prototype.drawShape = function () {
-        const g = this.shapeG;
-        g.clear();
-        const sd = this.problem.shapeData;
-        const cx = 150,
-          cy = 380;
-        g.fillStyle(0x2d6a9c, 0.9);
-        g.lineStyle(3, 0xbcd8ff, 1);
-        const s = 7; // px per unit (visual only)
-        if (sd.type === "rectangle") {
-          const w = Math.min(sd.b * s, 180),
-            h = Math.min(sd.h * s, 120);
-          g.fillRect(cx - w / 2, cy - h / 2, w, h);
-          g.strokeRect(cx - w / 2, cy - h / 2, w, h);
-        } else if (sd.type === "parallelogram") {
-          const w = Math.min(sd.b * s, 160),
-            h = Math.min(sd.h * s, 110),
-            sk = 22;
-          g.beginPath();
-          g.moveTo(cx - w / 2 + sk, cy - h / 2);
-          g.lineTo(cx + w / 2 + sk, cy - h / 2);
-          g.lineTo(cx + w / 2 - sk, cy + h / 2);
-          g.lineTo(cx - w / 2 - sk, cy + h / 2);
-          g.closePath();
-          g.fillPath();
-          g.strokePath();
-        } else if (sd.type === "triangle") {
-          const w = Math.min(sd.b * s, 170),
-            h = Math.min(sd.h * s, 120);
-          g.beginPath();
-          g.moveTo(cx, cy - h / 2);
-          g.lineTo(cx + w / 2, cy + h / 2);
-          g.lineTo(cx - w / 2, cy + h / 2);
-          g.closePath();
-          g.fillPath();
-          g.strokePath();
-        } else {
-          const w1 = Math.min(sd.b1 * s, 100),
-            w2 = Math.min(sd.b2 * s, 170),
-            h = Math.min(sd.h * s, 110);
-          g.beginPath();
-          g.moveTo(cx - w1 / 2, cy - h / 2);
-          g.lineTo(cx + w1 / 2, cy - h / 2);
-          g.lineTo(cx + w2 / 2, cy + h / 2);
-          g.lineTo(cx - w2 / 2, cy + h / 2);
-          g.closePath();
-          g.fillPath();
-          g.strokePath();
-        }
-      };
-
-      GameScene.prototype.clearTargets = function () {
-        this.targets.forEach((t) => {
-          t.circ.destroy();
-          t.txt.destroy();
-        });
-        this.targets = [];
-      };
-
-      GameScene.prototype.fire = function () {
-        if (this.locked || this.brick) return;
-        SFX.fire();
-        const rad = (this.angle * Math.PI) / 180;
-        const tipX = this.cannonX + Math.cos(rad) * 60;
-        const tipY = this.cannonY + Math.sin(rad) * 60;
-        const speed = 720;
-        const b = this.add.circle(tipX, tipY, 12, 0xff8844);
-        b.setStrokeStyle(2, 0xffd24a);
-        this.brick = {
-          obj: b,
-          vx: Math.cos(rad) * speed,
-          vy: Math.sin(rad) * speed,
-        };
-      };
-
-      GameScene.prototype.update = function (time, delta) {
-        const dt = delta / 1000;
-
-        // Cannon aim with keys.
-        if (this.cursors.left.isDown || this.keyA.isDown) this.angle -= 90 * dt;
-        else if (this.cursors.right.isDown || this.keyD.isDown)
-          this.angle += 90 * dt;
-        this.angle = Phaser.Math.Clamp(this.angle, -170, -10);
-        this.barrel.rotation = (this.angle * Math.PI) / 180;
-
-        if (this.locked) return;
-
-        // Move targets, wrap around edges.
-        for (const t of this.targets) {
-          t.circ.x += t.vx * dt;
-          t.txt.x = t.circ.x;
-          if (t.vx > 0 && t.circ.x > W + 50) t.circ.x = -50;
-          if (t.vx < 0 && t.circ.x < -50) t.circ.x = W + 50;
-        }
-
-        // Move brick, test collisions.
-        if (this.brick) {
-          const b = this.brick.obj;
-          b.x += this.brick.vx * dt;
-          b.y += this.brick.vy * dt;
-          // Hit test against targets.
-          for (const t of this.targets) {
-            const d = Phaser.Math.Distance.Between(
-              b.x,
-              b.y,
-              t.circ.x,
-              t.circ.y,
-            );
-            if (d <= 34 + 12) {
-              this.resolveHit(t);
-              return;
-            }
+      GameScene.prototype.lockIn = function () {
+        if (this.locked || !this.problem) return;
+        const p = this.problem;
+        // Gaps = target cells not covered; overflow = covered cells off-target.
+        const gaps = [];
+        const overflow = [];
+        for (let r = 0; r < ROWS; r++)
+          for (let c = 0; c < COLS; c++) {
+            const inTarget = p.cells.has(keyRC(c, r));
+            const cov = this.covered[r][c];
+            if (inTarget && !cov) gaps.push([c, r]);
+            if (!inTarget && cov) overflow.push([c, r]);
           }
-          // Off-screen miss.
-          if (b.x < -30 || b.x > W + 30 || b.y < -30) {
-            b.destroy();
-            this.brick = null;
-            // A whiff isn't a life loss; the player can re-aim and fire again.
-            srSay("Missed all targets. Aim again and fire.");
-          }
-        }
-      };
-
-      GameScene.prototype.resolveHit = function (t) {
+        const correct = gaps.length === 0 && overflow.length === 0;
         this.locked = true;
-        if (this.brick) {
-          this.burst.setPosition(this.brick.obj.x, this.brick.obj.y);
-          this.burst.explode(18);
-          this.brick.obj.destroy();
-          this.brick = null;
-        }
-        const correct = t.value === this.problem.area;
+
         if (correct) {
           SFX.good();
+          JUICE.audio.correct(this.streak);
           this.solved++;
           this.streak++;
           const bonus = Math.min(this.streak, 5) * 5;
-          this.score += 25 + bonus;
-          this.flash(t.circ.x, t.circ.y, "+1 ✓", "#88ccaa");
-          this.feedback
-            .setText(
-              "Correct! Area = " +
-                this.problem.area +
-                " sq units  (" +
-                this.problem.formula +
-                ")",
-            )
-            .setAlpha(1);
-          srSay("Correct. The area is " + this.problem.area + " square units.");
+          const gained = 20 + bonus + (this.level === 2 ? 10 : 0);
+          this.score += gained;
+          this.flash(W / 2, 320, "Correct! ✓", "#7ee0ad");
+          this.feedback.setText("Correct! " + p.why).setAlpha(1);
+          const fx = cellPX(p.oc + p.w / 2),
+            fy = cellPY(p.or + p.h / 2);
+          JUICE.burst(this, fx, fy, [0x2fae73, 0x5fd0ef, 0xffffff], 18);
+          JUICE.floatText(this, fx, fy - 30, "+" + gained, "#7ee0ad", 36);
+          JUICE.award(gained, "u5-area-attack");
+          if (this.streak >= 2) JUICE.confetti(this, 1);
+          srSay("Correct. " + p.why);
+          this.afterAttempt(true);
         } else {
           SFX.bad();
+          JUICE.audio.wrong();
+          JUICE.shake(this, 0.008);
           this.streak = 0;
           this.lives--;
           this.flashRed();
-          this.flash(t.circ.x, t.circ.y, "✗", "#ff8f8f");
-          this.feedback
-            .setText(
-              "Not that one. Correct area = " +
-                this.problem.area +
-                " sq units.",
-            )
-            .setAlpha(1);
-          srSay(
-            "Wrong target. The correct area was " +
-              this.problem.area +
-              " square units.",
+          // Teach: flash the gaps (amber) and overflow (red), then reveal the
+          // correct full cover so the right area is visible.
+          const g = this.gFlash;
+          g.clear();
+          g.fillStyle(0xffcf4d, 0.55);
+          gaps.forEach(([c, r]) =>
+            g.fillRect(cellPX(c) + 2, cellPY(r) + 2, CELL - 4, CELL - 4),
           );
+          g.fillStyle(0xff5a5a, 0.55);
+          overflow.forEach(([c, r]) =>
+            g.fillRect(cellPX(c) + 2, cellPY(r) + 2, CELL - 4, CELL - 4),
+          );
+          const msg =
+            "Not quite — the area is " +
+            p.area +
+            " square units. " +
+            p.why +
+            (gaps.length ? "  (amber = gaps)" : "") +
+            (overflow.length ? "  (red = too many)" : "");
+          this.feedback.setText(msg).setAlpha(1);
+          this.flash(W / 2, 320, "Area = " + p.area, "#ffcf4d");
+          srSay("Not quite. " + p.why);
+          // After a beat, fill the target exactly so the correct area shows.
+          this.time.delayedCall(this.reduceMotion ? 200 : 900, () => {
+            this.placed = [
+              // store each target cell as a 1×1 rect so the cover renders it
+            ];
+            this.covered = [];
+            for (let r = 0; r < ROWS; r++)
+              this.covered.push(new Array(COLS).fill(false));
+            p.cells.forEach((k) => {
+              const [c, r] = k.split(",").map(Number);
+              this.covered[r][c] = true;
+            });
+            this.gFlash.clear();
+            this.drawCover();
+            this.afterAttempt(false);
+          });
         }
-        this.afterAttempt();
       };
 
-      GameScene.prototype.afterAttempt = function () {
-        const newLevel = Math.min(8, 1 + Math.floor(this.solved / 3));
-        if (newLevel > this.level) {
-          this.level = newLevel;
-          SFX.level();
-          this.flash(W / 2, 220, "LEVEL " + this.level + "!", "#ffd24a");
-        }
+      GameScene.prototype.afterAttempt = function (correct) {
         this.updateHUD();
         if (this.lives <= 0) {
           this.endGame(false);
@@ -1038,7 +1485,7 @@
           this.endGame(true);
           return;
         }
-        this.time.delayedCall(1000, () => {
+        this.time.delayedCall(correct ? 950 : 1300, () => {
           this.feedback.setAlpha(0);
           this.newProblem();
         });
@@ -1051,11 +1498,11 @@
             fontSize: "26px",
             fontStyle: "bold",
             color: color,
-            stroke: "#060f1a",
+            stroke: "#08141b",
             strokeThickness: 4,
           })
           .setOrigin(0.5)
-          .setDepth(40);
+          .setDepth(45);
         this.tweens.add({
           targets: ft,
           y: y - 50,
@@ -1068,7 +1515,11 @@
       GameScene.prototype.flashRed = function () {
         if (this.reduceMotion) return;
         this.redFlash.setAlpha(0.35);
-        this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 350 });
+        this.tweens.add({
+          targets: this.redFlash,
+          alpha: 0,
+          duration: 350,
+        });
       };
 
       GameScene.prototype.updateHUD = function () {
@@ -1081,17 +1532,18 @@
 
       GameScene.prototype.endGame = function (won) {
         this.locked = true;
-        this.clearTargets();
-        this.time.delayedCall(500, () => {
+        this.time.delayedCall(600, () => {
           this.scene.start("Result", {
             score: this.score,
             solved: this.solved,
             target: this.target,
+            level: this.level,
             won: won,
           });
         });
       };
 
+      // ── RESULT ──
       function ResultScene() {
         Phaser.Scene.call(this, "Result");
       }
@@ -1103,9 +1555,11 @@
       ResultScene.prototype.create = function () {
         const d = this.data2;
         const cx = W / 2;
-        this.add.rectangle(cx, H / 2, W, H, 0x0c1c30);
+        this.add.rectangle(cx, H / 2, W, H, 0x0e2531);
+        // Stars from accuracy.
         const stars =
           d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        // High score
         let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
         if (d.score > hs) {
           hs = d.score;
@@ -1115,21 +1569,24 @@
         }
 
         this.add
-          .text(cx, 110, d.won ? "CITY BUILT!" : "OUT OF LIVES", {
+          .text(cx, 110, d.won ? "AREA MASTER!" : "OUT OF LIVES", {
             fontFamily: "Impact, sans-serif",
             fontSize: "48px",
-            color: d.won ? "#88ccaa" : "#ff8f8f",
-            stroke: "#060f1a",
+            color: d.won ? "#7ee0ad" : "#ff8f8f",
+            stroke: "#08141b",
             strokeThickness: 5,
           })
           .setOrigin(0.5);
+
+        const starStr = "★".repeat(stars) + "☆".repeat(3 - stars);
         this.add
-          .text(cx, 185, "★".repeat(stars) + "☆".repeat(3 - stars), {
+          .text(cx, 185, starStr, {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "48px",
-            color: "#ffd24a",
+            color: "#5fd0ef",
           })
           .setOrigin(0.5);
+
         this.add
           .text(cx, 255, "Score: " + d.score, {
             fontFamily: "Segoe UI, sans-serif",
@@ -1139,23 +1596,35 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 295, "Solved " + d.solved + " of " + d.target + " shapes", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
-            color: "#cfe0f0",
-          })
+          .text(
+            cx,
+            295,
+            "Tiled " +
+              d.solved +
+              " of " +
+              d.target +
+              " shapes (Level " +
+              d.level +
+              ")",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              color: "#bcd8e2",
+            },
+          )
           .setOrigin(0.5);
         this.add
           .text(cx, 325, "High Score: " + hs, {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "16px",
-            color: "#ffd24a",
+            color: "#5fd0ef",
           })
           .setOrigin(0.5);
 
         if (d.won) SFX.win();
         else SFX.lose();
 
+        // EduPulse reporting (guarded; safe no-op without bridge).
         try {
           window.EduPulse &&
             EduPulse.record({
@@ -1176,9 +1645,9 @@
         );
 
         const btn = this.add
-          .rectangle(cx, 400, 220, 54, 0x1a6fb5)
+          .rectangle(cx, 400, 240, 54, 0x1f8f6e)
           .setInteractive({ useHandCursor: true });
-        const btnT = this.add
+        this.add
           .text(cx, 400, "PLAY AGAIN 🔁", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "20px",
@@ -1186,9 +1655,9 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        const again = () => this.scene.start("Game");
-        btn.on("pointerover", () => btn.setFillStyle(0x2484d0));
-        btn.on("pointerout", () => btn.setFillStyle(0x1a6fb5));
+        const again = () => this.scene.start("Level");
+        btn.on("pointerover", () => btn.setFillStyle(0x26a884));
+        btn.on("pointerout", () => btn.setFillStyle(0x1f8f6e));
         btn.on("pointerdown", again);
         this.input.keyboard.on("keydown-SPACE", again);
         this.input.keyboard.on("keydown-ENTER", again);
@@ -1197,17 +1666,19 @@
           .text(cx, 480, "← Back to Math Games", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "15px",
-            color: "#7fa0c0",
+            color: "#6fa6b6",
           })
           .setOrigin(0.5)
           .setInteractive({ useHandCursor: true });
-        hub.on("pointerover", () => hub.setColor("#4488ff"));
-        hub.on("pointerout", () => hub.setColor("#7fa0c0"));
+        hub.on("pointerover", () => hub.setColor("#5fd0ef"));
+        hub.on("pointerout", () => hub.setColor("#6fa6b6"));
         hub.on("pointerdown", () => (window.location.href = "/math/games/"));
       };
 
+      // ── Launch ──
       const aaGame = new Phaser.Game(config);
 
+      // Canvas accessibility (additive; no gameplay change).
       aaGame.events.once("ready", function () {
         try {
           const cv = aaGame.canvas;
@@ -1215,9 +1686,11 @@
           cv.setAttribute("role", "application");
           cv.setAttribute(
             "aria-label",
-            "Area Attack Brick Cannon math game. Find the area of the shape, " +
-              "aim the cannon with the left and right arrow keys, and press " +
-              "space to fire a brick at the target showing the correct area.",
+            "Area Attack, Decompose and Tile math game. A shape is outlined on a " +
+              "unit grid. Drag across the grid, or use the arrow keys to move a " +
+              "cursor and press F to set two corners, to lay rectangles of tiles " +
+              "that exactly cover the shape. Watch the area count, then press " +
+              "Lock In, Enter, or Space. Use U to undo and C to clear.",
           );
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
@@ -1240,8 +1713,10 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+    <!-- Student Passport (meta-progression: lifetime XP / streak / badges) -->
+    <script src="/assets/lesson-passport.js" defer></script>
+  </body>
 </html>

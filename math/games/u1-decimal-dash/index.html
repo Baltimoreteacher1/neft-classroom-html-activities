@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
-    <title>Decimal Dash — Lessons 1.4–1.7 Game | Neft Teacher</title>
+    <title>Decimal Dash — Number-Line Placer | Math Games</title>
     <meta
       name="description"
-      content="A 2D lane-runner driving game for Grade 6 lessons 1.4–1.7: multi-digit division and decimal operations (6.NS.2, 6.NS.3). Steer into the correct answer gate."
+      content="A place-it math game for Grade 6 lessons 1.4–1.7 (6.NS.3): drag a marker onto a number line to place a decimal, or order several decimals least-to-greatest. Calm and self-paced — a wrong placement costs a life and shows the correct spot to teach."
     />
     <style>
       * {
@@ -15,11 +15,7 @@
         padding: 0;
         box-sizing: border-box;
       }
-      html, body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
+      body {
         background: #102338;
         overflow: hidden;
         font-family: "Segoe UI", system-ui, sans-serif;
@@ -51,28 +47,38 @@
           #0a1626 100%
         );
       }
-      .dd-star {
+      #dd-bg-layer {
+        position: absolute;
+        inset: -6% -6%;
+        will-change: transform;
+        transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+      }
+      .dd-spark {
         position: absolute;
         border-radius: 50%;
         background: #bfe0ff;
-        opacity: 0.4;
+        opacity: 0.5;
         animation: ddTwinkle var(--tw, 3s) ease-in-out infinite;
       }
       @keyframes ddTwinkle {
         0%,
         100% {
-          opacity: 0.12;
+          opacity: 0.14;
           transform: scale(0.8);
         }
         50% {
-          opacity: 0.65;
+          opacity: 0.7;
           transform: scale(1.2);
         }
       }
       @media (prefers-reduced-motion: reduce) {
-        .dd-star {
+        #dd-bg-layer {
+          transition: none !important;
+          transform: none !important;
+        }
+        .dd-spark {
           animation: none !important;
-          opacity: 0.35 !important;
+          opacity: 0.4 !important;
         }
       }
       #dd-sr {
@@ -111,56 +117,161 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
+    <!-- Student Passport (meta-progression: lifetime XP / streak / badges) -->
+    <link rel="stylesheet" href="/assets/lesson-passport.css" />
+    <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
+    <script src="/assets/game-juice.js"></script>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
-    <div id="dd-bg" aria-hidden="true"></div>
+    <!-- Decorative animated spark-field (behind the Phaser canvas). -->
+    <div id="dd-bg" data-parallax aria-hidden="true">
+      <div id="dd-bg-layer" data-parallax-layer></div>
+    </div>
+    <!-- Screen-reader live region: mirrors the current problem + result. -->
     <div id="dd-sr" role="status" aria-live="polite"></div>
     <script>
+      // Decorative spark-field builder (reduced-motion safe; pointer-neutral).
       (function () {
-        var host = document.getElementById("dd-bg");
-        if (!host) return;
-        var reduce =
+        "use strict";
+        var reduceMQ =
           window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        var n = reduce ? 10 : 28;
-        for (var i = 0; i < n; i++) {
-          var d = document.createElement("div");
-          d.className = "dd-star";
-          var sz = 1.5 + Math.random() * 3.5;
-          d.style.width = d.style.height = sz.toFixed(1) + "px";
-          d.style.left = (Math.random() * 100).toFixed(2) + "%";
-          d.style.top = (Math.random() * 100).toFixed(2) + "%";
-          d.style.setProperty("--tw", (2 + Math.random() * 4).toFixed(2) + "s");
-          d.style.animationDelay = "-" + (Math.random() * 4).toFixed(2) + "s";
-          host.appendChild(d);
+          window.matchMedia("(prefers-reduced-motion: reduce)");
+        var layer = document.getElementById("dd-bg-layer");
+        if (!layer) return;
+        function rnd(a, b) {
+          return a + Math.random() * (b - a);
         }
+        function build() {
+          layer.textContent = "";
+          var reduce = !!(reduceMQ && reduceMQ.matches);
+          var n = reduce ? 16 : 32;
+          for (var i = 0; i < n; i++) {
+            var s = document.createElement("div");
+            s.className = "dd-spark";
+            var sz = rnd(2, 5);
+            s.style.width = s.style.height = sz.toFixed(1) + "px";
+            s.style.left = rnd(0, 100).toFixed(2) + "%";
+            s.style.top = rnd(0, 100).toFixed(2) + "%";
+            s.style.setProperty("--tw", rnd(2.2, 5).toFixed(2) + "s");
+            s.style.animationDelay = "-" + rnd(0, 4).toFixed(2) + "s";
+            layer.appendChild(s);
+          }
+        }
+        build();
+        var driver = false;
+        function onMove(e) {
+          var dx = e.clientX / (window.innerWidth || 1) - 0.5;
+          var dy = e.clientY / (window.innerHeight || 1) - 0.5;
+          layer.style.transform =
+            "translate3d(" +
+            (dx * 20).toFixed(2) +
+            "px," +
+            (dy * 12).toFixed(2) +
+            "px,0)";
+        }
+        function attach() {
+          if (driver || (reduceMQ && reduceMQ.matches)) return;
+          driver = true;
+          window.addEventListener("pointermove", onMove, { passive: true });
+        }
+        function detach() {
+          if (!driver) return;
+          driver = false;
+          window.removeEventListener("pointermove", onMove);
+          layer.style.transform = "";
+        }
+        attach();
+        if (reduceMQ) {
+          var onChange = function () {
+            build();
+            if (reduceMQ.matches) detach();
+            else attach();
+          };
+          if (reduceMQ.addEventListener)
+            reduceMQ.addEventListener("change", onChange);
+          else if (reduceMQ.addListener) reduceMQ.addListener(onChange);
+        }
+        var rt;
+        window.addEventListener("resize", function () {
+          clearTimeout(rt);
+          rt = setTimeout(build, 200);
+        });
       })();
     </script>
     <script>
-      // ════════════════════════════════════════════════════════════════════
-      // DECIMAL DASH — Lane Runner  ·  Grade 6  ·  6.NS.2 / 6.NS.3
-      // Lessons 1.4–1.7: multi-digit division, decimal + − × ÷.
+      // ── DECIMAL DASH — NUMBER-LINE PLACER ──
+      // Phaser 3 — Grade 6 Math — Place & order decimals on a number line.
+      // Mechanic (math-as-mechanic, no reflex/timer): the NUMBER LINE is the
+      // game. Drag a marker (or nudge ±1 tick with ← → / A·D) onto the tick
+      // that matches a decimal, then press Lock In. At higher levels you place
+      // 2–3 markers and ordering least→greatest happens by placing each at its
+      // value. Endpoints and tick granularity (tenths → hundredths) change every
+      // round. A wrong placement (wrong math) costs a life and the markers glide
+      // to the correct ticks to teach. Calm, self-paced, no clock.
       //
-      // MECHANIC: You drive a car down a 3-lane highway. A row of "answer gates"
-      //   (one per lane) rushes toward you, each gate labeled with a value. The
-      //   prompt at top is a computation; steer the car (← → / A D / tap a lane)
-      //   into the lane whose gate holds the CORRECT answer to pass through.
-      //   Driving into a wrong gate = crash (lose a life). Speed (and number
-      //   size) rises each round.
-      //
-      // FLOAT SAFETY: every value is normalized through r2()/fmt() to a fixed
-      //   2-decimal string; correctness is checked by string equality, never by
-      //   raw float ==, so 0.1+0.2 style drift can never mislabel a gate.
-      // ════════════════════════════════════════════════════════════════════
-      const LS_KEY = "dd_decimal_dash_highscore";
-      const W = 800,
+      // EXACTNESS: every value is generated on a tick (lo + idx*step) and the
+      // marker snaps to integer tick indices. Correctness is checked by tick
+      // INDEX, never by raw float ==, so decimal drift can never mislabel a spot.
+
+      const W = 820,
         H = 600;
+      const LS_KEY = "dd_decimal_dash_highscore";
       const ACTIVITY_TITLE = "Decimal Dash — Lessons 1.4–1.7";
       const STANDARD = "6.NS.3";
 
+      // Number-line geometry in game space. Phaser Scale.FIT maps pointer
+      // coordinates into this space, so drag math works at any screen size.
+      const LINE_X0 = 110,
+        LINE_X1 = 710,
+        LINE_Y = 380;
+      const LINE_W = LINE_X1 - LINE_X0;
+      const TICKS = 10; // 10 intervals → 11 ticks, indices 0..10
+      function tickX(i) {
+        return LINE_X0 + (LINE_W * i) / TICKS;
+      }
+      function nearestIndex(x) {
+        return Phaser.Math.Clamp(
+          Math.round(((x - LINE_X0) / LINE_W) * TICKS),
+          0,
+          TICKS,
+        );
+      }
+
+      // Resolve the shared game-feel layer; provide safe no-op fallbacks so the
+      // game still runs if /assets/game-juice.js failed to load.
+      const JUICE = window.GameJuice || {
+        reduceMotion: false,
+        audio: {
+          unlock() {},
+          tap() {},
+          pop() {},
+          correct() {},
+          wrong() {},
+          whoosh() {},
+          fanfare() {},
+          musicStart() {},
+          musicStop() {},
+        },
+        theme: () => ({
+          accent: "#5ad1ff",
+          accentN: 0x5ad1ff,
+          tileN: 0x334155,
+          botN: 0x1e293b,
+        }),
+        bgGradient() {},
+        popIn() {},
+        tilePop() {},
+        burst() {},
+        confetti() {},
+        shake() {},
+        floatText() {},
+        award() {},
+      };
+
+      // ── Audio (tiny WebAudio blips; gracefully no-op without a context) ──
       const SFX = {
         ctx: null,
         init() {
@@ -171,7 +282,7 @@
               )();
             } catch (e) {}
         },
-        play(t, f, d, v = 0.2) {
+        play(t, f, d, v = 0.18) {
           if (!this.ctx) return;
           try {
             const c = this.ctx,
@@ -187,59 +298,33 @@
             o.stop(c.currentTime + d);
           } catch (e) {}
         },
-        noise(d, v = 0.1) {
-          if (!this.ctx) return;
-          try {
-            const c = this.ctx,
-              n = c.sampleRate * d,
-              buf = c.createBuffer(1, n, c.sampleRate),
-              dt = buf.getChannelData(0);
-            for (let i = 0; i < n; i++) dt[i] = Math.random() * 2 - 1;
-            const s = c.createBufferSource();
-            s.buffer = buf;
-            const g = c.createGain();
-            g.gain.setValueAtTime(v, c.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
-            s.connect(g);
-            g.connect(c.destination);
-            s.start();
-            s.stop(c.currentTime + d);
-          } catch (e) {}
+        good() {
+          this.play("sine", 660, 0.1, 0.25);
+          this.play("sine", 880, 0.14, 0.2);
         },
-        pass() {
-          this.play("sine", 660, 0.1, 0.3);
-          this.play("sine", 990, 0.14, 0.22);
+        bad() {
+          this.play("sawtooth", 200, 0.25, 0.18);
+          this.play("sawtooth", 150, 0.3, 0.14);
         },
-        crash() {
-          this.noise(0.25, 0.15);
-          this.play("sawtooth", 160, 0.3, 0.18);
+        move() {
+          this.play("square", 980, 0.04, 0.07);
         },
-        engine() {
-          this.play("triangle", 220, 0.05, 0.05);
+        select() {
+          this.play("triangle", 540, 0.06, 0.08);
         },
-        tick() {
-          this.play("square", 600, 0.03, 0.07);
-        },
-        streak(n) {
-          [523, 659, 784, 988, 1175]
-            .slice(0, Math.min(n, 5))
-            .forEach((f, i) =>
-              setTimeout(() => this.play("sine", f, 0.12, 0.2), i * 55),
-            );
-        },
-        levelUp() {
+        level() {
           [523, 659, 784, 1047].forEach((f, i) =>
             setTimeout(() => this.play("sine", f, 0.15, 0.22), i * 70),
           );
         },
         win() {
           [523, 659, 784, 1047, 1318].forEach((f, i) =>
-            setTimeout(() => this.play("sine", f, 0.22, 0.28), i * 110),
+            setTimeout(() => this.play("sine", f, 0.25, 0.25), i * 110),
           );
         },
         lose() {
-          [400, 350, 300, 200].forEach((f, i) =>
-            setTimeout(() => this.play("sawtooth", f, 0.28, 0.15), i * 170),
+          [400, 330, 260, 200].forEach((f, i) =>
+            setTimeout(() => this.play("sawtooth", f, 0.3, 0.14), i * 170),
           );
         },
       };
@@ -248,135 +333,133 @@
         return Math.floor(Math.random() * (b - a + 1)) + a;
       }
       function shuffle(a) {
-        const r = a.slice();
+        const r = [...a];
         for (let i = r.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [r[i], r[j]] = [r[j], r[i]];
         }
         return r;
       }
-      // Round to 2 decimals (integer-cents math to avoid float drift).
-      function r2(x) {
-        return Math.round((x + Number.EPSILON) * 100) / 100;
-      }
-      // Canonical display/compare string. Whole numbers stay plain; decimals
-      // trim trailing zeros but keep at least one place.
-      function fmt(x) {
-        const v = r2(x);
-        if (Number.isInteger(v)) return String(v);
-        let s = v.toFixed(2);
-        s = s.replace(/0$/, ""); // 3.50 -> 3.5 ; 3.05 stays
-        return s;
-      }
-
-      // Build 3 distinct gate labels containing exactly one correct answer.
-      function buildGates(answer, makeWrong) {
-        const correct = fmt(answer);
-        const set = new Set([correct]);
-        let guard = 0;
-        while (set.size < 3 && guard++ < 200) {
-          const w = fmt(makeWrong());
-          if (w !== correct && w !== "NaN" && Number(w) > 0) set.add(w);
-        }
-        // Safety fallback: pad with offsets if collisions left us short.
-        let pad = 1;
-        while (set.size < 3 && pad < 50) {
-          const w = fmt(r2(answer) + pad * (pad % 2 ? 1 : -1));
-          if (w !== correct && Number(w) > 0) set.add(w);
-          pad++;
-        }
-        const labels = shuffle(Array.from(set));
-        return { labels: labels, correctIndex: labels.indexOf(correct) };
-      }
-
-      // round 1: multi-digit division (whole quotient)
-      // round 2: add/subtract decimals
-      // round 3: multiply OR divide decimals
-      function genQuestion(round) {
-        if (round === 1) {
-          const q = randInt(12, 48),
-            d = randInt(3, 9),
-            dividend = q * d;
-          const g = buildGates(q, () => q + randInt(-7, 7));
-          return {
-            tag: "Multi-Digit Division",
-            prompt: dividend + " ÷ " + d,
-            why: dividend + " ÷ " + d + " = " + q + ".",
-            gates: g.labels,
-            correctIndex: g.correctIndex,
-          };
-        }
-        if (round === 2) {
-          let a = r2(randInt(15, 95) / 10 + randInt(0, 9) / 100);
-          let b = r2(randInt(10, 70) / 10 + randInt(0, 9) / 100);
-          const add = Math.random() < 0.5;
-          if (!add && b > a) {
-            const t = a;
-            a = b;
-            b = t;
-          }
-          const ans = r2(add ? a + b : a - b);
-          const g = buildGates(ans, () => {
-            const w = r2(
-              ans + (randInt(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1),
-            );
-            return w > 0 ? w : r2(ans + randInt(1, 9) / 10);
-          });
-          return {
-            tag: "Add & Subtract Decimals",
-            prompt: fmt(a) + (add ? " + " : " − ") + fmt(b),
-            why:
-              fmt(a) + (add ? " + " : " − ") + fmt(b) + " = " + fmt(ans) + ".",
-            gates: g.labels,
-            correctIndex: g.correctIndex,
-          };
-        }
-        // round 3
-        const mul = Math.random() < 0.5;
-        if (mul) {
-          const x = r2(
-            randInt(2, 9) / 10 + (Math.random() < 0.5 ? randInt(1, 4) : 0),
-          );
-          const y = randInt(2, 9);
-          const ans = r2(x * y);
-          const g = buildGates(ans, () => {
-            const w = r2(
-              ans + (randInt(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1),
-            );
-            return w > 0 ? w : r2(ans + randInt(1, 9) / 10);
-          });
-          return {
-            tag: "Multiply Decimals",
-            prompt: fmt(x) + " × " + y,
-            why: fmt(x) + " × " + y + " = " + fmt(ans) + ".",
-            gates: g.labels,
-            correctIndex: g.correctIndex,
-          };
-        } else {
-          const quo = r2(randInt(11, 49) / 10); // 1.1 .. 4.9
-          const dv = randInt(2, 6);
-          const dividend = r2(quo * dv);
-          const g = buildGates(quo, () => {
-            const w = r2(
-              quo + (randInt(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1),
-            );
-            return w > 0 ? w : r2(quo + randInt(1, 9) / 10);
-          });
-          return {
-            tag: "Divide Decimals",
-            prompt: fmt(dividend) + " ÷ " + dv,
-            why: fmt(dividend) + " ÷ " + dv + " = " + fmt(quo) + ".",
-            gates: g.labels,
-            correctIndex: g.correctIndex,
-          };
-        }
-      }
-
       function srSay(msg) {
-        try {
-          const el = document.getElementById("dd-sr");
-          if (el) el.textContent = msg;
-        } catch (e) {}
+        const el = document.getElementById("dd-sr");
+        if (el) el.textContent = msg;
+      }
+
+      // Value at a tick index for the current range, as a clean fixed string.
+      function rstr(range, idx) {
+        return (range.lo + idx * range.step).toFixed(range.decimals);
+      }
+
+      // ── Problem generator (number line) ─────────────────────────────────
+      // Returns { count, range, beads:[{targetIdx,startIdx,valStr,color}],
+      //           label, prompt, why, loStr, midStr, hiStr }.
+      // Two student-chosen modes drive both the generator and the scaffolding:
+      //   Mode 1 (Support)    : tenths only, small ranges, ONE marker, every
+      //                         tick labeled — the gentlest path.
+      //   Mode 2 (Enrichment) : harder values, hundredths, and ordering 2–3
+      //                         markers; only endpoints + midpoint labeled.
+      // Within a mode, an internal difficulty ramp (level) raises challenge.
+      const BEAD_COLORS = [0x5ad1ff, 0xf0b44a, 0x7fd6a0];
+
+      function makeRange(level, mode) {
+        // Support mode: tenths only, kept in a small, friendly range.
+        if (mode === 1) {
+          const lo = randInt(0, 5);
+          return { lo, hi: lo + 1, step: 0.1, decimals: 1 };
+        }
+        let hundredths;
+        if (level <= 1) hundredths = false;
+        else if (level === 2) hundredths = Math.random() < 0.4;
+        else hundredths = Math.random() < (level >= 4 ? 0.55 : 0.4);
+        if (hundredths) {
+          const base = randInt(0, 9);
+          const tenth = randInt(0, 9);
+          const lo = Math.round((base + tenth / 10) * 10) / 10;
+          return {
+            lo,
+            hi: Math.round((lo + 0.1) * 100) / 100,
+            step: 0.01,
+            decimals: 2,
+          };
+        }
+        const lo = randInt(0, 12);
+        return { lo, hi: lo + 1, step: 0.1, decimals: 1 };
+      }
+
+      function decideCount(level, mode) {
+        // Support mode is always a single placement.
+        if (mode === 1) return 1;
+        if (level <= 1) return 1;
+        if (level === 2) return 2;
+        if (level === 3) return Math.random() < 0.6 ? 3 : 2;
+        return 3;
+      }
+
+      function genProblem(level, mode) {
+        const count = decideCount(level, mode);
+        const range = makeRange(level, mode);
+        // Distinct target ticks in 1..9 (endpoints stay as readable labels).
+        const targetIdxs = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]).slice(0, count);
+        const beads = targetIdxs.map((ti, k) => ({
+          targetIdx: ti,
+          // Spread the starting positions so markers don't stack on top.
+          startIdx: Math.max(
+            0,
+            Math.min(TICKS, Math.round(((k + 1) / (count + 1)) * TICKS)),
+          ),
+          valStr: rstr(range, ti),
+          color: BEAD_COLORS[k % BEAD_COLORS.length],
+        }));
+        const loStr = range.lo.toFixed(range.decimals);
+        const midStr = rstr(range, 5);
+        const hiStr = range.hi.toFixed(range.decimals);
+        const stepStr = range.decimals === 1 ? "0.1" : "0.01";
+        const unitWord = range.decimals === 1 ? "tenth" : "hundredth";
+        let label, prompt, why;
+        if (count === 1) {
+          const b = beads[0];
+          label =
+            range.decimals === 1
+              ? "Place on the number line · tenths"
+              : "Place on the number line · hundredths";
+          prompt = "Place " + b.valStr;
+          why =
+            "Each mark is " +
+            stepStr +
+            " (one " +
+            unitWord +
+            "), so " +
+            b.valStr +
+            " is " +
+            b.targetIdx +
+            " marks past " +
+            loStr +
+            ".";
+        } else {
+          label = "Order least → greatest · drag each marker to its value";
+          prompt = "Place each:  " + beads.map((b) => b.valStr).join("   ");
+          const sorted = beads
+            .map((b) => b.valStr)
+            .slice()
+            .sort((a, c) => parseFloat(a) - parseFloat(c));
+          why =
+            "Least to greatest: " +
+            sorted.join(", ") +
+            ".  Each mark is " +
+            stepStr +
+            ".";
+        }
+        return {
+          count,
+          range,
+          beads,
+          label,
+          prompt,
+          why,
+          loStr,
+          midStr,
+          hiStr,
+        };
       }
 
       const config = {
@@ -386,871 +469,1127 @@
         parent: document.body,
         backgroundColor: "#102338",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [],
+        scene: [
+          BootScene,
+          TitleScene,
+          VocabScene,
+          ModeScene,
+          GameScene,
+          ResultScene,
+        ],
       };
 
-      // 3 lanes
-      const LANE_X = [W * 0.22, W * 0.5, W * 0.78];
+      // ── Vocab gate state (repo rule: term + Level-1 definition + image/emoji
+      // shown BEFORE the first round). Shown by default; skippable only on a
+      // replay within the same page session. ──
+      let ddVocabSeen = false;
+      // Chosen difficulty: 1 = Level 1 (support), 2 = Level 2 (enrichment).
+      let ddMode = 1;
 
-      class BootScene extends Phaser.Scene {
-        constructor() {
-          super("Boot");
-        }
-        create() {
-          const g = this.make.graphics({ add: false });
-          g.fillStyle(0xffffff);
-          g.fillRect(0, 0, 7, 4);
-          g.generateTexture("confetti", 7, 4);
-          g.clear();
-          g.fillStyle(0xffffff);
-          g.fillCircle(3, 3, 3);
-          g.generateTexture("spark", 6, 6);
-          g.destroy();
-          this.scene.start("Title");
-        }
-      }
-
-      class TitleScene extends Phaser.Scene {
-        constructor() {
-          super("Title");
-        }
-        create() {
-          const cx = W / 2;
-          this.reduce =
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          this.add.rectangle(cx, H / 2, W, H, 0x102338);
-          this.add
-            .text(cx, 120, "DECIMAL", {
-              fontSize: "66px",
-              fontFamily: "Impact, sans-serif",
-              color: "#5ad1ff",
-              stroke: "#0a1626",
-              strokeThickness: 6,
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(cx, 186, "DASH", {
-              fontSize: "66px",
-              fontFamily: "Impact, sans-serif",
-              color: "#d4952a",
-              stroke: "#0a1626",
-              strokeThickness: 6,
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(
-              cx,
-              244,
-              "Lane Runner  ·  Lessons 1.4–1.7  ·  6.NS.2 / 6.NS.3",
-              {
-                fontSize: "15px",
-                color: "#9fc6e0",
-              },
-            )
-            .setOrigin(0.5);
-          this.add
-            .text(
-              cx,
-              300,
-              "Solve the problem at the top, then STEER your car into\nthe lane whose gate shows the correct answer.",
-              { fontSize: "15px", color: "#7fa8c3", align: "center" },
-            )
-            .setOrigin(0.5);
-          this.add
-            .text(
-              cx,
-              356,
-              "← → or A/D to change lanes   ·   tap a lane on touch",
-              {
-                fontSize: "14px",
-                color: "#6b97b3",
-              },
-            )
-            .setOrigin(0.5);
-
-          const hs = localStorage.getItem(LS_KEY);
-          if (hs)
-            this.add
-              .text(cx, 392, "HIGH SCORE: " + hs, {
-                fontSize: "15px",
-                color: "#d4952a",
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5);
-
-          const btn = this.add
-            .rectangle(cx, 450, 260, 56, 0x1a6fb5)
-            .setInteractive({ useHandCursor: true });
-          const btnT = this.add
-            .text(cx, 450, "START ENGINE ▶", {
-              fontSize: "22px",
-              fontStyle: "bold",
-              color: "#eaf6ff",
-            })
-            .setOrigin(0.5);
-          if (!this.reduce)
-            this.tweens.add({
-              targets: [btn, btnT],
-              scaleX: 1.05,
-              scaleY: 1.05,
-              duration: 800,
-              yoyo: true,
-              repeat: -1,
-            });
-          const go = () => {
-            SFX.init();
-            SFX.tick();
-            this.cameras.main.fadeOut(300);
-            this.time.delayedCall(300, () => this.scene.start("Vocab"));
-          };
-          btn.on("pointerover", () => btn.setFillStyle(0x2080cc));
-          btn.on("pointerout", () => btn.setFillStyle(0x1a6fb5));
-          btn.on("pointerdown", go);
-          this.input.keyboard.on("keydown-SPACE", go);
-          this.input.keyboard.on("keydown-ENTER", go);
-
-          const hub = this.add
-            .text(cx, 555, "← Back to Games hub", {
-              fontSize: "15px",
-              fontStyle: "bold",
-              color: "#6b97b3",
-            })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true });
-          hub.on("pointerover", () => hub.setColor("#5ad1ff"));
-          hub.on("pointerout", () => hub.setColor("#6b97b3"));
-          hub.on("pointerdown", () => (window.location.href = "/math/games/"));
-
-          this.cameras.main.fadeIn(400);
-        }
-      }
-
-      // ════════════════════════════════════════════════════════════════════
-      // VOCAB GATE — shown BEFORE the first round (Title → Vocab → Game).
-      //   Repo rule: term + student-facing (Level 1) definition + image/emoji
-      //   for each key word, BEFORE play. No giveaways: these define the math
-      //   vocabulary, they do not reveal any answer to a gate.
-      //   On replay the Result scene jumps straight to "Game", so the gate
-      //   shows on first play only (skippable on replay).
-      // ════════════════════════════════════════════════════════════════════
-      const VOCAB_TERMS = [
-        {
-          term: "Quotient",
-          emoji: "➗",
-          def: "The answer you get when you divide. In 48 ÷ 6 = 8, the quotient is 8.",
-        },
+      // Key words for THIS game's topic (decimals on a number line). Each has a
+      // student-facing (Level 1) definition and an emoji so a visual always
+      // shows even with no network/images.
+      const DD_VOCAB = [
         {
           term: "Decimal",
           emoji: "🔢",
-          def: "A number with a dot that shows parts smaller than one, like 3.5 or 0.07.",
+          def: "A number with a dot that shows parts smaller than one, like 3.7 or 0.25.",
         },
         {
-          term: "Decimal point",
-          emoji: "📍",
-          def: "The dot in a decimal. Keep the points lined up when you add or subtract.",
+          term: "Tenths",
+          emoji: "🔟",
+          def: "The first place after the dot. In 3.7, the 7 means 7 tenths (0.7).",
         },
         {
-          term: "Place value",
-          emoji: "🏷️",
-          def: "What each digit is worth by its spot — tenths, hundredths, ones, tens.",
+          term: "Hundredths",
+          emoji: "💯",
+          def: "The second place after the dot. In 2.07, the 7 means 7 hundredths (0.07).",
+        },
+        {
+          term: "Number line",
+          emoji: "📏",
+          def: "A line where numbers grow as you move right. Each mark is one step bigger.",
+        },
+        {
+          term: "Compare",
+          emoji: "⚖️",
+          def: "To decide which number is bigger. On a number line, farther right is bigger.",
         },
       ];
 
-      class VocabScene extends Phaser.Scene {
-        constructor() {
-          super("Vocab");
-        }
-        init() {
-          this.reduce =
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          this.i = 0;
-        }
-        create() {
-          const cx = W / 2;
-          this.add.rectangle(cx, H / 2, W, H, 0x102338);
+      // ── BOOT ──
+      function BootScene() {
+        Phaser.Scene.call(this, "Boot");
+      }
+      BootScene.prototype = Object.create(Phaser.Scene.prototype);
+      BootScene.prototype.constructor = BootScene;
+      BootScene.prototype.create = function () {
+        const g = this.make.graphics({ add: false });
+        g.fillStyle(0xffffff);
+        g.fillCircle(4, 4, 4);
+        g.generateTexture("dot", 8, 8);
+        g.clear();
+        g.fillStyle(0x5ad1ff);
+        g.fillCircle(5, 5, 5);
+        g.generateTexture("spark", 10, 10);
+        g.destroy();
+        this.scene.start("Title");
+      };
+
+      // ── TITLE ──
+      function TitleScene() {
+        Phaser.Scene.call(this, "Title");
+      }
+      TitleScene.prototype = Object.create(Phaser.Scene.prototype);
+      TitleScene.prototype.constructor = TitleScene;
+      TitleScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x102338);
+        this.add
+          .text(cx, 116, "DECIMAL DASH", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "62px",
+            color: "#5ad1ff",
+            stroke: "#0a1626",
+            strokeThickness: 6,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 170, "Number-Line Placer", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "26px",
+            color: "#9fd6ff",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            228,
+            "Drag the marker onto the number line to PLACE a decimal.\nHigher up: place several and order them least to greatest, then Lock In!",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#bfe0ff",
+              align: "center",
+            },
+          )
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            292,
+            "Drag, or nudge with ← → / A·D · 6.NS.3 · Lessons 1.4–1.7",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              color: "#7fa8c3",
+            },
+          )
+          .setOrigin(0.5);
+
+        const hs = localStorage.getItem(LS_KEY);
+        if (hs)
           this.add
-            .text(cx, 70, "WORDS TO KNOW FIRST", {
-              fontSize: "30px",
+            .text(cx, 330, "High Score: " + hs, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#d4952a",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+
+        const btn = this.add
+          .rectangle(cx, 400, 240, 58, 0x1a6fb5)
+          .setInteractive({ useHandCursor: true });
+        const btnT = this.add
+          .text(cx, 400, "START ▶", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "24px",
+            fontStyle: "bold",
+            color: "#eaf6ff",
+          })
+          .setOrigin(0.5);
+        this.tweens.add({
+          targets: [btn, btnT],
+          scaleX: 1.05,
+          scaleY: 1.05,
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+        });
+        const start = () => {
+          SFX.init();
+          SFX.select();
+          JUICE.audio.unlock();
+          // Show the vocab gate before the first round; on a replay (already
+          // seen this session) jump straight to the game.
+          // Vocab gate first (first play), then the Level chooser, then play.
+          this.scene.start(ddVocabSeen ? "Mode" : "Vocab");
+        };
+        btn.on("pointerover", () => btn.setFillStyle(0x2080cc));
+        btn.on("pointerout", () => btn.setFillStyle(0x1a6fb5));
+        btn.on("pointerdown", start);
+        this.input.keyboard.on("keydown-SPACE", start);
+        this.input.keyboard.on("keydown-ENTER", start);
+
+        const hub = this.add
+          .text(cx, 540, "← Back to Math Games", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            color: "#7fa8c3",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        hub.on("pointerover", () => hub.setColor("#5ad1ff"));
+        hub.on("pointerout", () => hub.setColor("#7fa8c3"));
+        hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+        srSay("Decimal Dash Number-Line Placer. Press Start to play.");
+      };
+
+      // ── VOCAB GATE ──
+      // Repo rule: term + Level-1 definition + image/emoji shown BEFORE play.
+      // One card per key word; Back / Next; last card starts the game. No
+      // answers or giveaways are shown here — only the vocabulary.
+      function VocabScene() {
+        Phaser.Scene.call(this, "Vocab");
+      }
+      VocabScene.prototype = Object.create(Phaser.Scene.prototype);
+      VocabScene.prototype.constructor = VocabScene;
+      VocabScene.prototype.init = function () {
+        this.idx = 0;
+      };
+      VocabScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x102338);
+        this.add
+          .text(cx, 70, "WORDS TO KNOW FIRST", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "34px",
+            color: "#5ad1ff",
+            stroke: "#0a1626",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+
+        // Card surface.
+        this.add
+          .rectangle(cx, 320, 560, 320, 0x0a1626)
+          .setStrokeStyle(2, 0x1f4a5b);
+
+        this.stepText = this.add
+          .text(cx, 185, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            fontStyle: "bold",
+            color: "#9fc6e0",
+          })
+          .setOrigin(0.5);
+        this.emojiText = this.add
+          .text(cx, 250, "", { fontSize: "76px" })
+          .setOrigin(0.5);
+        this.termText = this.add
+          .text(cx, 330, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "32px",
+            fontStyle: "bold",
+            color: "#d4952a",
+          })
+          .setOrigin(0.5);
+        this.defText = this.add
+          .text(cx, 400, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            color: "#dff1f0",
+            align: "center",
+            wordWrap: { width: 500 },
+            lineSpacing: 4,
+          })
+          .setOrigin(0.5);
+
+        // Next / Start button.
+        const nextBtn = this.add
+          .rectangle(cx + 90, 510, 220, 52, 0x1a6fb5)
+          .setInteractive({ useHandCursor: true });
+        const nextT = this.add
+          .text(cx + 90, 510, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#eaf6ff",
+          })
+          .setOrigin(0.5);
+        nextBtn.on("pointerover", () => nextBtn.setFillStyle(0x2080cc));
+        nextBtn.on("pointerout", () => nextBtn.setFillStyle(0x1a6fb5));
+        nextBtn.on("pointerdown", () => this.advance());
+        this.nextBtn = nextBtn;
+        this.nextT = nextT;
+
+        // Back button (hidden on the first card).
+        const backBtn = this.add
+          .rectangle(cx - 120, 510, 130, 52, 0x223a48)
+          .setInteractive({ useHandCursor: true });
+        const backT = this.add
+          .text(cx - 120, 510, "← Back", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#9fc6e0",
+          })
+          .setOrigin(0.5);
+        backBtn.on("pointerover", () => backBtn.setFillStyle(0x2c4c5c));
+        backBtn.on("pointerout", () => backBtn.setFillStyle(0x223a48));
+        backBtn.on("pointerdown", () => this.goBack());
+        this.backBtn = backBtn;
+        this.backT = backT;
+
+        this.input.keyboard.on("keydown-SPACE", () => this.advance());
+        this.input.keyboard.on("keydown-ENTER", () => this.advance());
+        this.input.keyboard.on("keydown-RIGHT", () => this.advance());
+        this.input.keyboard.on("keydown-LEFT", () => this.goBack());
+
+        this.renderCard();
+      };
+      VocabScene.prototype.renderCard = function () {
+        const v = DD_VOCAB[this.idx];
+        const last = this.idx === DD_VOCAB.length - 1;
+        this.stepText.setText(
+          "Key word " + (this.idx + 1) + " of " + DD_VOCAB.length,
+        );
+        this.emojiText.setText(v.emoji);
+        this.termText.setText(v.term);
+        this.defText.setText(v.def);
+        this.nextT.setText(last ? "Start playing ▶" : "Next →");
+        const showBack = this.idx > 0;
+        this.backBtn.setVisible(showBack);
+        this.backT.setVisible(showBack);
+        srSay(v.term + ". " + v.def);
+      };
+      VocabScene.prototype.advance = function () {
+        SFX.init();
+        SFX.select();
+        if (this.idx < DD_VOCAB.length - 1) {
+          this.idx++;
+          this.renderCard();
+        } else {
+          ddVocabSeen = true;
+          this.scene.start("Mode");
+        }
+      };
+      VocabScene.prototype.goBack = function () {
+        if (this.idx > 0) {
+          this.idx--;
+          this.renderCard();
+        }
+      };
+
+      // ── LEVEL CHOOSER ──
+      // Two paths, picked by the student before each game. Level 1 = support
+      // (simpler numbers, more on-screen help); Level 2 = enrichment (harder
+      // values, hundredths, ordering). The choice drives genProblem + the
+      // scaffolding and is shown in the HUD. (Never labeled "ESOL".)
+      function ModeScene() {
+        Phaser.Scene.call(this, "Mode");
+      }
+      ModeScene.prototype = Object.create(Phaser.Scene.prototype);
+      ModeScene.prototype.constructor = ModeScene;
+      ModeScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x102338);
+        this.add
+          .text(cx, 92, "CHOOSE YOUR LEVEL", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "40px",
+            color: "#5ad1ff",
+            stroke: "#0a1626",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            142,
+            "Pick the path that fits you. You can switch next time.",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#bfe0ff",
+            },
+          )
+          .setOrigin(0.5);
+
+        const makeCard = (x, accent, heading, lines, mode) => {
+          const card = this.add
+            .rectangle(x, 350, 320, 320, 0x0a1626)
+            .setStrokeStyle(3, accent)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(x, 232, heading, {
               fontFamily: "Impact, sans-serif",
-              color: "#5ad1ff",
-              stroke: "#0a1626",
-              strokeThickness: 5,
-            })
-            .setOrigin(0.5);
-
-          // Card backdrop
-          this.add
-            .rectangle(cx, 320, 560, 360, 0x0a1626, 0.92)
-            .setStrokeStyle(2, 0x1f4a5b);
-
-          this.stepText = this.add
-            .text(cx, 168, "", {
-              fontSize: "13px",
-              color: "#9fc6e0",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-          this.emojiText = this.add
-            .text(cx, 232, "", { fontSize: "72px" })
-            .setOrigin(0.5);
-          this.termText = this.add
-            .text(cx, 312, "", {
               fontSize: "34px",
-              fontStyle: "bold",
-              color: "#d4952a",
-            })
-            .setOrigin(0.5);
-          this.defText = this.add
-            .text(cx, 388, "", {
-              fontSize: "18px",
-              color: "#dff1f0",
-              align: "center",
-              wordWrap: { width: 500 },
-              lineSpacing: 4,
-            })
-            .setOrigin(0.5);
-
-          // Dots
-          this.dots = [];
-          const dn = VOCAB_TERMS.length;
-          for (let n = 0; n < dn; n++) {
-            const dx = cx - ((dn - 1) * 18) / 2 + n * 18;
-            this.dots.push(this.add.circle(dx, 452, 5, 0x33505a));
-          }
-
-          // Back button
-          this.backBtn = this.add
-            .rectangle(cx - 95, 510, 150, 50, 0x223a48)
-            .setInteractive({ useHandCursor: true });
-          this.backTxt = this.add
-            .text(cx - 95, 510, "← Back", {
-              fontSize: "18px",
-              fontStyle: "bold",
-              color: "#9fc6e0",
-            })
-            .setOrigin(0.5);
-          this.backBtn.on("pointerover", () =>
-            this.backBtn.setFillStyle(0x2c4c5c),
-          );
-          this.backBtn.on("pointerout", () =>
-            this.backBtn.setFillStyle(0x223a48),
-          );
-          this.backBtn.on("pointerdown", () => this.go(-1));
-
-          // Next / Start button
-          this.nextBtn = this.add
-            .rectangle(cx + 95, 510, 150, 50, 0x1a6fb5)
-            .setInteractive({ useHandCursor: true });
-          this.nextTxt = this.add
-            .text(cx + 95, 510, "Next →", {
-              fontSize: "18px",
-              fontStyle: "bold",
-              color: "#eaf6ff",
-            })
-            .setOrigin(0.5);
-          this.nextBtn.on("pointerover", () =>
-            this.nextBtn.setFillStyle(0x2080cc),
-          );
-          this.nextBtn.on("pointerout", () =>
-            this.nextBtn.setFillStyle(0x1a6fb5),
-          );
-          this.nextBtn.on("pointerdown", () => this.go(1));
-
-          this.input.keyboard.on("keydown-RIGHT", () => this.go(1));
-          this.input.keyboard.on("keydown-LEFT", () => this.go(-1));
-          this.input.keyboard.on("keydown-SPACE", () => this.go(1));
-          this.input.keyboard.on("keydown-ENTER", () => this.go(1));
-
-          this.render();
-          this.cameras.main.fadeIn(350);
-        }
-        render() {
-          const t = VOCAB_TERMS[this.i];
-          const last = this.i === VOCAB_TERMS.length - 1;
-          this.stepText.setText(
-            "Key word " + (this.i + 1) + " of " + VOCAB_TERMS.length,
-          );
-          this.emojiText.setText(t.emoji);
-          this.termText.setText(t.term);
-          this.defText.setText(t.def);
-          this.nextTxt.setText(last ? "Start driving ▶" : "Next →");
-          this.backBtn.setVisible(this.i > 0);
-          this.backTxt.setVisible(this.i > 0);
-          this.dots.forEach((d, n) =>
-            d.setFillStyle(n === this.i ? 0x5ad1ff : 0x33505a),
-          );
-          srSay(t.term + ". " + t.def);
-        }
-        go(dir) {
-          SFX.init();
-          SFX.tick();
-          const next = this.i + dir;
-          if (next < 0) return;
-          if (next >= VOCAB_TERMS.length) {
-            this.cameras.main.fadeOut(300);
-            this.time.delayedCall(300, () => this.scene.start("Game"));
-            return;
-          }
-          this.i = next;
-          this.render();
-        }
-      }
-
-      class GameScene extends Phaser.Scene {
-        constructor() {
-          super("Game");
-        }
-        init() {
-          this.reduce =
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          this.score = 0;
-          this.lives = 3;
-          this.streak = 0;
-          this.maxStreak = 0;
-          this.correct = 0;
-          this.qIndex = 0;
-          this.TOTAL = 12;
-          this.level = 1;
-          this.lane = 1;
-          this.busy = false;
-          this.gateRow = null;
-        }
-        roundFor(i) {
-          return i < 4 ? 1 : i < 8 ? 2 : 3;
-        }
-        create() {
-          const cx = W / 2;
-          this.add.rectangle(cx, H / 2, W, H, 0x223a2a); // grass
-          // road
-          this.roadX0 = LANE_X[0] - 90;
-          this.roadX1 = LANE_X[2] + 90;
-          this.roadW = this.roadX1 - this.roadX0;
-          this.add.rectangle(
-            (this.roadX0 + this.roadX1) / 2,
-            H / 2,
-            this.roadW,
-            H,
-            0x2b3340,
-          );
-          // lane divider dashes (animated by scrolling)
-          this.dashes = [];
-          for (let li = 0; li < 2; li++) {
-            const dx = (LANE_X[li] + LANE_X[li + 1]) / 2;
-            for (let y = -40; y < H + 40; y += 60) {
-              const dsh = this.add.rectangle(dx, y, 6, 30, 0xf0d060, 0.7);
-              this.dashes.push(dsh);
-            }
-          }
-
-          // top HUD band
-          this.add.rectangle(cx, 24, W, 48, 0x0a1626, 0.92).setDepth(8);
-          this.scoreText = this.add
-            .text(16, 12, "Score: 0", {
-              fontSize: "20px",
-              color: "#5ad1ff",
-              fontStyle: "bold",
-            })
-            .setDepth(9);
-          this.livesText = this.add
-            .text(W - 16, 12, "❤❤❤", { fontSize: "20px", color: "#ff6b5a" })
-            .setOrigin(1, 0)
-            .setDepth(9);
-          this.streakText = this.add
-            .text(cx, 12, "Streak: 0", {
-              fontSize: "16px",
-              color: "#d4952a",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5, 0)
-            .setDepth(9);
-
-          // prompt panel
-          this.add.rectangle(cx, 78, 360, 56, 0x0a1626, 0.92).setDepth(8);
-          this.tagText = this.add
-            .text(cx, 62, "", { fontSize: "13px", color: "#9fc6e0" })
-            .setOrigin(0.5)
-            .setDepth(9);
-          this.promptText = this.add
-            .text(cx, 86, "", {
-              fontSize: "26px",
-              color: "#ffffff",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5)
-            .setDepth(9);
-          this.qnumText = this.add
-            .text(cx, 112, "", { fontSize: "12px", color: "#7fa8c3" })
-            .setOrigin(0.5)
-            .setDepth(9);
-
-          // Car
-          this.carY = H - 80;
-          this.car = this.add
-            .container(LANE_X[this.lane], this.carY)
-            .setDepth(15);
-          const body = this.add.graphics();
-          body.fillStyle(0xd43c3c, 1);
-          body.fillRoundedRect(-22, -34, 44, 68, 10);
-          body.fillStyle(0xa42c2c, 1);
-          body.fillRoundedRect(-22, -6, 44, 28, 6);
-          body.fillStyle(0x9fd6ff, 1);
-          body.fillRoundedRect(-15, -26, 30, 16, 4); // windshield
-          body.lineStyle(2, 0xffffff, 0.6);
-          body.strokeRoundedRect(-22, -34, 44, 68, 10);
-          this.car.add(body);
-
-          this.confetti = this.add
-            .particles(0, 0, "confetti", {
-              speed: { min: 80, max: 280 },
-              angle: { min: 0, max: 360 },
-              scale: { start: 1.4, end: 0.2 },
-              rotate: { min: 0, max: 360 },
-              lifespan: 1100,
-              gravityY: 240,
-              emitting: false,
-              quantity: 22,
-              tint: [0x5ad1ff, 0x1a6fb5, 0xd4952a, 0x2d874b],
-            })
-            .setDepth(40);
-          this.crashParticles = this.add
-            .particles(0, 0, "spark", {
-              speed: { min: 60, max: 220 },
-              scale: { start: 1.4, end: 0 },
-              lifespan: 500,
-              emitting: false,
-              quantity: 16,
-              tint: [0xff6b5a, 0xffaa33, 0xaa3333],
-            })
-            .setDepth(40);
-          this.redFlash = this.add
-            .rectangle(cx, H / 2, W, H, 0xff3322, 0)
-            .setDepth(35);
-          this.feedback = this.add
-            .text(cx, 150, "", {
-              fontSize: "16px",
-              color: "#fff",
-              fontStyle: "bold",
-              align: "center",
-              wordWrap: { width: W - 80 },
-            })
-            .setOrigin(0.5)
-            .setAlpha(0)
-            .setDepth(20);
-
-          // Input
-          this.cursors = this.input.keyboard.createCursorKeys();
-          this.keyA = this.input.keyboard.addKey("A");
-          this.keyD = this.input.keyboard.addKey("D");
-          this.input.keyboard.on("keydown-LEFT", () => this.moveLane(-1));
-          this.input.keyboard.on("keydown-RIGHT", () => this.moveLane(1));
-          this.input.keyboard.on("keydown-A", () => this.moveLane(-1));
-          this.input.keyboard.on("keydown-D", () => this.moveLane(1));
-          this.input.on("pointerdown", (p) => {
-            // pick nearest lane by pointer x
-            let best = 0,
-              bd = Infinity;
-            LANE_X.forEach((lx, i) => {
-              const dd = Math.abs(lx - p.worldX);
-              if (dd < bd) {
-                bd = dd;
-                best = i;
-              }
-            });
-            this.setLane(best);
-          });
-
-          this.nextQuestion();
-          this.cameras.main.fadeIn(350);
-        }
-
-        moveLane(dir) {
-          this.setLane(Phaser.Math.Clamp(this.lane + dir, 0, 2));
-        }
-        setLane(i) {
-          if (i === this.lane || this.busy) {
-            this.lane = i;
-            return;
-          }
-          this.lane = i;
-          SFX.init();
-          SFX.engine();
-          this.tweens.add({
-            targets: this.car,
-            x: LANE_X[i],
-            duration: this.reduce ? 1 : 120,
-            ease: "Quad.easeOut",
-          });
-        }
-
-        nextQuestion() {
-          if (this.qIndex >= this.TOTAL || this.lives <= 0) {
-            this.endGame();
-            return;
-          }
-          const round = this.roundFor(this.qIndex);
-          if (round !== this.level && this.qIndex > 0) SFX.levelUp();
-          this.level = round;
-          this.q = genQuestion(round);
-          this.qIndex++;
-          this.busy = false;
-
-          this.tagText.setText(this.q.tag);
-          this.promptText.setText(this.q.prompt + " = ?");
-          this.qnumText.setText(this.qIndex + " / " + this.TOTAL);
-          this.feedback.setAlpha(0);
-
-          srSay(
-            this.q.tag +
-              ". " +
-              this.q.prompt +
-              " equals what? Lane gates: left " +
-              this.q.gates[0] +
-              ", middle " +
-              this.q.gates[1] +
-              ", right " +
-              this.q.gates[2] +
-              ". Steer into the correct gate.",
-          );
-
-          // Build gate row container (starts above the visible road)
-          if (this.gateRow) this.gateRow.destroy();
-          this.gateRow = this.add.container(0, -60).setDepth(12);
-          this.gateSprites = [];
-          for (let i = 0; i < 3; i++) {
-            const lx = LANE_X[i];
-            const g = this.add.graphics();
-            const col = 0x1a6fb5;
-            g.fillStyle(col, 0.85);
-            g.fillRoundedRect(lx - 70, -28, 140, 56, 12);
-            g.lineStyle(3, 0xffffff, 0.85);
-            g.strokeRoundedRect(lx - 70, -28, 140, 56, 12);
-            this.gateRow.add(g);
-            const t = this.add
-              .text(lx, 0, this.q.gates[i], {
-                fontSize: "26px",
-                color: "#ffffff",
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5);
-            this.gateRow.add(t);
-            this.gateSprites.push({ g: g, t: t });
-          }
-          // Gate descends toward the car; speed rises with level.
-          this.gateVY = (110 + (this.level - 1) * 45) / 1000; // px/ms
-          this.gateResolved = false;
-        }
-
-        update(time, delta) {
-          // scroll lane dashes for a sense of motion
-          if (!this.reduce) {
-            const ds = 0.25 * delta * (1 + (this.level - 1) * 0.3);
-            this.dashes.forEach((d) => {
-              d.y += ds;
-              if (d.y > H + 30) d.y -= H + 70;
-            });
-          }
-          // also allow held arrow keys (key events handle taps; this covers holds)
-          if (this.busy || !this.gateRow || this.gateResolved) return;
-          this.gateRow.y += this.gateVY * delta;
-          // resolve when gate row center reaches car
-          if (this.gateRow.y >= this.carY) {
-            this.gateResolved = true;
-            this.resolve();
-          }
-        }
-
-        resolve() {
-          this.busy = true;
-          SFX.init();
-          const right = this.lane === this.q.correctIndex;
-          if (right) {
-            this.correct++;
-            this.streak++;
-            this.maxStreak = Math.max(this.maxStreak, this.streak);
-            const gained = 10 + Math.min(this.streak, 5) * 2;
-            this.score += gained;
-            SFX.pass();
-            if (this.streak >= 3) SFX.streak(this.streak);
-            this.confetti.emitParticleAt(LANE_X[this.lane], this.carY - 40);
-            this.flash(
-              "✓ +" +
-                gained +
-                (this.streak > 1 ? "   🔥 ×" + this.streak : "") +
-                "   " +
-                this.q.why,
-              "#7fffb0",
-            );
-            srSay("Correct! " + this.q.why);
-            // let the gate pass by
-            this.tweens.add({
-              targets: this.gateRow,
-              y: H + 80,
-              duration: this.reduce ? 1 : 220,
-            });
-            try {
-              if (window.GameFX && GameFX.celebrate && this.streak >= 3)
-                GameFX.celebrate(document.querySelector("canvas"));
-            } catch (e) {}
-          } else {
-            this.streak = 0;
-            this.lives--;
-            SFX.crash();
-            this.crashParticles.emitParticleAt(LANE_X[this.lane], this.carY);
-            this.doRedFlash();
-            if (!this.reduce)
-              this.tweens.add({
-                targets: this.car,
-                angle: { from: -8, to: 8 },
-                duration: 70,
-                yoyo: true,
-                repeat: 3,
-                onComplete: () => this.car.setAngle(0),
-              });
-            this.flash("💥 Crash! " + this.q.why + "  (−1 ❤)", "#ff8a7a");
-            srSay("Crash. " + this.q.why);
-            // highlight correct gate
-            const cs = this.gateSprites[this.q.correctIndex];
-            if (cs)
-              this.tweens.add({
-                targets: cs.t,
-                scale: { from: 1, to: 1.4 },
-                duration: 300,
-                yoyo: true,
-                repeat: 1,
-              });
-          }
-          this.updateHUD();
-          this.time.delayedCall(right ? 950 : 1600, () => this.nextQuestion());
-        }
-
-        flash(msg, color) {
-          this.feedback.setText(msg).setColor(color).setAlpha(1).setScale(0.85);
-          this.tweens.add({
-            targets: this.feedback,
-            scale: 1,
-            duration: this.reduce ? 1 : 220,
-            ease: "Back.easeOut",
-          });
-        }
-        doRedFlash() {
-          if (this.reduce) return;
-          this.redFlash.setAlpha(0.35);
-          this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 350 });
-        }
-        updateHUD() {
-          this.scoreText.setText("Score: " + this.score);
-          this.streakText.setText("Streak: " + this.streak);
-          this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
-        }
-        endGame() {
-          this.scene.start("Result", {
-            score: this.score,
-            correct: this.correct,
-            attempted: this.qIndex,
-            maxStreak: this.maxStreak,
-            outOfLives: this.lives <= 0,
-          });
-        }
-      }
-
-      class ResultScene extends Phaser.Scene {
-        constructor() {
-          super("Result");
-        }
-        init(data) {
-          this.d = data;
-        }
-        create() {
-          const cx = W / 2;
-          const d = this.d;
-          this.reduce =
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          this.add.rectangle(cx, H / 2, W, H, 0x102338);
-          const pct = d.attempted ? (d.correct / d.attempted) * 100 : 0;
-          const stars = pct >= 90 ? 3 : pct >= 65 ? 2 : pct >= 40 ? 1 : 0;
-          const won = !d.outOfLives;
-          if (stars >= 2) SFX.win();
-          else SFX.lose();
-
-          this.add
-            .text(cx, 70, won ? "FINISH LINE!" : "OUT OF LIVES", {
-              fontSize: "38px",
-              fontStyle: "bold",
-              color: won ? "#5ad1ff" : "#ff6b5a",
+              color: Phaser.Display.Color.IntegerToColor(accent).rgba,
               stroke: "#0a1626",
               strokeThickness: 4,
             })
             .setOrigin(0.5);
-
-          for (let i = 0; i < 3; i++) {
-            const sx = cx - 70 + i * 70;
-            this.add
-              .text(sx, 150, "☆", { fontSize: "54px", color: "#33505a" })
-              .setOrigin(0.5);
-            if (i < stars) {
-              const s = this.add
-                .text(sx, 150, "★", { fontSize: "54px", color: "#d4952a" })
-                .setOrigin(0.5)
-                .setScale(0);
-              this.tweens.add({
-                targets: s,
-                scale: 1,
-                duration: this.reduce ? 1 : 380,
-                delay: 250 + i * 220,
-                ease: "Back.easeOut",
-              });
-            }
-          }
-
-          const prevHigh = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
-          const isNewHigh = d.score > prevHigh;
-          if (isNewHigh && d.score > 0)
-            localStorage.setItem(LS_KEY, String(d.score));
-
-          const stats = [
-            ["Final Score", String(d.score)],
-            ["Gates Cleared", d.correct + " / " + d.attempted],
-            ["Accuracy", Math.round(pct) + "%"],
-            ["Best Streak", "×" + d.maxStreak],
-          ];
-          stats.forEach((s, i) => {
-            const y = 230 + i * 42;
-            this.add.rectangle(cx, y, 380, 34, 0x0a1626, 0.85);
-            this.add
-              .text(cx - 165, y, s[0], { fontSize: "15px", color: "#7fa8c3" })
-              .setOrigin(0, 0.5);
-            this.add
-              .text(cx + 165, y, s[1], {
-                fontSize: "17px",
-                color: "#5ad1ff",
-                fontStyle: "bold",
-              })
-              .setOrigin(1, 0.5);
-          });
-
-          if (isNewHigh && d.score > 0)
-            this.add
-              .text(cx, 415, "★ NEW HIGH SCORE! ★", {
-                fontSize: "18px",
-                color: "#d4952a",
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5);
-
-          try {
-            window.EduPulse &&
-              EduPulse.record({
-                activityTitle: ACTIVITY_TITLE,
-                score: d.score,
-                stars: stars,
-                problemsCorrect: d.correct,
-                problemsAttempted: d.attempted,
-                percent: Math.round(pct),
-                standard: STANDARD,
-              });
-          } catch (e) {}
-
-          srSay(
-            (won ? "Finish line. " : "Out of lives. ") +
-              "Score " +
-              d.score +
-              ", " +
-              d.correct +
-              " of " +
-              d.attempted +
-              " correct, " +
-              stars +
-              " stars.",
-          );
-
-          const retry = this.add
-            .rectangle(cx - 95, 470, 170, 46, 0x1a6fb5)
-            .setInteractive({ useHandCursor: true });
           this.add
-            .text(cx - 95, 470, "DRIVE AGAIN", {
-              fontSize: "17px",
-              fontStyle: "bold",
-              color: "#eaf6ff",
+            .text(x, 286, lines, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#dff1f0",
+              align: "center",
+              wordWrap: { width: 280 },
+              lineSpacing: 6,
             })
             .setOrigin(0.5);
-          retry.on("pointerover", () => retry.setFillStyle(0x2080cc));
-          retry.on("pointerout", () => retry.setFillStyle(0x1a6fb5));
-          retry.on("pointerdown", () => {
-            SFX.tick();
+          const btn = this.add
+            .rectangle(x, 448, 220, 50, accent)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(x, 448, "PLAY ▶", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#0a1626",
+            })
+            .setOrigin(0.5);
+          const pick = () => {
+            ddMode = mode;
+            SFX.init();
+            SFX.select();
+            JUICE.audio.unlock();
             this.scene.start("Game");
-          });
+          };
+          card.on("pointerover", () => card.setFillStyle(0x132c44));
+          card.on("pointerout", () => card.setFillStyle(0x0a1626));
+          card.on("pointerdown", pick);
+          btn.on("pointerdown", pick);
+          return pick;
+        };
 
-          const hub = this.add
-            .rectangle(cx + 95, 470, 170, 46, 0x223a48)
-            .setInteractive({ useHandCursor: true });
+        const pick1 = makeCard(
+          cx - 180,
+          0x7fd6a0,
+          "Level 1",
+          "Support\n\nTenths only\nSmall number lines\nOne marker at a time\nEvery mark labeled",
+          1,
+        );
+        const pick2 = makeCard(
+          cx + 180,
+          0xf0b44a,
+          "Level 2",
+          "Enrichment\n\nTenths & hundredths\nOrder 2–3 numbers\nFewer labels\nBigger challenge",
+          2,
+        );
+
+        // Keyboard: 1 / 2 choose; Enter/Space defaults to Level 1.
+        this.input.keyboard.on("keydown-ONE", pick1);
+        this.input.keyboard.on("keydown-TWO", pick2);
+        this.input.keyboard.on("keydown-ENTER", pick1);
+        this.input.keyboard.on("keydown-SPACE", pick1);
+
+        srSay(
+          "Choose your level. Press 1 for Level 1 support, or 2 for Level 2 enrichment.",
+        );
+        this.cameras.main.fadeIn(300);
+      };
+
+      // ── GAME ──
+      function GameScene() {
+        Phaser.Scene.call(this, "Game");
+      }
+      GameScene.prototype = Object.create(Phaser.Scene.prototype);
+      GameScene.prototype.constructor = GameScene;
+
+      GameScene.prototype.init = function () {
+        this.reduceMotion = !!(
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        );
+        this.mode = ddMode; // 1 = Level 1 (support), 2 = Level 2 (enrichment)
+        this.score = 0;
+        this.lives = 3;
+        this.streak = 0;
+        this.level = 1; // internal difficulty ramp WITHIN the chosen mode
+        this.solved = 0; // problems answered correctly
+        this.target = 10; // win condition: solve this many problems
+        this.problem = null;
+        this.locked = false;
+        this.dragging = false;
+        this.sel = 0; // index of the currently selected marker
+        this.beads = [];
+        this.ghosts = [];
+      };
+
+      GameScene.prototype.create = function () {
+        this.add.rectangle(W / 2, H / 2, W, H, 0x102338);
+
+        // HUD (same layout as the shell's other games)
+        const hudStyle = {
+          fontFamily: "Segoe UI, sans-serif",
+          fontSize: "18px",
+          fontStyle: "bold",
+        };
+        this.scoreText = this.add.text(16, 12, "Score: 0", {
+          ...hudStyle,
+          color: "#5ad1ff",
+        });
+        this.livesText = this.add.text(16, 36, "❤❤❤", {
+          ...hudStyle,
+          color: "#ff8f8f",
+        });
+        this.streakText = this.add
+          .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#d4952a" })
+          .setOrigin(1, 0);
+        this.levelText = this.add
+          .text(
+            W - 16,
+            36,
+            this.mode === 1 ? "Level 1 · Support" : "Level 2 · Enrichment",
+            { ...hudStyle, color: this.mode === 1 ? "#7fd6a0" : "#f0b44a" },
+          )
+          .setOrigin(1, 0);
+        this.progressText = this.add
+          .text(W / 2, 12, "0 / " + this.target, {
+            ...hudStyle,
+            color: "#bfe0ff",
+          })
+          .setOrigin(0.5, 0);
+
+        // Problem banner
+        this.bannerLabel = this.add
+          .text(W / 2, 76, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#7fa8c3",
+          })
+          .setOrigin(0.5);
+        this.bannerText = this.add
+          .text(W / 2, 108, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "27px",
+            fontStyle: "bold",
+            color: "#ffffff",
+            align: "center",
+            wordWrap: { width: W - 80 },
+          })
+          .setOrigin(0.5);
+
+        this.feedback = this.add
+          .text(W / 2, 156, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "17px",
+            fontStyle: "bold",
+            color: "#d4952a",
+            stroke: "#0a1626",
+            strokeThickness: 3,
+            align: "center",
+            wordWrap: { width: W - 80 },
+          })
+          .setOrigin(0.5)
+          .setAlpha(0);
+
+        // Live readout — the heart of the mechanic: the value where the selected
+        // marker currently sits, updating as it moves.
+        this.readoutBig = this.add
+          .text(W / 2, 214, "", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "52px",
+            color: "#d4952a",
+            stroke: "#0a1626",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.readoutSub = this.add
+          .text(W / 2, 258, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#9fd6ff",
+          })
+          .setOrigin(0.5);
+
+        // Number line track + ticks (fixed positions; labels change per round).
+        this.add
+          .rectangle(LINE_X0, LINE_Y, LINE_W, 5, 0x9fc6e0)
+          .setOrigin(0, 0.5);
+        for (let i = 0; i <= TICKS; i++) {
+          const major = i === 0 || i === 5 || i === TICKS;
           this.add
-            .text(cx + 95, 470, "ALL GAMES", {
-              fontSize: "17px",
+            .rectangle(tickX(i), LINE_Y, 3, major ? 30 : 16, 0x9fc6e0)
+            .setOrigin(0.5);
+        }
+        // One label per tick (set in newProblem). Support mode labels every
+        // tick; enrichment shows only the endpoints + midpoint.
+        this.tickLabels = [];
+        for (let i = 0; i <= TICKS; i++) {
+          const major = i === 0 || i === 5 || i === TICKS;
+          this.tickLabels.push(
+            this.add
+              .text(tickX(i), LINE_Y + 28, "", {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: major ? "16px" : "13px",
+                fontStyle: major ? "bold" : "normal",
+                color: major ? "#bfe0ff" : "#7fa8c3",
+              })
+              .setOrigin(0.5, 0),
+          );
+        }
+
+        // Lock-in button
+        this.lockBtn = this.add
+          .rectangle(W / 2, 482, 240, 54, 0x1a6fb5)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(W / 2, 482, "LOCK IN ✓", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "22px",
+            fontStyle: "bold",
+            color: "#eaf6ff",
+          })
+          .setOrigin(0.5);
+        this.lockBtn.on("pointerover", () =>
+          this.lockBtn.setFillStyle(0x2080cc),
+        );
+        this.lockBtn.on("pointerout", () =>
+          this.lockBtn.setFillStyle(0x1a6fb5),
+        );
+        this.lockBtn.on("pointerdown", () => this.lockIn());
+
+        // Hint — fuller in support mode, brief in enrichment.
+        this.hintText = this.add
+          .text(
+            W / 2,
+            532,
+            this.mode === 1
+              ? "Drag the marker, or press ← → (A·D) to step one mark at a time. The number under the marker shows where you are. Press Enter when it matches."
+              : "Drag a marker or press ← → (A·D). Use 1·2·3 to switch markers. Enter = lock in.",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              color: "#7fa8c3",
+              align: "center",
+              wordWrap: { width: W - 120 },
+            },
+          )
+          .setOrigin(0.5);
+
+        // Red flash for a wrong placement.
+        this.redFlash = this.add
+          .rectangle(W / 2, H / 2, W, H, 0xff3333, 0)
+          .setDepth(30);
+
+        // Input: drag/tap on or near the line; arrows / A·D nudge ±1 tick;
+        // 1·2·3 pick a marker; Enter/Space lock in.
+        this.input.on("pointerdown", (p) => {
+          if (this.locked) return;
+          const grabbed = this.beadAt(p.worldX, p.worldY);
+          if (grabbed >= 0) {
+            this.sel = grabbed;
+            this.dragging = true;
+            this.updateSelectionVisual();
+            this.updateReadout();
+            SFX.init();
+            SFX.select();
+          } else if (Math.abs(p.worldY - LINE_Y) < 140 && this.beads.length) {
+            // Tap on the line moves the selected marker there (touch friendly).
+            this.setBeadIndex(this.beads[this.sel], nearestIndex(p.worldX));
+            SFX.init();
+            SFX.move();
+          }
+        });
+        this.input.on("pointermove", (p) => {
+          if (this.dragging && !this.locked && this.beads[this.sel])
+            this.setBeadIndex(this.beads[this.sel], nearestIndex(p.worldX));
+        });
+        this.input.on("pointerup", () => {
+          this.dragging = false;
+        });
+        const nudge = (d) => {
+          if (this.locked || !this.beads[this.sel]) return;
+          this.setBeadIndex(this.beads[this.sel], this.beads[this.sel].idx + d);
+          SFX.init();
+          SFX.move();
+        };
+        this.input.keyboard.on("keydown-LEFT", () => nudge(-1));
+        this.input.keyboard.on("keydown-RIGHT", () => nudge(1));
+        this.input.keyboard.on("keydown-A", () => nudge(-1));
+        this.input.keyboard.on("keydown-D", () => nudge(1));
+        this.input.keyboard.on("keydown-ONE", () => this.selectBead(0));
+        this.input.keyboard.on("keydown-TWO", () => this.selectBead(1));
+        this.input.keyboard.on("keydown-THREE", () => this.selectBead(2));
+        this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
+        this.input.keyboard.on("keydown-SPACE", () => this.lockIn());
+
+        this.cameras.main.fadeIn(400);
+        this.newProblem();
+      };
+
+      // Vertical offsets that lift markers off the line so they never overlap.
+      GameScene.prototype.offsetsFor = function (count) {
+        if (count === 1) return [-50];
+        if (count === 2) return [-50, -84];
+        return [-46, -76, -106];
+      };
+
+      GameScene.prototype.beadAt = function (x, y) {
+        let best = -1,
+          bd = 1e9;
+        this.beads.forEach((b, i) => {
+          const bx = b.c.x;
+          const by = LINE_Y + b.yOff;
+          const d = Math.hypot(x - bx, y - by);
+          if (d < bd) {
+            bd = d;
+            best = i;
+          }
+        });
+        return bd < 70 ? best : -1;
+      };
+
+      GameScene.prototype.selectBead = function (i) {
+        if (this.locked || i < 0 || i >= this.beads.length) return;
+        this.sel = i;
+        this.updateSelectionVisual();
+        this.updateReadout();
+        SFX.init();
+        SFX.select();
+      };
+
+      GameScene.prototype.updateSelectionVisual = function () {
+        this.beads.forEach((b, i) => {
+          const on = i === this.sel;
+          b.body.setStrokeStyle(on ? 5 : 3, on ? 0xffffff : 0x6b97b3);
+          b.c.setDepth(on ? 16 : 14);
+        });
+      };
+
+      GameScene.prototype.updateReadout = function () {
+        const b = this.beads[this.sel];
+        if (!b) return;
+        this.readoutBig.setText(rstr(this.problem.range, b.idx));
+        if (this.beads.length === 1) {
+          this.readoutSub.setText("Goal: place " + b.valStr);
+        } else {
+          this.readoutSub.setText(
+            "Marker " +
+              (this.sel + 1) +
+              " of " +
+              this.beads.length +
+              " holds " +
+              b.valStr +
+              " · tap a marker to switch",
+          );
+        }
+      };
+
+      GameScene.prototype.setBeadIndex = function (b, idx) {
+        b.idx = Phaser.Math.Clamp(idx, 0, TICKS);
+        b.c.x = tickX(b.idx);
+        if (this.beads[this.sel] === b) this.updateReadout();
+      };
+
+      GameScene.prototype.buildBeads = function () {
+        // Clear any previous markers / teaching ghosts.
+        this.beads.forEach((b) => b.c.destroy());
+        this.beads = [];
+        this.ghosts.forEach((g) => g.destroy());
+        this.ghosts = [];
+
+        const list = this.problem.beads;
+        const offs = this.offsetsFor(list.length);
+        list.forEach((spec, i) => {
+          const yOff = offs[i];
+          const c = this.add.container(tickX(spec.startIdx), LINE_Y);
+          const stem = this.add.rectangle(
+            0,
+            yOff / 2,
+            4,
+            Math.abs(yOff),
+            0xcfe8ff,
+            0.55,
+          );
+          const dot = this.add
+            .circle(0, 0, 6, spec.color)
+            .setStrokeStyle(2, 0x0a1626);
+          const body = this.add
+            .rectangle(0, yOff, 78, 44, spec.color)
+            .setStrokeStyle(3, 0x6b97b3);
+          const txt = this.add
+            .text(0, yOff, spec.valStr, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "22px",
               fontStyle: "bold",
-              color: "#9fc6e0",
+              color: "#0a1626",
             })
             .setOrigin(0.5);
-          hub.on("pointerover", () => hub.setFillStyle(0x2c4c5c));
-          hub.on("pointerout", () => hub.setFillStyle(0x223a48));
-          hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+          c.add([stem, dot, body, txt]);
+          const bead = {
+            c,
+            body,
+            txt,
+            dot,
+            stem,
+            yOff,
+            color: spec.color,
+            valStr: spec.valStr,
+            targetIdx: spec.targetIdx,
+            idx: spec.startIdx,
+          };
+          this.beads.push(bead);
+          JUICE.popIn(this, c, i * 80);
+        });
+      };
 
-          this.input.keyboard.on("keydown-SPACE", () =>
-            this.scene.start("Game"),
-          );
-
-          if (won && stars >= 2 && !this.reduce) {
-            const p = this.add
-              .particles(0, 0, "confetti", {
-                speed: { min: 60, max: 240 },
-                angle: { min: 0, max: 360 },
-                scale: { start: 1.4, end: 0 },
-                rotate: { min: 0, max: 360 },
-                lifespan: 1500,
-                gravityY: 160,
-                quantity: 20,
-                tint: [0x5ad1ff, 0x1a6fb5, 0xd4952a, 0x2d874b],
-              })
-              .setDepth(40);
-            for (let i = 0; i < 5; i++)
-              this.time.delayedCall(i * 280, () =>
-                p.emitParticleAt(randInt(120, W - 120), randInt(40, 140)),
-              );
-          }
-          this.cameras.main.fadeIn(400);
+      GameScene.prototype.newProblem = function () {
+        this.locked = false;
+        this.dragging = false;
+        this.sel = 0;
+        this.problem = genProblem(this.level, this.mode);
+        this.bannerLabel.setText(this.problem.label);
+        this.bannerText.setText(this.problem.prompt);
+        // Tick labels: support mode labels every tick; enrichment shows only
+        // the endpoints + midpoint.
+        const range = this.problem.range;
+        for (let i = 0; i <= TICKS; i++) {
+          const major = i === 0 || i === 5 || i === TICKS;
+          const show = this.mode === 1 || major;
+          this.tickLabels[i].setText(show ? rstr(range, i) : "");
         }
+        this.feedback.setAlpha(0);
+        this.buildBeads();
+        this.updateSelectionVisual();
+        this.updateReadout();
+        const gates = this.problem.beads.map((b) => b.valStr).join(", ");
+        srSay(
+          this.problem.label +
+            ". " +
+            this.problem.prompt +
+            ". Drag each marker to its spot on the number line from " +
+            this.problem.loStr +
+            " to " +
+            this.problem.hiStr +
+            ", then lock it in. Values: " +
+            gates +
+            ".",
+        );
+      };
+
+      GameScene.prototype.lockIn = function () {
+        if (this.locked || !this.problem) return;
+        this.locked = true;
+        this.dragging = false;
+        const allCorrect = this.beads.every((b) => b.idx === b.targetIdx);
+        if (allCorrect) {
+          SFX.good();
+          this.solved++;
+          this.streak++;
+          const bonus = Math.min(this.streak, 5) * 5;
+          const gained = 20 + bonus;
+          this.score += gained;
+          this.beads.forEach((b) => {
+            b.body.setFillStyle(0x2d9e5a);
+            const wx = b.c.x;
+            const wy = LINE_Y + b.yOff;
+            JUICE.burst(this, wx, wy, [0x5ad1ff, 0x7fd6a0, 0xffffff], 14);
+          });
+          JUICE.audio.correct(this.streak);
+          JUICE.floatText(this, W / 2, 200, "+" + gained, "#7fd6a0", 30);
+          JUICE.award(gained, "u1-decimal-dash");
+          this.flash(W / 2, 188, "Correct! ✓", "#7fd6a0");
+          this.feedback.setText("Correct! " + this.problem.why).setAlpha(1);
+          srSay("Correct. " + this.problem.why);
+          this.afterAttempt(true);
+        } else {
+          SFX.bad();
+          JUICE.audio.wrong();
+          this.streak = 0;
+          this.lives--;
+          this.flashRed();
+          JUICE.shake(this, 0.006);
+          this.beads.forEach((b) => {
+            if (b.idx !== b.targetIdx) b.body.setFillStyle(0xc23b3b);
+          });
+          this.feedback.setText("Not quite — " + this.problem.why).setAlpha(1);
+          srSay("Not quite. " + this.problem.why);
+          // Teach: drop a green ghost on each correct tick and glide each marker
+          // home, then continue.
+          this.beads.forEach((b) => {
+            const gx = tickX(b.targetIdx);
+            const ghost = this.add
+              .circle(gx, LINE_Y, 10, 0x7fd6a0, 0.6)
+              .setDepth(5);
+            this.ghosts.push(ghost);
+            this.tweens.add({
+              targets: b.c,
+              x: gx,
+              duration: this.reduceMotion ? 0 : 600,
+              ease: "Quad.easeOut",
+              onUpdate: () => {
+                b.idx = nearestIndex(b.c.x);
+              },
+            });
+          });
+          this.time.delayedCall(this.reduceMotion ? 60 : 700, () => {
+            this.beads.forEach((b) => (b.idx = b.targetIdx));
+            this.afterAttempt(false);
+          });
+        }
+      };
+
+      GameScene.prototype.afterAttempt = function (correct) {
+        // Internal difficulty ramp every 2 correct (caps at 5). In enrichment
+        // this introduces hundredths + ordering; in support it nudges ranges
+        // only. The "Step up!" cue shows in enrichment, where it changes feel.
+        const newLevel = Math.min(5, 1 + Math.floor(this.solved / 2));
+        if (newLevel > this.level) {
+          this.level = newLevel;
+          if (this.mode === 2) {
+            SFX.level();
+            this.flash(W / 2, 188, "STEP UP! ▲", "#f0b44a");
+          }
+        }
+        this.updateHUD();
+        if (this.lives <= 0) {
+          this.endGame(false);
+          return;
+        }
+        if (this.solved >= this.target) {
+          this.endGame(true);
+          return;
+        }
+        this.time.delayedCall(correct ? 900 : 1200, () => {
+          this.feedback.setAlpha(0);
+          this.newProblem();
+        });
+      };
+
+      GameScene.prototype.flash = function (x, y, text, color) {
+        const ft = this.add
+          .text(x, y, text, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "26px",
+            fontStyle: "bold",
+            color: color,
+            stroke: "#0a1626",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5)
+          .setDepth(40);
+        this.tweens.add({
+          targets: ft,
+          y: y - 50,
+          alpha: { from: 1, to: 0 },
+          duration: this.reduceMotion ? 500 : 900,
+          onComplete: () => ft.destroy(),
+        });
+      };
+
+      GameScene.prototype.flashRed = function () {
+        if (this.reduceMotion) return;
+        this.redFlash.setAlpha(0.35);
+        this.tweens.add({
+          targets: this.redFlash,
+          alpha: 0,
+          duration: 350,
+        });
+      };
+
+      GameScene.prototype.updateHUD = function () {
+        this.scoreText.setText("Score: " + this.score);
+        this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
+        this.streakText.setText("Streak: " + this.streak);
+        // levelText shows the CHOSEN level (Support / Enrichment); it is set
+        // once in create() and stays fixed for the game.
+        this.progressText.setText(this.solved + " / " + this.target);
+      };
+
+      GameScene.prototype.endGame = function (won) {
+        this.locked = true;
+        this.time.delayedCall(500, () => {
+          this.scene.start("Result", {
+            score: this.score,
+            solved: this.solved,
+            target: this.target,
+            won: won,
+          });
+        });
+      };
+
+      // ── RESULT ──
+      function ResultScene() {
+        Phaser.Scene.call(this, "Result");
       }
+      ResultScene.prototype = Object.create(Phaser.Scene.prototype);
+      ResultScene.prototype.constructor = ResultScene;
+      ResultScene.prototype.init = function (data) {
+        this.data2 = data;
+      };
+      ResultScene.prototype.create = function () {
+        const d = this.data2;
+        const cx = W / 2;
+        this.reduceMotion = !!(
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        );
+        this.add.rectangle(cx, H / 2, W, H, 0x102338);
+        // Stars from progress.
+        const stars =
+          d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        // High score
+        let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+        const isNewHigh = d.score > hs;
+        if (isNewHigh) {
+          hs = d.score;
+          try {
+            localStorage.setItem(LS_KEY, String(hs));
+          } catch (e) {}
+        }
 
-      config.scene = [
-        BootScene,
-        TitleScene,
-        VocabScene,
-        GameScene,
-        ResultScene,
-      ];
-      const game = new Phaser.Game(config);
+        this.add
+          .text(cx, 110, d.won ? "NUMBER-LINE MASTER!" : "OUT OF LIVES", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "46px",
+            color: d.won ? "#5ad1ff" : "#ff8f8f",
+            stroke: "#0a1626",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
 
-      game.events.once("ready", function () {
+        const starStr = "★".repeat(stars) + "☆".repeat(3 - stars);
+        this.add
+          .text(cx, 185, starStr, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "48px",
+            color: "#d4952a",
+          })
+          .setOrigin(0.5);
+
+        this.add
+          .text(cx, 255, "Score: " + d.score, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "30px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            295,
+            "Placed " + d.solved + " of " + d.target + " problems",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              color: "#bfe0ff",
+            },
+          )
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 325, "High Score: " + hs, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#d4952a",
+          })
+          .setOrigin(0.5);
+        if (isNewHigh && d.score > 0)
+          this.add
+            .text(cx, 352, "★ NEW HIGH SCORE! ★", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              fontStyle: "bold",
+              color: "#d4952a",
+            })
+            .setOrigin(0.5);
+
+        if (d.won) {
+          SFX.win();
+          JUICE.audio.fanfare();
+          JUICE.confetti(this, 4);
+        } else {
+          SFX.lose();
+        }
+
+        // EduPulse reporting (guarded; safe no-op without bridge).
         try {
-          const cv = game.canvas;
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: ACTIVITY_TITLE,
+              score: d.score,
+              stars: stars,
+              standard: STANDARD,
+              problemsCorrect: d.solved,
+              problemsAttempted: d.target,
+            });
+        } catch (e) {}
+        srSay(
+          (d.won ? "You won! " : "Game over. ") +
+            "Final score " +
+            d.score +
+            ", " +
+            stars +
+            " stars.",
+        );
+
+        const btn = this.add
+          .rectangle(cx, 410, 220, 54, 0x1a6fb5)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx, 410, "PLAY AGAIN 🔁", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#eaf6ff",
+          })
+          .setOrigin(0.5);
+        // Back to the level chooser so the student can switch Level 1 / 2.
+        const again = () => this.scene.start("Mode");
+        btn.on("pointerover", () => btn.setFillStyle(0x2080cc));
+        btn.on("pointerout", () => btn.setFillStyle(0x1a6fb5));
+        btn.on("pointerdown", again);
+        this.input.keyboard.on("keydown-SPACE", again);
+        this.input.keyboard.on("keydown-ENTER", again);
+
+        const hub = this.add
+          .text(cx, 488, "← Back to Math Games", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            color: "#7fa8c3",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        hub.on("pointerover", () => hub.setColor("#5ad1ff"));
+        hub.on("pointerout", () => hub.setColor("#7fa8c3"));
+        hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+
+        this.cameras.main.fadeIn(400);
+      };
+
+      // ── Launch ──
+      const ddGame = new Phaser.Game(config);
+
+      // Canvas accessibility (additive; no gameplay change).
+      ddGame.events.once("ready", function () {
+        try {
+          const cv = ddGame.canvas;
           if (!cv) return;
           cv.setAttribute("role", "application");
           cv.setAttribute(
             "aria-label",
-            "Decimal Dash lane-runner math game. Solve the division or decimal " +
-              "problem at the top, then steer your car with the arrow keys or A " +
-              "and D into the lane whose gate shows the correct answer. Press " +
-              "Space to start.",
+            "Decimal Dash Number-Line Placer math game. A decimal to place " +
+              "appears at the top; drag a marker, or use the left and right " +
+              "arrow keys or A and D, to move it onto the matching tick on the " +
+              "number line. At higher levels, place several markers and order " +
+              "them. Press 1, 2, or 3 to pick a marker, then press Lock In, " +
+              "Enter, or Space.",
           );
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
           cv.addEventListener("pointerdown", function () {
             try {
+              cv.focus({ preventScroll: true });
+            } catch (e) {
               cv.focus();
-            } catch (e) {}
+            }
           });
         } catch (e) {}
       });
@@ -1264,8 +1603,10 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- Student Passport (meta-progression layer) -->
+    <script src="/assets/lesson-passport.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

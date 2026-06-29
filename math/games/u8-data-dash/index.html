@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
-    <title>Data Dash — Mean, Median &amp; Range Catcher | Neft Teacher</title>
+    <title>Data Dash — Line Plot Builder | Neft Teacher</title>
     <meta
       name="description"
-      content="A 2D catcher game for Grade 6 lessons 8.1-8.7 (6.SP): compute the mean, median, and range of a data set, then slide your collector cart to catch the falling answer tile."
+      content="A build-it math game for Grade 6 lessons 8.1-8.7 (6.SP.5): add and remove dots on a line plot to make the MEAN, MEDIAN, or RANGE hit a target — the statistic updates live as you build, then lock in your answer."
     />
     <style>
       * {
@@ -15,11 +15,7 @@
         padding: 0;
         box-sizing: border-box;
       }
-      html, body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
+      body {
         background: #06141f;
         overflow: hidden;
         font-family: "Segoe UI", system-ui, sans-serif;
@@ -121,9 +117,13 @@
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- Student Passport (meta-progression: lifetime XP / streak / badges) -->
+    <link rel="stylesheet" href="/assets/lesson-passport.css" />
+    <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
+    <script src="/assets/game-juice.js"></script>
+  </head>
   <body>
     <!-- Decorative animated chart-bar field (behind the Phaser canvas). -->
     <div id="dd-bg" data-parallax aria-hidden="true">
@@ -171,1156 +171,236 @@
 
     <script>
       // ════════════════════════════════════════════════════════════════════
-      //  DATA DASH — STAT CATCHER   ·   Lessons 8.1-8.7 · 6.SP
-      //  True 2D mechanic: a data set is shown; four answer tiles fall from the
-      //  top; slide your collector cart (← → / pointer) to CATCH the tile that
-      //  equals the requested statistic (mean, median, or range). Catch a wrong
-      //  tile or let the correct one hit the floor = lose a life.
-      //  Rising difficulty: Round 1 mean → Round 2 median (ODD sets) →
-      //  Round 3 range; faster drops + larger data sets at higher levels.
+      //  DATA DASH — LINE PLOT BUILDER   ·   Lessons 8.1-8.7 · 6.SP.5
+      //
+      //  Math-as-mechanic, calm and self-paced (NO timer, NO reflex): you BUILD
+      //  a line plot to hit a target statistic. Tap a value column to ADD a dot,
+      //  tap a dot to REMOVE it (keyboard: ← → choose a column, ↑/W add, ↓/S
+      //  remove). The MEAN updates live as you build (median + range too at
+      //  Level 2), so steering the statistic IS the action. Lock In checks the
+      //  target exactly. A wrong build (wrong math) costs a life and shows your
+      //  ACTUAL statistic vs. the target with a teaching hint, then continues.
+      //
+      //  Two levels (never "ESOL"):
+      //    Level 1 (support)    — target the MEAN only; small axis 1–6; the live
+      //                           mean is shown big with a "sum ÷ count" hint.
+      //    Level 2 (enrichment) — target MEAN, MEDIAN, or RANGE; wider axis
+      //                           1–10; fewer hints; sometimes preset dots to
+      //                           adjust. Every target is reachable with whole
+      //                           numbers (mean/median target a value on the
+      //                           axis; range target ≤ axis span).
       // ════════════════════════════════════════════════════════════════════
-      const W = 900,
-        H = 620;
+      const W = 820,
+        H = 600;
+      const LS_KEY = "dd_lineplot_highscore";
+      const DOT_CAP = 12; // total dots allowed on the plot
 
+      // Plot geometry in game space (Scale.FIT maps pointer coords into this).
+      const AX_Y = 470, // baseline of the line plot
+        AX_X0 = 120,
+        AX_X1 = 700;
+      const PLOT_TOP = 210; // dots/columns never rise above this
+      const DOT_R = 10,
+        DOT_GAP = 21; // stack spacing (12 dots fit between top and baseline)
+
+      // ── Theme colors (Data & Statistics — teal / deep blue) ──
       const C = {
         bg: 0x0a1c2c,
         panel: 0x10283c,
         panelEdge: 0x244a63,
-        ink: "#eaf6ff",
-        sub: "#9cc4dd",
         accent: 0x2bd1c4,
         good: 0x4fd18b,
         bad: 0xff6b6b,
         gold: 0xffcd4d,
-        mean: 0x0e8a7d,
-        median: 0xd4952a,
-        range: 0xc45a3c,
-        cart: 0x2bd1c4,
-        tile: 0x163a52,
+        dot: 0x2bd1c4,
+        sel: 0x1a6fb5,
       };
 
-      const STAT_INFO = {
+      // Resolve the shared game-feel layer; provide safe no-op fallbacks so the
+      // game still runs if /assets/game-juice.js failed to load.
+      const JUICE = window.GameJuice || {
+        reduceMotion: false,
+        audio: {
+          unlock() {},
+          tap() {},
+          pop() {},
+          correct() {},
+          wrong() {},
+          whoosh() {},
+          fanfare() {},
+          musicStart() {},
+          musicStop() {},
+        },
+        theme: () => ({ accentN: 0x2bd1c4, tileN: 0x163a52, botN: 0x0a1c2c }),
+        bgGradient() {},
+        popIn() {},
+        tilePop() {},
+        burst() {},
+        confetti() {},
+        shake() {},
+        floatText() {},
+        award() {},
+      };
+
+      // ── Audio (tiny WebAudio blips; gracefully no-op without a context) ──
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+        },
+        play(t, f, d, v = 0.18) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              o = c.createOscillator(),
+              g = c.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            o.connect(g);
+            g.connect(c.destination);
+            o.start();
+            o.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        good() {
+          this.play("sine", 660, 0.1, 0.25);
+          this.play("sine", 880, 0.14, 0.2);
+        },
+        bad() {
+          this.play("sawtooth", 200, 0.25, 0.18);
+          this.play("sawtooth", 150, 0.3, 0.14);
+        },
+        miss() {
+          this.play("triangle", 240, 0.16, 0.12);
+        },
+        coin() {
+          this.play("square", 1040, 0.05, 0.08);
+        },
+        level() {
+          [523, 659, 784, 1047].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.15, 0.22), i * 70),
+          );
+        },
+        win() {
+          [523, 659, 784, 1047, 1318].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.25, 0.25), i * 110),
+          );
+        },
+        lose() {
+          [400, 330, 260, 200].forEach((f, i) =>
+            setTimeout(() => this.play("sawtooth", f, 0.3, 0.14), i * 170),
+          );
+        },
+      };
+
+      // ── helpers ──
+      function randInt(a, b) {
+        return Math.floor(Math.random() * (b - a + 1)) + a;
+      }
+      function shuffle(a) {
+        const r = [...a];
+        for (let i = r.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [r[i], r[j]] = [r[j], r[i]];
+        }
+        return r;
+      }
+      function srSay(msg) {
+        const el = document.getElementById("dd-sr");
+        if (el) el.textContent = msg;
+      }
+      function numStr(v) {
+        return Number.isInteger(v) ? String(v) : v.toFixed(1);
+      }
+
+      // ── Chosen difficulty (set on the Level Select screen) ──
+      // 1 = support (mean only, axis 1–6), 2 = enrichment (mean/median/range,
+      // axis 1–10). Drives the generator and how much scaffolding shows.
+      let ddLevel = 1;
+
+      // ── Stat definitions (label + teaching hint) ──
+      const STAT = {
         mean: {
-          label: "MEAN",
-          color: C.mean,
-          hint: "Add all values, then divide by how many there are.",
+          name: "MEAN",
+          hint: "Mean = sum of all dots ÷ number of dots.",
         },
         median: {
-          label: "MEDIAN",
-          color: C.median,
-          hint: "Sort the values; the median is the middle one.",
+          name: "MEDIAN",
+          hint: "Median = the middle value when the dots are in order.",
         },
         range: {
-          label: "RANGE",
-          color: C.range,
+          name: "RANGE",
           hint: "Range = greatest value − least value.",
         },
       };
 
-      // ── Words to know first (shown BEFORE the first round) ──
-      // Level-1 (student-facing) definitions + an emoji image per term.
-      // No giveaways: these explain WHAT each word means, not how to win a round.
-      const VOCAB_TERMS = [
-        {
-          term: "Data set",
-          emoji: "📋",
-          def: "A group of numbers we collected, like test scores or daily temperatures.",
-        },
-        {
-          term: "Mean (average)",
-          emoji: "➗",
-          def: "Add up all the numbers, then share the total equally — divide by how many numbers there are.",
-        },
-        {
-          term: "Median",
-          emoji: "🪜",
-          def: "Put the numbers in order from least to greatest. The median is the one right in the middle.",
-        },
-        {
-          term: "Range",
-          emoji: "📏",
-          def: "How spread out the numbers are: the biggest number minus the smallest number.",
-        },
-      ];
+      // ── Problem generator ────────────────────────────────────────────────
+      // Returns { stat, target, presets } for the current axis [lo..hi]. Every
+      // target is reachable with whole-number data:
+      //   mean   → target is a value on the axis (place that many dots at it)
+      //   median → target is a value on the axis (the middle dot can be it)
+      //   range  → target ≤ (hi − lo) (place a dot at lo and at lo+target)
+      function genProblem(level, lo, hi) {
+        const span = hi - lo;
+        let stat;
+        if (level === 1) stat = "mean";
+        else stat = ["mean", "median", "range"][randInt(0, 2)];
 
-      const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
-      const choice = (arr) => arr[Math.floor(Math.random() * arr.length)];
-      function shuffle(a) {
-        a = a.slice();
-        for (let i = a.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [a[i], a[j]] = [a[j], a[i]];
+        let target;
+        if (stat === "range") {
+          target = randInt(2, Math.min(span, level === 1 ? 3 : 7));
+        } else if (stat === "mean") {
+          // Keep off the very edges so building feels like a real task.
+          target = randInt(lo + 1, hi - 1);
+        } else {
+          target = randInt(lo, hi);
         }
-        return a;
-      }
-      const VV_RM_QUERY =
-        window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)");
-      const reducedMotion = () => !!(VV_RM_QUERY && VV_RM_QUERY.matches);
 
-      const TOTAL_LEVELS = 3;
-      const ROUNDS_PER_LEVEL = 4; // catches needed to clear a level
-      const START_LIVES = 3;
-
-      // ── Question generators (exported on window for stress testing) ──
-
-      // MEAN: choose a whole-number target mean and a count, build values that
-      // sum to mean*count so the mean is always an exact integer.
-      function buildMeanQuestion(level) {
-        const count = level === 0 ? 4 : level === 1 ? 5 : 6;
-        const mean = randInt(4, 14);
-        let nums, total, computed;
-        let guard = 0;
-        do {
-          nums = [];
-          let offsetSum = 0;
-          for (let k = 0; k < count - 1; k++) {
-            const delta = randInt(-3, 3);
-            nums.push(mean + delta);
-            offsetSum += delta;
+        // Level 2: ~40% of rounds start with a few preset dots to adjust.
+        let presets = null;
+        if (level === 2 && Math.random() < 0.4) {
+          presets = new Array(span + 1).fill(0);
+          const k = randInt(2, 3);
+          for (let i = 0; i < k; i++) presets[randInt(0, span)]++;
+          // Make sure the preset doesn't already satisfy the target (otherwise
+          // there is nothing to build); if it does, nudge it off.
+          if (statOf(presets, lo, stat) === target) {
+            presets[span] = (presets[span] || 0) + 1;
           }
-          nums.push(mean - offsetSum); // corrects the sum so total = mean*count
-          total = nums.reduce((a, b) => a + b, 0);
-          computed = total / count;
-          guard++;
-        } while (
-          (nums.some((v) => v < 1) || computed !== Math.floor(computed)) &&
-          guard < 40
-        );
-        if (nums.some((v) => v < 1) || computed !== Math.floor(computed)) {
-          // deterministic fallback (always integer mean, all positive)
-          nums = [];
-          for (let k = 0; k < count; k++) nums.push(mean);
-          total = mean * count;
-          computed = mean;
         }
-        return finishQuestion(
-          "mean",
-          nums,
-          computed,
-          "Sum = " +
-            total +
-            "; " +
-            total +
-            " ÷ " +
-            count +
-            " = " +
-            computed +
-            ".",
-        );
+        return { stat, target, presets };
       }
 
-      // MEDIAN: ODD-length set (5 or 7), distinct values, answer = middle.
-      function buildMedianQuestion(level) {
-        const count = level <= 1 ? 5 : 7; // always odd
-        const seen = {};
-        const nums = [];
-        while (nums.length < count) {
-          const v = randInt(1, 24);
-          if (!seen[v]) {
-            seen[v] = true;
-            nums.push(v);
-          }
+      // Compute a statistic from a counts-per-column array. Returns null when
+      // undefined (no dots, or range with < 2 dots).
+      function statOf(counts, lo, stat) {
+        const vals = [];
+        for (let i = 0; i < counts.length; i++)
+          for (let c = 0; c < counts[i]; c++) vals.push(lo + i);
+        const n = vals.length;
+        if (n === 0) return null;
+        if (stat === "mean") {
+          const sum = vals.reduce((a, b) => a + b, 0);
+          return sum / n;
         }
-        const sorted = nums.slice().sort((a, b) => a - b);
-        const median = sorted[(count - 1) / 2];
-        return finishQuestion(
-          "median",
-          nums,
-          median,
-          "Sorted: " + sorted.join(", ") + ". Middle value = " + median + ".",
-        );
+        if (stat === "median") {
+          // vals are already sorted (columns iterated low→high).
+          return n % 2
+            ? vals[(n - 1) / 2]
+            : (vals[n / 2 - 1] + vals[n / 2]) / 2;
+        }
+        // range
+        if (n < 2) return null;
+        return vals[n - 1] - vals[0];
       }
 
-      // RANGE: distinct values; answer = max - min.
-      function buildRangeQuestion(level) {
-        const count = level === 0 ? 4 : level === 1 ? 5 : 6;
-        const seen = {};
-        const nums = [];
-        while (nums.length < count) {
-          const v = randInt(1, 28);
-          if (!seen[v]) {
-            seen[v] = true;
-            nums.push(v);
-          }
-        }
-        const mn = Math.min.apply(null, nums);
-        const mx = Math.max.apply(null, nums);
-        const range = mx - mn;
-        return finishQuestion(
-          "range",
-          nums,
-          range,
-          "Max = " +
-            mx +
-            ", Min = " +
-            mn +
-            "; " +
-            mx +
-            " − " +
-            mn +
-            " = " +
-            range +
-            ".",
-        );
-      }
-
-      // Build four DISTINCT integer answer tiles, exactly one correct.
-      function finishQuestion(statType, nums, answer, why) {
-        const seen = {};
-        seen[answer] = true;
-        const tiles = [answer];
-        let guard = 0;
-        while (tiles.length < 4 && guard < 60) {
-          guard++;
-          const sign = Math.random() < 0.5 ? 1 : -1;
-          let cand = answer + randInt(1, 5) * sign;
-          if (cand < 0) cand = answer + randInt(1, 5); // keep non-negative
-          if (!seen[cand]) {
-            seen[cand] = true;
-            tiles.push(cand);
-          }
-        }
-        // deterministic padding so we always render 4 distinct tiles
-        let pad = 1;
-        while (tiles.length < 4) {
-          const cand = answer + pad;
-          if (!seen[cand]) {
-            seen[cand] = true;
-            tiles.push(cand);
-          }
-          pad++;
-        }
-        return {
-          statType: statType,
-          nums: nums.slice(),
-          answer: answer,
-          tiles: shuffle(tiles),
-          why: why,
-        };
-      }
-
-      function buildQuestion(level) {
-        // Round (statistic) cycles by level: 0=mean, 1=median, 2=range
-        if (level === 0) return buildMeanQuestion(level);
-        if (level === 1) return buildMedianQuestion(level);
-        return buildRangeQuestion(level);
-      }
-      // expose for offline stress testing
-      window.DataDash = {
-        buildMeanQuestion,
-        buildMedianQuestion,
-        buildRangeQuestion,
-        buildQuestion,
-      };
-
-      // ════════════════════════════════════════════════════════════════════
-      //  BOOT
-      // ════════════════════════════════════════════════════════════════════
-      class BootScene extends Phaser.Scene {
-        constructor() {
-          super("Boot");
-        }
-        create() {
-          const g = this.make.graphics({ add: false });
-          g.fillStyle(0xffffff).fillCircle(4, 4, 4);
-          g.generateTexture("dot", 8, 8);
-          g.clear();
-          g.fillStyle(0xffffff).fillRect(0, 0, 7, 4);
-          g.generateTexture("chip", 7, 4);
-          g.clear();
-          g.destroy();
-          this.scene.start("Title");
-        }
-      }
-
-      // ════════════════════════════════════════════════════════════════════
-      //  TITLE
-      // ════════════════════════════════════════════════════════════════════
-      class TitleScene extends Phaser.Scene {
-        constructor() {
-          super("Title");
-        }
-        create() {
-          this.cameras.main.setBackgroundColor(C.bg);
-          const cx = W / 2;
-
-          // mini bar-chart emblem
-          const badge = this.add.container(cx, 150);
-          const heights = [40, 70, 54, 86, 62];
-          heights.forEach((h, i) => {
-            badge.add(
-              this.add
-                .rectangle(
-                  -90 + i * 45,
-                  0 - h / 2,
-                  32,
-                  h,
-                  [C.mean, C.median, C.range, C.accent, C.gold][i],
-                )
-                .setOrigin(0.5, 0.5),
-            );
-          });
-          if (!reducedMotion()) {
-            this.tweens.add({
-              targets: badge,
-              y: 138,
-              duration: 1600,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.inOut",
-            });
-          }
-
-          this.add
-            .text(cx, 250, "DATA DASH", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "56px",
-              fontStyle: "900",
-              color: "#eaf6ff",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(cx, 296, "Stat Catcher", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "26px",
-              fontStyle: "bold",
-              color: "#2bd1c4",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(
-              cx,
-              350,
-              "Read the data set, then slide your cart to CATCH the tile\nthat equals the mean, median, or range.",
-              {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "18px",
-                color: "#9cc4dd",
-                align: "center",
-                lineSpacing: 6,
-              },
-            )
-            .setOrigin(0.5);
-          this.add
-            .text(cx, 406, "Grade 6 · Lessons 8.1–8.7 · Standard 6.SP", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "15px",
-              fontStyle: "bold",
-              color: "#2bd1c4",
-            })
-            .setOrigin(0.5);
-
-          this.makeButton(cx, 474, "▶  START GAME", 0x0e8a7d, () =>
-            // Words-first: route through the Vocab gate before the first round.
-            // (skip:false → always show the key words on a fresh start.)
-            this.scene.start("Vocab", {
-              level: 0,
-              score: 0,
-              lives: START_LIVES,
-              skip: false,
-            }),
-          );
-          this.add
-            .text(
-              cx,
-              548,
-              "Move with ← → arrows or your finger.   Catch the correct tile, dodge the rest.",
-              {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "14px",
-                color: "#7fa9c2",
-              },
-            )
-            .setOrigin(0.5);
-          this.makeLink(cx, 586, "← Back to Math Games");
-          this.setSR(
-            "Data Dash, Stat Catcher. A catcher game for mean, median, and range, standard 6.SP. Press start to play.",
-          );
-        }
-        makeButton(x, y, label, color, cb) {
-          const b = this.add
-            .rectangle(x, y, 290, 56, color)
-            .setStrokeStyle(3, 0xffffff, 0.85)
-            .setInteractive({ useHandCursor: true });
-          this.add
-            .text(x, y, label, {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "22px",
-              fontStyle: "bold",
-              color: "#ffffff",
-            })
-            .setOrigin(0.5);
-          b.on("pointerover", () => b.setScale(1.04));
-          b.on("pointerout", () => b.setScale(1));
-          b.on("pointerdown", cb);
-          this.input.keyboard.once("keydown-SPACE", cb);
-          this.input.keyboard.once("keydown-ENTER", cb);
-          return b;
-        }
-        makeLink(x, y, label) {
-          const t = this.add
-            .text(x, y, label, {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "15px",
-              fontStyle: "bold",
-              color: "#9cc4dd",
-            })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true });
-          t.on("pointerover", () => t.setColor("#2bd1c4"));
-          t.on("pointerout", () => t.setColor("#9cc4dd"));
-          t.on("pointerdown", () => {
-            window.location.href = "/math/games/";
-          });
-          return t;
-        }
-        setSR(msg) {
-          const el = document.getElementById("dd-sr");
-          if (el) el.textContent = msg;
-        }
-      }
-
-      // ════════════════════════════════════════════════════════════════════
-      //  VOCAB GATE  ·  "Words to know first" (shown BEFORE the first round)
-      //  Repo rule: term + Level-1 definition + image/emoji BEFORE play.
-      //  Additive: routed Title → Vocab → Game. Skipped on replay (skip:true).
-      // ════════════════════════════════════════════════════════════════════
-      class VocabScene extends Phaser.Scene {
-        constructor() {
-          super("Vocab");
-        }
-        init(data) {
-          this.next = {
-            level: data.level || 0,
-            score: data.score || 0,
-            lives: data.lives != null ? data.lives : START_LIVES,
-          };
-          this.skip = !!data.skip;
-          this.i = 0;
-        }
-        create() {
-          // On replay the words have already been seen — go straight to play.
-          if (this.skip) {
-            this.scene.start("Game", this.next);
-            return;
-          }
-          this.cameras.main.setBackgroundColor(C.bg);
-          const cx = W / 2;
-
-          this.add
-            .text(cx, 70, "WORDS TO KNOW FIRST", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "30px",
-              fontStyle: "900",
-              color: "#eaf6ff",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(cx, 108, "Learn these before you play Data Dash.", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "16px",
-              color: "#9cc4dd",
-            })
-            .setOrigin(0.5);
-
-          // card
-          this.add
-            .rectangle(cx, 330, 620, 320, C.panel)
-            .setStrokeStyle(2, C.panelEdge);
-
-          this.stepText = this.add
-            .text(cx, 200, "", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "13px",
-              fontStyle: "bold",
-              color: "#2bd1c4",
-            })
-            .setOrigin(0.5);
-          this.emojiText = this.add
-            .text(cx, 262, "", { fontSize: "76px" })
-            .setOrigin(0.5);
-          this.termText = this.add
-            .text(cx, 332, "", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "30px",
-              fontStyle: "900",
-              color: "#eaf6ff",
-            })
-            .setOrigin(0.5);
-          this.defText = this.add
-            .text(cx, 392, "", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "18px",
-              color: "#cfe6f5",
-              align: "center",
-              lineSpacing: 6,
-              wordWrap: { width: 540 },
-            })
-            .setOrigin(0.5, 0);
-
-          // dots
-          this.dots = VOCAB_TERMS.map((_, n) =>
-            this.add.circle(0, 0, 6, C.panelEdge),
-          );
-          const dw = (VOCAB_TERMS.length - 1) * 22;
-          this.dots.forEach((d, n) => d.setPosition(cx - dw / 2 + n * 22, 470));
-
-          // buttons
-          this.backBtn = this.makeBtn(cx - 110, 540, "← Back", 0x355a86, () =>
-            this.go(-1),
-          );
-          this.nextBtn = this.makeBtn(cx + 110, 540, "Next →", 0x0e8a7d, () =>
-            this.go(1),
-          );
-
-          this.input.keyboard.on("keydown-RIGHT", () => this.go(1));
-          this.input.keyboard.on("keydown-SPACE", () => this.go(1));
-          this.input.keyboard.on("keydown-ENTER", () => this.go(1));
-          this.input.keyboard.on("keydown-LEFT", () => this.go(-1));
-
-          this.render();
-          this.cameras.main.fadeIn(300);
-        }
-        makeBtn(x, y, label, color, cb) {
-          const b = this.add
-            .rectangle(x, y, 200, 52, color)
-            .setStrokeStyle(3, 0xffffff, 0.85)
-            .setInteractive({ useHandCursor: true });
-          const t = this.add
-            .text(x, y, label, {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "19px",
-              fontStyle: "bold",
-              color: "#ffffff",
-            })
-            .setOrigin(0.5);
-          b.on("pointerover", () => b.setScale(1.04));
-          b.on("pointerout", () => b.setScale(1));
-          b.on("pointerdown", cb);
-          b.labelText = t;
-          return b;
-        }
-        go(dir) {
-          const last = this.i >= VOCAB_TERMS.length - 1;
-          if (dir > 0 && last) {
-            this.scene.start("Game", this.next);
-            return;
-          }
-          this.i = Phaser.Math.Clamp(this.i + dir, 0, VOCAB_TERMS.length - 1);
-          this.render();
-        }
-        render() {
-          const t = VOCAB_TERMS[this.i];
-          const last = this.i >= VOCAB_TERMS.length - 1;
-          this.stepText.setText(
-            "WORD " + (this.i + 1) + " OF " + VOCAB_TERMS.length,
-          );
-          this.emojiText.setText(t.emoji || t.term.charAt(0));
-          this.termText.setText(t.term);
-          this.defText.setText(t.def);
-          this.nextBtn.labelText.setText(last ? "Start playing ▶" : "Next →");
-          this.backBtn.setVisible(this.i > 0);
-          this.backBtn.labelText.setVisible(this.i > 0);
-          this.dots.forEach((d, n) =>
-            d.setFillStyle(n === this.i ? C.accent : C.panelEdge),
-          );
-          const el = document.getElementById("dd-sr");
-          if (el)
-            el.textContent =
-              "Word " +
-              (this.i + 1) +
-              " of " +
-              VOCAB_TERMS.length +
-              ". " +
-              t.term +
-              ". " +
-              t.def;
-        }
-      }
-
-      // ════════════════════════════════════════════════════════════════════
-      //  GAME
-      // ════════════════════════════════════════════════════════════════════
-      class GameScene extends Phaser.Scene {
-        constructor() {
-          super("Game");
-        }
-        init(data) {
-          this.levelIndex = data.level || 0;
-          this.score = data.score || 0;
-          this.lives = data.lives != null ? data.lives : START_LIVES;
-          this.streak = 0;
-          this.caught = 0; // catches this level
-          this.locked = false;
-          this.tiles = [];
-          this.falling = false;
-        }
-        create() {
-          this.cameras.main.setBackgroundColor(C.bg);
-          this.playLeft = 30;
-          this.playRight = W - 30;
-          this.floorY = H - 70;
-
-          this.buildHUD();
-          this.buildDataPanel();
-          this.buildCart();
-
-          // input
-          this.cursors = this.input.keyboard.createCursorKeys();
-          this.aKey = this.input.keyboard.addKey("A");
-          this.dKey = this.input.keyboard.addKey("D");
-          this.input.on("pointermove", (p) => {
-            if (this.falling)
-              this.targetX = Phaser.Math.Clamp(
-                p.x,
-                this.playLeft + 50,
-                this.playRight - 50,
-              );
-          });
-
-          this.targetX = W / 2;
-          this.nextQuestion();
-          this.cameras.main.fadeIn(400);
-        }
-
-        buildHUD() {
-          this.add.rectangle(W / 2, 30, W, 60, C.panel).setDepth(1);
-          this.add.rectangle(W / 2, 60, W, 2, C.panelEdge).setDepth(1);
-          const mk = (x, label) => {
-            this.add
-              .text(x, 16, label, {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "12px",
-                color: "#7fa9c2",
-              })
-              .setOrigin(1, 0)
-              .setDepth(2);
-            return this.add
-              .text(x, 30, "", {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "22px",
-                fontStyle: "900",
-                color: "#eaf6ff",
-              })
-              .setOrigin(1, 0)
-              .setDepth(2);
-          };
-          this.add
-            .text(20, 18, "📊 Data Dash", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "18px",
-              fontStyle: "bold",
-              color: "#2bd1c4",
-            })
-            .setDepth(2);
-          this.scoreT = mk(W - 20, "SCORE");
-          this.levelT = mk(W - 150, "ROUND");
-          this.streakT = mk(W - 290, "STREAK");
-          this.livesT = mk(W - 420, "LIVES");
-
-          const menu = this.add
-            .text(180, 30, "☰ Menu", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "14px",
-              fontStyle: "bold",
-              color: "#9cc4dd",
-            })
-            .setOrigin(0, 0.5)
-            .setDepth(2)
-            .setInteractive({ useHandCursor: true });
-          menu.on("pointerdown", () => this.scene.start("Title"));
-          menu.on("pointerover", () => menu.setColor("#2bd1c4"));
-          menu.on("pointerout", () => menu.setColor("#9cc4dd"));
-          this.refreshHUD();
-        }
-        refreshHUD() {
-          this.scoreT.setText(String(this.score));
-          this.levelT.setText(`${this.levelIndex + 1} / ${TOTAL_LEVELS}`);
-          this.streakT.setText(this.streak > 0 ? `×${this.streak}` : "—");
-          this.livesT.setText("❤".repeat(Math.max(0, this.lives)) || "—");
-        }
-
-        buildDataPanel() {
-          this.add
-            .rectangle(W / 2, 122, W - 60, 96, C.panel)
-            .setStrokeStyle(2, C.panelEdge)
-            .setDepth(1);
-          this.statTag = this.add
-            .text(W / 2, 90, "", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "16px",
-              fontStyle: "900",
-            })
-            .setOrigin(0.5)
-            .setDepth(2);
-          this.dataText = this.add
-            .text(W / 2, 120, "", {
-              fontFamily: "Consolas, monospace",
-              fontSize: "26px",
-              fontStyle: "bold",
-              color: "#eaf6ff",
-            })
-            .setOrigin(0.5)
-            .setDepth(2);
-          this.hintText = this.add
-            .text(W / 2, 150, "", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "14px",
-              color: "#9cc4dd",
-            })
-            .setOrigin(0.5)
-            .setDepth(2);
-
-          // floor / collection line
-          this.add
-            .rectangle(W / 2, this.floorY + 26, W, 4, C.panelEdge)
-            .setDepth(1);
-
-          this.fbText = this.add
-            .text(W / 2, this.floorY + 46, "", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "15px",
-              fontStyle: "bold",
-              color: "#9cc4dd",
-              align: "center",
-              wordWrap: { width: W - 80 },
-            })
-            .setOrigin(0.5, 0)
-            .setDepth(2);
-        }
-
-        buildCart() {
-          this.cart = this.add.container(W / 2, this.floorY).setDepth(6);
-          const body = this.add
-            .rectangle(0, 0, 110, 30, C.cart)
-            .setStrokeStyle(3, 0x0a5a54);
-          const rim = this.add.rectangle(0, -16, 110, 8, 0x0a5a54);
-          const w1 = this.add
-            .circle(-34, 20, 9, 0x123040)
-            .setStrokeStyle(3, C.cart);
-          const w2 = this.add
-            .circle(34, 20, 9, 0x123040)
-            .setStrokeStyle(3, C.cart);
-          this.cartGlow = this.add
-            .rectangle(0, 0, 110, 36, 0xffffff, 0)
-            .setStrokeStyle(0);
-          this.cart.add([w1, w2, rim, body, this.cartGlow]);
-          this.cartHalf = 55;
-        }
-
-        nextQuestion() {
-          this.locked = false;
-          this.q = buildQuestion(this.levelIndex);
-          const info = STAT_INFO[this.q.statType];
-          this.statTag
-            .setText("FIND THE " + info.label)
-            .setColor("#" + info.color.toString(16).padStart(6, "0"));
-          this.dataText.setText(this.q.nums.join("   "));
-          this.hintText.setText(info.hint);
-          this.fbText.setText(
-            "Catch the tile that equals the " + info.label.toLowerCase() + "!",
-          );
-
-          this.spawnTiles();
-          this.setSR(
-            "Find the " +
-              info.label.toLowerCase() +
-              " of " +
-              this.q.nums.join(", ") +
-              ". " +
-              "Falling answers: " +
-              this.q.tiles.join(", ") +
-              ". Move your cart to catch the correct one.",
-          );
-        }
-
-        spawnTiles() {
-          this.tiles.forEach((t) => t.destroy());
-          this.tiles = [];
-          // four lanes across the play area
-          const lanes = 4;
-          const usable = this.playRight - this.playLeft - 120;
-          const order = shuffle([0, 1, 2, 3]);
-          const speedBase = 70 + this.levelIndex * 35 + this.streak * 4; // px/sec
-          this.q.tiles.forEach((val, i) => {
-            const lane = order[i];
-            const x = this.playLeft + 60 + (usable / (lanes - 1)) * lane;
-            const y = 200 - i * 70 - randInt(0, 40); // staggered start above view
-            const cont = this.add.container(x, y).setDepth(5);
-            const isCorrect = val === this.q.answer;
-            const rect = this.add
-              .rectangle(0, 0, 78, 54, C.tile)
-              .setStrokeStyle(3, C.panelEdge);
-            const lab = this.add
-              .text(0, 0, String(val), {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "26px",
-                fontStyle: "900",
-                color: "#eaf6ff",
-              })
-              .setOrigin(0.5);
-            cont.add([rect, lab]);
-            cont.rect = rect;
-            cont.lab = lab;
-            cont.value = val;
-            cont.correct = isCorrect;
-            cont.speed = speedBase + randInt(-10, 20);
-            cont.done = false;
-            this.tiles.push(cont);
-          });
-          this.falling = true;
-        }
-
-        update(time, delta) {
-          // cart movement
-          const dt = delta / 1000;
-          const speed = 460;
-          let dx = 0;
-          if (this.cursors.left.isDown || this.aKey.isDown) dx -= 1;
-          if (this.cursors.right.isDown || this.dKey.isDown) dx += 1;
-          if (dx !== 0) {
-            this.cart.x = Phaser.Math.Clamp(
-              this.cart.x + dx * speed * dt,
-              this.playLeft + this.cartHalf,
-              this.playRight - this.cartHalf,
-            );
-          } else if (this.input.activePointer.isDown && this.falling) {
-            // follow pointer when held
-            this.cart.x = Phaser.Math.Clamp(
-              this.input.activePointer.x,
-              this.playLeft + this.cartHalf,
-              this.playRight - this.cartHalf,
-            );
-          }
-
-          if (!this.falling) return;
-          const catchY = this.floorY;
-          this.tiles.forEach((t) => {
-            if (t.done) return;
-            t.y += t.speed * dt;
-            // catch zone: tile bottom reaches cart top and within cart width
-            if (t.y >= catchY - 24 && t.y <= catchY + 30) {
-              if (Math.abs(t.x - this.cart.x) <= this.cartHalf + 38) {
-                t.done = true;
-                this.resolveCatch(t);
-              }
-            } else if (t.y > this.floorY + 40) {
-              // hit floor uncaught
-              t.done = true;
-              this.resolveMiss(t);
-            }
-          });
-        }
-
-        resolveCatch(tile) {
-          if (this.locked) return;
-          this.locked = true;
-          this.falling = false;
-          const info = STAT_INFO[this.q.statType];
-          if (tile.correct) {
-            tile.rect.setFillStyle(0x1c5a3a).setStrokeStyle(3, C.good);
-            this.streak++;
-            this.caught++;
-            const gain = 100 + Math.min(this.streak, 5) * 20;
-            this.score += gain;
-            this.fbText
-              .setColor("#4fd18b")
-              .setText("✓ +" + gain + "   " + this.q.why);
-            this.burst(tile.x, tile.y, C.good);
-            this.flashCart(C.good);
-            this.setSR("Correct. " + this.q.why);
-          } else {
-            tile.rect.setFillStyle(0x5a1c1c).setStrokeStyle(3, C.bad);
-            this.streak = 0;
-            this.lives--;
-            this.fbText
-              .setColor("#ff8f8f")
-              .setText(
-                "✗ That was " +
-                  tile.value +
-                  ", not the " +
-                  info.label.toLowerCase() +
-                  " (" +
-                  this.q.answer +
-                  "). " +
-                  this.q.why,
-              );
-            this.flashCart(C.bad);
-            if (!reducedMotion()) this.cameras.main.shake(180, 0.006);
-            this.setSR("Not quite. " + this.q.why);
-          }
-          this.refreshHUD();
-          this.afterResolve(tile.correct);
-        }
-
-        resolveMiss(tile) {
-          if (this.locked) return;
-          // only penalize if the CORRECT tile hit the floor uncaught
-          if (tile.correct) {
-            this.locked = true;
-            this.falling = false;
-            this.streak = 0;
-            this.lives--;
-            this.fbText
-              .setColor("#ff8f8f")
-              .setText(
-                "✗ Missed it! The " +
-                  STAT_INFO[this.q.statType].label.toLowerCase() +
-                  " was " +
-                  this.q.answer +
-                  ". " +
-                  this.q.why,
-              );
-            if (!reducedMotion()) this.cameras.main.shake(160, 0.005);
-            this.refreshHUD();
-            this.setSR("Missed. " + this.q.why);
-            this.afterResolve(false);
-          }
-        }
-
-        afterResolve(correct) {
-          this.time.delayedCall(correct ? 1000 : 1700, () => {
-            this.tiles.forEach((t) => t.destroy());
-            this.tiles = [];
-            if (this.lives <= 0) return this.gameOver();
-            if (this.caught >= ROUNDS_PER_LEVEL) return this.completeLevel();
-            this.nextQuestion();
-          });
-        }
-
-        flashCart(color) {
-          if (reducedMotion()) return;
-          this.cartGlow.setStrokeStyle(4, color, 1);
-          this.tweens.add({
-            targets: this.cartGlow,
-            alpha: { from: 1, to: 0 },
-            duration: 500,
-            onComplete: () => {
-              this.cartGlow.setStrokeStyle(0).setAlpha(1);
-            },
-          });
-        }
-
-        burst(x, y, color) {
-          const p = this.add.particles(x, y, "dot", {
-            speed: { min: 60, max: 180 },
-            angle: { min: 0, max: 360 },
-            scale: { start: 1, end: 0 },
-            lifespan: 500,
-            quantity: 14,
-            tint: color,
-          });
-          this.time.delayedCall(550, () => p.destroy());
-        }
-
-        completeLevel() {
-          this.score += 250;
-          this.refreshHUD();
-          const ov = this.add.container(0, 0).setDepth(20);
-          ov.add(this.add.rectangle(W / 2, H / 2, W, H, 0x05101d, 0.8));
-          ov.add(
-            this.add
-              .text(W / 2, 230, "ROUND CLEAR!", {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "42px",
-                fontStyle: "900",
-                color: "#4fd18b",
-              })
-              .setOrigin(0.5),
-          );
-          ov.add(
-            this.add
-              .text(
-                W / 2,
-                292,
-                "You mastered the " +
-                  STAT_INFO[this.q.statType].label.toLowerCase() +
-                  "!\n+250 round bonus",
-                {
-                  fontFamily: "Segoe UI, sans-serif",
-                  fontSize: "20px",
-                  color: "#eaf6ff",
-                  align: "center",
-                  lineSpacing: 6,
-                },
-              )
-              .setOrigin(0.5),
-          );
-          this.confetti();
-          const last = this.levelIndex + 1 >= TOTAL_LEVELS;
-          const label = last ? "🏁  SEE RESULTS" : "▶  NEXT ROUND";
-          const btn = this.add
-            .rectangle(W / 2, 380, 300, 56, 0x0e8a7d)
-            .setStrokeStyle(3, 0xffffff, 0.85)
-            .setDepth(21)
-            .setInteractive({ useHandCursor: true });
-          this.add
-            .text(W / 2, 380, label, {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "22px",
-              fontStyle: "bold",
-              color: "#fff",
-            })
-            .setOrigin(0.5)
-            .setDepth(22);
-          btn.on("pointerover", () => btn.setScale(1.04));
-          btn.on("pointerout", () => btn.setScale(1));
-          const go = () => {
-            if (last) {
-              this.scene.start("Result", { score: this.score, won: true });
-            } else {
-              this.scene.start("Game", {
-                level: this.levelIndex + 1,
-                score: this.score,
-                lives: this.lives,
-              });
-            }
-          };
-          btn.on("pointerdown", go);
-          this.input.keyboard.once("keydown-SPACE", go);
-          this.setSR(
-            "Round clear. You mastered the " +
-              STAT_INFO[this.q.statType].label.toLowerCase() +
-              ". Score " +
-              this.score +
-              ".",
-          );
-        }
-
-        gameOver() {
-          this.scene.start("Result", { score: this.score, won: false });
-        }
-
-        confetti() {
-          const p = this.add.particles(W / 2, -10, "chip", {
-            x: { min: 0, max: W },
-            y: -10,
-            speedY: { min: 120, max: 280 },
-            speedX: { min: -60, max: 60 },
-            angle: { min: 0, max: 360 },
-            rotate: { min: 0, max: 360 },
-            scale: { min: 0.7, max: 1.4 },
-            lifespan: 2600,
-            quantity: 3,
-            frequency: 40,
-            tint: [0xffcd4d, 0x2bd1c4, 0x4fd18b, 0xc45a3c],
-          });
-          this.time.delayedCall(1800, () => p.stop());
-        }
-
-        setSR(msg) {
-          const el = document.getElementById("dd-sr");
-          if (el) el.textContent = msg;
-        }
-      }
-
-      // ════════════════════════════════════════════════════════════════════
-      //  RESULT
-      // ════════════════════════════════════════════════════════════════════
-      class ResultScene extends Phaser.Scene {
-        constructor() {
-          super("Result");
-        }
-        init(data) {
-          this.score = data.score || 0;
-          this.won = !!data.won;
-        }
-        create() {
-          this.cameras.main.setBackgroundColor(C.bg);
-          const cx = W / 2;
-          const stars = this.score >= 1500 ? 3 : this.score >= 900 ? 2 : 1;
-          try {
-            window.EduPulse &&
-              EduPulse.record({
-                activityTitle: document.title,
-                score: this.score,
-                stars: stars,
-              });
-          } catch (e) {}
-          this.add
-            .text(cx, 150, this.won ? "DATA MASTERED!" : "OUT OF LIVES", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "46px",
-              fontStyle: "900",
-              color: this.won ? "#4fd18b" : "#ff8f8f",
-            })
-            .setOrigin(0.5);
-          for (let i = 0; i < 3; i++) {
-            this.add
-              .text(cx - 80 + i * 80, 240, i < stars ? "★" : "☆", {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "64px",
-                color: i < stars ? "#ffcd4d" : "#3a5a74",
-              })
-              .setOrigin(0.5);
-          }
-          this.add
-            .text(cx, 326, "Final Score: " + this.score, {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "30px",
-              fontStyle: "bold",
-              color: "#eaf6ff",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(
-              cx,
-              372,
-              this.won
-                ? "You caught the mean, median, and range across every round."
-                : "Tip: mean = sum ÷ count, median = middle of the sorted set, range = max − min. Try again!",
-              {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "16px",
-                color: "#9cc4dd",
-                align: "center",
-                wordWrap: { width: 560 },
-              },
-            )
-            .setOrigin(0.5);
-          this.btn(cx - 150, 460, "↻  PLAY AGAIN", 0x0e8a7d, () =>
-            // Replay: words were already shown this session, so skip the gate.
-            this.scene.start("Vocab", {
-              level: 0,
-              score: 0,
-              lives: START_LIVES,
-              skip: true,
-            }),
-          );
-          this.btn(cx + 150, 460, "🏠  ALL GAMES", 0x355a86, () => {
-            window.location.href = "/math/games/";
-          });
-          const el = document.getElementById("dd-sr");
-          if (el)
-            el.textContent =
-              (this.won ? "Data mastered" : "Out of lives") +
-              ". Final score " +
-              this.score +
-              ", " +
-              stars +
-              " stars.";
-        }
-        btn(x, y, label, color, cb) {
-          const b = this.add
-            .rectangle(x, y, 270, 56, color)
-            .setStrokeStyle(3, 0xffffff, 0.85)
-            .setInteractive({ useHandCursor: true });
-          this.add
-            .text(x, y, label, {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "20px",
-              fontStyle: "bold",
-              color: "#fff",
-            })
-            .setOrigin(0.5);
-          b.on("pointerover", () => b.setScale(1.04));
-          b.on("pointerout", () => b.setScale(1));
-          b.on("pointerdown", cb);
-        }
-      }
-
-      // ── launch ──
       const config = {
         type: Phaser.AUTO,
         width: W,
@@ -1328,8 +408,1033 @@
         parent: document.body,
         backgroundColor: "#0a1c2c",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [BootScene, TitleScene, VocabScene, GameScene, ResultScene],
+        scene: [
+          BootScene,
+          TitleScene,
+          VocabScene,
+          LevelScene,
+          GameScene,
+          ResultScene,
+        ],
       };
+
+      // ── Vocab gate state (repo rule: term + Level-1 definition + image/emoji
+      // shown BEFORE the first round). Shown once per page session. ──
+      let ddVocabSeen = false;
+
+      // ~5 STATS key words — Level-1 (student-facing) definitions + an emoji so
+      // a visual always shows even with no network/images. No giveaways.
+      const DD_VOCAB = [
+        {
+          term: "Data",
+          emoji: "📊",
+          def: "The numbers or facts you collect, like how many pets each kid has.",
+        },
+        {
+          term: "Line plot",
+          emoji: "•",
+          def: "A number line with a dot for each value. More dots stacked = more of that value.",
+        },
+        {
+          term: "Mean",
+          emoji: "⚖️",
+          def: "The average. Add all the values, then share them out evenly.",
+        },
+        {
+          term: "Median",
+          emoji: "🎯",
+          def: "The middle value when you line all the numbers up in order.",
+        },
+        {
+          term: "Range",
+          emoji: "↔️",
+          def: "How spread out the data is: the biggest value minus the smallest.",
+        },
+      ];
+
+      // ── BOOT ──
+      function BootScene() {
+        Phaser.Scene.call(this, "Boot");
+      }
+      BootScene.prototype = Object.create(Phaser.Scene.prototype);
+      BootScene.prototype.constructor = BootScene;
+      BootScene.prototype.create = function () {
+        const g = this.make.graphics({ add: false });
+        g.fillStyle(0xffffff);
+        g.fillCircle(4, 4, 4);
+        g.generateTexture("dot", 8, 8);
+        g.clear();
+        g.fillStyle(0xffe07a);
+        g.fillCircle(5, 5, 5);
+        g.generateTexture("spark", 10, 10);
+        g.destroy();
+        this.scene.start("Title");
+      };
+
+      // ── TITLE ──
+      function TitleScene() {
+        Phaser.Scene.call(this, "Title");
+      }
+      TitleScene.prototype = Object.create(Phaser.Scene.prototype);
+      TitleScene.prototype.constructor = TitleScene;
+      TitleScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, C.bg);
+        this.add
+          .text(cx, 120, "DATA DASH", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "64px",
+            color: "#2bd1c4",
+            stroke: "#04121c",
+            strokeThickness: 6,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 175, "Line Plot Builder", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "26px",
+            color: "#9cc4dd",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            232,
+            "BUILD a line plot to hit a target. Tap a column to add a dot,\ntap a dot to remove it — watch the mean change — then Lock In!",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#bfe9ff",
+              align: "center",
+            },
+          )
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            295,
+            "Tap or ← → ↑ ↓ (A·D·W·S) · 6.SP.5 · Lessons 8.1–8.7",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              color: "#6fa3bf",
+            },
+          )
+          .setOrigin(0.5);
+
+        const hs = localStorage.getItem(LS_KEY);
+        if (hs)
+          this.add
+            .text(cx, 330, "High Score: " + hs, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#ffcd4d",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+
+        const btn = this.add
+          .rectangle(cx, 400, 240, 58, 0x148f86)
+          .setInteractive({ useHandCursor: true });
+        const btnT = this.add
+          .text(cx, 400, "START ▶", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "24px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.tweens.add({
+          targets: [btn, btnT],
+          scaleX: 1.05,
+          scaleY: 1.05,
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+        });
+        const start = () => {
+          SFX.init();
+          SFX.coin();
+          JUICE.audio.unlock();
+          // Vocab gate before the first run; afterwards jump to level select.
+          this.scene.start(ddVocabSeen ? "Level" : "Vocab");
+        };
+        btn.on("pointerover", () => btn.setFillStyle(0x1aa99e));
+        btn.on("pointerout", () => btn.setFillStyle(0x148f86));
+        btn.on("pointerdown", start);
+        this.input.keyboard.on("keydown-SPACE", start);
+        this.input.keyboard.on("keydown-ENTER", start);
+
+        const hub = this.add
+          .text(cx, 540, "← Back to Math Games", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            color: "#6fa3bf",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        hub.on("pointerover", () => hub.setColor("#ffcd4d"));
+        hub.on("pointerout", () => hub.setColor("#6fa3bf"));
+        hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+        srSay("Data Dash Line Plot Builder. Press Start to play.");
+      };
+
+      // ── VOCAB GATE ──
+      function VocabScene() {
+        Phaser.Scene.call(this, "Vocab");
+      }
+      VocabScene.prototype = Object.create(Phaser.Scene.prototype);
+      VocabScene.prototype.constructor = VocabScene;
+      VocabScene.prototype.init = function () {
+        this.idx = 0;
+      };
+      VocabScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, C.bg);
+        this.add
+          .text(cx, 70, "WORDS TO KNOW FIRST", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "34px",
+            color: "#2bd1c4",
+            stroke: "#04121c",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+
+        this.add
+          .rectangle(cx, 320, 560, 320, C.panel)
+          .setStrokeStyle(2, C.panelEdge);
+
+        this.stepText = this.add
+          .text(cx, 185, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            fontStyle: "bold",
+            color: "#6fa3bf",
+          })
+          .setOrigin(0.5);
+        this.emojiText = this.add
+          .text(cx, 250, "", { fontSize: "76px" })
+          .setOrigin(0.5);
+        this.termText = this.add
+          .text(cx, 330, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "32px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.defText = this.add
+          .text(cx, 400, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            color: "#bfe9ff",
+            align: "center",
+            wordWrap: { width: 500 },
+          })
+          .setOrigin(0.5);
+
+        const nextBtn = this.add
+          .rectangle(cx + 90, 510, 220, 52, 0x148f86)
+          .setInteractive({ useHandCursor: true });
+        const nextT = this.add
+          .text(cx + 90, 510, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        nextBtn.on("pointerover", () => nextBtn.setFillStyle(0x1aa99e));
+        nextBtn.on("pointerout", () => nextBtn.setFillStyle(0x148f86));
+        nextBtn.on("pointerdown", () => this.advance());
+        this.nextBtn = nextBtn;
+        this.nextT = nextT;
+
+        const backBtn = this.add
+          .rectangle(cx - 120, 510, 130, 52, 0x1a3a48)
+          .setInteractive({ useHandCursor: true });
+        const backT = this.add
+          .text(cx - 120, 510, "← Back", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#9fc6cf",
+          })
+          .setOrigin(0.5);
+        backBtn.on("pointerover", () => backBtn.setFillStyle(0x244c5c));
+        backBtn.on("pointerout", () => backBtn.setFillStyle(0x1a3a48));
+        backBtn.on("pointerdown", () => this.goBack());
+        this.backBtn = backBtn;
+        this.backT = backT;
+
+        this.input.keyboard.on("keydown-SPACE", () => this.advance());
+        this.input.keyboard.on("keydown-ENTER", () => this.advance());
+        this.input.keyboard.on("keydown-RIGHT", () => this.advance());
+        this.input.keyboard.on("keydown-LEFT", () => this.goBack());
+
+        this.renderCard();
+      };
+      VocabScene.prototype.renderCard = function () {
+        const v = DD_VOCAB[this.idx];
+        const last = this.idx === DD_VOCAB.length - 1;
+        this.stepText.setText(
+          "Key word " + (this.idx + 1) + " of " + DD_VOCAB.length,
+        );
+        this.emojiText.setText(v.emoji);
+        this.termText.setText(v.term);
+        this.defText.setText(v.def);
+        this.nextT.setText(last ? "Choose level ▶" : "Next →");
+        const showBack = this.idx > 0;
+        this.backBtn.setVisible(showBack);
+        this.backT.setVisible(showBack);
+        srSay(v.term + ". " + v.def);
+      };
+      VocabScene.prototype.advance = function () {
+        if (this.idx < DD_VOCAB.length - 1) {
+          this.idx++;
+          this.renderCard();
+        } else {
+          ddVocabSeen = true;
+          this.scene.start("Level");
+        }
+      };
+      VocabScene.prototype.goBack = function () {
+        if (this.idx > 0) {
+          this.idx--;
+          this.renderCard();
+        }
+      };
+
+      // ── LEVEL SELECT ──
+      // Two choices (never "ESOL"): Level 1 support, Level 2 enrichment.
+      function LevelScene() {
+        Phaser.Scene.call(this, "Level");
+      }
+      LevelScene.prototype = Object.create(Phaser.Scene.prototype);
+      LevelScene.prototype.constructor = LevelScene;
+      LevelScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, C.bg);
+        this.add
+          .text(cx, 90, "CHOOSE YOUR LEVEL", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "40px",
+            color: "#2bd1c4",
+            stroke: "#04121c",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+
+        const mkCard = (x, accent, title, sub, lines, lvl) => {
+          const card = this.add
+            .rectangle(x, 330, 320, 300, C.panel)
+            .setStrokeStyle(3, accent)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(x, 215, title, {
+              fontFamily: "Impact, sans-serif",
+              fontSize: "34px",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(x, 255, sub, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              fontStyle: "bold",
+              color: "#9cc4dd",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(x, 350, lines, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              color: "#bfe9ff",
+              align: "center",
+              lineSpacing: 6,
+              wordWrap: { width: 280 },
+            })
+            .setOrigin(0.5);
+          const choose = () => {
+            ddLevel = lvl;
+            SFX.init();
+            SFX.coin();
+            JUICE.audio.unlock();
+            this.scene.start("Game");
+          };
+          card.on("pointerover", () => card.setFillStyle(0x163a52));
+          card.on("pointerout", () => card.setFillStyle(C.panel));
+          card.on("pointerdown", choose);
+          return choose;
+        };
+
+        const chooseL1 = mkCard(
+          cx - 175,
+          0x4fd18b,
+          "LEVEL 1",
+          "Support",
+          "Target the MEAN\nNumbers 1–6\nLive mean shown big\nwith a helper hint",
+          1,
+        );
+        const chooseL2 = mkCard(
+          cx + 175,
+          0xffcd4d,
+          "LEVEL 2",
+          "Enrichment",
+          "Mean, MEDIAN, or RANGE\nNumbers 1–10\nFewer hints\nSometimes preset dots",
+          2,
+        );
+
+        this.add
+          .text(cx, 520, "Tap a card, or press 1 or 2.", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            color: "#6fa3bf",
+          })
+          .setOrigin(0.5);
+        this.input.keyboard.on("keydown-ONE", chooseL1);
+        this.input.keyboard.on("keydown-TWO", chooseL2);
+        this.input.keyboard.on("keydown-NUMPAD_ONE", chooseL1);
+        this.input.keyboard.on("keydown-NUMPAD_TWO", chooseL2);
+        srSay(
+          "Choose your level. Level 1 support targets the mean. Level 2 " +
+            "enrichment targets the mean, median, or range.",
+        );
+      };
+
+      // ── GAME ──
+      function GameScene() {
+        Phaser.Scene.call(this, "Game");
+      }
+      GameScene.prototype = Object.create(Phaser.Scene.prototype);
+      GameScene.prototype.constructor = GameScene;
+
+      GameScene.prototype.init = function () {
+        this.reduceMotion = !!(
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        );
+        this.score = 0;
+        this.lives = 3;
+        this.streak = 0;
+        this.solved = 0;
+        this.target = 10; // win: build this many plots correctly
+        this.locked = false;
+        // Axis is fixed by chosen level.
+        this.lo = 1;
+        this.hi = ddLevel === 1 ? 6 : 10;
+        this.n = this.hi - this.lo + 1;
+        this.counts = new Array(this.n).fill(0);
+        this.cursor = Math.floor(this.n / 2);
+        this.problem = null;
+      };
+
+      GameScene.prototype.colX = function (i) {
+        return AX_X0 + ((AX_X1 - AX_X0) * i) / (this.n - 1);
+      };
+
+      GameScene.prototype.create = function () {
+        this.add.rectangle(W / 2, H / 2, W, H, C.bg);
+
+        // HUD
+        const hud = {
+          fontFamily: "Segoe UI, sans-serif",
+          fontSize: "18px",
+          fontStyle: "bold",
+        };
+        this.scoreText = this.add.text(16, 12, "Score: 0", {
+          ...hud,
+          color: "#4fd18b",
+        });
+        this.livesText = this.add.text(16, 36, "❤❤❤", {
+          ...hud,
+          color: "#ff8f8f",
+        });
+        this.streakText = this.add
+          .text(W - 16, 12, "Streak: 0", { ...hud, color: "#ffcd4d" })
+          .setOrigin(1, 0);
+        this.levelText = this.add
+          .text(W - 16, 36, "Level " + ddLevel, { ...hud, color: "#bfe9ff" })
+          .setOrigin(1, 0);
+        this.progressText = this.add
+          .text(W / 2, 12, "0 / " + this.target, { ...hud, color: "#bfe9ff" })
+          .setOrigin(0.5, 0);
+
+        // Goal banner
+        this.bannerLabel = this.add
+          .text(W / 2, 60, "BUILD THE LINE PLOT", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#6fa3bf",
+          })
+          .setOrigin(0.5);
+        this.bannerText = this.add
+          .text(W / 2, 90, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "27px",
+            fontStyle: "bold",
+            color: "#ffffff",
+            align: "center",
+            wordWrap: { width: W - 80 },
+          })
+          .setOrigin(0.5);
+
+        // Live readout — the heart of the mechanic: the target stat updates as
+        // dots are added/removed.
+        this.bigReadout = this.add
+          .text(W / 2, 142, "", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "46px",
+            color: "#2bd1c4",
+            stroke: "#04121c",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.subReadout = this.add
+          .text(W / 2, 180, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "17px",
+            fontStyle: "bold",
+            color: "#9cc4dd",
+          })
+          .setOrigin(0.5);
+
+        // Teaching feedback (shown after Lock In; hidden otherwise).
+        this.feedback = this.add
+          .text(W / 2, 180, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "17px",
+            fontStyle: "bold",
+            color: "#ffcd4d",
+            stroke: "#04121c",
+            strokeThickness: 3,
+            align: "center",
+            wordWrap: { width: W - 80 },
+          })
+          .setOrigin(0.5)
+          .setAlpha(0);
+
+        // Plot baseline + value columns/labels.
+        this.add
+          .rectangle(AX_X0 - 16, AX_Y, AX_X1 - AX_X0 + 32, 3, C.panelEdge)
+          .setOrigin(0, 0.5);
+        this.zones = [];
+        this.colLabels = [];
+        for (let i = 0; i < this.n; i++) {
+          const x = this.colX(i);
+          // Selection highlight band (drawn first, low depth).
+          // (single shared highlight created after loop)
+          const zone = this.add
+            .rectangle(
+              x,
+              (PLOT_TOP + AX_Y) / 2,
+              Math.min(((AX_X1 - AX_X0) / (this.n - 1)) * 0.82, 64),
+              AX_Y - PLOT_TOP,
+              0xffffff,
+              0.001,
+            )
+            .setInteractive({ useHandCursor: true });
+          zone.on("pointerdown", () => this.addDot(i));
+          this.zones.push(zone);
+          this.add.rectangle(x, AX_Y, 2, 10, C.panelEdge).setOrigin(0.5, 0);
+          this.colLabels.push(
+            this.add
+              .text(x, AX_Y + 16, String(this.lo + i), {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "16px",
+                fontStyle: "bold",
+                color: "#bfe9ff",
+              })
+              .setOrigin(0.5, 0),
+          );
+        }
+        // Keyboard selection highlight (above zones, below dots).
+        this.sel = this.add
+          .rectangle(
+            this.colX(this.cursor),
+            (PLOT_TOP + AX_Y) / 2,
+            Math.min(((AX_X1 - AX_X0) / (this.n - 1)) * 0.82, 64),
+            AX_Y - PLOT_TOP,
+            C.sel,
+            0.16,
+          )
+          .setDepth(2);
+        this.dotLayer = this.add.group();
+
+        // Lock-in button
+        this.lockBtn = this.add
+          .rectangle(W / 2, 528, 240, 50, 0x148f86)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(W / 2, 528, "LOCK IN ✓", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "22px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.lockBtn.on("pointerover", () =>
+          this.lockBtn.setFillStyle(0x1aa99e),
+        );
+        this.lockBtn.on("pointerout", () =>
+          this.lockBtn.setFillStyle(0x148f86),
+        );
+        this.lockBtn.on("pointerdown", () => this.lockIn());
+
+        // Controls hint
+        this.add
+          .text(
+            W / 2,
+            570,
+            "Tap a column to add a dot · tap a dot to remove · ← → choose, ↑ add, ↓ remove · Enter = Lock In",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "13px",
+              color: "#6fa3bf",
+              align: "center",
+            },
+          )
+          .setOrigin(0.5);
+
+        // FX: red flash for a wrong lock-in.
+        this.redFlash = this.add
+          .rectangle(W / 2, H / 2, W, H, 0xff3333, 0)
+          .setDepth(30);
+
+        // Keyboard
+        const mvL = () => this.moveCursor(-1);
+        const mvR = () => this.moveCursor(1);
+        this.input.keyboard.on("keydown-LEFT", mvL);
+        this.input.keyboard.on("keydown-RIGHT", mvR);
+        this.input.keyboard.on("keydown-A", mvL);
+        this.input.keyboard.on("keydown-D", mvR);
+        this.input.keyboard.on("keydown-UP", () => this.addDot(this.cursor));
+        this.input.keyboard.on("keydown-W", () => this.addDot(this.cursor));
+        this.input.keyboard.on("keydown-DOWN", () =>
+          this.removeDot(this.cursor),
+        );
+        this.input.keyboard.on("keydown-S", () => this.removeDot(this.cursor));
+        this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
+        this.input.keyboard.on("keydown-SPACE", () => this.lockIn());
+
+        this.cameras.main.fadeIn(400);
+        this.newProblem();
+      };
+
+      GameScene.prototype.totalDots = function () {
+        return this.counts.reduce((a, b) => a + b, 0);
+      };
+
+      GameScene.prototype.moveCursor = function (d) {
+        if (this.locked) return;
+        this.cursor = Phaser.Math.Clamp(this.cursor + d, 0, this.n - 1);
+        this.sel.x = this.colX(this.cursor);
+        SFX.coin();
+        srSay("Column " + (this.lo + this.cursor) + " selected.");
+      };
+
+      GameScene.prototype.addDot = function (i) {
+        if (this.locked) return;
+        if (this.totalDots() >= DOT_CAP) {
+          this.flash(W / 2, 250, "Max " + DOT_CAP + " dots", "#ffcd4d");
+          SFX.miss();
+          return;
+        }
+        this.cursor = i;
+        this.sel.x = this.colX(i);
+        this.counts[i]++;
+        SFX.coin();
+        JUICE.audio.pop();
+        this.redrawDots();
+        this.updateReadout();
+        srSay("Added a dot at " + (this.lo + i) + ".");
+      };
+
+      GameScene.prototype.removeDot = function (i) {
+        if (this.locked) return;
+        if (this.counts[i] <= 0) {
+          SFX.miss();
+          return;
+        }
+        this.cursor = i;
+        this.sel.x = this.colX(i);
+        this.counts[i]--;
+        SFX.coin();
+        JUICE.audio.tap();
+        this.redrawDots();
+        this.updateReadout();
+        srSay("Removed a dot at " + (this.lo + i) + ".");
+      };
+
+      GameScene.prototype.redrawDots = function () {
+        this.dotLayer.clear(true, true);
+        for (let i = 0; i < this.n; i++) {
+          const x = this.colX(i);
+          for (let j = 0; j < this.counts[i]; j++) {
+            const y = AX_Y - 22 - j * DOT_GAP;
+            const d = this.add
+              .circle(x, y, DOT_R, C.dot)
+              .setStrokeStyle(2, 0x0a1c2c)
+              .setDepth(6)
+              .setInteractive({ useHandCursor: true });
+            d.on("pointerdown", () => this.removeDot(i));
+            this.dotLayer.add(d);
+            if (!this.reduceMotion && j === this.counts[i] - 1)
+              JUICE.tilePop(this, d);
+          }
+        }
+      };
+
+      GameScene.prototype.updateReadout = function () {
+        const stat = this.problem.stat;
+        const cur = statOf(this.counts, this.lo, stat);
+        const tot = this.totalDots();
+        this.bigReadout.setText(
+          STAT[stat].name + " = " + (cur === null ? "—" : numStr(cur)),
+        );
+        if (ddLevel === 1) {
+          // Support: count + the formula hint always visible.
+          this.subReadout.setText("Dots: " + tot + "   ·   " + STAT.mean.hint);
+        } else {
+          // Enrichment: show all three live stats, fewer words.
+          const mean = statOf(this.counts, this.lo, "mean");
+          const med = statOf(this.counts, this.lo, "median");
+          const rng = statOf(this.counts, this.lo, "range");
+          this.subReadout.setText(
+            "Dots: " +
+              tot +
+              "   ·   Mean " +
+              (mean === null ? "—" : numStr(mean)) +
+              "  ·  Median " +
+              (med === null ? "—" : numStr(med)) +
+              "  ·  Range " +
+              (rng === null ? "—" : numStr(rng)),
+          );
+        }
+      };
+
+      GameScene.prototype.newProblem = function () {
+        this.locked = false;
+        this.problem = genProblem(ddLevel, this.lo, this.hi);
+        this.counts = this.problem.presets
+          ? this.problem.presets.slice()
+          : new Array(this.n).fill(0);
+        this.cursor = Math.floor(this.n / 2);
+        this.sel.x = this.colX(this.cursor);
+        this.feedback.setAlpha(0);
+        this.subReadout.setVisible(true);
+        const s = STAT[this.problem.stat];
+        this.bannerText.setText(
+          "Add dots so the " + s.name + " is " + this.problem.target + ".",
+        );
+        this.redrawDots();
+        this.updateReadout();
+        srSay(
+          "Build the line plot so the " +
+            s.name +
+            " is " +
+            this.problem.target +
+            ". Tap a column to add a dot, then lock it in.",
+        );
+      };
+
+      GameScene.prototype.lockIn = function () {
+        if (this.locked) return;
+        const stat = this.problem.stat;
+        const tot = this.totalDots();
+        const need = stat === "range" ? 2 : 1;
+        if (tot < need) {
+          // Not an error — just guide; no life lost.
+          SFX.miss();
+          this.flash(
+            W / 2,
+            250,
+            need === 2 ? "Add at least 2 dots" : "Add a dot first",
+            "#ffcd4d",
+          );
+          return;
+        }
+        this.locked = true;
+        const cur = statOf(this.counts, this.lo, stat);
+        const correct =
+          cur !== null && Math.abs(cur - this.problem.target) < 1e-9;
+
+        if (correct) {
+          SFX.good();
+          JUICE.audio.correct(this.streak);
+          this.solved++;
+          this.streak++;
+          const bonus = Math.min(this.streak, 5) * 5;
+          const gained = 20 + bonus;
+          this.score += gained;
+          JUICE.burst(
+            this,
+            W / 2,
+            AX_Y - 60,
+            [0x4fd18b, 0x2bd1c4, 0xffffff],
+            18,
+          );
+          JUICE.floatText(this, W / 2, 250, "+" + gained, "#4fd18b", 36);
+          JUICE.award(gained, "u8-data-dash");
+          if (this.streak >= 2) JUICE.confetti(this, 1);
+          this.flash(W / 2, 210, "Correct! ✓", "#4fd18b");
+          this.feedback
+            .setText("Correct! " + this.successWhy(stat, cur))
+            .setAlpha(1);
+          this.subReadout.setVisible(false);
+          srSay("Correct. " + this.successWhy(stat, cur));
+          this.afterAttempt(true);
+        } else {
+          SFX.bad();
+          JUICE.audio.wrong();
+          this.streak = 0;
+          this.lives--;
+          this.flashRed();
+          JUICE.shake(this, 0.008);
+          const why = this.failWhy(stat, cur);
+          this.feedback.setText(why).setAlpha(1);
+          this.subReadout.setVisible(false);
+          srSay("Not quite. " + why);
+          this.afterAttempt(false);
+        }
+      };
+
+      // Teaching text that shows the student's ACTUAL statistic (the "correct
+      // state" of their build) against the target.
+      GameScene.prototype.successWhy = function (stat, cur) {
+        if (stat === "mean") {
+          const tot = this.totalDots();
+          const sum = Math.round(cur * tot);
+          return "Mean = " + sum + " ÷ " + tot + " = " + numStr(cur) + ".";
+        }
+        if (stat === "median")
+          return "The middle value is " + numStr(cur) + ".";
+        return "Greatest − least = " + numStr(cur) + ".";
+      };
+      GameScene.prototype.failWhy = function (stat, cur) {
+        const t = this.problem.target;
+        if (stat === "mean") {
+          const tot = this.totalDots();
+          const sum = Math.round(cur * tot);
+          return (
+            "Your mean is " +
+            numStr(cur) +
+            " (sum " +
+            sum +
+            " ÷ " +
+            tot +
+            " dots), but you need " +
+            t +
+            ". " +
+            STAT.mean.hint
+          );
+        }
+        if (stat === "median") {
+          return (
+            "Your median is " +
+            numStr(cur) +
+            ", but you need " +
+            t +
+            ". " +
+            STAT.median.hint
+          );
+        }
+        return (
+          "Your range is " +
+          numStr(cur) +
+          ", but you need " +
+          t +
+          ". " +
+          STAT.range.hint
+        );
+      };
+
+      GameScene.prototype.afterAttempt = function (correct) {
+        this.updateHUD();
+        if (this.lives <= 0) {
+          this.endGame(false);
+          return;
+        }
+        if (this.solved >= this.target) {
+          this.endGame(true);
+          return;
+        }
+        this.time.delayedCall(correct ? 1100 : 1700, () => {
+          this.newProblem();
+        });
+      };
+
+      GameScene.prototype.flash = function (x, y, text, color) {
+        const ft = this.add
+          .text(x, y, text, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "26px",
+            fontStyle: "bold",
+            color: color,
+            stroke: "#04121c",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5)
+          .setDepth(40);
+        this.tweens.add({
+          targets: ft,
+          y: y - 50,
+          alpha: { from: 1, to: 0 },
+          duration: this.reduceMotion ? 500 : 900,
+          onComplete: () => ft.destroy(),
+        });
+      };
+
+      GameScene.prototype.flashRed = function () {
+        if (this.reduceMotion) return;
+        this.redFlash.setAlpha(0.35);
+        this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 350 });
+      };
+
+      GameScene.prototype.updateHUD = function () {
+        this.scoreText.setText("Score: " + this.score);
+        this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
+        this.streakText.setText("Streak: " + this.streak);
+        this.levelText.setText("Level " + ddLevel);
+        this.progressText.setText(this.solved + " / " + this.target);
+      };
+
+      GameScene.prototype.endGame = function (won) {
+        this.locked = true;
+        this.time.delayedCall(600, () => {
+          this.scene.start("Result", {
+            score: this.score,
+            solved: this.solved,
+            target: this.target,
+            won: won,
+          });
+        });
+      };
+
+      // ── RESULT ──
+      function ResultScene() {
+        Phaser.Scene.call(this, "Result");
+      }
+      ResultScene.prototype = Object.create(Phaser.Scene.prototype);
+      ResultScene.prototype.constructor = ResultScene;
+      ResultScene.prototype.init = function (data) {
+        this.data2 = data;
+      };
+      ResultScene.prototype.create = function () {
+        const d = this.data2;
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, C.bg);
+        const stars =
+          d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+        if (d.score > hs) {
+          hs = d.score;
+          try {
+            localStorage.setItem(LS_KEY, String(hs));
+          } catch (e) {}
+        }
+
+        this.add
+          .text(cx, 110, d.won ? "DATA MASTER!" : "OUT OF LIVES", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "48px",
+            color: d.won ? "#4fd18b" : "#ff8f8f",
+            stroke: "#04121c",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+
+        const starStr = "★".repeat(stars) + "☆".repeat(3 - stars);
+        this.add
+          .text(cx, 185, starStr, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "48px",
+            color: "#ffcd4d",
+          })
+          .setOrigin(0.5);
+
+        this.add
+          .text(cx, 255, "Score: " + d.score, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "30px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 295, "Built " + d.solved + " of " + d.target + " plots", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            color: "#bfe9ff",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 325, "High Score: " + hs, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#ffcd4d",
+          })
+          .setOrigin(0.5);
+
+        if (d.won) {
+          SFX.win();
+          JUICE.audio.fanfare();
+          JUICE.confetti(this, 1);
+        } else SFX.lose();
+
+        // EduPulse reporting (guarded; safe no-op without bridge).
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: document.title,
+              score: d.score,
+              stars: stars,
+              standard: "6.SP.5",
+              problemsAttempted: d.solved,
+            });
+        } catch (e) {}
+        srSay(
+          (d.won ? "You won! " : "Game over. ") +
+            "Final score " +
+            d.score +
+            ", " +
+            stars +
+            " stars.",
+        );
+
+        const btn = this.add
+          .rectangle(cx, 400, 220, 54, 0x148f86)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx, 400, "PLAY AGAIN 🔁", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        const again = () => this.scene.start("Level");
+        btn.on("pointerover", () => btn.setFillStyle(0x1aa99e));
+        btn.on("pointerout", () => btn.setFillStyle(0x148f86));
+        btn.on("pointerdown", again);
+        this.input.keyboard.on("keydown-SPACE", again);
+        this.input.keyboard.on("keydown-ENTER", again);
+
+        const hub = this.add
+          .text(cx, 480, "← Back to Math Games", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            color: "#6fa3bf",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        hub.on("pointerover", () => hub.setColor("#ffcd4d"));
+        hub.on("pointerout", () => hub.setColor("#6fa3bf"));
+        hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+      };
+
+      // ── Launch ──
       const ddGame = new Phaser.Game(config);
 
       // ── Canvas accessibility (additive; no gameplay change) ──
@@ -1340,9 +1445,10 @@
           cv.setAttribute("role", "application");
           cv.setAttribute(
             "aria-label",
-            "Data Dash Stat Catcher math game. Read the data set, then move your " +
-              "cart with the left and right arrow keys to catch the falling tile that " +
-              "equals the mean, median, or range.",
+            "Data Dash Line Plot Builder math game. Read the goal, then build a " +
+              "line plot: tap a value column (or use the arrow keys) to add a dot, " +
+              "tap a dot to remove it, until the mean, median, or range matches the " +
+              "target, then press Lock In.",
           );
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
@@ -1365,8 +1471,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>
