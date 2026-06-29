@@ -19,10 +19,14 @@
         background: #0f172a;
         overflow: hidden;
         font-family: "Segoe UI", system-ui, sans-serif;
+        /* Stop the browser from treating a drag as scroll/zoom on tablets, so
+           Phaser receives the touch-drag gestures (drag-sort works on touch). */
+        touch-action: none;
       }
       canvas {
         display: block;
         margin: 0 auto;
+        touch-action: none;
       }
       canvas:focus-visible {
         outline: 3px solid #38bdf8;
@@ -889,20 +893,17 @@
               Phaser.Geom.Rectangle.Contains,
             );
             this.input.setDraggable(t.parts);
-            // Position from the pointer's world coords (Scale.FIT-correct), not
-            // the drag event's dragX/dragY — those don't reposition a container
-            // nested inside another container (this.layer), so the tile would
-            // never follow the cursor. Capture the grab offset so the tile
-            // doesn't jump to centre under the finger.
-            t.parts.on("dragstart", (p) => {
-              t.grabDX = t.parts.x - p.worldX;
-              t.grabDY = t.parts.y - p.worldY;
-              t.parts.setDepth(20);
-            });
+            // Position the tile from the pointer's world coords (Scale.FIT-
+            // correct). NOTE: dragX/dragY from the event do NOT update for a
+            // container nested in another container (this.layer), so we must use
+            // the pointer. We CENTRE the tile on the pointer (no grab offset) so
+            // the tile's centre — which dropTile tests against the bins — is
+            // exactly where the student is aiming. That makes it land in the box.
+            t.parts.on("dragstart", () => t.parts.setDepth(20));
             t.parts.on("drag", (p) => {
               if (t.assigned) return;
-              t.parts.x = p.worldX + (t.grabDX || 0);
-              t.parts.y = p.worldY + (t.grabDY || 0);
+              t.parts.x = p.worldX;
+              t.parts.y = p.worldY;
             });
             t.parts.on("dragend", () => {
               t.parts.setDepth(0);
@@ -950,14 +951,32 @@
           // The container is positioned in absolute (layer) space while dragging.
           const gx = t.parts.x;
           const gy = t.parts.y;
+          // Forgiving drop: pick the NEAREST bin and accept it if the release is
+          // anywhere near that bin (a generous margin around the box) OR simply
+          // in the lower "bins" zone. Kids shouldn't have to hit a small target
+          // pixel-perfectly — getting close to the right box is enough.
+          const MARGIN = 70;
           let target = -1;
+          let bestD = Infinity;
           this.bins.forEach((b, bi) => {
-            if (Math.abs(gx - b.x) <= b.w / 2 && Math.abs(gy - b.y) <= b.h / 2)
+            const d = Math.hypot(gx - b.x, gy - b.y);
+            if (d < bestD) {
+              bestD = d;
               target = bi;
+            }
           });
-          if (target >= 0) this.assignTile(t, target);
-          else {
-            // snap back home
+          const b = target >= 0 ? this.bins[target] : null;
+          const nearBox =
+            b &&
+            Math.abs(gx - b.x) <= b.w / 2 + MARGIN &&
+            Math.abs(gy - b.y) <= b.h / 2 + MARGIN;
+          // Also accept if released anywhere in the horizontal band of the bins
+          // (so a drop that overshoots vertically still snaps to the nearest box).
+          const inBinsBand = b && gy >= b.y - b.h / 2 - MARGIN;
+          if (b && (nearBox || inBinsBand)) {
+            this.assignTile(t, target);
+          } else {
+            // released up near the staging row — snap back home
             t.parts.x = t.homeX;
             t.parts.y = t.homeY;
           }
