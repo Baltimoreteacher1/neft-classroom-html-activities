@@ -255,6 +255,37 @@
           }
 
           this.stars.y = (this.stars.y + 0.5) % H;
+
+          // Update labels to follow falling meteors and check for off-screen bounds
+          let missedCorrect = false;
+          const activeMeteors = this.meteors.getChildren();
+          for (let i = activeMeteors.length - 1; i >= 0; i--) {
+            const met = activeMeteors[i];
+            if (met.label && met.active) {
+              met.label.x = met.x;
+              met.label.y = met.y;
+            }
+            if (met.y > H + 40) {
+              if (met.isCorrect) {
+                missedCorrect = true;
+              }
+              if (met.label) met.label.destroy();
+              met.destroy();
+            }
+          }
+
+          if (missedCorrect) {
+            this.streak = 0;
+            document.body.classList.add('gfx-wrong');
+            setTimeout(() => document.body.classList.remove('gfx-wrong'), 200);
+            this.lives--;
+            this.updateLivesUI();
+            if (this.lives <= 0) {
+              this.scene.start('WinScene', { score: this.score, gameover: true });
+            } else {
+              this.loadQuestion();
+            }
+          }
         }
 
         updateLivesUI() {
