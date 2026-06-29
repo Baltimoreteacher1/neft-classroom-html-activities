@@ -7702,15 +7702,17 @@
         function lessonPhaseIndex(act, isProject) {
           var name = (act.text || "").toLowerCase();
           var href = (act.href || "").toLowerCase();
-          
+
           // Separate games bucket (index 3)
           if (
-            /game|games|play|arcade|escape|relay|hunt|puzzle|maze|alchemy|forge|odyssey|coordinate defender|scoring engine|pricing engine|aquarium build|room designer|package design/.test(name) ||
+            /game|games|play|arcade|escape|relay|hunt|puzzle|maze|alchemy|forge|odyssey|coordinate defender|scoring engine|pricing engine|aquarium build|room designer|package design/.test(
+              name,
+            ) ||
             /\/games\/|\/game\//.test(href)
           ) {
             return 3;
           }
-          
+
           if (
             /get ready|readiness|pre-?lesson|pre-?test|vocab|warm[- ]?up/.test(
               name,
@@ -7937,6 +7939,7 @@
                   })
                   .join(" "),
               isEndOfUnit: true,
+              unitInteger: unitInteger,
             });
           }
 
@@ -8199,19 +8202,36 @@
               // opens it. Empty phases are disabled with a "— None —" label.
               phaseSelects.forEach(function (sel, pIdx) {
                 var items = phaseBuckets[pIdx];
-                
+
                 // Inject universal Practice Arcade Game option for Games dropdown (pIdx === 3)
                 if (pIdx === 3) {
                   items = items.slice();
-                  var hasArcade = items.some(function(it) { return it.href.indexOf('practice-arcade') > -1; });
+                  var hasArcade = items.some(function (it) {
+                    return it.href.indexOf("practice-arcade") > -1;
+                  });
                   if (!hasArcade) {
-                    items.push({
-                      text: "⚙️ Practice Arcade Game",
-                      href: "/math/games/practice-arcade/?lesson=" + lesson.lessonId
-                    });
+                    if (lesson.isEndOfUnit && lesson.unitInteger) {
+                      // End-of-Unit entry: cumulative review across the whole
+                      // unit (?unit=N), not a single lesson. "Arcade" is the
+                      // per-lesson name, so this end-of-unit option is labeled
+                      // "Unit Review Game" instead.
+                      items.push({
+                        text: "🎮 Unit Review Game",
+                        href:
+                          "/math/games/practice-arcade/?unit=" +
+                          lesson.unitInteger,
+                      });
+                    } else if (lesson.lessonId) {
+                      items.push({
+                        text: "⚙️ Practice Arcade Game",
+                        href:
+                          "/math/games/practice-arcade/?lesson=" +
+                          lesson.lessonId,
+                      });
+                    }
                   }
                 }
-                
+
                 sel.innerHTML = "";
                 var placeholder = document.createElement("option");
                 placeholder.value = "";

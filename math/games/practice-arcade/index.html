@@ -134,6 +134,7 @@
       let rounds = [];
       let lessonTitle = "Lesson";
       let activeLesson = "1-1";
+      let isReviewMode = false; // true for unit / multi-lesson cumulative review
       let themeId = "default"; // lesson config "theme" id → palette
       let mascot = "🎮"; // lesson config "themeEmoji" → guide character
 
@@ -282,6 +283,7 @@
         // longer recolor it from the per-lesson (dark) theme, which produced
         // the muddy low-contrast look. Per-lesson identity = the mascot emoji.
 
+        isReviewMode = isGroup;
         if (isGroup) {
           rounds = shuffle(rounds);
           lessonTitle = unit ? "Unit " + unit + " Review" : "Mixed Review";
@@ -433,12 +435,17 @@
         create() {
           drawStars(this);
           this.add
-            .text(W / 2, 150, "PRACTICE ARCADE", {
-              fontFamily: "Nunito, Segoe UI, sans-serif",
-              fontSize: "52px",
-              fontStyle: "bold",
-              color: "#38bdf8",
-            })
+            .text(
+              W / 2,
+              150,
+              isReviewMode ? "UNIT REVIEW" : "PRACTICE ARCADE",
+              {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "52px",
+                fontStyle: "bold",
+                color: "#38bdf8",
+              },
+            )
             .setOrigin(0.5);
           this.add
             .text(W / 2, 210, lessonTitle, {
