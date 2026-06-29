@@ -889,11 +889,20 @@
               Phaser.Geom.Rectangle.Contains,
             );
             this.input.setDraggable(t.parts);
-            t.parts.on("dragstart", () => t.parts.setDepth(20));
-            t.parts.on("drag", (p, dx, dy) => {
+            // Position from the pointer's world coords (Scale.FIT-correct), not
+            // the drag event's dragX/dragY — those don't reposition a container
+            // nested inside another container (this.layer), so the tile would
+            // never follow the cursor. Capture the grab offset so the tile
+            // doesn't jump to centre under the finger.
+            t.parts.on("dragstart", (p) => {
+              t.grabDX = t.parts.x - p.worldX;
+              t.grabDY = t.parts.y - p.worldY;
+              t.parts.setDepth(20);
+            });
+            t.parts.on("drag", (p) => {
               if (t.assigned) return;
-              t.parts.x = dx;
-              t.parts.y = dy;
+              t.parts.x = p.worldX + (t.grabDX || 0);
+              t.parts.y = p.worldY + (t.grabDY || 0);
             });
             t.parts.on("dragend", () => {
               t.parts.setDepth(0);
