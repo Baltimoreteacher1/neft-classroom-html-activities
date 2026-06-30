@@ -1108,6 +1108,11 @@
           }
         });
         this.input.on("drag", (p, g) => {
+          // Mark as dragged HERE (not only in dragstart): Phaser fires dragstart
+          // before the tile's own pointerdown, which resets _wasDragged to false.
+          // The drag event always fires after pointerdown, so the flag sticks and
+          // the trailing pointerup won't autoPlace (and undo) a drag-placed tile.
+          if (g._tileObj) g._tileObj._wasDragged = true;
           g.x = p.worldX;
           g.y = p.worldY;
         });
