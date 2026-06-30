@@ -1102,9 +1102,9 @@
             this.refreshReadout();
           }
         });
-        this.input.on("drag", (p, g, dx, dy) => {
-          g.x = dx;
-          g.y = dy;
+        this.input.on("drag", (p, g) => {
+          g.x = p.worldX;
+          g.y = p.worldY;
         });
         this.input.on("dragend", (p, g) => {
           g.setDepth(8);
