@@ -141,26 +141,38 @@
     ["pushups", "💪", "Push-ups or sit-ups", "Knock out a set or two"],
     ["stretch", "🤸", "Warmed up / stretched", "Loosen up before or after"],
   ];
-  // Custom movement items the student adds on the Health page live in
-  // state.health.items; the effective list is the built-in defaults plus those.
+  // The Health page list is fully user-editable. The built-in HEALTH_ITEMS are
+  // only a first-run seed: on first use they're copied into state.health.items,
+  // after which every movement (defaults included) can be renamed or deleted.
+  // A `seeded` flag means "don't re-seed" so deleting everything stays empty.
   function healthItems() {
-    const custom =
-      state.health && Array.isArray(state.health.items)
-        ? state.health.items
-        : [];
-    return HEALTH_ITEMS.concat(custom);
+    state.health = state.health || { log: {} };
+    if (!state.health.seeded) {
+      if (
+        !Array.isArray(state.health.items) ||
+        state.health.items.length === 0
+      ) {
+        state.health.items = HEALTH_ITEMS.map((it) => it.slice());
+      }
+      state.health.seeded = true;
+    }
+    if (!Array.isArray(state.health.items)) state.health.items = [];
+    return state.health.items;
   }
   // Validate a synced/imported health payload so it can't poison state. Keeps
-  // the built-in items plus any well-formed custom items, and only log entries
-  // that reference a known item id.
+  // every well-formed movement item (built-in or custom) and only log entries
+  // that reference a known item id, and preserves the first-run `seeded` flag.
   function normalizeHealth(h) {
     const items = [];
     const rawItems = h && Array.isArray(h.items) ? h.items : [];
+    const seenIds = new Set();
     for (const it of rawItems) {
       if (!Array.isArray(it) || it.length < 3) continue;
       const [id, emoji, label, hint] = it;
-      if (typeof id !== "string" || !/^h_/.test(id)) continue;
+      if (typeof id !== "string" || !id || id.length > 40) continue;
+      if (seenIds.has(id)) continue;
       if (typeof label !== "string" || !label.trim()) continue;
+      seenIds.add(id);
       items.push([
         id,
         typeof emoji === "string" && emoji ? emoji.slice(0, 4) : "💪",
@@ -187,7 +199,9 @@
       if (paid.length) clean.__paid = [...new Set(paid)];
       if (Object.keys(clean).length) log[date] = clean;
     }
-    return { log, items };
+    const out = { log, items };
+    if (h && h.seeded) out.seeded = true;
+    return out;
   }
   const parseLocal = (iso) => (iso ? new Date(iso + "T12:00:00") : null);
   const daysUntil = (iso) => {
@@ -4358,7 +4372,6 @@
         .map((it) => {
           const [id, emoji, label, hint] = it;
           const done = !!day[id];
-          const custom = /^h_/.test(id);
           return (
             '<div class="health-row">' +
             '<label class="health-item' +
@@ -4380,20 +4393,18 @@
             '</small></span><span class="health-pay">+' +
             money(rate) +
             "</span></label>" +
-            (custom
-              ? '<span class="health-edit">' +
-                '<button class="btn sm ghost" data-act="health-edit" data-id="' +
-                id +
-                '" aria-label="Edit ' +
-                esc(label) +
-                '" title="Edit">✏️</button>' +
-                '<button class="btn sm ghost" data-act="health-del" data-id="' +
-                id +
-                '" aria-label="Delete ' +
-                esc(label) +
-                '" title="Delete">✕</button>' +
-                "</span>"
-              : "") +
+            '<span class="health-edit">' +
+            '<button class="btn sm ghost" data-act="health-edit" data-id="' +
+            id +
+            '" aria-label="Edit ' +
+            esc(label) +
+            '" title="Edit">✏️</button>' +
+            '<button class="btn sm ghost" data-act="health-del" data-id="' +
+            id +
+            '" aria-label="Delete ' +
+            esc(label) +
+            '" title="Delete">✕</button>' +
+            "</span>" +
             "</div>"
           );
         })
@@ -8128,9 +8139,7 @@ Due May 31"></textarea>
     },
     "health-add": () => openModal("Add a movement", healthItemForm(null)),
     "health-edit": (id) => {
-      const item = ((state.health && state.health.items) || []).find(
-        (it) => it[0] === id,
-      );
+      const item = healthItems().find((it) => it[0] === id);
       if (item) openModal("Edit movement", healthItemForm(item));
     },
     "save-health-item": (id) => {
@@ -8138,19 +8147,16 @@ Due May 31"></textarea>
       if (!label) return toast("Type what the movement is first.");
       const emoji = ($("#hEmoji").value || "").trim().slice(0, 4) || "💪";
       const hint = ($("#hHint").value || "").trim().slice(0, 80);
-      state.health = state.health || { log: {} };
-      state.health.items = Array.isArray(state.health.items)
-        ? state.health.items
-        : [];
+      const list = healthItems();
       if (id) {
-        const item = state.health.items.find((it) => it[0] === id);
+        const item = list.find((it) => it[0] === id);
         if (item) {
           item[1] = emoji;
           item[2] = label.slice(0, 60);
           item[3] = hint;
         }
       } else {
-        state.health.items.push([uid("h"), emoji, label.slice(0, 60), hint]);
+        list.push([uid("h"), emoji, label.slice(0, 60), hint]);
       }
       save();
       closeModal();
@@ -8158,9 +8164,7 @@ Due May 31"></textarea>
       toast(id ? "Saved 💪" : "Added 💪 — go move your body");
     },
     "health-del": (id) => {
-      state.health.items = ((state.health && state.health.items) || []).filter(
-        (it) => it[0] !== id,
-      );
+      state.health.items = healthItems().filter((it) => it[0] !== id);
       save();
       render();
       toast("Removed");
