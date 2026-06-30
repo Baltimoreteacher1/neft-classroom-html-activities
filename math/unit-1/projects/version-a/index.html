@@ -4,10 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Block Party Planner — Unit 1 Culminating Project</title>
-    <meta name="description" content="Unit 1 Number Sense culminating project. Plan a block party using GCF, LCM, decimal operations, and division. Simple step-by-step, tab-based guide." />
+    <meta
+      name="description"
+      content="Unit 1 Number Sense culminating project. Plan a block party using GCF, LCM, decimal operations, and division. Simple step-by-step, tab-based guide."
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
         --navy: #0f2b3c;
@@ -26,296 +32,807 @@
         --bg: #f4f7fa;
         --card: #ffffff;
         --radius: 16px;
-        --shadow: 0 2px 16px rgba(15,43,60,.10);
+        --shadow: 0 2px 16px rgba(15, 43, 60, 0.1);
       }
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.6;
+      }
 
       /* ---- Hero ---- */
       .hero {
-        background: linear-gradient(135deg, #0f2b3c 0%, #1565a8 60%, #0e8a7d 100%);
+        background: linear-gradient(
+          135deg,
+          #0f2b3c 0%,
+          #1565a8 60%,
+          #0e8a7d 100%
+        );
         color: #fff;
         padding: 36px 24px 28px;
         text-align: center;
       }
-      .hero-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
-      .hero h1 { font-size: clamp(24px,5vw,38px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
-      .hero-sub { color: rgba(255,255,255,.85); font-size: 16px; max-width: 580px; margin: 0 auto 16px; }
-      .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
-      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 50px; padding: 4px 13px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
-      .tag.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
+      .hero-emoji {
+        font-size: 52px;
+        line-height: 1;
+        margin-bottom: 10px;
+      }
+      .hero h1 {
+        font-size: clamp(24px, 5vw, 38px);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
+      }
+      .hero-sub {
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 16px;
+        max-width: 580px;
+        margin: 0 auto 16px;
+      }
+      .hero-tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      .tag {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 50px;
+        padding: 4px 13px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+      .tag.gold {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #fff;
+      }
 
       /* ---- Level selector ---- */
       .level-bar {
-        display: flex; gap: 10px; justify-content: center;
-        background: rgba(255,255,255,.10); border-radius: 50px;
-        padding: 6px 10px; max-width: 400px; margin: 0 auto;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50px;
+        padding: 6px 10px;
+        max-width: 400px;
+        margin: 0 auto;
       }
       .level-btn {
-        flex: 1; background: transparent; color: rgba(255,255,255,.75);
-        border: 2px solid rgba(255,255,255,.30); border-radius: 50px;
-        padding: 7px 16px; font-size: 13px; font-weight: 700;
-        cursor: pointer; font-family: inherit; transition: all .2s;
+        flex: 1;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.75);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50px;
+        padding: 7px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s;
       }
-      .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; font-weight: 800; box-shadow: 0 6px 16px rgba(0,0,0,.30); transform: translateY(-1px) scale(1.03); }
+      .level-btn.active {
+        background: #fff;
+        color: var(--navy);
+        border-color: #fff;
+        font-weight: 800;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        transform: translateY(-1px) scale(1.03);
+      }
 
       /* ---- Tab wizard ---- */
-      .wizard { max-width: 860px; margin: 0 auto; padding: 0 16px 60px; }
+      .wizard {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 16px 60px;
+      }
 
       .step-trail {
-        display: flex; align-items: center; gap: 0;
-        padding: 22px 0 0; overflow-x: auto;
+        display: flex;
+        align-items: center;
+        gap: 0;
+        padding: 22px 0 0;
+        overflow-x: auto;
       }
       .step-trail-item {
-        display: flex; align-items: center; gap: 6px;
-        cursor: pointer; white-space: nowrap; padding: 8px 12px;
-        border-radius: 10px; transition: background .15s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        white-space: nowrap;
+        padding: 8px 12px;
+        border-radius: 10px;
+        transition: background 0.15s;
       }
-      .step-trail-item:hover { background: var(--blue-lt); }
+      .step-trail-item:hover {
+        background: var(--blue-lt);
+      }
       .step-trail-item.active .s-num {
-        background: var(--blue); color: #fff;
+        background: var(--blue);
+        color: #fff;
       }
       .step-trail-item.done .s-num {
-        background: var(--green); color: #fff;
+        background: var(--green);
+        color: #fff;
       }
       .s-num {
-        width: 30px; height: 30px; border-radius: 50%;
-        background: var(--line); color: var(--muted);
-        font-weight: 800; font-size: 13px;
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0; transition: all .2s;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--line);
+        color: var(--muted);
+        font-weight: 800;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.2s;
       }
-      .s-label { font-size: 13px; font-weight: 600; color: var(--muted); }
-      .step-trail-item.active .s-label { color: var(--blue); }
-      .step-trail-item.done .s-label { color: var(--green); }
-      .step-arrow { color: var(--line); font-size: 16px; padding: 0 2px; }
+      .s-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .step-trail-item.active .s-label {
+        color: var(--blue);
+      }
+      .step-trail-item.done .s-label {
+        color: var(--green);
+      }
+      .step-arrow {
+        color: var(--line);
+        font-size: 16px;
+        padding: 0 2px;
+      }
 
       /* ---- Progress bar ---- */
-      .prog-wrap { margin: 14px 0 4px; }
-      .prog-bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
-      .prog-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--teal)); border-radius: 99px; transition: width .4s ease; }
-      .prog-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+      .prog-wrap {
+        margin: 14px 0 4px;
+      }
+      .prog-bar {
+        height: 6px;
+        background: var(--line);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .prog-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue), var(--teal));
+        border-radius: 99px;
+        transition: width 0.4s ease;
+      }
+      .prog-label {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
 
       /* ---- Step panel ---- */
-      .step-panel { display: none; animation: fadein .25s ease; }
-      .step-panel.active { display: block; }
-      @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+      .step-panel {
+        display: none;
+        animation: fadein 0.25s ease;
+      }
+      .step-panel.active {
+        display: block;
+      }
+      @keyframes fadein {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
 
       /* ---- Card ---- */
       .card {
-        background: var(--card); border: 1px solid var(--line);
-        border-radius: var(--radius); padding: 28px 26px;
-        box-shadow: var(--shadow); margin-top: 16px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 28px 26px;
+        box-shadow: var(--shadow);
+        margin-top: 16px;
       }
-      .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
       .card-icon {
-        width: 50px; height: 50px; border-radius: 14px;
-        background: var(--blue-lt); display: flex;
-        align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: var(--blue-lt);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
       }
-      .card-icon.gold { background: var(--gold-lt); }
-      .card-icon.teal { background: var(--teal-lt); }
-      .card-icon.green { background: var(--green-lt); }
-      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
-      .card-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
+      .card-icon.gold {
+        background: var(--gold-lt);
+      }
+      .card-icon.teal {
+        background: var(--teal-lt);
+      }
+      .card-icon.green {
+        background: var(--green-lt);
+      }
+      .card-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 3px;
+      }
+      .card-sub {
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 500;
+      }
 
       /* ---- Instruction box ---- */
       .instruct {
-        background: var(--blue-lt); border-left: 4px solid var(--blue);
-        border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
-        font-size: 15px; line-height: 1.6;
+        background: var(--blue-lt);
+        border-left: 4px solid var(--blue);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+        font-size: 15px;
+        line-height: 1.6;
       }
-      .instruct.gold { background: var(--gold-lt); border-color: var(--gold); }
-      .instruct.teal { background: var(--teal-lt); border-color: var(--teal); }
-      .instruct.green { background: var(--green-lt); border-color: var(--green); }
+      .instruct.gold {
+        background: var(--gold-lt);
+        border-color: var(--gold);
+      }
+      .instruct.teal {
+        background: var(--teal-lt);
+        border-color: var(--teal);
+      }
+      .instruct.green {
+        background: var(--green-lt);
+        border-color: var(--green);
+      }
 
       /* ---- SVG visual ---- */
-      .visual-svg { display: block; width: 100%; max-width: 520px; margin: 0 auto 20px; border-radius: 12px; }
+      .visual-svg {
+        display: block;
+        width: 100%;
+        max-width: 520px;
+        margin: 0 auto 20px;
+        border-radius: 12px;
+      }
 
       /* ---- Form inputs ---- */
-      label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
-      input[type="number"], input[type="text"], textarea, select {
-        width: 100%; padding: 10px 14px; border: 1.5px solid var(--line);
-        border-radius: 10px; font-size: 15px; font-family: inherit;
-        background: var(--bg); color: var(--ink); transition: border-color .2s;
+      label.lbl {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 5px;
+        margin-top: 14px;
       }
-      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
-      textarea { min-height: 90px; resize: vertical; }
-      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+      input[type="number"],
+      input[type="text"],
+      textarea,
+      select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1.5px solid var(--line);
+        border-radius: 10px;
+        font-size: 15px;
+        font-family: inherit;
+        background: var(--bg);
+        color: var(--ink);
+        transition: border-color 0.2s;
+      }
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
+      textarea {
+        min-height: 90px;
+        resize: vertical;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
 
       /* ---- Calc button & readout ---- */
       .calc-btn {
-        background: var(--blue); color: #fff; border: none;
-        border-radius: 10px; padding: 11px 20px; font-size: 14px;
-        font-weight: 700; cursor: pointer; font-family: inherit;
-        margin-top: 12px; transition: background .2s;
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 12px;
+        transition: background 0.2s;
       }
-      .calc-btn:hover { background: #155fa0; }
-      .calc-btn.gold { background: var(--gold); }
-      .calc-btn.gold:hover { background: #a36a0c; }
-      .calc-btn.teal { background: var(--teal); }
-      .calc-btn.teal:hover { background: #0a6b62; }
-      .calc-btn.green { background: var(--green); }
-      .calc-btn.green:hover { background: #185f31; }
+      .calc-btn:hover {
+        background: #155fa0;
+      }
+      .calc-btn.gold {
+        background: var(--gold);
+      }
+      .calc-btn.gold:hover {
+        background: #a36a0c;
+      }
+      .calc-btn.teal {
+        background: var(--teal);
+      }
+      .calc-btn.teal:hover {
+        background: #0a6b62;
+      }
+      .calc-btn.green {
+        background: var(--green);
+      }
+      .calc-btn.green:hover {
+        background: #185f31;
+      }
       .readout {
-        background: var(--navy); color: #e8f4ff;
-        border-radius: 10px; padding: 14px 18px; margin-top: 12px;
-        font-size: 15px; line-height: 1.6; display: none;
+        background: var(--navy);
+        color: #e8f4ff;
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-top: 12px;
+        font-size: 15px;
+        line-height: 1.6;
+        display: none;
       }
-      .readout.show { display: block; }
-      .readout strong { color: #7dd3fc; }
+      .readout.show {
+        display: block;
+      }
+      .readout strong {
+        color: #7dd3fc;
+      }
 
       /* ---- Hint ---- */
-      details.hint { margin-top: 14px; }
-      details.hint summary {
-        cursor: pointer; font-size: 13px; font-weight: 600;
-        color: var(--blue); list-style: none; display: inline-flex;
-        align-items: center; gap: 5px;
+      details.hint {
+        margin-top: 14px;
       }
-      details.hint summary::before { content: "💡"; }
-      details.hint p { font-size: 14px; color: var(--muted); margin-top: 8px; padding: 10px 12px; background: var(--blue-lt); border-radius: 8px; }
+      details.hint summary {
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--blue);
+        list-style: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      details.hint summary::before {
+        content: "💡";
+      }
+      details.hint p {
+        font-size: 14px;
+        color: var(--muted);
+        margin-top: 8px;
+        padding: 10px 12px;
+        background: var(--blue-lt);
+        border-radius: 8px;
+      }
 
       /* ---- Level 2 extension ---- */
       .lvl2-block {
-        border: 2px dashed var(--blue); border-radius: 12px;
-        padding: 14px 16px; margin-top: 18px;
+        border: 2px dashed var(--blue);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-top: 18px;
       }
       .lvl2-label {
-        display: inline-block; background: var(--blue); color: #fff;
-        font-size: 11px; font-weight: 800; letter-spacing: .05em;
-        border-radius: 50px; padding: 3px 10px; margin-bottom: 8px;
+        display: inline-block;
+        background: var(--blue);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        border-radius: 50px;
+        padding: 3px 10px;
+        margin-bottom: 8px;
       }
 
       /* ---- Real-world data table ---- */
-      .data-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
-      .data-table th { background: var(--navy); color: #fff; padding: 8px 12px; text-align: left; }
-      .data-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); }
-      .data-table tr:last-child td { border-bottom: none; }
-      .data-table tr:nth-child(even) td { background: var(--bg); }
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 14px;
+        font-size: 14px;
+      }
+      .data-table th {
+        background: var(--navy);
+        color: #fff;
+        padding: 8px 12px;
+        text-align: left;
+      }
+      .data-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      .data-table tr:last-child td {
+        border-bottom: none;
+      }
+      .data-table tr:nth-child(even) td {
+        background: var(--bg);
+      }
 
       /* ---- Comparison stats ---- */
-      .stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
-      .stat-box {
-        flex: 1; min-width: 120px; background: var(--bg);
-        border: 1px solid var(--line); border-radius: 12px;
-        padding: 14px; text-align: center;
+      .stat-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 14px;
       }
-      .stat-num { font-size: 24px; font-weight: 800; color: var(--blue); }
-      .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 3px; }
+      .stat-box {
+        flex: 1;
+        min-width: 120px;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+        text-align: center;
+      }
+      .stat-num {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--blue);
+      }
+      .stat-lbl {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 3px;
+      }
 
       /* ---- Checklist ---- */
-      .checklist { list-style: none; margin-top: 12px; }
-      .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
-      .checklist li:last-child { border-bottom: none; }
-      .checklist input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green); flex-shrink: 0; }
+      .checklist {
+        list-style: none;
+        margin-top: 12px;
+      }
+      .checklist li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 15px;
+      }
+      .checklist li:last-child {
+        border-bottom: none;
+      }
+      .checklist input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--green);
+        flex-shrink: 0;
+      }
 
       /* ---- Rubric ---- */
-      .rubric { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 14px; }
-      .rubric th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; }
-      .rubric td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
-      .rubric tr:last-child td { border-bottom: none; }
-      .score-4 { color: var(--green); font-weight: 700; }
-      .score-3 { color: var(--blue); font-weight: 700; }
-      .score-2 { color: var(--gold); font-weight: 700; }
+      .rubric {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        margin-top: 14px;
+      }
+      .rubric th {
+        background: var(--navy);
+        color: #fff;
+        padding: 10px 12px;
+        text-align: left;
+      }
+      .rubric td {
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      .rubric tr:last-child td {
+        border-bottom: none;
+      }
+      .score-4 {
+        color: var(--green);
+        font-weight: 700;
+      }
+      .score-3 {
+        color: var(--blue);
+        font-weight: 700;
+      }
+      .score-2 {
+        color: var(--gold);
+        font-weight: 700;
+      }
 
       /* ---- Nav buttons ---- */
-      .nav-row { display: flex; gap: 10px; margin-top: 24px; justify-content: space-between; }
-      .nav-btn {
-        background: var(--blue); color: #fff; border: none;
-        border-radius: 10px; padding: 12px 24px; font-size: 15px;
-        font-weight: 700; cursor: pointer; font-family: inherit;
-        display: flex; align-items: center; gap: 8px; transition: background .2s;
+      .nav-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 24px;
+        justify-content: space-between;
       }
-      .nav-btn:hover { background: #155fa0; }
-      .nav-btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
-      .nav-btn.ghost:hover { background: var(--blue-lt); }
-      .nav-btn:disabled { opacity: .45; cursor: not-allowed; }
+      .nav-btn {
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.2s;
+      }
+      .nav-btn:hover {
+        background: #155fa0;
+      }
+      .nav-btn.ghost {
+        background: transparent;
+        color: var(--blue);
+        border: 2px solid var(--blue);
+      }
+      .nav-btn.ghost:hover {
+        background: var(--blue-lt);
+      }
+      .nav-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
 
       /* ---- Report / pitch textarea ---- */
-      #pitch { min-height: 130px; }
+      #pitch {
+        min-height: 130px;
+      }
       .report-box {
-        background: var(--navy); color: #e8f4ff; border-radius: 12px;
-        padding: 20px; margin-top: 14px; font-size: 14px; line-height: 1.7;
-        white-space: pre-wrap; display: none;
+        background: var(--navy);
+        color: #e8f4ff;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 14px;
+        font-size: 14px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        display: none;
       }
-      .report-box.show { display: block; }
-      .export-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .report-box.show {
+        display: block;
+      }
+      .export-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
       .export-btn {
-        background: transparent; border: 1.5px solid var(--line);
-        border-radius: 8px; padding: 7px 14px; font-size: 13px;
-        font-weight: 600; cursor: pointer; font-family: inherit;
-        color: var(--muted); transition: all .15s;
+        background: transparent;
+        border: 1.5px solid var(--line);
+        border-radius: 8px;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        color: var(--muted);
+        transition: all 0.15s;
       }
-      .export-btn:hover { border-color: var(--blue); color: var(--blue); }
+      .export-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
 
       /* ---- Level-gated content ---- */
-      .lvl1-only { display: none; }
-      .lvl2-only { display: none; }
-      body.level-1 .lvl1-only { display: block; }
-      body.level-2 .lvl2-only { display: block; }
-      body.level-2 .lvl2-block { border-color: var(--blue); }
+      .lvl1-only {
+        display: none;
+      }
+      .lvl2-only {
+        display: none;
+      }
+      body.level-1 .lvl1-only {
+        display: block;
+      }
+      body.level-2 .lvl2-only {
+        display: block;
+      }
+      body.level-2 .lvl2-block {
+        border-color: var(--blue);
+      }
 
       /* ---- Vocab cards ---- */
-      .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
-      .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
-      .vocab-icon { font-size: 26px; margin-bottom: 6px; }
-      .vocab-term { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
-      .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
-      .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .vocab-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .vocab-icon {
+        font-size: 26px;
+        margin-bottom: 6px;
+      }
+      .vocab-term {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .vocab-def {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .vocab-ex {
+        font-size: 12px;
+        color: var(--blue);
+        font-weight: 600;
+        margin-top: 5px;
+      }
 
       /* ---- Print ---- */
       @media print {
-        .no-print { display: none !important; }
-        .hero { background: var(--navy) !important; }
-        body { background: #fff; }
-        .card { box-shadow: none; border-color: #ccc; }
+        .no-print {
+          display: none !important;
+        }
+        .hero {
+          background: var(--navy) !important;
+        }
+        body {
+          background: #fff;
+        }
+        .card {
+          box-shadow: none;
+          border-color: #ccc;
+        }
       }
 
       /* ---- Bilingual Support ---- */
-      body.es .en-text { display: none !important; }
-      body.es .es-text { display: inline !important; }
-      span.es-text, tspan.es-text { display: none; }
-          .checklist li:has(input[type="checkbox"]:checked) {
+      body.es .en-text {
+        display: none !important;
+      }
+      body.es .es-text {
+        display: inline !important;
+      }
+      span.es-text,
+      tspan.es-text {
+        display: none;
+      }
+      .checklist li:has(input[type="checkbox"]:checked) {
         color: var(--muted) !important;
         opacity: 0.65;
         text-decoration: line-through;
         transition: all 0.25s ease;
       }
-    
+
       /* ---- Teacher Diagnostics Console ---- */
       #teacher-console {
-        position: fixed; bottom: 20px; right: 20px; z-index: 10000;
-        width: 330px; max-height: 480px; overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px;
-        padding: 16px; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif;
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3), 0 8px 10px -6px rgba(0,0,0,0.3);
-        display: none; box-sizing: border-box; text-align: left;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 10000;
+        width: 330px;
+        max-height: 480px;
+        overflow-y: auto;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        padding: 16px;
+        color: #f8fafc;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        box-shadow:
+          0 10px 25px -5px rgba(0, 0, 0, 0.3),
+          0 8px 10px -6px rgba(0, 0, 0, 0.3);
+        display: none;
+        box-sizing: border-box;
+        text-align: left;
       }
-      #teacher-console.show { display: block; }
-      #teacher-console h4 { margin: 0 0 8px 0; color: #38bdf8; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
-      #teacher-console .close-btn { background: transparent; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1; }
-      #teacher-console .close-btn:hover { color: #f1f5f9; }
-      #teacher-console table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-      #teacher-console td { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08); color: #e2e8f0; }
-      #teacher-console .lbl { font-weight: 600; color: #94a3b8; }
-      #teacher-console .val { font-weight: 700; text-align: right; color: #38bdf8; word-break: break-all; }
-      #teacher-console .prefill-btn { width: 100%; margin-top: 12px; background: #0284c7; border: none; border-radius: 6px; padding: 8px; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s; }
-      #teacher-console .prefill-btn:hover { background: #0369a1; }
-
+      #teacher-console.show {
+        display: block;
+      }
+      #teacher-console h4 {
+        margin: 0 0 8px 0;
+        color: #38bdf8;
+        font-size: 14px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      #teacher-console .close-btn {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 0 4px;
+        line-height: 1;
+      }
+      #teacher-console .close-btn:hover {
+        color: #f1f5f9;
+      }
+      #teacher-console table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 12px;
+      }
+      #teacher-console td {
+        padding: 6px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        color: #e2e8f0;
+      }
+      #teacher-console .lbl {
+        font-weight: 600;
+        color: #94a3b8;
+      }
+      #teacher-console .val {
+        font-weight: 700;
+        text-align: right;
+        color: #38bdf8;
+        word-break: break-all;
+      }
+      #teacher-console .prefill-btn {
+        width: 100%;
+        margin-top: 12px;
+        background: #0284c7;
+        border: none;
+        border-radius: 6px;
+        padding: 8px;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      #teacher-console .prefill-btn:hover {
+        background: #0369a1;
+      }
     </style>
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <!-- nsr-injected:end -->
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="/shared/projects/projects-pro.css" />
     <!-- projects-pro-injected:end -->
   </head>
   <body class="level-1 pro-projects" id="body">
-
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
       <div class="hero-emoji">🎉</div>
@@ -324,8 +841,13 @@
         <span class="es-text">Planificador de fiesta de cuadra</span>
       </h1>
       <p class="hero-sub">
-        <span class="en-text">Plan your own block party using real math — step by step.</span>
-        <span class="es-text">Planifica tu propia fiesta de cuadra usando matemáticas reales, paso a paso.</span>
+        <span class="en-text"
+          >Plan your own block party using real math — step by step.</span
+        >
+        <span class="es-text"
+          >Planifica tu propia fiesta de cuadra usando matemáticas reales, paso
+          a paso.</span
+        >
       </p>
       <div class="hero-tags">
         <span class="tag gold">
@@ -350,70 +872,31 @@
           <span class="es-text">🔵 Nivel 2 — Desafío</span>
         </button>
       </div>
-      <div class="level-bar" style="margin-top: 10px;">
-        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
+      <div class="level-bar" style="margin-top: 10px">
+        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">
+          🌐 Language: EN
+        </button>
         <button class="level-btn" id="btn-read" onclick="readAloud()">
           <span class="en-text">🔊 Read Aloud</span>
           <span class="es-text">🔊 Leer en voz alta</span>
         </button>
       </div>
-      <!-- ===================== COLLAPSIBLE RESEARCH LINKS ===================== -->
-      <details open class="hint no-print" style="margin-top: 15px; background: rgba(255,255,255,0.96); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-        <summary style="font-weight: 700; font-size: 15px; color: var(--navy); cursor: pointer; user-select: none;">
-          <span class="en-text">🔍 Research &amp; Reference Resources</span>
-          <span class="es-text">🔍 Recursos de Investigación y Referencia</span>
-        </summary>
-        <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 4px;">
-          <div data-research-box style="background: var(--blue-lt); border: 1px solid var(--blue); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; font-size: 15px; line-height: 1.5; color: var(--navy); font-weight: 700;">
-            <span class="en-text">✍️ Open each link below, find the fact it points to, and type what you find in its box. Your answers save automatically.</span>
-            <span class="es-text">✍️ Abre cada enlace, encuentra el dato que indica y escríbelo en su casilla. Tus respuestas se guardan automáticamente.</span>
-          </div>
-
-          <div style="padding: 6px; border-bottom: 1px solid rgba(0,0,0,0.05);">
-            🛒 <a href="https://www.walmart.com/cp/party-supplies/2637" target="_blank" rel="noopener noreferrer" class="level-btn" style="display: inline-block; padding: 5px 11px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 4px;">
-              <span class="en-text">Walmart — Party Supplies ↗</span>
-              <span class="es-text">Walmart — Artículos para fiestas ↗</span>
-            </a><br>
-            <small style="color: var(--ink); font-size: 14px; font-weight: 600;"><span class="en-text">Find: Price of plates, cups, and napkins | Look for: how many come in each pack</span><span class="es-text">Buscar: Precio de platos, vasos y servilletas | Observar: cuántos vienen en cada paquete</span></small>
-            <input type="text" id="rfind-1" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
-          </div>
-          <div style="padding: 6px; border-bottom: 1px solid rgba(0,0,0,0.05);">
-            🍔 <a href="https://www.walmart.com/cp/grocery/1115193" target="_blank" rel="noopener noreferrer" class="level-btn" style="display: inline-block; padding: 5px 11px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 4px;">
-              <span class="en-text">Walmart — Groceries ↗</span>
-              <span class="es-text">Walmart — Comestibles ↗</span>
-            </a><br>
-            <small style="color: var(--ink); font-size: 14px; font-weight: 600;"><span class="en-text">Find: Price of hot dogs, buns, and drinks | Look for: pack sizes (use for LCM)</span><span class="es-text">Buscar: Precio de hot dogs, panes y bebidas | Observar: tamaños de paquete (usa para el MCM)</span></small>
-            <input type="text" id="rfind-2" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
-          </div>
-          <div style="padding: 6px; border-bottom: 1px solid rgba(0,0,0,0.05);">
-            🎈 <a href="https://www.partycity.com/" target="_blank" rel="noopener noreferrer" class="level-btn" style="display: inline-block; padding: 5px 11px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 4px;">
-              <span class="en-text">Party City — Decorations ↗</span>
-              <span class="es-text">Party City — Decoraciones ↗</span>
-            </a><br>
-            <small style="color: var(--ink); font-size: 14px; font-weight: 600;"><span class="en-text">Find: Price and pack size of balloons or decorations</span><span class="es-text">Buscar: Precio y tamaño de paquete de globos o decoraciones</span></small>
-            <input type="text" id="rfind-3" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
-          </div>
-          <div style="padding: 6px; border-bottom: 1px solid rgba(0,0,0,0.05);">
-            🥗 <a href="https://www.fns.usda.gov/cnpp/usda-food-plans-cost-food-monthly-reports" target="_blank" rel="noopener noreferrer" class="level-btn" style="display: inline-block; padding: 5px 11px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 4px;">
-              <span class="en-text">USDA — Monthly Cost of Food ↗</span>
-              <span class="es-text">USDA — Costo mensual de alimentos ↗</span>
-            </a><br>
-            <small style="color: var(--ink); font-size: 14px; font-weight: 600;"><span class="en-text">Find: Monthly food cost for a family — estimate per-person cost</span><span class="es-text">Buscar: Costo mensual de alimentos de una familia — estima el costo por persona</span></small>
-            <input type="text" id="rfind-4" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
-          </div>
-        </div>
-      </details>
     </header>
 
     <!-- ====== WIZARD ====== -->
     <div class="wizard">
-
       <!-- Step trail -->
-      <nav class="step-trail no-print" id="stepTrail" aria-label="Project steps"></nav>
+      <nav
+        class="step-trail no-print"
+        id="stepTrail"
+        aria-label="Project steps"
+      ></nav>
 
       <!-- Progress bar -->
       <div class="prog-wrap no-print">
-        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div class="prog-bar">
+          <div class="prog-fill" id="progFill" style="width: 0%"></div>
+        </div>
         <div class="prog-label" id="progLabel">Step 1 of 6</div>
       </div>
 
@@ -430,8 +913,12 @@
                 <span class="es-text">Palabras clave</span>
               </div>
               <div class="card-sub">
-                <span class="en-text">Learn these 4 math words before you begin</span>
-                <span class="es-text">Aprende estas 4 palabras matemáticas antes de comenzar</span>
+                <span class="en-text"
+                  >Learn these 4 math words before you begin</span
+                >
+                <span class="es-text"
+                  >Aprende estas 4 palabras matemáticas antes de comenzar</span
+                >
               </div>
             </div>
           </div>
@@ -446,8 +933,14 @@
                 <span class="es-text">MCD — Máximo Común Divisor</span>
               </div>
               <div class="vocab-def">
-                <span class="en-text">The biggest number that divides evenly into two numbers.</span>
-                <span class="es-text">El número más grande que divide exactamente a dos números.</span>
+                <span class="en-text"
+                  >The biggest number that divides evenly into two
+                  numbers.</span
+                >
+                <span class="es-text"
+                  >El número más grande que divide exactamente a dos
+                  números.</span
+                >
               </div>
               <div class="vocab-ex">
                 <span class="en-text">GCF of 12 and 18 = 6</span>
@@ -461,8 +954,12 @@
                 <span class="es-text">MCM — Mínimo Común Múltiplo</span>
               </div>
               <div class="vocab-def">
-                <span class="en-text">The smallest number that both numbers fit into evenly.</span>
-                <span class="es-text">El número más pequeño que es múltiplo de ambos números.</span>
+                <span class="en-text"
+                  >The smallest number that both numbers fit into evenly.</span
+                >
+                <span class="es-text"
+                  >El número más pequeño que es múltiplo de ambos números.</span
+                >
               </div>
               <div class="vocab-ex">
                 <span class="en-text">LCM of 4 and 6 = 12</span>
@@ -476,8 +973,14 @@
                 <span class="es-text">Operaciones con decimales</span>
               </div>
               <div class="vocab-def">
-                <span class="en-text">Adding or subtracting money amounts — line up the decimal point first.</span>
-                <span class="es-text">Sumar o restar cantidades de dinero; alinea el punto decimal primero.</span>
+                <span class="en-text"
+                  >Adding or subtracting money amounts — line up the decimal
+                  point first.</span
+                >
+                <span class="es-text"
+                  >Sumar o restar cantidades de dinero; alinea el punto decimal
+                  primero.</span
+                >
               </div>
               <div class="vocab-ex">$12.50 + $7.25 = $19.75</div>
             </div>
@@ -488,8 +991,14 @@
                 <span class="es-text">División</span>
               </div>
               <div class="vocab-def">
-                <span class="en-text">Splitting a total into equal groups to find cost per person.</span>
-                <span class="es-text">Dividir un total en grupos iguales para encontrar el costo por persona.</span>
+                <span class="en-text"
+                  >Splitting a total into equal groups to find cost per
+                  person.</span
+                >
+                <span class="es-text"
+                  >Dividir un total en grupos iguales para encontrar el costo
+                  por persona.</span
+                >
               </div>
               <div class="vocab-ex">
                 <span class="en-text">$240 ÷ 8 guests = $30 each</span>
@@ -498,9 +1007,15 @@
             </div>
           </div>
 
-          <div class="instruct" style="margin-top:20px">
-            <span class="en-text">✅ Read each word card. When you're ready, click <strong>Next Step</strong>.</span>
-            <span class="es-text">✅ Lee cada tarjeta de palabras. Cuando estés listo, haz clic en <strong>Siguiente paso</strong>.</span>
+          <div class="instruct" style="margin-top: 20px">
+            <span class="en-text"
+              >✅ Read each word card. When you're ready, click
+              <strong>Next Step</strong>.</span
+            >
+            <span class="es-text"
+              >✅ Lee cada tarjeta de palabras. Cuando estés listo, haz clic en
+              <strong>Siguiente paso</strong>.</span
+            >
           </div>
         </div>
 
@@ -526,41 +1041,167 @@
             <div>
               <div class="card-title">
                 <span class="en-text">Step 1 — Build the Goodie Bags</span>
-                <span class="es-text">Paso 1 — Preparar las bolsas de regalos</span>
+                <span class="es-text"
+                  >Paso 1 — Preparar las bolsas de regalos</span
+                >
               </div>
               <div class="card-sub">
-                <span class="en-text">Use GCF to make equal bags with no leftovers</span>
-                <span class="es-text">Usa el MCD para hacer bolsas iguales sin que sobre nada</span>
+                <span class="en-text"
+                  >Use GCF to make equal bags with no leftovers</span
+                >
+                <span class="es-text"
+                  >Usa el MCD para hacer bolsas iguales sin que sobre nada</span
+                >
               </div>
             </div>
           </div>
 
           <div class="instruct">
-            <span class="en-text"><strong>Your job:</strong> You have stickers and granola bars to pack into equal goodie bags. Enter your numbers, then find the GCF to see how many equal bags you can make.</span>
-            <span class="es-text"><strong>Tu trabajo:</strong> Tienes pegatinas y barras de granola para empacar en bolsas de regalos iguales. Ingresa tus números y luego encuentra el MCD para ver cuántas bolsas iguales puedes hacer.</span>
+            <span class="en-text"
+              ><strong>Your job:</strong> You have stickers and granola bars to
+              pack into equal goodie bags. Enter your numbers, then find the GCF
+              to see how many equal bags you can make.</span
+            >
+            <span class="es-text"
+              ><strong>Tu trabajo:</strong> Tienes pegatinas y barras de granola
+              para empacar en bolsas de regalos iguales. Ingresa tus números y
+              luego encuentra el MCD para ver cuántas bolsas iguales puedes
+              hacer.</span
+            >
+          </div>
+
+          <div class="step-research no-print">
+            <div class="sr-head">
+              <span class="en-text">📊 Research you need for this step</span
+              ><span class="es-text"
+                >📊 Investigación que necesitas para este paso</span
+              >
+            </div>
+            🛒
+            <a
+              href="https://www.walmart.com/cp/party-supplies/2637"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="level-btn"
+              ><span class="en-text">Walmart — Party Supplies ↗</span
+              ><span class="es-text"
+                >Walmart — Artículos para fiestas ↗</span
+              ></a
+            >
+            <small class="sr-hint"
+              ><span class="en-text"
+                >Find: Price of plates, cups, and napkins | Look for: how many
+                come in each pack</span
+              ><span class="es-text"
+                >Buscar: Precio de platos, vasos y servilletas | Observar:
+                cuántos vienen en cada paquete</span
+              ></small
+            >
+            <input
+              type="text"
+              id="rfind-1"
+              data-research-find
+              placeholder="✍️ What I found here…"
+              style="
+                width: 100%;
+                box-sizing: border-box;
+                margin-top: 6px;
+                padding: 9px 11px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                font-family: inherit;
+                font-size: 15px;
+                background: #fff;
+              "
+            />
           </div>
 
           <!-- SVG: GCF visual -->
-          <svg id="gcf-svg" class="visual-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
-            <text x="260" y="50" text-anchor="middle" font-size="15" font-weight="bold" fill="#0f2b3c">
+          <svg
+            id="gcf-svg"
+            class="visual-svg"
+            viewBox="0 0 520 140"
+            xmlns="http://www.w3.org/2000/svg"
+            style="
+              background: white;
+              border: 1px solid #e2e7ec;
+              border-radius: 12px;
+            "
+          >
+            <text
+              x="260"
+              y="50"
+              text-anchor="middle"
+              font-size="15"
+              font-weight="bold"
+              fill="#0f2b3c"
+            >
               <tspan class="en-text">GCF: Finding the Most Equal Bags</tspan>
-              <tspan class="es-text">MCD: Encontrar la mayor cantidad de bolsas iguales</tspan>
+              <tspan class="es-text">
+                MCD: Encontrar la mayor cantidad de bolsas iguales
+              </tspan>
             </text>
-            <rect x="20" y="70" width="200" height="50" rx="8" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="2"/>
-            <text x="120" y="92" text-anchor="middle" font-size="12" fill="#0f2b3c" font-weight="bold">
+            <rect
+              x="20"
+              y="70"
+              width="200"
+              height="50"
+              rx="8"
+              fill="#e8f2fc"
+              stroke="#1a6fb5"
+              stroke-width="2"
+            />
+            <text
+              x="120"
+              y="92"
+              text-anchor="middle"
+              font-size="12"
+              fill="#0f2b3c"
+              font-weight="bold"
+            >
               <tspan class="en-text">🔖 Stickers</tspan>
               <tspan class="es-text">🔖 Pegatinas</tspan>
             </text>
-            <text x="120" y="110" text-anchor="middle" font-size="12" fill="#1a6fb5" id="gcf-svg-a">
+            <text
+              x="120"
+              y="110"
+              text-anchor="middle"
+              font-size="12"
+              fill="#1a6fb5"
+              id="gcf-svg-a"
+            >
               <tspan class="en-text">Enter sticker count →</tspan>
               <tspan class="es-text">Ingresar cantidad de pegatinas →</tspan>
             </text>
-            <rect x="300" y="70" width="200" height="50" rx="8" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="2"/>
-            <text x="400" y="92" text-anchor="middle" font-size="12" fill="#0f2b3c" font-weight="bold">
+            <rect
+              x="300"
+              y="70"
+              width="200"
+              height="50"
+              rx="8"
+              fill="#e4f5f3"
+              stroke="#0e8a7d"
+              stroke-width="2"
+            />
+            <text
+              x="400"
+              y="92"
+              text-anchor="middle"
+              font-size="12"
+              fill="#0f2b3c"
+              font-weight="bold"
+            >
               <tspan class="en-text">🍫 Granola Bars</tspan>
               <tspan class="es-text">🍫 Barras de granola</tspan>
             </text>
-            <text x="400" y="110" text-anchor="middle" font-size="12" fill="#0e8a7d" id="gcf-svg-b">
+            <text
+              x="400"
+              y="110"
+              text-anchor="middle"
+              font-size="12"
+              fill="#0e8a7d"
+              id="gcf-svg-b"
+            >
               <tspan class="en-text">Enter bar count →</tspan>
               <tspan class="es-text">Ingresar cantidad de barras →</tspan>
             </text>
@@ -568,17 +1209,29 @@
 
           <!-- Level 1 hint -->
           <div class="instruct lvl1-only">
-            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try friendly numbers that share factors, like 24 stickers and 36 granola bars.</span>
-            <span class="es-text">🟢 <strong>Consejo del Nivel 1:</strong> Prueba con números amigables que compartan factores, como 24 pegatinas y 36 barras de granola.</span>
+            <span class="en-text"
+              >🟢 <strong>Level 1 tip:</strong> Try friendly numbers that share
+              factors, like 24 stickers and 36 granola bars.</span
+            >
+            <span class="es-text"
+              >🟢 <strong>Consejo del Nivel 1:</strong> Prueba con números
+              amigables que compartan factores, como 24 pegatinas y 36 barras de
+              granola.</span
+            >
           </div>
           <!-- Level 2 hint -->
           <div class="instruct lvl2-block lvl2-only">
             <span class="lvl2-label">
               <span class="en-text">LEVEL 2 CHALLENGE</span>
-              <span class="es-text">RETO DE NIVEL 2</span>
-            </span><br>
-            <span class="en-text">Use your own numbers — they don't have to be round or easy!</span>
-            <span class="es-text">¡Usa tus propios números; no tienen que ser redondos ni fáciles!</span>
+              <span class="es-text">RETO DE NIVEL 2</span> </span
+            ><br />
+            <span class="en-text"
+              >Use your own numbers — they don't have to be round or easy!</span
+            >
+            <span class="es-text"
+              >¡Usa tus propios números; no tienen que ser redondos ni
+              fáciles!</span
+            >
           </div>
 
           <div class="grid2">
@@ -587,27 +1240,65 @@
                 <span class="en-text">🔖 Number of stickers you have</span>
                 <span class="es-text">🔖 Cantidad de pegatinas que tienes</span>
               </label>
-              <input type="number" id="g-stickers" min="1" placeholder="" oninput="calcGCF()" />
+              <input
+                type="number"
+                id="g-stickers"
+                min="1"
+                placeholder=""
+                oninput="calcGCF()"
+              />
             </div>
             <div>
               <label class="lbl" for="g-bars">
                 <span class="en-text">🍫 Number of granola bars you have</span>
-                <span class="es-text">🍫 Cantidad de barras de granola que tienes</span>
+                <span class="es-text"
+                  >🍫 Cantidad de barras de granola que tienes</span
+                >
               </label>
-              <input type="number" id="g-bars" min="1" placeholder="" oninput="calcGCF()" />
+              <input
+                type="number"
+                id="g-bars"
+                min="1"
+                placeholder=""
+                oninput="calcGCF()"
+              />
             </div>
           </div>
 
-          <div class="student-calc-section" style="margin-top:15px; margin-bottom:15px; padding:12px; background:rgba(0,0,0,0.02); border:1px dashed #cbd5e1; border-radius:8px;">
+          <div
+            class="student-calc-section"
+            style="
+              margin-top: 15px;
+              margin-bottom: 15px;
+              padding: 12px;
+              background: rgba(0, 0, 0, 0.02);
+              border: 1px dashed #cbd5e1;
+              border-radius: 8px;
+            "
+          >
             <label class="lbl" for="student-gcf-input">
-              <span class="en-text"><strong>Your Answer:</strong> How many equal bags can you make? (Enter GCF)</span>
-              <span class="es-text"><strong>Tu Respuesta:</strong> ¿Cuántas bolsas iguales puedes hacer? (Ingresa MCD)</span>
+              <span class="en-text"
+                ><strong>Your Answer:</strong> How many equal bags can you make?
+                (Enter GCF)</span
+              >
+              <span class="es-text"
+                ><strong>Tu Respuesta:</strong> ¿Cuántas bolsas iguales puedes
+                hacer? (Ingresa MCD)</span
+              >
             </label>
-            <input type="number" id="student-gcf-input" min="1" placeholder="" oninput="calcGCF()" />
+            <input
+              type="number"
+              id="student-gcf-input"
+              min="1"
+              placeholder=""
+              oninput="calcGCF()"
+            />
           </div>
           <button class="calc-btn" onclick="calcGCF()">
             <span class="en-text">🧮 Find the Most Equal Bags</span>
-            <span class="es-text">🧮 Encontrar la mayor cantidad de bolsas iguales</span>
+            <span class="es-text"
+              >🧮 Encontrar la mayor cantidad de bolsas iguales</span
+            >
           </button>
           <div class="readout" id="gcf-out"></div>
 
@@ -617,23 +1308,50 @@
               <span class="es-text">¿Necesitas una pista?</span>
             </summary>
             <p>
-              <span class="en-text">List all the numbers that divide evenly into each count. The GCF is the biggest number on both lists.<br><strong>Example:</strong> Factors of 12: 1,2,3,4,6,12. Factors of 18: 1,2,3,6,9,18. Biggest match = <strong>6 bags</strong>.</span>
-              <span class="es-text">Haz una lista de todos los números que dividen exactamente a cada cantidad. El MCD es el número más grande en ambas listas.<br><strong>Ejemplo:</strong> Factores de 12: 1,2,3,4,6,12. Factores de 18: 1,2,3,6,9,18. El mayor coincidente = <strong>6 bolsas</strong>.</span>
+              <span class="en-text"
+                >List all the numbers that divide evenly into each count. The
+                GCF is the biggest number on both lists.<br /><strong
+                  >Example:</strong
+                >
+                Factors of 12: 1,2,3,4,6,12. Factors of 18: 1,2,3,6,9,18.
+                Biggest match = <strong>6 bags</strong>.</span
+              >
+              <span class="es-text"
+                >Haz una lista de todos los números que dividen exactamente a
+                cada cantidad. El MCD es el número más grande en ambas
+                listas.<br /><strong>Ejemplo:</strong> Factores de 12:
+                1,2,3,4,6,12. Factores de 18: 1,2,3,6,9,18. El mayor coincidente
+                = <strong>6 bolsas</strong>.</span
+              >
             </p>
           </details>
 
-          <div class="lvl2-block lvl2-only" style="margin-top:18px">
+          <div class="lvl2-block lvl2-only" style="margin-top: 18px">
             <span class="lvl2-label">
-              <span class="en-text">LEVEL 2 EXTENSION — Distributive Property (6.NS.4)</span>
-              <span class="es-text">EXTENSIÓN DE NIVEL 2 — Propiedad distributiva (6.NS.4)</span>
+              <span class="en-text"
+                >LEVEL 2 EXTENSION — Distributive Property (6.NS.4)</span
+              >
+              <span class="es-text"
+                >EXTENSIÓN DE NIVEL 2 — Propiedad distributiva (6.NS.4)</span
+              >
             </span>
-            <p style="font-size:14px;margin:6px 0 10px">
-              <span class="en-text">Rewrite your two counts using the GCF. Example: 24 + 36 = 12 × (2 + 3)</span>
-              <span class="es-text">Reescribe tus dos cantidades usando el MCD. Ejemplo: 24 + 36 = 12 × (2 + 3)</span>
+            <p style="font-size: 14px; margin: 6px 0 10px">
+              <span class="en-text"
+                >Rewrite your two counts using the GCF. Example: 24 + 36 = 12 ×
+                (2 + 3)</span
+              >
+              <span class="es-text"
+                >Reescribe tus dos cantidades usando el MCD. Ejemplo: 24 + 36 =
+                12 × (2 + 3)</span
+              >
             </p>
             <label class="lbl" for="distrib">
-              <span class="en-text">Your equation: ___ + ___ = GCF × (___ + ___)</span>
-              <span class="es-text">Tu ecuación: ___ + ___ = MCD × (___ + ___)</span>
+              <span class="en-text"
+                >Your equation: ___ + ___ = GCF × (___ + ___)</span
+              >
+              <span class="es-text"
+                >Tu ecuación: ___ + ___ = MCD × (___ + ___)</span
+              >
             </label>
             <input type="text" id="distrib" placeholder="" />
           </div>
@@ -661,55 +1379,163 @@
             <div>
               <div class="card-title">
                 <span class="en-text">Step 2 — Sync the Entertainment</span>
-                <span class="es-text">Paso 2 — Sincronizar el entretenimiento</span>
+                <span class="es-text"
+                  >Paso 2 — Sincronizar el entretenimiento</span
+                >
               </div>
               <div class="card-sub">
-                <span class="en-text">Use LCM to find when both events happen at the same time</span>
-                <span class="es-text">Usa el MCM para encontrar cuándo ocurren ambos eventos al mismo tiempo</span>
+                <span class="en-text"
+                  >Use LCM to find when both events happen at the same
+                  time</span
+                >
+                <span class="es-text"
+                  >Usa el MCM para encontrar cuándo ocurren ambos eventos al
+                  mismo tiempo</span
+                >
               </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <span class="en-text"><strong>Your job:</strong> The music plays every few minutes and the bubble machine runs every few minutes. Find the LCM to discover when both happen at the exact same moment!</span>
-            <span class="es-text"><strong>Tu trabajo:</strong> La música suena cada pocos minutos y la máquina de burbujas funciona cada pocos minutos. ¡Encuentra el MCM para descubrir cuándo ocurren ambos en el mismo instante!</span>
+            <span class="en-text"
+              ><strong>Your job:</strong> The music plays every few minutes and
+              the bubble machine runs every few minutes. Find the LCM to
+              discover when both happen at the exact same moment!</span
+            >
+            <span class="es-text"
+              ><strong>Tu trabajo:</strong> La música suena cada pocos minutos y
+              la máquina de burbujas funciona cada pocos minutos. ¡Encuentra el
+              MCM para descubrir cuándo ocurren ambos en el mismo
+              instante!</span
+            >
+          </div>
+
+          <div class="step-research no-print">
+            <div class="sr-head">
+              <span class="en-text">📊 Research you need for this step</span
+              ><span class="es-text"
+                >📊 Investigación que necesitas para este paso</span
+              >
+            </div>
+            🍔
+            <a
+              href="https://www.walmart.com/cp/grocery/1115193"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="level-btn"
+              ><span class="en-text">Walmart — Groceries ↗</span
+              ><span class="es-text">Walmart — Comestibles ↗</span></a
+            >
+            <small class="sr-hint"
+              ><span class="en-text"
+                >Find: Price of hot dogs, buns, and drinks | Look for: pack
+                sizes (use for LCM)</span
+              ><span class="es-text"
+                >Buscar: Precio de hot dogs, panes y bebidas | Observar: tamaños
+                de paquete (usa para el MCM)</span
+              ></small
+            >
+            <input
+              type="text"
+              id="rfind-2"
+              data-research-find
+              placeholder="✍️ What I found here…"
+              style="
+                width: 100%;
+                box-sizing: border-box;
+                margin-top: 6px;
+                padding: 9px 11px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                font-family: inherit;
+                font-size: 15px;
+                background: #fff;
+              "
+            />
           </div>
 
           <!-- SVG: Timeline visual -->
-          <svg class="visual-svg" viewBox="0 0 520 120" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
-            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">
+          <svg
+            class="visual-svg"
+            viewBox="0 0 520 120"
+            xmlns="http://www.w3.org/2000/svg"
+            style="
+              background: white;
+              border: 1px solid #e2e7ec;
+              border-radius: 12px;
+            "
+          >
+            <text
+              x="260"
+              y="25"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="bold"
+              fill="#0f2b3c"
+            >
               <tspan class="en-text">LCM: When do both events line up?</tspan>
-              <tspan class="es-text">MCM: ¿Cuándo se alinean ambos eventos?</tspan>
+              <tspan class="es-text">
+                MCM: ¿Cuándo se alinean ambos eventos?
+              </tspan>
             </text>
             <!-- Timeline -->
-            <line x1="30" y1="55" x2="490" y2="55" stroke="#e2e7ec" stroke-width="3"/>
+            <line
+              x1="30"
+              y1="55"
+              x2="490"
+              y2="55"
+              stroke="#e2e7ec"
+              stroke-width="3"
+            />
             <!-- Music markers (every 4) -->
-            <circle cx="30" cy="55" r="7" fill="#1a6fb5"/>
-            <circle cx="118" cy="55" r="7" fill="#1a6fb5"/>
-            <circle cx="206" cy="55" r="7" fill="#1a6fb5"/>
-            <circle cx="294" cy="55" r="7" fill="#1a6fb5"/>
-            <circle cx="382" cy="55" r="7" fill="#1a6fb5"/>
-            <circle cx="470" cy="55" r="7" fill="#1a6fb5"/>
-            <text x="260" y="78" text-anchor="middle" font-size="10" fill="#1a6fb5">
+            <circle cx="30" cy="55" r="7" fill="#1a6fb5" />
+            <circle cx="118" cy="55" r="7" fill="#1a6fb5" />
+            <circle cx="206" cy="55" r="7" fill="#1a6fb5" />
+            <circle cx="294" cy="55" r="7" fill="#1a6fb5" />
+            <circle cx="382" cy="55" r="7" fill="#1a6fb5" />
+            <circle cx="470" cy="55" r="7" fill="#1a6fb5" />
+            <text
+              x="260"
+              y="78"
+              text-anchor="middle"
+              font-size="10"
+              fill="#1a6fb5"
+            >
               <tspan class="en-text">🎵 Music (every 4 min)</tspan>
               <tspan class="es-text">🎵 Música (cada 4 min)</tspan>
             </text>
             <!-- Bubble markers (every 6) -->
-            <rect x="25" y="88" width="10" height="10" rx="2" fill="#0e8a7d"/>
-            <rect x="157" y="88" width="10" height="10" rx="2" fill="#0e8a7d"/>
-            <rect x="289" y="88" width="10" height="10" rx="2" fill="#0e8a7d"/>
-            <rect x="421" y="88" width="10" height="10" rx="2" fill="#0e8a7d"/>
-            <text x="260" y="112" text-anchor="middle" font-size="10" fill="#0e8a7d">
-              <tspan class="en-text">🫧 Bubbles (every 6 min) — meet at 12 min!</tspan>
-              <tspan class="es-text">🫧 Burbujas (cada 6 min) — ¡se encuentran a los 12 min!</tspan>
+            <rect x="25" y="88" width="10" height="10" rx="2" fill="#0e8a7d" />
+            <rect x="157" y="88" width="10" height="10" rx="2" fill="#0e8a7d" />
+            <rect x="289" y="88" width="10" height="10" rx="2" fill="#0e8a7d" />
+            <rect x="421" y="88" width="10" height="10" rx="2" fill="#0e8a7d" />
+            <text
+              x="260"
+              y="112"
+              text-anchor="middle"
+              font-size="10"
+              fill="#0e8a7d"
+            >
+              <tspan class="en-text">
+                🫧 Bubbles (every 6 min) — meet at 12 min!
+              </tspan>
+              <tspan class="es-text">
+                🫧 Burbujas (cada 6 min) — ¡se encuentran a los 12 min!
+              </tspan>
             </text>
             <!-- Star at LCM -->
             <text x="294" y="46" text-anchor="middle" font-size="16">⭐</text>
           </svg>
 
           <div class="lvl1-only instruct teal">
-            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try numbers like 4 and 6 — their LCM is 12.</span>
-            <span class="es-text">🟢 <strong>Consejo del Nivel 1:</strong> Prueba con números como 4 y 6; su MCM es 12.</span>
+            <span class="en-text"
+              >🟢 <strong>Level 1 tip:</strong> Try numbers like 4 and 6 — their
+              LCM is 12.</span
+            >
+            <span class="es-text"
+              >🟢 <strong>Consejo del Nivel 1:</strong> Prueba con números como
+              4 y 6; su MCM es 12.</span
+            >
           </div>
 
           <div class="grid2">
@@ -718,23 +1544,61 @@
                 <span class="en-text">🎵 Music plays every ___ minutes</span>
                 <span class="es-text">🎵 La música suena cada ___ minutos</span>
               </label>
-              <input type="number" id="l-music" min="1" placeholder="" oninput="calcLCM()" />
+              <input
+                type="number"
+                id="l-music"
+                min="1"
+                placeholder=""
+                oninput="calcLCM()"
+              />
             </div>
             <div>
               <label class="lbl" for="l-bubble">
-                <span class="en-text">🫧 Bubble machine runs every ___ minutes</span>
-                <span class="es-text">🫧 La máquina de burbujas funciona cada ___ minutos</span>
+                <span class="en-text"
+                  >🫧 Bubble machine runs every ___ minutes</span
+                >
+                <span class="es-text"
+                  >🫧 La máquina de burbujas funciona cada ___ minutos</span
+                >
               </label>
-              <input type="number" id="l-bubble" min="1" placeholder="" oninput="calcLCM()" />
+              <input
+                type="number"
+                id="l-bubble"
+                min="1"
+                placeholder=""
+                oninput="calcLCM()"
+              />
             </div>
           </div>
 
-          <div class="student-calc-section" style="margin-top:15px; margin-bottom:15px; padding:12px; background:rgba(0,0,0,0.02); border:1px dashed #cbd5e1; border-radius:8px;">
+          <div
+            class="student-calc-section"
+            style="
+              margin-top: 15px;
+              margin-bottom: 15px;
+              padding: 12px;
+              background: rgba(0, 0, 0, 0.02);
+              border: 1px dashed #cbd5e1;
+              border-radius: 8px;
+            "
+          >
             <label class="lbl" for="student-lcm-input">
-              <span class="en-text"><strong>Your Answer:</strong> What is the minute both events happen at the same time? (Enter LCM)</span>
-              <span class="es-text"><strong>Tu Respuesta:</strong> ¿Cuál es el minuto en que ambos eventos ocurren al mismo tiempo? (Ingresa MCM)</span>
+              <span class="en-text"
+                ><strong>Your Answer:</strong> What is the minute both events
+                happen at the same time? (Enter LCM)</span
+              >
+              <span class="es-text"
+                ><strong>Tu Respuesta:</strong> ¿Cuál es el minuto en que ambos
+                eventos ocurren al mismo tiempo? (Ingresa MCM)</span
+              >
             </label>
-            <input type="number" id="student-lcm-input" min="1" placeholder="" oninput="calcLCM()" />
+            <input
+              type="number"
+              id="student-lcm-input"
+              min="1"
+              placeholder=""
+              oninput="calcLCM()"
+            />
           </div>
           <button class="calc-btn teal" onclick="calcLCM()">
             <span class="en-text">⭐ Find the Big Moment</span>
@@ -748,8 +1612,19 @@
               <span class="es-text">¿Necesitas una pista?</span>
             </summary>
             <p>
-              <span class="en-text">List multiples of each number until they share one.<br><strong>Music (4):</strong> 4, 8, <strong>12</strong>… <strong>Bubbles (6):</strong> 6, <strong>12</strong>… LCM = 12 minutes.</span>
-              <span class="es-text">Haz una lista de los múltiplos de cada número hasta que compartan uno.<br><strong>Música (4):</strong> 4, 8, <strong>12</strong>… <strong>Burbujas (6):</strong> 6, <strong>12</strong>… MCM = 12 minutos.</span>
+              <span class="en-text"
+                >List multiples of each number until they share one.<br /><strong
+                  >Music (4):</strong
+                >
+                4, 8, <strong>12</strong>… <strong>Bubbles (6):</strong> 6,
+                <strong>12</strong>… LCM = 12 minutes.</span
+              >
+              <span class="es-text"
+                >Haz una lista de los múltiplos de cada número hasta que
+                compartan uno.<br /><strong>Música (4):</strong> 4, 8,
+                <strong>12</strong>… <strong>Burbujas (6):</strong> 6,
+                <strong>12</strong>… MCM = 12 minutos.</span
+              >
             </p>
           </details>
         </div>
@@ -779,51 +1654,261 @@
                 <span class="es-text">Paso 3 — Monitorear tu presupuesto</span>
               </div>
               <div class="card-sub">
-                <span class="en-text">Add up costs, then divide to find cost per guest</span>
-                <span class="es-text">Suma los costos y luego divide para encontrar el costo por invitado</span>
+                <span class="en-text"
+                  >Add up costs, then divide to find cost per guest</span
+                >
+                <span class="es-text"
+                  >Suma los costos y luego divide para encontrar el costo por
+                  invitado</span
+                >
               </div>
             </div>
           </div>
 
           <div class="instruct gold">
-            <span class="en-text"><strong>Your job:</strong> Enter what you'll spend on food, decorations, and activities. Add them up, then divide by the number of guests to find the cost per person.</span>
-            <span class="es-text"><strong>Tu trabajo:</strong> Ingresa lo que gastarás en comida, decoraciones y actividades. Súmalos y luego divídelos por el número de invitados para encontrar el costo por persona.</span>
+            <span class="en-text"
+              ><strong>Your job:</strong> Enter what you'll spend on food,
+              decorations, and activities. Add them up, then divide by the
+              number of guests to find the cost per person.</span
+            >
+            <span class="es-text"
+              ><strong>Tu trabajo:</strong> Ingresa lo que gastarás en comida,
+              decoraciones y actividades. Súmalos y luego divídelos por el
+              número de invitados para encontrar el costo por persona.</span
+            >
+          </div>
+
+          <div class="step-research no-print">
+            <div class="sr-head">
+              <span class="en-text">📊 Research you need for this step</span
+              ><span class="es-text"
+                >📊 Investigación que necesitas para este paso</span
+              >
+            </div>
+            🎈
+            <a
+              href="https://www.partycity.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="level-btn"
+              ><span class="en-text">Party City — Decorations ↗</span
+              ><span class="es-text">Party City — Decoraciones ↗</span></a
+            >
+            <small class="sr-hint"
+              ><span class="en-text"
+                >Find: Price and pack size of balloons or decorations</span
+              ><span class="es-text"
+                >Buscar: Precio y tamaño de paquete de globos o
+                decoraciones</span
+              ></small
+            >
+            <input
+              type="text"
+              id="rfind-3"
+              data-research-find
+              placeholder="✍️ What I found here…"
+              style="
+                width: 100%;
+                box-sizing: border-box;
+                margin-top: 6px;
+                padding: 9px 11px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                font-family: inherit;
+                font-size: 15px;
+                background: #fff;
+              "
+            />
+            🥗
+            <a
+              href="https://www.fns.usda.gov/cnpp/usda-food-plans-cost-food-monthly-reports"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="level-btn"
+              ><span class="en-text">USDA — Monthly Cost of Food ↗</span
+              ><span class="es-text"
+                >USDA — Costo mensual de alimentos ↗</span
+              ></a
+            >
+            <small class="sr-hint"
+              ><span class="en-text"
+                >Find: Monthly food cost for a family — estimate per-person
+                cost</span
+              ><span class="es-text"
+                >Buscar: Costo mensual de alimentos de una familia — estima el
+                costo por persona</span
+              ></small
+            >
+            <input
+              type="text"
+              id="rfind-4"
+              data-research-find
+              placeholder="✍️ What I found here…"
+              style="
+                width: 100%;
+                box-sizing: border-box;
+                margin-top: 6px;
+                padding: 9px 11px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                font-family: inherit;
+                font-size: 15px;
+                background: #fff;
+              "
+            />
           </div>
 
           <!-- SVG: Budget visual -->
-          <svg class="visual-svg" viewBox="0 0 520 130" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
-            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">
-              <tspan class="en-text">Budget = Food + Decorations + Activities</tspan>
-              <tspan class="es-text">Presupuesto = Comida + Decoraciones + Actividades</tspan>
+          <svg
+            class="visual-svg"
+            viewBox="0 0 520 130"
+            xmlns="http://www.w3.org/2000/svg"
+            style="
+              background: white;
+              border: 1px solid #e2e7ec;
+              border-radius: 12px;
+            "
+          >
+            <text
+              x="260"
+              y="25"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="bold"
+              fill="#0f2b3c"
+            >
+              <tspan class="en-text">
+                Budget = Food + Decorations + Activities
+              </tspan>
+              <tspan class="es-text">
+                Presupuesto = Comida + Decoraciones + Actividades
+              </tspan>
             </text>
-            <rect x="20" y="40" width="140" height="70" rx="10" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
+            <rect
+              x="20"
+              y="40"
+              width="140"
+              height="70"
+              rx="10"
+              fill="#fdf3e0"
+              stroke="#c9820f"
+              stroke-width="2"
+            />
             <text x="90" y="65" text-anchor="middle" font-size="20">🍔</text>
-            <text x="90" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">
+            <text
+              x="90"
+              y="85"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="bold"
+              fill="#0f2b3c"
+            >
               <tspan class="en-text">Food</tspan>
               <tspan class="es-text">Comida</tspan>
             </text>
-            <text x="90" y="102" text-anchor="middle" font-size="10" fill="#c9820f">$___</text>
-            <text x="185" y="80" text-anchor="middle" font-size="22" fill="#c9820f" font-weight="bold">+</text>
-            <rect x="200" y="40" width="140" height="70" rx="10" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
+            <text
+              x="90"
+              y="102"
+              text-anchor="middle"
+              font-size="10"
+              fill="#c9820f"
+            >
+              $___
+            </text>
+            <text
+              x="185"
+              y="80"
+              text-anchor="middle"
+              font-size="22"
+              fill="#c9820f"
+              font-weight="bold"
+            >
+              +
+            </text>
+            <rect
+              x="200"
+              y="40"
+              width="140"
+              height="70"
+              rx="10"
+              fill="#fdf3e0"
+              stroke="#c9820f"
+              stroke-width="2"
+            />
             <text x="270" y="65" text-anchor="middle" font-size="20">🎈</text>
-            <text x="270" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">
+            <text
+              x="270"
+              y="85"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="bold"
+              fill="#0f2b3c"
+            >
               <tspan class="en-text">Decorations</tspan>
               <tspan class="es-text">Decoraciones</tspan>
             </text>
-            <text x="270" y="102" text-anchor="middle" font-size="10" fill="#c9820f">$___</text>
-            <text x="365" y="80" text-anchor="middle" font-size="22" fill="#c9820f" font-weight="bold">+</text>
-            <rect x="380" y="40" width="130" height="70" rx="10" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
+            <text
+              x="270"
+              y="102"
+              text-anchor="middle"
+              font-size="10"
+              fill="#c9820f"
+            >
+              $___
+            </text>
+            <text
+              x="365"
+              y="80"
+              text-anchor="middle"
+              font-size="22"
+              fill="#c9820f"
+              font-weight="bold"
+            >
+              +
+            </text>
+            <rect
+              x="380"
+              y="40"
+              width="130"
+              height="70"
+              rx="10"
+              fill="#fdf3e0"
+              stroke="#c9820f"
+              stroke-width="2"
+            />
             <text x="445" y="65" text-anchor="middle" font-size="20">🎮</text>
-            <text x="445" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">
+            <text
+              x="445"
+              y="85"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="bold"
+              fill="#0f2b3c"
+            >
               <tspan class="en-text">Activities</tspan>
               <tspan class="es-text">Actividades</tspan>
             </text>
-            <text x="445" y="102" text-anchor="middle" font-size="10" fill="#c9820f">$___</text>
+            <text
+              x="445"
+              y="102"
+              text-anchor="middle"
+              font-size="10"
+              fill="#c9820f"
+            >
+              $___
+            </text>
           </svg>
 
           <div class="lvl1-only instruct gold">
-            <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try round numbers like $80 food, $40 decorations, $30 activities, 25 guests.</span>
-            <span class="es-text">🟢 <strong>Consejo del Nivel 1:</strong> Prueba con números redondos como $80 en comida, $40 en decoraciones, $30 en actividades, 25 invitados.</span>
+            <span class="en-text"
+              >🟢 <strong>Level 1 tip:</strong> Try round numbers like $80 food,
+              $40 decorations, $30 activities, 25 guests.</span
+            >
+            <span class="es-text"
+              >🟢 <strong>Consejo del Nivel 1:</strong> Prueba con números
+              redondos como $80 en comida, $40 en decoraciones, $30 en
+              actividades, 25 invitados.</span
+            >
           </div>
 
           <div class="grid2">
@@ -832,46 +1917,91 @@
                 <span class="en-text">🍔 Food cost ($)</span>
                 <span class="es-text">🍔 Costo de comida ($)</span>
               </label>
-              <input type="number" id="c-food" step="0.01" min="0" placeholder="" oninput="calcBudget()" />
+              <input
+                type="number"
+                id="c-food"
+                step="0.01"
+                min="0"
+                placeholder=""
+                oninput="calcBudget()"
+              />
             </div>
             <div>
               <label class="lbl" for="c-deco">
                 <span class="en-text">🎈 Decorations cost ($)</span>
                 <span class="es-text">🎈 Costo de decoraciones ($)</span>
               </label>
-              <input type="number" id="c-deco" step="0.01" min="0" placeholder="" oninput="calcBudget()" />
+              <input
+                type="number"
+                id="c-deco"
+                step="0.01"
+                min="0"
+                placeholder=""
+                oninput="calcBudget()"
+              />
             </div>
             <div>
               <label class="lbl" for="c-act">
                 <span class="en-text">🎮 Activities cost ($)</span>
                 <span class="es-text">🎮 Costo de actividades ($)</span>
               </label>
-              <input type="number" id="c-act" step="0.01" min="0" placeholder="" oninput="calcBudget()" />
+              <input
+                type="number"
+                id="c-act"
+                step="0.01"
+                min="0"
+                placeholder=""
+                oninput="calcBudget()"
+              />
             </div>
             <div>
               <label class="lbl" for="c-guests">
                 <span class="en-text">👥 Number of guests</span>
                 <span class="es-text">👥 Número de invitados</span>
               </label>
-              <input type="number" id="c-guests" min="1" placeholder="" oninput="calcBudget()" />
+              <input
+                type="number"
+                id="c-guests"
+                min="1"
+                placeholder=""
+                oninput="calcBudget()"
+              />
             </div>
           </div>
 
           <button class="calc-btn gold" onclick="calcBudget()">
-            <span class="en-text">💵 Calculate Budget &amp; Cost Per Guest</span>
-            <span class="es-text">💵 Calcular presupuesto y costo por invitado</span>
+            <span class="en-text"
+              >💵 Calculate Budget &amp; Cost Per Guest</span
+            >
+            <span class="es-text"
+              >💵 Calcular presupuesto y costo por invitado</span
+            >
           </button>
           <div class="readout" id="budget-out"></div>
 
           <!-- Real-world comparison — data built in, no research required -->
-          <div style="margin-top:22px;">
-            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">
+          <div style="margin-top: 22px">
+            <h3
+              style="
+                font-size: 15px;
+                font-weight: 800;
+                color: var(--navy);
+                margin-bottom: 6px;
+              "
+            >
               <span class="en-text">🌎 Real-World Comparison</span>
               <span class="es-text">🌎 Comparación del mundo real</span>
             </h3>
-            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">
-              <span class="en-text">Here are real average cookout costs per guest in different U.S. cities. See where your number falls!</span>
-              <span class="es-text">¡Aquí están los costos promedio reales de una comida al aire libre por invitado en diferentes ciudades de EE. UU. Mira dónde se ubica tu número!</span>
+            <p style="font-size: 14px; color: var(--muted); margin-bottom: 6px">
+              <span class="en-text"
+                >Here are real average cookout costs per guest in different U.S.
+                cities. See where your number falls!</span
+              >
+              <span class="es-text"
+                >¡Aquí están los costos promedio reales de una comida al aire
+                libre por invitado en diferentes ciudades de EE. UU. Mira dónde
+                se ubica tu número!</span
+              >
             </p>
             <table class="data-table">
               <thead>
@@ -935,20 +2065,39 @@
               </tbody>
             </table>
             <label class="lbl" for="world-compare">
-              <span class="en-text">Where does your cost per guest fit? Write one sentence.</span>
-              <span class="es-text">¿Dónde encaja tu costo por invitado? Escribe una oración.</span>
+              <span class="en-text"
+                >Where does your cost per guest fit? Write one sentence.</span
+              >
+              <span class="es-text"
+                >¿Dónde encaja tu costo por invitado? Escribe una oración.</span
+              >
             </label>
-            <textarea id="world-compare" placeholder="My cost per guest is $___. Compared to real cookouts, this is..."></textarea>
+            <textarea
+              id="world-compare"
+              placeholder="My cost per guest is $___. Compared to real cookouts, this is..."
+            ></textarea>
           </div>
 
           <details class="hint">
             <summary>
               <span class="en-text">Need a hint for division?</span>
-              <span class="es-text">¿Necesitas una pista para la división?</span>
+              <span class="es-text"
+                >¿Necesitas una pista para la división?</span
+              >
             </summary>
             <p>
-              <span class="en-text">Total Cost ÷ Number of Guests = Cost Per Guest.<br><strong>Example:</strong> $150 ÷ 25 guests = $6.00 per guest.</span>
-              <span class="es-text">Costo total ÷ Número de invitados = Costo por invitado.<br><strong>Ejemplo:</strong> $150 ÷ 25 invitados = $6.00 por invitado.</span>
+              <span class="en-text"
+                >Total Cost ÷ Number of Guests = Cost Per Guest.<br /><strong
+                  >Example:</strong
+                >
+                $150 ÷ 25 guests = $6.00 per guest.</span
+              >
+              <span class="es-text"
+                >Costo total ÷ Número de invitados = Costo por invitado.<br /><strong
+                  >Ejemplo:</strong
+                >
+                $150 ÷ 25 invitados = $6.00 por invitado.</span
+              >
             </p>
           </details>
         </div>
@@ -978,53 +2127,132 @@
                 <span class="es-text">Paso 4 — Comparar con un compañero</span>
               </div>
               <div class="card-sub">
-                <span class="en-text">Interview a classmate and compare your block party plans</span>
-                <span class="es-text">Entrevista a un compañero de clase y compara tus planes de fiesta de cuadra</span>
+                <span class="en-text"
+                  >Interview a classmate and compare your block party
+                  plans</span
+                >
+                <span class="es-text"
+                  >Entrevista a un compañero de clase y compara tus planes de
+                  fiesta de cuadra</span
+                >
               </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <span class="en-text"><strong>Your job:</strong> Ask a partner these 3 questions. Write their answers below, then press Compare to see the differences.</span>
-            <span class="es-text"><strong>Tu trabajo:</strong> Hazle estas 3 preguntas a un compañero. Escribe sus respuestas a continuación, luego presiona Comparar para ver las diferencias.</span>
+            <span class="en-text"
+              ><strong>Your job:</strong> Ask a partner these 3 questions. Write
+              their answers below, then press Compare to see the
+              differences.</span
+            >
+            <span class="es-text"
+              ><strong>Tu trabajo:</strong> Hazle estas 3 preguntas a un
+              compañero. Escribe sus respuestas a continuación, luego presiona
+              Comparar para ver las diferencias.</span
+            >
           </div>
 
           <!-- SVG: Interview visual -->
-          <svg class="visual-svg" viewBox="0 0 520 100" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
+          <svg
+            class="visual-svg"
+            viewBox="0 0 520 100"
+            xmlns="http://www.w3.org/2000/svg"
+            style="
+              background: white;
+              border: 1px solid #e2e7ec;
+              border-radius: 12px;
+            "
+          >
             <text x="140" y="40" text-anchor="middle" font-size="28">🙋</text>
-            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">
+            <text
+              x="140"
+              y="65"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="bold"
+              fill="#0f2b3c"
+            >
               <tspan class="en-text">You</tspan>
               <tspan class="es-text">Tú</tspan>
             </text>
-            <rect x="185" y="38" width="150" height="30" rx="8" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="1.5"/>
-            <text x="260" y="59" text-anchor="middle" font-size="12" fill="#0e8a7d">
+            <rect
+              x="185"
+              y="38"
+              width="150"
+              height="30"
+              rx="8"
+              fill="#e4f5f3"
+              stroke="#0e8a7d"
+              stroke-width="1.5"
+            />
+            <text
+              x="260"
+              y="59"
+              text-anchor="middle"
+              font-size="12"
+              fill="#0e8a7d"
+            >
               <tspan class="en-text">"How many bags did you make?"</tspan>
               <tspan class="es-text">"¿Cuántas bolsas hiciste?"</tspan>
             </text>
             <text x="380" y="40" text-anchor="middle" font-size="28">🙋</text>
-            <text x="380" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">
+            <text
+              x="380"
+              y="65"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="bold"
+              fill="#0f2b3c"
+            >
               <tspan class="en-text">Partner</tspan>
               <tspan class="es-text">Compañero</tspan>
             </text>
           </svg>
 
-          <div style="background:var(--teal-lt);border-radius:12px;padding:14px 16px;margin-bottom:18px;">
-            <strong style="font-size:14px;color:var(--teal);">
-              <span class="en-text">Interview Questions — Ask Your Partner:</span>
-              <span class="es-text">Preguntas de la entrevista — Pregúntale a tu compañero:</span>
+          <div
+            style="
+              background: var(--teal-lt);
+              border-radius: 12px;
+              padding: 14px 16px;
+              margin-bottom: 18px;
+            "
+          >
+            <strong style="font-size: 14px; color: var(--teal)">
+              <span class="en-text"
+                >Interview Questions — Ask Your Partner:</span
+              >
+              <span class="es-text"
+                >Preguntas de la entrevista — Pregúntale a tu compañero:</span
+              >
             </strong>
-            <ol style="margin-top:8px;font-size:14px;line-height:1.9;padding-left:18px;color:var(--ink);">
+            <ol
+              style="
+                margin-top: 8px;
+                font-size: 14px;
+                line-height: 1.9;
+                padding-left: 18px;
+                color: var(--ink);
+              "
+            >
               <li>
-                <span class="en-text">How many equal goodie bags did you make? (GCF)</span>
-                <span class="es-text">¿Cuántas bolsas de regalos iguales hiciste? (MCD)</span>
+                <span class="en-text"
+                  >How many equal goodie bags did you make? (GCF)</span
+                >
+                <span class="es-text"
+                  >¿Cuántas bolsas de regalos iguales hiciste? (MCD)</span
+                >
               </li>
               <li>
                 <span class="en-text">What is your cost per guest? ($)</span>
                 <span class="es-text">¿Cuál es tu costo por invitado? ($)</span>
               </li>
               <li>
-                <span class="en-text">How much of your budget is left over?</span>
-                <span class="es-text">¿Cuánto de tu presupuesto te queda de sobra?</span>
+                <span class="en-text"
+                  >How much of your budget is left over?</span
+                >
+                <span class="es-text"
+                  >¿Cuánto de tu presupuesto te queda de sobra?</span
+                >
               </li>
             </ol>
           </div>
@@ -1035,20 +2263,35 @@
           </label>
           <input type="text" id="p-name" placeholder="" />
 
-          <div class="grid2" style="margin-top:4px;">
+          <div class="grid2" style="margin-top: 4px">
             <div>
               <label class="lbl" for="p-bags">
                 <span class="en-text">Partner's number of bags</span>
                 <span class="es-text">Número de bolsas del compañero</span>
               </label>
-              <input type="number" id="p-bags" min="0" oninput="comparePeer()" placeholder="" />
+              <input
+                type="number"
+                id="p-bags"
+                min="0"
+                oninput="comparePeer()"
+                placeholder=""
+              />
             </div>
             <div>
               <label class="lbl" for="p-per">
                 <span class="en-text">Partner's cost per guest ($)</span>
-                <span class="es-text">Costo por invitado del compañero ($)</span>
+                <span class="es-text"
+                  >Costo por invitado del compañero ($)</span
+                >
               </label>
-              <input type="number" id="p-per" step="0.01" min="0" oninput="comparePeer()" placeholder="" />
+              <input
+                type="number"
+                id="p-per"
+                step="0.01"
+                min="0"
+                oninput="comparePeer()"
+                placeholder=""
+              />
             </div>
           </div>
 
@@ -1058,11 +2301,19 @@
           </button>
           <div class="readout" id="peer-out"></div>
 
-          <label class="lbl" for="peer-reflect" style="margin-top:18px;">
-            <span class="en-text">Who planned more carefully? Explain using your numbers.</span>
-            <span class="es-text">¿Quién planificó con más cuidado? Explica usando tus números.</span>
+          <label class="lbl" for="peer-reflect" style="margin-top: 18px">
+            <span class="en-text"
+              >Who planned more carefully? Explain using your numbers.</span
+            >
+            <span class="es-text"
+              >¿Quién planificó con más cuidado? Explica usando tus
+              números.</span
+            >
           </label>
-          <textarea id="peer-reflect" placeholder="My plan had ___ bags and $__ per guest. My partner had... I think ___ planned more carefully because..."></textarea>
+          <textarea
+            id="peer-reflect"
+            placeholder="My plan had ___ bags and $__ per guest. My partner had... I think ___ planned more carefully because..."
+          ></textarea>
         </div>
 
         <div class="nav-row">
@@ -1090,40 +2341,122 @@
                 <span class="es-text">Paso 5 — Terminar y entregar</span>
               </div>
               <div class="card-sub">
-                <span class="en-text">Write your pitch, check the list, get your score</span>
-                <span class="es-text">Escribe tu presentación, revisa la lista, obtén tu puntaje</span>
+                <span class="en-text"
+                  >Write your pitch, check the list, get your score</span
+                >
+                <span class="es-text"
+                  >Escribe tu presentación, revisa la lista, obtén tu
+                  puntaje</span
+                >
               </div>
             </div>
           </div>
 
           <div class="instruct green">
-            <span class="en-text"><strong>Your job:</strong> Write 3–5 sentences pitching your block party plan using your real numbers. Then check off everything you did.</span>
-            <span class="es-text"><strong>Tu trabajo:</strong> Escribe de 3 a 5 oraciones presentando tu plan de fiesta de cuadra usando tus números reales. Luego marca todo lo que hiciste.</span>
+            <span class="en-text"
+              ><strong>Your job:</strong> Write 3–5 sentences pitching your
+              block party plan using your real numbers. Then check off
+              everything you did.</span
+            >
+            <span class="es-text"
+              ><strong>Tu trabajo:</strong> Escribe de 3 a 5 oraciones
+              presentando tu plan de fiesta de cuadra usando tus números reales.
+              Luego marca todo lo que hiciste.</span
+            >
           </div>
 
           <!-- Pitch -->
           <label class="lbl" for="pitch">
-            <span class="en-text">✍️ Your Block Party Pitch (use your real numbers!)</span>
-            <span class="es-text">✍️ Tu presentación de la fiesta de cuadra (¡usa tus números reales!)</span>
+            <span class="en-text"
+              >✍️ Your Block Party Pitch (use your real numbers!)</span
+            >
+            <span class="es-text"
+              >✍️ Tu presentación de la fiesta de cuadra (¡usa tus números
+              reales!)</span
+            >
           </label>
-          <textarea id="pitch" placeholder="My block party plan uses math to make it fair and fun. I made ___ equal goodie bags by finding the GCF of ___ and ___. My cost per guest is $___..."></textarea>
+          <textarea
+            id="pitch"
+            placeholder="My block party plan uses math to make it fair and fun. I made ___ equal goodie bags by finding the GCF of ___ and ___. My cost per guest is $___..."
+          ></textarea>
 
           <!-- Checklist -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
-            <span class="en-text">✅ Checklist — Check off everything you completed</span>
-            <span class="es-text">✅ Lista de verificación — Marca todo lo que hayas completado</span>
+          <h3
+            style="
+              font-size: 16px;
+              font-weight: 800;
+              color: var(--navy);
+              margin: 22px 0 6px;
+            "
+          >
+            <span class="en-text"
+              >✅ Checklist — Check off everything you completed</span
+            >
+            <span class="es-text"
+              >✅ Lista de verificación — Marca todo lo que hayas
+              completado</span
+            >
           </h3>
           <ul class="checklist" id="checklist">
-            <li><input type="checkbox" id="ck1" /> <span class="en-text">I found the GCF to make equal goodie bags.</span><span class="es-text">Encontré el MCD para hacer bolsas de regalos iguales.</span></li>
-            <li><input type="checkbox" id="ck2" /> <span class="en-text">I found the LCM to sync the entertainment.</span><span class="es-text">Encontré el MCM para sincronizar el entretenimiento.</span></li>
-            <li><input type="checkbox" id="ck3" /> <span class="en-text">I calculated my total budget and cost per guest.</span><span class="es-text">Calculé mi presupuesto total y el costo por invitado.</span></li>
-            <li><input type="checkbox" id="ck4" /> <span class="en-text">I compared my cost to the real-world city data.</span><span class="es-text">Comparé mi costo con los datos de ciudades del mundo real.</span></li>
-            <li><input type="checkbox" id="ck5" /> <span class="en-text">I interviewed a partner and compared plans.</span><span class="es-text">Entrevisté a un compañero y comparé planes.</span></li>
-            <li><input type="checkbox" id="ck6" /> <span class="en-text">I wrote a pitch using my real numbers.</span><span class="es-text">Escribí una presentación usando mis números reales.</span></li>
+            <li>
+              <input type="checkbox" id="ck1" />
+              <span class="en-text"
+                >I found the GCF to make equal goodie bags.</span
+              ><span class="es-text"
+                >Encontré el MCD para hacer bolsas de regalos iguales.</span
+              >
+            </li>
+            <li>
+              <input type="checkbox" id="ck2" />
+              <span class="en-text"
+                >I found the LCM to sync the entertainment.</span
+              ><span class="es-text"
+                >Encontré el MCM para sincronizar el entretenimiento.</span
+              >
+            </li>
+            <li>
+              <input type="checkbox" id="ck3" />
+              <span class="en-text"
+                >I calculated my total budget and cost per guest.</span
+              ><span class="es-text"
+                >Calculé mi presupuesto total y el costo por invitado.</span
+              >
+            </li>
+            <li>
+              <input type="checkbox" id="ck4" />
+              <span class="en-text"
+                >I compared my cost to the real-world city data.</span
+              ><span class="es-text"
+                >Comparé mi costo con los datos de ciudades del mundo
+                real.</span
+              >
+            </li>
+            <li>
+              <input type="checkbox" id="ck5" />
+              <span class="en-text"
+                >I interviewed a partner and compared plans.</span
+              ><span class="es-text"
+                >Entrevisté a un compañero y comparé planes.</span
+              >
+            </li>
+            <li>
+              <input type="checkbox" id="ck6" />
+              <span class="en-text">I wrote a pitch using my real numbers.</span
+              ><span class="es-text"
+                >Escribí una presentación usando mis números reales.</span
+              >
+            </li>
           </ul>
 
           <!-- Rubric -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+          <h3
+            style="
+              font-size: 16px;
+              font-weight: 800;
+              color: var(--navy);
+              margin: 22px 0 6px;
+            "
+          >
             <span class="en-text">📊 How You Are Scored</span>
             <span class="es-text">📊 Cómo se te califica</span>
           </h3>
@@ -1168,7 +2501,9 @@
                 <td><strong>Decimal Budget</strong></td>
                 <td>
                   <span class="en-text">All costs correct, within budget</span>
-                  <span class="es-text">Todos los costos correctos, dentro del presupuesto</span>
+                  <span class="es-text"
+                    >Todos los costos correctos, dentro del presupuesto</span
+                  >
                 </td>
                 <td>
                   <span class="en-text">Total is accurate</span>
@@ -1182,8 +2517,12 @@
               <tr>
                 <td><strong>Division</strong></td>
                 <td>
-                  <span class="en-text">Cost per guest correct + reasoning</span>
-                  <span class="es-text">Costo por invitado correcto + razonamiento</span>
+                  <span class="en-text"
+                    >Cost per guest correct + reasoning</span
+                  >
+                  <span class="es-text"
+                    >Costo por invitado correcto + razonamiento</span
+                  >
                 </td>
                 <td>
                   <span class="en-text">Cost per guest correct</span>
@@ -1191,14 +2530,20 @@
                 </td>
                 <td>
                   <span class="en-text">Setup correct, computation error</span>
-                  <span class="es-text">Configuración correcta, error de cálculo</span>
+                  <span class="es-text"
+                    >Configuración correcta, error de cálculo</span
+                  >
                 </td>
               </tr>
               <tr>
                 <td><strong>Comparison</strong></td>
                 <td>
-                  <span class="en-text">Compares partner + city data with reasoning</span>
-                  <span class="es-text">Compara datos de compañero y ciudad con razonamiento</span>
+                  <span class="en-text"
+                    >Compares partner + city data with reasoning</span
+                  >
+                  <span class="es-text"
+                    >Compara datos de compañero y ciudad con razonamiento</span
+                  >
                 </td>
                 <td>
                   <span class="en-text">Both comparisons present</span>
@@ -1212,8 +2557,12 @@
               <tr>
                 <td><strong>Pitch</strong></td>
                 <td>
-                  <span class="en-text">Uses all real numbers, clear reasoning</span>
-                  <span class="es-text">Usa todos los números reales, razonamiento claro</span>
+                  <span class="en-text"
+                    >Uses all real numbers, clear reasoning</span
+                  >
+                  <span class="es-text"
+                    >Usa todos los números reales, razonamiento claro</span
+                  >
                 </td>
                 <td>
                   <span class="en-text">Uses most numbers</span>
@@ -1228,7 +2577,15 @@
           </table>
 
           <!-- Report + export -->
-          <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
+          <div
+            class="nav-row no-print"
+            style="
+              margin-top: 22px;
+              flex-wrap: wrap;
+              justify-content: flex-start;
+              gap: 8px;
+            "
+          >
             <button class="calc-btn" onclick="buildReport()">
               <span class="en-text">📝 Generate Summary</span>
               <span class="es-text">📝 Generar resumen</span>
@@ -1260,14 +2617,19 @@
           </button>
         </div>
       </div>
-
-    </div><!-- end wizard -->
+    </div>
+    <!-- end wizard -->
 
     <!-- ====== SCRIPTS ====== -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <script src="/assets/app.js" defer></script>
     <script>
-      const PRESETS = {"g-stickers": 24, "g-bars": 36, "l-music": 5, "l-bubble": 7};
+      const PRESETS = {
+        "g-stickers": 24,
+        "g-bars": 36,
+        "l-music": 5,
+        "l-bubble": 7,
+      };
       function handleLevelPreset(n) {
         try {
           if (n === 1) {
@@ -1275,125 +2637,150 @@
               const el = document.getElementById(id);
               if (el && !el.value) {
                 el.value = val;
-                el.dispatchEvent(new Event('input', { bubbles: true }));
-                el.dispatchEvent(new Event('change', { bubbles: true }));
+                el.dispatchEvent(new Event("input", { bubbles: true }));
+                el.dispatchEvent(new Event("change", { bubbles: true }));
               }
             }
           } else if (n === 2) {
             for (const [id, val] of Object.entries(PRESETS)) {
               const el = document.getElementById(id);
               if (el && String(el.value) === String(val)) {
-                el.value = '';
-                el.dispatchEvent(new Event('input', { bubbles: true }));
-                el.dispatchEvent(new Event('change', { bubbles: true }));
+                el.value = "";
+                el.dispatchEvent(new Event("input", { bubbles: true }));
+                el.dispatchEvent(new Event("change", { bubbles: true }));
               }
             }
           }
-        } catch(e) {}
+        } catch (e) {}
       }
 
       function playConfetti() {
         try {
-          const container = document.createElement('div');
-          container.style.position = 'fixed';
-          container.style.top = '0';
-          container.style.left = '0';
-          container.style.width = '100vw';
-          container.style.height = '100vh';
-          container.style.pointerEvents = 'none';
-          container.style.zIndex = '9999';
+          const container = document.createElement("div");
+          container.style.position = "fixed";
+          container.style.top = "0";
+          container.style.left = "0";
+          container.style.width = "100vw";
+          container.style.height = "100vh";
+          container.style.pointerEvents = "none";
+          container.style.zIndex = "9999";
           document.body.appendChild(container);
-          
-          const colors = ['#f43f5e', '#3b82f6', '#10b981', '#eab308', '#a855f7', '#f97316'];
+
+          const colors = [
+            "#f43f5e",
+            "#3b82f6",
+            "#10b981",
+            "#eab308",
+            "#a855f7",
+            "#f97316",
+          ];
           for (let i = 0; i < 80; i++) {
-            const el = document.createElement('div');
-            el.style.position = 'absolute';
-            el.style.width = Math.random() * 8 + 6 + 'px';
-            el.style.height = Math.random() * 8 + 6 + 'px';
-            el.style.background = colors[Math.floor(Math.random() * colors.length)];
-            el.style.borderRadius = Math.random() > 0.5 ? '50%' : '0%';
-            
-            el.style.bottom = '-10px';
-            el.style.left = Math.random() * 100 + 'vw';
-            
+            const el = document.createElement("div");
+            el.style.position = "absolute";
+            el.style.width = Math.random() * 8 + 6 + "px";
+            el.style.height = Math.random() * 8 + 6 + "px";
+            el.style.background =
+              colors[Math.floor(Math.random() * colors.length)];
+            el.style.borderRadius = Math.random() > 0.5 ? "50%" : "0%";
+
+            el.style.bottom = "-10px";
+            el.style.left = Math.random() * 100 + "vw";
+
             container.appendChild(el);
-            
+
             const duration = Math.random() * 2 + 1.5;
             const horizontalShift = (Math.random() - 0.5) * 200;
             const rotation = Math.random() * 720;
-            
-            el.animate([
-              { transform: 'translate(0, 0) rotate(0deg)', opacity: '1' },
-              { transform: `translate(${horizontalShift}px, -110vh) rotate(${rotation}deg)`, opacity: '0' }
-            ], {
-              duration: duration * 1000,
-              easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)',
-              fill: 'forwards'
-            });
+
+            el.animate(
+              [
+                { transform: "translate(0, 0) rotate(0deg)", opacity: "1" },
+                {
+                  transform: `translate(${horizontalShift}px, -110vh) rotate(${rotation}deg)`,
+                  opacity: "0",
+                },
+              ],
+              {
+                duration: duration * 1000,
+                easing: "cubic-bezier(0.1, 0.8, 0.3, 1)",
+                fill: "forwards",
+              },
+            );
           }
-          
+
           setTimeout(() => container.remove(), 4000);
         } catch (e) {}
       }
 
       // ---- State ----
       const STEPS = [
-        { id: 1, label: 'Key Words', labelEs: 'Palabras clave', icon: '📖' },
-        { id: 2, label: 'Goodie Bags', labelEs: 'Bolsas de regalos', icon: '🎁' },
-        { id: 3, label: 'Entertainment', labelEs: 'Entretenimiento', icon: '⏱️' },
-        { id: 4, label: 'Budget', labelEs: 'Presupuesto', icon: '💵' },
-        { id: 5, label: 'Compare', labelEs: 'Comparar', icon: '👥' },
-        { id: 6, label: 'Finish', labelEs: 'Terminar', icon: '🏆' },
+        { id: 1, label: "Key Words", labelEs: "Palabras clave", icon: "📖" },
+        {
+          id: 2,
+          label: "Goodie Bags",
+          labelEs: "Bolsas de regalos",
+          icon: "🎁",
+        },
+        {
+          id: 3,
+          label: "Entertainment",
+          labelEs: "Entretenimiento",
+          icon: "⏱️",
+        },
+        { id: 4, label: "Budget", labelEs: "Presupuesto", icon: "💵" },
+        { id: 5, label: "Compare", labelEs: "Comparar", icon: "👥" },
+        { id: 6, label: "Finish", labelEs: "Terminar", icon: "🏆" },
       ];
       let currentStep = 1;
       const visited = new Set([1]);
 
       // ---- Level toggle ----
       function setLevel(n) {
-        const body = document.getElementById('body');
-        const isEs = body.classList.contains('es');
-        body.className = 'level-' + n + (isEs ? ' es' : '');
-        document.getElementById('btn-lv1').classList.toggle('active', n === 1);
-        document.getElementById('btn-lv2').classList.toggle('active', n === 2);
-      
-        handleLevelPreset(n);}
+        const body = document.getElementById("body");
+        const isEs = body.classList.contains("es");
+        body.className = "level-" + n + (isEs ? " es" : "");
+        document.getElementById("btn-lv1").classList.toggle("active", n === 1);
+        document.getElementById("btn-lv2").classList.toggle("active", n === 2);
+
+        handleLevelPreset(n);
+      }
 
       // ---- Language toggle ----
       function toggleLanguage() {
-        const body = document.getElementById('body');
-        body.classList.toggle('es');
-        const isEs = body.classList.contains('es');
-        
+        const body = document.getElementById("body");
+        body.classList.toggle("es");
+        const isEs = body.classList.contains("es");
+
         // Update language button
-        const btn = document.getElementById('btn-lang');
+        const btn = document.getElementById("btn-lang");
         if (btn) {
-          btn.innerHTML = isEs ? '🌐 Idioma: ES' : '🌐 Language: EN';
+          btn.innerHTML = isEs ? "🌐 Idioma: ES" : "🌐 Language: EN";
         }
-        
+
         // Update placeholders
         const placeholders = {
-          'g-stickers': { en: '', es: '' },
-          'g-bars': { en: '', es: '' },
-          'distrib': { en: '', es: '' },
-          'l-music': { en: '', es: '' },
-          'l-bubble': { en: '', es: '' },
-          'c-food': { en: '', es: '' },
-          'c-deco': { en: '', es: '' },
-          'c-act': { en: '', es: '' },
-          'c-guests': { en: '', es: '' },
-          'world-compare': { 
-            en: 'My cost per guest is $___. Compared to real cookouts, this is...', 
-            es: 'Mi costo por invitado es $___. Comparado con las comidas al aire libre reales, esto es...' 
+          "g-stickers": { en: "", es: "" },
+          "g-bars": { en: "", es: "" },
+          distrib: { en: "", es: "" },
+          "l-music": { en: "", es: "" },
+          "l-bubble": { en: "", es: "" },
+          "c-food": { en: "", es: "" },
+          "c-deco": { en: "", es: "" },
+          "c-act": { en: "", es: "" },
+          "c-guests": { en: "", es: "" },
+          "world-compare": {
+            en: "My cost per guest is $___. Compared to real cookouts, this is...",
+            es: "Mi costo por invitado es $___. Comparado con las comidas al aire libre reales, esto es...",
           },
-          'p-name': { en: '', es: '' },
-          'peer-reflect': { 
-            en: 'My plan had ___ bags and $__ per guest. My partner had... I think ___ planned more carefully because...', 
-            es: 'Mi plan tenía ___ bolsas y $___ por invitado. Mi compañero tenía... Creo que ___ planificó con más cuidado porque...' 
+          "p-name": { en: "", es: "" },
+          "peer-reflect": {
+            en: "My plan had ___ bags and $__ per guest. My partner had... I think ___ planned more carefully because...",
+            es: "Mi plan tenía ___ bolsas y $___ por invitado. Mi compañero tenía... Creo que ___ planificó con más cuidado porque...",
           },
-          'pitch': { 
-            en: 'My block party plan uses math to make it fair and fun. I made ___ equal goodie bags by finding the GCF of ___ and ___. My cost per guest is $___...', 
-            es: 'Mi plan de fiesta de cuadra usa matemáticas para que sea justa y divertida. Hice ___ bolsas de regalos iguales al encontrar el MCD de ___ y ___. Mi costo por invitado es $___...' 
-          }
+          pitch: {
+            en: "My block party plan uses math to make it fair and fun. I made ___ equal goodie bags by finding the GCF of ___ and ___. My cost per guest is $___...",
+            es: "Mi plan de fiesta de cuadra usa matemáticas para que sea justa y divertida. Hice ___ bolsas de regalos iguales al encontrar el MCD de ___ y ___. Mi costo por invitado es $___...",
+          },
         };
 
         for (const [id, value] of Object.entries(placeholders)) {
@@ -1402,7 +2789,7 @@
             el.placeholder = isEs ? value.es : value.en;
           }
         }
-        
+
         // Refresh trail and progress to apply translations
         buildTrail();
         updateProgress();
@@ -1411,98 +2798,111 @@
       // ---- Read Aloud ----
       function readAloud() {
         if (!window.speechSynthesis) {
-          alert('Speech synthesis not supported in this browser.');
+          alert("Speech synthesis not supported in this browser.");
           return;
         }
         if (window.speechSynthesis.speaking) {
           window.speechSynthesis.cancel();
           return;
         }
-        
-        const body = document.getElementById('body');
-        const isEs = body.classList.contains('es');
-        const selector = isEs ? '.es-text' : '.en-text';
-        
-        const activePanel = document.querySelector('.step-panel.active');
+
+        const body = document.getElementById("body");
+        const isEs = body.classList.contains("es");
+        const selector = isEs ? ".es-text" : ".en-text";
+
+        const activePanel = document.querySelector(".step-panel.active");
         if (!activePanel) return;
-        
+
         const textElements = activePanel.querySelectorAll(selector);
         let textToRead = Array.from(textElements)
-          .map(el => el.textContent.trim())
-          .filter(txt => txt.length > 0)
-          .join('. ');
-        
+          .map((el) => el.textContent.trim())
+          .filter((txt) => txt.length > 0)
+          .join(". ");
+
         if (!textToRead) return;
-        
+
         const utterance = new SpeechSynthesisUtterance(textToRead);
-        utterance.lang = isEs ? 'es-ES' : 'en-US';
-        
+        utterance.lang = isEs ? "es-ES" : "en-US";
+
         const voices = window.speechSynthesis.getVoices();
-        const preferredVoice = voices.find(voice => voice.lang.startsWith(isEs ? 'es' : 'en'));
+        const preferredVoice = voices.find((voice) =>
+          voice.lang.startsWith(isEs ? "es" : "en"),
+        );
         if (preferredVoice) {
           utterance.voice = preferredVoice;
         }
-        
+
         window.speechSynthesis.speak(utterance);
       }
 
       // ---- Build step trail ----
       function buildTrail() {
-        const trail = document.getElementById('stepTrail');
+        const trail = document.getElementById("stepTrail");
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
-          return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
-            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
+          return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" onclick="goStep(${s.id})">
+            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? "✓" : s.id}</span>
             <span class="s-label"><span class="en-text">${s.label}</span><span class="es-text">${s.labelEs}</span></span>
-          </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
-        }).join('');
+          </span>${!isLast ? '<span class="step-arrow">›</span>' : ""}`;
+        }).join("");
       }
 
       // ---- Navigation ----
       function goStep(n) {
         if (n < 1 || n > STEPS.length) return;
-        document.getElementById('step-' + currentStep).classList.remove('active');
+        document
+          .getElementById("step-" + currentStep)
+          .classList.remove("active");
         currentStep = n;
         visited.add(n);
-        document.getElementById('step-' + n).classList.add('active');
+        document.getElementById("step-" + n).classList.add("active");
         buildTrail();
         updateProgress();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
       function updateProgress() {
         const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
-        document.getElementById('progFill').style.width = pct + '%';
-        document.getElementById('progLabel').innerHTML = `<span class="en-text">Step ${currentStep} of ${STEPS.length}</span><span class="es-text">Paso ${currentStep} de ${STEPS.length}</span>`;
+        document.getElementById("progFill").style.width = pct + "%";
+        document.getElementById("progLabel").innerHTML =
+          `<span class="en-text">Step ${currentStep} of ${STEPS.length}</span><span class="es-text">Paso ${currentStep} de ${STEPS.length}</span>`;
       }
 
       // ---- Math helpers ----
-      function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
-      function lcm(a, b) { return (a * b) / gcd(a, b); }
+      function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+      }
+      function lcm(a, b) {
+        return (a * b) / gcd(a, b);
+      }
       function getFactors(n) {
         const f = [];
         for (let i = 1; i <= n; i++) if (n % i === 0) f.push(i);
         return f;
       }
-      function fmt(n) { return Number.isInteger(n) ? n.toFixed(0) : n.toFixed(2); }
+      function fmt(n) {
+        return Number.isInteger(n) ? n.toFixed(0) : n.toFixed(2);
+      }
       function showReadout(id, html) {
         const el = document.getElementById(id);
         el.innerHTML = html;
-        el.classList.add('show');
+        el.classList.add("show");
       }
 
       // ---- GCF ----
       function calcGCF() {
-        const a = parseInt(document.getElementById('g-stickers').value);
-        const b = parseInt(document.getElementById('g-bars').value);
-        const studentVal = parseInt(document.getElementById('student-gcf-input').value);
-        const body = document.getElementById('body') || document.body;
-        const isLevel2 = body.classList.contains('level-2');
-        const isEs = body.classList.contains('es');
+        const a = parseInt(document.getElementById("g-stickers").value);
+        const b = parseInt(document.getElementById("g-bars").value);
+        const studentVal = parseInt(
+          document.getElementById("student-gcf-input").value,
+        );
+        const body = document.getElementById("body") || document.body;
+        const isLevel2 = body.classList.contains("level-2");
+        const isEs = body.classList.contains("es");
 
         // Update SVG labels
-        const sa = document.getElementById('gcf-svg-a');
-        const sb = document.getElementById('gcf-svg-b');
+        const sa = document.getElementById("gcf-svg-a");
+        const sb = document.getElementById("gcf-svg-b");
         if (sa && !isNaN(a)) {
           sa.innerHTML = `<tspan class="en-text">${a} stickers</tspan><tspan class="es-text">${a} pegatinas</tspan>`;
         }
@@ -1513,43 +2913,45 @@
         const g = gcd(a, b);
 
         if (isNaN(studentVal)) {
-          showReadout('gcf-out', isEs
-            ? '<span style="color:var(--orange); font-weight:600;">✍️ Ingresa tu respuesta del MCD arriba para verificar tu cálculo.</span>'
-            : '<span style="color:var(--orange); font-weight:600;">✍️ Enter your GCF answer above to verify your calculation.</span>'
+          showReadout(
+            "gcf-out",
+            isEs
+              ? '<span style="color:var(--orange); font-weight:600;">✍️ Ingresa tu respuesta del MCD arriba para verificar tu cálculo.</span>'
+              : '<span style="color:var(--orange); font-weight:600;">✍️ Enter your GCF answer above to verify your calculation.</span>',
           );
           return;
         }
 
-        let feedback = '';
+        let feedback = "";
         if (studentVal === g) {
           feedback = isEs
-            ? `<strong><span style="color:var(--green)">✅ ¡Correcto!</span> MCD de ${a} y ${b} = ${g} bolsas iguales</strong><br>Cada bolsa recibe <strong>${Math.floor(a/g)} pegatinas</strong> y <strong>${Math.floor(b/g)} barras de granola</strong>.`
-            : `<strong><span style="color:var(--green)">✅ Correct!</span> GCF of ${a} and ${b} = ${g} equal bags</strong><br>Each bag gets <strong>${Math.floor(a/g)} stickers</strong> and <strong>${Math.floor(b/g)} granola bars</strong>.`;
-          
+            ? `<strong><span style="color:var(--green)">✅ ¡Correcto!</span> MCD de ${a} y ${b} = ${g} bolsas iguales</strong><br>Cada bolsa recibe <strong>${Math.floor(a / g)} pegatinas</strong> y <strong>${Math.floor(b / g)} barras de granola</strong>.`
+            : `<strong><span style="color:var(--green)">✅ Correct!</span> GCF of ${a} and ${b} = ${g} equal bags</strong><br>Each bag gets <strong>${Math.floor(a / g)} stickers</strong> and <strong>${Math.floor(b / g)} granola bars</strong>.`;
+
           if (!isLevel2) {
-            feedback += `<br><small>${isEs ? 'Factores' : 'Factors'} of ${a}: ${getFactors(a).join(', ')} &nbsp;|&nbsp; ${isEs ? 'Factores' : 'Factors'} of ${b}: ${getFactors(b).join(', ')}</small>`;
+            feedback += `<br><small>${isEs ? "Factores" : "Factors"} of ${a}: ${getFactors(a).join(", ")} &nbsp;|&nbsp; ${isEs ? "Factores" : "Factors"} of ${b}: ${getFactors(b).join(", ")}</small>`;
           } else {
             // Level 2 distributive property check
-            const distribVal = document.getElementById('distrib').value.trim();
+            const distribVal = document.getElementById("distrib").value.trim();
             if (!distribVal) {
               feedback += isEs
                 ? '<br><span style="color:var(--orange)"><small>✍️ Completa la extensión del MCD abajo usando la propiedad distributiva.</small></span>'
                 : '<br><span style="color:var(--orange)"><small>✍️ Complete the GCF extension below using the distributive property.</small></span>';
             } else {
-              const clean = distribVal.replace(/\s+/g, '');
+              const clean = distribVal.replace(/\s+/g, "");
               const match = clean.match(/^(\d+)[\*x]?\((\d+)\+(\d+)\)$/);
               if (match) {
                 const sg = parseInt(match[1]);
                 const sa_term = parseInt(match[2]);
                 const sb_term = parseInt(match[3]);
-                if (sg === g && sa_term === (a/g) && sb_term === (b/g)) {
+                if (sg === g && sa_term === a / g && sb_term === b / g) {
                   feedback += isEs
                     ? '<br><span style="color:var(--green)"><strong>✅ MCD de la propiedad distributiva correcto!</strong></span>'
                     : '<br><span style="color:var(--green)"><strong>✅ Correct Distributive Property GCF!</strong></span>';
                 } else {
                   feedback += isEs
-                    ? `<br><span style="color:var(--coral)">❌ Aún no es correcto. Debería ser: ${g}(${a/g} + ${b/g})</span>`
-                    : `<br><span style="color:var(--coral)">❌ Not quite correct. Should match: ${g}(${a/g} + ${b/g})</span>`;
+                    ? `<br><span style="color:var(--coral)">❌ Aún no es correcto. Debería ser: ${g}(${a / g} + ${b / g})</span>`
+                    : `<br><span style="color:var(--coral)">❌ Not quite correct. Should match: ${g}(${a / g} + ${b / g})</span>`;
                 }
               } else {
                 feedback += isEs
@@ -1563,228 +2965,258 @@
             ? `<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto. Inténtalo de nuevo.</span>`
             : `<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet. Try again!</span>`;
           if (!isLevel2) {
-            feedback += `<br><small>${isEs ? 'Factores' : 'Factors'} of ${a}: ${getFactors(a).slice(0, 3).join(', ')}... &nbsp;|&nbsp; ${isEs ? 'Factores' : 'Factors'} of ${b}: ${getFactors(b).slice(0, 3).join(', ')}...</small>`;
+            feedback += `<br><small>${isEs ? "Factores" : "Factors"} of ${a}: ${getFactors(a).slice(0, 3).join(", ")}... &nbsp;|&nbsp; ${isEs ? "Factores" : "Factors"} of ${b}: ${getFactors(b).slice(0, 3).join(", ")}...</small>`;
           }
         }
 
-        showReadout('gcf-out', feedback);
+        showReadout("gcf-out", feedback);
       }
 
       // ---- LCM ----
       function calcLCM() {
-        const a = parseInt(document.getElementById('l-music').value);
-        const b = parseInt(document.getElementById('l-bubble').value);
-        const studentVal = parseInt(document.getElementById('student-lcm-input').value);
-        const body = document.getElementById('body') || document.body;
-        const isLevel2 = body.classList.contains('level-2');
-        const isEs = body.classList.contains('es');
+        const a = parseInt(document.getElementById("l-music").value);
+        const b = parseInt(document.getElementById("l-bubble").value);
+        const studentVal = parseInt(
+          document.getElementById("student-lcm-input").value,
+        );
+        const body = document.getElementById("body") || document.body;
+        const isLevel2 = body.classList.contains("level-2");
+        const isEs = body.classList.contains("es");
 
         if (isNaN(a) || isNaN(b) || a < 1 || b < 1) return;
         const l = lcm(a, b);
 
         if (isNaN(studentVal)) {
-          showReadout('lcm-out', isEs
-            ? '<span style="color:var(--orange); font-weight:600;">✍️ Ingresa tu respuesta del MCM arriba para verificar tu cálculo.</span>'
-            : '<span style="color:var(--orange); font-weight:600;">✍️ Enter your LCM answer above to verify your calculation.</span>'
+          showReadout(
+            "lcm-out",
+            isEs
+              ? '<span style="color:var(--orange); font-weight:600;">✍️ Ingresa tu respuesta del MCM arriba para verificar tu cálculo.</span>'
+              : '<span style="color:var(--orange); font-weight:600;">✍️ Enter your LCM answer above to verify your calculation.</span>',
           );
           return;
         }
 
-        let feedback = '';
+        let feedback = "";
         if (studentVal === l) {
           feedback = isEs
             ? `<strong><span style="color:var(--green)">✅ ¡Correcto!</span> MCM de ${a} y ${b} = ${l} minutos</strong><br>Ambos eventos ocurren al mismo tiempo en el minuto <strong>${l}</strong>.`
             : `<strong><span style="color:var(--green)">✅ Correct!</span> LCM of ${a} and ${b} = ${l} minutes</strong><br>Both events happen at the same time at minute <strong>${l}</strong>.`;
-          
+
           if (!isLevel2) {
-            const musMultiples = Array.from({length:5}, (_,i) => a*(i+1));
-            const bubMultiples = Array.from({length:5}, (_,i) => b*(i+1));
-            feedback += `<br><small>Música (×${a}): ${musMultiples.join(', ')}… &nbsp;|&nbsp; Burbujas (×${b}): ${bubMultiples.join(', ')}…</small>`;
+            const musMultiples = Array.from(
+              { length: 5 },
+              (_, i) => a * (i + 1),
+            );
+            const bubMultiples = Array.from(
+              { length: 5 },
+              (_, i) => b * (i + 1),
+            );
+            feedback += `<br><small>Música (×${a}): ${musMultiples.join(", ")}… &nbsp;|&nbsp; Burbujas (×${b}): ${bubMultiples.join(", ")}…</small>`;
           }
         } else {
           feedback = isEs
             ? `<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto. Inténtalo de nuevo.</span>`
             : `<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet. Try again!</span>`;
           if (!isLevel2) {
-            const musMultiples = Array.from({length:3}, (_,i) => a*(i+1));
-            const bubMultiples = Array.from({length:3}, (_,i) => b*(i+1));
-            feedback += `<br><small>Música: ${musMultiples.join(', ')}… &nbsp;|&nbsp; Burbujas: ${bubMultiples.join(', ')}…</small>`;
+            const musMultiples = Array.from(
+              { length: 3 },
+              (_, i) => a * (i + 1),
+            );
+            const bubMultiples = Array.from(
+              { length: 3 },
+              (_, i) => b * (i + 1),
+            );
+            feedback += `<br><small>Música: ${musMultiples.join(", ")}… &nbsp;|&nbsp; Burbujas: ${bubMultiples.join(", ")}…</small>`;
           }
         }
 
-        showReadout('lcm-out', feedback);
+        showReadout("lcm-out", feedback);
       }
 
       // ---- Budget ----
       function calcBudget() {
-        const food = parseFloat(document.getElementById('c-food').value) || 0;
-        const deco = parseFloat(document.getElementById('c-deco').value) || 0;
-        const act = parseFloat(document.getElementById('c-act').value) || 0;
-        const guests = parseInt(document.getElementById('c-guests').value);
+        const food = parseFloat(document.getElementById("c-food").value) || 0;
+        const deco = parseFloat(document.getElementById("c-deco").value) || 0;
+        const act = parseFloat(document.getElementById("c-act").value) || 0;
+        const guests = parseInt(document.getElementById("c-guests").value);
         const total = food + deco + act;
         if (total === 0) return;
         if (isNaN(guests) || guests < 1) {
-          showReadout('budget-out', `
+          showReadout(
+            "budget-out",
+            `
             <span class="en-text"><strong>Total cost: $${total.toFixed(2)}</strong><br>Enter the number of guests to find cost per guest.</span>
             <span class="es-text"><strong>Costo total: $${total.toFixed(2)}</strong><br>Ingresa el número de invitados para encontrar el costo por invitado.</span>
-          `);
+          `,
+          );
           return;
         }
         const perGuest = total / guests;
-        showReadout('budget-out', `
+        showReadout(
+          "budget-out",
+          `
           <span class="en-text"><strong>Total cost: $${total.toFixed(2)}</strong><br>
           Cost per guest: <strong>$${perGuest.toFixed(2)}</strong> (${total.toFixed(2)} ÷ ${guests} guests)<br>
           <small>Food $${food.toFixed(2)} + Decorations $${deco.toFixed(2)} + Activities $${act.toFixed(2)} = $${total.toFixed(2)}</small></span>
           <span class="es-text"><strong>Costo total: $${total.toFixed(2)}</strong><br>
           Costo por invitado: <strong>$${perGuest.toFixed(2)}</strong> (${total.toFixed(2)} ÷ ${guests} invitados)<br>
           <small>Comida $${food.toFixed(2)} + Decoraciones $${deco.toFixed(2)} + Actividades $${act.toFixed(2)} = $${total.toFixed(2)}</small></span>
-        `);
+        `,
+        );
       }
 
       // ---- Peer compare ----
       function comparePeer() {
-        const myBags = parseInt(document.getElementById('g-stickers')?.value) > 0
-          ? gcd(parseInt(document.getElementById('g-stickers').value)||0, parseInt(document.getElementById('g-bars').value)||0) : null;
+        const myBags =
+          parseInt(document.getElementById("g-stickers")?.value) > 0
+            ? gcd(
+                parseInt(document.getElementById("g-stickers").value) || 0,
+                parseInt(document.getElementById("g-bars").value) || 0,
+              )
+            : null;
         const myPer = (() => {
-          const food = parseFloat(document.getElementById('c-food').value)||0;
-          const deco = parseFloat(document.getElementById('c-deco').value)||0;
-          const act = parseFloat(document.getElementById('c-act').value)||0;
-          const guests = parseInt(document.getElementById('c-guests').value);
+          const food = parseFloat(document.getElementById("c-food").value) || 0;
+          const deco = parseFloat(document.getElementById("c-deco").value) || 0;
+          const act = parseFloat(document.getElementById("c-act").value) || 0;
+          const guests = parseInt(document.getElementById("c-guests").value);
           if (!guests) return null;
-          return (food+deco+act)/guests;
+          return (food + deco + act) / guests;
         })();
-        const pBags = parseInt(document.getElementById('p-bags').value);
-        const pPer = parseFloat(document.getElementById('p-per').value);
+        const pBags = parseInt(document.getElementById("p-bags").value);
+        const pPer = parseFloat(document.getElementById("p-per").value);
         if (isNaN(pBags) || isNaN(pPer)) return;
-        let html = '';
+        let html = "";
         if (myBags !== null) {
           const diff = myBags - pBags;
           html += `
-            <span class="en-text"><strong>Goodie Bags:</strong> You made <strong>${myBags}</strong>, partner made <strong>${pBags}</strong> — ${diff > 0 ? 'You made ' + diff + ' more.' : diff < 0 ? 'Partner made ' + Math.abs(diff) + ' more.' : 'Same!'}</span>
-            <span class="es-text"><strong>Bolsas de regalos:</strong> Hiciste <strong>${myBags}</strong>, tu compañero hizo <strong>${pBags}</strong> — ${diff > 0 ? 'Hiciste ' + diff + ' más.' : diff < 0 ? 'Tu compañero hizo ' + Math.abs(diff) + ' más.' : '¡Igual!'}</span>
+            <span class="en-text"><strong>Goodie Bags:</strong> You made <strong>${myBags}</strong>, partner made <strong>${pBags}</strong> — ${diff > 0 ? "You made " + diff + " more." : diff < 0 ? "Partner made " + Math.abs(diff) + " more." : "Same!"}</span>
+            <span class="es-text"><strong>Bolsas de regalos:</strong> Hiciste <strong>${myBags}</strong>, tu compañero hizo <strong>${pBags}</strong> — ${diff > 0 ? "Hiciste " + diff + " más." : diff < 0 ? "Tu compañero hizo " + Math.abs(diff) + " más." : "¡Igual!"}</span>
           `;
         }
         if (myPer !== null) {
           const diff2 = (myPer - pPer).toFixed(2);
           html += `
-            <span class="en-text"><br><strong>Cost Per Guest:</strong> You: <strong>$${myPer.toFixed(2)}</strong>, Partner: <strong>$${pPer.toFixed(2)}</strong> — ${parseFloat(diff2) < 0 ? 'Your party costs $' + Math.abs(diff2) + ' less per guest.' : parseFloat(diff2) > 0 ? 'Partner\'s party costs $' + Math.abs(diff2) + ' less per guest.' : 'Same cost!'}</span>
-            <span class="es-text"><br><strong>Costo por invitado:</strong> Tú: <strong>$${myPer.toFixed(2)}</strong>, Compañero: <strong>$${pPer.toFixed(2)}</strong> — ${parseFloat(diff2) < 0 ? 'Tu fiesta cuesta $' + Math.abs(diff2) + ' menos por invitado.' : parseFloat(diff2) > 0 ? 'La fiesta de tu compañero cuesta $' + Math.abs(diff2) + ' menos por invitado.' : '¡Mismo costo!'}</span>
+            <span class="en-text"><br><strong>Cost Per Guest:</strong> You: <strong>$${myPer.toFixed(2)}</strong>, Partner: <strong>$${pPer.toFixed(2)}</strong> — ${parseFloat(diff2) < 0 ? "Your party costs $" + Math.abs(diff2) + " less per guest." : parseFloat(diff2) > 0 ? "Partner's party costs $" + Math.abs(diff2) + " less per guest." : "Same cost!"}</span>
+            <span class="es-text"><br><strong>Costo por invitado:</strong> Tú: <strong>$${myPer.toFixed(2)}</strong>, Compañero: <strong>$${pPer.toFixed(2)}</strong> — ${parseFloat(diff2) < 0 ? "Tu fiesta cuesta $" + Math.abs(diff2) + " menos por invitado." : parseFloat(diff2) > 0 ? "La fiesta de tu compañero cuesta $" + Math.abs(diff2) + " menos por invitado." : "¡Mismo costo!"}</span>
           `;
         }
-        if (html) showReadout('peer-out', html);
+        if (html) showReadout("peer-out", html);
       }
 
       // ---- Report ----
       function buildReport() {
         playConfetti();
-        const isEs = document.getElementById('body').classList.contains('es');
-        const gcfA = document.getElementById('g-stickers').value;
-        const gcfB = document.getElementById('g-bars').value;
-        const lcmA = document.getElementById('l-music').value;
-        const lcmB = document.getElementById('l-bubble').value;
-        const food = document.getElementById('c-food').value;
-        const deco = document.getElementById('c-deco').value;
-        const act = document.getElementById('c-act').value;
-        const guests = document.getElementById('c-guests').value;
-        const pitch = document.getElementById('pitch').value;
-        const partner = document.getElementById('p-name').value;
-        const pReflect = document.getElementById('peer-reflect').value;
-        const worldNote = document.getElementById('world-compare').value;
-        const total = (parseFloat(food)||0) + (parseFloat(deco)||0) + (parseFloat(act)||0);
-        const perGuest = guests ? (total/parseFloat(guests)).toFixed(2) : '—';
-        const g = (gcfA && gcfB) ? gcd(parseInt(gcfA), parseInt(gcfB)) : '—';
-        const l = (lcmA && lcmB) ? lcm(parseInt(lcmA), parseInt(lcmB)) : '—';
-        
+        const isEs = document.getElementById("body").classList.contains("es");
+        const gcfA = document.getElementById("g-stickers").value;
+        const gcfB = document.getElementById("g-bars").value;
+        const lcmA = document.getElementById("l-music").value;
+        const lcmB = document.getElementById("l-bubble").value;
+        const food = document.getElementById("c-food").value;
+        const deco = document.getElementById("c-deco").value;
+        const act = document.getElementById("c-act").value;
+        const guests = document.getElementById("c-guests").value;
+        const pitch = document.getElementById("pitch").value;
+        const partner = document.getElementById("p-name").value;
+        const pReflect = document.getElementById("peer-reflect").value;
+        const worldNote = document.getElementById("world-compare").value;
+        const total =
+          (parseFloat(food) || 0) +
+          (parseFloat(deco) || 0) +
+          (parseFloat(act) || 0);
+        const perGuest = guests ? (total / parseFloat(guests)).toFixed(2) : "—";
+        const g = gcfA && gcfB ? gcd(parseInt(gcfA), parseInt(gcfB)) : "—";
+        const l = lcmA && lcmB ? lcm(parseInt(lcmA), parseInt(lcmB)) : "—";
+
         let lines = [];
         if (isEs) {
           lines = [
-            '═══ PLANIFICADOR DE FIESTA DE CUADRA — PROYECTO UNIDAD 1 (Versión A) ═══',
-            '',
-            '📖 HABILIDADES MATEMÁTICAS USADAS: MCD, MCM, Operaciones con decimales, División',
-            '',
-            '🎁 PASO 1 — BOLSAS DE REGALOS (MCD)',
-            `   Pegatinas: ${gcfA || '—'} | Barras de granola: ${gcfB || '—'}`,
+            "═══ PLANIFICADOR DE FIESTA DE CUADRA — PROYECTO UNIDAD 1 (Versión A) ═══",
+            "",
+            "📖 HABILIDADES MATEMÁTICAS USADAS: MCD, MCM, Operaciones con decimales, División",
+            "",
+            "🎁 PASO 1 — BOLSAS DE REGALOS (MCD)",
+            `   Pegatinas: ${gcfA || "—"} | Barras de granola: ${gcfB || "—"}`,
             `   MCD = ${g} bolsas`,
-            '',
-            '⏱️ PASO 2 — SINCRONIZAR ENTRETENIMIENTO (MCM)',
-            `   Música cada: ${lcmA || '—'} min | Burbujas cada: ${lcmB || '—'} min`,
+            "",
+            "⏱️ PASO 2 — SINCRONIZAR ENTRETENIMIENTO (MCM)",
+            `   Música cada: ${lcmA || "—"} min | Burbujas cada: ${lcmB || "—"} min`,
             `   MCM = Ambos eventos se encuentran en el minuto ${l}`,
-            '',
-            '💵 PASO 3 — PRESUPUESTO',
-            `   Comida: $${food || '—'} | Decoraciones: $${deco || '—'} | Actividades: $${act || '—'}`,
-            `   Total: $${total.toFixed(2)} | Invitados: ${guests || '—'}`,
+            "",
+            "💵 PASO 3 — PRESUPUESTO",
+            `   Comida: $${food || "—"} | Decoraciones: $${deco || "—"} | Actividades: $${act || "—"}`,
+            `   Total: $${total.toFixed(2)} | Invitados: ${guests || "—"}`,
             `   Costo por invitado: $${perGuest}`,
-            worldNote ? `   Comparación del mundo real: ${worldNote}` : '',
-            '',
-            '👥 PASO 4 — COMPARACIÓN CON COMPAÑERO',
-            `   Compañero: ${partner || '—'}`,
-            pReflect ? `   Reflexión: ${pReflect}` : '',
-            '',
-            '✍️ MI PRESENTACIÓN:',
-            pitch || '(no se escribió presentación)',
-            '',
-            '═══════════════════════════════',
+            worldNote ? `   Comparación del mundo real: ${worldNote}` : "",
+            "",
+            "👥 PASO 4 — COMPARACIÓN CON COMPAÑERO",
+            `   Compañero: ${partner || "—"}`,
+            pReflect ? `   Reflexión: ${pReflect}` : "",
+            "",
+            "✍️ MI PRESENTACIÓN:",
+            pitch || "(no se escribió presentación)",
+            "",
+            "═══════════════════════════════",
             `Generado: ${new Date().toLocaleDateString()}`,
           ];
         } else {
           lines = [
-            '═══ BLOCK PARTY PLANNER — UNIT 1 PROJECT (Version A) ═══',
-            '',
-            '📖 MATH SKILLS USED: GCF, LCM, Decimal Operations, Division',
-            '',
-            '🎁 STEP 1 — GOODIE BAGS (GCF)',
-            `   Stickers: ${gcfA || '—'} | Granola Bars: ${gcfB || '—'}`,
+            "═══ BLOCK PARTY PLANNER — UNIT 1 PROJECT (Version A) ═══",
+            "",
+            "📖 MATH SKILLS USED: GCF, LCM, Decimal Operations, Division",
+            "",
+            "🎁 STEP 1 — GOODIE BAGS (GCF)",
+            `   Stickers: ${gcfA || "—"} | Granola Bars: ${gcfB || "—"}`,
             `   GCF = ${g} bags`,
-            '',
-            '⏱️ STEP 2 — ENTERTAINMENT SYNC (LCM)',
-            `   Music every: ${lcmA || '—'} min | Bubbles every: ${lcmB || '—'} min`,
+            "",
+            "⏱️ STEP 2 — ENTERTAINMENT SYNC (LCM)",
+            `   Music every: ${lcmA || "—"} min | Bubbles every: ${lcmB || "—"} min`,
             `   LCM = Both events meet at minute ${l}`,
-            '',
-            '💵 STEP 3 — BUDGET',
-            `   Food: $${food || '—'} | Decorations: $${deco || '—'} | Activities: $${act || '—'}`,
-            `   Total: $${total.toFixed(2)} | Guests: ${guests || '—'}`,
+            "",
+            "💵 STEP 3 — BUDGET",
+            `   Food: $${food || "—"} | Decorations: $${deco || "—"} | Activities: $${act || "—"}`,
+            `   Total: $${total.toFixed(2)} | Guests: ${guests || "—"}`,
             `   Cost per guest: $${perGuest}`,
-            worldNote ? `   Real-world comparison: ${worldNote}` : '',
-            '',
-            '👥 STEP 4 — PARTNER COMPARISON',
-            `   Partner: ${partner || '—'}`,
-            pReflect ? `   Reflection: ${pReflect}` : '',
-            '',
-            '✍️ MY PITCH:',
-            pitch || '(no pitch written)',
-            '',
-            '═══════════════════════════════',
+            worldNote ? `   Real-world comparison: ${worldNote}` : "",
+            "",
+            "👥 STEP 4 — PARTNER COMPARISON",
+            `   Partner: ${partner || "—"}`,
+            pReflect ? `   Reflection: ${pReflect}` : "",
+            "",
+            "✍️ MY PITCH:",
+            pitch || "(no pitch written)",
+            "",
+            "═══════════════════════════════",
             `Generated: ${new Date().toLocaleDateString()}`,
           ];
         }
-        lines = lines.filter(l => l !== false);
-        const box = document.getElementById('reportBox');
-        box.textContent = lines.join('\n');
-        box.classList.add('show');
+        lines = lines.filter((l) => l !== false);
+        const box = document.getElementById("reportBox");
+        box.textContent = lines.join("\n");
+        box.classList.add("show");
       }
 
       function copyReport() {
-        const isEs = document.getElementById('body').classList.contains('es');
-        const txt = document.getElementById('reportBox').textContent;
+        const isEs = document.getElementById("body").classList.contains("es");
+        const txt = document.getElementById("reportBox").textContent;
         navigator.clipboard?.writeText(txt).then(() => {
-          alert(isEs ? '¡Copiado al portapapeles!' : 'Copied to clipboard!');
+          alert(isEs ? "¡Copiado al portapapeles!" : "Copied to clipboard!");
         });
       }
 
       function downloadTxt() {
-        const txt = document.getElementById('reportBox').textContent;
-        const a = document.createElement('a');
-        a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
-        a.download = 'block-party-plan.txt';
+        const txt = document.getElementById("reportBox").textContent;
+        const a = document.createElement("a");
+        a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);
+        a.download = "block-party-plan.txt";
         a.click();
       }
 
       function finishProject() {
-        const isEs = document.getElementById('body').classList.contains('es');
+        const isEs = document.getElementById("body").classList.contains("es");
         if (isEs) {
-          alert('¡Excelente trabajo! 🎉 Muestra esta página a tu maestro.');
+          alert("¡Excelente trabajo! 🎉 Muestra esta página a tu maestro.");
         } else {
-          alert('Great work! 🎉 Show this page to your teacher.');
+          alert("Great work! 🎉 Show this page to your teacher.");
         }
       }
 
@@ -1793,126 +3225,150 @@
       updateProgress();
 
       function toggleGradingConsole() {
-        const el = document.getElementById('teacher-console');
+        const el = document.getElementById("teacher-console");
         if (el) {
-          el.classList.toggle('show');
-          if (el.classList.contains('show')) updateGradingAnswers();
+          el.classList.toggle("show");
+          if (el.classList.contains("show")) updateGradingAnswers();
         }
       }
-      
+
       function prefillGradingConsole() {
-        const presets = {"g-stickers": 24, "g-bars": 36, "l-music": 5, "l-bubble": 7};
+        const presets = {
+          "g-stickers": 24,
+          "g-bars": 36,
+          "l-music": 5,
+          "l-bubble": 7,
+        };
         for (const [id, val] of Object.entries(presets)) {
           const el = document.getElementById(id);
           if (el) {
             el.value = val;
-            el.dispatchEvent(new Event('input', { bubbles: true }));
-            el.dispatchEvent(new Event('change', { bubbles: true }));
+            el.dispatchEvent(new Event("input", { bubbles: true }));
+            el.dispatchEvent(new Event("change", { bubbles: true }));
           }
         }
         // Also prefill student calculation answers
-        if (document.getElementById('student-gcf-input')) {
-          document.getElementById('student-gcf-input').value = document.getElementById('student-gcf-input').min || 1;
-          document.getElementById('student-gcf-input').dispatchEvent(new Event('input', { bubbles: true }));
+        if (document.getElementById("student-gcf-input")) {
+          document.getElementById("student-gcf-input").value =
+            document.getElementById("student-gcf-input").min || 1;
+          document
+            .getElementById("student-gcf-input")
+            .dispatchEvent(new Event("input", { bubbles: true }));
         }
-        if (document.getElementById('student-lcm-input')) {
-          document.getElementById('student-lcm-input').value = document.getElementById('student-lcm-input').min || 1;
-          document.getElementById('student-lcm-input').dispatchEvent(new Event('input', { bubbles: true }));
+        if (document.getElementById("student-lcm-input")) {
+          document.getElementById("student-lcm-input").value =
+            document.getElementById("student-lcm-input").min || 1;
+          document
+            .getElementById("student-lcm-input")
+            .dispatchEvent(new Event("input", { bubbles: true }));
         }
         updateGradingAnswers();
       }
-      
+
       function updateGradingAnswers() {
         try {
-          const resolver = function() {
-            
-          const a = parseInt(document.getElementById('g-stickers').value) || 24;
-          const b = parseInt(document.getElementById('g-bars').value) || 36;
-          const lm = parseInt(document.getElementById('l-music').value) || 5;
-          const lb = parseInt(document.getElementById('l-bubble').value) || 7;
-          const food = parseFloat(document.getElementById('c-food').value) || 0;
-          const deco = parseFloat(document.getElementById('c-deco').value) || 0;
-          const act = parseFloat(document.getElementById('c-act').value) || 0;
-          const guests = parseInt(document.getElementById('c-guests').value) || 25;
-          
-          const g = gcd(a, b);
-          const l = lcm(lm, lb);
-          const total = food + deco + act;
-          const perGuest = guests ? (total / guests).toFixed(2) : '0.00';
-          
-          return {
-            'GCF (Bags count)': g,
-            'Stickers per bag': Math.floor(a/g),
-            'Bars per bag': Math.floor(b/g),
-            'Distributive Property': `${g}(${a/g} + ${b/g})`,
-            'LCM (Sync min)': l,
-            'Total Budget': '$' + total.toFixed(2),
-            'Cost per Guest': '$' + perGuest
-          };
-        
+          const resolver = function () {
+            const a =
+              parseInt(document.getElementById("g-stickers").value) || 24;
+            const b = parseInt(document.getElementById("g-bars").value) || 36;
+            const lm = parseInt(document.getElementById("l-music").value) || 5;
+            const lb = parseInt(document.getElementById("l-bubble").value) || 7;
+            const food =
+              parseFloat(document.getElementById("c-food").value) || 0;
+            const deco =
+              parseFloat(document.getElementById("c-deco").value) || 0;
+            const act = parseFloat(document.getElementById("c-act").value) || 0;
+            const guests =
+              parseInt(document.getElementById("c-guests").value) || 25;
+
+            const g = gcd(a, b);
+            const l = lcm(lm, lb);
+            const total = food + deco + act;
+            const perGuest = guests ? (total / guests).toFixed(2) : "0.00";
+
+            return {
+              "GCF (Bags count)": g,
+              "Stickers per bag": Math.floor(a / g),
+              "Bars per bag": Math.floor(b / g),
+              "Distributive Property": `${g}(${a / g} + ${b / g})`,
+              "LCM (Sync min)": l,
+              "Total Budget": "$" + total.toFixed(2),
+              "Cost per Guest": "$" + perGuest,
+            };
           };
           const ans = resolver();
-          const body = document.getElementById('teacher-answers-body');
+          const body = document.getElementById("teacher-answers-body");
           if (body && ans) {
-            body.innerHTML = Object.entries(ans).map(([k, v]) => `
+            body.innerHTML = Object.entries(ans)
+              .map(
+                ([k, v]) => `
               <tr>
                 <td class="lbl">${k}</td>
                 <td class="val">${v}</td>
               </tr>
-            `).join('');
+            `,
+              )
+              .join("");
           }
-        } catch(e) {
+        } catch (e) {
           console.error("Grading resolver error", e);
         }
       }
-      
+
       // Wire up key listener (Ctrl+Shift+T) and triple click on h1
-      document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
+      document.addEventListener("keydown", function (e) {
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "t") {
           e.preventDefault();
           toggleGradingConsole();
         }
       });
-      
-      
-      window.exportStudentBackup = function() {
+
+      window.exportStudentBackup = function () {
         try {
-          const state = window.NeftSaveResume ? window.NeftSaveResume.getState() : null;
+          const state = window.NeftSaveResume
+            ? window.NeftSaveResume.getState()
+            : null;
           const inputs = {};
-          document.querySelectorAll('input, textarea, select').forEach(el => {
+          document.querySelectorAll("input, textarea, select").forEach((el) => {
             if (el.id) inputs[el.id] = el.value;
           });
           const metadata = {
-            studentName: document.getElementById('student-name')?.value || 'Student',
-            section: document.getElementById('class-period')?.value || 'Class',
-            activityId: window.NeftSaveResumeConfig?.activityId || 'project',
+            studentName:
+              document.getElementById("student-name")?.value || "Student",
+            section: document.getElementById("class-period")?.value || "Class",
+            activityId: window.NeftSaveResumeConfig?.activityId || "project",
             activityTitle: document.title,
             timestamp: new Date().toISOString(),
             inputs: inputs,
-            state: state
+            state: state,
           };
-          
-          const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(metadata, null, 2));
-          const dlAnchor = document.createElement('a');
+
+          const dataStr =
+            "data:text/json;charset=utf-8," +
+            encodeURIComponent(JSON.stringify(metadata, null, 2));
+          const dlAnchor = document.createElement("a");
           dlAnchor.setAttribute("href", dataStr);
-          dlAnchor.setAttribute("download", `${metadata.studentName.replace(/\s+/g, '_')}_${metadata.activityId}_backup.json`);
+          dlAnchor.setAttribute(
+            "download",
+            `${metadata.studentName.replace(/\s+/g, "_")}_${metadata.activityId}_backup.json`,
+          );
           document.body.appendChild(dlAnchor);
           dlAnchor.click();
           dlAnchor.remove();
-        } catch(e) {
+        } catch (e) {
           alert("Export failed: " + e.message);
         }
       };
-      
-      window.triggerImportStudentBackup = function() {
-        document.getElementById('student-backup-file-input').click();
+
+      window.triggerImportStudentBackup = function () {
+        document.getElementById("student-backup-file-input").click();
       };
-      
-      window.importStudentBackup = function(event) {
+
+      window.importStudentBackup = function (event) {
         const file = event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
           try {
             const data = JSON.parse(e.target.result);
             if (data && data.inputs) {
@@ -1920,66 +3376,99 @@
                 const el = document.getElementById(id);
                 if (el) {
                   el.value = val;
-                  el.dispatchEvent(new Event('input', { bubbles: true }));
-                  el.dispatchEvent(new Event('change', { bubbles: true }));
+                  el.dispatchEvent(new Event("input", { bubbles: true }));
+                  el.dispatchEvent(new Event("change", { bubbles: true }));
                 }
               }
               alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === 'function') updateGradingAnswers();
+              if (typeof updateGradingAnswers === "function")
+                updateGradingAnswers();
             } else {
               alert("Invalid backup file structure.");
             }
-          } catch(err) {
+          } catch (err) {
             alert("Error parsing backup file: " + err.message);
           }
         };
         reader.readAsText(file);
       };
 
-      document.addEventListener('DOMContentLoaded', function() {
-        const titleEl = document.querySelector('.hero h1');
+      document.addEventListener("DOMContentLoaded", function () {
+        const titleEl = document.querySelector(".hero h1");
         if (titleEl) {
           let clicks = 0;
-          titleEl.addEventListener('click', function() {
+          titleEl.addEventListener("click", function () {
             clicks++;
             if (clicks >= 3) {
               toggleGradingConsole();
               clicks = 0;
             }
-            setTimeout(() => { clicks = 0; }, 1000);
+            setTimeout(() => {
+              clicks = 0;
+            }, 1000);
           });
         }
         // Re-calculate answers when input event fires
-        document.addEventListener('input', function(e) {
-          const inputs = ["g-stickers", "g-bars", "l-music", "l-bubble", "c-food", "c-deco", "c-act", "c-guests"];
+        document.addEventListener("input", function (e) {
+          const inputs = [
+            "g-stickers",
+            "g-bars",
+            "l-music",
+            "l-bubble",
+            "c-food",
+            "c-deco",
+            "c-act",
+            "c-guests",
+          ];
           if (inputs.includes(e.target.id)) {
             updateGradingAnswers();
           }
         });
       });
-
     </script>
-  
+
     <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
     <div id="teacher-console" class="no-print">
       <h4>
         <span>🔑 Teacher Grading Console</span>
         <button class="close-btn" onclick="toggleGradingConsole()">×</button>
       </h4>
-      <p style="font-size:11px;color:#94a3b8;margin:0 0 10px;">Calculated dynamically based on student inputs:</p>
+      <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px">
+        Calculated dynamically based on student inputs:
+      </p>
       <table>
         <tbody id="teacher-answers-body"></tbody>
       </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
-      <div style="display:flex;gap:6px;margin-top:6px;">
-        <button class="prefill-btn" style="margin-top:0;background:#059669;" onclick="exportStudentBackup()">📥 Export JSON</button>
-        <button class="prefill-btn" style="margin-top:0;background:#7c3aed;" onclick="triggerImportStudentBackup()">📤 Import JSON</button>
+      <button class="prefill-btn" onclick="prefillGradingConsole()">
+        Prefill Sample Answers
+      </button>
+      <div style="display: flex; gap: 6px; margin-top: 6px">
+        <button
+          class="prefill-btn"
+          style="margin-top: 0; background: #059669"
+          onclick="exportStudentBackup()"
+        >
+          📥 Export JSON
+        </button>
+        <button
+          class="prefill-btn"
+          style="margin-top: 0; background: #7c3aed"
+          onclick="triggerImportStudentBackup()"
+        >
+          📤 Import JSON
+        </button>
       </div>
-      <input type="file" id="student-backup-file-input" style="display:none;" onchange="importStudentBackup(event)" accept=".json" />
+      <input
+        type="file"
+        id="student-backup-file-input"
+        style="display: none"
+        onchange="importStudentBackup(event)"
+        accept=".json"
+      />
     </div>
 
-  <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
-  <script src="/shared/projects/projects-pro.js" defer></script>
-  <!-- projects-pro-injected:end -->
+    <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
+    <script src="/shared/projects/projects-pro.js" defer></script>
+    <!-- projects-pro-injected:end -->
   </body>
 </html>

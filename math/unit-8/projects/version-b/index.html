@@ -4,10 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fundraiser Goal Tracker — Unit 8 Culminating Project</title>
-    <meta name="description" content="Unit 8 Equations &amp; Inequalities culminating project. Plan a charity fundraiser, write equations to find needed funds, graph inequalities for milestones, and compare progress." />
+    <meta
+      name="description"
+      content="Unit 8 Equations &amp; Inequalities culminating project. Plan a charity fundraiser, write equations to find needed funds, graph inequalities for milestones, and compare progress."
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
         --navy: #0f2b3c;
@@ -26,305 +32,825 @@
         --bg: #f4f7fa;
         --card: #ffffff;
         --radius: 16px;
-        --shadow: 0 2px 16px rgba(15,43,60,.10);
+        --shadow: 0 2px 16px rgba(15, 43, 60, 0.1);
       }
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.6;
+      }
 
       /* ---- Hero ---- */
       .hero {
-        background: linear-gradient(135deg, #0f2b3c 0%, #1e7d40 60%, #0e8a7d 100%);
+        background: linear-gradient(
+          135deg,
+          #0f2b3c 0%,
+          #1e7d40 60%,
+          #0e8a7d 100%
+        );
         color: #fff;
         padding: 36px 24px 28px;
         text-align: center;
       }
-      .hero-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
-      .hero h1 { font-size: clamp(24px,5vw,38px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
-      .hero-sub { color: rgba(255,255,255,.85); font-size: 16px; max-width: 580px; margin: 0 auto 16px; }
-      .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
-      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 50px; padding: 4px 13px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
-      .tag.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
+      .hero-emoji {
+        font-size: 52px;
+        line-height: 1;
+        margin-bottom: 10px;
+      }
+      .hero h1 {
+        font-size: clamp(24px, 5vw, 38px);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
+      }
+      .hero-sub {
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 16px;
+        max-width: 580px;
+        margin: 0 auto 16px;
+      }
+      .hero-tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      .tag {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 50px;
+        padding: 4px 13px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+      .tag.gold {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #fff;
+      }
 
       /* ---- Level selector ---- */
       .level-bar {
-        display: flex; gap: 10px; justify-content: center;
-        background: rgba(255,255,255,.10); border-radius: 50px;
-        padding: 6px 10px; max-width: 400px; margin: 0 auto;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50px;
+        padding: 6px 10px;
+        max-width: 400px;
+        margin: 0 auto;
       }
       .level-btn {
-        flex: 1; background: transparent; color: rgba(255,255,255,.75);
-        border: 2px solid rgba(255,255,255,.30); border-radius: 50px;
-        padding: 7px 16px; font-size: 13px; font-weight: 700;
-        cursor: pointer; font-family: inherit; transition: all .2s;
+        flex: 1;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.75);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50px;
+        padding: 7px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s;
       }
-      .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; font-weight: 800; box-shadow: 0 6px 16px rgba(0,0,0,.30); transform: translateY(-1px) scale(1.03); }
+      .level-btn.active {
+        background: #fff;
+        color: var(--navy);
+        border-color: #fff;
+        font-weight: 800;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        transform: translateY(-1px) scale(1.03);
+      }
 
       /* ---- Tab wizard ---- */
-      .wizard { max-width: 860px; margin: 0 auto; padding: 0 16px 60px; }
+      .wizard {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 16px 60px;
+      }
 
       .step-trail {
-        display: flex; align-items: center; gap: 0;
-        padding: 22px 0 0; overflow-x: auto;
+        display: flex;
+        align-items: center;
+        gap: 0;
+        padding: 22px 0 0;
+        overflow-x: auto;
       }
       .step-trail-item {
-        display: flex; align-items: center; gap: 6px;
-        cursor: pointer; white-space: nowrap; padding: 8px 12px;
-        border-radius: 10px; transition: background .15s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        white-space: nowrap;
+        padding: 8px 12px;
+        border-radius: 10px;
+        transition: background 0.15s;
       }
-      .step-trail-item:hover { background: var(--blue-lt); }
+      .step-trail-item:hover {
+        background: var(--blue-lt);
+      }
       .step-trail-item.active .s-num {
-        background: var(--blue); color: #fff;
+        background: var(--blue);
+        color: #fff;
       }
       .step-trail-item.done .s-num {
-        background: var(--teal); color: #fff;
+        background: var(--teal);
+        color: #fff;
       }
       .s-num {
-        width: 30px; height: 30px; border-radius: 50%;
-        background: var(--line); color: var(--muted);
-        font-weight: 800; font-size: 13px;
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0; transition: all .2s;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--line);
+        color: var(--muted);
+        font-weight: 800;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.2s;
       }
-      .s-label { font-size: 13px; font-weight: 600; color: var(--muted); }
-      .step-trail-item.active .s-label { color: var(--blue); }
-      .step-trail-item.done .s-label { color: var(--teal); }
-      .step-arrow { color: var(--line); font-size: 16px; padding: 0 2px; }
+      .s-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .step-trail-item.active .s-label {
+        color: var(--blue);
+      }
+      .step-trail-item.done .s-label {
+        color: var(--teal);
+      }
+      .step-arrow {
+        color: var(--line);
+        font-size: 16px;
+        padding: 0 2px;
+      }
 
       /* ---- Progress bar ---- */
-      .prog-wrap { margin: 14px 0 4px; }
-      .prog-bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
-      .prog-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--teal)); border-radius: 99px; transition: width .4s ease; }
-      .prog-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+      .prog-wrap {
+        margin: 14px 0 4px;
+      }
+      .prog-bar {
+        height: 6px;
+        background: var(--line);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .prog-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue), var(--teal));
+        border-radius: 99px;
+        transition: width 0.4s ease;
+      }
+      .prog-label {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
 
       /* ---- Step panel ---- */
-      .step-panel { display: none; animation: fadein .25s ease; }
-      .step-panel.active { display: block; }
-      @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+      .step-panel {
+        display: none;
+        animation: fadein 0.25s ease;
+      }
+      .step-panel.active {
+        display: block;
+      }
+      @keyframes fadein {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
 
       /* ---- Card ---- */
       .card {
-        background: var(--card); border: 1px solid var(--line);
-        border-radius: var(--radius); padding: 28px 26px;
-        box-shadow: var(--shadow); margin-top: 16px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 28px 26px;
+        box-shadow: var(--shadow);
+        margin-top: 16px;
       }
-      .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
       .card-icon {
-        width: 50px; height: 50px; border-radius: 14px;
-        background: var(--blue-lt); display: flex;
-        align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: var(--blue-lt);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
       }
-      .card-icon.gold { background: var(--gold-lt); }
-      .card-icon.teal { background: var(--teal-lt); }
-      .card-icon.green { background: var(--green-lt); }
-      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
-      .card-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
+      .card-icon.gold {
+        background: var(--gold-lt);
+      }
+      .card-icon.teal {
+        background: var(--teal-lt);
+      }
+      .card-icon.green {
+        background: var(--green-lt);
+      }
+      .card-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 3px;
+      }
+      .card-sub {
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 500;
+      }
 
       /* ---- Instruction box ---- */
       .instruct {
-        background: var(--blue-lt); border-left: 4px solid var(--blue);
-        border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
-        font-size: 15px; line-height: 1.6;
+        background: var(--blue-lt);
+        border-left: 4px solid var(--blue);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+        font-size: 15px;
+        line-height: 1.6;
       }
-      .instruct.gold { background: var(--gold-lt); border-color: var(--gold); }
-      .instruct.teal { background: var(--teal-lt); border-color: var(--teal); }
-      .instruct.green { background: var(--green-lt); border-color: var(--green); }
+      .instruct.gold {
+        background: var(--gold-lt);
+        border-color: var(--gold);
+      }
+      .instruct.teal {
+        background: var(--teal-lt);
+        border-color: var(--teal);
+      }
+      .instruct.green {
+        background: var(--green-lt);
+        border-color: var(--green);
+      }
 
       /* ---- SVG visual ---- */
-      .visual-svg { display: block; width: 100%; max-width: 520px; margin: 0 auto 20px; border-radius: 12px; }
+      .visual-svg {
+        display: block;
+        width: 100%;
+        max-width: 520px;
+        margin: 0 auto 20px;
+        border-radius: 12px;
+      }
 
       /* ---- Form inputs ---- */
-      label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
-      input[type="number"], input[type="text"], textarea, select {
-        width: 100%; padding: 10px 14px; border: 1.5px solid var(--line);
-        border-radius: 10px; font-size: 15px; font-family: inherit;
-        background: var(--bg); color: var(--ink); transition: border-color .2s;
+      label.lbl {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 5px;
+        margin-top: 14px;
       }
-      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
-      textarea { min-height: 90px; resize: vertical; }
-      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+      input[type="number"],
+      input[type="text"],
+      textarea,
+      select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1.5px solid var(--line);
+        border-radius: 10px;
+        font-size: 15px;
+        font-family: inherit;
+        background: var(--bg);
+        color: var(--ink);
+        transition: border-color 0.2s;
+      }
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
+      textarea {
+        min-height: 90px;
+        resize: vertical;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
 
       /* ---- Calc button & readout ---- */
       .calc-btn {
-        background: var(--blue); color: #fff; border: none;
-        border-radius: 10px; padding: 11px 20px; font-size: 14px;
-        font-weight: 700; cursor: pointer; font-family: inherit;
-        margin-top: 12px; transition: background .2s;
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 12px;
+        transition: background 0.2s;
       }
-      .calc-btn:hover { background: #185f31; }
-      .calc-btn.gold { background: var(--gold); }
-      .calc-btn.gold:hover { background: #a36a0c; }
-      .calc-btn.teal { background: var(--teal); }
-      .calc-btn.teal:hover { background: #0a6b62; }
-      .calc-btn.green { background: var(--green); }
-      .calc-btn.green:hover { background: #185f31; }
+      .calc-btn:hover {
+        background: #185f31;
+      }
+      .calc-btn.gold {
+        background: var(--gold);
+      }
+      .calc-btn.gold:hover {
+        background: #a36a0c;
+      }
+      .calc-btn.teal {
+        background: var(--teal);
+      }
+      .calc-btn.teal:hover {
+        background: #0a6b62;
+      }
+      .calc-btn.green {
+        background: var(--green);
+      }
+      .calc-btn.green:hover {
+        background: #185f31;
+      }
       .readout {
-        background: var(--navy); color: #e8f4ff;
-        border-radius: 10px; padding: 14px 18px; margin-top: 12px;
-        font-size: 15px; line-height: 1.6; display: none;
+        background: var(--navy);
+        color: #e8f4ff;
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-top: 12px;
+        font-size: 15px;
+        line-height: 1.6;
+        display: none;
       }
-      .readout.show { display: block; }
-      .readout strong { color: #86efac; }
+      .readout.show {
+        display: block;
+      }
+      .readout strong {
+        color: #86efac;
+      }
 
       /* ---- Hint ---- */
-      details.hint { margin-top: 14px; }
-      details.hint summary {
-        cursor: pointer; font-size: 13px; font-weight: 600;
-        color: var(--blue); list-style: none; display: inline-flex;
-        align-items: center; gap: 5px;
+      details.hint {
+        margin-top: 14px;
       }
-      details.hint summary::before { content: "💡"; }
-      details.hint p { font-size: 14px; color: var(--muted); margin-top: 8px; padding: 10px 12px; background: var(--blue-lt); border-radius: 8px; }
+      details.hint summary {
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--blue);
+        list-style: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      details.hint summary::before {
+        content: "💡";
+      }
+      details.hint p {
+        font-size: 14px;
+        color: var(--muted);
+        margin-top: 8px;
+        padding: 10px 12px;
+        background: var(--blue-lt);
+        border-radius: 8px;
+      }
 
       /* ---- Level 2 extension ---- */
       .lvl2-block {
-        border: 2px dashed var(--blue); border-radius: 12px;
-        padding: 14px 16px; margin-top: 18px;
+        border: 2px dashed var(--blue);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-top: 18px;
       }
       .lvl2-label {
-        display: inline-block; background: var(--blue); color: #fff;
-        font-size: 11px; font-weight: 800; letter-spacing: .05em;
-        border-radius: 50px; padding: 3px 10px; margin-bottom: 8px;
+        display: inline-block;
+        background: var(--blue);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        border-radius: 50px;
+        padding: 3px 10px;
+        margin-bottom: 8px;
       }
 
       /* ---- Real-world data table ---- */
-      .data-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
-      .data-table th { background: var(--navy); color: #fff; padding: 8px 12px; text-align: left; }
-      .data-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); }
-      .data-table tr:last-child td { border-bottom: none; }
-      .data-table tr:nth-child(even) td { background: var(--bg); }
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 14px;
+        font-size: 14px;
+      }
+      .data-table th {
+        background: var(--navy);
+        color: #fff;
+        padding: 8px 12px;
+        text-align: left;
+      }
+      .data-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      .data-table tr:last-child td {
+        border-bottom: none;
+      }
+      .data-table tr:nth-child(even) td {
+        background: var(--bg);
+      }
 
       /* ---- Comparison stats ---- */
-      .stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
-      .stat-box {
-        flex: 1; min-width: 120px; background: var(--bg);
-        border: 1px solid var(--line); border-radius: 12px;
-        padding: 14px; text-align: center;
+      .stat-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 14px;
       }
-      .stat-num { font-size: 24px; font-weight: 800; color: var(--blue); }
-      .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 3px; }
+      .stat-box {
+        flex: 1;
+        min-width: 120px;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+        text-align: center;
+      }
+      .stat-num {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--blue);
+      }
+      .stat-lbl {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 3px;
+      }
 
       /* ---- Checklist ---- */
-      .checklist { list-style: none; margin-top: 12px; }
-      .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
-      .checklist li:last-child { border-bottom: none; }
-      .checklist input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--blue); flex-shrink: 0; }
+      .checklist {
+        list-style: none;
+        margin-top: 12px;
+      }
+      .checklist li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 15px;
+      }
+      .checklist li:last-child {
+        border-bottom: none;
+      }
+      .checklist input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--blue);
+        flex-shrink: 0;
+      }
 
       /* ---- Rubric ---- */
-      .rubric { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 14px; }
-      .rubric th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; }
-      .rubric td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
-      .rubric tr:last-child td { border-bottom: none; }
-      .score-4 { color: var(--blue); font-weight: 700; }
-      .score-3 { color: var(--teal); font-weight: 700; }
-      .score-2 { color: var(--gold); font-weight: 700; }
+      .rubric {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        margin-top: 14px;
+      }
+      .rubric th {
+        background: var(--navy);
+        color: #fff;
+        padding: 10px 12px;
+        text-align: left;
+      }
+      .rubric td {
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      .rubric tr:last-child td {
+        border-bottom: none;
+      }
+      .score-4 {
+        color: var(--blue);
+        font-weight: 700;
+      }
+      .score-3 {
+        color: var(--teal);
+        font-weight: 700;
+      }
+      .score-2 {
+        color: var(--gold);
+        font-weight: 700;
+      }
 
       /* ---- Nav buttons ---- */
-      .nav-row { display: flex; gap: 10px; margin-top: 24px; justify-content: space-between; }
-      .nav-btn {
-        background: var(--blue); color: #fff; border: none;
-        border-radius: 10px; padding: 12px 24px; font-size: 15px;
-        font-weight: 700; cursor: pointer; font-family: inherit;
-        display: flex; align-items: center; gap: 8px; transition: background .2s;
+      .nav-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 24px;
+        justify-content: space-between;
       }
-      .nav-btn:hover { background: #185f31; }
-      .nav-btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
-      .nav-btn.ghost:hover { background: var(--blue-lt); }
-      .nav-btn:disabled { opacity: .45; cursor: not-allowed; }
+      .nav-btn {
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.2s;
+      }
+      .nav-btn:hover {
+        background: #185f31;
+      }
+      .nav-btn.ghost {
+        background: transparent;
+        color: var(--blue);
+        border: 2px solid var(--blue);
+      }
+      .nav-btn.ghost:hover {
+        background: var(--blue-lt);
+      }
+      .nav-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
 
       /* ---- Report / pitch textarea ---- */
-      #pitch { min-height: 130px; }
+      #pitch {
+        min-height: 130px;
+      }
       .report-box {
-        background: var(--navy); color: #e8f4ff; border-radius: 12px;
-        padding: 20px; margin-top: 14px; font-size: 14px; line-height: 1.7;
-        white-space: pre-wrap; display: none;
+        background: var(--navy);
+        color: #e8f4ff;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 14px;
+        font-size: 14px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        display: none;
       }
-      .report-box.show { display: block; }
-      .export-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .report-box.show {
+        display: block;
+      }
+      .export-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
       .export-btn {
-        background: transparent; border: 1.5px solid var(--line);
-        border-radius: 8px; padding: 7px 14px; font-size: 13px;
-        font-weight: 600; cursor: pointer; font-family: inherit;
-        color: var(--muted); transition: all .15s;
+        background: transparent;
+        border: 1.5px solid var(--line);
+        border-radius: 8px;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        color: var(--muted);
+        transition: all 0.15s;
       }
-      .export-btn:hover { border-color: var(--blue); color: var(--blue); }
+      .export-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
 
       /* ---- Level-gated content ---- */
-      .lvl1-only { display: none; }
-      .lvl2-only { display: none; }
-      body.level-1 .lvl1-only { display: block; }
-      body.level-2 .lvl2-only { display: block; }
-      body.level-2 .lvl2-block { border-color: var(--blue); }
+      .lvl1-only {
+        display: none;
+      }
+      .lvl2-only {
+        display: none;
+      }
+      body.level-1 .lvl1-only {
+        display: block;
+      }
+      body.level-2 .lvl2-only {
+        display: block;
+      }
+      body.level-2 .lvl2-block {
+        border-color: var(--blue);
+      }
 
       /* ---- Vocab cards ---- */
-      .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
-      .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
-      .vocab-icon { font-size: 26px; margin-bottom: 6px; }
-      .vocab-term { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
-      .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
-      .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .vocab-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .vocab-icon {
+        font-size: 26px;
+        margin-bottom: 6px;
+      }
+      .vocab-term {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .vocab-def {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .vocab-ex {
+        font-size: 12px;
+        color: var(--blue);
+        font-weight: 600;
+        margin-top: 5px;
+      }
 
       /* ---- Bilingual Support ---- */
-      body.es .en-text { display: none !important; }
-      body.es .es-text { display: inline !important; }
-      span.es-text { display: none; }
-      tspan.es-text { display: none; }
+      body.es .en-text {
+        display: none !important;
+      }
+      body.es .es-text {
+        display: inline !important;
+      }
+      span.es-text {
+        display: none;
+      }
+      tspan.es-text {
+        display: none;
+      }
 
       /* ---- Print ---- */
       @media print {
-        .no-print { display: none !important; }
-        .hero { background: var(--navy) !important; }
-        body { background: #fff; }
-        .card { box-shadow: none; border-color: #ccc; }
+        .no-print {
+          display: none !important;
+        }
+        .hero {
+          background: var(--navy) !important;
+        }
+        body {
+          background: #fff;
+        }
+        .card {
+          box-shadow: none;
+          border-color: #ccc;
+        }
       }
-          .checklist li:has(input[type="checkbox"]:checked) {
+      .checklist li:has(input[type="checkbox"]:checked) {
         color: var(--muted) !important;
         opacity: 0.65;
         text-decoration: line-through;
         transition: all 0.25s ease;
       }
-    
+
       /* ---- Teacher Diagnostics Console ---- */
       #teacher-console {
-        position: fixed; bottom: 20px; right: 20px; z-index: 10000;
-        width: 330px; max-height: 480px; overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px;
-        padding: 16px; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif;
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3), 0 8px 10px -6px rgba(0,0,0,0.3);
-        display: none; box-sizing: border-box; text-align: left;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 10000;
+        width: 330px;
+        max-height: 480px;
+        overflow-y: auto;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        padding: 16px;
+        color: #f8fafc;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        box-shadow:
+          0 10px 25px -5px rgba(0, 0, 0, 0.3),
+          0 8px 10px -6px rgba(0, 0, 0, 0.3);
+        display: none;
+        box-sizing: border-box;
+        text-align: left;
       }
-      #teacher-console.show { display: block; }
-      #teacher-console h4 { margin: 0 0 8px 0; color: #38bdf8; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
-      #teacher-console .close-btn { background: transparent; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1; }
-      #teacher-console .close-btn:hover { color: #f1f5f9; }
-      #teacher-console table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-      #teacher-console td { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08); color: #e2e8f0; }
-      #teacher-console .lbl { font-weight: 600; color: #94a3b8; }
-      #teacher-console .val { font-weight: 700; text-align: right; color: #38bdf8; word-break: break-all; }
-      #teacher-console .prefill-btn { width: 100%; margin-top: 12px; background: #0284c7; border: none; border-radius: 6px; padding: 8px; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s; }
-      #teacher-console .prefill-btn:hover { background: #0369a1; }
-
+      #teacher-console.show {
+        display: block;
+      }
+      #teacher-console h4 {
+        margin: 0 0 8px 0;
+        color: #38bdf8;
+        font-size: 14px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      #teacher-console .close-btn {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 0 4px;
+        line-height: 1;
+      }
+      #teacher-console .close-btn:hover {
+        color: #f1f5f9;
+      }
+      #teacher-console table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 12px;
+      }
+      #teacher-console td {
+        padding: 6px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        color: #e2e8f0;
+      }
+      #teacher-console .lbl {
+        font-weight: 600;
+        color: #94a3b8;
+      }
+      #teacher-console .val {
+        font-weight: 700;
+        text-align: right;
+        color: #38bdf8;
+        word-break: break-all;
+      }
+      #teacher-console .prefill-btn {
+        width: 100%;
+        margin-top: 12px;
+        background: #0284c7;
+        border: none;
+        border-radius: 6px;
+        padding: 8px;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      #teacher-console .prefill-btn:hover {
+        background: #0369a1;
+      }
     </style>
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="/shared/projects/projects-pro.css" />
     <!-- projects-pro-injected:end -->
   </head>
   <body class="level-1 pro-projects" id="body">
-
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
       <div class="hero-emoji">🎒</div>
       <h1>
         <span class="en-text">Fundraiser Goal Tracker</span>
-        <span class="es-text">Localizador de Metas de Recaudación de Fondos</span>
+        <span class="es-text"
+          >Localizador de Metas de Recaudación de Fondos</span
+        >
       </h1>
       <p class="hero-sub">
-        <span class="en-text">Plan a charity fundraiser using equations and inequalities to track your goals.</span>
-        <span class="es-text">Planifica una recaudación de fondos benéctica usando ecuaciones y desigualdades para realizar el seguimiento de tus metas.</span>
+        <span class="en-text"
+          >Plan a charity fundraiser using equations and inequalities to track
+          your goals.</span
+        >
+        <span class="es-text"
+          >Planifica una recaudación de fondos benéctica usando ecuaciones y
+          desigualdades para realizar el seguimiento de tus metas.</span
+        >
       </p>
       <div class="hero-tags">
         <span class="tag gold">
@@ -350,59 +876,30 @@
         </button>
       </div>
       <!-- Accessibility / Language controls -->
-      <div class="level-bar" style="margin-top: 10px;">
-        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
-        <button class="level-btn" id="btn-read" onclick="readAloud()">🔊 Read Aloud</button>
+      <div class="level-bar" style="margin-top: 10px">
+        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">
+          🌐 Language: EN
+        </button>
+        <button class="level-btn" id="btn-read" onclick="readAloud()">
+          🔊 Read Aloud
+        </button>
       </div>
-      <!-- ===================== COLLAPSIBLE RESEARCH LINKS ===================== -->
-      <details open class="hint no-print" style="margin-top: 15px; background: rgba(255,255,255,0.96); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-        <summary style="font-weight: 700; font-size: 15px; color: var(--navy); cursor: pointer; user-select: none;">
-          <span class="en-text">🔍 Research &amp; Reference Resources</span>
-          <span class="es-text">🔍 Recursos de Investigación y Referencia</span>
-        </summary>
-        <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 4px;">
-          <div data-research-box style="background: var(--blue-lt); border: 1px solid var(--blue); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; font-size: 15px; line-height: 1.5; color: var(--navy); font-weight: 700;">
-            <span class="en-text">✍️ Open each link below, find the fact it points to, and type what you find in its box. Your answers save automatically.</span>
-            <span class="es-text">✍️ Abre cada enlace, encuentra el dato que indica y escríbelo en su casilla. Tus respuestas se guardan automáticamente.</span>
-          </div>
-
-          <div style="padding: 6px; border-bottom: 1px solid rgba(0,0,0,0.05);">
-            💝 <a href="https://www.donorschoose.org/" target="_blank" rel="noopener noreferrer" class="level-btn" style="display: inline-block; padding: 5px 11px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 4px;">
-              <span class="en-text">DonorsChoose — Fundraisers ↗</span>
-              <span class="es-text">DonorsChoose — Recaudaciones ↗</span>
-            </a><br>
-            <small style="color: var(--ink); font-size: 14px; font-weight: 600;"><span class="en-text">Find: A real fundraising goal amount</span><span class="es-text">Buscar: Una meta real de recaudación de fondos</span></small>
-            <input type="text" id="rfind-1" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
-          </div>
-          <div style="padding: 6px; border-bottom: 1px solid rgba(0,0,0,0.05);">
-            🎟️ <a href="https://www.gofundme.com/" target="_blank" rel="noopener noreferrer" class="level-btn" style="display: inline-block; padding: 5px 11px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 4px;">
-              <span class="en-text">GoFundMe — Campaigns ↗</span>
-              <span class="es-text">GoFundMe — Campañas ↗</span>
-            </a><br>
-            <small style="color: var(--ink); font-size: 14px; font-weight: 600;"><span class="en-text">Find: A campaign's goal vs amount raised (for inequalities)</span><span class="es-text">Buscar: La meta de una campaña vs. lo recaudado (para desigualdades)</span></small>
-            <input type="text" id="rfind-2" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
-          </div>
-          <div style="padding: 6px; border-bottom: 1px solid rgba(0,0,0,0.05);">
-            🎫 <a href="https://www.eventbrite.com/" target="_blank" rel="noopener noreferrer" class="level-btn" style="display: inline-block; padding: 5px 11px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 4px;">
-              <span class="en-text">Eventbrite — Event Tickets ↗</span>
-              <span class="es-text">Eventbrite — Boletos de eventos ↗</span>
-            </a><br>
-            <small style="color: var(--ink); font-size: 14px; font-weight: 600;"><span class="en-text">Find: A ticket price + how many to sell to reach a goal</span><span class="es-text">Buscar: El precio de un boleto y cuántos vender para alcanzar la meta</span></small>
-            <input type="text" id="rfind-3" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
-          </div>
-        </div>
-      </details>
     </header>
 
     <!-- ====== WIZARD ====== -->
     <div class="wizard">
-
       <!-- Step trail -->
-      <nav class="step-trail no-print" id="stepTrail" aria-label="Project steps"></nav>
+      <nav
+        class="step-trail no-print"
+        id="stepTrail"
+        aria-label="Project steps"
+      ></nav>
 
       <!-- Progress bar -->
       <div class="prog-wrap no-print">
-        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div class="prog-bar">
+          <div class="prog-fill" id="progFill" style="width: 0%"></div>
+        </div>
         <div class="prog-label" id="progLabel">Step 1 of 6</div>
       </div>
 
@@ -419,14 +916,18 @@
                 <span class="es-text">Palabras clave</span>
               </div>
               <div class="card-sub">
-                <span class="en-text">Learn these 5 math words before you begin</span>
-                <span class="es-text">Aprende estas 5 palabras de matemáticas antes de comenzar</span>
+                <span class="en-text"
+                  >Learn these 5 math words before you begin</span
+                >
+                <span class="es-text"
+                  >Aprende estas 5 palabras de matemáticas antes de
+                  comenzar</span
+                >
               </div>
             </div>
           </div>
 
           <!-- SVG Visual: horizontal thermometer meter -->
-          
 
           <div class="vocab-grid">
             <div class="vocab-card">
@@ -436,8 +937,14 @@
                 <span class="es-text">Ecuación</span>
               </div>
               <div class="vocab-def">
-                <span class="en-text">A mathematical sentence stating that two expressions are equal (=).</span>
-                <span class="es-text">Una oración matemática que establece que dos expresiones son iguales (=).</span>
+                <span class="en-text"
+                  >A mathematical sentence stating that two expressions are
+                  equal (=).</span
+                >
+                <span class="es-text"
+                  >Una oración matemática que establece que dos expresiones son
+                  iguales (=).</span
+                >
               </div>
               <div class="vocab-ex">
                 <span class="en-text">Example: 180 + x = 500</span>
@@ -451,12 +958,20 @@
                 <span class="es-text">Desigualdad</span>
               </div>
               <div class="vocab-def">
-                <span class="en-text">A statement comparing values using &lt;, &gt;, &le;, or &ge;.</span>
-                <span class="es-text">Un enunciado que compara valores usando &lt;, &gt;, &le; o &ge;.</span>
+                <span class="en-text"
+                  >A statement comparing values using &lt;, &gt;, &le;, or
+                  &ge;.</span
+                >
+                <span class="es-text"
+                  >Un enunciado que compara valores usando &lt;, &gt;, &le; o
+                  &ge;.</span
+                >
               </div>
               <div class="vocab-ex">
                 <span class="en-text">Example: amount raised &gt; 350</span>
-                <span class="es-text">Ejemplo: cantidad recaudada &gt; 350</span>
+                <span class="es-text"
+                  >Ejemplo: cantidad recaudada &gt; 350</span
+                >
               </div>
             </div>
             <div class="vocab-card">
@@ -466,8 +981,13 @@
                 <span class="es-text">Variable</span>
               </div>
               <div class="vocab-def">
-                <span class="en-text">A letter or symbol representing an unknown value.</span>
-                <span class="es-text">Una letra o símbolo que representa un valor desconocido.</span>
+                <span class="en-text"
+                  >A letter or symbol representing an unknown value.</span
+                >
+                <span class="es-text"
+                  >Una letra o símbolo que representa un valor
+                  desconocido.</span
+                >
               </div>
               <div class="vocab-ex">
                 <span class="en-text">Example: x = amount remaining</span>
@@ -481,8 +1001,13 @@
                 <span class="es-text">Solución</span>
               </div>
               <div class="vocab-def">
-                <span class="en-text">A value for the variable that makes the equation true.</span>
-                <span class="es-text">Un valor para la variable que hace que la ecuación sea verdadera.</span>
+                <span class="en-text"
+                  >A value for the variable that makes the equation true.</span
+                >
+                <span class="es-text"
+                  >Un valor para la variable que hace que la ecuación sea
+                  verdadera.</span
+                >
               </div>
               <div class="vocab-ex">
                 <span class="en-text">Example: x = 320</span>
@@ -496,8 +1021,13 @@
                 <span class="es-text">Meta de recaudación</span>
               </div>
               <div class="vocab-def">
-                <span class="en-text">The target amount of money your class wants to raise.</span>
-                <span class="es-text">La cantidad de dinero objetivo que tu clase quiere recaudar.</span>
+                <span class="en-text"
+                  >The target amount of money your class wants to raise.</span
+                >
+                <span class="es-text"
+                  >La cantidad de dinero objetivo que tu clase quiere
+                  recaudar.</span
+                >
               </div>
               <div class="vocab-ex">
                 <span class="en-text">Example: Goal = $500</span>
@@ -506,9 +1036,16 @@
             </div>
           </div>
 
-          <div class="instruct" style="margin-top:20px">
-            <span class="en-text">✅ Read each word card and inspect the visual thermometer. When you're ready, click <strong>Next Step</strong>.</span>
-            <span class="es-text">✅ Lee cada tarjeta de palabras e inspecciona el termómetro visual. Cuando estés listo/a, haz clic en <strong>Siguiente paso</strong>.</span>
+          <div class="instruct" style="margin-top: 20px">
+            <span class="en-text"
+              >✅ Read each word card and inspect the visual thermometer. When
+              you're ready, click <strong>Next Step</strong>.</span
+            >
+            <span class="es-text"
+              >✅ Lee cada tarjeta de palabras e inspecciona el termómetro
+              visual. Cuando estés listo/a, haz clic en
+              <strong>Siguiente paso</strong>.</span
+            >
           </div>
         </div>
 
@@ -533,28 +1070,107 @@
             <div class="card-icon">🎒</div>
             <div>
               <div class="card-title">
-                <span class="en-text">Step 1 — Fundraiser Goal &amp; Progress</span>
-                <span class="es-text">Paso 1 — Meta y progreso de la recaudación</span>
+                <span class="en-text"
+                  >Step 1 — Fundraiser Goal &amp; Progress</span
+                >
+                <span class="es-text"
+                  >Paso 1 — Meta y progreso de la recaudación</span
+                >
               </div>
               <div class="card-sub">
-                <span class="en-text">Write an addition equation to find the needed remaining funds</span>
-                <span class="es-text">Escribe una ecuación de suma para encontrar los fondos restantes necesarios</span>
+                <span class="en-text"
+                  >Write an addition equation to find the needed remaining
+                  funds</span
+                >
+                <span class="es-text"
+                  >Escribe una ecuación de suma para encontrar los fondos
+                  restantes necesarios</span
+                >
               </div>
             </div>
           </div>
 
           <div class="instruct">
-            <span class="en-text"><strong>Your job:</strong> Enter a cause for your class fundraiser, set your total goal and current amount raised. Then write and solve an addition equation to find how much more you need.</span>
-            <span class="es-text"><strong>Tu trabajo:</strong> Ingresa una causa para la recaudación de fondos de tu clase, establece tu meta total y la cantidad ya recaudada. Luego, escribe y resuelve una ecuación de suma para encontrar cuánto más necesitas.</span>
+            <span class="en-text"
+              ><strong>Your job:</strong> Enter a cause for your class
+              fundraiser, set your total goal and current amount raised. Then
+              write and solve an addition equation to find how much more you
+              need.</span
+            >
+            <span class="es-text"
+              ><strong>Tu trabajo:</strong> Ingresa una causa para la
+              recaudación de fondos de tu clase, establece tu meta total y la
+              cantidad ya recaudada. Luego, escribe y resuelve una ecuación de
+              suma para encontrar cuánto más necesitas.</span
+            >
+          </div>
+
+          <div class="step-research no-print">
+            <div class="sr-head">
+              <span class="en-text">📊 Research you need for this step</span
+              ><span class="es-text"
+                >📊 Investigación que necesitas para este paso</span
+              >
+            </div>
+            💝
+            <a
+              href="https://www.donorschoose.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="level-btn"
+              ><span class="en-text">DonorsChoose — Fundraisers ↗</span
+              ><span class="es-text">DonorsChoose — Recaudaciones ↗</span></a
+            >
+            <small class="sr-hint"
+              ><span class="en-text">Find: A real fundraising goal amount</span
+              ><span class="es-text"
+                >Buscar: Una meta real de recaudación de fondos</span
+              ></small
+            >
+            <input
+              type="text"
+              id="rfind-1"
+              data-research-find
+              placeholder="✍️ What I found here…"
+              style="
+                width: 100%;
+                box-sizing: border-box;
+                margin-top: 6px;
+                padding: 9px 11px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                font-family: inherit;
+                font-size: 15px;
+                background: #fff;
+              "
+            />
           </div>
 
           <!-- Tape Diagram SVG -->
-          <svg id="tape-svg" class="visual-svg" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;"></svg>
+          <svg
+            id="tape-svg"
+            class="visual-svg"
+            viewBox="0 0 520 160"
+            xmlns="http://www.w3.org/2000/svg"
+            style="
+              background: white;
+              border: 1px solid #e2e7ec;
+              border-radius: 12px;
+            "
+          ></svg>
 
           <!-- Level 1 Tip -->
           <div class="instruct lvl1-only">
-            <span class="en-text">🟢 <strong>Level 1 suggestion:</strong> Use the default values: Goal <strong>$500</strong>, Raised <strong>$180</strong>, and variable <strong>x</strong>.</span>
-            <span class="es-text">🟢 <strong>Sugerencia de Nivel 1:</strong> Usa los valores predeterminados: Meta <strong>$500</strong>, Recaudado <strong>$180</strong> y variable <strong>x</strong>.</span>
+            <span class="en-text"
+              >🟢 <strong>Level 1 suggestion:</strong> Use the default values:
+              Goal <strong>$500</strong>, Raised <strong>$180</strong>, and
+              variable <strong>x</strong>.</span
+            >
+            <span class="es-text"
+              >🟢 <strong>Sugerencia de Nivel 1:</strong> Usa los valores
+              predeterminados: Meta <strong>$500</strong>, Recaudado
+              <strong>$180</strong> y variable <strong>x</strong>.</span
+            >
           </div>
 
           <!-- Level 2 Block -->
@@ -563,9 +1179,16 @@
               <span class="en-text">LEVEL 2 CHALLENGE</span>
               <span class="es-text">DESAFÍO DE NIVEL 2</span>
             </span>
-            <p style="font-size:14px;margin-bottom:6px;">
-              <span class="en-text">Choose your own unique fundraiser goal and variable name. Ensure your variable makes sense for the context!</span>
-              <span class="es-text">Elige tu propia meta de recaudación de fondos y nombre de variable únicos. ¡Asegúrate de que tu variable tenga sentido para el contexto!</span>
+            <p style="font-size: 14px; margin-bottom: 6px">
+              <span class="en-text"
+                >Choose your own unique fundraiser goal and variable name.
+                Ensure your variable makes sense for the context!</span
+              >
+              <span class="es-text"
+                >Elige tu propia meta de recaudación de fondos y nombre de
+                variable únicos. ¡Asegúrate de que tu variable tenga sentido
+                para el contexto!</span
+              >
             </p>
           </div>
 
@@ -575,39 +1198,72 @@
                 <span class="en-text">🏫 Fundraiser Cause</span>
                 <span class="es-text">🏫 Causa de la recaudación</span>
               </label>
-              <input type="text" id="fg-cause" value="Library Books" oninput="drawTapeDiagram()" />
+              <input
+                type="text"
+                id="fg-cause"
+                value="Library Books"
+                oninput="drawTapeDiagram()"
+              />
             </div>
             <div>
               <label class="lbl" for="fg-var">
                 <span class="en-text">🔤 Variable (for needed amount)</span>
-                <span class="es-text">🔤 Variable (para la cantidad necesaria)</span>
+                <span class="es-text"
+                  >🔤 Variable (para la cantidad necesaria)</span
+                >
               </label>
-              <input type="text" id="fg-var" value="x" maxlength="2" oninput="drawTapeDiagram()" />
+              <input
+                type="text"
+                id="fg-var"
+                value="x"
+                maxlength="2"
+                oninput="drawTapeDiagram()"
+              />
             </div>
             <div>
               <label class="lbl" for="fg-goal">
                 <span class="en-text">🎯 Fundraiser Goal ($)</span>
                 <span class="es-text">🎯 Meta de la recaudación ($)</span>
               </label>
-              <input type="number" id="fg-goal" value="500" min="1" oninput="drawTapeDiagram()" />
+              <input
+                type="number"
+                id="fg-goal"
+                value="500"
+                min="1"
+                oninput="drawTapeDiagram()"
+              />
             </div>
             <div>
               <label class="lbl" for="fg-raised">
                 <span class="en-text">💰 Amount Already Raised ($)</span>
                 <span class="es-text">💰 Cantidad ya recaudada ($)</span>
               </label>
-              <input type="number" id="fg-raised" value="180" min="0" oninput="drawTapeDiagram()" />
+              <input
+                type="number"
+                id="fg-raised"
+                value="180"
+                min="0"
+                oninput="drawTapeDiagram()"
+              />
             </div>
           </div>
 
-          <div style="margin-top:20px;">
+          <div style="margin-top: 20px">
             <label class="lbl" for="fg-eq-input">
-              <span class="en-text">✍️ Write your addition equation (e.g. 180 + x = 500)</span>
-              <span class="es-text">✍️ Escribe tu ecuación de suma (ej. 180 + x = 500)</span>
+              <span class="en-text"
+                >✍️ Write your addition equation (e.g. 180 + x = 500)</span
+              >
+              <span class="es-text"
+                >✍️ Escribe tu ecuación de suma (ej. 180 + x = 500)</span
+              >
             </label>
-            <div style="display:flex; gap:10px;">
+            <div style="display: flex; gap: 10px">
               <input type="text" id="fg-eq-input" placeholder="" />
-              <button class="calc-btn" style="margin-top:0;" onclick="checkGoalEquation()">
+              <button
+                class="calc-btn"
+                style="margin-top: 0"
+                onclick="checkGoalEquation()"
+              >
                 <span class="en-text">🧮 Check Equation</span>
                 <span class="es-text">🧮 Comprobar ecuación</span>
               </button>
@@ -615,14 +1271,22 @@
             <div class="readout" id="fg-eq-out"></div>
           </div>
 
-          <div style="margin-top:20px;">
+          <div style="margin-top: 20px">
             <label class="lbl" for="fg-sol-input">
-              <span class="en-text">🔓 Solve your equation for the needed amount ($)</span>
-              <span class="es-text">🔓 Resuelve tu ecuación para la cantidad necesaria ($)</span>
+              <span class="en-text"
+                >🔓 Solve your equation for the needed amount ($)</span
+              >
+              <span class="es-text"
+                >🔓 Resuelve tu ecuación para la cantidad necesaria ($)</span
+              >
             </label>
-            <div style="display:flex; gap:10px;">
+            <div style="display: flex; gap: 10px">
               <input type="number" id="fg-sol-input" placeholder="" />
-              <button class="calc-btn" style="margin-top:0;" onclick="verifyGoalSolution()">
+              <button
+                class="calc-btn"
+                style="margin-top: 0"
+                onclick="verifyGoalSolution()"
+              >
                 <span class="en-text">🔓 Solve &amp; Verify</span>
                 <span class="es-text">🔓 Resolver y verificar</span>
               </button>
@@ -636,8 +1300,18 @@
               <span class="es-text">¿Necesitas una pista?</span>
             </summary>
             <p>
-              <span class="en-text">Your equation balances the money you have already raised plus the variable (needed amount) to equal your total goal: <code>Raised + x = Goal</code>. To solve it, subtract the raised amount from both sides.</span>
-              <span class="es-text">Tu ecuación equilibra el dinero que ya has recaudado más la variable (cantidad necesaria) para igualar tu meta total: <code>Recaudado + x = Meta</code>. Para resolverla, resta la cantidad recaudada de ambos lados.</span>
+              <span class="en-text"
+                >Your equation balances the money you have already raised plus
+                the variable (needed amount) to equal your total goal:
+                <code>Raised + x = Goal</code>. To solve it, subtract the raised
+                amount from both sides.</span
+              >
+              <span class="es-text"
+                >Tu ecuación equilibra el dinero que ya has recaudado más la
+                variable (cantidad necesaria) para igualar tu meta total:
+                <code>Recaudado + x = Meta</code>. Para resolverla, resta la
+                cantidad recaudada de ambos lados.</span
+              >
             </p>
           </details>
         </div>
@@ -667,23 +1341,101 @@
                 <span class="es-text">Paso 2 — Hitos de progreso</span>
               </div>
               <div class="card-sub">
-                <span class="en-text">Write and evaluate inequalities to represent milestones</span>
-                <span class="es-text">Escribe y evalúa desigualdades para representar hitos</span>
+                <span class="en-text"
+                  >Write and evaluate inequalities to represent milestones</span
+                >
+                <span class="es-text"
+                  >Escribe y evalúa desigualdades para representar hitos</span
+                >
               </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <span class="en-text"><strong>Your job:</strong> Plan a key progress milestone (e.g., getting a stretch goal or class reward). Write an inequality using <strong>y</strong> (total amount raised) to represent reaching this milestone.</span>
-            <span class="es-text"><strong>Tu trabajo:</strong> Planifica un hito clave de progreso (ej. obtener una meta extendida o una recompensa para la clase). Escribe una desigualdad usando <strong>y</strong> (cantidad total recaudada) para representar que se alcanza este hito.</span>
+            <span class="en-text"
+              ><strong>Your job:</strong> Plan a key progress milestone (e.g.,
+              getting a stretch goal or class reward). Write an inequality using
+              <strong>y</strong> (total amount raised) to represent reaching
+              this milestone.</span
+            >
+            <span class="es-text"
+              ><strong>Tu trabajo:</strong> Planifica un hito clave de progreso
+              (ej. obtener una meta extendida o una recompensa para la clase).
+              Escribe una desigualdad usando <strong>y</strong> (cantidad total
+              recaudada) para representar que se alcanza este hito.</span
+            >
+          </div>
+
+          <div class="step-research no-print">
+            <div class="sr-head">
+              <span class="en-text">📊 Research you need for this step</span
+              ><span class="es-text"
+                >📊 Investigación que necesitas para este paso</span
+              >
+            </div>
+            🎟️
+            <a
+              href="https://www.gofundme.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="level-btn"
+              ><span class="en-text">GoFundMe — Campaigns ↗</span
+              ><span class="es-text">GoFundMe — Campañas ↗</span></a
+            >
+            <small class="sr-hint"
+              ><span class="en-text"
+                >Find: A campaign's goal vs amount raised (for
+                inequalities)</span
+              ><span class="es-text"
+                >Buscar: La meta de una campaña vs. lo recaudado (para
+                desigualdades)</span
+              ></small
+            >
+            <input
+              type="text"
+              id="rfind-2"
+              data-research-find
+              placeholder="✍️ What I found here…"
+              style="
+                width: 100%;
+                box-sizing: border-box;
+                margin-top: 6px;
+                padding: 9px 11px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                font-family: inherit;
+                font-size: 15px;
+                background: #fff;
+              "
+            />
           </div>
 
           <!-- Dynamic Number Line SVG -->
-          <svg id="number-line-svg" class="visual-svg" viewBox="0 0 520 150" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;"></svg>
+          <svg
+            id="number-line-svg"
+            class="visual-svg"
+            viewBox="0 0 520 150"
+            xmlns="http://www.w3.org/2000/svg"
+            style="
+              background: white;
+              border: 1px solid #e2e7ec;
+              border-radius: 12px;
+            "
+          ></svg>
 
           <div class="instruct teal lvl1-only">
-            <span class="en-text">🟢 <strong>Level 1 suggestion:</strong> Write an inequality showing that the total raised (y) must be more than <strong>$350</strong>. Use symbol <strong>&gt;</strong> and write <code>y &gt; 350</code>.</span>
-            <span class="es-text">🟢 <strong>Sugerencia de Nivel 1:</strong> Escribe una desigualdad que muestre que el total recaudado (y) debe ser más de <strong>$350</strong>. Usa el símbolo <strong>&gt;</strong> y escribe <code>y &gt; 350</code>.</span>
+            <span class="en-text"
+              >🟢 <strong>Level 1 suggestion:</strong> Write an inequality
+              showing that the total raised (y) must be more than
+              <strong>$350</strong>. Use symbol <strong>&gt;</strong> and write
+              <code>y &gt; 350</code>.</span
+            >
+            <span class="es-text"
+              >🟢 <strong>Sugerencia de Nivel 1:</strong> Escribe una
+              desigualdad que muestre que el total recaudado (y) debe ser más de
+              <strong>$350</strong>. Usa el símbolo <strong>&gt;</strong> y
+              escribe <code>y &gt; 350</code>.</span
+            >
           </div>
 
           <div class="grid2">
@@ -692,14 +1444,25 @@
                 <span class="en-text">🏆 Milestone Name</span>
                 <span class="es-text">🏆 Nombre del hito</span>
               </label>
-              <input type="text" id="ineq-name" value="Stretch Goal" oninput="drawNumberLine()" />
+              <input
+                type="text"
+                id="ineq-name"
+                value="Stretch Goal"
+                oninput="drawNumberLine()"
+              />
             </div>
             <div>
               <label class="lbl" for="ineq-target">
                 <span class="en-text">🎯 Milestone Target Amount ($)</span>
                 <span class="es-text">🎯 Cantidad objetivo del hito ($)</span>
               </label>
-              <input type="number" id="ineq-target" value="350" min="0" oninput="drawNumberLine()" />
+              <input
+                type="number"
+                id="ineq-target"
+                value="350"
+                min="0"
+                oninput="drawNumberLine()"
+              />
             </div>
             <div>
               <label class="lbl" for="ineq-symbol">
@@ -708,15 +1471,23 @@
               </label>
               <select id="ineq-symbol" onchange="drawNumberLine()">
                 <option value=">">&gt; (More than / Greater than)</option>
-                <option value="&ge;">&ge; (At least / Greater than or equal to)</option>
+                <option value="&ge;">
+                  &ge; (At least / Greater than or equal to)
+                </option>
                 <option value="&lt;">&lt; (Less than)</option>
-                <option value="&le;">&le; (At most / Less than or equal to)</option>
+                <option value="&le;">
+                  &le; (At most / Less than or equal to)
+                </option>
               </select>
             </div>
             <div>
               <label class="lbl" for="ineq-input">
-                <span class="en-text">✍️ Write your inequality (using variable 'y')</span>
-                <span class="es-text">✍️ Escribe tu desigualdad (usando la variable 'y')</span>
+                <span class="en-text"
+                  >✍️ Write your inequality (using variable 'y')</span
+                >
+                <span class="es-text"
+                  >✍️ Escribe tu desigualdad (usando la variable 'y')</span
+                >
               </label>
               <input type="text" id="ineq-input" placeholder="" />
             </div>
@@ -728,18 +1499,52 @@
           </button>
           <div class="readout" id="ineq-out"></div>
 
-          <div style="margin-top:22px; border-top:1px solid var(--line); padding-top:16px;">
-            <h3 style="font-size:15px; font-weight:800; color:var(--navy); margin-bottom:6px;">
-              <span class="en-text">🕵️ Test the Milestone (Substitution Check)</span>
-              <span class="es-text">🕵️ Probar el hito (Comprobación por sustitución)</span>
+          <div
+            style="
+              margin-top: 22px;
+              border-top: 1px solid var(--line);
+              padding-top: 16px;
+            "
+          >
+            <h3
+              style="
+                font-size: 15px;
+                font-weight: 800;
+                color: var(--navy);
+                margin-bottom: 6px;
+              "
+            >
+              <span class="en-text"
+                >🕵️ Test the Milestone (Substitution Check)</span
+              >
+              <span class="es-text"
+                >🕵️ Probar el hito (Comprobación por sustitución)</span
+              >
             </h3>
-            <p style="font-size:14px; color:var(--muted); margin-bottom:12px;">
-              <span class="en-text">Substitute different raised amounts (values for y) to see if they satisfy your inequality milestone.</span>
-              <span class="es-text">Sustituye diferentes cantidades recaudadas (valores de y) para ver si satisfacen tu desigualdad del hito.</span>
+            <p
+              style="font-size: 14px; color: var(--muted); margin-bottom: 12px"
+            >
+              <span class="en-text"
+                >Substitute different raised amounts (values for y) to see if
+                they satisfy your inequality milestone.</span
+              >
+              <span class="es-text"
+                >Sustituye diferentes cantidades recaudadas (valores de y) para
+                ver si satisfacen tu desigualdad del hito.</span
+              >
             </p>
-            <div style="display:flex; gap:10px;">
-              <input type="number" style="max-width:200px;" id="ineq-test-val" placeholder="" />
-              <button class="calc-btn teal" style="margin-top:0;" onclick="evaluateIneqValue()">
+            <div style="display: flex; gap: 10px">
+              <input
+                type="number"
+                style="max-width: 200px"
+                id="ineq-test-val"
+                placeholder=""
+              />
+              <button
+                class="calc-btn teal"
+                style="margin-top: 0"
+                onclick="evaluateIneqValue()"
+              >
                 <span class="en-text">⚖️ Test Value</span>
                 <span class="es-text">⚖️ Probar valor</span>
               </button>
@@ -753,8 +1558,20 @@
               <span class="es-text">¿Necesitas una pista?</span>
             </summary>
             <p>
-              <span class="en-text">An inequality uses comparison signs like <code>&gt;</code> (greater than) or <code>&ge;</code> (greater than or equal to). An open circle on the number line means that exact value is excluded (like &gt;), while a closed circle means it is included (like &ge;).</span>
-              <span class="es-text">Una desigualdad usa signos de comparación como <code>&gt;</code> (mayor que) o <code>&ge;</code> (mayor o igual que). Un círculo abierto en la recta numérica significa que ese valor exacto está excluido (como &gt;), mientras que un círculo cerrado significa que está incluido (como &ge;).</span>
+              <span class="en-text"
+                >An inequality uses comparison signs like
+                <code>&gt;</code> (greater than) or <code>&ge;</code> (greater
+                than or equal to). An open circle on the number line means that
+                exact value is excluded (like &gt;), while a closed circle means
+                it is included (like &ge;).</span
+              >
+              <span class="es-text"
+                >Una desigualdad usa signos de comparación como
+                <code>&gt;</code> (mayor que) o <code>&ge;</code> (mayor o igual
+                que). Un círculo abierto en la recta numérica significa que ese
+                valor exacto está excluido (como &gt;), mientras que un círculo
+                cerrado significa que está incluido (como &ge;).</span
+              >
             </p>
           </details>
         </div>
@@ -781,29 +1598,96 @@
             <div>
               <div class="card-title">
                 <span class="en-text">Step 3 — Plan Product Sales</span>
-                <span class="es-text">Paso 3 — Planificar ventas de productos</span>
+                <span class="es-text"
+                  >Paso 3 — Planificar ventas de productos</span
+                >
               </div>
               <div class="card-sub">
-                <span class="en-text">Write a multiplication equation to calculate item sales</span>
-                <span class="es-text">Escribe una ecuación de multiplicación para calcular las ventas de artículos</span>
+                <span class="en-text"
+                  >Write a multiplication equation to calculate item sales</span
+                >
+                <span class="es-text"
+                  >Escribe una ecuación de multiplicación para calcular las
+                  ventas de artículos</span
+                >
               </div>
             </div>
           </div>
 
           <div class="instruct gold">
-            <span class="en-text"><strong>Your job:</strong> Your class will sell fundraiser products to raise the remaining needed funds. Write and solve a multiplication equation to find the number of items (<strong>n</strong>) to sell.</span>
-            <span class="es-text"><strong>Tu trabajo:</strong> Tu clase venderá productos de recaudación de fondos para obtener los fondos restantes necesarios. Escribe y resuelve una ecuación de multiplicación para encontrar la cantidad de artículos (<strong>n</strong>) a vender.</span>
+            <span class="en-text"
+              ><strong>Your job:</strong> Your class will sell fundraiser
+              products to raise the remaining needed funds. Write and solve a
+              multiplication equation to find the number of items
+              (<strong>n</strong>) to sell.</span
+            >
+            <span class="es-text"
+              ><strong>Tu trabajo:</strong> Tu clase venderá productos de
+              recaudación de fondos para obtener los fondos restantes
+              necesarios. Escribe y resuelve una ecuación de multiplicación para
+              encontrar la cantidad de artículos (<strong>n</strong>) a
+              vender.</span
+            >
           </div>
 
-          <div class="lvl1-only" style="margin-bottom:14px;">
+          <div class="step-research no-print">
+            <div class="sr-head">
+              <span class="en-text">📊 Research you need for this step</span
+              ><span class="es-text"
+                >📊 Investigación que necesitas para este paso</span
+              >
+            </div>
+            🎫
+            <a
+              href="https://www.eventbrite.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="level-btn"
+              ><span class="en-text">Eventbrite — Event Tickets ↗</span
+              ><span class="es-text">Eventbrite — Boletos de eventos ↗</span></a
+            >
+            <small class="sr-hint"
+              ><span class="en-text"
+                >Find: A ticket price + how many to sell to reach a goal</span
+              ><span class="es-text"
+                >Buscar: El precio de un boleto y cuántos vender para alcanzar
+                la meta</span
+              ></small
+            >
+            <input
+              type="text"
+              id="rfind-3"
+              data-research-find
+              placeholder="✍️ What I found here…"
+              style="
+                width: 100%;
+                box-sizing: border-box;
+                margin-top: 6px;
+                padding: 9px 11px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                font-family: inherit;
+                font-size: 15px;
+                background: #fff;
+              "
+            />
+          </div>
+
+          <div class="lvl1-only" style="margin-bottom: 14px">
             <label class="lbl" for="sales-item-select">
               <span class="en-text">🍩 Choose an item to sell</span>
               <span class="es-text">🍩 Elige un artículo para vender</span>
             </label>
             <select id="sales-item-select" onchange="updateLvl1Item()">
-              <option value="Popcorn" data-price="5">🍿 Popcorn ($5.00 each)</option>
-              <option value="Cookie Dough" data-price="8">🍪 Cookie Dough ($8.00 each)</option>
-              <option value="Candy Bars" data-price="2">🍫 Candy Bars ($2.00 each)</option>
+              <option value="Popcorn" data-price="5">
+                🍿 Popcorn ($5.00 each)
+              </option>
+              <option value="Cookie Dough" data-price="8">
+                🍪 Cookie Dough ($8.00 each)
+              </option>
+              <option value="Candy Bars" data-price="2">
+                🍫 Candy Bars ($2.00 each)
+              </option>
             </select>
           </div>
 
@@ -812,16 +1696,30 @@
               <div>
                 <label class="lbl" for="sales-item-name">
                   <span class="en-text">📦 Custom Item Name</span>
-                  <span class="es-text">📦 Nombre de artículo personalizado</span>
+                  <span class="es-text"
+                    >📦 Nombre de artículo personalizado</span
+                  >
                 </label>
-                <input type="text" id="sales-item-name" value="Popcorn" oninput="updateLvl2Item()" />
+                <input
+                  type="text"
+                  id="sales-item-name"
+                  value="Popcorn"
+                  oninput="updateLvl2Item()"
+                />
               </div>
               <div>
                 <label class="lbl" for="sales-price-input">
                   <span class="en-text">💵 Price Per Item ($)</span>
                   <span class="es-text">💵 Precio por artículo ($)</span>
                 </label>
-                <input type="number" id="sales-price-input" value="5" min="0.5" step="0.5" oninput="updateLvl2Item()" />
+                <input
+                  type="number"
+                  id="sales-price-input"
+                  value="5"
+                  min="0.5"
+                  step="0.5"
+                  oninput="updateLvl2Item()"
+                />
               </div>
             </div>
           </div>
@@ -829,7 +1727,7 @@
           <!-- Hidden active price state -->
           <input type="hidden" id="sales-price" value="5" />
 
-          <div class="grid2" style="margin-top:8px;">
+          <div class="grid2" style="margin-top: 8px">
             <div>
               <label class="lbl" for="sales-var">
                 <span class="en-text">🔤 Variable for items sold</span>
@@ -839,8 +1737,12 @@
             </div>
             <div>
               <label class="lbl" for="sales-eq-input">
-                <span class="en-text">✍️ Write multiplication equation (e.g. 5n = 320)</span>
-                <span class="es-text">✍️ Escribe la ecuación de multiplicación (ej. 5n = 320)</span>
+                <span class="en-text"
+                  >✍️ Write multiplication equation (e.g. 5n = 320)</span
+                >
+                <span class="es-text"
+                  >✍️ Escribe la ecuación de multiplicación (ej. 5n = 320)</span
+                >
               </label>
               <input type="text" id="sales-eq-input" placeholder="" />
             </div>
@@ -852,14 +1754,24 @@
           </button>
           <div class="readout" id="sales-eq-out"></div>
 
-          <div style="margin-top:18px;">
+          <div style="margin-top: 18px">
             <label class="lbl" for="sales-sol-input">
-              <span class="en-text">🔓 How many items do you need to sell? (Solve for your variable)</span>
-              <span class="es-text">🔓 ¿Cuántos artículos necesitas vender? (Resuelve para tu variable)</span>
+              <span class="en-text"
+                >🔓 How many items do you need to sell? (Solve for your
+                variable)</span
+              >
+              <span class="es-text"
+                >🔓 ¿Cuántos artículos necesitas vender? (Resuelve para tu
+                variable)</span
+              >
             </label>
-            <div style="display:flex; gap:10px;">
+            <div style="display: flex; gap: 10px">
               <input type="number" id="sales-sol-input" placeholder="" />
-              <button class="calc-btn gold" style="margin-top:0;" onclick="verifySalesSolution()">
+              <button
+                class="calc-btn gold"
+                style="margin-top: 0"
+                onclick="verifySalesSolution()"
+              >
                 <span class="en-text">🔓 Solve &amp; Verify</span>
                 <span class="es-text">🔓 Resolver y verificar</span>
               </button>
@@ -868,14 +1780,40 @@
           </div>
 
           <!-- Real-world benchmarks -->
-          <div style="margin-top:24px; border-top:1px solid var(--line); padding-top:16px;">
-            <h3 style="font-size:15px; font-weight:800; color:var(--navy); margin-bottom:6px;">
-              <span class="en-text">🌎 Real-World School Fundraiser Benchmarks</span>
-              <span class="es-text">🌎 Puntos de referencia de recaudación de fondos escolares en el mundo real</span>
+          <div
+            style="
+              margin-top: 24px;
+              border-top: 1px solid var(--line);
+              padding-top: 16px;
+            "
+          >
+            <h3
+              style="
+                font-size: 15px;
+                font-weight: 800;
+                color: var(--navy);
+                margin-bottom: 6px;
+              "
+            >
+              <span class="en-text"
+                >🌎 Real-World School Fundraiser Benchmarks</span
+              >
+              <span class="es-text"
+                >🌎 Puntos de referencia de recaudación de fondos escolares en
+                el mundo real</span
+              >
             </h3>
-            <p style="font-size:14px; color:var(--muted); margin-bottom:10px;">
-              <span class="en-text">Compare your class target to typical fundraising amounts in US schools:</span>
-              <span class="es-text">Compara el objetivo de tu clase con las cantidades típicas de recaudación de fondos en las escuelas de EE. UU.:</span>
+            <p
+              style="font-size: 14px; color: var(--muted); margin-bottom: 10px"
+            >
+              <span class="en-text"
+                >Compare your class target to typical fundraising amounts in US
+                schools:</span
+              >
+              <span class="es-text"
+                >Compara el objetivo de tu clase con las cantidades típicas de
+                recaudación de fondos en las escuelas de EE. UU.:</span
+              >
             </p>
             <table class="data-table">
               <thead>
@@ -898,7 +1836,9 @@
                 <tr>
                   <td>
                     <span class="en-text">Bake Sale / Car Wash</span>
-                    <span class="es-text">Venta de pasteles / Lavado de autos</span>
+                    <span class="es-text"
+                      >Venta de pasteles / Lavado de autos</span
+                    >
                   </td>
                   <td>$200 – $800</td>
                   <td>
@@ -909,18 +1849,24 @@
                 <tr>
                   <td>
                     <span class="en-text">Product Sales (popcorn/cookies)</span>
-                    <span class="es-text">Ventas de productos (palomitas/galletas)</span>
+                    <span class="es-text"
+                      >Ventas de productos (palomitas/galletas)</span
+                    >
                   </td>
                   <td>$2,000 – $5,000</td>
                   <td>
                     <span class="en-text">Grade Levels or Small School</span>
-                    <span class="es-text">Grados escolares o escuela pequeña</span>
+                    <span class="es-text"
+                      >Grados escolares o escuela pequeña</span
+                    >
                   </td>
                 </tr>
                 <tr>
                   <td>
                     <span class="en-text">Fun Run / Walk-a-thon</span>
-                    <span class="es-text">Carrera divertida / Caminata escolar</span>
+                    <span class="es-text"
+                      >Carrera divertida / Caminata escolar</span
+                    >
                   </td>
                   <td>$3,000 – $8,000</td>
                   <td>
@@ -931,10 +1877,19 @@
               </tbody>
             </table>
             <label class="lbl" for="benchmark-compare">
-              <span class="en-text">Where does your goal fit in these benchmarks? Write 1-2 sentences.</span>
-              <span class="es-text">¿Dónde encaja tu meta en estos puntos de referencia? Escribe 1 o 2 oraciones.</span>
+              <span class="en-text"
+                >Where does your goal fit in these benchmarks? Write 1-2
+                sentences.</span
+              >
+              <span class="es-text"
+                >¿Dónde encaja tu meta en estos puntos de referencia? Escribe 1
+                o 2 oraciones.</span
+              >
             </label>
-            <textarea id="benchmark-compare" placeholder="My fundraiser goal is $___. According to typical school benchmarks, this level of goal is best for..."></textarea>
+            <textarea
+              id="benchmark-compare"
+              placeholder="My fundraiser goal is $___. According to typical school benchmarks, this level of goal is best for..."
+            ></textarea>
           </div>
 
           <details class="hint">
@@ -943,8 +1898,21 @@
               <span class="es-text">¿Necesitas una pista?</span>
             </summary>
             <p>
-              <span class="en-text">Your multiplication equation matches: <code>Price per Item &times; Variable = Needed Amount</code>. To find the solution, use the division property of equality: divide the needed remaining funds by the price of one item.</span>
-              <span class="es-text">Tu ecuación de multiplicación coincide con: <code>Precio por artículo &times; Variable = Cantidad necesaria</code>. Para encontrar la solución, usa la propiedad de división de la igualdad: divide los fondos restantes necesarios por el precio de un artículo.</span>
+              <span class="en-text"
+                >Your multiplication equation matches:
+                <code>Price per Item &times; Variable = Needed Amount</code>. To
+                find the solution, use the division property of equality: divide
+                the needed remaining funds by the price of one item.</span
+              >
+              <span class="es-text"
+                >Tu ecuación de multiplicación coincide con:
+                <code
+                  >Precio por artículo &times; Variable = Cantidad
+                  necesaria</code
+                >. Para encontrar la solución, usa la propiedad de división de
+                la igualdad: divide los fondos restantes necesarios por el
+                precio de un artículo.</span
+              >
             </p>
           </details>
         </div>
@@ -971,18 +1939,33 @@
             <div>
               <div class="card-title">
                 <span class="en-text">Step 4 — Compare With a Classmate</span>
-                <span class="es-text">Paso 4 — Comparar con un/a compañero/a</span>
+                <span class="es-text"
+                  >Paso 4 — Comparar con un/a compañero/a</span
+                >
               </div>
               <div class="card-sub">
-                <span class="en-text">Compare goals and fundraiser progress side-by-side</span>
-                <span class="es-text">Compara metas y el progreso de la recaudación lado a lado</span>
+                <span class="en-text"
+                  >Compare goals and fundraiser progress side-by-side</span
+                >
+                <span class="es-text"
+                  >Compara metas y el progreso de la recaudación lado a
+                  lado</span
+                >
               </div>
             </div>
           </div>
 
           <div class="instruct teal">
-            <span class="en-text"><strong>Your job:</strong> Interview a classmate. Enter their name, goal, and how much they have raised. We will compute their progress percentage and show how you compare.</span>
-            <span class="es-text"><strong>Tu trabajo:</strong> Entrevista a un/a compañero/a. Ingresa su nombre, meta y cuánto ha recaudado. Calcularemos su porcentaje de progreso y mostraremos cómo se comparan.</span>
+            <span class="en-text"
+              ><strong>Your job:</strong> Interview a classmate. Enter their
+              name, goal, and how much they have raised. We will compute their
+              progress percentage and show how you compare.</span
+            >
+            <span class="es-text"
+              ><strong>Tu trabajo:</strong> Entrevista a un/a compañero/a.
+              Ingresa su nombre, meta y cuánto ha recaudado. Calcularemos su
+              porcentaje de progreso y mostraremos cómo se comparan.</span
+            >
           </div>
 
           <div class="grid2">
@@ -1003,7 +1986,9 @@
             <div>
               <label class="lbl" for="p-raised">
                 <span class="en-text">💰 Partner's Amount Raised ($)</span>
-                <span class="es-text">💰 Cantidad recaudada del compañero/a ($)</span>
+                <span class="es-text"
+                  >💰 Cantidad recaudada del compañero/a ($)</span
+                >
               </label>
               <input type="number" id="p-raised" placeholder="" />
             </div>
@@ -1015,7 +2000,7 @@
           </button>
 
           <!-- Comparative Stat Boxes -->
-          <div class="stat-row" id="compare-stats-row" style="display:none;">
+          <div class="stat-row" id="compare-stats-row" style="display: none">
             <div class="stat-box">
               <div class="stat-num" id="stat-my-pct">0%</div>
               <div class="stat-lbl">
@@ -1041,11 +2026,20 @@
 
           <div class="readout" id="peer-out"></div>
 
-          <label class="lbl" for="peer-reflect" style="margin-top:18px;">
-            <span class="en-text">Compare your progress. Who has the larger goal, and who is closer to finishing? Explain in 2-3 sentences.</span>
-            <span class="es-text">Compara tu progreso. ¿Quién tiene la meta más grande y quién está más cerca de terminar? Explica en 2 o 3 oraciones.</span>
+          <label class="lbl" for="peer-reflect" style="margin-top: 18px">
+            <span class="en-text"
+              >Compare your progress. Who has the larger goal, and who is closer
+              to finishing? Explain in 2-3 sentences.</span
+            >
+            <span class="es-text"
+              >Compara tu progreso. ¿Quién tiene la meta más grande y quién está
+              más cerca de terminar? Explica en 2 o 3 oraciones.</span
+            >
           </label>
-          <textarea id="peer-reflect" placeholder="My fundraiser goal is $___ with ___% raised. My classmate ___ has a goal of $___ with ___% raised. They are closer/further because..."></textarea>
+          <textarea
+            id="peer-reflect"
+            placeholder="My fundraiser goal is $___ with ___% raised. My classmate ___ has a goal of $___ with ___% raised. They are closer/further because..."
+          ></textarea>
         </div>
 
         <div class="nav-row">
@@ -1073,66 +2067,146 @@
                 <span class="es-text">Paso 5 — Finalizar y enviar</span>
               </div>
               <div class="card-sub">
-                <span class="en-text">Generate a class pitch, check your work, and get your summary report</span>
-                <span class="es-text">Genera una presentación para la clase, revisa tu trabajo y obtén tu informe de resumen</span>
+                <span class="en-text"
+                  >Generate a class pitch, check your work, and get your summary
+                  report</span
+                >
+                <span class="es-text"
+                  >Genera una presentación para la clase, revisa tu trabajo y
+                  obtén tu informe de resumen</span
+                >
               </div>
             </div>
           </div>
 
           <div class="instruct green">
-            <span class="en-text"><strong>Your job:</strong> Write a 3-4 sentence pitch to convince classmates or your school principal to support your fundraiser. Use your real goal and progress numbers!</span>
-            <span class="es-text"><strong>Tu trabajo:</strong> Escribe una presentación de 3 o 4 oraciones para convencer a tus compañeros/as de clase o al director de tu escuela para que apoyen tu recaudación de fondos. ¡Usa tus números reales de meta y progreso!</span>
+            <span class="en-text"
+              ><strong>Your job:</strong> Write a 3-4 sentence pitch to convince
+              classmates or your school principal to support your fundraiser.
+              Use your real goal and progress numbers!</span
+            >
+            <span class="es-text"
+              ><strong>Tu trabajo:</strong> Escribe una presentación de 3 o 4
+              oraciones para convencer a tus compañeros/as de clase o al
+              director de tu escuela para que apoyen tu recaudación de fondos.
+              ¡Usa tus números reales de meta y progreso!</span
+            >
           </div>
 
           <label class="lbl" for="pitch">
-            <span class="en-text">✍️ Your Fundraiser Pitch (use your actual numbers!)</span>
-            <span class="es-text">✍️ Tu presentación de recaudación (¡usa tus números reales!)</span>
+            <span class="en-text"
+              >✍️ Your Fundraiser Pitch (use your actual numbers!)</span
+            >
+            <span class="es-text"
+              >✍️ Tu presentación de recaudación (¡usa tus números
+              reales!)</span
+            >
           </label>
-          <textarea id="pitch" placeholder="We are hosting a fundraiser for our classroom's library books. Our goal is to raise $500, and we have already raised $180! We need to raise $320 more, which we will do by selling popcorn at $5 per bag. We only need to sell 64 bags..."></textarea>
+          <textarea
+            id="pitch"
+            placeholder="We are hosting a fundraiser for our classroom's library books. Our goal is to raise $500, and we have already raised $180! We need to raise $320 more, which we will do by selling popcorn at $5 per bag. We only need to sell 64 bags..."
+          ></textarea>
 
-          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin:22px 0 6px;">
-            <span class="en-text">✅ Checklist — Check off completed tasks</span>
-            <span class="es-text">✅ Lista de verificación — Marca las tareas completadas</span>
+          <h3
+            style="
+              font-size: 16px;
+              font-weight: 800;
+              color: var(--navy);
+              margin: 22px 0 6px;
+            "
+          >
+            <span class="en-text"
+              >✅ Checklist — Check off completed tasks</span
+            >
+            <span class="es-text"
+              >✅ Lista de verificación — Marca las tareas completadas</span
+            >
           </h3>
           <ul class="checklist" id="checklist">
             <li>
               <input type="checkbox" id="ck1" />
-              <span class="en-text">I chose a cause and defined my fundraiser goal.</span>
-              <span class="es-text">Elegí una causa y definí mi meta de recaudación.</span>
+              <span class="en-text"
+                >I chose a cause and defined my fundraiser goal.</span
+              >
+              <span class="es-text"
+                >Elegí una causa y definí mi meta de recaudación.</span
+              >
             </li>
             <li>
               <input type="checkbox" id="ck2" />
-              <span class="en-text">I wrote and solved an addition equation to find the remaining funds needed.</span>
-              <span class="es-text">Escribí y resolví una ecuación de suma para encontrar los fondos restantes necesarios.</span>
+              <span class="en-text"
+                >I wrote and solved an addition equation to find the remaining
+                funds needed.</span
+              >
+              <span class="es-text"
+                >Escribí y resolví una ecuación de suma para encontrar los
+                fondos restantes necesarios.</span
+              >
             </li>
             <li>
               <input type="checkbox" id="ck3" />
-              <span class="en-text">I wrote an inequality to represent a target milestone.</span>
-              <span class="es-text">Escribí una desigualdad para representar un hito objetivo.</span>
+              <span class="en-text"
+                >I wrote an inequality to represent a target milestone.</span
+              >
+              <span class="es-text"
+                >Escribí una desigualdad para representar un hito
+                objetivo.</span
+              >
             </li>
             <li>
               <input type="checkbox" id="ck4" />
-              <span class="en-text">I graphed my milestone inequality on an interactive number line.</span>
-              <span class="es-text">Grafiqué mi desigualdad del hito en una recta numérica interactiva.</span>
+              <span class="en-text"
+                >I graphed my milestone inequality on an interactive number
+                line.</span
+              >
+              <span class="es-text"
+                >Grafiqué mi desigualdad del hito en una recta numérica
+                interactiva.</span
+              >
             </li>
             <li>
               <input type="checkbox" id="ck5" />
-              <span class="en-text">I chose a product and solved a multiplication equation to find the items to sell.</span>
-              <span class="es-text">Elegí un producto y resolví una ecuación de multiplicación para encontrar los artículos a vender.</span>
+              <span class="en-text"
+                >I chose a product and solved a multiplication equation to find
+                the items to sell.</span
+              >
+              <span class="es-text"
+                >Elegí un producto y resolví una ecuación de multiplicación para
+                encontrar los artículos a vender.</span
+              >
             </li>
             <li>
               <input type="checkbox" id="ck6" />
-              <span class="en-text">I compared my class goal to classmate and real-world school benchmarks.</span>
-              <span class="es-text">Comparé la meta de mi clase con la de un compañero/a y con puntos de referencia escolares reales.</span>
+              <span class="en-text"
+                >I compared my class goal to classmate and real-world school
+                benchmarks.</span
+              >
+              <span class="es-text"
+                >Comparé la meta de mi clase con la de un compañero/a y con
+                puntos de referencia escolares reales.</span
+              >
             </li>
             <li>
               <input type="checkbox" id="ck7" />
-              <span class="en-text">I wrote a fundraiser pitch using my actual project numbers.</span>
-              <span class="es-text">Escribí una presentación de recaudación usando los números reales de mi proyecto.</span>
+              <span class="en-text"
+                >I wrote a fundraiser pitch using my actual project
+                numbers.</span
+              >
+              <span class="es-text"
+                >Escribí una presentación de recaudación usando los números
+                reales de mi proyecto.</span
+              >
             </li>
           </ul>
 
-          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin:22px 0 6px;">
+          <h3
+            style="
+              font-size: 16px;
+              font-weight: 800;
+              color: var(--navy);
+              margin: 22px 0 6px;
+            "
+          >
             <span class="en-text">📊 Rubric — How You Are Scored</span>
             <span class="es-text">📊 Rúbrica — Cómo se te califica</span>
           </h3>
@@ -1159,81 +2233,172 @@
             </thead>
             <tbody>
               <tr>
-                <td><strong>
-                  <span class="en-text">Goal Equation (6.EE.7)</span>
-                  <span class="es-text">Ecuación de la meta (6.EE.7)</span>
-                </strong></td>
                 <td>
-                  <span class="en-text">Addition equation set up correctly and solved with step-by-step subtraction shown.</span>
-                  <span class="es-text">Ecuación de suma planteada correctamente y resuelta mostrando la resta paso a paso.</span>
+                  <strong>
+                    <span class="en-text">Goal Equation (6.EE.7)</span>
+                    <span class="es-text">Ecuación de la meta (6.EE.7)</span>
+                  </strong>
                 </td>
                 <td>
-                  <span class="en-text">Equation and solution are correct.</span>
-                  <span class="es-text">La ecuación y la solución son correctas.</span>
+                  <span class="en-text"
+                    >Addition equation set up correctly and solved with
+                    step-by-step subtraction shown.</span
+                  >
+                  <span class="es-text"
+                    >Ecuación de suma planteada correctamente y resuelta
+                    mostrando la resta paso a paso.</span
+                  >
                 </td>
                 <td>
-                  <span class="en-text">Equation is correct but contains mathematical calculation error.</span>
-                  <span class="es-text">La ecuación es correcta pero contiene un error de cálculo matemático.</span>
-                </td>
-              </tr>
-              <tr>
-                <td><strong>
-                  <span class="en-text">Milestone Inequality (6.EE.5, 6.EE.8)</span>
-                  <span class="es-text">Desigualdad del hito (6.EE.5, 6.EE.8)</span>
-                </strong></td>
-                <td>
-                  <span class="en-text">Milestone inequality graphed accurately on number line with open/closed circle and correct shading. Test value evaluated.</span>
-                  <span class="es-text">Desigualdad del hito graficada con precisión en la recta numérica con círculo abierto/cerrado y sombreado correcto. Valor de prueba evaluado.</span>
+                  <span class="en-text"
+                    >Equation and solution are correct.</span
+                  >
+                  <span class="es-text"
+                    >La ecuación y la solución son correctas.</span
+                  >
                 </td>
                 <td>
-                  <span class="en-text">Inequality correct and graphed properly.</span>
-                  <span class="es-text">Desigualdad correcta y graficada apropiadamente.</span>
-                </td>
-                <td>
-                  <span class="en-text">Inequality set up correctly, but number line graph or test evaluation is incorrect.</span>
-                  <span class="es-text">Desigualdad planteada correctamente, pero el gráfico de la recta numérica o la evaluación del valor de prueba es incorrecto.</span>
-                </td>
-              </tr>
-              <tr>
-                <td><strong>
-                  <span class="en-text">Item Sales Equation (6.EE.7)</span>
-                  <span class="es-text">Ecuación de venta de artículos (6.EE.7)</span>
-                </strong></td>
-                <td>
-                  <span class="en-text">Multiplication equation set up and solved with step-by-step division. Fractional items rounded up correctly.</span>
-                  <span class="es-text">Ecuación de multiplicación planteada y resuelta con división paso a paso. Los artículos fraccionarios se redondearon hacia arriba correctamente.</span>
-                </td>
-                <td>
-                  <span class="en-text">Multiplication equation solved correctly.</span>
-                  <span class="es-text">Ecuación de multiplicación resuelta correctamente.</span>
-                </td>
-                <td>
-                  <span class="en-text">Incorrect equation or multiplication operation used instead of division.</span>
-                  <span class="es-text">Ecuación incorrecta u operación de multiplicación utilizada en lugar de división.</span>
+                  <span class="en-text"
+                    >Equation is correct but contains mathematical calculation
+                    error.</span
+                  >
+                  <span class="es-text"
+                    >La ecuación es correcta pero contiene un error de cálculo
+                    matemático.</span
+                  >
                 </td>
               </tr>
               <tr>
-                <td><strong>
-                  <span class="en-text">Analysis &amp; Reflection</span>
-                  <span class="es-text">Análisis y reflexión</span>
-                </strong></td>
                 <td>
-                  <span class="en-text">Compares percent progress with classmate side-by-side and analyzes benchmark tiers with clear reasoning.</span>
-                  <span class="es-text">Compara el progreso porcentual con un compañero/a lado a lado y analiza los niveles de referencia con un razonamiento claro.</span>
+                  <strong>
+                    <span class="en-text"
+                      >Milestone Inequality (6.EE.5, 6.EE.8)</span
+                    >
+                    <span class="es-text"
+                      >Desigualdad del hito (6.EE.5, 6.EE.8)</span
+                    >
+                  </strong>
                 </td>
                 <td>
-                  <span class="en-text">Compares both classmate progress and benchmarks.</span>
-                  <span class="es-text">Compara tanto el progreso del compañero/a como los puntos de referencia.</span>
+                  <span class="en-text"
+                    >Milestone inequality graphed accurately on number line with
+                    open/closed circle and correct shading. Test value
+                    evaluated.</span
+                  >
+                  <span class="es-text"
+                    >Desigualdad del hito graficada con precisión en la recta
+                    numérica con círculo abierto/cerrado y sombreado correcto.
+                    Valor de prueba evaluado.</span
+                  >
                 </td>
                 <td>
-                  <span class="en-text">Only classmate or benchmark comparison completed.</span>
-                  <span class="es-text">Solo se completó la comparación con el compañero/a o con los puntos de referencia.</span>
+                  <span class="en-text"
+                    >Inequality correct and graphed properly.</span
+                  >
+                  <span class="es-text"
+                    >Desigualdad correcta y graficada apropiadamente.</span
+                  >
+                </td>
+                <td>
+                  <span class="en-text"
+                    >Inequality set up correctly, but number line graph or test
+                    evaluation is incorrect.</span
+                  >
+                  <span class="es-text"
+                    >Desigualdad planteada correctamente, pero el gráfico de la
+                    recta numérica o la evaluación del valor de prueba es
+                    incorrecto.</span
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>
+                    <span class="en-text">Item Sales Equation (6.EE.7)</span>
+                    <span class="es-text"
+                      >Ecuación de venta de artículos (6.EE.7)</span
+                    >
+                  </strong>
+                </td>
+                <td>
+                  <span class="en-text"
+                    >Multiplication equation set up and solved with step-by-step
+                    division. Fractional items rounded up correctly.</span
+                  >
+                  <span class="es-text"
+                    >Ecuación de multiplicación planteada y resuelta con
+                    división paso a paso. Los artículos fraccionarios se
+                    redondearon hacia arriba correctamente.</span
+                  >
+                </td>
+                <td>
+                  <span class="en-text"
+                    >Multiplication equation solved correctly.</span
+                  >
+                  <span class="es-text"
+                    >Ecuación de multiplicación resuelta correctamente.</span
+                  >
+                </td>
+                <td>
+                  <span class="en-text"
+                    >Incorrect equation or multiplication operation used instead
+                    of division.</span
+                  >
+                  <span class="es-text"
+                    >Ecuación incorrecta u operación de multiplicación utilizada
+                    en lugar de división.</span
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>
+                    <span class="en-text">Analysis &amp; Reflection</span>
+                    <span class="es-text">Análisis y reflexión</span>
+                  </strong>
+                </td>
+                <td>
+                  <span class="en-text"
+                    >Compares percent progress with classmate side-by-side and
+                    analyzes benchmark tiers with clear reasoning.</span
+                  >
+                  <span class="es-text"
+                    >Compara el progreso porcentual con un compañero/a lado a
+                    lado y analiza los niveles de referencia con un razonamiento
+                    claro.</span
+                  >
+                </td>
+                <td>
+                  <span class="en-text"
+                    >Compares both classmate progress and benchmarks.</span
+                  >
+                  <span class="es-text"
+                    >Compara tanto el progreso del compañero/a como los puntos
+                    de referencia.</span
+                  >
+                </td>
+                <td>
+                  <span class="en-text"
+                    >Only classmate or benchmark comparison completed.</span
+                  >
+                  <span class="es-text"
+                    >Solo se completó la comparación con el compañero/a o con
+                    los puntos de referencia.</span
+                  >
                 </td>
               </tr>
             </tbody>
           </table>
 
-          <div class="nav-row no-print" style="margin-top:22px; flex-wrap:wrap; justify-content:flex-start; gap:8px;">
+          <div
+            class="nav-row no-print"
+            style="
+              margin-top: 22px;
+              flex-wrap: wrap;
+              justify-content: flex-start;
+              gap: 8px;
+            "
+          >
             <button class="calc-btn" onclick="buildReport()">
               <span class="en-text">📝 Generate Summary</span>
               <span class="es-text">📝 Generar resumen</span>
@@ -1265,14 +2430,13 @@
           </button>
         </div>
       </div>
-
     </div>
 
     <!-- ====== SCRIPTS ====== -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <script src="/assets/app.js" defer></script>
     <script>
-      const PRESETS = {"goal-amt": 100, "earned-amt": 45};
+      const PRESETS = { "goal-amt": 100, "earned-amt": 45 };
       function handleLevelPreset(n) {
         try {
           if (n === 1) {
@@ -1280,211 +2444,259 @@
               const el = document.getElementById(id);
               if (el && !el.value) {
                 el.value = val;
-                el.dispatchEvent(new Event('input', { bubbles: true }));
-                el.dispatchEvent(new Event('change', { bubbles: true }));
+                el.dispatchEvent(new Event("input", { bubbles: true }));
+                el.dispatchEvent(new Event("change", { bubbles: true }));
               }
             }
           } else if (n === 2) {
             for (const [id, val] of Object.entries(PRESETS)) {
               const el = document.getElementById(id);
               if (el && String(el.value) === String(val)) {
-                el.value = '';
-                el.dispatchEvent(new Event('input', { bubbles: true }));
-                el.dispatchEvent(new Event('change', { bubbles: true }));
+                el.value = "";
+                el.dispatchEvent(new Event("input", { bubbles: true }));
+                el.dispatchEvent(new Event("change", { bubbles: true }));
               }
             }
           }
-        } catch(e) {}
+        } catch (e) {}
       }
 
       function playConfetti() {
         try {
-          const container = document.createElement('div');
-          container.style.position = 'fixed';
-          container.style.top = '0';
-          container.style.left = '0';
-          container.style.width = '100vw';
-          container.style.height = '100vh';
-          container.style.pointerEvents = 'none';
-          container.style.zIndex = '9999';
+          const container = document.createElement("div");
+          container.style.position = "fixed";
+          container.style.top = "0";
+          container.style.left = "0";
+          container.style.width = "100vw";
+          container.style.height = "100vh";
+          container.style.pointerEvents = "none";
+          container.style.zIndex = "9999";
           document.body.appendChild(container);
-          
-          const colors = ['#f43f5e', '#3b82f6', '#10b981', '#eab308', '#a855f7', '#f97316'];
+
+          const colors = [
+            "#f43f5e",
+            "#3b82f6",
+            "#10b981",
+            "#eab308",
+            "#a855f7",
+            "#f97316",
+          ];
           for (let i = 0; i < 80; i++) {
-            const el = document.createElement('div');
-            el.style.position = 'absolute';
-            el.style.width = Math.random() * 8 + 6 + 'px';
-            el.style.height = Math.random() * 8 + 6 + 'px';
-            el.style.background = colors[Math.floor(Math.random() * colors.length)];
-            el.style.borderRadius = Math.random() > 0.5 ? '50%' : '0%';
-            
-            el.style.bottom = '-10px';
-            el.style.left = Math.random() * 100 + 'vw';
-            
+            const el = document.createElement("div");
+            el.style.position = "absolute";
+            el.style.width = Math.random() * 8 + 6 + "px";
+            el.style.height = Math.random() * 8 + 6 + "px";
+            el.style.background =
+              colors[Math.floor(Math.random() * colors.length)];
+            el.style.borderRadius = Math.random() > 0.5 ? "50%" : "0%";
+
+            el.style.bottom = "-10px";
+            el.style.left = Math.random() * 100 + "vw";
+
             container.appendChild(el);
-            
+
             const duration = Math.random() * 2 + 1.5;
             const horizontalShift = (Math.random() - 0.5) * 200;
             const rotation = Math.random() * 720;
-            
-            el.animate([
-              { transform: 'translate(0, 0) rotate(0deg)', opacity: '1' },
-              { transform: `translate(${horizontalShift}px, -110vh) rotate(${rotation}deg)`, opacity: '0' }
-            ], {
-              duration: duration * 1000,
-              easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)',
-              fill: 'forwards'
-            });
+
+            el.animate(
+              [
+                { transform: "translate(0, 0) rotate(0deg)", opacity: "1" },
+                {
+                  transform: `translate(${horizontalShift}px, -110vh) rotate(${rotation}deg)`,
+                  opacity: "0",
+                },
+              ],
+              {
+                duration: duration * 1000,
+                easing: "cubic-bezier(0.1, 0.8, 0.3, 1)",
+                fill: "forwards",
+              },
+            );
           }
-          
+
           setTimeout(() => container.remove(), 4000);
         } catch (e) {}
       }
 
       // ---- State ----
       const STEPS = [
-        { id: 1, labelEn: 'Key Words', labelEs: 'Palabras Clave', icon: '📖' },
-        { id: 2, labelEn: 'Fundraiser Goal', labelEs: 'Meta de Recaudación', icon: '🎒' },
-        { id: 3, labelEn: 'Write Inequalities', labelEs: 'Escribir Desigualdades', icon: '↔️' },
-        { id: 4, labelEn: 'Solve Progress Clues', labelEs: 'Resolver Pistas de Progreso', icon: '🧮' },
-        { id: 5, labelEn: 'Partner Fundraiser', labelEs: 'Recaudación de Compañero', icon: '👥' },
-        { id: 6, labelEn: 'Finish', labelEs: 'Finalizar', icon: '🏆' },
+        { id: 1, labelEn: "Key Words", labelEs: "Palabras Clave", icon: "📖" },
+        {
+          id: 2,
+          labelEn: "Fundraiser Goal",
+          labelEs: "Meta de Recaudación",
+          icon: "🎒",
+        },
+        {
+          id: 3,
+          labelEn: "Write Inequalities",
+          labelEs: "Escribir Desigualdades",
+          icon: "↔️",
+        },
+        {
+          id: 4,
+          labelEn: "Solve Progress Clues",
+          labelEs: "Resolver Pistas de Progreso",
+          icon: "🧮",
+        },
+        {
+          id: 5,
+          labelEn: "Partner Fundraiser",
+          labelEs: "Recaudación de Compañero",
+          icon: "👥",
+        },
+        { id: 6, labelEn: "Finish", labelEs: "Finalizar", icon: "🏆" },
       ];
       let currentStep = 1;
       const visited = new Set([1]);
 
       // ---- Level Toggle ----
       function setLevel(n) {
-        document.getElementById('body').className = 'level-' + n;
-        document.getElementById('btn-lv1').classList.toggle('active', n === 1);
-        document.getElementById('btn-lv2').classList.toggle('active', n === 2);
-        
+        document.getElementById("body").className = "level-" + n;
+        document.getElementById("btn-lv1").classList.toggle("active", n === 1);
+        document.getElementById("btn-lv2").classList.toggle("active", n === 2);
+
         // Reset or redraw components
         drawTapeDiagram();
         drawNumberLine();
-      
-        handleLevelPreset(n);}
+
+        handleLevelPreset(n);
+      }
 
       // ---- Build Step Trail ----
       function buildTrail() {
-        const trail = document.getElementById('stepTrail');
+        const trail = document.getElementById("stepTrail");
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
-          return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
-            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
+          return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" onclick="goStep(${s.id})">
+            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? "✓" : s.id}</span>
             <span class="s-label"><span class="en-text">${s.labelEn}</span><span class="es-text">${s.labelEs}</span></span>
-          </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
-        }).join('');
+          </span>${!isLast ? '<span class="step-arrow">›</span>' : ""}`;
+        }).join("");
       }
 
       // ---- Navigation ----
       function goStep(n) {
         if (n < 1 || n > STEPS.length) return;
-        
+
         // Stop read aloud on step change
         if (window.speechSynthesis) {
           window.speechSynthesis.cancel();
-          const btnRead = document.getElementById('btn-read');
+          const btnRead = document.getElementById("btn-read");
           if (btnRead) {
-            const isEs = document.body.classList.contains('es');
-            btnRead.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+            const isEs = document.body.classList.contains("es");
+            btnRead.textContent = isEs
+              ? "🔊 Leer en voz alta"
+              : "🔊 Read Aloud";
           }
         }
 
-        document.getElementById('step-' + currentStep).classList.remove('active');
+        document
+          .getElementById("step-" + currentStep)
+          .classList.remove("active");
         currentStep = n;
         visited.add(n);
-        document.getElementById('step-' + n).classList.add('active');
+        document.getElementById("step-" + n).classList.add("active");
         buildTrail();
         updateProgress();
-        
+
         // Redraw dynamic graphics to handle render timing
         if (n === 2) drawTapeDiagram();
         if (n === 3) drawNumberLine();
-        
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
       function updateProgress() {
         const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
-        document.getElementById('progFill').style.width = pct + '%';
-        document.getElementById('progLabel').innerHTML = `<span class="en-text">Step ${currentStep} of ${STEPS.length}</span><span class="es-text">Paso ${currentStep} de ${STEPS.length}</span>`;
+        document.getElementById("progFill").style.width = pct + "%";
+        document.getElementById("progLabel").innerHTML =
+          `<span class="en-text">Step ${currentStep} of ${STEPS.length}</span><span class="es-text">Paso ${currentStep} de ${STEPS.length}</span>`;
       }
 
       // ---- Readout utility ----
       function showReadout(id, html) {
         const el = document.getElementById(id);
         el.innerHTML = html;
-        el.classList.add('show');
+        el.classList.add("show");
       }
 
       // ---- Step 1: Tape Diagram SVG ----
       function drawTapeDiagram() {
-        const goalInput = document.getElementById('fg-goal');
-        const raisedInput = document.getElementById('fg-raised');
-        
+        const goalInput = document.getElementById("fg-goal");
+        const raisedInput = document.getElementById("fg-raised");
+
         let goal = parseFloat(goalInput.value) || 500;
         let raised = parseFloat(raisedInput.value) || 180;
-        
+
         if (raised > goal) {
           raised = goal;
           raisedInput.value = raised;
         }
-        
-        const varName = document.getElementById('fg-var').value || 'x';
+
+        const varName = document.getElementById("fg-var").value || "x";
         const remaining = goal - raised;
-        
-        const svg = document.getElementById('tape-svg');
+
+        const svg = document.getElementById("tape-svg");
         if (!svg) return;
-        
+
         const totalWidth = 440;
         const padding = 40;
-        
+
         let raisedWidth = (raised / goal) * totalWidth;
         if (isNaN(raisedWidth) || raisedWidth < 20) raisedWidth = 20;
         if (raisedWidth > totalWidth - 20) raisedWidth = totalWidth - 20;
-        
+
         const neededWidth = totalWidth - raisedWidth;
-        
+
         let html = `
           <!-- Background Card -->
           <rect width="520" height="160" fill="#f8fafc" rx="12" />
           
           <!-- Top Tape: Raised -->
           <rect x="${padding}" y="30" width="${raisedWidth}" height="40" rx="8" fill="#e6f4eb" stroke="#1e7d40" stroke-width="2" />
-          <text x="${padding + raisedWidth/2}" y="55" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="bold" fill="#0f2b3c">$${raised}</text>
-          <text x="${padding + raisedWidth/2}" y="85" text-anchor="middle" font-family="'Inter', sans-serif" font-size="10" fill="#5e6e7e" font-weight="600"><tspan class="en-text">Raised</tspan><tspan class="es-text">Recaudado</tspan></text>
+          <text x="${padding + raisedWidth / 2}" y="55" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="bold" fill="#0f2b3c">$${raised}</text>
+          <text x="${padding + raisedWidth / 2}" y="85" text-anchor="middle" font-family="'Inter', sans-serif" font-size="10" fill="#5e6e7e" font-weight="600"><tspan class="en-text">Raised</tspan><tspan class="es-text">Recaudado</tspan></text>
 
           <!-- Top Tape: Needed -->
           <rect x="${padding + raisedWidth}" y="30" width="${neededWidth}" height="40" rx="8" fill="#fdf3e0" stroke="#c9820f" stroke-width="2" />
-          <text x="${padding + raisedWidth + neededWidth/2}" y="55" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="bold" fill="#c9820f">${varName}</text>
-          <text x="${padding + raisedWidth + neededWidth/2}" y="85" text-anchor="middle" font-family="'Inter', sans-serif" font-size="10" fill="#5e6e7e" font-weight="600"><tspan class="en-text">Needed</tspan><tspan class="es-text">Faltante</tspan></text>
+          <text x="${padding + raisedWidth + neededWidth / 2}" y="55" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="bold" fill="#c9820f">${varName}</text>
+          <text x="${padding + raisedWidth + neededWidth / 2}" y="85" text-anchor="middle" font-family="'Inter', sans-serif" font-size="10" fill="#5e6e7e" font-weight="600"><tspan class="en-text">Needed</tspan><tspan class="es-text">Faltante</tspan></text>
 
           <!-- Bottom Bracket (Goal) -->
-          <path d="M ${padding} 105 L ${padding} 115 L ${padding + totalWidth/2} 115 L ${padding + totalWidth/2} 120 L ${padding + totalWidth/2} 115 L ${padding + totalWidth} 115 L ${padding + totalWidth} 105" fill="none" stroke="#0f2b3c" stroke-width="2" />
+          <path d="M ${padding} 105 L ${padding} 115 L ${padding + totalWidth / 2} 115 L ${padding + totalWidth / 2} 120 L ${padding + totalWidth / 2} 115 L ${padding + totalWidth} 115 L ${padding + totalWidth} 105" fill="none" stroke="#0f2b3c" stroke-width="2" />
           <text x="260" y="140" text-anchor="middle" font-family="'Inter', sans-serif" font-size="13" font-weight="bold" fill="#0f2b3c"><tspan class="en-text">Total Goal: $${goal}</tspan><tspan class="es-text">Meta Total: $${goal}</tspan></text>
         `;
         svg.innerHTML = html;
-        
+
         // Hide checking elements since parameters changed
-        document.getElementById('fg-eq-out').classList.remove('show');
-        document.getElementById('fg-sol-out').classList.remove('show');
+        document.getElementById("fg-eq-out").classList.remove("show");
+        document.getElementById("fg-sol-out").classList.remove("show");
       }
 
       // ---- Step 1: Equation Checking ----
       function checkGoalEquation() {
-        const isEs = document.body.classList.contains('es');
-        const goal = parseFloat(document.getElementById('fg-goal').value) || 500;
-        const raised = parseFloat(document.getElementById('fg-raised').value) || 180;
-        const varName = (document.getElementById('fg-var').value || 'x').trim().toLowerCase();
-        const eqRaw = (document.getElementById('fg-eq-input').value || '').replace(/\s+/g, '').toLowerCase();
-        
+        const isEs = document.body.classList.contains("es");
+        const goal =
+          parseFloat(document.getElementById("fg-goal").value) || 500;
+        const raised =
+          parseFloat(document.getElementById("fg-raised").value) || 180;
+        const varName = (document.getElementById("fg-var").value || "x")
+          .trim()
+          .toLowerCase();
+        const eqRaw = (document.getElementById("fg-eq-input").value || "")
+          .replace(/\s+/g, "")
+          .toLowerCase();
+
         if (!eqRaw) {
-          const msg = isEs ? '¡Por favor, ingresa una ecuación primero!' : 'Please enter an equation first!';
+          const msg = isEs
+            ? "¡Por favor, ingresa una ecuación primero!"
+            : "Please enter an equation first!";
           alert(msg);
           return;
         }
-        
+
         const v1 = `${raised}+${varName}=${goal}`;
         const v2 = `${varName}+${raised}=${goal}`;
         const v3 = `${goal}=${raised}+${varName}`;
@@ -1493,38 +2705,54 @@
         const v6 = `${varName}=${goal}-${raised}`;
         const v7 = `${goal}-${varName}=${raised}`;
         const v8 = `${raised}=${goal}-${varName}`;
-        
-        const isValid = [v1, v2, v3, v4_correct, v5, v6, v7, v8].includes(eqRaw);
-        
+
+        const isValid = [v1, v2, v3, v4_correct, v5, v6, v7, v8].includes(
+          eqRaw,
+        );
+
         if (isValid) {
-          showReadout('fg-eq-out', `
+          showReadout(
+            "fg-eq-out",
+            `
             <span class="en-text">✅ <strong>Correct!</strong> Your equation represents the fundraiser balance perfectly.</span>
             <span class="es-text">✅ <strong>¡Correcto!</strong> Tu ecuación representa perfectamente el balance de la recaudación de fondos.</span>
-          `);
+          `,
+          );
         } else {
-          showReadout('fg-eq-out', `
+          showReadout(
+            "fg-eq-out",
+            `
             <span class="en-text">❌ <strong>Try again.</strong> Relate the raised amount (<strong>$${raised}</strong>), the variable (<strong>${varName}</strong>), and the total goal (<strong>$${goal}</strong>). <br>Example: <code>${raised} + ${varName} = ${goal}</code></span>
             <span class="es-text">❌ <strong>Inténtalo de nuevo.</strong> Relaciona la cantidad recaudada (<strong>$${raised}</strong>), la variable (<strong>${varName}</strong>) y la meta total (<strong>$${goal}</strong>). <br>Ejemplo: <code>${raised} + ${varName} = ${goal}</code></span>
-          `);
+          `,
+          );
         }
       }
 
       function verifyGoalSolution() {
-        const isEs = document.body.classList.contains('es');
-        const goal = parseFloat(document.getElementById('fg-goal').value) || 500;
-        const raised = parseFloat(document.getElementById('fg-raised').value) || 180;
-        const varName = document.getElementById('fg-var').value || 'x';
-        const solVal = parseFloat(document.getElementById('fg-sol-input').value);
-        
+        const isEs = document.body.classList.contains("es");
+        const goal =
+          parseFloat(document.getElementById("fg-goal").value) || 500;
+        const raised =
+          parseFloat(document.getElementById("fg-raised").value) || 180;
+        const varName = document.getElementById("fg-var").value || "x";
+        const solVal = parseFloat(
+          document.getElementById("fg-sol-input").value,
+        );
+
         const correctSol = goal - raised;
         if (isNaN(solVal)) {
-          const msg = isEs ? 'Por favor, ingresa un número para la solución.' : 'Please enter a number for the solution.';
+          const msg = isEs
+            ? "Por favor, ingresa un número para la solución."
+            : "Please enter a number for the solution.";
           alert(msg);
           return;
         }
-        
+
         if (Math.abs(solVal - correctSol) < 0.01) {
-          showReadout('fg-sol-out', `
+          showReadout(
+            "fg-sol-out",
+            `
             <span class="en-text">
               ✅ <strong>Correct! The solution is ${varName} = $${correctSol}</strong><br>
               <strong style="color:#86efac">Step-by-step Solution:</strong><br>
@@ -1543,38 +2771,43 @@
               3. Simplifica: <code>${varName} = ${correctSol}</code><br>
               4. Comprueba mediante sustitución: ¡<code>${raised} + ${correctSol} = ${goal}</code> es <strong>verdadero</strong>!
             </span>
-          `);
+          `,
+          );
         } else {
-          showReadout('fg-sol-out', `
+          showReadout(
+            "fg-sol-out",
+            `
             <span class="en-text">❌ <strong>Incorrect.</strong> Subtract the amount raised ($${raised}) from the total goal ($${goal}) to find the remaining needed amount.</span>
             <span class="es-text">❌ <strong>Incorrecto.</strong> Resta la cantidad recaudada ($${raised}) de la meta total ($${goal}) para encontrar la cantidad restante necesaria.</span>
-          `);
+          `,
+          );
         }
       }
 
       // ---- Step 2: Number Line SVG ----
       function drawNumberLine() {
-        const goal = parseFloat(document.getElementById('fg-goal').value) || 500;
-        const targetInput = document.getElementById('ineq-target');
+        const goal =
+          parseFloat(document.getElementById("fg-goal").value) || 500;
+        const targetInput = document.getElementById("ineq-target");
         let target = parseFloat(targetInput.value) || 350;
-        
+
         if (target > goal * 1.5) {
           target = goal * 1.5;
           targetInput.value = target;
         }
-        
-        const symbol = document.getElementById('ineq-symbol').value || '>';
-        const svg = document.getElementById('number-line-svg');
+
+        const symbol = document.getElementById("ineq-symbol").value || ">";
+        const svg = document.getElementById("number-line-svg");
         if (!svg) return;
-        
+
         const maxVal = Math.round(goal * 1.2);
         const width = 500;
         const padding = 45;
         const lineY = 70;
-        
+
         const getX = (val) => padding + (val / maxVal) * (width - 2 * padding);
         const targetX = getX(target);
-        
+
         let html = `
           <!-- Background Card -->
           <rect width="520" height="150" fill="#f8fafc" rx="12" />
@@ -1587,13 +2820,13 @@
           <!-- Right Arrow -->
           <path d="M ${width - padding} ${lineY} L ${width - padding - 10} ${lineY - 6} M ${width - padding} ${lineY} L ${width - padding - 10} ${lineY + 6}" stroke="#0f2b3c" stroke-width="3" fill="none" />
         `;
-        
+
         // Dynamic tick intervals
         let tickStep = 50;
         if (maxVal > 1500) tickStep = 250;
         else if (maxVal > 800) tickStep = 100;
         else if (maxVal < 150) tickStep = 10;
-        
+
         for (let val = 0; val <= maxVal; val += tickStep) {
           const tx = getX(val);
           if (tx >= padding && tx <= width - padding) {
@@ -1603,185 +2836,241 @@
             `;
           }
         }
-        
+
         // Draw shading
-        const isRight = (symbol === '>' || symbol === '≥');
-        const arrowEndX = isRight ? (width - padding - 10) : (padding + 10);
-        
+        const isRight = symbol === ">" || symbol === "≥";
+        const arrowEndX = isRight ? width - padding - 10 : padding + 10;
+
         html += `
           <line x1="${targetX}" y1="${lineY}" x2="${arrowEndX}" y2="${lineY}" stroke="#1e7d40" stroke-width="6" stroke-linecap="round" opacity="0.8" />
           <path d="M ${arrowEndX} ${lineY} L ${arrowEndX + (isRight ? -8 : 8)} ${lineY - 5} M ${arrowEndX} ${lineY} L ${arrowEndX + (isRight ? -8 : 8)} ${lineY + 5}" stroke="#1e7d40" stroke-width="4" stroke-linecap="round" fill="none" />
         `;
-        
+
         // Circle at boundary
-        const isOpen = (symbol === '>' || symbol === '<');
+        const isOpen = symbol === ">" || symbol === "<";
         html += `
-          <circle cx="${targetX}" cy="${lineY}" r="7" fill="${isOpen ? 'white' : '#1e7d40'}" stroke="#1e7d40" stroke-width="3.5" />
+          <circle cx="${targetX}" cy="${lineY}" r="7" fill="${isOpen ? "white" : "#1e7d40"}" stroke="#1e7d40" stroke-width="3.5" />
           <text x="${targetX}" y="${lineY - 15}" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11" font-weight="bold" fill="#1e7d40">$${target}</text>
         `;
-        
+
         svg.innerHTML = html;
-        
-        document.getElementById('ineq-out').classList.remove('show');
-        document.getElementById('ineq-eval-out').classList.remove('show');
+
+        document.getElementById("ineq-out").classList.remove("show");
+        document.getElementById("ineq-eval-out").classList.remove("show");
       }
 
       function checkIneq() {
-        const isEs = document.body.classList.contains('es');
-        const target = parseFloat(document.getElementById('ineq-target').value) || 350;
-        const symbol = document.getElementById('ineq-symbol').value || '>';
-        const ineqRaw = (document.getElementById('ineq-input').value || '').replace(/\s+/g, '').toLowerCase();
-        
+        const isEs = document.body.classList.contains("es");
+        const target =
+          parseFloat(document.getElementById("ineq-target").value) || 350;
+        const symbol = document.getElementById("ineq-symbol").value || ">";
+        const ineqRaw = (document.getElementById("ineq-input").value || "")
+          .replace(/\s+/g, "")
+          .toLowerCase();
+
         if (!ineqRaw) {
-          const msg = isEs ? '¡Por favor, escribe tu desigualdad primero!' : 'Please write your inequality first!';
+          const msg = isEs
+            ? "¡Por favor, escribe tu desigualdad primero!"
+            : "Please write your inequality first!";
           alert(msg);
           return;
         }
-        
-        const varName = 'y';
+
+        const varName = "y";
         const v1 = `${varName}${symbol}${target}`;
-        
-        let revSym = '';
-        if (symbol === '>') revSym = '<';
-        else if (symbol === '<') revSym = '>';
-        else if (symbol === '≥') revSym = '≤';
-        else if (symbol === '≤') revSym = '≥';
-        
+
+        let revSym = "";
+        if (symbol === ">") revSym = "<";
+        else if (symbol === "<") revSym = ">";
+        else if (symbol === "≥") revSym = "≤";
+        else if (symbol === "≤") revSym = "≥";
+
         const v2 = `${target}${revSym}${varName}`;
         const isValid = [v1, v2].includes(ineqRaw);
-        
+
         if (isValid) {
-          showReadout('ineq-out', `
+          showReadout(
+            "ineq-out",
+            `
             <span class="en-text">✅ <strong>Correct!</strong> Your inequality matches the milestone constraint.</span>
             <span class="es-text">✅ <strong>¡Correcto!</strong> Tu desigualdad coincide con la restricción del hito.</span>
-          `);
+          `,
+          );
         } else {
-          showReadout('ineq-out', `
+          showReadout(
+            "ineq-out",
+            `
             <span class="en-text">❌ <strong>Try again.</strong> Write an inequality using <strong>y</strong>, your comparison symbol, and the milestone target <strong>$${target}</strong>. <br>Example: <code>y ${symbol} ${target}</code></span>
             <span class="es-text">❌ <strong>Inténtalo de nuevo.</strong> Escribe una desigualdad usando <strong>y</strong>, tu símbolo de comparación y la meta del hito <strong>$${target}</strong>. <br>Ejemplo: <code>y ${symbol} ${target}</code></span>
-          `);
+          `,
+          );
         }
       }
 
       function evaluateIneqValue() {
-        const isEs = document.body.classList.contains('es');
-        const target = parseFloat(document.getElementById('ineq-target').value) || 350;
-        const symbol = document.getElementById('ineq-symbol').value || '>';
-        const testVal = parseFloat(document.getElementById('ineq-test-val').value);
-        
+        const isEs = document.body.classList.contains("es");
+        const target =
+          parseFloat(document.getElementById("ineq-target").value) || 350;
+        const symbol = document.getElementById("ineq-symbol").value || ">";
+        const testVal = parseFloat(
+          document.getElementById("ineq-test-val").value,
+        );
+
         if (isNaN(testVal)) {
-          const msg = isEs ? 'Por favor, ingresa un valor para probar.' : 'Please enter a value to test.';
+          const msg = isEs
+            ? "Por favor, ingresa un valor para probar."
+            : "Please enter a value to test.";
           alert(msg);
           return;
         }
-        
+
         let isTrue = false;
-        let symDescEn = '';
-        let symDescEs = '';
-        
-        if (symbol === '>') { isTrue = testVal > target; symDescEn = 'greater than'; symDescEs = 'mayor que'; }
-        else if (symbol === '≥') { isTrue = testVal >= target; symDescEn = 'greater than or equal to'; symDescEs = 'mayor o igual que'; }
-        else if (symbol === '<') { isTrue = testVal < target; symDescEn = 'less than'; symDescEs = 'menor que'; }
-        else if (symbol === '≤') { isTrue = testVal <= target; symDescEn = 'less than or equal to'; symDescEs = 'menor o igual que'; }
-        
-        const icon = isTrue ? '✅' : '❌';
-        const setStatusEn = isTrue ? 'is' : 'is NOT';
-        const setStatusEs = isTrue ? 'está' : 'NO está';
-        const statementEn = isTrue ? 'True' : 'False';
-        const statementEs = isTrue ? 'Verdadero' : 'Falso';
-        
-        showReadout('ineq-eval-out', `
+        let symDescEn = "";
+        let symDescEs = "";
+
+        if (symbol === ">") {
+          isTrue = testVal > target;
+          symDescEn = "greater than";
+          symDescEs = "mayor que";
+        } else if (symbol === "≥") {
+          isTrue = testVal >= target;
+          symDescEn = "greater than or equal to";
+          symDescEs = "mayor o igual que";
+        } else if (symbol === "<") {
+          isTrue = testVal < target;
+          symDescEn = "less than";
+          symDescEs = "menor que";
+        } else if (symbol === "≤") {
+          isTrue = testVal <= target;
+          symDescEn = "less than or equal to";
+          symDescEs = "menor o igual que";
+        }
+
+        const icon = isTrue ? "✅" : "❌";
+        const setStatusEn = isTrue ? "is" : "is NOT";
+        const setStatusEs = isTrue ? "está" : "NO está";
+        const statementEn = isTrue ? "True" : "False";
+        const statementEs = isTrue ? "Verdadero" : "Falso";
+
+        showReadout(
+          "ineq-eval-out",
+          `
           <span class="en-text">
             ${icon} <strong>Substitution result:</strong><br>
             We plug in <code>y = ${testVal}</code>: is <code>${testVal} ${symbol} ${target}</code> true?<br>
-            Since ${testVal} is ${isTrue ? '' : 'not '}${symDescEn} ${target}, the statement is <strong>${statementEn}</strong>.<br>
+            Since ${testVal} is ${isTrue ? "" : "not "}${symDescEn} ${target}, the statement is <strong>${statementEn}</strong>.<br>
             Therefore, $${testVal} <strong>${setStatusEn}</strong> in the solution set.
           </span>
           <span class="es-text">
             ${icon} <strong>Resultado de la sustitución:</strong><br>
             Sustituimos <code>y = ${testVal}</code>: ¿es <code>${testVal} ${symbol} ${target}</code> verdadero?<br>
-            Como ${testVal} ${isTrue ? 'es' : 'no es'} ${symDescEs} ${target}, el enunciado es <strong>${statementEs}</strong>.<br>
+            Como ${testVal} ${isTrue ? "es" : "no es"} ${symDescEs} ${target}, el enunciado es <strong>${statementEs}</strong>.<br>
             Por lo tanto, $${testVal} <strong>${setStatusEs}</strong> en el conjunto solución.
           </span>
-        `);
+        `,
+        );
       }
 
       // ---- Step 3: Item Sales ----
       function updateLvl1Item() {
-        const select = document.getElementById('sales-item-select');
+        const select = document.getElementById("sales-item-select");
         const opt = select.options[select.selectedIndex];
-        document.getElementById('sales-price').value = opt.getAttribute('data-price');
-        
-        document.getElementById('sales-eq-out').classList.remove('show');
-        document.getElementById('sales-sol-out').classList.remove('show');
+        document.getElementById("sales-price").value =
+          opt.getAttribute("data-price");
+
+        document.getElementById("sales-eq-out").classList.remove("show");
+        document.getElementById("sales-sol-out").classList.remove("show");
       }
 
       // ---- Level 2 Toggle Sync ----
       function updateLvl2Item() {
-        const price = parseFloat(document.getElementById('sales-price-input').value) || 5;
-        document.getElementById('sales-price').value = price;
-        
-        document.getElementById('sales-eq-out').classList.remove('show');
-        document.getElementById('sales-sol-out').classList.remove('show');
+        const price =
+          parseFloat(document.getElementById("sales-price-input").value) || 5;
+        document.getElementById("sales-price").value = price;
+
+        document.getElementById("sales-eq-out").classList.remove("show");
+        document.getElementById("sales-sol-out").classList.remove("show");
       }
 
       function checkSalesEquation() {
-        const isEs = document.body.classList.contains('es');
-        const goal = parseFloat(document.getElementById('fg-goal').value) || 500;
-        const raised = parseFloat(document.getElementById('fg-raised').value) || 180;
+        const isEs = document.body.classList.contains("es");
+        const goal =
+          parseFloat(document.getElementById("fg-goal").value) || 500;
+        const raised =
+          parseFloat(document.getElementById("fg-raised").value) || 180;
         const remaining = goal - raised;
-        const price = parseFloat(document.getElementById('sales-price').value) || 5;
-        const varName = (document.getElementById('sales-var').value || 'n').trim().toLowerCase();
-        const eqRaw = (document.getElementById('sales-eq-input').value || '').replace(/\s+/g, '').toLowerCase();
-        
+        const price =
+          parseFloat(document.getElementById("sales-price").value) || 5;
+        const varName = (document.getElementById("sales-var").value || "n")
+          .trim()
+          .toLowerCase();
+        const eqRaw = (document.getElementById("sales-eq-input").value || "")
+          .replace(/\s+/g, "")
+          .toLowerCase();
+
         if (!eqRaw) {
-          const msg = isEs ? '¡Por favor, ingresa una ecuación primero!' : 'Please enter an equation first!';
+          const msg = isEs
+            ? "¡Por favor, ingresa una ecuación primero!"
+            : "Please enter an equation first!";
           alert(msg);
           return;
         }
-        
-        const eqNorm = eqRaw.replace(/\*/g, '');
-        
+
+        const eqNorm = eqRaw.replace(/\*/g, "");
+
         const v1 = `${price}${varName}=${remaining}`;
         const v2 = `${varName}${price}=${remaining}`;
         const v3 = `${remaining}=${price}${varName}`;
         const v4 = `${remaining}=${varName}${price}`;
         const v5 = `${remaining}/${price}=${varName}`;
         const v6 = `${varName}=${remaining}/${price}`;
-        
+
         const isValid = [v1, v2, v3, v4, v5, v6].includes(eqNorm);
-        
+
         if (isValid) {
-          showReadout('sales-eq-out', `
+          showReadout(
+            "sales-eq-out",
+            `
             <span class="en-text">✅ <strong>Correct!</strong> Your multiplication equation models the sales required correctly.</span>
             <span class="es-text">✅ <strong>¡Correcto!</strong> Tu ecuación de multiplicación modela correctamente las ventas requeridas.</span>
-          `);
+          `,
+          );
         } else {
-          showReadout('sales-eq-out', `
+          showReadout(
+            "sales-eq-out",
+            `
             <span class="en-text">❌ <strong>Try again.</strong> Relate item price (<strong>$${price}</strong>), item count (<strong>${varName}</strong>), and amount needed (<strong>$${remaining}</strong>).<br>Example: <code>${price}${varName} = ${remaining}</code></span>
             <span class="es-text">❌ <strong>Inténtalo de nuevo.</strong> Relaciona el precio del artículo (<strong>$${price}</strong>), la cantidad de artículos (<strong>${varName}</strong>) y la cantidad necesaria (<strong>$${remaining}</strong>).<br>Ejemplo: <code>${price}${varName} = ${remaining}</code></span>
-          `);
+          `,
+          );
         }
       }
 
       function verifySalesSolution() {
-        const isEs = document.body.classList.contains('es');
-        const goal = parseFloat(document.getElementById('fg-goal').value) || 500;
-        const raised = parseFloat(document.getElementById('fg-raised').value) || 180;
+        const isEs = document.body.classList.contains("es");
+        const goal =
+          parseFloat(document.getElementById("fg-goal").value) || 500;
+        const raised =
+          parseFloat(document.getElementById("fg-raised").value) || 180;
         const remaining = goal - raised;
-        const price = parseFloat(document.getElementById('sales-price').value) || 5;
-        const varName = document.getElementById('sales-var').value || 'n';
-        const solVal = parseFloat(document.getElementById('sales-sol-input').value);
-        
+        const price =
+          parseFloat(document.getElementById("sales-price").value) || 5;
+        const varName = document.getElementById("sales-var").value || "n";
+        const solVal = parseFloat(
+          document.getElementById("sales-sol-input").value,
+        );
+
         if (isNaN(solVal)) {
-          const msg = isEs ? 'Por favor, ingresa un número para la solución.' : 'Please enter a number for the solution.';
+          const msg = isEs
+            ? "Por favor, ingresa un número para la solución."
+            : "Please enter a number for the solution.";
           alert(msg);
           return;
         }
-        
+
         const exact = remaining / price;
         const neededItems = Math.ceil(exact);
-        
+
         if (Math.abs(solVal - exact) < 0.01 || solVal === neededItems) {
           let htmlEn = `
             ✅ <strong>Correct! Solution is ${varName} = ${solVal}</strong><br>
@@ -1799,51 +3088,66 @@
                <code>${varName} = ${remaining} / ${price}</code><br>
             3. Simplifica: <code>${varName} = ${exact.toFixed(2)}</code>
           `;
-          
+
           if (neededItems !== exact) {
             htmlEn += `<br>4. Since you cannot sell a partial item, your class must sell at least <strong>${neededItems}</strong> items to reach or exceed your goal.`;
             htmlEs += `<br>4. Como no puedes vender un artículo parcial, tu clase debe vender al menos <strong>${neededItems}</strong> artículos para alcanzar o superar tu meta.`;
           }
-          
-          showReadout('sales-sol-out', `
+
+          showReadout(
+            "sales-sol-out",
+            `
             <span class="en-text">${htmlEn}</span>
             <span class="es-text">${htmlEs}</span>
-          `);
+          `,
+          );
         } else {
-          showReadout('sales-sol-out', `
+          showReadout(
+            "sales-sol-out",
+            `
             <span class="en-text">❌ <strong>Incorrect.</strong> Divide the remaining amount needed ($${remaining}) by the item price ($${price}).</span>
             <span class="es-text">❌ <strong>Incorrecto.</strong> Divide la cantidad restante necesaria ($${remaining}) por el precio del artículo ($${price}).</span>
-          `);
+          `,
+          );
         }
       }
 
       // ---- Step 4: Partner Comparison ----
       function comparePeer() {
-        const isEs = document.body.classList.contains('es');
-        const myGoal = parseFloat(document.getElementById('fg-goal').value) || 500;
-        const myRaised = parseFloat(document.getElementById('fg-raised').value) || 180;
-        
-        const pName = document.getElementById('p-name').value || (isEs ? 'Compañero/a' : 'Partner');
-        const pGoal = parseFloat(document.getElementById('p-goal').value);
-        const pRaised = parseFloat(document.getElementById('p-raised').value);
-        
+        const isEs = document.body.classList.contains("es");
+        const myGoal =
+          parseFloat(document.getElementById("fg-goal").value) || 500;
+        const myRaised =
+          parseFloat(document.getElementById("fg-raised").value) || 180;
+
+        const pName =
+          document.getElementById("p-name").value ||
+          (isEs ? "Compañero/a" : "Partner");
+        const pGoal = parseFloat(document.getElementById("p-goal").value);
+        const pRaised = parseFloat(document.getElementById("p-raised").value);
+
         if (isNaN(pGoal) || isNaN(pRaised)) {
-          const msg = isEs ? 'Por favor, ingresa la meta y la cantidad recaudada del compañero/a.' : "Please enter partner's goal and raised amounts.";
+          const msg = isEs
+            ? "Por favor, ingresa la meta y la cantidad recaudada del compañero/a."
+            : "Please enter partner's goal and raised amounts.";
           alert(msg);
           return;
         }
-        
+
         const myPct = (myRaised / myGoal) * 100;
         const pPct = (pRaised / pGoal) * 100;
         const diff = Math.abs(myPct - pPct);
-        
-        document.getElementById('stat-my-pct').textContent = myPct.toFixed(0) + '%';
-        document.getElementById('stat-peer-pct').textContent = pPct.toFixed(0) + '%';
-        document.getElementById('stat-diff-pct').textContent = diff.toFixed(0) + '%';
-        document.getElementById('compare-stats-row').style.display = 'flex';
-        
-        let htmlEn = '';
-        let htmlEs = '';
+
+        document.getElementById("stat-my-pct").textContent =
+          myPct.toFixed(0) + "%";
+        document.getElementById("stat-peer-pct").textContent =
+          pPct.toFixed(0) + "%";
+        document.getElementById("stat-diff-pct").textContent =
+          diff.toFixed(0) + "%";
+        document.getElementById("compare-stats-row").style.display = "flex";
+
+        let htmlEn = "";
+        let htmlEs = "";
         if (myGoal > pGoal) {
           htmlEn += `🎯 Your goal ($${myGoal}) is <strong>$${myGoal - pGoal}</strong> higher than ${pName}'s goal ($${pGoal}).<br>`;
           htmlEs += `🎯 Tu meta ($${myGoal}) es <strong>$${myGoal - pGoal}</strong> más alta que la meta de ${pName} ($${pGoal}).<br>`;
@@ -1854,7 +3158,7 @@
           htmlEn += `🎯 Both of you have the same goal of $${myGoal}.<br>`;
           htmlEs += `🎯 Ambos tienen la misma meta de $${myGoal}.<br>`;
         }
-        
+
         if (myRaised > pRaised) {
           htmlEn += `💰 You have raised <strong>$${myRaised - pRaised}</strong> more than ${pName}.<br>`;
           htmlEs += `💰 Has recaudado <strong>$${myRaised - pRaised}</strong> más que ${pName}.<br>`;
@@ -1865,7 +3169,7 @@
           htmlEn += `💰 You have raised the same amount ($${myRaised}).<br>`;
           htmlEs += `💰 Han recaudado la misma cantidad ($${myRaised}).<br>`;
         }
-        
+
         if (myPct > pPct) {
           htmlEn += `📈 You are closer to your goal! You are <strong>${myPct.toFixed(1)}%</strong> complete, while ${pName} is <strong>${pPct.toFixed(1)}%</strong> complete.`;
           htmlEs += `📈 ¡Estás más cerca de tu meta! Has completado el <strong>${myPct.toFixed(1)}%</strong>, mientras que ${pName} ha completado el <strong>${pPct.toFixed(1)}%</strong>.`;
@@ -1876,162 +3180,196 @@
           htmlEn += `📈 You are neck-and-neck! Both of you are at <strong>${myPct.toFixed(1)}%</strong> of your goals.`;
           htmlEs += `📈 ¡Están empatados! Ambos están al <strong>${myPct.toFixed(1)}%</strong> de sus metas.`;
         }
-        
-        showReadout('peer-out', `
+
+        showReadout(
+          "peer-out",
+          `
           <span class="en-text">${htmlEn}</span>
           <span class="es-text">${htmlEs}</span>
-        `);
+        `,
+        );
       }
 
       // ---- Step 5: Report Generation ----
       function buildReport() {
         playConfetti();
-        const isEs = document.body.classList.contains('es');
-        const cause = document.getElementById('fg-cause').value || (isEs ? 'Nuestra Causa' : 'Our Cause');
-        const goal = parseFloat(document.getElementById('fg-goal').value) || 500;
-        const raised = parseFloat(document.getElementById('fg-raised').value) || 180;
-        const varGoal = document.getElementById('fg-var').value || 'x';
+        const isEs = document.body.classList.contains("es");
+        const cause =
+          document.getElementById("fg-cause").value ||
+          (isEs ? "Nuestra Causa" : "Our Cause");
+        const goal =
+          parseFloat(document.getElementById("fg-goal").value) || 500;
+        const raised =
+          parseFloat(document.getElementById("fg-raised").value) || 180;
+        const varGoal = document.getElementById("fg-var").value || "x";
         const remaining = goal - raised;
-        const goalEq = document.getElementById('fg-eq-input').value || `${raised} + ${varGoal} = ${goal}`;
-        
-        const milestone = document.getElementById('ineq-name').value || (isEs ? 'Hito' : 'Milestone');
-        const ineqTarget = parseFloat(document.getElementById('ineq-target').value) || 350;
-        const ineqSymbol = document.getElementById('ineq-symbol').value || '>';
-        const ineqEq = document.getElementById('ineq-input').value || `y ${ineqSymbol} ${ineqTarget}`;
-        
-        const isLvl2 = document.getElementById('body').classList.contains('level-2');
-        const item = isLvl2 
-          ? (document.getElementById('sales-item-name').value || (isEs ? 'Artículo Personalizado' : 'Custom Item'))
-          : (document.getElementById('sales-item-select').value || (isEs ? 'Palomitas de maíz' : 'Popcorn'));
-        const price = parseFloat(document.getElementById('sales-price').value) || 5;
-        const varSales = document.getElementById('sales-var').value || 'n';
-        const salesEq = document.getElementById('sales-eq-input').value || `${price}${varSales} = ${remaining}`;
-        const salesItems = document.getElementById('sales-sol-input').value || Math.ceil(remaining / price);
-        const benchmarkNote = document.getElementById('benchmark-compare').value || '';
-        
-        const partner = document.getElementById('p-name').value || '';
-        const pGoal = document.getElementById('p-goal').value || '';
-        const pRaised = document.getElementById('p-raised').value || '';
-        const pReflect = document.getElementById('peer-reflect').value || '';
-        const pitch = document.getElementById('pitch').value || '';
-        
-        const myPct = ((raised / goal) * 100).toFixed(0) + '%';
-        const pPct = pGoal ? ((parseFloat(pRaised) / parseFloat(pGoal)) * 100).toFixed(0) + '%' : '—';
-        
+        const goalEq =
+          document.getElementById("fg-eq-input").value ||
+          `${raised} + ${varGoal} = ${goal}`;
+
+        const milestone =
+          document.getElementById("ineq-name").value ||
+          (isEs ? "Hito" : "Milestone");
+        const ineqTarget =
+          parseFloat(document.getElementById("ineq-target").value) || 350;
+        const ineqSymbol = document.getElementById("ineq-symbol").value || ">";
+        const ineqEq =
+          document.getElementById("ineq-input").value ||
+          `y ${ineqSymbol} ${ineqTarget}`;
+
+        const isLvl2 = document
+          .getElementById("body")
+          .classList.contains("level-2");
+        const item = isLvl2
+          ? document.getElementById("sales-item-name").value ||
+            (isEs ? "Artículo Personalizado" : "Custom Item")
+          : document.getElementById("sales-item-select").value ||
+            (isEs ? "Palomitas de maíz" : "Popcorn");
+        const price =
+          parseFloat(document.getElementById("sales-price").value) || 5;
+        const varSales = document.getElementById("sales-var").value || "n";
+        const salesEq =
+          document.getElementById("sales-eq-input").value ||
+          `${price}${varSales} = ${remaining}`;
+        const salesItems =
+          document.getElementById("sales-sol-input").value ||
+          Math.ceil(remaining / price);
+        const benchmarkNote =
+          document.getElementById("benchmark-compare").value || "";
+
+        const partner = document.getElementById("p-name").value || "";
+        const pGoal = document.getElementById("p-goal").value || "";
+        const pRaised = document.getElementById("p-raised").value || "";
+        const pReflect = document.getElementById("peer-reflect").value || "";
+        const pitch = document.getElementById("pitch").value || "";
+
+        const myPct = ((raised / goal) * 100).toFixed(0) + "%";
+        const pPct = pGoal
+          ? ((parseFloat(pRaised) / parseFloat(pGoal)) * 100).toFixed(0) + "%"
+          : "—";
+
         let lines = [];
         if (isEs) {
           lines = [
-            '═══ SEGUIDOR DE LA META DE RECAUDACIÓN — PROYECTO DE LA UNIDAD 8 (Versión B) ═══',
-            '',
+            "═══ SEGUIDOR DE LA META DE RECAUDACIÓN — PROYECTO DE LA UNIDAD 8 (Versión B) ═══",
+            "",
             `🏫 CAUSA: ${cause}`,
-            '📖 ESTÁNDARES DE MATEMÁTICAS: 6.EE.5, 6.EE.6, 6.EE.7, 6.EE.8',
-            '',
-            '🎒 PASO 1 — ECUACIÓN DE LA META DE RECAUDACIÓN',
+            "📖 ESTÁNDARES DE MATEMÁTICAS: 6.EE.5, 6.EE.6, 6.EE.7, 6.EE.8",
+            "",
+            "🎒 PASO 1 — ECUACIÓN DE LA META DE RECAUDACIÓN",
             `   Meta Total: $${goal.toFixed(2)} | Ya Recaudado: $${raised.toFixed(2)}`,
             `   Ecuación: ${goalEq}`,
             `   Solución: ${varGoal} = $${remaining.toFixed(2)} necesarios`,
-            '',
-            '↔️ PASO 2 — HITOS DE PROGRESO (DESIGUALDADES)',
+            "",
+            "↔️ PASO 2 — HITOS DE PROGRESO (DESIGUALDADES)",
             `   Nombre del hito: ${milestone}`,
             `   Objetivo del hito: $${ineqTarget.toFixed(2)}`,
             `   Desigualdad: ${ineqEq}`,
-            '',
-            '🧮 PASO 3 — VENTAS DE ARTÍCULOS (ECUACIONES DE MULTIPLICACIÓN)',
+            "",
+            "🧮 PASO 3 — VENTAS DE ARTÍCULOS (ECUACIONES DE MULTIPLICACIÓN)",
             `   Artículo a vender: ${item} | Precio: $${price.toFixed(2)}`,
             `   Ecuación: ${salesEq}`,
             `   Solución: ${varSales} = ${salesItems} artículos a vender`,
-            benchmarkNote ? `   Comparación con puntos de referencia: ${benchmarkNote}` : '',
-            '',
-            '👥 PASO 4 — COMPARACIÓN CON COMPAÑERO/A',
-            partner ? `   Compañero/a: ${partner} (Meta: $${pGoal} | Recaudado: $${pRaised} | Progreso: ${pPct})` : '   No se ingresaron datos de compañero/a.',
-            pReflect ? `   Reflexión sobre el compañero/a: ${pReflect}` : '',
-            '',
-            '✍️ MI PRESENTACIÓN DE RECAUDACIÓN DE FONDOS:',
-            pitch || '(no se escribió presentación)',
-            '',
-            '═══════════════════════════════',
+            benchmarkNote
+              ? `   Comparación con puntos de referencia: ${benchmarkNote}`
+              : "",
+            "",
+            "👥 PASO 4 — COMPARACIÓN CON COMPAÑERO/A",
+            partner
+              ? `   Compañero/a: ${partner} (Meta: $${pGoal} | Recaudado: $${pRaised} | Progreso: ${pPct})`
+              : "   No se ingresaron datos de compañero/a.",
+            pReflect ? `   Reflexión sobre el compañero/a: ${pReflect}` : "",
+            "",
+            "✍️ MI PRESENTACIÓN DE RECAUDACIÓN DE FONDOS:",
+            pitch || "(no se escribió presentación)",
+            "",
+            "═══════════════════════════════",
             `Generado: ${new Date().toLocaleDateString()}`,
           ];
         } else {
           lines = [
-            '═══ FUNDRAISER GOAL TRACKER — UNIT 8 PROJECT (Version B) ═══',
-            '',
+            "═══ FUNDRAISER GOAL TRACKER — UNIT 8 PROJECT (Version B) ═══",
+            "",
             `🏫 CAUSE: ${cause}`,
-            '📖 MATH STANDARDS: 6.EE.5, 6.EE.6, 6.EE.7, 6.EE.8',
-            '',
-            '🎒 STEP 1 — FUNDRAISER GOAL EQUATION',
+            "📖 MATH STANDARDS: 6.EE.5, 6.EE.6, 6.EE.7, 6.EE.8",
+            "",
+            "🎒 STEP 1 — FUNDRAISER GOAL EQUATION",
             `   Total Goal: $${goal.toFixed(2)} | Already Raised: $${raised.toFixed(2)}`,
             `   Equation: ${goalEq}`,
             `   Solution: ${varGoal} = $${remaining.toFixed(2)} needed`,
-            '',
-            '↔️ STEP 2 — PROGRESS MILESTONES (INEQUALITIES)',
+            "",
+            "↔️ STEP 2 — PROGRESS MILESTONES (INEQUALITIES)",
             `   Milestone Name: ${milestone}`,
             `   Milestone Target: $${ineqTarget.toFixed(2)}`,
             `   Inequality: ${ineqEq}`,
-            '',
-            '🧮 STEP 3 — ITEM SALES (MULTIPLICATION EQUATIONS)',
+            "",
+            "🧮 STEP 3 — ITEM SALES (MULTIPLICATION EQUATIONS)",
             `   Item to Sell: ${item} | Price: $${price.toFixed(2)}`,
             `   Equation: ${salesEq}`,
             `   Solution: ${varSales} = ${salesItems} items to sell`,
-            benchmarkNote ? `   Benchmark Comparison: ${benchmarkNote}` : '',
-            '',
-            '👥 STEP 4 — CLASSMATE COMPARISON',
-            partner ? `   Classmate: ${partner} (Goal: $${pGoal} | Raised: $${pRaised} | Progress: ${pPct})` : '   No partner data entered.',
-            pReflect ? `   Partner Reflection: ${pReflect}` : '',
-            '',
-            '✍️ MY FUNDRAISER PITCH:',
-            pitch || '(no pitch written)',
-            '',
-            '═══════════════════════════════',
+            benchmarkNote ? `   Benchmark Comparison: ${benchmarkNote}` : "",
+            "",
+            "👥 STEP 4 — CLASSMATE COMPARISON",
+            partner
+              ? `   Classmate: ${partner} (Goal: $${pGoal} | Raised: $${pRaised} | Progress: ${pPct})`
+              : "   No partner data entered.",
+            pReflect ? `   Partner Reflection: ${pReflect}` : "",
+            "",
+            "✍️ MY FUNDRAISER PITCH:",
+            pitch || "(no pitch written)",
+            "",
+            "═══════════════════════════════",
             `Generated: ${new Date().toLocaleDateString()}`,
           ];
         }
-        
-        const box = document.getElementById('reportBox');
-        box.textContent = lines.filter(Boolean).join('\n');
-        box.classList.add('show');
+
+        const box = document.getElementById("reportBox");
+        box.textContent = lines.filter(Boolean).join("\n");
+        box.classList.add("show");
       }
 
       function copyReport() {
-        const isEs = document.body.classList.contains('es');
-        const txt = document.getElementById('reportBox').textContent;
+        const isEs = document.body.classList.contains("es");
+        const txt = document.getElementById("reportBox").textContent;
         navigator.clipboard?.writeText(txt).then(() => {
-          const msg = isEs ? '¡Copiado al portapapeles!' : 'Copied to clipboard!';
+          const msg = isEs
+            ? "¡Copiado al portapapeles!"
+            : "Copied to clipboard!";
           alert(msg);
         });
       }
 
       function downloadTxt() {
-        const txt = document.getElementById('reportBox').textContent;
-        const a = document.createElement('a');
-        a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
-        a.download = 'fundraiser-goal-tracker-report.txt';
+        const txt = document.getElementById("reportBox").textContent;
+        const a = document.createElement("a");
+        a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);
+        a.download = "fundraiser-goal-tracker-report.txt";
         a.click();
       }
 
       // ---- Language & Read Aloud ----
       const PLACEHOLDERS = {
-        'fg-eq-input': { en: '', es: '' },
-        'fg-sol-input': { en: '', es: '' },
-        'ineq-input': { en: '', es: '' },
-        'ineq-test-val': { en: '', es: '' },
-        'sales-eq-input': { en: '', es: '' },
-        'sales-sol-input': { en: '', es: '' },
-        'benchmark-compare': {
-          en: 'My fundraiser goal is $___. According to typical school benchmarks, this level of goal is best for...',
-          es: 'La meta de mi recaudación es $___. Según los puntos de referencia escolares típicos, este nivel de meta es mejor para...'
+        "fg-eq-input": { en: "", es: "" },
+        "fg-sol-input": { en: "", es: "" },
+        "ineq-input": { en: "", es: "" },
+        "ineq-test-val": { en: "", es: "" },
+        "sales-eq-input": { en: "", es: "" },
+        "sales-sol-input": { en: "", es: "" },
+        "benchmark-compare": {
+          en: "My fundraiser goal is $___. According to typical school benchmarks, this level of goal is best for...",
+          es: "La meta de mi recaudación es $___. Según los puntos de referencia escolares típicos, este nivel de meta es mejor para...",
         },
-        'p-name': { en: '', es: '' },
-        'p-goal': { en: '', es: '' },
-        'p-raised': { en: '', es: '' },
-        'peer-reflect': {
-          en: 'My fundraiser goal is $___ with ___% raised. My classmate ___ has a goal of $___ with ___% raised. They are closer/further because...',
-          es: 'La meta de mi recaudación es $___ con ___% recaudado. Mi compañero/a ___ tiene una meta de $___ con ___% recaudado. Está más cerca/lejos porque...'
+        "p-name": { en: "", es: "" },
+        "p-goal": { en: "", es: "" },
+        "p-raised": { en: "", es: "" },
+        "peer-reflect": {
+          en: "My fundraiser goal is $___ with ___% raised. My classmate ___ has a goal of $___ with ___% raised. They are closer/further because...",
+          es: "La meta de mi recaudación es $___ con ___% recaudado. Mi compañero/a ___ tiene una meta de $___ con ___% recaudado. Está más cerca/lejos porque...",
         },
-        'pitch': {
+        pitch: {
           en: "We are hosting a fundraiser for our classroom's library books. Our goal is to raise $500, and we have already raised $180! We need to raise $320 more, which we will do by selling popcorn at $5 per bag. We only need to sell 64 bags...",
-          es: 'Estamos organizando una recaudación de fondos para los libros de la biblioteca de nuestra clase. ¡Nuestra meta es recaudar $500 y ya hemos recaudado $180! Necesitamos recaudar $320 más, lo cual haremos vendiendo palomitas de maíz a $5 por bolsa. Solo necesitamos vender 64 bolsas...'
-        }
+          es: "Estamos organizando una recaudación de fondos para los libros de la biblioteca de nuestra clase. ¡Nuestra meta es recaudar $500 y ya hemos recaudado $180! Necesitamos recaudar $320 más, lo cual haremos vendiendo palomitas de maíz a $5 por bolsa. Solo necesitamos vender 64 bolsas...",
+        },
       };
 
       function updatePlaceholders(lang) {
@@ -2044,60 +3382,60 @@
       }
 
       function toggleLanguage() {
-        const body = document.getElementById('body');
-        const isEs = body.classList.toggle('es');
-        
+        const body = document.getElementById("body");
+        const isEs = body.classList.toggle("es");
+
         // Update document lang attribute
-        document.documentElement.lang = isEs ? 'es' : 'en';
-        
+        document.documentElement.lang = isEs ? "es" : "en";
+
         // Update title
-        document.title = isEs 
+        document.title = isEs
           ? "Localizador de Metas de Recaudación de Fondos — Proyecto Final de la Unidad 8"
           : "Fundraiser Goal Tracker — Unit 8 Culminating Project";
 
         // Update buttons
-        const btnLang = document.getElementById('btn-lang');
+        const btnLang = document.getElementById("btn-lang");
         if (btnLang) {
-          btnLang.textContent = isEs ? '🌐 Idioma: ES' : '🌐 Language: EN';
+          btnLang.textContent = isEs ? "🌐 Idioma: ES" : "🌐 Language: EN";
         }
-        
-        const btnRead = document.getElementById('btn-read');
+
+        const btnRead = document.getElementById("btn-read");
         if (btnRead && !window.speechSynthesis.speaking) {
-          btnRead.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+          btnRead.textContent = isEs ? "🔊 Leer en voz alta" : "🔊 Read Aloud";
         }
 
         // Update select options text content
-        const ineqSelect = document.getElementById('ineq-symbol');
+        const ineqSelect = document.getElementById("ineq-symbol");
         if (ineqSelect) {
           const opts = ineqSelect.options;
           if (isEs) {
-            opts[0].text = '> (Más que / Mayor que)';
-            opts[1].text = '≥ (Al menos / Mayor o igual que)';
-            opts[2].text = '< (Menos que / Menor que)';
-            opts[3].text = '≤ (A lo sumo / Menor o igual que)';
+            opts[0].text = "> (Más que / Mayor que)";
+            opts[1].text = "≥ (Al menos / Mayor o igual que)";
+            opts[2].text = "< (Menos que / Menor que)";
+            opts[3].text = "≤ (A lo sumo / Menor o igual que)";
           } else {
-            opts[0].text = '> (More than / Greater than)';
-            opts[1].text = '≥ (At least / Greater than or equal to)';
-            opts[2].text = '< (Less than)';
-            opts[3].text = '≤ (At most / Less than or equal to)';
+            opts[0].text = "> (More than / Greater than)";
+            opts[1].text = "≥ (At least / Greater than or equal to)";
+            opts[2].text = "< (Less than)";
+            opts[3].text = "≤ (At most / Less than or equal to)";
           }
         }
 
-        const salesSelect = document.getElementById('sales-item-select');
+        const salesSelect = document.getElementById("sales-item-select");
         if (salesSelect) {
           const opts = salesSelect.options;
           if (isEs) {
-            opts[0].text = '🍿 Palomitas de maíz ($5.00 c/u)';
-            opts[1].text = '🍪 Masa para galletas ($8.00 c/u)';
-            opts[2].text = '🍫 Barras de chocolate ($2.00 c/u)';
+            opts[0].text = "🍿 Palomitas de maíz ($5.00 c/u)";
+            opts[1].text = "🍪 Masa para galletas ($8.00 c/u)";
+            opts[2].text = "🍫 Barras de chocolate ($2.00 c/u)";
           } else {
-            opts[0].text = '🍿 Popcorn ($5.00 each)';
-            opts[1].text = '🍪 Cookie Dough ($8.00 each)';
-            opts[2].text = '🍫 Candy Bars ($2.00 each)';
+            opts[0].text = "🍿 Popcorn ($5.00 each)";
+            opts[1].text = "🍪 Cookie Dough ($8.00 each)";
+            opts[2].text = "🍫 Candy Bars ($2.00 each)";
           }
         }
 
-        updatePlaceholders(isEs ? 'es' : 'en');
+        updatePlaceholders(isEs ? "es" : "en");
 
         // Redraw dynamic components
         buildTrail();
@@ -2115,42 +3453,48 @@
           return;
         }
 
-        const isEs = document.body.classList.contains('es');
-        const activePanel = document.querySelector('.step-panel.active');
+        const isEs = document.body.classList.contains("es");
+        const activePanel = document.querySelector(".step-panel.active");
         if (!activePanel) return;
 
-        const selector = isEs ? '.es-text' : '.en-text';
+        const selector = isEs ? ".es-text" : ".en-text";
         const elements = activePanel.querySelectorAll(selector);
 
         let textToRead = Array.from(elements)
-          .map(el => el.textContent.trim())
-          .filter(text => text.length > 0)
-          .join('. ');
+          .map((el) => el.textContent.trim())
+          .filter((text) => text.length > 0)
+          .join(". ");
 
         if (!textToRead) return;
 
         const utterance = new SpeechSynthesisUtterance(textToRead);
-        utterance.lang = isEs ? 'es-ES' : 'en-US';
+        utterance.lang = isEs ? "es-ES" : "en-US";
 
         if (window.speechSynthesis.getVoices) {
           const voices = window.speechSynthesis.getVoices();
-          const voice = voices.find(v => v.lang.startsWith(isEs ? 'es' : 'en'));
+          const voice = voices.find((v) =>
+            v.lang.startsWith(isEs ? "es" : "en"),
+          );
           if (voice) utterance.voice = voice;
         }
 
-        const btnRead = document.getElementById('btn-read');
+        const btnRead = document.getElementById("btn-read");
         if (btnRead) {
-          btnRead.textContent = isEs ? '⏹️ Detener' : '⏹️ Stop';
+          btnRead.textContent = isEs ? "⏹️ Detener" : "⏹️ Stop";
         }
 
         utterance.onend = () => {
           if (btnRead) {
-            btnRead.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+            btnRead.textContent = isEs
+              ? "🔊 Leer en voz alta"
+              : "🔊 Read Aloud";
           }
         };
         utterance.onerror = () => {
           if (btnRead) {
-            btnRead.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+            btnRead.textContent = isEs
+              ? "🔊 Leer en voz alta"
+              : "🔊 Read Aloud";
           }
         };
 
@@ -2158,11 +3502,15 @@
       }
 
       function finishProject() {
-        const isEs = document.body.classList.contains('es');
+        const isEs = document.body.classList.contains("es");
         if (isEs) {
-          alert('¡Felicitaciones! 🎉 Muestra tu seguidor completado y tu presentación a tu profesor/a.');
+          alert(
+            "¡Felicitaciones! 🎉 Muestra tu seguidor completado y tu presentación a tu profesor/a.",
+          );
         } else {
-          alert('Congratulations! 🎉 Show your completed tracker and pitch to your teacher.');
+          alert(
+            "Congratulations! 🎉 Show your completed tracker and pitch to your teacher.",
+          );
         }
       }
 
@@ -2171,114 +3519,131 @@
       updateProgress();
       drawTapeDiagram();
       drawNumberLine();
-      updatePlaceholders('en');
+      updatePlaceholders("en");
 
       function toggleGradingConsole() {
-        const el = document.getElementById('teacher-console');
+        const el = document.getElementById("teacher-console");
         if (el) {
-          el.classList.toggle('show');
-          if (el.classList.contains('show')) updateGradingAnswers();
+          el.classList.toggle("show");
+          if (el.classList.contains("show")) updateGradingAnswers();
         }
       }
-      
+
       function prefillGradingConsole() {
-        const presets = {"goal-amt": 100, "earned-amt": 45};
+        const presets = { "goal-amt": 100, "earned-amt": 45 };
         for (const [id, val] of Object.entries(presets)) {
           const el = document.getElementById(id);
           if (el) {
             el.value = val;
-            el.dispatchEvent(new Event('input', { bubbles: true }));
-            el.dispatchEvent(new Event('change', { bubbles: true }));
+            el.dispatchEvent(new Event("input", { bubbles: true }));
+            el.dispatchEvent(new Event("change", { bubbles: true }));
           }
         }
         // Also prefill student calculation answers
-        if (document.getElementById('student-gcf-input')) {
-          document.getElementById('student-gcf-input').value = document.getElementById('student-gcf-input').min || 1;
-          document.getElementById('student-gcf-input').dispatchEvent(new Event('input', { bubbles: true }));
+        if (document.getElementById("student-gcf-input")) {
+          document.getElementById("student-gcf-input").value =
+            document.getElementById("student-gcf-input").min || 1;
+          document
+            .getElementById("student-gcf-input")
+            .dispatchEvent(new Event("input", { bubbles: true }));
         }
-        if (document.getElementById('student-lcm-input')) {
-          document.getElementById('student-lcm-input').value = document.getElementById('student-lcm-input').min || 1;
-          document.getElementById('student-lcm-input').dispatchEvent(new Event('input', { bubbles: true }));
+        if (document.getElementById("student-lcm-input")) {
+          document.getElementById("student-lcm-input").value =
+            document.getElementById("student-lcm-input").min || 1;
+          document
+            .getElementById("student-lcm-input")
+            .dispatchEvent(new Event("input", { bubbles: true }));
         }
         updateGradingAnswers();
       }
-      
+
       function updateGradingAnswers() {
         try {
-          const resolver = function() {
-            
-          const g = parseFloat(document.getElementById('goal-amt').value) || 100;
-          const e = parseFloat(document.getElementById('earned-amt').value) || 45;
-          return {
-            'Goal amount': '$' + g.toFixed(2),
-            'Earned amount': '$' + e.toFixed(2),
-            'Equation (e + r = g)': `${e} + r = ${g}`,
-            'Remaining amount (r)': '$' + (g - e).toFixed(2)
-          };
-        
+          const resolver = function () {
+            const g =
+              parseFloat(document.getElementById("goal-amt").value) || 100;
+            const e =
+              parseFloat(document.getElementById("earned-amt").value) || 45;
+            return {
+              "Goal amount": "$" + g.toFixed(2),
+              "Earned amount": "$" + e.toFixed(2),
+              "Equation (e + r = g)": `${e} + r = ${g}`,
+              "Remaining amount (r)": "$" + (g - e).toFixed(2),
+            };
           };
           const ans = resolver();
-          const body = document.getElementById('teacher-answers-body');
+          const body = document.getElementById("teacher-answers-body");
           if (body && ans) {
-            body.innerHTML = Object.entries(ans).map(([k, v]) => `
+            body.innerHTML = Object.entries(ans)
+              .map(
+                ([k, v]) => `
               <tr>
                 <td class="lbl">${k}</td>
                 <td class="val">${v}</td>
               </tr>
-            `).join('');
+            `,
+              )
+              .join("");
           }
-        } catch(e) {
+        } catch (e) {
           console.error("Grading resolver error", e);
         }
       }
-      
+
       // Wire up key listener (Ctrl+Shift+T) and triple click on h1
-      document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
+      document.addEventListener("keydown", function (e) {
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "t") {
           e.preventDefault();
           toggleGradingConsole();
         }
       });
-      
-      
-      window.exportStudentBackup = function() {
+
+      window.exportStudentBackup = function () {
         try {
-          const state = window.NeftSaveResume ? window.NeftSaveResume.getState() : null;
+          const state = window.NeftSaveResume
+            ? window.NeftSaveResume.getState()
+            : null;
           const inputs = {};
-          document.querySelectorAll('input, textarea, select').forEach(el => {
+          document.querySelectorAll("input, textarea, select").forEach((el) => {
             if (el.id) inputs[el.id] = el.value;
           });
           const metadata = {
-            studentName: document.getElementById('student-name')?.value || 'Student',
-            section: document.getElementById('class-period')?.value || 'Class',
-            activityId: window.NeftSaveResumeConfig?.activityId || 'project',
+            studentName:
+              document.getElementById("student-name")?.value || "Student",
+            section: document.getElementById("class-period")?.value || "Class",
+            activityId: window.NeftSaveResumeConfig?.activityId || "project",
             activityTitle: document.title,
             timestamp: new Date().toISOString(),
             inputs: inputs,
-            state: state
+            state: state,
           };
-          
-          const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(metadata, null, 2));
-          const dlAnchor = document.createElement('a');
+
+          const dataStr =
+            "data:text/json;charset=utf-8," +
+            encodeURIComponent(JSON.stringify(metadata, null, 2));
+          const dlAnchor = document.createElement("a");
           dlAnchor.setAttribute("href", dataStr);
-          dlAnchor.setAttribute("download", `${metadata.studentName.replace(/\s+/g, '_')}_${metadata.activityId}_backup.json`);
+          dlAnchor.setAttribute(
+            "download",
+            `${metadata.studentName.replace(/\s+/g, "_")}_${metadata.activityId}_backup.json`,
+          );
           document.body.appendChild(dlAnchor);
           dlAnchor.click();
           dlAnchor.remove();
-        } catch(e) {
+        } catch (e) {
           alert("Export failed: " + e.message);
         }
       };
-      
-      window.triggerImportStudentBackup = function() {
-        document.getElementById('student-backup-file-input').click();
+
+      window.triggerImportStudentBackup = function () {
+        document.getElementById("student-backup-file-input").click();
       };
-      
-      window.importStudentBackup = function(event) {
+
+      window.importStudentBackup = function (event) {
         const file = event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
           try {
             const data = JSON.parse(e.target.result);
             if (data && data.inputs) {
@@ -2286,66 +3651,90 @@
                 const el = document.getElementById(id);
                 if (el) {
                   el.value = val;
-                  el.dispatchEvent(new Event('input', { bubbles: true }));
-                  el.dispatchEvent(new Event('change', { bubbles: true }));
+                  el.dispatchEvent(new Event("input", { bubbles: true }));
+                  el.dispatchEvent(new Event("change", { bubbles: true }));
                 }
               }
               alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === 'function') updateGradingAnswers();
+              if (typeof updateGradingAnswers === "function")
+                updateGradingAnswers();
             } else {
               alert("Invalid backup file structure.");
             }
-          } catch(err) {
+          } catch (err) {
             alert("Error parsing backup file: " + err.message);
           }
         };
         reader.readAsText(file);
       };
 
-      document.addEventListener('DOMContentLoaded', function() {
-        const titleEl = document.querySelector('.hero h1');
+      document.addEventListener("DOMContentLoaded", function () {
+        const titleEl = document.querySelector(".hero h1");
         if (titleEl) {
           let clicks = 0;
-          titleEl.addEventListener('click', function() {
+          titleEl.addEventListener("click", function () {
             clicks++;
             if (clicks >= 3) {
               toggleGradingConsole();
               clicks = 0;
             }
-            setTimeout(() => { clicks = 0; }, 1000);
+            setTimeout(() => {
+              clicks = 0;
+            }, 1000);
           });
         }
         // Re-calculate answers when input event fires
-        document.addEventListener('input', function(e) {
+        document.addEventListener("input", function (e) {
           const inputs = ["goal-amt", "earned-amt"];
           if (inputs.includes(e.target.id)) {
             updateGradingAnswers();
           }
         });
       });
-
     </script>
-  
+
     <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
     <div id="teacher-console" class="no-print">
       <h4>
         <span>🔑 Teacher Grading Console</span>
         <button class="close-btn" onclick="toggleGradingConsole()">×</button>
       </h4>
-      <p style="font-size:11px;color:#94a3b8;margin:0 0 10px;">Calculated dynamically based on student inputs:</p>
+      <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px">
+        Calculated dynamically based on student inputs:
+      </p>
       <table>
         <tbody id="teacher-answers-body"></tbody>
       </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
-      <div style="display:flex;gap:6px;margin-top:6px;">
-        <button class="prefill-btn" style="margin-top:0;background:#059669;" onclick="exportStudentBackup()">📥 Export JSON</button>
-        <button class="prefill-btn" style="margin-top:0;background:#7c3aed;" onclick="triggerImportStudentBackup()">📤 Import JSON</button>
+      <button class="prefill-btn" onclick="prefillGradingConsole()">
+        Prefill Sample Answers
+      </button>
+      <div style="display: flex; gap: 6px; margin-top: 6px">
+        <button
+          class="prefill-btn"
+          style="margin-top: 0; background: #059669"
+          onclick="exportStudentBackup()"
+        >
+          📥 Export JSON
+        </button>
+        <button
+          class="prefill-btn"
+          style="margin-top: 0; background: #7c3aed"
+          onclick="triggerImportStudentBackup()"
+        >
+          📤 Import JSON
+        </button>
       </div>
-      <input type="file" id="student-backup-file-input" style="display:none;" onchange="importStudentBackup(event)" accept=".json" />
+      <input
+        type="file"
+        id="student-backup-file-input"
+        style="display: none"
+        onchange="importStudentBackup(event)"
+        accept=".json"
+      />
     </div>
 
-  <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
-  <script src="/shared/projects/projects-pro.js" defer></script>
-  <!-- projects-pro-injected:end -->
+    <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
+    <script src="/shared/projects/projects-pro.js" defer></script>
+    <!-- projects-pro-injected:end -->
   </body>
 </html>

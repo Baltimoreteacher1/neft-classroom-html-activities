@@ -355,44 +355,6 @@
         <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
         <button class="level-btn" id="btn-read" onclick="readAloud()">🔊 Read Aloud</button>
       </div>
-      <!-- ===================== COLLAPSIBLE RESEARCH LINKS ===================== -->
-      <details open class="hint no-print" style="margin-top: 15px; background: rgba(255,255,255,0.96); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-        <summary style="font-weight: 700; font-size: 15px; color: var(--navy); cursor: pointer; user-select: none;">
-          <span class="en-text">🔍 Research &amp; Reference Resources</span>
-          <span class="es-text">🔍 Recursos de Investigación y Referencia</span>
-        </summary>
-        <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 4px;">
-          <div data-research-box style="background: var(--blue-lt); border: 1px solid var(--blue); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; font-size: 15px; line-height: 1.5; color: var(--navy); font-weight: 700;">
-            <span class="en-text">✍️ Open each link below, find the fact it points to, and type what you find in its box. Your answers save automatically.</span>
-            <span class="es-text">✍️ Abre cada enlace, encuentra el dato que indica y escríbelo en su casilla. Tus respuestas se guardan automáticamente.</span>
-          </div>
-
-          <div style="padding: 6px; border-bottom: 1px solid rgba(0,0,0,0.05);">
-            🎵 <a href="https://www.spotify.com/us/premium/" target="_blank" rel="noopener noreferrer" class="level-btn" style="display: inline-block; padding: 5px 11px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 4px;">
-              <span class="en-text">Spotify — Premium Plans ↗</span>
-              <span class="es-text">Spotify — Planes Premium ↗</span>
-            </a><br>
-            <small style="color: var(--ink); font-size: 14px; font-weight: 600;"><span class="en-text">Find: The monthly price of each plan tier</span><span class="es-text">Buscar: El precio mensual de cada nivel de plan</span></small>
-            <input type="text" id="rfind-1" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
-          </div>
-          <div style="padding: 6px; border-bottom: 1px solid rgba(0,0,0,0.05);">
-            🎬 <a href="https://help.netflix.com/en/node/24926" target="_blank" rel="noopener noreferrer" class="level-btn" style="display: inline-block; padding: 5px 11px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 4px;">
-              <span class="en-text">Netflix — Plans &amp; Pricing ↗</span>
-              <span class="es-text">Netflix — Planes y precios ↗</span>
-            </a><br>
-            <small style="color: var(--ink); font-size: 14px; font-weight: 600;"><span class="en-text">Find: Price of the Basic, Standard, and Premium tiers</span><span class="es-text">Buscar: Precio de los niveles Básico, Estándar y Premium</span></small>
-            <input type="text" id="rfind-2" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
-          </div>
-          <div style="padding: 6px; border-bottom: 1px solid rgba(0,0,0,0.05);">
-            🖥️ <a href="https://www.hostinger.com/web-hosting" target="_blank" rel="noopener noreferrer" class="level-btn" style="display: inline-block; padding: 5px 11px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 4px;">
-              <span class="en-text">Hostinger — Web Hosting Tiers ↗</span>
-              <span class="es-text">Hostinger — Niveles de hosting web ↗</span>
-            </a><br>
-            <small style="color: var(--ink); font-size: 14px; font-weight: 600;"><span class="en-text">Find: Storage (GB) and price for each tier | Look for: storage that doubles (powers of 2)</span><span class="es-text">Buscar: Almacenamiento (GB) y precio de cada nivel | Observar: almacenamiento que se duplica (potencias de 2)</span></small>
-            <input type="text" id="rfind-3" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
-          </div>
-        </div>
-      </details>
     </header>
 
     <!-- ====== WIZARD ====== -->
@@ -546,6 +508,19 @@
             <span class="es-text"><strong>Tu trabajo:</strong> Planifica la estructura de precios mensuales para suscriptores estándar (s) y suscriptores premium (p). Ingresa tus precios y recuento de usuarios a continuación para evaluar la expresión: <strong>as + bp</strong>.</span>
           </div>
 
+          <div class="step-research no-print">
+            <div class="sr-head"><span class="en-text">📊 Research you need for this step</span><span class="es-text">📊 Investigación que necesitas para este paso</span></div>
+            🎵
+            <a href="https://www.spotify.com/us/premium/" target="_blank" rel="noopener noreferrer" class="level-btn"><span class="en-text">Spotify — Premium Plans ↗</span><span class="es-text">Spotify — Planes Premium ↗</span></a>
+            <small class="sr-hint"><span class="en-text">Find: The monthly price of each plan tier</span><span class="es-text">Buscar: El precio mensual de cada nivel de plan</span></small>
+            <input type="text" id="rfind-1" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
+            🎬
+            <a href="https://help.netflix.com/en/node/24926" target="_blank" rel="noopener noreferrer" class="level-btn"><span class="en-text">Netflix — Plans &amp; Pricing ↗</span><span class="es-text">Netflix — Planes y precios ↗</span></a>
+            <small class="sr-hint"><span class="en-text">Find: Price of the Basic, Standard, and Premium tiers</span><span class="es-text">Buscar: Precio de los niveles Básico, Estándar y Premium</span></small>
+            <input type="text" id="rfind-2" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
+          </div>
+
+
           <!-- SVG Visual: Subscription Revenue expression flow -->
           <svg class="visual-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
             <text x="260" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">
@@ -687,6 +662,15 @@
             <span class="en-text"><strong>Your job:</strong> Your app hosting costs double every month. The cost is modeled by: <strong>C &times; 2^m</strong>, where C is the starting base cost multiplier and m is the month. Evaluate costs for Month 1 through Month 5.</span>
             <span class="es-text"><strong>Tu trabajo:</strong> Los costos de alojamiento de tu aplicación se duplican cada mes. El costo está modelado por: <strong>C &times; 2^m</strong>, donde C es el multiplicador de costo base inicial y m es el mes. Evalúa los costos desde el Mes 1 hasta el Mes 5.</span>
           </div>
+
+          <div class="step-research no-print">
+            <div class="sr-head"><span class="en-text">📊 Research you need for this step</span><span class="es-text">📊 Investigación que necesitas para este paso</span></div>
+            🖥️
+            <a href="https://www.hostinger.com/web-hosting" target="_blank" rel="noopener noreferrer" class="level-btn"><span class="en-text">Hostinger — Web Hosting Tiers ↗</span><span class="es-text">Hostinger — Niveles de hosting web ↗</span></a>
+            <small class="sr-hint"><span class="en-text">Find: Storage (GB) and price for each tier | Look for: storage that doubles (powers of 2)</span><span class="es-text">Buscar: Almacenamiento (GB) y precio de cada nivel | Observar: almacenamiento que se duplica (potencias de 2)</span></small>
+            <input type="text" id="rfind-3" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
+          </div>
+
 
           <!-- SVG Visual: Exponential growth bar chart -->
           <svg id="exponent-svg" class="visual-svg" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">

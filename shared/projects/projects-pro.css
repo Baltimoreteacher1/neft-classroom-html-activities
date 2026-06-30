@@ -133,6 +133,85 @@ body.pro-projects .level-btn.active {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
 }
 
+/* Research & Reference links — readable chips on the light research panel.
+   These anchors reuse .level-btn (built for the dark header), which renders
+   white-on-white inside the research box. Override to high-contrast blue
+   chips with a clear clickable affordance. Scoped to <a> so the header's
+   <button> level toggles are untouched. */
+body.pro-projects details a.level-btn,
+details a.level-btn,
+body.pro-projects .step-research a.level-btn,
+.step-research a.level-btn {
+  display: inline-block;
+  color: #0f4c81 !important;
+  background: #eaf3fc;
+  border: 1.5px solid #1a6fb5 !important;
+  border-radius: 8px;
+  padding: 8px 13px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  line-height: 1.3;
+  white-space: normal;
+  text-decoration: none;
+  transform: none !important;
+  box-shadow: none;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+body.pro-projects details a.level-btn:hover,
+details a.level-btn:hover,
+body.pro-projects .step-research a.level-btn:hover,
+.step-research a.level-btn:hover {
+  background: #d6e9fb;
+  color: #0b3a63 !important;
+  box-shadow: 0 2px 6px rgba(26, 111, 181, 0.25);
+  text-decoration: underline;
+}
+body.pro-projects details a.level-btn:focus-visible,
+details a.level-btn:focus-visible,
+body.pro-projects .step-research a.level-btn:focus-visible,
+.step-research a.level-btn:focus-visible {
+  outline: 3px solid #1a6fb5;
+  outline-offset: 2px;
+}
+
+/* In-step research callout — students look up the data right where they use it,
+   inside the relevant step-tab (not in a separate header box). */
+body.pro-projects .step-research,
+.step-research {
+  background: #f1f7fd;
+  border: 1px solid #bcdcf5;
+  border-left: 4px solid #1a6fb5;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 14px 0;
+}
+body.pro-projects .step-research .sr-head,
+.step-research .sr-head {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f4c81;
+  margin-bottom: 8px;
+}
+body.pro-projects .step-research .sr-hint,
+.step-research .sr-hint {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a2633;
+  line-height: 1.45;
+  margin: 8px 0 4px;
+}
+
+/* "Your Answer" calc box — crisp, legible callout (was a faint dashed panel). */
+body.pro-projects .student-calc-section {
+  background: #fafbfc !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-left: 4px solid #1a6fb5 !important;
+  border-radius: 10px !important;
+}
+
 /* --- Step trail: connected, premium stepper ------------------------------- */
 body.pro-projects .step-trail-item {
   transition:
