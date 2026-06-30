@@ -1320,20 +1320,13 @@
 
   const TABS = [
     ["launch", "Launch", "🚀"],
-    ["home", "Now", "🎯"],
-    ["today", "Today", "📅"],
     ["tasks", "Tasks", "✅"],
     ["homework", "Homework", "📋"],
     ["calendar", "Calendar", "📆"],
-    ["rewards", "Allowance", "💰"],
-    ["routines", "Routines", "🔁"],
-    ["calming", "Calming", "🧘"],
-    ["ai", "Academic Help", "🤖"],
-    ["reading", "Reading", "📚"],
-    ["health", "Health", "💪"],
+    ["help", "Help", "?"],
     ["more", "More", "⋯"],
   ];
-  let view = "home";
+  let view = "launch";
   let inboxCache = [];
   let coachUnlocked = false;
   // "Arrange" mode turns the Now screen into an easy drag-to-rearrange board:
@@ -3544,6 +3537,164 @@
     };
   }
 
+  function smartDueFromText(text, base = startOfToday()) {
+    const raw = String(text || "").toLowerCase();
+    if (!raw.trim()) return "";
+    const dayNames = [
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+    ];
+    const set = (offset) => {
+      const d = new Date(base);
+      d.setDate(d.getDate() + offset);
+      return isoForOffsetFrom(d);
+    };
+    if (/\btoday|tonight\b/.test(raw)) return set(0);
+    if (/\btomorrow\b/.test(raw)) return set(1);
+    if (/\bnext week\b/.test(raw)) return set(7);
+    const inDays = raw.match(/\bin\s+(\d{1,2})\s+days?\b/);
+    if (inDays) return set(clamp(Number(inDays[1]) || 0, 0, 30));
+    const dayIdx = dayNames.findIndex((d) => new RegExp(`\\b${d.slice(0, 3)}(?:day)?\\b`).test(raw));
+    if (dayIdx >= 0) {
+      const cur = base.getDay();
+      let offset = (dayIdx - cur + 7) % 7;
+      if (offset === 0 || raw.includes("next ")) offset += 7;
+      return set(offset);
+    }
+    return "";
+  }
+
+  function isoForOffsetFrom(d) {
+    const copy = new Date(d);
+    copy.setHours(12, 0, 0, 0);
+    const m = String(copy.getMonth() + 1).padStart(2, "0");
+    const day = String(copy.getDate()).padStart(2, "0");
+    return `${copy.getFullYear()}-${m}-${day}`;
+  }
+
+  function taskHelpPrompt(a) {
+    if (!a) return "I need help deciding what to do next. Ask me one question at a time.";
+    const c = cls(a.classId);
+    const openStep = a.steps.find((s) => !s.done);
+    return [
+      `I need help with ${a.title}.`,
+      `Class: ${c.name}.`,
+      a.due ? `Due: ${dueLabel(a.due, a.dueTime)}.` : "",
+      a.notes ? `Notes: ${a.notes}` : "",
+      openStep ? `Current step: ${openStep.text}.` : "",
+      "Give me a hint and a tiny next step, not the full answer.",
+    ]
+      .filter(Boolean)
+      .join(" ");
+  }
+
+  function helpPanelHTML() {
+    const stats = todayWorkStats();
+    const task = stats.first;
+    const parentLine = parentCheckLine();
+    return `
+      <div class="view-head">
+        <h2 class="view-title">? Help</h2>
+        <button class="btn sm" data-act="nav" data-arg="launch">Back to Launch</button>
+      </div>
+      <p class="view-intro">One place to get unstuck, ask for support, or reset without hunting through tabs.</p>
+      ${
+        task
+          ? `<section class="card feature"><div class="head"><div><h3>Right now: ${esc(task.title)}</h3><p class="sub">${esc(dueLabel(task.due, task.dueTime))}</p></div></div><div class="grid g2">
+              <button class="btn block menu-tile" data-act="help-ai-task" data-id="${task.id}"><span class="menu-ic">🤖</span><span><b>Get a hint</b><small>Uses this assignment's details</small></span></button>
+              <button class="btn block menu-tile" data-act="breakdown" data-id="${task.id}"><span class="menu-ic">🧩</span><span><b>Break it into steps</b><small>Make the first move tiny</small></span></button>
+              <button class="btn block menu-tile" data-act="ask-help" data-id="${task.id}"><span class="menu-ic">✉️</span><span><b>Email teacher</b><small>Drafts a clear message</small></span></button>
+              <button class="btn block menu-tile" data-act="focus-start" data-id="${task.id}"><span class="menu-ic">▶</span><span><b>Start focus</b><small>Open the focus timer</small></span></button>
+            </div></section>`
+          : `<section class="card feature"><h3>Nothing urgent is selected</h3><p class="sub">You can still ask Academic Help, add a task, or take a reset.</p></section>`
+      }
+      <div class="grid g2" style="margin-top:14px">
+        <button class="btn block menu-tile" data-act="nav" data-arg="ai"><span class="menu-ic">🤖</span><span><b>Academic Help</b><small>Ask a question or attach a picture</small></span></button>
+        <button class="btn block menu-tile" data-act="nav" data-arg="calming"><span class="menu-ic">🧘</span><span><b>Calm reset</b><small>Breathe, ground, and restart</small></span></button>
+        <button class="btn block menu-tile" data-act="nav" data-arg="coach"><span class="menu-ic">🧑‍🏫</span><span><b>Parent check</b><small>${esc(parentLine)}</small></span></button>
+        <button class="btn block menu-tile" data-act="quick-add"><span class="menu-ic">＋</span><span><b>Add what is missing</b><small>Write it down fast</small></span></button>
+      </div>`;
+  }
+
+  function parentCheckLine() {
+    const stats = todayWorkStats();
+    if (stats.overdue.length)
+      return `${stats.overdue.length} overdue item${stats.overdue.length === 1 ? "" : "s"} need attention`;
+    if (stats.first) return `First task: ${stats.first.title}`;
+    return "No urgent catch-up right now";
+  }
+
+  function parentTonightHTML() {
+    const stats = todayWorkStats();
+    const items = [];
+    if (stats.overdue.length)
+      items.push(`Catch up on ${stats.overdue[0].title}`);
+    if (stats.first) items.push(`Start ${stats.first.title}`);
+    if (!state.captureLog[todayKey()]) items.push("Check Google Classroom and planner");
+    const routine = routineForHome() || actionableRoutine();
+    if (routine) items.push(`Run ${routine.name}`);
+    if (!Object.values(state.readingProgress || {}).some((x) => x.done))
+      items.push("Check reading plan");
+    const rows = items.slice(0, 5).map((x) => `<li>${esc(x)}</li>`).join("");
+    return `<section class="card feature"><h3>Tonight parent check</h3><p class="sub">One quick list for a grown-up.</p><ul class="ground-list">${rows || "<li>No urgent reminders right now.</li>"}</ul><div class="row" style="margin-top:10px"><button class="btn sm primary" data-act="nav" data-arg="launch">Open Launch</button><button class="btn sm" data-act="nav" data-arg="day">School Day</button></div></section>`;
+  }
+
+  function gentleNudgesHTML() {
+    const stats = todayWorkStats();
+    const rows = [];
+    const push = (title, sub, action, arg = "", id = "") => {
+      rows.push({ title, sub, action, arg, id });
+    };
+    if (!state.captureLog[todayKey()]) {
+      push(
+        "Check for new work",
+        "Planner, Google Classroom, backpack, and school mail.",
+        "nav",
+        "inbox",
+      );
+    }
+    if (stats.first) {
+      push(
+        "Try the first 10 minutes",
+        `${stats.first.title} · ${dueLabel(stats.first.due, stats.first.dueTime)}`,
+        "focus-start",
+        "",
+        stats.first.id,
+      );
+    }
+    const routine = actionableRoutine();
+    if (routine) {
+      push(
+        "Walk through the next routine",
+        `${routine.name} has ${routine.items.length} step${routine.items.length === 1 ? "" : "s"}.`,
+        "guide-start",
+        "",
+        routine.id,
+      );
+    }
+    if (!rows.length) {
+      rows.push({
+        title: "You are caught up for the moment",
+        sub: "Take a breath, then check again later.",
+        action: "nav",
+        arg: "calming",
+        id: "",
+      });
+    }
+    return `<section class="card feature gentle-nudges"><div class="head"><div><h3>Gentle nudges</h3><p class="sub">Small reminders without alarm bells.</p></div><button class="btn sm" data-act="nav" data-arg="help">Help</button></div><div class="grid g2">${rows
+      .slice(0, 4)
+      .map(
+        (r) =>
+          `<button class="btn block menu-tile" data-act="${r.action}" ${r.arg ? `data-arg="${r.arg}"` : ""} ${r.id ? `data-id="${r.id}"` : ""}><span class="menu-ic">•</span><span><b>${esc(r.title)}</b><small>${esc(r.sub)}</small></span></button>`,
+      )
+      .join("")}</div></section>`;
+  }
+
   function launchStepCard({ key, icon, title, sub, done, body, actions }) {
     return `<section class="launch-step ${done ? "done" : ""}" data-launch-step="${key}">
       <div class="launch-step-main">
@@ -3643,7 +3794,8 @@
           done: !stats.first,
           actions: stats.first ? `<button class="btn sm primary" data-act="focus-start" data-id="${stats.first.id}">Start focus</button><button class="btn sm" data-act="breakdown" data-id="${stats.first.id}">Steps</button>` : `<button class="btn sm" data-act="quick-add">Add task</button>`,
         })}
-      </div>`;
+      </div>
+      ${gentleNudgesHTML()}`;
   }
 
   function googleEventBlocksToday() {
@@ -3713,6 +3865,46 @@
         .join("")}</div></section>`;
   }
 
+  function dayTimelineHTML() {
+    const items = [];
+    const add = (time, kind, title, meta, action = "") => {
+      items.push({ time, kind, title, meta, action });
+    };
+    const timeOrEnd = (value, fallback) => (TIME_RE.test(value || "") ? value : fallback);
+    gcalToday().forEach((e) =>
+      add(gcalTimeLabel(e).slice(0, 8), "event", e.title, e.calName || "Google Calendar"),
+    );
+    todaysTodos()
+      .filter((t) => !todoDoneToday(t) && t.time)
+      .forEach((t) => add(t.time, "reminder", t.text, "Reminder"));
+    sortByUrgency(openTasks())
+      .filter((a) => daysUntil(a.due) <= 1 || !a.due)
+      .slice(0, 5)
+      .forEach((a, idx) =>
+        add(
+          timeOrEnd(a.dueTime, idx === 0 ? "After school" : "Homework"),
+          "work",
+          a.title,
+          dueLabel(a.due, a.dueTime),
+          `<button class="btn sm" data-act="focus-start" data-id="${a.id}">Focus</button>`,
+        ),
+      );
+    const routine = actionableRoutine();
+    if (routine) add("Routine", "routine", routine.name, "Walk through the steps", `<button class="btn sm" data-act="guide-start" data-id="${routine.id}">Start</button>`);
+    const rows = items.length
+      ? items
+          .map(
+            (it) =>
+              `<div class="schedule-row ${it.kind}"><b>${esc(it.time)}</b><span>${it.kind === "event" ? "📆" : it.kind === "reminder" ? "⏰" : it.kind === "routine" ? "🔁" : "📘"} ${esc(it.title)}<small>${esc(it.meta || "")}</small></span>${it.action}</div>`,
+          )
+          .join("")
+      : emptyState("🌤", "Nothing scheduled yet.");
+    return (
+      backHeader("School Day", "more") +
+      `<p class="view-intro">A simple timeline that blends calendar events, reminders, routines, and homework.</p><section class="card homework-schedule"><div class="schedule-list">${rows}</div></section>`
+    );
+  }
+
   function inboxCandidateRows() {
     const mail = (state.gmail?.messages || [])
       .filter((m) => !state.deletedIds[`mail:${m.id}`])
@@ -3771,6 +3963,7 @@
     return (
       backHeader("Coach Dashboard", "more") +
       `<p class="view-intro">A grown-up view of what is working, what needs help, and whether payday is ready.</p>
+      ${parentTonightHTML()}
       <div class="diag-grid">
         <div class="diag-stat"><b>Focus this week</b><span>${stats.focusMin}m</span></div>
         <div class="diag-stat"><b>Tasks done</b><span>${stats.tasks}</span></div>
@@ -4409,6 +4602,14 @@
       return html;
     },
 
+    help() {
+      return helpPanelHTML();
+    },
+
+    day() {
+      return dayTimelineHTML();
+    },
+
     more() {
       const grid = (items) =>
         `<div class="grid g2">${items
@@ -4421,6 +4622,27 @@
       return `
         <div class="view-head"><h2 class="view-title">More</h2></div>
         ${grid([
+          {
+            act: "nav",
+            arg: "home",
+            ic: "🎯",
+            title: "Now screen",
+            sub: "Right-now task and cards",
+          },
+          {
+            act: "nav",
+            arg: "today",
+            ic: "📅",
+            title: "Today",
+            sub: "Goal, overdue, due today",
+          },
+          {
+            act: "nav",
+            arg: "day",
+            ic: "🗺️",
+            title: "School Day",
+            sub: "Timeline of calendar, tasks, routines",
+          },
           {
             act: "nav",
             arg: "launch",
@@ -4441,6 +4663,41 @@
             ic: "🧑‍🏫",
             title: "Coach Dashboard",
             sub: "Parent view, allowance, progress",
+          },
+          {
+            act: "nav",
+            arg: "ai",
+            ic: "🤖",
+            title: "Academic Help",
+            sub: "Ask questions or attach a picture",
+          },
+          {
+            act: "nav",
+            arg: "routines",
+            ic: "🔁",
+            title: "Routines",
+            sub: "Morning, after school, shutdown",
+          },
+          {
+            act: "nav",
+            arg: "calming",
+            ic: "🧘",
+            title: "Calming",
+            sub: "Breathing and reset tools",
+          },
+          {
+            act: "nav",
+            arg: "reading",
+            ic: "📚",
+            title: "Reading",
+            sub: "Summer reading plan",
+          },
+          {
+            act: "nav",
+            arg: "health",
+            ic: "💪",
+            title: "Health",
+            sub: "Movement check-ins",
           },
           {
             act: "view-classes",
@@ -6241,6 +6498,7 @@ Due May 31"></textarea>
         .join("")}</select></div>
       <div class="field"><label>When is it due?</label>
         <div class="seg" id="qaDueSeg">${pick(isoForOffset(0), "Today")}${pick(isoForOffset(1), "Tomorrow")}${pick("custom", "Pick a date")}${pick("", "Not sure")}</div>
+        <input id="qaDueText" placeholder="Or type: Friday, tomorrow, next week" autocomplete="off" style="margin-top:8px">
         <input type="date" id="qaDate" value="${esc(due && due !== "custom" ? due : "")}" style="margin-top:8px;${due === "custom" || (due && due !== isoForOffset(0) && due !== isoForOffset(1)) ? "" : "display:none"}">
       </div>
       <button class="btn primary block big" data-act="save-quickadd">＋ Add it</button>
@@ -6274,6 +6532,7 @@ Due May 31"></textarea>
         <div class="field"><label>Due date</label><input type="date" id="tDue" value="${esc(a.due || "")}"></div>
         <div class="field"><label>Due time (optional)</label><input type="time" id="tTime" value="${esc(a.dueTime || "")}"></div>
       </div>
+      <div class="field"><label>Due words (optional)</label><input id="tDueText" placeholder="tomorrow, Friday, next week, in 3 days"></div>
       <div class="field"><label>About how long? (minutes)</label><input type="number" id="tEst" min="0" step="5" value="${a.estimateMin || ""}" placeholder="20"></div>
       <div class="field"><label>Notes (optional)</label><textarea id="tNotes">${esc(a.notes || "")}</textarea></div>
       <button class="btn primary block" data-act="save-task" data-id="${esc(a.id || "")}">${editing ? "Save changes" : "Add assignment"}</button>`;
@@ -8631,6 +8890,7 @@ Due May 31"></textarea>
       if (!title) return toast("Type what it is first.");
       let due = quickAddForm._due || "";
       if (due === "custom") due = $("#qaDate").value || "";
+      due = due || smartDueFromText($("#qaDueText")?.value || title);
       const obj = normalizeTask({
         title,
         classId: $("#qaClass").value,
@@ -8655,7 +8915,7 @@ Due May 31"></textarea>
       obj.title = $("#tTitle").value.trim() || "Assignment";
       obj.classId = $("#tClass").value;
       obj.priority = $("#tPri").value;
-      obj.due = $("#tDue").value;
+      obj.due = $("#tDue").value || smartDueFromText($("#tDueText")?.value);
       obj.dueTime = $("#tTime").value;
       obj.estimateMin = Number($("#tEst").value) || 0;
       obj.notes = $("#tNotes").value;
@@ -8803,7 +9063,7 @@ Due May 31"></textarea>
           <button class="btn block menu-tile" data-act="breakdown" data-id="${a.id}"><span class="menu-ic">🧩</span><span><b>Break it smaller</b><small>Make or edit the checklist</small></span></button>
           <button class="btn block menu-tile" data-act="ask-help" data-id="${a.id}"><span class="menu-ic">✉️</span><span><b>Ask for help</b><small>Draft a clear teacher email</small></span></button>
           <button class="btn block menu-tile" data-act="focus-break"><span class="menu-ic">🌿</span><span><b>Take a reset break</b><small>Come back in a few minutes</small></span></button>
-          <button class="btn block menu-tile" data-act="ai-suggest" data-arg="I am stuck on ${esc(a.title)}. Give me a hint, not the answer."><span class="menu-ic">🤖</span><span><b>Ask Academic Help</b><small>Hint mode prompt</small></span></button>
+          <button class="btn block menu-tile" data-act="help-ai-task" data-id="${a.id}"><span class="menu-ic">🤖</span><span><b>Ask Academic Help</b><small>Hint mode prompt</small></span></button>
         </div>
         ${firstOpen ? `<div class="note" style="margin-top:12px">Try this next: <b>${esc(firstOpen.text)}</b></div>` : `<div class="note" style="margin-top:12px">Try the first two minutes only. Open the work, read the directions, and write one thing you notice.</div>`}`,
       );
@@ -9142,11 +9402,20 @@ Due May 31"></textarea>
     },
     // ---- AI Support (Gemini via server proxy /api/ai) ----
     "ai-suggest": (id, arg) => {
+      if (view !== "ai") {
+        view = "ai";
+        render();
+      }
       const i = $("#aiInput");
       if (i) {
         i.value = arg || "";
         i.focus();
       }
+    },
+    "help-ai-task": (id) => {
+      const a = state.assignments.find((x) => x.id === id) || rightNowTask();
+      closeModal();
+      ACTIONS["ai-suggest"](null, taskHelpPrompt(a));
     },
     "ai-clear": () => {
       AI_CHAT = [];
