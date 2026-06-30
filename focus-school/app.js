@@ -15,7 +15,8 @@
     if (!document.querySelector('link[href*="katex"]')) {
       var link = document.createElement("link");
       link.rel = "stylesheet";
-      link.href = "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css";
+      link.href =
+        "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css";
       link.crossOrigin = "anonymous";
       document.head.appendChild(link);
     }
@@ -24,7 +25,8 @@
     script.crossOrigin = "anonymous";
     script.onload = function () {
       var ext = document.createElement("script");
-      ext.src = "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js";
+      ext.src =
+        "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js";
       ext.crossOrigin = "anonymous";
       ext.onload = callback;
       document.head.appendChild(ext);
@@ -139,8 +141,36 @@
     ["pushups", "💪", "Push-ups or sit-ups", "Knock out a set or two"],
     ["stretch", "🤸", "Warmed up / stretched", "Loosen up before or after"],
   ];
-  // Validate a synced/imported health log so a bad payload can't poison state.
+  // Custom movement items the student adds on the Health page live in
+  // state.health.items; the effective list is the built-in defaults plus those.
+  function healthItems() {
+    const custom =
+      state.health && Array.isArray(state.health.items)
+        ? state.health.items
+        : [];
+    return HEALTH_ITEMS.concat(custom);
+  }
+  // Validate a synced/imported health payload so it can't poison state. Keeps
+  // the built-in items plus any well-formed custom items, and only log entries
+  // that reference a known item id.
   function normalizeHealth(h) {
+    const items = [];
+    const rawItems = h && Array.isArray(h.items) ? h.items : [];
+    for (const it of rawItems) {
+      if (!Array.isArray(it) || it.length < 3) continue;
+      const [id, emoji, label, hint] = it;
+      if (typeof id !== "string" || !/^h_/.test(id)) continue;
+      if (typeof label !== "string" || !label.trim()) continue;
+      items.push([
+        id,
+        typeof emoji === "string" && emoji ? emoji.slice(0, 4) : "💪",
+        label.trim().slice(0, 60),
+        typeof hint === "string" ? hint.trim().slice(0, 80) : "",
+      ]);
+    }
+    const knownIds = new Set(
+      HEALTH_ITEMS.map((i) => i[0]).concat(items.map((i) => i[0])),
+    );
     const log = {};
     const src =
       h && typeof h === "object" && h.log && typeof h.log === "object"
@@ -150,14 +180,14 @@
       if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !day || typeof day !== "object")
         continue;
       const clean = {};
-      for (const it of HEALTH_ITEMS) if (day[it[0]]) clean[it[0]] = 1;
+      for (const id of knownIds) if (day[id]) clean[id] = 1;
       const paid = Array.isArray(day.__paid)
-        ? day.__paid.filter((x) => HEALTH_ITEMS.some((it) => it[0] === x))
+        ? day.__paid.filter((x) => knownIds.has(x))
         : [];
       if (paid.length) clean.__paid = [...new Set(paid)];
       if (Object.keys(clean).length) log[date] = clean;
     }
-    return { log };
+    return { log, items };
   }
   const parseLocal = (iso) => (iso ? new Date(iso + "T12:00:00") : null);
   const daysUntil = (iso) => {
@@ -453,7 +483,13 @@
         currency: "$",
         balance: 0, // earned, not yet paid out
         paidOut: 0, // lifetime paid out by a parent
-        rates: { task: 0.5, reminder: 0.1, routine: 0.25, focus: 0.25, health: 0.1 },
+        rates: {
+          task: 0.5,
+          reminder: 0.1,
+          routine: 0.25,
+          focus: 0.25,
+          health: 0.1,
+        },
         dailyCap: 5, // max earnable per day (anti-gaming); 0 = no cap
         weeklyCap: 10, // realistic ceiling on a single week's payout; 0 = none
         bonusPerfectWeek: 1, // bonus when there's activity every weekday Mon–Fri
@@ -465,7 +501,12 @@
         payouts: [],
       },
       readingProgress: {},
-      bookTransition: { finishedB: "", responseB: false, startC: "", rememberText: "" },
+      bookTransition: {
+        finishedB: "",
+        responseB: false,
+        startC: "",
+        rememberText: "",
+      },
       health: { log: {} },
       updatedAt: Date.now(),
     };
@@ -525,8 +566,7 @@
         Array.isArray(x.routines) && x.routines.length
           ? x.routines.map(normalizeRoutine)
           : base.routines,
-      routineLog:
-        normalizeRoutineLog(x.routineLog),
+      routineLog: normalizeRoutineLog(x.routineLog),
       activity: x.activity && typeof x.activity === "object" ? x.activity : {},
       wins: Array.isArray(x.wins) ? x.wins : [],
       points: Number(x.points) || 0,
@@ -552,8 +592,14 @@
         x.reflections && typeof x.reflections === "object" ? x.reflections : {},
       deletedIds:
         x.deletedIds && typeof x.deletedIds === "object" ? x.deletedIds : {},
-      readingProgress: x.readingProgress && typeof x.readingProgress === "object" ? x.readingProgress : {},
-      bookTransition: x.bookTransition && typeof x.bookTransition === "object" ? x.bookTransition : { finishedB: "", responseB: false, startC: "", rememberText: "" },
+      readingProgress:
+        x.readingProgress && typeof x.readingProgress === "object"
+          ? x.readingProgress
+          : {},
+      bookTransition:
+        x.bookTransition && typeof x.bookTransition === "object"
+          ? x.bookTransition
+          : { finishedB: "", responseB: false, startC: "", rememberText: "" },
       garden:
         x.garden && typeof x.garden === "object"
           ? {
@@ -1045,33 +1091,217 @@
   }
 
   const READING_DAYS = [
-    { id: "day1", date: "6/29", dayName: "Mon", book: "Blood on the River", read: "Chapter 13", prompt: "What changes after Wingfield is arrested?" },
-    { id: "day2", date: "6/30", dayName: "Tue", book: "Blood on the River", read: "Chapter 14", prompt: "Smith leaves; what happens to the settlement?" },
-    { id: "day3", date: "7/1", dayName: "Wed", book: "Blood on the River", read: "Chapter 15", prompt: "Why is Smith in danger again?" },
-    { id: "day4", date: "7/2", dayName: "Thu", book: "Blood on the River", read: "Chapter 16", prompt: "Summarize the rescue/interruption." },
-    { id: "day5", date: "7/3", dayName: "Fri", book: "Blood on the River", read: "Chapter 17", prompt: "Cause/effect: new supplies, new people, fire." },
-    { id: "day6", date: "7/6", dayName: "Mon", book: "Blood on the River", read: "Chapter 18", prompt: "Track leadership: How does Smith become president?" },
-    { id: "day7", date: "7/7", dayName: "Tue", book: "Blood on the River", read: "Chapter 19", prompt: "Quote focus: \"He that will not work shall not eat.\"" },
-    { id: "day8", date: "7/8", dayName: "Wed", book: "Blood on the River", read: "Chapter 20", prompt: "Compare English goals vs. Powhatan goals." },
-    { id: "day9", date: "7/9", dayName: "Thu", book: "Blood on the River", read: "Chapter 21", prompt: "Track: conflict, ceremony, marriage, loss." },
-    { id: "day10", date: "7/10", dayName: "Fri", book: "Blood on the River", read: "Chapter 22", prompt: "Explain how Samuel changes while living with the Warraskoyack." },
-    { id: "day11", date: "7/13", dayName: "Mon", book: "Blood on the River", read: "Chapter 23", prompt: "Conflict map: What do the newcomers do, and why does it matter?" },
-    { id: "day12", date: "7/14", dayName: "Tue", book: "Blood on the River", read: "Chapter 24", prompt: "Identify the turning point for Captain Smith." },
-    { id: "day13", date: "7/15", dayName: "Wed", book: "Blood on the River", read: "Chapter 25", prompt: "Decision check: Why does Samuel take action?" },
-    { id: "day14", date: "7/16", dayName: "Thu", book: "Blood on the River", read: "Chapter 26", prompt: "Summarize the attack and its consequences." },
-    { id: "day15", date: "7/17", dayName: "Fri", book: "Blood on the River", read: "Chapter 27", prompt: "Point Comfort: What safety does Samuel find?" },
-    { id: "day16", date: "7/20", dayName: "Mon", book: "Blood on the River", read: "Chapter 28", prompt: "Endgame: What is resolved? What still feels unsettled?" },
-    { id: "day17", date: "7/21", dayName: "Tue", book: "Blood on the River", read: "Chapter 29 + wrap-up", prompt: "Final response: How has Samuel changed from Chapter 1 to the end?" },
+    {
+      id: "day1",
+      date: "6/29",
+      dayName: "Mon",
+      book: "Blood on the River",
+      read: "Chapter 13",
+      prompt: "What changes after Wingfield is arrested?",
+    },
+    {
+      id: "day2",
+      date: "6/30",
+      dayName: "Tue",
+      book: "Blood on the River",
+      read: "Chapter 14",
+      prompt: "Smith leaves; what happens to the settlement?",
+    },
+    {
+      id: "day3",
+      date: "7/1",
+      dayName: "Wed",
+      book: "Blood on the River",
+      read: "Chapter 15",
+      prompt: "Why is Smith in danger again?",
+    },
+    {
+      id: "day4",
+      date: "7/2",
+      dayName: "Thu",
+      book: "Blood on the River",
+      read: "Chapter 16",
+      prompt: "Summarize the rescue/interruption.",
+    },
+    {
+      id: "day5",
+      date: "7/3",
+      dayName: "Fri",
+      book: "Blood on the River",
+      read: "Chapter 17",
+      prompt: "Cause/effect: new supplies, new people, fire.",
+    },
+    {
+      id: "day6",
+      date: "7/6",
+      dayName: "Mon",
+      book: "Blood on the River",
+      read: "Chapter 18",
+      prompt: "Track leadership: How does Smith become president?",
+    },
+    {
+      id: "day7",
+      date: "7/7",
+      dayName: "Tue",
+      book: "Blood on the River",
+      read: "Chapter 19",
+      prompt: 'Quote focus: "He that will not work shall not eat."',
+    },
+    {
+      id: "day8",
+      date: "7/8",
+      dayName: "Wed",
+      book: "Blood on the River",
+      read: "Chapter 20",
+      prompt: "Compare English goals vs. Powhatan goals.",
+    },
+    {
+      id: "day9",
+      date: "7/9",
+      dayName: "Thu",
+      book: "Blood on the River",
+      read: "Chapter 21",
+      prompt: "Track: conflict, ceremony, marriage, loss.",
+    },
+    {
+      id: "day10",
+      date: "7/10",
+      dayName: "Fri",
+      book: "Blood on the River",
+      read: "Chapter 22",
+      prompt: "Explain how Samuel changes while living with the Warraskoyack.",
+    },
+    {
+      id: "day11",
+      date: "7/13",
+      dayName: "Mon",
+      book: "Blood on the River",
+      read: "Chapter 23",
+      prompt: "Conflict map: What do the newcomers do, and why does it matter?",
+    },
+    {
+      id: "day12",
+      date: "7/14",
+      dayName: "Tue",
+      book: "Blood on the River",
+      read: "Chapter 24",
+      prompt: "Identify the turning point for Captain Smith.",
+    },
+    {
+      id: "day13",
+      date: "7/15",
+      dayName: "Wed",
+      book: "Blood on the River",
+      read: "Chapter 25",
+      prompt: "Decision check: Why does Samuel take action?",
+    },
+    {
+      id: "day14",
+      date: "7/16",
+      dayName: "Thu",
+      book: "Blood on the River",
+      read: "Chapter 26",
+      prompt: "Summarize the attack and its consequences.",
+    },
+    {
+      id: "day15",
+      date: "7/17",
+      dayName: "Fri",
+      book: "Blood on the River",
+      read: "Chapter 27",
+      prompt: "Point Comfort: What safety does Samuel find?",
+    },
+    {
+      id: "day16",
+      date: "7/20",
+      dayName: "Mon",
+      book: "Blood on the River",
+      read: "Chapter 28",
+      prompt: "Endgame: What is resolved? What still feels unsettled?",
+    },
+    {
+      id: "day17",
+      date: "7/21",
+      dayName: "Tue",
+      book: "Blood on the River",
+      read: "Chapter 29 + wrap-up",
+      prompt:
+        "Final response: How has Samuel changed from Chapter 1 to the end?",
+    },
     // The Crossover
-    { id: "day18", date: "7/22", dayName: "Wed", book: "The Crossover", read: "Warm-Up pp. 1-20", prompt: "Meet Josh/Filthy McNasty; track voice, rhythm, and family." },
-    { id: "day19", date: "7/23", dayName: "Thu", book: "The Crossover", read: "First Quarter, Part 1 pp. 21-54", prompt: "Track: basketball as family language." },
-    { id: "day20", date: "7/24", dayName: "Fri", book: "The Crossover", read: "First Quarter, Part 2 pp. 55-86", prompt: "Explain how JB and Josh’s relationship starts to shift." },
-    { id: "day21", date: "7/27", dayName: "Mon", book: "The Crossover", read: "Second Quarter, Part 1 pp. 87-110", prompt: "Track tension: jealousy, consequences, and choices." },
-    { id: "day22", date: "7/28", dayName: "Tue", book: "The Crossover", read: "Second Quarter, Part 2 pp. 111-134", prompt: "Cause/effect: What mistake changes things?" },
-    { id: "day23", date: "7/29", dayName: "Wed", book: "The Crossover", read: "Third Quarter, Part 1 pp. 135-165", prompt: "Track emotions: guilt, family pressure, and Dad’s health." },
-    { id: "day24", date: "7/30", dayName: "Thu", book: "The Crossover", read: "Third Quarter, Part 2 pp. 166-196", prompt: "Explain how the author builds worry and urgency." },
-    { id: "day25", date: "7/31", dayName: "Fri", book: "The Crossover", read: "Fourth Quarter pp. 197-222", prompt: "Track the climax: what changes for the family?" },
-    { id: "day26", date: "8/3", dayName: "Mon", book: "The Crossover", read: "Overtime + final reflection pp. 223-237", prompt: "Final response: What does Josh learn about love, loss, and family?" }
+    {
+      id: "day18",
+      date: "7/22",
+      dayName: "Wed",
+      book: "The Crossover",
+      read: "Warm-Up pp. 1-20",
+      prompt: "Meet Josh/Filthy McNasty; track voice, rhythm, and family.",
+    },
+    {
+      id: "day19",
+      date: "7/23",
+      dayName: "Thu",
+      book: "The Crossover",
+      read: "First Quarter, Part 1 pp. 21-54",
+      prompt: "Track: basketball as family language.",
+    },
+    {
+      id: "day20",
+      date: "7/24",
+      dayName: "Fri",
+      book: "The Crossover",
+      read: "First Quarter, Part 2 pp. 55-86",
+      prompt: "Explain how JB and Josh’s relationship starts to shift.",
+    },
+    {
+      id: "day21",
+      date: "7/27",
+      dayName: "Mon",
+      book: "The Crossover",
+      read: "Second Quarter, Part 1 pp. 87-110",
+      prompt: "Track tension: jealousy, consequences, and choices.",
+    },
+    {
+      id: "day22",
+      date: "7/28",
+      dayName: "Tue",
+      book: "The Crossover",
+      read: "Second Quarter, Part 2 pp. 111-134",
+      prompt: "Cause/effect: What mistake changes things?",
+    },
+    {
+      id: "day23",
+      date: "7/29",
+      dayName: "Wed",
+      book: "The Crossover",
+      read: "Third Quarter, Part 1 pp. 135-165",
+      prompt: "Track emotions: guilt, family pressure, and Dad’s health.",
+    },
+    {
+      id: "day24",
+      date: "7/30",
+      dayName: "Thu",
+      book: "The Crossover",
+      read: "Third Quarter, Part 2 pp. 166-196",
+      prompt: "Explain how the author builds worry and urgency.",
+    },
+    {
+      id: "day25",
+      date: "7/31",
+      dayName: "Fri",
+      book: "The Crossover",
+      read: "Fourth Quarter pp. 197-222",
+      prompt: "Track the climax: what changes for the family?",
+    },
+    {
+      id: "day26",
+      date: "8/3",
+      dayName: "Mon",
+      book: "The Crossover",
+      read: "Overtime + final reflection pp. 223-237",
+      prompt:
+        "Final response: What does Josh learn about love, loss, and family?",
+    },
   ];
 
   const TABS = [
@@ -2715,6 +2945,16 @@
     $("#main").innerHTML = (VIEWS[view] || VIEWS.home)();
     renderTabbar();
     updateHeaderStatus();
+    // The floating ＋ is context-aware: on the Health page it adds a custom
+    // movement (editable), everywhere else it quick-adds an assignment.
+    const fab = $("#fab");
+    if (fab) {
+      const onHealth = view === "health";
+      fab.dataset.act = onHealth ? "health-add" : "quick-add";
+      const fabLabel = onHealth ? "Add a movement" : "Quick add an assignment";
+      fab.setAttribute("aria-label", fabLabel);
+      fab.setAttribute("title", fabLabel);
+    }
     if (view === "ai") {
       ensureKaTeX(function () {
         const scrollEl = $("#aiScroll");
@@ -2725,8 +2965,8 @@
                 { left: "$$", right: "$$", display: true },
                 { left: "$", right: "$", display: false },
                 { left: "\\(", right: "\\)", display: false },
-                { left: "\\[", right: "\\]", display: true }
-              ]
+                { left: "\\[", right: "\\]", display: true },
+              ],
             });
           } catch (e) {}
         }
@@ -3738,11 +3978,20 @@
     },
 
     reading() {
-      const completedDays = Object.values(state.readingProgress || {}).filter((x) => x.done).length;
+      const completedDays = Object.values(state.readingProgress || {}).filter(
+        (x) => x.done,
+      ).length;
       const totalDays = READING_DAYS.length;
-      const percent = totalDays ? Math.round((completedDays / totalDays) * 100) : 0;
-      const transition = state.bookTransition || { finishedB: "", responseB: false, startC: "", rememberText: "" };
-      
+      const percent = totalDays
+        ? Math.round((completedDays / totalDays) * 100)
+        : 0;
+      const transition = state.bookTransition || {
+        finishedB: "",
+        responseB: false,
+        startC: "",
+        rememberText: "",
+      };
+
       let html = `
         <div class="view-head">
           <h2 class="view-title">📚 Summer Reading</h2>
@@ -3768,18 +4017,25 @@
         </div>
       `;
 
-      const botrDays = READING_DAYS.filter(d => d.book === "Blood on the River");
-      const tcDays = READING_DAYS.filter(d => d.book === "The Crossover");
+      const botrDays = READING_DAYS.filter(
+        (d) => d.book === "Blood on the River",
+      );
+      const tcDays = READING_DAYS.filter((d) => d.book === "The Crossover");
 
       const renderDayRow = (d) => {
-        const prog = state.readingProgress[d.id] || { done: false, gist: "", evidence: "", response: "" };
+        const prog = state.readingProgress[d.id] || {
+          done: false,
+          gist: "",
+          evidence: "",
+          response: "",
+        };
         const isExpanded = state.expandedReadingDay === d.id;
-        
+
         return `
-          <div class="card reading-day-card ${prog.done ? 'done-day' : ''}" style="margin-bottom: 10px; border-left: 4px solid ${d.book === 'Blood on the River' ? '#147c78' : '#c0473a'};">
+          <div class="card reading-day-card ${prog.done ? "done-day" : ""}" style="margin-bottom: 10px; border-left: 4px solid ${d.book === "Blood on the River" ? "#147c78" : "#c0473a"};">
             <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;">
               <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
-                <input type="checkbox" style="width: 20px; height: 20px; cursor: pointer; flex-shrink: 0;" data-act="toggle-reading-done" data-id="${d.id}" ${prog.done ? 'checked' : ''}>
+                <input type="checkbox" style="width: 20px; height: 20px; cursor: pointer; flex-shrink: 0;" data-act="toggle-reading-done" data-id="${d.id}" ${prog.done ? "checked" : ""}>
                 <div style="cursor: pointer; flex: 1;" data-act="toggle-reading-expand" data-id="${d.id}">
                   <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--muted); letter-spacing: 0.5px;">${d.dayName} ${d.date}</div>
                   <div style="font-size: 0.95rem; font-weight: 700; margin: 2px 0;">${esc(d.read)}</div>
@@ -3787,11 +4043,13 @@
                 </div>
               </div>
               <button class="btn sm icon-only" data-act="toggle-reading-expand" data-id="${d.id}" style="background: none; border: none; font-size: 1rem;" aria-label="Toggle details">
-                ${isExpanded ? '▲' : '▼'}
+                ${isExpanded ? "▲" : "▼"}
               </button>
             </div>
             
-            ${isExpanded ? `
+            ${
+              isExpanded
+                ? `
               <div class="reading-details" style="margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); display: flex; flex-direction: column; gap: 10px;">
                 <div class="field">
                   <label style="font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase;">1. Gist (1-2 sentences)</label>
@@ -3807,7 +4065,9 @@
                 </div>
                 <div style="font-size: 0.75rem; color: var(--muted); text-align: right; font-style: italic;">✍️ Changes save automatically</div>
               </div>
-            ` : ''}
+            `
+                : ""
+            }
           </div>
         `;
       };
@@ -3830,7 +4090,7 @@
               </div>
             </div>
             <div style="display: flex; align-items: center; gap: 8px; margin: 4px 0;">
-              <input type="checkbox" data-transition-check="responseB" style="width:18px; height:18px;" ${transition.responseB ? 'checked' : ''}>
+              <input type="checkbox" data-transition-check="responseB" style="width:18px; height:18px;" ${transition.responseB ? "checked" : ""}>
               <label style="font-size: 0.88rem; font-weight: 700; cursor: pointer;">Final Response Completed</label>
             </div>
             <div class="field">
@@ -4087,40 +4347,61 @@
 
     health() {
       const day =
-        (state.health && state.health.log && state.health.log[todayKey()]) || {};
+        (state.health && state.health.log && state.health.log[todayKey()]) ||
+        {};
       const rate =
         (state.rewards && state.rewards.rates && state.rewards.rates.health) ||
         0.1;
-      const doneCount = HEALTH_ITEMS.filter((it) => day[it[0]]).length;
-      const items = HEALTH_ITEMS.map((it) => {
-        const [id, emoji, label, hint] = it;
-        const done = !!day[id];
-        return (
-          '<label class="health-item' +
-          (done ? " done" : "") +
-          '"><input type="checkbox" data-check="health" data-id="' +
-          id +
-          '"' +
-          (done ? " checked" : "") +
-          ' aria-label="' +
-          esc(label) +
-          '"><span class="health-emoji" aria-hidden="true">' +
-          emoji +
-          '</span><span class="health-text"><b class="steptext' +
-          (done ? " done" : "") +
-          '">' +
-          esc(label) +
-          "</b><small>" +
-          esc(hint) +
-          '</small></span><span class="health-pay">+' +
-          money(rate) +
-          "</span></label>"
-        );
-      }).join("");
+      const eff = healthItems();
+      const doneCount = eff.filter((it) => day[it[0]]).length;
+      const items = eff
+        .map((it) => {
+          const [id, emoji, label, hint] = it;
+          const done = !!day[id];
+          const custom = /^h_/.test(id);
+          return (
+            '<div class="health-row">' +
+            '<label class="health-item' +
+            (done ? " done" : "") +
+            '"><input type="checkbox" data-check="health" data-id="' +
+            id +
+            '"' +
+            (done ? " checked" : "") +
+            ' aria-label="' +
+            esc(label) +
+            '"><span class="health-emoji" aria-hidden="true">' +
+            emoji +
+            '</span><span class="health-text"><b class="steptext' +
+            (done ? " done" : "") +
+            '">' +
+            esc(label) +
+            "</b><small>" +
+            esc(hint) +
+            '</small></span><span class="health-pay">+' +
+            money(rate) +
+            "</span></label>" +
+            (custom
+              ? '<span class="health-edit">' +
+                '<button class="btn sm ghost" data-act="health-edit" data-id="' +
+                id +
+                '" aria-label="Edit ' +
+                esc(label) +
+                '" title="Edit">✏️</button>' +
+                '<button class="btn sm ghost" data-act="health-del" data-id="' +
+                id +
+                '" aria-label="Delete ' +
+                esc(label) +
+                '" title="Delete">✕</button>' +
+                "</span>"
+              : "") +
+            "</div>"
+          );
+        })
+        .join("");
       const cheer =
         doneCount === 0
           ? "Pick one and go move your body. 🚀"
-          : doneCount >= HEALTH_ITEMS.length
+          : doneCount >= eff.length
             ? "Wow — you did them all today! 🏆"
             : "Nice work — " + doneCount + " done today! 🔥";
       return (
@@ -4132,7 +4413,8 @@
           "Check one off when you do it. Each is worth " + money(rate) + ".",
           '<div class="health-list">' +
             items +
-            '</div><p class="health-cheer" aria-live="polite">' +
+            '</div><button class="btn block" data-act="health-add" style="margin-top:10px">＋ Add a movement</button>' +
+            '<p class="health-cheer" aria-live="polite">' +
             cheer +
             "</p>",
         )
@@ -4140,7 +4422,7 @@
     },
 
     ai() {
-      const mode = window._aiMode = window._aiMode || "hint";
+      const mode = (window._aiMode = window._aiMode || "hint");
       const msgs = AI_CHAT.length
         ? AI_CHAT.map(
             (m) =>
@@ -4204,7 +4486,7 @@
         '<button class="btn block" data-act="ai-mode" data-arg="solve" aria-pressed="' +
         (mode === "solve") +
         '">✨ Solve Mode</button>' +
-        '</div>' +
+        "</div>" +
         '<div class="ai-inputbar"><button class="btn ai-attach-btn" data-act="ai-attach" aria-label="Add a picture" title="Add a picture">📷</button><input id="aiInput" placeholder="Ask for help…" aria-label="Ask for help" ' +
         (aiBusy ? "disabled" : "") +
         '><button class="btn primary" data-act="ai-send" ' +
@@ -4683,7 +4965,13 @@ Due May 31"></textarea>
         health: "💪 Biking & lifting",
       };
       const stub = (w) =>
-        `<div class="pay-stub">${["task", "routine", "focus", "reminder", "health"]
+        `<div class="pay-stub">${[
+          "task",
+          "routine",
+          "focus",
+          "reminder",
+          "health",
+        ]
           .filter((k) => w.by[k] > 0)
           .map(
             (k) =>
@@ -5538,6 +5826,20 @@ Due May 31"></textarea>
       </div>
       <button class="btn primary block big" data-act="save-quickadd">＋ Add it</button>
       <button class="btn block ghost" data-act="open-task" style="margin-top:8px">More details…</button>`;
+  }
+
+  // Add / edit one of the student's own movement items on the Health page.
+  function healthItemForm(item) {
+    const editing = !!item;
+    const [id, emoji, label, hint] = item || ["", "💪", "", ""];
+    return `
+      <p class="sub">Add your own way to move your body. It shows up on the Health page and earns the same allowance as the built-in ones.</p>
+      <div class="g2 grid">
+        <div class="field"><label>Emoji</label><input id="hEmoji" value="${esc(emoji || "💪")}" maxlength="4" placeholder="🏃"></div>
+        <div class="field"><label>What is it?</label><input id="hLabel" value="${esc(label || "")}" placeholder="Went for a run" autocomplete="off"></div>
+      </div>
+      <div class="field"><label>Hint (optional)</label><input id="hHint" value="${esc(hint || "")}" placeholder="20 minutes or more"></div>
+      <button class="btn primary block" data-act="save-health-item" data-id="${esc(id || "")}">${editing ? "Save changes" : "＋ Add it"}</button>`;
   }
 
   function taskForm(a) {
@@ -6600,13 +6902,21 @@ Due May 31"></textarea>
     // 14. Merge readingProgress and bookTransition
     {
       const mergedReading = { ...(local.readingProgress || {}) };
-      for (const [dayId, remProg] of Object.entries(remote.readingProgress || {})) {
+      for (const [dayId, remProg] of Object.entries(
+        remote.readingProgress || {},
+      )) {
         const locProg = mergedReading[dayId];
         if (!locProg) {
           mergedReading[dayId] = remProg;
         } else {
-          const locLen = (locProg.gist || "").length + (locProg.evidence || "").length + (locProg.response || "").length;
-          const remLen = (remProg.gist || "").length + (remProg.evidence || "").length + (remProg.response || "").length;
+          const locLen =
+            (locProg.gist || "").length +
+            (locProg.evidence || "").length +
+            (locProg.response || "").length;
+          const remLen =
+            (remProg.gist || "").length +
+            (remProg.evidence || "").length +
+            (remProg.response || "").length;
           if (remProg.done && !locProg.done) {
             mergedReading[dayId] = remProg;
           } else if (!remProg.done && locProg.done) {
@@ -6622,10 +6932,17 @@ Due May 31"></textarea>
       const rt = remote.bookTransition || {};
       const remoteIsNewer = (remote.updatedAt || 0) > (local.updatedAt || 0);
       merged.bookTransition = {
-        finishedB: remoteIsNewer ? (rt.finishedB || lt.finishedB || "") : (lt.finishedB || rt.finishedB || ""),
+        finishedB: remoteIsNewer
+          ? rt.finishedB || lt.finishedB || ""
+          : lt.finishedB || rt.finishedB || "",
         responseB: lt.responseB || rt.responseB || false,
-        startC: remoteIsNewer ? (rt.startC || lt.startC || "") : (lt.startC || rt.startC || ""),
-        rememberText: (rt.rememberText || "").length > (lt.rememberText || "").length ? (rt.rememberText || "") : (lt.rememberText || "")
+        startC: remoteIsNewer
+          ? rt.startC || lt.startC || ""
+          : lt.startC || rt.startC || "",
+        rememberText:
+          (rt.rememberText || "").length > (lt.rememberText || "").length
+            ? rt.rememberText || ""
+            : lt.rememberText || "",
       };
     }
 
@@ -7809,6 +8126,45 @@ Due May 31"></textarea>
       quickAddForm._due = "";
       openModal("Quick add", quickAddForm());
     },
+    "health-add": () => openModal("Add a movement", healthItemForm(null)),
+    "health-edit": (id) => {
+      const item = ((state.health && state.health.items) || []).find(
+        (it) => it[0] === id,
+      );
+      if (item) openModal("Edit movement", healthItemForm(item));
+    },
+    "save-health-item": (id) => {
+      const label = ($("#hLabel").value || "").trim();
+      if (!label) return toast("Type what the movement is first.");
+      const emoji = ($("#hEmoji").value || "").trim().slice(0, 4) || "💪";
+      const hint = ($("#hHint").value || "").trim().slice(0, 80);
+      state.health = state.health || { log: {} };
+      state.health.items = Array.isArray(state.health.items)
+        ? state.health.items
+        : [];
+      if (id) {
+        const item = state.health.items.find((it) => it[0] === id);
+        if (item) {
+          item[1] = emoji;
+          item[2] = label.slice(0, 60);
+          item[3] = hint;
+        }
+      } else {
+        state.health.items.push([uid("h"), emoji, label.slice(0, 60), hint]);
+      }
+      save();
+      closeModal();
+      render();
+      toast(id ? "Saved 💪" : "Added 💪 — go move your body");
+    },
+    "health-del": (id) => {
+      state.health.items = ((state.health && state.health.items) || []).filter(
+        (it) => it[0] !== id,
+      );
+      save();
+      render();
+      toast("Removed");
+    },
     "qa-due": (_, arg, ev) => {
       // Toggle which quick-pick is active and show/hide the date input.
       quickAddForm._due = arg === "custom" ? "custom" : arg;
@@ -8348,7 +8704,12 @@ Due May 31"></textarea>
     },
     "toggle-reading-done": (id) => {
       state.readingProgress = state.readingProgress || {};
-      state.readingProgress[id] = state.readingProgress[id] || { done: false, gist: "", evidence: "", response: "" };
+      state.readingProgress[id] = state.readingProgress[id] || {
+        done: false,
+        gist: "",
+        evidence: "",
+        response: "",
+      };
       const done = !state.readingProgress[id].done;
       state.readingProgress[id].done = done;
       if (done) {
@@ -9272,7 +9633,7 @@ ${name}`;
         const day = (state.health.log[todayKey()] =
           state.health.log[todayKey()] || {});
         const paid = (day.__paid = day.__paid || []);
-        const item = HEALTH_ITEMS.find((h) => h[0] === id);
+        const item = healthItems().find((h) => h[0] === id);
         if (box.checked) {
           day[id] = 1;
           if (!paid.includes(id)) {
@@ -9292,11 +9653,11 @@ ${name}`;
         const cheerEl = document.querySelector(".health-cheer");
         if (cheerEl) {
           const d = state.health.log[todayKey()] || {};
-          const n = HEALTH_ITEMS.filter((it) => d[it[0]]).length;
+          const n = healthItems().filter((it) => d[it[0]]).length;
           cheerEl.textContent =
             n === 0
               ? "Pick one and go move your body. 🚀"
-              : n >= HEALTH_ITEMS.length
+              : n >= healthItems().length
                 ? "Wow — you did them all today! 🏆"
                 : "Nice work — " + n + " done today! 🔥";
         }
@@ -9386,21 +9747,36 @@ ${name}`;
         const id = ev.target.dataset.id;
         const field = ev.target.dataset.readingField;
         state.readingProgress = state.readingProgress || {};
-        state.readingProgress[id] = state.readingProgress[id] || { done: false, gist: "", evidence: "", response: "" };
+        state.readingProgress[id] = state.readingProgress[id] || {
+          done: false,
+          gist: "",
+          evidence: "",
+          response: "",
+        };
         state.readingProgress[id][field] = ev.target.value;
         save();
         return;
       }
       if (ev.target.dataset.transitionField) {
         const field = ev.target.dataset.transitionField;
-        state.bookTransition = state.bookTransition || { finishedB: "", responseB: false, startC: "", rememberText: "" };
+        state.bookTransition = state.bookTransition || {
+          finishedB: "",
+          responseB: false,
+          startC: "",
+          rememberText: "",
+        };
         state.bookTransition[field] = ev.target.value;
         save();
         return;
       }
       if (ev.target.dataset.transitionCheck) {
         const field = ev.target.dataset.transitionCheck;
-        state.bookTransition = state.bookTransition || { finishedB: "", responseB: false, startC: "", rememberText: "" };
+        state.bookTransition = state.bookTransition || {
+          finishedB: "",
+          responseB: false,
+          startC: "",
+          rememberText: "",
+        };
         state.bookTransition[field] = ev.target.checked;
         save();
         return;
@@ -9599,7 +9975,7 @@ ${name}`;
         const diffX = touchEndX - touchStartX;
         const diffY = touchEndY - touchStartY;
         if (Math.abs(diffX) > 80 && Math.abs(diffY) < 40) {
-          const tabsOrder = TABS.map(t => t[0]);
+          const tabsOrder = TABS.map((t) => t[0]);
           const currentIdx = tabsOrder.indexOf(view);
           if (currentIdx !== -1) {
             if (diffX < 0) {
