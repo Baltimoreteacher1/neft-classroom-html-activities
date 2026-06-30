@@ -1095,13 +1095,16 @@
           this.tweens.killTweensOf(g); // Prevent any active tween from fighting the drag!
           g.setDepth(50);
           JUICE.tilePop(this, g);
-          if (g._tileObj && g._tileObj.slotIndex != null) {
-            const slot = this.slots[g._tileObj.slotIndex];
-            if (slot && slot.tileId === g._tileObj.id) {
-              slot.tileId = null;
+          if (g._tileObj) {
+            g._tileObj._wasDragged = true; // Mark as dragged!
+            if (g._tileObj.slotIndex != null) {
+              const slot = this.slots[g._tileObj.slotIndex];
+              if (slot && slot.tileId === g._tileObj.id) {
+                slot.tileId = null;
+              }
+              g._tileObj.slotIndex = null;
+              this.refreshReadout();
             }
-            g._tileObj.slotIndex = null;
-            this.refreshReadout();
           }
         });
         this.input.on("drag", (p, g) => {
@@ -1252,14 +1255,11 @@
           slotIndex: null,
         };
         c._tileObj = obj;
-        c.on("pointerup", (pointer) => {
-          const dist = Phaser.Math.Distance.Between(
-            pointer.downX,
-            pointer.downY,
-            pointer.upX,
-            pointer.upY
-          );
-          if (dist < 6) {
+        c.on("pointerdown", () => {
+          obj._wasDragged = false; // Reset state!
+        });
+        c.on("pointerup", () => {
+          if (!obj._wasDragged) {
             this.autoPlace(obj);
           }
         });
