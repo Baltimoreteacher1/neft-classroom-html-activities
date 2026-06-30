@@ -1528,16 +1528,20 @@ export function renderDoneTab() {
   return `<div ${tabPanelAttrs("done", true)}>${inner}</div>`;
 }
 
+// Order follows the real family-homework flow: understand the concept, learn the
+// vocab (vocab before any activity), do the guided activity together, work it on
+// the scratch pad, check understanding, then practice games, then reference
+// help/links, then finish. Tab nav + progress read this DOM order directly.
 const HOMEWORK_TABS = [
   { id: "learn", icon: "📖", en: "Learn", es: "Aprender" },
-  { id: "arcade", icon: "🕹️", en: "Arcade", es: "Sala de juegos" },
   { id: "words", icon: "📚", en: "Words", es: "Palabras" },
   { id: "together", icon: "🤝", en: "Together", es: "Juntos" },
-  { id: "check", icon: "✅", en: "Check", es: "Repaso" },
   { id: "workbench", icon: "🧮", en: "Workbench", es: "Pizarra" },
+  { id: "check", icon: "✅", en: "Check", es: "Repaso" },
+  { id: "arcade", icon: "🕹️", en: "Arcade", es: "Sala de juegos" },
+  { id: "play", icon: "🎮", en: "Play", es: "Jugar" },
   { id: "help", icon: "💬", en: "Help", es: "Ayuda" },
   { id: "more", icon: "🌐", en: "More", es: "Más" },
-  { id: "play", icon: "🎮", en: "Play", es: "Jugar" },
   { id: "done", icon: "🎉", en: "Done", es: "Listo" },
 ];
 
