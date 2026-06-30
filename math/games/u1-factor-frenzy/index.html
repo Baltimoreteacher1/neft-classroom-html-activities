@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
-    <title>Factor Frenzy — Lessons 1.1–1.3 Game | Neft Teacher</title>
+    <title>Factor Frenzy — Prime Factorization Game | Neft Teacher</title>
     <meta
       name="description"
-      content="Prime Factor Forge: a Grade 6 math-as-mechanic game for lessons 1.1–1.3 — sort each number's prime factors into a Venn to build the greatest common factor and least common multiple (6.NS.4)."
+      content="Factor Frenzy: a calm, self-paced Grade 6 game where you build factor trees to find a number's prime factorization — split each number into factors or mark it prime until every branch is prime (6.NS.4)."
     />
     <style>
       * {
@@ -22,9 +22,7 @@
         --ink: #06202c;
         --panel: #0f2b3c;
         --line: #1f4a5b;
-        --a: #1a6fb5;
-        --b: #b5531a;
-        --shared: #2d874b;
+        --comp: #5fb0e6;
         --txt: #dff1f0;
         --muted: #8fb6bf;
       }
@@ -181,17 +179,17 @@
       .vterm {
         color: var(--gold);
         font-weight: 700;
-        min-width: 130px;
+        min-width: 150px;
       }
       .vdef {
         color: var(--txt);
       }
       .levels {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr;
         gap: 14px;
       }
-      @media (max-width: 560px) {
+      @media (max-width: 680px) {
         .levels {
           grid-template-columns: 1fr;
         }
@@ -243,17 +241,12 @@
         color: var(--muted);
         font-weight: 600;
       }
-      .lives {
-        color: #e06b6b;
-        letter-spacing: 2px;
-        font-size: 1.1rem;
-      }
       .target {
         text-align: center;
-        margin: 6px 0 14px;
+        margin: 6px 0 10px;
       }
       .target .nums {
-        font-size: clamp(1.5rem, 5vw, 2.2rem);
+        font-size: clamp(1.3rem, 4.4vw, 1.9rem);
         font-weight: 800;
         color: #fff;
       }
@@ -263,169 +256,203 @@
       .prompt {
         color: var(--muted);
         margin-top: 4px;
+        font-size: 0.95rem;
       }
-      .venn {
-        display: grid;
-        grid-template-columns: 1fr 1.1fr 1fr;
-        gap: 10px;
-        margin: 8px 0 14px;
+
+      /* ── Factor tree ── */
+      .tree-wrap {
+        overflow-x: auto;
+        padding: 14px 0 6px;
       }
-      @media (max-width: 620px) {
-        .venn {
-          grid-template-columns: 1fr;
-        }
+      .tree {
+        display: flex;
+        justify-content: center;
+        min-width: max-content;
+        margin: 0 auto;
       }
-      .zone {
-        min-height: 120px;
-        border-radius: 16px;
-        padding: 12px;
-        text-align: center;
-        border: 2px dashed var(--line);
-        background: #0b2330;
-        transition:
-          border-color 0.15s,
-          background 0.15s;
+      .node {
         display: flex;
         flex-direction: column;
-        gap: 8px;
-        cursor: pointer;
+        align-items: center;
       }
-      .zone:focus-visible {
-        outline: 3px solid var(--gold);
+      .bubble {
+        font:
+          800 1.2rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        min-width: 54px;
+        height: 54px;
+        padding: 0 14px;
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        color: var(--ink);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          transform 0.1s,
+          box-shadow 0.1s;
+      }
+      .bubble.composite {
+        background: linear-gradient(180deg, #bfe6ff, var(--comp));
+        box-shadow: 0 4px 0 #2c6f9e;
+      }
+      .bubble.composite:hover {
+        transform: translateY(-2px);
+      }
+      .bubble.composite.sel {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow:
+          0 0 0 3px #fff,
+          0 5px 0 #2c6f9e;
+      }
+      .bubble.prime {
+        background: linear-gradient(180deg, #ffd98a, var(--gold));
+        box-shadow: 0 4px 0 #a86f16;
+        cursor: default;
+      }
+      .bubble.internal {
+        background: #16384a;
+        color: #9fc6cf;
+        border: 1px solid var(--line);
+        box-shadow: none;
+        cursor: default;
+      }
+      .bubble:focus-visible {
+        outline: 3px solid #fff;
         outline-offset: 2px;
       }
-      .zone.hot {
-        border-color: var(--teal-bright);
-        background: #11384a;
-      }
-      .zone .zt {
-        font-weight: 800;
-      }
-      .zone.a .zt {
-        color: #74b6f0;
-      }
-      .zone.b .zt {
-        color: #f0a574;
-      }
-      .zone.s .zt {
-        color: #79d39a;
-      }
-      .zone .zsub {
-        color: var(--muted);
-        font-size: 0.82rem;
-      }
-      .zone .slots {
+      /* org-chart connectors (always two children per split) */
+      .children {
         display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
         justify-content: center;
-        min-height: 44px;
-        align-content: flex-start;
+        gap: 26px;
+        padding-top: 28px;
+        position: relative;
       }
-      /* Ghost target slots (Level 1 scaffold): show how many primes a circle still needs. */
-      .ghost-slot {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        border: 2px dashed var(--line);
-        background: rgba(255, 255, 255, 0.03);
+      .children::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2px;
+        height: 14px;
+        background: var(--line);
       }
-      /* When a prime is "picked up", the circles glow + invite a tap. */
-      .venn.armed .zone {
-        border-style: solid;
-        border-color: var(--teal-bright);
-        background: #11384a;
+      .children::after {
+        content: "";
+        position: absolute;
+        top: 14px;
+        left: 25%;
+        right: 25%;
+        height: 2px;
+        background: var(--line);
       }
-      .zone.filled {
-        border-style: solid;
-        border-color: var(--shared);
+      .children > .node {
+        position: relative;
       }
-      .zone.filled .ztick {
-        color: var(--shared);
-        font-weight: 800;
+      .children > .node::before {
+        content: "";
+        position: absolute;
+        top: -14px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2px;
+        height: 14px;
+        background: var(--line);
       }
-      .tap-cue {
+
+      /* ── Action palette (split / mark prime) ── */
+      .palette {
         display: none;
-        text-align: center;
-        color: var(--teal-bright);
-        font-weight: 700;
-        margin: 2px 0 8px;
-      }
-      .venn-wrap.armed .tap-cue {
-        display: block;
-      }
-      .howto {
-        display: flex;
+        flex-wrap: wrap;
         gap: 10px;
-        align-items: flex-start;
+        align-items: center;
+        justify-content: center;
         background: #0c2532;
         border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 10px 14px;
-        margin: 4px 0 12px;
+        border-radius: 14px;
+        padding: 14px;
+        margin: 14px 0 6px;
+      }
+      .palette.on {
+        display: flex;
+        animation: fade 0.2s ease;
+      }
+      .pal-q {
+        width: 100%;
+        text-align: center;
+        color: var(--txt);
+        font-weight: 600;
+      }
+      .pal-q b {
+        color: #fff;
+      }
+      .pal-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+      }
+      .pal-or {
         color: var(--muted);
         font-size: 0.9rem;
       }
-      .howto b {
-        color: var(--txt);
-      }
-      .tray {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center;
-        min-height: 56px;
-        padding: 10px;
-      }
-      .ingot {
+      .pair-chip {
         font:
-          800 1.15rem "Segoe UI",
+          700 1rem "Segoe UI",
           system-ui,
           sans-serif;
         cursor: pointer;
         border: none;
         border-radius: 12px;
-        padding: 12px 16px;
+        padding: 11px 16px;
+        color: var(--ink);
+        background: linear-gradient(180deg, #bfe6ff, var(--comp));
+        box-shadow: 0 3px 0 #2c6f9e;
+        transition: transform 0.1s;
+      }
+      .pair-chip:hover {
+        transform: translateY(-1px);
+      }
+      .prime-btn {
+        font:
+          700 1rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 11px 18px;
         color: var(--ink);
         background: linear-gradient(180deg, #ffd98a, var(--gold));
-        box-shadow: 0 4px 0 #a86f16;
-        transition:
-          transform 0.1s,
-          box-shadow 0.1s;
+        box-shadow: 0 3px 0 #a86f16;
+        transition: transform 0.1s;
       }
-      .ingot:hover {
-        transform: translateY(-2px);
+      .prime-btn:hover {
+        transform: translateY(-1px);
       }
-      .ingot:focus-visible {
+      .pair-chip:focus-visible,
+      .prime-btn:focus-visible {
         outline: 3px solid #fff;
         outline-offset: 2px;
       }
-      .ingot.sel {
-        transform: translateY(-3px) scale(1.06);
-        box-shadow:
-          0 0 0 3px #fff,
-          0 6px 0 #a86f16;
-      }
-      .ingot.placed {
-        background: linear-gradient(180deg, #bfe7c8, var(--shared));
-        box-shadow: 0 3px 0 #1c5a32;
-        color: #06251a;
-        cursor: default;
-      }
+
       .readout {
         display: flex;
-        gap: 18px;
         justify-content: center;
-        flex-wrap: wrap;
-        margin: 6px 0 2px;
+        margin: 10px 0 2px;
       }
       .readout .r {
         background: #0c2532;
         border: 1px solid var(--line);
         border-radius: 12px;
-        padding: 8px 16px;
-      }
-      .readout .r b {
+        padding: 10px 18px;
+        font-weight: 800;
+        font-size: 1.05rem;
         color: var(--gold);
       }
       .feedback {
@@ -470,18 +497,6 @@
         justify-content: center;
         margin-top: 16px;
       }
-      .factbox {
-        color: var(--muted);
-        font-size: 0.9rem;
-        text-align: center;
-        margin-top: 8px;
-      }
-      .factbox code {
-        color: var(--gold);
-        background: #0c2532;
-        padding: 2px 6px;
-        border-radius: 6px;
-      }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
@@ -492,9 +507,9 @@
     <!-- Games-2D metadata source of truth (must load before the game script) -->
     <script src="/assets/games2d-data.js"></script>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
     <div id="ff-sr" role="status" aria-live="polite"></div>
@@ -503,9 +518,7 @@
       <!-- VOCAB GATE -->
       <section id="screen-vocab" class="screen on" aria-labelledby="vh">
         <h1 id="vh">⚒️ Factor Frenzy</h1>
-        <p class="sub">
-          Lessons 1.1–1.3 · Prime factors, GCF &amp; LCM · 6.NS.4
-        </p>
+        <p class="sub">Build factor trees · Prime factorization · 6.NS.4</p>
         <div class="card">
           <h2 style="color: #fff; font-size: 1.2rem">Words to know first</h2>
           <div class="vocab" id="vocab-list"></div>
@@ -524,11 +537,7 @@
 
       <!-- PLAY -->
       <section id="screen-play" class="screen" aria-labelledby="ph">
-        <h1
-          id="ph"
-          class="visually-hidden"
-          style="position: absolute; left: -9999px"
-        >
+        <h1 id="ph" style="position: absolute; left: -9999px">
           Factor Frenzy play
         </h1>
         <div class="hud">
@@ -541,84 +550,35 @@
           <span class="pill"
             ><small>Score</small> <span id="hud-score">0</span></span
           >
-          <span class="pill"
-            ><small>Lives</small>
-            <span class="lives" id="hud-lives">●●●●●</span></span
-          >
         </div>
         <div class="card">
           <div class="target">
             <div class="nums">
-              Forge the factors of <span id="t-a">12</span> and
-              <span id="t-b">18</span>
+              Build the prime factorization of <span id="t-n">12</span>
             </div>
-            <div class="prompt" id="t-prompt">
-              Sort every prime tile into the right circle.
+            <div class="prompt">
+              Tap a number. Split it into factors, or mark it prime — until
+              every branch is a prime.
             </div>
           </div>
 
-          <div class="howto">
-            <span aria-hidden="true">👇</span>
-            <span>
-              <b>How to play:</b> Tap a prime tile to pick it up, then tap a
-              circle to drop it in. A prime goes in the <b>middle</b> circle
-              only if <b>both</b> numbers have it.
-            </span>
+          <div class="tree-wrap">
+            <div
+              class="tree"
+              id="tree"
+              role="group"
+              aria-label="Factor tree"
+            ></div>
           </div>
 
-          <div class="venn-wrap" id="venn-wrap">
-            <div class="venn">
-              <button
-                class="zone a"
-                data-region="a"
-                aria-label="Only the first number's factors"
-              >
-                <span class="zt"
-                  >Only <span id="z-a-n">12</span> <span class="ztick"></span
-                ></span>
-                <span class="zsub">primes only in this number</span>
-                <span class="slots" id="slots-a"></span>
-              </button>
-              <button
-                class="zone s"
-                data-region="s"
-                aria-label="Shared factors of both numbers"
-              >
-                <span class="zt">Shared ⚒️ <span class="ztick"></span></span>
-                <span class="zsub">primes in BOTH → these build the GCF</span>
-                <span class="slots" id="slots-s"></span>
-              </button>
-              <button
-                class="zone b"
-                data-region="b"
-                aria-label="Only the second number's factors"
-              >
-                <span class="zt"
-                  >Only <span id="z-b-n">18</span> <span class="ztick"></span
-                ></span>
-                <span class="zsub">primes only in this number</span>
-                <span class="slots" id="slots-b"></span>
-              </button>
-            </div>
-            <p class="tap-cue" id="tap-cue" aria-hidden="true">
-              👆 Now tap a circle to drop your prime in
-            </p>
-          </div>
-
-          <div class="readout">
-            <span class="r">GCF so far: <b id="ro-gcf">1</b></span>
-            <span class="r">LCM so far: <b id="ro-lcm">1</b></span>
-          </div>
-
-          <p style="text-align: center; color: var(--muted); margin: 6px 0">
-            Prime tiles — tap one to pick it up, then tap a circle:
-          </p>
           <div
-            class="tray"
-            id="tray"
-            role="list"
-            aria-label="Prime factor ingots"
+            class="palette"
+            id="palette"
+            role="group"
+            aria-label="Choose what to do with the number you tapped"
           ></div>
+
+          <div class="readout"><span class="r" id="ro-fact">12 = …</span></div>
 
           <div
             class="feedback"
@@ -627,7 +587,6 @@
             aria-live="assertive"
           ></div>
           <p class="hint" id="hint"></p>
-          <div class="factbox" id="factbox"></div>
         </div>
       </section>
 
@@ -638,10 +597,10 @@
           <div class="result-stars" id="r-stars">★★★</div>
           <div class="result-stat"><span>Score</span><b id="r-score">0</b></div>
           <div class="result-stat">
-            <span>Correct placements</span><b id="r-correct">0</b>
+            <span>Correct steps</span><b id="r-correct">0</b>
           </div>
           <div class="result-stat">
-            <span>Rounds forged</span><b id="r-rounds">0</b>
+            <span>Numbers factored</span><b id="r-rounds">0</b>
           </div>
           <div class="result-stat" id="r-high-row" style="display: none">
             <span>★ New high score!</span><b id="r-high">0</b>
@@ -679,91 +638,68 @@
 
     <script>
       // ════════════════════════════════════════════════════════════════════
-      //  FACTOR FRENZY — Prime Factor Forge  ·  Grade 6  ·  6.NS.4
-      //  Math-as-mechanic rebuild (see docs/games-2d-rebuild-spec.md).
+      //  FACTOR FRENZY — Factor Tree Builder  ·  Grade 6  ·  6.NS.4
       //
-      //  The player factors two numbers into prime "ingots" and sorts each
-      //  ingot into a Venn: Only-A / Shared / Only-B. The product of the
-      //  SHARED region IS the GCF; the product of ALL ingots IS the LCM.
-      //  Wrong placement is rejected with a misconception nudge — you cannot
-      //  click a precomputed answer; you must build the factor structure.
+      //  Prime factorization, as a real mechanic: the player breaks a number
+      //  into a factor tree. Tap a number, then either SPLIT it into a factor
+      //  pair or MARK it PRIME. The number is factored when every leaf is a
+      //  prime the player has marked. No timer, no lives — wrong moves give a
+      //  gentle nudge and you try again. Stars reward doing it cleanly.
       // ════════════════════════════════════════════════════════════════════
       const STANDARD = "6.NS.4";
-      const ACTIVITY_TITLE = "Factor Frenzy — Lessons 1.1–1.3";
+      const ACTIVITY_TITLE = "Factor Frenzy — Prime Factorization";
       const LS_KEY = "ff_factor_frenzy_highscore";
       const ROUNDS = 4;
 
-      // Metadata source of truth: window.Games2DData (from scripts/games2d/data.mjs
-      // via assets/games2d-data.js). Inline fallback keeps the page alive if the
-      // artifact fails to load.
-      const DATA = (window.Games2DData &&
-        window.Games2DData["u1-factor-frenzy"]) || {
-        ccss: "6.NS.4",
-        title: "Factor Frenzy",
-        vocab: [
-          {
-            term: "prime factor",
-            defn: "A prime number (only divisible by 1 and itself) that divides a number, like 2 and 3 for 12.",
-          },
-          {
-            term: "GCF",
-            defn: "Greatest Common Factor — the biggest number that divides BOTH numbers. Build it from the primes they SHARE.",
-          },
-          {
-            term: "LCM",
-            defn: "Least Common Multiple — the smallest number BOTH divide into. Build it from ALL the primes.",
-          },
-        ],
-        misconceptions: [
-          {
-            tag: "shared-vs-unique",
-            trigger: "Puts a prime in Shared that only one number has.",
-            feedback: "A prime goes in Shared only if BOTH numbers contain it.",
-          },
-          {
-            tag: "multiplicity",
-            trigger: "Shares more copies of a prime than both numbers have.",
-            feedback:
-              "Only share as many copies of a prime as the SMALLER number has.",
-          },
-        ],
-        tiers: {
-          1: {
-            label: "Level 1",
-            sub: "Support",
-            desc: "Smaller numbers · factor trees shown · 5 lives",
-          },
-          2: {
-            label: "Level 2",
-            sub: "Challenge",
-            desc: "Bigger numbers · find the primes yourself · 3 lives",
-          },
+      // Self-contained content (this game is prime-factorization only, so it
+      // does not use the GCF/LCM framing in window.Games2DData).
+      const VOCAB = [
+        {
+          term: "factor",
+          defn: "A number that divides another number evenly, with nothing left over. 3 is a factor of 12 because 12 ÷ 3 = 4.",
+        },
+        {
+          term: "prime number",
+          defn: "A number greater than 1 whose only factors are 1 and itself, like 2, 3, 5, and 7. A prime cannot be split.",
+        },
+        {
+          term: "composite number",
+          defn: "A number with more than two factors, like 12 (1, 2, 3, 4, 6, 12). A composite can always be split into factors.",
+        },
+        {
+          term: "prime factorization",
+          defn: "Writing a number using only prime numbers multiplied together, like 12 = 2 × 2 × 3.",
+        },
+      ];
+
+      const TIERS = {
+        1: {
+          label: "Level 1",
+          sub: "Support",
+          name: "Apprentice Smith",
+          desc: "Smaller numbers · factor-pair help shown",
+        },
+        2: {
+          label: "Level 2",
+          sub: "On level",
+          name: "Journeyman Smith",
+          desc: "Bigger numbers · find the factors yourself",
+        },
+        3: {
+          label: "Level 3",
+          sub: "Enrichment",
+          name: "Master Smith",
+          desc: "Large numbers · watch for an already-prime",
         },
       };
 
-      // Curated puzzle pools (chosen for clear shared structure, never random ugly numbers).
+      // Curated number pools (clean, friendly factor structures).
       const POOLS = {
-        1: [
-          [12, 18],
-          [8, 12],
-          [6, 9],
-          [10, 15],
-          [8, 20],
-          [9, 12],
-          [14, 21],
-          [6, 8],
-        ],
-        2: [
-          [24, 36],
-          [18, 24],
-          [20, 30],
-          [16, 24],
-          [28, 42],
-          [30, 45],
-          [36, 48],
-          [24, 60],
-        ],
+        1: [12, 18, 20, 24, 16, 28],
+        2: [36, 48, 60, 72, 54, 40],
+        3: [84, 90, 120, 100, 126],
       };
+      const L3_PRIMES = [23, 29, 31, 37];
 
       // ── Tiny WebAudio SFX ──
       const SFX = {
@@ -807,28 +743,101 @@
       };
 
       // ── Math helpers ──
+      function isPrime(n) {
+        if (n < 2) return false;
+        for (let p = 2; p * p <= n; p++) if (n % p === 0) return false;
+        return true;
+      }
+      function factorPairs(n) {
+        // non-trivial pairs [a, b] with 1 < a <= b and a * b === n
+        const out = [];
+        for (let a = 2; a * a <= n; a++) if (n % a === 0) out.push([a, n / a]);
+        return out;
+      }
       function primeFactors(n) {
-        // returns {prime: count}
         const f = {};
         let m = n;
-        for (let p = 2; p * p <= m; p++) {
+        for (let p = 2; p * p <= m; p++)
           while (m % p === 0) {
             f[p] = (f[p] || 0) + 1;
             m /= p;
           }
-        }
         if (m > 1) f[m] = (f[m] || 0) + 1;
         return f;
       }
-      const product = (arr) => arr.reduce((a, b) => a * b, 1);
+      function primeListOf(n) {
+        const f = primeFactors(n);
+        const arr = [];
+        Object.keys(f)
+          .map(Number)
+          .sort((a, b) => a - b)
+          .forEach((p) => {
+            for (let i = 0; i < f[p]; i++) arr.push(p);
+          });
+        return arr;
+      }
+      function sup(n) {
+        const map = { 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷" };
+        return map[n] || "^" + n;
+      }
+      function exponentForm(primes) {
+        const f = {};
+        primes.forEach((p) => (f[p] = (f[p] || 0) + 1));
+        return Object.keys(f)
+          .map(Number)
+          .sort((a, b) => a - b)
+          .map((p) => (f[p] > 1 ? p + sup(f[p]) : "" + p))
+          .join(" × ");
+      }
+      function shuffle(a) {
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = (Math.random() * (i + 1)) | 0;
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      // ── Tree model ──
+      let nodeUid = 0;
+      function makeNode(value) {
+        return { id: "n" + nodeUid++, value, children: null, prime: false };
+      }
+      function makePuzzle(n) {
+        return { n, root: makeNode(n), targetPrimes: primeListOf(n) };
+      }
+      function findNode(node, id) {
+        if (node.id === id) return node;
+        if (node.children)
+          for (const c of node.children) {
+            const r = findNode(c, id);
+            if (r) return r;
+          }
+        return null;
+      }
+      function leaves(node, acc) {
+        acc = acc || [];
+        if (!node.children) acc.push(node);
+        else node.children.forEach((c) => leaves(c, acc));
+        return acc;
+      }
+      function isComplete(root) {
+        return leaves(root).every((l) => l.prime && isPrime(l.value));
+      }
+      function lockedPrimes() {
+        return leaves(S.cur.root)
+          .filter((l) => l.prime)
+          .map((l) => l.value)
+          .sort((a, b) => a - b);
+      }
 
       // ── State ──
       const S = {
         level: 1,
-        lives: 5,
         score: 0,
         round: 0,
-        correctPlacements: 0,
+        mistakes: 0,
+        correctActions: 0,
+        totalActions: 0,
         puzzles: [],
         cur: null,
         selected: null,
@@ -842,84 +851,36 @@
           setTimeout(() => (el.textContent = m), 30);
         }
       };
-
       function show(screen) {
         document
           .querySelectorAll(".screen")
           .forEach((s) => s.classList.remove("on"));
         $("screen-" + screen).classList.add("on");
       }
-
-      // Build a puzzle model: ingots + required counts per region.
-      function makePuzzle([a, b]) {
-        const fa = primeFactors(a),
-          fb = primeFactors(b);
-        const primes = [...new Set([...Object.keys(fa), ...Object.keys(fb)])]
-          .map(Number)
-          .sort((x, y) => x - y);
-        const need = { a: {}, b: {}, s: {} }; // region -> {prime: count}
-        const ingots = [];
-        let uid = 0;
-        primes.forEach((p) => {
-          const ca = fa[p] || 0,
-            cb = fb[p] || 0;
-          const shared = Math.min(ca, cb);
-          const onlyA = ca - shared,
-            onlyB = cb - shared;
-          if (shared) need.s[p] = shared;
-          if (onlyA) need.a[p] = onlyA;
-          if (onlyB) need.b[p] = onlyB;
-          for (let i = 0; i < shared + onlyA + onlyB; i++)
-            ingots.push({ id: "i" + uid++, p });
-        });
-        // shuffle ingots
-        for (let i = ingots.length - 1; i > 0; i--) {
-          const j = (Math.random() * (i + 1)) | 0;
-          [ingots[i], ingots[j]] = [ingots[j], ingots[i]];
-        }
-        const gcf = product(primes.map((p) => Math.pow(p, need.s[p] || 0)));
-        const lcm = product(
-          primes.map((p) => Math.pow(p, Math.max(fa[p] || 0, fb[p] || 0))),
-        );
-        return {
-          a,
-          b,
-          fa,
-          fb,
-          need,
-          ingots,
-          placed: { a: {}, b: {}, s: {} },
-          gcf,
-          lcm,
-          remaining: ingots.length,
-        };
-      }
-
-      function factTree(n, f) {
-        const parts = Object.entries(f).flatMap(([p, c]) => Array(c).fill(p));
-        return n + " = " + parts.join(" × ");
+      function flash(msg, cls) {
+        const f = $("feedback");
+        f.textContent = msg;
+        f.className = "feedback " + cls;
+        srSay(msg);
       }
 
       // ── Vocab gate ──
       function renderVocab() {
-        $("vocab-list").innerHTML = (DATA.vocab || [])
-          .map(
-            (v) =>
-              `<div class="vrow"><span class="vterm">${v.term}</span><span class="vdef">${v.defn}</span></div>`,
-          )
-          .join("");
+        $("vocab-list").innerHTML = VOCAB.map(
+          (v) =>
+            `<div class="vrow"><span class="vterm">${v.term}</span><span class="vdef">${v.defn}</span></div>`,
+        ).join("");
       }
 
       // ── Level select ──
       function renderLevels() {
-        const t = DATA.tiers || {};
-        $("level-list").innerHTML = Object.keys(t)
+        $("level-list").innerHTML = Object.keys(TIERS)
           .map((k) => {
-            const tier = t[k];
+            const t = TIERS[k];
             return `<button class="level-pick" data-level="${k}">
-            <span class="tag">${tier.label} · ${tier.sub}</span>
-            <b>${k === "1" ? "Apprentice Smith" : "Master Smith"}</b>
-            <span class="desc">${tier.desc}</span>
+            <span class="tag">${t.label} · ${t.sub}</span>
+            <b>${t.name}</b>
+            <span class="desc">${t.desc}</span>
           </button>`;
           })
           .join("");
@@ -933,19 +894,27 @@
       }
 
       // ── Game flow ──
+      function buildRounds(level) {
+        const picks = shuffle((POOLS[level] || POOLS[1]).slice()).slice(
+          0,
+          ROUNDS,
+        );
+        // Level 3 guarantees an "already prime" round so marking the root
+        // prime is sometimes the right first move.
+        if (level === 3 && !picks.some(isPrime))
+          picks[ROUNDS - 1] = shuffle(L3_PRIMES.slice())[0];
+        return shuffle(picks);
+      }
+
       function startGame(level) {
         SFX.init();
         S.level = level;
-        S.lives = level === 1 ? 5 : 3;
         S.score = 0;
         S.round = 0;
-        S.correctPlacements = 0;
-        const pool = (POOLS[level] || POOLS[1]).slice();
-        for (let i = pool.length - 1; i > 0; i--) {
-          const j = (Math.random() * (i + 1)) | 0;
-          [pool[i], pool[j]] = [pool[j], pool[i]];
-        }
-        S.puzzles = pool.slice(0, ROUNDS).map(makePuzzle);
+        S.mistakes = 0;
+        S.correctActions = 0;
+        S.totalActions = 0;
+        S.puzzles = buildRounds(level).map(makePuzzle);
         $("hud-total").textContent = ROUNDS;
         show("play");
         loadRound(0);
@@ -955,265 +924,175 @@
         S.round = i;
         S.cur = S.puzzles[i];
         S.selected = null;
-        const p = S.cur;
         $("hud-round").textContent = i + 1;
         $("hud-score").textContent = S.score;
-        $("hud-lives").textContent = "●".repeat(S.lives) || "—";
-        $("t-a").textContent = p.a;
-        $("t-b").textContent = p.b;
-        $("z-a-n").textContent = p.a;
-        $("z-b-n").textContent = p.b;
+        $("t-n").textContent = S.cur.n;
         $("feedback").textContent = "";
         $("feedback").className = "feedback";
-        $("slots-a").innerHTML = "";
-        $("slots-b").innerHTML = "";
-        $("slots-s").innerHTML = "";
-        document
-          .querySelectorAll(".zone")
-          .forEach((z) => z.classList.remove("filled"));
-        disarm();
-        renderGhosts();
-        updateAllZoneStatus();
         $("hint").textContent =
           S.level === 1
-            ? "Tip: a prime goes in Shared only if BOTH numbers have it."
-            : "Find the primes of each number, then share what they have in common.";
-        $("factbox").innerHTML =
-          S.level === 1
-            ? `<code>${factTree(p.a, p.fa)}</code> &nbsp; <code>${factTree(p.b, p.fb)}</code>`
-            : "";
+            ? "Tap the number. If it can be split, pick a factor pair. If it’s prime, mark it ✓."
+            : "Break each number down to primes. Decide: is it prime, or can it still be split?";
+        renderTree();
+        renderPalette();
         updateReadout();
-        renderTray();
-        srSay(`Round ${i + 1}. Sort the prime factors of ${p.a} and ${p.b}.`);
+        srSay(`Round ${i + 1}. Build the prime factorization of ${S.cur.n}.`);
       }
 
-      function renderTray() {
-        const tray = $("tray");
-        tray.innerHTML = "";
-        S.cur.ingots.forEach((ing) => {
-          if (ing.done) return;
-          const b = document.createElement("button");
-          b.className = "ingot";
-          b.textContent = ing.p;
-          b.dataset.id = ing.id;
-          b.setAttribute("role", "listitem");
+      // ── Tree rendering ──
+      function renderNode(node) {
+        const wrap = document.createElement("div");
+        wrap.className = "node";
+        const b = document.createElement("button");
+        b.className = "bubble";
+        b.textContent = node.value;
+        if (node.children) {
+          b.classList.add("internal");
+          b.disabled = true;
+          b.setAttribute("aria-label", node.value + ", already split");
+        } else if (node.prime) {
+          b.classList.add("prime");
+          b.disabled = true;
+          b.setAttribute("aria-label", node.value + ", prime, locked in");
+        } else {
+          b.classList.add("composite");
+          if (S.selected === node.id) b.classList.add("sel");
           b.setAttribute(
             "aria-label",
-            `Prime factor ${ing.p}. Tap to pick up, then tap a circle.`,
+            node.value + ", tap to split it or mark it prime",
           );
-          b.addEventListener("click", () => selectIngot(ing.id));
-          tray.appendChild(b);
-        });
-        if (!tray.children.length)
-          tray.innerHTML =
-            '<span style="color:var(--muted)">All tiles placed — forging…</span>';
-      }
-
-      function selectIngot(id) {
-        // Tap the same tile again to put it back down.
-        if (S.selected === id) {
-          S.selected = null;
-          document
-            .querySelectorAll(".ingot")
-            .forEach((el) => el.classList.remove("sel"));
-          disarm();
-          srSay("Put the prime back down.");
-          return;
+          b.addEventListener("click", () => selectNode(node.id));
         }
-        S.selected = id;
-        document
-          .querySelectorAll(".ingot")
-          .forEach((el) => el.classList.toggle("sel", el.dataset.id === id));
-        const ing = S.cur.ingots.find((x) => x.id === id);
-        arm();
-        srSay(
-          `Picked up prime ${ing.p}. Now tap a circle: Only ${S.cur.a}, Shared, or Only ${S.cur.b}.`,
-        );
+        wrap.appendChild(b);
+        if (node.children) {
+          const ch = document.createElement("div");
+          ch.className = "children";
+          node.children.forEach((c) => ch.appendChild(renderNode(c)));
+          wrap.appendChild(ch);
+        }
+        return wrap;
+      }
+      function renderTree() {
+        const host = $("tree");
+        host.innerHTML = "";
+        host.appendChild(renderNode(S.cur.root));
       }
 
-      // Circles "light up" while a prime is held, prompting the second tap.
-      function arm() {
-        const w = $("venn-wrap"),
-          v = document.querySelector(".venn");
-        if (w) w.classList.add("armed");
-        if (v) v.classList.add("armed");
+      // ── Action palette ──
+      function selectNode(id) {
+        S.selected = S.selected === id ? null : id;
+        renderTree();
+        renderPalette();
+        if (S.selected) {
+          const node = findNode(S.cur.root, id);
+          srSay(`You tapped ${node.value}. Is it prime, or can it be split?`);
+        }
       }
-      function disarm() {
-        const w = $("venn-wrap"),
-          v = document.querySelector(".venn");
-        if (w) w.classList.remove("armed");
-        if (v) v.classList.remove("armed");
-      }
-
-      // Region target/placed totals (multiplicity-aware).
-      const regionNeedTotal = (r) =>
-        Object.values(S.cur.need[r]).reduce((a, c) => a + c, 0);
-      const regionPlacedTotal = (r) =>
-        Object.values(S.cur.placed[r]).reduce((a, c) => a + c, 0);
-
-      // Level 1 scaffold: one dashed placeholder per prime each circle still needs.
-      function renderGhosts() {
-        if (S.level !== 1) return;
-        ["a", "s", "b"].forEach((r) => {
-          const host = $("slots-" + r);
-          const n = regionNeedTotal(r);
-          for (let k = 0; k < n; k++) {
-            const g = document.createElement("span");
-            g.className = "ghost-slot";
-            host.appendChild(g);
-          }
-        });
-      }
-      function updateZoneStatus(region) {
-        if (S.level !== 1) return; // counts stay hidden at Level 2 (challenge)
-        const zone = document.querySelector(
-          '.zone[data-region="' + region + '"]',
-        );
-        if (!zone) return;
-        const need = regionNeedTotal(region),
-          have = regionPlacedTotal(region);
-        const tick = zone.querySelector(".ztick");
-        if (tick) tick.textContent = need ? have + "/" + need : "";
-        zone.classList.toggle("filled", need > 0 && have >= need);
-      }
-      const updateAllZoneStatus = () =>
-        ["a", "s", "b"].forEach(updateZoneStatus);
-
-      function place(region) {
+      function renderPalette() {
+        const host = $("palette");
         if (!S.selected) {
-          flash("Tap a prime tile first, then tap a circle.", "bad");
+          host.innerHTML = "";
+          host.classList.remove("on");
           return;
         }
-        const ing = S.cur.ingots.find((x) => x.id === S.selected);
-        const p = ing.p,
-          need = S.cur.need[region][p] || 0,
-          has = S.cur.placed[region][p] || 0;
-        if (has < need) {
-          // correct
-          S.cur.placed[region][p] = has + 1;
-          ing.done = true;
-          S.cur.remaining--;
-          S.score += S.level === 1 ? 10 : 15;
-          S.correctPlacements++;
-          SFX.good();
-          addSlot(region, p);
-          updateReadout();
-          updateZoneStatus(region);
-          renderTray();
-          $("hud-score").textContent = S.score;
-          flash("Forged! " + ing.p + " → " + regionName(region), "good");
+        const node = findNode(S.cur.root, S.selected);
+        if (!node) {
+          host.innerHTML = "";
+          host.classList.remove("on");
+          return;
+        }
+        const pairs = factorPairs(node.value);
+        let html = `<div class="pal-q">You tapped <b>${node.value}</b>. Is it prime, or can it be split?</div><div class="pal-actions">`;
+        html += `<button class="prime-btn" data-act="prime">It’s prime ✓</button>`;
+        if (pairs.length) {
+          html += `<span class="pal-or">or split into…</span>`;
+          pairs.forEach(
+            ([a, b]) =>
+              (html += `<button class="pair-chip" data-act="split" data-a="${a}" data-b="${b}">${a} × ${b}</button>`),
+          );
+        }
+        html += `</div>`;
+        host.innerHTML = html;
+        host.classList.add("on");
+        host.querySelectorAll("[data-act]").forEach((el) =>
+          el.addEventListener("click", () => {
+            if (el.dataset.act === "prime") actPrime(node);
+            else actSplit(node, Number(el.dataset.a), Number(el.dataset.b));
+          }),
+        );
+      }
+
+      function actPrime(node) {
+        S.totalActions++;
+        if (isPrime(node.value)) {
+          node.prime = true;
           S.selected = null;
-          disarm();
-          if (S.cur.remaining === 0) roundWon();
+          S.correctActions++;
+          S.score += 10;
+          $("hud-score").textContent = S.score;
+          SFX.good();
+          renderTree();
+          renderPalette();
+          updateReadout();
+          flash(node.value + " is prime — locked in ✓", "good");
+          if (isComplete(S.cur.root)) roundWon();
         } else {
-          // wrong placement → misconception nudge
-          S.lives--;
+          S.mistakes++;
           SFX.bad();
-          $("hud-lives").textContent = "●".repeat(S.lives) || "—";
-          flash(nudgeFor(region, p), "bad");
-          if (S.lives <= 0) return endGame(false);
+          flash(
+            node.value +
+              " can still be split — it has factors other than 1 and itself.",
+            "bad",
+          );
         }
       }
 
-      function regionName(r) {
-        return r === "s"
-          ? "Shared"
-          : r === "a"
-            ? "Only " + S.cur.a
-            : "Only " + S.cur.b;
-      }
-
-      function nudgeFor(region, p) {
-        const inA = (S.cur.fa[p] || 0) > 0,
-          inB = (S.cur.fb[p] || 0) > 0;
-        const m = DATA.misconceptions || [];
-        if (region === "s" && !(inA && inB))
-          return (
-            (m[0] && m[0].feedback) ||
-            "Shared is only for primes in BOTH numbers."
-          );
-        if (region === "s")
-          return (
-            (m[1] && m[1].feedback) ||
-            "That circle already has all the shared copies of " + p + "."
-          );
-        if (region === "a" && !inA)
-          return p + " isn't a factor of " + S.cur.a + ".";
-        if (region === "b" && !inB)
-          return p + " isn't a factor of " + S.cur.b + ".";
-        return "That circle is already full for " + p + " — it must be shared.";
-      }
-
-      function addSlot(region, p) {
-        const slot = $("slots-" + region);
-        const chip = document.createElement("span");
-        chip.className = "ingot placed";
-        chip.textContent = p;
-        chip.style.padding = "6px 10px";
-        chip.style.fontSize = "0.95rem";
-        chip.style.boxShadow = "none";
-        // Fill a Level-1 ghost placeholder if one is waiting; else just append.
-        const ghost = slot.querySelector(".ghost-slot");
-        if (ghost) slot.replaceChild(chip, ghost);
-        else slot.appendChild(chip);
+      function actSplit(node, a, b) {
+        S.totalActions++;
+        if (a > 1 && b > 1 && a * b === node.value) {
+          node.children = [makeNode(a), makeNode(b)];
+          S.selected = null;
+          S.correctActions++;
+          S.score += 10;
+          $("hud-score").textContent = S.score;
+          SFX.good();
+          renderTree();
+          renderPalette();
+          updateReadout();
+          flash(node.value + " = " + a + " × " + b, "good");
+        } else {
+          S.mistakes++;
+          SFX.bad();
+          flash("Those don’t multiply to " + node.value + ".", "bad");
+        }
       }
 
       function updateReadout() {
-        const ps = (reg) =>
-          product(
-            Object.entries(S.cur.placed[reg]).flatMap(([p, c]) =>
-              Array(c).fill(Number(p)),
-            ),
-          );
-        const gcf = ps("s");
-        const lcm = product(
-          Object.entries({ ...mergePlaced() }).flatMap(([p, c]) =>
-            Array(c).fill(Number(p)),
-          ),
-        );
-        $("ro-gcf").textContent = gcf;
-        $("ro-lcm").textContent = lcm || 1;
-      }
-      function mergePlaced() {
-        const all = {};
-        ["a", "b", "s"].forEach((r) =>
-          Object.entries(S.cur.placed[r]).forEach(
-            ([p, c]) => (all[p] = (all[p] || 0) + c),
-          ),
-        );
-        return all;
-      }
-
-      function flash(msg, cls) {
-        const f = $("feedback");
-        f.textContent = msg;
-        f.className = "feedback " + cls;
-        srSay(msg);
+        const lp = lockedPrimes();
+        $("ro-fact").textContent =
+          S.cur.n + " = " + (lp.length ? lp.join(" × ") : "…");
       }
 
       function roundWon() {
         S.score += 25; // forge bonus
         $("hud-score").textContent = S.score;
         SFX.win();
-        flash(
-          `GCF(${S.cur.a}, ${S.cur.b}) = ${S.cur.gcf}  ·  LCM = ${S.cur.lcm} ⚒️`,
-          "good",
-        );
+        $("ro-fact").textContent =
+          S.cur.n + " = " + exponentForm(lockedPrimes());
+        flash(S.cur.n + " = " + exponentForm(lockedPrimes()) + " ⚒️", "good");
         if (window.GameFX && GameFX.successBurst)
           try {
             GameFX.successBurst();
           } catch (e) {}
-        if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(true), 1400);
-        else setTimeout(() => loadRound(S.round + 1), 1400);
+        if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(true), 1500);
+        else setTimeout(() => loadRound(S.round + 1), 1500);
       }
 
       function endGame(won) {
-        const totalNeeded = S.puzzles.reduce((n, p) => n + p.ingots.length, 0);
-        const pct = totalNeeded ? S.correctPlacements / totalNeeded : 0;
-        const stars = pct >= 0.95 ? 3 : pct >= 0.7 ? 2 : pct >= 0.4 ? 1 : 0;
+        const stars = S.mistakes === 0 ? 3 : S.mistakes <= 2 ? 2 : 1;
         $("r-stars").textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
         $("r-score").textContent = S.score;
-        $("r-correct").textContent = S.correctPlacements;
+        $("r-correct").textContent = S.correctActions;
         $("r-rounds").textContent = won ? ROUNDS : S.round;
         let high = 0;
         try {
@@ -1226,26 +1105,22 @@
           $("r-high").textContent = S.score;
           $("r-high-row").style.display = "flex";
         }
-        // EduPulse (guarded)
         try {
           window.EduPulse &&
             EduPulse.record({
               activityTitle: ACTIVITY_TITLE,
               score: S.score,
               stars: stars,
-              problemsCorrect: S.correctPlacements,
-              problemsAttempted: totalNeeded,
-              percent: Math.round(pct * 100),
+              problemsCorrect: S.correctActions,
+              problemsAttempted: S.totalActions,
+              percent: S.totalActions
+                ? Math.round((S.correctActions / S.totalActions) * 100)
+                : 100,
               standard: STANDARD,
             });
         } catch (e) {}
         srSay(
-          (won ? "All rounds forged. " : "Out of lives. ") +
-            "Score " +
-            S.score +
-            ", " +
-            stars +
-            " stars.",
+          "All numbers factored. Score " + S.score + ", " + stars + " stars.",
         );
         show("result");
       }
@@ -1258,22 +1133,6 @@
       $("r-again").addEventListener("click", () => {
         renderLevels();
         show("level");
-      });
-      document.querySelectorAll(".zone").forEach((z) => {
-        z.addEventListener("click", () => place(z.dataset.region));
-        z.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            place(z.dataset.region);
-          }
-        });
-      });
-      // Keyboard: 1/2/3 place selected ingot into Only-A / Shared / Only-B
-      document.addEventListener("keydown", (e) => {
-        if (!$("screen-play").classList.contains("on") || !S.selected) return;
-        if (e.key === "1") place("a");
-        else if (e.key === "2") place("s");
-        else if (e.key === "3") place("b");
       });
 
       renderVocab();
@@ -1288,8 +1147,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>
