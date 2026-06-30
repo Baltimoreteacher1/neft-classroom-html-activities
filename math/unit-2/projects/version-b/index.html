@@ -57,7 +57,7 @@
         padding: 7px 16px; font-size: 13px; font-weight: 700;
         cursor: pointer; font-family: inherit; transition: all .2s;
       }
-      .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; }
+      .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; font-weight: 800; box-shadow: 0 6px 16px rgba(0,0,0,.30); transform: translateY(-1px) scale(1.03); }
 
       /* ---- Tab wizard ---- */
       .wizard { max-width: 860px; margin: 0 auto; padding: 0 16px 60px; }
@@ -328,12 +328,20 @@
         <button class="level-btn" id="btn-read" onclick="readAloud()">🔊 Read Aloud</button>
       </div>
       <!-- ===================== COLLAPSIBLE RESEARCH LINKS ===================== -->
-      <details class="hint no-print" style="margin-top: 15px; background: rgba(255,255,255,0.7); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+      <details open class="hint no-print" style="margin-top: 15px; background: rgba(255,255,255,0.7); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
         <summary style="font-weight: 700; color: var(--navy); cursor: pointer; user-select: none;">
           <span class="en-text">🔍 Research &amp; Reference Resources</span>
           <span class="es-text">🔍 Recursos de Investigación y Referencia</span>
         </summary>
         <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 4px;">
+          <div data-research-box style="background: rgba(26,111,181,0.06); border: 1px solid var(--blue, #1a6fb5); border-radius: 8px; padding: 10px; margin-bottom: 8px;">
+            <label for="research-notes" style="display:block; font-weight:700; color: var(--navy, #0f2b3c); font-size:13px; margin-bottom:6px;">
+              <span class="en-text">âï¸ My research notes â open a link, find the fact, and write what you find here so you can use it in the steps below.</span>
+              <span class="es-text">âï¸ Mis notas de investigaciÃ³n â abre un enlace, encuentra el dato y escribe aquÃ­ lo que encuentres para usarlo en los pasos.</span>
+            </label>
+            <textarea id="research-notes" rows="4" placeholder="Write what you find hereâ¦" style="width:100%; box-sizing:border-box; padding:8px; border:1px solid var(--line, #e2e7ec); border-radius:6px; font-family:inherit; font-size:13px; resize:vertical; background:#fff;"></textarea>
+          </div>
+
           <div style="padding: 6px; border-bottom: 1px solid rgba(0,0,0,0.05);">
             📏 <a href="https://www.mathsisfun.com/fractions_division.html" target="_blank" class="level-btn" style="display: inline-block; padding: 2px 8px; font-size: 13px; text-decoration: none; margin-bottom: 2px;">
               <span class="en-text">Math is Fun — Dividing Fractions ↗</span>
@@ -588,7 +596,7 @@
           </details>
 
           <div class="lvl2-block lvl2-only" style="margin-top:18px">
-            <span class="lvl2-label"><span class="en-text">LEVEL 2 EXTENSION — ${isEs ? "Residuo" : "Scrap"} Wood Calculation</span><span class="es-text">EXTENSIÓN DE NIVEL 2 — Cálculo de madera residual</span></span>
+            <span class="lvl2-label"><span class="en-text">LEVEL 2 EXTENSION — Scrap Wood Calculation</span><span class="es-text">EXTENSIÓN DE NIVEL 2 — Cálculo de madera residual</span></span>
             <p style="font-size:14px;margin:6px 0 10px"><span class="en-text">If you cut a board and get 5 2/3 strips, the leftover strip fraction is 2/3. If each strip is 3/4 ft long, explain why the scrap is exactly 1/2 ft long.</span><span class="es-text">Si cortas una tabla y obtienes 5 2/3 tiras, la fracción de tira restante es 2/3. Si cada tira mide 3/4 ft de largo, explica por qué el residuo mide exactamente 1/2 ft de largo.</span></p>
             <textarea id="wood-reflect" placeholder="The leftover represents 2/3 of a strip. Since a full strip is 3/4 feet, the scrap is 2/3 × 3/4 = 6/12 = 1/2 foot."></textarea>
           </div>
@@ -653,7 +661,7 @@
                   <th><span class="en-text">Standard Supplier Size</span><span class="es-text">Tamaño estándar del proveedor</span></th>
                   <th><span class="en-text">Your Piece/Swatch Size</span><span class="es-text">Tu tamaño de pieza/muestra</span></th>
                   <th><span class="en-text">Yield (Full Pieces)</span><span class="es-text">Rendimiento (piezas completas)</span></th>
-                  <th><span class="en-text">Remaining ${isEs ? "Residuo" : "Scrap"}</span><span class="es-text">Residuo restante</span></th>
+                  <th><span class="en-text">Remaining Scrap</span><span class="es-text">Residuo restante</span></th>
                 </tr>
               </thead>
               <tbody>
@@ -806,7 +814,7 @@
                 <td><span class="en-text">Setup is correct, but made calculation or representation errors.</span><span class="es-text">La configuración es correcta, pero cometió errores de cálculo o representación.</span></td>
               </tr>
               <tr>
-                <td><strong>${isEs ? "Residuo" : "Scrap"} &amp; Remainders</strong></td>
+                <td><strong>Scrap &amp; Remainders</strong></td>
                 <td><span class="en-text">Correctly calculates and explains the physical scrap lengths in feet/yards.</span><span class="es-text">Calcula y explica correctamente las longitudes de madera sobrante física en pies/yardas.</span></td>
                 <td><span class="en-text">Correctly identifies whole-number pieces and fraction leftovers.</span><span class="es-text">Identifica correctamente las piezas de número entero y las fracciones sobrantes.</span></td>
                 <td><span class="en-text">Confuses the fraction of a piece with the physical length of scrap.</span><span class="es-text">Confunde la fracción de una pieza con la longitud física del residuo.</span></td>
@@ -1201,11 +1209,11 @@
         
         const usedLength = fullStrips * stepSize;
         if (boardLength > usedLength + 1) {
-          const x${isEs ? "Residuo" : "Scrap"} = 40 + usedLength;
-          const w${isEs ? "Residuo" : "Scrap"} = boardLength - usedLength;
+          const xScrap = 40 + usedLength;
+          const wScrap = boardLength - usedLength;
           html += `
-            <rect x="${x${isEs ? "Residuo" : "Scrap"}}" y="51" width="${w${isEs ? "Residuo" : "Scrap"}}" height="34" fill="#fdeee9" stroke="#c45a3c" stroke-width="1"/>
-            <text x="${x${isEs ? "Residuo" : "Scrap"} + w${isEs ? "Residuo" : "Scrap"}/2}" y="72" text-anchor="middle" font-size="9" fill="#c45a3c" font-weight="bold">${isEs ? "Residuo" : "Scrap"}</text>
+            <rect x="${xScrap}" y="51" width="${wScrap}" height="34" fill="#fdeee9" stroke="#c45a3c" stroke-width="1"/>
+            <text x="${xScrap + wScrap/2}" y="72" text-anchor="middle" font-size="9" fill="#c45a3c" font-weight="bold">Scrap</text>
           `;
         }
         
@@ -1275,25 +1283,25 @@
         const ropeYield = 25 * ropeDivDen;
         
         let fabricYieldStr = '—';
-        let fabric${isEs ? "Residuo" : "Scrap"}Str = '—';
+        let fabricScrapStr = '—';
         if (fNum && fDen) {
           const rawVal = (15 * fDen) / fNum;
           const full = Math.floor(rawVal);
           const rem = (15 * fDen) % fNum;
           if (rem === 0) {
             fabricYieldStr = isEs ? `${full} muestras` : `${full} swatches`;
-            fabric${isEs ? "Residuo" : "Scrap"}Str = `0 yd`;
+            fabricScrapStr = `0 yd`;
           } else {
             const cg = gcd(rem, fNum);
             fabricYieldStr = isEs ? `${full} ${rem/cg}/${fNum/cg} muestras` : `${full} ${rem/cg}/${fNum/cg} swatches`;
             const scrapNum = 15 * fDen - full * fNum;
             const scG = gcd(scrapNum, fDen);
-            fabric${isEs ? "Residuo" : "Scrap"}Str = `${scrapNum/scG}/${fDen/scG} yd`;
+            fabricScrapStr = `${scrapNum/scG}/${fDen/scG} yd`;
           }
         }
         
         let woodYieldStr = '—';
-        let wood${isEs ? "Residuo" : "Scrap"}Str = '—';
+        let woodScrapStr = '—';
         const wSNum = parseInt(document.getElementById('w-strip-num').value) || 3;
         const wSDen = parseInt(document.getElementById('w-strip-den').value) || 4;
         
@@ -1303,13 +1311,13 @@
           const wRem = (8 * wSDen) % wSNum;
           if (wRem === 0) {
             woodYieldStr = isEs ? `${wFull} tiras` : `${wFull} strips`;
-            wood${isEs ? "Residuo" : "Scrap"}Str = `0 ft`;
+            woodScrapStr = `0 ft`;
           } else {
             const cg = gcd(wRem, wSNum);
             woodYieldStr = isEs ? `${wFull} ${wRem/cg}/${wSNum/cg} tiras` : `${wFull} ${wRem/cg}/${wSNum/cg} strips`;
             const scrapNum = 8 * wSDen - wFull * wSNum;
             const scG = gcd(scrapNum, wSDen);
-            wood${isEs ? "Residuo" : "Scrap"}Str = `${scrapNum/scG}/${wSDen/scG} ft`;
+            woodScrapStr = `${scrapNum/scG}/${wSDen/scG} ft`;
           }
         }
         
@@ -1319,11 +1327,11 @@
         
         document.getElementById('td-fabric-divisor').textContent = fNum ? `${fNum}/${fDen} yd` : '—';
         document.getElementById('td-fabric-yield').innerHTML = fNum ? `<strong>${fabricYieldStr}</strong>` : '—';
-        document.getElementById('td-fabric-scrap').textContent = fNum ? fabric${isEs ? "Residuo" : "Scrap"}Str : '—';
+        document.getElementById('td-fabric-scrap').textContent = fNum ? fabricScrapStr : '—';
         
         document.getElementById('td-wood-divisor').textContent = `${wSNum}/${wSDen} ft`;
         document.getElementById('td-wood-yield').innerHTML = `<strong>${woodYieldStr}</strong>`;
-        document.getElementById('td-wood-scrap').textContent = wood${isEs ? "Residuo" : "Scrap"}Str;
+        document.getElementById('td-wood-scrap').textContent = woodScrapStr;
       }
 
       // ---- Partner Compare ----
