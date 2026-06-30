@@ -13,6 +13,107 @@ const OUT = resolve(ROOT, "math/intervention");
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+const lowerFirst = (s) => String(s || "").charAt(0).toLowerCase() + String(s || "").slice(1);
+const skillList = (t) =>
+  t.skills.length > 1
+    ? `${t.skills.slice(0, -1).join(", ")} and ${t.skills.at(-1)}`
+    : t.skills[0] || t.title;
+
+const DOMAIN_GUIDES = {
+  "Number & Operations": {
+    model: "Build the operation with arrays, factor rainbows, or place-value boxes before recording an algorithm.",
+    misconception: "Students often know the procedure but lose place value, skip a remainder, or stop checking whether the answer is reasonable.",
+    discourse: "My estimate was ___, so my exact answer is reasonable because ___.",
+    lookFor: "Watch for digit alignment, factor pairs, and whether students can explain what each number means.",
+    language: "Use sentence frames with quantity words: product, quotient, factor, multiple, remainder.",
+    extension: "Ask students to create a real-world situation that matches the same computation.",
+  },
+  "Fractions & Decimals": {
+    model: "Use area models, number lines, and place-value charts so students see the size of each quantity.",
+    misconception: "Students may compare digits instead of values, treat denominators as whole-number size, or forget that decimals and fractions can represent the same amount.",
+    discourse: "These two values are equivalent because I can show them as ___ and ___.",
+    lookFor: "Listen for unit language: halves, tenths, hundredths, equal parts, and benchmark values.",
+    language: "Pair every symbolic step with a visual phrase such as 'three tenths' or 'five equal parts'.",
+    extension: "Have students prove the same answer using a visual model and an equation.",
+  },
+  "Ratios & Proportions": {
+    model: "Start with ratio tables, double number lines, tape diagrams, and percent bars before using a shortcut.",
+    misconception: "Students often add instead of multiply, compare only one quantity, or mix up part, whole, and rate.",
+    discourse: "For every ___, there are ___, so the constant relationship is ___.",
+    lookFor: "Check whether students keep the units attached and scale both quantities by the same factor.",
+    language: "Emphasize for every, per, out of 100, part, whole, and equivalent ratio.",
+    extension: "Ask students to design a new situation with the same ratio relationship.",
+  },
+  "Number System": {
+    model: "Use vertical and horizontal number lines, counters, and coordinate grids to make direction and distance visible.",
+    misconception: "Students may confuse absolute value with the original number or treat negative values as always larger because the digit is larger.",
+    discourse: "The point is ___ units from zero and moves ___ because ___.",
+    lookFor: "Watch whether students name direction, distance from zero, and quadrant correctly.",
+    language: "Rehearse the words opposite, absolute value, quadrant, x-coordinate, y-coordinate, and origin.",
+    extension: "Ask students to create a map or temperature story that requires the same reasoning.",
+  },
+  "Expressions & Equations": {
+    model: "Use balance models, substitution tables, and color-coded terms before simplifying symbolically.",
+    misconception: "Students may combine unlike terms, reverse an inequality incorrectly, or solve without checking the answer in context.",
+    discourse: "I kept the equation balanced by ___, and I checked it by ___.",
+    lookFor: "Notice whether students preserve equality and can translate words into variables.",
+    language: "Use frames for variable, coefficient, term, solution, inequality, greater than, and less than.",
+    extension: "Have students write a different equation or inequality with the same solution.",
+  },
+  Geometry: {
+    model: "Use grids, nets, formula cards, and decomposed shapes so students connect measurement to structure.",
+    misconception: "Students may swap area and volume, count edges twice, or use a formula without matching each dimension.",
+    discourse: "I chose this formula because the shape has ___ and the units are ___.",
+    lookFor: "Check labels, units, and whether students can point to each value on the diagram.",
+    language: "Preteach base, height, face, net, surface area, volume, unit square, and cubic unit.",
+    extension: "Ask students to change one dimension and predict how the measurement changes.",
+  },
+  "Statistics & Data": {
+    model: "Use dot plots, histograms, data cards, and class-created displays before calculating summaries.",
+    misconception: "Students may report a number without describing variability, shape, or what the data actually represent.",
+    discourse: "The data show ___ because the center is ___ and the spread is ___.",
+    lookFor: "Listen for evidence-based claims that mention center, spread, shape, and context.",
+    language: "Use frames for mean, median, mode, range, distribution, cluster, gap, and outlier.",
+    extension: "Ask students to compare two displays and defend which group is more consistent.",
+  },
+};
+
+const topicGuide = (t) =>
+  DOMAIN_GUIDES[t.domain] || {
+    model: `Represent ${lowerFirst(t.title)} with a visual model, a table, and an equation.`,
+    misconception: `Students may answer procedurally without explaining why the method works for ${lowerFirst(t.title)}.`,
+    discourse: `My strategy works because ___.`,
+    lookFor: `Look for accurate use of ${skillList(t).toLowerCase()} and a clear explanation.`,
+    language: `Preteach the key vocabulary, then ask students to use it in a complete sentence.`,
+    extension: "Ask students to create a new problem that uses the same structure.",
+  };
+
+function evidenceMoves(t) {
+  const g = topicGuide(t);
+  return [
+    {
+      label: "Launch",
+      title: "Make the gap visible",
+      text: `Students preview ${skillList(t).toLowerCase()} with one low-floor problem, one model, and one vocabulary check.`,
+    },
+    {
+      label: "Model",
+      title: "Connect concrete to symbolic",
+      text: g.model,
+    },
+    {
+      label: "Explain",
+      title: "Require math talk",
+      text: `Students complete the frame: "${g.discourse}"`,
+    },
+    {
+      label: "Transfer",
+      title: "Apply in context",
+      text: g.extension,
+    },
+  ];
+}
+
 const head = (title, desc, depth, canonical) => {
   const url = "https://eduwonderlab.com" + (canonical || "/math/intervention/");
   return `<!doctype html>
@@ -136,6 +237,17 @@ function hub() {
             </tr>`,
   ).join("");
 
+  const evidenceRows = TOPICS.map((t) => {
+    const g = topicGuide(t);
+    return `
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/${t.slug}/" target="_blank" rel="noopener"><span>${t.icon}</span>${esc(t.title)}</a></td>
+              <td>${esc(g.lookFor)}</td>
+              <td>${esc(g.misconception)}</td>
+              <td>${esc(g.language)}</td>
+            </tr>`;
+  }).join("");
+
   const html = `${head(META.title, META.tagline, 0, "/math/intervention/")}
     <main id="main">
       <section class="masthead">
@@ -168,6 +280,42 @@ function hub() {
             <div class="rstep"><div class="rnum">Step 2 · Practice</div><h4>Guided Practice</h4><p>Interactive, self-checking questions with instant feedback and hints.</p></div>
             <div class="rstep"><div class="rnum">Step 3 · Apply</div><h4>Play &amp; Print</h4><p>An arcade game for fluency plus a printable worksheet for off-screen reps.</p></div>
             <div class="rstep"><div class="rnum">Step 4 · Re-Assess</div><h4>Post-Quiz</h4><p>The same-rigor Form proves growth and flags who still needs help.</p></div>
+          </div>
+          <div class="architecture-grid">
+            <article class="arch-card">
+              <span class="arch-num">01</span>
+              <h3>Placement sprint</h3>
+              <p>Use the pre-quiz plus the first diagnostic score to place students into reteach, guided practice, or extension without guesswork.</p>
+            </article>
+            <article class="arch-card">
+              <span class="arch-num">02</span>
+              <h3>Concept studio</h3>
+              <p>Every topic now pairs worked examples with a concept model, vocabulary rehearsal, smart review, and a misconception clinic.</p>
+            </article>
+            <article class="arch-card">
+              <span class="arch-num">03</span>
+              <h3>Evidence loop</h3>
+              <p>Teachers get look-fors, language supports, printables, exit tickets, and post-quiz proof so intervention work can be documented.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Teacher decision support</span>
+            <h2>Plan groups from evidence</h2>
+            <p>Each topic includes the observable misconception, the teacher look-for, and the multilingual scaffold that should drive the next small-group move.</p>
+          </div>
+          <div class="sos-wrap">
+            <table class="sos evidence-table">
+              <thead>
+                <tr><th>Topic</th><th>Teacher look-for</th><th>Common gap</th><th>Language scaffold</th></tr>
+              </thead>
+              <tbody>${evidenceRows}
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
@@ -332,6 +480,17 @@ function topicPage(t) {
   const lvTwo =
     (t.levels && t.levels.two) ||
     "Level 2 (stretch): finish the ★ challenge on Worksheet B and explain your reasoning in words.";
+  const guide = topicGuide(t);
+  const moves = evidenceMoves(t)
+    .map(
+      (m) => `
+              <article class="move-card">
+                <span>${esc(m.label)}</span>
+                <h4>${esc(m.title)}</h4>
+                <p>${esc(m.text)}</p>
+              </article>`,
+    )
+    .join("");
 
   // Vocabulary flashcards (flip)
   const flashHtml = t.vocab
@@ -360,7 +519,12 @@ function topicPage(t) {
   const familyVocab = t.vocab.map((v) => `<li><b>${esc(v.term)}</b> — ${esc(v.def)}</li>`).join("");
 
   // "I can" self-assessment checklist (objective + skills)
-  const checklist = [t.objective, ...t.skills.map((s) => `I can use ${s.toLowerCase()}.`)]
+  const checklist = [
+    t.objective,
+    `I can choose a strategy for ${skillList(t).toLowerCase()}.`,
+    "I can explain each step using topic vocabulary.",
+    "I can check whether my answer is reasonable.",
+  ]
     .map(
       (c, i) =>
         `<li><label><input type="checkbox" /> <span>${esc(c.replace(/^I can /, "I can "))}</span></label></li>`,
@@ -391,6 +555,12 @@ function topicPage(t) {
                 <span class="g-pill">📚 ${t.lessons} lessons</span>
                 <span class="g-pill">⏱ ${t.estMin} min</span>
               </div>
+              <div class="g-launch">
+                <h4>Core question</h4>
+                <p>How can I model, solve, and explain ${esc(lowerFirst(t.title))} so another student understands my thinking?</p>
+                <h4>Evidence of mastery</h4>
+                <p>Score 80% or higher, correct one missed item in Smart Review, and write a complete explanation using at least one vocabulary word.</p>
+              </div>
             </div>
             <div class="g-side">
               <h4 class="g-sub">Key vocabulary</h4>
@@ -403,12 +573,31 @@ function topicPage(t) {
               </ul>
             </div>
           </div>
+          <div class="mission-strip" aria-label="Topic mission">
+            <article>
+              <span>Mission</span>
+              <h3>Rebuild ${esc(lowerFirst(t.title))}</h3>
+              <p>Move from model to strategy to independent proof using ${esc(skillList(t).toLowerCase())}.</p>
+            </article>
+            <article>
+              <span>Success looks like</span>
+              <h3>Show, solve, explain</h3>
+              <p>Students can represent the idea, solve accurately, and justify why the answer makes sense.</p>
+            </article>
+            <article>
+              <span>Teacher evidence</span>
+              <h3>${esc(t.standard.replace("Builds ", ""))}</h3>
+              <p>${esc(guide.lookFor)}</p>
+            </article>
+          </div>
           <div class="tabs" role="tablist">
+            <button class="tab" role="tab" data-tab="concept">🧭 Concept Lab</button>
             ${workedHtml ? `<button class="tab" role="tab" data-tab="learn">📖 Learn</button>` : ""}
             <button class="tab" role="tab" data-tab="diagnostic">🩺 Diagnostic</button>
             <button class="tab" role="tab" data-tab="practice">✏️ Practice</button>
             <button class="tab" role="tab" data-tab="fluency">⚡ Fluency</button>
             <button class="tab" role="tab" data-tab="game">🎮 Game</button>
+            <button class="tab" role="tab" data-tab="clinic">🛠️ Error Clinic</button>
             <button class="tab" role="tab" data-tab="vocab">🗂️ Vocabulary</button>
             <button class="tab" role="tab" data-tab="worksheet">🖨️ Printables</button>
             <button class="tab" role="tab" data-tab="quizzes">📋 Pre/Post Quiz</button>
@@ -419,6 +608,25 @@ function topicPage(t) {
 
       <section class="block">
         <div class="wrap">
+          <div class="panel" id="panel-concept">
+            <h3>Concept lab</h3>
+            <p>Before students chase speed, they build meaning. Use this as the launch station for a small group, tutoring block, or independent recovery path.</p>
+            <div class="move-grid">${moves}</div>
+            <div class="anchor-board">
+              <div>
+                <span class="anchor-label">Model it</span>
+                <p>${esc(guide.model)}</p>
+              </div>
+              <div>
+                <span class="anchor-label">Say it</span>
+                <p>${esc(guide.discourse)}</p>
+              </div>
+              <div>
+                <span class="anchor-label">Extend it</span>
+                <p>${esc(guide.extension)}</p>
+              </div>
+            </div>
+          </div>
           ${
             workedHtml
               ? `<div class="panel" id="panel-learn">
@@ -454,6 +662,33 @@ function topicPage(t) {
                   <button class="btn btn-primary" id="game-stage-start" type="button">▶ Play</button>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div class="panel" id="panel-clinic">
+            <h3>Error clinic</h3>
+            <p>Use this as a quick conference script after a missed diagnostic, a worksheet error, or a low post-quiz score.</p>
+            <div class="clinic-grid">
+              <article class="clinic-card">
+                <span>Likely misconception</span>
+                <p>${esc(guide.misconception)}</p>
+              </article>
+              <article class="clinic-card">
+                <span>Teacher move</span>
+                <p>${esc(guide.lookFor)}</p>
+              </article>
+              <article class="clinic-card">
+                <span>Student self-check</span>
+                <p>Can I show the problem with a model, name the operation or relationship, and explain why my answer is reasonable?</p>
+              </article>
+            </div>
+            <div class="conference-script">
+              <h4>Two-minute conference</h4>
+              <ol>
+                <li>Ask the student to point to the exact step where the answer changed.</li>
+                <li>Have the student restate the problem using one vocabulary word from this topic.</li>
+                <li>Rebuild one simpler example together, then ask the student to solve a parallel problem alone.</li>
+              </ol>
             </div>
           </div>
 
@@ -522,6 +757,12 @@ function topicPage(t) {
               <div class="level"><h4>Level 1 — Support</h4><p>${esc(lvOne)}</p></div>
               <div class="level"><h4>Level 2 — Stretch</h4><p>${esc(lvTwo)}</p></div>
             </div>
+            <h3 style="margin-top:22px">Language supports</h3>
+            <div class="support-note">
+              <p>${esc(guide.language)}</p>
+              <p><strong>Talk frame:</strong> ${esc(guide.discourse)}</p>
+              <p><strong>Talk-Write-Revise:</strong> say the strategy with a partner, write one complete explanation, then revise it with a vocabulary word.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -547,6 +788,16 @@ function teacherGuide() {
               <td>${t.lessons} × ${t.estMin}m</td>
             </tr>`,
   ).join("");
+  const smallGroupRows = TOPICS.map((t) => {
+    const g = topicGuide(t);
+    return `
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/${t.slug}/" target="_blank" rel="noopener"><span>${t.icon}</span>${esc(t.title)}</a></td>
+              <td>${esc(g.misconception)}</td>
+              <td>${esc(g.model)}</td>
+              <td>${esc(g.discourse)}</td>
+            </tr>`;
+  }).join("");
   const html = `${head("Teacher Guide — Math Intervention", "Pacing guide, standards correlation, and routine for the 6th-grade math intervention program.", 1, "/math/intervention/teacher/")}
     <main id="main">
       <section class="masthead">
@@ -574,6 +825,23 @@ function teacherGuide() {
             <div class="rstep"><div class="rnum">Step 3</div><h4>Send home</h4><p>Print the family letter and exit ticket; assign Level 1 or Level 2 supports as needed.</p></div>
             <div class="rstep"><div class="rnum">Step 4</div><h4>Post-Quiz &amp; review</h4><p>Re-assess with the post-quiz to measure growth and regroup.</p></div>
           </div>
+          <div class="architecture-grid">
+            <article class="arch-card">
+              <span class="arch-num">A</span>
+              <h3>Reteach group</h3>
+              <p>Pre-quiz below 50% or diagnostic below 50%. Start with Concept Lab, worked examples, and a teacher-led model.</p>
+            </article>
+            <article class="arch-card">
+              <span class="arch-num">B</span>
+              <h3>Guided practice group</h3>
+              <p>Scores from 50% to 79%. Assign Practice, Smart Review, Error Clinic, and Worksheet A before the post-quiz.</p>
+            </article>
+            <article class="arch-card">
+              <span class="arch-num">C</span>
+              <h3>Extension group</h3>
+              <p>Scores 80%+. Use Fluency, Game, Worksheet B challenge, and the transfer prompt to keep growth moving.</p>
+            </article>
+          </div>
         </div>
       </section>
 
@@ -588,6 +856,23 @@ function teacherGuide() {
             <table class="sos">
               <thead><tr><th>#</th><th>Unit</th><th>Standard</th><th>Students will…</th><th>Pacing</th></tr></thead>
               <tbody>${rows}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Small-group playbook</span>
+            <h2>What to reteach when students miss it</h2>
+            <p>This table turns results into teacher action: identify the misconception, choose the model, and require a complete math-talk explanation.</p>
+          </div>
+          <div class="sos-wrap">
+            <table class="sos evidence-table">
+              <thead><tr><th>Unit</th><th>Likely gap</th><th>Best model</th><th>Discourse frame</th></tr></thead>
+              <tbody>${smallGroupRows}
               </tbody>
             </table>
           </div>
