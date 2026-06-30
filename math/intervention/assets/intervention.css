@@ -334,6 +334,43 @@ section.block {
   color: var(--muted);
 }
 
+.product-system,
+.quality-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 18px;
+}
+.product-card,
+.quality-grid article {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+.product-card span,
+.quality-grid b {
+  display: inline-block;
+  color: var(--green);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.product-card p,
+.quality-grid p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+.quality-grid h3 {
+  margin: 0 0 6px;
+  color: var(--navy);
+  font-size: 1rem;
+}
+
 .architecture-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -586,7 +623,10 @@ section.block {
   font-size: 0.88rem;
 }
 .move-grid,
-.clinic-grid {
+.clinic-grid,
+.lesson-path,
+.pathway-grid,
+.task-columns {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 12px;
@@ -594,23 +634,166 @@ section.block {
 }
 .move-card,
 .clinic-card,
-.support-note {
+.support-note,
+.lesson-card,
+.pathway-card,
+.task-card,
+.publisher-note {
   background: var(--surface-2);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 16px;
 }
-.move-card h4 {
+.publisher-note {
+  background: linear-gradient(135deg, rgba(21, 72, 127, 0.08), rgba(44, 125, 107, 0.08));
+  border-left: 5px solid var(--accent, var(--teal));
+}
+.publisher-note span,
+.task-card span,
+.lesson-card span,
+.pathway-card span {
+  display: inline-block;
+  color: var(--accent, var(--teal));
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+.publisher-note p {
+  margin: 0;
+  color: var(--navy);
+  font-size: 1.04rem;
+  font-weight: 750;
+}
+.move-card h4,
+.lesson-card h4,
+.pathway-card h4,
+.task-card h4 {
   margin: 0 0 6px;
   color: var(--navy);
   font-size: 0.98rem;
 }
 .move-card p,
 .clinic-card p,
-.support-note p {
+.support-note p,
+.pathway-card p,
+.task-card p {
   margin: 0;
   color: var(--muted);
   font-size: 0.9rem;
+}
+.lesson-card {
+  background: #fff;
+}
+.lesson-card dl {
+  margin: 0;
+}
+.lesson-card dt {
+  color: var(--navy);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+.lesson-card dd {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+.pathway-card {
+  border-left: 5px solid var(--accent, var(--teal));
+}
+.task-columns > div {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.task-columns h4 {
+  margin: 0 0 8px;
+  color: var(--navy);
+}
+.task-columns ul,
+.task-columns ol,
+.criteria-list,
+.print-notebook ul,
+.print-notebook ol {
+  margin: 0;
+  padding-left: 22px;
+  color: var(--muted);
+}
+.rubric {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.rubric th,
+.rubric td {
+  text-align: left;
+  vertical-align: top;
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.rubric th {
+  width: 210px;
+  color: var(--navy);
+  background: var(--surface-2);
+}
+.rubric tr:last-child th,
+.rubric tr:last-child td {
+  border-bottom: none;
+}
+.print-notebook {
+  display: grid;
+  gap: 12px;
+}
+.print-notebook h3 {
+  margin: 0;
+  color: var(--navy);
+}
+.print-notebook p {
+  margin: 0;
+  color: var(--muted);
+}
+.blank-lines {
+  min-height: 220px;
+  margin: 14px 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 30px,
+    rgba(20, 34, 58, 0.18) 31px
+  );
+}
+.fidelity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.fidelity-grid label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 15px;
+  color: var(--ink);
+  font-weight: 700;
+  box-shadow: var(--shadow);
+}
+.fidelity-grid input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--green);
+  flex: 0 0 auto;
 }
 .support-note p + p {
   margin-top: 8px;
@@ -664,7 +847,10 @@ section.block {
   }
   .architecture-grid,
   .mission-strip,
-  .anchor-board {
+  .anchor-board,
+  .product-system,
+  .quality-grid,
+  .fidelity-grid {
     grid-template-columns: 1fr;
   }
 }

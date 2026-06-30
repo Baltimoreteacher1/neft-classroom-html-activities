@@ -114,6 +114,100 @@ function evidenceMoves(t) {
   ];
 }
 
+function publisherBlueprint(t) {
+  const g = topicGuide(t);
+  const skills = skillList(t).toLowerCase();
+  return {
+    essentialQuestion: `How do mathematicians use ${skills} to make sense of real problems and defend an answer?`,
+    prerequisite: `Students should be able to read the problem, identify important quantities, and use at least one visual model before formal work with ${skills}.`,
+    transfer: g.extension,
+    successCriteria: [
+      "I can represent the math with a model, table, number line, diagram, or equation.",
+      `I can use ${skills} accurately and explain why the strategy fits the problem.`,
+      "I can find and correct an error by naming the misconception.",
+      "I can prove growth with a post-quiz score, an exit ticket, and a written explanation.",
+    ],
+    lessonArc: [
+      {
+        phase: "Session 1",
+        title: "Diagnose and name the gap",
+        teacher: "Assign the pre-quiz, sort students into groups, and launch one low-floor model.",
+        student: "Take the pre-quiz, complete the diagnostic, and write one goal for the topic.",
+        evidence: "Pre-quiz score, diagnostic score, student goal.",
+      },
+      {
+        phase: "Session 2",
+        title: "Build the concept",
+        teacher: g.model,
+        student: "Annotate the worked examples and complete the concept lab discussion frame.",
+        evidence: "Annotated example, vocabulary sentence, model check.",
+      },
+      {
+        phase: "Session 3",
+        title: "Practice with feedback",
+        teacher: "Conference with students using Smart Review misses and the Error Clinic protocol.",
+        student: "Complete Practice, Smart Review, and the fluency drill until one score improves.",
+        evidence: "Practice percent, cleared Smart Review item, fluency count.",
+      },
+      {
+        phase: "Session 4",
+        title: "Apply and transfer",
+        teacher: "Assign Worksheet B and the performance task; listen for the discourse frame.",
+        student: "Solve a contextual problem, explain the strategy, and revise the explanation.",
+        evidence: "Performance task, revised explanation, exit ticket.",
+      },
+      {
+        phase: "Session 5",
+        title: "Reassess and reflect",
+        teacher: "Assign the post-quiz, compare growth, and select the next intervention move.",
+        student: "Take the post-quiz and complete a reflection on what changed.",
+        evidence: "Post-quiz score, reflection, next-step recommendation.",
+      },
+    ],
+    pathways: [
+      {
+        name: "Intensive reteach",
+        trigger: "Pre-quiz or diagnostic below 50%",
+        moves: "Teacher-led model, manipulatives, read-aloud question support, Worksheet A odd items, then one Smart Review item.",
+      },
+      {
+        name: "Guided practice",
+        trigger: "50% to 79% or inconsistent explanations",
+        moves: "Concept Lab, worked examples, Practice, Error Clinic, Worksheet A/B mix, and an exit ticket conference.",
+      },
+      {
+        name: "Extension and transfer",
+        trigger: "80%+ with clear explanation",
+        moves: "Worksheet B challenge, performance task, student-created example, and peer teaching using the discourse frame.",
+      },
+    ],
+    rubric: [
+      {
+        level: "4 · Publishes math thinking",
+        criteria: "Accurate answer, efficient strategy, clear model, complete explanation, and correct vocabulary.",
+      },
+      {
+        level: "3 · Meets standard",
+        criteria: "Accurate answer and a mostly clear strategy with enough explanation to follow the thinking.",
+      },
+      {
+        level: "2 · Developing",
+        criteria: "Partially correct work; model or explanation shows a gap that can be repaired with feedback.",
+      },
+      {
+        level: "1 · Needs reteach",
+        criteria: "Misconception is still present; student needs a concrete model and a smaller parallel problem.",
+      },
+    ],
+    notebook: [
+      `Before I solve, the quantities I notice are ___ and ___.`,
+      `A model that helps me understand ${lowerFirst(t.title)} is ___ because ___.`,
+      `One mistake a student might make is ___; I would fix it by ___.`,
+      `My post-quiz goal is ___, and the evidence I will use is ___.`,
+    ],
+  };
+}
+
 const head = (title, desc, depth, canonical) => {
   const url = "https://eduwonderlab.com" + (canonical || "/math/intervention/");
   return `<!doctype html>
@@ -248,6 +342,21 @@ function hub() {
             </tr>`;
   }).join("");
 
+  const productRows = [
+    ["Student Edition", "Clear objectives, concept labs, worked examples, practice, games, vocabulary, notebook prompts, and performance tasks."],
+    ["Teacher Edition", "Placement guidance, lesson arcs, teacher look-fors, misconception clinics, small-group pathways, and printable routines."],
+    ["Assessment System", "Pre/post quizzes, diagnostics, exit tickets, rubrics, Smart Review, progress reports, and mastery certificates."],
+    ["Multilingual Supports", "Vocabulary rehearsal, read-aloud support, discourse frames, Talk-Write-Revise routines, and family letters."],
+  ]
+    .map(
+      ([name, desc]) => `
+            <article class="product-card">
+              <span>${esc(name)}</span>
+              <p>${esc(desc)}</p>
+            </article>`,
+    )
+    .join("");
+
   const html = `${head(META.title, META.tagline, 0, "/math/intervention/")}
     <main id="main">
       <section class="masthead">
@@ -271,10 +380,11 @@ function hub() {
       <section class="block" id="program">
         <div class="wrap">
           <div class="section-head">
-            <span class="eyebrow">The instructional routine</span>
-            <h2>One clean path for every student</h2>
-            <p>Every topic follows the same four-part routine, so students always know what comes next and teachers can measure growth.</p>
+            <span class="eyebrow">Publisher-quality program design</span>
+            <h2>A complete intervention curriculum, not a collection of links</h2>
+            <p>Every topic follows the same research-informed sequence: diagnose, model, practice, apply, reassess, and document growth.</p>
           </div>
+          <div class="product-system">${productRows}</div>
           <div class="routine">
             <div class="rstep"><div class="rnum">Step 1 · Assess</div><h4>Pre-Quiz</h4><p>A short Google Form shows exactly where each student starts.</p></div>
             <div class="rstep"><div class="rnum">Step 2 · Practice</div><h4>Guided Practice</h4><p>Interactive, self-checking questions with instant feedback and hints.</p></div>
@@ -297,6 +407,22 @@ function hub() {
               <h3>Evidence loop</h3>
               <p>Teachers get look-fors, language supports, printables, exit tickets, and post-quiz proof so intervention work can be documented.</p>
             </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">What changed for publication readiness</span>
+            <h2>Depth, clarity, coherence, and evidence</h2>
+            <p>This version is organized like a publishable intervention product: consistent routines, complete teacher supports, student-facing clarity, and multiple ways to prove learning.</p>
+          </div>
+          <div class="quality-grid">
+            <article><b>01</b><h3>Coherent sequence</h3><p>Each topic now has a 5-session lesson arc with teacher actions, student actions, and evidence checkpoints.</p></article>
+            <article><b>02</b><h3>Instructional depth</h3><p>Concept models, misconception clinics, performance tasks, rubrics, and notebook prompts extend beyond answer practice.</p></article>
+            <article><b>03</b><h3>Teacher usability</h3><p>Placement pathways make it clear when to reteach, guide practice, or extend a student.</p></article>
+            <article><b>04</b><h3>Student engagement</h3><p>Students move through missions, Smart Review, fluency, games, printables, and certificate/report systems.</p></article>
           </div>
         </div>
       </section>
@@ -481,6 +607,7 @@ function topicPage(t) {
     (t.levels && t.levels.two) ||
     "Level 2 (stretch): finish the ★ challenge on Worksheet B and explain your reasoning in words.";
   const guide = topicGuide(t);
+  const blueprint = publisherBlueprint(t);
   const moves = evidenceMoves(t)
     .map(
       (m) => `
@@ -490,6 +617,46 @@ function topicPage(t) {
                 <p>${esc(m.text)}</p>
               </article>`,
     )
+    .join("");
+
+  const lessonArcHtml = blueprint.lessonArc
+    .map(
+      (s) => `
+              <article class="lesson-card">
+                <span>${esc(s.phase)}</span>
+                <h4>${esc(s.title)}</h4>
+                <dl>
+                  <dt>Teacher move</dt><dd>${esc(s.teacher)}</dd>
+                  <dt>Student work</dt><dd>${esc(s.student)}</dd>
+                  <dt>Evidence</dt><dd>${esc(s.evidence)}</dd>
+                </dl>
+              </article>`,
+    )
+    .join("");
+
+  const pathwayHtml = blueprint.pathways
+    .map(
+      (p) => `
+              <article class="pathway-card">
+                <span>${esc(p.trigger)}</span>
+                <h4>${esc(p.name)}</h4>
+                <p>${esc(p.moves)}</p>
+              </article>`,
+    )
+    .join("");
+
+  const rubricHtml = blueprint.rubric
+    .map(
+      (r) => `
+              <tr>
+                <th>${esc(r.level)}</th>
+                <td>${esc(r.criteria)}</td>
+              </tr>`,
+    )
+    .join("");
+
+  const notebookHtml = blueprint.notebook
+    .map((p) => `<li>${esc(p)}</li>`)
     .join("");
 
   // Vocabulary flashcards (flip)
@@ -592,12 +759,14 @@ function topicPage(t) {
           </div>
           <div class="tabs" role="tablist">
             <button class="tab" role="tab" data-tab="concept">🧭 Concept Lab</button>
+            <button class="tab" role="tab" data-tab="path">🗺️ Lesson Path</button>
             ${workedHtml ? `<button class="tab" role="tab" data-tab="learn">📖 Learn</button>` : ""}
             <button class="tab" role="tab" data-tab="diagnostic">🩺 Diagnostic</button>
             <button class="tab" role="tab" data-tab="practice">✏️ Practice</button>
             <button class="tab" role="tab" data-tab="fluency">⚡ Fluency</button>
             <button class="tab" role="tab" data-tab="game">🎮 Game</button>
             <button class="tab" role="tab" data-tab="clinic">🛠️ Error Clinic</button>
+            <button class="tab" role="tab" data-tab="task">🏗️ Performance Task</button>
             <button class="tab" role="tab" data-tab="vocab">🗂️ Vocabulary</button>
             <button class="tab" role="tab" data-tab="worksheet">🖨️ Printables</button>
             <button class="tab" role="tab" data-tab="quizzes">📋 Pre/Post Quiz</button>
@@ -611,6 +780,10 @@ function topicPage(t) {
           <div class="panel" id="panel-concept">
             <h3>Concept lab</h3>
             <p>Before students chase speed, they build meaning. Use this as the launch station for a small group, tutoring block, or independent recovery path.</p>
+            <div class="publisher-note">
+              <span>Essential question</span>
+              <p>${esc(blueprint.essentialQuestion)}</p>
+            </div>
             <div class="move-grid">${moves}</div>
             <div class="anchor-board">
               <div>
@@ -626,6 +799,15 @@ function topicPage(t) {
                 <p>${esc(guide.extension)}</p>
               </div>
             </div>
+          </div>
+
+          <div class="panel" id="panel-path">
+            <h3>Five-session lesson path</h3>
+            <p>This is the teacher-ready pacing model for intervention blocks, tutoring, pull-out groups, or independent catch-up work.</p>
+            <div class="lesson-path">${lessonArcHtml}</div>
+            <h3 style="margin-top:24px">Placement pathways</h3>
+            <p>Use the pre-quiz and diagnostic score to select the right route without lowering the grade-level expectation.</p>
+            <div class="pathway-grid">${pathwayHtml}</div>
           </div>
           ${
             workedHtml
@@ -692,6 +874,34 @@ function topicPage(t) {
             </div>
           </div>
 
+          <div class="panel" id="panel-task">
+            <h3>Performance task</h3>
+            <p>Students apply ${esc(lowerFirst(t.title))} in a short constructed-response task. This gives publishers, teachers, and families evidence beyond multiple choice.</p>
+            <div class="task-card">
+              <span>Scenario</span>
+              <h4>${esc(t.title)} in the real world</h4>
+              <p>Create a realistic situation where someone must use ${esc(skillList(t).toLowerCase())}. Solve it two ways: first with a model or diagram, then with numbers or symbols. Finish by explaining why the answer is reasonable.</p>
+            </div>
+            <div class="task-columns">
+              <div>
+                <h4>Student deliverables</h4>
+                <ul>
+                  <li>A labeled model, diagram, table, or number line.</li>
+                  <li>A complete solution with units or labels.</li>
+                  <li>A written explanation using at least one vocabulary word.</li>
+                  <li>A revised answer after checking for the common misconception.</li>
+                </ul>
+              </div>
+              <div>
+                <h4>Notebook prompts</h4>
+                <ol>${notebookHtml}</ol>
+              </div>
+            </div>
+            <table class="rubric">
+              <tbody>${rubricHtml}</tbody>
+            </table>
+          </div>
+
           <div class="panel" id="panel-fluency">
             <h3>60-second fluency drill</h3>
             <p>Answer as many as you can before the clock runs out — speed plus accuracy builds automaticity.</p>
@@ -719,6 +929,31 @@ function topicPage(t) {
               <p style="color:var(--muted);margin-top:0">Quick check — answer all four before you leave.</p>
               <div class="ws-problems">${exitHtml}</div>
               <div class="answer-key"><h3>Answer Key (teacher)</h3><ol>${exitKey}</ol></div>
+            </div>
+
+            <div class="worksheet">
+              <div class="ws-header">
+                <h2>${t.icon} ${esc(t.title)} <span class="ws-variant">Student Notebook Page</span></h2>
+                <div class="ws-name">Name: ____________________  Date: __________</div>
+              </div>
+              <div class="print-notebook">
+                <h3>Essential question</h3>
+                <p>${esc(blueprint.essentialQuestion)}</p>
+                <h3>Success criteria</h3>
+                <ul>${blueprint.successCriteria.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>
+                <h3>Reflection prompts</h3>
+                <ol>${notebookHtml}</ol>
+              </div>
+            </div>
+
+            <div class="worksheet">
+              <div class="ws-header">
+                <h2>${t.icon} ${esc(t.title)} <span class="ws-variant">Performance Task</span></h2>
+                <div class="ws-name">Name: ____________________  Date: __________</div>
+              </div>
+              <p><strong>Task:</strong> Create and solve a realistic situation that uses ${esc(skillList(t).toLowerCase())}. Show a model, solve with numbers, and explain why the answer is reasonable.</p>
+              <div class="blank-lines"></div>
+              <table class="rubric print-rubric"><tbody>${rubricHtml}</tbody></table>
             </div>
 
             <div class="family-letter">
@@ -757,6 +992,8 @@ function topicPage(t) {
               <div class="level"><h4>Level 1 — Support</h4><p>${esc(lvOne)}</p></div>
               <div class="level"><h4>Level 2 — Stretch</h4><p>${esc(lvTwo)}</p></div>
             </div>
+            <h3 style="margin-top:22px">Success criteria</h3>
+            <ul class="criteria-list">${blueprint.successCriteria.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>
             <h3 style="margin-top:22px">Language supports</h3>
             <div class="support-note">
               <p>${esc(guide.language)}</p>
@@ -798,6 +1035,16 @@ function teacherGuide() {
               <td>${esc(g.discourse)}</td>
             </tr>`;
   }).join("");
+  const assessmentRows = TOPICS.map((t) => {
+    const b = publisherBlueprint(t);
+    return `
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/${t.slug}/" target="_blank" rel="noopener"><span>${t.icon}</span>${esc(t.title)}</a></td>
+              <td>${esc(b.essentialQuestion)}</td>
+              <td>Pre-quiz, diagnostic, Smart Review, exit ticket, performance task, post-quiz.</td>
+              <td>${esc(b.rubric[2].criteria)}</td>
+            </tr>`;
+  }).join("");
   const html = `${head("Teacher Guide — Math Intervention", "Pacing guide, standards correlation, and routine for the 6th-grade math intervention program.", 1, "/math/intervention/teacher/")}
     <main id="main">
       <section class="masthead">
@@ -808,6 +1055,22 @@ function teacherGuide() {
           <div class="hero-cta">
             <a class="btn btn-primary" data-print href="#">🖨️ Print this guide</a>
             <a class="btn btn-ghost" href="/math/intervention/">Open the student hub</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Teacher edition overview</span>
+            <h2>Implementation guide for a publishable intervention block</h2>
+            <p>This guide is built to support tutoring, pull-out intervention, stations, after-school programs, and independent recovery without changing the core routine from topic to topic.</p>
+          </div>
+          <div class="quality-grid">
+            <article><b>Planning</b><h3>Before instruction</h3><p>Assign the pre-quiz, preview vocabulary, choose the pathway, and prepare the concrete model for the topic.</p></article>
+            <article><b>Instruction</b><h3>During instruction</h3><p>Use Concept Lab and worked examples first, then release students into Practice, Smart Review, fluency, and print work.</p></article>
+            <article><b>Evidence</b><h3>After instruction</h3><p>Collect exit tickets, performance tasks, and post-quiz data to decide whether students need reteach, practice, or extension.</p></article>
+            <article><b>Equity</b><h3>Access for all learners</h3><p>Use read-aloud, discourse frames, family letters, vocabulary routines, and Talk-Write-Revise supports every cycle.</p></article>
           </div>
         </div>
       </section>
@@ -875,6 +1138,41 @@ function teacherGuide() {
               <tbody>${smallGroupRows}
               </tbody>
             </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Assessment blueprint</span>
+            <h2>Multiple measures for readiness, growth, and transfer</h2>
+            <p>Every topic now includes a consistent evidence chain, so a teacher can defend placement decisions and document progress with more than one score.</p>
+          </div>
+          <div class="sos-wrap">
+            <table class="sos evidence-table">
+              <thead><tr><th>Unit</th><th>Essential question</th><th>Evidence chain</th><th>Reteach signal</th></tr></thead>
+              <tbody>${assessmentRows}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Fidelity checklist</span>
+            <h2>Run every topic with the same high-quality routine</h2>
+            <p>Use this checklist during walkthroughs, tutoring, or lesson review to keep the intervention consistent and publisher-ready.</p>
+          </div>
+          <div class="fidelity-grid">
+            <label><input type="checkbox" /> Students see the objective, essential question, vocabulary, and success criteria before practice.</label>
+            <label><input type="checkbox" /> Teacher uses a concrete or visual model before symbolic practice.</label>
+            <label><input type="checkbox" /> Students complete at least one self-checking practice set and one print/constructed response item.</label>
+            <label><input type="checkbox" /> Error Clinic is used for the highest-leverage misconception.</label>
+            <label><input type="checkbox" /> Students use a discourse frame or Talk-Write-Revise routine.</label>
+            <label><input type="checkbox" /> Post-quiz, exit ticket, and performance task evidence are used to choose the next pathway.</label>
           </div>
         </div>
       </section>
