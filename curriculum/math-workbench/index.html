@@ -3720,11 +3720,15 @@
         const r = workspace.getBoundingClientRect();
         const w = Math.max(100, Math.round(r.width));
         const h = Math.max(100, Math.round(r.height));
-        const MIN = -25,
-          MAX = 25;
-        const range = MAX - MIN;
         const margin = 48;
         const usable = Math.max(40, w - margin * 2);
+        // Fit as many whole numbers as stay readable, centered on 0, then label
+        // EVERY integer (taller ticks on multiples of 5 keep the grouping).
+        const slot = 26; // minimum px per labeled number
+        const maxN = Math.max(5, Math.floor(usable / 2 / slot));
+        const MIN = -maxN,
+          MAX = maxN;
+        const range = MAX - MIN;
         const u = usable / range;
         const cy = Math.round(h / 2);
         const xFor = (n) => Math.round(margin + (n - MIN) * u);
@@ -3805,7 +3809,7 @@
             '" stroke-width="' +
             (major ? 2 : 1) +
             '"/>';
-          if (major) g += lab(x, cy + 30, n);
+          g += lab(x, cy + 30, n);
         }
         bgLayer.innerHTML =
           '<svg viewBox="0 0 ' +
@@ -4289,10 +4293,9 @@
       }
 
       function numLineSVG(min, max) {
-        const range = max - min;
-        // choose a step so labels stay legible (<= ~25 labels)
-        let step = 1;
-        if (range > 25) step = Math.ceil(range / 25);
+        // Label every whole number; spacing keeps each legible and the object
+        // simply grows wider (and can be scaled down) for larger ranges.
+        const step = 1;
         const spacing = 36;
         const pad = 26;
         const ticks = [];
