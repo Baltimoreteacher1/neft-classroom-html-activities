@@ -941,7 +941,6 @@
         this.ghosts = [];
         this.boardObjs = [];
         this.selectedSlot = 0;
-        this._dragMoved = false;
       };
 
       GameScene.prototype.create = function () {
@@ -1091,12 +1090,18 @@
 
         // Drag plumbing (Phaser drag events at scene scope).
         this.input.on("dragstart", (p, g) => {
-          this._dragMoved = false;
           g.setDepth(50);
           JUICE.tilePop(this, g);
+          if (g._tileObj && g._tileObj.slotIndex != null) {
+            const slot = this.slots[g._tileObj.slotIndex];
+            if (slot && slot.tileId === g._tileObj.id) {
+              slot.tileId = null;
+            }
+            g._tileObj.slotIndex = null;
+            this.refreshReadout();
+          }
         });
         this.input.on("drag", (p, g, dx, dy) => {
-          this._dragMoved = true;
           g.x = dx;
           g.y = dy;
         });
@@ -1244,8 +1249,16 @@
           slotIndex: null,
         };
         c._tileObj = obj;
-        c.on("pointerup", () => {
-          if (!this._dragMoved) this.autoPlace(obj);
+        c.on("pointerup", (pointer) => {
+          const dist = Phaser.Math.Distance.Between(
+            pointer.downX,
+            pointer.downY,
+            pointer.upX,
+            pointer.upY
+          );
+          if (dist < 6) {
+            this.autoPlace(obj);
+          }
         });
         this.boardObjs.push(c);
         return obj;
@@ -1339,7 +1352,7 @@
           return;
         }
         let best = null,
-          bd = 64;
+          bd = 96;
         const cx = tile.container.x,
           cy = tile.container.y;
         this.slots.forEach((s, i) => {
