@@ -1051,6 +1051,8 @@ html[data-theme="dark"] .note {
   background: radial-gradient(ellipse at top, #11405a, var(--navy-deep) 70%);
   color: #fff;
   padding: max(20px, env(safe-area-inset-top)) 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .focus-overlay.open {
   display: flex;
@@ -1141,6 +1143,31 @@ html[data-theme="dark"] .note {
   background: #ffd790;
   color: var(--navy-deep);
   border-color: #ffd790;
+}
+
+@media (max-width: 520px) {
+  .focus-overlay {
+    padding: max(12px, env(safe-area-inset-top)) 12px
+      max(12px, env(safe-area-inset-bottom));
+  }
+  .timer-ring {
+    width: min(210px, 58vw);
+    margin: 10px auto;
+  }
+  .focus-overlay .factions {
+    position: sticky;
+    bottom: 0;
+    margin-top: 12px;
+    padding: 10px 0 max(6px, env(safe-area-inset-bottom));
+    background: linear-gradient(
+      180deg,
+      transparent,
+      color-mix(in srgb, var(--navy-deep) 92%, transparent) 28%
+    );
+  }
+  .focus-overlay .factions .btn {
+    flex: 1 1 108px;
+  }
 }
 
 /* ---- Toast ---- */
@@ -1245,6 +1272,138 @@ html[data-theme="dark"] .toast {
   color: var(--muted);
   font-size: 0.88rem;
   margin: -4px 4px 14px;
+}
+
+.launch-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  padding: 18px;
+  border-radius: var(--radius);
+  background:
+    linear-gradient(135deg, rgba(13, 148, 136, 0.16), transparent),
+    var(--paper);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+.launch-hero h3 {
+  margin: 8px 0 4px;
+  color: var(--navy);
+  font-size: 1.2rem;
+}
+.launch-hero p {
+  margin: 0;
+  color: var(--muted);
+}
+.launch-list {
+  display: grid;
+  gap: 10px;
+}
+.launch-step {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--paper);
+  box-shadow: var(--shadow-sm);
+}
+.launch-step.done {
+  border-color: color-mix(in srgb, var(--green) 45%, var(--line));
+  background: color-mix(in srgb, var(--green) 8%, var(--paper));
+}
+.launch-step-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+.launch-step-ic {
+  width: 42px;
+  height: 42px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--bg-2);
+  font-size: 1.35rem;
+}
+.launch-step h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1rem;
+}
+.launch-step p,
+.launch-micro {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+.launch-step-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.homework-schedule {
+  margin-bottom: 14px;
+}
+.schedule-list {
+  display: grid;
+  gap: 8px;
+}
+.schedule-row {
+  display: grid;
+  grid-template-columns: 68px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.schedule-row b {
+  color: var(--navy);
+  font-variant-numeric: tabular-nums;
+}
+.schedule-row.break {
+  border-style: dashed;
+}
+.schedule-row.event {
+  border-left: 4px solid #4285f4;
+}
+.schedule-row.work {
+  border-left: 4px solid var(--teal);
+}
+.inbox-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.coach-lock {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .launch-step {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .launch-step-actions {
+    justify-content: flex-start;
+  }
+  .schedule-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* "More" menu tiles — even card-like grid that matches home cards */

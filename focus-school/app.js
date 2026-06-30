@@ -1319,6 +1319,7 @@
   ];
 
   const TABS = [
+    ["launch", "Launch", "🚀"],
     ["home", "Now", "🎯"],
     ["today", "Today", "📅"],
     ["tasks", "Tasks", "✅"],
@@ -1333,6 +1334,8 @@
     ["more", "More", "⋯"],
   ];
   let view = "home";
+  let inboxCache = [];
+  let coachUnlocked = false;
   // "Arrange" mode turns the Now screen into an easy drag-to-rearrange board:
   // every card becomes grabbable (not just the small ⋮⋮ handle) and gently
   // wobbles so kids can clearly see what to move. Runtime-only (not saved).
@@ -3522,6 +3525,267 @@
     }
   };
 
+  function actionableRoutine() {
+    const active = routineForHome();
+    if (active) return active;
+    const next = nextRoutineWindow();
+    return next?.routine || state.routines[0] || null;
+  }
+
+  function todayWorkStats() {
+    const open = openTasks();
+    return {
+      overdue: open.filter((a) => daysUntil(a.due) < 0),
+      today: open.filter((a) => daysUntil(a.due) === 0),
+      noDate: open.filter((a) => !a.due),
+      first: rightNowTask(),
+      gcal: gcalToday(),
+      todos: todaysTodos().filter((t) => !todoDoneToday(t)),
+    };
+  }
+
+  function launchStepCard({ key, icon, title, sub, done, body, actions }) {
+    return `<section class="launch-step ${done ? "done" : ""}" data-launch-step="${key}">
+      <div class="launch-step-main">
+        <div class="launch-step-ic" aria-hidden="true">${icon}</div>
+        <div>
+          <h3>${esc(title)}</h3>
+          ${sub ? `<p>${esc(sub)}</p>` : ""}
+          ${body || ""}
+        </div>
+      </div>
+      <div class="launch-step-actions">${actions || ""}</div>
+    </section>`;
+  }
+
+  function launchProgress() {
+    const stats = todayWorkStats();
+    const routine = actionableRoutine();
+    const routineDone =
+      routine &&
+      routine.items.length &&
+      ((state.routineLog[todayKey()] || {})[routine.id] || []).length >=
+        routine.items.length;
+    const checks = [
+      !!state.checkins[todayKey()],
+      !!state.captureLog[todayKey()],
+      !!(state.daily.goalDate === todayKey() && state.daily.goal),
+      !routine || !!routineDone,
+      !stats.first,
+    ];
+    const done = checks.filter(Boolean).length;
+    return { done, total: checks.length };
+  }
+
+  function launchDashboardHTML() {
+    const stats = todayWorkStats();
+    const routine = actionableRoutine();
+    const routineDone =
+      routine &&
+      ((state.routineLog[todayKey()] || {})[routine.id] || []).length >=
+        routine.items.length;
+    const goalSet = state.daily.goalDate === todayKey() && state.daily.goal;
+    const checkin = state.checkins[todayKey()];
+    const prog = launchProgress();
+    return `
+      <div class="view-head">
+        <h2 class="view-title">🚀 Daily Launch</h2>
+        <button class="btn sm" data-act="launch-complete">✓ Finish launch</button>
+      </div>
+      <p class="view-intro">One calm path for starting the day: check in, capture work, choose the first move, then focus.</p>
+      <div class="launch-hero">
+        <div>
+          <span class="pill">Step ${prog.done} of ${prog.total}</span>
+          <h3>${esc(briefingText())}</h3>
+          <p>${stats.gcal.length ? `${stats.gcal.length} calendar event${stats.gcal.length === 1 ? "" : "s"} today.` : "Calendar is clear unless new events sync in."}</p>
+        </div>
+        <button class="btn go big" data-act="${stats.first ? "focus-start" : "quick-add"}" ${stats.first ? `data-id="${stats.first.id}"` : ""}>${stats.first ? "Start first focus" : "Add first task"}</button>
+      </div>
+      <div class="launch-list">
+        ${launchStepCard({
+          key: "checkin",
+          icon: "👋",
+          title: checkin ? "Check-in saved" : "Quick check-in",
+          sub: checkin ? checkin.priority || "Ready to begin." : "Mood and one priority.",
+          done: !!checkin,
+          actions: `<button class="btn sm ${checkin ? "" : "primary"}" data-act="checkin-open">${checkin ? "Edit" : "Check in"}</button>`,
+        })}
+        ${launchStepCard({
+          key: "capture",
+          icon: "📥",
+          title: state.captureLog[todayKey()] ? "Homework capture checked" : "Capture assignments",
+          sub: "Planner, Google Classroom, backpack, and school mail.",
+          done: !!state.captureLog[todayKey()],
+          body: `<p class="launch-micro">${stats.todos.length} reminder/to-do item${stats.todos.length === 1 ? "" : "s"} waiting.</p>`,
+          actions: `<button class="btn sm primary" data-act="nav" data-arg="inbox">Open inbox</button><button class="btn sm" data-act="capture-done">All in</button>`,
+        })}
+        ${launchStepCard({
+          key: "goal",
+          icon: "🌟",
+          title: goalSet ? "Goal chosen" : "Pick one goal",
+          sub: goalSet || "Choose the one thing that would make today a win.",
+          done: !!goalSet,
+          actions: `<button class="btn sm ${goalSet ? "" : "primary"}" data-act="nav" data-arg="today">${goalSet ? "Edit goal" : "Choose goal"}</button>`,
+        })}
+        ${launchStepCard({
+          key: "routine",
+          icon: routine?.emoji || "🔁",
+          title: routine ? routine.name : "No routine set",
+          sub: routine ? `${routine.items.length} steps` : "Add a morning or after-school routine.",
+          done: !routine || !!routineDone,
+          actions: routine ? `<button class="btn sm ${routineDone ? "" : "primary"}" data-act="guide-start" data-id="${routine.id}">${routineDone ? "Review" : "Walk me through"}</button>` : `<button class="btn sm primary" data-act="add-routine">Add routine</button>`,
+        })}
+        ${launchStepCard({
+          key: "focus",
+          icon: "🎯",
+          title: stats.first ? stats.first.title : "No first task waiting",
+          sub: stats.first ? dueLabel(stats.first.due, stats.first.dueTime) : "You can add a task or enjoy being caught up.",
+          done: !stats.first,
+          actions: stats.first ? `<button class="btn sm primary" data-act="focus-start" data-id="${stats.first.id}">Start focus</button><button class="btn sm" data-act="breakdown" data-id="${stats.first.id}">Steps</button>` : `<button class="btn sm" data-act="quick-add">Add task</button>`,
+        })}
+      </div>`;
+  }
+
+  function googleEventBlocksToday() {
+    return gcalToday()
+      .map((e) => {
+        const d = new Date(e.start || "");
+        if (Number.isNaN(d.getTime())) return null;
+        return {
+          start: d,
+          end: e.end ? new Date(e.end) : new Date(d.getTime() + 45 * 60000),
+          title: e.title || "Calendar event",
+        };
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.start - b.start);
+  }
+
+  function minutesToClock(total) {
+    const h = Math.floor(total / 60) % 24;
+    const m = total % 60;
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  }
+
+  function clockToMinutes(value, fallback) {
+    if (!TIME_RE.test(value || "")) return fallback;
+    const [h, m] = value.split(":").map(Number);
+    return h * 60 + m;
+  }
+
+  function homeworkScheduleHTML(open) {
+    const start = Math.max(
+      new Date().getHours() * 60 + new Date().getMinutes(),
+      15 * 60 + 30,
+    );
+    const leaveBy = clockToMinutes(state.settings.leaveByTime, 21 * 60);
+    let cursor = Math.min(start, leaveBy - 20);
+    const blocks = googleEventBlocksToday();
+    const rows = [];
+    const top = open.slice(0, 6);
+    for (const a of top) {
+      const block = blocks.find(
+        (b) =>
+          cursor >= b.start.getHours() * 60 + b.start.getMinutes() - 5 &&
+          cursor < b.end.getHours() * 60 + b.end.getMinutes(),
+      );
+      if (block) {
+        const bStart = block.start.getHours() * 60 + block.start.getMinutes();
+        const bEnd = block.end.getHours() * 60 + block.end.getMinutes();
+        rows.push({ time: minutesToClock(bStart), title: block.title, kind: "event" });
+        cursor = bEnd + 5;
+      }
+      const workMin = clamp(Number(a.estimateMin) || state.settings.defaultFocusMin, 10, 45);
+      rows.push({ time: minutesToClock(cursor), title: a.title, kind: "work", id: a.id, min: workMin });
+      cursor += workMin;
+      if (cursor < leaveBy && a !== top[top.length - 1]) {
+        rows.push({ time: minutesToClock(cursor), title: "Break: water, stretch, reset", kind: "break" });
+        cursor += 5;
+      }
+    }
+    if (!rows.length) return "";
+    return `<section class="card homework-schedule"><div class="head"><div><h3>🗺️ Smart after-school map</h3><p class="sub">Built from due dates, estimates, breaks, calendar events, and leave-by time.</p></div></div>
+      <div class="schedule-list">${rows
+        .map(
+          (r) =>
+            `<div class="schedule-row ${r.kind}"><b>${esc(r.time)}</b><span>${r.kind === "event" ? "📆" : r.kind === "break" ? "🌿" : "📘"} ${esc(r.title)}${r.min ? ` · ${r.min}m` : ""}</span>${r.id ? `<button class="btn sm" data-act="focus-start" data-id="${r.id}">Focus</button>` : ""}</div>`,
+        )
+        .join("")}</div></section>`;
+  }
+
+  function inboxCandidateRows() {
+    const mail = (state.gmail?.messages || [])
+      .filter((m) => !state.deletedIds[`mail:${m.id}`])
+      .slice(0, 8)
+      .map((m) => ({
+        type: "mail",
+        id: m.id,
+        title: ("Email: " + (m.subject || "(no subject)")).slice(0, 120),
+        meta: `${m.from || "School Mail"} · ${gmailDateLabel(m.date)}`,
+      }));
+    const parsed = inboxCache.map((a, idx) => ({
+      type: "parsed",
+      id: String(idx),
+      title: a.title,
+      meta: `${cls(a.classId).name} · ${dueLabel(a.due, a.dueTime)}`,
+    }));
+    return [...parsed, ...mail];
+  }
+
+  function reliabilityHTML() {
+    const stored = state.updatedAt
+      ? new Date(state.updatedAt).toLocaleString()
+      : "Unknown";
+    const sync = state.settings.sync || {};
+    const events = state.gcal?.events?.length || 0;
+    const mail = state.gmail?.messages?.length || 0;
+    return (
+      backHeader("Reliability", "more") +
+      `<p class="view-intro">A quick trust check for sync, backups, offline support, and restore habits.</p>
+      <div class="diag-grid">
+        <div class="diag-stat ok"><b>Saved on device</b><span>${esc(stored)}</span></div>
+        <div class="diag-stat ${sync.enabled ? "ok" : ""}"><b>Cloud sync</b><span>${sync.enabled ? "On" : "Off"}</span></div>
+        <div class="diag-stat"><b>Google cache</b><span>${events} events · ${mail} mail</span></div>
+        <div class="diag-stat"><b>Offline shell</b><span>${"serviceWorker" in navigator ? "Supported" : "Unsupported"}</span></div>
+      </div>
+      <div class="grid g2" style="margin-top:14px">
+        ${card("backup-now", "Backup & restore", "Export before big changes or device swaps.", `<div class="row"><button class="btn primary" data-act="export">Download backup</button><button class="btn" data-act="import">Load backup</button></div>`)}
+        ${card("self-test", "Run self-test", "Checks browser storage, service worker, and sync endpoint.", `<div class="row"><button class="btn primary" data-act="run-self-test">Run diagnostics</button><button class="btn" data-act="view-sync">Sync settings</button></div>`)}
+      </div>`
+    );
+  }
+
+  function coachDashboardHTML() {
+    const pin = state.rewards?.pin || "";
+    if (pin && !coachUnlocked) {
+      return (
+        backHeader("Coach Dashboard", "more") +
+        `<section class="card coach-lock"><h3>🔒 Parent / coach dashboard</h3><p class="sub">Enter the parent PIN to see allowance, routines, and weekly progress.</p><div class="field"><label>Parent PIN</label><input id="coachPin" type="password" inputmode="numeric" autocomplete="off"></div><button class="btn primary" data-act="coach-unlock">Unlock</button><p id="coachErr" class="sub" style="display:none;color:var(--red)">That PIN did not match.</p></section>`
+      );
+    }
+    const stats = getWeeklyStats();
+    const open = openTasks();
+    const overdue = open.filter((a) => daysUntil(a.due) < 0);
+    const routine = actionableRoutine();
+    const log = routine ? (state.routineLog[todayKey()] || {})[routine.id] || [] : [];
+    return (
+      backHeader("Coach Dashboard", "more") +
+      `<p class="view-intro">A grown-up view of what is working, what needs help, and whether payday is ready.</p>
+      <div class="diag-grid">
+        <div class="diag-stat"><b>Focus this week</b><span>${stats.focusMin}m</span></div>
+        <div class="diag-stat"><b>Tasks done</b><span>${stats.tasks}</span></div>
+        <div class="diag-stat ${overdue.length ? "fail" : "ok"}"><b>Overdue</b><span>${overdue.length}</span></div>
+        <div class="diag-stat"><b>Allowance due</b><span>${money(state.rewards?.balance || 0)}</span></div>
+      </div>
+      <div class="grid g2" style="margin-top:14px">
+        ${weeklyReportCardHTML()}
+        ${card("coach-routine", "Today routine", routine ? `${log.length}/${routine.items.length} complete` : "No routine set", routine ? `<ul class="steps">${routine.items.map((it) => `<li><span class="steptext ${log.includes(it.id) ? "done" : ""}">${log.includes(it.id) ? "✓" : "○"} ${esc(it.text)}</span></li>`).join("")}</ul>` : `<button class="btn primary" data-act="add-routine">Add routine</button>`)}
+        ${card("coach-pay", "Allowance controls", "Review and cash out safely.", `<div class="rw-bank"><div class="rw-big">${money(state.rewards?.balance || 0)}</div><div class="rw-sub">current balance</div></div><div class="row"><button class="btn primary" data-act="view-rewards">Open payday</button><button class="btn" data-act="reward-settings">Settings</button></div>`)}
+        ${card("coach-risk", "Needs attention", overdue.length ? `${overdue.length} overdue assignment${overdue.length === 1 ? "" : "s"}` : "No overdue work", overdue.length ? overdue.slice(0, 4).map(taskItem).join("") : emptyState("✅", "No urgent catch-up right now."))}
+      </div>`
+    );
+  }
+
   // ---------------------------------------------------------------------------
   // Views
   // ---------------------------------------------------------------------------
@@ -3768,6 +4032,10 @@
   ];
 
   const VIEWS = {
+    launch() {
+      return launchDashboardHTML();
+    },
+
     home() {
       const open = openTasks();
       const next = sortByUrgency(
@@ -4005,6 +4273,12 @@
         startC: "",
         rememberText: "",
       };
+      const today = startOfToday();
+      const todayReading =
+        READING_DAYS.find((d) => {
+          const parsed = new Date(`${d.date}, ${today.getFullYear()} 12:00:00`);
+          return parsed.toDateString() === today.toDateString();
+        }) || READING_DAYS.find((d) => !(state.readingProgress[d.id] || {}).done);
 
       let html = `
         <div class="view-head">
@@ -4029,6 +4303,11 @@
         <div class="note" style="margin-bottom: 16px;">
           📖 <b>Daily Student Routine:</b> (1) Read the assigned pages. (2) Check "Done". (3) Write 1-2 sentence gist. (4) Note one quote/evidence detail. (5) Answer the focus question.
         </div>
+        ${
+          todayReading
+            ? `<section class="card feature reading-today"><div class="head"><div><h3>📍 Today / next reading</h3><p class="sub">${esc(todayReading.book)} · ${esc(todayReading.dayName)} ${esc(todayReading.date)}</p></div><button class="btn sm primary" data-act="toggle-reading-expand" data-id="${todayReading.id}">Open</button></div><p><b>${esc(todayReading.read)}</b></p><p class="muted">${esc(todayReading.prompt)}</p></section>`
+            : ""
+        }
       `;
 
       const botrDays = READING_DAYS.filter(
@@ -4143,6 +4422,27 @@
         <div class="view-head"><h2 class="view-title">More</h2></div>
         ${grid([
           {
+            act: "nav",
+            arg: "launch",
+            ic: "🚀",
+            title: "Daily Launch",
+            sub: "Start the day step by step",
+          },
+          {
+            act: "nav",
+            arg: "inbox",
+            ic: "📥",
+            title: "Assignment Inbox",
+            sub: "Review pasted work and mail",
+          },
+          {
+            act: "nav",
+            arg: "coach",
+            ic: "🧑‍🏫",
+            title: "Coach Dashboard",
+            sub: "Parent view, allowance, progress",
+          },
+          {
             act: "view-classes",
             ic: "🏫",
             title: "My classes",
@@ -4206,6 +4506,20 @@
         <div class="section-title">App</div>
         ${grid([
           {
+            act: "nav",
+            arg: "setup",
+            ic: "🧭",
+            title: "Setup wizard",
+            sub: "Classes, sync, routines, install",
+          },
+          {
+            act: "nav",
+            arg: "reliability",
+            ic: "🛡️",
+            title: "Reliability",
+            sub: "Backup, sync, diagnostics",
+          },
+          {
             act: "install",
             ic: "⬇️",
             title: "Install on this computer",
@@ -4219,6 +4533,99 @@
           },
         ])}
       `;
+    },
+
+    inbox() {
+      const candidates = inboxCandidateRows();
+      const rows = candidates.length
+        ? candidates
+            .map(
+              (c) =>
+                `<div class="item inbox-row"><div><h4>${c.type === "mail" ? "✉️" : "📋"} ${esc(c.title)}</h4><p class="meta">${esc(c.meta)}</p></div><div class="row"><button class="btn primary sm" data-act="inbox-accept" data-id="${esc(c.id)}" data-arg="${c.type}">Accept</button><button class="btn sm" data-act="inbox-edit" data-id="${esc(c.id)}" data-arg="${c.type}">Edit first</button><button class="btn danger sm" data-act="inbox-reject" data-id="${esc(c.id)}" data-arg="${c.type}">Dismiss</button></div></div>`,
+            )
+            .join("")
+        : emptyState(
+            "📭",
+            "Nothing waiting. Paste Classroom work or connect School Mail.",
+          );
+      return (
+        backHeader("Assignment Inbox", "more") +
+        `<p class="view-intro">Review possible assignments before they become real tasks. Accept, edit, or dismiss each one.</p>
+        <div class="grid g2">
+          <section class="card"><h3>Paste from Classroom</h3><p class="sub">Paste To-do text, then review each detected item here.</p><textarea id="inboxPasteBox" placeholder="Math
+Ratios worksheet
+Due tomorrow"></textarea><div class="row"><button class="btn primary" data-act="inbox-parse">Review pasted work</button><button class="btn" data-act="inbox-clear">Clear</button></div></section>
+          ${gmailPanel()}
+        </div>
+        <div class="section-title">Review queue (${candidates.length})</div>
+        ${rows}`
+      );
+    },
+
+    coach() {
+      return coachDashboardHTML();
+    },
+
+    reliability() {
+      return reliabilityHTML();
+    },
+
+    setup() {
+      const hasClasses = state.classes.length > 0;
+      const hasRoutine = state.routines.length > 0;
+      const syncOn = !!state.settings.sync?.enabled;
+      return (
+        backHeader("Setup Wizard", "more") +
+        `<p class="view-intro">A quick pass to make Focus School feel ready on every device.</p>
+        <div class="launch-list">
+          ${launchStepCard({
+            key: "profile",
+            icon: "👤",
+            title: state.settings.studentName
+              ? `Student: ${state.settings.studentName}`
+              : "Add student name",
+            sub: "Used in emails, reports, and calm prompts.",
+            done: !!state.settings.studentName,
+            actions: `<button class="btn sm primary" data-act="view-settings">Profile</button>`,
+          })}
+          ${launchStepCard({
+            key: "classes",
+            icon: "🏫",
+            title: hasClasses ? `${state.classes.length} classes ready` : "Add classes",
+            sub: "Colors, teacher email, period, room.",
+            done: hasClasses,
+            actions: `<button class="btn sm primary" data-act="view-classes">Classes</button>`,
+          })}
+          ${launchStepCard({
+            key: "sync",
+            icon: "☁️",
+            title: syncOn ? "Cloud sync is on" : "Turn on backup & sync",
+            sub: syncOn
+              ? `Code: ${state.settings.sync.code || "ready"}`
+              : "Keeps devices together.",
+            done: syncOn,
+            actions: `<button class="btn sm primary" data-act="view-sync">Sync</button>`,
+          })}
+          ${launchStepCard({
+            key: "routine",
+            icon: "🔁",
+            title: hasRoutine
+              ? `${state.routines.length} routines ready`
+              : "Add daily routines",
+            sub: "Morning, after school, and shutdown.",
+            done: hasRoutine,
+            actions: `<button class="btn sm primary" data-act="nav" data-arg="routines">Routines</button>`,
+          })}
+          ${launchStepCard({
+            key: "install",
+            icon: "⬇️",
+            title: "Install on Chromebook or phone",
+            sub: "Opens faster and works offline.",
+            done: false,
+            actions: `<button class="btn sm primary" data-act="install">Install</button>`,
+          })}
+        </div>`
+      );
     },
 
     classes() {
@@ -4325,6 +4732,7 @@
       return (
         '<div class="view-head"><h2 class="view-title">📋 Homework Plan</h2><button class="btn primary" data-act="quick-add">＋ Add</button></div>' +
         intro +
+        homeworkScheduleHTML(open) +
         '<div class="hw-legend"><span>📘 Assignment</span><span>🌿 Break</span><span>⏱ Tap a number to start</span></div>' +
         rows
       );
@@ -7987,6 +8395,45 @@ Due May 31"></textarea>
     "view-about": () => setView("about"),
     "view-insights": () => setView("insights"),
     "view-rewards": () => setView("rewards"),
+    "launch-complete": () => {
+      state.captureLog[todayKey()] = true;
+      if (!state.checkins[todayKey()]) {
+        state.checkins[todayKey()] = {
+          mood: "ok",
+          priority:
+            state.daily.goalDate === todayKey() ? state.daily.goal || "" : "",
+        };
+      }
+      save();
+      render();
+      toast("Launch checked off 🚀");
+    },
+    "coach-unlock": () => {
+      const entered = ($("#coachPin")?.value || "").trim();
+      if (entered === (state.rewards?.pin || "")) {
+        coachUnlocked = true;
+        render();
+        toast("Coach dashboard unlocked");
+      } else {
+        const err = $("#coachErr");
+        if (err) err.style.display = "block";
+      }
+    },
+    "run-self-test": async () => {
+      openModal(
+        "Diagnostics",
+        `<div class="diagnostics-panel">
+          <div class="diag-grid">
+            <div class="diag-stat"><b>IndexedDB</b><span id="diagIdbStatus">Checking…</span></div>
+            <div class="diag-stat"><b>LocalStorage</b><span id="diagLsStatus">Checking…</span></div>
+            <div class="diag-stat"><b>Sync endpoint</b><span id="diagNetStatus">Checking…</span></div>
+            <div class="diag-stat"><b>Service worker</b><span id="diagSwStatus">Checking…</span></div>
+          </div>
+          <div class="diag-console" id="diagConsole"></div>
+        </div>`,
+      );
+      await selfTest();
+    },
 
     // Pay out one finished week. Opens a parent-gated paystub.
     "reward-payout": (_, weekKey) => {
@@ -8345,6 +8792,22 @@ Due May 31"></textarea>
       focus.beginPhase("focus");
     },
     "focus-stop": () => focus.stop(),
+    "focus-stuck": () => {
+      const a = state.assignments.find((x) => x.id === focus.taskId);
+      if (!a) return;
+      const firstOpen = a.steps.find((s) => !s.done);
+      openModal(
+        "Getting unstuck",
+        `<p class="sub">Stay in the focus session. Pick one tiny move.</p>
+        <div class="grid g2">
+          <button class="btn block menu-tile" data-act="breakdown" data-id="${a.id}"><span class="menu-ic">🧩</span><span><b>Break it smaller</b><small>Make or edit the checklist</small></span></button>
+          <button class="btn block menu-tile" data-act="ask-help" data-id="${a.id}"><span class="menu-ic">✉️</span><span><b>Ask for help</b><small>Draft a clear teacher email</small></span></button>
+          <button class="btn block menu-tile" data-act="focus-break"><span class="menu-ic">🌿</span><span><b>Take a reset break</b><small>Come back in a few minutes</small></span></button>
+          <button class="btn block menu-tile" data-act="ai-suggest" data-arg="I am stuck on ${esc(a.title)}. Give me a hint, not the answer."><span class="menu-ic">🤖</span><span><b>Ask Academic Help</b><small>Hint mode prompt</small></span></button>
+        </div>
+        ${firstOpen ? `<div class="note" style="margin-top:12px">Try this next: <b>${esc(firstOpen.text)}</b></div>` : `<div class="note" style="margin-top:12px">Try the first two minutes only. Open the work, read the directions, and write one thing you notice.</div>`}`,
+      );
+    },
     "focus-sound": (_, arg) => {
       if (arg === "rain") playRain();
       else if (arg === "rumble") playRumble();
@@ -8947,6 +9410,71 @@ ${name}`;
       toast(`Added ${parsedCache.length} assignments`);
       parsedCache = [];
       setView("tasks");
+    },
+    "inbox-parse": () => {
+      inboxCache = parsePaste($("#inboxPasteBox")?.value || "");
+      render();
+      toast(
+        inboxCache.length
+          ? `${inboxCache.length} item${inboxCache.length === 1 ? "" : "s"} ready to review`
+          : "No assignments found yet",
+      );
+    },
+    "inbox-clear": () => {
+      inboxCache = [];
+      render();
+    },
+    "inbox-accept": (id, type) => {
+      if (type === "parsed") {
+        const idx = Number(id);
+        const item = inboxCache[idx];
+        if (!item) return;
+        state.assignments.push(item);
+        inboxCache.splice(idx, 1);
+      } else {
+        const m = (state.gmail?.messages || []).find((x) => x.id === id);
+        if (!m) return;
+        state.assignments.push(
+          normalizeTask({
+            title: ("Email: " + (m.subject || "(no subject)")).slice(0, 120),
+            source: "School Mail Inbox",
+            notes: m.from ? `From: ${m.from}` : "",
+          }),
+        );
+        state.deletedIds[`mail:${id}`] = Date.now();
+      }
+      save();
+      render();
+      toast("Added to assignments ✓");
+    },
+    "inbox-edit": (id, type) => {
+      if (type === "parsed") {
+        const item = inboxCache[Number(id)];
+        if (item) openModal("Edit before adding", taskForm(item));
+      } else {
+        const m = (state.gmail?.messages || []).find((x) => x.id === id);
+        if (m)
+          openModal(
+            "Edit before adding",
+            taskForm(
+              normalizeTask({
+                title: ("Email: " + (m.subject || "(no subject)")).slice(
+                  0,
+                  120,
+                ),
+                source: "School Mail Inbox",
+                notes: m.from ? `From: ${m.from}` : "",
+              }),
+            ),
+          );
+      }
+    },
+    "inbox-reject": (id, type) => {
+      if (type === "parsed") inboxCache.splice(Number(id), 1);
+      else state.deletedIds[`mail:${id}`] = Date.now();
+      save();
+      render();
+      toast("Dismissed");
     },
 
     install: () => doInstall(),
