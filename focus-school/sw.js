@@ -1,7 +1,7 @@
 /* Focus School — service worker.
  * Offline-first app shell: precache core files, serve them cache-first,
  * fall back to the cached app for navigations when offline. */
-const VERSION = "focus-school-v19";
+const VERSION = "focus-school-v20";
 const CORE = [
   "./",
   "index.html",
@@ -38,7 +38,13 @@ self.addEventListener("install", (event) => {
       .open(VERSION)
       .then((cache) =>
         // Tolerate any single missing asset so install never fails outright.
-        Promise.allSettled(CORE.map((url) => cache.add(url))),
+        // Use cache:"reload" so precaching bypasses the HTTP cache — otherwise a
+        // long zone Browser Cache TTL could make a new SW store a stale app.js.
+        Promise.allSettled(
+          CORE.map((url) =>
+            cache.add(new Request(url, { cache: "reload" })),
+          ),
+        ),
       )
       .then(() => self.skipWaiting()),
   );
