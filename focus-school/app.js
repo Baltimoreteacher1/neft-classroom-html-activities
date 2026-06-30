@@ -127,6 +127,38 @@
     return `${d.getFullYear()}-${m}-${day}`;
   };
   const todayKey = () => isoForOffset(0);
+
+  // ---- Health & movement check-ins -------------------------------------
+  // Fun, optional daily movement goals (biking + lifting). They reset every
+  // day and are never required; finishing one pays a small allowance.
+  // [id, emoji, label, hint]
+  const HEALTH_ITEMS = [
+    ["bikeRide", "🚴", "Went for a bike ride", "15 minutes or more outside"],
+    ["bikeLoop", "🚲", "Quick bike loop", "A spin around the block counts"],
+    ["lift", "🏋️", "Lifted weights", "Dumbbells or a strength set"],
+    ["pushups", "💪", "Push-ups or sit-ups", "Knock out a set or two"],
+    ["stretch", "🤸", "Warmed up / stretched", "Loosen up before or after"],
+  ];
+  // Validate a synced/imported health log so a bad payload can't poison state.
+  function normalizeHealth(h) {
+    const log = {};
+    const src =
+      h && typeof h === "object" && h.log && typeof h.log === "object"
+        ? h.log
+        : {};
+    for (const [date, day] of Object.entries(src)) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !day || typeof day !== "object")
+        continue;
+      const clean = {};
+      for (const it of HEALTH_ITEMS) if (day[it[0]]) clean[it[0]] = 1;
+      const paid = Array.isArray(day.__paid)
+        ? day.__paid.filter((x) => HEALTH_ITEMS.some((it) => it[0] === x))
+        : [];
+      if (paid.length) clean.__paid = [...new Set(paid)];
+      if (Object.keys(clean).length) log[date] = clean;
+    }
+    return { log };
+  }
   const parseLocal = (iso) => (iso ? new Date(iso + "T12:00:00") : null);
   const daysUntil = (iso) => {
     if (!iso) return null;
@@ -421,7 +453,7 @@
         currency: "$",
         balance: 0, // earned, not yet paid out
         paidOut: 0, // lifetime paid out by a parent
-        rates: { task: 0.5, reminder: 0.1, routine: 0.25, focus: 0.25 },
+        rates: { task: 0.5, reminder: 0.1, routine: 0.25, focus: 0.25, health: 0.1 },
         dailyCap: 5, // max earnable per day (anti-gaming); 0 = no cap
         weeklyCap: 10, // realistic ceiling on a single week's payout; 0 = none
         bonusPerfectWeek: 1, // bonus when there's activity every weekday Mon–Fri
@@ -434,6 +466,7 @@
       },
       readingProgress: {},
       bookTransition: { finishedB: "", responseB: false, startC: "", rememberText: "" },
+      health: { log: {} },
       updatedAt: Date.now(),
     };
   }
@@ -541,6 +574,7 @@
               plantType: "cactus",
             },
       rewards: normalizeRewards(x.rewards),
+      health: normalizeHealth(x.health),
     };
   }
 
@@ -587,6 +621,7 @@
         reminder: Math.max(0, num(rates.reminder, base.rates.reminder)),
         routine: Math.max(0, num(rates.routine, base.rates.routine)),
         focus: Math.max(0, num(rates.focus, base.rates.focus)),
+        health: Math.max(0, num(rates.health, base.rates.health)),
       },
       dailyCap: Math.max(0, num(r.dailyCap, base.dailyCap)),
       weeklyCap: Math.max(0, num(r.weeklyCap, base.weeklyCap)),
@@ -1050,6 +1085,7 @@
     ["calming", "Calming", "🧘"],
     ["ai", "Academic Help", "🤖"],
     ["reading", "Reading", "📚"],
+    ["health", "Health", "💪"],
     ["more", "More", "⋯"],
   ];
   let view = "home";
@@ -4049,6 +4085,60 @@
       );
     },
 
+    health() {
+      const day =
+        (state.health && state.health.log && state.health.log[todayKey()]) || {};
+      const rate =
+        (state.rewards && state.rewards.rates && state.rewards.rates.health) ||
+        0.1;
+      const doneCount = HEALTH_ITEMS.filter((it) => day[it[0]]).length;
+      const items = HEALTH_ITEMS.map((it) => {
+        const [id, emoji, label, hint] = it;
+        const done = !!day[id];
+        return (
+          '<label class="health-item' +
+          (done ? " done" : "") +
+          '"><input type="checkbox" data-check="health" data-id="' +
+          id +
+          '"' +
+          (done ? " checked" : "") +
+          ' aria-label="' +
+          esc(label) +
+          '"><span class="health-emoji" aria-hidden="true">' +
+          emoji +
+          '</span><span class="health-text"><b class="steptext' +
+          (done ? " done" : "") +
+          '">' +
+          esc(label) +
+          "</b><small>" +
+          esc(hint) +
+          '</small></span><span class="health-pay">+' +
+          money(rate) +
+          "</span></label>"
+        );
+      }).join("");
+      const cheer =
+        doneCount === 0
+          ? "Pick one and go move your body. 🚀"
+          : doneCount >= HEALTH_ITEMS.length
+            ? "Wow — you did them all today! 🏆"
+            : "Nice work — " + doneCount + " done today! 🔥";
+      return (
+        '<div class="view-head"><h2 class="view-title">💪 Health</h2></div>' +
+        '<p class="view-intro">Move your body, earn a little allowance. These are just for fun — nothing here is required, and they reset every day.</p>' +
+        card(
+          "health-today",
+          "🚴 Today’s movement",
+          "Check one off when you do it. Each is worth " + money(rate) + ".",
+          '<div class="health-list">' +
+            items +
+            '</div><p class="health-cheer" aria-live="polite">' +
+            cheer +
+            "</p>",
+        )
+      );
+    },
+
     ai() {
       const mode = window._aiMode = window._aiMode || "hint";
       const msgs = AI_CHAT.length
@@ -4590,9 +4680,10 @@ Due May 31"></textarea>
         routine: "🔁 Routines",
         focus: "▶ Focus sessions",
         reminder: "🔔 Reminders",
+        health: "💪 Biking & lifting",
       };
       const stub = (w) =>
-        `<div class="pay-stub">${["task", "routine", "focus", "reminder"]
+        `<div class="pay-stub">${["task", "routine", "focus", "reminder", "health"]
           .filter((k) => w.by[k] > 0)
           .map(
             (k) =>
@@ -7580,8 +7671,9 @@ Due May 31"></textarea>
         routine: "Routines",
         focus: "Focus sessions",
         reminder: "Reminders",
+        health: "Biking & lifting",
       };
-      const lines = ["task", "routine", "focus", "reminder"]
+      const lines = ["task", "routine", "focus", "reminder", "health"]
         .filter((k) => w.by[k] > 0)
         .map(
           (k) =>
@@ -9172,6 +9264,41 @@ ${name}`;
           save();
           // Re-render so the reminder moves between Open/Done groups cleanly.
           render();
+        }
+      } else if (kind === "health") {
+        // Daily movement check-ins (biking/lifting). Optional; reset each day.
+        // Paid at most once per item per day (tracked in day.__paid) so they
+        // can't be farmed by un/re-checking; money already earned is kept.
+        const day = (state.health.log[todayKey()] =
+          state.health.log[todayKey()] || {});
+        const paid = (day.__paid = day.__paid || []);
+        const item = HEALTH_ITEMS.find((h) => h[0] === id);
+        if (box.checked) {
+          day[id] = 1;
+          if (!paid.includes(id)) {
+            paid.push(id);
+            addPoints(1);
+            earnReward("health", item ? item[2] : "Movement");
+            triggerConfetti();
+          }
+        } else {
+          delete day[id];
+        }
+        save({ immediate: true });
+        const wrap = box.closest(".health-item");
+        if (wrap) wrap.classList.toggle("done", box.checked);
+        const label = box.parentElement.querySelector(".steptext");
+        if (label) label.classList.toggle("done", box.checked);
+        const cheerEl = document.querySelector(".health-cheer");
+        if (cheerEl) {
+          const d = state.health.log[todayKey()] || {};
+          const n = HEALTH_ITEMS.filter((it) => d[it[0]]).length;
+          cheerEl.textContent =
+            n === 0
+              ? "Pick one and go move your body. 🚀"
+              : n >= HEALTH_ITEMS.length
+                ? "Wow — you did them all today! 🏆"
+                : "Nice work — " + n + " done today! 🔥";
         }
       }
     });
