@@ -432,10 +432,32 @@
           opacity 0.18s,
           transform 0.18s;
         z-index: 60;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
       }
       .wb-toast.show {
         opacity: 1;
         transform: translateX(-50%) translateY(0);
+      }
+      .wb-toast-action {
+        pointer-events: auto;
+        min-height: 32px;
+        padding: 4px 12px;
+        border: none;
+        border-radius: 999px;
+        background: #ffd54a;
+        color: #1f2937;
+        font: inherit;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .wb-toast-action:hover {
+        background: #ffe07a;
+      }
+      .wb-toast-action:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
       }
       .flyout h3 {
         margin: 0 0 3px;
@@ -1751,6 +1773,13 @@
       .obj.sel .obj-tools {
         display: flex;
       }
+      /* Near the top of the sheet the toolbar flips below the object so its
+         controls stay on-screen instead of clipping above the workspace. */
+      .obj-tools.below {
+        top: auto;
+        bottom: -14px;
+        transform: translate(-50%, 100%);
+      }
       .obj-tools button {
         width: 36px;
         height: 36px;
@@ -1778,6 +1807,18 @@
         box-shadow: 0 0 0 1px var(--line);
         align-self: center;
         margin: 0 2px;
+      }
+      /* On touch hardware (Chromebooks / tablets) grow the object controls to
+         the 44px minimum touch-target size so small fingers can hit them. */
+      @media (pointer: coarse) {
+        .obj-tools button {
+          width: 44px;
+          height: 44px;
+        }
+        .obj-tools .mini-sw {
+          width: 36px;
+          height: 36px;
+        }
       }
 
       /* hint when empty */
@@ -2438,6 +2479,26 @@
             <span class="i">⤓</span><span class="txt">Save / Print</span>
           </button>
           <button
+            class="tbtn"
+            id="backupBtn"
+            title="Save a re-openable copy of all your pages to a file"
+          >
+            <span class="i">💾</span><span class="txt">Backup</span>
+          </button>
+          <button
+            class="tbtn"
+            id="openBtn"
+            title="Open a Workbench file you saved before"
+          >
+            <span class="i">📂</span><span class="txt">Open</span>
+          </button>
+          <input
+            type="file"
+            id="openFile"
+            accept="application/json,.json"
+            hidden
+          />
+          <button
             class="tbtn solid"
             id="helpBtn"
             title="How to use the Workbench"
@@ -2986,14 +3047,25 @@
         renderTabs();
         workspace.scrollTop = state.scroll || 0;
       }
+      let saveFailNotified = false;
       function writeNow() {
         const pill = $("#savePill");
         try {
           localStorage.setItem(LS_KEY, notebookSnapshot());
           if (pill) pill.textContent = "Saved";
+          saveFailNotified = false;
           return true;
         } catch (e) {
           if (pill) pill.textContent = "Not saved";
+          // Don't let a full or blocked storage fail silently — tell the
+          // student once and offer a file backup so their work isn't lost.
+          if (!saveFailNotified) {
+            saveFailNotified = true;
+            showToast("Can't auto-save — save a copy to be safe", {
+              label: "Save a copy",
+              fn: () => downloadNotebook(),
+            });
+          }
           return false;
         }
       }
@@ -3192,15 +3264,10 @@
           showToast("You need at least one page");
           return;
         }
-        const b = notebook.boards[i];
-        const hasContent =
-          (b.strokes && b.strokes.length) || (b.objects && b.objects.length);
-        if (
-          hasContent &&
-          !confirm("Delete page " + (i + 1) + "? This can't be undone.")
-        )
-          return;
-        // Save the leaving page's scroll, then remove the target page.
+        // Save the leaving page's scroll, then remove the target page. The
+        // removed board is kept so the student can restore it from the toast —
+        // page delete is fully reversible, no scary "can't be undone" prompt.
+        const removed = notebook.boards[i];
         notebook.boards[notebook.active].scroll = workspace.scrollTop;
         notebook.boards.splice(i, 1);
         let na = notebook.active;
@@ -3220,7 +3287,23 @@
         workspace.scrollTop = state.scroll || 0;
         renderTabs();
         persist();
-        showToast("Page deleted");
+        showToast("Page " + (i + 1) + " deleted", {
+          label: "Undo",
+          fn: () => restoreBoard(removed, i),
+        });
+      }
+      // Put a deleted page back where it was (or as close as the current page
+      // count allows) and jump to it.
+      function restoreBoard(board, index) {
+        if (notebook.boards.length >= MAX_TABS) {
+          showToast("Can't restore — that's the most pages (" + MAX_TABS + ")");
+          return;
+        }
+        const at = Math.min(Math.max(0, index), notebook.boards.length);
+        notebook.boards.splice(at, 0, board);
+        renderTabs();
+        switchBoard(at);
+        showToast("Page restored");
       }
       $("#addPageBtn").addEventListener("click", addBoard);
       $("#delPageBtn").addEventListener("click", () =>
@@ -3276,6 +3359,12 @@
       }
       canvas.addEventListener("pointerdown", (e) => {
         if (document.body.dataset.draw !== "1") return;
+        // Palm rejection on touch hardware: once a stroke is in progress, ignore
+        // any additional pointer (a resting palm or a second finger) so it can
+        // never lay down stray ink while the student is writing. Likewise skip
+        // non-primary touch points entirely.
+        if (drawing) return;
+        if (e.pointerType === "touch" && e.isPrimary === false) return;
         canvas.setPointerCapture(e.pointerId);
         // Measure the workspace once and reuse it for the whole stroke. The
         // pointer is captured and nothing mutates layout mid-gesture, so this
@@ -3285,16 +3374,20 @@
         const p = ptFromRect(e, rect);
         if (tool === "eraser") {
           eraseAt(p);
-          drawing = { erase: true, rect };
+          drawing = { erase: true, rect, pointerId: e.pointerId };
           return;
         }
         const color = tool === "highlighter" ? hiColor : penColor;
         const size =
           tool === "highlighter" ? Math.max(penSize * 3, 14) : penSize;
-        drawing = { tool, color, size, pts: [p], rect };
+        drawing = { tool, color, size, pts: [p], rect, pointerId: e.pointerId };
       });
       canvas.addEventListener("pointermove", (e) => {
         if (!drawing) return;
+        // Only the pointer that started the stroke may extend it — a palm or
+        // second finger firing pointermove must not bend the active line.
+        if (drawing.pointerId != null && e.pointerId !== drawing.pointerId)
+          return;
         const rect = drawing.rect;
         if (drawing.erase) {
           eraseAt(ptFromRect(e, rect));
@@ -3410,7 +3503,10 @@
 
       let toastEl = null,
         toastT = null;
-      function showToast(msg) {
+      // showToast(msg) — quick status; or showToast(msg, {label, fn}) to attach
+      // a single action button (e.g. "Undo") that stays up longer so the
+      // student can react before it fades. Used to make page delete reversible.
+      function showToast(msg, action) {
         if (!toastEl) {
           toastEl = document.createElement("div");
           toastEl.className = "wb-toast";
@@ -3418,12 +3514,29 @@
           toastEl.setAttribute("aria-live", "polite");
           document.body.appendChild(toastEl);
         }
-        toastEl.textContent = msg;
+        toastEl.textContent = "";
+        const label = document.createElement("span");
+        label.textContent = msg;
+        toastEl.appendChild(label);
+        let life = 1500;
+        if (action && action.label && typeof action.fn === "function") {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "wb-toast-action";
+          btn.textContent = action.label;
+          btn.addEventListener("click", () => {
+            clearTimeout(toastT);
+            toastEl.classList.remove("show");
+            action.fn();
+          });
+          toastEl.appendChild(btn);
+          life = 6000; // leave time to act on the offered action
+        }
         // reflow so re-triggering the transition works
         void toastEl.offsetWidth;
         toastEl.classList.add("show");
         clearTimeout(toastT);
-        toastT = setTimeout(() => toastEl.classList.remove("show"), 1500);
+        toastT = setTimeout(() => toastEl.classList.remove("show"), life);
       }
 
       function objById(id) {
@@ -3801,10 +3914,16 @@
       function miniTools(o, opts = {}) {
         const wrap = document.createElement("div");
         wrap.className = "obj-tools";
+        // Flip the toolbar below the object when it sits near the top of the
+        // sheet, so the resize/duplicate/delete controls never clip off-screen.
+        if ((o.y || 0) < 56) wrap.classList.add("below");
         const mk = (label, title, cls, fn) => {
           const b = document.createElement("button");
+          b.type = "button";
           b.textContent = label;
           b.title = title;
+          // Icon glyphs are not readable by assistive tech — name each control.
+          b.setAttribute("aria-label", title);
           if (cls) b.className = cls;
           b.addEventListener("pointerdown", (e) => {
             e.stopPropagation();
@@ -3834,8 +3953,10 @@
         }
         if (opts.color) {
           const sw = document.createElement("button");
+          sw.type = "button";
           sw.className = "mini-sw";
           sw.title = "Change color";
+          sw.setAttribute("aria-label", "Change color");
           const cur = o.color || opts.color;
           sw.style.background = cur;
           sw.addEventListener("pointerdown", (e) => e.stopPropagation());
@@ -3863,11 +3984,37 @@
         return wrap;
       }
 
+      // A short spoken name for an object, so screen-reader users know what
+      // they have focused and (via the global keydown) can move/delete it.
+      function objAriaLabel(o) {
+        switch (o && o.type) {
+          case "tile":
+            return (o.kind === "op" ? "Symbol " : "Number ") + (o.value || "");
+          case "text":
+            return "Text" + (o.text ? ": " + o.text : " box");
+          case "fraction":
+            return "Fraction " + (o.num || "") + " over " + (o.den || "");
+          case "line":
+            return "Line";
+          default:
+            return ((o && o.type) || "Object").replace(/[-_]/g, " ");
+        }
+      }
       function buildObjEl(o) {
         normScale(o);
         const el = document.createElement("div");
         el.className = "obj";
         el.dataset.id = o.id;
+        // Keyboard operability (WCAG 2.1.1): every object is focusable, names
+        // itself to assistive tech, and selects itself on focus so the arrow
+        // keys / Delete handled in the global keydown act on it.
+        el.tabIndex = 0;
+        el.setAttribute("role", "group");
+        el.setAttribute(
+          "aria-label",
+          objAriaLabel(o) + " — arrow keys move, Delete removes",
+        );
+        el.addEventListener("focus", () => selectObject(o.id));
         const inner = document.createElement("div");
         inner.className = "obj-inner";
         if (o.type === "line") {
@@ -7943,7 +8090,7 @@
         if (!state.objects.length && !state.strokes.length) return;
         if (
           confirm(
-            "Clear the whole board? This cannot be undone after you leave.",
+            "Clear everything on this page? You can put it back right away with Undo (Ctrl+Z).",
           )
         ) {
           state.objects = [];
@@ -7960,6 +8107,75 @@
         deselect();
         setTimeout(() => window.print(), 60);
       });
+
+      /* --------- Backup / restore: a re-openable copy of the notebook --------
+       * Gives students and teachers a real, portable export of their work and a
+       * recovery path when browser storage is full or blocked (see writeNow).
+       * Pure client-side JSON download/upload — no network, no dependencies. */
+      function downloadNotebook() {
+        try {
+          const data = notebookSnapshot();
+          const blob = new Blob([data], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          const d = new Date();
+          const stamp =
+            d.getFullYear() +
+            "-" +
+            String(d.getMonth() + 1).padStart(2, "0") +
+            "-" +
+            String(d.getDate()).padStart(2, "0");
+          a.href = url;
+          a.download = "math-workbench-" + stamp + ".json";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 2000);
+          showToast("Saved a copy to your downloads");
+        } catch (e) {
+          showToast("Couldn't save a copy");
+        }
+      }
+      const backupBtn = $("#backupBtn");
+      if (backupBtn) backupBtn.addEventListener("click", downloadNotebook);
+      const openFile = $("#openFile");
+      const openBtn = $("#openBtn");
+      if (openBtn && openFile)
+        openBtn.addEventListener("click", () => openFile.click());
+      if (openFile)
+        openFile.addEventListener("change", () => {
+          const file = openFile.files && openFile.files[0];
+          openFile.value = ""; // allow re-opening the same file later
+          if (!file) return;
+          const hasWork = notebook.boards.some(
+            (b) => b.strokes.length || b.objects.length,
+          );
+          if (
+            hasWork &&
+            !confirm(
+              "Open this file? It replaces the pages you have open now. " +
+                "Use Backup first if you want to keep them.",
+            )
+          )
+            return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              loadNotebook(String(reader.result || ""));
+              history.length = 0;
+              hpos = -1;
+              history.push(snapshot());
+              hpos = 0;
+              updateUndoButtons();
+              persist();
+              showToast("Opened your saved Workbench");
+            } catch (e) {
+              showToast("That file couldn't be opened");
+            }
+          };
+          reader.onerror = () => showToast("That file couldn't be read");
+          reader.readAsText(file);
+        });
       let helpReturnFocus = null;
       function openHelp() {
         helpReturnFocus = document.activeElement;
@@ -7998,6 +8214,7 @@
       });
 
       /* ----------------------- Keyboard ----------------------- */
+      let nudgeT = null; // debounce timer for arrow-key object nudging
       window.addEventListener("keydown", (e) => {
         if (
           e.target.isContentEditable ||
@@ -8019,6 +8236,32 @@
           if (selectedId) {
             e.preventDefault();
             deleteObject(selectedId);
+          }
+          return;
+        }
+        if (
+          selectedId &&
+          (k === "arrowup" ||
+            k === "arrowdown" ||
+            k === "arrowleft" ||
+            k === "arrowright")
+        ) {
+          const o = objById(selectedId);
+          if (o) {
+            e.preventDefault();
+            const step = e.shiftKey ? 16 : 4; // Shift = bigger jumps
+            if (k === "arrowup") o.y -= step;
+            else if (k === "arrowdown") o.y += step;
+            else if (k === "arrowleft") o.x -= step;
+            else o.x += step;
+            o.y = Math.max(0, o.y);
+            o.x = Math.max(0, o.x);
+            const el = overlay.querySelector('[data-id="' + selectedId + '"]');
+            if (el) applyTransform(el, o);
+            growToFit();
+            // Coalesce a run of nudges into one undo step + one save.
+            clearTimeout(nudgeT);
+            nudgeT = setTimeout(pushHistory, 350);
           }
           return;
         }
