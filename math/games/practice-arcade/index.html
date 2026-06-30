@@ -1568,7 +1568,15 @@
         return names[n] || "ONE";
       }
 
-      window.addEventListener("DOMContentLoaded", loadLessonConfig);
+      // Init must survive deferred/async script execution (e.g. Cloudflare Rocket
+      // Loader), which runs this script AFTER DOMContentLoaded has already fired —
+      // a plain listener would never run and the loader would spin forever. Mirror
+      // the readyState guard used by the engine-error block above.
+      if (document.readyState === "loading") {
+        window.addEventListener("DOMContentLoaded", loadLessonConfig);
+      } else {
+        loadLessonConfig();
+      }
       } // end engine guard (typeof Phaser === "undefined")
     </script>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
