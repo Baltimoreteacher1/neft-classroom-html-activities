@@ -366,11 +366,20 @@
         if (it.type === "multiple-choice") {
           if (!it.stem || !Array.isArray(it.choices) || it.choices.length < 2)
             return null;
+          // Randomize the choice order. Every lesson config authors the correct
+          // answer first (correctIndex 0) and the renderer keeps that order, so
+          // without this the answer is always the top button — predictable and
+          // not a real check for understanding. Track the correct option text
+          // through the shuffle so correctIndex stays valid.
+          const ci = it.correctIndex || 0;
+          const correctText = it.choices[ci];
+          const choices = shuffle(it.choices);
+          const newIndex = choices.indexOf(correctText);
           return {
             kind: "choose",
             prompt: it.stem,
-            choices: it.choices,
-            correctIndex: it.correctIndex || 0,
+            choices,
+            correctIndex: newIndex < 0 ? 0 : newIndex,
             why: it.explanation || "",
           };
         }
