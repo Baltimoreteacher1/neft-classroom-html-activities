@@ -104,6 +104,38 @@
     <div id="pa-sr" role="status" aria-live="polite"></div>
 
     <script>
+      // Failsafe: the scene classes below are declared as
+      // `class … extends Phaser.Scene`, evaluated the instant this script runs.
+      // If the Phaser engine failed to load (blocked CDN fallback on a school
+      // network, or a stale deploy missing the vendored file), that line throws
+      // and aborts the whole script — so the DOMContentLoaded handler at the
+      // bottom never registers and the loader spins on "Loading…" forever.
+      // Guard the game behind an engine check: when Phaser is missing, show an
+      // actionable error with a Reload button instead of a dead spinner.
+      if (typeof Phaser === "undefined") {
+        (function () {
+          function render() {
+            var loader = document.getElementById("loader");
+            if (!loader) return;
+            loader.innerHTML =
+              '<div style="max-width:30rem;text-align:center;color:#e2e8f0;' +
+              'font-family:system-ui,-apple-system,sans-serif;padding:1.5rem;line-height:1.5">' +
+              '<div style="font-size:2.6rem;margin-bottom:.4rem" aria-hidden="true">🎮⚠️</div>' +
+              '<div style="font-size:1.2rem;font-weight:800;margin-bottom:.5rem">' +
+              "Couldn't load the game engine</div>" +
+              '<div style="opacity:.85;margin-bottom:1.1rem">Check your internet ' +
+              "connection, then reload. If you're on the school network and it keeps " +
+              "failing, let your teacher know.</div>" +
+              '<button type="button" onclick="location.reload()" ' +
+              'style="background:#22d3ee;color:#0b1020;border:0;border-radius:.6rem;' +
+              'padding:.65rem 1.3rem;font-size:1rem;font-weight:800;cursor:pointer">' +
+              "Reload</button></div>";
+          }
+          if (document.readyState === "loading")
+            document.addEventListener("DOMContentLoaded", render);
+          else render();
+        })();
+      } else {
       // ── PRACTICE ARCADE — REVIEW LAB ──────────────────────────────────────
       // Universal per-lesson review game. Reads ?lesson=<id>, fetches that
       // lesson's /lessons/<id>/config.json, and turns each practice item into a
@@ -1537,6 +1569,7 @@
       }
 
       window.addEventListener("DOMContentLoaded", loadLessonConfig);
+      } // end engine guard (typeof Phaser === "undefined")
     </script>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
