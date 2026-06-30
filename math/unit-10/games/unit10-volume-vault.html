@@ -4,41 +4,383 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
-    <title>Volume Vault — Crate Packer</title>
+    <title>Volume Vault — Build the Prism | Neft Teacher</title>
+    <meta
+      name="description"
+      content="Volume Vault: a calm, self-paced Grade 6 game where you set a rectangular prism's length, width, and height to build a vault of an exact volume — V = l × w × h made visible, one unit cube at a time (6.G.A.2)."
+    />
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-      body,
-      html {
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        background: #0a0a0a;
+      :root {
+        --teal: #0e8a7d;
+        --teal-bright: #12a596;
+        --gold: #d4952a;
+        --ink: #06202c;
+        --panel: #0f2b3c;
+        --line: #1f4a5b;
+        --txt: #dff1f0;
+        --muted: #8fb6bf;
+      }
+      body {
+        background: var(--panel);
+        min-height: 100vh;
         font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--txt);
+        overflow-x: hidden;
       }
-      #game {
-        width: 100%;
-        height: 100%;
-      }
-    </style>
-    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
-    <script>
-      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror.
-      if (typeof Phaser === "undefined") {
-        document.write(
-          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+      #vv-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background: radial-gradient(
+          130% 90% at 50% 0%,
+          #134a5a 0%,
+          #0f2b3c 55%,
+          #08202c 100%
         );
       }
-      window.addEventListener("load", function () {
-        if (typeof Phaser === "undefined") {
-          document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+      #vv-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      #wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 18px 16px 48px;
+        min-height: 100vh;
+      }
+      .screen {
+        display: none;
+      }
+      .screen.on {
+        display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
         }
-      });
-    </script>
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .screen.on {
+          animation: none;
+        }
+        * {
+          scroll-behavior: auto !important;
+        }
+      }
+      h1 {
+        font-size: clamp(1.6rem, 4vw, 2.3rem);
+        color: #fff;
+        letter-spacing: 0.5px;
+      }
+      .sub {
+        color: var(--muted);
+        margin-top: 4px;
+        font-size: 0.95rem;
+      }
+      .card {
+        background: rgba(13, 41, 56, 0.82);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px;
+        margin: 16px 0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+      }
+      .btn {
+        font:
+          600 1rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 13px 22px;
+        color: var(--ink);
+        background: var(--teal);
+        transition:
+          transform 0.12s,
+          background 0.12s,
+          box-shadow 0.12s;
+      }
+      .btn:hover {
+        background: var(--teal-bright);
+        transform: translateY(-1px);
+      }
+      .btn:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 3px;
+      }
+      .btn.ghost {
+        background: #1a3a48;
+        color: #9fc6cf;
+      }
+      .btn.ghost:hover {
+        background: #244c5c;
+      }
+      .btn.big {
+        padding: 18px 26px;
+        font-size: 1.1rem;
+      }
+      .btn.seal {
+        background: linear-gradient(180deg, #ffd98a, var(--gold));
+        color: var(--ink);
+        box-shadow: 0 4px 0 #a86f16;
+      }
+      .btn.seal:hover {
+        background: linear-gradient(180deg, #ffe0a0, #e0a23a);
+      }
+      .vocab {
+        display: grid;
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .vrow {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .vterm {
+        color: var(--gold);
+        font-weight: 700;
+        min-width: 150px;
+      }
+      .vdef {
+        color: var(--txt);
+      }
+      .levels {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 680px) {
+        .levels {
+          grid-template-columns: 1fr;
+        }
+      }
+      .level-pick {
+        text-align: left;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+        padding: 18px;
+        background: #0c2532;
+        border: 1px solid var(--line);
+        color: var(--txt);
+        border-radius: 14px;
+        cursor: pointer;
+      }
+      .level-pick:hover {
+        border-color: var(--teal-bright);
+        background: #102f3f;
+      }
+      .level-pick b {
+        color: #fff;
+        font-size: 1.15rem;
+      }
+      .level-pick .tag {
+        color: var(--teal-bright);
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .level-pick .desc {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .hud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .hud .pill {
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-weight: 700;
+      }
+      .hud .pill small {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .target {
+        text-align: center;
+        margin: 6px 0 12px;
+      }
+      .target .nums {
+        font-size: clamp(1.3rem, 4.4vw, 1.9rem);
+        font-weight: 800;
+        color: #fff;
+      }
+      .target .nums span {
+        color: var(--gold);
+      }
+      .prompt {
+        color: var(--muted);
+        margin-top: 4px;
+        font-size: 0.95rem;
+      }
+
+      /* ── Builder ── */
+      .builder {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+        align-items: center;
+      }
+      .stage {
+        display: flex;
+        justify-content: center;
+      }
+      #prism {
+        width: 100%;
+        max-width: 420px;
+        height: auto;
+        background: #0b2330;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+      }
+      .steppers {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+      }
+      @media (max-width: 560px) {
+        .steppers {
+          grid-template-columns: 1fr;
+        }
+      }
+      .stepper {
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px;
+        text-align: center;
+      }
+      .stepper .slabel {
+        display: block;
+        font-weight: 700;
+        color: var(--teal-bright);
+        margin-bottom: 8px;
+      }
+      .srow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      .sbtn {
+        width: 46px;
+        height: 46px;
+        border: none;
+        border-radius: 12px;
+        background: #1a3a48;
+        color: #fff;
+        font-size: 1.6rem;
+        font-weight: 800;
+        line-height: 1;
+        cursor: pointer;
+        transition: background 0.12s;
+      }
+      .sbtn:hover {
+        background: #265064;
+      }
+      .sbtn:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      .sval {
+        min-width: 44px;
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: #fff;
+      }
+      .formula {
+        text-align: center;
+        font-size: clamp(1.05rem, 3.4vw, 1.4rem);
+        font-weight: 800;
+        color: var(--txt);
+        margin: 6px 0 2px;
+      }
+      .formula b {
+        color: var(--muted);
+      }
+      .formula b.hit {
+        color: var(--gold);
+      }
+      .seal-row {
+        display: flex;
+        justify-content: center;
+        margin-top: 6px;
+      }
+      .feedback {
+        min-height: 24px;
+        text-align: center;
+        margin: 10px 0 2px;
+        font-weight: 600;
+      }
+      .feedback.bad {
+        color: #f0a06b;
+      }
+      .feedback.good {
+        color: #79d39a;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-align: center;
+        margin-top: 6px;
+      }
+      .result-stars {
+        font-size: 2rem;
+        color: var(--gold);
+        letter-spacing: 6px;
+        text-align: center;
+        margin: 10px 0;
+      }
+      .result-stat {
+        display: flex;
+        justify-content: space-between;
+        max-width: 320px;
+        margin: 6px auto;
+        color: var(--muted);
+      }
+      .result-stat b {
+        color: var(--txt);
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
+      }
+    </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
@@ -50,64 +392,244 @@
     <!-- mobile-access-injected:end -->
   </head>
   <body>
-    <div id="game"></div>
+    <div id="vv-bg" aria-hidden="true"></div>
+    <div id="vv-sr" role="status" aria-live="polite"></div>
+
+    <main id="wrap">
+      <!-- VOCAB GATE -->
+      <section id="screen-vocab" class="screen on" aria-labelledby="vh">
+        <h1 id="vh">🔒 Volume Vault</h1>
+        <p class="sub">
+          Build rectangular prisms · Volume = l × w × h · 6.G.A.2
+        </p>
+        <div class="card">
+          <h2 style="color: #fff; font-size: 1.2rem">Words to know first</h2>
+          <div class="vocab" id="vocab-list"></div>
+          <button class="btn big" id="vocab-go">I'm ready →</button>
+        </div>
+      </section>
+
+      <!-- LEVEL SELECT -->
+      <section id="screen-level" class="screen" aria-labelledby="lh">
+        <h1 id="lh">Choose your level</h1>
+        <p class="sub">You can change this any time by playing again.</p>
+        <div class="card">
+          <div class="levels" id="level-list"></div>
+        </div>
+      </section>
+
+      <!-- PLAY -->
+      <section id="screen-play" class="screen" aria-labelledby="ph">
+        <h1 id="ph" style="position: absolute; left: -9999px">
+          Volume Vault play
+        </h1>
+        <div class="hud">
+          <span class="pill"
+            ><small>Round</small> <span id="hud-round">1</span>/<span
+              id="hud-total"
+              >4</span
+            ></span
+          >
+          <span class="pill"
+            ><small>Score</small> <span id="hud-score">0</span></span
+          >
+        </div>
+        <div class="card">
+          <div class="target">
+            <div class="nums">
+              Build a vault of exactly
+              <span id="t-vol">24</span> cubic units
+            </div>
+            <div class="prompt">
+              Set the length, width, and height. Each unit cube is 1 cubic unit
+              — seal the vault when the volume is exactly right.
+            </div>
+          </div>
+
+          <div class="builder">
+            <div class="stage">
+              <canvas
+                id="prism"
+                width="420"
+                height="300"
+                role="img"
+                aria-label="A rectangular prism built from unit cubes. Its size changes as you set the length, width, and height."
+              ></canvas>
+            </div>
+
+            <div class="steppers">
+              <div class="stepper">
+                <span class="slabel">Length</span>
+                <div class="srow">
+                  <button
+                    class="sbtn"
+                    data-dim="l"
+                    data-d="-1"
+                    aria-label="Decrease length"
+                  >
+                    −
+                  </button>
+                  <span class="sval" id="v-l">1</span>
+                  <button
+                    class="sbtn"
+                    data-dim="l"
+                    data-d="1"
+                    aria-label="Increase length"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <div class="stepper">
+                <span class="slabel">Width</span>
+                <div class="srow">
+                  <button
+                    class="sbtn"
+                    data-dim="w"
+                    data-d="-1"
+                    aria-label="Decrease width"
+                  >
+                    −
+                  </button>
+                  <span class="sval" id="v-w">1</span>
+                  <button
+                    class="sbtn"
+                    data-dim="w"
+                    data-d="1"
+                    aria-label="Increase width"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <div class="stepper">
+                <span class="slabel">Height</span>
+                <div class="srow">
+                  <button
+                    class="sbtn"
+                    data-dim="h"
+                    data-d="-1"
+                    aria-label="Decrease height"
+                  >
+                    −
+                  </button>
+                  <span class="sval" id="v-h">1</span>
+                  <button
+                    class="sbtn"
+                    data-dim="h"
+                    data-d="1"
+                    aria-label="Increase height"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="formula" id="formula"></div>
+          <div class="seal-row">
+            <button class="btn big seal" id="seal">🔒 Seal the vault</button>
+          </div>
+
+          <div
+            class="feedback"
+            id="feedback"
+            role="status"
+            aria-live="assertive"
+          ></div>
+          <p class="hint" id="hint"></p>
+        </div>
+      </section>
+
+      <!-- RESULT -->
+      <section id="screen-result" class="screen" aria-labelledby="rh">
+        <h1 id="rh">Vault sealed</h1>
+        <div class="card">
+          <div class="result-stars" id="r-stars">★★★</div>
+          <div class="result-stat"><span>Score</span><b id="r-score">0</b></div>
+          <div class="result-stat">
+            <span>Vaults sealed</span><b id="r-sealed">0</b>
+          </div>
+          <div class="result-stat" id="r-high-row" style="display: none">
+            <span>★ New high score!</span><b id="r-high">0</b>
+          </div>
+          <div class="row">
+            <button class="btn big" id="r-again">Play again</button>
+            <a class="btn ghost big" href="/math/games/">All games</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
     <script>
-      // ───────────────────────────────────────────────────────────
-      // VOLUME VAULT — CRATE PACKER  (Neft Teacher)
-      // Grade 6: 6.G.A.2 — Volume of rectangular prisms (V = l × w × h).
+      // ════════════════════════════════════════════════════════════════════
+      //  VOLUME VAULT — Dimension Builder  ·  Grade 6  ·  6.G.A.2
       //
-      // REAL GAME: A physics-driven packing game. Unit cubes fall from a
-      // conveyor; you slide a crate left/right to catch them and pack the
-      // prism EXACTLY to its target volume. The math IS the mechanic — you
-      // build the prism layer-by-layer and the live volume counter teaches
-      // V = l × w × h as you fill the box. Over-pack and the crate jams;
-      // hit the exact volume to seal the vault and advance.
-      // ───────────────────────────────────────────────────────────
-      const W = 1024,
-        H = 768;
-      const LS_KEY = "volumevault_packer_hi";
+      //  Volume of a rectangular prism, as a real mechanic. Each round gives a
+      //  target volume; the player sets Length / Width / Height with steppers
+      //  and a gridded isometric prism of unit cubes builds live, with the
+      //  formula V = l × w × h shown the whole time. Seal the vault when the
+      //  volume is exactly the target. Many shapes work, so it teaches the
+      //  formula AND that volume has many factor shapes. Calm, self-paced,
+      //  no timer, no-fail — a wrong seal nudges and you adjust.
+      // ════════════════════════════════════════════════════════════════════
+      const STANDARD = "6.G.A.2";
+      const ACTIVITY_TITLE = "Volume Vault — Volume of Prisms";
+      const LS_KEY = "volumevault_builder_hi";
+      const ROUNDS = 4;
 
-      // ── Reduced-motion: gate every ADDITIVE visual effect below. Gameplay
-      //    (loop, controls, scoring, answer-checking) is untouched either way.
-      const RM = (function () {
-        try {
-          return (
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches
-          );
-        } catch (e) {
-          return false;
-        }
-      })();
+      const VOCAB = [
+        {
+          term: "volume",
+          defn: "The amount of space inside a 3-D shape, measured in cubic units (how many unit cubes fit inside).",
+        },
+        {
+          term: "rectangular prism",
+          defn: "A 3-D box shape with 6 rectangular faces, like a cereal box or a shipping crate.",
+        },
+        {
+          term: "cubic unit",
+          defn: "A cube that is 1 unit long, 1 unit wide, and 1 unit tall. We count volume in cubic units.",
+        },
+        {
+          term: "V = l × w × h",
+          defn: "To find a box's volume, multiply its length by its width by its height.",
+        },
+      ];
 
-      // ── aria-live HUD mirror: a visually-hidden DOM region that announces the
-      //    live packed/target volume for screen-reader + assistive users. This
-      //    is purely additive (the on-canvas HUD is unchanged).
-      const a11yLive = (function () {
-        try {
-          const d = document.createElement("div");
-          d.setAttribute("aria-live", "polite");
-          d.setAttribute("role", "status");
-          d.id = "vv-aria-live";
-          d.style.cssText =
-            "position:absolute;width:1px;height:1px;margin:-1px;padding:0;" +
-            "overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;";
-          (document.body || document.documentElement).appendChild(d);
-          return d;
-        } catch (e) {
-          return null;
-        }
-      })();
-      function announce(msg) {
-        if (a11yLive && a11yLive.textContent !== msg)
-          a11yLive.textContent = msg;
-      }
+      const TIERS = {
+        1: {
+          label: "Level 1",
+          sub: "Support",
+          name: "Bronze Vault",
+          desc: "Smaller targets · dimensions up to 6",
+        },
+        2: {
+          label: "Level 2",
+          sub: "On level",
+          name: "Silver Vault",
+          desc: "Bigger targets · dimensions up to 9",
+        },
+        3: {
+          label: "Level 3",
+          sub: "Enrichment",
+          name: "Gold Vault",
+          desc: "Large targets · think in factors",
+        },
+      };
 
-      // ── Web Audio SFX ──
-      class SFX {
-        constructor() {
-          this.ctx = null;
-        }
+      // Curated target volumes (each is reachable with the level's dimension
+      // cap and has several whole-number l × w × h shapes).
+      const TARGETS = {
+        1: [12, 16, 18, 20, 24],
+        2: [36, 40, 48, 54, 60, 72],
+        3: [64, 72, 96, 120, 144],
+      };
+
+      // ── Tiny WebAudio SFX ──
+      const SFX = {
+        ctx: null,
         init() {
           if (!this.ctx)
             try {
@@ -115,977 +637,359 @@
                 window.AudioContext || window.webkitAudioContext
               )();
             } catch (e) {}
-        }
-        tone(f, d, t = "sine", v = 0.07) {
+        },
+        play(t, f, d, v = 0.2) {
           if (!this.ctx) return;
           try {
-            const o = this.ctx.createOscillator(),
-              g = this.ctx.createGain();
+            const c = this.ctx,
+              o = c.createOscillator(),
+              g = c.createGain();
             o.type = t;
             o.frequency.value = f;
-            g.gain.setValueAtTime(v, this.ctx.currentTime);
-            g.gain.exponentialRampToValueAtTime(
-              0.001,
-              this.ctx.currentTime + d,
-            );
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
             o.connect(g);
-            g.connect(this.ctx.destination);
+            g.connect(c.destination);
             o.start();
-            o.stop(this.ctx.currentTime + d);
+            o.stop(c.currentTime + d);
           } catch (e) {}
-        }
-        catch() {
-          this.tone(523, 0.08, "square", 0.05);
-          this.tone(784, 0.1, "sine", 0.05);
-        }
-        seal() {
-          this.tone(659, 0.12, "sine");
-          setTimeout(() => this.tone(988, 0.18, "sine"), 90);
-        }
-        jam() {
-          this.tone(160, 0.25, "sawtooth", 0.08);
-        }
-        miss() {
-          this.tone(220, 0.12, "triangle", 0.05);
-        }
-      }
-      const sfx = new SFX();
-
-      const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
-
-      // ── Level generation: pick a target prism l×w×h within grade range ──
-      function makeLevel(floor) {
-        // Difficulty scales the dimensions (and thus the target volume).
-        let lMax, hMax;
-        if (floor <= 2) {
-          lMax = 4;
-          hMax = 3;
-        } else if (floor <= 5) {
-          lMax = 5;
-          hMax = 4;
-        } else {
-          lMax = 6;
-          hMax = 5;
-        }
-        const l = randInt(2, lMax); // crate footprint length (columns)
-        const w = randInt(2, 3); // crate depth — affects cubes-per-cell weighting
-        const h = randInt(2, hMax); // target stack height (layers)
-        return { l, w, h, target: l * w * h };
-      }
-
-      // ════════════════════════════════════════════════════════════
-      //  BOOT
-      // ════════════════════════════════════════════════════════════
-      class BootScene extends Phaser.Scene {
-        constructor() {
-          super("Boot");
-        }
-        create() {
-          // procedural cube texture (isometric-ish gold ingot block)
-          const g = this.add.graphics();
-          const drawCube = (key, top, left, right) => {
-            g.clear();
-            g.fillStyle(top, 1);
-            g.fillPoints(
-              [
-                { x: 22, y: 0 },
-                { x: 44, y: 12 },
-                { x: 22, y: 24 },
-                { x: 0, y: 12 },
-              ],
-              true,
-            );
-            g.fillStyle(left, 1);
-            g.fillPoints(
-              [
-                { x: 0, y: 12 },
-                { x: 22, y: 24 },
-                { x: 22, y: 44 },
-                { x: 0, y: 32 },
-              ],
-              true,
-            );
-            g.fillStyle(right, 1);
-            g.fillPoints(
-              [
-                { x: 44, y: 12 },
-                { x: 22, y: 24 },
-                { x: 22, y: 44 },
-                { x: 44, y: 32 },
-              ],
-              true,
-            );
-            g.generateTexture(key, 44, 44);
-          };
-          drawCube("cube", 0xffe066, 0xf2b705, 0xd99e04);
-          drawCube("cubeBad", 0xff8585, 0xe05656, 0xc33d3d);
-          g.destroy();
-          this.scene.start("Title");
-        }
-      }
-
-      // ════════════════════════════════════════════════════════════
-      //  TITLE
-      // ════════════════════════════════════════════════════════════
-      class TitleScene extends Phaser.Scene {
-        constructor() {
-          super("Title");
-        }
-        create() {
-          this.cameras.main.setBackgroundColor("#0c1733");
-          for (let i = 0; i < 40; i++) {
-            this.add
-              .rectangle(
-                randInt(0, W),
-                randInt(0, H),
-                2,
-                2,
-                0x3b5bdb,
-                Phaser.Math.FloatBetween(0.2, 0.7),
-              )
-              .setDepth(0);
-          }
-          this.add
-            .text(W / 2, 150, "VOLUME VAULT", {
-              fontFamily: "Segoe UI",
-              fontSize: "72px",
-              fontStyle: "900",
-              color: "#ffe066",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(W / 2, 222, "CRATE PACKER", {
-              fontFamily: "Segoe UI",
-              fontSize: "30px",
-              fontStyle: "700",
-              color: "#74c0fc",
-              letterSpacing: 8,
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(
-              W / 2,
-              330,
-              "Slide the crate to catch the slow-falling cubes and pack the prism to its EXACT volume.\nV = length × width × height. No timer, no rush — take your time!",
-              {
-                fontFamily: "Segoe UI",
-                fontSize: "20px",
-                color: "#dbe4ff",
-                align: "center",
-                lineSpacing: 8,
-              },
-            )
-            .setOrigin(0.5);
-          this.add
-            .text(
-              W / 2,
-              440,
-              "← →  or  A / D  to slide the crate    •    Catch cubes to stack layers",
-              {
-                fontFamily: "Segoe UI",
-                fontSize: "18px",
-                color: "#94a3b8",
-              },
-            )
-            .setOrigin(0.5);
-
-          const hi = parseInt(localStorage.getItem(LS_KEY) || "0");
-          this.add
-            .text(W / 2, 500, "Best vault total: " + hi, {
-              fontFamily: "Segoe UI",
-              fontSize: "18px",
-              color: "#ffd43b",
-            })
-            .setOrigin(0.5);
-
-          const btn = this.add
-            .rectangle(W / 2, 600, 280, 70, 0xffe066)
-            .setInteractive({ useHandCursor: true });
-          const btnT = this.add
-            .text(W / 2, 600, "START HEIST", {
-              fontFamily: "Segoe UI",
-              fontSize: "28px",
-              fontStyle: "800",
-              color: "#0c1733",
-            })
-            .setOrigin(0.5);
-          this.tweens.add({
-            targets: [btn, btnT],
-            scale: 1.05,
-            duration: 700,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.inOut",
-          });
-          const go = () => {
-            sfx.init();
-            this.scene.start("Game");
-          };
-          btn.on("pointerdown", go);
-          this.input.keyboard.once("keydown-ENTER", go);
-          this.input.keyboard.once("keydown-SPACE", go);
-        }
-      }
-
-      // ════════════════════════════════════════════════════════════
-      //  GAME — the real packing loop
-      // ════════════════════════════════════════════════════════════
-      class GameScene extends Phaser.Scene {
-        constructor() {
-          super("Game");
-        }
-        create() {
-          this.cameras.main.setBackgroundColor("#0c1733");
-          this.buildBackdrop(); // ADDITIVE: parallax warehouse-rack depth
-          this.score = 0;
-          this.floor = 1;
-          this.lives = 3;
-          this.placed = 0; // current packed volume (cubes placed so far)
-          this.fallingCubes = [];
-          this.spawnTimer = 0;
-          this.spawnEvery = 2200; // calmer cadence — one slow cube at a time
-          this.gameOver = false;
-
-          // crate footprint geometry (in screen space)
-          this.CELL = 46;
-          this.crateY = H - 90;
-
-          // HUD
-          this.hudScore = this.add
-            .text(20, 16, "", {
-              fontFamily: "Segoe UI",
-              fontSize: "22px",
-              fontStyle: "700",
-              color: "#ffe066",
-            })
-            .setDepth(20);
-          this.hudFloor = this.add
-            .text(W - 20, 16, "", {
-              fontFamily: "Segoe UI",
-              fontSize: "22px",
-              fontStyle: "700",
-              color: "#74c0fc",
-            })
-            .setOrigin(1, 0)
-            .setDepth(20);
-          this.hudLives = this.add
-            .text(W / 2, 16, "", {
-              fontFamily: "Segoe UI",
-              fontSize: "22px",
-              color: "#ff8787",
-            })
-            .setOrigin(0.5, 0)
-            .setDepth(20);
-
-          // live volume equation display (high-contrast: white on deep navy
-          // with a border so it stays readable on a classroom projector)
-          this.eq = this.add
-            .text(W / 2, 58, "", {
-              fontFamily: "Consolas, monospace",
-              fontSize: "26px",
-              fontStyle: "700",
-              color: "#ffffff",
-              backgroundColor: "#0a1838",
-              padding: { x: 16, y: 7 },
-              stroke: "#000000",
-              strokeThickness: 0,
-            })
-            .setOrigin(0.5, 0)
-            .setDepth(20);
-
-          // ── ADDITIVE: animated layer-fill gauge (packed vs target). A vertical
-          //    bar on the left that fills as cubes are packed; turns green at the
-          //    exact target. Mechanic-neutral readout of placed / target.
-          this.buildFillGauge();
-
-          // crate container (slides left/right)
-          this.crate = this.add.container(W / 2, this.crateY).setDepth(10);
-          this.cells = []; // packed cube sprites
-
-          // input
-          this.cursors = this.input.keyboard.createCursorKeys();
-          this.keyA = this.input.keyboard.addKey("A");
-          this.keyD = this.input.keyboard.addKey("D");
-          this.input.on("pointermove", (p) => {
-            this.targetX = Phaser.Math.Clamp(
-              p.x,
-              this.halfCrate,
-              W - this.halfCrate,
-            );
-            this._pointerX = p.x; // ADDITIVE: drives backdrop parallax
-          });
-
-          this.startFloor();
-        }
-
-        // ── ADDITIVE: vertical layer-fill gauge. Frame + animated fill rect +
-        //    a "TARGET" tick at 100%. Reflects placed/target only.
-        buildFillGauge() {
-          const gx = 38,
-            gy = 150,
-            gw = 30,
-            gh = 420;
-          this.gauge = { x: gx, y: gy, w: gw, h: gh };
-          // frame
-          this.add
-            .rectangle(gx, gy, gw + 8, gh + 8, 0x0a1838)
-            .setOrigin(0, 0)
-            .setStrokeStyle(2, 0x3b5bdb, 0.8)
-            .setDepth(19);
-          // animated fill (origin at bottom so it grows upward)
-          this.gaugeFill = this.add
-            .rectangle(gx + 4, gy + 4 + gh, gw, 0, 0xffe066)
-            .setOrigin(0, 1)
-            .setDepth(20);
-          // target line at the top of the usable area
-          this.add
-            .rectangle(gx + 4, gy + 4, gw, 3, 0x51cf66)
-            .setOrigin(0, 0)
-            .setDepth(21);
-          this.add
-            .text(gx + gw + 12, gy, "TARGET", {
-              fontFamily: "Segoe UI",
-              fontSize: "13px",
-              fontStyle: "700",
-              color: "#51cf66",
-            })
-            .setDepth(21);
-          this.add
-            .text(gx, gy + gh + 16, "PACKED", {
-              fontFamily: "Segoe UI",
-              fontSize: "13px",
-              fontStyle: "700",
-              color: "#ffe066",
-            })
-            .setOrigin(0, 0)
-            .setDepth(21);
-        }
-
-        // Update the gauge to reflect packed/target. Animated unless reduced.
-        updateFillGauge() {
-          if (!this.gaugeFill || !this.level) return;
-          const frac = Phaser.Math.Clamp(this.placed / this.level.target, 0, 1);
-          const targetH = this.gauge.h * frac;
-          const exact = this.placed === this.level.target;
-          const color = exact ? 0x51cf66 : 0xffe066;
-          this.gaugeFill.fillColor = color;
-          if (RM) {
-            this.gaugeFill.height = targetH;
-          } else {
-            this.tweens.add({
-              targets: this.gaugeFill,
-              height: targetH,
-              duration: 160,
-              ease: "Quad.out",
-            });
-          }
-        }
-
-        // ── ADDITIVE: parallax warehouse rack giving z-axis depth behind the
-        //    falling cubes. Pure visuals (low depth, behind cubes/crate). Drift
-        //    is disabled under reduced-motion. Drawn once with Graphics so there
-        //    is no per-frame layout cost — only the container x shifts in update.
-        buildBackdrop() {
-          const bg = this.add.container(0, 0).setDepth(1);
-          this.backdrop = bg;
-          const g = this.add.graphics();
-
-          // Vanishing-point perspective floor + ceiling rails (rack depth).
-          const vpx = W / 2;
-          const horizon = H * 0.42;
-          g.lineStyle(2, 0x1c2c57, 0.55);
-          for (let i = -6; i <= 6; i++) {
-            const fx = vpx + i * 150;
-            g.beginPath();
-            g.moveTo(vpx, horizon);
-            g.lineTo(fx, H + 40); // floor fan
-            g.strokePath();
-            g.beginPath();
-            g.moveTo(vpx, horizon);
-            g.lineTo(fx, -40); // ceiling fan
-            g.strokePath();
-          }
-          // Horizontal rack shelves receding toward the horizon.
-          g.lineStyle(2, 0x223a6e, 0.5);
-          for (let r = 1; r <= 7; r++) {
-            const t = r / 8;
-            const y1 = horizon + (H + 40 - horizon) * (t * t);
-            const spread = 60 + 900 * (t * t);
-            g.beginPath();
-            g.moveTo(vpx - spread, y1);
-            g.lineTo(vpx + spread, y1);
-            g.strokePath();
-          }
-          bg.add(g);
-
-          // Upright rack posts (warehouse pillars) — solid, high enough contrast
-          // to read on a projector but dim enough not to fight the cubes.
-          this.rackPosts = [];
-          for (let i = 0; i < 6; i++) {
-            const px = 70 + i * 180;
-            const post = this.add
-              .rectangle(px, H / 2, 16, H, 0x16244a, 0.55)
-              .setStrokeStyle(2, 0x2c447e, 0.5);
-            bg.add(post);
-            this.rackPosts.push(post);
-          }
-          // Floating dust motes for atmosphere (capped, reduced-motion safe).
-          this.motes = [];
-          if (!RM) {
-            for (let i = 0; i < 18; i++) {
-              const m = this.add
-                .circle(randInt(0, W), randInt(60, H - 40), 2, 0x3b5bdb, 0.35)
-                .setDepth(2);
-              m.vy = Phaser.Math.FloatBetween(0.15, 0.5);
-              this.motes.push(m);
-            }
-          }
-          this._bgBaseX = 0;
-        }
-
-        startFloor() {
-          this.level = makeLevel(this.floor);
-          // Honest model: the crate is the prism's BASE (l × w cells). Catching
-          // cubes fills the base one cell at a time; a full base = one LAYER, and
-          // the prism is h layers tall. Total packed = l × w × h = volume. The
-          // student literally builds "base area × height," the 6.G.2 definition.
-          this.baseCount = this.level.l * this.level.w; // cubes per layer
-          this.placed = 0; // total cubes packed so far
-          this.fallingCubes.forEach((c) => c.destroy());
-          this.fallingCubes = [];
-          this.cells.forEach((c) => c.destroy());
-          this.cells = [];
-          this.crate.removeAll(true);
-
-          const { l, w, h } = this.level;
-          this.cols = l;
-          this.rows = w;
-          this.CELL = l >= 5 ? 40 : 46; // shrink cells a touch for wide bases
-          this.crateW = this.cols * this.CELL;
-          this.crateD = this.rows * this.CELL;
-          this.halfCrate = this.crateW / 2;
-          this.targetX = W / 2;
-          this.crate.x = W / 2;
-          // Lift the crate so a w-deep base grid still clears the bottom edge.
-          this.crateY = H - 70 - this.crateD / 2;
-          this.crate.y = this.crateY;
-
-          // Wooden base tray sized to the full l × w footprint.
-          const base = this.add
-            .rectangle(0, 0, this.crateW + 16, this.crateD + 16, 0x5a3d1f)
-            .setStrokeStyle(3, 0x3a2510);
-          this.crate.add(base);
-          // One guide square per base cell (l columns × w rows), top-down.
-          for (let r = 0; r < this.rows; r++) {
-            for (let c = 0; c < this.cols; c++) {
-              const gx = -this.halfCrate + this.CELL / 2 + c * this.CELL;
-              const gy = -this.crateD / 2 + this.CELL / 2 + r * this.CELL;
-              const guide = this.add
-                .rectangle(gx, gy, this.CELL - 6, this.CELL - 6, 0x1b2a52, 0.5)
-                .setStrokeStyle(1, 0x3b5bdb, 0.6);
-              this.crate.add(guide);
-            }
-          }
-
-          this.buildLayerTower(h); // h stacked slots showing completed layers
-
-          // floor banner
-          const banner = this.add
-            .text(
-              W / 2,
-              H / 2 - 40,
-              `FLOOR ${this.floor}\n${l} × ${w} × ${h} = ${this.level.target} cubic units\nbase ${l} × ${w} = ${l * w}  ·  height ${h} layers`,
-              {
-                fontFamily: "Segoe UI",
-                fontSize: "30px",
-                fontStyle: "800",
-                color: "#ffe066",
-                align: "center",
-                backgroundColor: "#0a142e",
-                padding: { x: 24, y: 16 },
-                lineSpacing: 8,
-              },
-            )
-            .setOrigin(0.5)
-            .setDepth(30);
-          this.crateLocked = true;
-          this.time.delayedCall(1600, () => {
-            banner.destroy();
-            this.crateLocked = false;
-          });
-          this.updateHUD();
-        }
-
-        // ── Layer tower: h slots on the right edge that fill green as each full
-        //    base layer is packed. Makes the "× height" factor visible/countable.
-        buildLayerTower(h) {
-          if (this.layerTower) this.layerTower.forEach((o) => o.destroy());
-          if (this.layerTowerExtras)
-            this.layerTowerExtras.forEach((o) => o.destroy());
-          this.layerTower = [];
-          this.layerTowerExtras = [];
-          const slotH = Math.min(34, Math.floor(360 / h));
-          const gap = 6;
-          const towerH = h * slotH + (h - 1) * gap;
-          const tx = W - 70;
-          const top = H / 2 - towerH / 2;
-          this.layerTowerExtras.push(
-            this.add
-              .text(tx + 18, top - 26, "LAYERS", {
-                fontFamily: "Segoe UI",
-                fontSize: "14px",
-                fontStyle: "700",
-                color: "#74c0fc",
-              })
-              .setOrigin(0.5, 0)
-              .setDepth(21),
-          );
-          // Slots fill bottom→top, mirroring how the prism stacks upward.
-          for (let i = 0; i < h; i++) {
-            const y = top + (h - 1 - i) * (slotH + gap);
-            const slot = this.add
-              .rectangle(tx, y, 42, slotH, 0x1b2a52, 0.55)
-              .setOrigin(0, 0)
-              .setStrokeStyle(2, 0x3b5bdb, 0.7)
-              .setDepth(20);
-            this.layerTower.push(slot);
-          }
-        }
-
-        // Light the next tower slot when a base layer is completed.
-        updateLayerTower(completedLayers) {
-          if (!this.layerTower) return;
-          for (let i = 0; i < this.layerTower.length; i++) {
-            const filled = i < completedLayers;
-            this.layerTower[i].setFillStyle(
-              filled ? 0x51cf66 : 0x1b2a52,
-              filled ? 0.95 : 0.55,
-            );
-          }
-        }
-
-        // A base layer just filled — flash it green, sweep its cubes away, and
-        // light a tower slot, then reset the base for the next layer.
-        completeLayer(completedLayers) {
-          sfx.seal();
-          this.updateLayerTower(completedLayers);
-          const sweep = this.cells.slice();
-          this.cells = [];
-          sweep.forEach((cube) => {
-            if (RM) {
-              cube.destroy();
-              return;
-            }
-            this.tweens.add({
-              targets: cube,
-              y: cube.y - 26,
-              alpha: 0,
-              scale: 0.6,
-              duration: 260,
-              ease: "Quad.in",
-              onComplete: () => cube.destroy(),
-            });
-          });
-          this.flashEq("#51cf66");
-        }
-
-        spawnCube() {
-          // a cube falls down one of the columns' screen x-positions
-          const x = randInt(120, W - 120);
-          // Calm tuning (teacher preference): NO hazard cubes — every cube is good.
-          const bad = false;
-          const spr = this.add
-            .image(x, -30, bad ? "cubeBad" : "cube")
-            .setDepth(8)
-            .setData("bad", bad);
-          // Slow, steady fall with no floor speed-up — gentle, not a reflex test.
-          spr.vy = 0.95;
-          this.fallingCubes.push(spr);
-        }
-
-        catchCube(spr) {
-          const bad = spr.getData("bad");
-          if (bad) {
-            // lead cube jams the works
-            sfx.jam();
-            this.cameras.main.shake(180, 0.01);
-            this.jamSpray(spr.x, this.crateY - 40); // ADDITIVE: red shard spray
-            this.loseLife();
-            this.flashEq("#ff6b6b");
-            return;
-          }
-          // Fill the current base layer cell-by-cell (column then row); when the
-          // base is full, that is one completed layer. placed → (col, row, layer).
-          const cellInLayer = this.placed % this.baseCount;
-          const col = cellInLayer % this.cols;
-          const row = Math.floor(cellInLayer / this.cols);
-          const cx = -this.halfCrate + this.CELL / 2 + col * this.CELL;
-          const cy = -this.crateD / 2 + this.CELL / 2 + row * this.CELL;
-          const cube = this.add
-            .image(cx, cy - 44, "cube")
-            .setDepth(9)
-            .setScale(0.92);
-          this.crate.add(cube);
-          this.cells.push(cube);
-          this.placed++;
-          if (RM) {
-            // Reduced motion: place instantly, no drop/tumble animation.
-            cube.y = cy;
-            cube.angle = 0;
-          } else {
-            // ADDITIVE: tumble settle — the cube spins in then eases upright
-            //   as it drops into its cell, then a quick squash-pop on landing.
-            cube.angle = Phaser.Math.Between(-32, 32);
-            this.tweens.add({
-              targets: cube,
-              y: cy,
-              duration: 200,
-              ease: "Bounce.out",
-            });
-            this.tweens.add({
-              targets: cube,
-              angle: 0,
-              duration: 240,
-              ease: "Back.out",
-            });
-            this.tweens.add({
-              targets: cube,
-              scaleX: 1.05,
-              scaleY: 0.78,
-              duration: 110,
-              yoyo: true,
-              delay: 150,
-              ease: "Quad.out",
-              onComplete: () => cube.setScale(0.92),
-            });
-          }
-          sfx.catch();
-          this.score += 5;
-          this.updateHUD();
-
-          if (this.placed === this.level.target) {
-            this.sealVault();
-          } else if (this.placed % this.baseCount === 0) {
-            // A full base layer is done — bank it and reset for the next layer.
-            this.completeLayer(this.placed / this.baseCount);
-          }
-        }
-
-        // ── ADDITIVE: capped red shard spray when the crate jams (hazard cube
-        //    or overfill). Pure feedback — emits at most 14 short-lived rects in
-        //    screen space and is fully skipped under reduced motion.
-        jamSpray(x, y) {
-          if (RM) return;
-          const COUNT = 14;
-          for (let i = 0; i < COUNT; i++) {
-            const sz = randInt(3, 6);
-            const shard = this.add
-              .rectangle(x, y, sz, sz, i % 2 ? 0xff6b6b : 0xffa94d)
-              .setDepth(41);
-            const ang =
-              (Math.PI * 2 * i) / COUNT + Phaser.Math.FloatBetween(-0.3, 0.3);
-            const dist = randInt(60, 150);
-            this.tweens.add({
-              targets: shard,
-              x: x + Math.cos(ang) * dist,
-              y: y + Math.sin(ang) * dist - 30,
-              angle: randInt(-180, 180),
-              alpha: 0,
-              duration: 520,
-              ease: "Quad.out",
-              onComplete: () => shard.destroy(),
-            });
-          }
-        }
-
-        sealVault() {
-          this.crateLocked = true;
-          sfx.seal();
-          this.score += 50 + this.floor * 10;
-          this.flashEq("#51cf66");
-          // sparkle
-          for (let i = 0; i < 18; i++) {
-            const s = this.add
-              .rectangle(this.crate.x, this.crateY - 30, 4, 4, 0xffe066)
-              .setDepth(40);
-            this.tweens.add({
-              targets: s,
-              x: this.crate.x + randInt(-160, 160),
-              y: this.crateY - 30 + randInt(-160, 60),
-              alpha: 0,
-              duration: 700,
-              onComplete: () => s.destroy(),
-            });
-          }
-          const msg = this.add
-            .text(
-              W / 2,
-              H / 2 - 30,
-              "VAULT SEALED!\n+" + (50 + this.floor * 10),
-              {
-                fontFamily: "Segoe UI",
-                fontSize: "40px",
-                fontStyle: "900",
-                color: "#51cf66",
-                align: "center",
-                backgroundColor: "#0a142e",
-                padding: { x: 28, y: 18 },
-              },
-            )
-            .setOrigin(0.5)
-            .setDepth(40);
-          this.updateHUD();
-          this.time.delayedCall(1400, () => {
-            msg.destroy();
-            this.floor++;
-            if (this.floor > 10) this.endGame(true);
-            else this.startFloor();
-          });
-        }
-
-        loseLife() {
-          this.lives--;
-          this.updateHUD();
-          if (this.lives <= 0) this.endGame(false);
-        }
-
-        flashEq(color) {
-          this.eq.setColor(color);
-          this.time.delayedCall(350, () => this.eq.setColor("#ffffff"));
-        }
-
-        updateHUD() {
-          this.hudScore.setText("SCORE  " + this.score);
-          this.hudFloor.setText("FLOOR  " + this.floor + " / 10");
-          this.hudLives.setText("♥".repeat(Math.max(0, this.lives)));
-          if (this.level) {
-            const { l, w, h, target } = this.level;
-            const remaining = target - this.placed;
-            const layer = Math.min(
-              h,
-              Math.floor(this.placed / this.baseCount) + 1,
-            );
-            this.eq.setText(
-              `BASE ${l}×${w}=${l * w}  ·  LAYER ${layer}/${h}  ·  ` +
-                `PACKED ${this.placed} / ${target}`,
-            );
-            this.updateFillGauge(); // ADDITIVE: animated fill gauge
-            // ADDITIVE: aria-live announcement for assistive tech.
-            announce(
-              `Packed ${this.placed} of ${target} cubic units, ` +
-                `layer ${layer} of ${h}, ${remaining} more needed.`,
-            );
-          }
-        }
-
-        endGame(won) {
-          this.gameOver = true;
-          const hi = parseInt(localStorage.getItem(LS_KEY) || "0");
-          if (this.score > hi) localStorage.setItem(LS_KEY, this.score);
-          try {
-            window.EduPulse &&
-              EduPulse.record({
-                activityTitle: document.title,
-                score: this.score,
-              });
-          } catch (e) {}
-          this.scene.start("Results", { score: this.score, won });
-        }
-
-        update(time, delta) {
-          if (this.gameOver) return;
-
-          // ── ADDITIVE: backdrop parallax + drifting motes (reduced-motion off).
-          if (!RM && this.backdrop) {
-            // Rack drifts opposite the crate/pointer for a subtle z-axis sense.
-            const focus =
-              this._pointerX != null ? this._pointerX : this.crate.x;
-            const targetShift = ((focus - W / 2) / (W / 2)) * -22;
-            this._bgBaseX = Phaser.Math.Linear(
-              this._bgBaseX || 0,
-              targetShift,
-              0.06,
-            );
-            this.backdrop.x = this._bgBaseX;
-            if (this.motes) {
-              for (let m = 0; m < this.motes.length; m++) {
-                const mo = this.motes[m];
-                mo.y += mo.vy;
-                if (mo.y > H - 30) {
-                  mo.y = 50;
-                  mo.x = randInt(0, W);
-                }
-              }
-            }
-          }
-
-          // ── ADDITIVE: hazard "lead" cubes pulse a warning flash so students
-          //    can spot and avoid them. Visual only — does not change which
-          //    cubes are hazards or how catching them is scored.
-          if (!RM) {
-            for (let i = 0; i < this.fallingCubes.length; i++) {
-              const fc = this.fallingCubes[i];
-              if (fc.getData("bad")) {
-                const pulse = 0.55 + 0.45 * Math.sin(time / 90);
-                fc.setAlpha(pulse);
-                fc.setTint(0xffffff, 0xffffff, 0xff4d4d, 0xff4d4d);
-              }
-            }
-          }
-
-          // slide crate
-          if (!this.crateLocked) {
-            let dir = 0;
-            if (this.cursors.left.isDown || this.keyA.isDown) dir = -1;
-            else if (this.cursors.right.isDown || this.keyD.isDown) dir = 1;
-            if (dir !== 0) {
-              this.targetX = Phaser.Math.Clamp(
-                this.crate.x + dir * 9,
-                this.halfCrate,
-                W - this.halfCrate,
-              );
-            }
-            this.crate.x = Phaser.Math.Linear(
-              this.crate.x,
-              this.targetX ?? this.crate.x,
-              0.25,
-            );
-          }
-
-          // spawn
-          this.spawnTimer += delta;
-          if (this.spawnTimer > this.spawnEvery && !this.crateLocked) {
-            this.spawnTimer = 0;
-            this.spawnCube();
-          }
-
-          // move falling cubes + collision with crate mouth.
-          // Generous catch margin (calm tuning) so near-misses still pack.
-          const CATCH_MARGIN = 55;
-          const mouthL = this.crate.x - this.halfCrate - CATCH_MARGIN;
-          const mouthR = this.crate.x + this.halfCrate + CATCH_MARGIN;
-          for (let i = this.fallingCubes.length - 1; i >= 0; i--) {
-            const c = this.fallingCubes[i];
-            c.y += c.vy;
-            c.angle += 1.5;
-            // caught when reaching crate rim within mouth
-            if (c.y >= this.crateY - 50) {
-              if (c.x >= mouthL && c.x <= mouthR && !this.crateLocked) {
-                this.catchCube(c);
-              } else if (!c.getData("bad")) {
-                sfx.miss();
-              }
-              c.destroy();
-              this.fallingCubes.splice(i, 1);
-            } else if (c.y > H + 40) {
-              c.destroy();
-              this.fallingCubes.splice(i, 1);
-            }
-          }
-        }
-      }
-
-      // ════════════════════════════════════════════════════════════
-      //  RESULTS
-      // ════════════════════════════════════════════════════════════
-      class ResultsScene extends Phaser.Scene {
-        constructor() {
-          super("Results");
-        }
-        init(d) {
-          this.data2 = d || {};
-        }
-        create() {
-          this.cameras.main.setBackgroundColor("#0c1733");
-          const won = this.data2.won;
-          this.add
-            .text(W / 2, 200, won ? "VAULT CLEARED!" : "HEIST OVER", {
-              fontFamily: "Segoe UI",
-              fontSize: "60px",
-              fontStyle: "900",
-              color: won ? "#51cf66" : "#ff8787",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(W / 2, 300, "Score: " + (this.data2.score || 0), {
-              fontFamily: "Segoe UI",
-              fontSize: "34px",
-              color: "#ffe066",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(
-              W / 2,
-              370,
-              "Best: " + (localStorage.getItem(LS_KEY) || "0"),
-              {
-                fontFamily: "Segoe UI",
-                fontSize: "22px",
-                color: "#74c0fc",
-              },
-            )
-            .setOrigin(0.5);
-          this.add
-            .text(
-              W / 2,
-              440,
-              "Every sealed vault = length × width × height cubic units.",
-              {
-                fontFamily: "Segoe UI",
-                fontSize: "18px",
-                color: "#94a3b8",
-              },
-            )
-            .setOrigin(0.5);
-          const btn = this.add
-            .rectangle(W / 2, 540, 240, 64, 0xffe066)
-            .setInteractive({ useHandCursor: true });
-          this.add
-            .text(W / 2, 540, "PLAY AGAIN", {
-              fontFamily: "Segoe UI",
-              fontSize: "26px",
-              fontStyle: "800",
-              color: "#0c1733",
-            })
-            .setOrigin(0.5);
-          const again = () => this.scene.start("Title");
-          btn.on("pointerdown", again);
-          this.input.keyboard.once("keydown-ENTER", again);
-          this.input.keyboard.once("keydown-SPACE", again);
-        }
-      }
-
-      // ════════════════════════════════════════════════════════════
-      const config = {
-        type: Phaser.AUTO,
-        width: W,
-        height: H,
-        parent: "game",
-        backgroundColor: "#0c1733",
-        scale: {
-          mode: Phaser.Scale.FIT,
-          autoCenter: Phaser.Scale.CENTER_BOTH,
         },
-        scene: [BootScene, TitleScene, GameScene, ResultsScene],
-      };
-      new Phaser.Game(config);
-
-      // ── ADDITIVE a11y: label the Phaser canvas for assistive tech once it
-      //    mounts (the canvas is otherwise opaque to screen readers). Mirrors
-      //    the labeling pattern used by the sibling games. No game logic.
-      (function labelCanvas() {
-        const c = document.querySelector("#game canvas, canvas");
-        if (c) {
-          c.setAttribute("role", "img");
-          c.setAttribute(
-            "aria-label",
-            "Volume Vault crate-packer game. Slide the crate with the arrow keys or A and D to catch falling cubes and pack each prism to its exact volume (length times width times height). A spoken status of packed and target volume is announced as you play.",
+        tick() {
+          this.play("sine", 520, 0.05, 0.15);
+        },
+        bad() {
+          this.play("sawtooth", 200, 0.22, 0.2);
+        },
+        win() {
+          [523, 659, 784, 1046].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.18, 0.25), i * 90),
           );
-        } else {
-          requestAnimationFrame(labelCanvas);
+        },
+      };
+
+      // ── State ──
+      const S = {
+        level: 1,
+        maxdim: 6,
+        score: 0,
+        round: 0,
+        mistakes: 0,
+        sealed: 0,
+        correctActions: 0,
+        totalActions: 0,
+        targets: [],
+        cur: null,
+        l: 1,
+        w: 1,
+        h: 1,
+      };
+
+      const $ = (id) => document.getElementById(id);
+      const srSay = (m) => {
+        const el = $("vv-sr");
+        if (el) {
+          el.textContent = "";
+          setTimeout(() => (el.textContent = m), 30);
         }
-      })();
+      };
+      function show(screen) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("on"));
+        $("screen-" + screen).classList.add("on");
+      }
+      function flash(msg, cls) {
+        const f = $("feedback");
+        f.textContent = msg;
+        f.className = "feedback " + cls;
+        srSay(msg);
+      }
+      function shuffle(a) {
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = (Math.random() * (i + 1)) | 0;
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      // ── Isometric gridded prism ──
+      function draw() {
+        const cv = $("prism"),
+          ctx = cv.getContext("2d");
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        const l = S.l,
+          w = S.w,
+          h = S.h;
+        // unit axis vectors (2:1 isometric); scaled to fit below
+        const eX = { x: 1, y: 0.5 },
+          eY = { x: -1, y: 0.5 },
+          eZ = { x: 0, y: -1.1 };
+        const P = (a, b, c) => ({
+          x: a * eX.x + b * eY.x + c * eZ.x,
+          y: a * eX.y + b * eY.y + c * eZ.y,
+        });
+        // bounding box of the 8 corners to auto-fit
+        const corners = [];
+        for (const a of [0, l])
+          for (const b of [0, w])
+            for (const c of [0, h]) corners.push(P(a, b, c));
+        const xs = corners.map((p) => p.x),
+          ys = corners.map((p) => p.y);
+        const minx = Math.min(...xs),
+          maxx = Math.max(...xs),
+          miny = Math.min(...ys),
+          maxy = Math.max(...ys);
+        const pad = 28;
+        const scale = Math.min(
+          (cv.width - 2 * pad) / (maxx - minx || 1),
+          (cv.height - 2 * pad) / (maxy - miny || 1),
+        );
+        const ox =
+          pad + (cv.width - 2 * pad - (maxx - minx) * scale) / 2 - minx * scale;
+        const oy =
+          pad +
+          (cv.height - 2 * pad - (maxy - miny) * scale) / 2 -
+          miny * scale;
+        const T = (p) => ({ x: ox + p.x * scale, y: oy + p.y * scale });
+        const sX = { x: eX.x * scale, y: eX.y * scale },
+          sY = { x: eY.x * scale, y: eY.y * scale },
+          sZ = { x: eZ.x * scale, y: eZ.y * scale };
+
+        function face(originPt, e1, n, e2, m, fill) {
+          const o = T(originPt);
+          const corner = (i, j) => ({
+            x: o.x + e1.x * i + e2.x * j,
+            y: o.y + e1.y * i + e2.y * j,
+          });
+          // fill
+          ctx.beginPath();
+          ctx.moveTo(o.x, o.y);
+          let p = corner(n, 0);
+          ctx.lineTo(p.x, p.y);
+          p = corner(n, m);
+          ctx.lineTo(p.x, p.y);
+          p = corner(0, m);
+          ctx.lineTo(p.x, p.y);
+          ctx.closePath();
+          ctx.fillStyle = fill;
+          ctx.fill();
+          // unit grid
+          ctx.strokeStyle = "rgba(6,32,44,0.4)";
+          ctx.lineWidth = 1;
+          for (let i = 0; i <= n; i++) {
+            const a = corner(i, 0),
+              b = corner(i, m);
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+          for (let j = 0; j <= m; j++) {
+            const a = corner(0, j),
+              b = corner(n, j);
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+          // outline
+          ctx.strokeStyle = "#06202c";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(o.x, o.y);
+          let q = corner(n, 0);
+          ctx.lineTo(q.x, q.y);
+          q = corner(n, m);
+          ctx.lineTo(q.x, q.y);
+          q = corner(0, m);
+          ctx.lineTo(q.x, q.y);
+          ctx.closePath();
+          ctx.stroke();
+        }
+
+        // right face (a = l): plane spanned by Y and Z
+        face(P(l, 0, 0), sY, w, sZ, h, "#4f86b0");
+        // left face (b = w): plane spanned by X and Z
+        face(P(0, w, 0), sX, l, sZ, h, "#6ba6cf");
+        // top face (c = h): plane spanned by X and Y — drawn last
+        face(P(0, 0, h), sX, l, sY, w, "#bfe6ff");
+      }
+
+      function updateFormula() {
+        $("v-l").textContent = S.l;
+        $("v-w").textContent = S.w;
+        $("v-h").textContent = S.h;
+        const v = S.l * S.w * S.h;
+        const hit = S.cur && v === S.cur.target ? " hit" : "";
+        $("formula").innerHTML =
+          `V = ${S.l} × ${S.w} × ${S.h} = <b class="${hit.trim()}">${v}</b> cubic units`;
+      }
+
+      // ── Vocab + levels ──
+      function renderVocab() {
+        $("vocab-list").innerHTML = VOCAB.map(
+          (v) =>
+            `<div class="vrow"><span class="vterm">${v.term}</span><span class="vdef">${v.defn}</span></div>`,
+        ).join("");
+      }
+      function renderLevels() {
+        $("level-list").innerHTML = Object.keys(TIERS)
+          .map((k) => {
+            const t = TIERS[k];
+            return `<button class="level-pick" data-level="${k}">
+            <span class="tag">${t.label} · ${t.sub}</span>
+            <b>${t.name}</b>
+            <span class="desc">${t.desc}</span>
+          </button>`;
+          })
+          .join("");
+        $("level-list")
+          .querySelectorAll("[data-level]")
+          .forEach((el) =>
+            el.addEventListener("click", () =>
+              startGame(Number(el.dataset.level)),
+            ),
+          );
+      }
+
+      // ── Game flow ──
+      function startGame(level) {
+        SFX.init();
+        S.level = level;
+        S.maxdim = level === 1 ? 6 : 9;
+        S.score = 0;
+        S.round = 0;
+        S.mistakes = 0;
+        S.sealed = 0;
+        S.correctActions = 0;
+        S.totalActions = 0;
+        S.targets = shuffle((TARGETS[level] || TARGETS[1]).slice())
+          .slice(0, ROUNDS)
+          .map((n) => ({ target: n }));
+        $("hud-total").textContent = ROUNDS;
+        show("play");
+        loadRound(0);
+      }
+
+      function loadRound(i) {
+        S.round = i;
+        S.cur = S.targets[i];
+        S.l = 1;
+        S.w = 1;
+        S.h = 1;
+        $("hud-round").textContent = i + 1;
+        $("hud-score").textContent = S.score;
+        $("t-vol").textContent = S.cur.target;
+        $("feedback").textContent = "";
+        $("feedback").className = "feedback";
+        $("hint").textContent =
+          S.level === 1
+            ? "Use − and + to set length, width, and height. Watch the volume — seal when it equals the target."
+            : "Find a length × width × height that equals the target. More than one box works!";
+        draw();
+        updateFormula();
+        srSay(
+          `Round ${i + 1}. Build a vault of exactly ${S.cur.target} cubic units.`,
+        );
+      }
+
+      function setDim(dim, delta) {
+        const v = Math.max(1, Math.min(S.maxdim, S[dim] + delta));
+        if (v === S[dim]) return;
+        S[dim] = v;
+        SFX.tick();
+        $("feedback").textContent = "";
+        $("feedback").className = "feedback";
+        draw();
+        updateFormula();
+        const name = dim === "l" ? "Length" : dim === "w" ? "Width" : "Height";
+        srSay(`${name} ${v}. Volume ${S.l * S.w * S.h}.`);
+      }
+
+      function seal() {
+        S.totalActions++;
+        const v = S.l * S.w * S.h;
+        if (v === S.cur.target) {
+          S.sealed++;
+          S.correctActions++;
+          S.score += 25;
+          $("hud-score").textContent = S.score;
+          SFX.win();
+          flash(
+            `Sealed! ${S.l} × ${S.w} × ${S.h} = ${v} cubic units 🔒`,
+            "good",
+          );
+          if (window.GameFX && GameFX.successBurst)
+            try {
+              GameFX.successBurst();
+            } catch (e) {}
+          if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(true), 1500);
+          else setTimeout(() => loadRound(S.round + 1), 1500);
+        } else {
+          S.mistakes++;
+          SFX.bad();
+          flash(
+            `That vault holds ${v} cubic units — you need ${S.cur.target}. Adjust a dimension.`,
+            "bad",
+          );
+        }
+      }
+
+      function endGame(won) {
+        const stars = S.mistakes === 0 ? 3 : S.mistakes <= 2 ? 2 : 1;
+        $("r-stars").textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
+        $("r-score").textContent = S.score;
+        $("r-sealed").textContent = S.sealed;
+        let high = 0;
+        try {
+          high = Number(localStorage.getItem(LS_KEY) || 0);
+        } catch (e) {}
+        if (S.score > high) {
+          try {
+            localStorage.setItem(LS_KEY, String(S.score));
+          } catch (e) {}
+          $("r-high").textContent = S.score;
+          $("r-high-row").style.display = "flex";
+        }
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: ACTIVITY_TITLE,
+              score: S.score,
+              stars: stars,
+              problemsCorrect: S.correctActions,
+              problemsAttempted: S.totalActions,
+              percent: S.totalActions
+                ? Math.round((S.correctActions / S.totalActions) * 100)
+                : 100,
+              standard: STANDARD,
+            });
+        } catch (e) {}
+        srSay("All vaults sealed. Score " + S.score + ", " + stars + " stars.");
+        show("result");
+      }
+
+      // ── Wiring ──
+      $("vocab-go").addEventListener("click", () => {
+        renderLevels();
+        show("level");
+      });
+      $("r-again").addEventListener("click", () => {
+        renderLevels();
+        show("level");
+      });
+      document
+        .querySelectorAll(".sbtn")
+        .forEach((b) =>
+          b.addEventListener("click", () =>
+            setDim(b.dataset.dim, Number(b.dataset.d)),
+          ),
+        );
+      $("seal").addEventListener("click", seal);
+
+      renderVocab();
     </script>
+
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
