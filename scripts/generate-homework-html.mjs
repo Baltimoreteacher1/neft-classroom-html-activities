@@ -734,7 +734,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
               .map(
                 (step, sIdx) => `
               <div class="worked-step" id="step_q_${pIdx}_${sIdx + 1}">
-                <span class="step-badge">Step ${sIdx + 1}</span>
+                <span class="step-badge">Step ${sIdx + 1} / Paso ${sIdx + 1}</span>
                 <span class="step-label">${esc(step.label)}:</span>
                 <span class="step-work">${esc(step.work)}</span>
               </div>
@@ -3721,12 +3721,55 @@ window.onload = function() {
 </html>`;
 }
 
+// Split an inline-bilingual label ("🔵 English / Español") into language spans so
+// the existing language-mode toggle (body.lang-mode-es hides .lang-en, etc.) can
+// show only the chosen language. A leading icon/symbol cluster is kept outside the
+// spans so it stays visible in every mode. Text without a " / " separator is left
+// untouched (nothing to split — e.g. content that has no Spanish counterpart).
+function wrapBilingualLabel(raw) {
+  if (!raw || !raw.includes(" / ")) return raw;
+  const text = raw.trim();
+  const iconMatch = text.match(/^([^\p{L}\p{N}]*)(.*)$/u);
+  const icon = iconMatch[1] || "";
+  const rest = iconMatch[2];
+  const sep = rest.indexOf(" / ");
+  if (sep === -1) return raw;
+  const en = rest.slice(0, sep).trim();
+  const es = rest.slice(sep + 3).trim();
+  if (!en || !es) return raw;
+  const iconHtml = icon ? `${icon.trim()} ` : "";
+  return `${iconHtml}<span class="lang-en">${en}</span><span class="lang-es" lang="es">${es}</span>`;
+}
+
+// Build-time pass over the assembled homework HTML. Each rule targets a stable
+// class/handler so only known UI labels (never per-lesson math text) are rewritten.
+function localizeBilingualLabels(html) {
+  const rules = [
+    // Section headings (h2/h3.section-title) — plain text, no nested markup.
+    /(<h[23] class="section-title">)([^<]*)(<\/h[23]>)/g,
+    // Guided-step badges, vocab flip prompt.
+    /(<span class="step-badge">)([^<]*)(<\/span>)/g,
+    /(<div class="flip-prompt">)([^<]*)(<\/div>)/g,
+    // Bilingual action buttons, keyed on stable class or handler.
+    /(<button[^>]*class="[^"]*print-all-btn[^"]*"[^>]*>)([^<]*)(<\/button>)/g,
+    /(<button[^>]*class="[^"]*btn-check-one[^"]*"[^>]*>)([^<]*)(<\/button>)/g,
+    /(<button[^>]*class="[^"]*hw-game-restart[^"]*"[^>]*>)([^<]*)(<\/button>)/g,
+    /(<button[^>]*class="[^"]*help-pop-btn[^"]*"[^>]*>)([^<]*)(<\/button>)/g,
+    /(<button[^>]*onclick="checkWorksheet\(\)"[^>]*>)([^<]*)(<\/button>)/g,
+  ];
+  let out = html;
+  for (const re of rules) {
+    out = out.replace(re, (_m, open, inner, close) => `${open}${wrapBilingualLabel(inner)}${close}`);
+  }
+  return out;
+}
+
 function main() {
   const lessons = lessonConfigs();
   let count = 0;
 
   for (const { id, config } of lessons) {
-    const homeworkHtml = generateHtml(id, config);
+    const homeworkHtml = localizeBilingualLabels(generateHtml(id, config));
     const lessonPath = join(lessonsDir, id, "homework.html");
     writeFileSync(lessonPath, homeworkHtml);
     count++;
