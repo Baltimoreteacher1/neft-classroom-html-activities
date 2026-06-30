@@ -1090,6 +1090,7 @@
 
         // Drag plumbing (Phaser drag events at scene scope).
         this.input.on("dragstart", (p, g) => {
+          this.tweens.killTweensOf(g); // Prevent any active tween from fighting the drag!
           g.setDepth(50);
           JUICE.tilePop(this, g);
           if (g._tileObj && g._tileObj.slotIndex != null) {
@@ -1274,6 +1275,7 @@
           : tile.kind === "num" || tile.kind === "var";
       };
       GameScene.prototype.tweenTo = function (tile, x, y) {
+        this.tweens.killTweensOf(tile.container); // Stop any existing tweens on this container
         if (this.reduceMotion) {
           tile.container.x = x;
           tile.container.y = y;
@@ -1355,6 +1357,15 @@
           bd = 96;
         const cx = tile.container.x,
           cy = tile.container.y;
+
+        // If the player drops the tile below the midpoint (closer to the tray),
+        // return it home immediately without snapping back to the slots.
+        if (cy > 348) {
+          this.sendHome(tile);
+          this.refreshReadout();
+          return;
+        }
+
         this.slots.forEach((s, i) => {
           if (!this.kindFits(tile, s)) return;
           const d = Math.hypot(cx - s.x, cy - s.y);

@@ -58,7 +58,7 @@ check(/mailbox-feature/.test(html), "missing the Student Digital Mailbox feature
 const emptyArcadeParam = /practice-arcade\/\?(?:lesson|unit)="(?!\s*\+)/.test(html);
 check(
   !emptyArcadeParam,
-  'a practice-arcade link has an empty/hard-coded query param ' +
+  "a practice-arcade link has an empty/hard-coded query param " +
     '(?lesson="/?unit=" not concatenated with a value) — the empty-?lesson= bug class',
 );
 check(

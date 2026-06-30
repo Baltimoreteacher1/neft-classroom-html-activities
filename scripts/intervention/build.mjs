@@ -13,7 +13,10 @@ const OUT = resolve(ROOT, "math/intervention");
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-const lowerFirst = (s) => String(s || "").charAt(0).toLowerCase() + String(s || "").slice(1);
+const lowerFirst = (s) =>
+  String(s || "")
+    .charAt(0)
+    .toLowerCase() + String(s || "").slice(1);
 const skillList = (t) =>
   t.skills.length > 1
     ? `${t.skills.slice(0, -1).join(", ")} and ${t.skills.at(-1)}`
@@ -21,56 +24,79 @@ const skillList = (t) =>
 
 const DOMAIN_GUIDES = {
   "Number & Operations": {
-    model: "Build the operation with arrays, factor rainbows, or place-value boxes before recording an algorithm.",
-    misconception: "Students often know the procedure but lose place value, skip a remainder, or stop checking whether the answer is reasonable.",
+    model:
+      "Build the operation with arrays, factor rainbows, or place-value boxes before recording an algorithm.",
+    misconception:
+      "Students often know the procedure but lose place value, skip a remainder, or stop checking whether the answer is reasonable.",
     discourse: "My estimate was ___, so my exact answer is reasonable because ___.",
-    lookFor: "Watch for digit alignment, factor pairs, and whether students can explain what each number means.",
-    language: "Use sentence frames with quantity words: product, quotient, factor, multiple, remainder.",
+    lookFor:
+      "Watch for digit alignment, factor pairs, and whether students can explain what each number means.",
+    language:
+      "Use sentence frames with quantity words: product, quotient, factor, multiple, remainder.",
     extension: "Ask students to create a real-world situation that matches the same computation.",
   },
   "Fractions & Decimals": {
-    model: "Use area models, number lines, and place-value charts so students see the size of each quantity.",
-    misconception: "Students may compare digits instead of values, treat denominators as whole-number size, or forget that decimals and fractions can represent the same amount.",
+    model:
+      "Use area models, number lines, and place-value charts so students see the size of each quantity.",
+    misconception:
+      "Students may compare digits instead of values, treat denominators as whole-number size, or forget that decimals and fractions can represent the same amount.",
     discourse: "These two values are equivalent because I can show them as ___ and ___.",
-    lookFor: "Listen for unit language: halves, tenths, hundredths, equal parts, and benchmark values.",
-    language: "Pair every symbolic step with a visual phrase such as 'three tenths' or 'five equal parts'.",
+    lookFor:
+      "Listen for unit language: halves, tenths, hundredths, equal parts, and benchmark values.",
+    language:
+      "Pair every symbolic step with a visual phrase such as 'three tenths' or 'five equal parts'.",
     extension: "Have students prove the same answer using a visual model and an equation.",
   },
   "Ratios & Proportions": {
-    model: "Start with ratio tables, double number lines, tape diagrams, and percent bars before using a shortcut.",
-    misconception: "Students often add instead of multiply, compare only one quantity, or mix up part, whole, and rate.",
+    model:
+      "Start with ratio tables, double number lines, tape diagrams, and percent bars before using a shortcut.",
+    misconception:
+      "Students often add instead of multiply, compare only one quantity, or mix up part, whole, and rate.",
     discourse: "For every ___, there are ___, so the constant relationship is ___.",
-    lookFor: "Check whether students keep the units attached and scale both quantities by the same factor.",
+    lookFor:
+      "Check whether students keep the units attached and scale both quantities by the same factor.",
     language: "Emphasize for every, per, out of 100, part, whole, and equivalent ratio.",
     extension: "Ask students to design a new situation with the same ratio relationship.",
   },
   "Number System": {
-    model: "Use vertical and horizontal number lines, counters, and coordinate grids to make direction and distance visible.",
-    misconception: "Students may confuse absolute value with the original number or treat negative values as always larger because the digit is larger.",
+    model:
+      "Use vertical and horizontal number lines, counters, and coordinate grids to make direction and distance visible.",
+    misconception:
+      "Students may confuse absolute value with the original number or treat negative values as always larger because the digit is larger.",
     discourse: "The point is ___ units from zero and moves ___ because ___.",
     lookFor: "Watch whether students name direction, distance from zero, and quadrant correctly.",
-    language: "Rehearse the words opposite, absolute value, quadrant, x-coordinate, y-coordinate, and origin.",
-    extension: "Ask students to create a map or temperature story that requires the same reasoning.",
+    language:
+      "Rehearse the words opposite, absolute value, quadrant, x-coordinate, y-coordinate, and origin.",
+    extension:
+      "Ask students to create a map or temperature story that requires the same reasoning.",
   },
   "Expressions & Equations": {
-    model: "Use balance models, substitution tables, and color-coded terms before simplifying symbolically.",
-    misconception: "Students may combine unlike terms, reverse an inequality incorrectly, or solve without checking the answer in context.",
+    model:
+      "Use balance models, substitution tables, and color-coded terms before simplifying symbolically.",
+    misconception:
+      "Students may combine unlike terms, reverse an inequality incorrectly, or solve without checking the answer in context.",
     discourse: "I kept the equation balanced by ___, and I checked it by ___.",
     lookFor: "Notice whether students preserve equality and can translate words into variables.",
-    language: "Use frames for variable, coefficient, term, solution, inequality, greater than, and less than.",
+    language:
+      "Use frames for variable, coefficient, term, solution, inequality, greater than, and less than.",
     extension: "Have students write a different equation or inequality with the same solution.",
   },
   Geometry: {
-    model: "Use grids, nets, formula cards, and decomposed shapes so students connect measurement to structure.",
-    misconception: "Students may swap area and volume, count edges twice, or use a formula without matching each dimension.",
+    model:
+      "Use grids, nets, formula cards, and decomposed shapes so students connect measurement to structure.",
+    misconception:
+      "Students may swap area and volume, count edges twice, or use a formula without matching each dimension.",
     discourse: "I chose this formula because the shape has ___ and the units are ___.",
     lookFor: "Check labels, units, and whether students can point to each value on the diagram.",
-    language: "Preteach base, height, face, net, surface area, volume, unit square, and cubic unit.",
+    language:
+      "Preteach base, height, face, net, surface area, volume, unit square, and cubic unit.",
     extension: "Ask students to change one dimension and predict how the measurement changes.",
   },
   "Statistics & Data": {
-    model: "Use dot plots, histograms, data cards, and class-created displays before calculating summaries.",
-    misconception: "Students may report a number without describing variability, shape, or what the data actually represent.",
+    model:
+      "Use dot plots, histograms, data cards, and class-created displays before calculating summaries.",
+    misconception:
+      "Students may report a number without describing variability, shape, or what the data actually represent.",
     discourse: "The data show ___ because the center is ___ and the spread is ___.",
     lookFor: "Listen for evidence-based claims that mention center, spread, shape, and context.",
     language: "Use frames for mean, median, mode, range, distribution, cluster, gap, and outlier.",

@@ -18,9 +18,7 @@
   "use strict";
   if (window.GameJuice && window.GameJuice.__booted) return;
 
-  var reduce =
-    window.matchMedia &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   function muted() {
     return !!window.NT_MUTED;
   }
@@ -115,8 +113,7 @@
       musicTimer = setInterval(function () {
         if (muted()) return;
         voice(scale[i % scale.length], 1.1, "sine", 0.035);
-        if (i % 2 === 0)
-          voice(scale[i % scale.length] / 2, 1.4, "triangle", 0.025);
+        if (i % 2 === 0) voice(scale[i % scale.length] / 2, 1.4, "triangle", 0.025);
         i++;
       }, 900);
     },
