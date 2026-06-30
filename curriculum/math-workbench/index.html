@@ -907,7 +907,11 @@
       .bg-opt .sw.numberline {
         background-image:
           linear-gradient(#14223a 2px, transparent 2px),
-          linear-gradient(90deg, rgba(32, 95, 166, 0.6) 1.4px, transparent 1.4px);
+          linear-gradient(
+            90deg,
+            rgba(32, 95, 166, 0.6) 1.4px,
+            transparent 1.4px
+          );
         background-size:
           100% 50%,
           7px 100%;
@@ -2417,17 +2421,13 @@
     <div class="app">
       <!-- ===================== Top bar ===================== -->
       <header class="topbar">
-        <a
-          class="brand home-link"
-          href="/curriculum/"
-          title="Back to Curriculum Hub"
-        >
+        <div class="brand">
           <span class="logo" aria-hidden="true">∑</span>
           <span class="titles">
             <span class="eyebrow">Mr. Neft · Grade 6 Math</span>
             <h1>Math Workbench</h1>
           </span>
-        </a>
+        </div>
         <div class="top-actions">
           <span
             id="savePill"
@@ -2720,11 +2720,7 @@
         </div>
 
         <!-- Page tabs (right side): each page is its own whiteboard surface -->
-        <div
-          class="page-tabs"
-          id="pageTabs"
-          aria-label="Whiteboard pages"
-        >
+        <div class="page-tabs" id="pageTabs" aria-label="Whiteboard pages">
           <div class="page-tabs-list" id="pageTabsList" tabindex="0"></div>
           <button
             class="page-tab-add"
@@ -2752,8 +2748,8 @@
             ><span class="ic">📚</span> Formula &amp; Reference Bank</span
           >
           <span class="sub"
-            >PreK&nbsp;–&nbsp;Algebra · open a category, then tap a card to
-            drop it on the board</span
+            >PreK&nbsp;–&nbsp;Algebra · open a category, then tap a card to drop
+            it on the board</span
           >
           <button class="dock-toggle" id="dockToggle">
             <span id="dockToggleIc">▴</span>
@@ -3206,7 +3202,10 @@
           btn.textContent = i + 1;
           btn.title = "Go to page " + (i + 1);
           btn.setAttribute("aria-label", "Go to page " + (i + 1));
-          btn.setAttribute("aria-current", i === notebook.active ? "page" : "false");
+          btn.setAttribute(
+            "aria-current",
+            i === notebook.active ? "page" : "false",
+          );
           btn.addEventListener("click", () => switchBoard(i));
           list.appendChild(btn);
         });
@@ -7860,10 +7859,16 @@
                   "Estimate the center.",
                   "Support your claim with at least two data details.",
                 ],
-                footer:
-                  "Claim frame: The data show ___ because ___ and ___.",
+                footer: "Claim frame: The data show ___ because ___ and ___.",
               },
-              { type: "dotplot", x: x + 24, y: y + 245, min: 0, max: 10, counts: {} },
+              {
+                type: "dotplot",
+                x: x + 24,
+                y: y + 245,
+                min: 0,
+                max: 10,
+                counts: {},
+              },
               { type: "boxplot", x: x + 24, y: y + 405 },
             ];
           },
@@ -7920,7 +7925,8 @@
               "Which model matches the problem?",
               "What can you do first without solving the whole thing?",
             ],
-            footer: "Teacher check: I tried a model, a label, or a sentence first.",
+            footer:
+              "Teacher check: I tried a model, a label, or a sentence first.",
           },
         },
         {
@@ -8051,7 +8057,9 @@
       }
       function toggleGuideDrawer() {
         const drawer = $("#guideDrawer");
-        drawer.classList.contains("open") ? closeGuideDrawer() : openGuideDrawer();
+        drawer.classList.contains("open")
+          ? closeGuideDrawer()
+          : openGuideDrawer();
       }
 
       /* ----------------------- Top-bar actions ----------------------- */
@@ -8328,7 +8336,8 @@
             b.setAttribute("aria-label", "Use " + b.textContent.trim());
         });
         const dockToggle = $("#dockToggle");
-        if (dockToggle) dockToggle.setAttribute("aria-label", "Show or hide formula bank");
+        if (dockToggle)
+          dockToggle.setAttribute("aria-label", "Show or hide formula bank");
         const bgTab = $("#bgTab");
         if (bgTab) bgTab.setAttribute("aria-label", "Change paper background");
         // One-tap starter templates on the empty board.
@@ -8487,10 +8496,7 @@
         border-radius: 14px;
         box-shadow: 0 18px 50px rgba(18, 53, 91, 0.28);
         overflow: hidden;
-        font-family:
-          "Atkinson Hyperlegible",
-          "Nunito",
-          sans-serif;
+        font-family: "Atkinson Hyperlegible", "Nunito", sans-serif;
         display: flex;
         flex-direction: column;
         max-height: 90vh;
@@ -8955,20 +8961,6 @@
             head.releasePointerCapture(e.pointerId);
           } catch (_) {}
         });
-      })();
-    </script>
-    <script>
-      // The brand logo links "home". On the class site that's the Curriculum
-      // Hub; when this Workbench is served on the Focus School domain (noam),
-      // home is the planner app instead, so it never 404s off-domain.
-      (function () {
-        if (location.hostname === "noam.eduwonderlab.com") {
-          var bl = document.querySelector(".home-link");
-          if (bl) {
-            bl.setAttribute("href", "/");
-            bl.setAttribute("title", "Back to Focus School");
-          }
-        }
       })();
     </script>
   </body>
