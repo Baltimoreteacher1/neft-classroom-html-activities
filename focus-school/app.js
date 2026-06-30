@@ -9799,9 +9799,24 @@ ${name}`;
 
     // register service worker + let the user know when an update is ready
     if ("serviceWorker" in navigator) {
+      // If an old service worker already controls this page, reload once when a
+      // new one takes over so the fresh app.js/css load automatically — no
+      // "reopen the app" step. Skipped on first-ever install (no controller
+      // yet), where the page is already running the latest code.
+      if (navigator.serviceWorker.controller) {
+        let reloadingForUpdate = false;
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          if (reloadingForUpdate) return;
+          reloadingForUpdate = true;
+          window.location.reload();
+        });
+      }
       navigator.serviceWorker
         .register("sw.js")
         .then((reg) => {
+          // Poll hourly so long-lived installed PWAs pick up a new deploy
+          // without waiting for a manual navigation.
+          setInterval(() => reg.update().catch(() => {}), 60 * 60 * 1000);
           reg.addEventListener("updatefound", () => {
             const nw = reg.installing;
             if (!nw) return;
@@ -9810,7 +9825,7 @@ ${name}`;
                 nw.state === "installed" &&
                 navigator.serviceWorker.controller
               ) {
-                toast("Update ready — reopen the app to get it");
+                toast("Updating to the latest version…");
               }
             });
           });
