@@ -6450,7 +6450,12 @@ Due May 31"></textarea>
       // can compare the student's time guess to what it actually took.
       if (this.taskId) {
         const a = state.assignments.find((x) => x.id === this.taskId);
-        if (a) a.actualMin = (Number(a.actualMin) || 0) + m;
+        if (a) {
+          a.actualMin = (Number(a.actualMin) || 0) + m;
+          // Bump the item stamp so these minutes win the per-task last-write
+          // merge across devices instead of silently losing to a stale copy.
+          a.updatedAt = Date.now();
+        }
       }
       addPoints(m);
       earnReward("focus", "Focus session");
@@ -7451,10 +7456,16 @@ Due May 31"></textarea>
             // state + re-rendered + pushed to KV every single tick — wiping any
             // half-typed input and churning the store. Now a no-op pull is a
             // true no-op. Both sides are normalized so key ordering can't lie.
+            //
+            // This is CONTENT-only on purpose: a `remoteUpdated > localUpdated`
+            // term would never converge with two devices both open, because
+            // each merge re-stamps a newer updatedAt and pushes it, so the peer
+            // always sees "remote is newer" and re-merges/re-renders forever
+            // (phantom churn that wipes input on Noam's phone + laptop). Once
+            // the content matches, changed=false and both devices settle.
             const changed =
-              remoteUpdated > localUpdated ||
               JSON.stringify({ ...mergedNorm, updatedAt: 0 }) !==
-                JSON.stringify({ ...state, updatedAt: 0 });
+              JSON.stringify({ ...state, updatedAt: 0 });
             let shouldPushMerged = false;
             if (changed) {
               const prev = suppressPush;
