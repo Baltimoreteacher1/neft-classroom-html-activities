@@ -112,7 +112,7 @@ function sco(lessonUrl, launchQuery, origin, title) {
     <!-- SCORM 1.2 SCO wrapper for a Neft activity. Plays the LIVE activity, so
          edits never require re-uploading. ?lms=scorm relays the score to Canvas
          and hides the code popup; ?embed=1 alone keeps the save-code prompt. -->
-    <iframe id="lesson" src="${lessonUrl}${launchQuery}" allow="fullscreen; clipboard-write" title="${title}"></iframe>
+    <iframe id="lesson" data-src="${lessonUrl}${launchQuery}" allow="fullscreen; clipboard-write" title="${title}"></iframe>
     <script>
       (function () {
         "use strict";
@@ -130,6 +130,30 @@ function sco(lessonUrl, launchQuery, origin, title) {
             try { API.LMSInitialize(""); started = true; API.LMSSetValue("cmi.core.lesson_status", "incomplete"); API.LMSCommit(""); } catch (e) {}
           }
         }
+        // Canvas identity → live activity: read the LMS-provided student name/id
+        // and hand them to the lesson so the student is auto-identified inside
+        // Canvas (no name-entry screen, resume keyed to the Canvas roster).
+        // SCORM 1.2 returns the name as "Last, First"; normalize to "First Last".
+        function lmsGet(key) { try { return API ? String(API.LMSGetValue(key) || "") : ""; } catch (e) { return ""; } }
+        function normalizeName(raw) {
+          raw = (raw || "").trim();
+          if (!raw) return "";
+          var c = raw.indexOf(",");
+          if (c > -1) return (raw.slice(c + 1).trim() + " " + raw.slice(0, c).trim()).trim();
+          return raw;
+        }
+        function launchUrl() {
+          var iframe = document.getElementById("lesson");
+          var base = iframe.getAttribute("data-src");
+          start();
+          var name = normalizeName(lmsGet("cmi.core.student_name"));
+          var sid = lmsGet("cmi.core.student_id");
+          var sep = base.indexOf("?") > -1 ? "&" : "?";
+          var q = "";
+          if (name) q += sep + "sn=" + encodeURIComponent(name);
+          if (sid) q += (q ? "&" : sep) + "si=" + encodeURIComponent(sid);
+          iframe.src = base + q;
+        }
         function report(pct) {
           if (!API) return; start();
           var status = pct >= MASTERY ? "passed" : "completed";
@@ -142,7 +166,8 @@ function sco(lessonUrl, launchQuery, origin, title) {
           } catch (e) {}
         }
         function finish() { if (API && started && !finished) { try { API.LMSFinish(""); finished = true; } catch (e) {} } }
-        start();
+        // Register the score listener BEFORE loading the activity so no early
+        // completion message is missed, then launch with the Canvas identity.
         window.addEventListener("message", function (e) {
           if (LESSON_ORIGIN && e.origin !== LESSON_ORIGIN) return;
           var d = e.data || {};
@@ -150,6 +175,7 @@ function sco(lessonUrl, launchQuery, origin, title) {
         });
         window.addEventListener("pagehide", finish);
         window.addEventListener("unload", finish);
+        launchUrl();
       })();
     </script>
   </body>
@@ -160,7 +186,9 @@ function sco(lessonUrl, launchQuery, origin, title) {
 /** Build the two package files. Returns { id, lessonUrl, files }. */
 export function buildScormFiles({ target, title, codes }, site = SITE_DEFAULT) {
   const { lessonUrl, id, origin } = resolveTarget(target, site);
-  const t = xmlEsc(title && String(title).trim() ? title.trim() : `Activity ${id}`);
+  const t = xmlEsc(
+    title && String(title).trim() ? title.trim() : `Activity ${id}`,
+  );
   const launchQuery = codes ? "?embed=1" : "?lms=scorm&embed=1";
   return {
     id,
