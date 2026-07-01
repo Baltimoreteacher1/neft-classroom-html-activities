@@ -2403,6 +2403,66 @@
     );
   }
 
+  // Closes the reflection loop: the app collects a Focus/Mood 1-5 at check-out
+  // but never told the student what it means. This turns that self-report into
+  // a plain-language insight (best focus day-of-week + recent trend) for the
+  // Insights view. Pure read of state.reflections — nothing new is stored.
+  function reflectionInsight() {
+    const entries = Object.entries(state.reflections || {}).filter(
+      ([k, r]) => DATE_RE.test(k) && r && Number(r.focus) > 0,
+    );
+    if (entries.length < 3) return "";
+    const names = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const dow = Array.from({ length: 7 }, () => []);
+    entries.forEach(([k, r]) => {
+      const d = parseLocal(k);
+      if (d) dow[d.getDay()].push(Number(r.focus));
+    });
+    const mean = (arr) =>
+      arr.length ? arr.reduce((s, v) => s + v, 0) / arr.length : 0;
+    let bestDay = null,
+      bestAvg = 0;
+    dow.forEach((arr, i) => {
+      if (arr.length >= 2 && mean(arr) > bestAvg) {
+        bestAvg = mean(arr);
+        bestDay = names[i];
+      }
+    });
+    const sorted = entries
+      .sort(([a], [b]) => (a < b ? -1 : 1))
+      .map(([, r]) => Number(r.focus));
+    const last3 = sorted.slice(-3);
+    const prev3 = sorted.slice(-6, -3);
+    const recent = mean(last3),
+      prior = mean(prev3);
+    const lines = [];
+    if (bestDay)
+      lines.push(
+        `You tend to focus best on <b>${bestDay}s</b> — a good day to save your trickiest work for.`,
+      );
+    if (prev3.length >= 2 && recent < prior - 0.5)
+      lines.push(
+        `Your focus dipped a little lately. On tough days, a shorter <b>15-minute burst</b> makes starting easier.`,
+      );
+    else if (prev3.length >= 2 && recent > prior + 0.5)
+      lines.push(`Your focus is trending <b>up</b> this week — nice work. 🌟`);
+    if (!lines.length) return "";
+    return card(
+      "ins-reflect",
+      "🧠 What your check-outs show",
+      "From your end-of-day reflections.",
+      lines.map((l) => `<p class="sub" style="margin:6px 0">${l}</p>`).join(""),
+    );
+  }
+
   function reflectionChartHTML() {
     const dates = [];
     const focusRatings = [];
@@ -5106,7 +5166,8 @@ Due May 31"></textarea>
                 }</p>`
               : `<p class="sub" style="margin-top:8px">Finish a few assignments and your on-time rate shows up here.</p>`
           }`,
-        )
+        ) +
+        reflectionInsight()
       );
     },
 
@@ -6023,6 +6084,11 @@ Due May 31"></textarea>
     return `
       <p class="sub">Break "<b>${esc(a.title)}</b>" into small steps. Start with a template, then tweak.</p>
       <button class="btn primary block" data-act="ai-breakdown" data-id="${a.id}" id="aiBreakBtn" style="margin-bottom:10px">✨ Break it down for me</button>
+      ${
+        a.due && daysUntil(a.due) >= 2 && a.steps.length >= 2
+          ? `<button class="btn block" data-act="spread-steps" data-id="${a.id}" style="margin-bottom:10px">📆 Spread these steps across the days until it's due</button>`
+          : ""
+      }
       <div class="field"><label>Quick templates</label><div class="seg">${Object.keys(
         STEP_TEMPLATES,
       )
@@ -8495,6 +8561,37 @@ Due May 31"></textarea>
         save();
         openModal("Break it into steps", breakdownForm(a));
       }
+    },
+    // Backward-planning: fan an assignment's steps out into dated to-dos across
+    // the days between now and the due date, so a multi-day project stops being
+    // a night-before scramble. Reuses the existing to-do system (date field) —
+    // no new schema. Deduped by text so tapping twice can't pile up copies.
+    "spread-steps": (id) => {
+      const a = state.assignments.find((x) => x.id === id);
+      if (!a || !a.steps.length) return;
+      const n = daysUntil(a.due);
+      if (!a.due || n < 1) return toast("Add a due date a few days out first.");
+      const spreadDays = clamp(Math.min(n, a.steps.length), 1, 14);
+      const existing = new Set(state.todos.map((t) => t.text));
+      let added = 0;
+      a.steps.forEach((s, i) => {
+        const dayOffset = Math.floor((i * spreadDays) / a.steps.length);
+        const text = `${a.title}: ${s.text}`.slice(0, 200);
+        if (existing.has(text)) return;
+        state.todos.push(
+          normalizeTodo({ text, date: isoForOffset(dayOffset) }),
+        );
+        existing.add(text);
+        added++;
+      });
+      save();
+      closeModal();
+      render();
+      toast(
+        added
+          ? `📆 Planned ${added} step${added === 1 ? "" : "s"} across ${spreadDays} day${spreadDays === 1 ? "" : "s"}`
+          : "Already planned ✓",
+      );
     },
     "del-step": (id, arg, ev, sid) => {
       const a = state.assignments.find((x) => x.id === id);
