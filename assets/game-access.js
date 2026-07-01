@@ -3,9 +3,10 @@
  *
  * Provides, with zero network calls and no dependencies:
  *   1. TTS "Read aloud" — speaks the visible game prompt via the Web Speech API,
- *      language-aware (EN/ES) for ESOL learners.
- *   2. Calm mode toggle — persistent (localStorage), damps motion + hides
- *      reflex timers. Also auto-respects prefers-reduced-motion.
+ *      language-aware (EN/ES) for ESOL learners. (The only student-facing button.)
+ *   2. Calm mode — no button; motion is damped automatically for users whose OS
+ *      requests reduced motion (see the CSS media query). window.NeftCalm.setCalm()
+ *      remains for programmatic use.
  *   3. Growth-mindset helper — window.NeftCalm.encourage() shows a "not yet"
  *      toast. Passive: games may call it, nothing is forced.
  *
@@ -31,10 +32,14 @@
 
   /* ---------- language detection for TTS ---------- */
   function pickLang(text) {
-    var htmlLang = (doc.documentElement.getAttribute("lang") || "").toLowerCase();
+    var htmlLang = (
+      doc.documentElement.getAttribute("lang") || ""
+    ).toLowerCase();
     if (htmlLang.indexOf("es") === 0) return "es-ES";
     // Heuristic: Spanish-specific characters / stopwords in the read text.
-    if (/[¿¡ñ]|(\b(el|la|los|las|una|resuelve|calcula|fracci[oó]n)\b)/i.test(text)) {
+    if (
+      /[¿¡ñ]|(\b(el|la|los|las|una|resuelve|calcula|fracci[oó]n)\b)/i.test(text)
+    ) {
       return "es-ES";
     }
     return "en-US";
@@ -51,11 +56,15 @@
     // Clone, strip our own controls + script/style, collapse whitespace.
     var clone = root.cloneNode(true);
     clone
-      .querySelectorAll(".nt-ga-controls, .nt-ga-toast, script, style, noscript, svg")
+      .querySelectorAll(
+        ".nt-ga-controls, .nt-ga-toast, script, style, noscript, svg",
+      )
       .forEach(function (n) {
         n.remove();
       });
-    var txt = (clone.innerText || clone.textContent || "").replace(/\s+/g, " ").trim();
+    var txt = (clone.innerText || clone.textContent || "")
+      .replace(/\s+/g, " ")
+      .trim();
     return txt.slice(0, 600); // keep it a sensible utterance length
   }
 
@@ -93,13 +102,6 @@
   function applyCalm(on) {
     doc.documentElement.classList.toggle("nt-calm", !!on);
   }
-  function calmStored() {
-    try {
-      return localStorage.getItem(CALM_KEY) === "1";
-    } catch (e) {
-      return false;
-    }
-  }
   function setCalm(on, btn) {
     try {
       localStorage.setItem(CALM_KEY, on ? "1" : "0");
@@ -132,13 +134,15 @@
   /* ---------- build the floating control cluster ---------- */
   function build() {
     try {
-      // Auto-apply stored calm preference immediately (before controls exist).
-      applyCalm(calmStored());
-
       if (doc.querySelector(".nt-ga-controls")) return;
       var wrap = doc.createElement("div");
       wrap.className = "nt-ga-controls";
 
+      // Read-aloud is the one student-facing control. Calm mode is handled
+      // silently by the OS "reduce motion" setting (see the CSS media query) —
+      // no button, since a manual toggle added clutter with little benefit on
+      // these already-calm games. window.NeftCalm.setCalm() still exists for
+      // programmatic use.
       var read = doc.createElement("button");
       read.type = "button";
       read.className = "nt-ga-btn";
@@ -149,19 +153,7 @@
         speak(read);
       });
 
-      var calm = doc.createElement("button");
-      calm.type = "button";
-      calm.className = "nt-ga-btn";
-      calm.setAttribute("aria-label", "Toggle calm mode (reduce motion, hide timers)");
-      calm.setAttribute("aria-pressed", calmStored() ? "true" : "false");
-      calm.title = "Calm mode";
-      calm.innerHTML = "🧘 <span>Calm</span>";
-      calm.addEventListener("click", function () {
-        setCalm(!doc.documentElement.classList.contains("nt-calm"), calm);
-      });
-
       wrap.appendChild(read);
-      wrap.appendChild(calm);
       doc.body.appendChild(wrap);
 
       // Comfortable tap targets on obvious answer controls.
