@@ -312,6 +312,7 @@
   ];
 
   const CARDS = [
+    ["routine", "Right routine"],
     ["glance", "Today at a glance"],
     ["plan", "Afternoon Plan"],
     ["payday", "Allowance"],
@@ -319,7 +320,6 @@
     ["calendar", "Calendar"],
     ["todos", "To-do list"],
     ["assignments", "Assignment list"],
-    ["routine", "Right routine"],
     ["momentum", "Momentum"],
     ["soon", "Coming up"],
   ];
@@ -447,6 +447,9 @@
         breakMin: 5,
         homeOrder: CARDS.map((x) => x[0]),
         hiddenCards: [],
+        // One-time flag: lift the time-based routine card to the top of the
+        // Now screen for installs that saved a layout before it led the order.
+        routineTopMigrated: false,
         // Reminder times (24h "HH:MM") for the local notification scheduler.
         morningBriefingTime: "07:15",
         leaveByTime: "",
@@ -556,6 +559,14 @@
     s.homeOrder = order;
     s.hiddenCards = Array.isArray(s.hiddenCards) ? s.hiddenCards : [];
     s.homeOrderAt = Number(s.homeOrderAt) || 0; // layout change-stamp for sync
+    // One-time: move the time-based routine card to the very top of the Now
+    // screen. Runs once per install (then respects any later manual reorder),
+    // and bumps the sync stamp so linked devices pick up the new order.
+    if (!s.routineTopMigrated) {
+      s.homeOrder = ["routine", ...s.homeOrder.filter((k) => k !== "routine")];
+      s.routineTopMigrated = true;
+      s.homeOrderAt = Date.now();
+    }
     s.fontScale = clamp(Number(s.fontScale) || 1, 0.9, 1.5);
     s.defaultFocusMin = clamp(Number(s.defaultFocusMin) || 15, 5, 60);
     s.accent = ACCENTS.some((a) => a[0] === s.accent) ? s.accent : "teal";
