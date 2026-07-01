@@ -134,7 +134,32 @@
       .trim()
       .slice(0, 40);
   }
+  // Canvas/SCORM/LTI launch identity: the SCORM SCO (and the LTI Worker) append
+  // ?sn=<roster name>&si=<roster id>. When present, the roster name wins over any
+  // locally-typed name so a student launched from Canvas is auto-identified — the
+  // same behavior the 74 engine lessons get, now for standalone activities too.
+  // Guarded on sn, so an ordinary visit to the live site is unaffected.
+  function launchIdentity() {
+    return safe(
+      function () {
+        var sn = (new URLSearchParams(location.search).get("sn") || "").trim();
+        return sn ? { name: sn.slice(0, 60), section: "" } : null;
+      },
+      "identity-launch",
+      null,
+    );
+  }
   function getIdentity() {
+    var launched = launchIdentity();
+    if (launched) {
+      safe(function () {
+        localStorage.setItem(IDENTITY_KEY, JSON.stringify(launched));
+      }, "identity-launch-persist");
+      safe(function () {
+        if (window.NeftIdentity) window.NeftIdentity.set({ name: launched.name, section: "" });
+      }, "identity-launch-share");
+      return launched;
+    }
     var local = safe(
       function () {
         var raw = localStorage.getItem(IDENTITY_KEY);
