@@ -1338,18 +1338,18 @@
     },
   ];
 
+  // Bottom bar kept to 7 core destinations so it's scannable for a 7th grader
+  // (12 was overwhelming, and Today/Tasks/Homework were three overlapping
+  // lists). The rest — Today, To-do, Reading, Health, Academic Help — live one
+  // tap away under the "Daily" section of More. Every view still exists and is
+  // reachable by URL/command-bar; only what sits in the bar changed.
   const TABS = [
     ["home", "Now", "🎯"],
-    ["today", "Today", "📅"],
-    ["tasks", "Tasks", "✅"],
     ["homework", "Homework", "📋"],
     ["calendar", "Calendar", "📆"],
-    ["rewards", "Allowance", "💰"],
     ["routines", "Routines", "🔁"],
+    ["rewards", "Allowance", "💰"],
     ["calming", "Calming", "🧘"],
-    ["ai", "Academic Help", "🤖"],
-    ["reading", "Reading", "📚"],
-    ["health", "Health", "💪"],
     ["more", "More", "⋯"],
   ];
   let view = "home";
@@ -4250,6 +4250,45 @@
           .join("")}</div>`;
       return `
         <div class="view-head"><h2 class="view-title">More</h2></div>
+        <div class="section-title">Daily</div>
+        ${grid([
+          {
+            act: "nav",
+            arg: "today",
+            ic: "📅",
+            title: "Today",
+            sub: "Today's plan & check-in",
+          },
+          {
+            act: "nav",
+            arg: "tasks",
+            ic: "✅",
+            title: "To-do list",
+            sub: "Quick daily to-dos",
+          },
+          {
+            act: "nav",
+            arg: "reading",
+            ic: "📚",
+            title: "Reading",
+            sub: "Reading log & response",
+          },
+          {
+            act: "nav",
+            arg: "health",
+            ic: "💪",
+            title: "Health",
+            sub: "Move & feel-good check-ins",
+          },
+          {
+            act: "nav",
+            arg: "ai",
+            ic: "🤖",
+            title: "Academic Help",
+            sub: "Break work down with AI",
+          },
+        ])}
+        <div class="section-title">Planner</div>
         ${grid([
           {
             act: "view-classes",
