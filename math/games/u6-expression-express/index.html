@@ -1603,8 +1603,10 @@
       GameScene.prototype.afterAttempt = function () {
         this.updateHUD();
         if (this.lives <= 0) {
-          this.endGame(false);
-          return;
+          // No-fail practice: refill hearts and keep going. Mistakes teach;
+          // they never end the game (calm, self-paced classroom mode).
+          this.lives = 3;
+          this.updateHUD();
         }
         if (this.solved >= this.target) {
           this.endGame(true);

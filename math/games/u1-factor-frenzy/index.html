@@ -649,7 +649,7 @@
       const STANDARD = "6.NS.4";
       const ACTIVITY_TITLE = "Factor Frenzy — Prime Factorization";
       const LS_KEY = "ff_factor_frenzy_highscore";
-      const ROUNDS = 4;
+      const ROUNDS = 5; // pools hold 5–6 numbers; 5 keeps every level full-length
 
       // Self-contained content (this game is prime-factorization only, so it
       // does not use the GCF/LCM framing in window.Games2DData).
@@ -1080,9 +1080,11 @@
         $("ro-fact").textContent =
           S.cur.n + " = " + exponentForm(lockedPrimes());
         flash(S.cur.n + " = " + exponentForm(lockedPrimes()) + " ⚒️", "good");
-        if (window.GameFX && GameFX.successBurst)
+        // Real celebration burst (GameFX exposes burst(cx,cy) — there is no
+        // successBurst(), so the old call was a silent no-op).
+        if (window.GameFX && GameFX.burst)
           try {
-            GameFX.successBurst();
+            GameFX.burst(window.innerWidth / 2, window.innerHeight / 3);
           } catch (e) {}
         if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(true), 1500);
         else setTimeout(() => loadRound(S.round + 1), 1500);

@@ -1091,8 +1091,15 @@
             this.updateReadout();
             SFX.init();
             SFX.select();
-          } else if (Math.abs(p.worldY - LINE_Y) < 140 && this.beads.length) {
-            // Tap on the line moves the selected marker there (touch friendly).
+          } else if (
+            p.worldY > LINE_Y - 120 &&
+            p.worldY < LINE_Y + 40 &&
+            this.beads.length
+          ) {
+            // Tap on/near the number line moves the selected marker there
+            // (touch friendly). Band spans the markers (which sit above the
+            // line) down to just below it, but stops short of the Lock In
+            // button so empty-space taps no longer nudge the marker.
             this.setBeadIndex(this.beads[this.sel], nearestIndex(p.worldX));
             SFX.init();
             SFX.move();
@@ -1362,8 +1369,10 @@
         }
         this.updateHUD();
         if (this.lives <= 0) {
-          this.endGame(false);
-          return;
+          // No-fail practice: refill hearts and keep going. Mistakes teach;
+          // they never end the game (calm, self-paced classroom mode).
+          this.lives = 3;
+          this.updateHUD();
         }
         if (this.solved >= this.target) {
           this.endGame(true);

@@ -1179,8 +1179,12 @@
         this.applyText.setText(lab);
       };
       GameScene.prototype.updateMoves = function () {
-        this.movesText.setText("Moves left: " + this.movesLeft);
-        this.movesText.setColor(this.movesLeft <= 1 ? "#ffb38a" : "#bfe0c8");
+        // Reframed as a positive "efficiency bonus" meter: solving while it is
+        // still above zero earns extra points, but running it out is NOT a loss
+        // — students may take as many inverse moves as they need (calm mode).
+        const m = Math.max(0, this.movesLeft);
+        this.movesText.setText("Bonus: ★" + m);
+        this.movesText.setColor("#bfe0c8");
       };
       GameScene.prototype.updateLock = function () {
         const armed = this.isIsolated();
@@ -1258,8 +1262,6 @@
             .setText("✅ x is alone! Read the value, then Lock In.")
             .setColor("#8ff0c4");
           srSay("x is alone. It equals " + this.C + ". Press Lock In.");
-        } else if (this.movesLeft <= 0) {
-          this.loseRound("Out of moves!");
         } else {
           this.feedback
             .setText("Now: " + this.leftExprStr() + " = " + this.C)
@@ -1282,7 +1284,7 @@
           this.solved++;
           this.streak++;
           const bonus = Math.min(this.streak, 5) * 5;
-          const eff = this.movesLeft * 5;
+          const eff = Math.max(0, this.movesLeft) * 5;
           const gained = 20 + bonus + eff;
           this.score += gained;
           const cx = this.pivotX + this.panDX,
@@ -1300,10 +1302,15 @@
           srSay("Correct. x equals " + this.s + ".");
           this.afterAttempt(true);
         } else {
-          // Claiming a value before x is alone = a wrong final value.
-          this.loseRound(
-            "x is not alone yet — that value is not the solution.",
-          );
+          // Gentle nudge — NOT a loss. x isn't isolated yet, so just guide the
+          // student to keep applying inverse moves (calm, no-penalty).
+          SFX.tilt();
+          this.feedback
+            .setText(
+              "x isn't alone yet — keep doing the same move to both sides until x is by itself.",
+            )
+            .setColor("#ffb38a");
+          srSay("x is not alone yet. Keep using inverse moves on both sides.");
         }
       };
 
@@ -1337,8 +1344,10 @@
       GameScene.prototype.afterAttempt = function (correct) {
         this.updateHUD();
         if (this.lives <= 0) {
-          this.endGame(false);
-          return;
+          // No-fail practice: refill hearts and keep going. Mistakes teach;
+          // they never end the game (calm, self-paced classroom mode).
+          this.lives = 3;
+          this.updateHUD();
         }
         if (this.solved >= this.target) {
           this.endGame(true);

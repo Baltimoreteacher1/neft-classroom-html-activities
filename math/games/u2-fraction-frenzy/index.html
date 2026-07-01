@@ -1368,8 +1368,10 @@
         }
         this.updateHUD();
         if (this.lives <= 0) {
-          this.endGame(false);
-          return;
+          // No-fail practice: refill hearts and keep going. Mistakes teach;
+          // they never end the game (calm, self-paced classroom mode).
+          this.lives = 3;
+          this.updateHUD();
         }
         if (this.solved >= this.target) {
           this.endGame(true);
@@ -1515,7 +1517,8 @@
               score: d.score,
               stars: stars,
               standard: "6.NS.1",
-              problemsAttempted: d.solved,
+              problemsCorrect: d.solved,
+              problemsAttempted: d.target,
             });
         } catch (e) {}
         srSay(

@@ -15,7 +15,8 @@
         padding: 0;
         box-sizing: border-box;
       }
-      html, body {
+      html,
+      body {
         width: 100%;
         height: 100%;
         margin: 0;
@@ -945,7 +946,9 @@
         this.bannerText.setText(this.problem.prompt);
         this.endR.setText(String(this.problem.whole));
         this.fill.setFillStyle(0x2d874b);
-        this.setMarker(50);
+        // Start empty (0%) every problem so the student always builds up to the
+        // target — starting at 50% pre-solved any 50% problem with no movement.
+        this.setMarker(0);
         srSay(
           this.problem.label +
             ": " +
@@ -1013,8 +1016,10 @@
         }
         this.updateHUD();
         if (this.lives <= 0) {
-          this.endGame(false);
-          return;
+          // No-fail practice: refill hearts and keep going. Mistakes teach;
+          // they never end the game (calm, self-paced classroom mode).
+          this.lives = 3;
+          this.updateHUD();
         }
         if (this.solved >= this.target) {
           this.endGame(true);
