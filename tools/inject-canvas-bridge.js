@@ -40,7 +40,10 @@ const report = {
 
 function revert(html) {
   const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return html.replace(new RegExp(`\\s*${esc(BEGIN)}[\\s\\S]*?${esc(END)}`, "g"), "");
+  return html.replace(
+    new RegExp(`\\s*${esc(BEGIN)}[\\s\\S]*?${esc(END)}`, "g"),
+    "",
+  );
 }
 
 for (const p of paths) {
@@ -67,12 +70,22 @@ for (const p of paths) {
     report.missing.push(p + " (no </body>)");
     continue;
   }
-  html = html.replace(/<\/body>/i, `  ${BEGIN}\n  ${TAG}\n  ${END}\n</body>`);
+  // Inject before the LAST </body> — the real page body close. Some pages
+  // contain an earlier </body> inside a document.write() template literal
+  // (e.g. a print-report popup); injecting a <script> there would embed a
+  // literal </script> inside an inline script and prematurely terminate it.
+  const lastBody = html.toLowerCase().lastIndexOf("</body>");
+  html =
+    html.slice(0, lastBody) +
+    `  ${BEGIN}\n  ${TAG}\n  ${END}\n` +
+    html.slice(lastBody);
   if (!DRY) writeFileSync(file, html);
   report.injected++;
 }
 
-console.log(`Canvas-bridge injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`);
+console.log(
+  `Canvas-bridge injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`,
+);
 console.log("  activities :", paths.length);
 console.log("  scanned    :", report.scanned);
 if (REVERT) console.log("  reverted   :", report.reverted);
@@ -80,4 +93,5 @@ else {
   console.log("  injected   :", report.injected);
   console.log("  already    :", report.already);
 }
-if (report.missing.length) console.log("  missing    :", report.missing.join(", "));
+if (report.missing.length)
+  console.log("  missing    :", report.missing.join(", "));
