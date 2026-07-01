@@ -304,7 +304,9 @@
   ];
 
   const CARDS = [
+    ["next", "Do next"],
     ["glance", "Today at a glance"],
+    ["hebrew", "Hebrew practice"],
     ["payday", "Allowance"],
     ["garden", "Focus Garden"],
     ["calendar", "Calendar"],
@@ -468,6 +470,18 @@
       gcal: { events: [], fetchedAt: "", calendars: [] },
       // Cached Gmail messages (read-only). { messages:[...], fetchedAt }
       gmail: { messages: [], fetchedAt: "" },
+      family: {
+        note: "",
+        needsHelp: "",
+        ridePlan: "",
+        materials: "",
+        updatedAt: 0,
+      },
+      hebrew: {
+        updatedAt: 0,
+        weakWords: "",
+        practiceLog: {},
+      },
       // Quick morning check-in: { dateKey: { mood, priority } }
       checkins: {},
       routines: DEFAULT_ROUTINES(),
@@ -601,6 +615,8 @@
         x.gmail && Array.isArray(x.gmail.messages)
           ? { messages: x.gmail.messages, fetchedAt: x.gmail.fetchedAt || "" }
           : { messages: [], fetchedAt: "" },
+      family: normalizeFamily(x.family),
+      hebrew: normalizeHebrew(x.hebrew),
       checkins: x.checkins && typeof x.checkins === "object" ? x.checkins : {},
       reflections:
         x.reflections && typeof x.reflections === "object" ? x.reflections : {},
@@ -635,6 +651,44 @@
             },
       rewards: normalizeRewards(x.rewards),
       health: normalizeHealth(x.health),
+    };
+  }
+
+  function normalizeFamily(f) {
+    f = f && typeof f === "object" ? f : {};
+    return {
+      note: String(f.note || "").slice(0, 1000),
+      needsHelp: String(f.needsHelp || "").slice(0, 600),
+      ridePlan: String(f.ridePlan || "").slice(0, 300),
+      materials: String(f.materials || "").slice(0, 300),
+      updatedAt: Number(f.updatedAt) || 0,
+    };
+  }
+
+  const HEBREW_PRACTICE = [
+    ["chant", "Chant", "Ki Teitzei chant practice"],
+    ["prayer", "Prayer", "Hebrew prayer reading"],
+    ["vocab", "Vocabulary", "Units 5.3 and 5.4 words"],
+    ["quiz", "Quiz", "Unit 5.4 quiz practice"],
+    ["study", "Study guide", "Unit 5.3 study guide"],
+  ];
+
+  function normalizeHebrew(h) {
+    h = h && typeof h === "object" ? h : {};
+    const practiceLog = {};
+    const rawLog =
+      h.practiceLog && typeof h.practiceLog === "object" ? h.practiceLog : {};
+    for (const [date, entry] of Object.entries(rawLog)) {
+      if (!DATE_RE.test(date) || !entry || typeof entry !== "object") continue;
+      const clean = {};
+      for (const [id] of HEBREW_PRACTICE) clean[id] = !!entry[id];
+      clean.minutes = clamp(Number(entry.minutes) || 0, 0, 240);
+      practiceLog[date] = clean;
+    }
+    return {
+      updatedAt: Number(h.updatedAt) || 0,
+      weakWords: String(h.weakWords || "").slice(0, 1000),
+      practiceLog,
     };
   }
 
@@ -3537,6 +3591,184 @@
     };
   }
 
+  function doNextAction() {
+    const stats = todayWorkStats();
+    const routine = routineForHome();
+    if (stats.overdue.length) {
+      const task = sortByUrgency(stats.overdue)[0];
+      return {
+        label: "Catch up first",
+        title: task.title,
+        sub: dueLabel(task.due, task.dueTime),
+        act: "focus-start",
+        id: task.id,
+        button: "Start focus",
+        tone: "urgent",
+      };
+    }
+    if (routine) {
+      return {
+        label: "Routine window",
+        title: routine.name,
+        sub: `${routine.items.length} small steps`,
+        act: "guide-start",
+        id: routine.id,
+        button: "Walk me through",
+        tone: "routine",
+      };
+    }
+    if (stats.first) {
+      const firstStep = stats.first.steps.find((s) => !s.done);
+      return {
+        label: daysUntil(stats.first.due) === 0 ? "Due today" : "Best next move",
+        title: firstStep ? firstStep.text : stats.first.title,
+        sub: firstStep
+          ? stats.first.title
+          : dueLabel(stats.first.due, stats.first.dueTime),
+        act: "focus-start",
+        id: stats.first.id,
+        button: "Start this",
+        tone: "work",
+      };
+    }
+    if (!hebrewDoneCount(todayKey())) {
+      return {
+        label: "Practice block",
+        title: "Do one Hebrew practice",
+        sub: "Pick chant, prayer, vocab, quiz, or study guide.",
+        act: "nav",
+        arg: "hebrew",
+        button: "Open Hebrew",
+        tone: "hebrew",
+      };
+    }
+    if (!state.captureLog[todayKey()]) {
+      return {
+        label: "Quick check",
+        title: "Make sure all work is written down",
+        sub: "Planner, Classroom, backpack, and school mail.",
+        act: "nav",
+        arg: "inbox",
+        button: "Open inbox",
+        tone: "capture",
+      };
+    }
+    return {
+      label: "Clear",
+      title: "Nothing urgent is waiting",
+      sub: "Add a task, check the week, or take a reset.",
+      act: "quick-add",
+      button: "Add task",
+      tone: "clear",
+    };
+  }
+
+  function doNextCardHTML({ compact = false } = {}) {
+    const n = doNextAction();
+    const data =
+      `data-act="${n.act}"` +
+      (n.id ? ` data-id="${n.id}"` : "") +
+      (n.arg ? ` data-arg="${n.arg}"` : "");
+    return `<section class="card feature do-next-card ${n.tone}">
+      <div class="head"><div><span class="pill">${esc(n.label)}</span><h3>${esc(n.title)}</h3><p class="sub">${esc(n.sub)}</p></div></div>
+      <div class="row"><button class="btn go ${compact ? "" : "big"}" ${data}>${esc(n.button)}</button><button class="btn" data-act="nav" data-arg="week">Week rhythm</button></div>
+    </section>`;
+  }
+
+  function hebrewEntry(date = todayKey()) {
+    state.hebrew = normalizeHebrew(state.hebrew);
+    state.hebrew.practiceLog[date] = state.hebrew.practiceLog[date] || {
+      minutes: 0,
+    };
+    return state.hebrew.practiceLog[date];
+  }
+
+  function hebrewDoneCount(date = todayKey()) {
+    const entry = state.hebrew?.practiceLog?.[date] || {};
+    return HEBREW_PRACTICE.filter(([id]) => !!entry[id]).length;
+  }
+
+  function hebrewWeekCount() {
+    let total = 0;
+    for (let i = -6; i <= 0; i++) total += hebrewDoneCount(isoForOffset(i));
+    return total;
+  }
+
+  function hebrewProgressHTML({ compact = false } = {}) {
+    const entry = state.hebrew?.practiceLog?.[todayKey()] || {};
+    const done = hebrewDoneCount(todayKey());
+    const rows = HEBREW_PRACTICE.map(
+      ([id, label, sub]) =>
+        `<label class="practice-check"><input class="check" type="checkbox" data-check="hebrew" data-id="${id}" ${entry[id] ? "checked" : ""}><span><b>${esc(label)}</b><small>${esc(sub)}</small></span></label>`,
+    ).join("");
+    return `<section class="card ${compact ? "" : "feature"}" data-card="hebrew">
+      <div class="head"><div><h3>Hebrew practice</h3><p class="sub">${done}/${HEBREW_PRACTICE.length} today · ${hebrewWeekCount()} checks this week</p></div><button class="btn sm" data-act="nav" data-arg="hebrew">Open</button></div>
+      <div class="bar" aria-hidden="true"><span style="width:${Math.round((done / HEBREW_PRACTICE.length) * 100)}%"></span></div>
+      <div class="practice-grid">${rows}</div>
+    </section>`;
+  }
+
+  function familySnapshotHTML({ editable = false } = {}) {
+    const f = normalizeFamily(state.family);
+    if (editable) {
+      return `<section class="card feature family-snapshot">
+        <h3>Family check-in</h3>
+        <p class="sub">A shared plain-language note for tonight, rides, materials, and help needed.</p>
+        <div class="grid g2">
+          <div class="field"><label>Parent note</label><textarea id="familyNote" rows="4">${esc(f.note)}</textarea></div>
+          <div class="field"><label>Needs help with</label><textarea id="familyHelp" rows="4">${esc(f.needsHelp)}</textarea></div>
+          <div class="field"><label>Ride / pickup plan</label><input id="familyRide" value="${esc(f.ridePlan)}"></div>
+          <div class="field"><label>Materials to bring</label><input id="familyMaterials" value="${esc(f.materials)}"></div>
+        </div>
+        <div class="row"><button class="btn primary" data-act="save-family">Save family note</button><button class="btn" data-act="print-weekly-report">Print weekly snapshot</button></div>
+      </section>`;
+    }
+    const line = (title, value) =>
+      value ? `<li><b>${esc(title)}:</b> ${esc(value)}</li>` : "";
+    return `<section class="card family-snapshot">
+      <div class="head"><div><h3>Family check-in</h3><p class="sub">${f.updatedAt ? `Updated ${timeAgo(f.updatedAt)}` : "Ready for tonight's quick review."}</p></div><button class="btn sm" data-act="nav" data-arg="coach">Edit</button></div>
+      <ul class="ground-list">
+        ${line("Note", f.note)}
+        ${line("Needs help", f.needsHelp)}
+        ${line("Ride plan", f.ridePlan)}
+        ${line("Materials", f.materials)}
+        ${f.note || f.needsHelp || f.ridePlan || f.materials ? "" : "<li>No family note yet.</li>"}
+      </ul>
+    </section>`;
+  }
+
+  function weekRhythmHTML() {
+    const open = sortByUrgency(openTasks());
+    const dueThisWeek = open.filter((a) => {
+      const d = daysUntil(a.due);
+      return d !== null && d >= 0 && d <= 7;
+    });
+    const rhythm = [
+      ["Sunday", "Setup", "Review the week, choose a goal, make sure sync is on."],
+      ["Monday", "Launch", "Start with the highest-friction assignment before anything optional."],
+      ["Tuesday", "Practice", "Do one Hebrew check and one short focus block."],
+      ["Wednesday", "Midweek reset", "Clear loose papers, update due dates, ask for help early."],
+      ["Thursday", "Finish", "Turn in anything due Friday or over the weekend."],
+      ["Friday", "Review", "Print or read the family snapshot and celebrate finished work."],
+    ];
+    const rows = rhythm
+      .map(
+        ([day, title, sub]) =>
+          `<div class="schedule-row rhythm"><b>${esc(day)}</b><span><strong>${esc(title)}</strong><small>${esc(sub)}</small></span></div>`,
+      )
+      .join("");
+    return (
+      backHeader("Week Rhythm", "more") +
+      `<p class="view-intro">A repeatable weekly pattern so school planning does not restart from zero every day.</p>
+      ${doNextCardHTML({ compact: true })}
+      <section class="card homework-schedule"><div class="schedule-list">${rows}</div></section>
+      <section class="card"><div class="head"><div><h3>Due in the next 7 days</h3><p class="sub">${dueThisWeek.length} assignment${dueThisWeek.length === 1 ? "" : "s"} on deck.</p></div><button class="btn sm" data-act="print-weekly-report">Print snapshot</button></div>
+        ${dueThisWeek.length ? dueThisWeek.slice(0, 6).map((a) => taskItem(a)).join("") : emptyState("✅", "No dated assignments due this week.")}
+      </section>
+      ${familySnapshotHTML()}`
+    );
+  }
+
   function smartDueFromText(text, base = startOfToday()) {
     const raw = String(text || "").toLowerCase();
     if (!raw.trim()) return "";
@@ -3744,6 +3976,7 @@
         <button class="btn sm" data-act="launch-complete">✓ Finish launch</button>
       </div>
       <p class="view-intro">One calm path for starting the day: check in, capture work, choose the first move, then focus.</p>
+      ${doNextCardHTML()}
       <div class="launch-hero">
         <div>
           <span class="pill">Step ${prog.done} of ${prog.total}</span>
@@ -3964,6 +4197,7 @@
       backHeader("Coach Dashboard", "more") +
       `<p class="view-intro">A grown-up view of what is working, what needs help, and whether payday is ready.</p>
       ${parentTonightHTML()}
+      ${familySnapshotHTML({ editable: true })}
       <div class="diag-grid">
         <div class="diag-stat"><b>Focus this week</b><span>${stats.focusMin}m</span></div>
         <div class="diag-stat"><b>Tasks done</b><span>${stats.tasks}</span></div>
@@ -4236,7 +4470,9 @@
       ).slice(0, 3);
       const routine = routineForHome();
       const map = {
+        next: doNextCardHTML({ compact: true }),
         glance: glanceCard(),
+        hebrew: hebrewProgressHTML({ compact: true }),
         payday: paydayCard(),
         calendar: calendarCard(),
         todos: todoCard(),
@@ -4331,6 +4567,7 @@
       const goalToday =
         state.daily.goalDate === todayKey() ? state.daily.goal : "";
       return `
+        ${doNextCardHTML({ compact: true })}
         ${card(
           "goal",
           "🌟 My one goal today",
@@ -4666,6 +4903,20 @@
           },
           {
             act: "nav",
+            arg: "hebrew",
+            ic: "✡️",
+            title: "Hebrew Practice",
+            sub: "Chant, prayer, vocab, quiz",
+          },
+          {
+            act: "nav",
+            arg: "week",
+            ic: "🗓️",
+            title: "Week Rhythm",
+            sub: "Sunday setup through Friday review",
+          },
+          {
+            act: "nav",
             arg: "ai",
             ic: "🤖",
             title: "Academic Help",
@@ -4748,6 +4999,12 @@
             sub: "Your focus & on-time trends",
           },
           {
+            act: "print-weekly-report",
+            ic: "🖨️",
+            title: "Print snapshot",
+            sub: "Family weekly summary",
+          },
+          {
             act: "view-settings",
             ic: "⚙️",
             title: "Settings",
@@ -4821,6 +5078,36 @@ Due tomorrow"></textarea><div class="row"><button class="btn primary" data-act="
 
     coach() {
       return coachDashboardHTML();
+    },
+
+    hebrew() {
+      const entry = state.hebrew?.practiceLog?.[todayKey()] || {};
+      return (
+        backHeader("Hebrew Practice", "more") +
+        `<p class="view-intro">Track the practice that matters today, then keep the tricky words visible for the next review.</p>
+        ${hebrewProgressHTML()}
+        <section class="card">
+          <h3>Weak words / phrases</h3>
+          <p class="sub">Add the words that need another quick pass.</p>
+          <textarea id="hebrewWeakWords" rows="5" placeholder="Type tricky words, trope reminders, or prayer-reading notes...">${esc(state.hebrew?.weakWords || "")}</textarea>
+          <div class="row" style="margin-top:10px">
+            <label class="field compact"><span>Minutes today</span><input id="hebrewMinutes" type="number" min="0" max="240" value="${Number(entry.minutes) || 0}"></label>
+            <button class="btn primary" data-act="save-hebrew-notes">Save Hebrew notes</button>
+          </div>
+        </section>
+        <section class="card">
+          <h3>Suggested Hebrew mini-plan</h3>
+          <div class="schedule-list">
+            <div class="schedule-row rhythm"><b>5m</b><span><strong>Warm read</strong><small>Read slowly once before checking speed.</small></span></div>
+            <div class="schedule-row rhythm"><b>8m</b><span><strong>Hard words</strong><small>Use the weak-word list above.</small></span></div>
+            <div class="schedule-row rhythm"><b>7m</b><span><strong>Quiz or chant</strong><small>End with one check that gives feedback.</small></span></div>
+          </div>
+        </section>`
+      );
+    },
+
+    week() {
+      return weekRhythmHTML();
     },
 
     reliability() {
@@ -7624,6 +7911,16 @@ Due May 31"></textarea>
       };
     }
 
+    // 15. Merge family + Hebrew coaching surfaces by their own timestamps.
+    merged.family =
+      (remote.family?.updatedAt || 0) > (local.family?.updatedAt || 0)
+        ? normalizeFamily(remote.family)
+        : normalizeFamily(local.family);
+    merged.hebrew =
+      (remote.hebrew?.updatedAt || 0) > (local.hebrew?.updatedAt || 0)
+        ? normalizeHebrew(remote.hebrew)
+        : normalizeHebrew(local.hebrew);
+
     merged.updatedAt = Date.now();
     return merged;
   }
@@ -8692,6 +8989,61 @@ Due May 31"></textarea>
         </div>`,
       );
       await selfTest();
+    },
+    "save-family": () => {
+      state.family = {
+        note: ($("#familyNote")?.value || "").trim(),
+        needsHelp: ($("#familyHelp")?.value || "").trim(),
+        ridePlan: ($("#familyRide")?.value || "").trim(),
+        materials: ($("#familyMaterials")?.value || "").trim(),
+        updatedAt: Date.now(),
+      };
+      save();
+      render();
+      toast("Family note saved");
+    },
+    "save-hebrew-notes": () => {
+      const entry = hebrewEntry(todayKey());
+      entry.minutes = clamp(Number($("#hebrewMinutes")?.value) || 0, 0, 240);
+      state.hebrew.weakWords = ($("#hebrewWeakWords")?.value || "").trim();
+      state.hebrew.updatedAt = Date.now();
+      save();
+      render();
+      toast("Hebrew practice saved");
+    },
+    "print-weekly-report": () => {
+      const stats = getWeeklyStats();
+      const open = sortByUrgency(openTasks()).slice(0, 8);
+      const f = normalizeFamily(state.family);
+      const html = `
+        <section class="weekly-print">
+          <h1>Focus School Weekly Snapshot</h1>
+          <p>${esc(new Date().toLocaleDateString())}</p>
+          <div class="statgrid">
+            <div><b>${stats.focusMin}m</b><span>Focus</span></div>
+            <div><b>${stats.tasks}</b><span>Tasks done</span></div>
+            <div><b>${hebrewWeekCount()}</b><span>Hebrew checks</span></div>
+            <div><b>${money(state.rewards?.balance || 0)}</b><span>Allowance due</span></div>
+          </div>
+          <h2>Open Work</h2>
+          <ul>${open.length ? open.map((a) => `<li><b>${esc(a.title)}</b> — ${esc(dueLabel(a.due, a.dueTime))}</li>`).join("") : "<li>No open assignments.</li>"}</ul>
+          <h2>Family Notes</h2>
+          <ul>
+            <li><b>Note:</b> ${esc(f.note || "None")}</li>
+            <li><b>Needs help:</b> ${esc(f.needsHelp || "None")}</li>
+            <li><b>Ride plan:</b> ${esc(f.ridePlan || "None")}</li>
+            <li><b>Materials:</b> ${esc(f.materials || "None")}</li>
+          </ul>
+        </section>`;
+      const w = window.open("", "_blank");
+      if (!w) {
+        toast("Popup blocked. Use the browser print command from Coach Dashboard.");
+        return;
+      }
+      w.document.write(`<!doctype html><html><head><title>Weekly Snapshot</title><style>body{font-family:system-ui,sans-serif;margin:32px;color:#111}h1{margin:0 0 4px}.statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.statgrid div{border:1px solid #ddd;border-radius:8px;padding:12px}.statgrid b{display:block;font-size:1.5rem}li{margin:6px 0}@media print{button{display:none}}</style></head><body>${html}<button onclick="print()">Print</button></body></html>`);
+      w.document.close();
+      w.focus();
+      w.print();
     },
 
     // Pay out one finished week. Opens a parent-gated paystub.
@@ -10427,6 +10779,17 @@ ${name}`;
           // Re-render so the reminder moves between Open/Done groups cleanly.
           render();
         }
+      } else if (kind === "hebrew") {
+        const entry = hebrewEntry(todayKey());
+        entry[id] = box.checked;
+        state.hebrew.updatedAt = Date.now();
+        if (box.checked) {
+          addPoints(1);
+          bumpActivity("tasks");
+          toast("Hebrew practice checked");
+        }
+        save({ immediate: true });
+        renderHero();
       } else if (kind === "health") {
         // Daily movement check-ins (biking/lifting). Optional; reset each day.
         // Paid at most once per item per day (tracked in day.__paid) so they
@@ -11016,6 +11379,8 @@ ${name}`;
       mergeRoutineLogs,
       mergeStates,
       nextRoutineWindow,
+      doNextAction,
+      hebrewDoneCount,
       normalize,
       pickRoutineForNow,
       routineForHome,

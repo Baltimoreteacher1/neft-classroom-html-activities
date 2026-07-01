@@ -190,4 +190,48 @@ const at = (hour, minute = 0, day = 1) => {
   ok("Home routine card persists checked progress until the next day");
 }
 
-console.log(`\nfocus-school-routine-sync: ${passed}/5 checks passed`);
+{
+  const local = {
+    ...api.seed(),
+    assignments: [],
+    family: { note: "Bring folder", needsHelp: "", updatedAt: 10 },
+    hebrew: {
+      updatedAt: 10,
+      weakWords: "shalom",
+      practiceLog: { "2026-06-29": { chant: true, minutes: 5 } },
+    },
+  };
+  const remote = {
+    ...api.seed(),
+    assignments: [],
+    family: { note: "Quiz tomorrow", needsHelp: "vocab", updatedAt: 20 },
+    hebrew: {
+      updatedAt: 20,
+      weakWords: "tefillah",
+      practiceLog: { "2026-06-29": { prayer: true, minutes: 8 } },
+    },
+  };
+  const merged = api.mergeStates(local, remote);
+  assert.equal(merged.family.note, "Quiz tomorrow");
+  assert.equal(merged.family.needsHelp, "vocab");
+  assert.equal(merged.hebrew.weakWords, "tefillah");
+  assert.equal(merged.hebrew.practiceLog["2026-06-29"].prayer, true);
+  ok("family and Hebrew coaching data merge by their own update stamps");
+}
+
+{
+  api.state.assignments = [];
+  api.state.routines = [];
+  api.state.routineLog = {};
+  api.state.hebrew = {
+    updatedAt: 0,
+    weakWords: "",
+    practiceLog: {},
+  };
+  const next = api.doNextAction();
+  assert.equal(next.label, "Practice block");
+  assert.equal(next.arg, "hebrew");
+  ok("Do Next falls back to Hebrew practice when work is clear");
+}
+
+console.log(`\nfocus-school-routine-sync: ${passed}/7 checks passed`);
