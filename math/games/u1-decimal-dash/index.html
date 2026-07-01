@@ -127,6 +127,9 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
   <link rel="stylesheet" href="/assets/game-access.css">
   <!-- gacc-injected:end -->
+  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+  <link rel="stylesheet" href="/assets/game-hint-ladder.css">
+  <!-- ghl-injected:end -->
 </head>
   <body>
     <!-- Decorative animated spark-field (behind the Phaser canvas). -->
@@ -1635,5 +1638,17 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
   <script src="/assets/game-access.js" defer></script>
   <!-- gacc-injected:end -->
+  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+  <script src="/assets/game-hint-ladder.js" defer></script>
+  <script>
+      window.addEventListener('DOMContentLoaded', function () {
+        if (window.NeftHintLadder) window.NeftHintLadder.watch({
+          sourceSelector: "#dd-sr",
+          standard: "6.NS.3",
+          staticHints: ["Look at the place values. Which two whole numbers does this decimal sit between?","Line up the decimal points, then compare digit by digit from the left (tenths, then hundredths).","Set it up: count how many tenths/hundredths past the smaller whole number, then place your marker there."]
+        });
+      });
+    </script>
+  <!-- ghl-injected:end -->
 </body>
 </html>

@@ -99,8 +99,7 @@
     if (!p || !p.itemText) return Promise.resolve(null);
     // state.rung is already incremented to the 1-based rung being requested;
     // RUNG_FRAMING is 0-indexed, so subtract 1 to escalate 0 -> 1 -> 2.
-    var framing =
-      RUNG_FRAMING[Math.min(state.rung - 1, RUNG_FRAMING.length - 1)];
+    var framing = RUNG_FRAMING[Math.min(state.rung - 1, RUNG_FRAMING.length - 1)];
     var body = {
       mode: "hint",
       standard: clamp(p.standard, 40),
@@ -310,8 +309,69 @@
     openPanel(false);
   }
 
+  // Generic driver: watch a DOM element that mirrors the current problem (these
+  // Phaser games write the live problem into a screen-reader status region via
+  // srSay). On each genuine new problem, publish it to the ladder. This lets a
+  // game opt in with zero changes to its closure/game logic — just a selector.
+  //
+  // opts: { sourceSelector, standard, staticHints }
+  function watch(opts) {
+    if (!opts || !opts.sourceSelector) return;
+    ensureUi();
+    var standard = clamp(opts.standard, 40);
+    var staticHints = Array.isArray(opts.staticHints) ? opts.staticHints : [];
+
+    // Result/answer announcements must never become itemText — they may contain
+    // the solution (games announce "Correct. <why>"). Accept only problem-like
+    // statements, and require a real change before resetting the ladder.
+    function looksLikeProblem(t) {
+      if (!t || t.length < 14) return false;
+      if (
+        /\b(correct|nice|great job|well done|try again|not quite|oops|incorrect|marker at|placed|equivalent|you got|you win|game over|score|level up)\b/i.test(
+          t,
+        )
+      )
+        return false;
+      if (/[✓✗]/.test(t)) return false;
+      return true;
+    }
+
+    function ingest(raw) {
+      var t = (raw || "").replace(/\s+/g, " ").trim();
+      if (!looksLikeProblem(t)) return;
+      var next = clamp(t, 1800);
+      if (state.problem && state.problem.itemText === next) return; // unchanged
+      setProblem({
+        itemText: next,
+        standard: standard,
+        staticHints: staticHints,
+      });
+    }
+
+    var el = doc.querySelector(opts.sourceSelector);
+    if (el) {
+      ingest(el.textContent);
+      try {
+        var mo = new MutationObserver(function () {
+          ingest(el.textContent);
+        });
+        mo.observe(el, { childList: true, characterData: true, subtree: true });
+      } catch (e) {
+        /* MutationObserver unsupported — first-read still works */
+      }
+    }
+    // Fallback: (re-)read the source the moment the student opens the panel, in
+    // case no mutation fired (e.g. problem set before the observer attached).
+    if (els.fab) {
+      els.fab.addEventListener("click", function () {
+        if (!state.problem && el) ingest(el.textContent);
+      });
+    }
+  }
+
   window.NeftHintLadder = {
     setProblem: setProblem,
+    watch: watch,
     // Manual controls (optional).
     open: function () {
       openPanel(true);

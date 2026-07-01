@@ -128,6 +128,9 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
   <link rel="stylesheet" href="/assets/game-access.css">
   <!-- gacc-injected:end -->
+  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+  <link rel="stylesheet" href="/assets/game-hint-ladder.css">
+  <!-- ghl-injected:end -->
 </head>
   <body>
     <!-- Decorative animated spark-field (behind the Phaser canvas). -->
@@ -1254,5 +1257,17 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
   <script src="/assets/game-access.js" defer></script>
   <!-- gacc-injected:end -->
+  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+  <script src="/assets/game-hint-ladder.js" defer></script>
+  <script>
+      window.addEventListener('DOMContentLoaded', function () {
+        if (window.NeftHintLadder) window.NeftHintLadder.watch({
+          sourceSelector: "#pp-sr",
+          standard: "6.RP.3c",
+          staticHints: ["Percent means 'per 100'. What is the whole (the 100%) in this problem?","Set up part/whole = percent/100, and see which piece is missing.","Set it up: write the proportion (or find 1% first), then solve for the missing part."]
+        });
+      });
+    </script>
+  <!-- ghl-injected:end -->
 </body>
 </html>

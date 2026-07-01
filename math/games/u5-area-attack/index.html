@@ -127,6 +127,9 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
   <link rel="stylesheet" href="/assets/game-access.css">
   <!-- gacc-injected:end -->
+  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+  <link rel="stylesheet" href="/assets/game-hint-ladder.css">
+  <!-- ghl-injected:end -->
 </head>
   <body>
     <!-- Decorative animated spark-field (behind the Phaser canvas). -->
@@ -1726,5 +1729,17 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
   <script src="/assets/game-access.js" defer></script>
   <!-- gacc-injected:end -->
+  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+  <script src="/assets/game-hint-ladder.js" defer></script>
+  <script>
+      window.addEventListener('DOMContentLoaded', function () {
+        if (window.NeftHintLadder) window.NeftHintLadder.watch({
+          sourceSelector: "#aa-sr",
+          standard: "6.G.1",
+          staticHints: ["Can you break this shape into rectangles or triangles you already know how to measure?","Recall the area rules: rectangle = base × height; triangle = ½ × base × height.","Set it up: find each piece's area with the formula, then add (or subtract) — you finish the arithmetic."]
+        });
+      });
+    </script>
+  <!-- ghl-injected:end -->
 </body>
 </html>

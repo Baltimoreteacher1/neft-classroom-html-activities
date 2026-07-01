@@ -126,6 +126,9 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
   <link rel="stylesheet" href="/assets/game-access.css">
   <!-- gacc-injected:end -->
+  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+  <link rel="stylesheet" href="/assets/game-hint-ladder.css">
+  <!-- ghl-injected:end -->
 </head>
   <body>
     <!-- Decorative animated chart-bar field (behind the Phaser canvas). -->
@@ -1482,5 +1485,17 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
   <script src="/assets/game-access.js" defer></script>
   <!-- gacc-injected:end -->
+  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+  <script src="/assets/game-hint-ladder.js" defer></script>
+  <script>
+      window.addEventListener('DOMContentLoaded', function () {
+        if (window.NeftHintLadder) window.NeftHintLadder.watch({
+          sourceSelector: "#dd-sr",
+          standard: "6.SP.5",
+          staticHints: ["Is the question about the center of the data (mean/median) or the spread (range)?","Recall the measure: mean = add then divide; median = middle of the ordered list; range = max − min.","Set it up: order the data or set up the sum, then do the final step yourself."]
+        });
+      });
+    </script>
+  <!-- ghl-injected:end -->
 </body>
 </html>
