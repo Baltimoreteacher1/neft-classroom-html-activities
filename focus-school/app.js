@@ -1349,10 +1349,13 @@
   const TABS = [
     ["home", "Now", "🎯"],
     ["homework", "Homework", "📋"],
+    ["reading", "Reading", "📚"],
     ["calendar", "Calendar", "📆"],
     ["routines", "Routines", "🔁"],
     ["rewards", "Allowance", "💰"],
     ["calming", "Calming", "🧘"],
+    ["health", "Health", "💪"],
+    ["ai", "AI Help", "🤖"],
     ["more", "More", "⋯"],
   ];
   let view = "home";
