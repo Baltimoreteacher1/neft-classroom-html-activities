@@ -1,0 +1,43 @@
+# neft-lti — Canvas LTI 1.3 tool Worker.
+#
+# DEPLOY (separate from the Pages site; never touches eduwonderlab.com):
+#   1. Generate the tool keypair once (RS256 JWK) and store it as a secret:
+#        node tools/gen-keypair.mjs            # prints private + public JWK
+#        npx wrangler secret put LTI_PRIVATE_JWK    # paste the private JWK JSON
+#   2. Create the D1 + KV bindings (ids below are placeholders until created):
+#        npx wrangler d1 create neft-lti
+#        npx wrangler kv namespace create LTI_KV
+#      then paste the returned ids here.
+#   3. npx wrangler deploy    (brings up /health + /lti/jwks — dormant)
+#   4. Send docs/canvas/it-lti-developer-key-email.md to BCPS IT with the live
+#      URLs. On approval they return client_id + deployment_id:
+#        npx wrangler secret put LTI_CLIENT_ID
+#        npx wrangler secret put LTI_DEPLOYMENT_ID
+#      …and set the platform vars below. That flips the tool ACTIVE — no code
+#      change, no student impact until a Canvas course points here.
+name = "neft-lti"
+main = "src/worker.js"
+compatibility_date = "2026-05-25"
+
+# Platform (BCPS Canvas) endpoints — confirmed from the Developer Key screen on
+# approval. Standard *.instructure.com paths.
+[vars]
+PLATFORM_ISS = "https://canvas.instructure.com"
+PLATFORM_AUTH_URL = "https://sso.canvaslms.com/api/lti/authorize_redirect"
+PLATFORM_TOKEN_URL = "https://sso.canvaslms.com/login/oauth2/token"
+PLATFORM_JWKS_URL = "https://sso.canvaslms.com/api/lti/security/jwks"
+TOOL_URL = "https://neft-lti.jdneft.workers.dev"
+LESSON_BASE = "https://eduwonderlab.com"
+
+# Nonce/replay table + launch audit. Create with `wrangler d1 create neft-lti`
+# and paste the id; migrations in ./migrations.
+[[d1_databases]]
+binding = "DB"
+database_name = "neft-lti"
+database_id = "PLACEHOLDER-create-with-wrangler-d1-create"
+migrations_dir = "migrations"
+
+# Platform JWKS cache + OAuth token cache + nonce (preferred over D1 for TTL).
+[[kv_namespaces]]
+binding = "KV"
+id = "PLACEHOLDER-create-with-wrangler-kv-namespace-create"

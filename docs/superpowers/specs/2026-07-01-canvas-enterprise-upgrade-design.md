@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-01
 **Repo:** `neft-classroom-html-activities`
-**Status:** Part A1 delivered & deployed; Parts A2–C planned
+**Status:** Parts A1, A3, B, C delivered; A2 deferred (YAGNI). LTI Worker built + tested (16/16), deploy-ready, dormant.
 **Supersedes framing of:** `2026-06-23-canvas-lti-seamless-design.md` (SCORM reframed from "weak fallback" to primary working path)
 
 ## Reframing (why this differs from the 2026-06-23 spec)
@@ -49,29 +49,48 @@ resume would relay a compact state snapshot through `cmi.suspend_data`. Deferred
 until there is a real cross-device need — it adds bidirectional sync risk for a
 marginal gain.
 
-### A3 — One-click / bulk SCORM download in the Console (planned)
+### A3 — One-click SCORM download in the Console (DELIVERED)
 
-Surface the existing on-demand SCORM endpoint (`functions/api/scorm.js`) and the
-batch builder (`tools/scorm/`) as one-click `.zip` downloads — per lesson and as
-a whole-library / per-unit bundle with a printable rollout INDEX, mirroring the
-Canvas Studio cartridge flow.
+The **Package** tab of the new Canvas Console surfaces the existing on-demand
+SCORM endpoint (`functions/api/scorm.js`) as a one-click `.zip` — enter a lesson
+id/path, download the auto-grade or completion-code package. Whole-library /
+per-unit packages link out to Canvas Studio (already one-click) and the batch
+SCORM builder. A printable per-unit rollout INDEX remains available via the
+`--split` cartridge flow.
 
-## Part B — Console consolidation (no IT, planned)
+## Part B — Canvas Console (DELIVERED, additive)
 
-Collapse the six `teacher-tools/canvas-*` tools (command-center, dashboard,
-grades, scorm, setup, studio) into one **Canvas Console** with three tabs:
-**Package** (SCORM / cartridge / QTI download), **Grades** (code decode + roster
-merge), **Setup & Status**. Old URLs become **redirects** to the Console —
-redirect-backed migration only, no bare folder moves (routes are load-bearing).
+New `teacher-tools/canvas-console/` unifies the six `canvas-*` tools into one hub
+with three tabs — **Package** (SCORM one-click / cartridge / QTI), **Grades**
+(code decode + live dashboard), **Setup & Status** (setup wizard, command center,
+**live LTI status check** via the Worker's `/health`). Additive and safe: the six
+existing tools keep working and are linked in; no folder moves, no route changes
+(routes are load-bearing). Redirect-based retirement of the redundant tools can
+follow later if desired.
 
-## Part C — LTI 1.3 Worker, dormant (planned, per 2026-06-23 spec)
+## Part C — LTI 1.3 Worker, dormant (DELIVERED, deploy-ready)
 
-Build `lti-worker/` (OIDC login, launch/JWT-verify, JWKS, Deep Linking, AGS
-score) + `engine/core/grade-emit.js` channel selector (LTI → SCORM → code) + the
-IT Developer-Key email carrying real URLs. Deployed but inert until IT returns
-`client_id` + `deployment_id`; two pasted values flip it live. Zero student
-impact while dormant. Positioned as the future SSO/placement/roster upgrade —
-grades are already handled by SCORM.
+Built `lti-worker/` (OIDC login, launch/JWT-verify via cached platform JWKS,
+public JWKS, Deep Linking picker + signed response, AGS client-credentials token
+
+- Score POST) + `engine/core/grade-emit.js` channel selector (LTI → SCORM/code) +
+  `migrations/0001_init.sql` (nonce/replay + audit) + `tools/gen-keypair.mjs` +
+  README + a 16-assertion conformance test against a mock Canvas. The IT
+  Developer-Key email (`docs/canvas/it-lti-developer-key-email.md`) already carries
+  the real Worker URLs. **Fails closed (503) until `LTI_PRIVATE_JWK` +
+  `LTI_CLIENT_ID` + `LTI_DEPLOYMENT_ID` are set** — zero student impact while
+  dormant. Two pasted values from IT flip it live. Positioned as the future
+  SSO/placement/roster upgrade; grades already work via SCORM today.
+
+The LTI launch redirect appends `sn`/`si` too, so LTI launches reuse the same
+A1 auto-identify path — one identity mechanism for both channels.
+
+### Deploy note
+
+`lti-worker/` deploys **separately** via `wrangler` (see its README) and never
+touches the Pages site. It is committed here but NOT auto-deployed by the Pages
+push — deploying the Worker requires an authenticated `wrangler` + generating the
+keypair secret, done when the IT email goes out.
 
 ## Constraints honored
 

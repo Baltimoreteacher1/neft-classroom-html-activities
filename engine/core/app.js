@@ -2,7 +2,7 @@ import { createState, normalizeStudentId, findSavedStudents } from "./state.js";
 import { createEngagement } from "../engagement/engagement.js";
 import { mountExportToolbar } from "./export.js";
 import { reportScore } from "./score-reporter.js";
-import { showCanvasCode } from "./canvas-code.js";
+import { completeLesson } from "./grade-emit.js";
 import { runComponentList } from "../components/activity-chooser.js";
 import {
   renderComponent,
@@ -708,7 +708,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       if (window.AudioSynth) window.AudioSynth.tada();
       if (window.fireConfetti) window.fireConfetti();
       ensureEduPulse().finally(() => reportScore(state, config));
-      showCanvasCode(state, config);
+      completeLesson(state, config);
     }
   });
 
