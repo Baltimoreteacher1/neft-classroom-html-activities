@@ -72,19 +72,22 @@ function isActive(env) {
 }
 
 function health(env) {
-  return json({
-    ok: true,
-    tool: "neft-lti",
-    status: isActive(env) ? "active" : "dormant",
-    keypair: !!env.LTI_PRIVATE_JWK,
-    registered: !!(env.LTI_CLIENT_ID && env.LTI_DEPLOYMENT_ID),
-    endpoints: {
-      login: "/lti/login",
-      launch: "/lti/launch",
-      jwks: "/lti/jwks",
-      deeplink: "/lti/deeplink",
-    },
-  });
+  // CORS so the Canvas Console (on eduwonderlab.com) can read the live status.
+  return cors(
+    json({
+      ok: true,
+      tool: "neft-lti",
+      status: isActive(env) ? "active" : "dormant",
+      keypair: !!env.LTI_PRIVATE_JWK,
+      registered: !!(env.LTI_CLIENT_ID && env.LTI_DEPLOYMENT_ID),
+      endpoints: {
+        login: "/lti/login",
+        launch: "/lti/launch",
+        jwks: "/lti/jwks",
+        deeplink: "/lti/deeplink",
+      },
+    }),
+  );
 }
 
 /* --------------------------------------------------------------- JWKS (pub) */
@@ -109,8 +112,8 @@ function publicFromPrivate(jwk) {
 }
 
 function jwks(env) {
-  if (!env.LTI_PRIVATE_JWK) return json({ keys: [] });
-  return json({ keys: [publicFromPrivate(privateJwk(env))] });
+  if (!env.LTI_PRIVATE_JWK) return cors(json({ keys: [] }));
+  return cors(json({ keys: [publicFromPrivate(privateJwk(env))] }));
 }
 
 /* ------------------------------------------------------------ OIDC login */
