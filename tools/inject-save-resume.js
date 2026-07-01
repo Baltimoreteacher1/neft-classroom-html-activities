@@ -87,6 +87,9 @@ const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
 //     matches the audit's teacher skip in audit-save-resume-integration.js)
 //   - living-school/neft-city-*  → self-persist their own game state to a
 //     private localStorage key (see each app.js)
+//   - focus-school/*             → self-persisting dashboard app (all state in
+//     app.js + multi-device sync); its only field is a command-bar search box,
+//     not durable student work
 //   - games-live/*               → ephemeral live multiplayer host/join lobby
 //   - games/3d/*                 → 3D game launchers (no form fields / canvas)
 //   - math/intervention/index.html → the intervention nav hub (links only)
@@ -94,7 +97,7 @@ const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
 // quiz state and are intentionally NOT excluded.) Revert stays allowed so any
 // already-injected refs can still be stripped.
 const SKIP_INJECT_PATH_RE =
-  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|games-live\/|games\/3d\/|math\/intervention\/index\.html$)/i;
+  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|games-live\/|games\/3d\/|math\/intervention\/index\.html$)/i;
 
 const args = new Set(process.argv.slice(2));
 const DRY = args.has("--dry-run");

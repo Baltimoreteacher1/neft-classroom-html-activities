@@ -65,11 +65,13 @@ const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
 // omissions):
 //   - .../teacher/...            → teacher-facing pages
 //   - living-school/neft-city-*  → sims that self-persist their own game state
+//   - focus-school/*             → self-persisting dashboard app (own state in
+//     app.js + multi-device sync); only field is a command-bar search box
 //   - games-live/*               → ephemeral live multiplayer host/join lobby
 //   - games/3d/*                 → 3D game launchers (no form fields)
 //   - math/intervention/index.html → the intervention nav hub (links only)
 const SKIP_PATH_RE =
-  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|games-live\/|games\/3d\/|math\/intervention\/index\.html$)/i;
+  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|games-live\/|games\/3d\/|math\/intervention\/index\.html$)/i;
 
 const issues = [];
 const stats = {
