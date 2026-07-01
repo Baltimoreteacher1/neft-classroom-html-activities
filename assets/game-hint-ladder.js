@@ -178,11 +178,28 @@
     els.more.addEventListener("click", nextRung);
   }
 
+  function showEmptyState() {
+    if (!els.steps) return;
+    els.steps.innerHTML =
+      '<p class="nt-hl-step-text nt-hl-empty">Start a problem, then tap here and I\'ll help you think it through — one hint at a time.</p>';
+    if (els.more) {
+      els.more.disabled = true;
+      els.more.textContent = "Show me a hint";
+    }
+    if (els.badge) els.badge.hidden = true;
+  }
+
   function openPanel(open) {
     ensureUi();
     els.panel.hidden = !open;
     els.fab.setAttribute("aria-expanded", open ? "true" : "false");
-    if (open && state.rung === 0) nextRung(); // reveal rung 1 on first open
+    if (!open) return;
+    // No active problem yet (title/menu/results screen): guide, don't fetch.
+    if (!state.problem) {
+      showEmptyState();
+      return;
+    }
+    if (state.rung === 0) nextRung(); // reveal rung 1 on first open
   }
   function togglePanel() {
     openPanel(els.panel.hidden);
@@ -320,6 +337,18 @@
     ensureUi();
     var standard = clamp(opts.standard, 40);
     var staticHints = Array.isArray(opts.staticHints) ? opts.staticHints : [];
+    // Optional allow-list: when a game's status region also carries non-problem
+    // chatter (interaction feedback, intros), pass an `accept` regex source so
+    // ONLY genuine problem announcements are ingested. When absent, any
+    // non-result text qualifies (fine for single-format games).
+    var acceptRe = null;
+    if (opts.accept) {
+      try {
+        acceptRe = new RegExp(opts.accept, "i");
+      } catch (e) {
+        acceptRe = null;
+      }
+    }
 
     // Result/answer announcements must never become itemText — they may contain
     // the solution (games announce "Correct. <why>"). Accept only problem-like
@@ -333,6 +362,7 @@
       )
         return false;
       if (/[✓✗]/.test(t)) return false;
+      if (acceptRe && !acceptRe.test(t)) return false;
       return true;
     }
 
@@ -381,10 +411,15 @@
     },
   };
 
-  // Probe the backend once the page is ready (non-blocking).
-  if (doc.readyState === "loading") {
-    doc.addEventListener("DOMContentLoaded", probeBackend, { once: true });
-  } else {
+  // On ready: show the hint button immediately (so students can always find it,
+  // even before the first problem renders) and probe the backend (non-blocking).
+  function onReady() {
+    ensureUi();
     probeBackend();
+  }
+  if (doc.readyState === "loading") {
+    doc.addEventListener("DOMContentLoaded", onReady, { once: true });
+  } else {
+    onReady();
   }
 })();

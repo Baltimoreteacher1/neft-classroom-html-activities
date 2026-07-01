@@ -123,6 +123,21 @@ const GAMES = {
       "Set it up: write length × width × height with the numbers, then do the multiplying.",
     ],
   },
+  // Universal per-lesson engine (?unit=/lesson) with several mini-game modes.
+  // Standard varies by lesson, so leave it blank (the tutor reads the problem
+  // text). `accept` restricts ingestion to genuine problem announcements — each
+  // mode carries a marker (Round N / Options: / Left cards: / Steps:) that the
+  // interaction chatter and intro never do. Hints are topic-agnostic.
+  "math/games/practice-arcade": {
+    sr: "#pa-sr",
+    standard: "",
+    accept: "(^Round \\d|\\bOptions:|\\bLeft cards:|\\bSteps:)",
+    hints: [
+      "Read the problem again slowly. What is it giving you, and what is it asking you to find?",
+      "What one idea or rule from this lesson connects what you have to what you need?",
+      "Set it up: write the first step using that rule, then work it through — you finish the last part.",
+    ],
+  },
 };
 
 const args = new Set(process.argv.slice(2));
@@ -146,12 +161,14 @@ function revert(html) {
 
 function initScript(cfg) {
   const hints = JSON.stringify(cfg.hints);
+  const acceptLine = cfg.accept ? `          accept: ${JSON.stringify(cfg.accept)},\n` : "";
   return (
     "<script>\n" +
     "      window.addEventListener('DOMContentLoaded', function () {\n" +
     "        if (window.NeftHintLadder) window.NeftHintLadder.watch({\n" +
     `          sourceSelector: ${JSON.stringify(cfg.sr)},\n` +
     `          standard: ${JSON.stringify(cfg.standard)},\n` +
+    acceptLine +
     `          staticHints: ${hints}\n` +
     "        });\n" +
     "      });\n" +
@@ -185,10 +202,7 @@ for (const [rel, cfg] of Object.entries(GAMES)) {
     continue;
   }
 
-  html = html.replace(
-    /<\/head>/i,
-    `  ${BEGIN_HEAD}\n  ${LINK}\n  ${END}\n</head>`,
-  );
+  html = html.replace(/<\/head>/i, `  ${BEGIN_HEAD}\n  ${LINK}\n  ${END}\n</head>`);
   html = html.replace(
     /<\/body>/i,
     `  ${BEGIN_BODY}\n  ${SCRIPT}\n  ${initScript(cfg)}\n  ${END}\n</body>`,
@@ -197,9 +211,7 @@ for (const [rel, cfg] of Object.entries(GAMES)) {
   report.injected++;
 }
 
-console.log(
-  `Hint-ladder injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`,
-);
+console.log(`Hint-ladder injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`);
 console.log("  games matched   :", report.scanned);
 if (REVERT) {
   console.log("  reverted        :", report.reverted);
@@ -207,7 +219,5 @@ if (REVERT) {
   console.log("  injected        :", report.injected);
   console.log("  already injected:", report.already);
 }
-if (report.missing.length)
-  console.log("  MISSING dirs    :", report.missing.join(", "));
-if (report.noTags.length)
-  console.log("  no head/body    :", report.noTags.join(", "));
+if (report.missing.length) console.log("  MISSING dirs    :", report.missing.join(", "));
+if (report.noTags.length) console.log("  no head/body    :", report.noTags.join(", "));
