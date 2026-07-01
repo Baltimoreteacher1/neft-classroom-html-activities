@@ -5246,12 +5246,17 @@
         zero.className = "chip-btn";
         zero.textContent = "Zero pair";
         zero.title = "Add one +1 and one −1";
+        const cancel = document.createElement("button");
+        cancel.className = "chip-btn";
+        cancel.textContent = "Cancel pairs";
+        cancel.title =
+          "Take away matched +1 and −1 pairs — the sum stays the same";
         const clr = document.createElement("button");
         clr.className = "chip-btn";
         clr.textContent = "Clear";
         const sum = document.createElement("span");
         sum.className = "chip-sum";
-        head.append(addP, addN, zero, clr, sum);
+        head.append(addP, addN, zero, cancel, clr, sum);
         const tray = document.createElement("div");
         tray.className = "chip-tray";
         function render() {
@@ -5282,6 +5287,7 @@
         addP.addEventListener("pointerdown", (e) => e.stopPropagation());
         addN.addEventListener("pointerdown", (e) => e.stopPropagation());
         zero.addEventListener("pointerdown", (e) => e.stopPropagation());
+        cancel.addEventListener("pointerdown", (e) => e.stopPropagation());
         clr.addEventListener("pointerdown", (e) => e.stopPropagation());
         addP.addEventListener("click", (e) => {
           e.stopPropagation();
@@ -5295,6 +5301,30 @@
           e.stopPropagation();
           o.chips.push(1, -1);
           render();
+          pushHistory();
+        });
+        // Remove every matched +1/−1 pair at once. The leftover is |sum| chips
+        // of the dominant sign, so the Sum is unchanged — the core "zero pairs
+        // make zero" idea (6.NS). No-op (with a nudge) if nothing can cancel.
+        cancel.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const pos = o.chips.filter((v) => v > 0).length;
+          const neg = o.chips.length - pos;
+          if (!pos || !neg) {
+            showToast("No + and − pair to cancel yet");
+            return;
+          }
+          const total = o.chips.reduce((a, b) => a + b, 0);
+          o.chips = [];
+          for (let i = 0; i < Math.abs(total); i++)
+            o.chips.push(total > 0 ? 1 : -1);
+          render();
+          showToast(
+            Math.min(pos, neg) +
+              " zero pair" +
+              (Math.min(pos, neg) === 1 ? "" : "s") +
+              " removed — sum stays the same",
+          );
           pushHistory();
         });
         clr.addEventListener("click", (e) => {

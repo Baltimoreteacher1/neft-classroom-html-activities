@@ -275,11 +275,17 @@ export async function onRequest(context) {
   const hasWorkersAI = !!env.AI;
 
   // Health works without any backend so the client can probe availability.
+  // `claude`/`workersAI` expose which backends are actually BOUND (not just
+  // whether the key is well-formed) so operators can diagnose a "live but every
+  // POST is offline" state — that means the bound backend's upstream call fails
+  // (bad/unfunded ANTHROPIC_API_KEY, or Workers AI not enabled on the account).
   if (seg === "health" && method === "GET") {
     return json({
       ok: true,
       backend: hasClaude ? "claude" : hasWorkersAI ? "workers-ai" : "none",
       live: hasClaude || hasWorkersAI,
+      claude: hasClaude,
+      workersAI: hasWorkersAI,
     });
   }
 
