@@ -1194,6 +1194,7 @@
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
+        this.missedOnce = false; // one free retry before a miss costs a life
         this.problem = makeProblem(this.chosenLevel);
         const p = this.problem;
         this.bannerLabel.setText(
@@ -1264,6 +1265,21 @@
           this.feedback.setText("Correct! " + p.why).setAlpha(1);
           srSay("Correct. " + p.why);
           this.afterAttempt();
+        } else if (!this.missedOnce) {
+          // First miss on this problem: give a calm retry — no life lost, the
+          // answer is NOT revealed, so the student can rethink and try again.
+          this.missedOnce = true;
+          this.locked = false;
+          this.streak = 0;
+          SFX.bad();
+          JUICE.audio.wrong();
+          JUICE.shake(this, 0.006);
+          const tip =
+            p.hint ||
+            "Check the sign and size of each coordinate, then Lock In.";
+          this.feedback.setText("Not quite — try again. " + tip).setAlpha(1);
+          this.updateHUD();
+          srSay("Not quite. Try again. " + tip);
         } else {
           SFX.bad();
           JUICE.audio.wrong();
@@ -1296,8 +1312,10 @@
       GameScene.prototype.afterAttempt = function () {
         this.updateHUD();
         if (this.lives <= 0) {
-          this.endGame(false);
-          return;
+          // No-fail practice: refill hearts and keep going. Mistakes teach;
+          // they never end the game (calm, self-paced classroom mode).
+          this.lives = 3;
+          this.updateHUD();
         }
         if (this.solved >= this.target) {
           this.endGame(true);
