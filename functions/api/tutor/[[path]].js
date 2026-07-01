@@ -48,7 +48,7 @@ const CAP = {
   output: 700,
 };
 
-const MODES = new Set(["hint", "explain", "another"]);
+const MODES = new Set(["hint", "explain", "another", "diagnose", "teach"]);
 
 // Best-effort in-memory rate limiter (per isolate). Not a hard guarantee
 // across the edge, but it blunts accidental loops / abuse.
@@ -65,7 +65,9 @@ function clampStr(v, n) {
 
 function clientIp(request) {
   return (
-    request.headers.get("CF-Connecting-IP") || request.headers.get("X-Forwarded-For") || "anon"
+    request.headers.get("CF-Connecting-IP") ||
+    request.headers.get("X-Forwarded-For") ||
+    "anon"
   );
 }
 
@@ -123,7 +125,9 @@ function parseBody(body) {
 }
 
 function systemPrompt(mode, standard) {
-  const stdLine = standard ? `The problem targets math standard ${standard}. ` : "";
+  const stdLine = standard
+    ? `The problem targets math standard ${standard}. `
+    : "";
   const base =
     `You are a warm, patient Grade 6 math tutor for a multilingual classroom. ${stdLine}` +
     `Use short sentences and simple words. Be encouraging. Never shame a wrong answer. ` +
@@ -147,6 +151,31 @@ function systemPrompt(mode, standard) {
       `You may show the method, but keep it about understanding, not just the one answer.`
     );
   }
+  if (mode === "diagnose") {
+    return (
+      base +
+      ` The student shared their work. Find the MISCONCEPTION, not just the mistake. ` +
+      `Rules you MUST follow: ` +
+      `(1) Do NOT give the final answer or redo the full problem. ` +
+      `(2) Name, in kid-friendly words, the ONE thinking-error you see (e.g. "you added the ` +
+      `denominators — that is the most common fraction mix-up"). ` +
+      `(3) If the work looks correct, say what they did well and confirm the reasoning is sound. ` +
+      `(4) End with ONE tiny next step to self-check. Keep it to 2-4 short, warm sentences.`
+    );
+  }
+  if (mode === "teach") {
+    return (
+      base +
+      ` You are "Robo", a friendly robot who is a curious LEARNER — the student is teaching YOU. ` +
+      `The protégé effect: students learn by explaining. Rules you MUST follow: ` +
+      `(1) Stay in character as a confused-but-eager learner; the student is the teacher. ` +
+      `(2) Ask ONE simple, naive follow-up question about the step they explained, so they have to ` +
+      `make it clearer (e.g. "Wait — why do we flip the second fraction and not the first?"). ` +
+      `(3) Never lecture or give the answer yourself; only ask or reflect back. ` +
+      `(4) If their explanation is clear and correct, cheer briefly, then ask a slightly deeper ` +
+      `"what if" question. Keep every reply to 1-3 short sentences.`
+    );
+  }
   // another
   return (
     base +
@@ -158,9 +187,19 @@ function systemPrompt(mode, standard) {
 
 function userPrompt(v) {
   const lines = [`Problem the student is working on:\n${v.itemText}`];
-  if (v.studentWork) lines.push(`\nWhat the student has tried so far:\n${v.studentWork}`);
-  if (v.mode === "hint") lines.push(`\nGive me a hint for the next step (not the answer).`);
+  if (v.studentWork)
+    lines.push(`\nWhat the student has tried so far:\n${v.studentWork}`);
+  if (v.mode === "hint")
+    lines.push(`\nGive me a hint for the next step (not the answer).`);
   else if (v.mode === "explain") lines.push(`\nExplain why / how this works.`);
+  else if (v.mode === "diagnose")
+    lines.push(
+      `\nLook at my work above and tell me where my thinking went wrong (or confirm it is right).`,
+    );
+  else if (v.mode === "teach")
+    lines.push(
+      `\nI am the teacher and you are Robo the learner. Ask me one question about what I just explained.`,
+    );
   else lines.push(`\nGive me another problem like this to practice.`);
   return lines.join("\n");
 }
