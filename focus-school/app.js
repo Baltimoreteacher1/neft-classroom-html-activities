@@ -7393,7 +7393,16 @@ Due May 31"></textarea>
       "fern",
     ];
     const bytes = new Uint8Array(14);
-    (crypto || {}).getRandomValues?.(bytes);
+    if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+      crypto.getRandomValues(bytes);
+    } else {
+      // No Web Crypto (old/insecure context): mix Date.now() + Math.random()
+      // per byte so the code is still unpredictable instead of the all-zero
+      // (fully guessable "focus-orca-aaaa…") a missing RNG would leave behind.
+      for (let i = 0; i < bytes.length; i++) {
+        bytes[i] = (Math.floor(Math.random() * 256) + Date.now() + i) & 0xff;
+      }
+    }
     const alpha = "abcdefghjkmnpqrstuvwxyz23456789"; // no look-alikes
     const rand = [...bytes].map((b) => alpha[b % alpha.length]).join("");
     const w = words[bytes[0] % words.length];

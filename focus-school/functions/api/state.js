@@ -50,6 +50,22 @@ function keyFor(code) {
   return clean.length >= 1 ? "sync:" + clean : null;
 }
 
+// Cryptographically-strong 6-digit pairing code. Rejection-samples a Uint32 so
+// there is no modulo bias (unlike Math.random()*900000, which is also
+// predictable). Kept 6 digits so it's still easy to type between devices; the
+// brute-force cap below is what protects the small keyspace.
+function secureSixDigit() {
+  const range = 1_000_000;
+  const limit = Math.floor(0xffffffff / range) * range;
+  const buf = new Uint32Array(1);
+  let n;
+  do {
+    crypto.getRandomValues(buf);
+    n = buf[0];
+  } while (n >= limit);
+  return String(n % range).padStart(6, "0");
+}
+
 export async function onRequestOptions({ request }) {
   return new Response(null, { status: 204, headers: corsFor(request) });
 }
@@ -66,9 +82,29 @@ export async function onRequestGet({ request, env }) {
       .replace(/[^0-9]/g, "");
     if (clean.length !== 6)
       return json({ error: "pairing code must be 6 digits" }, 400, request);
+    // Brute-force cap: a 6-digit code has only 900k possibilities and resolving
+    // it hands over the full sync code, so throttle failed resolves per client
+    // IP within the pairing window. KV isn't atomic — this is a proportionate
+    // speed bump that makes enumerating the keyspace in 5 minutes infeasible.
+    const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+    const failKey = "pairfail:" + ip;
+    const failCount = Number(await env.NOAM_SCHOOL_KV.get(failKey)) || 0;
+    if (failCount >= 20)
+      return json(
+        { error: "too many pairing attempts — wait a few minutes" },
+        429,
+        request,
+      );
     const resolvedCode = await env.NOAM_SCHOOL_KV.get("pair:" + clean);
-    if (!resolvedCode)
+    if (!resolvedCode) {
+      await env.NOAM_SCHOOL_KV.put(failKey, String(failCount + 1), {
+        expirationTtl: 300,
+      });
       return json({ error: "pairing code expired or invalid" }, 404, request);
+    }
+    // One-time use: consume the code so an observed/leaked pairing code can't be
+    // replayed after the legitimate device has paired.
+    await env.NOAM_SCHOOL_KV.delete("pair:" + clean);
     return json({ code: resolvedCode }, 200, request);
   }
 
@@ -96,8 +132,8 @@ export async function onRequestPut({ request, env }) {
     const code = String(pairGenerate).trim();
     if (code.length < 1)
       return json({ error: "invalid target code" }, 400, request);
-    // Generate a random 6-digit number
-    const pairCode = String(Math.floor(100000 + Math.random() * 900000));
+    // Cryptographically-strong, unbiased 6-digit pairing code.
+    const pairCode = secureSixDigit();
     await env.NOAM_SCHOOL_KV.put("pair:" + pairCode, code, {
       expirationTtl: 300,
     }); // expires in 5 mins
