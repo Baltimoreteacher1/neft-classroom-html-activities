@@ -169,6 +169,11 @@
         border-color: var(--line);
         color: var(--ink);
       }
+      .tbtn[aria-pressed="true"] {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: #fff;
+      }
       .tbtn.solid {
         background: var(--teal);
         border-color: var(--teal);
@@ -706,6 +711,37 @@
       }
       .page-tab-add:disabled {
         opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .page-tab-copy {
+        flex: none;
+        pointer-events: auto;
+        width: 42px;
+        height: 38px;
+        border: 1px solid var(--line);
+        border-right: none;
+        border-radius: 12px 0 0 12px;
+        background: #fff;
+        color: var(--teal);
+        font-size: 1rem;
+        line-height: 1;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.85;
+        transition:
+          background 0.12s,
+          width 0.12s,
+          opacity 0.12s;
+      }
+      .page-tab-copy:hover {
+        background: rgba(32, 95, 166, 0.1);
+        opacity: 1;
+        width: 48px;
+      }
+      .page-tab-copy:disabled {
+        opacity: 0.3;
         cursor: not-allowed;
       }
       .page-tab-del {
@@ -2417,9 +2453,9 @@
       }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body data-draw="0">
     <div class="app">
       <!-- ===================== Top bar ===================== -->
@@ -2444,6 +2480,14 @@
             title="Change the background (graph, dots, coordinate plane…)"
           >
             <span class="i">🎨</span><span class="txt">Background</span>
+          </button>
+          <button
+            class="tbtn"
+            id="snapBtn"
+            title="Snap to grid — line up your numbers and tiles neatly"
+            aria-pressed="false"
+          >
+            <span class="i">▦</span><span class="txt">Align</span>
           </button>
           <button
             class="tbtn solid"
@@ -2734,6 +2778,14 @@
             ＋
           </button>
           <button
+            class="page-tab-copy"
+            id="copyPageBtn"
+            title="Copy this page to a new page"
+            aria-label="Copy the current page"
+          >
+            ⧉
+          </button>
+          <button
             class="page-tab-del"
             id="delPageBtn"
             title="Delete the current page"
@@ -2801,8 +2853,18 @@
             <span class="k">✥</span
             ><span
               ><b>Move &amp; edit.</b> With <b>Move</b>, drag anything around.
-              Tap an item to select it — a tiny toolbar lets you delete,
-              duplicate, resize, or recolor it.</span
+              Tap an item to select it — a tiny toolbar lets you bring it to the
+              front, send it to the back, resize, recolor, duplicate
+              (<b>Ctrl</b>+<b>D</b>), or delete it.</span
+            >
+          </li>
+          <li>
+            <span class="k">▦</span
+            ><span
+              ><b>Align &amp; reuse.</b> Turn on <b>Align</b> in the top bar and
+              items snap to the grid so columns line up neatly. Use the
+              <b>⧉</b> button on the page tabs to copy the whole page and try a
+              problem again.</span
             >
           </li>
           <li>
@@ -2908,6 +2970,27 @@
       let selectedId = null;
       let uid = 1;
       const nid = () => "o" + uid++ + "_" + ((performance.now() | 0) % 100000);
+
+      /* ----------------------- Snap to grid ----------------------- */
+      // Optional alignment aid: when on, dropped/dragged objects land on a
+      // 28px lattice (matching the graph-grid background) so students can line
+      // up column arithmetic, place value, and ratio tables neatly.
+      const SNAP_STEP = 28;
+      let snapOn = false;
+      try {
+        snapOn = localStorage.getItem("mw_snap") === "1";
+      } catch (e) {}
+      const snapVal = (n) =>
+        snapOn ? Math.round(n / SNAP_STEP) * SNAP_STEP : n;
+      function setSnap(on) {
+        snapOn = !!on;
+        try {
+          localStorage.setItem("mw_snap", snapOn ? "1" : "0");
+        } catch (e) {}
+        const b = $("#snapBtn");
+        if (b) b.setAttribute("aria-pressed", snapOn ? "true" : "false");
+        document.body.classList.toggle("snap-on", snapOn);
+      }
 
       /* ----------------------- Undo / redo history ----------------------- */
       const history = [];
@@ -3214,6 +3297,8 @@
         });
         const add = $("#addPageBtn");
         if (add) add.disabled = notebook.boards.length >= MAX_TABS;
+        const copy = $("#copyPageBtn");
+        if (copy) copy.disabled = notebook.boards.length >= MAX_TABS;
         const del = $("#delPageBtn");
         if (del) {
           del.disabled = notebook.boards.length <= 1;
@@ -3257,6 +3342,28 @@
         notebook.boards.push(blankBoard());
         switchBoard(notebook.boards.length - 1);
         showToast("Page " + notebook.boards.length + " added");
+      }
+      // Duplicate the current page onto a fresh page right after it, so a
+      // student can re-try a problem or a teacher can hand out a worked model
+      // and a blank copy. Object ids are regenerated so the two pages stay
+      // fully independent (select/duplicate/delete never cross pages).
+      function copyBoard() {
+        if (notebook.boards.length >= MAX_TABS) {
+          showToast("That's the most pages (" + MAX_TABS + ")");
+          return;
+        }
+        flushPendingHistory();
+        notebook.boards[notebook.active].scroll = workspace.scrollTop;
+        const clone = JSON.parse(
+          JSON.stringify(notebook.boards[notebook.active]),
+        );
+        (clone.objects || []).forEach((o) => {
+          o.id = nid();
+        });
+        const at = notebook.active + 1;
+        notebook.boards.splice(at, 0, clone);
+        switchBoard(at);
+        showToast("Page copied to page " + (at + 1));
       }
       // Delete the current page. There must always be at least one page; a page
       // with any ink/objects asks for confirmation first.
@@ -3308,9 +3415,14 @@
         showToast("Page restored");
       }
       $("#addPageBtn").addEventListener("click", addBoard);
+      $("#copyPageBtn").addEventListener("click", copyBoard);
       $("#delPageBtn").addEventListener("click", () =>
         deleteBoard(notebook.active),
       );
+      $("#snapBtn").addEventListener("click", () => {
+        setSnap(!snapOn);
+        showToast(snapOn ? "Align on — items snap to the grid" : "Align off");
+      });
       function drawStroke(st) {
         const pts = st.pts;
         if (!pts.length) return;
@@ -3976,18 +4088,42 @@
           });
           wrap.appendChild(sw);
         }
-        mk("⧉", "Duplicate", "", () => {
-          const copy = JSON.parse(JSON.stringify(o));
-          copy.id = nid();
-          copy.x += 24;
-          copy.y += 24;
-          state.objects.push(copy);
-          renderAll();
-          selectObject(copy.id);
-          pushHistory();
-        });
+        mk("⤒", "Bring to front", "", () => bringObjectToFront(o.id));
+        mk("⤓", "Send to back", "", () => sendObjectToBack(o.id));
+        mk("⧉", "Duplicate", "", () => duplicateObject(o.id));
         mk("✕", "Delete", "del", () => deleteObject(o.id));
         return wrap;
+      }
+
+      // Objects paint in array order (last = on top), so z-ordering is just an
+      // array move. Used by the mini-toolbar and keyboard shortcuts.
+      function duplicateObject(id) {
+        const o = objById(id);
+        if (!o) return;
+        const copy = JSON.parse(JSON.stringify(o));
+        copy.id = nid();
+        copy.x += 24;
+        copy.y += 24;
+        state.objects.push(copy);
+        renderAll();
+        selectObject(copy.id);
+        pushHistory();
+      }
+      function bringObjectToFront(id) {
+        const i = state.objects.findIndex((o) => o.id === id);
+        if (i < 0 || i === state.objects.length - 1) return;
+        state.objects.push(state.objects.splice(i, 1)[0]);
+        renderAll();
+        selectObject(id);
+        pushHistory();
+      }
+      function sendObjectToBack(id) {
+        const i = state.objects.findIndex((o) => o.id === id);
+        if (i <= 0) return;
+        state.objects.unshift(state.objects.splice(i, 1)[0]);
+        renderAll();
+        selectObject(id);
+        pushHistory();
       }
 
       // A short spoken name for an object, so screen-reader users know what
@@ -5887,6 +6023,24 @@
         const up = (e) => {
           if (!start) return;
           start = null;
+          if (snapOn) {
+            o.x = Math.max(0, snapVal(o.x));
+            o.y = Math.max(0, snapVal(o.y));
+            if (o.type === "line") {
+              el.style.transform =
+                "translate(" +
+                o.x +
+                "px," +
+                o.y +
+                "px) rotate(" +
+                (o.angle || 0) +
+                "deg) scale(" +
+                (o.scale || 1) +
+                ")";
+            } else {
+              applyTransform(el, o);
+            }
+          }
           pushHistory();
         };
         el.addEventListener("pointerup", up);
@@ -8246,6 +8400,13 @@
           redo();
           return;
         }
+        if ((e.metaKey || e.ctrlKey) && k === "d") {
+          if (selectedId) {
+            e.preventDefault();
+            duplicateObject(selectedId);
+          }
+          return;
+        }
         if (k === "delete" || k === "backspace") {
           if (selectedId) {
             e.preventDefault();
@@ -8366,6 +8527,7 @@
         renderTabs();
         renderFormulas();
         setupAccessibility();
+        setSnap(snapOn);
         // Dock starts collapsed so the full left tool rail is reachable.
         // On tall desktop screens, honor the student's last-remembered choice.
         let dockOpen = false;
