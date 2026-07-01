@@ -30,6 +30,25 @@ PROJECT="focus-school"
 APP_DIR="focus-school"
 LIVE="https://noam.eduwonderlab.com"
 
+assert_focus_school_bundle() {
+	local root="$1"
+
+	if ! grep -q "<title>Focus School</title>" "$root/index.html"; then
+		echo "✗ Refusing to deploy: $root/index.html is not the Focus School shell." >&2
+		exit 1
+	fi
+
+	if grep -q "Neft Hub" "$root/index.html"; then
+		echo "✗ Refusing to deploy: $root/index.html contains Neft Hub content." >&2
+		exit 1
+	fi
+
+	if ! grep -q "focus-school" "$root/app.js"; then
+		echo "✗ Refusing to deploy: $root/app.js is not the Focus School app bundle." >&2
+		exit 1
+	fi
+}
+
 # --- approval gate (same as the classroom `npm run deploy`) -----------------
 if [ "${ALLOW_DEPLOY:-}" != "1" ]; then
 	echo "Production deploy blocked." >&2
@@ -58,6 +77,8 @@ if [ ! -f "$WT/$APP_DIR/index.html" ] || [ ! -f "$WT/$APP_DIR/app.js" ]; then
 	echo "✗ $APP_DIR/ is missing core files in origin/main — aborting." >&2
 	exit 1
 fi
+
+assert_focus_school_bundle "$WT/$APP_DIR"
 
 # --- vendor the Math Workbench so it serves on noam's OWN domain -------------
 # Single source of truth lives at curriculum/math-workbench/; copy it (and the
@@ -98,6 +119,11 @@ for _ in $(seq 1 12); do
 done
 
 if [ "$got" = "$want" ]; then
+	live_title="$(curl -fsS "$LIVE/?cb=$RANDOM$RANDOM" 2>/dev/null | grep -o "<title>[^<]*</title>" | head -1 || true)"
+	if [ "$live_title" != "<title>Focus School</title>" ]; then
+		echo "△ Live app.js matches, but live title is unexpected: ${live_title:-missing}" >&2
+		exit 1
+	fi
 	echo "✓ Live app.js matches deployed build (${want} bytes). Done: $LIVE"
 else
 	echo "△ Deployed, but live app.js (${got:-?} bytes) != built (${want} bytes) yet."
