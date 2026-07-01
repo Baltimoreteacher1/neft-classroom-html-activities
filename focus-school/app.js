@@ -81,6 +81,14 @@
     );
   const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 
+  // True when the student turned motion off in Settings OR their OS/browser
+  // requests reduced motion. Used to gate every JS-driven animation (confetti,
+  // timer visualizer) so vestibular-sensitive users get a calm, still UI.
+  const reducedMotion = () =>
+    (typeof state !== "undefined" && state.settings.motion === "off") ||
+    (typeof matchMedia !== "undefined" &&
+      matchMedia("(prefers-reduced-motion: reduce)").matches);
+
   function hexToHsl(hex) {
     const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
     hex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
@@ -305,6 +313,7 @@
 
   const CARDS = [
     ["glance", "Today at a glance"],
+    ["plan", "Afternoon Plan"],
     ["payday", "Allowance"],
     ["garden", "Focus Garden"],
     ["calendar", "Calendar"],
@@ -1356,6 +1365,11 @@
 
   // Confetti Particle System
   function triggerConfetti() {
+    // Respect "Reduce motion" (in-app toggle or OS setting): a full-screen
+    // 80-particle burst on every reward is exactly the kind of animation
+    // vestibular-sensitive students need suppressed. Rewards still land via
+    // the toast + state change; only the animation is skipped.
+    if (reducedMotion()) return;
     const canvas = document.createElement("canvas");
     canvas.style.position = "fixed";
     canvas.style.top = "0";
@@ -1887,6 +1901,17 @@
         cancelAnimationFrame(visualizerAnimFrame);
         visualizerAnimFrame = null;
       }
+      return;
+    }
+
+    // Reduced motion: skip the animated audio waveform entirely — clear the
+    // path and don't schedule another frame. The timer ring + digits remain.
+    if (reducedMotion()) {
+      if (visualizerAnimFrame) {
+        cancelAnimationFrame(visualizerAnimFrame);
+        visualizerAnimFrame = null;
+      }
+      path.setAttribute("d", "");
       return;
     }
 
@@ -2701,10 +2726,18 @@
   window._cmdSelectedIndex = 0;
   window._cmdItems = [];
 
+  let _cmdLastFocus = null;
   function openCommandBar() {
     const modal = document.getElementById("commandBarBack");
     if (!modal) return;
+    // Remember what to return focus to, and expose the dialog to assistive tech
+    // (it is authored aria-hidden so it's silent while closed).
+    _cmdLastFocus =
+      document.activeElement && document.activeElement !== document.body
+        ? document.activeElement
+        : document.getElementById("searchBtn");
     modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
     const input = document.getElementById("cmdInput");
     if (input) {
       input.value = "";
@@ -2715,7 +2748,17 @@
 
   function closeCommandBar() {
     const modal = document.getElementById("commandBarBack");
-    if (modal) modal.classList.remove("open");
+    if (!modal) return;
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+    // Restore focus to the trigger so keyboard/screen-reader users aren't
+    // dumped at the top of the page.
+    if (_cmdLastFocus && document.contains(_cmdLastFocus)) {
+      try {
+        _cmdLastFocus.focus();
+      } catch {}
+    }
+    _cmdLastFocus = null;
   }
 
   function renderCommandBarResults(query) {
@@ -3166,6 +3209,60 @@
   }
   function emptyState(emoji, text) {
     return `<div class="empty"><div class="big-emoji" aria-hidden="true">${emoji}</div><p>${esc(text)}</p></div>`;
+  }
+
+  // "Afternoon Plan" — turns the open-work pile into an ordered, time-boxed
+  // sequence a 7th grader can just do top-to-bottom, with a short break between
+  // each task and a realistic "done by ~4:35" finish estimate. Each step starts
+  // the focus timer for that exact assignment. Purely derived from existing
+  // data (assignments, estimateMin, urgency sort, defaultFocusMin) — nothing new
+  // is persisted, so it stays correct across devices with zero migration.
+  function planCard() {
+    const picks = sortByUrgency(openTasks()).slice(0, 5);
+    if (!picks.length) {
+      return card(
+        "plan",
+        "🗺️ Afternoon Plan",
+        "Your work, in the order to do it.",
+        emptyState("🎉", "Nothing to plan right now — you're caught up!"),
+      );
+    }
+    const focusMin = clamp(Number(state.settings.defaultFocusMin) || 15, 5, 60);
+    const now = new Date();
+    const atLabel = (mins) =>
+      new Date(now.getTime() + mins * 60000).toLocaleTimeString(undefined, {
+        hour: "numeric",
+        minute: "2-digit",
+      });
+    let running = 0;
+    const rows = [];
+    picks.forEach((a, i) => {
+      const c = cls(a.classId);
+      const est = clamp(Number(a.estimateMin) || focusMin, 5, 90);
+      const overdue = a.due && daysUntil(a.due) < 0;
+      rows.push(
+        `<li class="plan-step${overdue ? " overdue" : ""}">
+          <span class="plan-num" aria-hidden="true">${i + 1}</span>
+          <span class="plan-info"><b>${esc(a.title)}</b>
+            <span class="plan-meta">${c.emoji || "📚"} ${esc(c.name)} · ~${est} min · start ~${atLabel(running)}</span></span>
+          <button class="btn primary sm plan-go" data-act="focus-start" data-id="${a.id}" aria-label="Start ${esc(a.title)} now">▶ Start</button>
+        </li>`,
+      );
+      running += est;
+      if (i < picks.length - 1) {
+        rows.push(
+          `<li class="plan-break" aria-hidden="true">☕ 5-min brain break</li>`,
+        );
+        running += 5;
+      }
+    });
+    const intro = `<p class="sub plan-intro">Do them top to bottom. Finish by about <b>${atLabel(running)}</b> — roughly ${running} min with breaks. 💪</p>`;
+    return card(
+      "plan",
+      "🗺️ Afternoon Plan",
+      "Your work, in the order to do it.",
+      intro + `<ol class="plan-list">${rows.join("")}</ol>`,
+    );
   }
 
   // Daily "did you write everything down?" capture nudge. Shows once per day,
@@ -3776,6 +3873,7 @@
       const routine = routineForHome();
       const map = {
         glance: glanceCard(),
+        plan: planCard(),
         payday: paydayCard(),
         calendar: calendarCard(),
         todos: todoCard(),
@@ -4049,7 +4147,7 @@
           <div class="card reading-day-card ${prog.done ? "done-day" : ""}" style="margin-bottom: 10px; border-left: 4px solid ${d.book === "Blood on the River" ? "#147c78" : "#c0473a"};">
             <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;">
               <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
-                <input type="checkbox" style="width: 20px; height: 20px; cursor: pointer; flex-shrink: 0;" data-act="toggle-reading-done" data-id="${d.id}" ${prog.done ? "checked" : ""}>
+                <input type="checkbox" style="width: 20px; height: 20px; cursor: pointer; flex-shrink: 0;" data-act="toggle-reading-done" data-id="${d.id}" ${prog.done ? "checked" : ""} aria-label="Mark ${esc(d.dayName)} ${esc(d.date)} reading done">
                 <div style="cursor: pointer; flex: 1;" data-act="toggle-reading-expand" data-id="${d.id}">
                   <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--muted); letter-spacing: 0.5px;">${d.dayName} ${d.date}</div>
                   <div style="font-size: 0.95rem; font-weight: 700; margin: 2px 0;">${esc(d.read)}</div>
@@ -4104,7 +4202,7 @@
               </div>
             </div>
             <div style="display: flex; align-items: center; gap: 8px; margin: 4px 0;">
-              <input type="checkbox" data-transition-check="responseB" style="width:18px; height:18px;" ${transition.responseB ? "checked" : ""}>
+              <input type="checkbox" data-transition-check="responseB" style="width:18px; height:18px;" ${transition.responseB ? "checked" : ""} aria-label="Final Response Completed">
               <label style="font-size: 0.88rem; font-weight: 700; cursor: pointer;">Final Response Completed</label>
             </div>
             <div class="field">
@@ -6671,8 +6769,11 @@ Due May 31"></textarea>
     };
 
     // 2. Merge assignments
-    const localMap = new Map(local.assignments.map((a) => [a.id, a]));
-    const remoteMap = new Map(remote.assignments.map((a) => [a.id, a]));
+    const localMap = new Map((local.assignments || []).map((a) => [a.id, a]));
+    // `remote` is a raw KV blob (never normalized), so a legacy/corrupt payload
+    // may lack `assignments` entirely — guard like every other collection below,
+    // otherwise the whole merge throws and sync silently drops to "offline".
+    const remoteMap = new Map((remote.assignments || []).map((a) => [a.id, a]));
     const allIds = new Set([...localMap.keys(), ...remoteMap.keys()]);
     const mergedAssignments = [];
     for (const id of allIds) {
@@ -6962,11 +7063,13 @@ Due May 31"></textarea>
   }
 
   function showConflictResolver(localState, cloudState) {
-    const addedLocally = localState.assignments.filter(
-      (a) => !cloudState.assignments.some((x) => x.id === a.id),
+    const localAssigns = localState.assignments || [];
+    const cloudAssigns = cloudState.assignments || [];
+    const addedLocally = localAssigns.filter(
+      (a) => !cloudAssigns.some((x) => x.id === a.id),
     );
-    const addedInCloud = cloudState.assignments.filter(
-      (a) => !localState.assignments.some((x) => x.id === a.id),
+    const addedInCloud = cloudAssigns.filter(
+      (a) => !localAssigns.some((x) => x.id === a.id),
     );
 
     let diffHtml = "";
@@ -7169,14 +7272,22 @@ Due May 31"></textarea>
           const localUpdated = state.updatedAt || 0;
           if (remoteUpdated > localUpdated || forceMerge) {
             const merged = mergeStates(state, data.state);
+            const mergedNorm = normalize(merged);
+            // Compare CONTENT, ignoring the volatile top-level `updatedAt`
+            // (mergeStates always stamps it fresh). Without this, the stringify
+            // comparison was always unequal, so the 10s auto-pull replaced
+            // state + re-rendered + pushed to KV every single tick — wiping any
+            // half-typed input and churning the store. Now a no-op pull is a
+            // true no-op. Both sides are normalized so key ordering can't lie.
             const changed =
               remoteUpdated > localUpdated ||
-              JSON.stringify(merged) !== JSON.stringify(state);
+              JSON.stringify({ ...mergedNorm, updatedAt: 0 }) !==
+                JSON.stringify({ ...state, updatedAt: 0 });
             let shouldPushMerged = false;
             if (changed) {
               const prev = suppressPush;
               suppressPush = true;
-              state = normalize(merged);
+              state = mergedNorm;
               await save({ touch: false, immediate: true });
               suppressPush = prev;
               shouldPushMerged = !prev;
@@ -9817,12 +9928,15 @@ ${name}`;
       const modalOpen = $("#modalBack").classList.contains("open");
       const focusOpen = $("#focusOverlay").classList.contains("open");
       const guideOpen = $("#guideOverlay").classList.contains("open");
+      const cmdOpen = $("#commandBarBack").classList.contains("open");
       if (ev.key === "Escape") {
-        if (modalOpen) closeModal();
+        if (cmdOpen) closeCommandBar();
+        else if (modalOpen) closeModal();
         else if (focusOpen) focus.stop();
         else if (guideOpen) guide.stop();
       } else if (ev.key === "Tab") {
-        if (modalOpen) trapFocus($("#modalBack .modal"), ev);
+        if (cmdOpen) trapFocus($("#commandBarBack .command-bar-modal"), ev);
+        else if (modalOpen) trapFocus($("#modalBack .modal"), ev);
         else if (focusOpen) trapFocus($("#focusOverlay"), ev);
         else if (guideOpen) trapFocus($("#guideOverlay"), ev);
       }

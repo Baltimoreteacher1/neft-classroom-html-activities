@@ -37,7 +37,9 @@ h6,
   --paper: #ffffff;
   --line: #e2e8f0;
   --ink: #0f172a;
-  --muted: #64748b;
+  /* Darkened from #64748b for a safer contrast ratio (~5.7:1 on white) since
+     --muted is used on small text over translucent card backgrounds. */
+  --muted: #55637a;
   --shadow-sm: 0 6px 18px rgba(15, 23, 42, 0.06);
   --shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
   --radius: 18px;
@@ -160,6 +162,12 @@ a {
   }
   .timer-ring .prog {
     transition: none;
+  }
+  /* Stop the ambient background glows drifting when the OS asks for reduced
+     motion (the in-app data-motion="off" rule below covers the manual toggle). */
+  .bg-blob-1,
+  .bg-blob-2 {
+    animation: none !important;
   }
 }
 html[data-motion="off"] * {
@@ -1245,6 +1253,66 @@ html[data-theme="dark"] .toast {
   color: var(--muted);
   font-size: 0.88rem;
   margin: -4px 4px 14px;
+}
+
+/* Afternoon Plan card — an ordered, timed do-this-then-that list. */
+.plan-intro {
+  margin: 0 0 10px;
+}
+.plan-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.plan-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-2);
+}
+.plan-step.overdue {
+  border-color: var(--danger, #c0473a);
+}
+.plan-num {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+.plan-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.plan-info b {
+  overflow-wrap: anywhere;
+}
+.plan-meta {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+.plan-go {
+  flex: 0 0 auto;
+}
+.plan-break {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.8rem;
+  padding: 2px 0;
 }
 
 /* "More" menu tiles — even card-like grid that matches home cards */
