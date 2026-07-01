@@ -5856,7 +5856,7 @@ Due May 31"></textarea>
             </button>
             <button class="btn sm ghost" data-act="garden-help" style="padding:6px 8px; font-size:0.8rem;">❓ Info</button>
           </div>
-          <p class="muted" style="margin:8px 0 0; font-size:0.7rem; line-height:1.2;">Earn water by completing tasks & focus sessions! (1 💧 per 10 XP)</p>
+          <p class="muted" style="margin:8px 0 0; font-size:0.7rem; line-height:1.2;">The same work that earns your allowance also grows your garden — finish tasks &amp; focus sessions to earn water (1 💧 per 10 XP).</p>
         </div>
       </div>
       `,
@@ -8250,6 +8250,7 @@ Due May 31"></textarea>
         "Focus Garden Info 🪴",
         `
         <p>Welcome to your <b>Focus Garden</b>! Here you can grow a plant of your choice.</p>
+        <p>It runs on the <b>same effort</b> as your allowance: every task, checklist item, and focus session pays you real money <i>and</i> grows your garden. One kind of work, two payoffs. 🌱💰</p>
         <p><b>How to grow:</b></p>
         <ul>
           <li>Earn XP by completing tasks, checklist items, and focus sessions.</li>
