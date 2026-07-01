@@ -1,0 +1,152 @@
+/* Neft Calm & Accessible Games layer (additive, gameplay-neutral).
+ * Injected by tools/inject-game-access.js. Pairs with assets/game-access.js.
+ *
+ * Scope: accessibility + calm-mode polish ONLY. No gameplay logic, no colors
+ * that override a game's identity beyond focus/controls. Everything degrades
+ * gracefully — if the JS fails to load, these rules are inert.
+ */
+
+/* ---- Floating control cluster (TTS + calm toggle) ---- */
+.nt-ga-controls {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2147483000; /* above game canvas + juice overlays, below modals rarely */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
+.nt-ga-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 2px solid rgba(15, 23, 42, 0.15);
+  border-radius: 999px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.18);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.nt-ga-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.24);
+}
+.nt-ga-btn:active {
+  transform: translateY(0);
+}
+.nt-ga-btn[aria-pressed="true"] {
+  background: #dcfce7;
+  border-color: #16a34a;
+  color: #166534;
+}
+.nt-ga-btn.nt-ga-speaking {
+  background: #dbeafe;
+  border-color: #2563eb;
+  color: #1e3a8a;
+}
+
+/* ---- Strong, consistent keyboard focus everywhere ---- */
+.nt-ga-btn:focus-visible,
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ---- Comfortable tap targets for common game controls ---- */
+.nt-ga-tap-hint button,
+.nt-ga-tap-hint [role="button"],
+.nt-ga-tap-hint .choice,
+.nt-ga-tap-hint .option {
+  min-height: 44px;
+}
+
+/* ---- "Not yet" encouragement toast (growth mindset, Dweck) ---- */
+.nt-ga-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%) translateY(12px);
+  z-index: 2147483001;
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+  max-width: min(90vw, 420px);
+  text-align: center;
+}
+.nt-ga-toast.nt-ga-show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ---- Calm mode: damp motion + hide reflex timers (opt-in) ---- */
+html.nt-calm *,
+html.nt-calm *::before,
+html.nt-calm *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.06s !important;
+  scroll-behavior: auto !important;
+}
+/* Common countdown/timer affordances hidden in calm mode. Games without these
+ * are unaffected; this only targets clearly timer-flavored hooks. */
+html.nt-calm [data-timer],
+html.nt-calm .countdown,
+html.nt-calm .timer-bar,
+html.nt-calm .game-timer {
+  visibility: hidden !important;
+}
+
+/* ---- Respect the OS-level reduce-motion signal automatically ---- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.06s !important;
+  }
+}
+
+@media print {
+  .nt-ga-controls,
+  .nt-ga-toast {
+    display: none !important;
+  }
+}
