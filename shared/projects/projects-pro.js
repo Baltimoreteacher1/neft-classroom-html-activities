@@ -49,6 +49,32 @@
         wireReveal();
       } catch (e) {}
     }
+    try {
+      guardBodyClass();
+    } catch (e) {}
+  }
+
+  /* --- 0. Keep the pro layer alive across level switches ------------------ */
+  // Each project page's own setLevel() rewrites body.className to "level-N",
+  // which drops the "pro-projects" class the whole premium layer is scoped to
+  // (progress bar, reveal, ribbon, back-to-top all disappear until reload).
+  // Re-assert the class whenever it is stripped, and re-reveal the active
+  // panel so switching Level 1 ⇄ Level 2 stays seamless.
+  function guardBodyClass() {
+    var body = document.body;
+    if (!("MutationObserver" in window)) return;
+    var mo = new MutationObserver(function () {
+      if (!body.classList.contains("pro-projects")) {
+        body.classList.add("pro-projects"); // triggers one more (no-op) fire
+        var active = document.querySelector(".step-panel.active");
+        if (active) {
+          var cards = active.querySelectorAll(".card");
+          for (var i = 0; i < cards.length; i++)
+            cards[i].classList.add("pro-in");
+        }
+      }
+    });
+    mo.observe(body, { attributes: true, attributeFilter: ["class"] });
   }
 
   /* --- 1. Reading-progress bar -------------------------------------------- */
