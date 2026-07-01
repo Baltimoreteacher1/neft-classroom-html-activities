@@ -421,7 +421,7 @@
           w,
           h,
           V,
-          start: { l, w, h: 1 },
+          start: { l: 1, w: 1, h: 1 },
           label: "Find the missing height",
           prompt:
             "This prism holds " +
@@ -1179,6 +1179,7 @@
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
+        this.missedOnce = false; // one free retry before a miss costs a life
         this.problem = genProblem(vbLevel);
         this.built = {
           l: this.problem.start.l,
@@ -1240,6 +1241,24 @@
             .setAlpha(1);
           srSay("Correct. " + this.problem.why);
           this.afterAttempt(true);
+        } else if (!this.missedOnce) {
+          // First miss on this problem: a calm retry — no life lost and the
+          // correct build is NOT revealed, so the student can recount and retry.
+          this.missedOnce = true;
+          this.locked = false;
+          this.streak = 0;
+          SFX.bad();
+          JUICE.audio.wrong();
+          JUICE.shake(this, 0.006);
+          this.feedback
+            .setColor("#ffcd4d")
+            .setText(
+              "Not quite yet — check L × W × H, then try again. " +
+                (this.problem.hint || ""),
+            )
+            .setAlpha(1);
+          this.updateHUD();
+          srSay("Not quite. Try again. " + (this.problem.hint || ""));
         } else {
           SFX.bad();
           JUICE.audio.wrong();
@@ -1265,7 +1284,11 @@
 
       GameScene.prototype.afterAttempt = function (correct) {
         this.updateHUD();
-        if (this.lives <= 0) return this.endGame(false);
+        if (this.lives <= 0) {
+          // No-fail practice: refill hearts and keep going (calm mode).
+          this.lives = START_LIVES;
+          this.updateHUD();
+        }
         if (this.solved >= this.target) return this.endGame(true);
         this.time.delayedCall(correct ? 950 : 1700, () => {
           this.newProblem();
