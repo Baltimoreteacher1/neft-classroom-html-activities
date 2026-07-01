@@ -223,22 +223,9 @@ async function callClaude(env, v) {
   });
 
   if (!resp.ok) {
-    // Never surface the upstream body (may contain account detail). Capture only
-    // the HTTP status + Anthropic's error *type* classification so a gated
-    // ?debug=1 can report WHY Claude refused (bad key vs. bad model vs. limit).
-    let upstreamType = "";
-    try {
-      const errData = await resp.json();
-      upstreamType = (errData && errData.error && errData.error.type) || "";
-    } catch (e) {
-      /* body not JSON — ignore */
-    }
-    return {
-      ok: false,
-      status: resp.status === 429 ? 429 : 502,
-      upstreamStatus: resp.status,
-      upstreamType,
-    };
+    // Never surface the upstream body (may contain account detail). Map to a
+    // generic error; the client falls back to its offline state.
+    return { ok: false, status: resp.status === 429 ? 429 : 502 };
   }
 
   const data = await resp.json().catch(() => null);
@@ -313,18 +300,8 @@ export async function onRequest(context) {
     }
 
     if (!out || !out.ok) {
-      // Gated diagnostic: ?debug=1 echoes only the upstream status + error type
-      // (no key, no content) so we can pinpoint a misconfig. Temporary.
-      const dbg =
-        new URL(request.url).searchParams.get("debug") === "1"
-          ? {
-              claudeStatus: out ? out.upstreamStatus : null,
-              claudeError: out ? out.upstreamType : null,
-              model: CLAUDE_MODEL,
-            }
-          : {};
       return json(
-        { ok: false, offline: true, error: "tutor-unavailable", ...dbg },
+        { ok: false, offline: true, error: "tutor-unavailable" },
         out && out.status === 429 ? 429 : 503,
       );
     }
