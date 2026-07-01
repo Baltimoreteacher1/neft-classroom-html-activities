@@ -1373,14 +1373,20 @@
   ];
 
   const TABS = [
-    ["launch", "Launch", "🚀"],
+    ["home", "Now", "🎯"],
+    ["today", "Today", "📅"],
     ["tasks", "Tasks", "✅"],
     ["homework", "Homework", "📋"],
     ["calendar", "Calendar", "📆"],
-    ["help", "Help", "?"],
+    ["rewards", "Allowance", "💰"],
+    ["routines", "Routines", "🔁"],
+    ["calming", "Calming", "🧘"],
+    ["ai", "Academic Help", "🤖"],
+    ["reading", "Reading", "📚"],
+    ["health", "Health", "💪"],
     ["more", "More", "⋯"],
   ];
-  let view = "launch";
+  let view = "home";
   let inboxCache = [];
   let coachUnlocked = false;
   // "Arrange" mode turns the Now screen into an easy drag-to-rearrange board:
