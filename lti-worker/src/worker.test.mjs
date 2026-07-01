@@ -76,7 +76,7 @@ async function main() {
     PLATFORM_AUTH_URL: "https://sso.canvaslms.com/api/lti/authorize_redirect",
     PLATFORM_TOKEN_URL: "https://sso.canvaslms.com/login/oauth2/token",
     PLATFORM_JWKS_URL: "https://sso.canvaslms.com/api/lti/security/jwks",
-    TOOL_URL: "https://neft-lti.jdneft.workers.dev",
+    TOOL_URL: "https://neft-lti.neftjd.workers.dev",
     LESSON_BASE: "https://eduwonderlab.com",
     KV,
   };

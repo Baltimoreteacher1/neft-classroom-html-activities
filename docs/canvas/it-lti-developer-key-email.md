@@ -25,10 +25,10 @@ sub-account, with the values below?
 
 | Field                                | Value                                              |
 | ------------------------------------ | -------------------------------------------------- |
-| Target Link / Redirect URI           | `https://neft-lti.jdneft.workers.dev/lti/launch`   |
-| OpenID Connect Initiation URL        | `https://neft-lti.jdneft.workers.dev/lti/login`    |
-| Public JWK URL                       | `https://neft-lti.jdneft.workers.dev/lti/jwks`     |
-| Deep Linking (content selection) URL | `https://neft-lti.jdneft.workers.dev/lti/deeplink` |
+| Target Link / Redirect URI           | `https://neft-lti.neftjd.workers.dev/lti/launch`   |
+| OpenID Connect Initiation URL        | `https://neft-lti.neftjd.workers.dev/lti/login`    |
+| Public JWK URL                       | `https://neft-lti.neftjd.workers.dev/lti/jwks`     |
+| Deep Linking (content selection) URL | `https://neft-lti.neftjd.workers.dev/lti/deeplink` |
 
 **LTI Advantage services to enable**
 

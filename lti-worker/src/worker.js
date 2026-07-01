@@ -587,7 +587,7 @@ function randomId() {
 }
 function toolUrl(env, path) {
   return (
-    (env.TOOL_URL || "https://neft-lti.jdneft.workers.dev").replace(/\/$/, "") +
+    (env.TOOL_URL || "https://neft-lti.neftjd.workers.dev").replace(/\/$/, "") +
     path
   );
 }

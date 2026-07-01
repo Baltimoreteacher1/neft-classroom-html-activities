@@ -20,7 +20,7 @@ import { showCanvasCode } from "./canvas-code.js";
 
 // Public URL of the neft-lti Worker. Only contacted when a lesson was launched
 // through it (an `ltik` is present), so this constant is inert on the live site.
-const LTI_SCORE_URL = "https://neft-lti.jdneft.workers.dev/lti/score";
+const LTI_SCORE_URL = "https://neft-lti.neftjd.workers.dev/lti/score";
 
 function readLaunch() {
   try {

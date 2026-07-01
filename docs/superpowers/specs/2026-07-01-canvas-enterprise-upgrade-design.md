@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-01
 **Repo:** `neft-classroom-html-activities`
-**Status:** Parts A1, A3, B, C delivered; A2 deferred (YAGNI). LTI Worker built + tested (16/16), deploy-ready, dormant.
+**Status:** Parts A1, A3, B, C delivered; A2 deferred (YAGNI). LTI Worker built + tested (16/16) and **DEPLOYED live** at `https://neft-lti.neftjd.workers.dev` — dormant (keypair set, awaiting only IT's client_id/deployment_id). Note the real workers.dev subdomain is **`neftjd`**, not `jdneft`.
 **Supersedes framing of:** `2026-06-23-canvas-lti-seamless-design.md` (SCORM reframed from "weak fallback" to primary working path)
 
 ## Reframing (why this differs from the 2026-06-23 spec)
@@ -85,12 +85,17 @@ public JWKS, Deep Linking picker + signed response, AGS client-credentials token
 The LTI launch redirect appends `sn`/`si` too, so LTI launches reuse the same
 A1 auto-identify path — one identity mechanism for both channels.
 
-### Deploy note
+### Deploy note (DONE 2026-07-01)
 
-`lti-worker/` deploys **separately** via `wrangler` (see its README) and never
-touches the Pages site. It is committed here but NOT auto-deployed by the Pages
-push — deploying the Worker requires an authenticated `wrangler` + generating the
-keypair secret, done when the IT email goes out.
+`lti-worker/` was deployed **separately** via `wrangler` to
+`https://neft-lti.neftjd.workers.dev` (account `neftjd@gmail.com`). Created:
+D1 `neft-lti` (`fbe9baa9-…`), KV `LTI_KV` (`5ee32fc3…`), migration applied,
+`LTI_PRIVATE_JWK` secret set. `/health` = `{keypair:true, registered:false,
+status:"dormant"}`; `/lti/jwks` serves the public key. It never touches the Pages
+site. **Remaining to go ACTIVE:** send the IT email, then
+`wrangler secret put LTI_CLIENT_ID` + `LTI_DEPLOYMENT_ID`. Corrected a real bug:
+every reference said `jdneft.workers.dev` but Joel's subdomain is `neftjd` — fixed
+across the Worker, engine hook, console, and IT email before deploy.
 
 ## Constraints honored
 
