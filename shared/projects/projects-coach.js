@@ -20,6 +20,7 @@
   var MAX_CTX = 1600; // keep payloads small
   var history = [];
   var busy = false;
+  var dead = false;
   var els = {};
 
   function isEs() {
@@ -102,8 +103,32 @@
     );
   }
 
-  function ask(mode, userLabel) {
-    if (busy) return;
+  // Backend confirmed unable to serve (invalid key / not configured / upstream
+  // down): degrade gracefully so students don't keep clicking a dead button.
+  function goOffline() {
+    dead = true;
+    addMsg(
+      "sys",
+      t(
+        "The coach isn't available right now. Keep going — you've got this!",
+        "El entrenador no está disponible ahora. ¡Sigue adelante, tú puedes!",
+      ),
+    );
+    if (els.launch) els.launch.style.display = "none";
+    if (els.send) els.send.disabled = true;
+    if (els.input) els.input.disabled = true;
+    Array.prototype.forEach.call(
+      els.panel.querySelectorAll(".ntc-chip"),
+      function (c) {
+        c.disabled = true;
+      },
+    );
+  }
+
+  // Unified request path. displayText = the student's chat bubble; userText =
+  // what to store in history; extraWork = free-text appended to studentWork.
+  function send(mode, displayText, userText, extraWork) {
+    if (busy || dead) return;
     var itemText = activeStepText();
     if (!itemText) {
       addMsg(
@@ -115,7 +140,10 @@
     // Language directive appended to context so replies match the UI language.
     if (isEs()) itemText = "[Responde en español sencillo]\n" + itemText;
 
-    addMsg("me", userLabel);
+    var work = activeStudentWork();
+    if (extraWork) work = (work + " | " + extraWork).slice(0, MAX_CTX);
+
+    addMsg("me", displayText);
     var typing = document.createElement("div");
     typing.className = "ntc-typing";
     typing.textContent = t(
@@ -126,79 +154,14 @@
     scrollLog();
     setBusy(true);
 
-    var payload = {
-      mode: mode,
-      standard: standardLabel(),
-      itemText: itemText,
-      studentWork: activeStudentWork(),
-      history: history.slice(-8),
-    };
-
-    fetch(TUTOR, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
-      .then(function (r) {
-        return r.json().catch(function () {
-          return null;
-        });
-      })
-      .then(function (data) {
-        typing.remove();
-        setBusy(false);
-        if (data && data.ok && data.reply) {
-          addMsg("coach", data.reply);
-          history.push({ role: "user", text: userLabel });
-          history.push({ role: "assistant", text: data.reply });
-        } else {
-          addMsg(
-            "sys",
-            t(
-              "The coach is offline right now. Keep going — you've got this!",
-              "El entrenador no está disponible ahora. ¡Sigue adelante, tú puedes!",
-            ),
-          );
-        }
-      })
-      .catch(function () {
-        typing.remove();
-        setBusy(false);
-        addMsg(
-          "sys",
-          t(
-            "Could not reach the coach. Check your connection.",
-            "No se pudo conectar con el entrenador. Revisa tu conexión.",
-          ),
-        );
-      });
-  }
-
-  function sendFreeText() {
-    var v = (els.input.value || "").trim();
-    if (!v || busy) return;
-    els.input.value = "";
-    // Free-text questions are treated as hint requests server-side (Socratic).
-    var itemText = activeStepText();
-    if (isEs()) itemText = "[Responde en español sencillo]\n" + itemText;
-    addMsg("me", v);
-    var typing = document.createElement("div");
-    typing.className = "ntc-typing";
-    typing.textContent = t(
-      "Coach is thinking…",
-      "El entrenador está pensando…",
-    );
-    els.log.appendChild(typing);
-    scrollLog();
-    setBusy(true);
     fetch(TUTOR, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        mode: "hint",
+        mode: mode,
         standard: standardLabel(),
         itemText: itemText,
-        studentWork: (activeStudentWork() + " | " + v).slice(0, MAX_CTX),
+        studentWork: work,
         history: history.slice(-8),
       }),
     })
@@ -212,29 +175,42 @@
         setBusy(false);
         if (data && data.ok && data.reply) {
           addMsg("coach", data.reply);
-          history.push({ role: "user", text: v });
+          history.push({ role: "user", text: userText });
           history.push({ role: "assistant", text: data.reply });
-        } else {
+        } else if (data && data.error === "rate-limited") {
+          // Transient — keep the coach alive, just ask them to wait.
           addMsg(
             "sys",
             t(
-              "The coach is offline right now.",
-              "El entrenador no está disponible ahora.",
+              "One moment — try again in a few seconds.",
+              "Un momento — inténtalo de nuevo en unos segundos.",
             ),
           );
+        } else {
+          // offline / unavailable / not-configured: the backend can't serve.
+          goOffline();
         }
       })
       .catch(function () {
         typing.remove();
         setBusy(false);
+        // Network error is likely connectivity, not a dead backend — keep coach.
         addMsg(
           "sys",
           t(
-            "Could not reach the coach.",
-            "No se pudo conectar con el entrenador.",
+            "Could not reach the coach. Check your connection and try again.",
+            "No se pudo conectar. Revisa tu conexión e inténtalo de nuevo.",
           ),
         );
       });
+  }
+
+  function sendFreeText() {
+    var v = (els.input.value || "").trim();
+    if (!v || busy || dead) return;
+    els.input.value = "";
+    // Free-text questions are treated as hint requests server-side (Socratic).
+    send("hint", v, v, v);
   }
 
   function togglePanel(open) {
@@ -329,7 +305,8 @@
       function (chip) {
         chip.addEventListener("click", function () {
           var mode = chip.getAttribute("data-mode");
-          ask(mode, chip.textContent.trim());
+          var label = chip.textContent.trim();
+          send(mode, label, label);
         });
       },
     );
