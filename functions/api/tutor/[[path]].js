@@ -31,7 +31,7 @@ const JSON_HEADERS = {
 };
 
 // Anthropic Messages API.
-const CLAUDE_MODEL = "claude-haiku-4-5";
+const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
 const CLAUDE_URL = "https://api.anthropic.com/v1/messages";
 const CLAUDE_VERSION = "2023-06-01";
 
