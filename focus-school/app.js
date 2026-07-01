@@ -1355,7 +1355,7 @@
     ["rewards", "Allowance", "💰"],
     ["calming", "Calming", "🧘"],
     ["health", "Health", "💪"],
-    ["ai", "AI Help", "🤖"],
+    ["ai", "Academic Help", "🤖"],
     ["more", "More", "⋯"],
   ];
   let view = "home";
