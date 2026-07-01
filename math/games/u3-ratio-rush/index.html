@@ -125,9 +125,11 @@
     <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
     <script src="/assets/game-juice.js"></script>
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <link rel="stylesheet" href="/assets/game-access.css">
-  <!-- gacc-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- Socratic hint ladder (opt-in; reuses /api/tutor, falls back to static hints) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+  </head>
   <body>
     <!-- Decorative animated spark-field (behind the Phaser canvas). -->
     <div id="rr-bg" data-parallax aria-hidden="true">
@@ -380,6 +382,63 @@
         if (level <= 2) return "full";
         if (level <= 4) return "unit";
         return "full";
+      }
+
+      // Authored, answer-free hint rungs for the Socratic hint ladder. Used
+      // whenever the AI tutor endpoint is offline/unconfigured, so hints always
+      // work. Each rung escalates (notice -> strategy -> set up the step) and
+      // never states the final numeric answer.
+      function ratioStaticHints(p) {
+        if (p.kind === "unit") {
+          return [
+            "You have " +
+              p.a +
+              " " +
+              p.nameA +
+              " for " +
+              p.b +
+              " " +
+              p.nameB +
+              ". You want the amount for just 1 " +
+              p.nameA +
+              ". What do you do to " +
+              p.a +
+              " to make it 1?",
+            "A unit rate is 'per 1'. Divide BOTH parts of the ratio by " +
+              p.a +
+              " so the top becomes 1.",
+            "Set it up: the bottom value = " +
+              p.b +
+              " ÷ " +
+              p.a +
+              ". Work that out, then slide the bottom knob to it.",
+          ];
+        }
+        if (p.kind === "full") {
+          return [
+            "An equivalent ratio keeps the same relationship. If you make the top bigger, what must happen to the bottom?",
+            "Pick a multiplier like ×2 or ×3, then multiply BOTH " +
+              p.a +
+              " and " +
+              p.b +
+              " by that same number.",
+            "Set it up: choose your k, then top = " +
+              p.a +
+              "×k and bottom = " +
+              p.b +
+              "×k. Move both knobs there — don't leave it at " +
+              p.a +
+              ":" +
+              p.b +
+              ".",
+          ];
+        }
+        // kind === "one": one knob is fixed; find the matching value.
+        return [
+          "One knob is already set. Compare it to the base number it lines up with — how many times bigger is it?",
+          "Find the scale factor by dividing the fixed value by its base number, then apply that SAME factor to the other part.",
+          "Set it up: multiply the other base number by that scale factor, then slide the movable knob there.",
+        ];
       }
 
       function makeProblem(level, track) {
@@ -1292,6 +1351,16 @@
         const p = makeProblem(this.level, this.track);
         this.problem = p;
 
+        // Publish the current problem to the Socratic hint ladder (opt-in, safe:
+        // no-op if the module didn't load). Resets the ladder for each problem.
+        if (window.NeftHintLadder) {
+          window.NeftHintLadder.setProblem({
+            itemText: p.label + ". " + p.prompt,
+            standard: "6.RP.3",
+            staticHints: ratioStaticHints(p),
+          });
+        }
+
         this.bannerLabel.setText(p.label);
         this.bannerText.setText(p.prompt);
 
@@ -1701,7 +1770,8 @@
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <script src="/assets/game-access.js" defer></script>
-  <!-- gacc-injected:end -->
-</body>
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+  </body>
 </html>
