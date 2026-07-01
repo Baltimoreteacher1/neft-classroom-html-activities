@@ -320,7 +320,7 @@
     ["calendar", "Calendar"],
     ["todos", "To-do list"],
     ["assignments", "Assignment list"],
-    ["momentum", "Momentum"],
+    ["momentum", "Your Week"],
     ["soon", "Coming up"],
   ];
 
@@ -819,6 +819,9 @@
             ? "doing"
             : "todo",
       estimateMin: Number(a.estimateMin) || 0,
+      // Actual focus minutes logged against this assignment (summed as focus
+      // sessions run). Powers the estimate-vs-actual "time guess" feedback.
+      actualMin: Number(a.actualMin) || 0,
       steps: Array.isArray(a.steps)
         ? a.steps.map((st) => ({
             id: st.id || uid("s"),
@@ -3067,10 +3070,36 @@
     }
   }
 
+  // Give every plain <label> an explicit control association (WCAG 1.3.1 /
+  // 3.3.2 / 4.1.2). Forms are built as innerHTML with <label> and <input> as
+  // siblings inside a .field, so screen readers announce the control unnamed
+  // and tapping the label text doesn't focus it. This one generic pass links
+  // each label to the single labelable control in its container (adding an id
+  // when the control lacks one), preserving DOM order so the settings live-
+  // update (previousElementSibling) keeps working. Runs after every render and
+  // modal, so dynamically-built forms are covered too.
+  let _labelSeq = 0;
+  function associateLabels(root) {
+    if (!root) return;
+    root.querySelectorAll("label:not([for])").forEach((label) => {
+      if (label.querySelector("input, select, textarea")) return; // already wraps
+      const scope =
+        label.closest(".field, .toggle-row, .reflection-text-row") ||
+        label.parentElement;
+      if (!scope) return;
+      const controls = scope.querySelectorAll("input, select, textarea");
+      if (controls.length !== 1) return; // skip groups / button-only rows
+      const ctrl = controls[0];
+      if (!ctrl.id) ctrl.id = "fld-" + ++_labelSeq;
+      label.setAttribute("for", ctrl.id);
+    });
+  }
+
   function render() {
     applyAppearance();
     renderHero();
     $("#main").innerHTML = (VIEWS[view] || VIEWS.home)();
+    associateLabels($("#main"));
     renderTabbar();
     updateHeaderStatus();
     // The floating ＋ is context-aware: on the Health page it adds a custom
@@ -4395,7 +4424,7 @@
           {
             act: "view-insights",
             ic: "📊",
-            title: "Insights",
+            title: "How It's Going",
             sub: "Your focus & on-time trends",
           },
           {
@@ -5105,6 +5134,23 @@ Due May 31"></textarea>
       const onTimePct = done.length
         ? Math.round((onTime / done.length) * 100)
         : null;
+      // Time-estimation accuracy across finished work that had a guess + logged
+      // focus time. Turns the tracked estimateMin/actualMin into a coached line.
+      const withEst = done.filter(
+        (a) => Number(a.estimateMin) > 0 && Number(a.actualMin) > 0,
+      );
+      let estLine = "";
+      if (withEst.length >= 3) {
+        const avgRatio =
+          withEst.reduce((s, a) => s + a.actualMin / a.estimateMin, 0) /
+          withEst.length;
+        estLine =
+          avgRatio > 1.25
+            ? `<p class="sub" style="margin-top:8px">⏱️ Your work usually takes <b>longer</b> than you guess — padding your time estimates a little makes plans more realistic.</p>`
+            : avgRatio < 0.8
+              ? `<p class="sub" style="margin-top:8px">⚡ You finish <b>faster</b> than you guess — you can fit a little more into a study block.</p>`
+              : `<p class="sub" style="margin-top:8px">🎯 Your time guesses are usually <b>spot on</b>. Great planning sense!</p>`;
+      }
       // Best day of week by focus minutes (all history).
       const byDow = [0, 0, 0, 0, 0, 0, 0];
       for (const [k, a] of Object.entries(state.activity)) {
@@ -5133,7 +5179,7 @@ Due May 31"></textarea>
         )
         .join("");
       return (
-        backHeader("Insights", "more") +
+        backHeader("How It's Going", "more") +
         card(
           "ins-week",
           "This week",
@@ -5165,7 +5211,7 @@ Due May 31"></textarea>
                     : "Knocking out work a little earlier bumps this up fast."
                 }</p>`
               : `<p class="sub" style="margin-top:8px">Finish a few assignments and your on-time rate shows up here.</p>`
-          }`,
+          }${estLine}`,
         ) +
         reflectionInsight()
       );
@@ -5942,7 +5988,7 @@ Due May 31"></textarea>
 
     return card(
       "momentum",
-      "🏆 Momentum",
+      "🏆 Your Week",
       "",
       `
       <div class="progress-strip" style="grid-template-columns:repeat(auto-fit,minmax(90px,1fr))">
@@ -5987,6 +6033,7 @@ Due May 31"></textarea>
     modalLastFocus = document.activeElement;
     $("#modalTitle").textContent = title;
     $("#modalBody").innerHTML = bodyHtml;
+    associateLabels($("#modalBody"));
     $("#modalBack").classList.add("open");
     $("#modalBack").setAttribute("aria-hidden", "false");
     const first = $(
@@ -6396,6 +6443,12 @@ Due May 31"></textarea>
       if (this.phase !== "focus" || this.phaseAwarded || m <= 0) return 0;
       this.phaseAwarded = true;
       bumpActivity("focusMin", m);
+      // Log the minutes against the assignment being focused, so completing it
+      // can compare the student's time guess to what it actually took.
+      if (this.taskId) {
+        const a = state.assignments.find((x) => x.id === this.taskId);
+        if (a) a.actualMin = (Number(a.actualMin) || 0) + m;
+      }
       addPoints(m);
       earnReward("focus", "Focus session");
       return m;
@@ -8146,6 +8199,20 @@ Due May 31"></textarea>
   // ---------------------------------------------------------------------------
   // Actions (delegated)
   // ---------------------------------------------------------------------------
+  // Friendly estimate-vs-actual feedback shown when a task with a time guess
+  // and logged focus time finishes. Teaches time-estimation without judgment.
+  function estimateNote(a) {
+    const est = Number(a.estimateMin) || 0;
+    const act = Number(a.actualMin) || 0;
+    if (est <= 0 || act <= 0) return "";
+    const ratio = act / est;
+    if (ratio >= 0.8 && ratio <= 1.2)
+      return `🎯 You guessed ${est} min and it took about ${act} — great time sense!`;
+    if (ratio > 1.2)
+      return `⏱️ You guessed ${est} min; it took about ${act}. Guessing a little higher helps you plan.`;
+    return `⚡ You guessed ${est} min but finished in about ${act} — you can take on a bit more!`;
+  }
+
   function completeTask(id) {
     const a = state.assignments.find((x) => x.id === id);
     if (!a || a.status === "done") return;
@@ -8159,7 +8226,8 @@ Due May 31"></textarea>
       date: new Date().toLocaleString(),
     });
     save();
-    toast("Done! +10 points 🎉");
+    const note = estimateNote(a);
+    toast("Done! +10 points 🎉" + (note ? " · " + note : ""));
     triggerConfetti();
     if (focus.taskId === id) focus.stop();
     else render();
