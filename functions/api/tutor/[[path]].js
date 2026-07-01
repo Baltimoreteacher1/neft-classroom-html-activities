@@ -5,13 +5,12 @@
  *   POST /api/tutor          { mode, standard, itemText, studentWork, history }
  *   GET  /api/tutor/health   -> { ok, backend, live }
  *
- * Strategy (graceful degradation, mirrors functions/api/progress):
+ * Strategy (Claude Haiku only, graceful degradation):
  *   1. If env.ANTHROPIC_API_KEY is set -> call the Claude Messages API
- *      (model "claude-haiku-4-5") with a Socratic system prompt that NEVER
- *      reveals the final numeric answer for hint requests.
- *   2. Else if env.AI (Workers AI binding) is available -> fall back to a
- *      Workers AI text model.
- *   3. Else -> return HTTP 503 { offline: true }. The client treats this as
+ *      (Haiku) with a Socratic system prompt that NEVER reveals the final
+ *      numeric answer for hint requests. Haiku is the ONLY backend so every
+ *      student reply has one consistent voice and quality.
+ *   2. Else -> return HTTP 503 { offline: true }. The client treats this as
  *      "Tutor is offline right now" and keeps the lesson fully usable.
  *
  * SAFETY:
@@ -34,9 +33,6 @@ const JSON_HEADERS = {
 const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
 const CLAUDE_URL = "https://api.anthropic.com/v1/messages";
 const CLAUDE_VERSION = "2023-06-01";
-
-// Workers AI fallback model (instruction-tuned, broadly available).
-const WORKERS_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct";
 
 // Input caps (defensive — these are upper bounds, not expected sizes).
 const CAP = {
@@ -244,24 +240,6 @@ async function callClaude(env, v) {
   return { ok: true, reply: text, source: "claude" };
 }
 
-async function callWorkersAI(env, v) {
-  try {
-    const result = await env.AI.run(WORKERS_AI_MODEL, {
-      max_tokens: CAP.output,
-      messages: [
-        { role: "system", content: systemPrompt(v.mode, v.standard) },
-        ...v.history.map((t) => ({ role: t.role, content: t.text })),
-        { role: "user", content: userPrompt(v) },
-      ],
-    });
-    const text = (result?.response || "").trim();
-    if (!text) return { ok: false, status: 502 };
-    return { ok: true, reply: text, source: "workers-ai" };
-  } catch (e) {
-    return { ok: false, status: 502 };
-  }
-}
-
 export async function onRequest(context) {
   const { request, env, params } = context;
   const method = request.method.toUpperCase();
@@ -272,20 +250,17 @@ export async function onRequest(context) {
 
   const seg = (params.path && params.path[0]) || "";
   const hasClaude = !!env.ANTHROPIC_API_KEY;
-  const hasWorkersAI = !!env.AI;
 
   // Health works without any backend so the client can probe availability.
-  // `claude`/`workersAI` expose which backends are actually BOUND (not just
-  // whether the key is well-formed) so operators can diagnose a "live but every
-  // POST is offline" state — that means the bound backend's upstream call fails
-  // (bad/unfunded ANTHROPIC_API_KEY, or Workers AI not enabled on the account).
+  // `claude` reports whether the key is BOUND (not whether it is valid), so a
+  // "live:true but every POST is offline" state means the ANTHROPIC_API_KEY is
+  // bad/unfunded or the model id was rejected upstream.
   if (seg === "health" && method === "GET") {
     return json({
       ok: true,
-      backend: hasClaude ? "claude" : hasWorkersAI ? "workers-ai" : "none",
-      live: hasClaude || hasWorkersAI,
+      backend: hasClaude ? "claude" : "none",
+      live: hasClaude,
       claude: hasClaude,
-      workersAI: hasWorkersAI,
     });
   }
 
@@ -294,14 +269,13 @@ export async function onRequest(context) {
   }
 
   // No backend configured -> graceful offline (client keeps working).
-  if (!hasClaude && !hasWorkersAI) {
+  if (!hasClaude) {
     return json(
       {
         ok: false,
         offline: true,
         error: "tutor-not-configured",
-        message:
-          "AI tutor backend is not configured. Set ANTHROPIC_API_KEY (or bind Workers AI as 'AI').",
+        message: "AI tutor backend is not configured. Set ANTHROPIC_API_KEY.",
       },
       503,
     );
@@ -316,13 +290,13 @@ export async function onRequest(context) {
   if (!parsed.ok) return json({ ok: false, error: parsed.error }, 400);
 
   try {
+    // Haiku-only: the tutor answers exclusively with Claude Haiku so every
+    // student reply has one consistent voice and quality. No Workers AI (llama)
+    // fallback — if Claude is unavailable we return the graceful offline state
+    // rather than silently switching to a different model.
     let out = null;
     if (hasClaude) {
       out = await callClaude(env, parsed.value);
-      // If Claude is configured but transiently failing, try Workers AI.
-      if (!out.ok && hasWorkersAI) out = await callWorkersAI(env, parsed.value);
-    } else {
-      out = await callWorkersAI(env, parsed.value);
     }
 
     if (!out || !out.ok) {
