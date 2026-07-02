@@ -883,6 +883,10 @@
     if (/morning|launch/.test(n)) return "morning";
     return "";
   }
+  // Minutes-since-midnight, 0..1439, or undefined ("use the slot's default").
+  function normalizeMinuteOverride(v) {
+    return Number.isInteger(v) && v >= 0 && v < 1440 ? v : undefined;
+  }
   function normalizeRoutine(r) {
     r = r || {};
     const name = String(r.name || "Routine").slice(0, 60);
@@ -896,6 +900,11 @@
           : ROUTINE_SLOTS.includes(r.slot)
             ? r.slot
             : "",
+      // Optional per-routine override of its slot's default start/end time
+      // (e.g. an early-release day's "After School" starting at 3:00 instead
+      // of the usual 3:30). Unset = use the slot's standard window.
+      startMin: normalizeMinuteOverride(r.startMin),
+      endMin: normalizeMinuteOverride(r.endMin),
       days: Array.isArray(r.days) ? r.days.filter((d) => DAYS.includes(d)) : [],
       items: Array.isArray(r.items)
         ? r.items.map((it) => ({
@@ -4222,11 +4231,14 @@
             const pct = r.items.length
               ? Math.round((done.length / r.items.length) * 100)
               : 0;
+            const noTimeNotice = r.slot
+              ? ""
+              : `<p style="color:var(--amber);font-size:.82rem;margin:4px 0 0">⚠️ No automatic time set — won't appear on the Now screen. Edit this routine to set a time of day.</p>`;
             return card(
               "routine-" + r.id,
               `${r.emoji || "🔁"} ${r.name}`,
               `${done.length}/${r.items.length} done today · 🔁 ${routineDaysLabel(r)}`,
-              `<div class="bar" aria-hidden="true"><span style="width:${pct}%"></span></div>
+              `${noTimeNotice}<div class="bar" aria-hidden="true"><span style="width:${pct}%"></span></div>
                <ul class="steps">${r.items
                  .map(
                    (it) =>
@@ -5572,6 +5584,15 @@ Due May 31"></textarea>
     const isWeekend = when.getDay() === 0 || when.getDay() === 6;
     return routineByName(isWeekend ? win.weekend : win.weekday, when);
   }
+  // A routine can override its slot's default start/end (e.g. an
+  // early-release day's After School starting at 3:00 instead of 3:30). An
+  // invalid override (end at/before start) is ignored, falling back to the
+  // slot's standard window.
+  function effectiveWindowBounds(win, routine) {
+    const start = routine?.startMin ?? win.start;
+    const end = routine?.endMin ?? win.end;
+    return end > start ? { start, end } : { start: win.start, end: win.end };
+  }
   function dateAtMinutes(base, mins) {
     const d = new Date(base);
     d.setHours(0, mins, 0, 0);
@@ -5580,16 +5601,18 @@ Due May 31"></textarea>
   function routineWindowFor(now = new Date()) {
     const mins = minutesSinceMidnight(now);
     for (const win of ROUTINE_WINDOWS) {
-      if (!inTimeWindow(mins, win.start, win.end)) continue;
       const routine = routineForWindow(win, now);
-      if (routine) {
-        return {
-          ...win,
-          routine,
-          startsAt: dateAtMinutes(now, win.start),
-          endsAt: dateAtMinutes(now, win.end),
-        };
-      }
+      if (!routine) continue;
+      const { start, end } = effectiveWindowBounds(win, routine);
+      if (!inTimeWindow(mins, start, end)) continue;
+      return {
+        ...win,
+        start,
+        end,
+        routine,
+        startsAt: dateAtMinutes(now, start),
+        endsAt: dateAtMinutes(now, end),
+      };
     }
     return null;
   }
@@ -5620,11 +5643,13 @@ Due May 31"></textarea>
       day.setDate(now.getDate() + dayOffset);
       day.setHours(0, 0, 0, 0);
       for (const win of ROUTINE_WINDOWS) {
-        const startsAt = dateAtMinutes(day, win.start);
-        const endsAt = dateAtMinutes(day, win.end);
-        if (endsAt <= now) continue;
         const routine = routineForWindow(win, day);
-        if (routine) return { ...win, routine, startsAt, endsAt };
+        if (!routine) continue;
+        const { start, end } = effectiveWindowBounds(win, routine);
+        const startsAt = dateAtMinutes(day, start);
+        const endsAt = dateAtMinutes(day, end);
+        if (endsAt <= now) continue;
+        return { ...win, start, end, routine, startsAt, endsAt };
       }
     }
     return null;
@@ -6295,6 +6320,16 @@ Due May 31"></textarea>
       <button class="btn primary block" data-act="save-reminder" data-id="${esc(r.id || "")}">${r.id ? "Save changes" : "Add reminder"}</button>`;
   }
 
+  const minsToHHMM = (mins) =>
+    typeof mins === "number"
+      ? `${String(Math.floor(mins / 60)).padStart(2, "0")}:${String(mins % 60).padStart(2, "0")}`
+      : "";
+  const hhmmToMins = (s) => {
+    const m = /^(\d{1,2}):(\d{2})$/.exec(String(s || "").trim());
+    if (!m) return undefined;
+    const mins = Number(m[1]) * 60 + Number(m[2]);
+    return mins >= 0 && mins < 1440 ? mins : undefined;
+  };
   function routineForm(r) {
     r = r || { items: [] };
     return `
@@ -6326,6 +6361,11 @@ Due May 31"></textarea>
         </select>
         <small class="muted">Controls when this shows automatically on the Now screen.</small>
       </div>
+      <div class="g2 grid">
+        <div class="field"><label>Custom start (optional)</label><input type="time" id="rStartTime" value="${esc(minsToHHMM(r.startMin))}"></div>
+        <div class="field"><label>Custom end (optional)</label><input type="time" id="rEndTime" value="${esc(minsToHHMM(r.endMin))}"></div>
+      </div>
+      <small class="muted" style="display:block;margin:-8px 0 8px">Leave either blank to use the slot's standard time for that side — set one or both to override just this routine (e.g. an early-release day).</small>
       <div class="field"><label>Repeat on</label>
         <div class="day-toggle" id="rDays">${DAYS.map((d) => `<button type="button" class="btn sm day-btn ${(r.days || []).includes(d) ? "on" : ""}" data-act="toggle-routine-day" data-arg="${d}" aria-pressed="${(r.days || []).includes(d)}">${d[0]}</button>`).join("")}</div>
         <small class="muted">No days picked = every day.</small>
@@ -9036,6 +9076,8 @@ Due May 31"></textarea>
       r.emoji = $("#rEmoji").value.trim() || "🔁";
       const slotVal = $("#rSlot").value;
       r.slot = ROUTINE_SLOTS.includes(slotVal) ? slotVal : "";
+      r.startMin = hhmmToMins($("#rStartTime").value);
+      r.endMin = hhmmToMins($("#rEndTime").value);
       r.days = days;
       r.items = items.length ? items : r.items;
       r.updatedAt = Date.now();
