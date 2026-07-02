@@ -66,6 +66,7 @@ CANDIDATES=(
 	validate:reveal-math
 	validate:homework
 	validate:practice
+	validate:save-resume
 	audit
 	audit:curriculum
 	audit:homework

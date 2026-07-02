@@ -177,4 +177,21 @@ const problems =
   issues.length + stats.missingRefs.length + stats.duplicates.length + stats.brokenStructure.length;
 if (issues.length) console.log("\nIssues:\n  " + issues.join("\n  "));
 console.log("\nRESULT:", problems === 0 ? "PASS ✅" : `FAIL ❌ (${problems} problem group(s))`);
+if (problems) {
+  // Remediation guidance: missing refs self-heal via the idempotent injector;
+  // duplicates/structure warnings usually mean a page carries pre-existing raw
+  // refs (outside the sentinel) and needs a manual look.
+  if (stats.missingRefs.length) {
+    console.log(
+      "\n→ Fix missing refs (idempotent, reversible): npm run fix:save-resume" +
+        "\n  (dry-run first: node tools/inject-save-resume.js --dry-run)",
+    );
+  }
+  if (stats.duplicates.length || stats.brokenStructure.length) {
+    console.log(
+      "\n→ Duplicate/structure warnings usually mean raw save-resume refs exist" +
+        "\n  outside the nsr-injected sentinel; inspect those pages by hand.",
+    );
+  }
+}
 process.exit(problems === 0 ? 0 : 1);
