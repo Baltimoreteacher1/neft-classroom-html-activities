@@ -23,7 +23,7 @@
         --blue-lt: #e8f2fc;
         --teal: #0e8a7d;
         --teal-lt: #e4f5f3;
-        --gold: #c9820f;
+        --gold: #a5670a;
         --gold-lt: #fdf3e0;
         --green: #1e7d40;
         --green-lt: #e6f4eb;
@@ -281,7 +281,7 @@
         margin-bottom: 3px;
       }
       .card-sub {
-        font-size: 13px;
+        font-size: 14px;
         color: var(--muted);
         font-weight: 500;
       }
@@ -293,7 +293,7 @@
         border-radius: 10px;
         padding: 14px 16px;
         margin-bottom: 20px;
-        font-size: 15px;
+        font-size: 16px;
         line-height: 1.6;
       }
       .instruct.gold {
@@ -346,6 +346,7 @@
       select:focus {
         outline: none;
         border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(26, 111, 181, 0.25);
       }
       textarea {
         min-height: 90px;
@@ -701,7 +702,7 @@
         margin-bottom: 4px;
       }
       .vocab-def {
-        font-size: 13px;
+        font-size: 14px;
         color: var(--muted);
         line-height: 1.5;
       }
@@ -928,10 +929,10 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Key Words</span>
                 <span class="es-text">Palabras clave</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Learn these 6 statistics words before you begin</span
@@ -1117,14 +1118,14 @@
           <div class="card-header">
             <div class="card-icon">🌡️</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text"
                   >Step 1 — Measures of Center &amp; Spread</span
                 >
                 <span class="es-text"
                   >Paso 1 — Medidas de centro y dispersión</span
                 >
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Record daily high temperatures and calculate statistics</span
@@ -1489,10 +1490,10 @@
           <div class="card-header">
             <div class="card-icon teal">📊</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 2 — Choose the Display</span>
                 <span class="es-text">Paso 2 — Elegir el gráfico</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Identify the best representation &amp; visualize your
@@ -1624,10 +1625,10 @@
           <div class="card-header">
             <div class="card-icon gold">🌎</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 3 — Compare Regions</span>
                 <span class="es-text">Paso 3 — Comparar regiones</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Contrast your data spread against real regional
@@ -1916,10 +1917,10 @@
           <div class="card-header">
             <div class="card-icon teal">👥</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 4 — Partner Compare</span>
                 <span class="es-text">Paso 4 — Comparar compañero</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Swap data logs and analyze differences in centers and
@@ -2105,10 +2106,10 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 5 — Finish &amp; Submit</span>
                 <span class="es-text">Paso 5 — Terminar y enviar</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Write your pitch, audit the checklist, and generate your
@@ -2455,7 +2456,10 @@
               gap: 8px;
             "
           >
-            <button class="calc-btn" onclick="buildReport()">
+            <button
+              class="calc-btn"
+              onclick="if (buildReport() !== false) playConfetti();"
+            >
               <span class="en-text">📝 Generate Summary</span>
               <span class="es-text">📝 Generar resumen</span>
             </button>
@@ -2492,7 +2496,11 @@
     <!-- ====== SCRIPTS ====== -->
     <script src="/assets/app.js" defer></script>
     <script>
-      const PRESETS = { "weather-vals": "72,75,78,71,74,80,75,76" };
+      // No auto-fill presets: the "Load Sample Data" scaffold (loadSampleData)
+      // fills the real temp-1..temp-8 inputs for Level 1. Kept as an empty map
+      // so handleLevelPreset is a clean no-op (previously referenced a phantom
+      // "weather-vals" input).
+      const PRESETS = {};
       function handleLevelPreset(n) {
         try {
           if (n === 1) {
@@ -2590,13 +2598,11 @@
       // ---- Level toggle ----
       function setLevel(n) {
         const body = document.getElementById("body");
-        const isEs = body.classList.contains("es");
-        body.className = "level-" + n;
-        if (isEs) {
-          body.classList.add("es");
-
-          handleLevelPreset(n);
-        }
+        // Surgical swap: never reassign className (that would drop the injected
+        // pro-projects premium class and the es language class).
+        body.classList.remove("level-1", "level-2");
+        body.classList.add("level-" + n);
+        handleLevelPreset(n);
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
         clearCalculation();
@@ -2629,10 +2635,10 @@
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
           const label = isEs ? getSpanishStepLabel(s.id) : s.label;
-          return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" onclick="goStep(${s.id})">
+          return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" role="button" tabindex="0" aria-label="${label}" onclick="goStep(${s.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(${s.id});}">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? "✓" : s.id + 1}</span>
             <span class="s-label">${label}</span>
-          </span>${!isLast ? '<span class="step-arrow">›</span>' : ""}`;
+          </span>${!isLast ? '<span class="step-arrow" aria-hidden="true">›</span>' : ""}`;
         }).join("");
       }
 
@@ -3004,8 +3010,10 @@
       }
 
       // ---- Report Generation ----
+      // NOTE: confetti is fired only from the Generate Summary button click
+      // (see onclick handler), never on load/resume/language-toggle. Returns
+      // false when the report could not be built so the caller can skip confetti.
       function buildReport() {
-        playConfetti();
         const isEs = document.body.classList.contains("es");
         if (!window.projectData) {
           alert(
@@ -3013,7 +3021,7 @@
               ? "Por favor ingresa las temperaturas y realiza los cálculos en el Paso 1 antes de generar el resumen."
               : "Please enter temperatures and run calculations on Step 1 before generating the summary.",
           );
-          return;
+          return false;
         }
 
         const { values, min, max, mean, median, range, q1, q3, iqr } =
@@ -3196,7 +3204,7 @@
 
       // ---- Bilingual UI helpers ----
       function toggleLanguage() {
-        if (window.speechSynthesis.speaking) {
+        if (window.speechSynthesis?.speaking) {
           window.speechSynthesis.cancel();
         }
         const body = document.getElementById("body");
@@ -3333,6 +3341,9 @@
       // ---- Read Aloud TTS Support ----
       let currentUtterance = null;
       function readAloud() {
+        if (!("speechSynthesis" in window) || !window.SpeechSynthesisUtterance) {
+          return;
+        }
         if (window.speechSynthesis.speaking) {
           window.speechSynthesis.cancel();
           return;
@@ -3433,61 +3444,60 @@
       }
 
       function prefillGradingConsole() {
-        const presets = { "weather-vals": "72,75,78,71,74,80,75,76" };
-        for (const [id, val] of Object.entries(presets)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = val;
-            el.dispatchEvent(new Event("input", { bubbles: true }));
-            el.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        // Also prefill student calculation answers
-        if (document.getElementById("student-gcf-input")) {
-          document.getElementById("student-gcf-input").value =
-            document.getElementById("student-gcf-input").min || 1;
-          document
-            .getElementById("student-gcf-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        if (document.getElementById("student-lcm-input")) {
-          document.getElementById("student-lcm-input").value =
-            document.getElementById("student-lcm-input").min || 1;
-          document
-            .getElementById("student-lcm-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
-        }
+        // Fill the real temperature inputs with the Level-1 sample set, then
+        // recompute the grading answers.
+        loadSampleData();
         updateGradingAnswers();
       }
 
       function updateGradingAnswers() {
         try {
           const resolver = function () {
-            const raw = document.getElementById("weather-vals").value;
-            const vals = raw
-              .split(",")
-              .map((v) => parseFloat(v.trim()))
-              .filter((v) => !isNaN(v));
+            const vals = [];
+            for (let i = 1; i <= 8; i++) {
+              const el = document.getElementById("temp-" + i);
+              if (!el) continue;
+              const v = parseFloat(el.value);
+              if (!isNaN(v)) vals.push(v);
+            }
             if (!vals.length) return { Error: "No values" };
-            const sum = vals.reduce((a, b) => a + b, 0);
-            const mean = sum / vals.length;
             const sorted = [...vals].sort((a, b) => a - b);
+            const sum = sorted.reduce((a, b) => a + b, 0);
+            const mean = sum / sorted.length;
+            const mid = Math.floor(sorted.length / 2);
             const median =
               sorted.length % 2 !== 0
-                ? sorted[Math.floor(sorted.length / 2)]
-                : (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) /
-                  2;
-            const min = Math.min(...vals);
-            const max = Math.max(...vals);
+                ? sorted[mid]
+                : (sorted[mid - 1] + sorted[mid]) / 2;
+            const min = sorted[0];
+            const max = sorted[sorted.length - 1];
             const range = max - min;
-            const mad =
-              vals.reduce((a, b) => a + Math.abs(b - mean), 0) / vals.length;
+            // Quartiles via the middle-school exclusive method (median-excluded
+            // for odd counts) — identical to the student calculateStats().
+            const getMedian = function (arr) {
+              if (!arr.length) return 0;
+              const m = Math.floor(arr.length / 2);
+              return arr.length % 2 !== 0 ? arr[m] : (arr[m - 1] + arr[m]) / 2;
+            };
+            let lowerHalf, upperHalf;
+            if (sorted.length % 2 === 0) {
+              lowerHalf = sorted.slice(0, mid);
+              upperHalf = sorted.slice(mid);
+            } else {
+              lowerHalf = sorted.slice(0, mid);
+              upperHalf = sorted.slice(mid + 1);
+            }
+            const q1 = getMedian(lowerHalf);
+            const q3 = getMedian(upperHalf);
+            const iqr = q3 - q1;
             return {
-              Count: vals.length,
+              Count: sorted.length,
               "Expected Mean": mean.toFixed(2),
               "Expected Median": median.toFixed(2),
               "Expected Range": `${max} - ${min} = ${range}`,
-              "Expected MAD": mad.toFixed(2),
+              "Expected Q1": q1.toFixed(2),
+              "Expected Q3": q3.toFixed(2),
+              "Expected IQR": iqr.toFixed(2),
             };
           };
           const ans = resolver();
@@ -3509,9 +3519,11 @@
         }
       }
 
-      // Wire up key listener (Ctrl+Shift+T) and triple click on h1
+      // Teacher-only reveal: obscure, non-hijacking chord (Alt+Shift+G).
+      // (Ctrl+Shift+T is a browser "reopen closed tab" shortcut, so it is not
+      // used; the student-reachable triple-click on the title has been removed.)
       document.addEventListener("keydown", function (e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "t") {
+        if (e.altKey && e.shiftKey && e.key.toLowerCase() === "g") {
           e.preventDefault();
           toggleGradingConsole();
         }
@@ -3588,24 +3600,12 @@
       };
 
       document.addEventListener("DOMContentLoaded", function () {
-        const titleEl = document.querySelector(".hero h1");
-        if (titleEl) {
-          let clicks = 0;
-          titleEl.addEventListener("click", function () {
-            clicks++;
-            if (clicks >= 3) {
-              toggleGradingConsole();
-              clicks = 0;
-            }
-            setTimeout(() => {
-              clicks = 0;
-            }, 1000);
-          });
-        }
-        // Re-calculate answers when input event fires
+        // Teacher grading console is reached via the Alt+Shift+G chord only.
+        // (The former triple-click gesture on the title was student-reachable
+        // and has been removed to keep answers teacher-only.)
+        // Re-calculate answers when any temperature input (temp-1..temp-8) changes
         document.addEventListener("input", function (e) {
-          const inputs = ["weather-vals"];
-          if (inputs.includes(e.target.id)) {
+          if (/^temp-[1-8]$/.test(e.target.id || "")) {
             updateGradingAnswers();
           }
         });

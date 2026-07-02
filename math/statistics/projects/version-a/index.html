@@ -21,7 +21,7 @@
         --blue-lt: #e8f2fc;
         --teal: #0e8a7d;
         --teal-lt: #e4f5f3;
-        --gold: #c9820f;
+        --gold: #a5670a;
         --gold-lt: #fdf3e0;
         --green: #1e7d40;
         --green-lt: #e6f4eb;
@@ -279,7 +279,7 @@
         margin-bottom: 3px;
       }
       .card-sub {
-        font-size: 13px;
+        font-size: 14px;
         color: var(--muted);
         font-weight: 500;
       }
@@ -291,7 +291,7 @@
         border-radius: 10px;
         padding: 14px 16px;
         margin-bottom: 20px;
-        font-size: 15px;
+        font-size: 16px;
         line-height: 1.6;
       }
       .instruct.gold {
@@ -344,6 +344,7 @@
       select:focus {
         outline: none;
         border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(26, 111, 181, 0.25);
       }
       textarea {
         min-height: 90px;
@@ -394,6 +395,14 @@
       }
       .calc-btn.green:hover {
         background: #185f31;
+      }
+      .calc-btn.ghost {
+        background: transparent;
+        color: var(--blue);
+        border: 2px solid var(--blue);
+      }
+      .calc-btn.ghost:hover {
+        background: var(--blue-lt);
       }
       .readout {
         background: var(--navy);
@@ -659,7 +668,7 @@
         margin-bottom: 4px;
       }
       .vocab-def {
-        font-size: 13px;
+        font-size: 14px;
         color: var(--muted);
         line-height: 1.5;
       }
@@ -885,10 +894,10 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Key Words</span>
                 <span class="es-text">Palabras clave</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Learn these 6 statistics words before you begin</span
@@ -921,8 +930,14 @@
                 >
               </div>
               <div class="vocab-ex">
-                <span class="en-text">"How much did you sleep?"</span>
-                <span class="es-text">"¿Cuánto dormiste?"</span>
+                <span class="en-text"
+                  >"How many hours do students in my class sleep each
+                  night?"</span
+                >
+                <span class="es-text"
+                  >"¿Cuántas horas duerme cada noche cada estudiante de mi
+                  clase?"</span
+                >
               </div>
             </div>
             <div class="vocab-card">
@@ -1062,14 +1077,14 @@
           <div class="card-header">
             <div class="card-icon">⚖️</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text"
                   >Step 1 — Input Dataset &amp; Find Center</span
                 >
                 <span class="es-text"
                   >Paso 1 — Ingresar conjunto de datos y hallar el centro</span
                 >
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Record sleep hours (6 to 10 points) and compute Mean &amp;
@@ -1198,13 +1213,14 @@
               <span class="es-text">DESAFÍO DE NIVEL 2</span> </span
             ><br />
             <span class="en-text"
-              >Collect real classmate survey answers (including half hours like
-              8.5) and calculate your statistics.</span
+              >Collect real classmate survey answers (rounded to the nearest
+              whole hour so they fit the dot plot) and calculate your
+              statistics.</span
             >
             <span class="es-text"
               >Recolecta respuestas reales de la encuesta de compañeros de clase
-              (incluyendo medias horas como 8.5) y calcula tus
-              estadísticas.</span
+              (redondeadas a la hora entera más cercana para que quepan en el
+              diagrama de puntos) y calcula tus estadísticas.</span
             >
           </div>
 
@@ -1232,7 +1248,7 @@
                 id="val-1"
                 min="0"
                 max="24"
-                step="0.5"
+                step="1"
                 placeholder="Value 1"
                 style="text-align: center"
                 oninput="clearCenterReadout()"
@@ -1244,7 +1260,7 @@
                 id="val-2"
                 min="0"
                 max="24"
-                step="0.5"
+                step="1"
                 placeholder="Value 2"
                 style="text-align: center"
                 oninput="clearCenterReadout()"
@@ -1256,7 +1272,7 @@
                 id="val-3"
                 min="0"
                 max="24"
-                step="0.5"
+                step="1"
                 placeholder="Value 3"
                 style="text-align: center"
                 oninput="clearCenterReadout()"
@@ -1268,7 +1284,7 @@
                 id="val-4"
                 min="0"
                 max="24"
-                step="0.5"
+                step="1"
                 placeholder="Value 4"
                 style="text-align: center"
                 oninput="clearCenterReadout()"
@@ -1280,7 +1296,7 @@
                 id="val-5"
                 min="0"
                 max="24"
-                step="0.5"
+                step="1"
                 placeholder="Value 5"
                 style="text-align: center"
                 oninput="clearCenterReadout()"
@@ -1302,7 +1318,7 @@
                 id="val-6"
                 min="0"
                 max="24"
-                step="0.5"
+                step="1"
                 placeholder="Value 6"
                 style="text-align: center"
                 oninput="clearCenterReadout()"
@@ -1314,7 +1330,7 @@
                 id="val-7"
                 min="0"
                 max="24"
-                step="0.5"
+                step="1"
                 placeholder="Value 7"
                 style="text-align: center"
                 oninput="clearCenterReadout()"
@@ -1326,7 +1342,7 @@
                 id="val-8"
                 min="0"
                 max="24"
-                step="0.5"
+                step="1"
                 placeholder="Value 8"
                 style="text-align: center"
                 oninput="clearCenterReadout()"
@@ -1338,7 +1354,7 @@
                 id="val-9"
                 min="0"
                 max="24"
-                step="0.5"
+                step="1"
                 placeholder="Value 9"
                 style="text-align: center"
                 oninput="clearCenterReadout()"
@@ -1350,7 +1366,7 @@
                 id="val-10"
                 min="0"
                 max="24"
-                step="0.5"
+                step="1"
                 placeholder="Value 10"
                 style="text-align: center"
                 oninput="clearCenterReadout()"
@@ -1448,10 +1464,10 @@
           <div class="card-header">
             <div class="card-icon gold">📏</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 2 — Calculate Spread</span>
                 <span class="es-text">Paso 2 — Calcular la dispersión</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Find the Range and Mean Absolute Deviation (MAD)
@@ -1599,14 +1615,14 @@
           <div class="card-header">
             <div class="card-icon teal">📈</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text"
                   >Step 3 — Interactive Dot Plot &amp; Comparisons</span
                 >
                 <span class="es-text"
                   >Paso 3 — Diagrama de puntos interactivo y comparaciones</span
                 >
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Plot your sleep dataset and compare to national
@@ -1765,7 +1781,7 @@
                 type="button"
                 class="calc-btn teal"
                 style="padding: 2px 8px; margin: 0; font-size: 12px"
-                onclick="adjustDot(4, 1)"
+                onclick="adjustDot(4, 1)" aria-label="Add a dot at 4 hours"
               >
                 +
               </button>
@@ -1778,7 +1794,7 @@
                   font-size: 12px;
                   border-color: var(--line);
                 "
-                onclick="adjustDot(4, -1)"
+                onclick="adjustDot(4, -1)" aria-label="Remove a dot at 4 hours"
               >
                 -
               </button>
@@ -1799,7 +1815,7 @@
                 type="button"
                 class="calc-btn teal"
                 style="padding: 2px 8px; margin: 0; font-size: 12px"
-                onclick="adjustDot(5, 1)"
+                onclick="adjustDot(5, 1)" aria-label="Add a dot at 5 hours"
               >
                 +
               </button>
@@ -1812,7 +1828,7 @@
                   font-size: 12px;
                   border-color: var(--line);
                 "
-                onclick="adjustDot(5, -1)"
+                onclick="adjustDot(5, -1)" aria-label="Remove a dot at 5 hours"
               >
                 -
               </button>
@@ -1833,7 +1849,7 @@
                 type="button"
                 class="calc-btn teal"
                 style="padding: 2px 8px; margin: 0; font-size: 12px"
-                onclick="adjustDot(6, 1)"
+                onclick="adjustDot(6, 1)" aria-label="Add a dot at 6 hours"
               >
                 +
               </button>
@@ -1846,7 +1862,7 @@
                   font-size: 12px;
                   border-color: var(--line);
                 "
-                onclick="adjustDot(6, -1)"
+                onclick="adjustDot(6, -1)" aria-label="Remove a dot at 6 hours"
               >
                 -
               </button>
@@ -1867,7 +1883,7 @@
                 type="button"
                 class="calc-btn teal"
                 style="padding: 2px 8px; margin: 0; font-size: 12px"
-                onclick="adjustDot(7, 1)"
+                onclick="adjustDot(7, 1)" aria-label="Add a dot at 7 hours"
               >
                 +
               </button>
@@ -1880,7 +1896,7 @@
                   font-size: 12px;
                   border-color: var(--line);
                 "
-                onclick="adjustDot(7, -1)"
+                onclick="adjustDot(7, -1)" aria-label="Remove a dot at 7 hours"
               >
                 -
               </button>
@@ -1901,7 +1917,7 @@
                 type="button"
                 class="calc-btn teal"
                 style="padding: 2px 8px; margin: 0; font-size: 12px"
-                onclick="adjustDot(8, 1)"
+                onclick="adjustDot(8, 1)" aria-label="Add a dot at 8 hours"
               >
                 +
               </button>
@@ -1914,7 +1930,7 @@
                   font-size: 12px;
                   border-color: var(--line);
                 "
-                onclick="adjustDot(8, -1)"
+                onclick="adjustDot(8, -1)" aria-label="Remove a dot at 8 hours"
               >
                 -
               </button>
@@ -1935,7 +1951,7 @@
                 type="button"
                 class="calc-btn teal"
                 style="padding: 2px 8px; margin: 0; font-size: 12px"
-                onclick="adjustDot(9, 1)"
+                onclick="adjustDot(9, 1)" aria-label="Add a dot at 9 hours"
               >
                 +
               </button>
@@ -1948,7 +1964,7 @@
                   font-size: 12px;
                   border-color: var(--line);
                 "
-                onclick="adjustDot(9, -1)"
+                onclick="adjustDot(9, -1)" aria-label="Remove a dot at 9 hours"
               >
                 -
               </button>
@@ -1969,7 +1985,7 @@
                 type="button"
                 class="calc-btn teal"
                 style="padding: 2px 8px; margin: 0; font-size: 12px"
-                onclick="adjustDot(10, 1)"
+                onclick="adjustDot(10, 1)" aria-label="Add a dot at 10 hours"
               >
                 +
               </button>
@@ -1982,7 +1998,7 @@
                   font-size: 12px;
                   border-color: var(--line);
                 "
-                onclick="adjustDot(10, -1)"
+                onclick="adjustDot(10, -1)" aria-label="Remove a dot at 10 hours"
               >
                 -
               </button>
@@ -2003,7 +2019,7 @@
                 type="button"
                 class="calc-btn teal"
                 style="padding: 2px 8px; margin: 0; font-size: 12px"
-                onclick="adjustDot(11, 1)"
+                onclick="adjustDot(11, 1)" aria-label="Add a dot at 11 hours"
               >
                 +
               </button>
@@ -2016,7 +2032,7 @@
                   font-size: 12px;
                   border-color: var(--line);
                 "
-                onclick="adjustDot(11, -1)"
+                onclick="adjustDot(11, -1)" aria-label="Remove a dot at 11 hours"
               >
                 -
               </button>
@@ -2037,7 +2053,7 @@
                 type="button"
                 class="calc-btn teal"
                 style="padding: 2px 8px; margin: 0; font-size: 12px"
-                onclick="adjustDot(12, 1)"
+                onclick="adjustDot(12, 1)" aria-label="Add a dot at 12 hours"
               >
                 +
               </button>
@@ -2050,7 +2066,7 @@
                   font-size: 12px;
                   border-color: var(--line);
                 "
-                onclick="adjustDot(12, -1)"
+                onclick="adjustDot(12, -1)" aria-label="Remove a dot at 12 hours"
               >
                 -
               </button>
@@ -2127,19 +2143,6 @@
                     <span class="es-text">Calcular en el Paso 1</span>
                   </td>
                 </tr>
-                <tr>
-                  <td>
-                    <strong>
-                      <span class="en-text">Daily Screen Time</span>
-                      <span class="es-text">Tiempo de pantalla diario</span>
-                    </strong>
-                  </td>
-                  <td>
-                    <span class="en-text">3.0 – 6.0 hours per day</span>
-                    <span class="es-text">3.0 – 6.0 horas por día</span>
-                  </td>
-                  <td style="color: var(--muted)">—</td>
-                </tr>
               </tbody>
             </table>
 
@@ -2212,12 +2215,12 @@
           <div class="card-header">
             <div class="card-icon teal">👥</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 4 — Classmate Comparison</span>
                 <span class="es-text"
                   >Paso 4 — Comparación con un compañero</span
                 >
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Compare class statistics and MAD values side-by-side with a
@@ -2359,10 +2362,10 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 5 — Finish &amp; Submit</span>
                 <span class="es-text">Paso 5 — Finalizar y entregar</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Write your pitch, check the list, get your score</span
@@ -2720,7 +2723,7 @@
               gap: 8px;
             "
           >
-            <button class="calc-btn" onclick="buildReport()">
+            <button class="calc-btn" onclick="buildReport(); playConfetti();">
               <span class="en-text">📝 Generate Summary</span>
               <span class="es-text">📝 Generar resumen</span>
             </button>
@@ -2767,7 +2770,10 @@
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <script src="/assets/app.js" defer></script>
     <script>
-      const PRESETS = { "det-vals": "12,15,18,14,16,20,15,17" };
+      // No auto-fill presets: the "Fill Sample Sleep Data" button (fillSample)
+      // is the Level-1 scaffold. Kept as an empty map so handleLevelPreset is a
+      // clean no-op (previously referenced a phantom "det-vals" input).
+      const PRESETS = {};
       function handleLevelPreset(n) {
         try {
           if (n === 1) {
@@ -2897,7 +2903,9 @@
       function setLevel(n) {
         window.speechSynthesis?.cancel();
         document.getElementById("btn-read").classList.remove("active");
-        document.getElementById("body").className = "level-" + n;
+        const body = document.getElementById("body");
+        body.classList.remove("level-1", "level-2");
+        body.classList.add("level-" + n);
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
 
@@ -3115,10 +3123,10 @@
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
           const label = isEs ? s.labelEs : s.labelEn;
-          return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" onclick="goStep(${s.id})">
+          return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" role="button" tabindex="0" aria-label="${label}" onclick="goStep(${s.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(${s.id});}">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? "✓" : s.id}</span>
             <span class="s-label">${label}</span>
-          </span>${!isLast ? '<span class="step-arrow">›</span>' : ""}`;
+          </span>${!isLast ? '<span class="step-arrow" aria-hidden="true">›</span>' : ""}`;
         }).join("");
       }
 
@@ -3416,7 +3424,7 @@
 
         const changeMean = `${newMean - originalMean >= 0 ? "+" : ""}${(newMean - originalMean).toFixed(2)}${isEs ? " h" : ""}`;
         const changeRange = `+${newRange - originalRange}${isEs ? " h" : ""}`;
-        const changeMad = `+${(newMad - originalMad).toFixed(2)}${isEs ? " h" : ""}`;
+        const changeMad = `${newMad - originalMad >= 0 ? "+" : ""}${(newMad - originalMad).toFixed(2)}${isEs ? " h" : ""}`;
 
         showReadout(
           "outlier-out",
@@ -3746,8 +3754,9 @@
       }
 
       // ---- Step 5: Report ----
+      // NOTE: confetti is fired only from the Generate Summary button click
+      // (see onclick="buildReport(); playConfetti();"), never on load/resume/toggle.
       function buildReport() {
-        playConfetti();
         const isEs = document.body.classList.contains("es");
         const data = getDataSet();
         const pName = document.getElementById("p-name").value || "—";
@@ -3934,41 +3943,16 @@
       }
 
       function prefillGradingConsole() {
-        const presets = { "det-vals": "12,15,18,14,16,20,15,17" };
-        for (const [id, val] of Object.entries(presets)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = val;
-            el.dispatchEvent(new Event("input", { bubbles: true }));
-            el.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        // Also prefill student calculation answers
-        if (document.getElementById("student-gcf-input")) {
-          document.getElementById("student-gcf-input").value =
-            document.getElementById("student-gcf-input").min || 1;
-          document
-            .getElementById("student-gcf-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        if (document.getElementById("student-lcm-input")) {
-          document.getElementById("student-lcm-input").value =
-            document.getElementById("student-lcm-input").min || 1;
-          document
-            .getElementById("student-lcm-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
-        }
+        // Fill the real student data inputs (val-1..val-10) with a sample set,
+        // then recompute the grading answers.
+        fillSample();
         updateGradingAnswers();
       }
 
       function updateGradingAnswers() {
         try {
           const resolver = function () {
-            const raw = document.getElementById("det-vals").value;
-            const vals = raw
-              .split(",")
-              .map((v) => parseFloat(v.trim()))
-              .filter((v) => !isNaN(v));
+            const vals = getDataSet();
             if (!vals.length) return { Error: "No values" };
             const sum = vals.reduce((a, b) => a + b, 0);
             const mean = sum / vals.length;
@@ -4010,9 +3994,11 @@
         }
       }
 
-      // Wire up key listener (Ctrl+Shift+T) and triple click on h1
+      // Teacher-only reveal: obscure, non-hijacking chord (Alt+Shift+G).
+      // (Ctrl+Shift+T is a browser "reopen closed tab" shortcut, so it is not
+      // used; the student-reachable triple-click on the title has been removed.)
       document.addEventListener("keydown", function (e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "t") {
+        if (e.altKey && e.shiftKey && e.key.toLowerCase() === "g") {
           e.preventDefault();
           toggleGradingConsole();
         }
@@ -4089,24 +4075,12 @@
       };
 
       document.addEventListener("DOMContentLoaded", function () {
-        const titleEl = document.querySelector(".hero h1");
-        if (titleEl) {
-          let clicks = 0;
-          titleEl.addEventListener("click", function () {
-            clicks++;
-            if (clicks >= 3) {
-              toggleGradingConsole();
-              clicks = 0;
-            }
-            setTimeout(() => {
-              clicks = 0;
-            }, 1000);
-          });
-        }
-        // Re-calculate answers when input event fires
+        // Teacher grading console is reached via the Alt+Shift+G chord only.
+        // (The former triple-click gesture on the title was student-reachable
+        // and has been removed to keep answers teacher-only.)
+        // Re-calculate answers when any data input (val-1..val-10) changes
         document.addEventListener("input", function (e) {
-          const inputs = ["det-vals"];
-          if (inputs.includes(e.target.id)) {
+          if (/^val-([1-9]|10)$/.test(e.target.id || "")) {
             updateGradingAnswers();
           }
         });
