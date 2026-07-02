@@ -423,3 +423,114 @@
 .mrpg-progress-dots i.boss {
   background: var(--xp);
 }
+
+/* =============================================================================
+ * v2 campaign UI — statbar actions, daily strip, tools, shop, codex, toasts
+ * ========================================================================== */
+
+.mrpg-statbar-actions { margin-left: auto; display: inline-flex; gap: 0.4rem; }
+.mrpg-chip-btn {
+  font: inherit; font-weight: 700; font-size: 0.85rem;
+  border: 1px solid var(--accent); color: var(--accent); background: #fff;
+  border-radius: 999px; padding: 0.3rem 0.75rem; cursor: pointer; min-height: 36px;
+}
+.mrpg-chip-btn:hover { background: rgba(15, 118, 110, 0.08); }
+.mrpg-chip-btn:focus-visible { outline: 3px solid #1d4ed8; outline-offset: 2px; }
+
+/* Daily quest strip */
+.mrpg-daily-strip {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 0.75rem; background: linear-gradient(120deg, rgba(109,40,217,0.10), rgba(15,118,110,0.08));
+  border: 1px solid var(--line, #d8dfdc); border-radius: 14px; padding: 0.8rem 1rem; margin-bottom: 1rem;
+}
+.mrpg-daily-strip strong { display: block; font-size: 1.05rem; }
+.mrpg-daily-sub { font-size: 0.88rem; color: var(--muted, #5b6773); }
+.mrpg-daily-right { display: flex; align-items: center; gap: 0.75rem; }
+.mrpg-streak { font-weight: 800; color: #c2410c; }
+
+/* Diagram container */
+.mrpg-diagram {
+  display: flex; justify-content: center; margin: 0.5rem 0 0.9rem;
+  background: #fff; border: 1px solid var(--line, #d8dfdc); border-radius: 12px; padding: 0.5rem;
+}
+.mrpg-svg { width: 100%; max-width: 300px; height: auto; }
+
+/* Battle toolbars (abilities + items) */
+.mrpg-toolbar { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.6rem 0; }
+.mrpg-tool {
+  font: inherit; font-weight: 700; font-size: 0.88rem; cursor: pointer;
+  border: 2px solid var(--xp); color: var(--xp); background: rgba(109,40,217,0.06);
+  border-radius: 10px; padding: 0.45rem 0.8rem; min-height: 40px;
+}
+.mrpg-tool.item { border-color: var(--gold, #b7791f); color: var(--gold, #b7791f); background: rgba(183,121,31,0.08); }
+.mrpg-tool[disabled] { opacity: 0.4; cursor: not-allowed; }
+.mrpg-tool:focus-visible { outline: 3px solid #1d4ed8; outline-offset: 2px; }
+.mrpg-choice.removed { opacity: 0.25; text-decoration: line-through; }
+
+/* Level-up / unlock callouts */
+.mrpg-unlock {
+  background: rgba(109,40,217,0.10); border: 1px dashed var(--xp); color: var(--xp);
+  font-weight: 700; border-radius: 10px; padding: 0.6rem 0.9rem; margin: 0.75rem auto; max-width: 460px;
+}
+
+/* Shop */
+.mrpg-shop { display: grid; gap: 0.75rem; margin: 1rem 0; }
+.mrpg-shop-item {
+  display: flex; align-items: center; gap: 1rem; background: #fff;
+  border: 1px solid var(--line, #d8dfdc); border-radius: 14px; padding: 0.85rem 1rem;
+}
+.mrpg-shop-emoji { font-size: 2rem; flex: 0 0 auto; }
+.mrpg-shop-body { flex: 1 1 auto; }
+.mrpg-shop-name { font-weight: 800; margin: 0; }
+.mrpg-shop-desc { margin: 0.15rem 0 0; color: var(--muted, #5b6773); font-size: 0.9rem; }
+
+/* Codex */
+.mrpg-codex-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+@media (max-width: 640px) { .mrpg-codex-grid { grid-template-columns: 1fr; } }
+.mrpg-panel {
+  background: #fff; border: 1px solid var(--line, #d8dfdc); border-radius: 14px; padding: 1rem 1.1rem; margin: 1rem 0;
+}
+.mrpg-panel h2 { margin: 0 0 0.5rem; font-size: 1.25rem; }
+.mrpg-panel h3 { margin: 0.9rem 0 0.4rem; font-size: 1rem; }
+.mrpg-muted { color: var(--muted, #5b6773); font-size: 0.9rem; }
+
+/* Mastery bars */
+.mrpg-mastery { display: grid; gap: 0.5rem; }
+.mrpg-mastery-row { display: grid; grid-template-columns: 90px 1fr auto auto; align-items: center; gap: 0.6rem; font-size: 0.9rem; }
+.mrpg-mastery-std { font-weight: 700; }
+.mrpg-mastery-bar { height: 12px; background: #e5e7eb; border-radius: 6px; overflow: hidden; }
+.mrpg-mastery-bar .fill { display: block; height: 100%; background: #94a3b8; }
+.mrpg-mastery-bar .fill.tier-master { background: #15803d; }
+.mrpg-mastery-bar .fill.tier-apprentice { background: #b7791f; }
+.mrpg-mastery-bar .fill.tier-novice { background: #c2410c; }
+.mrpg-mastery-tag { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em; }
+.mrpg-mastery-tag.tier-master { color: #15803d; }
+.mrpg-mastery-tag.tier-apprentice { color: #b7791f; }
+.mrpg-mastery-tag.tier-novice { color: #c2410c; }
+.mrpg-mastery-tag.tier-none { color: #94a3b8; }
+.mrpg-mastery-n { color: var(--muted, #5b6773); font-variant-numeric: tabular-nums; }
+
+/* Abilities list */
+.mrpg-abils { display: grid; gap: 0.5rem; }
+.mrpg-abil { display: flex; flex-direction: column; padding: 0.5rem 0.7rem; border-radius: 10px; background: #f1f5f9; opacity: 0.65; }
+.mrpg-abil.on { opacity: 1; background: rgba(109,40,217,0.08); }
+.mrpg-abil-desc { font-size: 0.82rem; color: var(--muted, #5b6773); }
+
+/* Inventory chips */
+.mrpg-inv { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.mrpg-inv-chip { background: rgba(183,121,31,0.1); color: var(--gold, #b7791f); font-weight: 700; font-size: 0.85rem; border-radius: 999px; padding: 0.25rem 0.7rem; }
+
+/* Achievements */
+.mrpg-achs { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.5rem; }
+.mrpg-ach { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.15rem; padding: 0.7rem 0.4rem; border-radius: 12px; background: #f1f5f9; opacity: 0.55; }
+.mrpg-ach.got { opacity: 1; background: rgba(22,163,74,0.10); border: 1px solid rgba(22,163,74,0.3); }
+.mrpg-ach-emoji { font-size: 1.6rem; }
+.mrpg-ach-name { font-weight: 800; font-size: 0.85rem; }
+.mrpg-ach-hint { font-size: 0.72rem; color: var(--muted, #5b6773); }
+
+/* Toasts */
+.mrpg-toasts { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 9999; display: grid; gap: 0.4rem; }
+.mrpg-toast { background: #0f172a; color: #fff; font-weight: 700; padding: 0.6rem 1rem; border-radius: 999px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+@media (prefers-reduced-motion: no-preference) {
+  .mrpg-toast { animation: mrpg-pop 0.3s ease; }
+}
