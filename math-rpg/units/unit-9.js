@@ -45,6 +45,16 @@
           "A serpent stretches across a rift between two points. Find the distance to leap across.",
         victory: "The rift closes as you measure the gap exactly.",
       },
+      {
+        id: "u9c4",
+        title: "The Mirror Lake",
+        enemy: { name: "Reflection Wisp", emoji: "🪞" },
+        standard: "6.NS.C.6",
+        topicLabel: "Opposites & reflections · 6.NS.C.6",
+        topics: ["opposite-integer", "reflect-coordinate"],
+        scene: "A still lake reflects every point across its surface. Find each opposite and reflection to cross.",
+        victory: "The lake stills, every reflection perfectly placed.",
+      },
     ],
     boss: {
       name: "The Gravity Storm",
@@ -52,7 +62,7 @@
       subtitle: "It bends the whole coordinate plane",
       scene:
         "The Gravity Storm warps integers and coordinates together. Chart every point and distance to calm the Cosmos.",
-      topics: ["integer-order", "absolute-value", "quadrant", "coordinate-distance"],
+      topics: ["integer-order", "absolute-value", "quadrant", "coordinate-distance", "opposite-integer", "reflect-coordinate"],
       victory: "The storm settles into a still, perfectly-plotted starfield.",
     },
     outro:

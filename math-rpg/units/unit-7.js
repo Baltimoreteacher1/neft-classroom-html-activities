@@ -45,6 +45,16 @@
           "An ogre patrols a wall marked with 'greater than' and 'less than'. Choose the right inequality to pass.",
         victory: "The ogre grunts approval and lowers the boundary.",
       },
+      {
+        id: "u7c4",
+        title: "The Solution Set",
+        enemy: { name: "Boundless Shade", emoji: "♾️" },
+        standard: "6.EE.B.8",
+        topicLabel: "Inequality solutions · 6.EE.B.8",
+        topics: ["inequality-solution", "inequality"],
+        scene: "A shade tests whether you truly know which numbers satisfy an inequality. Choose a real solution.",
+        victory: "The shade's boundary snaps into a clear solution set.",
+      },
     ],
     boss: {
       name: "The Grand Saboteur",
@@ -52,7 +62,7 @@
       subtitle: "The one who tipped the scales",
       scene:
         "The Saboteur throws equations and inequalities from every direction. Keep every scale balanced to save the Citadel.",
-      topics: ["one-step-equation", "write-equation", "inequality"],
+      topics: ["one-step-equation", "write-equation", "inequality", "inequality-solution"],
       victory: "Every scale locks level at once. The Citadel stands firm and fair.",
     },
     outro:

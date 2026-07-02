@@ -45,6 +45,16 @@
           "A blur of a merchant races between stalls quoting rates. Reduce each to a unit rate to keep up.",
         victory: "The runner skids to a stop, impressed. The stalls quiet down.",
       },
+      {
+        id: "u3c4",
+        title: "The Table Keeper",
+        enemy: { name: "Ledger Wraith", emoji: "📜" },
+        standard: "6.RP.A.3",
+        topicLabel: "Ratio tables · 6.RP.A.3",
+        topics: ["ratio-table", "equivalent-ratio"],
+        scene: "A wraith of endless ledgers demands you complete its ratio tables to pass.",
+        victory: "The ledgers balance perfectly. The wraith fades into neat columns.",
+      },
     ],
     boss: {
       name: "The Grand Swindler",
@@ -52,7 +62,7 @@
       subtitle: "Master of every crooked trade",
       scene:
         "The Grand Swindler runs the whole crooked bazaar, hiding behind ratios, tables, and better-buy tricks. Expose every fake price using all your ratio reasoning.",
-      topics: ["ratio-basic", "equivalent-ratio", "unit-rate", "compare-ratios"],
+      topics: ["ratio-basic", "equivalent-ratio", "unit-rate", "compare-ratios", "ratio-table"],
       victory: "The Swindler's mask falls. Honest ratios rule the Bazaar once more.",
     },
     outro:

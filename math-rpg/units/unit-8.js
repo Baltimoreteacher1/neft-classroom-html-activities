@@ -45,6 +45,16 @@
           "An eel measures how far every value strays from the mean. Match its spread with the MAD.",
         victory: "The shallows calm. You can measure both center and spread now.",
       },
+      {
+        id: "u8c4",
+        title: "The Dot Plot Depths",
+        enemy: { name: "Plotting Polyp", emoji: "🫧" },
+        standard: "6.SP.A.1 / 6.SP.B.4",
+        topicLabel: "Statistical questions & dot plots · 6.SP",
+        topics: ["statistical-question", "dotplot-read"],
+        scene: "A creature of scattered dots tests whether you can read a dot plot and spot a statistical question.",
+        victory: "The dots settle into a readable plot. The polyp drifts away.",
+      },
     ],
     boss: {
       name: "The Fog of Uncertainty",
@@ -52,7 +62,7 @@
       subtitle: "It hides every summary of the data",
       scene:
         "The Fog throws datasets at you, demanding center and spread on the spot. Summarize them all to clear the Delta.",
-      topics: ["mean", "median", "range", "mad"],
+      topics: ["mean", "median", "range", "mad", "dotplot-read", "statistical-question"],
       victory: "The fog lifts. Every channel of the Data Delta reads crystal clear.",
     },
     outro:

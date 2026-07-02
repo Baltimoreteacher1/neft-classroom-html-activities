@@ -45,6 +45,16 @@
           "A yeti guards the pass, roaring in mismatched units. Convert measurements and rates to calm it.",
         victory: "The yeti nods and lumbers off. The summit is close.",
       },
+      {
+        id: "u4c4",
+        title: "The Discount Market",
+        enemy: { name: "Bargain Gremlin", emoji: "🏷️" },
+        standard: "6.RP.A.3",
+        topicLabel: "Percent word problems · 6.RP.A.3",
+        topics: ["percent-word", "percent-of-number"],
+        scene: "A gremlin runs a market of tricky discounts and sales. Solve each percent situation to shop safely.",
+        victory: "The gremlin grumbles and hands over an honest receipt.",
+      },
     ],
     boss: {
       name: "The Summit Sphinx",
@@ -52,7 +62,7 @@
       subtitle: "Riddler of percents and rates",
       scene:
         "At the peak waits the Sphinx, who riddles in every form of percent and rate at once. Answer all to claim the summit.",
-      topics: ["fdp-conversion", "percent-of-number", "unit-rate", "measurement-convert"],
+      topics: ["fdp-conversion", "percent-of-number", "unit-rate", "measurement-convert", "percent-word"],
       victory: "The Sphinx purrs and vanishes. You stand atop Percent Peaks.",
     },
     outro:

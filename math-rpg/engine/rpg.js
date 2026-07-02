@@ -58,6 +58,36 @@
   }
   function today() { return dstr(Date.now()); }
   function yesterday() { return dstr(Date.now() - 86400000); }
+  // ISO-8601 week key, e.g. "2026-W27".
+  function weekKey(ms) {
+    var d = new Date(ms == null ? Date.now() : ms);
+    var date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    var dayNum = (date.getUTCDay() + 6) % 7;
+    date.setUTCDate(date.getUTCDate() - dayNum + 3);
+    var firstThursday = new Date(Date.UTC(date.getUTCFullYear(), 0, 4));
+    var week = 1 + Math.round(((date - firstThursday) / 86400000 - 3 + ((firstThursday.getUTCDay() + 6) % 7)) / 7);
+    return date.getUTCFullYear() + "-W" + (week < 10 ? "0" + week : week);
+  }
+
+  /* ---- text-to-speech (accessibility / ESOL) ---------------------------- */
+  function ttsAvailable() {
+    return !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
+  }
+  function speak(text) {
+    try {
+      if (window.NT_MUTED || !ttsAvailable()) return;
+      var synth = window.speechSynthesis;
+      synth.cancel();
+      var u = new SpeechSynthesisUtterance(String(text || "").slice(0, 400));
+      u.rate = 0.95;
+      synth.speak(u);
+    } catch (e) {}
+  }
+  function stopSpeech() { try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {} }
+  function readAloudBtn(text) {
+    if (!ttsAvailable()) return null;
+    return h("button", { class: "mrpg-tts", type: "button", "aria-label": "Read aloud", title: "Read aloud", onclick: function () { speak(text); } }, ["🔊 Read aloud"]);
+  }
 
   /* ---- engine state ------------------------------------------------------ */
   var UNIT = null; // active unit / realm config
@@ -179,6 +209,7 @@
 
   /* ---- rendering: shared chrome ----------------------------------------- */
   function stage(kids) {
+    stopSpeech();
     clear(MOUNT);
     var s = h("div", { class: "mrpg-stage" }, kids);
     MOUNT.appendChild(s);
@@ -211,6 +242,44 @@
   }
 
   /* ---- screen: intro ---------------------------------------------------- */
+  /* ---- screen: onboarding (name + avatar, once) ------------------------- */
+  var AVATARS = ["🧑‍🎓", "🧙", "🦸", "🧝", "🥷", "👩‍🚀", "🧛", "🧚", "🐉", "🦊", "🐱", "🤖"];
+  function showOnboarding() {
+    BATTLE = null;
+    var chosen = { avatar: AVATARS[0] };
+    var avatarBtns = AVATARS.map(function (av) {
+      var btn = h("button", {
+        class: "mrpg-avatar" + (av === chosen.avatar ? " on" : ""), type: "button",
+        "aria-label": "Choose avatar " + av, "aria-pressed": av === chosen.avatar ? "true" : "false",
+        onclick: function () {
+          chosen.avatar = av;
+          MOUNT.querySelectorAll(".mrpg-avatar").forEach(function (b) { b.classList.remove("on"); b.setAttribute("aria-pressed", "false"); });
+          btn.classList.add("on"); btn.setAttribute("aria-pressed", "true");
+        },
+      }, [av]);
+      return btn;
+    });
+    var nameInput = h("input", { class: "mrpg-name-input", type: "text", maxlength: "24", placeholder: "Your name or initials", "aria-label": "Hero name" });
+    function begin() {
+      var nm = (nameInput.value || "").trim() || "Hero";
+      PROFILE.setIdentity(nm, chosen.avatar);
+      render();
+    }
+    nameInput.addEventListener("keydown", function (e) { if (e.key === "Enter") begin(); });
+    stage([
+      h("p", { class: "mrpg-kicker", text: "Welcome, adventurer" }),
+      h("h1", { text: "Create your hero" }),
+      h("p", { text: "Your hero travels through every realm of the Number Realm, leveling up as you learn. Pick a name and a look." }),
+      h("label", { class: "mrpg-field-label", text: "Name" }),
+      nameInput,
+      h("p", { class: "mrpg-field-label", text: "Choose your avatar" }),
+      h("div", { class: "mrpg-avatars-pick" }, avatarBtns),
+      h("div", { class: "mrpg-actions" }, [h("button", { class: "mrpg-btn", onclick: begin }, ["Start my adventure ⚔️"])]),
+      backLink(),
+    ]);
+    try { nameInput.focus(); } catch (e) {}
+  }
+
   function showIntro() {
     BATTLE = null;
     stage([
@@ -266,6 +335,7 @@
       ]));
     }
     var dailyDone = PROFILE.dailyDone(today());
+    var weeklyDone = PROFILE.weeklyDone(weekKey());
     stage([
       statBar(),
       h("div", { class: "mrpg-daily-strip" }, [
@@ -276,6 +346,16 @@
         h("div", { class: "mrpg-daily-right" }, [
           h("span", { class: "mrpg-streak", text: "🔥 " + PROFILE.get().daily.streak + "-day streak" }),
           h("button", { class: "mrpg-btn small" + (dailyDone ? " ghost" : ""), type: "button", disabled: dailyDone ? true : false, onclick: dailyDone ? null : startDaily }, [dailyDone ? "Done today" : "Start Daily"]),
+        ]),
+      ]),
+      h("div", { class: "mrpg-daily-strip weekly" }, [
+        h("div", {}, [
+          h("strong", { text: weeklyDone ? "✅ Weekly Challenge complete" : "🏆 Weekly Challenge" }),
+          h("span", { class: "mrpg-daily-sub", text: weeklyDone ? "A new challenge unlocks next week." : "A tougher, longer gauntlet across many standards. Big rewards." }),
+        ]),
+        h("div", { class: "mrpg-daily-right" }, [
+          h("span", { class: "mrpg-streak", text: "🏆 " + PROFILE.get().weekly.count + " done" }),
+          h("button", { class: "mrpg-btn small" + (weeklyDone ? " ghost" : ""), type: "button", disabled: weeklyDone ? true : false, onclick: weeklyDone ? null : startWeekly }, [weeklyDone ? "Done this week" : "Start Weekly"]),
         ]),
       ]),
       h("p", { class: "mrpg-kicker", text: UNIT.title + " · " + UNIT.realm }),
@@ -335,27 +415,48 @@
       ]),
     ]);
   }
-  // Pick a spread of topics for the daily quest. Seeded by the date so every
-  // student on the same day faces the same skill mix (but fresh numbers).
-  function dailyTopics() {
+  function startWeekly() {
+    var node = {
+      id: "weekly", name: "Weekly Champion", emoji: "🏆",
+      topics: seededTopics(weekKey(), 10), hitsToWin: 8, victory: "", scene: "",
+    };
+    stage([
+      h("p", { class: "mrpg-kicker", text: "WEEKLY CHALLENGE · " + weekKey() }),
+      h("span", { class: "mrpg-hero-emoji", "aria-hidden": "true", text: "🏆" }),
+      h("h1", { text: "The Weekly Champion" }),
+      h("div", { class: "mrpg-scene", text: "A tougher, longer gauntlet spanning many standards at a higher difficulty. Defeat it once per week for a big reward." }),
+      h("div", { class: "mrpg-actions" }, [
+        h("button", { class: "mrpg-btn", onclick: function () { beginBattle(node, false, false, true); } }, ["Begin Weekly Challenge 🔥"]),
+        h("button", { class: "mrpg-btn ghost", onclick: showShop }, ["🛒 Shop first"]),
+        h("button", { class: "mrpg-btn ghost", onclick: showMap }, ["Later"]),
+      ]),
+    ]);
+  }
+  // Pick a spread of topics seeded by a key so everyone on the same day/week
+  // faces the same skill mix (but fresh numbers).
+  function seededTopics(key, count) {
     var all = P.topics();
-    var seed = 0, s = today();
-    for (var i = 0; i < s.length; i++) seed = (seed * 31 + s.charCodeAt(i)) >>> 0;
+    var seed = 0;
+    for (var i = 0; i < key.length; i++) seed = (seed * 31 + key.charCodeAt(i)) >>> 0;
     var picks = [];
-    for (var k = 0; k < 6; k++) { seed = (seed * 1103515245 + 12345) >>> 0; picks.push(all[seed % all.length]); }
+    for (var k = 0; k < count; k++) { seed = (seed * 1103515245 + 12345) >>> 0; picks.push(all[seed % all.length]); }
     return picks;
   }
+  function dailyTopics() { return seededTopics(today(), 6); }
 
-  function beginBattle(node, isBoss, isDaily) {
+  function beginBattle(node, isBoss, isDaily, isWeekly) {
     var pr = PROFILE.get();
     var topics = (node.topics && node.topics.length ? node.topics : ["gcf"]).filter(function (t) { return P.has(t); });
     if (!topics.length) topics = ["gcf"];
-    var hitsToWin = node.hitsToWin || (isBoss ? 8 : 5);
+    var hitsToWin = node.hitsToWin || (isBoss ? 8 : isWeekly ? 8 : 5);
     // Enemy scales gently with hero level so battles stay challenging for weeks.
     var levelScale = 1 + Math.min(0.6, (pr.level - 1) * 0.06);
     var enemyMax = 100;
+    // Problem difficulty tier rises with hero level; bosses/weekly bump it.
+    var tier = pr.level < 4 ? 1 : pr.level < 8 ? 2 : 3;
+    if (isBoss || isWeekly) tier = Math.min(3, tier + 1);
     BATTLE = {
-      node: node, isBoss: isBoss, isDaily: !!isDaily, topics: topics,
+      node: node, isBoss: isBoss, isDaily: !!isDaily, isWeekly: !!isWeekly, tier: tier, topics: topics,
       enemyMax: enemyMax, enemyHp: enemyMax,
       dmg: Math.ceil(enemyMax / hitsToWin),
       enemyDmg: Math.round(Math.ceil(pr.maxHp / (isBoss ? 6 : 5)) * levelScale),
@@ -373,7 +474,7 @@
   function nextProblem() {
     var t = BATTLE.topics[BATTLE.asked % BATTLE.topics.length];
     if (BATTLE.asked >= BATTLE.topics.length) t = BATTLE.topics[Math.floor(Math.random() * BATTLE.topics.length)];
-    BATTLE.problem = P.generate(t);
+    BATTLE.problem = P.generate(t, BATTLE.tier);
     BATTLE.answered = false;
     renderBattle();
   }
@@ -409,6 +510,8 @@
     ];
     if (diagramHtml) qKids.push(h("div", { class: "mrpg-diagram", html: diagramHtml }));
     qKids.push(h("p", { class: "mrpg-q-text", tabindex: "-1", text: p.prompt }));
+    var rab = readAloudBtn(p.prompt + ". Answer choices: " + p.choices.join("; "));
+    if (rab) qKids.push(rab);
     qKids.push(h("div", { class: "mrpg-choices" }, choiceBtns));
 
     var log = h("p", { class: "mrpg-log", "aria-live": "polite" }, [b.isBoss ? "The boss glares. Make your move." : "Choose the correct answer to attack!"]);
@@ -625,9 +728,9 @@
     var b = BATTLE;
     var acc = b.asked ? Math.round((b.correct / b.asked) * 100) : 100;
     var flawless = b.asked > 0 && b.correct === b.asked;
-    var baseXp = b.isBoss ? 130 : b.isDaily ? 90 : 60;
+    var baseXp = b.isBoss ? 130 : b.isWeekly ? 150 : b.isDaily ? 90 : 60;
     var xp = baseXp + Math.round(baseXp * (acc / 100)) + b.correct * 5;
-    var gold = (b.isBoss ? 55 : b.isDaily ? 40 : 22) + b.correct * 3;
+    var gold = (b.isBoss ? 55 : b.isWeekly ? 70 : b.isDaily ? 40 : 22) + b.correct * 3;
 
     // Daily streak bonus.
     var streakInfo = null;
@@ -638,6 +741,7 @@
       if (streakInfo.streak >= 3) grantAch("streak-3");
       if (streakInfo.streak >= 7) grantAch("streak-7");
     }
+    if (b.isWeekly) PROFILE.completeWeekly(weekKey());
 
     PROFILE.addGold(gold);
     var lvl = PROFILE.addXp(xp);
@@ -651,20 +755,20 @@
       if (UNIT.finale) grantAch("the-null");
       GAME.bossDone = true; GAME.done = true;
       PROFILE.bump("realmsCleared");
-    } else if (!b.isDaily) {
+    } else if (!b.isDaily && !b.isWeekly) {
       GAME.cleared[b.node.id] = true;
     }
-    if (!b.isDaily) saveGame();
+    if (!b.isDaily && !b.isWeekly) saveGame();
     checkThresholdAchievements();
 
-    var scene = b.isDaily ? "" : b.isBoss ? (UNIT.boss.victory || "") : (b.node.victory || "");
-    var wasBoss = b.isBoss, wasDaily = b.isDaily;
+    var scene = (b.isDaily || b.isWeekly) ? "" : b.isBoss ? (UNIT.boss.victory || "") : (b.node.victory || "");
+    var wasBoss = b.isBoss, wasDaily = b.isDaily, wasWeekly = b.isWeekly;
     BATTLE = null;
 
     stage([
       h("div", { class: "mrpg-result" }, [
-        h("span", { class: "big-emoji", "aria-hidden": "true", text: wasBoss ? "👑" : wasDaily ? "🗓️" : "🎉" }),
-        h("h1", { text: wasBoss ? (UNIT.finale ? "The saga is complete!" : "The realm is saved!") : wasDaily ? "Daily Quest complete!" : "Victory!" }),
+        h("span", { class: "big-emoji", "aria-hidden": "true", text: wasBoss ? "👑" : wasWeekly ? "🏆" : wasDaily ? "🗓️" : "🎉" }),
+        h("h1", { text: wasBoss ? (UNIT.finale ? "The saga is complete!" : "The realm is saved!") : wasWeekly ? "Weekly Challenge complete!" : wasDaily ? "Daily Quest complete!" : "Victory!" }),
         scene ? h("div", { class: "mrpg-scene", text: scene }) : null,
         h("p", { text: "Accuracy: " + acc + "%" + (b.hintsUsed ? "  ·  Hints used: " + b.hintsUsed : "") + (flawless ? "  ·  Flawless! 💎" : "") }),
         streakInfo ? h("p", { class: "mrpg-streak", text: "🔥 " + streakInfo.streak + "-day streak (best: " + streakInfo.longest + ")" }) : null,
@@ -686,7 +790,7 @@
 
   function loseBattle() {
     var b = BATTLE;
-    var node = b.node, isBoss = b.isBoss, isDaily = b.isDaily;
+    var node = b.node, isBoss = b.isBoss, isDaily = b.isDaily, isWeekly = b.isWeekly;
     BATTLE = null;
     stage([
       h("div", { class: "mrpg-result" }, [
@@ -694,7 +798,7 @@
         h("h1", { text: "You were knocked out!" }),
         h("p", { text: "Every hero regroups. Buy a potion in the shop, use the Sage's hints, and try again. Your other progress is safe." }),
         h("div", { class: "mrpg-actions", style: "justify-content:center" }, [
-          h("button", { class: "mrpg-btn", onclick: function () { isDaily ? startDaily() : isBoss ? startBoss() : startChapter(node); } }, ["Try again 🔁"]),
+          h("button", { class: "mrpg-btn", onclick: function () { isWeekly ? startWeekly() : isDaily ? startDaily() : isBoss ? startBoss() : startChapter(node); } }, ["Try again 🔁"]),
           h("button", { class: "mrpg-btn ghost", onclick: showShop }, ["🛒 Shop"]),
           h("button", { class: "mrpg-btn ghost", onclick: showMap }, ["World map"]),
         ]),
@@ -852,6 +956,7 @@
   /* ---- boot ------------------------------------------------------------- */
   function render() {
     if (!UNIT || !MOUNT) return;
+    if (PROFILE && !PROFILE.get().name) return showOnboarding();
     if (UNIT.finale && realmsClearedCount() < 10 && !GAME.done) return showFinaleLocked();
     if (GAME.done && GAME.bossDone) return showComplete();
     if (!GAME.seenIntro) return showIntro();

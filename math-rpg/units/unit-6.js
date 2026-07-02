@@ -45,6 +45,16 @@
           "A beast hides behind parentheses. Distribute to expose it, then combine like terms to bind it.",
         victory: "The brackets snap open and the beast simplifies away.",
       },
+      {
+        id: "u6c4",
+        title: "The Order Obelisk",
+        enemy: { name: "Sequence Specter", emoji: "🗿" },
+        standard: "6.EE.A.2 / 6.EE.C.9",
+        topicLabel: "Order of operations & variables · 6.EE",
+        topics: ["order-of-operations", "dependent-variable"],
+        scene: "An ancient obelisk carved with expressions demands you evaluate them in the correct order.",
+        victory: "The carvings glow in sequence. The specter dissolves.",
+      },
     ],
     boss: {
       name: "The Equivalence Sphinx",
@@ -52,7 +62,7 @@
       subtitle: "Keeper of equivalent expressions",
       scene:
         "The Sphinx tests whether you truly understand expressions — writing, evaluating, distributing, and simplifying, all at once. Prove your mastery.",
-      topics: ["exponents", "evaluate-expression", "write-expression", "distributive", "combine-like-terms"],
+      topics: ["exponents", "evaluate-expression", "write-expression", "distributive", "combine-like-terms", "order-of-operations", "dependent-variable"],
       victory: "The Sphinx nods: your expressions are elegant and equivalent. The Vale clears.",
     },
     outro:

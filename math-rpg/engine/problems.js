@@ -65,6 +65,11 @@
     return s;
   }
 
+  // Difficulty tier selector: returns the tier-1/2/3 value (default tier 1).
+  function byTier(tier, t1, t2, t3) {
+    return tier >= 3 ? t3 : tier >= 2 ? t2 : t1;
+  }
+
   /* Build a problem from a correct value + a list of wrong values. Dedupes,
    * pads with safe filler if two distractors collided, shuffles, and reports
    * the answer index. `fmt` maps a raw value to its display string. */
@@ -122,12 +127,13 @@
   /* ======================================================================
    * UNIT 1 — Number Sense
    * ==================================================================== */
-  function gcf() {
-    var g = ri(2, 9);
-    var a = g * ri(2, 9);
-    var b = g * ri(2, 9);
+  function gcf(tier) {
+    var hi = byTier(tier, 9, 12, 15);
+    var g = ri(2, hi);
+    var a = g * ri(2, hi);
+    var b = g * ri(2, hi);
     while (gcd(a, b) !== g || a === b) {
-      b = g * ri(2, 9);
+      b = g * ri(2, hi);
     }
     var real = gcd(a, b);
     return build(
@@ -397,9 +403,9 @@
   /* ======================================================================
    * UNIT 4 — Rates, Percents, Unit Rates
    * ==================================================================== */
-  function percentOfNumber() {
-    var p = pick([10, 20, 25, 40, 50, 60, 75, 80]);
-    var whole = pick([20, 40, 60, 80, 120, 200, 240]);
+  function percentOfNumber(tier) {
+    var p = pick(byTier(tier, [10, 20, 25, 50], [10, 20, 25, 40, 50, 60, 75, 80], [5, 15, 25, 35, 45, 60, 75, 90]));
+    var whole = pick(byTier(tier, [20, 40, 60, 80, 100], [20, 40, 60, 80, 120, 200, 240], [80, 120, 160, 200, 240, 300, 400]));
     var real = (p / 100) * whole;
     return build(
       real,
@@ -529,9 +535,9 @@
   /* ======================================================================
    * UNIT 6 — Expressions
    * ==================================================================== */
-  function exponents() {
-    var base = ri(2, 6),
-      exp = ri(2, 3);
+  function exponents(tier) {
+    var base = ri(2, byTier(tier, 6, 8, 10)),
+      exp = ri(2, byTier(tier, 3, 3, 4));
     var real = Math.pow(base, exp);
     return build(real, [base * exp, base + exp, Math.pow(base, exp) + base], {
       prompt: "Evaluate the power: " + base + "^" + exp,
@@ -541,10 +547,10 @@
     });
   }
 
-  function evaluateExpression() {
-    var x = ri(2, 8);
-    var a = ri(2, 6),
-      b = ri(1, 9);
+  function evaluateExpression(tier) {
+    var x = ri(2, byTier(tier, 8, 12, 20));
+    var a = ri(2, byTier(tier, 6, 9, 12)),
+      b = ri(1, byTier(tier, 9, 15, 25));
     var real = a * x + b;
     return build(real, [a * (x + b), a + x + b, a * x - b], {
       prompt: "Evaluate " + a + "x + " + b + " when x = " + x + ".",
@@ -884,6 +890,139 @@
     return p;
   }
 
+  /* ======================================================================
+   * EXPANSION PACK — additional standards coverage
+   * ==================================================================== */
+  function ratioTable() {
+    var a = ri(2, 6), b = ri(2, 8), k = ri(2, 6);
+    var inV = a * k, outV = b * k;
+    return build(outV, [inV + b, b * k + a, inV], {
+      prompt: "A ratio table keeps the ratio " + a + " : " + b + ". If the first column shows " + inV + ", what is the second column?",
+      explain: "Find the multiplier (" + inV + " ÷ " + a + " = " + k + "), then multiply " + b + " by it.",
+      standard: "6.RP.A.3",
+      topic: "Ratio Tables",
+    });
+  }
+
+  function percentWord() {
+    var p = pick([10, 20, 25, 50]);
+    var whole = pick([20, 40, 60, 80, 120, 200]);
+    var part = (p / 100) * whole;
+    var scen = pick([
+      ["A store has " + whole + " shirts. " + p + "% are on sale. How many shirts are on sale?", part],
+      ["There are " + whole + " students. " + p + "% ride the bus. How many students ride the bus?", part],
+      ["A book has " + whole + " pages. You have read " + p + "%. How many pages have you read?", part],
+    ]);
+    return build(scen[1], [round(scen[1] * 2, 2), whole - scen[1], round(whole / p, 2)], {
+      prompt: scen[0],
+      explain: p + "% = " + p / 100 + "; multiply by " + whole + ".",
+      standard: "6.RP.A.3",
+      topic: "Percent Problems",
+      fmt: num,
+    });
+  }
+
+  function orderOfOperations() {
+    var a = ri(2, 9), b = ri(2, 5), c = ri(2, 4);
+    var real = a + b * (c * c);
+    return build(real, [(a + b) * c * c, a + b * c * 2, a * b + c * c], {
+      prompt: "Evaluate using order of operations:  " + a + " + " + b + " × " + c + "²",
+      explain: "Exponent first (" + c + "² = " + c * c + "), then multiply by " + b + ", then add " + a + ".",
+      standard: "6.EE.A.2",
+      topic: "Order of Operations",
+    });
+  }
+
+  function inequalitySolution() {
+    var bound = ri(4, 12);
+    var correct = bound + ri(1, 5);
+    return build(correct, [bound, bound - 1, bound - 2], {
+      prompt: "Which value is a solution to  x > " + bound + " ?",
+      explain: "A solution must be a number greater than " + bound + ".",
+      standard: "6.EE.B.8",
+      topic: "Inequality Solutions",
+    });
+  }
+
+  function dependentVariable() {
+    var m = ri(2, 6), x = ri(2, 9);
+    var real = m * x;
+    return build(real, [m + x, m * (x + 1), real + m], {
+      prompt: "In the equation y = " + m + "x, what is y when x = " + x + "?",
+      explain: "Substitute x = " + x + ": y = " + m + " × " + x + ". (x is independent, y depends on it.)",
+      standard: "6.EE.C.9",
+      topic: "Dependent & Independent Variables",
+    });
+  }
+
+  function oppositeInteger() {
+    var v = pick([-1, 1]) * ri(2, 12);
+    var real = -v;
+    var p = build(real, [v, 0, Math.abs(v) + 1], {
+      prompt: "What is the opposite of " + v + "?",
+      explain: "The opposite of a number is the same distance from 0, on the other side.",
+      standard: "6.NS.C.6",
+      topic: "Opposites",
+    });
+    p.diagram = { kind: "numberline", min: -13, max: 13, marks: [{ v: v, label: String(v) }, { v: real, label: String(real) }] };
+    return p;
+  }
+
+  function reflectCoordinate() {
+    var x = pick([-1, 1]) * ri(1, 7), y = pick([-1, 1]) * ri(1, 7);
+    var axis = pick(["x", "y"]);
+    var rx = axis === "x" ? x : -x;
+    var ry = axis === "x" ? -y : y;
+    var fmtPt = function (px, py) { return "(" + px + ", " + py + ")"; };
+    var p = build(fmtPt(rx, ry), [fmtPt(-x, -y), fmtPt(x, y), fmtPt(ry, rx)], {
+      prompt: "Reflect the point (" + x + ", " + y + ") across the " + axis + "-axis. What are the new coordinates?",
+      explain: "Reflecting across the " + axis + "-axis flips the sign of the " + (axis === "x" ? "y" : "x") + "-coordinate.",
+      standard: "6.NS.C.6",
+      topic: "Reflecting Points",
+      fmt: String,
+    });
+    p.diagram = { kind: "coordinate", points: [{ x: x, y: y, label: "start" }, { x: rx, y: ry, label: "image" }] };
+    return p;
+  }
+
+  function statisticalQuestion() {
+    var stat = pick([
+      "How tall are the students in my class?",
+      "How many minutes do sixth graders sleep each night?",
+      "What are the ages of the people at the park?",
+      "How many pets do students in this school have?",
+    ]);
+    var nonstat = shuffle([
+      "How old am I?",
+      "How many days are in June?",
+      "What is my height?",
+      "How many students are in this room right now?",
+      "What time does school start?",
+    ]).slice(0, 3);
+    return build(stat, nonstat, {
+      prompt: "Which of these is a statistical question (one that expects a variety of answers)?",
+      explain: "A statistical question anticipates many different answers, not one fixed fact.",
+      standard: "6.SP.A.1",
+      topic: "Statistical Questions",
+      fmt: String,
+    });
+  }
+
+  function dotplotRead() {
+    var n = ri(8, 12), data = [];
+    for (var i = 0; i < n; i++) data.push(ri(3, 8));
+    var target = pick(data);
+    var count = data.filter(function (v) { return v === target; }).length;
+    var p = build(count, [count + 1, Math.max(0, count - 1), n], {
+      prompt: "In the dot plot below, how many data points have the value " + target + "?",
+      explain: "Count the dots stacked above " + target + ".",
+      standard: "6.SP.B.4",
+      topic: "Read a Dot Plot",
+    });
+    p.diagram = { kind: "dotplot", values: data };
+    return p;
+  }
+
   /* ---- registry ---------------------------------------------------------- */
   var REGISTRY = {
     // Unit 1
@@ -935,18 +1074,30 @@
     "volume-fractional": volumeFractional,
     "surface-area": surfaceArea,
     "surface-area-net": surfaceAreaNet,
+    // Expansion pack
+    "ratio-table": ratioTable,
+    "percent-word": percentWord,
+    "order-of-operations": orderOfOperations,
+    "inequality-solution": inequalitySolution,
+    "dependent-variable": dependentVariable,
+    "opposite-integer": oppositeInteger,
+    "reflect-coordinate": reflectCoordinate,
+    "statistical-question": statisticalQuestion,
+    "dotplot-read": dotplotRead,
   };
 
   /* Generate a problem for a topic slug. Falls back to a safe default and
    * always returns a well-formed problem with a valid answer index. */
-  function generate(topic) {
+  function generate(topic, tier) {
+    tier = tier === 2 || tier === 3 ? tier : 1;
     var gen = REGISTRY[topic] || gcf;
     var p;
     try {
-      p = gen();
+      p = gen(tier);
     } catch (e) {
-      p = gcf();
+      p = gcf(1);
     }
+    p.tier = tier;
     // compare-ratios sets a placeholder answer; resolve it here.
     if (p.__fixAnswer != null) {
       p.answer = p.choices.indexOf(p.__fixAnswer);

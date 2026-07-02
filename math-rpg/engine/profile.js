@@ -53,6 +53,10 @@
         completed: {}, // dateStr -> true  (daily quest finished that day)
         daysPlayed: 0, // distinct calendar days visited
       },
+      weekly: {
+        completed: {}, // weekKey (e.g. "2026-W27") -> true
+        count: 0, // total weekly challenges completed
+      },
       stats: {
         problemsSolved: 0,
         battlesWon: 0,
@@ -86,6 +90,10 @@
     if (!g.daily || typeof g.daily !== "object") g.daily = base.daily;
     Object.keys(base.daily).forEach(function (k) {
       if (g.daily[k] == null) g.daily[k] = base.daily[k];
+    });
+    if (!g.weekly || typeof g.weekly !== "object") g.weekly = base.weekly;
+    Object.keys(base.weekly).forEach(function (k) {
+      if (g.weekly[k] == null) g.weekly[k] = base.weekly[k];
     });
     g.v = VERSION;
     DATA = g;
@@ -281,6 +289,28 @@
     return { streak: d.streak, longest: d.longest, alreadyDone: false };
   }
 
+  function weeklyDone(weekKey) {
+    load();
+    return !!DATA.weekly.completed[weekKey];
+  }
+  function completeWeekly(weekKey) {
+    load();
+    if (DATA.weekly.completed[weekKey]) return { alreadyDone: true, count: DATA.weekly.count };
+    DATA.weekly.completed[weekKey] = true;
+    DATA.weekly.count++;
+    var keys = Object.keys(DATA.weekly.completed).sort();
+    if (keys.length > 30) keys.slice(0, keys.length - 30).forEach(function (k) { delete DATA.weekly.completed[k]; });
+    save();
+    return { alreadyDone: false, count: DATA.weekly.count };
+  }
+
+  function setIdentity(name, avatar) {
+    load();
+    if (typeof name === "string") DATA.name = name.slice(0, 24);
+    if (typeof avatar === "string") DATA.avatar = avatar.slice(0, 8);
+    save();
+  }
+
   function get() {
     return load();
   }
@@ -312,6 +342,9 @@
     touchDay: touchDay,
     dailyDone: dailyDone,
     completeDaily: completeDaily,
+    weeklyDone: weeklyDone,
+    completeWeekly: completeWeekly,
+    setIdentity: setIdentity,
     reset: reset,
     xpForLevel: xpForLevel,
     maxHpForLevel: maxHpForLevel,
