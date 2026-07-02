@@ -871,12 +871,31 @@
     });
   }
   // Routine schedule: days = weekday short names it runs on; empty = every day.
+  const ROUTINE_SLOTS = ["morning", "afterSchool", "nighttime"];
+  // Best-effort guess from the routine's name, used only the first time a
+  // routine is normalized (no slot key yet) so renamed/custom routines still
+  // land in the right Right-Now time window without the user having to set
+  // anything. Once set, the slot is explicit and this never runs again.
+  function inferRoutineSlot(name) {
+    const n = String(name || "").toLowerCase();
+    if (/night|bed|evening|shutdown/.test(n)) return "nighttime";
+    if (/after.?school|afternoon/.test(n)) return "afterSchool";
+    if (/morning|launch/.test(n)) return "morning";
+    return "";
+  }
   function normalizeRoutine(r) {
     r = r || {};
+    const name = String(r.name || "Routine").slice(0, 60);
     return {
       id: r.id || uid("r"),
-      name: String(r.name || "Routine").slice(0, 60),
+      name,
       emoji: String(r.emoji || "🔁").slice(0, 8),
+      slot:
+        r.slot === undefined
+          ? inferRoutineSlot(name)
+          : ROUTINE_SLOTS.includes(r.slot)
+            ? r.slot
+            : "",
       days: Array.isArray(r.days) ? r.days.filter((d) => DAYS.includes(d)) : [],
       items: Array.isArray(r.items)
         ? r.items.map((it) => ({
@@ -5507,6 +5526,7 @@ Due May 31"></textarea>
   const inTimeWindow = (mins, start, end) => mins >= start && mins <= end;
   const ROUTINE_WINDOWS = [
     {
+      key: "morning",
       label: "Morning",
       start: 6 * 60,
       end: 8 * 60,
@@ -5514,6 +5534,7 @@ Due May 31"></textarea>
       weekend: ["Weekend Launch", "Morning Launch", "Morning Launchpad"],
     },
     {
+      key: "afterSchool",
       label: "After School",
       start: 15 * 60 + 30,
       end: 18 * 60,
@@ -5521,6 +5542,7 @@ Due May 31"></textarea>
       weekend: ["Weekend Reset", "After-School Reset", "After School Reset"],
     },
     {
+      key: "nighttime",
       label: "Nighttime",
       start: 19 * 60,
       end: 23 * 60 + 30,
@@ -5528,16 +5550,25 @@ Due May 31"></textarea>
       weekend: ["Nighttime Shutdown", "Shutdown"],
     },
   ];
-  function routineByName(names, when = new Date()) {
+  function scheduledRoutinePool(when = new Date()) {
     const scheduled = state.routines.filter((r) => routineOccursOn(r, when));
-    const pool = scheduled.length ? scheduled : state.routines;
+    return scheduled.length ? scheduled : state.routines;
+  }
+  function routineByName(names, when = new Date()) {
+    const pool = scheduledRoutinePool(when);
     for (const name of names) {
       const found = pool.find((r) => r.name === name);
       if (found) return found;
     }
     return null;
   }
+  // A routine's explicit `slot` (set by the user, or inferred once from its
+  // name on first normalize — see normalizeRoutine) always wins. The
+  // hardcoded name list is a legacy fallback for routines with no slot at all.
   function routineForWindow(win, when) {
+    const pool = scheduledRoutinePool(when);
+    const bySlot = pool.find((r) => r.slot === win.key);
+    if (bySlot) return bySlot;
     const isWeekend = when.getDay() === 0 || when.getDay() === 6;
     return routineByName(isWeekend ? win.weekend : win.weekday, when);
   }
@@ -6286,6 +6317,15 @@ Due May 31"></textarea>
         <div class="field"><label>Routine name</label><input id="rName" value="${esc(r.name || "")}" placeholder="Morning Launch"></div>
         <div class="field"><label>Emoji</label><input id="rEmoji" value="${esc(r.emoji || "🔁")}" maxlength="4"></div>
       </div>
+      <div class="field"><label>Time of day</label>
+        <select id="rSlot">
+          <option value="" ${!r.slot ? "selected" : ""}>No specific time</option>
+          <option value="morning" ${r.slot === "morning" ? "selected" : ""}>🌅 Morning (6:00–8:00 AM)</option>
+          <option value="afterSchool" ${r.slot === "afterSchool" ? "selected" : ""}>🎒 After School (3:30–6:00 PM)</option>
+          <option value="nighttime" ${r.slot === "nighttime" ? "selected" : ""}>🌙 Nighttime (7:00–11:30 PM)</option>
+        </select>
+        <small class="muted">Controls when this shows automatically on the Now screen.</small>
+      </div>
       <div class="field"><label>Repeat on</label>
         <div class="day-toggle" id="rDays">${DAYS.map((d) => `<button type="button" class="btn sm day-btn ${(r.days || []).includes(d) ? "on" : ""}" data-act="toggle-routine-day" data-arg="${d}" aria-pressed="${(r.days || []).includes(d)}">${d[0]}</button>`).join("")}</div>
         <small class="muted">No days picked = every day.</small>
@@ -6306,6 +6346,7 @@ Due May 31"></textarea>
     "after-school": {
       name: "After School Reset",
       emoji: "🎒",
+      slot: "afterSchool",
       steps: [
         "Unpack my backpack",
         "Put any trash/recycling in the bin",
@@ -6317,6 +6358,7 @@ Due May 31"></textarea>
     morning: {
       name: "Morning Launchpad",
       emoji: "🧠",
+      slot: "morning",
       steps: [
         "Eat breakfast",
         "Double-check Chromebook is in my bag",
@@ -6328,6 +6370,7 @@ Due May 31"></textarea>
     "study-prep": {
       name: "Study Space Prep",
       emoji: "📝",
+      slot: "",
       steps: [
         "Clear my desk of clutter",
         "Close all browser tabs (except schoolwork)",
@@ -6339,6 +6382,7 @@ Due May 31"></textarea>
     evening: {
       name: "Bedtime Prep",
       emoji: "🌙",
+      slot: "nighttime",
       steps: [
         "Put completed homework in my binder/backpack",
         "Plug in Chromebook so it charges overnight",
@@ -8959,6 +9003,7 @@ Due May 31"></textarea>
       if (!t) return;
       $("#rName").value = t.name;
       $("#rEmoji").value = t.emoji;
+      $("#rSlot").value = t.slot || "";
       const ul = $("#rSteps");
       ul.innerHTML = t.steps
         .map((text) => {
@@ -8989,6 +9034,8 @@ Due May 31"></textarea>
       const r = existing || { id: uid("r"), items: [], days: [] };
       r.name = $("#rName").value.trim() || "Routine";
       r.emoji = $("#rEmoji").value.trim() || "🔁";
+      const slotVal = $("#rSlot").value;
+      r.slot = ROUTINE_SLOTS.includes(slotVal) ? slotVal : "";
       r.days = days;
       r.items = items.length ? items : r.items;
       r.updatedAt = Date.now();
