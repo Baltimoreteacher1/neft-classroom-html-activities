@@ -917,9 +917,12 @@
   }
 
   /* ---------- public API ---------- */
-  function build(map, fields) {
+  function build(map, fields, reshuffleNonce) {
     const seed =
-      (fields.topic || map.title || "ready") + "|" + (fields.date || "");
+      (fields.topic || map.title || "ready") +
+      "|" +
+      (fields.date || "") +
+      (reshuffleNonce ? "|" + reshuffleNonce : "");
     const r = rng(seed);
     const domain = detectDomain(map, fields);
     let content;

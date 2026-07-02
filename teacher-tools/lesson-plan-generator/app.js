@@ -38,6 +38,7 @@
     outputCard: $("outputCard"),
     lessonOutput: $("lessonOutput"),
     printBtn: $("printBtn"),
+    reshuffleBtn: $("reshuffleBtn"),
     downloadDocxBtn: $("downloadDocxBtn"),
     downloadDocBtn: $("downloadDocBtn"),
     downloadMdBtn: $("downloadMdBtn"),
@@ -57,6 +58,7 @@
 
   let uploadedExtract = null; // { text, name, kind }
   let lastPlan = null;
+  let reshuffleNonce = 0; // bumped by "Reshuffle numbers" to vary the seeded problem numbers
 
   /* ===================== THEME ===================== */
   function initTheme() {
@@ -100,7 +102,7 @@
   async function extractPptx(arrayBuffer) {
     if (typeof JSZip === "undefined") {
       throw new Error(
-        "Slide reader library (jszip) failed to load. Copy the slide text and paste it into the text box instead."
+        "Slide reader library (jszip) failed to load. Copy the slide text and paste it into the text box instead.",
       );
     }
     const zip = await JSZip.loadAsync(arrayBuffer);
@@ -153,14 +155,16 @@
   async function extractPdf(arrayBuffer) {
     let pdfjs;
     try {
-      pdfjs = await import("/teacher-tools/lesson-plan-generator/vendor/pdf.min.mjs");
+      pdfjs =
+        await import("/teacher-tools/lesson-plan-generator/vendor/pdf.min.mjs");
     } catch (e) {
       throw new Error(
         "PDF reader (pdf.js) could not load. Copy the PDF text and paste it into the box instead.",
       );
     }
     try {
-      pdfjs.GlobalWorkerOptions.workerSrc = "/teacher-tools/lesson-plan-generator/vendor/pdf.worker.min.mjs";
+      pdfjs.GlobalWorkerOptions.workerSrc =
+        "/teacher-tools/lesson-plan-generator/vendor/pdf.worker.min.mjs";
     } catch (_) {
       /* ignore */
     }
@@ -221,6 +225,8 @@
     }
   }
 
+  const MAX_UPLOAD_BYTES = 25 * 1024 * 1024; // 25 MB — larger files stall in-browser parsing
+
   async function handleFile(file) {
     const name = file.name || "file";
     const lower = name.toLowerCase();
@@ -228,6 +234,11 @@
     els.fileStatus.textContent = `Reading "${name}"…`;
     setFileReading(true);
     try {
+      if (file.size > MAX_UPLOAD_BYTES) {
+        throw new Error(
+          `This file is ${(file.size / (1024 * 1024)).toFixed(1)} MB, which is too large to read in the browser (limit ${MAX_UPLOAD_BYTES / (1024 * 1024)} MB). Copy the text and paste it into the box instead, or export a smaller/text-only version of the file.`,
+        );
+      }
       let text = "";
       let kind = "";
       if (lower.endsWith(".pptx")) {
@@ -763,8 +774,7 @@
             ["Guided practice", cf.guided],
             ["Independent practice", cf.independent],
           ],
-        ) +
-          noteList("Teacher decision points", cf.decisionPoints),
+        ) + noteList("Teacher decision points", cf.decisionPoints),
       ),
     );
 
@@ -891,7 +901,7 @@
     await tick();
     let plan;
     try {
-      const content = window.LPGContent.build(map, fields);
+      const content = window.LPGContent.build(map, fields, reshuffleNonce);
       plan = window.LPGModel.build(map, fields, content);
     } catch (e) {
       setStage("build", "fail");
@@ -1043,6 +1053,7 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       els.fStandards.value = "6.RP.A.2 — unit rate";
       els.fWida.value = "Level 2 (Emerging)";
       uploadedExtract = null;
+      reshuffleNonce = 0;
       els.fileStatus.className = "file-status";
       els.fileStatus.textContent = "";
     });
@@ -1053,12 +1064,19 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
         (e) => (e.value = ""),
       );
       uploadedExtract = null;
+      reshuffleNonce = 0;
       els.fileInput.value = "";
       els.fileStatus.className = "file-status";
       els.fileStatus.textContent = "";
       els.statusCard.hidden = true;
       els.outputCard.hidden = true;
       els.downloadDocxBtn.disabled = true;
+    });
+
+    els.reshuffleBtn.addEventListener("click", () => {
+      if (!lastPlan) return;
+      reshuffleNonce++;
+      generate();
     });
 
     els.fileInput.addEventListener("change", (e) => {
@@ -1156,14 +1174,18 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
     out.push(`<div class="student-handout-preview">`);
     out.push(`<h1>Student Version — ${esc(h.title)}</h1>`);
     out.push(
-      `<div class="student-meta">Name: _______________________ &nbsp;&nbsp;&nbsp;&nbsp; Date: ${esc(h.date || "____________")}</div>`
+      `<div class="student-meta">Name: _______________________ &nbsp;&nbsp;&nbsp;&nbsp; Date: ${esc(h.date || "____________")}</div>`,
     );
     out.push(`<p><strong>Objective:</strong> ${esc(h.iCan)}</p>`);
-    out.push(`<p><strong>Essential Question:</strong> ${esc(h.essentialQuestion)}</p>`);
+    out.push(
+      `<p><strong>Essential Question:</strong> ${esc(h.essentialQuestion)}</p>`,
+    );
 
     // Do Now
     out.push(`<h2>Do Now</h2>`);
-    out.push(`<p class="student-instructions">${esc(plan.doNow.directions)}</p>`);
+    out.push(
+      `<p class="student-instructions">${esc(plan.doNow.directions)}</p>`,
+    );
     plan.doNow.items.forEach((it, i) => {
       out.push(`<p>${i + 1}. (${esc(it.level)}) ${esc(it.q)}</p>`);
       out.push(`<div class="student-response-lines"></div>`);
@@ -1174,7 +1196,9 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
     out.push(`<ul class="student-bullet-list">`);
     plan.mini.studentNotes.forEach((n) => out.push(`<li>${esc(n)}</li>`));
     out.push(`</ul>`);
-    out.push(`<p><strong>Worked Example:</strong> ${esc(plan.mini.worked.problem)}</p>`);
+    out.push(
+      `<p><strong>Worked Example:</strong> ${esc(plan.mini.worked.problem)}</p>`,
+    );
     out.push(`<div class="student-response-box"></div>`);
 
     // Guided Practice
@@ -1186,13 +1210,15 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
     out.push(
       `<p><strong>Sentence starters:</strong></p><ul class="student-bullet-list">` +
         plan.guided.sentenceStarters.map((s) => `<li>${esc(s)}</li>`).join("") +
-        `</ul>`
+        `</ul>`,
     );
 
     // Partner Activity
     out.push(`<h2>Partner Activity</h2>`);
     out.push(`<p>${esc(plan.collaborative.studentDirections)}</p>`);
-    out.push(`<p><strong>Write together:</strong> ${esc(plan.collaborative.twrWritten)}</p>`);
+    out.push(
+      `<p><strong>Write together:</strong> ${esc(plan.collaborative.twrWritten)}</p>`,
+    );
     out.push(`<div class="student-response-box"></div>`);
 
     // Independent Practice
@@ -1201,18 +1227,30 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       out.push(`<p>${i + 1}. (${esc(it.type)}) ${esc(it.q)}</p>`);
       out.push(`<div class="student-response-lines"></div>`);
     });
-    out.push(`<p><strong>Show your thinking:</strong> ${esc(plan.independent.showThinking)}</p>`);
+    out.push(
+      `<p><strong>Show your thinking:</strong> ${esc(plan.independent.showThinking)}</p>`,
+    );
     out.push(`<div class="student-response-box"></div>`);
 
     // Writing
     out.push(`<h2>Writing (TWR)</h2>`);
-    out.push(`<p><strong>Kernel sentence:</strong> ${esc(plan.writing.kernel)}</p>`);
-    out.push(`<p>Complete the sentence using <em>because</em>, <em>but</em>, and <em>so</em>:</p>`);
-    out.push(`<p>• Because: __________________________________________________________________</p>`);
-    out.push(`<p>• But: ______________________________________________________________________</p>`);
-    out.push(`<p>• So: _______________________________________________________________________</p>`);
     out.push(
-      `<p class="student-instructions">Word bank: ${esc(plan.writing.wordBank.join(", "))}</p>`
+      `<p><strong>Kernel sentence:</strong> ${esc(plan.writing.kernel)}</p>`,
+    );
+    out.push(
+      `<p>Complete the sentence using <em>because</em>, <em>but</em>, and <em>so</em>:</p>`,
+    );
+    out.push(
+      `<p>• Because: __________________________________________________________________</p>`,
+    );
+    out.push(
+      `<p>• But: ______________________________________________________________________</p>`,
+    );
+    out.push(
+      `<p>• So: _______________________________________________________________________</p>`,
+    );
+    out.push(
+      `<p class="student-instructions">Word bank: ${esc(plan.writing.wordBank.join(", "))}</p>`,
     );
     out.push(`<div class="student-response-box"></div>`);
 
@@ -1268,7 +1306,7 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
     if (uploadedExtract) {
       strippedUpload = {
         name: uploadedExtract.name,
-        kind: uploadedExtract.kind
+        kind: uploadedExtract.kind,
       };
     }
 
@@ -1279,7 +1317,7 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       standard,
       fields,
       source: rawSource,
-      uploadedExtract: strippedUpload
+      uploadedExtract: strippedUpload,
     };
 
     const filtered = list.filter((item) => item.title !== title);
@@ -1322,7 +1360,7 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       uploadedExtract = {
         name: entry.uploadedExtract.name,
         kind: entry.uploadedExtract.kind,
-        text: entry.source || ""
+        text: entry.source || "",
       };
       els.fileStatus.className = "file-status ok";
       els.fileStatus.innerHTML = `<span class="extract-ok">Loaded:</span> ${esc(uploadedExtract.name)}`;
