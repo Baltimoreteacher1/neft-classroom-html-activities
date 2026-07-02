@@ -17,7 +17,7 @@
     <style>
       :root {
         --navy: #0f2b3c;
-        --blue: #c9820f; /* gold/orange primary accent */
+        --blue: #9a6300; /* gold/orange primary accent (AA-contrast) */
         --blue-lt: #fdf3e0; /* light gold/orange secondary */
         --teal: #0e8a7d;
         --teal-lt: #e4f5f3;
@@ -276,10 +276,11 @@
         font-size: 20px;
         font-weight: 800;
         color: var(--navy);
+        margin-top: 0;
         margin-bottom: 3px;
       }
       .card-sub {
-        font-size: 13px;
+        font-size: 15px;
         color: var(--muted);
         font-weight: 500;
       }
@@ -319,7 +320,7 @@
       /* ---- Form inputs ---- */
       label.lbl {
         display: block;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 700;
         color: var(--navy);
         margin-bottom: 5px;
@@ -426,7 +427,7 @@
       }
       details.hint summary {
         cursor: pointer;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 600;
         color: var(--blue);
         list-style: none;
@@ -661,18 +662,18 @@
         margin-bottom: 6px;
       }
       .vocab-term {
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 800;
         color: var(--navy);
         margin-bottom: 4px;
       }
       .vocab-def {
-        font-size: 13px;
+        font-size: 15px;
         color: var(--muted);
         line-height: 1.5;
       }
       .vocab-ex {
-        font-size: 12px;
+        font-size: 15px;
         color: var(--blue);
         font-weight: 600;
         margin-top: 5px;
@@ -879,7 +880,7 @@
         <div class="prog-bar">
           <div class="prog-fill" id="progFill" style="width: 0%"></div>
         </div>
-        <div class="prog-label" id="progLabel">Step 1 of 6</div>
+        <div class="prog-label" id="progLabel">Step 0 of 5</div>
       </div>
 
       <!-- ======================================
@@ -890,10 +891,10 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Key Words</span>
                 <span class="es-text">Palabras Clave</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Learn these 5 math terms before you begin</span
@@ -1046,12 +1047,12 @@
           <div class="card-header">
             <div class="card-icon">🧊</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 1 — Calculate Box Volume</span>
                 <span class="es-text"
                   >Paso 1 — Calcular el Volumen de la Caja</span
                 >
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Measure your package and find its capacity</span
@@ -1262,12 +1263,12 @@
           <div class="card-header">
             <div class="card-icon teal">📐</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 2 — Surface Area from Net</span>
                 <span class="es-text"
                   >Paso 2 — Área de Superficie a partir de la Plantilla</span
                 >
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Calculate the area of all faces to find cardboard usage</span
@@ -1522,12 +1523,12 @@
           <div class="card-header">
             <div class="card-icon gold">💵</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 3 — Cardboard Material Cost</span>
                 <span class="es-text"
                   >Paso 3 — Costo del Material de Cartón</span
                 >
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Determine the cost of producing your custom package</span
@@ -1775,10 +1776,10 @@
           <div class="card-header">
             <div class="card-icon teal">👥</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 4 — Compare Packages</span>
                 <span class="es-text">Paso 4 — Comparar Paquetes</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Evaluate size and efficiency side-by-side with a
@@ -1968,10 +1969,10 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 5 — Finish &amp; Submit</span>
                 <span class="es-text">Paso 5 — Terminar y Enviar</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Present your pitch, verify the checklist, and generate the
@@ -2329,7 +2330,7 @@
               gap: 8px;
             "
           >
-            <button class="calc-btn" onclick="buildReport()">
+            <button class="calc-btn" onclick="buildReport(); playConfetti();">
               <span class="en-text">📝 Generate Summary</span>
               <span class="es-text">📝 Generar Resumen</span>
             </button>
@@ -2367,7 +2368,7 @@
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <script src="/assets/app.js" defer></script>
     <script>
-      const PRESETS = { "box-l": 8, "box-w": 6, "box-h": 4 };
+      const PRESETS = { "v-len": 8, "v-wid": 5, "v-hgt": 4 };
       function handleLevelPreset(n) {
         try {
           if (n === 1) {
@@ -2390,6 +2391,32 @@
             }
           }
         } catch (e) {}
+      }
+
+      // Low-floor ESOL scaffold: fill the real inputs with a worked example
+      // box (8" × 5" × 4") and its six face areas, then recompute.
+      function loadExampleNumbers() {
+        const vals = {
+          "v-len": 8,
+          "v-wid": 5,
+          "v-hgt": 4,
+          "sa-bot": 40, // l×w = 8×5
+          "sa-top": 40,
+          "sa-front": 32, // l×h = 8×4
+          "sa-back": 32,
+          "sa-left": 20, // w×h = 5×4
+          "sa-right": 20,
+        };
+        for (const [id, val] of Object.entries(vals)) {
+          const el = document.getElementById(id);
+          if (el) {
+            el.value = val;
+            el.dispatchEvent(new Event("input", { bubbles: true }));
+          }
+        }
+        if (typeof updateVolumeCalc === "function") updateVolumeCalc();
+        if (typeof calcSA === "function") calcSA();
+        if (typeof calcCost === "function") calcCost();
       }
 
       function playConfetti() {
@@ -2473,10 +2500,10 @@
 
       // ---- Level toggle ----
       function setLevel(n) {
-        document.getElementById("body").className = "level-" + n;
+        const body = document.getElementById("body");
+        body.classList.remove("level-1", "level-2");
+        body.classList.add("level-" + n);
         if (isSpanish) {
-          document.getElementById("body").classList.add("es");
-
           handleLevelPreset(n);
         }
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
@@ -2502,8 +2529,8 @@
         trail.innerHTML = activeSteps
           .map((s, i) => {
             const isLast = i === activeSteps.length - 1;
-            return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" onclick="goStep(${s.id})">
-            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? "✓" : s.id}</span>
+            return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" role="button" tabindex="0" onclick="goStep(${s.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(${s.id});}">
+            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? "✓" : s.id - 1}</span>
             <span class="s-label">${s.label}</span>
           </span>${!isLast ? '<span class="step-arrow">›</span>' : ""}`;
           })
@@ -2546,12 +2573,14 @@
       function updateProgress() {
         const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
         document.getElementById("progFill").style.width = pct + "%";
+        const displayNum = currentStep - 1;
+        const totalNum = STEPS.length - 1;
         if (isSpanish) {
           document.getElementById("progLabel").textContent =
-            `Paso ${currentStep} de ${STEPS.length}`;
+            `Paso ${displayNum} de ${totalNum}`;
         } else {
           document.getElementById("progLabel").textContent =
-            `Step ${currentStep} of ${STEPS.length}`;
+            `Step ${displayNum} of ${totalNum}`;
         }
       }
 
@@ -3457,7 +3486,6 @@
 
       // ---- Report Builder ----
       function buildReport() {
-        playConfetti();
         const isLevel2 = document
           .getElementById("body")
           .classList.contains("level-2");
@@ -3675,39 +3703,17 @@
       }
 
       function prefillGradingConsole() {
-        const presets = { "box-l": 8, "box-w": 6, "box-h": 4 };
-        for (const [id, val] of Object.entries(presets)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = val;
-            el.dispatchEvent(new Event("input", { bubbles: true }));
-            el.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        // Also prefill student calculation answers
-        if (document.getElementById("student-gcf-input")) {
-          document.getElementById("student-gcf-input").value =
-            document.getElementById("student-gcf-input").min || 1;
-          document
-            .getElementById("student-gcf-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        if (document.getElementById("student-lcm-input")) {
-          document.getElementById("student-lcm-input").value =
-            document.getElementById("student-lcm-input").min || 1;
-          document
-            .getElementById("student-lcm-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
-        }
+        // Fill the real dimension + face inputs with the worked example box.
+        if (typeof loadExampleNumbers === "function") loadExampleNumbers();
         updateGradingAnswers();
       }
 
       function updateGradingAnswers() {
         try {
           const resolver = function () {
-            const l = parseFloat(document.getElementById("box-l").value) || 8;
-            const w = parseFloat(document.getElementById("box-w").value) || 6;
-            const h = parseFloat(document.getElementById("box-h").value) || 4;
+            const l = parseFloat(document.getElementById("v-len").value) || 8;
+            const w = parseFloat(document.getElementById("v-wid").value) || 5;
+            const h = parseFloat(document.getElementById("v-hgt").value) || 4;
             const vol = l * w * h;
             const sa = 2 * (l * w + w * h + h * l);
             return {
@@ -3737,9 +3743,10 @@
         }
       }
 
-      // Wire up key listener (Ctrl+Shift+T) and triple click on h1
+      // Wire up teacher-only key listener (Ctrl+Alt+K) and triple click on h1.
+      // Ctrl+Alt+K avoids hijacking the browser's Ctrl+Shift+T (reopen tab).
       document.addEventListener("keydown", function (e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "t") {
+        if (e.ctrlKey && e.altKey && e.key.toLowerCase() === "k") {
           e.preventDefault();
           toggleGradingConsole();
         }
@@ -3832,7 +3839,7 @@
         }
         // Re-calculate answers when input event fires
         document.addEventListener("input", function (e) {
-          const inputs = ["box-l", "box-w", "box-h"];
+          const inputs = ["v-len", "v-wid", "v-hgt"];
           if (inputs.includes(e.target.id)) {
             updateGradingAnswers();
           }

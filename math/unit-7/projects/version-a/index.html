@@ -15,7 +15,7 @@
         --blue-lt: #e8f2fc;
         --teal: #0e8a7d;
         --teal-lt: #e4f5f3;
-        --gold: #c9820f;
+        --gold: #a5670a;
         --gold-lt: #fdf3e0;
         --green: #1e7d40;
         --green-lt: #e6f4eb;
@@ -42,7 +42,7 @@
       .hero h1 { font-size: clamp(24px,5vw,38px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
       .hero-sub { color: rgba(255,255,255,.85); font-size: 16px; max-width: 580px; margin: 0 auto 16px; }
       .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
-      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 50px; padding: 4px 13px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 50px; padding: 4px 13px; font-size: 13px; font-weight: 700; letter-spacing: .04em; }
       .tag.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
 
       /* ---- Level selector ---- */
@@ -70,8 +70,10 @@
         display: flex; align-items: center; gap: 6px;
         cursor: pointer; white-space: nowrap; padding: 8px 12px;
         border-radius: 10px; transition: background .15s;
+        background: transparent; border: none; font-family: inherit;
       }
       .step-trail-item:hover { background: var(--blue-lt); }
+      .step-trail-item:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
       .step-trail-item.active .s-num {
         background: var(--blue); color: #fff;
       }
@@ -85,7 +87,7 @@
         display: flex; align-items: center; justify-content: center;
         flex-shrink: 0; transition: all .2s;
       }
-      .s-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+      .s-label { font-size: 14px; font-weight: 600; color: var(--muted); }
       .step-trail-item.active .s-label { color: var(--blue); }
       .step-trail-item.done .s-label { color: var(--green); }
       .step-arrow { color: var(--line); font-size: 16px; padding: 0 2px; }
@@ -94,7 +96,7 @@
       .prog-wrap { margin: 14px 0 4px; }
       .prog-bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
       .prog-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--teal)); border-radius: 99px; transition: width .4s ease; }
-      .prog-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+      .prog-label { font-size: 14px; color: var(--muted); margin-top: 4px; }
 
       /* ---- Step panel ---- */
       .step-panel { display: none; animation: fadein .25s ease; }
@@ -117,7 +119,7 @@
       .card-icon.teal { background: var(--teal-lt); }
       .card-icon.green { background: var(--green-lt); }
       .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
-      .card-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
+      .card-sub { font-size: 14px; color: var(--muted); font-weight: 500; }
 
       /* ---- Instruction box ---- */
       .instruct {
@@ -133,7 +135,7 @@
       .visual-svg { display: block; width: 100%; max-width: 520px; margin: 0 auto 20px; border-radius: 12px; }
 
       /* ---- Form inputs ---- */
-      label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
+      label.lbl { display: block; font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
       input[type="number"], input[type="text"], textarea, select {
         width: 100%; padding: 10px 14px; border: 1.5px solid var(--line);
         border-radius: 10px; font-size: 15px; font-family: inherit;
@@ -169,7 +171,7 @@
       /* ---- Hint ---- */
       details.hint { margin-top: 14px; }
       details.hint summary {
-        cursor: pointer; font-size: 13px; font-weight: 600;
+        cursor: pointer; font-size: 14px; font-weight: 600;
         color: var(--blue); list-style: none; display: inline-flex;
         align-items: center; gap: 5px;
       }
@@ -183,7 +185,7 @@
       }
       .lvl2-label {
         display: inline-block; background: var(--blue); color: #fff;
-        font-size: 11px; font-weight: 800; letter-spacing: .05em;
+        font-size: 13px; font-weight: 800; letter-spacing: .05em;
         border-radius: 50px; padding: 3px 10px; margin-bottom: 8px;
       }
 
@@ -264,9 +266,9 @@
       .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
       .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
       .vocab-icon { font-size: 26px; margin-bottom: 6px; }
-      .vocab-term { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
-      .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
-      .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
+      .vocab-term { font-size: 14px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+      .vocab-def { font-size: 14px; color: var(--muted); line-height: 1.5; }
+      .vocab-ex { font-size: 14px; color: var(--blue); font-weight: 600; margin-top: 5px; }
 
       /* ---- Coordinate grid SVGs ---- */
       .grid-svg {
@@ -432,8 +434,8 @@
       </p>
       <div class="hero-tags">
         <span class="tag gold">
-          <span class="en-text">Unit 7 · Geometry &amp; Coordinate Plane</span>
-          <span class="es-text">Unidad 7 · Geometría y Plano Cartesiano</span>
+          <span class="en-text">Unit 7 · Integers &amp; Coordinate Plane</span>
+          <span class="es-text">Unidad 7 · Enteros y Plano Cartesiano</span>
         </span>
         <span class="tag">6.NS.6</span>
         <span class="tag">6.NS.8</span>
@@ -475,10 +477,10 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Key Words</span>
                 <span class="es-text">Palabras Clave</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text">Learn these 6 math words before you begin</span>
                 <span class="es-text">Aprende estas 6 palabras matemáticas antes de comenzar</span>
@@ -608,10 +610,10 @@
           <div class="card-header">
             <div class="card-icon">🎡</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 1 — Plot Attractions</span>
                 <span class="es-text">Paso 1 — Ubicar Atracciones</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text">Choose locations for 5 main attractions on your map</span>
                 <span class="es-text">Elige las ubicaciones para 5 atracciones principales en tu mapa</span>
@@ -787,7 +789,14 @@
             <span class="en-text">← Back</span>
             <span class="es-text">← Atrás</span>
           </button>
-          <!-- ======================================
+          <button class="nav-btn" onclick="goStep(3)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente Paso →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ======================================
            STEP 3 — ATTRACTION DISTANCE
       ====================================== -->
       <div class="step-panel" id="step-3">
@@ -795,10 +804,10 @@
           <div class="card-header">
             <div class="card-icon teal">📏</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 2 — Attraction Distance</span>
                 <span class="es-text">Paso 2 — Distancia entre Atracciones</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text">Find the distance between attractions sharing an axis</span>
                 <span class="es-text">Encuentra la distancia entre atracciones que comparten un eje</span>
@@ -813,11 +822,11 @@
 
           <div class="step-research no-print">
             <div class="sr-head"><span class="en-text">📊 Research you need for this step</span><span class="es-text">📊 Investigación que necesitas para este paso</span></div>
-            🌡️ <a href="https://en.wikipedia.org/wiki/U.S._state_and_territory_temperature_extremes" target="_blank" rel="noopener noreferrer" class="level-btn"><span class="en-text">Wikipedia — U.S. Temperature Extremes ↗</span><span class="es-text">Wikipedia — Temperaturas extremas de EE. UU. ↗</span></a>
-            <small class="sr-hint"><span class="en-text">Find: Record high (+) and low (−) as integers</span><span class="es-text">Buscar: Récord máximo (+) y mínimo (−) como enteros</span></small>
+            🎢 <a href="https://en.wikipedia.org/wiki/Cedar_Point" target="_blank" rel="noopener noreferrer" class="level-btn"><span class="en-text">Wikipedia — Cedar Point (park size) ↗</span><span class="es-text">Wikipedia — Cedar Point (tamaño del parque) ↗</span></a>
+            <small class="sr-hint"><span class="en-text">Find: How large the park is and how far apart rides sit</span><span class="es-text">Buscar: Qué tan grande es el parque y qué tan separadas están las atracciones</span></small>
             <input type="text" id="rfind-3" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
-            🏔️ <a href="https://en.wikipedia.org/wiki/List_of_elevation_extremes_by_country" target="_blank" rel="noopener noreferrer" class="level-btn"><span class="en-text">Wikipedia — Elevation Extremes ↗</span><span class="es-text">Wikipedia — Elevaciones extremas ↗</span></a>
-            <small class="sr-hint"><span class="en-text">Find: Highest (+) and lowest (−) points</span><span class="es-text">Buscar: Los puntos más altos (+) y más bajos (−)</span></small>
+            🗺️ <a href="https://en.wikipedia.org/wiki/Walt_Disney_World" target="_blank" rel="noopener noreferrer" class="level-btn"><span class="en-text">Wikipedia — Walt Disney World (distance across) ↗</span><span class="es-text">Wikipedia — Walt Disney World (distancia a lo ancho) ↗</span></a>
+            <small class="sr-hint"><span class="en-text">Find: How far it is across a real park (miles)</span><span class="es-text">Buscar: Qué distancia hay a lo ancho de un parque real (millas)</span></small>
             <input type="text" id="rfind-4" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
           </div>
 
@@ -979,10 +988,10 @@
           <div class="card-header">
             <div class="card-icon">🪞</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 3 — Park Reflections</span>
                 <span class="es-text">Paso 3 — Reflejos en el Parque</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text">Flip attractions over the axes and calculate real scale</span>
                 <span class="es-text">Refleja atracciones sobre los ejes y calcula la escala real</span>
@@ -1205,10 +1214,10 @@
           <div class="card-header">
             <div class="card-icon teal">👥</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 4 — Partner Park</span>
                 <span class="es-text">Paso 4 — Parque de un Compañero</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text">Compare layout blueprints with a classmate</span>
                 <span class="es-text">Compara los planos de diseño con un compañero de clase</span>
@@ -1308,10 +1317,10 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 5 — Finish &amp; Submit</span>
                 <span class="es-text">Paso 5 — Terminar y Enviar</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text">Pitch your proposal, check requirements, and generate summary</span>
                 <span class="es-text">Presenta tu propuesta, verifica los requisitos y genera el resumen</span>
@@ -1436,7 +1445,7 @@
 
           <!-- Report Generator -->
           <div class="nav-row no-print" style="margin-top:22px; flex-wrap:wrap; justify-content:flex-start; gap:8px;">
-            <button class="calc-btn" onclick="buildReport()">
+            <button class="calc-btn" onclick="buildReport(); playConfetti();">
               <span class="en-text">📝 Generate Blueprint Summary</span>
               <span class="es-text">📝 Generar Resumen del Plano</span>
             </button>
@@ -1474,7 +1483,7 @@
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <script src="/assets/app.js" defer></script>
     <script>
-      const PRESETS = {"t-high": 95, "t-low": -12};
+      const PRESETS = {};
       function handleLevelPreset(n) {
         try {
           if (n === 1) {
@@ -1565,29 +1574,103 @@
       let currentStep = 1;
       const visited = new Set([1]);
       let activeLevel = 1;
+      let currentLang = 'en';
       let STEPS = STEPS_LANG.en;
 
       // ---- Level Toggle Function ----
       function setLevel(n) {
         activeLevel = n;
-        document.getElementById('body').className = 'level-' + n;
+        // Surgical class swap — preserve `es` and injected `pro-projects` classes
+        document.body.classList.remove('level-1', 'level-2');
+        document.body.classList.add('level-' + n);
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
         updatePlot();
-        runDistanceCalc();
-        runReflectionCalc();
-      
+        if (document.getElementById('dist-out').classList.contains('show')) runDistanceCalc();
+        if (document.getElementById('ref-out').classList.contains('show')) runReflectionCalc();
+
         handleLevelPreset(n);}
+
+      // ---- Language Toggle (EN/ES) ----
+      function toggleLanguage() {
+        currentLang = currentLang === 'en' ? 'es' : 'en';
+        const isEs = currentLang === 'es';
+        // Toggle only the `es` class; preserve level + pro-projects classes
+        document.body.classList.toggle('es', isEs);
+        STEPS = isEs ? STEPS_LANG.es : STEPS_LANG.en;
+        document.getElementById('btn-lang').textContent = isEs ? '🌐 Language: ES' : '🌐 Language: EN';
+        if (window.speechSynthesis && window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          document.getElementById('btn-read').textContent = isEs ? '🔊 Leer en Voz Alta' : '🔊 Read Aloud';
+        }
+        updateDropdownLanguages();
+        updatePlaceholders();
+        buildTrail();
+        updateProgress();
+        updatePlot();
+        // Only refresh readouts that are already visible (avoid spurious prompts)
+        if (document.getElementById('dist-out').classList.contains('show')) runDistanceCalc();
+        if (document.getElementById('ref-out').classList.contains('show')) runReflectionCalc();
+        if (document.getElementById('scale-out').classList.contains('show')) runScaleCalc();
+        if (document.getElementById('partner-out').classList.contains('show')) runPartnerComparison();
+      }
+
+      // ---- Read Aloud (TTS) of the active step ----
+      function readAloud() {
+        const synth = window.speechSynthesis;
+        if (!synth) {
+          alert(currentLang === 'es' ? 'El API de voz no es compatible con este navegador.' : 'Web Speech API is not supported in this browser.');
+          return;
+        }
+        if (synth.speaking) { synth.cancel(); return; }
+
+        const activePanel = document.querySelector('.step-panel.active');
+        if (!activePanel) return;
+
+        const textParts = [];
+        function walk(node) {
+          if (node.nodeType === Node.TEXT_NODE) {
+            const parent = node.parentElement;
+            const style = window.getComputedStyle(parent);
+            if (style.display !== 'none' && style.visibility !== 'hidden') {
+              const isEn = parent.closest('.en-text');
+              const isEs = parent.closest('.es-text');
+              if (currentLang === 'en' && isEs) return;
+              if (currentLang === 'es' && isEn) return;
+              const text = node.textContent.trim();
+              if (text) textParts.push(text);
+            }
+          } else if (node.nodeType === Node.ELEMENT_NODE) {
+            const tagName = node.tagName.toLowerCase();
+            if (['style', 'script', 'svg', 'select', 'input', 'textarea', 'option'].includes(tagName)) return;
+            const style = window.getComputedStyle(node);
+            if (style.display === 'none' || style.visibility === 'hidden') return;
+            for (let child of node.childNodes) walk(child);
+          }
+        }
+        walk(activePanel);
+        const speechText = textParts.join(' ');
+        if (!speechText.trim()) return;
+
+        const utterance = new SpeechSynthesisUtterance(speechText);
+        utterance.lang = currentLang === 'es' ? 'es-ES' : 'en-US';
+        const readBtn = document.getElementById('btn-read');
+        const originalText = readBtn.textContent;
+        readBtn.textContent = currentLang === 'es' ? '⏹️ Detener' : '⏹️ Stop Aloud';
+        utterance.onend = () => { readBtn.textContent = originalText; };
+        utterance.onerror = () => { readBtn.textContent = originalText; };
+        synth.speak(utterance);
+      }
 
       // ---- Build Step Navigation Trail ----
       function buildTrail() {
         const trail = document.getElementById('stepTrail');
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
-          return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
+          return `<button type="button" class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
             <span class="s-label">${s.label}</span>
-          </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
+          </button>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
         }).join('');
       }
 
@@ -1929,10 +2012,16 @@
         
         if (isCorrect) {
           const axisEquation = sharesX ? 'x = ' + x1 : 'y = ' + y1;
-          const signSymbol = sharesX ? (Math.sign(y1) !== Math.sign(y2) ? '+' : '-') : (Math.sign(x1) !== Math.sign(x2) ? '+' : '-');
-          const valA = sharesX ? y1 : x1;
-          const valB = sharesX ? y2 : x2;
-          
+          const rawA = sharesX ? y1 : x1;
+          const rawB = sharesX ? y2 : x2;
+          // Opposite sides of the shared axis → ADD; same side (or a point on the axis) → SUBTRACT
+          const isAdd = (Math.sign(rawA) !== Math.sign(rawB)) && rawA !== 0 && rawB !== 0;
+          const signSymbol = isAdd ? '+' : '-';
+          // For the subtract case, always show larger magnitude minus smaller so the
+          // displayed equation is never arithmetically false (e.g. never "|2| − |5|").
+          const valA = isAdd ? rawA : Math.max(Math.abs(rawA), Math.abs(rawB));
+          const valB = isAdd ? rawB : Math.min(Math.abs(rawA), Math.abs(rawB));
+
           readout.innerHTML = isEs ? `
             <strong>${response}</strong><br>
             El Punto A (${x1}, ${y1}) y el Punto B (${x2}, ${y2}) comparten la línea donde <strong>${axisEquation}</strong>.<br>
@@ -2351,9 +2440,8 @@
 
       // ---- Step 5: Generate proposals & summary reports ----
       function buildReport() {
-        playConfetti();
         const isEs = document.body.classList.contains('es');
-        
+
         const p1Name = document.getElementById("attr1-name").value || (isEs ? "Atracción 1" : "Attraction 1");
         const p1x = document.getElementById("attr1-x").value;
         const p1y = document.getElementById("attr1-y").value;
@@ -2747,45 +2835,31 @@
       }
       
       function prefillGradingConsole() {
-        const presets = {"t-high": 95, "t-low": -12};
-        for (const [id, val] of Object.entries(presets)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = val;
-            el.dispatchEvent(new Event('input', { bubbles: true }));
-            el.dispatchEvent(new Event('change', { bubbles: true }));
-          }
-        }
-        // Also prefill student calculation answers
-        if (document.getElementById('student-gcf-input')) {
-          document.getElementById('student-gcf-input').value = document.getElementById('student-gcf-input').min || 1;
-          document.getElementById('student-gcf-input').dispatchEvent(new Event('input', { bubbles: true }));
-        }
-        if (document.getElementById('student-lcm-input')) {
-          document.getElementById('student-lcm-input').value = document.getElementById('student-lcm-input').min || 1;
-          document.getElementById('student-lcm-input').dispatchEvent(new Event('input', { bubbles: true }));
-        }
+        // Load the sample attraction map, then recompute the teacher answers from it
+        if (typeof loadExamples === 'function') loadExamples();
         updateGradingAnswers();
       }
-      
+
       function updateGradingAnswers() {
         try {
-          const resolver = function() {
-            
-          const h = parseFloat(document.getElementById('t-high').value) || 95;
-          const l = parseFloat(document.getElementById('t-low').value) || -12;
-          return {
-            'Record High': h + '°F',
-            'Record Low': l + '°F',
-            '|High|': Math.abs(h),
-            '|Low|': Math.abs(l),
-            'Expected Difference (distance)': Math.abs(h - l) + '°F'
-          };
-        
-          };
-          const ans = resolver();
+          const qnames = { I: 'Quadrant I', II: 'Quadrant II', III: 'Quadrant III', IV: 'Quadrant IV', x: 'x-axis', y: 'y-axis', origin: 'Origin' };
+          const ans = {};
+          for (let i = 1; i <= 5; i++) {
+            const nm = (document.getElementById(`attr${i}-name`).value || `Attraction ${i}`);
+            const x = parseFloat(document.getElementById(`attr${i}-x`).value);
+            const y = parseFloat(document.getElementById(`attr${i}-y`).value);
+            if (isNaN(x) || isNaN(y)) { ans[nm] = '(not plotted)'; continue; }
+            ans[nm] = `(${x}, ${y}) → ${qnames[getQuadrantName(x, y)] || '—'}`;
+          }
+          // Park width from the real plotted x-coordinates
+          let mn = Infinity, mx = -Infinity, cnt = 0;
+          for (let i = 1; i <= 5; i++) {
+            const x = parseFloat(document.getElementById(`attr${i}-x`).value);
+            if (!isNaN(x)) { cnt++; mn = Math.min(mn, x); mx = Math.max(mx, x); }
+          }
+          if (cnt > 0) { const w = mx - mn; ans['Park width'] = `${w} units = ${(w * 0.1).toFixed(2)} mi`; }
           const body = document.getElementById('teacher-answers-body');
-          if (body && ans) {
+          if (body) {
             body.innerHTML = Object.entries(ans).map(([k, v]) => `
               <tr>
                 <td class="lbl">${k}</td>
@@ -2797,10 +2871,10 @@
           console.error("Grading resolver error", e);
         }
       }
-      
-      // Wire up key listener (Ctrl+Shift+T) and triple click on h1
+
+      // Wire up an obscure, non-browser-hijacking key combo (Alt+Shift+G) for teachers
       document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
+        if (e.altKey && e.shiftKey && e.key.toLowerCase() === 'g') {
           e.preventDefault();
           toggleGradingConsole();
         }
@@ -2869,22 +2943,10 @@
       };
 
       document.addEventListener('DOMContentLoaded', function() {
-        const titleEl = document.querySelector('.hero h1');
-        if (titleEl) {
-          let clicks = 0;
-          titleEl.addEventListener('click', function() {
-            clicks++;
-            if (clicks >= 3) {
-              toggleGradingConsole();
-              clicks = 0;
-            }
-            setTimeout(() => { clicks = 0; }, 1000);
-          });
-        }
-        // Re-calculate answers when input event fires
+        // Teacher console stays teacher-only (Alt+Shift+G). No student-reachable
+        // title triple-click. Keep the grading table current as attractions change.
         document.addEventListener('input', function(e) {
-          const inputs = ["t-high", "t-low"];
-          if (inputs.includes(e.target.id)) {
+          if (e.target.id && /^attr[1-5]-(x|y|name)$/.test(e.target.id)) {
             updateGradingAnswers();
           }
         });

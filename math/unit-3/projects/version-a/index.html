@@ -11,7 +11,7 @@
     <style>
       :root {
         --navy: #3c240f; /* Deep chocolate brown */
-        --blue: #e27d22; /* Warm orange (primary) */
+        --blue: #b5560d; /* Warm orange (primary) — darkened for WCAG AA text contrast */
         --blue-lt: #fff3e8; /* Light warm orange */
         --teal: #cca210; /* Mango yellow */
         --teal-lt: #fef8e6; /* Light yellow */
@@ -116,8 +116,8 @@
       .card-icon.gold { background: var(--gold-lt); }
       .card-icon.teal { background: var(--teal-lt); }
       .card-icon.green { background: var(--green-lt); }
-      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
-      .card-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
+      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin: 0 0 3px; }
+      .card-sub { font-size: 14px; color: var(--muted); font-weight: 500; }
 
       /* ---- Instruction box ---- */
       .instruct {
@@ -133,13 +133,13 @@
       .visual-svg { display: block; width: 100%; max-width: 520px; margin: 0 auto 20px; border-radius: 12px; }
 
       /* ---- Form inputs ---- */
-      label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
+      label.lbl { display: block; font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
       input[type="number"], input[type="text"], textarea, select {
         width: 100%; padding: 10px 14px; border: 1.5px solid var(--line);
         border-radius: 10px; font-size: 15px; font-family: inherit;
         background: var(--bg); color: var(--ink); transition: border-color .2s;
       }
-      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
+      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(181,86,13,.35); }
       textarea { min-height: 90px; resize: vertical; }
       .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
       @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
@@ -169,7 +169,7 @@
       /* ---- Hint ---- */
       details.hint { margin-top: 14px; }
       details.hint summary {
-        cursor: pointer; font-size: 13px; font-weight: 600;
+        cursor: pointer; font-size: 15px; font-weight: 600;
         color: var(--blue); list-style: none; display: inline-flex;
         align-items: center; gap: 5px;
       }
@@ -260,9 +260,9 @@
       .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
       .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
       .vocab-icon { font-size: 26px; margin-bottom: 6px; }
-      .vocab-term { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
-      .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
-      .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
+      .vocab-term { font-size: 15px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+      .vocab-def { font-size: 15px; color: var(--muted); line-height: 1.5; }
+      .vocab-ex { font-size: 14px; color: var(--blue); font-weight: 600; margin-top: 5px; }
 
       /* ---- Print ---- */
       @media print {
@@ -367,7 +367,7 @@
       <!-- Progress bar -->
       <div class="prog-wrap no-print">
         <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
-        <div class="prog-label" id="progLabel">Step 0 of 5</div>
+        <div class="prog-label" id="progLabel">Step 1 of 6</div>
       </div>
 
       <!-- ======================================
@@ -378,10 +378,10 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Key Words</span>
                 <span class="es-text">Palabras clave</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text">Learn these 4 math words before you begin</span>
                 <span class="es-text">Aprende estas 4 palabras de matemáticas antes de comenzar</span>
@@ -481,10 +481,10 @@
           <div class="card-header">
             <div class="card-icon">🥤</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 1 — Create Your Signature Blend</span>
                 <span class="es-text">Paso 1 — Crea tu mezcla signature</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text">Enter recipe amounts and write ratios in 3 ways</span>
                 <span class="es-text">Ingresa las cantidades de la receta y escribe razones de 3 maneras</span>
@@ -615,10 +615,10 @@
           <div class="card-header">
             <div class="card-icon gold">📈</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 2 — Scale Up Your Recipe</span>
                 <span class="es-text">Paso 2 — Escala tu receta</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text">Use equivalent ratios to multiply recipe sizes</span>
                 <span class="es-text">Usa razones equivalentes para multiplicar los tamaños de las recetas</span>
@@ -726,7 +726,14 @@
             <span class="en-text">← Back</span>
             <span class="es-text">← Atrás</span>
           </button>
-          <button class="nav-btn" onc      <!-- ======================================
+          <button class="nav-btn" onclick="goStep(3)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ======================================
            STEP 3 — UNIT PRICE / BETTER BUY
       ====================================== -->
       <div class="step-panel" id="step-3">
@@ -734,10 +741,10 @@
           <div class="card-header">
             <div class="card-icon teal">💵</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 3 — Unit Price &amp; Better Buy</span>
                 <span class="es-text">Paso 3 — Precio unitario y mejor compra</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text">Calculate price per smoothie and compare bulk fruit deals</span>
                 <span class="es-text">Calcula el precio por batido y compara las ofertas de fruta a granel</span>
@@ -1004,10 +1011,10 @@
           <div class="card-header">
             <div class="card-icon teal">👥</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 4 — Compare With a Partner</span>
                 <span class="es-text">Paso 4 — Comparar con un compañero</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text">Interview a classmate and compare recipe blend ratios and unit rates</span>
                 <span class="es-text">Entrevista a un compañero de clase y compara las razones de mezcla y tasas unitarias</span>
@@ -1090,7 +1097,7 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">Step 5 — Finish &amp; Submit</div>
+              <h2 class="card-title">Step 5 — Finish &amp; Submit</h2>
               <div class="card-sub">Pitch your proposal, check the list, and print your report</div>
             </div>
           </div>
@@ -1150,7 +1157,7 @@
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <script src="/assets/app.js" defer></script>
     <script>
-      const PRESETS = {"r-miles": 120, "r-hours": 3};
+      const PRESETS = {};
       function handleLevelPreset(n) {
         try {
           if (n === 1) {
@@ -1228,12 +1235,26 @@
         { id: 4, label: 'Compare', icon: '👥' },
         { id: 5, label: 'Finish', icon: '🏆' },
       ];
+      const STEPS_ES = [
+        { id: 0, label: 'Palabras clave', icon: '📖' },
+        { id: 1, label: 'Razón de receta', icon: '🥤' },
+        { id: 2, label: 'Escalar', icon: '📈' },
+        { id: 3, label: 'Precio unitario', icon: '💵' },
+        { id: 4, label: 'Comparar', icon: '👥' },
+        { id: 5, label: 'Terminar', icon: '🏆' },
+      ];
       let currentStep = 0;
       const visited = new Set([0]);
 
+      function isSpanish() {
+        return document.getElementById('body').classList.contains('es');
+      }
+
       // ---- Level toggle ----
       function setLevel(n) {
-        document.getElementById('body').className = 'level-' + n;
+        const body = document.getElementById('body');
+        body.classList.remove('level-1', 'level-2');
+        body.classList.add('level-' + n);
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
         handleLevelPreset(n);
@@ -1253,11 +1274,13 @@
       // ---- Build step trail ----
       function buildTrail() {
         const trail = document.getElementById('stepTrail');
+        const isEs = isSpanish();
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
-          return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
+          const label = isEs ? STEPS_ES[i].label : s.label;
+          return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" role="button" tabindex="0" onclick="goStep(${s.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(${s.id});}">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
-            <span class="s-label">${s.label}</span>
+            <span class="s-label">${label}</span>
           </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
         }).join('');
       }
@@ -1277,7 +1300,9 @@
       function updateProgress() {
         const pct = Math.round((currentStep / (STEPS.length - 1)) * 100);
         document.getElementById('progFill').style.width = pct + '%';
-        document.getElementById('progLabel').textContent = `Step ${currentStep} of 5`;
+        document.getElementById('progLabel').textContent = isSpanish()
+          ? `Paso ${currentStep + 1} de ${STEPS.length}`
+          : `Step ${currentStep + 1} of ${STEPS.length}`;
       }
 
       // ---- Math helpers ----
@@ -1560,7 +1585,7 @@
         const perSmoothie = total / count;
         showReadout('smoothie-cost-out', `
           <strong>Total batch cost: $${total.toFixed(2)}</strong><br>
-          Price per Smoothie (Unit Rate): <strong>$${perSmoothie.toFixed(2)}</strong> per cup ($${total.toFixed(2)} ÷ ${count} smoothies)<br>
+          Price per Smoothie (Unit Rate): <strong>$${perSmoothie.toFixed(2)}</strong> per smoothie ($${total.toFixed(2)} ÷ ${count} smoothies)<br>
           <small>Fruit: $${fruit.toFixed(2)} + Liquids: $${liquids.toFixed(2)} + Supplies: $${supplies.toFixed(2)} = $${total.toFixed(2)}</small>
         `);
       }
@@ -1699,9 +1724,9 @@
           if (diff < 0.01) {
             html += `Both smoothies cost the same to produce!`;
           } else if (myCost < pCost) {
-            html += `Your smoothie is cheaper to make by <strong>$${diff.toFixed(2)}</strong> per cup! 💸`;
+            html += `Your smoothie is cheaper to make by <strong>$${diff.toFixed(2)}</strong> per smoothie! 💸`;
           } else {
-            html += `${pName}'s smoothie is cheaper to make by <strong>$${diff.toFixed(2)}</strong> per cup! 💸`;
+            html += `${pName}'s smoothie is cheaper to make by <strong>$${diff.toFixed(2)}</strong> per smoothie! 💸`;
           }
         }
         
@@ -1746,7 +1771,7 @@
         const reflect = document.getElementById('peer-reflect').value || '(no reflection written)';
         const comparisonNote = document.getElementById('world-compare').value || '(no comparison written)';
         
-        const levelMode = document.getElementById('body').className === 'level-2' ? 'Level 2 (Challenge)' : 'Level 1 (With Support)';
+        const levelMode = document.getElementById('body').classList.contains('level-2') ? 'Level 2 (Challenge)' : 'Level 1 (With Support)';
         
         const simp = findSimplifiedRatio(val1, val2);
         const simpText = (simp[0] !== null) ? `${simp[0]} : ${simp[1]}` : '—';
@@ -1773,7 +1798,7 @@
           '💵 STEP 3 — UNIT PRICE & BETTER BUY (Rates)',
           `   Batch Cost: Fruit $${fruit.toFixed(2)} | Liquids $${liquids.toFixed(2)} | Supplies $${supplies.toFixed(2)}`,
           `   Total Cost: $${totalCost.toFixed(2)} for ${count} smoothies`,
-          `   Cost Per Smoothie (Unit Rate): $${costPer} per cup`,
+          `   Cost Per Smoothie (Unit Rate): $${costPer} per smoothie`,
           `   Market Comparison Note: ${comparisonNote}`,
           `   Bulk Deals:`,
           `     - Deal A: ${lbsA} lbs for $${costA}`,
@@ -1810,6 +1835,73 @@
         a.click();
       }
 
+      // ---- Language toggle (bilingual EN/ES) ----
+      function toggleLanguage() {
+        const body = document.getElementById('body');
+        const isEs = body.classList.toggle('es');
+
+        const btnLang = document.getElementById('btn-lang');
+        if (btnLang) btnLang.innerHTML = isEs ? '🌐 Idioma: ES' : '🌐 Language: EN';
+
+        if (!window.speechSynthesis || !window.speechSynthesis.speaking) {
+          updateReadAloudButton(false);
+        }
+
+        buildTrail();
+        updateProgress();
+        renderDealScenario();
+      }
+
+      // ---- Read Aloud TTS ----
+      let currentUtterance = null;
+      function readAloud() {
+        if (!window.speechSynthesis) return;
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          updateReadAloudButton(false);
+          return;
+        }
+
+        const lang = isSpanish() ? 'es-ES' : 'en-US';
+        const langClass = lang === 'es-ES' ? 'es-text' : 'en-text';
+
+        const activePanel = document.querySelector('.step-panel.active');
+        if (!activePanel) return;
+
+        const elements = activePanel.querySelectorAll(`.${langClass}`);
+        let textParts = [];
+        elements.forEach((el) => {
+          if (el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0) {
+            textParts.push(el.textContent.trim());
+          }
+        });
+
+        if (textParts.length === 0) return;
+
+        const utterance = new SpeechSynthesisUtterance(textParts.join('. '));
+        utterance.lang = lang;
+        const voices = window.speechSynthesis.getVoices();
+        const matchedVoice = voices.find((v) => v.lang.startsWith(lang.split('-')[0]));
+        if (matchedVoice) utterance.voice = matchedVoice;
+        utterance.onend = () => { updateReadAloudButton(false); currentUtterance = null; };
+        utterance.onerror = () => { updateReadAloudButton(false); currentUtterance = null; };
+
+        updateReadAloudButton(true);
+        currentUtterance = utterance;
+        window.speechSynthesis.speak(utterance);
+      }
+
+      function updateReadAloudButton(isPlaying) {
+        const btn = document.getElementById('btn-read');
+        if (!btn) return;
+        const isEs = isSpanish();
+        if (isPlaying) {
+          btn.innerHTML = isEs ? '⏹️ Detener Voz' : '⏹️ Stop Voice';
+        } else {
+          btn.innerHTML = isEs ? '🔊 Leer en Voz Alta' : '🔊 Read Aloud';
+        }
+      }
+
       // ---- Init ----
       updateIngredientLabels();
       buildTrail();
@@ -1836,7 +1928,12 @@
       }
       
       function prefillGradingConsole() {
-        const presets = {"r-miles": 120, "r-hours": 3};
+        // Prefill the real Version A example inputs (matches shipped defaults)
+        const presets = {
+          'r-ing1-cups': 3, 'r-ing2-cups': 2,
+          'c-fruit': 12, 'c-liquids': 5, 'c-supplies': 3, 'c-smoothie-count': 5,
+          'deal-a-lbs': 5, 'deal-a-cost': 10, 'deal-b-lbs': 3, 'deal-b-cost': 7
+        };
         for (const [id, val] of Object.entries(presets)) {
           const el = document.getElementById(id);
           if (el) {
@@ -1845,33 +1942,42 @@
             el.dispatchEvent(new Event('change', { bubbles: true }));
           }
         }
-        // Also prefill student calculation answers
-        if (document.getElementById('student-gcf-input')) {
-          document.getElementById('student-gcf-input').value = document.getElementById('student-gcf-input').min || 1;
-          document.getElementById('student-gcf-input').dispatchEvent(new Event('input', { bubbles: true }));
-        }
-        if (document.getElementById('student-lcm-input')) {
-          document.getElementById('student-lcm-input').value = document.getElementById('student-lcm-input').min || 1;
-          document.getElementById('student-lcm-input').dispatchEvent(new Event('input', { bubbles: true }));
-        }
         updateGradingAnswers();
       }
-      
+
       function updateGradingAnswers() {
         try {
           const resolver = function() {
-            
-          const miles = parseFloat(document.getElementById('r-miles').value) || 120;
-          const hours = parseFloat(document.getElementById('r-hours').value) || 3;
-          const rate = hours ? (miles / hours).toFixed(2) : '0';
-          return {
-            'Distance': miles + ' miles',
-            'Time': hours + ' hours',
-            'Unit Rate (mph)': rate,
-            'Expected in 5 hrs': (rate * 5).toFixed(2) + ' miles',
-            'Expected in 10 hrs': (rate * 10).toFixed(2) + ' miles'
-          };
-        
+            const num = (id, dflt) => {
+              const el = document.getElementById(id);
+              const v = el ? parseFloat(el.value) : NaN;
+              return isNaN(v) ? dflt : v;
+            };
+            // Step 1 — recipe ratio (simplified)
+            const cups1 = num('r-ing1-cups', 3);
+            const cups2 = num('r-ing2-cups', 2);
+            const simp = findSimplifiedRatio(cups1, cups2);
+            const simpText = simp[0] !== null ? `${simp[0]} : ${simp[1]}` : '—';
+            // Step 3 — cost per smoothie (unit rate)
+            const total = num('c-fruit', 12) + num('c-liquids', 5) + num('c-supplies', 3);
+            const count = num('c-smoothie-count', 5);
+            const perSmoothie = count ? (total / count).toFixed(2) : '—';
+            // Step 3 — better buy (price per pound, lower is better)
+            const lbsA = num('deal-a-lbs', 5), costA = num('deal-a-cost', 10);
+            const lbsB = num('deal-b-lbs', 3), costB = num('deal-b-cost', 7);
+            const rateA = lbsA ? costA / lbsA : NaN;
+            const rateB = lbsB ? costB / lbsB : NaN;
+            const better = (isNaN(rateA) || isNaN(rateB)) ? '—'
+              : (Math.abs(rateA - rateB) < 0.005 ? 'Equal' : (rateA < rateB ? 'Deal A' : 'Deal B'));
+            return {
+              'Recipe ratio (cups)': `${cups1} : ${cups2}`,
+              'Simplified ratio': simpText,
+              'Batch cost': `$${total.toFixed(2)} for ${count} smoothies`,
+              'Cost per Smoothie (unit rate)': `$${perSmoothie}`,
+              'Deal A price/lb': isNaN(rateA) ? '—' : `$${rateA.toFixed(2)}/lb`,
+              'Deal B price/lb': isNaN(rateB) ? '—' : `$${rateB.toFixed(2)}/lb`,
+              'Better Buy': better
+            };
           };
           const ans = resolver();
           const body = document.getElementById('teacher-answers-body');
@@ -1888,9 +1994,9 @@
         }
       }
       
-      // Wire up key listener (Ctrl+Shift+T) and triple click on h1
+      // Wire up key listener (Alt+Shift+G — non-hijacking) and triple click on h1
       document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
+        if (e.altKey && e.shiftKey && e.key.toLowerCase() === 'g') {
           e.preventDefault();
           toggleGradingConsole();
         }
@@ -1973,7 +2079,7 @@
         }
         // Re-calculate answers when input event fires
         document.addEventListener('input', function(e) {
-          const inputs = ["r-miles", "r-hours"];
+          const inputs = ["r-ing1-cups", "r-ing2-cups", "c-fruit", "c-liquids", "c-supplies", "c-smoothie-count", "deal-a-lbs", "deal-a-cost", "deal-b-lbs", "deal-b-cost"];
           if (inputs.includes(e.target.id)) {
             updateGradingAnswers();
           }

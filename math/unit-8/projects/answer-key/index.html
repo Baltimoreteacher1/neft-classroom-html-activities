@@ -342,155 +342,185 @@
       </div>
 
       <div class="ak-note">
-        <strong>Upgraded SELF → PEER → WORLD structure.</strong> Students now
-        build their own room (name, theme, four locks from their own numbers).
-        The worked solutions below use the
-        <strong>"Use example numbers"</strong> defaults. Live calculators solve
-        and verify by substitution as students type.
+        <strong>How the deployed Version A works.</strong> Students (1) name
+        their room and pick a theme, (2) write one <em>secret-code</em> equation
+        (addition or subtraction) from a code and constant they choose, (3)
+        choose and solve one of <strong>four built-in combination locks</strong>
+        from a dropdown (multiplication / division), (4) check the lock by
+        substitution and rate its difficulty against real escape-room stats, (5)
+        swap one clue with a partner and solve theirs, then (6) write a pitch and
+        generate a report. Live calculators verify each step by substitution as
+        students type. The worked solutions below use natural example inputs;
+        the four dropdown locks are fixed, so their solutions are always the
+        same.
       </div>
 
-      <!-- PART 1 — SELF -->
+      <!-- STEP 1 — SET THE CODE (student-authored equation) -->
       <div class="phase-ak">
         <h3>
-          Part 1 (Self) — Build Your Escape Room: Lock A &amp; Lock B
+          Step 1 — Set the Code (secret-code equation)
           <span class="ph-tag purple">6.EE.6 · 6.EE.7 · Add/Subtract</span>
         </h3>
+        <p style="margin: 8px 0 10px">
+          The student picks a secret code (the solution <strong>x</strong>), an
+          operation, and a constant. The app builds the clue equation
+          <em>x ± constant = result</em> and checks it by substitution. Numbers
+          vary by student — verify with the live "Verify Clue Equation" button.
+          Two worked examples:
+        </p>
 
         <p style="margin: 8px 0 4px; font-weight: 700">
-          Lock A — Addition (default p = 8, q = 15):
+          Addition example — secret code 12, constant 5:
         </p>
-        <div class="eq-display">x + 8 = 15</div>
+        <div class="eq-display">x + 5 = 17</div>
         <div class="worked purple">
-          Clue: "When you add 8 to the combination, you get 15."<br />
-          Inverse operation — subtract p from both sides: x = q − p = 15 − 8 =
-          <strong>7</strong><br />
-          Substitution check: 7 + 8 = 15
+          Result = code + constant = 12 + 5 = 17, so the clue is x + 5 = 17.<br />
+          To crack it, a player uses the inverse (subtract 5): x = 17 − 5 =
+          <strong>12</strong> (the secret code).<br />
+          Substitution check: 12 + 5 = 17
           <span class="verify-check">✓ Verified</span>
         </div>
-        <div class="answer-box">Lock A combination: x = 7</div>
+        <div class="answer-box">Secret code x = 12</div>
 
         <p style="margin: 16px 0 4px; font-weight: 700">
-          Lock B — Subtraction (default p = 6, q = 10):
+          Subtraction example — secret code 12, constant 5:
         </p>
-        <div class="eq-display">x − 6 = 10</div>
+        <div class="eq-display">x − 5 = 7</div>
         <div class="worked purple">
-          Clue: "When you take away 6 from the combination, you get 10."<br />
-          Inverse operation — add p to both sides: x = q + p = 10 + 6 =
-          <strong>16</strong><br />
-          Substitution check: 16 − 6 = 10
-          <span class="verify-check">✓ Verified</span>
+          Result = code − constant = 12 − 5 = 7, so the clue is x − 5 = 7.<br />
+          Inverse (add 5): x = 7 + 5 = <strong>12</strong>.<br />
+          Substitution check: 12 − 5 = 7
+          <span class="verify-check">✓ Verified</span><br />
+          <em>Guard:</em> for subtraction the app requires code ≥ constant, so
+          players never solve into negative numbers.
         </div>
-        <div class="answer-box">Lock B combination: x = 16</div>
+        <div class="answer-box">Secret code x = 12</div>
       </div>
 
+      <!-- STEP 2 — SOLVE A CLUE EQUATION (four fixed dropdown locks) -->
       <div class="phase-ak">
         <h3>
-          Part 1 (Self) — Lock C &amp; Lock D
-          <span class="ph-tag teal">6.EE.7 · Multiply/Divide</span>
+          Step 2 — Solve a Clue Equation (four built-in locks)
+          <span class="ph-tag teal">6.EE.7 · Multiply / Divide</span>
         </h3>
+        <p style="margin: 8px 0 10px">
+          Students pick one lock from a fixed dropdown and solve it with the
+          inverse operation. These four equations and their solutions never
+          change. (Level 1 hints point to the whole-number locks; Level 2 hints
+          point to the larger/decimal locks — but all four are always available.)
+        </p>
 
         <p style="margin: 8px 0 4px; font-weight: 700">
-          Lock C — Multiplication (default p = 4, q = 28):
+          The Cipher Lock:
         </p>
-        <div class="eq-display">4x = 28</div>
+        <div class="eq-display">3x = 36</div>
         <div class="worked teal">
-          <strong>Equation:</strong> 4x = 28<br />
-          Inverse operation — divide both sides by 4: x = 28 ÷ 4 =
-          <strong>7</strong><br />
-          Divisibility check: 28 ÷ 4 = 7 exactly (no remainder).<br />
-          Substitution check: 4 × 7 = 28
+          x is multiplied by 3 → inverse is division: divide both sides by 3.<br />
+          x = 36 ÷ 3 = <strong>12</strong><br />
+          Substitution check: 3 × 12 = 36
           <span class="verify-check">✓ Verified</span>
         </div>
-        <div class="answer-box">Lock C combination: x = 7</div>
+        <div class="answer-box">The Cipher Lock: x = 12</div>
 
         <p style="margin: 16px 0 4px; font-weight: 700">
-          Lock D — Level 1: Division (default p = 3, q = 5):
+          The Laser Grid Lock:
         </p>
-        <div class="eq-display">x ÷ 3 = 5</div>
+        <div class="eq-display">x / 4 = 8</div>
         <div class="worked teal">
-          Inverse operation — multiply both sides by 3: x = 5 × 3 =
-          <strong>15</strong><br />
-          Substitution check: 15 ÷ 3 = 5
+          x is divided by 4 → inverse is multiplication: multiply both sides by
+          4.<br />
+          x = 8 × 4 = <strong>32</strong><br />
+          Substitution check: 32 ÷ 4 = 8
           <span class="verify-check">✓ Verified</span>
         </div>
-        <div class="answer-box">Lock D (Level 1) combination: x = 15</div>
+        <div class="answer-box">The Laser Grid Lock: x = 32</div>
 
         <p style="margin: 16px 0 4px; font-weight: 700">
-          Lock D — Level 2: Two-step combo &gt; 50 (default p = 3, r = 7, q =
-          220):
+          The Chamber Lock:
         </p>
-        <div class="eq-display">3x + 7 = 220</div>
+        <div class="eq-display">12x = 180</div>
         <div class="worked teal">
-          <strong>Two-step (undo in reverse):</strong><br />
-          &nbsp; Step 1 — subtract r: 3x = 220 − 7 = 213<br />
-          &nbsp; Step 2 — divide by p: x = 213 ÷ 3 =
-          <strong>71</strong> (greater than 50 — tough final lock)<br />
-          Substitution check: 3 × 71 + 7 = 220
+          x is multiplied by 12 → divide both sides by 12.<br />
+          x = 180 ÷ 12 = <strong>15</strong><br />
+          Substitution check: 12 × 15 = 180
           <span class="verify-check">✓ Verified</span>
         </div>
-        <div class="answer-box">Lock D (Level 2) combination: x = 71</div>
-      </div>
+        <div class="answer-box">The Chamber Lock: x = 15</div>
 
-      <!-- PART 2 — PEER -->
-      <div class="phase-ak">
-        <h3>
-          Part 2 (Peer) — Swap &amp; Crack
-          <span class="ph-tag coral">6.EE.5 · Verify by Substitution</span>
-        </h3>
-        <div class="worked coral">
-          A partner reads the student's Lock A and Lock C equations and types
-          the combination they solve for. The page auto-checks the partner's
-          answer against the student's verified key (exact match) and explains
-          the substitution. With the example numbers:<br />
-          &nbsp; Partner should enter <strong>7</strong> for Lock A (x + 8 = 15)
-          → 7 + 8 = 15 ✓ "Lock A opens."<br />
-          &nbsp; Partner should enter <strong>7</strong> for Lock C (4x = 28) →
-          4 × 7 = 28 ✓ "Lock C opens."<br />
-          <em>Look-for:</em> the partner shows the inverse step and a
-          substitution, not just a guess.
+        <p style="margin: 16px 0 4px; font-weight: 700">
+          The Trapdoor Lock:
+        </p>
+        <div class="eq-display">x / 2.5 = 12</div>
+        <div class="worked teal">
+          x is divided by 2.5 → multiply both sides by 2.5.<br />
+          x = 12 × 2.5 = <strong>30</strong><br />
+          Substitution check: 30 ÷ 2.5 = 12
+          <span class="verify-check">✓ Verified</span>
         </div>
+        <div class="answer-box">The Trapdoor Lock: x = 30</div>
       </div>
 
-      <!-- PART 3 — WORLD -->
+      <!-- STEP 3 — CHECK & COMPARE -->
       <div class="phase-ak">
         <h3>
-          Part 3 (World) — Sample Escape Rooms &amp; Inequality Lock
-          <span class="ph-tag gold">6.EE.7 · 6.EE.8 · Compare</span>
+          Step 3 — Check &amp; Compare
+          <span class="ph-tag gold">6.EE.5 · Substitution</span>
         </h3>
         <div class="worked gold">
-          <strong>World meter:</strong> students compare their value (locks,
-          average combination, or hardest combination) against eight built-in
-          sample rooms. The meter reports whether the student is above or below
-          the sample mean — any on-topic numeric comparison is acceptable.<br /><br />
-          <strong>What-If inequality lock:</strong> set "opens when combination
-          is at least T" → x ≥ T, drawn as a closed circle at T shaded right.
-          Testing a value v reports TRUE (lock opens) when v ≥ T, FALSE
-          otherwise. Example: target 50, test 71 → 71 ≥ 50 TRUE, lock opens.<br /><br />
-          <strong>Level 2 question (5x − 3 = 97):</strong> add 3 → 5x = 100,
-          divide by 5 → <strong>x = 20</strong>; verify 5 × 20 − 3 = 97 ✓.
+          <strong>Substitution check:</strong> the app rebuilds the chosen lock
+          as a fill-in statement and accepts only the exact matching values:<br />
+          &nbsp; 3x = 36 → 3 × <strong>12</strong> = <strong>36</strong><br />
+          &nbsp; x / 4 = 8 → <strong>32</strong> ÷ 4 = <strong>8</strong><br />
+          &nbsp; 12x = 180 → 12 × <strong>15</strong> = <strong>180</strong><br />
+          &nbsp; x / 2.5 = 12 → <strong>30</strong> ÷ 2.5 = <strong>12</strong><br /><br />
+          <strong>Real-world stats table (static reference):</strong> average
+          solve rate 30%–40%, average time to solve 45–60 minutes, cost per
+          person $25–$35. The difficulty rating dropdown and the reflection are
+          open response — any reasoned comparison of the student's lock to these
+          figures is acceptable.
         </div>
-        <div class="answer-box">Level 2 question answer: x = 20</div>
+      </div>
+
+      <!-- STEP 4 — PARTNER CLUES -->
+      <div class="phase-ak">
+        <h3>
+          Step 4 — Partner Clues (swap &amp; solve)
+          <span class="ph-tag coral">6.EE.5 · 6.EE.7 · Verify</span>
+        </h3>
+        <div class="worked coral">
+          The student enters a partner's one-step equation, names the operation
+          and the inverse, applies the number to both sides, solves, and enters a
+          substitution check (LHS = RHS). The app parses addition, subtraction,
+          multiplication (e.g. <code>5x = 45</code>) and division (e.g.
+          <code>x / 3 = 10</code>) forms and confirms every field. Worked
+          example — partner wrote <strong>5x = 45</strong>:<br />
+          &nbsp; Operation: Multiplication → Inverse: Division by 5<br />
+          &nbsp; x = 45 ÷ 5 = <strong>9</strong><br />
+          &nbsp; Substitution: 5 × 9 = 45, so LHS 45 = RHS 45
+          <span class="verify-check">✓ Verified</span><br />
+          <em>Look-for:</em> the correct inverse operation and a balanced
+          substitution, not just a guessed number.
+        </div>
       </div>
 
       <!-- Complete Lock Summary -->
       <div class="phase-ak">
-        <h3>Complete Answer Key Summary — Example Numbers</h3>
+        <h3>Complete Answer Key Summary — The Four Built-in Locks</h3>
         <div class="worked">
-          <strong>Lock A:</strong> x + 8 = 15 &nbsp;→&nbsp; x =
-          <strong>7</strong> &nbsp; (verify: 7 + 8 = 15 ✓)<br />
-          <strong>Lock B:</strong> x − 6 = 10 &nbsp;→&nbsp; x =
-          <strong>16</strong> &nbsp; (verify: 16 − 6 = 10 ✓)<br />
-          <strong>Lock C:</strong> 4x = 28 &nbsp;→&nbsp; x =
-          <strong>7</strong> &nbsp;&nbsp; (verify: 4 × 7 = 28 ✓)<br />
-          <strong>Lock D (L1):</strong> x ÷ 3 = 5 &nbsp;→&nbsp; x =
-          <strong>15</strong> &nbsp; (verify: 15 ÷ 3 = 5 ✓)<br />
-          <strong>Lock D (L2):</strong> 3x + 7 = 220 &nbsp;→&nbsp; x =
-          <strong>71</strong> &nbsp; (verify: 3 × 71 + 7 = 220 ✓)
+          <strong>The Cipher Lock:</strong> 3x = 36 &nbsp;→&nbsp; x =
+          <strong>12</strong> &nbsp; (verify: 3 × 12 = 36 ✓)<br />
+          <strong>The Laser Grid Lock:</strong> x / 4 = 8 &nbsp;→&nbsp; x =
+          <strong>32</strong> &nbsp; (verify: 32 ÷ 4 = 8 ✓)<br />
+          <strong>The Chamber Lock:</strong> 12x = 180 &nbsp;→&nbsp; x =
+          <strong>15</strong> &nbsp; (verify: 12 × 15 = 180 ✓)<br />
+          <strong>The Trapdoor Lock:</strong> x / 2.5 = 12 &nbsp;→&nbsp; x =
+          <strong>30</strong> &nbsp; (verify: 30 ÷ 2.5 = 12 ✓)
         </div>
         <p style="font-size: 13px; color: #5e6e7e">
-          Students who use their own numbers will get different combinations;
-          the same inverse-operation and substitution reasoning applies. Use the
-          live calculator to check any custom values quickly.
+          The four dropdown locks are fixed, so these solutions are always
+          correct. The secret-code equation in Step 1 and the partner clue in
+          Step 4 use student-chosen numbers; use the live calculators to check
+          any custom values quickly.
         </p>
       </div>
 
@@ -498,31 +528,32 @@
       <div class="phase-ak">
         <h3>Sample Expert Response (4/4 Deliverable)</h3>
         <div class="sample-response">
-          <strong>Sample Escape Room Blueprint using example numbers:</strong
-          ><br />
+          <strong>Sample Escape Room Blueprint:</strong><br />
           "My escape room is called The Vault of Numbers (theme: Secret Spy
-          Lab). Lock A: x + 8 = 15; subtract 8 from both sides → x = 7; verify 7
-          + 8 = 15. Lock B: x − 6 = 10; add 6 to both sides → x = 16; verify 16
-          − 6 = 10. Lock C: 4x = 28; divide both sides by 4 → x = 7; verify 4 ×
-          7 = 28. Lock D (two-step): 3x + 7 = 220; subtract 7 → 3x = 213, divide
-          by 3 → x = 71; verify 3 × 71 + 7 = 220. A partner cracked Lock A and
-          Lock C and both opened. My hardest combination is 71, which is higher
-          than the sample-room average, so my room is on the tougher side. Every
-          combination was verified by substitution."
+          Lab). My secret code is 12, so my clue equation is x + 5 = 17 — players
+          subtract 5 from both sides to get x = 12, and 12 + 5 = 17 checks out.
+          For my combination lock I chose The Chamber Lock, 12x = 180. Since x is
+          multiplied by 12, I divided both sides by 12 to get x = 15, and 12 × 15
+          = 180 verifies it. I rated it Hard, since a solve rate near 30% matches
+          a tougher puzzle. My partner's clue was 5x = 45; I divided both sides
+          by 5 to get x = 9 and checked 5 × 9 = 45. Every lock was solved with an
+          inverse operation and verified by substitution."
         </div>
 
         <div class="rubric-note">
-          <strong>Sample 4 / 3 / 2 Rubric Scoring Guide:</strong><br />
-          <strong>4 — Expert:</strong> All lock equations written correctly
-          using a variable; each solution found by explicitly naming the inverse
-          operation used; substitution check shown for every lock; peer answers
-          checked and a numeric world comparison made.<br />
-          <strong>3 — Proficient:</strong> All solutions correct; at least one
-          substitution check shown; blueprint lists equations and solutions for
-          every lock.<br />
-          <strong>2 — Developing:</strong> One or two equations written
-          correctly; solutions attempted but one has a computation error;
-          blueprint is missing one or more locks' equations or solutions.
+          <strong>Sample 4 / 3 / 2 Rubric Scoring Guide</strong> (matches the
+          in-app rubric):<br />
+          <strong>4 — Expert:</strong> Secret-code equation (6.EE.6) written
+          correctly with a variable and matching the theme; combination lock
+          (6.EE.7) solved step-by-step by naming the correct inverse operation;
+          substitution check (6.EE.5) shown; partner clue solved and a real-world
+          comparison made; pitch uses the student's real numbers.<br />
+          <strong>3 — Proficient:</strong> Equations and lock solved correctly;
+          at least one substitution check shown; pitch present with real
+          numbers.<br />
+          <strong>2 — Developing:</strong> Equation or lock attempted with a
+          computation error, or the substitution check / pitch is missing or
+          incomplete.
         </div>
       </div>
 
@@ -536,85 +567,60 @@
         <div>
           <h2>Fundraiser Goal Tracker</h2>
           <p>
-            Standards: 6.EE.5 (substitution) · 6.EE.7 (one-step equations) ·
-            6.EE.8 (writing and graphing inequalities)
+            Standards: 6.EE.5 (substitution) · 6.EE.6 (writing equations &amp;
+            inequalities with variables) · 6.EE.7 (one-step equations) · 6.EE.8
+            (writing and graphing inequalities)
           </p>
         </div>
       </div>
 
       <div class="ak-note">
-        <strong>Upgraded SELF → PEER → WORLD structure.</strong> Students now
-        plan their own fundraiser (name the cause + item, real goal, already
-        raised, price). Worked solutions use the
-        <strong>"Use example numbers"</strong> defaults. Phases 1–3 below are
-        the SELF part.
+        <strong>How the deployed Version B works.</strong> Students plan a class
+        fundraiser and work through five steps: (1) set a goal and amount raised
+        and solve an addition equation for the amount still needed, (2) write and
+        graph a milestone inequality in <strong>y</strong> on a number line, (3)
+        write and solve a multiplication equation for the number of items to
+        sell, (4) compare progress with a classmate, and (5) write a pitch and
+        generate a report. The worked solutions below use the app's
+        <strong>default input values</strong> (goal $500, raised $180, price $5,
+        milestone target $350); students who change them get different but
+        similar answers.
       </div>
 
-      <!-- PART 1 — SELF / Phase 1 -->
+      <!-- STEP 1 — FUNDRAISER GOAL -->
       <div class="phase-ak">
         <h3>
-          Part 1 (Self) — How Much More Do We Need?
+          Step 1 — Fundraiser Goal &amp; Progress
           <span class="ph-tag emerald">6.EE.7 · Addition Equation</span>
         </h3>
 
         <p><strong>Default inputs:</strong></p>
         <div class="inputs-row">
-          <div class="inp-chip">Amount already raised = $85</div>
-          <div class="inp-chip">Fundraiser goal = $300</div>
+          <div class="inp-chip">Fundraiser goal = $500</div>
+          <div class="inp-chip">Amount already raised = $180</div>
         </div>
-        <div class="eq-display">$85 + x = $300</div>
+        <div class="eq-display">180 + x = 500</div>
 
         <div class="worked emerald">
           <strong>Equation model:</strong> raised + x = goal<br />
-          &nbsp; 85 + x = 300<br />
+          &nbsp; 180 + x = 500<br />
           <strong>Inverse operation:</strong> Subtraction undoes addition.
-          Subtract 85 from both sides:<br />
-          &nbsp; x = 300 − 85 = <strong>$215</strong><br /><br />
+          Subtract 180 from both sides:<br />
+          &nbsp; x = 500 − 180 = <strong>$320</strong><br /><br />
           <strong>Substitution check:</strong><br />
-          &nbsp; $85 + $215 = $300 <span class="verify-check">✓ Verified</span
+          &nbsp; $180 + $320 = $500 <span class="verify-check">✓ Verified</span
           ><br /><br />
-          <em>Interpretation:</em> The class still needs to raise $215 to meet
-          the $300 goal.
+          <em>Interpretation:</em> The class still needs to raise $320 to meet
+          the $500 goal. (The app accepts many equivalent forms, e.g.
+          <code>x + 180 = 500</code>, <code>500 − 180 = x</code>.)
         </div>
-        <div class="answer-box">x = $215 more needed</div>
+        <div class="answer-box">x = $320 more needed</div>
       </div>
 
-      <!-- Phase 2 -->
+      <!-- STEP 2 — INEQUALITY -->
       <div class="phase-ak">
         <h3>
-          Part 1 (Self) — Plan the Sales
-          <span class="ph-tag teal">6.EE.7 · Multiplication Equation</span>
-        </h3>
-
-        <p><strong>Default inputs:</strong></p>
-        <div class="inputs-row">
-          <div class="inp-chip">Price per item = $5</div>
-          <div class="inp-chip">Sales target = $150</div>
-        </div>
-        <div class="eq-display">n × $5 = $150</div>
-
-        <div class="worked teal">
-          <strong>Equation model:</strong> n × price = target &nbsp;&nbsp;(n =
-          number of items to sell)<br />
-          &nbsp; 5n = 150<br />
-          <strong>Inverse operation:</strong> Division undoes multiplication.
-          Divide both sides by 5:<br />
-          &nbsp; n = 150 ÷ 5 = <strong>30 items</strong><br /><br />
-          <strong>Divisibility check:</strong> 150 ÷ 5 = 30 exactly (no
-          remainder) — whole number answer. ✓<br /><br />
-          <strong>Substitution check:</strong><br />
-          &nbsp; 30 × $5 = $150 <span class="verify-check">✓ Verified</span
-          ><br /><br />
-          <em>Interpretation:</em> The class must sell 30 items at $5 each to
-          earn $150 from the bake sale.
-        </div>
-        <div class="answer-box">n = 30 items to sell</div>
-      </div>
-
-      <!-- Phase 3 -->
-      <div class="phase-ak">
-        <h3>
-          Part 1 (Self) — Set the Goal Condition (Inequality)
+          Step 2 — Progress Milestone (Inequality)
           <span class="ph-tag gold"
             >6.EE.8 · Writing &amp; Graphing Inequalities</span
           >
@@ -622,140 +628,138 @@
 
         <p><strong>Default inputs:</strong></p>
         <div class="inputs-row">
-          <div class="inp-chip">Minimum goal = $300</div>
-          <div class="inp-chip">Symbol = ≥ (greater than or equal to)</div>
+          <div class="inp-chip">Milestone = "Stretch Goal"</div>
+          <div class="inp-chip">Target amount = $350</div>
+          <div class="inp-chip">Symbol = &gt; (more than) · variable y</div>
         </div>
-        <div class="eq-display">x ≥ 300</div>
+        <div class="eq-display">y &gt; 350</div>
 
         <div class="worked gold">
-          <strong>Inequality written:</strong> x ≥ 300<br />
-          <em>Read as:</em> "The total amount raised (x) must be at least
-          $300."<br /><br />
-          <strong>Solution set:</strong> All values of x that are 300 or
-          greater.<br />
-          &nbsp; x ∈ {300, 301, 302, 305, 310, 400, 500, …} — infinitely many
-          solutions.<br /><br />
-          <strong>Number-line description:</strong> Draw a
-          <em>closed circle</em> at 300 (closed = includes 300, because ≥ means
-          "equal to or greater than") and shade the ray extending to the right
-          (toward larger numbers).<br />
-          If the symbol were strictly &gt;, use an <em>open circle</em> at
-          300.<br /><br />
-          <strong>Sample value check (from JS logic):</strong><br />
-          &nbsp; x = 298: 298 ≥ 300 → FALSE (does not satisfy — below goal)<br />
-          &nbsp; x = 300: 300 ≥ 300 → TRUE (satisfies — exactly meets goal)<br />
-          &nbsp; x = 302: 302 ≥ 300 → TRUE (satisfies — exceeds goal)<br />
-          &nbsp; x = 304: 304 ≥ 300 → TRUE (satisfies)
+          <strong>Inequality written:</strong> y &gt; 350 (the app uses the
+          variable <strong>y</strong> = total amount raised).<br />
+          <em>Read as:</em> "The total raised (y) must be more than $350."<br /><br />
+          <strong>Solution set:</strong> all values greater than 350 — infinitely
+          many solutions (351, 400, 500, …); 350 itself is <em>not</em> included
+          because the symbol is strictly &gt;.<br /><br />
+          <strong>Number-line description:</strong> draw an
+          <em>open circle</em> at 350 (open = 350 excluded, because &gt; is
+          strict) and shade the ray extending to the right. If a student instead
+          chooses <strong>≥</strong>, use a <em>closed circle</em> at 350; the
+          &lt; and ≤ options shade to the left.<br /><br />
+          <strong>Test-value check (from the app's logic):</strong><br />
+          &nbsp; y = 350: 350 &gt; 350 → FALSE (not in the set)<br />
+          &nbsp; y = 351: 351 &gt; 350 → TRUE<br />
+          &nbsp; y = 400: 400 &gt; 350 → TRUE<br />
+          &nbsp; y = 300: 300 &gt; 350 → FALSE
         </div>
         <div class="answer-box">
-          Inequality: x ≥ 300 &nbsp;|&nbsp; Closed circle at 300, shade right
+          Inequality: y &gt; 350 &nbsp;|&nbsp; Open circle at 350, shade right
+        </div>
+        <div class="rubric-note">
+          <strong>Chromebook note:</strong> the checker accepts typed
+          <code>&gt;=</code> for ≥ and <code>&lt;=</code> for ≤, so students who
+          pick those symbols can still type their inequality.
         </div>
       </div>
 
-      <!-- PART 1 — Level 2 -->
+      <!-- STEP 3 — ITEM SALES -->
       <div class="phase-ak">
         <h3>
-          Part 1 (Self) — Level 2: Compound Inequality &amp; Minimize Items
-          <span class="ph-tag purple">6.EE.8 · Compound · Minimize</span>
+          Step 3 — Plan Product Sales
+          <span class="ph-tag teal">6.EE.7 · Multiplication Equation</span>
         </h3>
-        <p>
-          <strong>Defaults:</strong> goal $300, stretch goal $500, price $5,
-          still needed $215 (from Phase 1).
-        </p>
-        <div class="worked purple">
-          <strong>Compound inequality:</strong> a "great" fundraiser raises
-          between the goal and the stretch goal:<br />
-          &nbsp; 300 ≤ x ≤ 500 — every amount from $300 up to $500
-          (inclusive).<br /><br />
-          <strong>Minimize items:</strong> the class still needs $215 at $5 per
-          item:<br />
-          &nbsp; 5n ≥ 215 → n ≥ 215 ÷ 5 = 43 → fewest whole number of items =
-          <strong>43</strong> (raises $215).<br />
-          <em
-            >If "needed" is not a multiple of price, round UP (ceiling) so the
-            plan reaches at least the amount.</em
-          >
+
+        <p><strong>Default inputs:</strong></p>
+        <div class="inputs-row">
+          <div class="inp-chip">Price per item = $5 (Popcorn)</div>
+          <div class="inp-chip">Amount still needed = $320</div>
         </div>
-        <div class="answer-box">
-          300 ≤ x ≤ 500 &nbsp;|&nbsp; minimum 43 items
+        <div class="eq-display">5n = 320</div>
+
+        <div class="worked teal">
+          <strong>Equation model:</strong> price × n = amount needed &nbsp;(n =
+          items to sell). The "needed" amount comes straight from Step 1:
+          goal − raised = 500 − 180 = 320.<br />
+          &nbsp; 5n = 320<br />
+          <strong>Inverse operation:</strong> Division undoes multiplication.
+          Divide both sides by 5:<br />
+          &nbsp; n = 320 ÷ 5 = <strong>64 items</strong><br /><br />
+          <strong>Divisibility check:</strong> 320 ÷ 5 = 64 exactly (no
+          remainder), so no rounding is needed here.<br />
+          <strong>Substitution check:</strong> 64 × $5 = $320
+          <span class="verify-check">✓ Verified</span><br /><br />
+          <em>Interpretation:</em> selling 64 items of popcorn at $5 raises the
+          remaining $320. If a student instead chooses a price that does not
+          divide evenly, the app rounds the item count <strong>up</strong>
+          (ceiling) so the plan reaches at least the amount.
+        </div>
+        <div class="answer-box">n = 64 items to sell</div>
+        <div class="worked teal">
+          <strong>Level 2 (custom price) examples, same $320 needed:</strong><br />
+          &nbsp; Cookie Dough at $8: 8n = 320 → n = 320 ÷ 8 = <strong>40</strong>
+          items.<br />
+          &nbsp; Candy Bars at $2: 2n = 320 → n = 320 ÷ 2 = <strong>160</strong>
+          items.<br />
+          <em>Real-world benchmark table (static reference):</em> bake sale /
+          car wash $200–$800, product sales $2,000–$5,000, fun run / walk-a-thon
+          $3,000–$8,000. The benchmark reflection is open response.
         </div>
       </div>
 
-      <!-- PART 2 — PEER -->
+      <!-- STEP 4 — PARTNER COMPARISON -->
       <div class="phase-ak">
         <h3>
-          Part 2 (Peer) — Compare Plans (Who's Closer?)
-          <span class="ph-tag coral">6.EE.7 · Compare</span>
+          Step 4 — Compare With a Classmate
+          <span class="ph-tag coral">6.EE.7 · Compare Percents</span>
         </h3>
         <div class="worked coral">
-          Students enter a partner's goal and amount raised; the page computes
-          each person's percent to goal and dollars away, then names who is
-          closer and by how many percentage points. With the example partner
-          values (goal $400, raised $250) versus the student's own ($300 raised
-          $85):<br />
-          &nbsp; Me: 85 ÷ 300 = <strong>28%</strong> to goal, $215 away.<br />
-          &nbsp; Partner: 250 ÷ 400 = <strong>63%</strong> to goal, $150
-          away.<br />
-          &nbsp; Verdict: the partner is closer to goal (63% vs 28%), ahead by
-          35 percentage points.<br />
+          Students enter a classmate's goal and amount raised; the app computes
+          each person's percent to goal, the dollar and goal differences, and
+          names who is closer. Using the student's defaults (goal $500, raised
+          $180) versus an example partner (goal $400, raised $250):<br />
+          &nbsp; Me: 180 ÷ 500 = <strong>36%</strong> to goal.<br />
+          &nbsp; Partner: 250 ÷ 400 = 62.5% ≈ <strong>63%</strong> to goal.<br />
+          &nbsp; Difference: 62.5% − 36% = 26.5% ≈ <strong>27</strong>
+          percentage points; the partner is closer to their goal.<br />
+          &nbsp; The partner's goal ($400) is $100 lower than the student's
+          ($500); the student has raised $70 less ($180 vs $250).<br />
           <em>Look-for:</em> reasoning uses percent of goal, not just raw
           dollars (a bigger goal needs more dollars).
         </div>
-      </div>
-
-      <!-- PART 3 — WORLD -->
-      <div class="phase-ak">
-        <h3>
-          Part 3 (World) — Sample Fundraisers &amp; What-If Lab
-          <span class="ph-tag gold">6.EE.7 · 6.EE.8 · Compare</span>
-        </h3>
-        <div class="worked gold">
-          <strong>World meter:</strong> students compare their value (percent to
-          goal, goal amount, or amount raised) against eight built-in sample
-          school fundraisers. The meter reports above/below the sample mean —
-          any on-topic numeric comparison is acceptable.<br /><br />
-          <strong>What-If Lab:</strong> students change price and item count;
-          the page projects total = already raised + price × items, then tests
-          the goal condition x ≥ goal live. Example: raised $85, sell 40 at $6 →
-          sales $240, total $325; 325 ≥ 300 → <strong>TRUE</strong>, plan meets
-          the goal.<br /><br />
-          <strong>Level 2 question (at least $480 at $8 each):</strong> 8n ≥ 480
-          → n ≥ 480 ÷ 8 = 60, so the fewest items is <strong>60</strong>.
-        </div>
-        <div class="answer-box">Level 2 question answer: at least 60 items</div>
       </div>
 
       <!-- Sample Expert Response -->
       <div class="phase-ak">
         <h3>Sample Expert Response (4/4 Deliverable)</h3>
         <div class="sample-response">
-          <strong>Sample Fundraiser Plan using example numbers:</strong><br />
-          "Our fundraiser is for the 6th grade field trip, selling cupcakes. Our
-          goal is $300 and we have raised $85, so 85 + x = 300 gives x = $215
-          more needed (verify: 85 + 215 = 300). To reach a $150 sales target at
-          $5 each, we must sell 30 items (5n = 150, verify 5 × 30 = 150). The
-          success condition is x ≥ $300 — a closed circle at 300 shaded right. A
-          partner's fundraiser is 63% to goal while ours is 28%, so they are
-          ahead. Using the What-If Lab, selling 40 cupcakes at $6 raises $240,
-          for a projected total of $325; since 325 ≥ 300 is TRUE, that plan
-          meets the goal."
+          <strong>Sample Fundraiser Plan using the default numbers:</strong><br />
+          "Our fundraiser is for classroom library books. Our goal is $500 and we
+          have already raised $180, so 180 + x = 500 gives x = $320 more needed
+          (verify: 180 + 320 = 500). Our stretch-goal milestone is y &gt; 350 —
+          an open circle at 350 on the number line, shaded to the right, because
+          $350 itself is not past the milestone. We will sell popcorn at $5 each:
+          5n = 320, so n = 64 items (verify 5 × 64 = 320). A classmate is 63% to
+          their $400 goal while we are 36% to our $500 goal, so they are about 27
+          percentage points closer even though our goal is larger. Please support
+          our library-book fundraiser!"
         </div>
 
         <div class="rubric-note">
-          <strong>Sample 4 / 3 / 2 Rubric Scoring Guide:</strong><br />
-          <strong>4 — Expert:</strong> Addition equation written, solved, and
-          verified with substitution; multiplication equation written, solved,
-          and verified; inequality written with correct symbol, solution set
-          described, number-line circle type (open/closed) justified; peer and
-          world comparisons use percents; conclusion compares projected total to
-          goal.<br />
-          <strong>3 — Proficient:</strong> All equations/inequality solved
-          correctly; at least one substitution check shown; plan reaches a
-          conclusion using real numbers.<br />
-          <strong>2 — Developing:</strong> One or two equations solved
-          correctly; inequality symbol correct but solution set or number-line
-          description incomplete; conclusion present but may not use actual
-          numbers.
+          <strong>Sample 4 / 3 / 2 Rubric Scoring Guide</strong> (matches the
+          in-app rubric):<br />
+          <strong>4 — Expert:</strong> Addition equation (6.EE.7) set up, solved
+          with step-by-step subtraction, and verified; milestone inequality
+          (6.EE.5, 6.EE.8) graphed accurately with correct open/closed circle
+          and shading, and a test value evaluated; multiplication equation
+          (6.EE.7) solved with division and any fractional items rounded up;
+          percent progress compared with a classmate and against real-world
+          benchmarks.<br />
+          <strong>3 — Proficient:</strong> All equations and the inequality
+          solved correctly and graphed properly; at least one substitution check
+          shown; both classmate and benchmark comparisons attempted.<br />
+          <strong>2 — Developing:</strong> Equations set up correctly but with a
+          calculation error, or the number-line graph / test evaluation is
+          wrong; only one of the two comparisons completed.
         </div>
       </div>
 

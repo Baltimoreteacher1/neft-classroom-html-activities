@@ -17,7 +17,7 @@
     <style>
       :root {
         --navy: #0b2e2d; /* Deep Teal-Navy for warm, premium text/headers */
-        --blue: #0e8a7d; /* Primary accent - Teal */
+        --blue: #0a6b62; /* Primary accent - Teal (darkened for WCAG AA text contrast) */
         --blue-lt: #e4f5f3; /* Primary accent light - Teal background */
         --teal: #1a6fb5; /* Secondary accent - Blue */
         --teal-lt: #e8f2fc; /* Secondary accent light - Blue background */
@@ -153,9 +153,17 @@
         padding: 8px 12px;
         border-radius: 10px;
         transition: background 0.15s;
+        border: none;
+        background: transparent;
+        font-family: inherit;
+        color: inherit;
       }
       .step-trail-item:hover {
         background: var(--blue-lt);
+      }
+      .step-trail-item:focus-visible {
+        outline: 2px solid var(--blue);
+        outline-offset: 2px;
       }
       .step-trail-item.active .s-num {
         background: var(--blue);
@@ -180,7 +188,7 @@
         transition: all 0.2s;
       }
       .s-label {
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 600;
         color: var(--muted);
       }
@@ -213,7 +221,7 @@
         transition: width 0.4s ease;
       }
       .prog-label {
-        font-size: 12px;
+        font-size: 14px;
         color: var(--muted);
         margin-top: 4px;
       }
@@ -276,10 +284,11 @@
         font-size: 20px;
         font-weight: 800;
         color: var(--navy);
+        margin-top: 0;
         margin-bottom: 3px;
       }
       .card-sub {
-        font-size: 13px;
+        font-size: 14px;
         color: var(--muted);
         font-weight: 500;
       }
@@ -319,7 +328,7 @@
       /* ---- Form inputs ---- */
       label.lbl {
         display: block;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 700;
         color: var(--navy);
         margin-bottom: 5px;
@@ -375,7 +384,7 @@
         transition: background 0.2s;
       }
       .calc-btn:hover {
-        background: #0a6b62;
+        background: #08544c;
       }
       .calc-btn.gold {
         background: var(--gold);
@@ -569,7 +578,7 @@
         transition: background 0.2s;
       }
       .nav-btn:hover {
-        background: #0a6b62;
+        background: #08544c;
       }
       .nav-btn.ghost {
         background: transparent;
@@ -666,12 +675,12 @@
         margin-bottom: 4px;
       }
       .vocab-def {
-        font-size: 13px;
+        font-size: 14px;
         color: var(--muted);
         line-height: 1.5;
       }
       .vocab-ex {
-        font-size: 12px;
+        font-size: 14px;
         color: var(--blue);
         font-weight: 600;
         margin-top: 5px;
@@ -884,10 +893,10 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Key Words</span
                 ><span class="es-text">Palabras Clave</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Learn these 4 math words before you begin</span
@@ -1017,10 +1026,10 @@
           <div class="card-header">
             <div class="card-icon">🧁</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 1 — Portion Control</span
                 ><span class="es-text">Paso 1 — Control de Porciones</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Divide a recipe amount by a portion serving size</span
@@ -1322,7 +1331,7 @@
           <div class="card-header">
             <div class="card-icon teal">🥣</div>
             <div>
-              <div class="card-title">Step 2 — Big Batch Servings</div>
+              <h2 class="card-title">Step 2 — Big Batch Servings</h2>
               <div class="card-sub">
                 Divide a whole number batch by a unit fraction scoop
               </div>
@@ -1494,7 +1503,7 @@
           <div class="card-header">
             <div class="card-icon gold">🥖</div>
             <div>
-              <div class="card-title">Step 3 — Roll Cuts</div>
+              <h2 class="card-title">Step 3 — Roll Cuts</h2>
               <div class="card-sub">
                 Divide a mixed number roll length by a fraction slice size
               </div>
@@ -1779,7 +1788,7 @@
           <div class="card-header">
             <div class="card-icon teal">👥</div>
             <div>
-              <div class="card-title">Step 4 — Compare With a Partner</div>
+              <h2 class="card-title">Step 4 — Compare With a Partner</h2>
               <div class="card-sub">
                 Swap recipe results with a classmate and compare yields
               </div>
@@ -1929,7 +1938,7 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">Step 5 — Finish &amp; Submit</div>
+              <h2 class="card-title">Step 5 — Finish &amp; Submit</h2>
               <div class="card-sub">
                 Write your menu card, complete the checklist, and export your
                 report
@@ -2116,7 +2125,7 @@
               gap: 8px;
             "
           >
-            <button class="calc-btn" onclick="buildReport()">
+            <button class="calc-btn" onclick="buildReport(); playConfetti();">
               📝 Generate Summary
             </button>
             <button class="export-btn" onclick="copyReport()">📋 Copy</button>
@@ -2151,31 +2160,6 @@
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <script src="/assets/app.js" defer></script>
     <script>
-      const PRESETS = { "wood-len": 8, "piece-len": 1.5 };
-      function handleLevelPreset(n) {
-        try {
-          if (n === 1) {
-            for (const [id, val] of Object.entries(PRESETS)) {
-              const el = document.getElementById(id);
-              if (el && !el.value) {
-                el.value = val;
-                el.dispatchEvent(new Event("input", { bubbles: true }));
-                el.dispatchEvent(new Event("change", { bubbles: true }));
-              }
-            }
-          } else if (n === 2) {
-            for (const [id, val] of Object.entries(PRESETS)) {
-              const el = document.getElementById(id);
-              if (el && String(el.value) === String(val)) {
-                el.value = "";
-                el.dispatchEvent(new Event("input", { bubbles: true }));
-                el.dispatchEvent(new Event("change", { bubbles: true }));
-              }
-            }
-          }
-        } catch (e) {}
-      }
-
       function playConfetti() {
         try {
           const container = document.createElement("div");
@@ -2252,7 +2236,8 @@
 
       // ---- Level toggle ----
       function setLevel(n) {
-        document.getElementById("body").className = "level-" + n;
+        document.body.classList.remove("level-1", "level-2");
+        document.body.classList.add("level-" + n);
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
 
@@ -2299,8 +2284,6 @@
           document.getElementById("p3-slice-den").value = parseInt(
             sliceParts[1],
           );
-
-          handleLevelPreset(n);
         } else {
           // Sync L2 -> L1 (fallback to defaults if invalid options)
           const n1 = parseInt(document.getElementById("p1-div-num").value);
@@ -2346,14 +2329,24 @@
       }
 
       // ---- Build step trail ----
+      const STEP_LABELS = {
+        1: { en: "Key Words", es: "Palabras Clave" },
+        2: { en: "Portion Control", es: "Control de Porciones" },
+        3: { en: "Big Batch", es: "Gran Lote" },
+        4: { en: "Roll Cuts", es: "Cortes de Rollo" },
+        5: { en: "Compare", es: "Comparar" },
+        6: { en: "Finish", es: "Finalizar" },
+      };
       function buildTrail() {
         const trail = document.getElementById("stepTrail");
+        const isEs = document.body.classList.contains("es");
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
-          return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" onclick="goStep(${s.id})">
+          const label = STEP_LABELS[s.id][isEs ? "es" : "en"];
+          return `<button type="button" class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" onclick="goStep(${s.id})" aria-label="${isEs ? "Paso" : "Step"} ${s.id}: ${label}"${s.id === currentStep ? ' aria-current="step"' : ""}>
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? "✓" : s.id}</span>
-            <span class="s-label">${s.label}</span>
-          </span>${!isLast ? '<span class="step-arrow">›</span>' : ""}`;
+            <span class="s-label">${label}</span>
+          </button>${!isLast ? '<span class="step-arrow">›</span>' : ""}`;
         }).join("");
       }
 
@@ -2374,17 +2367,16 @@
       function updateProgress() {
         const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
         document.getElementById("progFill").style.width = pct + "%";
-        document.getElementById("progLabel").textContent =
-          `Step ${currentStep} of ${STEPS.length}`;
+        const isEs = document.body.classList.contains("es");
+        document.getElementById("progLabel").textContent = isEs
+          ? `Paso ${currentStep} de ${STEPS.length}`
+          : `Step ${currentStep} of ${STEPS.length}`;
       }
 
       // ---- Math helpers ----
       // Euclidean algorithm for GCD
       function gcd(a, b) {
         return b === 0 ? a : gcd(b, a % b);
-      }
-      function lcm(a, b) {
-        return (a * b) / gcd(a, b);
       }
 
       function showReadout(id, html) {
@@ -2829,7 +2821,6 @@
 
       // ---- Step 5: Finish & Report ----
       function buildReport() {
-        playConfetti();
         const isL2 = document
           .getElementById("body")
           .classList.contains("level-2");
@@ -2957,6 +2948,109 @@
       updateProgress();
       recalcAll();
 
+      // ---- Language toggle (EN/ES) ----
+      function toggleLanguage() {
+        const isEs = document.body.classList.toggle("es");
+        const btn = document.getElementById("btn-lang");
+        if (btn) btn.textContent = isEs ? "🌐 Idioma: ES" : "🌐 Language: EN";
+
+        // Update input placeholders dynamically
+        const placeholders = {
+          "p-name": {
+            en: "Partner Chef's Name",
+            es: "Nombre del chef compañero",
+          },
+          pitch: {
+            en: "Write your bakery menu card using your real numbers...",
+            es: "Escribe la tarjeta de menú de tu pastelería con tus números reales...",
+          },
+          "peer-reflect": {
+            en: "Compare your results and explain using your math vocabulary...",
+            es: "Compara tus resultados y explica usando tu vocabulario matemático...",
+          },
+          "bakery-compare": {
+            en: "My roll cuts yield ___ slices. This is closest to...",
+            es: "Mis cortes de rollo rinden ___ rebanadas. Esto se acerca más a...",
+          },
+        };
+        for (const [id, langObj] of Object.entries(placeholders)) {
+          const el = document.getElementById(id);
+          if (el) el.placeholder = isEs ? langObj.es : langObj.en;
+        }
+
+        // Refresh trail, progress and live readouts
+        buildTrail();
+        updateProgress();
+        recalcAll();
+      }
+
+      function readAloud() {
+        const btn = document.getElementById("btn-read");
+        if (!btn) return;
+
+        if (window.speechSynthesis && window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          btn.textContent = document.body.classList.contains("es")
+            ? "🔊 Leer en Voz Alta"
+            : "🔊 Read Aloud";
+          return;
+        }
+
+        const isEs = document.body.classList.contains("es");
+        btn.textContent = isEs ? "⏹️ Detener" : "⏹️ Stop";
+
+        const activePanel = document.querySelector(".step-panel.active");
+        if (!activePanel) return;
+
+        const textElements = [];
+        const selector = isEs ? ".es-text" : ".en-text";
+        activePanel.querySelectorAll(selector).forEach((el) => {
+          if (el.offsetParent !== null) {
+            textElements.push(el.textContent.trim());
+          }
+        });
+
+        if (textElements.length === 0) {
+          activePanel
+            .querySelectorAll(
+              ".card-title, .card-sub, .instruct, .vocab-term, .vocab-def, .vocab-ex, label, summary, p",
+            )
+            .forEach((el) => {
+              if (
+                el.offsetParent !== null &&
+                !el.closest(".no-print") &&
+                !el.closest("svg")
+              ) {
+                textElements.push(el.textContent.trim());
+              }
+            });
+        }
+
+        const textToSpeak = textElements.join(". ");
+        const utterance = new SpeechSynthesisUtterance(textToSpeak);
+        utterance.lang = isEs ? "es-ES" : "en-US";
+        utterance.rate = 0.9;
+        utterance.onend = () => {
+          btn.textContent = isEs ? "🔊 Leer en Voz Alta" : "🔊 Read Aloud";
+        };
+        utterance.onerror = () => {
+          btn.textContent = isEs ? "🔊 Leer en Voz Alta" : "🔊 Read Aloud";
+        };
+        window.speechSynthesis.speak(utterance);
+      }
+
+      // Stop speech on page navigation
+      const originalGoStep = goStep;
+      goStep = function (n) {
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+        const btn = document.getElementById("btn-read");
+        if (btn)
+          btn.textContent = document.body.classList.contains("es")
+            ? "🔊 Leer en Voz Alta"
+            : "🔊 Read Aloud";
+        originalGoStep(n);
+      };
+
       function toggleGradingConsole() {
         const el = document.getElementById("teacher-console");
         if (el) {
@@ -2966,47 +3060,98 @@
       }
 
       function prefillGradingConsole() {
-        const presets = { "wood-len": 8, "piece-len": 1.5 };
-        for (const [id, val] of Object.entries(presets)) {
+        // Restore the Level-1 default sample inputs, then recompute.
+        const samples = {
+          "p1-dividend": "3/4",
+          "p1-divisor": "1/8",
+          "p2-batch": "4",
+          "p2-scoop": "3",
+          "p3-roll-w": "2",
+          "p3-roll-frac": "1/2",
+          "p3-slice": "1/4",
+        };
+        for (const [id, val] of Object.entries(samples)) {
           const el = document.getElementById(id);
           if (el) {
             el.value = val;
-            el.dispatchEvent(new Event("input", { bubbles: true }));
             el.dispatchEvent(new Event("change", { bubbles: true }));
           }
         }
-        // Also prefill student calculation answers
-        if (document.getElementById("student-gcf-input")) {
-          document.getElementById("student-gcf-input").value =
-            document.getElementById("student-gcf-input").min || 1;
-          document
-            .getElementById("student-gcf-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        if (document.getElementById("student-lcm-input")) {
-          document.getElementById("student-lcm-input").value =
-            document.getElementById("student-lcm-input").min || 1;
-          document
-            .getElementById("student-lcm-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
-        }
+        recalcAll();
         updateGradingAnswers();
       }
 
       function updateGradingAnswers() {
         try {
           const resolver = function () {
-            const total =
-              parseFloat(document.getElementById("wood-len").value) || 8;
-            const piece =
-              parseFloat(document.getElementById("piece-len").value) || 1.5;
-            const recip = piece ? (1 / piece).toFixed(3) : "0";
-            const count = piece ? (total / piece).toFixed(2) : "0";
+            const isL2 = document.body.classList.contains("level-2");
+            const fmt = (x) =>
+              Number.isFinite(x)
+                ? (Math.round(x * 100) / 100).toString()
+                : "—";
+
+            // Step 1 — Portion Control (fraction ÷ fraction)
+            let n1, d1, n2, d2, s1Eq;
+            if (!isL2) {
+              [n1, d1] = document
+                .getElementById("p1-dividend")
+                .value.split("/")
+                .map(Number);
+              [n2, d2] = document
+                .getElementById("p1-divisor")
+                .value.split("/")
+                .map(Number);
+              s1Eq =
+                document.getElementById("p1-dividend").value +
+                " ÷ " +
+                document.getElementById("p1-divisor").value;
+            } else {
+              n1 = parseInt(document.getElementById("p1-div-num").value);
+              d1 = parseInt(document.getElementById("p1-div-den").value);
+              n2 = parseInt(document.getElementById("p1-div-num2").value);
+              d2 = parseInt(document.getElementById("p1-div-den2").value);
+              s1Eq = `${n1}/${d1} ÷ ${n2}/${d2}`;
+            }
+            const portQ = n1 && d1 && n2 && d2 ? (n1 * d2) / (d1 * n2) : NaN;
+
+            // Step 2 — Big Batch (whole ÷ unit fraction)
+            const w = parseInt(
+              document.getElementById(isL2 ? "p2-batch-input" : "p2-batch")
+                .value,
+            );
+            const scoopDen = parseInt(
+              document.getElementById(isL2 ? "p2-scoop-den" : "p2-scoop").value,
+            );
+            const batchQ = w && scoopDen ? w * scoopDen : NaN;
+
+            // Step 3 — Roll Cuts (mixed number ÷ fraction)
+            let rw, rn, rd, sn, sd;
+            if (!isL2) {
+              rw = parseInt(document.getElementById("p3-roll-w").value);
+              [rn, rd] = document
+                .getElementById("p3-roll-frac")
+                .value.split("/")
+                .map(Number);
+              [sn, sd] = document
+                .getElementById("p3-slice")
+                .value.split("/")
+                .map(Number);
+            } else {
+              rw = parseInt(document.getElementById("p3-roll-w-input").value) || 0;
+              rn = parseInt(document.getElementById("p3-roll-num").value) || 0;
+              rd = parseInt(document.getElementById("p3-roll-den").value) || 1;
+              sn = parseInt(document.getElementById("p3-slice-num").value);
+              sd = parseInt(document.getElementById("p3-slice-den").value);
+            }
+            const rollImp = rw * rd + rn;
+            const rollQ =
+              rd && sn && sd ? (rollImp * sd) / (rd * sn) : NaN;
+
             return {
-              "Total Wood length": total + " ft",
-              "Piece size": piece + " ft",
-              "Expected Reciprocal": recip,
-              "Quotient (Expected pieces)": count,
+              "Step 1 · Portion Control": `${s1Eq} = ${fmt(portQ)} portions`,
+              "Step 2 · Big Batch": `${w || "—"} ÷ 1/${scoopDen || "—"} = ${fmt(batchQ)} servings`,
+              "Step 3 · Roll Cuts": `${rw} ${rn}/${rd} ÷ ${sn}/${sd} = ${fmt(rollQ)} slices`,
+              "Step 4 · Partner Compare": "Difference of student vs. partner (no fixed answer)",
             };
           };
           const ans = resolver();
@@ -3028,9 +3173,9 @@
         }
       }
 
-      // Wire up key listener (Ctrl+Shift+T) and triple click on h1
+      // Wire up key listener (Ctrl+Alt+G — non-hijacking) and triple click on h1
       document.addEventListener("keydown", function (e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "t") {
+        if (e.ctrlKey && e.altKey && e.key.toLowerCase() === "g") {
           e.preventDefault();
           toggleGradingConsole();
         }
@@ -3121,10 +3266,36 @@
             }, 1000);
           });
         }
-        // Re-calculate answers when input event fires
+        // Re-calculate answers when any project input changes
         document.addEventListener("input", function (e) {
-          const inputs = ["wood-len", "piece-len"];
+          const inputs = [
+            "p1-div-num",
+            "p1-div-den",
+            "p1-div-num2",
+            "p1-div-den2",
+            "p2-batch-input",
+            "p2-scoop-den",
+            "p3-roll-w-input",
+            "p3-roll-num",
+            "p3-roll-den",
+            "p3-slice-num",
+            "p3-slice-den",
+          ];
           if (inputs.includes(e.target.id)) {
+            updateGradingAnswers();
+          }
+        });
+        document.addEventListener("change", function (e) {
+          const selects = [
+            "p1-dividend",
+            "p1-divisor",
+            "p2-batch",
+            "p2-scoop",
+            "p3-roll-w",
+            "p3-roll-frac",
+            "p3-slice",
+          ];
+          if (selects.includes(e.target.id)) {
             updateGradingAnswers();
           }
         });
