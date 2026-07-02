@@ -21,57 +21,17 @@ import { fileURLToPath } from "url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-const MARK = "nsr-injected";
-const CSS_REF = "/shared/save-resume/save-resume-styles.css";
-const JS_REF = "/shared/save-resume/save-resume-engine.js";
-
-// Keep these IN SYNC with tools/inject-save-resume.js.
-const SKIP_DIRS = new Set([
-  "node_modules",
-  "dist",
-  ".git",
-  ".github",
-  ".claude",
-  ".wrangler",
-  ".vscode",
-  "scripts",
-  "engine",
-  "functions",
-  "migrations",
-  "workers",
-  "shared",
-  "tools",
-]);
-const SKIP_TOPLEVEL = new Set([
-  "dashboard",
-  "teacher-data-dashboard",
-  "teacher-tools",
-  "access-teacher",
-  "neft-school-hub",
-  "neft-data-studio",
-  "results-worker",
-  "directory",
-  "data",
-  "assets",
-  "docs",
-  "curriculum",
-  "personal", // private (event planning, family pages) — not classroom activities
-  "futures", // concept/demo/roadmap pages — not student activities
-]);
-const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
-// Surfaces with no capturable student state, intentionally excluded from
-// save/resume integration (these MUST stay in sync with the inject-only skips
-// in tools/inject-save-resume.js so the audit doesn't flag the deliberate
-// omissions):
-//   - .../teacher/...            → teacher-facing pages
-//   - living-school/neft-city-*  → sims that self-persist their own game state
-//   - focus-school/*             → self-persisting dashboard app (own state in
-//     app.js + multi-device sync); only field is a command-bar search box
-//   - games-live/*               → ephemeral live multiplayer host/join lobby
-//   - games/3d/*                 → 3D game launchers (no form fields)
-//   - math/intervention/index.html → the intervention nav hub (links only)
-const SKIP_PATH_RE =
-  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|games-live\/|games\/3d\/|math\/intervention\/index\.html$)/i;
+// Skip rules + ref/marker strings are shared with the injector via one module,
+// so the audit can never drift out of sync with what inject-save-resume.js does.
+import {
+  MARK,
+  CSS_REF,
+  JS_REF,
+  SKIP_DIRS,
+  SKIP_TOPLEVEL,
+  SKIP_FILE_RE,
+  SKIP_PATH_RE,
+} from "./save-resume-config.js";
 
 const issues = [];
 const stats = {
@@ -80,6 +40,7 @@ const stats = {
   missingRefs: [],
   duplicates: [],
   brokenStructure: [],
+  unsentineled: [],
   skipped: 0,
 };
 
@@ -140,13 +101,23 @@ function check(file) {
   if (begins !== ends) {
     stats.brokenStructure.push(`${rel} (begin=${begins}, end=${ends})`);
   }
+  // Sentinel coverage: the injector wraps the stylesheet (before </head>) and
+  // the engine (before </body>) in its own marker, so a canonically-integrated
+  // page has exactly TWO begin markers. Both refs present but begins !== 2 means
+  // the page carries raw refs the injector won't recognize — it would duplicate
+  // them on the next `fix:save-resume`. This is the drift that hit the
+  // projects/version-b and math-rpg pages; flag it so it's caught, not shipped.
+  if (begins !== 2) {
+    stats.unsentineled.push(`${rel} (marker begins=${begins}, expected 2)`);
+  }
   // Light structural sanity.
   if (!/<html[\s>]/i.test(html)) {
     stats.brokenStructure.push(`${rel} (no <html>)`);
   }
   if (
     stats.duplicates[stats.duplicates.length - 1] !== rel &&
-    stats.brokenStructure[stats.brokenStructure.length - 1] !== rel
+    stats.brokenStructure[stats.brokenStructure.length - 1] !== rel &&
+    stats.unsentineled[stats.unsentineled.length - 1] !== rel
   ) {
     stats.ok++;
   }
@@ -172,9 +143,15 @@ console.log("Duplicate refs     :", stats.duplicates.length);
 if (stats.duplicates.length) console.log("   →", stats.duplicates.slice(0, 20));
 console.log("Structure warnings :", stats.brokenStructure.length);
 if (stats.brokenStructure.length) console.log("   →", stats.brokenStructure.slice(0, 20));
+console.log("Unsentineled refs  :", stats.unsentineled.length);
+if (stats.unsentineled.length) console.log("   →", stats.unsentineled.slice(0, 20));
 
 const problems =
-  issues.length + stats.missingRefs.length + stats.duplicates.length + stats.brokenStructure.length;
+  issues.length +
+  stats.missingRefs.length +
+  stats.duplicates.length +
+  stats.brokenStructure.length +
+  stats.unsentineled.length;
 if (issues.length) console.log("\nIssues:\n  " + issues.join("\n  "));
 console.log("\nRESULT:", problems === 0 ? "PASS ✅" : `FAIL ❌ (${problems} problem group(s))`);
 if (problems) {
@@ -185,6 +162,13 @@ if (problems) {
     console.log(
       "\n→ Fix missing refs (idempotent, reversible): npm run fix:save-resume" +
         "\n  (dry-run first: node tools/inject-save-resume.js --dry-run)",
+    );
+  }
+  if (stats.unsentineled.length) {
+    console.log(
+      "\n→ Unsentineled pages carry raw save-resume refs the injector can't see;" +
+        "\n  running fix:save-resume would duplicate them. Strip the raw <link>/" +
+        "\n  <script> refs from those pages, then run: npm run fix:save-resume",
     );
   }
   if (stats.duplicates.length || stats.brokenStructure.length) {

@@ -1,0 +1,87 @@
+/* =============================================================================
+ * save-resume-config.js — single source of truth for the Save/Resume tooling.
+ *
+ * WHY THIS FILE EXISTS
+ *   The injector (tools/inject-save-resume.js) and the audit
+ *   (tools/audit-save-resume-integration.js) MUST agree on exactly which files
+ *   count as student activities and on the exact ref/marker strings. They used
+ *   to keep parallel, hand-synced copies of these constants; when the two
+ *   copies drifted, the injector and audit disagreed (e.g. pages the audit
+ *   accepted but the injector re-injected, producing duplicate refs). Importing
+ *   from one module makes that class of bug impossible.
+ *
+ *   Change a skip rule or a ref path HERE, once, and both tools stay in lockstep.
+ * ========================================================================== */
+
+// Sentinel marker (lives inside an HTML comment) that brackets injected blocks.
+export const MARK = "nsr-injected";
+
+// Canonical absolute refs. On Cloudflare Pages the top-level `shared/` dir is
+// copied to the dist root, so `/shared/...` resolves for lessons at any depth.
+export const CSS_REF = "/shared/save-resume/save-resume-styles.css";
+export const JS_REF = "/shared/save-resume/save-resume-engine.js";
+
+// The exact tags the injector writes (and the audit counts).
+export const LINK_TAG = `<link rel="stylesheet" href="${CSS_REF}">`;
+export const SCRIPT_TAG = `<script src="${JS_REF}" defer></script>`;
+export const BEGIN = `<!-- ${MARK}:begin (multi-day save/resume — tools/inject-save-resume.js) -->`;
+export const END = `<!-- ${MARK}:end -->`;
+
+// Directories never to enter (build, deps, dev, generated, infra).
+export const SKIP_DIRS = new Set([
+  "node_modules",
+  "dist",
+  ".git",
+  ".github",
+  ".claude",
+  ".wrangler",
+  ".vscode",
+  "scripts", // build scripts, not lessons
+  "engine", // bundled by vite, not standalone pages
+  "functions", // backend
+  "migrations",
+  "workers",
+  "shared", // the engine itself
+  "tools",
+]);
+
+// Top-level surfaces that are NOT student activities (teacher/admin/infra).
+// These get skipped to avoid showing a student "save your work" widget where it
+// makes no sense. Adjust here if a surface should be included.
+export const SKIP_TOPLEVEL = new Set([
+  "dashboard",
+  "teacher-data-dashboard",
+  "teacher-tools",
+  "neft-school-hub",
+  "neft-data-studio",
+  "results-worker",
+  "directory",
+  "data",
+  "assets",
+  "docs",
+  "curriculum", // curriculum hub/index pages, not activities
+  "personal", // private (event planning, family pages) — not classroom activities
+  "futures", // concept/demo/roadmap pages — not student activities
+  "access-teacher", // teacher-facing surface
+]);
+
+// Filename patterns that are not student-facing activities.
+export const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
+
+// Path patterns for surfaces with no capturable student state for the generic
+// widget. The injector applies this to INJECTION ONLY (revert stays allowed so
+// already-injected refs can still be stripped); the audit uses it to exclude
+// the same surfaces from its scan, so deliberate omissions are not flagged:
+//   - .../teacher/...            → teacher-facing pages (no student state)
+//   - living-school/neft-city-*  → self-persist their own game state to a
+//     private localStorage key (see each app.js)
+//   - focus-school/*             → self-persisting dashboard app (all state in
+//     app.js + multi-device sync); its only field is a command-bar search box,
+//     not durable student work
+//   - games-live/*               → ephemeral live multiplayer host/join lobby
+//   - games/3d/*                 → 3D game launchers (no form fields / canvas)
+//   - math/intervention/index.html → the intervention nav hub (links only)
+// (The math/intervention/<topic>/ pages DO carry student self-assessment +
+// quiz state and are intentionally NOT excluded.)
+export const SKIP_PATH_RE =
+  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|games-live\/|games\/3d\/|math\/intervention\/index\.html$)/i;

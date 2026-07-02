@@ -33,71 +33,20 @@ import { dirname } from "path";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-const MARK = "nsr-injected"; // sentinel in an HTML comment
-const LINK_TAG = '<link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">';
-const SCRIPT_TAG = '<script src="/shared/save-resume/save-resume-engine.js" defer></script>';
-const BEGIN = `<!-- ${MARK}:begin (multi-day save/resume — tools/inject-save-resume.js) -->`;
-const END = `<!-- ${MARK}:end -->`;
-
-// Directories never to enter (build, deps, dev, generated, infra).
-const SKIP_DIRS = new Set([
-  "node_modules",
-  "dist",
-  ".git",
-  ".github",
-  ".claude",
-  ".wrangler",
-  ".vscode",
-  "scripts", // build scripts, not lessons
-  "engine", // bundled by vite, not standalone pages
-  "functions", // backend
-  "migrations",
-  "workers",
-  "shared", // the engine itself
-  "tools",
-]);
-
-// Top-level surfaces that are NOT student activities (teacher/admin/infra).
-// These get skipped to avoid showing a student "save your work" widget where it
-// makes no sense. Adjust here if a surface should be included.
-const SKIP_TOPLEVEL = new Set([
-  "dashboard",
-  "teacher-data-dashboard",
-  "teacher-tools",
-  "neft-school-hub",
-  "neft-data-studio",
-  "results-worker",
-  "directory",
-  "data",
-  "assets",
-  "docs",
-  "curriculum", // curriculum hub/index pages, not activities
-  "personal", // private (event planning, family pages) — not classroom activities
-  "futures", // concept/demo/roadmap pages — not student activities
-  "access-teacher", // teacher-facing surface
-]);
-
-// Filename patterns that are not student-facing activities.
-const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
-
-// Path patterns to skip for INJECTION ONLY (not revert). These surfaces have no
-// capturable student state for the generic widget, so injecting it would only
-// add a redundant auto-opening panel and an empty central record:
-//   - .../teacher/...            → teacher-facing pages (no student state;
-//     matches the audit's teacher skip in audit-save-resume-integration.js)
-//   - living-school/neft-city-*  → self-persist their own game state to a
-//     private localStorage key (see each app.js)
-//   - focus-school/*             → self-persisting dashboard app (all state in
-//     app.js + multi-device sync); its only field is a command-bar search box,
-//     not durable student work
-//   - games-live/*               → ephemeral live multiplayer host/join lobby
-//   - games/3d/*                 → 3D game launchers (no form fields / canvas)
-//   - math/intervention/index.html → the intervention nav hub (links only)
-// (The math/intervention/<topic>/ pages DO carry student self-assessment +
-// quiz state and are intentionally NOT excluded.) Revert stays allowed so any
-// already-injected refs can still be stripped.
-const SKIP_INJECT_PATH_RE =
-  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|games-live\/|games\/3d\/|math\/intervention\/index\.html$)/i;
+// Shared skip rules + ref/marker strings live in ONE module so the injector and
+// the audit (tools/audit-save-resume-integration.js) can never drift apart.
+// The injector applies SKIP_PATH_RE to injection only (revert stays allowed).
+import {
+  MARK,
+  LINK_TAG,
+  SCRIPT_TAG,
+  BEGIN,
+  END,
+  SKIP_DIRS,
+  SKIP_TOPLEVEL,
+  SKIP_FILE_RE,
+  SKIP_PATH_RE as SKIP_INJECT_PATH_RE,
+} from "./save-resume-config.js";
 
 const args = new Set(process.argv.slice(2));
 const DRY = args.has("--dry-run");
