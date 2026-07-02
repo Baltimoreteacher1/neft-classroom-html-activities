@@ -4924,10 +4924,8 @@
       }
 
       const LEVELS = {
-        absolute_beginner: { name: "Absolute Beginner 🧒", prefix: "Okay, let's make this super simple! 🌟 ", suffix: "" },
         beginner: { name: "Beginner 🎒", prefix: "Let's break this down into easy pieces. 🎒 ", suffix: "" },
         understanding: { name: "Understanding 🧠", prefix: "Let's look at the mathematical steps. 🧠 ", suffix: "" },
-        expert: { name: "Expert 🎓", prefix: "Let's analyze this using advanced concepts. 🎓 ", suffix: "" }
       };
 
       function setParentLang(lang) {
@@ -5377,18 +5375,6 @@
       function selectBuilderChip(category, element) {
         const exampleIdx = element.dataset.exampleIndex ? parseInt(element.dataset.exampleIndex, 10) : undefined;
         selectChip(category, element.dataset.value || "", element, exampleIdx);
-      }
-
-      function copyPromptStudent() {
-        const previewText = document.getElementById("prompt-preview-text").textContent;
-        const btn = document.getElementById("copy-prompt-student");
-        
-        navigator.clipboard.writeText(previewText).then(() => {
-          btn.textContent = "✅ Copied!";
-          setTimeout(() => {
-            btn.textContent = "📋 Copy Prompt";
-          }, 2000);
-        });
       }
 
       // Submit prompt to trigger simulated AI evaluation
@@ -6888,10 +6874,8 @@ IEP Guidance: Click visualizer cells to view fractional blocks.`;
         let adapted = text;
 
         const prefixes = {
-          absolute_beginner: "Hey friend! 🎒 Let's learn together. 🌟 ",
           beginner: "Let's take it step-by-step: ✏️ ",
           understanding: "Let's review the mathematical steps: 🧠 ",
-          expert: "Greetings, advanced learner. Let's analyze this formally: 🎓 "
         };
         const levelPrefix = prefixes[level] || "";
         
