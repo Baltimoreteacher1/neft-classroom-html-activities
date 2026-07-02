@@ -11,7 +11,7 @@
     <style>
       :root {
         --navy: #2d1e0f;
-        --blue: #c9820f;
+        --blue: #8a5a00;
         --blue-lt: #fdf3e0;
         --teal: #0e8a7d;
         --teal-lt: #e4f5f3;
@@ -70,8 +70,10 @@
         display: flex; align-items: center; gap: 6px;
         cursor: pointer; white-space: nowrap; padding: 8px 12px;
         border-radius: 10px; transition: background .15s;
+        border: none; background: transparent; font-family: inherit; color: inherit;
       }
       .step-trail-item:hover { background: var(--blue-lt); }
+      .step-trail-item:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
       .step-trail-item.active .s-num {
         background: var(--blue); color: #fff;
       }
@@ -85,7 +87,7 @@
         display: flex; align-items: center; justify-content: center;
         flex-shrink: 0; transition: all .2s;
       }
-      .s-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+      .s-label { font-size: 14px; font-weight: 600; color: var(--muted); }
       .step-trail-item.active .s-label { color: var(--blue); }
       .step-trail-item.done .s-label { color: var(--green); }
       .step-arrow { color: var(--line); font-size: 16px; padding: 0 2px; }
@@ -94,7 +96,7 @@
       .prog-wrap { margin: 14px 0 4px; }
       .prog-bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
       .prog-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--teal)); border-radius: 99px; transition: width .4s ease; }
-      .prog-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+      .prog-label { font-size: 14px; color: var(--muted); margin-top: 4px; }
 
       /* ---- Step panel ---- */
       .step-panel { display: none; animation: fadein .25s ease; }
@@ -116,8 +118,8 @@
       .card-icon.gold { background: var(--gold-lt); }
       .card-icon.teal { background: var(--teal-lt); }
       .card-icon.green { background: var(--green-lt); }
-      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
-      .card-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
+      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-top: 0; margin-bottom: 3px; }
+      .card-sub { font-size: 14px; color: var(--muted); font-weight: 500; }
 
       /* ---- Instruction box ---- */
       .instruct {
@@ -133,7 +135,7 @@
       .visual-svg { display: block; width: 100%; max-width: 520px; margin: 0 auto 20px; border-radius: 12px; }
 
       /* ---- Form inputs ---- */
-      label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
+      label.lbl { display: block; font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
       input[type="number"], input[type="text"], textarea, select {
         width: 100%; padding: 10px 14px; border: 1.5px solid var(--line);
         border-radius: 10px; font-size: 15px; font-family: inherit;
@@ -148,7 +150,7 @@
         .grid4 { grid-template-columns: 1fr 1fr; }
       }
 
-      .frac-label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 4px; text-align: center; }
+      .frac-label { display: block; font-size: 14px; font-weight: 700; color: var(--muted); margin-bottom: 4px; text-align: center; }
 
       /* ---- Calc button & readout ---- */
       .calc-btn {
@@ -157,7 +159,7 @@
         font-weight: 700; cursor: pointer; font-family: inherit;
         margin-top: 12px; transition: background .2s;
       }
-      .calc-btn:hover { background: #a36a0c; }
+      .calc-btn:hover { background: #6f4900; }
       .calc-btn.gold { background: var(--gold); }
       .calc-btn.gold:hover { background: #a36a0c; }
       .calc-btn.teal { background: var(--teal); }
@@ -223,7 +225,7 @@
         font-weight: 700; cursor: pointer; font-family: inherit;
         display: flex; align-items: center; gap: 8px; transition: background .2s;
       }
-      .nav-btn:hover { background: #a36a0c; }
+      .nav-btn:hover { background: #6f4900; }
       .nav-btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
       .nav-btn.ghost:hover { background: var(--blue-lt); }
       .nav-btn:disabled { opacity: .45; cursor: not-allowed; }
@@ -257,8 +259,8 @@
       .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
       .vocab-icon { font-size: 26px; margin-bottom: 6px; }
       .vocab-term { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
-      .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
-      .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
+      .vocab-def { font-size: 14px; color: var(--muted); line-height: 1.5; }
+      .vocab-ex { font-size: 14px; color: var(--blue); font-weight: 600; margin-top: 5px; }
 
       body.es .en-text { display: none !important; }
       body.es .es-text { display: inline !important; }
@@ -352,7 +354,7 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title"><span class="en-text">Step 0 — Key Words</span><span class="es-text">Paso 0 — Palabras clave</span></div>
+              <h2 class="card-title"><span class="en-text">Step 0 — Key Words</span><span class="es-text">Paso 0 — Palabras clave</span></h2>
               <div class="card-sub"><span class="en-text">Learn these 4 math words before you begin</span><span class="es-text">Aprende estas 4 palabras matemáticas antes de comenzar</span></div>
             </div>
           </div>
@@ -406,7 +408,7 @@
           <div class="card-header">
             <div class="card-icon gold">🪢</div>
             <div>
-              <div class="card-title"><span class="en-text">Step 1 — Rope Cuts</span><span class="es-text">Paso 1 — Cortes de cuerda</span></div>
+              <h2 class="card-title"><span class="en-text">Step 1 — Rope Cuts</span><span class="es-text">Paso 1 — Cortes de cuerda</span></h2>
               <div class="card-sub"><span class="en-text">Total rope (fraction or whole) ÷ piece length (unit fraction) = number of pieces</span><span class="es-text">Cuerda total (fracción o entero) ÷ longitud de pieza (fracción unitaria) = número de piezas</span></div>
             </div>
           </div>
@@ -504,7 +506,7 @@
           <div class="card-header">
             <div class="card-icon gold">🪵</div>
             <div>
-              <div class="card-title"><span class="en-text">Step 2 — Wood Strips</span><span class="es-text">Paso 2 — Tiras de madera</span></div>
+              <h2 class="card-title"><span class="en-text">Step 2 — Wood Strips</span><span class="es-text">Paso 2 — Tiras de madera</span></h2>
               <div class="card-sub"><span class="en-text">Total board (mixed number) ÷ strip length (fraction) = number of strips</span><span class="es-text">Tabla total (número mixto) ÷ longitud de tira (fracción) = número de tiras</span></div>
             </div>
           </div>
@@ -592,7 +594,7 @@
           <div class="card-header">
             <div class="card-icon gold">🧵</div>
             <div>
-              <div class="card-title">Step 3 — Fabric Cuts &amp; Supplies</div>
+              <h2 class="card-title">Step 3 — Fabric Cuts &amp; Supplies</h2>
               <div class="card-sub"><span class="en-text">Total fabric ÷ swatch size = number of swatches; scale to supplier rolls</span><span class="es-text">Tela total ÷ tamaño de muestra = número de muestras; escalar a rollos de proveedor</span></div>
             </div>
           </div>
@@ -697,7 +699,7 @@
           <div class="card-header">
             <div class="card-icon gold">👥</div>
             <div>
-              <div class="card-title"><span class="en-text">Step 4 — Partner Compare</span><span class="es-text">Paso 4 — Comparar con compañero</span></div>
+              <h2 class="card-title"><span class="en-text">Step 4 — Partner Compare</span><span class="es-text">Paso 4 — Comparar con compañero</span></h2>
               <div class="card-sub"><span class="en-text">Compare cut lists and yields with a partner</span><span class="es-text">Compara listas de corte y rendimientos con un compañero</span></div>
             </div>
           </div>
@@ -755,7 +757,7 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">Step 5 — Finish &amp; Submit</div>
+              <h2 class="card-title">Step 5 — Finish &amp; Submit</h2>
               <div class="card-sub"><span class="en-text">Generate your final cut list summary and review your scoring rubric</span><span class="es-text">Genera tu resumen final de la lista de cortes y revisa tu rúbrica de calificación</span></div>
             </div>
           </div>
@@ -819,7 +821,7 @@
 
           <!-- Report generating buttons -->
           <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
-            <button class="calc-btn" onclick="buildReport()">📝 <span class="en-text">Generate Summary</span><span class="es-text">Generar resumen</span></button>
+            <button class="calc-btn" onclick="buildReport(); playConfetti();">📝 <span class="en-text">Generate Summary</span><span class="es-text">Generar resumen</span></button>
             <button class="export-btn" onclick="copyReport()">📋 <span class="en-text">Copy</span><span class="es-text">Copiar</span></button>
             <button class="export-btn" onclick="downloadTxt()">⬇️ <span class="en-text">Download .txt</span><span class="es-text">Descargar .txt</span></button>
             <button class="export-btn" onclick="window.print()">🖨️ <span class="en-text">Print</span><span class="es-text">Imprimir</span></button>
@@ -838,31 +840,6 @@
     <!-- ====== SCRIPTS ====== -->
     <script src="/assets/app.js" defer></script>
     <script>
-      const PRESETS = {"total-boards": 12, "cut-len": 2.25};
-      function handleLevelPreset(n) {
-        try {
-          if (n === 1) {
-            for (const [id, val] of Object.entries(PRESETS)) {
-              const el = document.getElementById(id);
-              if (el && !el.value) {
-                el.value = val;
-                el.dispatchEvent(new Event('input', { bubbles: true }));
-                el.dispatchEvent(new Event('change', { bubbles: true }));
-              }
-            }
-          } else if (n === 2) {
-            for (const [id, val] of Object.entries(PRESETS)) {
-              const el = document.getElementById(id);
-              if (el && String(el.value) === String(val)) {
-                el.value = '';
-                el.dispatchEvent(new Event('input', { bubbles: true }));
-                el.dispatchEvent(new Event('change', { bubbles: true }));
-              }
-            }
-          }
-        } catch(e) {}
-      }
-
       function playConfetti() {
         try {
           const container = document.createElement('div');
@@ -921,15 +898,15 @@
 
       // ---- Level toggle ----
       function setLevel(n) {
-        document.getElementById('body').className = 'level-' + n;
+        document.body.classList.remove('level-1', 'level-2');
+        document.body.classList.add('level-' + n);
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
-        
+
         calcRope();
         calcWood();
         calcFabric();
-      
-        handleLevelPreset(n);}
+      }
 
       // ---- Build step trail ----
       function buildTrail() {
@@ -946,10 +923,10 @@
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
           const label = stepLabels[s.id][isEs ? 'es' : 'en'];
-          return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
+          return `<button type="button" class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})" aria-label="${isEs ? 'Paso' : 'Step'} ${s.id}: ${label}"${s.id === currentStep ? ' aria-current="step"' : ''}>
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
             <span class="s-label">${label}</span>
-          </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
+          </button>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
         }).join('');
       }
 
@@ -1372,7 +1349,6 @@
 
       // ---- Report ----
       function buildReport() {
-        playConfetti();
         const rType = document.getElementById('rope-type').value;
         const rWhole = document.getElementById('rope-whole').value;
         const rNum = document.getElementById('rope-num').value;
@@ -1585,42 +1561,67 @@
       }
       
       function prefillGradingConsole() {
-        const presets = {"total-boards": 12, "cut-len": 2.25};
-        for (const [id, val] of Object.entries(presets)) {
+        // Restore the Level-1 default sample inputs, then recompute.
+        const samples = {
+          'rope-type': 'whole',
+          'rope-whole': '4',
+          'rope-divisor-den': '4',
+          'w-whole': '4',
+          'w-num': '1',
+          'w-den': '2',
+          'w-strip-num': '3',
+          'w-strip-den': '4',
+          'f-swatch-num': '2',
+          'f-swatch-den': '3'
+        };
+        for (const [id, val] of Object.entries(samples)) {
           const el = document.getElementById(id);
           if (el) {
             el.value = val;
-            el.dispatchEvent(new Event('input', { bubbles: true }));
             el.dispatchEvent(new Event('change', { bubbles: true }));
           }
         }
-        // Also prefill student calculation answers
-        if (document.getElementById('student-gcf-input')) {
-          document.getElementById('student-gcf-input').value = document.getElementById('student-gcf-input').min || 1;
-          document.getElementById('student-gcf-input').dispatchEvent(new Event('input', { bubbles: true }));
-        }
-        if (document.getElementById('student-lcm-input')) {
-          document.getElementById('student-lcm-input').value = document.getElementById('student-lcm-input').min || 1;
-          document.getElementById('student-lcm-input').dispatchEvent(new Event('input', { bubbles: true }));
-        }
+        if (typeof toggleRopeInput === 'function') toggleRopeInput();
+        calcRope();
+        calcWood();
+        calcFabric();
         updateGradingAnswers();
       }
-      
+
       function updateGradingAnswers() {
         try {
           const resolver = function() {
-            
-          const total = parseFloat(document.getElementById('total-boards').value) || 12;
-          const piece = parseFloat(document.getElementById('cut-len').value) || 2.25;
-          const recip = piece ? (1 / piece).toFixed(3) : '0';
-          const count = piece ? (total / piece).toFixed(2) : '0';
-          return {
-            'Total boards length': total + ' ft',
-            'Cut size': piece + ' ft',
-            'Expected Reciprocal': recip,
-            'Quotient (Expected cuts)': count
-          };
-        
+            const fmt = (x) => Number.isFinite(x) ? (Math.round(x * 100) / 100).toString() : '—';
+
+            // Step 1 — Rope Cuts (total ÷ unit fraction)
+            const rType = document.getElementById('rope-type').value;
+            const rWhole = parseInt(document.getElementById('rope-whole').value) || 0;
+            const rNum = parseInt(document.getElementById('rope-num').value) || 0;
+            const rDen = parseInt(document.getElementById('rope-den').value) || 1;
+            const rDivDen = parseInt(document.getElementById('rope-divisor-den').value) || 4;
+            const ropeTotalStr = rType === 'whole' ? (rWhole + ' ft') : (rNum + '/' + rDen + ' ft');
+            const ropeQ = rType === 'whole' ? (rWhole * rDivDen) : (rNum * rDivDen / rDen);
+
+            // Step 2 — Wood Strips (mixed number ÷ fraction)
+            const wWhole = parseInt(document.getElementById('w-whole').value) || 0;
+            const wNum = parseInt(document.getElementById('w-num').value) || 0;
+            const wDen = parseInt(document.getElementById('w-den').value) || 1;
+            const wSNum = parseInt(document.getElementById('w-strip-num').value) || 0;
+            const wSDen = parseInt(document.getElementById('w-strip-den').value) || 1;
+            const impNum = wWhole * wDen + wNum;
+            const woodQ = wSNum ? (impNum * wSDen) / (wDen * wSNum) : NaN;
+
+            // Step 3 — Fabric Cuts (15 yd bolt ÷ swatch)
+            const fNum = parseInt(document.getElementById('f-swatch-num').value) || 0;
+            const fDen = parseInt(document.getElementById('f-swatch-den').value) || 1;
+            const fabricQ = fNum ? (15 * fDen) / fNum : NaN;
+
+            return {
+              'Step 1 · Rope Cuts': `${ropeTotalStr} ÷ 1/${rDivDen} = ${fmt(ropeQ)} pieces`,
+              'Step 2 · Wood Strips': `${impNum}/${wDen} ÷ ${wSNum}/${wSDen} = ${fmt(woodQ)} strips`,
+              'Step 3 · Fabric Cuts': `15 ÷ ${fNum}/${fDen} = ${fmt(fabricQ)} swatches`,
+              'Step 4 · Partner Compare': 'Difference of student vs. partner (no fixed answer)'
+            };
           };
           const ans = resolver();
           const body = document.getElementById('teacher-answers-body');
@@ -1637,9 +1638,9 @@
         }
       }
       
-      // Wire up key listener (Ctrl+Shift+T) and triple click on h1
+      // Wire up key listener (Ctrl+Alt+G — non-hijacking) and triple click on h1
       document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
+        if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'g') {
           e.preventDefault();
           toggleGradingConsole();
         }
@@ -1720,10 +1721,20 @@
             setTimeout(() => { clicks = 0; }, 1000);
           });
         }
-        // Re-calculate answers when input event fires
+        // Re-calculate answers when any project input changes
         document.addEventListener('input', function(e) {
-          const inputs = ["total-boards", "cut-len"];
+          const inputs = [
+            "rope-whole", "rope-num", "rope-den",
+            "w-whole", "w-num", "w-den", "w-strip-num", "w-strip-den",
+            "f-swatch-num", "f-swatch-den"
+          ];
           if (inputs.includes(e.target.id)) {
+            updateGradingAnswers();
+          }
+        });
+        document.addEventListener('change', function(e) {
+          const selects = ["rope-type", "rope-divisor-den"];
+          if (selects.includes(e.target.id)) {
             updateGradingAnswers();
           }
         });

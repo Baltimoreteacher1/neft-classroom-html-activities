@@ -87,7 +87,7 @@
         border: 1px solid rgba(255, 255, 255, 0.28);
         border-radius: 50px;
         padding: 4px 13px;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 700;
         letter-spacing: 0.04em;
       }
@@ -213,7 +213,7 @@
         transition: width 0.4s ease;
       }
       .prog-label {
-        font-size: 12px;
+        font-size: 13px;
         color: var(--muted);
         margin-top: 4px;
       }
@@ -276,10 +276,10 @@
         font-size: 20px;
         font-weight: 800;
         color: var(--navy);
-        margin-bottom: 3px;
+        margin: 0 0 3px;
       }
       .card-sub {
-        font-size: 13px;
+        font-size: 14px;
         color: var(--muted);
         font-weight: 500;
       }
@@ -319,7 +319,7 @@
       /* ---- Form inputs ---- */
       label.lbl {
         display: block;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 700;
         color: var(--navy);
         margin-bottom: 5px;
@@ -342,8 +342,10 @@
       input:focus,
       textarea:focus,
       select:focus {
-        outline: none;
+        outline: 2px solid var(--blue);
+        outline-offset: 2px;
         border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(30, 125, 64, 0.2);
       }
       textarea {
         min-height: 90px;
@@ -558,11 +560,11 @@
         font-weight: 700;
       }
       .score-3 {
-        color: var(--teal);
+        color: #0a6b62;
         font-weight: 700;
       }
       .score-2 {
-        color: var(--gold);
+        color: #a5670a;
         font-weight: 700;
       }
 
@@ -598,6 +600,12 @@
       }
       .nav-btn.ghost:hover {
         background: var(--blue-lt);
+      }
+      .nav-btn.green {
+        background: var(--green);
+      }
+      .nav-btn.green:hover {
+        background: #185f31;
       }
       .nav-btn:disabled {
         opacity: 0.45;
@@ -680,13 +688,13 @@
         margin-bottom: 6px;
       }
       .vocab-term {
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 800;
         color: var(--navy);
         margin-bottom: 4px;
       }
       .vocab-def {
-        font-size: 13px;
+        font-size: 14px;
         color: var(--muted);
         line-height: 1.5;
       }
@@ -853,7 +861,7 @@
           your goals.</span
         >
         <span class="es-text"
-          >Planifica una recaudación de fondos benéctica usando ecuaciones y
+          >Planifica una recaudación de fondos benéfica usando ecuaciones y
           desigualdades para realizar el seguimiento de tus metas.</span
         >
       </p>
@@ -865,6 +873,7 @@
         <span class="tag">6.EE.5</span>
         <span class="tag">6.EE.6</span>
         <span class="tag">6.EE.7</span>
+        <span class="tag">6.EE.8</span>
         <span class="tag">
           <span class="en-text">Version B</span>
           <span class="es-text">Versión B</span>
@@ -916,10 +925,10 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Key Words</span>
                 <span class="es-text">Palabras clave</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Learn these 5 math words before you begin</span
@@ -932,7 +941,27 @@
             </div>
           </div>
 
-          <!-- SVG Visual: horizontal thermometer meter -->
+          <!-- SVG Visual: horizontal thermometer / progress meter -->
+          <svg
+            class="visual-svg"
+            viewBox="0 0 520 90"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Fundraiser thermometer showing $180 raised of a $500 goal"
+            style="
+              background: white;
+              border: 1px solid #e2e7ec;
+              border-radius: 12px;
+            "
+          >
+            <text x="20" y="26" font-family="'Inter', sans-serif" font-size="13" font-weight="700" fill="#0f2b3c">Raised $180 of $500 goal</text>
+            <!-- Track -->
+            <rect x="20" y="40" width="480" height="22" rx="11" fill="#e6f4eb" stroke="#1e7d40" stroke-width="1.5" />
+            <!-- Fill: 180/500 = 36% of 480 = 172.8 -->
+            <rect x="20" y="40" width="172.8" height="22" rx="11" fill="#1e7d40" />
+            <text x="30" y="56" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#ffffff">36%</text>
+            <text x="492" y="80" text-anchor="end" font-family="'Inter', sans-serif" font-size="11" fill="#5e6e7e">Goal = $500</text>
+          </svg>
 
           <div class="vocab-grid">
             <div class="vocab-card">
@@ -1074,14 +1103,14 @@
           <div class="card-header">
             <div class="card-icon">🎒</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text"
                   >Step 1 — Fundraiser Goal &amp; Progress</span
                 >
                 <span class="es-text"
                   >Paso 1 — Meta y progreso de la recaudación</span
                 >
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Write an addition equation to find the needed remaining
@@ -1341,10 +1370,10 @@
           <div class="card-header">
             <div class="card-icon teal">↔️</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 2 — Progress Milestones</span>
                 <span class="es-text">Paso 2 — Hitos de progreso</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Write and evaluate inequalities to represent milestones</span
@@ -1568,14 +1597,17 @@
                 <code>&gt;</code> (greater than) or <code>&ge;</code> (greater
                 than or equal to). An open circle on the number line means that
                 exact value is excluded (like &gt;), while a closed circle means
-                it is included (like &ge;).</span
+                it is included (like &ge;). Tip: you can type <code>&gt;=</code>
+                for &ge; and <code>&lt;=</code> for &le;.</span
               >
               <span class="es-text"
                 >Una desigualdad usa signos de comparación como
                 <code>&gt;</code> (mayor que) o <code>&ge;</code> (mayor o igual
                 que). Un círculo abierto en la recta numérica significa que ese
                 valor exacto está excluido (como &gt;), mientras que un círculo
-                cerrado significa que está incluido (como &ge;).</span
+                cerrado significa que está incluido (como &ge;). Consejo: puedes
+                escribir <code>&gt;=</code> para &ge; y <code>&lt;=</code> para
+                &le;.</span
               >
             </p>
           </details>
@@ -1601,12 +1633,12 @@
           <div class="card-header">
             <div class="card-icon gold">🧮</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 3 — Plan Product Sales</span>
                 <span class="es-text"
                   >Paso 3 — Planificar ventas de productos</span
                 >
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Write a multiplication equation to calculate item sales</span
@@ -1942,12 +1974,12 @@
           <div class="card-header">
             <div class="card-icon">👥</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 4 — Compare With a Classmate</span>
                 <span class="es-text"
                   >Paso 4 — Comparar con un/a compañero/a</span
                 >
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Compare goals and fundraiser progress side-by-side</span
@@ -2067,10 +2099,10 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 5 — Finish &amp; Submit</span>
                 <span class="es-text">Paso 5 — Finalizar y enviar</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Generate a class pitch, check your work, and get your summary
@@ -2557,7 +2589,9 @@
 
       // ---- Level Toggle ----
       function setLevel(n) {
-        document.getElementById("body").className = "level-" + n;
+        const body = document.getElementById("body");
+        body.classList.remove("level-1", "level-2");
+        body.classList.add("level-" + n);
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
 
@@ -2573,7 +2607,7 @@
         const trail = document.getElementById("stepTrail");
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
-          return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" onclick="goStep(${s.id})">
+          return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" role="button" tabindex="0" onclick="goStep(${s.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(${s.id});}">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? "✓" : s.id}</span>
             <span class="s-label"><span class="en-text">${s.labelEn}</span><span class="es-text">${s.labelEs}</span></span>
           </span>${!isLast ? '<span class="step-arrow">›</span>' : ""}`;
@@ -2881,6 +2915,11 @@
         }
 
         const varName = "y";
+        // Accept ASCII equivalents students can type on a Chromebook keyboard:
+        // >= for ≥ and <= for ≤ (also handles => and =<).
+        const ineqNorm = ineqRaw
+          .replace(/>=|=>/g, "≥")
+          .replace(/<=|=</g, "≤");
         const v1 = `${varName}${symbol}${target}`;
 
         let revSym = "";
@@ -2890,7 +2929,7 @@
         else if (symbol === "≤") revSym = "≥";
 
         const v2 = `${target}${revSym}${varName}`;
-        const isValid = [v1, v2].includes(ineqRaw);
+        const isValid = [v1, v2].includes(ineqNorm);
 
         if (isValid) {
           showReadout(
@@ -2901,11 +2940,13 @@
           `,
           );
         } else {
+          const typeSym =
+            symbol === "≥" ? ">=" : symbol === "≤" ? "<=" : symbol;
           showReadout(
             "ineq-out",
             `
-            <span class="en-text">❌ <strong>Try again.</strong> Write an inequality using <strong>y</strong>, your comparison symbol, and the milestone target <strong>$${target}</strong>. <br>Example: <code>y ${symbol} ${target}</code></span>
-            <span class="es-text">❌ <strong>Inténtalo de nuevo.</strong> Escribe una desigualdad usando <strong>y</strong>, tu símbolo de comparación y la meta del hito <strong>$${target}</strong>. <br>Ejemplo: <code>y ${symbol} ${target}</code></span>
+            <span class="en-text">❌ <strong>Try again.</strong> Write an inequality using <strong>y</strong>, your comparison symbol, and the milestone target <strong>$${target}</strong>. <br>Example: <code>y ${symbol} ${target}</code> (you can type <code>y ${typeSym} ${target}</code>)</span>
+            <span class="es-text">❌ <strong>Inténtalo de nuevo.</strong> Escribe una desigualdad usando <strong>y</strong>, tu símbolo de comparación y la meta del hito <strong>$${target}</strong>. <br>Ejemplo: <code>y ${symbol} ${target}</code> (puedes escribir <code>y ${typeSym} ${target}</code>)</span>
           `,
           );
         }
@@ -3255,7 +3296,7 @@
         let lines = [];
         if (isEs) {
           lines = [
-            "═══ SEGUIDOR DE LA META DE RECAUDACIÓN — PROYECTO DE LA UNIDAD 8 (Versión B) ═══",
+            "═══ LOCALIZADOR DE METAS DE RECAUDACIÓN DE FONDOS — PROYECTO DE LA UNIDAD 8 (Versión B) ═══",
             "",
             `🏫 CAUSA: ${cause}`,
             "📖 ESTÁNDARES DE MATEMÁTICAS: 6.EE.5, 6.EE.6, 6.EE.7, 6.EE.8",
@@ -3509,7 +3550,7 @@
         const isEs = document.body.classList.contains("es");
         if (isEs) {
           alert(
-            "¡Felicitaciones! 🎉 Muestra tu seguidor completado y tu presentación a tu profesor/a.",
+            "¡Felicitaciones! 🎉 Muestra tu localizador de metas completado y tu presentación a tu profesor/a.",
           );
         } else {
           alert(
@@ -3542,21 +3583,6 @@
             el.dispatchEvent(new Event("input", { bubbles: true }));
             el.dispatchEvent(new Event("change", { bubbles: true }));
           }
-        }
-        // Also prefill student calculation answers
-        if (document.getElementById("student-gcf-input")) {
-          document.getElementById("student-gcf-input").value =
-            document.getElementById("student-gcf-input").min || 1;
-          document
-            .getElementById("student-gcf-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        if (document.getElementById("student-lcm-input")) {
-          document.getElementById("student-lcm-input").value =
-            document.getElementById("student-lcm-input").min || 1;
-          document
-            .getElementById("student-lcm-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
         }
         updateGradingAnswers();
       }
