@@ -55,10 +55,19 @@ translations were checked for accuracy, not just presence.
 
 4. **`printables` incomplete — ships only `activity` + `color-by-number`, missing
    `word-search` and `mcap` — confirmed in 12 lessons, always the same two kinds missing.**
-   `3-4, 3-6, 3-7, 5-4, 6-4, 6-7, 4-3, 4-7, 9-5, 9-7, 10-1, 10-1-flagship`. Strongly correlated
-   with the lessons in gap #1/#2 above — likely the same pipeline run that skipped multiple
-   generation steps for these lessons. Recommend re-running the word-search and mcap
-   generators for this exact lesson list.
+   `3-4, 3-6, 3-7, 5-4, 6-4, 6-7, 4-3, 4-7, 9-5, 9-7, 10-1, 10-1-flagship`.
+   **Correction (2026-07-02, verified before acting on the "recommend re-running" note
+   above):** this is not a skipped generator run. `scripts/integrate-lesson-printables.mjs`
+   sources word-search/MCAP content from one-shot import folders (matched to classroom
+   lessons via a hardcoded `CLASSROOM_TO_REVEAL` table, keyed by confident CCSS
+   standard+topic match to a Reveal Math lesson). All 12 lessons above are absent from
+   that table — 100% correlation, not a coincidence — and the script's own comment says
+   lessons absent from the table "have no Reveal word search / MCAP counterpart by
+   design." The source folders (`~/Desktop/Grade_6_Math_Lesson_Wordsearches_DOCX_PDF`,
+   `~/Desktop/G6_MCAP_Practice_Sheets_CCSS_MCAP_Final_Flawless`) no longer exist on disk,
+   so there is nothing to re-run even if this weren't intentional. Closing this gap for
+   these 12 lessons would mean sourcing/authoring new word-search and MCAP content from
+   scratch, not running an existing generator — a real content-creation task, not a fix.
 
 5. **Vocabulary `examples`/`sentences` field sparsely populated or degrading within a unit.**
    Unit 3 shows a clear within-unit gradient (3-1: 5/5 terms have examples → 3-1-flagship:
