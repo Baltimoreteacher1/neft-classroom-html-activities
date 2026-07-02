@@ -1590,13 +1590,22 @@ html[data-theme="dark"] .cal-day {
   place-items: center;
   transition:
     transform var(--motion),
-    background var(--motion);
+    background var(--motion),
+    opacity var(--motion);
 }
 .fab:hover {
   transform: scale(1.06);
 }
 .fab:active {
   transform: scale(0.96);
+}
+/* The first-run welcome card already offers these same actions inline, so the
+   floating quick-add/sync buttons step aside instead of sitting on top of it. */
+.fab.onboarding-hide,
+.sync-fab.onboarding-hide {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.8);
 }
 html[data-theme="dark"] .fab {
   color: #06101a;
@@ -2964,7 +2973,9 @@ html[data-theme="dark"] .bg-blob-2 {
   padding: 10px 16px;
   border-radius: 999px;
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2);
-  transition: transform var(--motion);
+  transition:
+    transform var(--motion),
+    opacity var(--motion);
 }
 .sync-fab:active {
   transform: scale(0.95);

@@ -3118,6 +3118,17 @@
       fab.setAttribute("aria-label", fabLabel);
       fab.setAttribute("title", fabLabel);
     }
+    // The first-run welcome card already puts "Add an assignment"/"Link
+    // Device"/"Start Fresh" front and center — showing the floating quick-add
+    // and sync buttons at the same time is redundant and, on short phone
+    // screens, visually collides with those same buttons. Hide the floats
+    // for just this one-time state.
+    const showingWelcome =
+      view === "home" &&
+      state.assignments.length === 0 &&
+      !state.settings.welcomeDismissed;
+    $("#fab")?.classList.toggle("onboarding-hide", showingWelcome);
+    $("#syncFab")?.classList.toggle("onboarding-hide", showingWelcome);
     if (view === "ai") {
       ensureKaTeX(function () {
         const scrollEl = $("#aiScroll");
