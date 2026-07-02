@@ -21,7 +21,7 @@
         --blue-lt: #e8f2fc;
         --teal: #0e8a7d;
         --teal-lt: #e4f5f3;
-        --gold: #c9820f;
+        --gold: #a5670a;
         --gold-lt: #fdf3e0;
         --green: #1e7d40;
         --green-lt: #e6f4eb;
@@ -214,7 +214,7 @@
         transition: width 0.4s ease;
       }
       .prog-label {
-        font-size: 12px;
+        font-size: 13px;
         color: var(--muted);
         margin-top: 4px;
       }
@@ -277,10 +277,10 @@
         font-size: 20px;
         font-weight: 800;
         color: var(--navy);
-        margin-bottom: 3px;
+        margin: 0 0 3px;
       }
       .card-sub {
-        font-size: 13px;
+        font-size: 14px;
         color: var(--muted);
         font-weight: 500;
       }
@@ -320,7 +320,7 @@
       /* ---- Form inputs ---- */
       label.lbl {
         display: block;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 700;
         color: var(--navy);
         margin-bottom: 5px;
@@ -345,6 +345,15 @@
       select:focus {
         outline: none;
         border-color: var(--blue);
+      }
+      input:focus-visible,
+      textarea:focus-visible,
+      select:focus-visible,
+      button:focus-visible,
+      a:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 3px solid var(--blue);
+        outline-offset: 2px;
       }
       textarea {
         min-height: 90px;
@@ -692,13 +701,13 @@
         margin-bottom: 6px;
       }
       .vocab-term {
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 800;
         color: var(--navy);
         margin-bottom: 4px;
       }
       .vocab-def {
-        font-size: 13px;
+        font-size: 14px;
         color: var(--muted);
         line-height: 1.5;
       }
@@ -882,6 +891,14 @@
           🔵 Level 2 — Challenge
         </button>
       </div>
+      <div class="level-bar" style="margin-top: 10px">
+        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">
+          🌐 Language: EN
+        </button>
+        <button class="level-btn" id="btn-read" onclick="readAloud()">
+          🔊 Read Aloud
+        </button>
+      </div>
     </header>
 
     <!-- ====== WIZARD ====== -->
@@ -909,7 +926,7 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">Key Words</div>
+              <h2 class="card-title">Key Words</h2>
               <div class="card-sub">
                 Learn these 5 mathematical words before you begin
               </div>
@@ -986,9 +1003,9 @@
           <div class="card-header">
             <div class="card-icon">📱</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 Step 1 — Design Your Plan &amp; Equation
-              </div>
+              </h2>
               <div class="card-sub">
                 Choose a flat monthly fee and a rate per GB, then write the cost
                 equation
@@ -1411,7 +1428,7 @@
           <div class="card-header">
             <div class="card-icon teal">📊</div>
             <div>
-              <div class="card-title">Step 2 — Generate Your Data Table</div>
+              <h2 class="card-title">Step 2 — Generate Your Data Table</h2>
               <div class="card-sub">
                 Calculate the total monthly cost for different amounts of data
               </div>
@@ -1674,7 +1691,7 @@
           <div class="card-header">
             <div class="card-icon gold">📈</div>
             <div>
-              <div class="card-title">Step 3 — Graph and Analyze Your Plan</div>
+              <h2 class="card-title">Step 3 — Graph and Analyze Your Plan</h2>
               <div class="card-sub">
                 Look at your plan's visual representation and answer coordinate
                 questions
@@ -1930,7 +1947,7 @@
           <div class="card-header">
             <div class="card-icon teal">👥</div>
             <div>
-              <div class="card-title">Step 4 — Compare with a Partner</div>
+              <h2 class="card-title">Step 4 — Compare with a Partner</h2>
               <div class="card-sub">
                 Interview a classmate about their plan, graph both, and find the
                 cheaper option
@@ -2094,7 +2111,7 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">Step 5 — Complete and Submit</div>
+              <h2 class="card-title">Step 5 — Complete and Submit</h2>
               <div class="card-sub">
                 Write your sales pitch, review the rubric, and download your
                 final report
@@ -2240,7 +2257,7 @@
               gap: 8px;
             "
           >
-            <button class="calc-btn" onclick="buildReport()">
+            <button class="calc-btn" onclick="buildReport(); playConfetti();">
               📝 Generate Summary Report
             </button>
             <button class="export-btn" onclick="copyReport()">
@@ -2272,7 +2289,7 @@
     <!-- ====== SCRIPTS ====== -->
     <script src="/assets/app.js" defer></script>
     <script>
-      const PRESETS = { "base-fee": 30, "gb-rate": 5 };
+      const PRESETS = { "plan-rate": 10, "plan-fee": 20 };
       function handleLevelPreset(n) {
         try {
           if (n === 1) {
@@ -2437,7 +2454,9 @@
 
       // ---- Level toggle ----
       function setLevel(n) {
-        document.getElementById("body").className = "level-" + n;
+        const bodyEl = document.getElementById("body");
+        bodyEl.classList.remove("level-1", "level-2");
+        bodyEl.classList.add("level-" + n);
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
 
@@ -2454,7 +2473,7 @@
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
           const label = isEs ? s.label_es : s.label_en;
-          return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" onclick="goStep(${s.id})">
+          return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" role="button" tabindex="0" onclick="goStep(${s.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(${s.id});}">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? "✓" : s.id}</span>
             <span class="s-label">${label}</span>
           </span>${!isLast ? '<span class="step-arrow">›</span>' : ""}`;
@@ -2684,10 +2703,6 @@
 
         // Update Step 3 comparison 5 GB text
         document.getElementById("comp-cost-5").textContent = (
-          rate * 5 +
-          fee
-        ).toFixed(2);
-        document.getElementById("comp-cost-5-es").textContent = (
           rate * 5 +
           fee
         ).toFixed(2);
@@ -3207,7 +3222,6 @@
 
       // ---- Step 5: Finalize and Export Report ----
       function buildReport() {
-        playConfetti();
         const isEs = document.body.classList.contains("es");
 
         const rate = document.getElementById("plan-rate").value;
@@ -3593,7 +3607,7 @@
       }
 
       function prefillGradingConsole() {
-        const presets = { "base-fee": 30, "gb-rate": 5 };
+        const presets = { "plan-rate": 10, "plan-fee": 20 };
         for (const [id, val] of Object.entries(presets)) {
           const el = document.getElementById(id);
           if (el) {
@@ -3602,37 +3616,26 @@
             el.dispatchEvent(new Event("change", { bubbles: true }));
           }
         }
-        // Also prefill student calculation answers
-        if (document.getElementById("student-gcf-input")) {
-          document.getElementById("student-gcf-input").value =
-            document.getElementById("student-gcf-input").min || 1;
-          document
-            .getElementById("student-gcf-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        if (document.getElementById("student-lcm-input")) {
-          document.getElementById("student-lcm-input").value =
-            document.getElementById("student-lcm-input").min || 1;
-          document
-            .getElementById("student-lcm-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
-        }
         updateGradingAnswers();
       }
 
       function updateGradingAnswers() {
         try {
           const resolver = function () {
-            const base =
-              parseFloat(document.getElementById("base-fee").value) || 30;
             const rate =
-              parseFloat(document.getElementById("gb-rate").value) || 5;
+              parseFloat(document.getElementById("plan-rate").value) || 0;
+            const fee =
+              parseFloat(document.getElementById("plan-fee").value) || 0;
             return {
-              "Base Monthly fee": "$" + base.toFixed(2),
-              "Cost per GB": "$" + rate.toFixed(2),
-              "Equation (c=)": `${rate}g + ${base}`,
-              "Expected cost for 5 GB": "$" + (rate * 5 + base).toFixed(2),
-              "Expected cost for 10 GB": "$" + (rate * 10 + base).toFixed(2),
+              "Independent variable (g)": "Gigabytes of data",
+              "Dependent variable (C)": "Total monthly cost ($)",
+              "Cost per GB (rate)": "$" + rate.toFixed(2),
+              "Flat monthly fee": "$" + fee.toFixed(2),
+              "Equation (C=)": `${rate}g + ${fee}`,
+              "y-intercept (cost at 0 GB)": "$" + fee.toFixed(2),
+              "Proportional?": fee === 0 ? "Yes (fee = 0)" : "No (flat fee)",
+              "Cost for 8 GB": "$" + (rate * 8 + fee).toFixed(2),
+              "Cost for 10 GB": "$" + (rate * 10 + fee).toFixed(2),
             };
           };
           const ans = resolver();
@@ -3654,9 +3657,18 @@
         }
       }
 
-      // Wire up key listener (Ctrl+Shift+T) and triple click on h1
+      // Teacher-only reveal: requires ?teacher in the URL, then Alt+Shift+K.
+      // (Avoids hijacking Ctrl+Shift+T and keeps the console away from students.)
+      function teacherModeEnabled() {
+        return /[?&]teacher\b/.test(window.location.search);
+      }
       document.addEventListener("keydown", function (e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "t") {
+        if (
+          teacherModeEnabled() &&
+          e.altKey &&
+          e.shiftKey &&
+          e.key.toLowerCase() === "k"
+        ) {
           e.preventDefault();
           toggleGradingConsole();
         }
@@ -3733,8 +3745,9 @@
       };
 
       document.addEventListener("DOMContentLoaded", function () {
+        // Triple-click reveal only when teacher mode is enabled (?teacher).
         const titleEl = document.querySelector(".hero h1");
-        if (titleEl) {
+        if (titleEl && teacherModeEnabled()) {
           let clicks = 0;
           titleEl.addEventListener("click", function () {
             clicks++;
@@ -3749,7 +3762,7 @@
         }
         // Re-calculate answers when input event fires
         document.addEventListener("input", function (e) {
-          const inputs = ["base-fee", "gb-rate"];
+          const inputs = ["plan-rate", "plan-fee"];
           if (inputs.includes(e.target.id)) {
             updateGradingAnswers();
           }

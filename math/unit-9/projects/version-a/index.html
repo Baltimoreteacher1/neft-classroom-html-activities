@@ -21,7 +21,7 @@
         --purple-lt: #f5f3ff;
         --pink: #db2777;
         --pink-lt: #fdf2f8;
-        --gold: #c9820f;
+        --gold: #a5670a;
         --gold-lt: #fdf3e0;
         --green: #1e7d40;
         --green-lt: #e6f4eb;
@@ -213,7 +213,7 @@
         transition: width 0.4s ease;
       }
       .prog-label {
-        font-size: 12px;
+        font-size: 13px;
         color: var(--muted);
         margin-top: 4px;
       }
@@ -276,10 +276,10 @@
         font-size: 20px;
         font-weight: 800;
         color: var(--navy);
-        margin-bottom: 3px;
+        margin: 0 0 3px;
       }
       .card-sub {
-        font-size: 13px;
+        font-size: 14px;
         color: var(--muted);
         font-weight: 500;
       }
@@ -319,7 +319,7 @@
       /* ---- Form inputs ---- */
       label.lbl {
         display: block;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 700;
         color: var(--navy);
         margin-bottom: 5px;
@@ -344,6 +344,15 @@
       select:focus {
         outline: none;
         border-color: var(--purple);
+      }
+      input:focus-visible,
+      textarea:focus-visible,
+      select:focus-visible,
+      button:focus-visible,
+      a:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 3px solid var(--purple);
+        outline-offset: 2px;
       }
       textarea {
         min-height: 90px;
@@ -661,6 +670,12 @@
       body.level-2 .lvl2-block {
         border-color: var(--purple);
       }
+      .lvl2-inline {
+        display: none;
+      }
+      body.level-2 .lvl2-inline {
+        display: inline;
+      }
 
       /* ---- Vocab cards ---- */
       .vocab-grid {
@@ -680,13 +695,13 @@
         margin-bottom: 6px;
       }
       .vocab-term {
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 800;
         color: var(--navy);
         margin-bottom: 4px;
       }
       .vocab-def {
-        font-size: 13px;
+        font-size: 14px;
         color: var(--muted);
         line-height: 1.5;
       }
@@ -908,10 +923,10 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Key Words</span>
                 <span class="es-text">Palabras clave</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Learn these 5 vocabulary terms before you begin</span
@@ -1069,10 +1084,10 @@
           <div class="card-header">
             <div class="card-icon pink">⚡</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 1 — Write Your Equation</span>
                 <span class="es-text">Paso 1 — Escribe tu ecuación</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Identify variables and set your weekly growth rate</span
@@ -1301,22 +1316,10 @@
                 >
               </label>
               <select id="v-indep">
-                <option value="">
-                  <span class="en-text">-- Select Variable --</span>
-                  <span class="es-text">-- Seleccionar variable --</span>
-                </option>
-                <option value="weeks">
-                  <span class="en-text">Time in Weeks</span>
-                  <span class="es-text">Tiempo en semanas</span>
-                </option>
-                <option value="subs">
-                  <span class="en-text">Total Subscribers</span>
-                  <span class="es-text">Total de suscriptores</span>
-                </option>
-                <option value="rate">
-                  <span class="en-text">Weekly Growth Rate</span>
-                  <span class="es-text">Tasa de crecimiento semanal</span>
-                </option>
+                <option value="">-- Select Variable --</option>
+                <option value="weeks">Time in Weeks</option>
+                <option value="subs">Total Subscribers</option>
+                <option value="rate">Weekly Growth Rate</option>
               </select>
             </div>
             <div>
@@ -1329,22 +1332,10 @@
                 >
               </label>
               <select id="v-dep">
-                <option value="">
-                  <span class="en-text">-- Select Variable --</span>
-                  <span class="es-text">-- Seleccionar variable --</span>
-                </option>
-                <option value="weeks">
-                  <span class="en-text">Time in Weeks</span>
-                  <span class="es-text">Tiempo en semanas</span>
-                </option>
-                <option value="subs">
-                  <span class="en-text">Total Subscribers</span>
-                  <span class="es-text">Total de suscriptores</span>
-                </option>
-                <option value="rate">
-                  <span class="en-text">Weekly Growth Rate</span>
-                  <span class="es-text">Tasa de crecimiento semanal</span>
-                </option>
+                <option value="">-- Select Variable --</option>
+                <option value="weeks">Time in Weeks</option>
+                <option value="subs">Total Subscribers</option>
+                <option value="rate">Weekly Growth Rate</option>
               </select>
             </div>
           </div>
@@ -1362,16 +1353,20 @@
             </summary>
             <p>
               <span class="en-text"
-                >Remember that the **Independent Variable (x)** changes on its
-                own (Time in Weeks), and the **Dependent Variable (y)** depends
-                on the input (Total Subscribers). The equation is written as **y
-                = kx** where **k** is your weekly rate.</span
+                >Remember that the <strong>Independent Variable (x)</strong>
+                changes on its own (Time in Weeks), and the
+                <strong>Dependent Variable (y)</strong> depends on the input
+                (Total Subscribers). The equation is written as
+                <strong>y = kx</strong> where <strong>k</strong> is your weekly
+                rate.</span
               >
               <span class="es-text"
-                >Recuerda que la **variable independiente (x)** cambia por sí
-                misma (Tiempo en semanas) y la **variable dependiente (y)**
-                depende de la entrada (Total de suscriptores). La ecuación se
-                escribe como **y = kx** donde **k** es tu tasa semanal.</span
+                >Recuerda que la <strong>variable independiente (x)</strong>
+                cambia por sí misma (Tiempo en semanas) y la
+                <strong>variable dependiente (y)</strong> depende de la entrada
+                (Total de suscriptores). La ecuación se escribe como
+                <strong>y = kx</strong> donde <strong>k</strong> es tu tasa
+                semanal.</span
               >
             </p>
           </details>
@@ -1397,10 +1392,10 @@
           <div class="card-header">
             <div class="card-icon">📊</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 2 — Build Your Data Table</span>
                 <span class="es-text">Paso 2 — Crea tu tabla de datos</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Evaluate y for each week from 0 to 5 using your
@@ -1587,17 +1582,18 @@
             </summary>
             <p>
               <span class="en-text"
-                >For each week **x**, multiply it by your weekly growth rate
-                **k**${document.getElementById('body')?.className === 'level-2'
-                ? ' and add your head start b' : ''}. Format coordinate pairs
-                exactly as **(x, y)** with no spaces. E.g. **(2,30)**.</span
+                >For each week <strong>x</strong>, multiply it by your weekly
+                growth rate <strong>k</strong><span class="lvl2-inline"> and add
+                your head start b</span>. Format coordinate pairs exactly as
+                <strong>(x, y)</strong> with no spaces. E.g.
+                <strong>(2,30)</strong>.</span
               >
               <span class="es-text"
-                >Para cada semana **x**, multiplícala por tu tasa de crecimiento
-                semanal **k**${document.getElementById('body')?.className ===
-                'level-2' ? ' y suma tu ventaja inicial b' : ''}. Escribe los
-                pares ordenados exactamente como **(x, y)** sin espacios. Ej.
-                **(2,30)**.</span
+                >Para cada semana <strong>x</strong>, multiplícala por tu tasa
+                de crecimiento semanal <strong>k</strong><span class="lvl2-inline">
+                y suma tu ventaja inicial b</span>. Escribe los pares ordenados
+                exactamente como <strong>(x, y)</strong> sin espacios. Ej.
+                <strong>(2,30)</strong>.</span
               >
             </p>
           </details>
@@ -1623,12 +1619,12 @@
           <div class="card-header">
             <div class="card-icon gold">📈</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text"
                   >Step 3 — Read &amp; Analyze Your Graph</span
                 >
                 <span class="es-text">Paso 3 — Lee y analiza tu gráfica</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Plot points and compare against real growth tiers</span
@@ -1922,10 +1918,10 @@
           <div class="card-header">
             <div class="card-icon pink">👥</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 4 — Compare With a Partner</span>
                 <span class="es-text">Paso 4 — Comparar con un compañero</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Interview a classmate and compare your subscriber growth
@@ -2032,14 +2028,14 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text"
                   >Step 5 — Presentation Pitch &amp; Submit</span
                 >
                 <span class="es-text"
                   >Paso 5 — Presentación del discurso y envío</span
                 >
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text"
                   >Create your channel presentation pitch, verify checklist, and
@@ -2434,7 +2430,7 @@
     <!-- ====== SCRIPTS ====== -->
     <script src="/assets/app.js" defer></script>
     <script>
-      const PRESETS = { "base-cost": 25, "rate-cost": 10 };
+      const PRESETS = { "c-rate": 15 };
       function handleLevelPreset(n) {
         try {
           if (n === 1) {
@@ -2584,7 +2580,9 @@
 
       // ---- Level toggle ----
       function setLevel(n) {
-        document.getElementById("body").className = "level-" + n;
+        const bodyEl = document.getElementById("body");
+        bodyEl.classList.remove("level-1", "level-2");
+        bodyEl.classList.add("level-" + n);
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
         updateTablePlaceholders();
@@ -2601,7 +2599,7 @@
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
           const label = isEs ? STEPS_ES[s.label] || s.label : s.label;
-          return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" onclick="goStep(${s.id})">
+          return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" role="button" tabindex="0" onclick="goStep(${s.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(${s.id});}">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? "✓" : s.id - 1}</span>
             <span class="s-label">${label}</span>
           </span>${!isLast ? '<span class="step-arrow">›</span>' : ""}`;
@@ -2655,7 +2653,7 @@
           parseInt(document.getElementById("c-rate").value) ||
           CONFIG.defaultGrowthRate;
         const lvl =
-          document.getElementById("body").className === "level-2" ? 2 : 1;
+          document.getElementById("body").classList.contains("level-2") ? 2 : 1;
         const b =
           lvl === 2
             ? parseInt(document.getElementById("c-start").value) || 0
@@ -2673,7 +2671,7 @@
       function verifyEquation() {
         const k = parseInt(document.getElementById("c-rate").value);
         const lvl =
-          document.getElementById("body").className === "level-2" ? 2 : 1;
+          document.getElementById("body").classList.contains("level-2") ? 2 : 1;
         const b =
           lvl === 2
             ? parseInt(document.getElementById("c-start").value) || 0
@@ -2744,7 +2742,7 @@
           parseInt(document.getElementById("c-rate").value) ||
           CONFIG.defaultGrowthRate;
         const lvl =
-          document.getElementById("body").className === "level-2" ? 2 : 1;
+          document.getElementById("body").classList.contains("level-2") ? 2 : 1;
         const b =
           lvl === 2
             ? parseInt(document.getElementById("c-start").value) || 0
@@ -2844,7 +2842,7 @@
           parseInt(document.getElementById("c-rate").value) ||
           CONFIG.defaultGrowthRate;
         const lvl =
-          document.getElementById("body").className === "level-2" ? 2 : 1;
+          document.getElementById("body").classList.contains("level-2") ? 2 : 1;
         const b =
           lvl === 2
             ? parseInt(document.getElementById("c-start").value) || 0
@@ -3025,7 +3023,7 @@
           parseInt(document.getElementById("c-rate").value) ||
           CONFIG.defaultGrowthRate;
         const lvl =
-          document.getElementById("body").className === "level-2" ? 2 : 1;
+          document.getElementById("body").classList.contains("level-2") ? 2 : 1;
         const b =
           lvl === 2
             ? parseInt(document.getElementById("c-start").value) || 0
@@ -3110,7 +3108,7 @@
           parseInt(document.getElementById("c-rate").value) ||
           CONFIG.defaultGrowthRate;
         const lvl =
-          document.getElementById("body").className === "level-2" ? 2 : 1;
+          document.getElementById("body").classList.contains("level-2") ? 2 : 1;
         const b =
           lvl === 2
             ? parseInt(document.getElementById("c-start").value) || 0
@@ -3241,7 +3239,7 @@
           parseInt(document.getElementById("c-rate").value) ||
           CONFIG.defaultGrowthRate;
         const lvl =
-          document.getElementById("body").className === "level-2" ? 2 : 1;
+          document.getElementById("body").classList.contains("level-2") ? 2 : 1;
         const b =
           lvl === 2
             ? parseInt(document.getElementById("c-start").value) || 0
@@ -3451,6 +3449,7 @@
             : "🔵 Level 2 — Challenge";
         }
 
+        updateVariableSelectOptions(isEs);
         updateTablePlaceholders();
         drawGraph();
         calculateTier();
@@ -3459,6 +3458,31 @@
         }
         buildTrail();
         updateProgress();
+      }
+
+      function updateVariableSelectOptions(isEs) {
+        const optionText = isEs
+          ? {
+              "": "-- Seleccionar variable --",
+              weeks: "Tiempo en semanas",
+              subs: "Total de suscriptores",
+              rate: "Tasa de crecimiento semanal",
+            }
+          : {
+              "": "-- Select Variable --",
+              weeks: "Time in Weeks",
+              subs: "Total Subscribers",
+              rate: "Weekly Growth Rate",
+            };
+        ["v-indep", "v-dep"].forEach((id) => {
+          const sel = document.getElementById(id);
+          if (!sel) return;
+          Array.from(sel.options).forEach((opt) => {
+            if (optionText[opt.value] !== undefined) {
+              opt.textContent = optionText[opt.value];
+            }
+          });
+        });
       }
 
       let isSpeaking = false;
@@ -3567,7 +3591,7 @@
       }
 
       function prefillGradingConsole() {
-        const presets = { "base-cost": 25, "rate-cost": 10 };
+        const presets = { "c-rate": 15 };
         for (const [id, val] of Object.entries(presets)) {
           const el = document.getElementById(id);
           if (el) {
@@ -3576,37 +3600,33 @@
             el.dispatchEvent(new Event("change", { bubbles: true }));
           }
         }
-        // Also prefill student calculation answers
-        if (document.getElementById("student-gcf-input")) {
-          document.getElementById("student-gcf-input").value =
-            document.getElementById("student-gcf-input").min || 1;
-          document
-            .getElementById("student-gcf-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        if (document.getElementById("student-lcm-input")) {
-          document.getElementById("student-lcm-input").value =
-            document.getElementById("student-lcm-input").min || 1;
-          document
-            .getElementById("student-lcm-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
-        }
         updateGradingAnswers();
       }
 
       function updateGradingAnswers() {
         try {
           const resolver = function () {
-            const base =
-              parseFloat(document.getElementById("base-cost").value) || 25;
-            const rate =
-              parseFloat(document.getElementById("rate-cost").value) || 10;
+            const k =
+              parseInt(document.getElementById("c-rate").value) ||
+              CONFIG.defaultGrowthRate;
+            const isLevel2 = document
+              .getElementById("body")
+              .classList.contains("level-2");
+            const b =
+              isLevel2
+                ? parseInt(document.getElementById("c-start").value) || 0
+                : 0;
+            const eq = isLevel2 ? `y = ${k}x + ${b}` : `y = ${k}x`;
             return {
-              "Base Setup cost": "$" + base.toFixed(2),
-              "Cost per Hour": "$" + rate.toFixed(2),
-              "Equation (y=)": `${rate}x + ${base}`,
-              "Expected cost for 5 hrs": "$" + (rate * 5 + base).toFixed(2),
-              "Expected cost for 10 hrs": "$" + (rate * 10 + base).toFixed(2),
+              "Independent variable (x)": "Time in weeks",
+              "Dependent variable (y)": "Total subscribers",
+              "Growth rate k (subs/week)": String(k),
+              "Head start b (Level 2)": isLevel2 ? String(b) : "n/a (Level 1)",
+              "Equation": eq,
+              "Subscribers at week 5": String(k * 5 + b),
+              "Weeks to reach 1,000": (k > 0
+                ? ((CONFIG.targetMilestone - b) / k).toFixed(1)
+                : "—"),
             };
           };
           const ans = resolver();
@@ -3628,9 +3648,18 @@
         }
       }
 
-      // Wire up key listener (Ctrl+Shift+T) and triple click on h1
+      // Teacher-only reveal: requires ?teacher in the URL, then Alt+Shift+K.
+      // (Avoids hijacking Ctrl+Shift+T and keeps the console away from students.)
+      function teacherModeEnabled() {
+        return /[?&]teacher\b/.test(window.location.search);
+      }
       document.addEventListener("keydown", function (e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "t") {
+        if (
+          teacherModeEnabled() &&
+          e.altKey &&
+          e.shiftKey &&
+          e.key.toLowerCase() === "k"
+        ) {
           e.preventDefault();
           toggleGradingConsole();
         }
@@ -3707,8 +3736,9 @@
       };
 
       document.addEventListener("DOMContentLoaded", function () {
+        // Triple-click reveal only when teacher mode is enabled (?teacher).
         const titleEl = document.querySelector(".hero h1");
-        if (titleEl) {
+        if (titleEl && teacherModeEnabled()) {
           let clicks = 0;
           titleEl.addEventListener("click", function () {
             clicks++;
@@ -3723,7 +3753,7 @@
         }
         // Re-calculate answers when input event fires
         document.addEventListener("input", function (e) {
-          const inputs = ["base-cost", "rate-cost"];
+          const inputs = ["c-rate", "c-start"];
           if (inputs.includes(e.target.id)) {
             updateGradingAnswers();
           }

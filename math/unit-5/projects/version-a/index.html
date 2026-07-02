@@ -15,7 +15,7 @@
         --blue-lt: #e8f5e9;    /* Light Accent Background */
         --teal: #00796b;
         --teal-lt: #e0f2f1;
-        --gold: #c9820f;
+        --gold: #a5670a;
         --gold-lt: #fdf3e0;
         --green: #1b5e20;      /* Success Green */
         --green-lt: #e8f5e9;
@@ -29,7 +29,7 @@
         --shadow: 0 2px 16px rgba(15,40,24,.08);
       }
       * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
+      body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; font-size: 16px; }
 
       /* ---- Hero ---- */
       .hero {
@@ -70,6 +70,7 @@
         display: flex; align-items: center; gap: 6px;
         cursor: pointer; white-space: nowrap; padding: 8px 12px;
         border-radius: 10px; transition: background .15s;
+        background: none; border: none; font-family: inherit; color: inherit;
       }
       .step-trail-item:hover { background: var(--blue-lt); }
       .step-trail-item.active .s-num {
@@ -116,8 +117,8 @@
       .card-icon.gold { background: var(--gold-lt); }
       .card-icon.teal { background: var(--teal-lt); }
       .card-icon.green { background: var(--green-lt); }
-      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
-      .card-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
+      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin: 0 0 3px; }
+      .card-sub { font-size: 14px; color: var(--muted); font-weight: 500; }
 
       /* ---- Instruction box ---- */
       .instruct {
@@ -133,13 +134,17 @@
       .visual-svg { display: block; width: 100%; max-width: 520px; margin: 0 auto 20px; border-radius: 12px; }
 
       /* ---- Form inputs ---- */
-      label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
+      label.lbl { display: block; font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
       input[type="number"], input[type="text"], textarea, select {
         width: 100%; padding: 10px 14px; border: 1.5px solid var(--line);
-        border-radius: 10px; font-size: 15px; font-family: inherit;
+        border-radius: 10px; font-size: 16px; font-family: inherit;
         background: var(--bg); color: var(--ink); transition: border-color .2s;
       }
       input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
+      a:focus-visible, button:focus-visible, input:focus-visible,
+      select:focus-visible, textarea:focus-visible, .step-trail-item:focus-visible {
+        outline: 3px solid #1d4ed8; outline-offset: 2px;
+      }
       textarea { min-height: 90px; resize: vertical; }
       .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
       @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
@@ -169,12 +174,12 @@
       /* ---- Hint ---- */
       details.hint { margin-top: 14px; }
       details.hint summary {
-        cursor: pointer; font-size: 13px; font-weight: 600;
+        cursor: pointer; font-size: 15px; font-weight: 600;
         color: var(--blue); list-style: none; display: inline-flex;
         align-items: center; gap: 5px;
       }
       details.hint summary::before { content: "💡"; }
-      details.hint p { font-size: 14px; color: var(--muted); margin-top: 8px; padding: 10px 12px; background: var(--blue-lt); border-radius: 8px; }
+      details.hint p { font-size: 15px; color: var(--muted); margin-top: 8px; padding: 10px 12px; background: var(--blue-lt); border-radius: 8px; }
 
       /* ---- Level 2 extension ---- */
       .lvl2-block {
@@ -261,8 +266,8 @@
       .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
       .vocab-icon { font-size: 26px; margin-bottom: 6px; }
       .vocab-term { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
-      .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
-      .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
+      .vocab-def { font-size: 15px; color: var(--muted); line-height: 1.5; }
+      .vocab-ex { font-size: 14px; color: var(--blue); font-weight: 600; margin-top: 5px; }
 
       /* ---- Print ---- */
       @media print {
@@ -381,10 +386,10 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Key Words</span>
                 <span class="es-text">Palabras clave</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text">Learn these 6 area vocabulary terms before you start</span>
                 <span class="es-text">Aprende estos 6 términos de vocabulario de área antes de comenzar</span>
@@ -514,10 +519,10 @@
           <div class="card-header">
             <div class="card-icon">🛏️</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 1 — Bedroom Floor Area</span>
                 <span class="es-text">Paso 1 — Área del piso de la habitación</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text">Calculate the area of your rectangular bedroom</span>
                 <span class="es-text">Calcula el área de tu habitación rectangular</span>
@@ -633,10 +638,10 @@
           <div class="card-header">
             <div class="card-icon teal">📐</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 2 — Triangle Reading Nook</span>
                 <span class="es-text">Paso 2 — Rincón de lectura triangular</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text">Calculate the area of a triangular nook or alcove</span>
                 <span class="es-text">Calcula el área de un rincón o nicho triangular</span>
@@ -746,10 +751,10 @@
           <div class="card-header">
             <div class="card-icon gold">💵</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 3 — Flooring &amp; Costs</span>
                 <span class="es-text">Paso 3 — Pisos y costos</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text">Sum the composite floor areas and calculate flooring costs</span>
                 <span class="es-text">Suma las áreas de piso compuestas y calcula los costos de piso</span>
@@ -960,10 +965,10 @@
           <div class="card-header">
             <div class="card-icon teal">👥</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 4 — Compare With a Partner</span>
                 <span class="es-text">Paso 4 — Comparar con un compañero</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text">Compare bedroom sizes and costs side-by-side with a classmate</span>
                 <span class="es-text">Compara los tamaños y costos de las habitaciones lado a lado con un compañero</span>
@@ -1069,10 +1074,10 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <div class="card-title">
+              <h2 class="card-title">
                 <span class="en-text">Step 5 — Finish &amp; Submit</span>
                 <span class="es-text">Paso 5 — Terminar y enviar</span>
-              </div>
+              </h2>
               <div class="card-sub">
                 <span class="en-text">Check off your tasks, review the rubric, and generate your report</span>
                 <span class="es-text">Marca tus tareas completadas, revisa la rúbrica y genera tu informe</span>
@@ -1287,7 +1292,7 @@
     <!-- ====== SCRIPTS ====== -->
     <script src="/assets/app.js" defer></script>
     <script>
-      const PRESETS = {"room-len": 10, "room-wid": 8};
+      const PRESETS = {"f-length": 12, "f-width": 10, "t-base": 6, "t-height": 4};
       function handleLevelPreset(n) {
         try {
           if (n === 1) {
@@ -1370,12 +1375,13 @@
 
       // ---- Level toggle ----
       function setLevel(n) {
-        const isEs = document.body.classList.contains('es');
-        document.getElementById('body').className = 'level-' + n + (isEs ? ' es' : '');
+        document.body.classList.remove('level-1', 'level-2');
+        document.body.classList.add('level-' + n);
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
-      
-        handleLevelPreset(n);}
+
+        handleLevelPreset(n);
+      }
 
       // ---- Build step trail ----
       function buildTrail() {
@@ -1384,10 +1390,10 @@
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
           const label = isEs ? s.labelEs : s.labelEn;
-          return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
+          return `<button type="button" class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})" aria-label="${label}">
             <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
             <span class="s-label">${label}</span>
-          </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
+          </button>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
         }).join('');
       }
 
@@ -1625,8 +1631,14 @@
       }
 
       // ---- Report ----
+      // buildReport() = the button handler: fires confetti, then renders.
+      // buildReportContent() renders silently (used on language toggle).
       function buildReport() {
         playConfetti();
+        buildReportContent();
+      }
+
+      function buildReportContent() {
         const len = parseFloat(document.getElementById('f-length').value) || 0;
         const wid = parseFloat(document.getElementById('f-width').value) || 0;
         const base = parseFloat(document.getElementById('t-base').value) || 0;
@@ -1784,7 +1796,13 @@
         calcNook();
         recalcTotal();
         comparePeer();
-        buildReport();
+        // Note: do NOT call buildReport() here — it fires confetti and should
+        // only run from the "Generate Summary" button. Re-render the report
+        // only if it is already visible (keeps language in sync, no confetti).
+        const reportBox = document.getElementById('reportBox');
+        if (reportBox && reportBox.classList.contains('show')) {
+          buildReportContent();
+        }
       }
 
       // ---- Read Aloud TTS ----
@@ -1844,7 +1862,8 @@
       }
       
       function prefillGradingConsole() {
-        const presets = {"room-len": 10, "room-wid": 8};
+        // Fill the real calculator inputs with the Level 1 example values.
+        const presets = {"f-length": 12, "f-width": 10, "t-base": 6, "t-height": 4};
         for (const [id, val] of Object.entries(presets)) {
           const el = document.getElementById(id);
           if (el) {
@@ -1853,33 +1872,32 @@
             el.dispatchEvent(new Event('change', { bubbles: true }));
           }
         }
-        // Also prefill student calculation answers
-        if (document.getElementById('student-gcf-input')) {
-          document.getElementById('student-gcf-input').value = document.getElementById('student-gcf-input').min || 1;
-          document.getElementById('student-gcf-input').dispatchEvent(new Event('input', { bubbles: true }));
-        }
-        if (document.getElementById('student-lcm-input')) {
-          document.getElementById('student-lcm-input').value = document.getElementById('student-lcm-input').min || 1;
-          document.getElementById('student-lcm-input').dispatchEvent(new Event('input', { bubbles: true }));
-        }
         updateGradingAnswers();
       }
-      
+
       function updateGradingAnswers() {
         try {
           const resolver = function() {
-            
-          const l = parseFloat(document.getElementById('room-len').value) || 10;
-          const w = parseFloat(document.getElementById('room-wid').value) || 8;
-          const area = l * w;
-          const rate = 4.50; // Carpet rate
-          return {
-            'Length': l + ' ft',
-            'Width': w + ' ft',
-            'Expected Room Area': area.toFixed(2) + ' sq ft',
-            'Expected Carpet Cost ($4.50/sq ft)': '$' + (area * rate).toFixed(2)
-          };
-        
+            // Mirror the student calculator: floor (l×w) + triangle nook (½bh),
+            // then flooring cost = total area × price (defaults to Carpet $3.50).
+            const l = parseFloat(document.getElementById('f-length').value) || 0;
+            const w = parseFloat(document.getElementById('f-width').value) || 0;
+            const base = parseFloat(document.getElementById('t-base').value) || 0;
+            const height = parseFloat(document.getElementById('t-height').value) || 0;
+            const rectArea = l * w;
+            const nookArea = 0.5 * base * height;
+            const totalArea = rectArea + nookArea;
+            const price = parseFloat(document.getElementById('f-price').value) || 3.50;
+            const cost = totalArea * price;
+            return {
+              'Floor (l × w)': l + ' × ' + w + ' ft',
+              'Floor Area': rectArea.toFixed(2) + ' sq ft',
+              'Nook (½ × b × h)': base + ' × ' + height + ' ft',
+              'Nook Area': nookArea.toFixed(2) + ' sq ft',
+              'Total Area': totalArea.toFixed(2) + ' sq ft',
+              'Price per sq ft': '$' + price.toFixed(2),
+              'Flooring Cost (Area × Price)': '$' + cost.toFixed(2)
+            };
           };
           const ans = resolver();
           const body = document.getElementById('teacher-answers-body');
@@ -1896,9 +1914,10 @@
         }
       }
       
-      // Wire up key listener (Ctrl+Shift+T) and triple click on h1
+      // Teacher-only reveal: obscure, non-hijacking combo (Ctrl+Alt+Shift+G).
+      // Avoids Ctrl+Shift+T (browser "reopen closed tab").
       document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
+        if (e.ctrlKey && e.altKey && e.shiftKey && e.key.toLowerCase() === 'g') {
           e.preventDefault();
           toggleGradingConsole();
         }
@@ -1981,7 +2000,7 @@
         }
         // Re-calculate answers when input event fires
         document.addEventListener('input', function(e) {
-          const inputs = ["room-len", "room-wid"];
+          const inputs = ["f-length", "f-width", "t-base", "t-height", "f-price"];
           if (inputs.includes(e.target.id)) {
             updateGradingAnswers();
           }
