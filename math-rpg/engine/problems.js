@@ -464,25 +464,29 @@
     var b = ri(4, 15),
       h = ri(3, 12);
     var real = b * h;
-    return build(real, [round((b * h) / 2, 1), b + h, 2 * (b + h)], {
+    var p = build(real, [round((b * h) / 2, 1), b + h, 2 * (b + h)], {
       prompt: "A parallelogram has base " + b + " and height " + h + ". Find its area.",
       explain: "Area of a parallelogram = base × height.",
       standard: "6.G.A.1",
       topic: "Area of Parallelograms",
     });
+    p.diagram = { kind: "figure", shape: "parallelogram", base: b, height: h };
+    return p;
   }
 
   function areaTriangle() {
     var b = pick([4, 6, 8, 10, 12, 14]);
     var h = ri(3, 12);
     var real = (b * h) / 2;
-    return build(real, [b * h, b + h, round((b * h) / 4, 1)], {
+    var p = build(real, [b * h, b + h, round((b * h) / 4, 1)], {
       prompt: "A triangle has base " + b + " and height " + h + ". Find its area.",
       explain: "Area of a triangle = ½ × base × height.",
       standard: "6.G.A.1",
       topic: "Area of Triangles",
       fmt: num,
     });
+    p.diagram = { kind: "figure", shape: "triangle", base: b, height: h };
+    return p;
   }
 
   function areaTrapezoid() {
@@ -491,7 +495,7 @@
       h = pick([2, 4, 6, 8]);
     while (b2 === b1) b2 = ri(4, 10);
     var real = ((b1 + b2) / 2) * h;
-    return build(real, [(b1 + b2) * h, (b1 * b2 * h) / 2, b1 + b2 + h], {
+    var p = build(real, [(b1 + b2) * h, (b1 * b2 * h) / 2, b1 + b2 + h], {
       prompt:
         "A trapezoid has parallel sides " + b1 + " and " + b2 +
         " with height " + h + ". Find its area.",
@@ -500,6 +504,8 @@
       topic: "Area of Trapezoids",
       fmt: num,
     });
+    p.diagram = { kind: "figure", shape: "trapezoid", base: b1, b2: b2, height: h };
+    return p;
   }
 
   function areaComposite() {
@@ -508,7 +514,7 @@
       h = ri(3, 6);
     var s = ri(2, 4);
     var real = w * h + s * s;
-    return build(real, [w * h, w * h * s, (w + s) * (h + s)], {
+    var p = build(real, [w * h, w * h * s, (w + s) * (h + s)], {
       prompt:
         "An L-shape is a " + w + "×" + h + " rectangle with a " + s + "×" + s +
         " square added on. Find the total area.",
@@ -516,6 +522,8 @@
       standard: "6.G.A.1",
       topic: "Area of Composite Figures",
     });
+    p.diagram = { kind: "figure", shape: "lshape", w: w, h: h, s: s };
+    return p;
   }
 
   /* ======================================================================
@@ -664,36 +672,42 @@
     var data = makeDataset(pick([4, 5]));
     var sum = data.reduce(function (s, x) { return s + x; }, 0);
     var real = round(sum / data.length, 2);
-    return build(real, [sum, round(sum / (data.length + 1), 2), Math.max.apply(null, data)], {
-      prompt: "Find the mean (average) of: " + data.join(", "),
+    var p = build(real, [sum, round(sum / (data.length + 1), 2), Math.max.apply(null, data)], {
+      prompt: "Find the mean (average) of the data set below.",
       explain: "Add all the values, then divide by how many there are.",
       standard: "6.SP.B.5",
       topic: "Mean",
       fmt: num,
     });
+    p.diagram = { kind: "dotplot", values: data };
+    return p;
   }
   function median() {
     var data = makeDataset(5);
     var sorted = data.slice().sort(function (a, b) { return a - b; });
     var real = sorted[2];
-    return build(real, [data[2], Math.round((sorted[0] + sorted[4]) / 2), sorted[4]], {
-      prompt: "Find the median of: " + data.join(", "),
+    var p = build(real, [data[2], Math.round((sorted[0] + sorted[4]) / 2), sorted[4]], {
+      prompt: "Find the median of the data set below: " + data.join(", "),
       explain: "Put the numbers in order, then take the middle value.",
       standard: "6.SP.B.5",
       topic: "Median",
     });
+    p.diagram = { kind: "dotplot", values: data };
+    return p;
   }
   function rangeStat() {
     var data = makeDataset(5);
     var mx = Math.max.apply(null, data),
       mn = Math.min.apply(null, data);
     var real = mx - mn;
-    return build(real, [mx + mn, mx, mn], {
-      prompt: "Find the range of: " + data.join(", "),
+    var p = build(real, [mx + mn, mx, mn], {
+      prompt: "Find the range of the data set below: " + data.join(", "),
       explain: "Range = greatest value − least value.",
       standard: "6.SP.B.5",
       topic: "Range",
     });
+    p.diagram = { kind: "dotplot", values: data };
+    return p;
   }
   function mad() {
     // keep clean: dataset with integer mean
@@ -702,15 +716,17 @@
     var shuffled = shuffle(data);
     var absDev = data.map(function (x) { return Math.abs(x - m); });
     var real = round(absDev.reduce(function (s, x) { return s + x; }, 0) / data.length, 2);
-    return build(real, [m, round(real * 2, 2), 0], {
+    var p = build(real, [m, round(real * 2, 2), 0], {
       prompt:
-        "The mean of " + shuffled.join(", ") + " is " + m +
+        "The data set below has a mean of " + m +
         ". Find the mean absolute deviation (MAD).",
       explain: "Find each value's distance from the mean, then average those distances.",
       standard: "6.SP.B.5",
       topic: "Mean Absolute Deviation",
       fmt: num,
     });
+    p.diagram = { kind: "dotplot", values: shuffled };
+    return p;
   }
 
   /* ======================================================================
@@ -726,7 +742,7 @@
       if (uniq.indexOf(v) < 0) uniq.push(v);
     }
     var least = Math.min.apply(null, uniq);
-    return build(
+    var p = build(
       String(least),
       uniq.filter(function (v) { return v !== least; }).map(String),
       {
@@ -737,29 +753,39 @@
         fmt: String,
       }
     );
+    p.diagram = {
+      kind: "numberline", min: -10, max: 10,
+      marks: uniq.map(function (v) { return { v: v, label: String(v) }; }),
+    };
+    return p;
   }
   function absoluteValue() {
-    var v = -ri(2, 15);
+    var v = -ri(2, 10);
     var real = Math.abs(v);
-    return build(real, [v, 0, real + 1], {
+    var p = build(real, [v, 0, real + 1], {
       prompt: "What is | " + v + " |  (the absolute value of " + v + ")?",
       explain: "Absolute value is the distance from 0, always zero or positive.",
       standard: "6.NS.C.7",
       topic: "Absolute Value",
     });
+    p.diagram = {
+      kind: "numberline", min: -10, max: 10,
+      marks: [{ v: v, label: String(v) }, { v: 0, label: "0" }],
+    };
+    return p;
   }
   function quadrant() {
     var x = pick([-1, 1]) * ri(1, 8);
     var y = pick([-1, 1]) * ri(1, 8);
     var q =
       x > 0 && y > 0 ? "I" : x < 0 && y > 0 ? "II" : x < 0 && y < 0 ? "III" : "IV";
-    return build(
+    var p = build(
       "Quadrant " + q,
       ["Quadrant I", "Quadrant II", "Quadrant III", "Quadrant IV"].filter(
         function (s) { return s !== "Quadrant " + q; }
       ),
       {
-        prompt: "In which quadrant is the point (" + x + ", " + y + ")?",
+        prompt: "In which quadrant is the plotted point (" + x + ", " + y + ")?",
         explain:
           "Signs decide the quadrant: (+,+)=I, (−,+)=II, (−,−)=III, (+,−)=IV.",
         standard: "6.NS.C.6",
@@ -767,6 +793,8 @@
         fmt: String,
       }
     );
+    p.diagram = { kind: "coordinate", points: [{ x: x, y: y }] };
+    return p;
   }
   function coordinateDistance() {
     // same x, different y (vertical distance)
@@ -774,7 +802,7 @@
     var y1 = ri(-8, 0),
       y2 = ri(1, 8);
     var real = Math.abs(y2 - y1);
-    return build(real, [y1 + y2, Math.abs(y1) + x, Math.abs(y2 - y1) + 1], {
+    var p = build(real, [y1 + y2, Math.abs(y1) + x, Math.abs(y2 - y1) + 1], {
       prompt:
         "Find the distance between (" + x + ", " + y1 + ") and (" + x + ", " + y2 + ").",
       explain:
@@ -782,6 +810,11 @@
       standard: "6.NS.C.8",
       topic: "Distance on the Coordinate Plane",
     });
+    p.diagram = {
+      kind: "coordinate", segment: true,
+      points: [{ x: x, y: y1 }, { x: x, y: y2 }],
+    };
+    return p;
   }
 
   /* ======================================================================
@@ -792,7 +825,7 @@
       w = ri(2, 8),
       h = ri(2, 6);
     var real = l * w * h;
-    return build(real, [l + w + h, 2 * (l * w + l * h + w * h), l * w], {
+    var p = build(real, [l + w + h, 2 * (l * w + l * h + w * h), l * w], {
       prompt:
         "A rectangular prism is " + l + " by " + w + " by " + h +
         ". Find its volume.",
@@ -800,6 +833,8 @@
       standard: "6.G.A.2",
       topic: "Volume of Prisms",
     });
+    p.diagram = { kind: "prism", l: l, w: w, h: h };
+    return p;
   }
   function volumeFractional() {
     // edge with 1/2 unit -> keep as decimal
@@ -807,7 +842,7 @@
       w = ri(2, 6),
       h = ri(2, 5);
     var real = round(l * w * h, 2);
-    return build(real, [round(l + w + h, 2), round(l * w, 2), round(l * w * h + w, 2)], {
+    var p = build(real, [round(l + w + h, 2), round(l * w, 2), round(l * w * h + w, 2)], {
       prompt:
         "A box measures " + l + " × " + w + " × " + h +
         " units. Find its volume.",
@@ -816,13 +851,15 @@
       topic: "Volume with Fractional Edges",
       fmt: num,
     });
+    p.diagram = { kind: "prism", l: l, w: w, h: h };
+    return p;
   }
   function surfaceArea() {
     var l = ri(2, 7),
       w = ri(2, 7),
       h = ri(2, 7);
     var real = 2 * (l * w + l * h + w * h);
-    return build(real, [l * w * h, l * w + l * h + w * h, l + w + h], {
+    var p = build(real, [l * w * h, l * w + l * h + w * h, l + w + h], {
       prompt:
         "Find the surface area of a rectangular prism that is " +
         l + " × " + w + " × " + h + ".",
@@ -830,17 +867,21 @@
       standard: "6.G.A.4",
       topic: "Surface Area",
     });
+    p.diagram = { kind: "prism", l: l, w: w, h: h };
+    return p;
   }
   function surfaceAreaNet() {
     var s = ri(2, 8);
     var real = 6 * s * s;
-    return build(real, [s * s * s, s * s, 4 * s * s], {
+    var p = build(real, [s * s * s, s * s, 4 * s * s], {
       prompt:
         "A cube has edge length " + s + ". Using its net, find the total surface area.",
       explain: "A cube's net has 6 equal square faces, so surface area = 6 × s².",
       standard: "6.G.A.4",
       topic: "Surface Area from Nets",
     });
+    p.diagram = { kind: "cubenet", s: s };
+    return p;
   }
 
   /* ---- registry ---------------------------------------------------------- */
