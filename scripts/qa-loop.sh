@@ -67,6 +67,7 @@ CANDIDATES=(
 	validate:homework
 	validate:practice
 	validate:save-resume
+	validate:injection
 	audit
 	audit:curriculum
 	audit:homework
