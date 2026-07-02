@@ -100,6 +100,29 @@ function recipeTable() {
   return wrap(540, 360, `${head}${body}${note}`);
 }
 
+// ── 6-2: total = $150 base venue fee + $12 × s speakers ──
+function concertCost() {
+  const box = (x, y, w, h, fill, stroke) =>
+    `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`;
+  const y = 90,
+    h = 90;
+  const inner =
+    `<text x="40" y="48" font-size="19" font-weight="800" fill="${NAVY}">Concert setup — total cost</text>` +
+    box(40, y, 200, h, "rgba(42,157,143,0.12)", TEAL) +
+    `<text x="140" y="${y + 38}" font-size="17" font-weight="700" fill="${INK}" text-anchor="middle">base venue fee</text>` +
+    `<text x="140" y="${y + 66}" font-size="20" font-weight="800" fill="${TEAL}" text-anchor="middle">$150</text>` +
+    `<text x="262" y="${y + 56}" font-size="34" font-weight="800" fill="${NAVY}" text-anchor="middle">+</text>` +
+    box(288, y, 200, h, "rgba(233,196,106,0.22)", AMBER) +
+    `<text x="388" y="${y + 38}" font-size="17" font-weight="700" fill="${INK}" text-anchor="middle">per speaker rented</text>` +
+    `<text x="388" y="${y + 66}" font-size="20" font-weight="800" fill="#b8860b" text-anchor="middle">$12 × s</text>` +
+    `<text x="510" y="${y + 56}" font-size="30" font-weight="800" fill="${NAVY}" text-anchor="middle">=</text>` +
+    box(536, y, 200, h, "rgba(217,121,93,0.12)", CORAL) +
+    `<text x="636" y="${y + 38}" font-size="17" font-weight="700" fill="${INK}" text-anchor="middle">total cost</text>` +
+    `<text x="636" y="${y + 66}" font-size="20" font-weight="800" fill="${CORAL}" text-anchor="middle">150 + 12s</text>` +
+    `<text x="40" y="${y + h + 50}" font-size="16" fill="${TEAL}" font-weight="700">s = the number of speakers rented (unknown)</text>`;
+  return wrap(780, 260, inner);
+}
+
 // ── 6-3: total = (rate × hours) + $23.50 setup ──
 function studioCost() {
   const box = (x, y, w, h, fill, stroke) =>
@@ -155,6 +178,7 @@ const out = {
   "4-2": grid100(),
   "2-4": numberLine(),
   "3-2": recipeTable(),
+  "6-2": concertCost(),
   "6-3": studioCost(),
   "6-6": areaModel(),
 };
