@@ -475,13 +475,13 @@ h4 {
 }
 
 .btn-primary {
-  background: var(--teal);
+  background: var(--teal-ink);
   color: white;
-  box-shadow: 0 4px 12px rgba(31, 166, 162, 0.3);
+  box-shadow: 0 4px 12px rgba(12, 111, 107, 0.32);
 }
 
 .btn-primary:hover {
-  background: #1a918e;
+  background: #0a5b58;
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgba(31, 166, 162, 0.4);
 }
@@ -498,7 +498,7 @@ h4 {
 
 .btn-secondary:hover {
   border-color: var(--teal);
-  color: var(--teal);
+  color: var(--teal-ink);
 }
 
 .btn-amber {
@@ -561,7 +561,7 @@ h4 {
   border-bottom: 2px solid var(--teal);
   padding: 2px 4px;
   margin: 0 4px;
-  color: var(--teal);
+  color: var(--teal-ink);
   font-weight: 700;
 }
 
@@ -1366,11 +1366,21 @@ body.obj-popup-open {
   border: 1px solid rgba(18, 53, 91, 0.06);
 }
 .identity-hero {
-  background: linear-gradient(
-    135deg,
-    var(--theme-hero-from) 0%,
-    var(--theme-hero-to) 100%
-  );
+  /* Dark scrim over the theme gradient — themes with a light "to" color
+     (e.g. bright blues) washed out white text toward the bottom of the hero.
+     The scrim deepens toward the bottom to keep text AA-legible on every
+     theme while preserving the theme hue. */
+  background:
+    linear-gradient(
+      180deg,
+      rgba(6, 17, 38, 0.1) 0%,
+      rgba(6, 17, 38, 0.45) 100%
+    ),
+    linear-gradient(
+      135deg,
+      var(--theme-hero-from) 0%,
+      var(--theme-hero-to) 100%
+    );
   color: white;
   padding: var(--sp-7) var(--sp-6) var(--sp-6);
   text-align: center;
@@ -1417,7 +1427,7 @@ body.obj-popup-open {
 }
 .identity-sub {
   font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 255, 255, 0.95);
   margin: 0 0 var(--sp-4);
 }
 .identity-time {
@@ -1490,7 +1500,7 @@ body.obj-popup-open {
 .identity-btn {
   margin-top: var(--sp-3);
   padding: 12px;
-  background: var(--teal);
+  background: var(--teal-ink);
   color: white;
   border: none;
   border-radius: var(--radius-md);
@@ -1635,7 +1645,7 @@ body.obj-popup-open {
 
 .export-btn-secondary:hover {
   border-color: var(--teal);
-  color: var(--teal);
+  color: var(--teal-ink);
   transform: translateY(-1px);
 }
 
@@ -2017,7 +2027,7 @@ body:has(.identity-screen) .export-toolbar {
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--teal);
+  color: var(--teal-ink);
   background: var(--teal-light);
   padding: 4px 10px;
   border-radius: var(--radius-full);
@@ -2033,7 +2043,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 .problem-tier-badge.tier-level1 {
   background: var(--teal-light);
-  color: var(--teal);
+  color: var(--teal-ink);
 }
 .problem-tier-badge.tier-core {
   background: rgba(233, 196, 106, 0.25);
@@ -2360,7 +2370,7 @@ body:has(.identity-screen) .export-toolbar {
 .flip-prompt {
   font-size: 0.68rem;
   font-weight: 800;
-  color: var(--teal);
+  color: var(--teal-ink);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-top: auto;
@@ -2388,7 +2398,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .vocab-def-es {
   font-size: 0.82rem;
-  color: var(--amber);
+  color: var(--amber-ink);
   margin: var(--sp-2) 0 0;
   font-style: italic;
 }
@@ -2431,6 +2441,12 @@ body:has(.identity-screen) .export-toolbar {
   font-style: italic;
   margin-top: var(--sp-2);
   line-height: 1.4;
+}
+
+/* On the dark cover hero the illustration caption sits on navy — muted gray
+   is near-invisible there, so use a legible light tone (AA on navy). */
+.lesson-cover-art .theme-illustration-caption {
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .launch-narrative {
@@ -2939,9 +2955,10 @@ body:has(.identity-screen) .export-toolbar {
   text-align: left;
   margin: var(--sp-4) 0;
   padding: var(--sp-4);
-  background: rgba(255, 255, 255, 0.65);
+  background: #ffffff;
   border: 1px solid rgba(56, 127, 132, 0.25);
   border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .cover-goal-label {
@@ -2950,7 +2967,7 @@ body:has(.identity-screen) .export-toolbar {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--teal);
+  color: var(--teal-ink);
   margin-bottom: var(--sp-2);
 }
 
@@ -2958,6 +2975,7 @@ body:has(.identity-screen) .export-toolbar {
   margin: 0;
   font-weight: 600;
   line-height: 1.5;
+  color: var(--ink);
 }
 
 .cover-stats-row {
@@ -2970,7 +2988,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .cover-stat strong {
-  color: var(--navy);
+  color: var(--amber);
   font-family: var(--font-display);
 }
 
@@ -3022,7 +3040,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .cover-phase-chip {
   padding: 4px 10px;
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.92);
   border: 1px solid var(--line);
   border-radius: var(--radius-full);
   font-size: 0.72rem;
@@ -3052,11 +3070,17 @@ body:has(.identity-screen) .export-toolbar {
 .standards-explainer-panel {
   margin-top: var(--sp-2);
   padding: var(--sp-3);
-  background: white;
+  background: #ffffff;
+  color: var(--ink);
+  border: 1px solid rgba(56, 127, 132, 0.25);
   border-radius: var(--radius-sm);
   font-size: 0.88rem;
   line-height: 1.5;
   text-align: left;
+  box-shadow: var(--shadow-sm);
+}
+.standards-explainer-panel strong {
+  color: var(--teal-ink);
 }
 
 /* ── Phase accent moods ── */
@@ -3374,7 +3398,7 @@ body:has(.identity-screen) .export-toolbar {
   font-family: var(--font-display);
   font-weight: 900;
   font-size: 1.4rem;
-  color: var(--teal);
+  color: var(--teal-ink);
   margin-top: var(--sp-2);
 }
 
@@ -3473,7 +3497,7 @@ body:has(.identity-screen) .export-toolbar {
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--teal);
+  color: var(--teal-ink);
 }
 
 /* ── Exit-to-Student pill (shown ONLY while in Teacher Mode) ──
@@ -3679,7 +3703,7 @@ html.projector .main {
 
 .math-eq {
   font-weight: 800;
-  color: var(--teal);
+  color: var(--teal-ink);
   padding: 0 2px;
 }
 
@@ -3695,7 +3719,7 @@ html.projector .main {
 }
 .i18n-es {
   font-size: 0.82em;
-  opacity: 0.72;
+  opacity: 0.92;
   font-style: italic;
 }
 .i18n-btn .i18n-es {
@@ -3721,7 +3745,7 @@ html.projector .main {
 .welcome-teacher-panel h5 {
   margin: 0 0 var(--sp-2);
   font-size: 0.88rem;
-  color: var(--teal);
+  color: var(--teal-ink);
 }
 .certificate-download-btn {
   margin-right: var(--sp-2);

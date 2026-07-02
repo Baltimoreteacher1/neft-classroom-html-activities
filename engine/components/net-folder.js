@@ -280,7 +280,7 @@ export function renderNetFolder(
   slider.max = "100";
   slider.value = "0";
   slider.setAttribute("aria-label", "Fold the net into a solid");
-  slider.style.cssText = "flex:1; accent-color:var(--teal);";
+  slider.style.cssText = "flex:1; accent-color:var(--teal-ink);";
   const id = `fold-${Math.random().toString(36).slice(2, 7)}`;
   foldLbl.htmlFor = id;
   slider.id = id;

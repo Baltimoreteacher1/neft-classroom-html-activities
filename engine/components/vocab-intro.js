@@ -220,7 +220,7 @@ export function renderVocabIntro(container, { terms, onComplete }) {
   const exploreSection = document.createElement("div");
   exploreSection.className = "vocab-explore-section mt-6";
   exploreSection.innerHTML =
-    '<h4 style="color:var(--teal); margin-bottom:var(--sp-3);">🔬 Explore a Word</h4>';
+    '<h4 style="color:var(--teal-ink); margin-bottom:var(--sp-3);">🔬 Explore a Word</h4>';
 
   const exploreGrid = document.createElement("div");
   exploreGrid.className = "vocab-explore-grid";

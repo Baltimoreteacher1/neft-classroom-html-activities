@@ -331,7 +331,7 @@ export function renderCoordinateGrid(container, config = {}) {
       "display:flex; align-items:center; gap:var(--sp-2); font-size:0.88rem; font-weight:600; margin-top:var(--sp-3); cursor:pointer;";
     const cb = document.createElement("input");
     cb.type = "checkbox";
-    cb.style.cssText = "width:18px; height:18px; accent-color:var(--teal);";
+    cb.style.cssText = "width:18px; height:18px; accent-color:var(--teal-ink);";
     lineToggle.append(cb, document.createTextNode(" Connect points with a line"));
     wrapper.append(lineToggle);
 

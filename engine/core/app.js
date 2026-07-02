@@ -291,7 +291,7 @@ function mountWelcomeGoogleSlidesLink(lessonId, slot) {
   loadGoogleSlidesUrlMap().then((map) => {
     const url = map && map[lessonId];
     if (!url) return;
-    slot.innerHTML = ` · <a href="${escHtml(url)}" target="_blank" rel="noopener" style="color:var(--teal); font-weight:700;">↗ ${stackHtml(t("googleSlides", "en"), t("googleSlides", "es"))}</a>`;
+    slot.innerHTML = ` · <a href="${escHtml(url)}" target="_blank" rel="noopener" style="color:var(--teal-ink); font-weight:700;">↗ ${stackHtml(t("googleSlides", "en"), t("googleSlides", "es"))}</a>`;
   });
 }
 
@@ -339,7 +339,7 @@ function showIdentityScreen(root, config) {
           config.readiness
             ? `<a class="identity-readiness" href="/lessons/${encodeURIComponent(config.lessonId)}/readiness/" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; background:var(--cream,#fdf3e0); border:1px solid var(--gold,#d4952a); border-radius:12px; padding:12px 16px; margin:0 0 16px; text-align:left;">
                 <span style="font-size:1.5rem;" aria-hidden="true">📚</span>
-                <span><strong>${t("newToTopic")}</strong> ${t("getReadyDesc")} <span style="white-space:nowrap; font-weight:700; color:var(--blue,#1a6fb5);">${t("startArrow")}</span></span>
+                <span><strong>${t("newToTopic")}</strong> ${t("getReadyDesc")} <span style="white-space:nowrap; font-weight:700; color:#155fa0;">${t("startArrow")}</span></span>
               </a>`
             : ""
         }
@@ -358,11 +358,11 @@ function showIdentityScreen(root, config) {
         </div>
         <div id="identity-teacher-slot"></div>
         <p id="welcome-resource-links" style="margin:var(--sp-4) 0 0; font-size:0.82rem; text-align:center;">
-          <a href="${homeworkHtmlHref}" style="color:var(--teal); font-weight:700;">🏠 ${stackHtml(t("familyHomework", "en"), t("familyHomework", "es"))}</a>
+          <a href="${homeworkHtmlHref}" style="color:var(--teal-ink); font-weight:700;">🏠 ${stackHtml(t("familyHomework", "en"), t("familyHomework", "es"))}</a>
           · <a href="/lessons/${encodeURIComponent(config.lessonId)}/notes.html" style="color:var(--navy); font-weight:700;">📝 ${stackHtml(t("guidedNotes", "en"), t("guidedNotes", "es"))}</a>
-          · <a href="${slidesHref}" target="_blank" rel="noopener" style="color:var(--blue,#1a6fb5); font-weight:700;">📊 ${stackHtml(t("lessonSlides", "en"), t("lessonSlides", "es"))}</a>
+          · <a href="${slidesHref}" target="_blank" rel="noopener" style="color:#155fa0; font-weight:700;">📊 ${stackHtml(t("lessonSlides", "en"), t("lessonSlides", "es"))}</a>
           <span id="welcome-google-slides-slot"></span>
-          · <a href="${handoutHref}" target="_blank" rel="noopener" style="color:var(--amber,#c85a3a); font-weight:700;">📄 ${stackHtml(t("studentHandout", "en"), t("studentHandout", "es"))}</a>
+          · <a href="${handoutHref}" target="_blank" rel="noopener" style="color:var(--amber-ink); font-weight:700;">📄 ${stackHtml(t("studentHandout", "en"), t("studentHandout", "es"))}</a>
         </p>
         ${saved.length ? `<div class="identity-saved" id="id-saved-list"></div>` : ""}
       </div>
@@ -395,20 +395,26 @@ function showIdentityScreen(root, config) {
       '[data-action="standards-explainer"]',
     );
     if (stdBtn) {
-      stdBtn.addEventListener("click", () => {
-        const open = stdBtn.getAttribute("aria-expanded") === "true";
-        stdBtn.setAttribute("aria-expanded", String(!open));
+      // Show the standard explainer by default (no click required); the button
+      // remains a toggle so it can be collapsed.
+      const buildStandardsPanel = () => {
         let panel = coverExtras.querySelector(".standards-explainer-panel");
-        if (!open && !panel) {
+        if (!panel) {
           panel = document.createElement("div");
           panel.className = "standards-explainer-panel";
           panel.innerHTML = `
             <p><strong>${escHtml(config.standard)}</strong> — This lesson aligns to Grade 6 Reveal Math standards.</p>
             <p>${escHtml(resolveContentObjective(config))}</p>`;
           stdBtn.after(panel);
-        } else if (panel) {
-          panel.hidden = open;
         }
+        return panel;
+      };
+      buildStandardsPanel();
+      stdBtn.setAttribute("aria-expanded", "true");
+      stdBtn.addEventListener("click", () => {
+        const open = stdBtn.getAttribute("aria-expanded") === "true";
+        stdBtn.setAttribute("aria-expanded", String(!open));
+        buildStandardsPanel().hidden = open;
       });
     }
   }

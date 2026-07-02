@@ -235,7 +235,7 @@ export function renderTwrWriting(container, config, { getResponse, saveResponse,
   const kModel = document.createElement("p");
   kModel.style.cssText =
     "background:var(--teal-light); border-radius:var(--radius-sm); padding:var(--sp-2) var(--sp-3); margin:0 0 var(--sp-2); font-size:0.95rem;";
-  kModel.innerHTML = `<strong style="color:var(--teal);">Model:</strong> ${esc(twr.kernel.en)}`;
+  kModel.innerHTML = `<strong style="color:var(--teal-ink);">Model:</strong> ${esc(twr.kernel.en)}`;
   card.append(kModel);
   inputs.push(
     writeRow(card, {
@@ -252,7 +252,7 @@ export function renderTwrWriting(container, config, { getResponse, saveResponse,
   card.append(subhead("2. Sentence Expansion", "because · but · so"));
   const kInfo = document.createElement("p");
   kInfo.style.cssText = "margin:0 0 var(--sp-2); font-size:0.9rem;";
-  kInfo.innerHTML = `<strong style="color:var(--teal);">Kernel:</strong> ${esc(twr.expansion.kernelEn)}`;
+  kInfo.innerHTML = `<strong style="color:var(--teal-ink);">Kernel:</strong> ${esc(twr.expansion.kernelEn)}`;
   card.append(kInfo);
   twr.expansion.conjunctions.forEach((c, i) => {
     inputs.push(

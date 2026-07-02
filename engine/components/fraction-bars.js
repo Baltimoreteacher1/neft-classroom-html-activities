@@ -59,7 +59,7 @@ export function renderFractionBars(
 
     const readout = document.createElement("span");
     readout.className = "fb-readout";
-    readout.style.cssText = "font-weight:700; color:var(--teal);";
+    readout.style.cssText = "font-weight:700; color:var(--teal-ink);";
     const readoutNum = document.createElement("span");
     readoutNum.className = "fb-readout-num";
     const readoutSep = document.createElement("span");

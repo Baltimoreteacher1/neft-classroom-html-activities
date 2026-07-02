@@ -33,7 +33,7 @@ function injectFillTableStyles() {
       border-color: color-mix(in srgb, var(--teal) 55%, var(--line));
     }
     .ft-root .ft-input:focus {
-      border-color: var(--teal);
+      border-color: var(--teal-ink);
       box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 22%, transparent);
       background-size: 100% 2px;
     }

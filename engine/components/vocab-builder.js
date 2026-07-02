@@ -251,7 +251,7 @@ export function renderVocabBuilder(container, { terms, onComplete }) {
           visual.style.cssText = `
             margin-top:var(--sp-4); padding:var(--sp-3); background:var(--teal-light);
             border-radius:var(--radius-md); text-align:center; font-style:italic;
-            color:var(--teal);
+            color:var(--teal-ink);
           `;
           visual.textContent = `Visual: ${term.visual}`;
           card.append(visual);

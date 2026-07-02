@@ -1551,7 +1551,7 @@ function renderObjectives(el, config) {
   block.className = "launch-objectives grid-2";
   block.innerHTML = `
     <div class="card card-teal launch-objective">
-      <h4 style="color:var(--teal); margin-bottom:var(--sp-2);">Content Objective</h4>
+      <h4 style="color:var(--teal-ink); margin-bottom:var(--sp-2);">Content Objective</h4>
       <p style="margin:0; font-weight:600;">${contentHtml}</p>
     </div>
     <div class="card card-coral launch-objective">
@@ -1610,7 +1610,7 @@ function renderLaunchPhase(el, state, ctx, config) {
 
     const noticeCard = document.createElement("div");
     noticeCard.className = "card card-teal";
-    noticeCard.innerHTML = `<h4 style="color:var(--teal); margin-bottom:var(--sp-3);">👀 I Notice...</h4>
+    noticeCard.innerHTML = `<h4 style="color:var(--teal-ink); margin-bottom:var(--sp-3);">👀 I Notice...</h4>
       ${(cfg.noticePrompts || []).map((p) => `<div class="sentence-frame" style="margin-bottom:var(--sp-2);"><span style="font-weight:600;">${esc(p)}</span></div>`).join("")}`;
     noticeTA = document.createElement("textarea");
     noticeTA.className = "text-input";
@@ -1751,7 +1751,7 @@ function renderExplorePhase(el, state, ctx, config) {
       if (cfg.discourse) {
         const disc = document.createElement("div");
         disc.className = "card card-teal mt-6";
-        disc.innerHTML = `<h4 style="color:var(--teal); margin-bottom:var(--sp-3);">💬 Discuss</h4>`;
+        disc.innerHTML = `<h4 style="color:var(--teal-ink); margin-bottom:var(--sp-3);">💬 Discuss</h4>`;
         renderOpenResponse(disc, {
           prompt: cfg.discourse.prompt,
           sentenceFrame: cfg.discourse.sentenceFrame,
@@ -2271,7 +2271,7 @@ function renderReflectPhase(el, state, ctx, config) {
   // One thing I learned (exit ticket prep)
   const learnedCard = document.createElement("div");
   learnedCard.className = "card card-amber";
-  learnedCard.innerHTML = `<h4 style="color:var(--amber); margin-bottom:var(--sp-3);">✨ ${stackHtml(t("oneThingToday", "en"), t("oneThingToday", "es"))}</h4>`;
+  learnedCard.innerHTML = `<h4 style="color:var(--amber-ink); margin-bottom:var(--sp-3);">✨ ${stackHtml(t("oneThingToday", "en"), t("oneThingToday", "es"))}</h4>`;
   const learnedTA = document.createElement("textarea");
   learnedTA.className = "text-input";
   learnedTA.rows = 2;
@@ -2288,7 +2288,7 @@ function renderReflectPhase(el, state, ctx, config) {
   confCard.className = "card card-teal confidence-card";
   const savedConf = Number(state.getResponse(4, "confidence")) || 3;
   confCard.innerHTML = `
-    <h4 style="color:var(--teal); margin-bottom:var(--sp-3);">${t("howConfident")} ${esc(config.title)}?</h4>
+    <h4 style="color:var(--teal-ink); margin-bottom:var(--sp-3);">${t("howConfident")} ${esc(config.title)}?</h4>
     <div class="confidence-slider-wrap">
       <input type="range" class="confidence-slider" min="1" max="5" step="1" value="${savedConf}" aria-label="Confidence level 1 to 5" />
       <div class="confidence-labels">
@@ -2370,7 +2370,7 @@ function renderObjectiveReview(state, config) {
   ];
 
   card.innerHTML = `
-    <h4 id="obj-review-title" style="color:var(--teal); margin-bottom:var(--sp-2);">✅ ${stackHtml(t("didIGetIt", "en"), t("didIGetIt", "es"))}</h4>
+    <h4 id="obj-review-title" style="color:var(--teal-ink); margin-bottom:var(--sp-2);">✅ ${stackHtml(t("didIGetIt", "en"), t("didIGetIt", "es"))}</h4>
     <p style="color:var(--muted); margin:0 0 var(--sp-4); font-size:0.92rem;">Check off each goal you can do. Be honest — it helps you know what to practice!</p>
   `;
 
@@ -2389,7 +2389,7 @@ function renderObjectiveReview(state, config) {
 
     const text = document.createElement("div");
     text.innerHTML = `
-      <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.04em; color:var(--teal); margin-bottom:2px;">${item.label}</div>
+      <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.04em; color:var(--teal-ink); margin-bottom:2px;">${item.label}</div>
       <div style="font-weight:600;">${item.html}</div>
     `;
 

@@ -128,8 +128,8 @@ export function buildLessonCoverExtras(config, savedProgress) {
         : ""
     }
     <div class="cover-phase-preview">${phaseChips}</div>
-    <button type="button" class="cover-standards-btn" data-action="standards-explainer" aria-expanded="false">
-      📋 ${esc(config.standard)} — tap to learn more
+    <button type="button" class="cover-standards-btn" data-action="standards-explainer" aria-expanded="true">
+      📋 ${esc(config.standard)} — standard details
     </button>`;
 }
 
