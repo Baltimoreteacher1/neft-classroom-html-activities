@@ -8507,12 +8507,10 @@
     <script src="/assets/futures-lab.js?v=20260619" defer></script>
     <script src="/assets/gradebook-embed.js?v=20260624" defer></script>
 
-    <!-- Curriculum-first layout pass:
-         (1) The featured tool cards are collapsed into a thin "Classroom Tools
-             & Apps" bar at the very top, so the curriculum itself is the first
-             thing visible — tools stay one tap away without a wall of cards.
-         (2) The redundant per-phase dropdowns are hidden; the always-visible
-             grouped outline list is the single way to open any resource.
+    <!-- Tools bar: lift the featured tool cards out of the narrow left rail
+         into a full-width strip across the top so all stay visible and tidy.
+         The redundant per-phase dropdowns stay hidden; the always-visible
+         grouped outline list is the single way to open any resource.
          Additive + fail-safe: if this script does not run, the cards and the
          dropdowns simply remain visible in their original place. -->
     <style>
@@ -8521,48 +8519,13 @@
       .phase-selectors {
         display: none !important;
       }
-      .hub-toolbox {
-        max-width: 1180px;
-        margin: 14px auto 0;
-        padding: 0 clamp(18px, 4vw, 36px);
-        box-sizing: border-box;
-      }
-      .hub-toolbox > summary {
-        list-style: none;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font:
-          700 0.98rem/1.2 "Nunito",
-          system-ui,
-          sans-serif;
-        color: #1e3a5f;
-        background: #eef3fb;
-        border: 1px solid #d3e0f2;
-        border-radius: 12px;
-        padding: 12px 18px;
-      }
-      .hub-toolbox > summary::-webkit-details-marker {
-        display: none;
-      }
-      .hub-toolbox > summary::after {
-        content: "▸";
-        margin-left: auto;
-        transition: transform 0.15s ease;
-      }
-      .hub-toolbox[open] > summary::after {
-        transform: rotate(90deg);
-      }
-      .hub-toolbox > summary:focus-visible {
-        outline: 3px solid #2563eb;
-        outline-offset: 2px;
-      }
       .curriculum-tools-bar {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
         gap: 12px;
-        margin: 12px 0 0;
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 16px clamp(18px, 4vw, 36px) 0;
         box-sizing: border-box;
       }
       .curriculum-tools-bar .mf-text {
@@ -8581,15 +8544,7 @@
         var fg = wrap.querySelector(".hub-side > .features-grid");
         if (!fg) return;
         fg.classList.add("curriculum-tools-bar");
-        // Wrap the tool cards in a collapsed <details> so the curriculum is the
-        // first thing on the page; teachers/students expand for the apps.
-        var box = document.createElement("details");
-        box.className = "hub-toolbox";
-        var sum = document.createElement("summary");
-        sum.innerHTML = "🧰 Classroom Tools &amp; Apps";
-        box.appendChild(sum);
-        box.appendChild(fg);
-        wrap.parentNode.insertBefore(box, wrap);
+        wrap.parentNode.insertBefore(fg, wrap);
       })();
     </script>
   </body>
