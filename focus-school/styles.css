@@ -929,7 +929,7 @@ html[data-theme="dark"] .note {
 }
 
 /* ---- Bottom nav ---- */
-.tabbar {
+.tabbar-wrap {
   position: fixed;
   left: 50%;
   bottom: 16px;
@@ -942,12 +942,49 @@ html[data-theme="dark"] .note {
   backdrop-filter: blur(20px);
   border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-  padding: 6px 12px;
-  display: flex;
-  justify-content: space-around;
   transition:
     transform var(--motion),
     background var(--motion);
+}
+.tabbar {
+  position: relative;
+  padding: 6px 12px;
+  display: flex;
+  justify-content: space-around;
+}
+.tabbar-fade {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  width: 28px;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity var(--motion);
+}
+.tabbar-fade-l {
+  left: 0;
+  border-radius: 20px 0 0 20px;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--paper) 90%, transparent),
+    transparent
+  );
+}
+.tabbar-fade-r {
+  right: 0;
+  border-radius: 0 20px 20px 0;
+  background: linear-gradient(
+    to left,
+    color-mix(in srgb, var(--paper) 90%, transparent),
+    transparent
+  );
+}
+.tabbar-wrap:not(.at-start) .tabbar-fade-l {
+  opacity: 1;
+}
+.tabbar-wrap:not(.at-end) .tabbar-fade-r {
+  opacity: 1;
 }
 .tabbar button {
   position: relative;
@@ -1170,6 +1207,7 @@ html[data-theme="dark"] .note {
   box-shadow: var(--shadow);
   max-width: 90vw;
   text-align: center;
+  pointer-events: none;
 }
 html[data-theme="dark"] .toast {
   color: #06101a;
@@ -1177,6 +1215,7 @@ html[data-theme="dark"] .toast {
 .toast.show {
   opacity: 1;
   transform: translate(-50%, 0);
+  pointer-events: auto;
 }
 
 /* confetti-free celebration */
@@ -1754,11 +1793,11 @@ html[data-theme="dark"] .capture-banner {
     grid-template-columns: 1fr;
   }
   .wrap {
-    padding-bottom: 120px;
+    padding-bottom: 168px;
   }
 }
 @media print {
-  .tabbar,
+  .tabbar-wrap,
   .top-actions,
   .fab,
   .hero .now-actions {
@@ -2669,10 +2708,11 @@ html[data-theme="dark"] .bg-blob-2 {
   display: none;
 }
 .tabbar button {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   scroll-snap-align: center;
-  min-width: 44px;
-  padding: 6px 4px;
+  min-width: 52px;
+  white-space: nowrap;
+  padding: 6px 8px;
 }
 
 /* Homework Plan */
@@ -2908,8 +2948,8 @@ html[data-theme="dark"] .bg-blob-2 {
 /* ===== Sync FAB (replaces the old save/resume launcher) ===== */
 .sync-fab {
   position: fixed;
-  left: 14px;
-  bottom: 88px;
+  left: max(14px, env(safe-area-inset-left));
+  bottom: calc(96px + env(safe-area-inset-bottom));
   z-index: 60;
   border: none;
   cursor: pointer;
@@ -2999,6 +3039,22 @@ html[data-theme="dark"] .bg-blob-2 {
 }
 .statgrid .statbox {
   text-align: center;
+}
+.ins-trend {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  font-style: normal;
+}
+.ins-trend.up {
+  color: var(--teal, #147c78);
+}
+.ins-trend.down {
+  color: var(--muted);
+}
+.ins-trend.flat {
+  color: var(--muted);
 }
 .ins-chart {
   display: flex;

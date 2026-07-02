@@ -2278,18 +2278,21 @@
     return 0;
   }
 
+  function focusTitleForLevel(lvl) {
+    return lvl >= 10
+      ? "Focus Legend 👑"
+      : lvl >= 6
+        ? "Focus Master 🧙‍♂️"
+        : lvl >= 3
+          ? "Focus Knight 🛡️"
+          : "Focus Padawan 🪴";
+  }
+
   function xpLevelCardHTML() {
     const pts = state.points || 0;
     const lvl = Math.floor(pts / 100) + 1;
     const xpRemainder = pts % 100;
-    const title =
-      lvl >= 10
-        ? "Focus Legend 👑"
-        : lvl >= 6
-          ? "Focus Master 🧙‍♂️"
-          : lvl >= 3
-            ? "Focus Knight 🛡️"
-            : "Focus Padawan 🪴";
+    const title = focusTitleForLevel(lvl);
     const r = 36;
     const circ = 2 * Math.PI * r;
     const offset = circ * (1 - xpRemainder / 100);
@@ -3139,6 +3142,25 @@
       ([id, label, ic]) =>
         `<button data-act="nav" data-arg="${id}" ${view === id ? 'aria-current="page"' : ""}><span class="ic" aria-hidden="true">${ic}</span>${label}</button>`,
     ).join("");
+    updateTabbarFade();
+  }
+
+  // The bottom nav can overflow on narrow screens; these edge fades hint that
+  // more tabs are reachable by scrolling, and hide themselves once you reach
+  // that edge so they never claim there's more when there isn't.
+  let tabbarFadeBound = false;
+  function updateTabbarFade() {
+    const el = $("#tabbar");
+    const wrap = $("#tabbarWrap");
+    if (!el || !wrap) return;
+    const max = el.scrollWidth - el.clientWidth;
+    wrap.classList.toggle("at-start", el.scrollLeft <= 2);
+    wrap.classList.toggle("at-end", max <= 2 || el.scrollLeft >= max - 2);
+    if (!tabbarFadeBound) {
+      tabbarFadeBound = true;
+      el.addEventListener("scroll", updateTabbarFade, { passive: true });
+      addEventListener("resize", updateTabbarFade);
+    }
   }
 
   function greeting() {
@@ -4836,7 +4858,7 @@ Due May 31"></textarea>
                 const isLocked = lvl < req;
                 return `
                   <div class="theme-gradient-swatch ${isLocked ? "locked" : ""}" data-act="set-gradient-theme" data-arg="${esc(g[0])}" aria-pressed="${state.settings.themeGradient === g[0]}" style="background: ${g[0] || "linear-gradient(180deg, var(--bg-2), var(--bg))"}">
-                    <b>${isLocked ? "🔒 " : ""}${esc(g[1])}${isLocked ? ` (Lvl ${req})` : ""}</b>
+                    <b>${isLocked ? "🔒 " : ""}${esc(g[1])}${isLocked ? ` — unlocks as a ${focusTitleForLevel(req)}` : ""}</b>
                   </div>
                 `;
               }).join("")}
@@ -5125,6 +5147,36 @@ Due May 31"></textarea>
       }
       const maxFocus = Math.max(1, ...days.map((d) => d.focusMin));
       const sum = (f) => days.reduce((s, d) => s + d[f], 0);
+      // The prior 7-day window, so "this week" can show a real vs-last-week
+      // trend instead of just a raw total.
+      const prevSum = (f) => {
+        let s = 0;
+        for (let i = -13; i <= -7; i++) {
+          s += (state.activity[isoForOffset(i)] || {})[f] || 0;
+        }
+        return s;
+      };
+      const trend = (cur, prev, unit = "") => {
+        if (!prev && !cur) return "";
+        const diff = cur - prev;
+        if (diff === 0)
+          return `<em class="ins-trend flat">— same as last week</em>`;
+        const up = diff > 0;
+        return `<em class="ins-trend ${up ? "up" : "down"}">${up ? "▲" : "▼"} ${Math.abs(diff)}${unit} vs last week</em>`;
+      };
+      // Longest streak ever, not just the current one — a real "best" to be
+      // proud of, separate from the day-to-day streak shown in "This week".
+      const bestStreakEver = () => {
+        let best = 0,
+          cur = 0;
+        for (let i = 400; i >= 0; i--) {
+          const a = state.activity[isoForOffset(-i)];
+          const good = a && (a.tasks > 0 || a.focusMin > 0 || a.routines > 0);
+          cur = good ? cur + 1 : 0;
+          if (cur > best) best = cur;
+        }
+        return best;
+      };
       const allFocus = Object.values(state.activity).reduce(
         (s, a) => s + (a.focusMin || 0),
         0,
@@ -5171,8 +5223,8 @@ Due May 31"></textarea>
             "Saturday",
           ][byDow.indexOf(Math.max(...byDow))]
         : "—";
-      const stat = (big, small) =>
-        `<div class="statbox"><b>${big}</b><small>${small}</small></div>`;
+      const stat = (big, small, trendHtml = "") =>
+        `<div class="statbox"><b>${big}</b><small>${small}</small>${trendHtml}</div>`;
       const bars = days
         .map(
           (d) =>
@@ -5188,8 +5240,8 @@ Due May 31"></textarea>
           "This week",
           "Your last 7 days at a glance.",
           `<div class="statgrid">
-            ${stat(`${sum("focusMin")}m`, "Focus time")}
-            ${stat(sum("tasks"), "Tasks done")}
+            ${stat(`${sum("focusMin")}m`, "Focus time", trend(sum("focusMin"), prevSum("focusMin"), "m"))}
+            ${stat(sum("tasks"), "Tasks done", trend(sum("tasks"), prevSum("tasks")))}
             ${stat(sum("routines"), "Routines")}
             ${stat(`${streak()}🔥`, "Day streak")}
           </div>
@@ -5205,6 +5257,7 @@ Due May 31"></textarea>
             ${stat(done.length, "Finished")}
             ${stat(onTimePct === null ? "—" : `${onTimePct}%`, "On time")}
             ${stat(bestDow, "Best day")}
+            ${stat(`${bestStreakEver()}🔥`, "Best streak")}
           </div>
           ${
             onTimePct !== null
@@ -9636,7 +9689,9 @@ ${name}`;
       const lvl = Math.floor(pts / 100) + 1;
       const req = getGradientLevelRequired(arg);
       if (lvl < req) {
-        toast(`🔒 Locked! Requires Level ${req}. Keep earning XP!`);
+        toast(
+          `🔒 Unlocks once you're a ${focusTitleForLevel(req)} — keep earning XP!`,
+        );
         return;
       }
       state.settings.themeGradient = arg;
