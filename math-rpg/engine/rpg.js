@@ -89,6 +89,52 @@
     return h("button", { class: "mrpg-tts", type: "button", "aria-label": "Read aloud", title: "Read aloud", onclick: function () { speak(text); } }, ["🔊 Read aloud"]);
   }
 
+  /* ---- sound effects & haptics (Web Audio, no asset files) -------------- */
+  var AUDIO = { ctx: null };
+  function audioCtx() {
+    try {
+      if (!AUDIO.ctx) {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return null;
+        AUDIO.ctx = new AC();
+      }
+      if (AUDIO.ctx.state === "suspended" && AUDIO.ctx.resume) AUDIO.ctx.resume();
+      return AUDIO.ctx;
+    } catch (e) { return null; }
+  }
+  function soundEnabled() {
+    try { return !window.NT_MUTED && PROFILE.get().soundOn !== false; } catch (e) { return false; }
+  }
+  function tone(freq, dur, type, vol, delay) {
+    var ctx = audioCtx();
+    if (!ctx) return;
+    try {
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = type || "sine";
+      o.frequency.value = freq;
+      var t0 = ctx.currentTime + (delay || 0);
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(vol || 0.14, t0 + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + (dur || 0.15));
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t0); o.stop(t0 + (dur || 0.15) + 0.03);
+    } catch (e) {}
+  }
+  function vibrate(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} }
+  var SFX = {
+    correct: function () { tone(660, 0.12, "triangle", 0.13); tone(880, 0.12, "triangle", 0.11, 0.08); vibrate(8); },
+    crit: function () { tone(660, 0.1, "square", 0.12); tone(990, 0.1, "square", 0.12, 0.07); tone(1320, 0.14, "square", 0.11, 0.14); vibrate([10, 20, 10]); },
+    wrong: function () { tone(200, 0.22, "sawtooth", 0.12); tone(150, 0.22, "sawtooth", 0.1, 0.06); vibrate(30); },
+    heal: function () { tone(520, 0.12, "sine", 0.12); tone(780, 0.16, "sine", 0.11, 0.1); },
+    victory: function () { [523, 659, 784, 1047].forEach(function (f, i) { tone(f, 0.18, "triangle", 0.13, i * 0.11); }); vibrate([12, 30, 12]); },
+    levelup: function () { [659, 880, 1047, 1319].forEach(function (f, i) { tone(f, 0.2, "square", 0.1, i * 0.09); }); },
+    click: function () { tone(440, 0.06, "sine", 0.09); },
+  };
+  function playSfx(name) {
+    if (!soundEnabled()) return;
+    try { if (SFX[name]) SFX[name](); } catch (e) {}
+  }
+
   /* ---- engine state ------------------------------------------------------ */
   var UNIT = null; // active unit / realm config
   var MOUNT = null;
@@ -226,6 +272,25 @@
   }
   function backLink() { return h("a", { class: "mrpg-backlink", href: "/math-rpg/", text: "← All realms" }); }
 
+  // In-place sound on/off toggle (no full re-render, so it won't disturb a battle).
+  function soundToggleBtn() {
+    var on = PROFILE.get().soundOn !== false;
+    var btn = h("button", {
+      class: "mrpg-chip-btn", type: "button",
+      "aria-pressed": on ? "true" : "false",
+      "aria-label": on ? "Sound on — tap to mute" : "Sound off — tap to enable",
+      title: "Toggle sound",
+    }, [on ? "🔊" : "🔇"]);
+    btn.addEventListener("click", function () {
+      var now = PROFILE.setSound(!(PROFILE.get().soundOn !== false));
+      btn.textContent = now ? "🔊" : "🔇";
+      btn.setAttribute("aria-pressed", now ? "true" : "false");
+      btn.setAttribute("aria-label", now ? "Sound on — tap to mute" : "Sound off — tap to enable");
+      if (now) playSfx("click");
+    });
+    return btn;
+  }
+
   function statBar() {
     var pr = PROFILE.get();
     var frac = pr.xpNext ? Math.round((pr.xp / pr.xpNext) * 100) : 0;
@@ -235,6 +300,7 @@
       h("span", { class: "mrpg-stat", text: "🪙 " + pr.gold }),
       h("span", { class: "mrpg-stat", text: "❤️ " + pr.maxHp + " HP" }),
       h("span", { class: "mrpg-statbar-actions" }, [
+        soundToggleBtn(),
         h("button", { class: "mrpg-chip-btn", type: "button", onclick: showShop }, ["🛒 Shop"]),
         h("button", { class: "mrpg-chip-btn", type: "button", onclick: showCodex }, ["📖 Hero"]),
       ]),
@@ -633,6 +699,7 @@
       b.heroHp = Math.min(b.heroMax, b.heroHp + heal);
       updateBar(b._els.heroBox, b.heroHp, b.heroMax);
       animate(b._els.heroBox, "mrpg-anim-pop");
+      playSfx("heal");
       setLog(b._els.log, [h("span", { class: "heal", text: "🧪 Potion! +" + heal + " HP" })]);
     } else if (id === "insight") {
       if (!PROFILE.useItem(id)) return;
@@ -687,6 +754,7 @@
       var powered = false;
       if (b.powerNext) { dmg *= 2; b.powerNext = false; powered = true; }
       b.enemyHp = Math.max(0, b.enemyHp - dmg);
+      playSfx(crit || powered ? "crit" : "correct");
       animate(els.enemyBox, "mrpg-anim-hit");
       updateBar(els.enemyBox, b.enemyHp, b.enemyMax);
       setLog(els.log, [
@@ -703,6 +771,7 @@
       if (b.aegis) { damage = 0; b.aegis = false; note = "🛡️ Aegis blocked the hit! "; }
       else if (PROFILE.get().abilities.scholar && !b.usedScholar) { damage = 0; b.usedScholar = true; note = "📚 Scholar's Mercy — no damage this time. "; }
       b.heroHp = Math.max(0, b.heroHp - damage);
+      playSfx("wrong");
       // Second Wind rescue.
       if (b.heroHp <= 0 && PROFILE.get().abilities.secondwind && !b.usedSecondWind) {
         b.usedSecondWind = true; b.heroHp = Math.round(b.heroMax * 0.4); note += "💨 Second Wind revived you! ";
@@ -745,6 +814,8 @@
 
     PROFILE.addGold(gold);
     var lvl = PROFILE.addXp(xp);
+    playSfx("victory");
+    if (lvl.levels) setTimeout(function () { playSfx("levelup"); }, 550);
     PROFILE.bump("battlesWon");
     if (flawless) { grantAch("flawless"); PROFILE.bump("perfectBattles"); }
     grantAch("first-blood");
@@ -840,6 +911,7 @@
     if (!PROFILE.spendGold(it.cost)) return;
     PROFILE.addItem(id, 1);
     grantAch("shopper");
+    playSfx("click");
     showShop();
     flushToasts();
   }

@@ -36,6 +36,7 @@
       v: VERSION,
       name: "",
       avatar: "🧑‍🎓",
+      soundOn: true, // sound effects & haptics (global NT_MUTED always overrides)
       level: 1,
       xp: 0,
       xpNext: xpForLevel(1),
@@ -311,6 +312,13 @@
     save();
   }
 
+  function setSound(on) {
+    load();
+    DATA.soundOn = !!on;
+    save();
+    return DATA.soundOn;
+  }
+
   function get() {
     return load();
   }
@@ -345,6 +353,7 @@
     weeklyDone: weeklyDone,
     completeWeekly: completeWeekly,
     setIdentity: setIdentity,
+    setSound: setSound,
     reset: reset,
     xpForLevel: xpForLevel,
     maxHpForLevel: maxHpForLevel,
