@@ -10,9 +10,9 @@
     />
     <link rel="stylesheet" href="./styles.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <div class="app">
       <header class="topbar">
@@ -207,8 +207,12 @@
           <div class="output-head">
             <h2 class="card-title">3 · Lesson plan</h2>
             <div class="tab-container" id="outputTabs">
-              <button class="tab-btn active" id="tabTeacher" type="button">Teacher Plan</button>
-              <button class="tab-btn" id="tabStudent" type="button">Student Handout</button>
+              <button class="tab-btn active" id="tabTeacher" type="button">
+                Teacher Plan
+              </button>
+              <button class="tab-btn" id="tabStudent" type="button">
+                Student Handout
+              </button>
             </div>
             <div class="output-actions">
               <button
@@ -239,6 +243,13 @@
         pipeline with QA harness
       </footer>
     </div>
+
+    <!-- This tool has its own Teacher/Student export system (DOCX, .doc, .md,
+         Print) — opt out of the generic site-wide "Save your work" bar so it
+         doesn't duplicate/conflict with it. -->
+    <script>
+      window.NT_ACTIVITY = false;
+    </script>
 
     <!-- Self-hosted libraries (no CDN at runtime). -->
     <script src="./vendor/jszip.min.js" defer></script>

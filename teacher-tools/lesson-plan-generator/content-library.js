@@ -333,6 +333,8 @@
     const a = ri(r, 12, 48),
       b = ri(r, 2, 9);
     const g = gcd(a, b);
+    const stretchDenom = b * g;
+    const stretchGcf = gcd(a, stretchDenom);
     const dec1 = round2(ri(r, 11, 89) / 10),
       dec2 = round2(ri(r, 11, 49) / 10);
     const sum = round2(dec1 + dec2),
@@ -354,8 +356,8 @@
         },
         {
           level: "Stretch",
-          q: `Find the GCF of ${a} and ${b * g}, then write ${a}/${b * g} in simplest form.`,
-          a: `GCF = ${gcd(a, b * g)}; simplest form depends on the GCF`,
+          q: `Find the GCF of ${a} and ${stretchDenom}, then write ${a}/${stretchDenom} in simplest form.`,
+          a: `GCF = ${stretchGcf}; simplest form = ${a / stretchGcf}/${stretchDenom / stretchGcf}`,
         },
       ],
       worked: {

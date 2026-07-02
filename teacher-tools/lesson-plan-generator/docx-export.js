@@ -126,7 +126,11 @@
       new TableCell({
         borders: cellBorders,
         margins: cellMargins,
-        shading: opts.head ? { fill: TEAL } : (opts.shading ? { fill: opts.shading } : undefined),
+        shading: opts.head
+          ? { fill: TEAL }
+          : opts.shading
+            ? { fill: opts.shading }
+            : undefined,
         width: opts.width
           ? { size: opts.width, type: WidthType.PERCENTAGE }
           : undefined,
@@ -138,7 +142,7 @@
                     text: txt(c),
                     size: 20,
                     bold: !!opts.head,
-                    color: opts.head ? "FFFFFF" : undefined
+                    color: opts.head ? "FFFFFF" : undefined,
                   }),
                 ],
               })
@@ -162,7 +166,7 @@
                 children: r.map((c, i) =>
                   cell(c, {
                     width: widths && widths[i],
-                    shading: rowIndex % 2 === 1 ? "F8FAFC" : undefined
+                    shading: rowIndex % 2 === 1 ? "F8FAFC" : undefined,
                   }),
                 ),
               }),
@@ -177,27 +181,38 @@
         left: { style: BorderStyle.SINGLE, size: 24, color: TEAL },
         right: { style: BorderStyle.NONE, size: 0, color: "auto" },
       };
-      
+
       const children = [];
       if (title) {
-        children.push(new Paragraph({
-          children: [new TextRun({ text: txt(title), bold: true, size: 22, color: TEAL })],
-          spacing: { after: 60 }
-        }));
+        children.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: txt(title),
+                bold: true,
+                size: 22,
+                color: TEAL,
+              }),
+            ],
+            spacing: { after: 60 },
+          }),
+        );
       }
-      
+
       const contentList = Array.isArray(content) ? content : [content];
-      contentList.forEach(c => {
+      contentList.forEach((c) => {
         if (typeof c === "string") {
-          children.push(new Paragraph({
-            children: [new TextRun({ text: txt(c), size: 20 })],
-            spacing: { after: 40 }
-          }));
+          children.push(
+            new Paragraph({
+              children: [new TextRun({ text: txt(c), size: 20 })],
+              spacing: { after: 40 },
+            }),
+          );
         } else {
           children.push(c);
         }
       });
-      
+
       if (children.length > 0 && children[children.length - 1].spacing) {
         children[children.length - 1].spacing.after = 0;
       }
@@ -211,12 +226,12 @@
                 borders: calloutBorders,
                 margins: { top: 140, bottom: 140, left: 200, right: 140 },
                 shading: { fill: "F8FAFC" },
-                children: children
-              })
-            ]
-          })
+                children: children,
+              }),
+            ],
+          }),
         ],
-        spacing: { before: 120, after: 120 }
+        spacing: { before: 120, after: 120 },
       });
     };
 
@@ -318,31 +333,33 @@
     const s = plan.snapshot;
     out.push(k.H2("2 · Teacher Snapshot"));
     out.push(
-      k.callout(
-        [
-          new k.Paragraph({
-            children: [
-              new k.TextRun({ text: "Learning today: ", bold: true, size: 20 }),
-              new k.TextRun({ text: s.learning, size: 20 }),
-            ],
-            spacing: { after: 60 }
-          }),
-          new k.Paragraph({
-            children: [
-              new k.TextRun({ text: "Why it matters: ", bold: true, size: 20 }),
-              new k.TextRun({ text: s.why, size: 20 }),
-            ],
-            spacing: { after: 60 }
-          }),
-          new k.Paragraph({
-            children: [
-              new k.TextRun({ text: "By the end, students can: ", bold: true, size: 20 }),
-              new k.TextRun({ text: s.byEnd, size: 20 }),
-            ],
-            spacing: { after: 0 }
-          }),
-        ]
-      )
+      k.callout([
+        new k.Paragraph({
+          children: [
+            new k.TextRun({ text: "Learning today: ", bold: true, size: 20 }),
+            new k.TextRun({ text: s.learning, size: 20 }),
+          ],
+          spacing: { after: 60 },
+        }),
+        new k.Paragraph({
+          children: [
+            new k.TextRun({ text: "Why it matters: ", bold: true, size: 20 }),
+            new k.TextRun({ text: s.why, size: 20 }),
+          ],
+          spacing: { after: 60 },
+        }),
+        new k.Paragraph({
+          children: [
+            new k.TextRun({
+              text: "By the end, students can: ",
+              bold: true,
+              size: 20,
+            }),
+            new k.TextRun({ text: s.byEnd, size: 20 }),
+          ],
+          spacing: { after: 0 },
+        }),
+      ]),
     );
     out.push(k.H3("Anticipated misconceptions"));
     out.push(...k.bullets(s.misconceptions));
@@ -426,7 +443,9 @@
 
     // 7 · Collaborative
     const c = plan.collaborative;
-    out.push(k.H2("7 · Collaborative / Partner Activity" + at(t.collaborative)));
+    out.push(
+      k.H2("7 · Collaborative / Partner Activity" + at(t.collaborative)),
+    );
     out.push(
       k.runs([
         { t: "Student directions: ", b: true },
@@ -658,7 +677,12 @@
 
     out.push(k.H2("Writing"));
     out.push(k.P(plan.writing.kernel, { bold: true }));
+    out.push(k.P("Complete the sentence using because, but, and so:"));
     out.push(k.P("Because: " + plan.writing.because));
+    out.push(space(1));
+    out.push(k.P("But: " + plan.writing.but));
+    out.push(space(1));
+    out.push(k.P("So: " + plan.writing.so));
     out.push(space(1));
     out.push(
       k.P("Word bank: " + plan.writing.wordBank.join(", "), { italics: true }),

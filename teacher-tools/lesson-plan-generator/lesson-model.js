@@ -67,7 +67,7 @@
         .filter(Boolean)
         .map((s) => {
           const m = s.match(
-            /(6\.[A-Z]{1,3}(?:\.[A-Z])?\.\d+[a-z]?)\s*[-–—:]?\s*(.*)/i,
+            /(\d+\.[A-Z]{1,3}(?:\.[A-Z])?\.\d+[a-z]?)\s*[-–—:]?\s*(.*)/i,
           );
           return m ? { code: m[1], desc: m[2] || "" } : { code: "", desc: s };
         });
