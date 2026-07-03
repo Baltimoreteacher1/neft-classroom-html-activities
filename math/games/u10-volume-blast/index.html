@@ -7,7 +7,7 @@
     <title>Volume Blast — Unit-Cube Stacker | Neft Teacher</title>
     <meta
       name="description"
-      content="A calm build-it math game for Grade 6 lessons 10.1-10.5 (6.G.2): stack real unit cubes to build a rectangular prism. Set length, width, and height with steppers, watch L × W × H update live, and lock in the matching volume. Two levels: build to given sizes, or match a target volume and find a missing dimension."
+      content="A calm build-it math game for Grade 6 lessons 10.1-10.5 (6.G.2): stack real unit cubes to build a rectangular prism. Set length, width, and height with steppers, watch L × W × H update live, and lock in the matching volume. Three levels: build to given sizes, match a target volume or find a missing dimension, and build with half-unit edges (like 2½ × 3 × 4 = 30) for fractional edge lengths."
     />
     <style>
       * {
@@ -197,8 +197,14 @@
       //    • Level 2 (enrichment) — build ANY prism with volume = target, OR
       //                              given the volume + two sides, find the third
       //                              (larger volumes, fewer hints).
-      //  Wrong MATH (not slow hands) costs a life — and the prism redraws to the
-      //  CORRECT cubes with the reason, so every miss teaches.
+      //    • Level 3 (half units) — 6.G.2's defining feature: one edge is a
+      //                              mixed number like 2½ (its stepper moves by
+      //                              halves; the ½ layer draws as an amber slab).
+      //  EXACT ARITHMETIC: every dimension is stored as a DOUBLED int
+      //  (half-units): 5 means 2½. Volumes are computed in doubled units too,
+      //  so readouts like "2½ × 3 × 4 = 30" are exact — no floating point.
+      //  Misses never end the game — after a calm retry the prism redraws to
+      //  the CORRECT cubes with the reason, so every miss teaches (no-fail).
       // ════════════════════════════════════════════════════════════════════
       const W = 820,
         H = 600;
@@ -222,12 +228,15 @@
         cubeLeft: 0x2a9d6f,
         cubeRight: 0x1c6f4d,
         cubeEdge: 0x0a3a28,
+        halfTop: 0xffe08a,
+        halfLeft: 0xd9a642,
+        halfRight: 0xb5842b,
       };
 
-      const DIM_MIN = 1,
-        DIM_MAX = 6; // keep dims small so the cube drawing stays readable
+      // Dimensions are DOUBLED ints (half-units): 2 = one unit, 5 = 2½ units.
+      const DIM_MIN = 2,
+        DIM_MAX = 12; // 1 … 6 units — keeps the cube drawing readable
       const TARGET_SOLVED = 10; // win condition
-      const START_LIVES = 3;
 
       // Isometric unit-cube geometry (screen space; Scale.FIT maps to any size).
       const HW = 16, // half-width of a cube's top rhombus
@@ -248,6 +257,17 @@
       function srSay(msg) {
         const el = document.getElementById("vb-sr");
         if (el) el.textContent = msg;
+      }
+      // Format a doubled int as an exact mixed number: 5 → "2½", 6 → "3",
+      // 1 → "½". Keeps every readout free of floating-point artifacts.
+      function fmtHalf(dbl) {
+        const whole = Math.floor(dbl / 2);
+        return dbl % 2 ? (whole ? whole + "½" : "½") : String(whole);
+      }
+      // Volume in DOUBLED cubic units from doubled dims (exact while at most
+      // one dimension is odd, which the steppers guarantee): dl·dw·dh / 4.
+      function volumeDoubled(dl, dw, dh) {
+        return (dl * dw * dh) / 4;
       }
       const reduceMQ =
         window.matchMedia &&
@@ -322,15 +342,10 @@
             setTimeout(() => this.play("sine", f, 0.25, 0.25), i * 110),
           );
         },
-        lose() {
-          [400, 330, 260, 200].forEach((f, i) =>
-            setTimeout(() => this.play("sawtooth", f, 0.3, 0.14), i * 170),
-          );
-        },
       };
 
       // ── Run state (level select + vocab gate) ──
-      let vbLevel = 1; // 1 = support, 2 = enrichment
+      let vbLevel = 1; // 1 = support, 2 = enrichment, 3 = half units
       let vbVocabSeen = false;
 
       // ── Vocabulary gate (repo rule: term + Level-1 definition + emoji shown
@@ -364,6 +379,7 @@
       ];
 
       // ── Problem generator. The chosen level drives the framing. ──
+      // All dims in problems are DOUBLED ints; `dV` is the doubled volume.
       function genProblem(level) {
         if (level === 1) {
           let l, w, h;
@@ -371,14 +387,15 @@
             l = randInt(1, 6);
             w = randInt(1, 6);
             h = randInt(1, 6);
-          } while (l * w * h < 2 || (l === 1 && w === 1 && h === 1));
+          } while (l * w * h < 2);
           return {
             mode: "dims",
-            l,
-            w,
-            h,
-            V: l * w * h,
-            start: { l: 1, w: 1, h: 1 },
+            l: l * 2,
+            w: w * 2,
+            h: h * 2,
+            dV: l * w * h * 2,
+            halfDim: null,
+            start: { l: 2, w: 2, h: 2 },
             label: "Build the prism",
             prompt:
               "Build a prism that is " +
@@ -400,7 +417,68 @@
               l + " × " + w + " × " + h + " = " + l * w * h + " cubic units.",
           };
         }
-        // Level 2 — alternate two enrichment framings.
+        if (level === 3) {
+          // Half-unit tier — 6.G.2's defining feature: one edge is a mixed
+          // number (n½). That stepper moves by halves; the others stay whole.
+          let dims, halfDim, dV;
+          do {
+            dims = {
+              l: randInt(1, 6) * 2,
+              w: randInt(1, 6) * 2,
+              h: randInt(1, 6) * 2,
+            };
+            halfDim = shuffle(["l", "w", "h"])[0];
+            dims[halfDim] = randInt(1, 5) * 2 + 1; // 1½ … 5½
+            dV = volumeDoubled(dims.l, dims.w, dims.h);
+          } while (dV < 8); // keep the build bigger than a couple of cubes
+          const step1 = (dims.l * dims.w) / 2; // (L × W) in doubled units
+          const halfName =
+            halfDim === "l" ? "length" : halfDim === "w" ? "width" : "height";
+          return {
+            mode: "dims",
+            l: dims.l,
+            w: dims.w,
+            h: dims.h,
+            dV: dV,
+            halfDim: halfDim,
+            start: { l: 2, w: 2, h: 2 },
+            label: "Build with half units",
+            prompt:
+              "Build a prism that is " +
+              fmtHalf(dims.l) +
+              " long, " +
+              fmtHalf(dims.w) +
+              " wide, and " +
+              fmtHalf(dims.h) +
+              " tall.",
+            hint:
+              "The " +
+              halfName +
+              " stepper moves by halves. Multiply the fractions to check the volume.",
+            why:
+              fmtHalf(dims.l) +
+              " × " +
+              fmtHalf(dims.w) +
+              " × " +
+              fmtHalf(dims.h) +
+              " = " +
+              fmtHalf(dV) +
+              " cubic units. Multiply the fractions: " +
+              fmtHalf(dims.l) +
+              " × " +
+              fmtHalf(dims.w) +
+              " = " +
+              fmtHalf(step1) +
+              ", then " +
+              fmtHalf(step1) +
+              " × " +
+              fmtHalf(dims.h) +
+              " = " +
+              fmtHalf(dV) +
+              ".",
+          };
+        }
+        // Level 2 — alternate two enrichment framings (whole units).
         if (Math.random() < 0.55) {
           const a = randInt(2, 6),
             b = randInt(2, 6),
@@ -408,9 +486,10 @@
           const V = a * b * c;
           return {
             mode: "volume",
-            V,
-            exa: { a, b, c },
-            start: { l: 1, w: 1, h: 1 },
+            dV: V * 2,
+            exa: { a: a * 2, b: b * 2, c: c * 2 },
+            halfDim: null,
+            start: { l: 2, w: 2, h: 2 },
             label: "Match the volume",
             prompt: "Build ANY prism with a volume of " + V + " cubic units.",
             hint: "Find three numbers from 1–6 that multiply to " + V + ".",
@@ -423,11 +502,12 @@
         const V = l * w * h;
         return {
           mode: "third",
-          l,
-          w,
-          h,
-          V,
-          start: { l: 1, w: 1, h: 1 },
+          l: l * 2,
+          w: w * 2,
+          h: h * 2,
+          dV: V * 2,
+          halfDim: null,
+          start: { l: 2, w: 2, h: 2 },
           label: "Find the missing height",
           prompt:
             "This prism holds " +
@@ -453,16 +533,16 @@
             ".",
         };
       }
-      // Does a built {l,w,h} satisfy the target?
+      // Does a built {l,w,h} (doubled ints) satisfy the target?
       function isCorrect(t, b) {
-        const V = b.l * b.w * b.h;
+        const dV = volumeDoubled(b.l, b.w, b.h);
         if (t.mode === "dims") return b.l === t.l && b.w === t.w && b.h === t.h;
-        if (t.mode === "volume") return V === t.V;
+        if (t.mode === "volume") return dV === t.dV;
         // "third": a base with length/width swapped is the same prism —
         // accept either orientation as long as the volume matches.
         const baseMatches =
           (b.l === t.l && b.w === t.w) || (b.l === t.w && b.w === t.l);
-        return baseMatches && V === t.V;
+        return baseMatches && dV === t.dV;
       }
       // The cubes to show after a wrong answer (the correct build).
       function correctBuild(t) {
@@ -471,14 +551,28 @@
       }
       function goalLine(t) {
         if (t.mode === "dims")
-          return "Goal:  " + t.l + " × " + t.w + " × " + t.h;
-        if (t.mode === "volume") return "Goal volume:  " + t.V + " u³";
+          return (
+            "Goal:  " +
+            fmtHalf(t.l) +
+            " × " +
+            fmtHalf(t.w) +
+            " × " +
+            fmtHalf(t.h)
+          );
+        if (t.mode === "volume")
+          return "Goal volume:  " + fmtHalf(t.dV) + " u³";
         return (
-          "Goal volume:  " + t.V + " u³   (base " + t.l + " × " + t.w + ")"
+          "Goal volume:  " +
+          fmtHalf(t.dV) +
+          " u³   (base " +
+          fmtHalf(t.l) +
+          " × " +
+          fmtHalf(t.w) +
+          ")"
         );
       }
       // Expose generators for stress testing.
-      window.VolumeBlast = { genProblem, isCorrect };
+      window.VolumeBlast = { genProblem, isCorrect, fmtHalf, volumeDoubled };
 
       // ════════════════════════════════════════════════════════════════════
       //  BOOT
@@ -603,7 +697,8 @@
       };
 
       // ════════════════════════════════════════════════════════════════════
-      //  LEVEL SELECT  (Level 1 = support · Level 2 = enrichment)
+      //  LEVEL SELECT  (Level 1 = support · Level 2 = enrichment ·
+      //                 Level 3 = half-unit fractional edges)
       // ════════════════════════════════════════════════════════════════════
       function LevelSelectScene() {
         Phaser.Scene.call(this, "LevelSelect");
@@ -622,11 +717,16 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 132, "You can switch levels any time you play again.", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            color: "#a8d8c4",
-          })
+          .text(
+            cx,
+            132,
+            "Tap a card — or press 1, 2, or 3. Switch any time you play again.",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#a8d8c4",
+            },
+          )
           .setOrigin(0.5);
 
         const pick = (lvl) => {
@@ -639,27 +739,45 @@
 
         this.makeCard(
           cx,
-          240,
+          204,
           "LEVEL 1",
           "Build it",
           "I tell you the size. Build a prism that is L long, W wide, and H tall, then read the volume.",
-          0x1f7a52,
+          0x4fd18b,
+          "#4fd18b",
           () => pick(1),
         );
         this.makeCard(
           cx,
-          392,
+          330,
           "LEVEL 2",
           "Match Volume · Find a Missing Side",
           "Match a target volume any way you like — or find a missing side when the volume is given. Bigger numbers, fewer hints.",
-          0x2a6f9d,
+          0x6fb7e8,
+          "#6fb7e8",
           () => pick(2),
         );
+        this.makeCard(
+          cx,
+          456,
+          "LEVEL 3",
+          "Half-Unit Builder",
+          "One edge is a mixed number like 2½ — its stepper moves by halves. Multiply the fractions: 2½ × 3 × 4 = 30.",
+          0xffcd4d,
+          "#ffcd4d",
+          () => pick(3),
+        );
 
-        makeHubLink(this, cx, 540);
+        this.input.keyboard.on("keydown-ONE", () => pick(1));
+        this.input.keyboard.on("keydown-TWO", () => pick(2));
+        this.input.keyboard.on("keydown-THREE", () => pick(3));
+
+        makeHubLink(this, cx, 556);
         srSay(
           "Choose your level. Level 1, build it: I give you the size. " +
-            "Level 2, challenge: match a volume or find a missing side.",
+            "Level 2, challenge: match a volume or find a missing side. " +
+            "Level 3, half-unit builder: one edge is a mixed number like " +
+            "two and a half. Press 1, 2, or 3 to choose.",
         );
       };
       LevelSelectScene.prototype.makeCard = function (
@@ -668,31 +786,32 @@
         tag,
         title,
         desc,
-        color,
+        accentN,
+        accentS,
         cb,
       ) {
         const card = this.add
-          .rectangle(cx, cy, 560, 124, C.panel)
-          .setStrokeStyle(3, color === 0x1f7a52 ? 0x4fd18b : 0x6fb7e8)
+          .rectangle(cx, cy, 560, 110, C.panel)
+          .setStrokeStyle(3, accentN)
           .setInteractive({ useHandCursor: true });
         this.add
-          .text(cx - 250, cy - 32, tag, {
+          .text(cx - 250, cy - 30, tag, {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "15px",
             fontStyle: "900",
-            color: color === 0x1f7a52 ? "#4fd18b" : "#6fb7e8",
+            color: accentS,
           })
           .setOrigin(0, 0.5);
         this.add
           .text(cx - 250, cy - 6, title, {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "27px",
+            fontSize: "26px",
             fontStyle: "900",
             color: "#eafff4",
           })
           .setOrigin(0, 0.5);
         this.add
-          .text(cx - 250, cy + 32, desc, {
+          .text(cx - 250, cy + 30, desc, {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "14px",
             color: "#a8d8c4",
@@ -868,12 +987,11 @@
       GameScene.prototype.init = function () {
         this.reduceMotion = reducedMotion();
         this.score = 0;
-        this.lives = START_LIVES;
         this.streak = 0;
         this.solved = 0;
         this.target = TARGET_SOLVED;
         this.problem = null;
-        this.built = { l: 1, w: 1, h: 1 };
+        this.built = { l: 2, w: 2, h: 2 }; // doubled ints (half-units)
         this.active = "l";
         this.locked = false;
         this.stepRefs = {};
@@ -894,7 +1012,8 @@
           ...hud,
           color: "#8fe0bc",
         });
-        this.livesText = this.add.text(16, 36, "❤❤❤", {
+        // Calm, no-fail HUD: the heart line is static (mistakes never drain it).
+        this.livesText = this.add.text(16, 36, "❤ No-fail practice", {
           ...hud,
           color: "#ff8f8f",
         });
@@ -1024,9 +1143,6 @@
             tint: [0x4fd18b, 0xffcd4d, 0xffffff],
           })
           .setDepth(20);
-        this.redFlash = this.add
-          .rectangle(W / 2, H / 2, W, H, 0xff3333, 0)
-          .setDepth(30);
 
         // ── Keyboard ──
         this.input.keyboard.on("keydown-LEFT", () => this.selectDim(-1));
@@ -1100,7 +1216,17 @@
             color: "#eafff4",
           })
           .setOrigin(0.5);
-        this.stepRefs[dim] = { box, val };
+        // "moves by ½" tag — visible only on the half dimension (Level 3).
+        const halfTag = this.add
+          .text(cx, cy + 40, "moves by ½", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "12px",
+            fontStyle: "bold",
+            color: "#ffcd4d",
+          })
+          .setOrigin(0.5)
+          .setVisible(false);
+        this.stepRefs[dim] = { box, val, halfTag };
       };
 
       GameScene.prototype.selectDim = function (dir) {
@@ -1116,14 +1242,20 @@
             ? "Length"
             : this.active === "w"
               ? "Width"
-              : "Height") + " selected.",
+              : "Height") +
+            " selected, now " +
+            fmtHalf(this.built[this.active]) +
+            ".",
         );
       };
 
-      GameScene.prototype.changeDim = function (dim, delta) {
+      // Step one half-unit (doubled 1) on the designated half dimension
+      // (Level 3), one whole unit (doubled 2) otherwise. `dir` is −1 or +1.
+      GameScene.prototype.changeDim = function (dim, dir) {
         if (this.locked) return;
+        const step = this.problem && this.problem.halfDim === dim ? 1 : 2;
         const next = Phaser.Math.Clamp(
-          this.built[dim] + delta,
+          this.built[dim] + dir * step,
           DIM_MIN,
           DIM_MAX,
         );
@@ -1134,62 +1266,100 @@
         this.redrawPrism();
         this.updateReadout();
         this.updateSteppers();
+        srSay(
+          (dim === "l" ? "Length" : dim === "w" ? "Width" : "Height") +
+            " " +
+            fmtHalf(next) +
+            ". Volume " +
+            fmtHalf(volumeDoubled(this.built.l, this.built.w, this.built.h)) +
+            " cubic units.",
+        );
       };
 
       GameScene.prototype.updateSteppers = function () {
         ["l", "w", "h"].forEach((dim) => {
           const r = this.stepRefs[dim];
           if (!r) return;
-          r.val.setText(String(this.built[dim]));
+          r.val.setText(fmtHalf(this.built[dim]));
           r.box.setStrokeStyle(3, dim === this.active ? C.goldN : C.panelEdge);
+          r.halfTag.setVisible(
+            !!(this.problem && this.problem.halfDim === dim),
+          );
         });
       };
 
       GameScene.prototype.updateReadout = function () {
         const b = this.built;
-        const V = b.l * b.w * b.h;
+        const dV = volumeDoubled(b.l, b.w, b.h);
         this.readout.setText(
-          b.l + " × " + b.w + " × " + b.h + " = " + V + " u³",
+          fmtHalf(b.l) +
+            " × " +
+            fmtHalf(b.w) +
+            " × " +
+            fmtHalf(b.h) +
+            " = " +
+            fmtHalf(dV) +
+            " u³",
         );
         const ok = this.problem && isCorrect(this.problem, b);
         this.readout.setColor(ok ? "#4fd18b" : "#eafff4");
       };
 
-      // Draw the prism as stacked iso unit cubes (painter's order: i+j+k).
+      // Draw the prism as stacked iso boxes (painter's order). Dims are
+      // half-unit ints: full unit cubes plus, when a dimension is odd, a
+      // clearly-marked amber HALF slab along that dimension.
       GameScene.prototype.redrawPrism = function () {
         const g = this.prismGfx;
         g.clear();
-        const b = this.built;
-        // Gather cube top-vertex offsets and find bounds for centering.
-        const cubes = [];
+        // Split a doubled dim into unit segments + an optional ½ segment.
+        const segs = (dbl) => {
+          const out = [];
+          const full = Math.floor(dbl / 2);
+          for (let n = 0; n < full; n++) out.push({ at: n, size: 1 });
+          if (dbl % 2) out.push({ at: full, size: 0.5 });
+          return out;
+        };
+        const li = segs(this.built.l),
+          wi = segs(this.built.w),
+          hi = segs(this.built.h);
+        const boxes = [];
         let minX = Infinity,
           maxX = -Infinity,
           minY = Infinity,
           maxY = -Infinity;
-        for (let i = 0; i < b.l; i++) {
-          for (let j = 0; j < b.w; j++) {
-            for (let k = 0; k < b.h; k++) {
-              const X = (i - j) * HW;
-              const Y = (i + j) * TH - k * CH;
-              cubes.push({ X, Y, key: i + j + k });
-              if (X - HW < minX) minX = X - HW;
-              if (X + HW > maxX) maxX = X + HW;
+        li.forEach((si) => {
+          wi.forEach((sj) => {
+            hi.forEach((sk) => {
+              const X = (si.at - sj.at) * HW;
+              const Y = (si.at + sj.at) * TH - (sk.at + sk.size - 1) * CH;
+              boxes.push({
+                X,
+                Y,
+                sx: si.size,
+                sy: sj.size,
+                sz: sk.size,
+                half: si.size < 1 || sj.size < 1 || sk.size < 1,
+                key: si.at + sj.at + sk.at,
+              });
+              if (X - sj.size * HW < minX) minX = X - sj.size * HW;
+              if (X + si.size * HW > maxX) maxX = X + si.size * HW;
               if (Y < minY) minY = Y;
-              if (Y + 2 * TH + CH > maxY) maxY = Y + 2 * TH + CH;
-            }
-          }
-        }
+              const bot = Y + (si.size + sj.size) * TH + sk.size * CH;
+              if (bot > maxY) maxY = bot;
+            });
+          });
+        });
         const ox = PRISM_CX - (minX + maxX) / 2;
         const oy = PRISM_CY - (minY + maxY) / 2;
-        cubes.sort((a, c) => a.key - c.key);
-        cubes.forEach((cube) =>
-          drawIsoCube(g, cube.X + ox, cube.Y + oy, HW, TH, CH),
+        boxes.sort((a, c) => a.key - c.key);
+        boxes.forEach((bx) =>
+          drawIsoBox(g, bx.X + ox, bx.Y + oy, bx.sx, bx.sy, bx.sz, bx.half),
         );
       };
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
-        this.missedOnce = false; // one free retry before a miss costs a life
+        this.missedOnce = false; // one free retry before the answer is shown
         this.problem = genProblem(vbLevel);
         this.built = {
           l: this.problem.start.l,
@@ -1273,12 +1443,8 @@
           SFX.bad();
           JUICE.audio.wrong();
           this.streak = 0;
-          this.lives--;
-          this.flashRed();
-          JUICE.shake(this, 0.008);
-          JUICE.floatText(this, W - 60, 40, "−1 ❤", "#ff8f8f", 22);
           this.feedback
-            .setColor("#ff8f8f")
+            .setColor("#ffcd4d")
             .setText("✗ Not quite — " + this.problem.why)
             .setAlpha(1);
           srSay("Not quite. " + this.problem.why);
@@ -1293,33 +1459,22 @@
       };
 
       GameScene.prototype.afterAttempt = function (correct) {
+        // No-fail practice: mistakes teach; they never end the game.
         this.updateHUD();
-        if (this.lives <= 0) {
-          // No-fail practice: refill hearts and keep going (calm mode).
-          this.lives = START_LIVES;
-          this.updateHUD();
-        }
-        if (this.solved >= this.target) return this.endGame(true);
+        if (this.solved >= this.target) return this.endGame();
         this.time.delayedCall(correct ? 950 : 1700, () => {
           this.newProblem();
         });
       };
 
-      GameScene.prototype.flashRed = function () {
-        if (this.reduceMotion) return;
-        this.redFlash.setAlpha(0.35);
-        this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 350 });
-      };
-
       GameScene.prototype.updateHUD = function () {
         this.scoreText.setText("Score: " + this.score);
-        this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
         this.streakText.setText("Streak: " + this.streak);
         this.levelText.setText("Level " + vbLevel);
         this.progressText.setText(this.solved + " / " + this.target);
       };
 
-      GameScene.prototype.endGame = function (won) {
+      GameScene.prototype.endGame = function () {
         this.locked = true;
         JUICE.audio.musicStop();
         this.time.delayedCall(500, () => {
@@ -1327,7 +1482,6 @@
             score: this.score,
             solved: this.solved,
             target: this.target,
-            won,
           });
         });
       };
@@ -1359,11 +1513,11 @@
         }
 
         this.add
-          .text(cx, 120, d.won ? "VOLUME MASTERED!" : "OUT OF LIVES", {
+          .text(cx, 120, "VOLUME MASTERED!", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "46px",
             fontStyle: "900",
-            color: d.won ? "#4fd18b" : "#ff8f8f",
+            color: "#4fd18b",
           })
           .setOrigin(0.5);
 
@@ -1401,14 +1555,10 @@
           })
           .setOrigin(0.5);
 
-        if (d.won) {
-          SFX.win();
-          JUICE.audio.fanfare();
-          JUICE.confetti(this, 1);
-          JUICE.award(40, "u10-volume-blast");
-        } else {
-          SFX.lose();
-        }
+        SFX.win();
+        JUICE.audio.fanfare();
+        JUICE.confetti(this, 1);
+        JUICE.award(40, "u10-volume-blast");
 
         // EduPulse reporting (guarded; safe no-op without bridge).
         try {
@@ -1422,12 +1572,7 @@
             });
         } catch (e) {}
         srSay(
-          (d.won ? "Volume mastered! " : "Out of lives. ") +
-            "Final score " +
-            d.score +
-            ", " +
-            stars +
-            " stars.",
+          "Volume mastered! Final score " + d.score + ", " + stars + " stars.",
         );
 
         const again = this.add
@@ -1504,6 +1649,53 @@
         g.strokePath();
       }
 
+      // Draw one isometric box spanning sx × sy × sz units, top-back vertex at
+      // (X, Y). Full unit cubes use the green faces; half slabs use amber so
+      // the ½ piece reads clearly against the whole cubes.
+      function drawIsoBox(g, X, Y, sx, sy, sz, half) {
+        const ux = sx * HW,
+          uy = sx * TH;
+        const vx = -sy * HW,
+          vy = sy * TH;
+        const dz = sz * CH;
+        const top = half ? C.halfTop : C.cubeTop;
+        const left = half ? C.halfLeft : C.cubeLeft;
+        const right = half ? C.halfRight : C.cubeRight;
+        // top face
+        g.fillStyle(top, 1);
+        g.beginPath();
+        g.moveTo(X, Y);
+        g.lineTo(X + ux, Y + uy);
+        g.lineTo(X + ux + vx, Y + uy + vy);
+        g.lineTo(X + vx, Y + vy);
+        g.closePath();
+        g.fillPath();
+        g.lineStyle(1, C.cubeEdge, 0.85);
+        g.strokePath();
+        // left face
+        g.fillStyle(left, 1);
+        g.beginPath();
+        g.moveTo(X + vx, Y + vy);
+        g.lineTo(X + ux + vx, Y + uy + vy);
+        g.lineTo(X + ux + vx, Y + uy + vy + dz);
+        g.lineTo(X + vx, Y + vy + dz);
+        g.closePath();
+        g.fillPath();
+        g.lineStyle(1, C.cubeEdge, 0.85);
+        g.strokePath();
+        // right face
+        g.fillStyle(right, 1);
+        g.beginPath();
+        g.moveTo(X + ux, Y + uy);
+        g.lineTo(X + ux + vx, Y + uy + vy);
+        g.lineTo(X + ux + vx, Y + uy + vy + dz);
+        g.lineTo(X + ux, Y + uy + dz);
+        g.closePath();
+        g.fillPath();
+        g.lineStyle(1, C.cubeEdge, 0.85);
+        g.strokePath();
+      }
+
       function makeHubLink(scene, x, y) {
         const t = scene.add
           .text(x, y, "← Back to Math Games", {
@@ -1552,7 +1744,8 @@
               "with the steppers, or use the left and right arrow keys to pick a " +
               "side and the up and down arrows to change it. Watch the live " +
               "length times width times height readout, then press Lock In, " +
-              "Enter, or Space.",
+              "Enter, or Space. On Level 3 one edge is a mixed number and its " +
+              "stepper moves in half units.",
           );
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
@@ -1594,12 +1787,12 @@
           });
       });
     </script>
-  <!-- ghl-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
-  <script src="/assets/canvas-bridge.js" defer></script>
-  <!-- canvas-bridge-injected:end -->
-</body>
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+  </body>
 </html>

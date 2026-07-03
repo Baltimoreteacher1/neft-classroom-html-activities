@@ -9,7 +9,7 @@
     </title>
     <meta
       name="description"
-      content="A calm plot-it coordinate-plane game for Grade 6 (6.NS.6): read an ordered pair and place the point on the exact grid cell. Level 1 stays in Quadrant I; Level 2 adds all four quadrants and reflect-across-an-axis missions. No timer — wrong math costs a life and shows the correct spot to teach."
+      content="A calm plot-it coordinate-plane game for Grade 6 (6.NS.6, 6.NS.8, 6.G.3): read an ordered pair and place the point on the exact grid cell. Level 1 stays in Quadrant I; Level 2 adds all four quadrants plus reflect-across-an-axis, distance-between-points, and finish-the-rectangle missions. No timer, no fail — misses teach by lighting up the correct spot."
     />
     <style>
       * {
@@ -125,15 +125,15 @@
     <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
     <script src="/assets/game-juice.js"></script>
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <link rel="stylesheet" href="/assets/game-access.css">
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <link rel="stylesheet" href="/assets/game-hint-ladder.css">
-  <!-- ghl-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated star-field (behind the Phaser canvas). -->
     <div id="cq-bg" data-parallax aria-hidden="true">
@@ -179,19 +179,24 @@
 
     <script>
       // ════════════════════════════════════════════════════════════════════
-      //  COORDINATE QUEST — STAR PLOTTER   ·   6.NS.6
+      //  COORDINATE QUEST — STAR PLOTTER   ·   6.NS.6 / 6.NS.8 / 6.G.3
       //  Math-as-mechanic, calm, no timer/reflex. The action IS the math: read
       //  an ordered pair, then MOVE a marker (click a cell, or arrow keys) and
       //  PLACE the star on the EXACT grid intersection. Lock In checks the exact
-      //  cell. A wrong placement (wrong math, not slow hands) costs a life and
-      //  the correct cell lights up so the miss teaches.
+      //  cell. Misses never end the game — after a calm retry the correct cell
+      //  lights up so the miss teaches (no-fail practice).
       //
       //  LEVEL SELECT drives the generator + scaffolding:
       //   • Level 1 (support)    — Quadrant I only (positive integers), axis
       //                            labels + gridlines + a per-problem hint and
       //                            marker guide-lines.
-      //   • Level 2 (enrichment) — all four quadrants with negatives, plus
-      //                            reflect-across-an-axis missions, fewer hints.
+      //   • Level 2 (enrichment) — all four quadrants with negatives, plus:
+      //                            · reflect across an axis (6.NS.6)
+      //                            · DISTANCE missions (6.NS.8): plot the 2nd
+      //                              point, then answer |a − b| by counting the
+      //                              highlighted unit steps (choice buttons).
+      //                            · RECTANGLE missions (6.G.3): plot the 4th
+      //                              vertex, then give one side length.
       // ════════════════════════════════════════════════════════════════════
       const W = 820,
         H = 600;
@@ -205,7 +210,6 @@
       const R1MAX = 8; // Level 1: Quadrant I, 0..8
       const R2MAX = 6; // Level 2: four quadrants, -6..6
       const WIN_TARGET = 10; // solve this many to win
-      const START_LIVES = 3;
 
       const C = {
         bg: 0x0a1a2e,
@@ -244,6 +248,8 @@
       const reducedMotion = () => !!(RM_QUERY && RM_QUERY.matches);
       // Real minus sign for negatives (matches the rest of the math UI).
       const fmt = (n) => (n < 0 ? "−" + Math.abs(n) : String(n));
+      // Parenthesized negatives for |a − b| style strings: |3 − (−4)|.
+      const fmtP = (n) => (n < 0 ? "(" + fmt(n) + ")" : fmt(n));
       function srSay(msg) {
         const el = document.getElementById("cq-sr");
         if (el) el.textContent = msg;
@@ -328,11 +334,6 @@
             setTimeout(() => this.play("sine", f, 0.25, 0.25), i * 110),
           );
         },
-        lose() {
-          [400, 330, 260, 200].forEach((f, i) =>
-            setTimeout(() => this.play("sawtooth", f, 0.3, 0.14), i * 170),
-          );
-        },
       };
 
       // ── Problem generator ────────────────────────────────────────────────
@@ -363,35 +364,43 @@
               " is how far UP.",
           };
         }
-        // ── Level 2 ──
+        // ── Level 2: plot · reflect · distance (6.NS.8) · rectangle (6.G.3) ──
         const r = Math.random();
-        if (r < 0.4) {
-          let x, y;
-          do {
-            x = randInt(-R2MAX, R2MAX);
-          } while (x === 0);
-          do {
-            y = randInt(-R2MAX, R2MAX);
-          } while (y === 0);
-          return {
-            kind: "plot",
-            tx: x,
-            ty: y,
-            given: null,
-            prompt: "Plot the point  (" + fmt(x) + ", " + fmt(y) + ")",
-            hint: "",
-            why:
-              "(" +
-              fmt(x) +
-              ", " +
-              fmt(y) +
-              ") sits in Quadrant " +
-              ROMAN[quadrantOf(x, y)] +
-              ".",
-          };
-        }
-        // Reflect across an axis. P is shown plotted; place its image.
-        const acrossX = r < 0.7;
+        if (r < 0.28) return makePlotProblem();
+        if (r < 0.52) return makeReflectProblem();
+        if (r < 0.78) return makeDistanceProblem();
+        return makePolygonProblem();
+      }
+
+      function makePlotProblem() {
+        let x, y;
+        do {
+          x = randInt(-R2MAX, R2MAX);
+        } while (x === 0);
+        do {
+          y = randInt(-R2MAX, R2MAX);
+        } while (y === 0);
+        return {
+          kind: "plot",
+          tx: x,
+          ty: y,
+          given: null,
+          prompt: "Plot the point  (" + fmt(x) + ", " + fmt(y) + ")",
+          hint: "",
+          why:
+            "(" +
+            fmt(x) +
+            ", " +
+            fmt(y) +
+            ") sits in Quadrant " +
+            ROMAN[quadrantOf(x, y)] +
+            ".",
+        };
+      }
+
+      // Reflect across an axis. P is shown plotted; place its image.
+      function makeReflectProblem() {
+        const acrossX = Math.random() < 0.5;
         let a, b;
         do {
           a = randInt(-R2MAX, R2MAX);
@@ -448,8 +457,175 @@
             "). The y stays; the x flips sign.",
         };
       }
+
+      // Four choices for a length question. Always includes the correct count;
+      // distractors mirror common errors (off-by-one, subtracting the absolute
+      // values on a cross-zero pair). `extra` seeds one more distractor.
+      function distanceChoices(d, a, b, extra) {
+        const set = [d];
+        [
+          extra,
+          Math.abs(Math.abs(a) - Math.abs(b)),
+          d - 1,
+          d + 1,
+          d + 2,
+          d - 2,
+          d + 3,
+        ].forEach((v) => {
+          if (
+            typeof v === "number" &&
+            set.length < 4 &&
+            v >= 1 &&
+            set.indexOf(v) === -1
+          )
+            set.push(v);
+        });
+        return shuffle(set);
+      }
+
+      // 6.NS.8 — two points share an x or a y coordinate. Part 1: plot the
+      // second point. Part 2: give the distance between them (|a − b|; across
+      // zero, add the two distances to the axis, e.g. (−3, 2)→(4, 2) is 7).
+      function makeDistanceProblem() {
+        const horizontal = Math.random() < 0.5;
+        let a, b, c;
+        do {
+          a = randInt(-R2MAX, R2MAX);
+        } while (a === 0);
+        do {
+          b = randInt(-R2MAX, R2MAX);
+        } while (b === 0 || b === a);
+        do {
+          c = randInt(-R2MAX, R2MAX);
+        } while (c === 0);
+        const d = Math.abs(a - b);
+        const crossPart =
+          a * b < 0
+            ? " A and B are on opposite sides of the axis, so add the two parts: " +
+              Math.abs(a) +
+              " + " +
+              Math.abs(b) +
+              " = " +
+              d +
+              "."
+            : "";
+        const A = horizontal ? { x: a, y: c } : { x: c, y: a };
+        const B = horizontal ? { x: b, y: c } : { x: c, y: b };
+        return {
+          kind: "distance",
+          given: A,
+          tx: B.x,
+          ty: B.y,
+          prompt:
+            "Point A (" +
+            fmt(A.x) +
+            ", " +
+            fmt(A.y) +
+            ") is shown. Plot point B (" +
+            fmt(B.x) +
+            ", " +
+            fmt(B.y) +
+            ").",
+          hint: horizontal
+            ? "A and B share the same y-coordinate (" +
+              fmt(c) +
+              "), so B is straight LEFT or RIGHT of A."
+            : "A and B share the same x-coordinate (" +
+              fmt(c) +
+              "), so B is straight UP or DOWN from A.",
+          why:
+            "B sits at (" +
+            fmt(B.x) +
+            ", " +
+            fmt(B.y) +
+            "), on the same " +
+            (horizontal ? "horizontal" : "vertical") +
+            " line as A.",
+          segment: { x1: A.x, y1: A.y, x2: B.x, y2: B.y },
+          answer: {
+            question: "How many units apart are A and B?",
+            correct: d,
+            choices: distanceChoices(d, a, b, null),
+            why:
+              "Distance = |" +
+              fmt(a) +
+              " − " +
+              fmtP(b) +
+              "| = " +
+              d +
+              " units." +
+              crossPart,
+          },
+        };
+      }
+
+      // 6.G.3 — three vertices of a rectangle are shown. Part 1: plot the 4th
+      // vertex. Part 2: give the length of the side along the new vertex
+      // (whole-number coordinates inside the Level-2 grid).
+      function makePolygonProblem() {
+        const wd = randInt(2, 8);
+        const ht = randInt(2, 8);
+        const x1 = randInt(-R2MAX, R2MAX - wd),
+          x2 = x1 + wd;
+        const y1 = randInt(-R2MAX, R2MAX - ht),
+          y2 = y1 + ht;
+        const corners = [
+          { x: x1, y: y1 },
+          { x: x2, y: y1 },
+          { x: x2, y: y2 },
+          { x: x1, y: y2 },
+        ];
+        const missIdx = randInt(0, 3);
+        const miss = corners[missIdx];
+        const givens = corners.filter((c, i) => i !== missIdx);
+        const otherX = miss.x === x1 ? x2 : x1;
+        return {
+          kind: "polygon",
+          givens: givens,
+          tx: miss.x,
+          ty: miss.y,
+          prompt:
+            "Three corners of a rectangle are shown. Plot the missing corner.",
+          hint: "The missing corner shares its x with one shown corner and its y with another.",
+          why:
+            "The missing corner is (" +
+            fmt(miss.x) +
+            ", " +
+            fmt(miss.y) +
+            ") — it lines up with the other corners.",
+          segment: { x1: miss.x, y1: miss.y, x2: otherX, y2: miss.y },
+          outline: { x1: x1, y1: y1, x2: x2, y2: y2 },
+          answer: {
+            question:
+              "How long is the side from (" +
+              fmt(miss.x) +
+              ", " +
+              fmt(miss.y) +
+              ") to (" +
+              fmt(otherX) +
+              ", " +
+              fmt(miss.y) +
+              ")?",
+            correct: wd,
+            choices: distanceChoices(wd, miss.x, otherX, ht !== wd ? ht : null),
+            why:
+              "|" +
+              fmt(miss.x) +
+              " − " +
+              fmtP(otherX) +
+              "| = " +
+              wd +
+              " units — count the grid steps along that side.",
+          },
+        };
+      }
       // Exposed for stress tests / quick console checks.
-      window.CoordQuest = { makeProblem, quadrantOf };
+      window.CoordQuest = {
+        makeProblem,
+        quadrantOf,
+        makeDistanceProblem,
+        makePolygonProblem,
+      };
 
       // ── Vocab gate content (term + Level-1 definition + image/emoji) ──
       // Shown BEFORE the first round so students meet the key words first.
@@ -545,11 +721,16 @@
           )
           .setOrigin(0.5);
         this.add
-          .text(cx, 292, "Click a cell or use ← → ↑ ↓ · 6.NS.6 · Unit 9", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "14px",
-            color: C.sub,
-          })
+          .text(
+            cx,
+            292,
+            "Click a cell or use ← → ↑ ↓ · 6.NS.6 · 6.NS.8 · 6.G.3 · Unit 9",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              color: C.sub,
+            },
+          )
           .setOrigin(0.5);
 
         const hs = localStorage.getItem(LS_KEY);
@@ -777,14 +958,16 @@
         this.makeCard(cx + 196, 2, "LEVEL 2", "Enrichment", 0x0e8a7d, [
           "All four quadrants",
           "Positive & negative numbers",
-          "Reflect across an axis",
+          "Reflect · distance · rectangle missions",
           "Fewer hints",
         ]);
 
         srSay(
           "Choose your level. Level 1 is support: Quadrant one with positive " +
             "numbers, hints on. Level 2 is enrichment: all four quadrants with " +
-            "negatives and reflect missions, fewer hints.",
+            "negatives, plus reflect missions, distance-between-points " +
+            "missions, and finish-the-rectangle missions, fewer hints. " +
+            "Press 1 or 2 to choose.",
         );
       };
       LevelScene.prototype.makeCard = function (
@@ -853,12 +1036,12 @@
         this.reduceMotion = reducedMotion();
         this.chosenLevel = (data && data.level) || 1;
         this.score = 0;
-        this.lives = START_LIVES;
         this.streak = 0;
         this.solved = 0;
         this.target = WIN_TARGET;
         this.problem = null;
         this.locked = false;
+        this.phase = "plot"; // "plot" (place the marker) or "answer" (choices)
         // Coordinate range + pixel step for the chosen level.
         if (this.chosenLevel === 1) {
           this.range = { xmin: 0, xmax: R1MAX, ymin: 0, ymax: R1MAX };
@@ -900,7 +1083,8 @@
           ...hudStyle,
           color: C.goodS,
         });
-        this.livesText = this.add.text(16, 36, "❤❤❤", {
+        // Calm, no-fail HUD: the heart line is static (mistakes never drain it).
+        this.livesText = this.add.text(16, 36, "❤ No-fail practice", {
           ...hudStyle,
           color: "#ff8f8f",
         });
@@ -950,22 +1134,36 @@
         // Guide lines (Level-1 scaffold): marker → each axis.
         this.guideG = this.add.graphics().setDepth(8);
 
-        // Given point P (reflect missions): a star marker + label, hidden by default.
-        this.givenStar = this.add
-          .star(0, 0, 5, 7, 15, C.accent)
-          .setStrokeStyle(2, 0xffffff, 0.85)
-          .setDepth(12)
-          .setVisible(false);
-        this.givenLabel = this.add
-          .text(0, 0, "", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "14px",
-            fontStyle: "bold",
-            color: C.accentS,
-          })
-          .setOrigin(0.5)
-          .setDepth(12)
-          .setVisible(false);
+        // Highlighted counting segment + rectangle outline (distance/rectangle
+        // missions, part 2). Labels live in segLabels so they can be cleared.
+        this.segG = this.add.graphics().setDepth(9);
+        this.segLabels = [];
+
+        // Given points (reflect / distance / rectangle missions): a small pool
+        // of star markers + labels, shown per problem as needed.
+        this.givenStars = [];
+        this.givenLabels = [];
+        for (let i = 0; i < 3; i++) {
+          this.givenStars.push(
+            this.add
+              .star(0, 0, 5, 7, 15, C.accent)
+              .setStrokeStyle(2, 0xffffff, 0.85)
+              .setDepth(12)
+              .setVisible(false),
+          );
+          this.givenLabels.push(
+            this.add
+              .text(0, 0, "", {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "14px",
+                fontStyle: "bold",
+                color: C.accentS,
+              })
+              .setOrigin(0.5)
+              .setDepth(12)
+              .setVisible(false),
+          );
+        }
 
         // Ghost (shows the correct cell after a miss), hidden by default.
         this.ghost = this.add
@@ -1001,7 +1199,7 @@
           .rectangle(cx, 538, 240, 46, 0x2f8f5a)
           .setStrokeStyle(3, 0xffffff, 0.8)
           .setInteractive({ useHandCursor: true });
-        this.add
+        this.lockLabel = this.add
           .text(cx, 538, "LOCK IN ✓", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "22px",
@@ -1027,7 +1225,7 @@
           })
           .setOrigin(0.5);
 
-        // ── Particles + red flash ──
+        // ── Particles ──
         this.burst = this.add
           .particles(0, 0, "spark", {
             speed: { min: 80, max: 240 },
@@ -1039,9 +1237,6 @@
             tint: [0xffcd4d, 0x4fd18b, 0xffffff],
           })
           .setDepth(30);
-        this.redFlash = this.add
-          .rectangle(cx, H / 2, W, H, 0xff3333, 0)
-          .setDepth(40);
 
         // ── Input ──
         // Click a grid cell to place the marker (recoverable; Lock In confirms).
@@ -1073,6 +1268,10 @@
         this.input.keyboard.on("keydown-S", () => nudge(0, -1));
         this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
         this.input.keyboard.on("keydown-SPACE", () => this.lockIn());
+        // Number keys 1–4 answer the distance / side-length choice buttons.
+        ["ONE", "TWO", "THREE", "FOUR"].forEach((k, i) =>
+          this.input.keyboard.on("keydown-" + k, () => this.pickChoice(i)),
+        );
 
         this.events.once("shutdown", () => JUICE.audio.musicStop());
         JUICE.audio.musicStart();
@@ -1200,33 +1399,55 @@
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
-        this.missedOnce = false; // one free retry before a miss costs a life
+        this.phase = "plot";
+        this.missedOnce = false; // one free retry before the answer is shown
+        this.answerMissedOnce = false;
+        this.answerDone = false;
         this.problem = makeProblem(this.chosenLevel);
         const p = this.problem;
-        this.bannerLabel.setText(
-          p.kind === "reflect" ? "Reflect" : "Plot a point",
-        );
+        const KIND_LABEL = {
+          plot: "Plot a point",
+          reflect: "Reflect",
+          distance: "Distance mission (6.NS.8)",
+          polygon: "Rectangle mission (6.G.3)",
+        };
+        this.bannerLabel.setText(KIND_LABEL[p.kind] || "Plot a point");
         this.bannerText.setText(p.prompt);
         this.ghost.setVisible(false);
+        this.hideChoices();
+        this.clearSegment();
+        this.lockBtn.setVisible(true);
+        this.lockLabel.setVisible(true);
         this.markerRing.setStrokeStyle(3, C.gold);
         this.markerDot.setFillStyle(C.gold);
 
-        // Show / hide the given point P for reflect missions.
-        if (p.given) {
-          const gx = this.sx(p.given.x),
-            gy = this.sy(p.given.y);
-          this.givenStar.setPosition(gx, gy).setVisible(true);
-          this.givenLabel
-            .setText("P (" + fmt(p.given.x) + ", " + fmt(p.given.y) + ")")
+        // Show / hide the given point(s) for reflect / distance / rectangle.
+        const givens = p.givens || (p.given ? [p.given] : []);
+        const nameFor =
+          p.kind === "reflect" ? "P " : p.kind === "distance" ? "A " : "";
+        this.givenStars.forEach((s, i) => {
+          const gp = givens[i];
+          if (!gp) {
+            s.setVisible(false);
+            this.givenLabels[i].setVisible(false);
+            return;
+          }
+          const gx = this.sx(gp.x),
+            gy = this.sy(gp.y);
+          s.setPosition(gx, gy).setVisible(true);
+          this.givenLabels[i]
+            .setText(nameFor + "(" + fmt(gp.x) + ", " + fmt(gp.y) + ")")
             .setPosition(gx, gy - 22)
             .setVisible(true);
-        } else {
-          this.givenStar.setVisible(false);
-          this.givenLabel.setVisible(false);
-        }
+        });
 
-        // Hint line: Level 1 always shows it; Level 2 keeps it minimal.
-        if (this.chosenLevel === 1) {
+        // Hint line: Level 1 always shows it; the new mission types keep a
+        // light scaffold on Level 2 too (they are two-part questions).
+        const showHint =
+          this.chosenLevel === 1 ||
+          p.kind === "distance" ||
+          p.kind === "polygon";
+        if (showHint && p.hint) {
           this.hintText.setText(p.hint);
         } else {
           this.hintText.setText(
@@ -1236,26 +1457,30 @@
 
         // Reset marker to the origin each round.
         this.setMarker(0, 0);
+        const srGivens =
+          p.kind === "polygon"
+            ? " Corners shown: " +
+              givens
+                .map((g) => "(" + fmt(g.x) + ", " + fmt(g.y) + ")")
+                .join(", ") +
+              "."
+            : "";
         srSay(
           p.prompt +
-            ". Move your marker to the spot, then lock it in. " +
-            (this.chosenLevel === 1 ? p.hint : ""),
+            srGivens +
+            " Move your marker to the spot, then lock it in. " +
+            (showHint && p.hint ? p.hint : ""),
         );
       };
 
       GameScene.prototype.lockIn = function () {
-        if (this.locked || !this.problem) return;
+        if (this.locked || !this.problem || this.phase !== "plot") return;
         this.locked = true;
         const p = this.problem;
         const correct = this.mx === p.tx && this.my === p.ty;
         if (correct) {
           SFX.good();
           JUICE.audio.correct(this.streak);
-          this.solved++;
-          this.streak++;
-          const bonus = Math.min(this.streak, 5) * 5;
-          const gained = 20 + bonus;
-          this.score += gained;
           this.markerRing.setStrokeStyle(3, C.good);
           this.markerDot.setFillStyle(C.good);
           const px = this.sx(this.mx),
@@ -1263,6 +1488,21 @@
           this.burst.setPosition(px, py);
           this.burst.explode(16);
           JUICE.burst(this, px, py, [0x4fd18b, 0x5ad1ff, 0xffffff], 16);
+          if (p.answer) {
+            // Two-part mission: the point is placed — now ask for the length.
+            this.score += 10;
+            JUICE.floatText(this, px, py - 28, "+10", C.goodS, 26);
+            this.feedback.setText("Placed! " + p.why).setAlpha(1);
+            this.updateHUD();
+            srSay("Correct placement. " + p.why);
+            this.time.delayedCall(700, () => this.beginAnswerPhase());
+            return;
+          }
+          this.solved++;
+          this.streak++;
+          const bonus = Math.min(this.streak, 5) * 5;
+          const gained = 20 + bonus;
+          this.score += gained;
           JUICE.shake(this, 0.004 + Math.min(this.streak, 5) * 0.001);
           JUICE.floatText(this, px, py - 28, "+" + gained, C.goodS, 30);
           const xp = 8 + Math.min(this.streak, 5) * 2;
@@ -1272,14 +1512,13 @@
           srSay("Correct. " + p.why);
           this.afterAttempt();
         } else if (!this.missedOnce) {
-          // First miss on this problem: give a calm retry — no life lost, the
-          // answer is NOT revealed, so the student can rethink and try again.
+          // First miss on this problem: give a calm retry — the answer is NOT
+          // revealed, so the student can rethink and try again.
           this.missedOnce = true;
           this.locked = false;
           this.streak = 0;
           SFX.bad();
           JUICE.audio.wrong();
-          JUICE.shake(this, 0.006);
           const tip =
             p.hint ||
             "Check the sign and size of each coordinate, then Lock In.";
@@ -1289,14 +1528,11 @@
         } else {
           SFX.bad();
           JUICE.audio.wrong();
-          JUICE.shake(this, 0.009);
           this.streak = 0;
-          this.lives--;
-          this.flashRed();
           this.markerRing.setStrokeStyle(3, C.bad);
           this.markerDot.setFillStyle(C.bad);
           this.feedback.setText("Not quite — " + p.why).setAlpha(1);
-          JUICE.floatText(this, W - 44, 30, "−1 ❤", "#ff8f8f", 22);
+          this.updateHUD();
           srSay("Not quite. " + p.why);
           // Teach: light up the correct cell, glide the marker to it, continue.
           const tx = this.sx(p.tx),
@@ -1309,57 +1545,230 @@
             duration: this.reduceMotion ? 0 : 600,
             onComplete: () => {
               this.guideG.clear();
-              this.afterAttempt();
+              if (p.answer) {
+                // Still ask the length question — the points are now visible.
+                this.time.delayedCall(700, () => this.beginAnswerPhase());
+              } else {
+                this.afterAttempt();
+              }
             },
           });
         }
       };
 
-      GameScene.prototype.afterAttempt = function () {
-        this.updateHUD();
-        if (this.lives <= 0) {
-          // No-fail practice: refill hearts and keep going. Mistakes teach;
-          // they never end the game (calm, self-paced classroom mode).
-          this.lives = 3;
-          this.updateHUD();
+      // ── Part 2 of distance / rectangle missions: answer the length ──
+      GameScene.prototype.beginAnswerPhase = function () {
+        const p = this.problem;
+        if (!p || !p.answer || this.phase === "answer") return;
+        this.phase = "answer";
+        this.locked = true; // marker stays put; choice buttons take over
+        this.feedback.setAlpha(0);
+        this.ghost.setVisible(false);
+        if (p.outline) this.drawRectOutline(p.outline);
+        if (p.segment) this.drawCountedSegment(p.segment);
+        this.bannerLabel.setText(
+          p.kind === "distance"
+            ? "Distance mission (6.NS.8) · Part 2"
+            : "Rectangle mission (6.G.3) · Part 2",
+        );
+        this.bannerText.setText(p.answer.question);
+        this.hintText.setText(
+          "Count the dots along the gold line, then tap a number (or press 1–4).",
+        );
+        this.lockBtn.setVisible(false);
+        this.lockLabel.setVisible(false);
+        this.showChoices(p.answer.choices);
+        srSay(
+          p.answer.question +
+            " Choices: " +
+            p.answer.choices.join(", ") +
+            ". Press 1, 2, 3, or 4, or tap a number button.",
+        );
+      };
+
+      // Gold segment with a dot + count at every unit step, so students can
+      // COUNT the distance calmly (matches the |a − b| explanation).
+      GameScene.prototype.drawCountedSegment = function (seg) {
+        this.segG.lineStyle(4, C.gold, 0.9);
+        this.segG.lineBetween(
+          this.sx(seg.x1),
+          this.sy(seg.y1),
+          this.sx(seg.x2),
+          this.sy(seg.y2),
+        );
+        const steps = Math.abs(seg.x2 - seg.x1) + Math.abs(seg.y2 - seg.y1);
+        if (!steps) return;
+        const dx = (seg.x2 - seg.x1) / steps,
+          dy = (seg.y2 - seg.y1) / steps;
+        for (let i = 1; i <= steps; i++) {
+          const px = this.sx(seg.x1 + dx * i),
+            py = this.sy(seg.y1 + dy * i);
+          this.segG.fillStyle(C.gold, 1);
+          this.segG.fillCircle(px, py, 4);
+          this.segLabels.push(
+            this.add
+              .text(
+                px + (dy !== 0 ? 14 : 0),
+                py - (dx !== 0 ? 14 : 0),
+                String(i),
+                {
+                  fontFamily: "Segoe UI, sans-serif",
+                  fontSize: "12px",
+                  fontStyle: "bold",
+                  color: C.goldS,
+                },
+              )
+              .setOrigin(0.5)
+              .setDepth(9),
+          );
         }
+      };
+
+      GameScene.prototype.drawRectOutline = function (o) {
+        const left = Math.min(this.sx(o.x1), this.sx(o.x2)),
+          top = Math.min(this.sy(o.y1), this.sy(o.y2));
+        this.segG.lineStyle(2, C.accent, 0.8);
+        this.segG.strokeRect(
+          left,
+          top,
+          Math.abs(this.sx(o.x2) - this.sx(o.x1)),
+          Math.abs(this.sy(o.y2) - this.sy(o.y1)),
+        );
+      };
+
+      GameScene.prototype.clearSegment = function () {
+        this.segG.clear();
+        this.segLabels.forEach((t) => t.destroy());
+        this.segLabels = [];
+      };
+
+      // Big tappable answer buttons (keyboard: 1–4). Calm, self-paced.
+      GameScene.prototype.showChoices = function (values) {
+        this.hideChoices();
+        this.choiceVals = values.slice();
+        this.choiceObjs = [];
+        this.choiceRects = [];
+        const n = this.choiceVals.length,
+          bw = 96,
+          gap = 16;
+        const x0 = W / 2 - (n * bw + (n - 1) * gap) / 2 + bw / 2;
+        this.choiceVals.forEach((v, i) => {
+          const bx = x0 + i * (bw + gap);
+          const btn = this.add
+            .rectangle(bx, 538, bw, 50, 0x1a3a5c)
+            .setStrokeStyle(2, C.accent, 0.8)
+            .setInteractive({ useHandCursor: true });
+          const txt = this.add
+            .text(bx, 538, String(v), {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "24px",
+              fontStyle: "bold",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          const keyTag = this.add
+            .text(bx - bw / 2 + 10, 522, String(i + 1), {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "11px",
+              color: C.sub,
+            })
+            .setOrigin(0.5);
+          btn.on("pointerover", () => btn.setFillStyle(0x25507a));
+          btn.on("pointerout", () => btn.setFillStyle(0x1a3a5c));
+          btn.on("pointerdown", () => this.pickChoice(i));
+          this.choiceObjs.push(btn, txt, keyTag);
+          this.choiceRects.push(btn);
+        });
+      };
+
+      GameScene.prototype.hideChoices = function () {
+        (this.choiceObjs || []).forEach((o) => o.destroy());
+        this.choiceObjs = [];
+        this.choiceRects = [];
+        this.choiceVals = null;
+      };
+
+      GameScene.prototype.pickChoice = function (i) {
+        if (this.phase !== "answer" || !this.choiceVals || this.answerDone)
+          return;
+        if (i < 0 || i >= this.choiceVals.length) return;
+        const ans = this.problem.answer;
+        if (this.choiceVals[i] === ans.correct) {
+          this.answerDone = true;
+          SFX.good();
+          JUICE.audio.correct(this.streak);
+          this.solved++;
+          this.streak++;
+          const gained = 20 + Math.min(this.streak, 5) * 5;
+          this.score += gained;
+          this.choiceRects[i].setFillStyle(0x2f8f5a);
+          JUICE.floatText(this, W / 2, 470, "+" + gained, C.goodS, 30);
+          JUICE.award(8 + Math.min(this.streak, 5) * 2, "u9-coordinate-quest");
+          if (this.streak >= 2) JUICE.confetti(this, 1);
+          this.feedback.setText("Correct! " + ans.why).setAlpha(1);
+          srSay("Correct. " + ans.why);
+          this.afterAttempt();
+        } else if (!this.answerMissedOnce) {
+          // Calm retry: no reveal, just a nudge back to counting.
+          this.answerMissedOnce = true;
+          this.streak = 0;
+          SFX.bad();
+          JUICE.audio.wrong();
+          this.feedback
+            .setText(
+              "Not quite — count the dots along the gold line, then pick again.",
+            )
+            .setAlpha(1);
+          this.updateHUD();
+          srSay(
+            "Not quite. Count the unit steps along the highlighted line, then pick again.",
+          );
+        } else {
+          this.answerDone = true;
+          this.streak = 0;
+          SFX.bad();
+          JUICE.audio.wrong();
+          const ci = this.choiceVals.indexOf(ans.correct);
+          if (ci >= 0) this.choiceRects[ci].setFillStyle(0x2f8f5a);
+          this.feedback
+            .setText("The answer is " + ans.correct + ". " + ans.why)
+            .setAlpha(1);
+          this.updateHUD();
+          srSay("The answer is " + ans.correct + ". " + ans.why);
+          this.afterAttempt();
+        }
+      };
+
+      GameScene.prototype.afterAttempt = function () {
+        // No-fail practice: mistakes teach; they never end the game.
+        this.updateHUD();
         if (this.solved >= this.target) {
-          this.endGame(true);
+          this.endGame();
           return;
         }
-        this.time.delayedCall(950, () => {
+        this.time.delayedCall(this.phase === "answer" ? 1400 : 950, () => {
           this.feedback.setAlpha(0);
           this.newProblem();
         });
       };
 
-      GameScene.prototype.flashRed = function () {
-        if (this.reduceMotion) return;
-        this.redFlash.setAlpha(0.35);
-        this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 350 });
-      };
-
       GameScene.prototype.updateHUD = function () {
         this.scoreText.setText("Score: " + this.score);
-        this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
         this.streakText.setText("Streak: " + this.streak);
         this.levelText.setText("Level " + this.chosenLevel);
         this.progressText.setText(this.solved + " / " + this.target);
       };
 
-      GameScene.prototype.endGame = function (won) {
+      GameScene.prototype.endGame = function () {
         this.locked = true;
-        if (won) {
-          JUICE.confetti(this, 2);
-          JUICE.award(40, "u9-coordinate-quest-complete");
-        }
+        JUICE.confetti(this, 2);
+        JUICE.award(40, "u9-coordinate-quest-complete");
         this.time.delayedCall(500, () => {
           this.scene.start("Result", {
             score: this.score,
             solved: this.solved,
             target: this.target,
             level: this.chosenLevel,
-            won: won,
           });
         });
       };
@@ -1390,10 +1799,10 @@
         }
 
         this.add
-          .text(cx, 108, d.won ? "QUEST COMPLETE!" : "OUT OF LIVES", {
+          .text(cx, 108, "QUEST COMPLETE!", {
             fontFamily: "Impact, sans-serif",
             fontSize: "48px",
-            color: d.won ? C.goodS : "#ff8f8f",
+            color: C.goodS,
             stroke: "#061018",
             strokeThickness: 5,
           })
@@ -1440,9 +1849,8 @@
           })
           .setOrigin(0.5);
 
-        if (d.won) SFX.win();
-        else SFX.lose();
-        if (d.won) JUICE.audio.fanfare();
+        SFX.win();
+        JUICE.audio.fanfare();
 
         // EduPulse reporting (guarded; safe no-op without bridge).
         try {
@@ -1451,17 +1859,12 @@
               activityTitle: document.title,
               score: d.score,
               stars: stars,
-              standard: "6.NS.6",
+              standard: "6.NS.6 / 6.NS.8 / 6.G.3",
               problemsAttempted: d.solved,
             });
         } catch (e) {}
         srSay(
-          (d.won ? "Quest complete! " : "Game over. ") +
-            "Final score " +
-            d.score +
-            ", " +
-            stars +
-            " stars.",
+          "Quest complete! Final score " + d.score + ", " + stars + " stars.",
         );
 
         const btn = this.add
@@ -1526,7 +1929,8 @@
             "Coordinate Quest Star Plotter math game. Read the ordered pair, " +
               "then click a grid cell or use the arrow keys to move your marker " +
               "to the exact spot, and press Lock In, Enter, or Space to place " +
-              "the star.",
+              "the star. Distance and rectangle missions then ask a length " +
+              "question: tap a number button or press 1, 2, 3, or 4 to answer.",
           );
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
@@ -1552,25 +1956,32 @@
     <!-- Student Passport (meta-progression pill; boots itself, award() guarded) -->
     <script src="/assets/lesson-passport.js" defer></script>
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <script src="/assets/game-access.js" defer></script>
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <script src="/assets/game-hint-ladder.js" defer></script>
-  <script>
-      window.addEventListener('DOMContentLoaded', function () {
-        if (window.NeftHintLadder) window.NeftHintLadder.watch({
-          sourceSelector: "#cq-sr",
-          standard: "6.NS.6",
-          staticHints: ["Which number is the x (across) and which is the y (up/down)? Check the signs too.","Move along the x-axis first, then up or down for y; negatives go left/down.","Set it up: find the tick mark for each coordinate, then place the point yourself."]
-        });
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#cq-sr",
+            standard: "6.NS.6 / 6.NS.8 / 6.G.3",
+            staticHints: [
+              "Which number is the x (across) and which is the y (up/down)? Check the signs too.",
+              "Move along the x-axis first, then up or down for y; negatives go left/down.",
+              "Distance on a straight line: count the unit steps, or subtract and take the absolute value. Across zero, add the two distances to the axis.",
+              "A rectangle's missing corner shares its x with one shown corner and its y with another.",
+              "Set it up: find the tick mark for each coordinate, then place the point yourself.",
+            ],
+          });
       });
     </script>
-  <!-- ghl-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
-  <script src="/assets/canvas-bridge.js" defer></script>
-  <!-- canvas-bridge-injected:end -->
-</body>
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+  </body>
 </html>
