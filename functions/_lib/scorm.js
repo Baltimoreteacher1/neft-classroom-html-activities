@@ -189,7 +189,11 @@ export function buildScormFiles({ target, title, codes }, site = SITE_DEFAULT) {
   const t = xmlEsc(
     title && String(title).trim() ? title.trim() : `Activity ${id}`,
   );
-  const launchQuery = codes ? "?embed=1" : "?lms=scorm&embed=1";
+  // Joined with "&" when the target already carries a query (?unit=3 etc.) —
+  // mirrors tools/scorm/build-scorm.mjs so both builders stay in lockstep.
+  const launchQuery =
+    (lessonUrl.includes("?") ? "&" : "?") +
+    (codes ? "embed=1" : "lms=scorm&embed=1");
   return {
     id,
     lessonUrl,

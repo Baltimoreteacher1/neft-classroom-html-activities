@@ -33,19 +33,40 @@ const build = (target, title, id) =>
 const manifest = JSON.parse(
   readFileSync(resolve(repoRoot, "data/curriculum-manifest.json"), "utf8"),
 );
-const lessons = (
+const allLessons = (
   Array.isArray(manifest.lessons) ? manifest.lessons : Object.values(manifest.lessons)
-).filter((l) => l && l.id && !l.flagship);
+).filter((l) => l && l.id);
+// Flagship lessons are included too — a teacher who assigns the flagship
+// version needs its package just like the standard one.
+const lessons = allLessons;
 
 // --- activities (catalog) ---
 const catalog = JSON.parse(readFileSync(resolve(__dirname, "activity-catalog.json"), "utf8"));
+// Dedupe on the package slug (id || path) — query variants of one path (e.g.
+// practice-arcade ?unit=1..10) are DISTINCT packages and must all survive.
 const seen = new Set();
-const activities = catalog.activities.filter((a) => (seen.has(a.path) ? false : seen.add(a.path)));
+const activities = catalog.activities.filter((a) => {
+  const key = a.id || a.path;
+  return seen.has(key) ? false : seen.add(key);
+});
+
+// Resolve a catalog entry to its launch URL + collision-proof package slug.
+// path may be a directory (gets a trailing /) or a direct .html file; query
+// (e.g. ?unit=3) is appended and REQUIRES an explicit id so slugs stay unique.
+const resolveEntry = (a) => {
+  const isFile = /\.html?$/i.test(a.path);
+  const clean = a.path.replace(/\/+$/, "");
+  const url = `${SITE}/${clean}${isFile ? "" : "/"}${a.query || ""}`;
+  const slug =
+    a.id || clean.replace(/\.html?$/i, "").replace(/\//g, "-");
+  return { url, slug };
+};
 
 const index = {
   generatedNote: "Rebuild with: npm run canvas-scorm:build",
   lessons: [],
   activities: [],
+  homework: [],
 };
 let ok = 0,
   fail = 0;
@@ -56,7 +77,13 @@ for (const l of lessons) {
     build(l.id, title);
     const file = `neft-lesson-${l.id}.zip`;
     copyFileSync(resolve(scormOut, file), resolve(pkgDir, file));
-    index.lessons.push({ id: l.id, unit: l.unit ?? null, title, file });
+    index.lessons.push({
+      id: l.id,
+      unit: l.unit ?? null,
+      title,
+      file,
+      flagship: !!l.flagship,
+    });
     ok++;
   } catch (e) {
     fail++;
@@ -64,12 +91,28 @@ for (const l of lessons) {
   }
 }
 
-for (const a of activities) {
-  // Collision-proof slug so nested paths (math/unit-1/projects) get unique
-  // package names instead of all colliding on the last segment ("projects").
-  const slug = a.path.replace(/\/+$/, "").replace(/\//g, "-");
+// --- interactive homework (one per lesson that ships homework.html) ---
+for (const l of allLessons) {
+  const rel = `lessons/${l.id}/homework.html`;
+  if (!existsSync(resolve(repoRoot, rel))) continue;
+  const slug = `homework-${l.id}`;
+  const title = `Homework ${l.id}: ${l.title || l.id}`;
   try {
-    build(`${SITE}/${a.path}/`, a.title, slug);
+    build(`${SITE}/${rel}`, title, slug);
+    const file = `neft-lesson-${slug}.zip`;
+    copyFileSync(resolve(scormOut, file), resolve(pkgDir, file));
+    index.homework.push({ id: l.id, unit: l.unit ?? null, title, file });
+    ok++;
+  } catch (e) {
+    fail++;
+    console.log(`  ✗ homework ${l.id}: ${String(e.stderr || e.message).slice(0, 120)}`);
+  }
+}
+
+for (const a of activities) {
+  const { url, slug } = resolveEntry(a);
+  try {
+    build(url, a.title, slug);
     const file = `neft-lesson-${slug}.zip`;
     copyFileSync(resolve(scormOut, file), resolve(pkgDir, file));
     index.activities.push({ id: slug, title: a.title, grade: a.grade || "completion", file });
@@ -80,13 +123,14 @@ for (const a of activities) {
   }
 }
 
-index.lessons.sort(
-  (a, b) => a.unit - b.unit || a.id.localeCompare(b.id, undefined, { numeric: true }),
-);
+const byUnit = (a, b) =>
+  a.unit - b.unit || a.id.localeCompare(b.id, undefined, { numeric: true });
+index.lessons.sort(byUnit);
+index.homework.sort(byUnit);
 writeFileSync(resolve(pageDir, "packages-index.json"), JSON.stringify(index, null, 2) + "\n");
 
 console.log(
-  `Canvas SCORM page build: ${ok} packages (${index.lessons.length} lessons + ${index.activities.length} activities), ${fail} failed`,
+  `Canvas SCORM page build: ${ok} packages (${index.lessons.length} lessons + ${index.activities.length} activities + ${index.homework.length} homework), ${fail} failed`,
 );
 console.log(`  → teacher-tools/canvas-scorm/packages/ + packages-index.json`);
 if (fail) console.log(`  (${fail} item(s) skipped — non-fatal)`);

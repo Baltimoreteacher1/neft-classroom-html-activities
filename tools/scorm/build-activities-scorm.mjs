@@ -20,23 +20,31 @@ const outRoot = resolve(repoRoot, "scorm-packages");
 const SITE = (process.env.NEFT_SITE || "https://eduwonderlab.com").replace(/\/$/, "");
 
 const catalog = JSON.parse(readFileSync(resolve(__dirname, "activity-catalog.json"), "utf8"));
-// Dedupe by path, preserve first title.
+// Dedupe on the package slug (id || path) — query variants of one path are
+// distinct packages. path may be a dir (index.html) or a direct .html file.
 const seen = new Set();
 const activities = catalog.activities.filter((a) => {
-  if (seen.has(a.path)) return false;
-  seen.add(a.path);
-  return true;
+  const key = a.id || a.path;
+  return seen.has(key) ? false : seen.add(key);
 });
+const resolveEntry = (a) => {
+  const isFile = /\.html?$/i.test(a.path);
+  const clean = a.path.replace(/\/+$/, "");
+  return {
+    url: `${SITE}/${clean}${isFile ? "" : "/"}${a.query || ""}`,
+    slug: a.id || clean.replace(/\.html?$/i, "").replace(/\//g, "-"),
+  };
+};
 
 mkdirSync(outRoot, { recursive: true });
 const ok = [];
 const failed = [];
 for (const a of activities) {
-  // build-scorm.mjs appends ?lms=scorm&embed=1 itself — pass the plain URL.
-  const url = `${SITE}/${a.path}/`;
+  // build-scorm.mjs appends the SCORM launch params itself — pass the plain URL.
+  const { url, slug } = resolveEntry(a);
   try {
-    execFileSync("node", [buildOne, url, a.title], { stdio: "pipe" });
-    ok.push(a);
+    execFileSync("node", [buildOne, url, a.title, slug], { stdio: "pipe" });
+    ok.push({ ...a, slug });
   } catch (e) {
     failed.push({ path: a.path, err: String(e.stderr || e.message || e).slice(0, 200) });
   }
@@ -52,7 +60,7 @@ const lines = [
   "re-upload.",
   "",
 ];
-for (const a of ok) lines.push(`- [ ] \`neft-lesson-${a.path}.zip\` — ${a.title}`);
+for (const a of ok) lines.push(`- [ ] \`neft-lesson-${a.slug}.zip\` — ${a.title}`);
 writeFileSync(resolve(outRoot, "ACTIVITIES-CHECKLIST.md"), lines.join("\n"));
 
 console.log("SCORM build (activities)");

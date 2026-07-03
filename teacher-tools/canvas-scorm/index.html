@@ -122,13 +122,38 @@
       }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
+    <!-- canvas-console-banner:begin -->
+    <div
+      style="
+        background: #12355b;
+        color: #fff;
+        padding: 8px 16px;
+        font:
+          600 0.85rem system-ui,
+          sans-serif;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      "
+    >
+      <span>🎛 Part of the</span
+      ><a
+        href="/teacher-tools/canvas-console/"
+        style="color: #f2a93b; text-decoration: underline"
+        >Canvas Console</a
+      ><span>— every Canvas tool in one place.</span>
+    </div>
+    <!-- canvas-console-banner:end -->
+
     <h1>🎯 Canvas Auto-Grade</h1>
     <p class="sub">
-      Every lesson and activity, packaged for Canvas. Upload a package once and
+      Every lesson (including flagship), homework page, unit game, practice
+      arcade, and pre/post test — packaged for Canvas. Upload a package once and
       it grades itself when a student finishes — no completion codes, no IT.
     </p>
 
@@ -164,6 +189,9 @@
       >
         Activities <span class="count" id="c-activities"></span>
       </button>
+      <button class="tab" role="tab" aria-selected="false" data-view="homework">
+        Homework <span class="count" id="c-homework"></span>
+      </button>
     </div>
 
     <div id="list" class="loading">Loading packages…</div>
@@ -182,6 +210,10 @@
           "(" + data.lessons.length + ")";
         document.getElementById("c-activities").textContent =
           "(" + data.activities.length + ")";
+        // Older cached index files predate the homework section.
+        data.homework = data.homework || [];
+        document.getElementById("c-homework").textContent =
+          "(" + data.homework.length + ")";
 
         var esc = function (s) {
           return String(s).replace(/[&<>"]/g, function (c) {
@@ -212,7 +244,11 @@
             .forEach(function (u) {
               html += '<div class="unit-h">Unit ' + esc(u) + "</div>";
               byUnit[u].forEach(function (l) {
-                html += dl(l.file, l.title, "Lesson " + l.id);
+                html += dl(
+                  l.file,
+                  l.title,
+                  "Lesson " + l.id + (l.flagship ? " · flagship" : ""),
+                );
               });
             });
           list.className = "";
@@ -231,7 +267,32 @@
           list.innerHTML = html;
         }
 
-        var views = { lessons: renderLessons, activities: renderActivities };
+        function renderHomework() {
+          var byUnit = {};
+          data.homework.forEach(function (h) {
+            (byUnit[h.unit] = byUnit[h.unit] || []).push(h);
+          });
+          var html = "";
+          Object.keys(byUnit)
+            .sort(function (a, b) {
+              return a - b;
+            })
+            .forEach(function (u) {
+              html += '<div class="unit-h">Unit ' + esc(u) + "</div>";
+              byUnit[u].forEach(function (h) {
+                html += dl(h.file, h.title, "completion credit");
+              });
+            });
+          list.className = "";
+          list.innerHTML =
+            html || '<p class="loading">No homework packages.</p>';
+        }
+
+        var views = {
+          lessons: renderLessons,
+          activities: renderActivities,
+          homework: renderHomework,
+        };
         document.querySelectorAll(".tab").forEach(function (t) {
           t.addEventListener("click", function () {
             document.querySelectorAll(".tab").forEach(function (x) {

@@ -27,8 +27,28 @@ const REVERT = args.has("--revert");
 const catalog = JSON.parse(
   readFileSync(resolve(ROOT, "tools/scorm/activity-catalog.json"), "utf8"),
 );
-// Dedupe by path; one index.html per activity.
-const paths = [...new Set(catalog.activities.map((a) => a.path))];
+// A catalog path is either a directory (inject its index.html) or a direct
+// .html file (pre/post tests). Query-string variants (practice-arcade?unit=N)
+// share one file, so dedupe on the resolved file, not the raw entry.
+const toFile = (p) =>
+  /\.html?$/i.test(p) ? p : `${p.replace(/\/+$/, "")}/index.html`;
+const files = new Set(catalog.activities.map((a) => toFile(a.path)));
+// injectOnly: pages that need the bridge but ship no package of their own
+// (e.g. the -level-0/1/2 variants of pre/post tests a student may be moved to).
+for (const p of catalog.injectOnly || []) files.add(toFile(p));
+// Interactive homework pages are derived from the curriculum manifest — every
+// lesson's homework.html is assignable in Canvas, so each gets the bridge.
+const manifest = JSON.parse(
+  readFileSync(resolve(ROOT, "data/curriculum-manifest.json"), "utf8"),
+);
+const manifestLessons = Array.isArray(manifest.lessons)
+  ? manifest.lessons
+  : Object.values(manifest.lessons);
+for (const l of manifestLessons) {
+  if (l && l.id && existsSync(join(ROOT, "lessons", l.id, "homework.html")))
+    files.add(`lessons/${l.id}/homework.html`);
+}
+const paths = [...files];
 
 const report = {
   scanned: 0,
@@ -47,7 +67,7 @@ function revert(html) {
 }
 
 for (const p of paths) {
-  const file = join(ROOT, p, "index.html");
+  const file = join(ROOT, p); // paths are already resolved to concrete .html files
   if (!existsSync(file)) {
     report.missing.push(p);
     continue;

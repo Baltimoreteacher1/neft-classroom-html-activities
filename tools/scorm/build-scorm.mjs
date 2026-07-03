@@ -27,7 +27,9 @@ const CODES_MODE = rawArgs.some((a) => a === "--codes" || a === "--sheets");
 const [target, titleArg, idArg] = rawArgs.filter((a) => !a.startsWith("--"));
 // ?lms=scorm relays the score to Canvas AND hides the save-code prompt. Codes
 // mode drops it so students enter a save code → roster/grades land in the Sheets.
-const LAUNCH_QUERY = CODES_MODE ? "?embed=1" : "?lms=scorm&embed=1";
+// Joined with "&" (not "?") when the target URL already carries a query string
+// (e.g. practice-arcade/?unit=3) so we never emit a second "?".
+const LAUNCH_PARAMS = CODES_MODE ? "embed=1" : "lms=scorm&embed=1";
 
 if (!target) {
   console.error(
@@ -63,6 +65,7 @@ const lessonId =
     ? target
     : new URL(lessonUrl).pathname.split("/").filter(Boolean).pop() || "activity");
 const title = titleArg || (isLessonId ? `Lesson ${target}` : lessonId);
+const LAUNCH_QUERY = (lessonUrl.includes("?") ? "&" : "?") + LAUNCH_PARAMS;
 
 const tplDir = resolve(__dirname, "template");
 const fill = (s) =>

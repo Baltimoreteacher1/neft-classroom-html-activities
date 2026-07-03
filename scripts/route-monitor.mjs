@@ -102,8 +102,13 @@ function classify(route, forbidMarkers, r) {
       level: "fail",
       note: `right status, WRONG/stale content — missing: ${miss.map((m) => `"${m}"`).join(", ")}`,
     };
-  if (!/html/i.test(r.contentType))
+  if (!/html/i.test(r.contentType)) {
+    // Non-HTML endpoints (e.g. the /api/scorm zip) declare their expected
+    // content-type in the manifest so a correct response isn't a nightly warn.
+    if (route.contentTypeOk && new RegExp(route.contentTypeOk, "i").test(r.contentType))
+      return { level: "ok", note: `200, content verified (${r.contentType})` };
     return { level: "warn", note: `markers ok but content-type is "${r.contentType || "?"}"` };
+  }
   return { level: "ok", note: "200, content verified" };
 }
 
