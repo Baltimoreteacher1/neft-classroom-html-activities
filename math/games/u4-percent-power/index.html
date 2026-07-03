@@ -123,15 +123,15 @@
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <link rel="stylesheet" href="/assets/game-access.css">
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <link rel="stylesheet" href="/assets/game-hint-ladder.css">
-  <!-- ghl-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated spark-field (behind the Phaser canvas). -->
     <div id="pp-bg" data-parallax aria-hidden="true">
@@ -215,9 +215,10 @@
       // Drag the handle (or nudge ±5% with ← → / A D) to SHADE a percent, then
       // press Lock In. Two live readouts — the percent and the part it equals —
       // update as you move, so the percent↔part relationship is the action.
-      // A wrong shade (wrong math) costs a life and the marker animates to the
-      // correct spot to teach. Difficulty rises by level: more framings (find
-      // the part → decimal → find the percent → sale price).
+      // A wrong shade (wrong math) never costs anything — this is no-fail
+      // practice — the marker animates to the correct spot to teach.
+      // Difficulty rises by level: more framings (find the part → decimal →
+      // find the percent → sale price).
 
       const W = 820,
         H = 600;
@@ -290,11 +291,6 @@
         win() {
           [523, 659, 784, 1047, 1318].forEach((f, i) =>
             setTimeout(() => this.play("sine", f, 0.25, 0.25), i * 110),
-          );
-        },
-        lose() {
-          [400, 330, 260, 200].forEach((f, i) =>
-            setTimeout(() => this.play("sawtooth", f, 0.3, 0.14), i * 170),
           );
         },
       };
@@ -713,7 +709,6 @@
           window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
         this.score = 0;
-        this.lives = 3;
         this.streak = 0;
         this.level = 1;
         this.solved = 0; // problems answered correctly
@@ -737,7 +732,8 @@
           ...hudStyle,
           color: "#8fd6a0",
         });
-        this.livesText = this.add.text(16, 36, "❤❤❤", {
+        // Decorative hearts: this is no-fail practice, so they never decrease.
+        this.add.text(16, 36, "❤❤❤", {
           ...hudStyle,
           color: "#ff8f8f",
         });
@@ -880,7 +876,7 @@
           )
           .setOrigin(0.5);
 
-        // Particles + red flash (reused from the shell)
+        // Particles (reused from the shell)
         this.burst = this.add
           .particles(0, 0, "spark", {
             speed: { min: 80, max: 240 },
@@ -892,9 +888,6 @@
             tint: [0xffd24a, 0x8fd6a0, 0xffffff],
           })
           .setDepth(20);
-        this.redFlash = this.add
-          .rectangle(W / 2, H / 2, W, H, 0xff3333, 0)
-          .setDepth(30);
 
         // Input: drag on the bar band; arrows / A·D nudge ±5%; Enter/Space lock.
         const inBand = (y) => Math.abs(y - BAR_Y) <= BAR_H / 2 + 40;
@@ -983,9 +976,8 @@
         } else {
           SFX.bad();
           this.streak = 0;
-          this.lives--;
-          this.flashRed();
-          this.fill.setFillStyle(0xc23b3b);
+          // Calm amber "check again" tint (no red flash, no lost hearts).
+          this.fill.setFillStyle(0xd4952a);
           this.feedback.setText("Not quite — " + this.problem.why).setAlpha(1);
           srSay("Not quite. " + this.problem.why);
           // Teach: show the correct shade and glide the handle to it, then go on.
@@ -1021,14 +1013,8 @@
           this.flash(W / 2, 200, "LEVEL " + this.level + "!", "#ffd24a");
         }
         this.updateHUD();
-        if (this.lives <= 0) {
-          // No-fail practice: refill hearts and keep going. Mistakes teach;
-          // they never end the game (calm, self-paced classroom mode).
-          this.lives = 3;
-          this.updateHUD();
-        }
         if (this.solved >= this.target) {
-          this.endGame(true);
+          this.endGame();
           return;
         }
         this.time.delayedCall(900, () => {
@@ -1058,32 +1044,22 @@
         });
       };
 
-      GameScene.prototype.flashRed = function () {
-        if (this.reduceMotion) return;
-        this.redFlash.setAlpha(0.35);
-        this.tweens.add({
-          targets: this.redFlash,
-          alpha: 0,
-          duration: 350,
-        });
-      };
-
       GameScene.prototype.updateHUD = function () {
         this.scoreText.setText("Score: " + this.score);
-        this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
         this.streakText.setText("Streak: " + this.streak);
         this.levelText.setText("Level " + this.level);
         this.progressText.setText(this.solved + " / " + this.target);
       };
 
-      GameScene.prototype.endGame = function (won) {
+      // Reached only by solving all target problems (mistakes never end the
+      // game), so the Result scene is always a win.
+      GameScene.prototype.endGame = function () {
         this.locked = true;
         this.time.delayedCall(500, () => {
           this.scene.start("Result", {
             score: this.score,
             solved: this.solved,
             target: this.target,
-            won: won,
           });
         });
       };
@@ -1101,9 +1077,8 @@
         const d = this.data2;
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, 0x122413);
-        // Stars from accuracy/score.
-        const stars =
-          d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        // The game only ends when every problem is solved — always a full win.
+        const stars = 3;
         // High score
         let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
         if (d.score > hs) {
@@ -1114,10 +1089,10 @@
         }
 
         this.add
-          .text(cx, 110, d.won ? "CITY OF SAVINGS!" : "OUT OF LIVES", {
+          .text(cx, 110, "CITY OF SAVINGS!", {
             fontFamily: "Impact, sans-serif",
             fontSize: "48px",
-            color: d.won ? "#8fd6a0" : "#ff8f8f",
+            color: "#8fd6a0",
             stroke: "#0a160b",
             strokeThickness: 5,
           })
@@ -1160,8 +1135,7 @@
           })
           .setOrigin(0.5);
 
-        if (d.won) SFX.win();
-        else SFX.lose();
+        SFX.win();
 
         // EduPulse reporting (guarded; safe no-op without bridge).
         try {
@@ -1174,14 +1148,7 @@
               problemsAttempted: d.solved,
             });
         } catch (e) {}
-        srSay(
-          (d.won ? "You won! " : "Game over. ") +
-            "Final score " +
-            d.score +
-            ", " +
-            stars +
-            " stars.",
-        );
+        srSay("You won! Final score " + d.score + ", " + stars + " stars.");
 
         const btn = this.add
           .rectangle(cx, 400, 220, 54, 0x2d874b)
@@ -1252,25 +1219,30 @@
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <script src="/assets/game-access.js" defer></script>
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <script src="/assets/game-hint-ladder.js" defer></script>
-  <script>
-      window.addEventListener('DOMContentLoaded', function () {
-        if (window.NeftHintLadder) window.NeftHintLadder.watch({
-          sourceSelector: "#pp-sr",
-          standard: "6.RP.3c",
-          staticHints: ["Percent means 'per 100'. What is the whole (the 100%) in this problem?","Set up part/whole = percent/100, and see which piece is missing.","Set it up: write the proportion (or find 1% first), then solve for the missing part."]
-        });
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#pp-sr",
+            standard: "6.RP.3c",
+            staticHints: [
+              "Percent means 'per 100'. What is the whole (the 100%) in this problem?",
+              "Set up part/whole = percent/100, and see which piece is missing.",
+              "Set it up: write the proportion (or find 1% first), then solve for the missing part.",
+            ],
+          });
       });
     </script>
-  <!-- ghl-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
-  <script src="/assets/canvas-bridge.js" defer></script>
-  <!-- canvas-bridge-injected:end -->
-</body>
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+  </body>
 </html>

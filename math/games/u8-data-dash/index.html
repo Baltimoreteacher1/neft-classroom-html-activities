@@ -7,7 +7,7 @@
     <title>Data Dash — Line Plot Builder | Neft Teacher</title>
     <meta
       name="description"
-      content="A build-it math game for Grade 6 lessons 8.1-8.7 (6.SP.5): add and remove dots on a line plot to make the MEAN, MEDIAN, or RANGE hit a target — the statistic updates live as you build, then lock in your answer."
+      content="A build-it math game for Grade 6 lessons 8.1-8.7 (6.SP.5): add dots to a line plot to make the MEAN, MEDIAN, RANGE, or MAD hit a target — locked given dots seed each round, the statistic updates live as you build, then lock in your answer."
     />
     <style>
       * {
@@ -121,15 +121,15 @@
     <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
     <script src="/assets/game-juice.js"></script>
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <link rel="stylesheet" href="/assets/game-access.css">
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <link rel="stylesheet" href="/assets/game-hint-ladder.css">
-  <!-- ghl-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated chart-bar field (behind the Phaser canvas). -->
     <div id="dd-bg" data-parallax aria-hidden="true">
@@ -190,11 +190,16 @@
       //  Two levels (never "ESOL"):
       //    Level 1 (support)    — target the MEAN only; small axis 1–6; the live
       //                           mean is shown big with a "sum ÷ count" hint.
-      //    Level 2 (enrichment) — target MEAN, MEDIAN, or RANGE; wider axis
-      //                           1–10; fewer hints; sometimes preset dots to
-      //                           adjust. Every target is reachable with whole
-      //                           numbers (mean/median target a value on the
-      //                           axis; range target ≤ axis span).
+      //    Level 2 (enrichment) — target MEAN, MEDIAN, RANGE, or MAD (6.SP.5c);
+      //                           wider axis 1–10; fewer hints.
+      //
+      //  Anti-cheese: every round seeds 2-3 IMMOVABLE gold "given" dots chosen
+      //  so the target is NOT already met and CANNOT be met by one added dot —
+      //  the student must reason about how added values pull the statistic.
+      //  Rounds are built answer-first (an answer plot is constructed, then its
+      //  statistic becomes the target), so every target is reachable exactly
+      //  with whole-number dots inside the dot cap: means divide exactly and
+      //  MAD targets are integers or halves.
       // ════════════════════════════════════════════════════════════════════
       const W = 820,
         H = 600;
@@ -299,11 +304,6 @@
             setTimeout(() => this.play("sine", f, 0.25, 0.25), i * 110),
           );
         },
-        lose() {
-          [400, 330, 260, 200].forEach((f, i) =>
-            setTimeout(() => this.play("sawtooth", f, 0.3, 0.14), i * 170),
-          );
-        },
       };
 
       // ── helpers ──
@@ -327,8 +327,8 @@
       }
 
       // ── Chosen difficulty (set on the Level Select screen) ──
-      // 1 = support (mean only, axis 1–6), 2 = enrichment (mean/median/range,
-      // axis 1–10). Drives the generator and how much scaffolding shows.
+      // 1 = support (mean only, axis 1–6), 2 = enrichment (mean/median/range/
+      // MAD, axis 1–10). Drives the generator and how much scaffolding shows.
       let ddLevel = 1;
 
       // ── Stat definitions (label + teaching hint) ──
@@ -345,43 +345,106 @@
           name: "RANGE",
           hint: "Range = greatest value − least value.",
         },
+        mad: {
+          name: "MAD",
+          hint: "MAD = the mean of each dot's distance from the mean. Find the mean first, then average the distances.",
+        },
       };
 
-      // ── Problem generator ────────────────────────────────────────────────
-      // Returns { stat, target, presets } for the current axis [lo..hi]. Every
-      // target is reachable with whole-number data:
-      //   mean   → target is a value on the axis (place that many dots at it)
-      //   median → target is a value on the axis (the middle dot can be it)
-      //   range  → target ≤ (hi − lo) (place a dot at lo and at lo+target)
-      function genProblem(level, lo, hi) {
+      // ── Round generator ─────────────────────────────────────────────────
+      // Returns { stat, target, given } (plus targetMad for MAD rounds) for the
+      // axis [lo..hi]. Anti-cheese design:
+      //   • Every round seeds 2-3 IMMOVABLE "given" dots (gold; removeDot
+      //     refuses them), chosen so the target is NOT already met and CANNOT
+      //     be met by adding any single dot anywhere on the axis — one dot on
+      //     the target value never wins.
+      //   • Rounds are built answer-first: a full answer plot (given + 2-6
+      //     added dots, total ≤ DOT_CAP) is constructed and ITS statistic is
+      //     the target, so every target is exactly reachable with whole-number
+      //     dots. Mean targets are integers (the sum divides exactly); MAD
+      //     rounds pair an integer mean with a MAD that is an integer or a
+      //     half (exact in the game's arithmetic).
+      function targetMet(counts, lo, problem) {
+        if (problem.stat === "mad") {
+          const m = statOf(counts, lo, "mean");
+          const dv = statOf(counts, lo, "mad");
+          return (
+            m !== null &&
+            dv !== null &&
+            Math.abs(m - problem.target) < 1e-9 &&
+            Math.abs(dv - problem.targetMad) < 1e-9
+          );
+        }
+        const cur = statOf(counts, lo, problem.stat);
+        return cur !== null && Math.abs(cur - problem.target) < 1e-9;
+      }
+
+      // True when the given dots alone already meet the target, or when ANY
+      // single added dot would meet it (either way the round is cheesable).
+      function oneDotCheesable(problem, lo) {
+        const g = problem.given;
+        if (targetMet(g, lo, problem)) return true;
+        for (let i = 0; i < g.length; i++) {
+          g[i]++;
+          const met = targetMet(g, lo, problem);
+          g[i]--;
+          if (met) return true;
+        }
+        return false;
+      }
+
+      function genRound(level, lo, hi) {
         const span = hi - lo;
-        let stat;
-        if (level === 1) stat = "mean";
-        else stat = ["mean", "median", "range"][randInt(0, 2)];
-
-        let target;
-        if (stat === "range") {
-          target = randInt(2, Math.min(span, level === 1 ? 3 : 7));
-        } else if (stat === "mean") {
-          // Keep off the very edges so building feels like a real task.
-          target = randInt(lo + 1, hi - 1);
-        } else {
-          target = randInt(lo, hi);
-        }
-
-        // Level 2: ~40% of rounds start with a few preset dots to adjust.
-        let presets = null;
-        if (level === 2 && Math.random() < 0.4) {
-          presets = new Array(span + 1).fill(0);
-          const k = randInt(2, 3);
-          for (let i = 0; i < k; i++) presets[randInt(0, span)]++;
-          // Make sure the preset doesn't already satisfy the target (otherwise
-          // there is nothing to build); if it does, nudge it off.
-          if (statOf(presets, lo, stat) === target) {
-            presets[span] = (presets[span] || 0) + 1;
+        const statPool =
+          level === 1 ? ["mean"] : ["mean", "median", "range", "mad"];
+        for (let tries = 0; tries < 400; tries++) {
+          const stat = statPool[randInt(0, statPool.length - 1)];
+          const gN = randInt(2, 3);
+          const given = new Array(span + 1).fill(0);
+          if (stat === "range") {
+            // Range resists a one-dot fix only when the given dots sit near
+            // the middle and the target spread is wider than either side of
+            // the axis reaches from them.
+            const mid = Math.round(span / 2);
+            for (let i = 0; i < gN; i++)
+              given[randInt(Math.max(0, mid - 1), Math.min(span, mid + 1))]++;
+          } else {
+            for (let i = 0; i < gN; i++) given[randInt(0, span)]++;
           }
+          // Answer plot = given + k added dots (the reachability witness).
+          const k = randInt(2, Math.min(6, DOT_CAP - gN));
+          const full = given.slice();
+          for (let i = 0; i < k; i++) full[randInt(0, span)]++;
+
+          let problem = null;
+          if (stat === "mad") {
+            const m = statOf(full, lo, "mean");
+            const dv = statOf(full, lo, "mad");
+            // Integer mean; MAD an integer or half, and a real spread.
+            if (!Number.isInteger(m)) continue;
+            if (dv < 1 || !Number.isInteger(dv * 2)) continue;
+            problem = { stat, target: m, targetMad: dv, given };
+          } else {
+            const t = statOf(full, lo, stat);
+            if (t === null || !Number.isInteger(t)) continue;
+            if (stat === "range" && t < 2) continue;
+            // Keep the mean off the axis edges so building is a real task.
+            if (stat === "mean" && (t <= lo || t >= hi)) continue;
+            problem = { stat, target: t, given };
+          }
+          if (oneDotCheesable(problem, lo)) continue;
+          return problem;
         }
-        return { stat, target, presets };
+        // Deterministic hand-verified fallback (never one-dot cheesable):
+        //   Level 1 (axis 1–6):  given {2,2}, target mean 4. Given mean is 2;
+        //     one added dot would need (4+v)/3 = 4 → v = 8, off the axis.
+        //     Reachable: add {6,6} → {2,2,6,6}, mean 16 ÷ 4 = 4.
+        //   Level 2 (axis 1–10): given {2,2}, target mean 7. One added dot
+        //     would need v = 17, off the axis. Reachable: add {9,9,10,10} →
+        //     {2,2,9,9,10,10}, mean 42 ÷ 6 = 7.
+        const given = new Array(span + 1).fill(0);
+        given[1] = 2;
+        return { stat: "mean", target: level === 1 ? lo + 3 : lo + 6, given };
       }
 
       // Compute a statistic from a counts-per-column array. Returns null when
@@ -401,6 +464,11 @@
           return n % 2
             ? vals[(n - 1) / 2]
             : (vals[n / 2 - 1] + vals[n / 2]) / 2;
+        }
+        if (stat === "mad") {
+          // Mean absolute deviation: mean of |x − mean| (6.SP.5c).
+          const mean = vals.reduce((a, b) => a + b, 0) / n;
+          return vals.reduce((a, b) => a + Math.abs(b - mean), 0) / n;
         }
         // range
         if (n < 2) return null;
@@ -455,6 +523,11 @@
           term: "Range",
           emoji: "↔️",
           def: "How spread out the data is: the biggest value minus the smallest.",
+        },
+        {
+          term: "MAD",
+          emoji: "📏",
+          def: "Short for Mean Absolute Deviation: the average distance of the data from the mean. Small MAD = data close together.",
         },
       ];
 
@@ -788,7 +861,7 @@
           0xffcd4d,
           "LEVEL 2",
           "Enrichment",
-          "Mean, MEDIAN, or RANGE\nNumbers 1–10\nFewer hints\nSometimes preset dots",
+          "Mean, MEDIAN, RANGE, or MAD\nNumbers 1–10\nFewer hints\nGiven dots to build around",
           2,
         );
 
@@ -805,7 +878,7 @@
         this.input.keyboard.on("keydown-NUMPAD_TWO", chooseL2);
         srSay(
           "Choose your level. Level 1 support targets the mean. Level 2 " +
-            "enrichment targets the mean, median, or range.",
+            "enrichment targets the mean, median, range, or MAD.",
         );
       };
 
@@ -832,6 +905,8 @@
         this.hi = ddLevel === 1 ? 6 : 10;
         this.n = this.hi - this.lo + 1;
         this.counts = new Array(this.n).fill(0);
+        // Immovable "given" dots per column (gold; seeded by each round).
+        this.given = new Array(this.n).fill(0);
         this.cursor = Math.floor(this.n / 2);
         this.problem = null;
       };
@@ -856,6 +931,13 @@
         this.livesText = this.add.text(16, 36, "❤❤❤", {
           ...hud,
           color: "#ff8f8f",
+        });
+        // Legend for the immovable seed dots (see redrawDots).
+        this.add.text(16, 62, "Gold dots = given data (locked)", {
+          fontFamily: "Segoe UI, sans-serif",
+          fontSize: "13px",
+          fontStyle: "bold",
+          color: "#ffcd4d",
         });
         this.streakText = this.add
           .text(W - 16, 12, "Streak: 0", { ...hud, color: "#ffcd4d" })
@@ -1059,8 +1141,17 @@
 
       GameScene.prototype.removeDot = function (i) {
         if (this.locked) return;
-        if (this.counts[i] <= 0) {
+        if (this.counts[i] <= this.given[i]) {
+          // Only the immovable given dots (or nothing) are left here.
           SFX.miss();
+          if (this.counts[i] > 0) {
+            this.flash(this.colX(i), AX_Y - 60, "Given dots stay!", "#ffcd4d");
+            srSay(
+              "The dots left at " +
+                (this.lo + i) +
+                " are given dots. They cannot be removed.",
+            );
+          }
           return;
         }
         this.cursor = i;
@@ -1079,92 +1170,130 @@
           const x = this.colX(i);
           for (let j = 0; j < this.counts[i]; j++) {
             const y = AX_Y - 22 - j * DOT_GAP;
+            // Bottom given[i] dots are the immovable seed data: gold with a
+            // white ring; tapping one explains instead of removing.
+            const isGiven = j < this.given[i];
             const d = this.add
-              .circle(x, y, DOT_R, C.dot)
-              .setStrokeStyle(2, 0x0a1c2c)
+              .circle(x, y, DOT_R, isGiven ? C.gold : C.dot)
+              .setStrokeStyle(isGiven ? 3 : 2, isGiven ? 0xffffff : 0x0a1c2c)
               .setDepth(6)
               .setInteractive({ useHandCursor: true });
-            d.on("pointerdown", () => this.removeDot(i));
+            if (isGiven) d.on("pointerdown", () => this.givenDotTapped(i));
+            else d.on("pointerdown", () => this.removeDot(i));
             this.dotLayer.add(d);
-            if (!this.reduceMotion && j === this.counts[i] - 1)
+            if (!this.reduceMotion && !isGiven && j === this.counts[i] - 1)
               JUICE.tilePop(this, d);
           }
         }
       };
 
+      GameScene.prototype.givenDotTapped = function (i) {
+        if (this.locked) return;
+        SFX.miss();
+        this.flash(this.colX(i), AX_Y - 60, "Given dot — it stays!", "#ffcd4d");
+        srSay(
+          "The dot at " +
+            (this.lo + i) +
+            " is a given dot. It cannot be removed.",
+        );
+      };
+
       GameScene.prototype.updateReadout = function () {
         const stat = this.problem.stat;
-        const cur = statOf(this.counts, this.lo, stat);
         const tot = this.totalDots();
-        this.bigReadout.setText(
-          STAT[stat].name + " = " + (cur === null ? "—" : numStr(cur)),
-        );
+        if (stat === "mad") {
+          // MAD rounds target a mean AND a MAD — show both live.
+          const mean = statOf(this.counts, this.lo, "mean");
+          const mad = statOf(this.counts, this.lo, "mad");
+          this.bigReadout.setText(
+            "MEAN = " +
+              (mean === null ? "—" : numStr(mean)) +
+              "  ·  MAD = " +
+              (mad === null ? "—" : numStr(mad)),
+          );
+        } else {
+          const cur = statOf(this.counts, this.lo, stat);
+          this.bigReadout.setText(
+            STAT[stat].name + " = " + (cur === null ? "—" : numStr(cur)),
+          );
+        }
         if (ddLevel === 1) {
           // Support: count + the formula hint always visible.
           this.subReadout.setText("Dots: " + tot + "   ·   " + STAT.mean.hint);
         } else {
-          // Enrichment: show all three live stats, fewer words.
+          // Enrichment: show all four live stats, fewer words.
           const mean = statOf(this.counts, this.lo, "mean");
           const med = statOf(this.counts, this.lo, "median");
           const rng = statOf(this.counts, this.lo, "range");
+          const mad = statOf(this.counts, this.lo, "mad");
           this.subReadout.setText(
             "Dots: " +
               tot +
-              "   ·   Mean " +
+              "  ·  Mean " +
               (mean === null ? "—" : numStr(mean)) +
               "  ·  Median " +
               (med === null ? "—" : numStr(med)) +
               "  ·  Range " +
-              (rng === null ? "—" : numStr(rng)),
+              (rng === null ? "—" : numStr(rng)) +
+              "  ·  MAD " +
+              (mad === null ? "—" : numStr(mad)),
           );
         }
       };
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
-        this.problem = genProblem(ddLevel, this.lo, this.hi);
-        this.counts = this.problem.presets
-          ? this.problem.presets.slice()
-          : new Array(this.n).fill(0);
+        this.problem = genRound(ddLevel, this.lo, this.hi);
+        // The immovable given dots seed the build; the student adds on top.
+        this.given = this.problem.given.slice();
+        this.counts = this.problem.given.slice();
         this.cursor = Math.floor(this.n / 2);
         this.sel.x = this.colX(this.cursor);
         this.feedback.setAlpha(0);
         this.subReadout.setVisible(true);
-        const s = STAT[this.problem.stat];
-        this.bannerText.setText(
-          "Add dots so the " + s.name + " is " + this.problem.target + ".",
-        );
-        this.redrawDots();
-        this.updateReadout();
-        srSay(
-          "Build the line plot so the " +
-            s.name +
+        let goal;
+        if (this.problem.stat === "mad") {
+          goal =
+            "Add dots so the MEAN is " +
+            this.problem.target +
+            " and the MAD is " +
+            numStr(this.problem.targetMad) +
+            ".";
+        } else {
+          goal =
+            "Add dots so the " +
+            STAT[this.problem.stat].name +
             " is " +
             this.problem.target +
-            ". Tap a column to add a dot, then lock it in.",
+            ".";
+        }
+        this.bannerText.setText(goal);
+        this.redrawDots();
+        this.updateReadout();
+        const givenN = this.given.reduce((a, b) => a + b, 0);
+        srSay(
+          goal +
+            " " +
+            givenN +
+            " gold given dots are already on the plot and cannot be removed. " +
+            "Tap a column to add a dot, then lock it in.",
         );
       };
 
       GameScene.prototype.lockIn = function () {
         if (this.locked) return;
         const stat = this.problem.stat;
-        const tot = this.totalDots();
-        const need = stat === "range" ? 2 : 1;
-        if (tot < need) {
-          // Not an error — just guide; no life lost.
+        const givenN = this.given.reduce((a, b) => a + b, 0);
+        if (this.totalDots() <= givenN) {
+          // Not an error — just guide; the given dots alone never meet the
+          // target (guaranteed by the generator), so ask for a build first.
           SFX.miss();
-          this.flash(
-            W / 2,
-            250,
-            need === 2 ? "Add at least 2 dots" : "Add a dot first",
-            "#ffcd4d",
-          );
+          this.flash(W / 2, 250, "Add a dot first", "#ffcd4d");
           return;
         }
         this.locked = true;
         const cur = statOf(this.counts, this.lo, stat);
-        const correct =
-          cur !== null && Math.abs(cur - this.problem.target) < 1e-9;
+        const correct = targetMet(this.counts, this.lo, this.problem);
 
         if (correct) {
           SFX.good();
@@ -1216,6 +1345,18 @@
         }
         if (stat === "median")
           return "The middle value is " + numStr(cur) + ".";
+        if (stat === "mad") {
+          const mean = statOf(this.counts, this.lo, "mean");
+          return (
+            "Mean = " +
+            numStr(mean) +
+            " and MAD = " +
+            numStr(cur) +
+            " — on average each dot sits " +
+            numStr(cur) +
+            " from the mean."
+          );
+        }
         return "Greatest − least = " + numStr(cur) + ".";
       };
       GameScene.prototype.failWhy = function (stat, cur) {
@@ -1246,6 +1387,21 @@
             STAT.median.hint
           );
         }
+        if (stat === "mad") {
+          const mean = statOf(this.counts, this.lo, "mean");
+          return (
+            "Your mean is " +
+            numStr(mean) +
+            " and your MAD is " +
+            numStr(cur) +
+            ", but you need mean " +
+            t +
+            " and MAD " +
+            numStr(this.problem.targetMad) +
+            ". " +
+            STAT.mad.hint
+          );
+        }
         return (
           "Your range is " +
           numStr(cur) +
@@ -1265,7 +1421,7 @@
           this.updateHUD();
         }
         if (this.solved >= this.target) {
-          this.endGame(true);
+          this.endGame();
           return;
         }
         this.time.delayedCall(correct ? 1100 : 1700, () => {
@@ -1308,14 +1464,15 @@
         this.progressText.setText(this.solved + " / " + this.target);
       };
 
-      GameScene.prototype.endGame = function (won) {
+      // Reached only by finishing all target plots (mistakes never end the
+      // game), so the Result scene is always a win.
+      GameScene.prototype.endGame = function () {
         this.locked = true;
         this.time.delayedCall(600, () => {
           this.scene.start("Result", {
             score: this.score,
             solved: this.solved,
             target: this.target,
-            won: won,
           });
         });
       };
@@ -1333,8 +1490,8 @@
         const d = this.data2;
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, C.bg);
-        const stars =
-          d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        // The game only ends when every plot is built — always a full win.
+        const stars = 3;
         let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
         if (d.score > hs) {
           hs = d.score;
@@ -1344,10 +1501,10 @@
         }
 
         this.add
-          .text(cx, 110, d.won ? "DATA MASTER!" : "OUT OF LIVES", {
+          .text(cx, 110, "DATA MASTER!", {
             fontFamily: "Impact, sans-serif",
             fontSize: "48px",
-            color: d.won ? "#4fd18b" : "#ff8f8f",
+            color: "#4fd18b",
             stroke: "#04121c",
             strokeThickness: 5,
           })
@@ -1385,11 +1542,9 @@
           })
           .setOrigin(0.5);
 
-        if (d.won) {
-          SFX.win();
-          JUICE.audio.fanfare();
-          JUICE.confetti(this, 1);
-        } else SFX.lose();
+        SFX.win();
+        JUICE.audio.fanfare();
+        JUICE.confetti(this, 1);
 
         // EduPulse reporting (guarded; safe no-op without bridge).
         try {
@@ -1402,14 +1557,7 @@
               problemsAttempted: d.solved,
             });
         } catch (e) {}
-        srSay(
-          (d.won ? "You won! " : "Game over. ") +
-            "Final score " +
-            d.score +
-            ", " +
-            stars +
-            " stars.",
-        );
+        srSay("You won! Final score " + d.score + ", " + stars + " stars.");
 
         const btn = this.add
           .rectangle(cx, 400, 220, 54, 0x148f86)
@@ -1455,8 +1603,9 @@
             "aria-label",
             "Data Dash Line Plot Builder math game. Read the goal, then build a " +
               "line plot: tap a value column (or use the arrow keys) to add a dot, " +
-              "tap a dot to remove it, until the mean, median, or range matches the " +
-              "target, then press Lock In.",
+              "tap a dot to remove it, until the mean, median, range, or MAD " +
+              "matches the target. Gold given dots are locked in place. Then " +
+              "press Lock In.",
           );
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
@@ -1480,25 +1629,30 @@
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <script src="/assets/game-access.js" defer></script>
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <script src="/assets/game-hint-ladder.js" defer></script>
-  <script>
-      window.addEventListener('DOMContentLoaded', function () {
-        if (window.NeftHintLadder) window.NeftHintLadder.watch({
-          sourceSelector: "#dd-sr",
-          standard: "6.SP.5",
-          staticHints: ["Is the question about the center of the data (mean/median) or the spread (range)?","Recall the measure: mean = add then divide; median = middle of the ordered list; range = max − min.","Set it up: order the data or set up the sum, then do the final step yourself."]
-        });
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#dd-sr",
+            standard: "6.SP.5",
+            staticHints: [
+              "Is the target about the center of the data (mean/median), the spread (range), or the typical distance from the mean (MAD)?",
+              "Recall the measure: mean = add then divide; median = middle of the ordered list; range = max − min; MAD = the mean of each dot's distance from the mean.",
+              "Start from the locked gold given dots: decide whether your added dots must pull the statistic up or down, then check the live readout.",
+            ],
+          });
       });
     </script>
-  <!-- ghl-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
-  <script src="/assets/canvas-bridge.js" defer></script>
-  <!-- canvas-bridge-injected:end -->
-</body>
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+  </body>
 </html>

@@ -127,9 +127,9 @@
     <!-- Socratic hint ladder (opt-in; reuses /api/tutor, falls back to static hints) -->
     <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated spark-field (behind the Phaser canvas). -->
     <div id="rr-bg" data-parallax aria-hidden="true">
@@ -214,8 +214,9 @@
       // to whole ticks) on one line so the live pair STAYS in the ratio. A live
       // readout shows the current ratio c:d and whether it is equivalent
       // (a·d = b·c by cross-multiply). Lock In commits. A wrong lock-in (wrong
-      // MATH, not slow reflexes) costs a life and the knob glides to the correct
-      // spot — a green ghost marker shows the right value — so it teaches.
+      // MATH, not slow reflexes) never costs anything — this is no-fail
+      // practice — the knob glides to the correct spot and a green ghost
+      // marker shows the right value, so it teaches.
       // Levels raise the framing: fill ONE missing value → build a FULL
       // equivalent ratio (both knobs) → find the UNIT RATE (per 1). Whole,
       // friendly numbers only; every value lives on a 0–10 line.
@@ -292,11 +293,6 @@
         win() {
           [523, 659, 784, 1047, 1318].forEach((f, i) =>
             setTimeout(() => this.play("sine", f, 0.25, 0.25), i * 110),
-          );
-        },
-        lose() {
-          [400, 330, 260, 200].forEach((f, i) =>
-            setTimeout(() => this.play("sawtooth", f, 0.3, 0.14), i * 170),
           );
         },
       };
@@ -1000,7 +996,6 @@
         );
         this.track = rrTrack; // 1 = support, 2 = enrichment
         this.score = 0;
-        this.lives = 3;
         this.streak = 0;
         this.level = 1;
         this.solved = 0; // problems answered correctly
@@ -1026,7 +1021,8 @@
           ...hudStyle,
           color: "#8ff0d8",
         });
-        this.livesText = this.add.text(16, 36, "❤❤❤", {
+        // Decorative hearts: this is no-fail practice, so they never decrease.
+        this.add.text(16, 36, "❤❤❤", {
           ...hudStyle,
           color: "#ff8f8f",
         });
@@ -1037,7 +1033,7 @@
           .text(
             W - 16,
             36,
-            this.track === 1 ? "Lvl 1 · Support" : "Lvl 2 · Enrich",
+            this.track === 1 ? "Level 1 · Support" : "Level 2 · Enrich",
             { ...hudStyle, color: this.track === 1 ? "#8ff0d8" : "#ffd24a" },
           )
           .setOrigin(1, 0);
@@ -1160,7 +1156,7 @@
             .setOrigin(0.5);
         }
 
-        // Particles + red flash (reused from the shell)
+        // Particles (reused from the shell)
         this.burst = this.add
           .particles(0, 0, "spark", {
             speed: { min: 80, max: 240 },
@@ -1172,9 +1168,6 @@
             tint: [0xffd24a, 0x8ff0d8, 0xffffff],
           })
           .setDepth(20);
-        this.redFlash = this.add
-          .rectangle(W / 2, H / 2, W, H, 0xff3333, 0)
-          .setDepth(30);
 
         // Input: drag a knob on whichever line you grab; arrows / A·D nudge ±1;
         // up/down (W·S) switch the active line; Enter/Space lock in.
@@ -1451,8 +1444,6 @@
           JUICE.audio.wrong();
           JUICE.shake(this, 0.008);
           this.streak = 0;
-          this.lives--;
-          this.flashRed();
           this.feedback.setText("Not quite — " + p.why).setAlpha(1);
           srSay("Not quite. " + p.why);
           // Teach: show the correct value(s) with green ghost markers and glide
@@ -1526,14 +1517,8 @@
           this.flash(W / 2, 180, "STAGE " + this.level + "!", "#ffd24a");
         }
         this.updateHUD();
-        if (this.lives <= 0) {
-          // No-fail practice: refill hearts and keep going. Mistakes teach;
-          // they never end the game (calm, self-paced classroom mode).
-          this.lives = 3;
-          this.updateHUD();
-        }
         if (this.solved >= this.target) {
-          this.endGame(true);
+          this.endGame();
           return;
         }
         this.time.delayedCall(950, () => {
@@ -1563,34 +1548,24 @@
         });
       };
 
-      GameScene.prototype.flashRed = function () {
-        if (this.reduceMotion) return;
-        this.redFlash.setAlpha(0.35);
-        this.tweens.add({
-          targets: this.redFlash,
-          alpha: 0,
-          duration: 350,
-        });
-      };
-
       GameScene.prototype.updateHUD = function () {
         this.scoreText.setText("Score: " + this.score);
-        this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
         this.streakText.setText("Streak: " + this.streak);
         this.levelText.setText(
-          this.track === 1 ? "Lvl 1 · Support" : "Lvl 2 · Enrich",
+          this.track === 1 ? "Level 1 · Support" : "Level 2 · Enrich",
         );
         this.progressText.setText(this.solved + " / " + this.target);
       };
 
-      GameScene.prototype.endGame = function (won) {
+      // Reached only by solving all target problems (mistakes never end the
+      // game), so the Result scene is always a win.
+      GameScene.prototype.endGame = function () {
         this.locked = true;
         this.time.delayedCall(500, () => {
           this.scene.start("Result", {
             score: this.score,
             solved: this.solved,
             target: this.target,
-            won: won,
           });
         });
       };
@@ -1608,9 +1583,8 @@
         const d = this.data2;
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, 0x0c2a2e);
-        // Stars from accuracy/score.
-        const stars =
-          d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        // The game only ends when every problem is solved — always a full win.
+        const stars = 3;
         // High score
         let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
         if (d.score > hs) {
@@ -1621,10 +1595,10 @@
         }
 
         this.add
-          .text(cx, 110, d.won ? "RATIOS MASTERED!" : "OUT OF LIVES", {
+          .text(cx, 110, "RATIOS MASTERED!", {
             fontFamily: "Impact, sans-serif",
             fontSize: "48px",
-            color: d.won ? "#8ff0d8" : "#ff8f8f",
+            color: "#8ff0d8",
             stroke: "#06201f",
             strokeThickness: 5,
           })
@@ -1667,11 +1641,9 @@
           })
           .setOrigin(0.5);
 
-        if (d.won) {
-          SFX.win();
-          JUICE.audio.fanfare();
-          JUICE.confetti(this, 2);
-        } else SFX.lose();
+        SFX.win();
+        JUICE.audio.fanfare();
+        JUICE.confetti(this, 2);
 
         // EduPulse reporting (guarded; safe no-op without bridge).
         try {
@@ -1684,14 +1656,7 @@
               problemsAttempted: d.solved,
             });
         } catch (e) {}
-        srSay(
-          (d.won ? "You won! " : "Game over. ") +
-            "Final score " +
-            d.score +
-            ", " +
-            stars +
-            " stars.",
-        );
+        srSay("You won! Final score " + d.score + ", " + stars + " stars.");
 
         const btn = this.add
           .rectangle(cx, 400, 220, 54, 0x1f8a6b)
@@ -1770,11 +1735,11 @@
     <script src="/assets/game-access.js" defer></script>
     <!-- gacc-injected:end -->
     <script src="/assets/game-hint-ladder.js" defer></script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
-  <script src="/assets/canvas-bridge.js" defer></script>
-  <!-- canvas-bridge-injected:end -->
-</body>
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+  </body>
 </html>
