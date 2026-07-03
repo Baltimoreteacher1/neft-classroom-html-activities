@@ -44,7 +44,19 @@
   function unlock() {
     document.documentElement.classList.add("akg-unlocked");
     var card = document.querySelector(".akg-card");
-    if (card) card.remove();
+    if (card) {
+      card.remove();
+      // The focused PIN field just vanished — land keyboard/SR focus on the
+      // page heading so unlocking does not strand focus on <body>.
+      try {
+        var target = document.querySelector("h1, main, .page-shell, .wrap");
+        if (target) {
+          if (!target.hasAttribute("tabindex"))
+            target.setAttribute("tabindex", "-1");
+          target.focus({ preventScroll: true });
+        }
+      } catch (e) {}
+    }
   }
 
   function buildCard() {

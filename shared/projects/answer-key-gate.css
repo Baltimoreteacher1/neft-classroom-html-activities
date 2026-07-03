@@ -15,6 +15,38 @@ html:not(.akg-unlocked) body > :not(.akg-card):not(script):not(link) {
   visibility: hidden;
 }
 
+/* Fallback: if the gate script never builds its card (JS disabled or the
+   script failed to load), surface an explanation instead of a blank page.
+   The 1.5s animation delay keeps it invisible during normal gate startup;
+   :has() browsers hide it the instant the card exists. Fail-closed either
+   way — solution content stays hidden. */
+html:not(.akg-unlocked) body:not(:has(.akg-card))::before {
+  content: "This teacher answer key needs JavaScript to unlock. If this message does not go away, please reload the page or check with Mr. Neft.";
+  display: block;
+  visibility: visible;
+  max-width: 34rem;
+  margin: 3rem auto;
+  padding: 1.5rem 1.75rem;
+  background: #fff;
+  border: 1px solid #c6d4dd;
+  border-radius: 14px;
+  color: #16303f;
+  font:
+    600 1rem/1.5 system-ui,
+    sans-serif;
+  text-align: center;
+  opacity: 0;
+  animation: akg-fallback-reveal 0.3s ease 1.5s forwards;
+}
+html.akg-unlocked body::before {
+  content: none;
+}
+@keyframes akg-fallback-reveal {
+  to {
+    opacity: 1;
+  }
+}
+
 .akg-card {
   position: fixed;
   inset: 0;
