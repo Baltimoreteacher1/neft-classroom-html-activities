@@ -284,3 +284,10 @@
     color: #cfcfe6;
   }
 }
+
+/* When this launcher and the Math Workbench launcher share bottom-left,
+ * stack the Workbench above it so both stay >=44px unobscured tap targets
+ * (Lighthouse target-size). Progressive enhancement via :has(). */
+body:has(.nt-fx-launch) #mwb-launcher {
+  bottom: max(76px, calc(env(safe-area-inset-bottom) + 64px));
+}

@@ -72,7 +72,7 @@
         --navy: #15487f; /* deep brand blue */
         --teal: #205fa6; /* primary accent / links */
         --teal-light: rgba(32, 95, 166, 0.08);
-        --amber: #2c7d6b; /* secondary accent (green) */
+        --amber: #256b5b; /* secondary accent (green) */
         --amber-light: rgba(44, 125, 107, 0.08);
         --cream: #eaf0f7; /* paper background */
         --ink: #14223a; /* primary text (navy ink) */
@@ -896,7 +896,7 @@
         --navy: #15487f;
         --teal: #205fa6;
         --teal-light: #e7eff9;
-        --amber: #2c7d6b;
+        --amber: #256b5b;
         --amber-light: #e7f4ef;
       }
       body.light-theme::before {
@@ -1129,7 +1129,7 @@
   </head>
   <body class="light-theme">
     <a class="skip-link" href="#hub-content">Skip to lessons</a>
-    <div class="wrap">
+    <div class="wrap" role="main">
       <div class="hub-side" id="hub-side">
         <header class="hub">
           <p class="eyebrow">Neft Teacher · Grade 6 Math</p>
@@ -8168,6 +8168,7 @@
 
             var lessonSelect = document.createElement("select");
             lessonSelect.className = "select-control lesson-select";
+            lessonSelect.setAttribute("aria-label", "Choose a lesson");
 
             u.lessons.forEach(function (l, lIdx) {
               var opt = document.createElement("option");
@@ -8227,6 +8228,7 @@
 
             var launchBtn = document.createElement("a");
             launchBtn.className = "btn-launch";
+            launchBtn.setAttribute("href", "/curriculum/");
             launchBtn.textContent = "Launch Activity";
             launchBtn.target = "_blank";
             infoBlock.appendChild(launchBtn);

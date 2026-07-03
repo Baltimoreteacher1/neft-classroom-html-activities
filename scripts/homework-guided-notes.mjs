@@ -878,7 +878,7 @@ function conceptVisualSvg(config) {
 
 function helpButton(label, payload) {
   const data = String(JSON.stringify(payload)).replace(/&/g, "&amp;").replace(/'/g, "&#39;");
-  return `<button type="button" class="help-pop-btn" data-help='${data}' onclick="openHelpModalFromBtn(this)" aria-label="${esc(label)}">${label}</button>`;
+  return `<button type="button" class="help-pop-btn" data-help='${data}' onclick="openHelpModalFromBtn(this)">${label}</button>`;
 }
 
 export function selectQuickCheckProblems(practice = {}, config = {}) {
@@ -1338,7 +1338,7 @@ export function renderCheckTab(quickCheckIntro, warmupHtml, challengeHtml = "", 
             </p>
           </div>
         </div>
-        <main class="problems-container">${warmupHtml}</main>
+        <section class="problems-container" aria-label="Practice problems">${warmupHtml}</section>
       </section>`
     : "";
 
@@ -1358,7 +1358,7 @@ export function renderCheckTab(quickCheckIntro, warmupHtml, challengeHtml = "", 
             </p>
           </div>
         </div>
-        <main class="problems-container">${challengeHtml}</main>
+        <section class="problems-container" aria-label="Practice problems">${challengeHtml}</section>
       </section>`
     : "";
 
@@ -1373,7 +1373,7 @@ export function renderCheckTab(quickCheckIntro, warmupHtml, challengeHtml = "", 
           <span class="lang-en">Optional. Only if your student wants more — these are bonus problems.</span>
           <span class="lang-es" lang="es">Opcional. Solo si tu estudiante quiere más — son problemas adicionales.</span>
         </p>
-        <main class="problems-container more-practice-container">${moreHtml}</main>
+        <section class="problems-container more-practice-container" aria-label="More practice">${moreHtml}</section>
       </details>`
     : "";
 
@@ -1928,12 +1928,13 @@ export const GUIDED_NOTES_CSS = `
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--teal);
+  color: var(--teal-ink);
   margin-bottom: 6px;
 }
 .lang-en { margin: 0 0 6px; }
 /* Spanish is a primary language for our families: keep it fully legible, not a faded subtitle. */
 .lang-es { margin: 0; color: var(--ink); font-style: normal; }
+.step-badge .lang-en, .step-badge .lang-es { color: inherit; }
 .lang-en + .lang-es, .worked-step .lang-es { padding-left: 10px; border-left: 3px solid var(--teal); }
 .welcome-lead .lang-es { color: rgba(255, 255, 255, 0.94); border-left: 3px solid var(--amber); padding-left: 10px; display: inline-block; margin-top: 6px; }
 .learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
@@ -2117,8 +2118,8 @@ export const GUIDED_NOTES_CSS = `
 .homework-tab-btn:hover { border-color: var(--teal); color: var(--navy); }
 .homework-tab-btn:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
 .homework-tab-btn.is-active {
-  background: var(--teal);
-  border-color: var(--teal);
+  background: var(--teal-ink);
+  border-color: var(--teal-ink);
   color: var(--white);
   box-shadow: 0 2px 8px rgba(31,166,162,0.30);
 }
@@ -2242,7 +2243,7 @@ body.help-modal-open { overflow: hidden; }
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-display); font-weight: 800; font-size: 18px; color: #fff;
 }
-.practice-tier-badge.tier-warmup { background: var(--teal); }
+.practice-tier-badge.tier-warmup { background: var(--teal-ink); }
 .practice-tier-badge.tier-challenge { background: var(--amber-strong, #d99a1c); }
 .practice-tier-titles { min-width: 0; }
 .practice-tier-title {
@@ -2395,7 +2396,7 @@ body.lang-mode-es .bilingual-grid {
   border-color: var(--white);
 }
 .lang-toggle-btn.active {
-  background: var(--teal);
+  background: var(--teal-ink);
   border-color: var(--teal);
   color: var(--white);
   box-shadow: 0 4px 12px rgba(31, 166, 162, 0.35);
@@ -2489,7 +2490,7 @@ body.lang-mode-es .bilingual-grid {
   padding: 12px;
   font-size: 15px;
   font-weight: 800;
-  background: var(--teal);
+  background: var(--teal-ink);
   color: var(--white);
   border: none;
   border-radius: var(--radius-sm);
@@ -2575,7 +2576,7 @@ body.lang-mode-es .bilingual-grid {
   font-weight: 700;
 }
 .print-cert-btn:hover {
-  background: var(--teal);
+  background: var(--teal-ink);
 }
 .edit-signoff-btn {
   color: var(--muted);

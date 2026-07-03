@@ -33,6 +33,8 @@ export function createApp(config) {
   const root = document.getElementById("app");
   root.innerHTML = "";
   root.className = "app";
+  // a11y: the rendered lesson is the page's primary content (landmark-one-main).
+  root.setAttribute("role", "main");
   // Publisher-grade editorial design layer (engine/styles/editorial.css) — the
   // approved look now applies to EVERY lesson, not just flagship pilots.
   document.body.classList.add("editorial");
@@ -208,7 +210,12 @@ function injectSeoMeta(config) {
   upsertMetaName("description", description);
 
   if (config.lessonId) {
-    upsertLinkRel("canonical", `/lessons/${config.lessonId}/`);
+    // Absolute URL — Lighthouse/SEO rejects relative rel=canonical values.
+    const origin =
+      typeof location !== "undefined" && /^https?:/.test(location.origin)
+        ? location.origin
+        : "https://eduwonderlab.com";
+    upsertLinkRel("canonical", `${origin}/lessons/${config.lessonId}/`);
   }
 }
 

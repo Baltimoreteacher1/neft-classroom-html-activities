@@ -236,7 +236,7 @@ function wordBank(vocab = []) {
     .map((v) => `<span class="ws-bankword">${esc(v.term)}</span>`)
     .join("");
   return `<section class="ws-bank">
-    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
     <div class="ws-bankwords">${chips}</div>
   </section>`;
 }
@@ -256,7 +256,7 @@ function workedExample(cfg) {
     .map((s) => `<li><b>${esc(s.label)}:</b> ${esc(s.work)}</li>`)
     .join("");
   return `<section class="ws-example">
-    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
     <ol class="ws-example-steps">${steps}</ol>
   </section>`;
 }
@@ -411,7 +411,9 @@ ${EDITORIAL_OVERRIDES}
 </style>
 </head>
 <body>
+<main>
 ${pages}
+</main>
 </body>
 </html>`;
 }

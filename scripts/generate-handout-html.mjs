@@ -101,6 +101,7 @@ function buildHandout(config) {
   </style>
 </head>
 <body>
+<main>
   <div class="no-print" style="text-align:right; margin-bottom:12px;">
     <button onclick="window.print()" style="padding:8px 16px; font-weight:700; cursor:pointer;">🖨️ Print / Imprimir</button>
   </div>
@@ -152,6 +153,7 @@ function buildHandout(config) {
   </div>
 
   <footer class="footer">Neft Teacher · ${esc(config.lessonId)} · Printable student handout</footer>
+</main>
 </body>
 </html>`;
 }

@@ -1495,7 +1495,7 @@
       chip.dataset.token = d.token;
       chip.setAttribute("aria-pressed", d.token === "" ? "true" : "false");
       chip.title = d.label;
-      chip.setAttribute("aria-label", d.token ? d.label : "All standards");
+      chip.setAttribute("aria-label", d.token ? d.code + ": " + d.label : "All standards");
       chip.innerHTML =
         '<span class="hsc-code">' +
         d.code +

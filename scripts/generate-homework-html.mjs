@@ -904,6 +904,7 @@ ${EDITORIAL_FONT_IMPORT}
   --navy: #12355b;
   --navy-light: #18466f;
   --teal: #1fa6a2;
+--teal-ink: #0c6f6b;
   --teal-light: #dff2ee;
   --amber: #f2c15b;
   --amber-light: #fef7e0;
@@ -1507,7 +1508,7 @@ header.homework-header h1 {
   border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 11px; min-height: 36px; cursor: pointer;
 }
 .hw-graph-controls button:hover { border-color: var(--teal); }
-.hw-graph-controls button[aria-pressed="true"] { background: var(--teal); color: #ffffff; border-color: var(--teal); }
+.hw-graph-controls button[aria-pressed="true"] { background: var(--teal-ink); color: #ffffff; border-color: var(--teal-ink); }
 .hw-graph-reset {
   position: absolute; top: 6px; right: 6px; z-index: 2;
   font-family: var(--font-display); font-size: 12px; font-weight: 700;
@@ -2104,7 +2105,7 @@ header.homework-header h1 {
 }
 
 .word-chip:hover {
-  background: var(--teal);
+  background: var(--teal-ink);
   color: var(--white);
 }
 
@@ -2290,8 +2291,13 @@ header.homework-header h1 {
 }
 
 .btn-primary {
-  background: var(--teal);
+  background: var(--teal-ink);
   color: var(--white);
+}
+
+.btn .lang-en,
+.btn .lang-es {
+  color: inherit;
 }
 
 .btn-primary:hover {
@@ -2328,6 +2334,7 @@ header.homework-header h1 {
   }
   .action-buttons button {
     flex: 1;
+    min-height: 44px;
     justify-content: center;
   }
 }
@@ -2430,7 +2437,7 @@ ${EDITORIAL_OVERRIDES}
 </head>
 <body>
 
-<div class="container">
+<div class="container" role="main">
 
   ${welcomeHtml}
 
@@ -2456,7 +2463,7 @@ ${helpModalHtml}
     
     <div class="action-buttons">
       <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()">Check All / Revisar todo</button>
     </div>
   </div>
 </div>
