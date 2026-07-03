@@ -192,6 +192,9 @@
       <button class="tab" role="tab" aria-selected="false" data-view="homework">
         Homework <span class="count" id="c-homework"></span>
       </button>
+      <button class="tab" role="tab" aria-selected="false" data-view="quizzes">
+        Quizzes <span class="count" id="c-quizzes"></span>
+      </button>
     </div>
 
     <div id="list" class="loading">Loading packages…</div>
@@ -210,10 +213,13 @@
           "(" + data.lessons.length + ")";
         document.getElementById("c-activities").textContent =
           "(" + data.activities.length + ")";
-        // Older cached index files predate the homework section.
+        // Older cached index files predate the homework/quizzes sections.
         data.homework = data.homework || [];
         document.getElementById("c-homework").textContent =
           "(" + data.homework.length + ")";
+        data.quizzes = data.quizzes || [];
+        document.getElementById("c-quizzes").textContent =
+          "(" + data.quizzes.length + ")";
 
         var esc = function (s) {
           return String(s).replace(/[&<>"]/g, function (c) {
@@ -288,10 +294,27 @@
             html || '<p class="loading">No homework packages.</p>';
         }
 
+        function renderQuizzes() {
+          var html =
+            '<div class="unit-h">Native Canvas quizzes (QTI)</div>' +
+            '<p class="loading" style="text-align:left;padding:6px 2px">' +
+            "These import differently from the SCORM packages above: " +
+            "<strong>Settings → Import Course Content → “QTI .zip file”</strong>. " +
+            "Canvas grades every question itself (question-level results in the " +
+            "gradebook). Quizzes arrive unpublished, in a “Pre-Tests” " +
+            "assignment group.</p>";
+          data.quizzes.forEach(function (q) {
+            html += dl(q.file, q.title, "QTI import");
+          });
+          list.className = "";
+          list.innerHTML = html;
+        }
+
         var views = {
           lessons: renderLessons,
           activities: renderActivities,
           homework: renderHomework,
+          quizzes: renderQuizzes,
         };
         document.querySelectorAll(".tab").forEach(function (t) {
           t.addEventListener("click", function () {

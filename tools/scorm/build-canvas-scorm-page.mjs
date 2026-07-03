@@ -57,8 +57,7 @@ const resolveEntry = (a) => {
   const isFile = /\.html?$/i.test(a.path);
   const clean = a.path.replace(/\/+$/, "");
   const url = `${SITE}/${clean}${isFile ? "" : "/"}${a.query || ""}`;
-  const slug =
-    a.id || clean.replace(/\.html?$/i, "").replace(/\//g, "-");
+  const slug = a.id || clean.replace(/\.html?$/i, "").replace(/\//g, "-");
   return { url, slug };
 };
 
@@ -67,6 +66,7 @@ const index = {
   lessons: [],
   activities: [],
   homework: [],
+  quizzes: [],
 };
 let ok = 0,
   fail = 0;
@@ -123,14 +123,31 @@ for (const a of activities) {
   }
 }
 
-const byUnit = (a, b) =>
-  a.unit - b.unit || a.id.localeCompare(b.id, undefined, { numeric: true });
+// --- native QTI quizzes (item-scored — imported via "QTI .zip file", not SCORM) ---
+try {
+  execFileSync("node", [resolve(repoRoot, "tools/canvas/build-pretest-qti.mjs")], {
+    stdio: "pipe",
+  });
+  const qtiZip = "neft-pretest-quizzes.zip";
+  copyFileSync(resolve(repoRoot, "canvas-packages", qtiZip), resolve(pkgDir, qtiZip));
+  index.quizzes.push({
+    id: "pretest-quizzes",
+    title: "Unit Pre-Tests — 10 native Canvas quizzes (item-scored, answer keys validated)",
+    file: qtiZip,
+  });
+  ok++;
+} catch (e) {
+  fail++;
+  console.log(`  ✗ pre-test QTI: ${String(e.stderr || e.message).slice(0, 200)}`);
+}
+
+const byUnit = (a, b) => a.unit - b.unit || a.id.localeCompare(b.id, undefined, { numeric: true });
 index.lessons.sort(byUnit);
 index.homework.sort(byUnit);
 writeFileSync(resolve(pageDir, "packages-index.json"), JSON.stringify(index, null, 2) + "\n");
 
 console.log(
-  `Canvas SCORM page build: ${ok} packages (${index.lessons.length} lessons + ${index.activities.length} activities + ${index.homework.length} homework), ${fail} failed`,
+  `Canvas SCORM page build: ${ok} packages (${index.lessons.length} lessons + ${index.activities.length} activities + ${index.homework.length} homework + ${index.quizzes.length} quiz pack), ${fail} failed`,
 );
 console.log(`  → teacher-tools/canvas-scorm/packages/ + packages-index.json`);
 if (fail) console.log(`  (${fail} item(s) skipped — non-fatal)`);
