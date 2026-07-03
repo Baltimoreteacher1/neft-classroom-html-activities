@@ -837,12 +837,15 @@
     <link rel="stylesheet" href="/shared/projects/projects-pro.css" />
     <!-- projects-pro-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- projects-gold-injected:begin (gold hardening layer — tools/inject-projects-gold.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-gold.css" />
+    <!-- projects-gold-injected:end -->
+  </head>
   <body class="level-1 pro-projects" id="body">
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
@@ -2887,6 +2890,8 @@
       }
       function getFactors(n) {
         const f = [];
+        // Guard: unbounded input froze the tab on huge values (e.g. 1e9).
+        if (!Number.isFinite(n) || n < 1 || n > 100000) return f;
         for (let i = 1; i <= n; i++) if (n % i === 0) f.push(i);
         return f;
       }
@@ -3343,6 +3348,7 @@
             if (el.id) inputs[el.id] = el.value;
           });
           const metadata = {
+            schemaVersion: 1,
             studentName:
               document.getElementById("student-name")?.value || "Student",
             section: document.getElementById("class-period")?.value || "Class",
@@ -3480,12 +3486,17 @@
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <script src="/shared/projects/projects-pro.js" defer></script>
     <!-- projects-pro-injected:end -->
-      <link rel="stylesheet" href="/shared/projects/projects-future.css" />
+    <!-- projects-aux-injected:begin (future + coach layers — see shared/projects/) -->
+    <link rel="stylesheet" href="/shared/projects/projects-future.css" />
     <script src="/shared/projects/projects-future.js" defer></script>
-      <link rel="stylesheet" href="/shared/projects/projects-coach.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-coach.css" />
     <script src="/shared/projects/projects-coach.js" defer></script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- projects-aux-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- projects-gold-injected:begin (gold hardening layer — tools/inject-projects-gold.mjs) -->
+    <script src="/shared/projects/projects-gold.js" defer></script>
+    <!-- projects-gold-injected:end -->
   </body>
 </html>

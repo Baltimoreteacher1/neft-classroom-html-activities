@@ -1,0 +1,117 @@
+/* ==========================================================================
+   Projects GOLD — accessibility / print / motion hardening for the unit
+   culminating-project wizard pages (companion to projects-gold.js).
+
+   Scope: everything is gated on body.pro-projects so hubs, answer keys, and
+   the rest of the site are untouched. Purely additive; no page-owned rule is
+   removed, only extended.
+
+   What this layer fixes (audit 2026-07-02):
+     1. PRINT — the wizard shows one .step-panel at a time; without this,
+        printing captured only the active step. Print now flattens the whole
+        project (every panel, rubric, checklist) with ink-safe readouts.
+     2. CONTRAST — feedback injected into the dark .readout used the AA-on-
+        white tokens (--green/--coral/--orange/--gold), which fail on navy.
+        Remap those inline text colors to AA-on-dark equivalents.
+     3. MOTION — hard prefers-reduced-motion stop for page-owned animations
+        (panel fade, button scaling). Confetti is gated in projects-gold.js.
+     4. MOBILE — .rubric / .data-table overflow horizontally on phones; the
+        JS wraps them in .gold-scroll and this styles the scroll container.
+
+   Injected by tools/inject-projects-gold.mjs (sentinel: projects-gold).
+   ========================================================================== */
+
+/* --- 4. Mobile table overflow -------------------------------------------- */
+body.pro-projects .gold-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+body.pro-projects .gold-scroll > table {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* --- 2. AA feedback text on the dark readout ------------------------------
+   Pages inject feedback as inline style="color:var(--token)". Those tokens
+   were darkened for AA on white (ff94ba512) and fail on the navy readout.
+   Match the inline declaration and substitute a light AA-on-navy value.
+   NOTE: the --green rule also substring-matches color:var(--green-lt); the
+   later --green-lt rule wins (equal specificity, later order) on purpose. */
+body.pro-projects .readout [style*="color:var(--green)"],
+body.pro-projects .readout [style*="color: var(--green)"] {
+  color: #8fe3a9 !important;
+}
+body.pro-projects .readout [style*="color:var(--coral)"],
+body.pro-projects .readout [style*="color: var(--coral)"] {
+  color: #ffb3a1 !important;
+}
+body.pro-projects .readout [style*="color:var(--orange)"],
+body.pro-projects .readout [style*="color: var(--orange)"] {
+  color: #ffce85 !important;
+}
+body.pro-projects .readout [style*="color:var(--gold)"],
+body.pro-projects .readout [style*="color: var(--gold)"] {
+  color: #ffd98c !important;
+}
+body.pro-projects .readout [style*="color:var(--green-lt)"],
+body.pro-projects .readout [style*="color: var(--green-lt)"] {
+  color: #eafff2 !important; /* badge text on solid green chips stays light */
+}
+
+/* Keyboard focus lands on the newly-activated panel (projects-gold.js);
+   the panel itself is a focus waypoint, not an interactive control. */
+body.pro-projects .step-panel:focus {
+  outline: none;
+}
+
+/* --- 3. Reduced motion ---------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  body.pro-projects *,
+  body.pro-projects *::before,
+  body.pro-projects *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- 1. Print: the whole project, ink-safe -------------------------------- */
+@media print {
+  /* Every wizard step prints, not just the active tab. */
+  body.pro-projects .step-panel {
+    display: block !important;
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-bottom: 1.25rem;
+  }
+  /* Cards hidden by the pro reveal layer must not print invisible. */
+  body.pro-projects .pro-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  /* Wizard chrome that is meaningless on paper. */
+  body.pro-projects .step-trail,
+  body.pro-projects .nav-btn,
+  body.pro-projects .no-print {
+    display: none !important;
+  }
+  /* Dark readout/report panels: flatten to white so feedback is legible
+     and the page does not print solid navy blocks. */
+  body.pro-projects .readout {
+    background: #fff !important;
+    color: #16303f !important;
+    border: 1px solid #94a7b3 !important;
+  }
+  body.pro-projects .readout [style*="color:var("],
+  body.pro-projects .readout [style*="color: var("] {
+    color: #16303f !important;
+  }
+  body.pro-projects .gold-scroll {
+    overflow: visible;
+  }
+}

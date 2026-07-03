@@ -839,12 +839,15 @@
     <link rel="stylesheet" href="/shared/projects/projects-pro.css" />
     <!-- projects-pro-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- projects-gold-injected:begin (gold hardening layer — tools/inject-projects-gold.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-gold.css" />
+    <!-- projects-gold-injected:end -->
+  </head>
   <body class="level-1 pro-projects" id="body">
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
@@ -954,13 +957,56 @@
               border-radius: 12px;
             "
           >
-            <text x="20" y="26" font-family="'Inter', sans-serif" font-size="13" font-weight="700" fill="#0f2b3c">Raised $180 of $500 goal</text>
+            <text
+              x="20"
+              y="26"
+              font-family="'Inter', sans-serif"
+              font-size="13"
+              font-weight="700"
+              fill="#0f2b3c"
+            >
+              Raised $180 of $500 goal
+            </text>
             <!-- Track -->
-            <rect x="20" y="40" width="480" height="22" rx="11" fill="#e6f4eb" stroke="#1e7d40" stroke-width="1.5" />
+            <rect
+              x="20"
+              y="40"
+              width="480"
+              height="22"
+              rx="11"
+              fill="#e6f4eb"
+              stroke="#1e7d40"
+              stroke-width="1.5"
+            />
             <!-- Fill: 180/500 = 36% of 480 = 172.8 -->
-            <rect x="20" y="40" width="172.8" height="22" rx="11" fill="#1e7d40" />
-            <text x="30" y="56" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#ffffff">36%</text>
-            <text x="492" y="80" text-anchor="end" font-family="'Inter', sans-serif" font-size="11" fill="#5e6e7e">Goal = $500</text>
+            <rect
+              x="20"
+              y="40"
+              width="172.8"
+              height="22"
+              rx="11"
+              fill="#1e7d40"
+            />
+            <text
+              x="30"
+              y="56"
+              font-family="'Inter', sans-serif"
+              font-size="12"
+              font-weight="700"
+              fill="#ffffff"
+            >
+              36%
+            </text>
+            <text
+              x="492"
+              y="80"
+              text-anchor="end"
+              font-family="'Inter', sans-serif"
+              font-size="11"
+              fill="#5e6e7e"
+            >
+              Goal = $500
+            </text>
           </svg>
 
           <div class="vocab-grid">
@@ -1597,8 +1643,9 @@
                 <code>&gt;</code> (greater than) or <code>&ge;</code> (greater
                 than or equal to). An open circle on the number line means that
                 exact value is excluded (like &gt;), while a closed circle means
-                it is included (like &ge;). Tip: you can type <code>&gt;=</code>
-                for &ge; and <code>&lt;=</code> for &le;.</span
+                it is included (like &ge;). Tip: you can type
+                <code>&gt;=</code> for &ge; and <code>&lt;=</code> for
+                &le;.</span
               >
               <span class="es-text"
                 >Una desigualdad usa signos de comparación como
@@ -2917,9 +2964,7 @@
         const varName = "y";
         // Accept ASCII equivalents students can type on a Chromebook keyboard:
         // >= for ≥ and <= for ≤ (also handles => and =<).
-        const ineqNorm = ineqRaw
-          .replace(/>=|=>/g, "≥")
-          .replace(/<=|=</g, "≤");
+        const ineqNorm = ineqRaw.replace(/>=|=>/g, "≥").replace(/<=|=</g, "≤");
         const v1 = `${varName}${symbol}${target}`;
 
         let revSym = "";
@@ -3575,7 +3620,8 @@
       }
 
       function prefillGradingConsole() {
-        const presets = { "goal-amt": 100, "earned-amt": 45 };
+        // Ids must match the page's fundraiser inputs (fg-goal / fg-raised).
+        const presets = { "fg-goal": 500, "fg-raised": 180 };
         for (const [id, val] of Object.entries(presets)) {
           const el = document.getElementById(id);
           if (el) {
@@ -3591,9 +3637,9 @@
         try {
           const resolver = function () {
             const g =
-              parseFloat(document.getElementById("goal-amt").value) || 100;
+              parseFloat(document.getElementById("fg-goal")?.value) || 500;
             const e =
-              parseFloat(document.getElementById("earned-amt").value) || 45;
+              parseFloat(document.getElementById("fg-raised")?.value) || 180;
             return {
               "Goal amount": "$" + g.toFixed(2),
               "Earned amount": "$" + e.toFixed(2),
@@ -3638,6 +3684,7 @@
             if (el.id) inputs[el.id] = el.value;
           });
           const metadata = {
+            schemaVersion: 1,
             studentName:
               document.getElementById("student-name")?.value || "Student",
             section: document.getElementById("class-period")?.value || "Class",
@@ -3766,12 +3813,17 @@
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <script src="/shared/projects/projects-pro.js" defer></script>
     <!-- projects-pro-injected:end -->
-      <link rel="stylesheet" href="/shared/projects/projects-future.css" />
+    <!-- projects-aux-injected:begin (future + coach layers — see shared/projects/) -->
+    <link rel="stylesheet" href="/shared/projects/projects-future.css" />
     <script src="/shared/projects/projects-future.js" defer></script>
-      <link rel="stylesheet" href="/shared/projects/projects-coach.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-coach.css" />
     <script src="/shared/projects/projects-coach.js" defer></script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- projects-aux-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- projects-gold-injected:begin (gold hardening layer — tools/inject-projects-gold.mjs) -->
+    <script src="/shared/projects/projects-gold.js" defer></script>
+    <!-- projects-gold-injected:end -->
   </body>
 </html>

@@ -14,6 +14,16 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+// DEPRECATED (2026-07-02): this injector predates the pro/future/coach/gold
+// pipeline. The live version pages use <body class="pro-projects"> (not "pk"),
+// so its idempotence guards no longer match — re-running it would inject the
+// dead projects-tabs assets and duplicate TTS/Level-0 controls into all 22
+// version pages. Kept for reference only. Hub premium CSS is already in place.
+throw new Error(
+  "inject-projects-premium.mjs is DEPRECATED — superseded by inject-projects-pro.mjs " +
+    "+ inject-projects-gold.mjs. Refusing to run (would corrupt the version pages).",
+);
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const LINK = '<link rel="stylesheet" href="/shared/projects/projects-premium.css" />';

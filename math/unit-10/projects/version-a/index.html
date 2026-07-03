@@ -815,6 +815,9 @@
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
+    <!-- projects-gold-injected:begin (gold hardening layer — tools/inject-projects-gold.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-gold.css" />
+    <!-- projects-gold-injected:end -->
 </head>
   <body class="level-1 pro-projects" id="body">
     <!-- ====== HERO ====== -->
@@ -3761,6 +3764,7 @@
             if (el.id) inputs[el.id] = el.value;
           });
           const metadata = {
+            schemaVersion: 1,
             studentName:
               document.getElementById("student-name")?.value || "Student",
             section: document.getElementById("class-period")?.value || "Class",
@@ -3889,12 +3893,17 @@
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <script src="/shared/projects/projects-pro.js" defer></script>
     <!-- projects-pro-injected:end -->
+    <!-- projects-aux-injected:begin (future + coach layers — see shared/projects/) -->
       <link rel="stylesheet" href="/shared/projects/projects-future.css" />
     <script src="/shared/projects/projects-future.js" defer></script>
       <link rel="stylesheet" href="/shared/projects/projects-coach.css" />
     <script src="/shared/projects/projects-coach.js" defer></script>
+    <!-- projects-aux-injected:end -->
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
-  </body>
+    <!-- projects-gold-injected:begin (gold hardening layer — tools/inject-projects-gold.mjs) -->
+  <script src="/shared/projects/projects-gold.js" defer></script>
+  <!-- projects-gold-injected:end -->
+</body>
 </html>

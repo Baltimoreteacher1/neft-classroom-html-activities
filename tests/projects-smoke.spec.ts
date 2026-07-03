@@ -4,13 +4,16 @@
  * Covers every unit's project suite — the hub (`projects/`), both student
  * versions (`version-a`, `version-b`), the teacher answer key, and Unit 10's
  * World Architect — built to the "Stats of My Life" standard on top of the
- * shared Projects Kit (`/shared/projects/*`).
+ * shared PRO + GOLD layers (`/shared/projects/projects-pro.*`,
+ * `projects-gold.*`, `answer-key-gate.*`).
  *
  * For each page it:
- *   - loads the page and lets the kit + tab bootstrap run,
- *   - asserts the shared kit (window.PK) loaded,
- *   - on student version pages, asserts the step tabs and Level 1/2 toggles
- *     actually rendered,
+ *   - loads the page and waits for the PRO + GOLD layers to initialize,
+ *   - on student version pages, asserts the wizard (step trail, panels,
+ *     Level 1/2 toggles) rendered and the GOLD a11y invariants hold
+ *     (aria-live readouts, aria-pressed toggles, clamped number inputs),
+ *   - on answer-key pages, asserts the teacher gate is fail-closed (solutions
+ *     hidden, wrong PIN stays locked, correct PIN unlocks),
  *   - exercises the interactivity (fires input on every field, clicks every
  *     non-export button) and re-checks for thrown errors,
  *   - asserts no uncaught JS exceptions, no broken SAME-ORIGIN assets, and no
@@ -65,7 +68,8 @@ const IGNORE_CONSOLE = [
 // Buttons we do NOT auto-click: exports/saves (fire alerts/downloads/clipboard)
 // and print. Everything else (calculators, checks, compare, what-if) is fair
 // game and should never throw.
-const SKIP_BUTTON = /save|load|download|\.txt|\.csv|copy|print|share|reset|clear/i;
+const SKIP_BUTTON =
+  /save|load|download|\.txt|\.csv|copy|print|share|reset|clear/i;
 
 for (const route of ROUTES) {
   test(`project ok: ${route.url}`, async ({ page, baseURL }) => {
@@ -74,7 +78,12 @@ for (const route of ROUTES) {
     const consoleErrors: string[] = [];
 
     page.on("pageerror", (err) =>
-      pageErrors.push(err.message + (err.stack ? "\n" + err.stack.split("\n").slice(0, 4).join("\n") : "")),
+      pageErrors.push(
+        err.message +
+          (err.stack
+            ? "\n" + err.stack.split("\n").slice(0, 4).join("\n")
+            : ""),
+      ),
     );
     page.on("response", (res) => {
       const u = res.url();
@@ -95,36 +104,121 @@ for (const route of ROUTES) {
     await page.goto(route.url, { waitUntil: "load", timeout: 30_000 });
 
     // Page must not be blank.
-    const bodyLen = await page.evaluate(() => (document.body?.innerText || "").trim().length);
+    const bodyLen = await page.evaluate(
+      () => (document.body?.innerText || "").trim().length,
+    );
     expect(bodyLen, `page appears blank on ${route.url}`).toBeGreaterThan(60);
 
     if (route.kind === "version") {
-      // Student version pages load the shared kit (deferred); wait for it.
-      await page
-        .waitForFunction(() => typeof (window as { PK?: unknown }).PK !== "undefined", {
-          timeout: 10_000,
-        })
-        .catch(() => {});
-      const hasPK = await page.evaluate(
-        () => typeof (window as unknown as { PK?: unknown }).PK !== "undefined",
+      // Student version pages load the PRO + GOLD layers (deferred); wait for
+      // both to initialize (they stamp data attributes on <body>).
+      await page.waitForFunction(
+        () =>
+          document.body?.dataset.proInit === "1" &&
+          document.body?.dataset.goldInit === "1",
+        { timeout: 10_000 },
       );
-      expect(hasPK, `window.PK (projects kit) missing on ${route.url}`).toBe(true);
 
-      // Student version pages must build step tabs and Level 1/2 toggles.
-      const tabs = await page.locator(".pk-tabs-wrap").count();
-      expect(tabs, `step tabs did not render on ${route.url}`).toBeGreaterThan(0);
-      const levelBtns = await page.locator("[data-level-btn]").count();
-      expect(levelBtns, `Level 1/2 toggles missing on ${route.url}`).toBeGreaterThan(0);
+      // The wizard must render its step trail, panels, and Level 1/2 toggles.
+      const panels = await page.locator(".step-panel").count();
+      expect(
+        panels,
+        `wizard panels did not render on ${route.url}`,
+      ).toBeGreaterThan(0);
+      const trail = await page.locator(".step-trail").count();
+      expect(
+        trail,
+        `step trail did not render on ${route.url}`,
+      ).toBeGreaterThan(0);
+      const levelBtns = await page.locator("button.level-btn").count();
+      expect(
+        levelBtns,
+        `Level 1/2 toggles missing on ${route.url}`,
+      ).toBeGreaterThan(0);
+
+      // GOLD layer invariants: announced readouts, stateful toggles, clamped
+      // number inputs (no unbounded factor-loop inputs).
+      const gold = await page.evaluate(() => {
+        const readouts = Array.from(document.querySelectorAll(".readout"));
+        const unannounced = readouts.filter(
+          (r) => r.getAttribute("aria-live") !== "polite",
+        ).length;
+        const lv1 = document.getElementById("btn-lv1");
+        const unclamped = Array.from(
+          document.querySelectorAll<HTMLInputElement>('input[type="number"]'),
+        ).filter((i) => !i.max).length;
+        return {
+          readouts: readouts.length,
+          unannounced,
+          lv1Pressed: lv1 ? lv1.hasAttribute("aria-pressed") : true,
+          unclamped,
+        };
+      });
+      expect(
+        gold.readouts,
+        `no .readout regions found on ${route.url}`,
+      ).toBeGreaterThan(0);
+      expect(
+        gold.unannounced,
+        `readout(s) missing aria-live on ${route.url}`,
+      ).toBe(0);
+      expect(
+        gold.lv1Pressed,
+        `#btn-lv1 missing aria-pressed on ${route.url}`,
+      ).toBe(true);
+      expect(gold.unclamped, `unclamped number input(s) on ${route.url}`).toBe(
+        0,
+      );
 
       // Toggle EN/ES and each Level tier — these must not throw.
       await page.evaluate(() => {
-        const w = window as unknown as { PK?: { toggleEs?: () => void } };
-        w.PK?.toggleEs?.();
-        w.PK?.toggleEs?.();
+        const w = window as unknown as { toggleLanguage?: () => void };
+        w.toggleLanguage?.();
+        w.toggleLanguage?.();
         document
-          .querySelectorAll<HTMLElement>("[data-level-btn]")
+          .querySelectorAll<HTMLElement>("#btn-lv1, #btn-lv2")
           .forEach((b) => b.click());
       });
+    }
+
+    if (route.kind === "key") {
+      // Answer keys are teacher-gated (fail-closed): solutions stay hidden
+      // until the teacher PIN unlocks them, and the gate card must show.
+      const gateVisible = await page.locator(".akg-card").isVisible();
+      expect(gateVisible, `answer-key gate card missing on ${route.url}`).toBe(
+        true,
+      );
+      const solutionsHidden = await page.evaluate(() => {
+        // Structure-agnostic: keys use <main class="page-shell"> or <div class="wrap">.
+        const el = Array.from(document.body.children).find(
+          (c) =>
+            !c.classList.contains("akg-card") &&
+            !["SCRIPT", "LINK"].includes(c.tagName),
+        );
+        return el ? getComputedStyle(el).visibility === "hidden" : false;
+      });
+      expect(
+        solutionsHidden,
+        `solutions visible without PIN on ${route.url}`,
+      ).toBe(true);
+
+      // Wrong PIN stays locked.
+      await page.fill("#akg-pin", "wrong-pin");
+      await page.click("#akg-go");
+      expect(
+        await page.evaluate(() =>
+          document.documentElement.classList.contains("akg-unlocked"),
+        ),
+        `wrong PIN unlocked the answer key on ${route.url}`,
+      ).toBe(false);
+
+      // Correct PIN unlocks. (Client-side casual gate; the PIN also lives in
+      // assets/curriculum-enhancements.js — keep in sync.)
+      await page.fill("#akg-pin", "TeacherNeft");
+      await page.click("#akg-go");
+      await page.waitForFunction(() =>
+        document.documentElement.classList.contains("akg-unlocked"),
+      );
     }
 
     // Exercise interactivity: fire input/change on every field and click every
@@ -150,15 +244,20 @@ for (const route of ROUTES) {
           errs.push(`field ${el.id || el.name}: ${(e as Error).message}`);
         }
       });
-      const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>("button"));
+      const buttons = Array.from(
+        document.querySelectorAll<HTMLButtonElement>("button"),
+      );
       buttons.forEach((b) => {
-        const label = (b.textContent || "") + " " + (b.getAttribute("onclick") || "");
+        const label =
+          (b.textContent || "") + " " + (b.getAttribute("onclick") || "");
         if (skip.test(label)) return;
         if (b.closest(".pk-tablist") || b.classList.contains("pk-tab")) return; // tabs handled elsewhere
         try {
           b.click();
         } catch (e) {
-          errs.push(`button "${(b.textContent || "").trim().slice(0, 30)}": ${(e as Error).message}`);
+          errs.push(
+            `button "${(b.textContent || "").trim().slice(0, 30)}": ${(e as Error).message}`,
+          );
         }
       });
       return errs;
@@ -166,7 +265,9 @@ for (const route of ROUTES) {
 
     expect(handlerErrors, `handler error(s) on ${route.url}`).toEqual([]);
     expect(pageErrors, `uncaught error(s) on ${route.url}`).toEqual([]);
-    expect(badResponses, `broken same-origin asset(s) on ${route.url}`).toEqual([]);
+    expect(badResponses, `broken same-origin asset(s) on ${route.url}`).toEqual(
+      [],
+    );
     expect(consoleErrors, `console error(s) on ${route.url}`).toEqual([]);
   });
 }

@@ -1,0 +1,100 @@
+/* ==========================================================================
+   Answer-Key Gate — teacher gate for /math/unit-N/projects/answer-key/ pages.
+
+   Fail-closed: solution content is hidden until answer-key-gate.js unlocks it
+   (teacher mode via nt-teacher-mode, a previously-entered PIN this session,
+   or the shared teacher PIN). Keeps worked answers off casual student screens
+   per the repo rule "no answers exposed to students".
+
+   Injected by tools/inject-projects-gold.mjs (sentinel: answer-key-gate).
+   ========================================================================== */
+
+/* Structure-agnostic: answer keys variously use <main class="page-shell">
+   or <div class="wrap"> — hide every rendered child except the gate card. */
+html:not(.akg-unlocked) body > :not(.akg-card):not(script):not(link) {
+  visibility: hidden;
+}
+
+.akg-card {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: #f4f8fb;
+  visibility: visible;
+}
+html.akg-unlocked .akg-card {
+  display: none;
+}
+
+.akg-panel {
+  max-width: 30rem;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #c6d4dd;
+  border-radius: 14px;
+  padding: 2rem 1.75rem;
+  box-shadow: 0 12px 40px rgba(15, 43, 60, 0.14);
+  text-align: center;
+  font-family: inherit;
+  color: #16303f;
+}
+.akg-panel h1 {
+  font-size: 1.35rem;
+  margin: 0 0 0.5rem;
+}
+.akg-panel p {
+  margin: 0.4rem 0 1rem;
+  line-height: 1.5;
+}
+.akg-row {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.akg-panel input[type="password"] {
+  flex: 1 1 12rem;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #94a7b3;
+  border-radius: 8px;
+}
+.akg-panel button {
+  min-height: 44px;
+  padding: 0.5rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  background: #0f2b3c;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.akg-panel button:focus-visible,
+.akg-panel input:focus-visible {
+  outline: 3px solid #1668a7;
+  outline-offset: 2px;
+}
+.akg-error {
+  color: #a03015;
+  font-weight: 600;
+  min-height: 1.25rem;
+  margin-top: 0.5rem;
+}
+.akg-back {
+  display: inline-block;
+  margin-top: 1rem;
+  color: #1668a7;
+}
+
+@media print {
+  /* Never print solutions that were not unlocked on screen. */
+  html:not(.akg-unlocked) body > :not(.akg-card):not(script):not(link) {
+    display: none !important;
+  }
+}
