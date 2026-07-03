@@ -1413,13 +1413,26 @@
     },
   ];
 
-  // Anchor the page at the top when a filter is applied (matches the
-  // "open at the top" behaviour of the rest of the hub).
+  // Bring the freshly filtered results into view when a standard is picked.
+  // The interactive hub renders far down a single-column page, so a plain
+  // window-top scroll left the results ~3000px below the fold — to the user it
+  // looked like clicking a standard chip hid every unit. Scroll the results
+  // container itself into view. Native scrollIntoView (not pageYOffset math)
+  // because the standards toolbar is position:sticky, so its measured rect
+  // reports the stuck position and manual math lands in the blank gap above.
   function scrollHubTop() {
     var smooth = !(
       window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
     );
-    window.scrollTo({ top: 0, behavior: smooth ? "smooth" : "auto" });
+    var behavior = smooth ? "smooth" : "auto";
+    var target =
+      document.querySelector(".search-results-panel") ||
+      document.getElementById("interactive-hub");
+    if (target && typeof target.scrollIntoView === "function") {
+      target.scrollIntoView({ behavior: behavior, block: "start" });
+    } else {
+      window.scrollTo({ top: 0, behavior: smooth ? "smooth" : "auto" });
+    }
   }
 
   // Format a raw standard token (e.g. "6.rp.3a") for display ("6.RP.3a").
