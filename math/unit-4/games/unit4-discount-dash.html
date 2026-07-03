@@ -50,9 +50,27 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
     <link rel="stylesheet" href="/assets/game-access.css" />
     <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
   </head>
   <body>
     <div id="game"></div>
+    <!-- Visually-hidden live region: mirrors each deal row for assistive
+         tech and the shared hint ladder. Additive only. -->
+    <div
+      id="dd-sr"
+      role="status"
+      aria-live="polite"
+      style="
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      "
+    ></div>
     <script>
       // ───────────────────────────────────────────────────────────
       // DISCOUNT DASH — SALE RUNNER  (Neft Teacher)
@@ -542,6 +560,20 @@
 
         spawnRow() {
           const data = makeRow(this.round);
+          // Mirror the deal row (given info only — never the sale prices)
+          // into the hidden live region for assistive tech + the shared
+          // hint ladder. Additive: never touches gameplay/scoring.
+          const ddSr = document.getElementById("dd-sr");
+          if (ddSr)
+            ddSr.textContent =
+              `Deal row ${this.round + 1}: ${data.emoji} — ` +
+              data.cells
+                .map(
+                  (cell, i) =>
+                    `Lane ${i + 1}: ${money(cell.base)} at ${cell.pct}% off`,
+                )
+                .join(". ") +
+              ". Which lane has the lowest sale price?";
           const y = -120;
           const cells = data.cells.map((cell, i) => {
             const c = this.add.container(LANES[i], y).setDepth(5);
@@ -1026,5 +1058,23 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
     <script src="/assets/game-access.js" defer></script>
     <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#dd-sr",
+            standard: "6.RP.3c",
+            accept: "^Deal row",
+            staticHints: [
+              "Percent means 'out of 100.' A percent off tells you what part of the price you do NOT pay — so what part do you still pay?",
+              "Find 10% of a price first by dividing by 10 — then build the discount from there (20% is double it, 5% is half of it).",
+              "Set it up lane by lane: price × (100 − percent off) ÷ 100 gives each sale price. Compare the final prices, not the percents.",
+            ],
+          });
+      });
+    </script>
+    <!-- ghl-injected:end -->
   </body>
 </html>

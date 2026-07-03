@@ -122,15 +122,15 @@
     <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
     <script src="/assets/game-juice.js"></script>
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <link rel="stylesheet" href="/assets/game-access.css">
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <link rel="stylesheet" href="/assets/game-hint-ladder.css">
-  <!-- ghl-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated spark-field (behind the Phaser canvas). -->
     <div id="eq-bg" data-parallax aria-hidden="true">
@@ -215,9 +215,10 @@
       // shows units. You apply the SAME inverse operation to BOTH sides
       // (− a, + a, or ÷ k) to peel weights away until a single x is alone, then
       // read its value and Lock In. An illegal move (one that would unbalance the
-      // scale or make a fraction) gently tilts the beam and is refused — no life
-      // lost. A wrong final value, or running out of moves, costs a life and the
-      // correct sequence is shown to teach. Every value is a whole number.
+      // scale or make a fraction) gently tilts the beam and is refused. Locking
+      // in before x is alone just gives a gentle nudge — no-fail, calm practice.
+      // Extra moves only spend the efficiency bonus. Every value is a whole
+      // number.
 
       const W = 820,
         H = 600;
@@ -810,7 +811,6 @@
             window.matchMedia("(prefers-reduced-motion: reduce)").matches
           );
         this.score = 0;
-        this.lives = 3;
         this.streak = 0;
         this.level = eqLevel;
         this.solved = 0;
@@ -844,10 +844,6 @@
         this.scoreText = this.add.text(16, 12, "Score: 0", {
           ...hud,
           color: "#8ff0c4",
-        });
-        this.livesText = this.add.text(16, 36, "❤❤❤", {
-          ...hud,
-          color: "#ff8f8f",
         });
         this.streakText = this.add
           .text(W - 16, 12, "Streak: 0", { ...hud, color: "#ffd24a" })
@@ -1093,8 +1089,9 @@
             tint: [0xffd24a, 0x8ff0c4, 0xffffff],
           })
           .setDepth(20);
-        this.redFlash = this.add
-          .rectangle(W / 2, H / 2, W, H, 0xff3333, 0)
+        // Brief calm amber tint (reduced-motion stand-in for the beam tilt).
+        this.amberTint = this.add
+          .rectangle(W / 2, H / 2, W, H, 0xf0b44a, 0)
           .setDepth(30);
 
         // Keyboard
@@ -1134,7 +1131,7 @@
         this.C = p.C;
         this.s = p.s;
         this.problem = p;
-        this.movesLeft = p.minMoves + 2; // generous buffer; "out of moves" = loss
+        this.movesLeft = p.minMoves + 2; // efficiency-bonus meter only; never a loss
         this.opAmt = 1;
         this.bannerText.setText(p.banner);
         // Level 1 shows the specific inverse-operation hint; Level 2 a shorter,
@@ -1306,7 +1303,7 @@
             .setText("Correct! x = " + this.s + ". " + this.problem.solveHint)
             .setColor("#8ff0c4");
           srSay("Correct. x equals " + this.s + ".");
-          this.afterAttempt(true);
+          this.afterAttempt();
         } else {
           // Gentle nudge — NOT a loss. x isn't isolated yet, so just guide the
           // student to keep applying inverse moves (calm, no-penalty).
@@ -1320,46 +1317,13 @@
         }
       };
 
-      GameScene.prototype.loseRound = function (reason) {
-        if (this.locked) return;
-        this.locked = true;
-        if (this.lockTween) {
-          this.lockTween.remove();
-          this.lockTween = null;
-        }
-        JUICE.audio.wrong();
-        SFX.tilt();
-        this.streak = 0;
-        this.lives--;
-        this.flashRed();
-        JUICE.shake(this, 0.009);
-        this.feedback
-          .setText(reason + "  ➜  " + this.problem.solveHint)
-          .setColor("#ffb38a");
-        srSay(reason + " The answer is x equals " + this.s + ".");
-        // Teach: show the fully-solved state (x = s) so the correct result is
-        // visible before moving on.
-        this.A = 1;
-        this.B = 0;
-        this.C = this.s;
-        this.drawScale();
-        this.updateLock();
-        this.afterAttempt(false);
-      };
-
-      GameScene.prototype.afterAttempt = function (correct) {
+      GameScene.prototype.afterAttempt = function () {
         this.updateHUD();
-        if (this.lives <= 0) {
-          // No-fail practice: refill hearts and keep going. Mistakes teach;
-          // they never end the game (calm, self-paced classroom mode).
-          this.lives = 3;
-          this.updateHUD();
-        }
         if (this.solved >= this.target) {
-          this.endGame(true);
+          this.endGame();
           return;
         }
-        this.time.delayedCall(correct ? 1100 : 1700, () => this.newProblem());
+        this.time.delayedCall(1100, () => this.newProblem());
       };
 
       // ── Balance rendering ──
@@ -1438,7 +1402,7 @@
       GameScene.prototype.tiltScale = function () {
         if (this.reduceMotion) {
           this.scaleGroup.setRotation(0);
-          this.flashRed(0.18);
+          this.flashAmber(0.18);
           return;
         }
         this.tweens.add({
@@ -1451,21 +1415,20 @@
         });
       };
 
-      GameScene.prototype.flashRed = function (a) {
+      GameScene.prototype.flashAmber = function (a) {
         if (this.reduceMotion && a == null) return;
-        this.redFlash.setAlpha(a == null ? 0.32 : a);
-        this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 350 });
+        this.amberTint.setAlpha(a == null ? 0.18 : a);
+        this.tweens.add({ targets: this.amberTint, alpha: 0, duration: 350 });
       };
 
       GameScene.prototype.updateHUD = function () {
         this.scoreText.setText("Score: " + this.score);
-        this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
         this.streakText.setText("Streak: " + this.streak);
         this.levelText.setText("Level " + this.level);
         this.progressText.setText(this.solved + " / " + this.target);
       };
 
-      GameScene.prototype.endGame = function (won) {
+      GameScene.prototype.endGame = function () {
         this.locked = true;
         this.time.delayedCall(600, () => {
           this.scene.start("Result", {
@@ -1473,7 +1436,6 @@
             solved: this.solved,
             target: this.target,
             level: this.level,
-            won,
           });
         });
       };
@@ -1502,10 +1464,10 @@
         }
 
         this.add
-          .text(cx, 110, d.won ? "BALANCE MASTER!" : "OUT OF LIVES", {
+          .text(cx, 110, "BALANCE MASTER!", {
             fontFamily: "Impact, sans-serif",
             fontSize: "48px",
-            color: d.won ? "#8ff0c4" : "#ff8f8f",
+            color: "#8ff0c4",
             stroke: "#061410",
             strokeThickness: 5,
           })
@@ -1554,9 +1516,8 @@
           })
           .setOrigin(0.5);
 
-        if (d.won) JUICE.audio.fanfare();
-        else SFX.lose();
-        if (d.won) JUICE.confetti(this, 1);
+        JUICE.audio.fanfare();
+        JUICE.confetti(this, 1);
 
         // EduPulse reporting (guarded; safe no-op without bridge).
         try {
@@ -1569,14 +1530,7 @@
               problemsAttempted: d.solved,
             });
         } catch (e) {}
-        srSay(
-          (d.won ? "You won! " : "Game over. ") +
-            "Final score " +
-            d.score +
-            ", " +
-            stars +
-            " stars.",
-        );
+        srSay("You won! Final score " + d.score + ", " + stars + " stars.");
 
         const btn = this.add
           .rectangle(cx, 400, 240, 54, 0x2d874b)
@@ -1650,25 +1604,30 @@
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <script src="/assets/game-access.js" defer></script>
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <script src="/assets/game-hint-ladder.js" defer></script>
-  <script>
-      window.addEventListener('DOMContentLoaded', function () {
-        if (window.NeftHintLadder) window.NeftHintLadder.watch({
-          sourceSelector: "#eq-sr",
-          standard: "6.EE.7",
-          staticHints: ["What is being done to the variable — is it added to, or multiplied?","Do the inverse operation to BOTH sides to get the variable alone.","Set it up: apply the inverse step to both sides, then you finish the last calculation."]
-        });
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#eq-sr",
+            standard: "6.EE.7",
+            staticHints: [
+              "What is being done to the variable — is it added to, or multiplied?",
+              "Do the inverse operation to BOTH sides to get the variable alone.",
+              "Set it up: apply the inverse step to both sides, then you finish the last calculation.",
+            ],
+          });
       });
     </script>
-  <!-- ghl-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
-  <script src="/assets/canvas-bridge.js" defer></script>
-  <!-- canvas-bridge-injected:end -->
-</body>
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+  </body>
 </html>

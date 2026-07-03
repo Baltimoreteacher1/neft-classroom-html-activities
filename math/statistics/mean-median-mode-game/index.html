@@ -432,6 +432,9 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
     <link rel="stylesheet" href="/assets/game-access.css" />
     <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
   </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
@@ -1059,5 +1062,23 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
     <script src="/assets/game-access.js" defer></script>
     <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#ff-sr",
+            standard: "6.SP.3",
+            accept: "^Round \\d",
+            staticHints: [
+              "Which statistic is the target — mean or median? They respond to changes in very different ways.",
+              "Median = the MIDDLE of the ordered list, so sort the bar values smallest to largest in your head. Mean = total ÷ how many values — it balances all the bars.",
+              "Changing one bar by 1 moves the mean by 1 divided by the number of values. Pick one bar and step it toward the target, checking after each change.",
+            ],
+          });
+      });
+    </script>
+    <!-- ghl-injected:end -->
   </body>
 </html>

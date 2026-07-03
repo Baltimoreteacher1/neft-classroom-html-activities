@@ -7,7 +7,7 @@
     <title>Area Attack — Decompose &amp; Tile | Math Games</title>
     <meta
       name="description"
-      content="A calm build-it math game for Grade 6 lessons 5.1-5.5 (6.G.1): cover a shape on a unit grid by laying rectangles of tiles, watch the area count grow, then lock in when your tiles exactly cover the figure. Level 1 = rectangles; Level 2 = decompose L-shapes."
+      content="A calm build-it math game for Grade 6 lessons 5.1-5.5 (6.G.1): cover a shape on a unit grid by laying rectangles of tiles, watch the area count grow, then lock in when your tiles exactly cover the figure. Level 1 = rectangles & triangles (½ × base × height); Level 2 = decompose L-shapes & triangles."
     />
     <style>
       * {
@@ -122,15 +122,15 @@
     <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
     <script src="/assets/game-juice.js"></script>
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <link rel="stylesheet" href="/assets/game-access.css">
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <link rel="stylesheet" href="/assets/game-hint-ladder.css">
-  <!-- ghl-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated spark-field (behind the Phaser canvas). -->
     <div id="aa-bg" data-parallax aria-hidden="true">
@@ -216,10 +216,17 @@
       // press F to set corner A then corner B). A live readout shows the total
       // tiles placed = the current area. Lock In checks the tiles EXACTLY cover
       // the target (no gaps, no overflow) and the area count is right.
-      // Wrong math costs a life: the gaps and overflow flash and the correct
-      // area + the formula are shown, so a miss teaches. Two levels:
-      //   Level 1 (support)    — small rectangles, base/height labels, hints.
-      //   Level 2 (enrichment) — larger L-shapes you must DECOMPOSE, fewer labels.
+      // On wrong math the gaps and overflow flash and the correct area + the
+      // formula are shown, so a miss teaches — no lives, no fail state (calm,
+      // self-paced classroom mode). Two levels:
+      //   Level 1 (support)    — small rectangles + triangles, base/height
+      //                          labels, hints.
+      //   Level 2 (enrichment) — larger L-shapes you must DECOMPOSE + bigger
+      //                          triangles, fewer labels.
+      // Triangles (6.G.1 ½bh): a right triangle is drawn inside its
+      // surrounding rectangle; the student tiles the b×h rectangle and the
+      // teach is that the triangle is exactly HALF of it. b·h is always even,
+      // so every triangle area is a whole number.
 
       const W = 820,
         H = 600;
@@ -305,11 +312,6 @@
             setTimeout(() => this.play("sine", f, 0.25, 0.25), i * 110),
           );
         },
-        lose() {
-          [400, 330, 260, 200].forEach((f, i) =>
-            setTimeout(() => this.play("sawtooth", f, 0.3, 0.14), i * 170),
-          );
-        },
       };
 
       // Resolve the shared game-feel layer; provide safe no-op fallbacks so the
@@ -351,11 +353,60 @@
         if (el) el.textContent = msg;
       }
 
+      // ── Triangle problems (6.G.1: A = ½bh) ──────────────────────────────
+      // A right triangle drawn inside its surrounding b×h rectangle. The tile
+      // mechanic is unchanged: the student tiles the SURROUNDING RECTANGLE
+      // (cells = the b×h block), and the teach is that the triangle is exactly
+      // HALF of it — ½ × base × height. b·h is forced even, so the triangle's
+      // area is always a whole number.
+      function makeTriangle(level) {
+        let b, h;
+        do {
+          b = level === 1 ? randInt(2, 6) : randInt(3, 8);
+          h = level === 1 ? randInt(2, 5) : randInt(3, 6);
+        } while ((b * h) % 2 !== 0);
+        const oc = randInt(0, COLS - b),
+          or = randInt(0, ROWS - h);
+        const cells = new Set();
+        for (let r = 0; r < h; r++)
+          for (let c = 0; c < b; c++) cells.add(keyRC(oc + c, or + r));
+        const area = (b * h) / 2;
+        return {
+          level,
+          kind: "tri",
+          cells,
+          area,
+          rectArea: b * h,
+          oc,
+          or,
+          w: b,
+          h,
+          orient: randInt(0, 3), // which rectangle corner holds the right angle
+          label: "Triangle — half the rectangle",
+          prompt:
+            "Tile the rectangle AROUND the triangle, then Lock In — the triangle is half of it.",
+          why:
+            "Triangle area = ½ × base × height = ½ × " +
+            b +
+            " × " +
+            h +
+            " = " +
+            area +
+            " square units — half of the " +
+            b +
+            "×" +
+            h +
+            " rectangle you tiled.",
+        };
+      }
+
       // ── Problem generator (grid shapes) ─────────────────────────────────
       // Returns { level, kind, cells(Set "c,r"), area, oc, or, w, h, cw, ch,
       //           label, prompt, why }. Always on integer cells so an exact
       //           tile-cover is possible.
       function makeProblem(level) {
+        // Triangles join the mix at BOTH levels (~40% of problems).
+        if (Math.random() < 0.4) return makeTriangle(level);
         if (level === 1) {
           const w = randInt(2, 6),
             h = randInt(2, 5);
@@ -495,6 +546,11 @@
           term: "Decompose",
           emoji: "✂️",
           def: "Break a tricky shape into rectangles, find each area, then add them up.",
+        },
+        {
+          term: "Triangle area",
+          emoji: "📐",
+          def: "A triangle covers HALF of the rectangle around it: area = ½ × base × height.",
         },
       ];
 
@@ -793,7 +849,11 @@
           0x26a884,
           "Level 1",
           "Support",
-          ["Rectangles only", "Grid + base/height", "labels & extra hints"],
+          [
+            "Rectangles & triangles",
+            "Grid + base/height",
+            "labels & extra hints",
+          ],
           1,
         );
         this.makeCard(
@@ -802,7 +862,7 @@
           0x3585c9,
           "Level 2",
           "Enrichment",
-          ["L-shapes to decompose", "Larger figures", "fewer labels"],
+          ["L-shapes & triangles", "Larger figures", "fewer labels"],
           2,
         );
 
@@ -824,8 +884,8 @@
         this.input.keyboard.on("keydown-NUMPAD_ONE", () => this.choose(1));
         this.input.keyboard.on("keydown-NUMPAD_TWO", () => this.choose(2));
         srSay(
-          "Choose your level. Level 1 is support with rectangles. " +
-            "Level 2 is enrichment with L-shapes to decompose. Press 1 or 2.",
+          "Choose your level. Level 1 is support with rectangles and triangles. " +
+            "Level 2 is enrichment with L-shapes to decompose and bigger triangles. Press 1 or 2.",
         );
       };
       LevelScene.prototype.makeCard = function (
@@ -912,7 +972,6 @@
           window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
         this.score = 0;
-        this.lives = 3;
         this.streak = 0;
         this.level = aaLevel; // chosen difficulty (1 or 2), shown in HUD
         this.solved = 0; // problems answered correctly
@@ -939,10 +998,6 @@
         this.scoreText = this.add.text(16, 12, "Score: 0", {
           ...hudStyle,
           color: "#7ee0ad",
-        });
-        this.livesText = this.add.text(16, 36, "❤❤❤", {
-          ...hudStyle,
-          color: "#ff8f8f",
         });
         this.streakText = this.add
           .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#5fd0ef" })
@@ -1110,9 +1165,9 @@
           )
           .setOrigin(0.5);
 
-        // Red flash overlay (reused from the shell)
-        this.redFlash = this.add
-          .rectangle(W / 2, H / 2, W, H, 0xff3333, 0)
+        // Calm amber "try again" tint (no harsh red failure flash)
+        this.wrongTint = this.add
+          .rectangle(W / 2, H / 2, W, H, 0xffcf4d, 0)
           .setDepth(30);
 
         // ── Input: drag a rectangle of tiles on the grid ──
@@ -1224,6 +1279,26 @@
           if (!p.cells.has(keyRC(c + 1, r)))
             out.lineBetween(x + CELL, y, x + CELL, y + CELL);
         });
+
+        // Triangle problems: draw the triangle in gold inside the (already
+        // outlined) surrounding rectangle. The student tiles the rectangle;
+        // the triangle overlay makes "half of it" visible.
+        if (p.kind === "tri") {
+          const x0 = cellPX(p.oc),
+            y0 = cellPY(p.or);
+          const x1 = cellPX(p.oc + p.w),
+            y1 = cellPY(p.or + p.h);
+          const tri = [
+            [x0, y1, x1, y1, x0, y0], // right angle bottom-left
+            [x0, y1, x1, y1, x1, y0], // right angle bottom-right
+            [x0, y0, x1, y0, x0, y1], // right angle top-left
+            [x0, y0, x1, y0, x1, y1], // right angle top-right
+          ][p.orient];
+          out.fillStyle(0xffd24a, 0.25);
+          out.fillTriangle(tri[0], tri[1], tri[2], tri[3], tri[4], tri[5]);
+          out.lineStyle(4, 0xffd24a, 1);
+          out.strokeTriangle(tri[0], tri[1], tri[2], tri[3], tri[4], tri[5]);
+        }
 
         // Clear old labels, then add base/height labels (Level 1 only).
         this.labels.forEach((t) => t.destroy());
@@ -1389,13 +1464,21 @@
         this.drawTarget();
         this.recompute();
         this.drawCursor();
+        const p = this.problem;
         srSay(
-          this.problem.label +
+          p.label +
             ". " +
-            this.problem.prompt +
-            " A " +
-            (this.problem.kind === "rect" ? "rectangle" : "L-shape") +
-            " is outlined on the grid. Lay tiles to cover it exactly, then lock in.",
+            p.prompt +
+            " " +
+            (p.kind === "tri"
+              ? "A triangle is drawn inside a rectangle " +
+                p.w +
+                " across and " +
+                p.h +
+                " tall. Tile the whole rectangle, then lock in — the triangle's area is half of it."
+              : "A " +
+                (p.kind === "rect" ? "rectangle" : "L-shape") +
+                " is outlined on the grid. Lay tiles to cover it exactly, then lock in."),
         );
       };
 
@@ -1438,8 +1521,7 @@
           JUICE.audio.wrong();
           JUICE.shake(this, 0.008);
           this.streak = 0;
-          this.lives--;
-          this.flashRed();
+          this.flashWrong();
           // Teach: flash the gaps (amber) and overflow (red), then reveal the
           // correct full cover so the right area is visible.
           const g = this.gFlash;
@@ -1453,9 +1535,15 @@
             g.fillRect(cellPX(c) + 2, cellPY(r) + 2, CELL - 4, CELL - 4),
           );
           const msg =
-            "Not quite — the area is " +
-            p.area +
-            " square units. " +
+            (p.kind === "tri"
+              ? "Not quite — tile the whole " +
+                p.w +
+                "×" +
+                p.h +
+                " rectangle (" +
+                p.rectArea +
+                " tiles). "
+              : "Not quite — the area is " + p.area + " square units. ") +
             p.why +
             (gaps.length ? "  (amber = gaps)" : "") +
             (overflow.length ? "  (red = too many)" : "");
@@ -1483,14 +1571,8 @@
 
       GameScene.prototype.afterAttempt = function (correct) {
         this.updateHUD();
-        if (this.lives <= 0) {
-          // No-fail practice: refill hearts and keep going. Mistakes teach;
-          // they never end the game (calm, self-paced classroom mode).
-          this.lives = 3;
-          this.updateHUD();
-        }
         if (this.solved >= this.target) {
-          this.endGame(true);
+          this.endGame();
           return;
         }
         this.time.delayedCall(correct ? 950 : 1300, () => {
@@ -1520,11 +1602,12 @@
         });
       };
 
-      GameScene.prototype.flashRed = function () {
+      // Calm "not yet" cue: a soft amber wash instead of a red failure flash.
+      GameScene.prototype.flashWrong = function () {
         if (this.reduceMotion) return;
-        this.redFlash.setAlpha(0.35);
+        this.wrongTint.setAlpha(0.22);
         this.tweens.add({
-          targets: this.redFlash,
+          targets: this.wrongTint,
           alpha: 0,
           duration: 350,
         });
@@ -1532,13 +1615,12 @@
 
       GameScene.prototype.updateHUD = function () {
         this.scoreText.setText("Score: " + this.score);
-        this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
         this.streakText.setText("Streak: " + this.streak);
         this.levelText.setText("Level " + this.level);
         this.progressText.setText(this.solved + " / " + this.target);
       };
 
-      GameScene.prototype.endGame = function (won) {
+      GameScene.prototype.endGame = function () {
         this.locked = true;
         this.time.delayedCall(600, () => {
           this.scene.start("Result", {
@@ -1546,7 +1628,6 @@
             solved: this.solved,
             target: this.target,
             level: this.level,
-            won: won,
           });
         });
       };
@@ -1577,10 +1658,10 @@
         }
 
         this.add
-          .text(cx, 110, d.won ? "AREA MASTER!" : "OUT OF LIVES", {
+          .text(cx, 110, "AREA MASTER!", {
             fontFamily: "Impact, sans-serif",
             fontSize: "48px",
-            color: d.won ? "#7ee0ad" : "#ff8f8f",
+            color: "#7ee0ad",
             stroke: "#08141b",
             strokeThickness: 5,
           })
@@ -1629,8 +1710,7 @@
           })
           .setOrigin(0.5);
 
-        if (d.won) SFX.win();
-        else SFX.lose();
+        SFX.win();
 
         // EduPulse reporting (guarded; safe no-op without bridge).
         try {
@@ -1643,14 +1723,7 @@
               problemsAttempted: d.solved,
             });
         } catch (e) {}
-        srSay(
-          (d.won ? "You won! " : "Game over. ") +
-            "Final score " +
-            d.score +
-            ", " +
-            stars +
-            " stars.",
-        );
+        srSay("You won! Final score " + d.score + ", " + stars + " stars.");
 
         const btn = this.add
           .rectangle(cx, 400, 240, 54, 0x1f8f6e)
@@ -1697,7 +1770,9 @@
             "Area Attack, Decompose and Tile math game. A shape is outlined on a " +
               "unit grid. Drag across the grid, or use the arrow keys to move a " +
               "cursor and press F to set two corners, to lay rectangles of tiles " +
-              "that exactly cover the shape. Watch the area count, then press " +
+              "that exactly cover the shape. For triangle problems, tile the " +
+              "rectangle around the triangle; the triangle's area is half of it. " +
+              "Watch the area count, then press " +
               "Lock In, Enter, or Space. Use U to undo and C to clear.",
           );
           cv.setAttribute("aria-roledescription", "math game");
@@ -1724,25 +1799,30 @@
     <!-- Student Passport (meta-progression: lifetime XP / streak / badges) -->
     <script src="/assets/lesson-passport.js" defer></script>
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <script src="/assets/game-access.js" defer></script>
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <script src="/assets/game-hint-ladder.js" defer></script>
-  <script>
-      window.addEventListener('DOMContentLoaded', function () {
-        if (window.NeftHintLadder) window.NeftHintLadder.watch({
-          sourceSelector: "#aa-sr",
-          standard: "6.G.1",
-          staticHints: ["Can you break this shape into rectangles or triangles you already know how to measure?","Recall the area rules: rectangle = base × height; triangle = ½ × base × height.","Set it up: find each piece's area with the formula, then add (or subtract) — you finish the arithmetic."]
-        });
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#aa-sr",
+            standard: "6.G.1",
+            staticHints: [
+              "Can you break this shape into rectangles or triangles you already know how to measure?",
+              "Recall the area rules: rectangle = base × height; triangle = ½ × base × height.",
+              "Set it up: find each piece's area with the formula, then add (or subtract) — you finish the arithmetic.",
+            ],
+          });
       });
     </script>
-  <!-- ghl-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
-  <script src="/assets/canvas-bridge.js" defer></script>
-  <!-- canvas-bridge-injected:end -->
-</body>
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+  </body>
 </html>

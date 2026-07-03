@@ -122,15 +122,15 @@
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <link rel="stylesheet" href="/assets/game-access.css">
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <link rel="stylesheet" href="/assets/game-hint-ladder.css">
-  <!-- ghl-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated spark-field (behind the Phaser canvas). -->
     <div id="dd-bg" data-parallax aria-hidden="true">
@@ -913,7 +913,6 @@
         );
         this.mode = ddMode; // 1 = Level 1 (support), 2 = Level 2 (enrichment)
         this.score = 0;
-        this.lives = 3;
         this.streak = 0;
         this.level = 1; // internal difficulty ramp WITHIN the chosen mode
         this.solved = 0; // problems answered correctly
@@ -939,10 +938,6 @@
         this.scoreText = this.add.text(16, 12, "Score: 0", {
           ...hudStyle,
           color: "#5ad1ff",
-        });
-        this.livesText = this.add.text(16, 36, "❤❤❤", {
-          ...hudStyle,
-          color: "#ff8f8f",
         });
         this.streakText = this.add
           .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#d4952a" })
@@ -1080,9 +1075,9 @@
           )
           .setOrigin(0.5);
 
-        // Red flash for a wrong placement.
-        this.redFlash = this.add
-          .rectangle(W / 2, H / 2, W, H, 0xff3333, 0)
+        // Brief calm amber tint for a not-yet placement (no-fail practice).
+        this.amberTint = this.add
+          .rectangle(W / 2, H / 2, W, H, 0xf0b44a, 0)
           .setDepth(30);
 
         // Input: drag/tap on or near the line; arrows / A·D nudge ±1 tick;
@@ -1328,8 +1323,7 @@
           SFX.bad();
           JUICE.audio.wrong();
           this.streak = 0;
-          this.lives--;
-          this.flashRed();
+          this.flashAmber();
           JUICE.shake(this, 0.006);
           this.beads.forEach((b) => {
             if (b.idx !== b.targetIdx) b.body.setFillStyle(0xc23b3b);
@@ -1374,14 +1368,8 @@
           }
         }
         this.updateHUD();
-        if (this.lives <= 0) {
-          // No-fail practice: refill hearts and keep going. Mistakes teach;
-          // they never end the game (calm, self-paced classroom mode).
-          this.lives = 3;
-          this.updateHUD();
-        }
         if (this.solved >= this.target) {
-          this.endGame(true);
+          this.endGame();
           return;
         }
         this.time.delayedCall(correct ? 900 : 1200, () => {
@@ -1411,11 +1399,11 @@
         });
       };
 
-      GameScene.prototype.flashRed = function () {
+      GameScene.prototype.flashAmber = function () {
         if (this.reduceMotion) return;
-        this.redFlash.setAlpha(0.35);
+        this.amberTint.setAlpha(0.18);
         this.tweens.add({
-          targets: this.redFlash,
+          targets: this.amberTint,
           alpha: 0,
           duration: 350,
         });
@@ -1423,21 +1411,19 @@
 
       GameScene.prototype.updateHUD = function () {
         this.scoreText.setText("Score: " + this.score);
-        this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
         this.streakText.setText("Streak: " + this.streak);
         // levelText shows the CHOSEN level (Support / Enrichment); it is set
         // once in create() and stays fixed for the game.
         this.progressText.setText(this.solved + " / " + this.target);
       };
 
-      GameScene.prototype.endGame = function (won) {
+      GameScene.prototype.endGame = function () {
         this.locked = true;
         this.time.delayedCall(500, () => {
           this.scene.start("Result", {
             score: this.score,
             solved: this.solved,
             target: this.target,
-            won: won,
           });
         });
       };
@@ -1473,10 +1459,10 @@
         }
 
         this.add
-          .text(cx, 110, d.won ? "NUMBER-LINE MASTER!" : "OUT OF LIVES", {
+          .text(cx, 110, "NUMBER-LINE MASTER!", {
             fontFamily: "Impact, sans-serif",
             fontSize: "46px",
-            color: d.won ? "#5ad1ff" : "#ff8f8f",
+            color: "#5ad1ff",
             stroke: "#0a1626",
             strokeThickness: 5,
           })
@@ -1528,13 +1514,9 @@
             })
             .setOrigin(0.5);
 
-        if (d.won) {
-          SFX.win();
-          JUICE.audio.fanfare();
-          JUICE.confetti(this, 4);
-        } else {
-          SFX.lose();
-        }
+        SFX.win();
+        JUICE.audio.fanfare();
+        JUICE.confetti(this, 4);
 
         // EduPulse reporting (guarded; safe no-op without bridge).
         try {
@@ -1548,14 +1530,7 @@
               problemsAttempted: d.target,
             });
         } catch (e) {}
-        srSay(
-          (d.won ? "You won! " : "Game over. ") +
-            "Final score " +
-            d.score +
-            ", " +
-            stars +
-            " stars.",
-        );
+        srSay("You won! Final score " + d.score + ", " + stars + " stars.");
 
         const btn = this.add
           .rectangle(cx, 410, 220, 54, 0x1a6fb5)
@@ -1633,25 +1608,30 @@
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <script src="/assets/game-access.js" defer></script>
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <script src="/assets/game-hint-ladder.js" defer></script>
-  <script>
-      window.addEventListener('DOMContentLoaded', function () {
-        if (window.NeftHintLadder) window.NeftHintLadder.watch({
-          sourceSelector: "#dd-sr",
-          standard: "6.NS.3",
-          staticHints: ["Look at the place values. Which two whole numbers does this decimal sit between?","Line up the decimal points, then compare digit by digit from the left (tenths, then hundredths).","Set it up: count how many tenths/hundredths past the smaller whole number, then place your marker there."]
-        });
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#dd-sr",
+            standard: "6.NS.3",
+            staticHints: [
+              "Look at the place values. Which two whole numbers does this decimal sit between?",
+              "Line up the decimal points, then compare digit by digit from the left (tenths, then hundredths).",
+              "Set it up: count how many tenths/hundredths past the smaller whole number, then place your marker there.",
+            ],
+          });
       });
     </script>
-  <!-- ghl-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
-  <script src="/assets/canvas-bridge.js" defer></script>
-  <!-- canvas-bridge-injected:end -->
-</body>
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+  </body>
 </html>

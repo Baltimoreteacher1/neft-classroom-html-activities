@@ -70,14 +70,32 @@
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <link rel="stylesheet" href="/assets/game-access.css">
-  <!-- gacc-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
+  </head>
   <body>
     <a class="nt-back-hub" href="../index.html" aria-label="Back to Unit 2 hub"
       >← Back to Unit&nbsp;2</a
     >
     <div id="game"></div>
+    <!-- Visually-hidden live region: mirrors the current pour order for
+         assistive tech and the shared hint ladder. Additive only. -->
+    <div
+      id="fk-sr"
+      role="status"
+      aria-live="polite"
+      style="
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      "
+    ></div>
     <script>
       // ───────────────────────────────────────────────────────────
       // FRACTION KITCHEN — POUR MASTER  (Neft Teacher)
@@ -515,6 +533,11 @@
           this.orderText.setText(
             `${o.food}   —   fill to  ${o.shownNum}/${o.shownDen}`,
           );
+          // Mirror the order into the hidden live region (assistive tech +
+          // shared hint ladder). Additive: never touches gameplay/scoring.
+          const fkSr = document.getElementById("fk-sr");
+          if (fkSr)
+            fkSr.textContent = `Order for ${o.food}: fill the jug to ${o.shownNum}/${o.shownDen}. The jug is marked in ${o.jugDen}ths.`;
 
           // Equivalent-fraction hint: dedicated text that scales + glows so
           // students notice they must convert against the jug's gradations.
@@ -937,7 +960,25 @@
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <script src="/assets/game-access.js" defer></script>
-  <!-- gacc-injected:end -->
-</body>
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#fk-sr",
+            standard: "6.NS.1",
+            accept: "^Order ",
+            staticHints: [
+              "Look at the jug: how many equal parts do the lines split it into? Each line marks one unit fraction of the whole jug.",
+              "If the order's fraction uses a different denominator than the jug's lines, find an equivalent fraction that matches the jug's parts.",
+              "Set it up: decide how many jug lines up from the bottom the order needs, then pour slowly and release right at that line.",
+            ],
+          });
+      });
+    </script>
+    <!-- ghl-injected:end -->
+  </body>
 </html>

@@ -7,7 +7,7 @@
     <title>Fraction Frenzy — Partition &amp; Shade | Math Games</title>
     <meta
       name="description"
-      content="A build-it math game for Grade 6 lessons 2.1-2.5 (6.NS.1): cut a bar into equal parts and shade it to model a fraction, an equivalent fraction, or to count how many unit fractions fit in a whole — no timer, no reflex, wrong math shows the correct model so it teaches."
+      content="A build-it math game for Grade 6 lessons 2.1-2.5 (6.NS.1): cut a bar into equal parts and shade it to model a fraction, an equivalent fraction, to count how many unit fractions fit in a whole, or to divide a fraction by a fraction (how many 2/3 are in 2?) — no timer, no reflex, wrong math shows the correct model so it teaches."
     />
     <style>
       * {
@@ -122,15 +122,15 @@
     <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
     <script src="/assets/game-juice.js"></script>
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <link rel="stylesheet" href="/assets/game-access.css">
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <link rel="stylesheet" href="/assets/game-hint-ladder.css">
-  <!-- ghl-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated mote-field (behind the Phaser canvas). -->
     <div id="fr-bg" data-parallax aria-hidden="true">
@@ -214,11 +214,12 @@
       // You first CUT the bar into N equal parts with the −/+ steppers (or ← →),
       // then SHADE parts by tapping them (or ↑ ↓) to BUILD the target fraction.
       // Higher levels switch to a measurement model — wholes split into unit
-      // fractions, "how many 1/4 fit in 2?" — so the same cut-and-shade action
-      // teaches modeling, equivalence, and dividing by a unit fraction.
+      // fractions, "how many 1/4 fit in 2?" and full fraction ÷ fraction,
+      // "how many 2/3 are in 2?" — so the same cut-and-shade action teaches
+      // modeling, equivalence, and dividing fractions (6.NS.1).
       // Lock In checks BOTH the cut count and the shaded count. A wrong build
-      // (wrong math) costs a life, then the bar snaps to the correct model to
-      // teach, and play continues.
+      // (wrong math) snaps the bar to the correct model to teach, and play
+      // continues — no lives, no fail state (calm, self-paced classroom mode).
 
       const W = 820,
         H = 600;
@@ -282,11 +283,6 @@
             setTimeout(() => this.play("sine", f, 0.25, 0.25), i * 110),
           );
         },
-        lose() {
-          [400, 330, 260, 200].forEach((f, i) =>
-            setTimeout(() => this.play("sawtooth", f, 0.3, 0.14), i * 170),
-          );
-        },
       };
 
       // Resolve the shared game-feel layer; provide safe no-op fallbacks so the
@@ -313,17 +309,92 @@
         if (el) el.textContent = msg;
       }
 
+      // ── Fraction ÷ fraction (the heart of 6.NS.1): a/b ÷ c/b = a ÷ c. ──
+      // "How many c/b are in D?" where D = a/b (shown as a whole number when
+      // a is a multiple of b). The student cuts each whole into b parts and
+      // shades a pieces (the dividend); the WHY shows the shaded pieces
+      // grouping into q groups of c. c divides a, so the quotient q = a/c is
+      // ALWAYS a whole number, at both tiers.
+      //   tier 1 (support)    : b = 3–4, quotients 2–3, small dividends.
+      //   tier 2 (enrichment) : b = 3–6, quotients up to 4, bigger dividends.
+      // Bar-capacity guarantee: total pieces = ceil(a/b)·b never exceeds 12,
+      // so the required cut count is always reachable (see maxParts()).
+      function fracDivProblem(tier) {
+        const b = tier === 1 ? randInt(3, 4) : randInt(3, 6);
+        const c = randInt(2, b - 1);
+        // Most 1/b pieces the bar can show: floor(12/b) wholes of b pieces.
+        const pieceCap = Math.floor(12 / b) * b;
+        const qMax = Math.min(tier === 1 ? 3 : 4, Math.floor(pieceCap / c));
+        const q = randInt(2, Math.max(2, qMax)); // whole-number quotient
+        const a = q * c; // dividend numerator (c | a by construction)
+        const wholes = Math.ceil(a / b);
+        const divStr = a % b === 0 ? String(a / b) : a + "/" + b;
+        const shadeStr =
+          a % b === 0
+            ? a / b === 1
+              ? "1 whole"
+              : a / b + " wholes"
+            : divStr + " of the bar";
+        return {
+          kind: "fracdiv",
+          label: "Divide a fraction by a fraction",
+          wholes,
+          targetParts: b,
+          targetShaded: a,
+          prompt:
+            "How many " +
+            c +
+            "/" +
+            b +
+            " are in " +
+            divStr +
+            "? Cut each whole into " +
+            b +
+            " equal parts, shade " +
+            shadeStr +
+            ", then see how many groups of " +
+            c +
+            " fit.",
+          why:
+            divStr +
+            " is " +
+            a +
+            " pieces of 1/" +
+            b +
+            ", and " +
+            a +
+            " pieces make " +
+            q +
+            " groups of " +
+            c +
+            "/" +
+            b +
+            " — so " +
+            divStr +
+            " ÷ " +
+            c +
+            "/" +
+            b +
+            " = " +
+            q +
+            ".",
+        };
+      }
+
       // ── Problem generator (partition & shade) ───────────────────────────
       // Every problem reduces to one tactile action: cut the bar into the right
       // number of equal parts and shade the right number of them. Returns
       //   { kind, label, prompt, why, wholes, targetParts, targetShaded }
       // Two chosen TIERS drive the math, and the in-run stage (1-8) ramps within:
-      //   tier 1 (support)    : modeling only, friendly denominators 2–4.
-      //   tier 2 (enrichment) : larger denominators + equivalent + dividing by a
-      //                         unit fraction, mixed in sooner.
+      //   tier 1 (support)    : modeling first, friendly denominators 2–4;
+      //                         fraction ÷ fraction joins at stage 3+.
+      //   tier 2 (enrichment) : larger denominators + equivalent + dividing by
+      //                         a unit fraction + fraction ÷ fraction.
       function fracProblem(stage, tier) {
-        // ── Tier 1 (support): model proper fractions only, denominators 2–4. ──
+        // ── Tier 1 (support): model proper fractions, denominators 2–4;
+        //    later stages mix in gentle fraction ÷ fraction problems. ──
         if (tier === 1) {
+          if (stage >= 3 && Math.random() < 0.35) return fracDivProblem(1);
           const d = randInt(2, stage <= 2 ? 3 : 4);
           const n = randInt(1, d - 1);
           return {
@@ -346,16 +417,32 @@
           };
         }
 
-        // ── Tier 2 (enrichment): model + equivalent + divide by a unit fraction.
+        // ── Tier 2 (enrichment): model + equivalent + divide by a unit
+        //    fraction + fraction ÷ fraction. ──
         let kind;
         if (stage <= 1) kind = Math.random() < 0.6 ? "model" : "equiv";
         else if (stage <= 3) {
           const r = Math.random();
-          kind = r < 0.4 ? "model" : r < 0.7 ? "equiv" : "divide";
+          kind =
+            r < 0.3
+              ? "model"
+              : r < 0.55
+                ? "equiv"
+                : r < 0.8
+                  ? "divide"
+                  : "fracdiv";
         } else {
           const r = Math.random();
-          kind = r < 0.3 ? "model" : r < 0.55 ? "equiv" : "divide";
+          kind =
+            r < 0.2
+              ? "model"
+              : r < 0.4
+                ? "equiv"
+                : r < 0.65
+                  ? "divide"
+                  : "fracdiv";
         }
+        if (kind === "fracdiv") return fracDivProblem(tier);
 
         if (kind === "equiv") {
           const bases = [
@@ -505,6 +592,11 @@
           term: "Unit fraction",
           emoji: "1️⃣",
           def: "A fraction with 1 on top, like 1/4. It is ONE equal part of the whole.",
+        },
+        {
+          term: "Quotient",
+          emoji: "➗",
+          def: "The answer to a division problem. 2 ÷ 2/3 = 3 because three 2/3 pieces fit inside 2.",
         },
       ];
 
@@ -867,7 +959,7 @@
           2,
           "LEVEL 2",
           "Enrichment",
-          "Bigger denominators, equal\nfractions, and dividing by\nunit fractions. Fewer hints.",
+          "Bigger denominators, equal\nfractions, and dividing\nfractions (like 2 ÷ 2/3).",
           0xb83a6e,
           0xd24a82,
         );
@@ -899,7 +991,6 @@
         );
         this.tier = ffTier; // 1 = support, 2 = enrichment (from Level Select)
         this.score = 0;
-        this.lives = 3;
         this.streak = 0;
         this.level = 1; // in-run difficulty stage (ramps 1→8)
         this.solved = 0; // problems answered correctly
@@ -925,10 +1016,6 @@
         this.scoreText = this.add.text(16, 12, "Score: 0", {
           ...hudStyle,
           color: "#f0aec8",
-        });
-        this.livesText = this.add.text(16, 36, "❤❤❤", {
-          ...hudStyle,
-          color: "#ff8f8f",
         });
         this.streakText = this.add
           .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#ffd24a" })
@@ -1117,7 +1204,7 @@
           )
           .setOrigin(0.5);
 
-        // Particles + red flash
+        // Particles + calm amber "try again" tint (no harsh red failure flash)
         this.burst = this.add
           .particles(0, 0, "spark", {
             speed: { min: 80, max: 240 },
@@ -1129,8 +1216,8 @@
             tint: [0xffd24a, 0x8fd6a0, 0xff7ba8, 0xffffff],
           })
           .setDepth(20);
-        this.redFlash = this.add
-          .rectangle(W / 2, H / 2, W, H, 0xff3333, 0)
+        this.wrongTint = this.add
+          .rectangle(W / 2, H / 2, W, H, 0xffcf4d, 0)
           .setDepth(30);
 
         // Keyboard: ← → / A·D change the cut; ↑ ↓ / W·S change shaded; Enter/Space lock.
@@ -1302,7 +1389,9 @@
         // (enrichment) runs without it.
         if (this.tier === 1) {
           this.tipText.setText(
-            "Tip: the BOTTOM number tells how many parts to cut, the TOP tells how many to shade.",
+            this.problem.kind === "fracdiv"
+              ? "Tip: shade the starting amount first, then count equal groups the size of the divisor's TOP number."
+              : "Tip: the BOTTOM number tells how many parts to cut, the TOP tells how many to shade.",
           );
         } else {
           this.tipText.setText("");
@@ -1343,8 +1432,7 @@
         } else {
           SFX.bad();
           this.streak = 0;
-          this.lives--;
-          this.flashRed();
+          this.flashWrong();
           JUICE.shake(this, 0.008);
           this.feedback.setText("Not quite — " + p.why).setAlpha(1);
           srSay("Not quite. " + p.why);
@@ -1373,14 +1461,8 @@
           this.flash(W / 2, 200, "STAGE " + this.level + "!", "#ffd24a");
         }
         this.updateHUD();
-        if (this.lives <= 0) {
-          // No-fail practice: refill hearts and keep going. Mistakes teach;
-          // they never end the game (calm, self-paced classroom mode).
-          this.lives = 3;
-          this.updateHUD();
-        }
         if (this.solved >= this.target) {
-          this.endGame(true);
+          this.endGame();
           return;
         }
         this.time.delayedCall(900, () => {
@@ -1410,11 +1492,12 @@
         });
       };
 
-      GameScene.prototype.flashRed = function () {
+      // Calm "not yet" cue: a soft amber wash instead of a red failure flash.
+      GameScene.prototype.flashWrong = function () {
         if (this.reduceMotion) return;
-        this.redFlash.setAlpha(0.35);
+        this.wrongTint.setAlpha(0.22);
         this.tweens.add({
-          targets: this.redFlash,
+          targets: this.wrongTint,
           alpha: 0,
           duration: 350,
         });
@@ -1422,20 +1505,18 @@
 
       GameScene.prototype.updateHUD = function () {
         this.scoreText.setText("Score: " + this.score);
-        this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
         this.streakText.setText("Streak: " + this.streak);
         this.stageText.setText("Stage " + this.level);
         this.progressText.setText(this.solved + " / " + this.target);
       };
 
-      GameScene.prototype.endGame = function (won) {
+      GameScene.prototype.endGame = function () {
         this.locked = true;
         this.time.delayedCall(500, () => {
           this.scene.start("Result", {
             score: this.score,
             solved: this.solved,
             target: this.target,
-            won: won,
           });
         });
       };
@@ -1466,10 +1547,10 @@
         }
 
         this.add
-          .text(cx, 110, d.won ? "FRACTION MASTER!" : "OUT OF LIVES", {
+          .text(cx, 110, "FRACTION MASTER!", {
             fontFamily: "Impact, sans-serif",
             fontSize: "48px",
-            color: d.won ? "#8fd6a0" : "#ff8f8f",
+            color: "#8fd6a0",
             stroke: "#1c0c19",
             strokeThickness: 5,
           })
@@ -1512,8 +1593,7 @@
           })
           .setOrigin(0.5);
 
-        if (d.won) SFX.win();
-        else SFX.lose();
+        SFX.win();
 
         // EduPulse reporting (guarded; safe no-op without bridge).
         try {
@@ -1527,14 +1607,7 @@
               problemsAttempted: d.target,
             });
         } catch (e) {}
-        srSay(
-          (d.won ? "You won! " : "Game over. ") +
-            "Final score " +
-            d.score +
-            ", " +
-            stars +
-            " stars.",
-        );
+        srSay("You won! Final score " + d.score + ", " + stars + " stars.");
 
         const btn = this.add
           .rectangle(cx, 400, 220, 54, 0xb83a6e)
@@ -1608,25 +1681,31 @@
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <script src="/assets/game-access.js" defer></script>
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <script src="/assets/game-hint-ladder.js" defer></script>
-  <script>
-      window.addEventListener('DOMContentLoaded', function () {
-        if (window.NeftHintLadder) window.NeftHintLadder.watch({
-          sourceSelector: "#fr-sr",
-          standard: "6.NS.1",
-          staticHints: ["Dividing by a fraction asks: how many of that fraction fit inside the other number?","Use keep–change–flip: keep the first fraction, change ÷ to ×, flip the second.","Set it up: rewrite it as a multiplication problem, then you do the multiplying."]
-        });
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#fr-sr",
+            standard: "6.NS.1",
+            staticHints: [
+              "Dividing by a fraction asks: how many of that fraction fit inside the other number?",
+              "On the bar: cut every whole into the denominator's parts, shade the starting amount, then count equal groups the size of the divisor.",
+              "Use keep–change–flip: keep the first fraction, change ÷ to ×, flip the second.",
+              "Set it up: rewrite it as a multiplication problem, then you do the multiplying.",
+            ],
+          });
       });
     </script>
-  <!-- ghl-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
-  <script src="/assets/canvas-bridge.js" defer></script>
-  <!-- canvas-bridge-injected:end -->
-</body>
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+  </body>
 </html>

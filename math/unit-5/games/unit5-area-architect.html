@@ -107,6 +107,19 @@
           opacity: 0.4 !important;
         }
       }
+      /* Visually-hidden live region: mirrors the blueprint prompt and each
+         lock-in result for screen readers (also feeds the hint ladder). */
+      #aa-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
     </style>
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
     <script>
@@ -137,6 +150,9 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
     <link rel="stylesheet" href="/assets/game-access.css" />
     <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
   </head>
   <body>
     <!-- Bespoke animated parallax cityscape (behind the Phaser canvas).
@@ -144,6 +160,8 @@
     <div id="aa-bg" data-parallax aria-hidden="true">
       <div id="aa-bg-layer" data-parallax-layer></div>
     </div>
+    <!-- Screen-reader live region mirrors the current blueprint + result. -->
+    <div id="aa-sr" role="status" aria-live="polite"></div>
     <script>
       // ── Parallax cityscape builder + pointer driver (additive, gameplay-neutral) ──
       // Procedurally builds a layered skyline of CSS towers + twinkling lights
@@ -254,9 +272,15 @@
       })();
     </script>
     <script>
-      // ── AREA ARCHITECT — City Builder / Tetris Hybrid ──
-      // Phaser 3 — Grade 6 Math — Area of 2D Shapes
-      // Enhanced: particles, streak system, star rating, high scores, power-ups, juice
+      // ── AREA ARCHITECT — City Builder (build-the-shape edition) ──
+      // Phaser 3 — Grade 6 Math — 6.G.A.1 (areas of triangles, special
+      // quadrilaterals, and composite figures).
+      //
+      // Math-as-mechanic rebuild: instead of picking one of four answers, the
+      // student BUILDS each shape on the blueprint grid with +/− steppers
+      // (full keyboard + tap paths), watching a live formula readout until it
+      // matches the blueprint, then locks the build in. Calm and self-paced:
+      // no timer, no falling shapes, and hearts refill (no game-over).
 
       const LS_KEY = "area_architect_highscore";
 
@@ -314,22 +338,6 @@
           this.play("sawtooth", 150, 0.3, 0.15);
           this.noise(0.15, 0.1);
         },
-        glassBreak() {
-          this.noise(0.2, 0.15);
-          this.play("square", 800, 0.05, 0.1);
-          this.play("square", 1200, 0.04, 0.08);
-          this.play("square", 600, 0.06, 0.08);
-        },
-        crack() {
-          this.noise(0.15, 0.15);
-          this.play("square", 100, 0.1, 0.1);
-        },
-        rowClear() {
-          this.play("sine", 523, 0.08);
-          this.play("sine", 659, 0.08);
-          this.play("sine", 784, 0.1);
-          this.play("sine", 1047, 0.15);
-        },
         drop() {
           this.play("triangle", 200, 0.08, 0.15);
         },
@@ -353,11 +361,6 @@
             setTimeout(() => this.play("sine", f, 0.18, 0.3), i * 45),
           );
         },
-        powerUp() {
-          [440, 554, 659, 880].forEach((f, i) =>
-            setTimeout(() => this.play("triangle", f, 0.12, 0.2), i * 70),
-          );
-        },
         levelUp() {
           [523, 659, 784, 880, 1047].forEach((f, i) =>
             setTimeout(() => this.play("sine", f, 0.15, 0.25), i * 80),
@@ -378,11 +381,6 @@
             setTimeout(() => this.play("sine", f, 0.3, 0.3), i * 100),
           );
         },
-        lose() {
-          [400, 350, 300, 200].forEach((f, i) =>
-            setTimeout(() => this.play("sawtooth", f, 0.3, 0.15), i * 180),
-          );
-        },
         tick() {
           this.play("square", 600, 0.03, 0.08);
         },
@@ -393,139 +391,291 @@
         },
       };
 
+      // Screen-reader announcer: mirrors the current blueprint prompt and each
+      // lock-in result into the #aa-sr aria-live region. This region is also
+      // what the Socratic hint ladder watches (see the ghl block at the end of
+      // the page).
+      function srSay(msg) {
+        const el = document.getElementById("aa-sr");
+        if (el) el.textContent = msg;
+      }
+
+      // ── AA_PURE_BEGIN — round generator + lock validation (pure logic) ──
+      // No Phaser/DOM in this section: it is extracted verbatim and unit-run
+      // under node during QA, so keep it self-contained.
       function randInt(a, b) {
         return Math.floor(Math.random() * (b - a + 1)) + a;
       }
-      function shuffle(a) {
-        const r = [...a];
-        for (let i = r.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [r[i], r[j]] = [r[j], r[i]];
-        }
-        return r;
+      function fmtNum(n) {
+        return Number.isInteger(n)
+          ? String(n)
+          : String(Math.round(n * 10) / 10);
+      }
+      const DIM_LABELS = {
+        b: "the base",
+        h: "the height",
+        b1: "base b₁",
+        b2: "base b₂",
+      };
+      function dimLabel(k) {
+        return DIM_LABELS[k] || k;
       }
 
-      // ── Shape & Question Generator ──
-      function generateShapeQuestion(difficulty) {
-        const types =
-          difficulty === "easy"
-            ? ["rectangle", "parallelogram"]
-            : difficulty === "medium"
-              ? ["rectangle", "parallelogram", "triangle"]
-              : [
-                  "rectangle",
-                  "parallelogram",
-                  "triangle",
-                  "trapezoid",
-                  "composite",
-                ];
-        const type = types[randInt(0, types.length - 1)];
+      // Rounds where the target is (base, height): the blueprint fixes one
+      // dimension and the target area; the student sizes the other dimension.
+      function baseHeightRound(type, b, h, area) {
+        const givenKey = Math.random() < 0.5 ? "b" : "h";
+        const target = { b, h };
+        const dims = { b: 2, h: 2 };
+        dims[givenKey] = target[givenKey];
+        const given = {};
+        given[givenKey] = target[givenKey];
+        return {
+          type,
+          area,
+          target,
+          given,
+          freeKey: givenKey === "b" ? "h" : "b",
+          dims,
+        };
+      }
 
-        let prompt, answer, dims, formula, choices, shapeData;
-        const maxDim =
-          difficulty === "easy" ? 15 : difficulty === "medium" ? 20 : 30;
-        const minDim = difficulty === "easy" ? 3 : 4;
-
-        if (type === "rectangle") {
-          const b = randInt(minDim, maxDim),
-            h = randInt(minDim, maxDim);
-          const area = b * h;
-          prompt = `Rectangle: base=${b}, height=${h}`;
-          formula = `A = b × h = ${b} × ${h}`;
-          answer = area;
-          dims = { b, h };
-          shapeData = { type, b, h, color: 0x4488ff };
-          choices = [area, b + h, 2 * (b + h), b * h + randInt(1, 10)];
-        } else if (type === "parallelogram") {
-          const b = randInt(minDim, maxDim),
-            h = randInt(minDim, maxDim);
-          const area = b * h;
-          prompt = `Parallelogram: base=${b}, height=${h}`;
-          formula = `A = b × h = ${b} × ${h}`;
-          answer = area;
-          dims = { b, h };
-          shapeData = { type, b, h, color: 0xff8844 };
-          choices = [area, b + h, (b * h) / 2, b * h + randInt(-5, 5)];
-        } else if (type === "triangle") {
-          const b = randInt(minDim, maxDim),
-            h = randInt(minDim, maxDim);
-          const area = (b * h) / 2;
-          prompt = `Triangle: base=${b}, height=${h}`;
-          formula = `A = ½ × b × h = ½ × ${b} × ${h}`;
-          answer = area;
-          dims = { b, h };
-          shapeData = { type, b, h, color: 0x44cc88 };
-          choices = [area, b * h, b + h, (b * h) / 2 + randInt(1, 8)];
-        } else if (type === "trapezoid") {
-          const b1 = randInt(minDim, maxDim),
-            b2 = randInt(minDim, maxDim),
-            h = randInt(minDim, maxDim);
-          const area = ((b1 + b2) * h) / 2;
-          prompt = `Trapezoid: bases=${b1} & ${b2}, height=${h}`;
-          formula = `A = ½(b₁+b₂)×h = ½(${b1}+${b2})×${h}`;
-          answer = area;
-          dims = { b1, b2, h };
-          shapeData = { type, b1, b2, h, color: 0xcc44cc };
-          choices = [area, b1 * h, b2 * h, (b1 + b2) * h];
-        } else {
-          // Composite: rectangle + triangle
-          const rw = randInt(minDim, 12),
-            rh = randInt(minDim, 10),
-            th = randInt(minDim, 8);
-          const rectArea = rw * rh;
-          const triArea = (rw * th) / 2;
-          const area = rectArea + triArea;
-          prompt = `L-shape: rect ${rw}×${rh} + triangle base=${rw}, h=${th}`;
-          formula = `A = ${rw}×${rh} + ½×${rw}×${th}`;
-          answer = area;
-          dims = { rw, rh, tw: rw, th };
-          shapeData = {
-            type: "composite",
-            rw,
-            rh,
-            tw: rw,
-            th,
-            color: 0xddaa00,
+      function makeRound(type) {
+        if (type === "rectangle" || type === "parallelogram") {
+          // Parallelograms draw with a 1-cell slant, so cap the base at 9.
+          const b = randInt(2, type === "parallelogram" ? 9 : 10);
+          const h = randInt(2, 10);
+          return baseHeightRound(type, b, h, b * h);
+        }
+        if (type === "triangle") {
+          const b = randInt(2, 10);
+          let h = randInt(2, 10);
+          if ((b * h) % 2) h += 1; // keep ½·b·h a whole number (h ≤ 11 fits)
+          return baseHeightRound(type, b, h, (b * h) / 2);
+        }
+        if (type === "trapezoid") {
+          let h = randInt(2, 8);
+          const b1 = randInt(2, 7);
+          let b2 = randInt(2, 10);
+          if (b2 === b1) b2 = b1 < 10 ? b1 + 1 : b1 - 1;
+          if (((b1 + b2) * h) % 2) h += 1; // keep the area a whole number
+          return {
+            type,
+            area: ((b1 + b2) * h) / 2,
+            target: { b1, b2, h },
+            given: { b1, h },
+            freeKey: "b2",
+            dims: { b1, b2: 2, h },
           };
-          choices = [
-            area,
-            rectArea,
-            triArea,
-            rectArea + triArea + randInt(1, 10),
-          ];
         }
-
-        // Ensure exactly 4 distinct, positive choices that always include the
-        // answer. Build the distractor pool first (rounded, positive, !== answer
-        // and unique), then top it up with safe near-misses if collisions left
-        // us short — so we never render a blank/duplicate answer button.
-        const ans = Math.round(answer * 10) / 10;
-        const seen = new Set([ans]);
-        const distractors = [];
-        choices.forEach((c) => {
-          const v = Math.round(c * 10) / 10;
-          if (v > 0 && !seen.has(v)) {
-            seen.add(v);
-            distractors.push(v);
-          }
-        });
-        let guard = 0;
-        while (distractors.length < 3 && guard++ < 50) {
-          const v = Math.round((ans + randInt(1, 12)) * 10) / 10;
-          if (v > 0 && !seen.has(v)) {
-            seen.add(v);
-            distractors.push(v);
-          }
-        }
-        choices = shuffle([ans, ...distractors.slice(0, 3)]);
-
-        return { prompt, answer: ans, formula, choices, shapeData, type, dims };
+        // Composite: L-shape = outer W×H rectangle with a top-right corner cut
+        // away. Phase 1: pick a slicing line; phase 2: lock in the total area.
+        const W = randInt(6, 10);
+        const H = randInt(6, 10);
+        return {
+          type: "composite",
+          W,
+          H,
+          nw: randInt(2, W - 3),
+          nh: randInt(2, H - 3),
+          get area() {
+            return this.W * this.H - this.nw * this.nh;
+          },
+          sliceIndex: 0,
+          phase: "slice",
+          total: 0,
+        };
       }
+
+      function generateRound(levelNum) {
+        const types =
+          levelNum === 1
+            ? ["rectangle", "parallelogram", "triangle"]
+            : [
+                "rectangle",
+                "parallelogram",
+                "triangle",
+                "trapezoid",
+                "composite",
+              ];
+        return makeRound(types[randInt(0, types.length - 1)]);
+      }
+
+      function dimBounds(round, key) {
+        if (key === "h") return { min: 1, max: 12 };
+        return { min: 1, max: round.type === "parallelogram" ? 9 : 10 };
+      }
+
+      function currentArea(round) {
+        const d = round.dims;
+        if (round.type === "triangle") return (d.b * d.h) / 2;
+        if (round.type === "trapezoid") return ((d.b1 + d.b2) * d.h) / 2;
+        return d.b * d.h;
+      }
+
+      // The two valid one-line decompositions of the L-shape: a vertical cut
+      // or a horizontal cut through the concave corner. Both split it into
+      // exactly two rectangles.
+      function sliceOptions(round) {
+        const { W, H, nw, nh } = round;
+        return [
+          {
+            dir: "vertical",
+            name: "Vertical cut (left tower | right wing)",
+            a1: (W - nw) * H,
+            l1: "left tower",
+            a2: nw * (H - nh),
+            l2: "right wing",
+          },
+          {
+            dir: "horizontal",
+            name: "Horizontal cut (bottom floor / top floor)",
+            a1: W * (H - nh),
+            l1: "bottom floor",
+            a2: (W - nw) * nh,
+            l2: "top floor",
+          },
+        ];
+      }
+
+      function formulaFor(round) {
+        const d = round.dims;
+        if (round.type === "composite") {
+          if (round.phase === "slice") return "slice it first…";
+          const opt = sliceOptions(round)[round.sliceIndex];
+          return opt.a1 + " + " + opt.a2 + " = ?";
+        }
+        if (round.type === "triangle")
+          return (
+            "½ × " + d.b + " × " + d.h + " = " + fmtNum(currentArea(round))
+          );
+        if (round.type === "trapezoid")
+          return (
+            "½ × (" +
+            d.b1 +
+            " + " +
+            d.b2 +
+            ") × " +
+            d.h +
+            " = " +
+            fmtNum(currentArea(round))
+          );
+        return d.b + " × " + d.h + " = " + fmtNum(currentArea(round));
+      }
+
+      function givenSentence(round) {
+        const k = Object.keys(round.given)[0];
+        return (
+          "The blueprint fixes " + dimLabel(k) + " at " + round.given[k] + "."
+        );
+      }
+
+      function promptFor(round) {
+        if (round.type === "rectangle")
+          return (
+            "Rectangle floor — target area " +
+            round.area +
+            " sq units. " +
+            givenSentence(round)
+          );
+        if (round.type === "parallelogram")
+          return (
+            "Parallelogram wall (drawn slanted — area is still b × h) — target area " +
+            round.area +
+            " sq units. " +
+            givenSentence(round)
+          );
+        if (round.type === "triangle")
+          return (
+            "Triangle roof — target area " +
+            fmtNum(round.area) +
+            " sq units. " +
+            givenSentence(round) +
+            " The dashed rectangle shows b × h — your triangle is half of it."
+          );
+        if (round.type === "trapezoid")
+          return (
+            "Trapezoid plaza — target area " +
+            fmtNum(round.area) +
+            " sq units. b₁ = " +
+            round.given.b1 +
+            " and height = " +
+            round.given.h +
+            " are given. Size b₂ to match."
+          );
+        return "L-shaped park — place one slicing line to split it into two rectangles, then add their areas and lock in the total.";
+      }
+
+      // Decide whether a lock-in is correct; if not, return a teaching message
+      // that names the dimension that is off and compares counted squares.
+      function lockDiagnosis(round) {
+        if (round.type === "composite") {
+          if (round.total === round.area) return { ok: true };
+          const opt = sliceOptions(round)[round.sliceIndex];
+          const diff = round.total - round.area;
+          return {
+            ok: false,
+            teach:
+              "Count the pieces: the " +
+              opt.l1 +
+              " covers " +
+              opt.a1 +
+              " squares and the " +
+              opt.l2 +
+              " covers " +
+              opt.a2 +
+              " squares. Add them together — your total of " +
+              round.total +
+              " is " +
+              Math.abs(diff) +
+              " too " +
+              (diff > 0 ? "high" : "low") +
+              ".",
+          };
+        }
+        const wrongGiven = Object.keys(round.given).find(
+          (k) => round.dims[k] !== round.given[k],
+        );
+        if (wrongGiven) {
+          return {
+            ok: false,
+            teach:
+              "The blueprint fixes " +
+              dimLabel(wrongGiven) +
+              " at " +
+              round.given[wrongGiven] +
+              ", but yours is set to " +
+              round.dims[wrongGiven] +
+              ". Reset that dimension first.",
+          };
+        }
+        const a = currentArea(round);
+        if (a === round.area) return { ok: true };
+        const diff = a - round.area;
+        return {
+          ok: false,
+          teach:
+            "Your shape covers " +
+            fmtNum(a) +
+            " unit squares — the blueprint needs " +
+            fmtNum(round.area) +
+            ". That is " +
+            fmtNum(Math.abs(diff)) +
+            " too " +
+            (diff > 0 ? "many" : "few") +
+            ". Step " +
+            dimLabel(round.freeKey) +
+            " " +
+            (diff > 0 ? "down" : "up") +
+            ".",
+        };
+      }
+      // ── AA_PURE_END ──
 
       const W = 800,
         H = 600;
       const GRID_COLS = 10,
-        GRID_ROWS = 15,
+        GRID_ROWS = 12,
         CELL = 30;
       const GRID_X = 30,
         GRID_Y = 70;
@@ -542,6 +692,14 @@
         scene: [BootScene, TitleScene, DiffScene, GameScene, ResultScene],
       };
 
+      const SHAPE_COLORS = {
+        rectangle: 0x4488ff,
+        parallelogram: 0xff8844,
+        triangle: 0x44cc88,
+        trapezoid: 0xcc44cc,
+        composite: 0xddaa00,
+      };
+
       // ── BOOT ──
       function BootScene() {
         Phaser.Scene.call(this, "Boot");
@@ -550,51 +708,6 @@
       BootScene.prototype.constructor = BootScene;
       BootScene.prototype.create = function () {
         const g = this.make.graphics({ add: false });
-
-        // Building blocks
-        g.fillStyle(0x4488ff);
-        g.fillRect(0, 0, CELL - 2, CELL - 2);
-        g.generateTexture("block_blue", CELL - 2, CELL - 2);
-        g.clear();
-
-        g.fillStyle(0xff8844);
-        g.fillRect(0, 0, CELL - 2, CELL - 2);
-        g.generateTexture("block_orange", CELL - 2, CELL - 2);
-        g.clear();
-
-        g.fillStyle(0x44cc88);
-        g.fillRect(0, 0, CELL - 2, CELL - 2);
-        g.generateTexture("block_green", CELL - 2, CELL - 2);
-        g.clear();
-
-        g.fillStyle(0xcc44cc);
-        g.fillRect(0, 0, CELL - 2, CELL - 2);
-        g.generateTexture("block_purple", CELL - 2, CELL - 2);
-        g.clear();
-
-        g.fillStyle(0xddaa00);
-        g.fillRect(0, 0, CELL - 2, CELL - 2);
-        g.generateTexture("block_gold", CELL - 2, CELL - 2);
-        g.clear();
-
-        g.fillStyle(0x666666);
-        g.fillRect(0, 0, CELL - 2, CELL - 2);
-        g.generateTexture("block_gray", CELL - 2, CELL - 2);
-        g.clear();
-
-        g.fillStyle(0x334455);
-        g.fillRect(0, 0, CELL - 2, CELL - 2);
-        g.generateTexture("block_dark", CELL - 2, CELL - 2);
-        g.clear();
-
-        // Cracked block
-        g.fillStyle(0x993333);
-        g.fillRect(0, 0, CELL - 2, CELL - 2);
-        g.lineStyle(2, 0xff4444);
-        g.lineBetween(0, 0, CELL - 2, CELL - 2);
-        g.lineBetween(CELL - 2, 0, 0, CELL - 2);
-        g.generateTexture("block_cracked", CELL - 2, CELL - 2);
-        g.clear();
 
         // Particle
         g.fillStyle(0xffffff);
@@ -612,23 +725,6 @@
         g.fillStyle(0xffffff);
         g.fillRect(0, 0, 6, 3);
         g.generateTexture("confetti", 6, 3);
-        g.clear();
-
-        // Glow circle
-        g.fillStyle(0xffffff);
-        g.fillCircle(8, 8, 8);
-        g.generateTexture("glow", 16, 16);
-        g.clear();
-
-        // Building top
-        g.fillStyle(0x88aacc);
-        g.beginPath();
-        g.moveTo(15, 0);
-        g.lineTo(30, 20);
-        g.lineTo(0, 20);
-        g.closePath();
-        g.fill();
-        g.generateTexture("roof", 30, 20);
         g.clear();
 
         g.destroy();
@@ -661,14 +757,12 @@
 
         // City skyline
         const colors = [0x2244aa, 0x3366cc, 0x4488ff, 0x224488, 0x1a3366];
-        const buildings = [];
         for (let i = 0; i < 12; i++) {
           const bw = randInt(30, 70),
             bh = randInt(60, 200);
           const bx = i * 70 + randInt(-10, 10);
           const c = colors[randInt(0, colors.length - 1)];
           const bld = this.add.rectangle(bx, H - bh / 2, bw, bh, c, 0.6);
-          buildings.push(bld);
           // Animate buildings rising on scene start
           bld.setScale(1, 0);
           bld.y = H;
@@ -708,14 +802,14 @@
         // Ground
         this.add.rectangle(cx, H - 10, W, 20, 0x1a3a2e);
 
-        // Falling shapes preview with glow
+        // Floating shapes preview with glow
         const shapes = [
           { type: "rect", x: 160, y: 280, w: 60, h: 40, color: 0x4488ff },
           { type: "tri", x: 350, y: 270, w: 50, h: 45, color: 0x44cc88 },
           { type: "para", x: 540, y: 280, w: 65, h: 35, color: 0xff8844 },
           { type: "trap", x: 680, y: 275, w: 55, h: 40, color: 0xcc44cc },
         ];
-        shapes.forEach((s, idx) => {
+        shapes.forEach((s) => {
           const g = this.add.graphics();
           g.fillStyle(s.color, 0.5);
           if (s.type === "rect")
@@ -835,14 +929,30 @@
             cx,
             210,
             "Rectangles • Triangles • Parallelograms • Trapezoids",
-            { fontSize: "14px", color: "#6688aa" },
+            {
+              fontSize: "14px",
+              color: "#6688aa",
+            },
           )
           .setOrigin(0.5);
         this.add
-          .text(cx, 235, "Calculate areas to build your city!", {
-            fontSize: "13px",
-            color: "#557788",
-          })
+          .text(
+            cx,
+            235,
+            "Size each shape to match the blueprint — you build it!",
+            {
+              fontSize: "14px",
+              color: "#88aacc",
+            },
+          )
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            258,
+            "Tap + / − or use the arrow keys, then press Enter to lock in.",
+            { fontSize: "13px", color: "#557788" },
+          )
           .setOrigin(0.5);
 
         // High score display
@@ -858,10 +968,10 @@
         }
 
         const btn = this.add
-          .rectangle(cx, 340, 260, 56, 0x44cc88)
+          .rectangle(cx, 345, 260, 56, 0x44cc88)
           .setInteractive({ useHandCursor: true });
         const btnT = this.add
-          .text(cx, 340, "BUILD YOUR CITY", {
+          .text(cx, 345, "BUILD YOUR CITY", {
             fontSize: "22px",
             fontStyle: "bold",
             color: "#0a2a1e",
@@ -884,18 +994,15 @@
         });
         btn.on("pointerout", () => btn.setFillStyle(0x44cc88));
 
-        btn.on("pointerdown", () => {
+        const go = () => {
           SFX.init();
           SFX.place();
           this.cameras.main.fadeOut(400);
           this.time.delayedCall(400, () => this.scene.start("DiffSelect"));
-        });
-        this.input.keyboard.on("keydown-SPACE", () => {
-          SFX.init();
-          SFX.place();
-          this.cameras.main.fadeOut(400);
-          this.time.delayedCall(400, () => this.scene.start("DiffSelect"));
-        });
+        };
+        btn.on("pointerdown", go);
+        this.input.keyboard.on("keydown-SPACE", go);
+        this.input.keyboard.on("keydown-ENTER", go);
 
         // Back-to-hub link (returns to the Unit 5 collection page).
         const hub = this.add
@@ -915,7 +1022,7 @@
         this.cameras.main.fadeIn(500);
       };
 
-      // ── DIFFICULTY ──
+      // ── LEVEL SELECT ──
       function DiffScene() {
         Phaser.Scene.call(this, "DiffSelect");
       }
@@ -925,48 +1032,48 @@
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, 0x0a1a2e);
         this.add
-          .text(cx, 60, "SELECT YOUR CITY", {
+          .text(cx, 70, "SELECT YOUR CITY", {
             fontSize: "32px",
             fontStyle: "bold",
             color: "#44cc88",
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 100, "Harder cities have more shape types", {
-            fontSize: "14px",
+          .text(cx, 112, "Level 2 adds trapezoids and L-shaped parks", {
+            fontSize: "15px",
             color: "#6688aa",
           })
           .setOrigin(0.5);
 
         const diffs = [
           {
-            key: "easy",
-            label: "SMALL TOWN",
-            sub: "Rectangles & parallelograms",
-            emoji: "🏨️",
+            level: 1,
+            label: "LEVEL 1 — SMALL TOWN",
+            sub: "Rectangles, parallelograms & triangles",
+            emoji: "🏠",
             color: 0x44cc88,
-            y: 200,
+            y: 230,
           },
           {
-            key: "medium",
-            label: "BIG CITY",
-            sub: "Add triangles, faster drops",
+            level: 2,
+            label: "LEVEL 2 — MEGA CITY",
+            sub: "Adds trapezoids & L-shaped parks",
             emoji: "🏙️",
             color: 0xf59e0b,
-            y: 320,
-          },
-          {
-            key: "hard",
-            label: "MEGA METROPOLIS",
-            sub: "Trapezoids & composites, fast!",
-            emoji: "🌆",
-            color: 0xff4466,
-            y: 440,
+            y: 370,
           },
         ];
+        const start = (lvl) => {
+          SFX.init();
+          SFX.place();
+          this.cameras.main.fadeOut(300);
+          this.time.delayedCall(300, () =>
+            this.scene.start("Game", { level: lvl }),
+          );
+        };
         diffs.forEach((d, idx) => {
           const btn = this.add
-            .rectangle(cx, d.y, 380, 95, d.color, 0.85)
+            .rectangle(cx, d.y, 460, 100, d.color, 0.85)
             .setInteractive({ useHandCursor: true })
             .setScale(0)
             .setAlpha(0);
@@ -980,11 +1087,11 @@
             delay: idx * 150 + 200,
           });
           const lbl = this.add
-            .text(cx - 150, d.y - 10, d.emoji, { fontSize: "40px" })
+            .text(cx - 190, d.y - 10, d.emoji, { fontSize: "40px" })
             .setOrigin(0, 0.5)
             .setAlpha(0);
           const ttl = this.add
-            .text(cx + 10, d.y - 14, d.label, {
+            .text(cx + 20, d.y - 16, d.label, {
               fontSize: "26px",
               fontStyle: "bold",
               color: "#fff",
@@ -992,8 +1099,8 @@
             .setOrigin(0.5)
             .setAlpha(0);
           const sub = this.add
-            .text(cx + 10, d.y + 16, d.sub, {
-              fontSize: "13px",
+            .text(cx + 20, d.y + 18, d.sub, {
+              fontSize: "15px",
               color: "#ffffffcc",
             })
             .setOrigin(0.5)
@@ -1023,14 +1130,16 @@
               duration: 150,
             });
           });
-          btn.on("pointerdown", () => {
-            SFX.place();
-            this.cameras.main.fadeOut(300);
-            this.time.delayedCall(300, () =>
-              this.scene.start("Game", { difficulty: d.key }),
-            );
-          });
+          btn.on("pointerdown", () => start(d.level));
         });
+        this.add
+          .text(cx, 480, "Press 1 or 2 to choose with the keyboard", {
+            fontSize: "13px",
+            color: "#557788",
+          })
+          .setOrigin(0.5);
+        this.input.keyboard.on("keydown-ONE", () => start(1));
+        this.input.keyboard.on("keydown-TWO", () => start(2));
         this.cameras.main.fadeIn(400);
       };
 
@@ -1042,64 +1151,37 @@
       GameScene.prototype.constructor = GameScene;
 
       GameScene.prototype.init = function (data) {
-        this.difficulty = data.difficulty || "easy";
-        // Accessibility: respect the OS "reduce motion" preference. Used only to
-        // soften purely-decorative drop animations (no gameplay/timing change).
+        this.levelNum = data.level || 1;
+        // Accessibility: respect the OS "reduce motion" preference. Used only
+        // to soften purely-decorative animations (no gameplay change).
         this.reduceMotion = !!(
           window.matchMedia &&
           window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
         this.score = 0;
-        this.combo = 0;
+        this.combo = 0; // consecutive first-try locks
         this.maxCombo = 0;
-        this.lives = 3;
-        this.level = 1;
-        this.totalCorrect = 0;
-        this.totalWrong = 0;
-        this.shapesPlaced = 0;
-        this.rowsCleared = 0;
-        this.questionsAsked = 0;
-        this.maxQuestions = 18;
-        this.dropSpeed =
-          this.difficulty === "easy"
-            ? 0.4
-            : this.difficulty === "medium"
-              ? 0.6
-              : 0.85;
-        this.answered = false;
-        this.dropping = false;
-        this.currentShape = null;
-        this.shapeY = 0;
-        this.shapeCol = 3;
-        this.grid = [];
-        this.gridSprites = [];
-        this.showingQuestion = false;
-        this.scoreMultiplier = 1;
-        this.questionStartTime = 0;
-        // Power-ups
-        this.powerUps = { fiftyFifty: 1, doublePoints: 1, extraTime: 0 };
-        this.doublePointsActive = false;
-        this.removedChoices = [];
+        this.lives = 3; // hearts — refill at 0 (no-fail)
+        this.stage = 1;
+        this.totalCorrect = 0; // rounds locked correctly on the first try
+        this.totalWrong = 0; // wrong lock attempts across all rounds
+        this.shapesPlaced = 0; // buildings added to the city strip
+        this.roundsAsked = 0;
+        this.maxRounds = 10;
+        this.round = null;
+        this.attempts = 0;
+        this.selRow = 0;
+        this.lockBusy = false;
+        this.roundUI = [];
+        this.dimLabelsUI = [];
+        this.valueTexts = {};
+        this.rowBgs = [];
+        this.rowKeys = [];
       };
 
       GameScene.prototype.create = function () {
-        // Initialize grid
-        for (let r = 0; r < GRID_ROWS; r++) {
-          this.grid[r] = [];
-          this.gridSprites[r] = [];
-          for (let c = 0; c < GRID_COLS; c++) {
-            this.grid[r][c] = 0;
-            this.gridSprites[r][c] = null;
-          }
-        }
-
         // Background
         this.add.rectangle(W / 2, H / 2, W, H, 0x0a1a2e);
-
-        // Sky gradient
-        for (let i = 0; i < 10; i++) {
-          this.add.rectangle(W / 2, i * 6, W, 6, 0x0a1a2e, 1 - i * 0.03);
-        }
 
         // Ambient background particles (floating dust/stars)
         this.ambientParticles = this.add
@@ -1117,7 +1199,14 @@
           })
           .setDepth(0);
 
-        // Grid background
+        // Blueprint grid background + lines
+        this.add
+          .text(GRID_X, GRID_Y - 20, "BLUEPRINT GRID — 1 square = 1 sq unit", {
+            fontSize: "13px",
+            color: "#6688aa",
+            fontStyle: "bold",
+          })
+          .setOrigin(0, 0.5);
         this.add.rectangle(
           GRID_X + GRID_W / 2,
           GRID_Y + GRID_H / 2,
@@ -1125,9 +1214,8 @@
           GRID_H + 4,
           0x112233,
         );
-        // Grid lines
         const gg = this.add.graphics();
-        gg.lineStyle(1, 0x1a3355, 0.3);
+        gg.lineStyle(1, 0x2a4a77, 0.5);
         for (let c = 0; c <= GRID_COLS; c++)
           gg.lineBetween(
             GRID_X + c * CELL,
@@ -1143,28 +1231,45 @@
             GRID_Y + r * CELL,
           );
 
+        // City strip below the grid: every locked build adds a building here.
+        this.add
+          .text(GRID_X, GRID_Y + GRID_H + 16, "YOUR CITY:", {
+            fontSize: "13px",
+            color: "#6688aa",
+            fontStyle: "bold",
+          })
+          .setOrigin(0, 0.5);
+        this.add.rectangle(GRID_X + GRID_W / 2, 587, GRID_W + 4, 8, 0x1a3a2e);
+
+        // Shape drawing layers
+        this.shapeGraphics = this.add.graphics().setDepth(2);
+
         // Right panel background
         const panelX = GRID_X + GRID_W + 30;
         this.panelX = panelX;
-        this.add.rectangle(panelX + 195, H / 2, 390, H, 0x0f2035, 0.8);
+        this.add.rectangle(panelX + 205, H / 2, 410, H, 0x0f2035, 0.8);
 
         // HUD
-        this.scoreText = this.add.text(panelX, 15, "Score: 0", {
+        this.scoreText = this.add.text(panelX, 12, "Score: 0", {
           fontSize: "20px",
           color: "#44cc88",
           fontStyle: "bold",
         });
-        this.levelText = this.add.text(panelX, 42, "Level 1", {
+        this.levelText = this.add.text(panelX + 200, 15, "", {
           fontSize: "16px",
           color: "#88aacc",
         });
-        this.livesText = this.add.text(panelX, 65, "", {
+        this.livesText = this.add.text(panelX, 40, "", {
           fontSize: "18px",
           color: "#ff4444",
         });
+        this.buildingsText = this.add.text(panelX + 200, 42, "", {
+          fontSize: "14px",
+          color: "#6688aa",
+        });
 
         // Streak counter with visual styling
-        this.streakContainer = this.add.container(panelX + 130, 92).setDepth(5);
+        this.streakContainer = this.add.container(panelX + 320, 42).setDepth(5);
         this.streakBg = this.add
           .rectangle(0, 0, 0, 0, 0xffdd00, 0)
           .setOrigin(0.5);
@@ -1178,191 +1283,94 @@
           .setOrigin(0.5);
         this.streakContainer.add(this.comboText);
 
-        this.rowsClearedText = this.add.text(panelX, 110, "Rows: 0", {
-          fontSize: "14px",
-          color: "#6688aa",
-        });
-
         // Progress bar
-        this.add.text(panelX, 130, "Progress:", {
+        this.add.text(panelX, 62, "Progress:", {
           fontSize: "13px",
           color: "#557788",
         });
         this.progressBarBg = this.add
-          .rectangle(panelX + 80, 138, 140, 10, 0x1a3355)
+          .rectangle(panelX + 80, 70, 200, 10, 0x1a3355)
           .setOrigin(0, 0.5);
         this.progressBarFill = this.add
-          .rectangle(panelX + 80, 138, 0, 10, 0x4488ff)
+          .rectangle(panelX + 80, 70, 0, 10, 0x4488ff)
           .setOrigin(0, 0.5);
         this.progressText = this.add
-          .text(panelX + 230, 138, "", {
+          .text(panelX + 290, 70, "", {
             fontSize: "12px",
             color: "#557788",
           })
           .setOrigin(0, 0.5);
 
-        // Speed indicator
-        this.speedText = this.add
-          .text(panelX, 155, "", {
-            fontSize: "12px",
-            color: "#44cc88",
-          })
-          .setAlpha(0);
-
-        // Shape preview area
-        this.add.rectangle(panelX + 130, 195, 260, 4, 0x2a4466);
-        this.add.text(panelX, 170, "NEXT SHAPE:", {
-          fontSize: "14px",
-          color: "#6688aa",
-          fontStyle: "bold",
-        });
-
-        // Shape display
-        this.shapeGraphics = this.add.graphics();
-        this.shapePreviewGraphics = this.add.graphics();
-
-        // Question panel area
-        this.add.rectangle(panelX + 130, 310, 260, 4, 0x2a4466);
-        this.add.text(panelX, 290, "CALCULATE AREA:", {
-          fontSize: "14px",
-          color: "#6688aa",
+        // Blueprint prompt
+        this.add.rectangle(panelX + 205, 90, 410, 3, 0x2a4466);
+        this.add.text(panelX, 100, "📐 BLUEPRINT:", {
+          fontSize: "15px",
+          color: "#ffdd00",
           fontStyle: "bold",
         });
         this.promptText = this.add
-          .text(panelX + 130, 335, "", {
-            fontSize: "16px",
+          .text(panelX + 205, 158, "", {
+            fontSize: "18px",
             color: "#ffffff",
             fontStyle: "bold",
-            wordWrap: { width: 250 },
+            wordWrap: { width: 385 },
             align: "center",
+            lineSpacing: 4,
           })
           .setOrigin(0.5);
-        this.formulaText = this.add
-          .text(panelX + 130, 365, "", { fontSize: "13px", color: "#88aacc" })
+
+        // Live formula readout — the heart of the mechanic
+        this.readoutText = this.add
+          .text(panelX + 205, 240, "", {
+            fontSize: "26px",
+            color: "#ffffff",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5);
+        this.readoutHint = this.add
+          .text(panelX + 205, 268, "", {
+            fontSize: "13px",
+            color: "#557788",
+          })
           .setOrigin(0.5);
 
-        // Answer buttons
-        this.answerBtns = [];
-        this.answerTexts = [];
-        this.answerLetters = [];
-        for (let i = 0; i < 4; i++) {
-          const col = i % 2,
-            row = Math.floor(i / 2);
-          const bx = panelX + 10 + col * 135;
-          const by = 390 + row * 55;
-          const btn = this.add
-            .rectangle(bx + 55, by + 18, 120, 42, 0x1a3355)
-            .setStrokeStyle(2, 0x2a5577);
-          // Mobile tap-zone expansion: enlarge the hit area beyond the visible
-          // 120x42 box (the 15px/13px gaps to neighbors keep zones non-overlapping)
-          // so small fingers register taps reliably. Visuals are unchanged.
-          this.makeAnswerInteractive(btn);
-          const ltr = this.add
-            .text(bx + 10, by + 18, String.fromCharCode(65 + i), {
-              fontSize: "12px",
-              color: "#4488aa",
-            })
-            .setOrigin(0.5);
-          const txt = this.add
-            .text(bx + 65, by + 18, "", {
-              fontSize: "18px",
-              color: "#ffffff",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-          btn.on("pointerover", () => {
-            if (!this.answered) {
-              btn.setFillStyle(0x2a4466);
-              this.tweens.add({
-                targets: btn,
-                scaleX: 1.05,
-                scaleY: 1.05,
-                duration: 100,
-              });
-              SFX.tick();
-            }
-          });
-          btn.on("pointerout", () => {
-            if (!this.answered) {
-              btn.setFillStyle(0x1a3355);
-              this.tweens.add({
-                targets: btn,
-                scaleX: 1,
-                scaleY: 1,
-                duration: 100,
-              });
-            }
-          });
-          btn.on("pointerdown", () => {
-            // Tactile touch feedback: quick squash before resolving the answer
-            // (skipped under reduced motion). Does not gate or change scoring.
-            if (!this.answered && !this.reduceMotion) {
-              this.tweens.add({
-                targets: btn,
-                scaleX: { from: 0.93, to: 1 },
-                scaleY: { from: 0.93, to: 1 },
-                duration: 140,
-                ease: "Back.easeOut",
-              });
-            }
-            this.selectAnswer(i);
-          });
-          this.answerBtns.push(btn);
-          this.answerTexts.push(txt);
-          this.answerLetters.push(ltr);
-        }
-
-        // Power-up buttons
-        this.powerUpBtns = [];
-        const puY = 510;
-        const puDefs = [
-          { key: "fiftyFifty", label: "50/50", color: 0x4488ff },
-          { key: "doublePoints", label: "2x PTS", color: 0xffdd00 },
-        ];
-        puDefs.forEach((pu, i) => {
-          const bx = panelX + 30 + i * 140;
-          const bg = this.add
-            .rectangle(bx + 50, puY, 110, 30, pu.color, 0.3)
-            .setInteractive({ useHandCursor: true })
-            .setStrokeStyle(1, pu.color);
-          const t = this.add
-            .text(bx + 50, puY, "", {
-              fontSize: "12px",
-              color: "#ffffff",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-          bg.on("pointerover", () => bg.setFillStyle(pu.color, 0.5));
-          bg.on("pointerout", () => bg.setFillStyle(pu.color, 0.3));
-          bg.on("pointerdown", () => this.activatePowerUp(pu.key));
-          this.powerUpBtns.push({ bg, text: t, key: pu.key, label: pu.label });
+        // Lock-in button (big, persistent)
+        this.lockBtn = this.add
+          .rectangle(panelX + 205, 478, 280, 56, 0x44cc88)
+          .setInteractive({ useHandCursor: true });
+        this.lockBtnText = this.add
+          .text(panelX + 205, 478, "LOCK IT IN", {
+            fontSize: "22px",
+            fontStyle: "bold",
+            color: "#0a2a1e",
+          })
+          .setOrigin(0.5);
+        this.lockBtn.on("pointerover", () => {
+          this.lockBtn.setFillStyle(0x55ddaa);
+          SFX.init();
+          SFX.tick();
+        });
+        this.lockBtn.on("pointerout", () =>
+          this.lockBtn.setFillStyle(0x44cc88),
+        );
+        this.lockBtn.on("pointerdown", () => {
+          SFX.init();
+          this.onLock();
         });
 
-        // Keyboard shortcuts
-        this.input.keyboard.on("keydown-ONE", () => this.selectAnswer(0));
-        this.input.keyboard.on("keydown-TWO", () => this.selectAnswer(1));
-        this.input.keyboard.on("keydown-THREE", () => this.selectAnswer(2));
-        this.input.keyboard.on("keydown-FOUR", () => this.selectAnswer(3));
-        this.input.keyboard.on("keydown-Q", () =>
-          this.activatePowerUp("fiftyFifty"),
-        );
-        this.input.keyboard.on("keydown-W", () =>
-          this.activatePowerUp("doublePoints"),
-        );
-
-        // Feedback
+        // Feedback / teaching text
         this.feedbackText = this.add
-          .text(panelX + 130, 548, "", {
-            fontSize: "18px",
+          .text(panelX + 205, 548, "", {
+            fontSize: "15px",
             color: "#fff",
             fontStyle: "bold",
-            stroke: "#000",
-            strokeThickness: 3,
+            wordWrap: { width: 395 },
+            align: "center",
+            lineSpacing: 3,
           })
-          .setOrigin(0.5)
-          .setAlpha(0);
+          .setOrigin(0.5);
 
-        // Particles — confetti burst for correct answers
+        // Particles — confetti burst for correct locks
         this.confettiEmitter = this.add
           .particles(0, 0, "confetti", {
             speed: { min: 80, max: 300 },
@@ -1387,26 +1395,13 @@
             tint: [0x44cc88, 0x4488ff, 0xffdd00],
           })
           .setDepth(20);
-        this.breakParticles = this.add
-          .particles(0, 0, "particle", {
-            speed: { min: 50, max: 200 },
-            scale: { start: 1, end: 0 },
-            lifespan: 400,
-            emitting: false,
-            quantity: 8,
-            tint: [0xff4444, 0xff8844, 0xaa3333],
-          })
-          .setDepth(20);
 
-        // Red flash overlay for wrong answers
+        // Gentle red wash for wrong locks (calm — low alpha, short)
         this.redFlash = this.add
           .rectangle(W / 2, H / 2, W, H, 0xff0000, 0)
           .setDepth(30);
 
-        // Drop timer
-        this.dropTimer = 0;
-
-        // Phase transition overlay
+        // Stage transition overlay
         this.transitionOverlay = this.add
           .rectangle(W / 2, H / 2, W, H, 0x0a1a2e, 0)
           .setDepth(50);
@@ -1422,69 +1417,723 @@
           .setDepth(51)
           .setAlpha(0);
 
-        // Generate first shape question
-        this.nextQuestion();
+        // Keyboard paths: Up/Down choose a dimension row, Left/Right size it,
+        // Enter/Space locks in. (In L-shape rounds the same keys drive the
+        // slice chooser and the total stepper.)
+        const kb = this.input.keyboard;
+        kb.on("keydown-UP", () => this.onArrowVert(-1));
+        kb.on("keydown-DOWN", () => this.onArrowVert(1));
+        kb.on("keydown-LEFT", () => this.onArrowHoriz(-1));
+        kb.on("keydown-RIGHT", () => this.onArrowHoriz(1));
+        kb.on("keydown-ENTER", () => this.onLock());
+        kb.on("keydown-SPACE", () => this.onLock());
 
+        this.nextRound();
         this.updateHUD();
         this.cameras.main.fadeIn(500);
       };
 
-      // Enable an answer button with an enlarged touch hit area. The visible
-      // rectangle stays 120x42; the hit zone is padded ~8px on every side so
-      // taps near the edge still register on Chromebooks/touchscreens. Falls
-      // back to the default hit area if the custom geometry can't be built.
-      GameScene.prototype.makeAnswerInteractive = function (btn) {
-        const padX = 8,
-          padY = 7;
-        const w = 120 + padX * 2,
-          h = 42 + padY * 2;
-        try {
-          btn.setInteractive(
-            new Phaser.Geom.Rectangle(-padX, -padY, w, h),
-            Phaser.Geom.Rectangle.Contains,
+      // ── Round lifecycle ──
+
+      GameScene.prototype.nextRound = function () {
+        if (this.roundsAsked >= this.maxRounds) {
+          this.endGame();
+          return;
+        }
+        this.round = generateRound(this.levelNum);
+        this.roundsAsked++;
+        this.attempts = 0;
+        this.lockBusy = false;
+        this.feedbackText.setText("");
+        this.promptText.setText(promptFor(this.round));
+        this.buildRoundUI();
+        this.redrawShape();
+        this.updateReadout();
+        this.updateHUD();
+        const controls =
+          this.round.type === "composite"
+            ? "Use the left and right arrows or the arrow buttons to pick a slice, then press Enter to confirm."
+            : "Use the plus and minus buttons or arrow keys to size the shape, then press Enter to lock it in.";
+        srSay(
+          "Round " +
+            this.roundsAsked +
+            " of " +
+            this.maxRounds +
+            ". " +
+            promptFor(this.round) +
+            " " +
+            controls,
+        );
+      };
+
+      // ── Round UI (steppers / slice chooser / total stepper) ──
+
+      GameScene.prototype.clearRoundUI = function () {
+        this.roundUI.forEach((o) => o.destroy());
+        this.roundUI = [];
+        this.valueTexts = {};
+        this.rowBgs = [];
+        this.rowKeys = [];
+      };
+
+      // Small factory for a square tap-friendly button (48px hit target).
+      GameScene.prototype.makeButton = function (x, y, label, onTap, wide) {
+        const w = wide ? 64 : 48;
+        const bg = this.add
+          .rectangle(x, y, w, 48, 0x1a3355)
+          .setStrokeStyle(2, 0x2a5577)
+          .setInteractive({ useHandCursor: true });
+        const t = this.add
+          .text(x, y, label, {
+            fontSize: "26px",
+            fontStyle: "bold",
+            color: "#aaccff",
+          })
+          .setOrigin(0.5);
+        bg.on("pointerover", () => bg.setFillStyle(0x2a4466));
+        bg.on("pointerout", () => bg.setFillStyle(0x1a3355));
+        bg.on("pointerdown", () => {
+          SFX.init();
+          if (!this.reduceMotion) {
+            this.tweens.add({
+              targets: [bg, t],
+              scaleX: { from: 0.9, to: 1 },
+              scaleY: { from: 0.9, to: 1 },
+              duration: 120,
+            });
+          }
+          onTap();
+        });
+        this.roundUI.push(bg, t);
+        return bg;
+      };
+
+      GameScene.prototype.buildRoundUI = function () {
+        this.clearRoundUI();
+        const r = this.round;
+        if (r.type === "composite") {
+          if (r.phase === "slice") this.buildSliceUI();
+          else this.buildTotalUI();
+          return;
+        }
+        const keys = r.type === "trapezoid" ? ["b1", "b2", "h"] : ["b", "h"];
+        this.rowKeys = keys;
+        const labels = {
+          b: "Base b",
+          h: "Height h",
+          b1: "Base b₁",
+          b2: "Base b₂",
+        };
+        keys.forEach((key, i) => {
+          const y = 306 + i * 54;
+          const px = this.panelX;
+          const rowBg = this.add
+            .rectangle(px + 205, y, 400, 50, 0x13284a, 0.9)
+            .setStrokeStyle(2, 0x13284a);
+          this.roundUI.push(rowBg);
+          this.rowBgs.push(rowBg);
+          const isGiven = Object.prototype.hasOwnProperty.call(r.given, key);
+          const lbl = this.add
+            .text(
+              px + 12,
+              y,
+              labels[key] + (isGiven ? "  • given: " + r.given[key] : ""),
+              {
+                fontSize: "16px",
+                fontStyle: "bold",
+                color: isGiven ? "#ffdd00" : "#aaccff",
+              },
+            )
+            .setOrigin(0, 0.5);
+          this.roundUI.push(lbl);
+          this.makeButton(px + 250, y, "−", () => {
+            this.setSel(i);
+            this.adjustDim(key, -1);
+          });
+          const val = this.add
+            .text(px + 312, y, String(r.dims[key]), {
+              fontSize: "28px",
+              fontStyle: "bold",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          this.roundUI.push(val);
+          this.valueTexts[key] = val;
+          this.makeButton(px + 374, y, "+", () => {
+            this.setSel(i);
+            this.adjustDim(key, 1);
+          });
+        });
+        // Start with the dimension the student must find selected.
+        this.setSel(Math.max(0, keys.indexOf(r.freeKey)));
+        this.lockBtnText.setText("LOCK IT IN");
+      };
+
+      GameScene.prototype.buildSliceUI = function () {
+        const px = this.panelX;
+        const y = 330;
+        const opt = sliceOptions(this.round)[this.round.sliceIndex];
+        this.makeButton(px + 40, y, "◀", () => this.toggleSlice());
+        this.sliceLabel = this.add
+          .text(px + 205, y, opt.name, {
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#ffdd00",
+            wordWrap: { width: 250 },
+            align: "center",
+          })
+          .setOrigin(0.5);
+        this.roundUI.push(this.sliceLabel);
+        this.makeButton(px + 370, y, "▶", () => this.toggleSlice());
+        const hint = this.add
+          .text(px + 205, 390, "Either cut works — both make two rectangles.", {
+            fontSize: "13px",
+            color: "#557788",
+          })
+          .setOrigin(0.5);
+        this.roundUI.push(hint);
+        this.lockBtnText.setText("CONFIRM SLICE");
+      };
+
+      GameScene.prototype.buildTotalUI = function () {
+        const px = this.panelX;
+        const r = this.round;
+        const lbl = this.add
+          .text(px + 205, 300, "Total area (sq units):", {
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#aaccff",
+          })
+          .setOrigin(0.5);
+        this.roundUI.push(lbl);
+        this.totalText = this.add
+          .text(px + 205, 340, String(r.total), {
+            fontSize: "34px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.roundUI.push(this.totalText);
+        const y = 396;
+        this.makeButton(px + 55, y, "−10", () => this.adjustTotal(-10), true);
+        this.makeButton(px + 130, y, "−1", () => this.adjustTotal(-1), true);
+        this.makeButton(px + 280, y, "+1", () => this.adjustTotal(1), true);
+        this.makeButton(px + 355, y, "+10", () => this.adjustTotal(10), true);
+        const hint = this.add
+          .text(px + 205, 432, "Arrows: left/right = ±1, up/down = ±10", {
+            fontSize: "12px",
+            color: "#557788",
+          })
+          .setOrigin(0.5);
+        this.roundUI.push(hint);
+        this.lockBtnText.setText("LOCK TOTAL");
+      };
+
+      // ── Input plumbing ──
+
+      GameScene.prototype.setSel = function (i) {
+        this.selRow = i;
+        this.rowBgs.forEach((bg, j) =>
+          bg.setStrokeStyle(2, j === i ? 0xffdd00 : 0x13284a),
+        );
+      };
+
+      GameScene.prototype.onArrowVert = function (dir) {
+        const r = this.round;
+        if (!r || this.lockBusy) return;
+        if (r.type === "composite") {
+          if (r.phase === "total") this.adjustTotal(dir === -1 ? 10 : -10);
+          return;
+        }
+        if (!this.rowKeys.length) return;
+        const n = this.rowKeys.length;
+        this.setSel((this.selRow + dir + n) % n);
+        SFX.init();
+        SFX.tick();
+      };
+
+      GameScene.prototype.onArrowHoriz = function (dir) {
+        const r = this.round;
+        if (!r || this.lockBusy) return;
+        if (r.type === "composite") {
+          if (r.phase === "slice") this.toggleSlice();
+          else this.adjustTotal(dir);
+          return;
+        }
+        const key = this.rowKeys[this.selRow];
+        if (key) this.adjustDim(key, dir);
+      };
+
+      GameScene.prototype.adjustDim = function (key, delta) {
+        const r = this.round;
+        if (!r || this.lockBusy || r.type === "composite") return;
+        const bounds = dimBounds(r, key);
+        const next = Math.min(
+          bounds.max,
+          Math.max(bounds.min, r.dims[key] + delta),
+        );
+        if (next === r.dims[key]) return;
+        r.dims[key] = next;
+        if (this.valueTexts[key]) this.valueTexts[key].setText(String(next));
+        SFX.init();
+        SFX.tick();
+        this.feedbackText.setText("");
+        this.redrawShape();
+        this.updateReadout();
+      };
+
+      GameScene.prototype.adjustTotal = function (delta) {
+        const r = this.round;
+        if (
+          !r ||
+          this.lockBusy ||
+          r.type !== "composite" ||
+          r.phase !== "total"
+        )
+          return;
+        r.total = Math.min(200, Math.max(0, r.total + delta));
+        if (this.totalText) this.totalText.setText(String(r.total));
+        SFX.init();
+        SFX.tick();
+        this.feedbackText.setText("");
+      };
+
+      GameScene.prototype.toggleSlice = function () {
+        const r = this.round;
+        if (
+          !r ||
+          r.type !== "composite" ||
+          r.phase !== "slice" ||
+          this.lockBusy
+        )
+          return;
+        r.sliceIndex = r.sliceIndex === 0 ? 1 : 0;
+        const opt = sliceOptions(r)[r.sliceIndex];
+        if (this.sliceLabel) this.sliceLabel.setText(opt.name);
+        SFX.init();
+        SFX.tick();
+        this.redrawShape();
+        srSay("Slice option: " + opt.name + ". Press Enter to confirm.");
+      };
+
+      // ── Drawing ──
+
+      function dashLine(g, x1, y1, x2, y2, dash, gap) {
+        const dx = x2 - x1,
+          dy = y2 - y1;
+        const len = Math.sqrt(dx * dx + dy * dy);
+        if (!len) return;
+        const ux = dx / len,
+          uy = dy / len;
+        let dist = 0;
+        while (dist < len) {
+          const seg = Math.min(dash, len - dist);
+          g.lineBetween(
+            x1 + ux * dist,
+            y1 + uy * dist,
+            x1 + ux * (dist + seg),
+            y1 + uy * (dist + seg),
           );
-          if (btn.input) btn.input.cursor = "pointer";
-        } catch (e) {
-          btn.setInteractive({ useHandCursor: true });
+          dist += dash + gap;
+        }
+      }
+
+      GameScene.prototype.addDimLabel = function (
+        x,
+        y,
+        text,
+        originX,
+        originY,
+      ) {
+        const t = this.add
+          .text(x, y, text, {
+            fontSize: "15px",
+            fontStyle: "bold",
+            color: "#ffffff",
+            stroke: "#0a1a2e",
+            strokeThickness: 4,
+          })
+          .setOrigin(originX, originY)
+          .setDepth(3);
+        this.dimLabelsUI.push(t);
+      };
+
+      GameScene.prototype.redrawShape = function () {
+        const g = this.shapeGraphics;
+        g.clear();
+        this.dimLabelsUI.forEach((t) => t.destroy());
+        this.dimLabelsUI = [];
+        const r = this.round;
+        if (!r) return;
+        const ux = (u) => GRID_X + u * CELL;
+        const uy = (u) => GRID_Y + GRID_H - u * CELL;
+        const color = SHAPE_COLORS[r.type];
+        const d = r.dims;
+
+        if (r.type === "rectangle") {
+          g.fillStyle(color, 0.45);
+          g.lineStyle(3, color, 1);
+          g.fillRect(ux(0), uy(d.h), d.b * CELL, d.h * CELL);
+          g.strokeRect(ux(0), uy(d.h), d.b * CELL, d.h * CELL);
+          this.addDimLabel(ux(d.b / 2), uy(0) + 6, "b = " + d.b, 0.5, 0);
+          this.addDimLabel(ux(d.b) + 8, uy(d.h / 2), "h = " + d.h, 0, 0.5);
+        } else if (r.type === "parallelogram") {
+          // Slanted 1 cell to the right; the dashed drop shows the true height.
+          g.fillStyle(color, 0.45);
+          g.lineStyle(3, color, 1);
+          g.beginPath();
+          g.moveTo(ux(0), uy(0));
+          g.lineTo(ux(d.b), uy(0));
+          g.lineTo(ux(d.b + 1), uy(d.h));
+          g.lineTo(ux(1), uy(d.h));
+          g.closePath();
+          g.fillPath();
+          g.strokePath();
+          g.lineStyle(2, 0xffffff, 0.9);
+          dashLine(g, ux(1), uy(0), ux(1), uy(d.h), 6, 5);
+          this.addDimLabel(ux(d.b / 2), uy(0) + 6, "b = " + d.b, 0.5, 0);
+          this.addDimLabel(ux(1) + 8, uy(d.h / 2), "h = " + d.h, 0, 0.5);
+        } else if (r.type === "triangle") {
+          // Ghost rectangle b × h (dashed) — the triangle is half of it.
+          g.lineStyle(2, 0xffffff, 0.55);
+          dashLine(g, ux(0), uy(d.h), ux(d.b), uy(d.h), 6, 5);
+          dashLine(g, ux(d.b), uy(d.h), ux(d.b), uy(0), 6, 5);
+          g.fillStyle(color, 0.45);
+          g.lineStyle(3, color, 1);
+          g.beginPath();
+          g.moveTo(ux(0), uy(0));
+          g.lineTo(ux(d.b), uy(0));
+          g.lineTo(ux(0), uy(d.h));
+          g.closePath();
+          g.fillPath();
+          g.strokePath();
+          this.addDimLabel(ux(d.b / 2), uy(0) + 6, "b = " + d.b, 0.5, 0);
+          this.addDimLabel(ux(0) - 8, uy(d.h / 2), "h = " + d.h, 1, 0.5);
+          this.addDimLabel(ux(d.b) - 4, uy(d.h) + 4, "½ of b × h", 1, 0);
+        } else if (r.type === "trapezoid") {
+          // b2 on the bottom, b1 centered on top, height vertical.
+          const off = (d.b2 - d.b1) / 2;
+          g.fillStyle(color, 0.45);
+          g.lineStyle(3, color, 1);
+          g.beginPath();
+          g.moveTo(ux(0), uy(0));
+          g.lineTo(ux(d.b2), uy(0));
+          g.lineTo(ux(off + d.b1), uy(d.h));
+          g.lineTo(ux(off), uy(d.h));
+          g.closePath();
+          g.fillPath();
+          g.strokePath();
+          g.lineStyle(2, 0xffffff, 0.9);
+          dashLine(g, ux(d.b2 / 2), uy(0), ux(d.b2 / 2), uy(d.h), 6, 5);
+          this.addDimLabel(ux(d.b2 / 2), uy(0) + 6, "b₂ = " + d.b2, 0.5, 0);
+          this.addDimLabel(
+            ux(off + d.b1 / 2),
+            uy(d.h) - 6,
+            "b₁ = " + d.b1,
+            0.5,
+            1,
+          );
+          this.addDimLabel(ux(d.b2 / 2) + 6, uy(d.h / 2), "h = " + d.h, 0, 0.5);
+        } else {
+          // Composite L-shape: outer W×H minus a top-right nw×nh cut.
+          const { W: w, H: h, nw, nh } = r;
+          g.fillStyle(color, 0.45);
+          g.lineStyle(3, color, 1);
+          g.beginPath();
+          g.moveTo(ux(0), uy(0));
+          g.lineTo(ux(w), uy(0));
+          g.lineTo(ux(w), uy(h - nh));
+          g.lineTo(ux(w - nw), uy(h - nh));
+          g.lineTo(ux(w - nw), uy(h));
+          g.lineTo(ux(0), uy(h));
+          g.closePath();
+          g.fillPath();
+          g.strokePath();
+          this.addDimLabel(ux(w / 2), uy(0) + 6, w + " across", 0.5, 0);
+          this.addDimLabel(ux(0) - 8, uy(h / 2), h + " tall", 1, 0.5);
+          this.addDimLabel(
+            ux(w - nw / 2),
+            uy(h - nh / 2),
+            "cut: " + nw + " × " + nh,
+            0.5,
+            0.5,
+          );
+          const opt = sliceOptions(r)[r.sliceIndex];
+          if (r.phase === "slice") {
+            g.lineStyle(3, 0xffdd00, 1);
+            if (opt.dir === "vertical")
+              dashLine(g, ux(w - nw), uy(0), ux(w - nw), uy(h), 8, 6);
+            else dashLine(g, ux(0), uy(h - nh), ux(w), uy(h - nh), 8, 6);
+          } else {
+            g.lineStyle(4, 0xffdd00, 1);
+            if (opt.dir === "vertical")
+              g.lineBetween(ux(w - nw), uy(0), ux(w - nw), uy(h));
+            else g.lineBetween(ux(0), uy(h - nh), ux(w), uy(h - nh));
+            // Label each rectangle piece with its counted area.
+            if (opt.dir === "vertical") {
+              this.addDimLabel(
+                ux((w - nw) / 2),
+                uy(h / 2),
+                opt.a1 + " sq",
+                0.5,
+                0.5,
+              );
+              this.addDimLabel(
+                ux(w - nw / 2),
+                uy((h - nh) / 2),
+                opt.a2 + " sq",
+                0.5,
+                0.5,
+              );
+            } else {
+              this.addDimLabel(
+                ux(w / 2),
+                uy((h - nh) / 2),
+                opt.a1 + " sq",
+                0.5,
+                0.5,
+              );
+              this.addDimLabel(
+                ux((w - nw) / 2),
+                uy(h - nh / 2),
+                opt.a2 + " sq",
+                0.5,
+                0.5,
+              );
+            }
+          }
         }
       };
 
-      GameScene.prototype.activatePowerUp = function (key) {
-        if (!this.showingQuestion || this.answered) return;
-        if (this.powerUps[key] <= 0) return;
+      GameScene.prototype.updateReadout = function () {
+        const r = this.round;
+        if (!r) return;
+        this.readoutText.setText(formulaFor(r));
+        if (r.type === "composite") {
+          this.readoutHint.setText(
+            r.phase === "slice"
+              ? "Slice first, then add the two pieces."
+              : "Add the two pieces, set the total, lock it in.",
+          );
+          this.readoutText.setColor("#ffffff");
+          return;
+        }
+        const match = currentArea(r) === r.area;
+        this.readoutText.setColor(match ? "#44cc88" : "#ffffff");
+        this.readoutHint.setText(
+          match
+            ? "It matches the target — lock it in!"
+            : "Target: " + fmtNum(r.area) + " sq units",
+        );
+      };
 
-        if (key === "fiftyFifty") {
-          this.powerUps.fiftyFifty--;
-          SFX.powerUp();
-          // Remove 2 wrong answers
-          const q = this.currentQ;
-          const wrongIndices = [];
-          q.choices.forEach((c, i) => {
-            if (c !== q.answer) wrongIndices.push(i);
-          });
-          const toRemove = shuffle(wrongIndices).slice(0, 2);
-          toRemove.forEach((i) => {
-            this.answerBtns[i]
-              .setFillStyle(0x111122, 0.3)
-              .setStrokeStyle(1, 0x333344);
-            this.answerTexts[i].setText("--");
-            this.answerBtns[i].removeInteractive();
-            this.removedChoices.push(i);
-          });
-          this.showFloatingText(this.panelX + 130, 480, "50/50!", "#4488ff");
-        } else if (key === "doublePoints") {
-          this.powerUps.doublePoints--;
-          this.doublePointsActive = true;
-          SFX.powerUp();
+      // ── Lock-in resolution ──
+
+      GameScene.prototype.onLock = function () {
+        const r = this.round;
+        if (!r || this.lockBusy) return;
+        SFX.init();
+        if (r.type === "composite" && r.phase === "slice") {
+          const opt = sliceOptions(r)[r.sliceIndex];
+          r.phase = "total";
+          SFX.place();
+          this.buildRoundUI();
+          this.redrawShape();
+          this.updateReadout();
+          srSay(
+            "Sliced! The " +
+              opt.l1 +
+              " is " +
+              opt.a1 +
+              " square units and the " +
+              opt.l2 +
+              " is " +
+              opt.a2 +
+              " square units. Enter the total area, then lock it in.",
+          );
+          return;
+        }
+        const diag = lockDiagnosis(r);
+        if (diag.ok) this.resolveCorrect();
+        else this.resolveWrong(diag.teach);
+      };
+
+      GameScene.prototype.resolveCorrect = function () {
+        const r = this.round;
+        this.lockBusy = true;
+        const firstTry = this.attempts === 0;
+        if (firstTry) {
+          this.totalCorrect++;
+          this.combo++;
+          if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+        }
+        const pts = firstTry
+          ? 100 + this.combo * 20 + (this.stage - 1) * 10
+          : 50;
+        this.score += pts;
+        this.shapesPlaced++;
+
+        SFX.correct();
+        this.feedbackText.setText("✓ Locked in! +" + pts).setColor("#44cc88");
+        const summary =
+          r.type === "composite"
+            ? "total area " + r.area + " square units"
+            : formulaFor(r) + " square units";
+        srSay(
+          "Correct! " +
+            summary +
+            ". Plus " +
+            pts +
+            " points. Building added to your city.",
+        );
+
+        this.showFloatingText(
+          GRID_X + GRID_W / 2,
+          GRID_Y + GRID_H / 2,
+          "+" + pts,
+          "#44cc88",
+          "28px",
+        );
+
+        // Streak milestones (first-try streaks only)
+        if (firstTry) {
+          if (this.combo === 3) {
+            SFX.streak3();
+            this.showFloatingText(
+              W / 2,
+              H / 2 - 30,
+              "STREAK x3!",
+              "#ffdd00",
+              "30px",
+            );
+          } else if (this.combo === 5) {
+            SFX.streak5();
+            this.showFloatingText(
+              W / 2,
+              H / 2 - 30,
+              "STREAK x5! AMAZING!",
+              "#ff8844",
+              "32px",
+            );
+          } else if (this.combo === 7) {
+            SFX.streak7();
+            this.showFloatingText(
+              W / 2,
+              H / 2 - 30,
+              "STREAK x7! UNSTOPPABLE!",
+              "#ff4488",
+              "34px",
+            );
+          } else if (this.combo >= 3) {
+            SFX.combo();
+          }
+          if (this.combo >= 2) {
+            this.comboText.setText("STREAK x" + this.combo + "!");
+            if (!this.reduceMotion) {
+              this.tweens.add({
+                targets: this.streakContainer,
+                scaleX: { from: 1.3, to: 1 },
+                scaleY: { from: 1.3, to: 1 },
+                duration: 300,
+                ease: "Back.easeOut",
+              });
+            }
+            this.streakBg.setSize(120, 24).setFillStyle(0xffdd00, 0.15);
+          }
+        }
+
+        // Confetti burst — intensity scales with streak
+        this.confettiEmitter.setQuantity(Math.min(10 + this.combo * 5, 40));
+        this.confettiEmitter.emitParticleAt(
+          GRID_X + GRID_W / 2,
+          GRID_Y + GRID_H / 2,
+        );
+        if (!this.reduceMotion)
+          this.cameras.main.shake(
+            120,
+            Math.min(0.004 + this.combo * 0.002, 0.015),
+          );
+
+        this.addBuilding(SHAPE_COLORS[r.type]);
+
+        // Stage up every 4 buildings
+        if (this.shapesPlaced % 4 === 0 && this.roundsAsked < this.maxRounds) {
+          this.stage++;
+          SFX.levelUp();
+          this.showPhaseTransition("STAGE " + this.stage + "!");
+        }
+
+        this.updateHUD();
+        this.time.delayedCall(1500, () => this.nextRound());
+      };
+
+      GameScene.prototype.resolveWrong = function (teach) {
+        this.attempts++;
+        this.totalWrong++;
+        this.combo = 0;
+        this.comboText.setText("");
+        this.streakBg.setFillStyle(0x000000, 0);
+        this.lives--;
+
+        SFX.wrong();
+        this.feedbackText.setText("Not yet — " + teach).setColor("#ffaa66");
+        srSay("Not yet. " + teach);
+
+        // Calm feedback: gentle shake + brief low-alpha wash (no game-over).
+        if (!this.reduceMotion) this.cameras.main.shake(150, 0.006);
+        this.redFlash.setAlpha(0.18);
+        this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 450 });
+
+        if (this.lives <= 0) {
+          // No-fail: refill hearts and keep building.
+          this.lives = 3;
           this.showFloatingText(
-            this.panelX + 130,
-            480,
-            "DOUBLE POINTS!",
-            "#ffdd00",
+            GRID_X + GRID_W / 2,
+            GRID_Y + GRID_H / 2 + 44,
+            "♥ Refilled — keep going!",
+            "#44cc88",
+            "24px",
           );
         }
         this.updateHUD();
       };
+
+      // ── City strip ──
+
+      GameScene.prototype.addBuilding = function (color) {
+        const idx = this.shapesPlaced - 1;
+        const bw = randInt(20, 26);
+        const bh = randInt(30, 105);
+        const bx = GRID_X + 18 + idx * 29;
+        const by = 583;
+        const bld = this.add
+          .rectangle(bx, by, bw, bh, color, 0.85)
+          .setOrigin(0.5, 1);
+        SFX.drop();
+        if (this.reduceMotion) {
+          bld.setScale(1, 1);
+        } else {
+          bld.setScale(1, 0);
+          this.tweens.add({
+            targets: bld,
+            scaleY: 1,
+            duration: 500,
+            ease: "Back.easeOut",
+          });
+        }
+        for (let wy = by - bh + 8; wy < by - 8; wy += 14) {
+          const win = this.add.rectangle(bx, wy, 8, 6, 0xffdd88, 0);
+          this.tweens.add({
+            targets: win,
+            fillAlpha: 0.8,
+            duration: 200,
+            delay: this.reduceMotion ? 0 : 500 + Math.random() * 400,
+          });
+        }
+        this.sparkles.emitParticleAt(bx, by - bh / 2);
+      };
+
+      // ── Shared flair helpers ──
 
       GameScene.prototype.showFloatingText = function (
         x,
@@ -1536,502 +2185,34 @@
         });
       };
 
-      GameScene.prototype.nextQuestion = function () {
-        if (this.questionsAsked >= this.maxQuestions) {
-          this.endGame();
-          return;
-        }
-
-        this.currentQ = generateShapeQuestion(this.difficulty);
-        this.questionsAsked++;
-        this.answered = false;
-        this.showingQuestion = true;
-        this.questionStartTime = Date.now();
-        this.doublePointsActive = false;
-        this.removedChoices = [];
-
-        // Update question display
-        this.promptText.setText(this.currentQ.prompt);
-        this.formulaText.setText("");
-
-        this.currentQ.choices.forEach((c, i) => {
-          this.answerTexts[i].setText(String(c) + " sq");
-          this.answerBtns[i]
-            .setFillStyle(0x1a3355)
-            .setStrokeStyle(2, 0x2a5577)
-            .setScale(1);
-          // Re-apply the expanded mobile tap zone (plain re-enable would reset
-          // the hit area to the visible box).
-          this.makeAnswerInteractive(this.answerBtns[i]);
-        });
-        this.feedbackText.setAlpha(0);
-        this.speedText.setAlpha(0);
-
-        // Draw shape preview
-        this.drawShapePreview();
-
-        // Set up the column where shape will go
-        this.shapeCol = randInt(1, GRID_COLS - 3);
-        this.shapeY = 0;
-        this.dropping = false;
-      };
-
-      GameScene.prototype.drawShapePreview = function () {
-        this.shapePreviewGraphics.clear();
-        const sd = this.currentQ.shapeData;
-        const px = GRID_X + GRID_W + 160,
-          py = 235;
-        const scale = 2.5;
-
-        this.shapePreviewGraphics.fillStyle(sd.color, 0.8);
-        this.shapePreviewGraphics.lineStyle(2, 0xffffff, 0.8);
-
-        if (sd.type === "rectangle") {
-          const w = Math.min(sd.b * scale, 100),
-            h = Math.min(sd.h * scale, 60);
-          this.shapePreviewGraphics.fillRect(px - w / 2, py - h / 2, w, h);
-          this.shapePreviewGraphics.strokeRect(px - w / 2, py - h / 2, w, h);
-          this.add
-            .text(px, py + h / 2 + 10, `b=${sd.b}`, {
-              fontSize: "11px",
-              color: "#aaccff",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(px + w / 2 + 10, py, `h=${sd.h}`, {
-              fontSize: "11px",
-              color: "#aaccff",
-            })
-            .setOrigin(0, 0.5);
-        } else if (sd.type === "parallelogram") {
-          const w = Math.min(sd.b * scale, 100),
-            h = Math.min(sd.h * scale, 60),
-            off = 15;
-          this.shapePreviewGraphics.beginPath();
-          this.shapePreviewGraphics.moveTo(px - w / 2 + off, py - h / 2);
-          this.shapePreviewGraphics.lineTo(px + w / 2 + off, py - h / 2);
-          this.shapePreviewGraphics.lineTo(px + w / 2 - off, py + h / 2);
-          this.shapePreviewGraphics.lineTo(px - w / 2 - off, py + h / 2);
-          this.shapePreviewGraphics.closePath();
-          this.shapePreviewGraphics.fill();
-          this.shapePreviewGraphics.stroke();
-        } else if (sd.type === "triangle") {
-          const w = Math.min(sd.b * scale, 100),
-            h = Math.min(sd.h * scale, 70);
-          this.shapePreviewGraphics.beginPath();
-          this.shapePreviewGraphics.moveTo(px, py - h / 2);
-          this.shapePreviewGraphics.lineTo(px + w / 2, py + h / 2);
-          this.shapePreviewGraphics.lineTo(px - w / 2, py + h / 2);
-          this.shapePreviewGraphics.closePath();
-          this.shapePreviewGraphics.fill();
-          this.shapePreviewGraphics.stroke();
-        } else if (sd.type === "trapezoid") {
-          const w1 = Math.min(sd.b1 * scale, 70),
-            w2 = Math.min(sd.b2 * scale, 100),
-            h = Math.min(sd.h * scale, 60);
-          this.shapePreviewGraphics.beginPath();
-          this.shapePreviewGraphics.moveTo(px - w1 / 2, py - h / 2);
-          this.shapePreviewGraphics.lineTo(px + w1 / 2, py - h / 2);
-          this.shapePreviewGraphics.lineTo(px + w2 / 2, py + h / 2);
-          this.shapePreviewGraphics.lineTo(px - w2 / 2, py + h / 2);
-          this.shapePreviewGraphics.closePath();
-          this.shapePreviewGraphics.fill();
-          this.shapePreviewGraphics.stroke();
-        } else {
-          // Composite
-          const rw = Math.min(sd.rw * scale, 80),
-            rh = Math.min(sd.rh * scale, 40),
-            th = Math.min(sd.th * scale, 30);
-          this.shapePreviewGraphics.fillRect(
-            px - rw / 2,
-            py - rh / 2 + th / 2,
-            rw,
-            rh,
-          );
-          this.shapePreviewGraphics.strokeRect(
-            px - rw / 2,
-            py - rh / 2 + th / 2,
-            rw,
-            rh,
-          );
-          this.shapePreviewGraphics.beginPath();
-          this.shapePreviewGraphics.moveTo(px, py - rh / 2 - th / 2);
-          this.shapePreviewGraphics.lineTo(px + rw / 2, py - rh / 2 + th / 2);
-          this.shapePreviewGraphics.lineTo(px - rw / 2, py - rh / 2 + th / 2);
-          this.shapePreviewGraphics.closePath();
-          this.shapePreviewGraphics.fill();
-          this.shapePreviewGraphics.stroke();
-        }
-      };
-
-      GameScene.prototype.selectAnswer = function (idx) {
-        if (this.answered || !this.showingQuestion) return;
-        if (this.removedChoices.includes(idx)) return;
-        this.answered = true;
-        this.showingQuestion = false;
-
-        const q = this.currentQ;
-        const chosen = q.choices[idx];
-        const isCorrect = chosen === q.answer;
-
-        this.formulaText.setText(q.formula);
-
-        if (isCorrect) {
-          SFX.correct();
-          this.combo++;
-          if (this.combo > this.maxCombo) this.maxCombo = this.combo;
-          this.totalCorrect++;
-
-          let pts = 100 + this.combo * 20;
-          if (this.level > 1) pts += this.level * 10;
-
-          // Double points power-up
-          if (this.doublePointsActive) {
-            pts *= 2;
-            this.showFloatingText(
-              this.panelX + 130,
-              460,
-              "DOUBLED!",
-              "#ffdd00",
-              "16px",
-            );
-          }
-
-          this.score += pts;
-
-          this.answerBtns[idx]
-            .setFillStyle(0x225533)
-            .setStrokeStyle(2, 0x44cc88);
-
-          // Click feedback on correct button
-          this.tweens.add({
-            targets: this.answerBtns[idx],
-            scaleX: { from: 1.15, to: 1 },
-            scaleY: { from: 1.15, to: 1 },
-            duration: 200,
-          });
-
-          this.feedbackText
-            .setText(`✓ Correct! +${pts}`)
-            .setColor("#44cc88")
-            .setAlpha(1);
-
-          // Floating score text on grid
-          this.showFloatingText(
-            GRID_X + GRID_W / 2,
-            GRID_Y + GRID_H / 2,
-            `+${pts}`,
-            "#44cc88",
-            "28px",
-          );
-
-          // Streak milestones
-          if (this.combo === 3) {
-            SFX.streak3();
-            this.showFloatingText(
-              W / 2,
-              H / 2 - 30,
-              "STREAK x3!",
-              "#ffdd00",
-              "30px",
-            );
-          } else if (this.combo === 5) {
-            SFX.streak5();
-            this.showFloatingText(
-              W / 2,
-              H / 2 - 30,
-              "STREAK x5! AMAZING!",
-              "#ff8844",
-              "32px",
-            );
-          } else if (this.combo === 7) {
-            SFX.streak7();
-            this.showFloatingText(
-              W / 2,
-              H / 2 - 30,
-              "STREAK x7! UNSTOPPABLE!",
-              "#ff4488",
-              "34px",
-            );
-          } else if (this.combo >= 3) {
-            SFX.combo();
-          }
-
-          if (this.combo >= 2) {
-            this.comboText.setText(`STREAK x${this.combo}!`);
-            // Streak counter pulse
-            this.tweens.add({
-              targets: this.streakContainer,
-              scaleX: { from: 1.3, to: 1 },
-              scaleY: { from: 1.3, to: 1 },
-              duration: 300,
-              ease: "Back.easeOut",
-            });
-            this.streakBg.setSize(120, 24).setFillStyle(0xffdd00, 0.15);
-          }
-
-          // Confetti burst — intensity scales with streak
-          const confettiCount = Math.min(10 + this.combo * 5, 40);
-          this.confettiEmitter.setQuantity(confettiCount);
-          this.confettiEmitter.emitParticleAt(
-            GRID_X + GRID_W / 2,
-            GRID_Y + GRID_H / 2,
-          );
-
-          // Screen shake scales with streak
-          const shakeIntensity = Math.min(0.005 + this.combo * 0.003, 0.025);
-          this.cameras.main.shake(150, shakeIntensity);
-
-          // Place shape on grid — correctly!
-          this.placeShapeOnGrid(q.shapeData.color, true);
-        } else {
-          SFX.wrong();
-          SFX.glassBreak();
-          this.combo = 0;
-          this.comboText.setText("");
-          this.streakBg.setFillStyle(0x000000, 0);
-          this.totalWrong++;
-          this.lives--;
-
-          this.answerBtns[idx]
-            .setFillStyle(0x553322)
-            .setStrokeStyle(2, 0xff4444);
-          const ci = q.choices.indexOf(q.answer);
-          if (ci >= 0)
-            this.answerBtns[ci]
-              .setFillStyle(0x225533)
-              .setStrokeStyle(2, 0x44cc88);
-
-          this.feedbackText
-            .setText(`✗ Answer: ${q.answer} sq`)
-            .setColor("#ff4444")
-            .setAlpha(1);
-
-          // Dramatic wrong answer effects
-          this.cameras.main.shake(350, 0.025);
-
-          // Red screen flash
-          this.redFlash.setAlpha(0.4);
-          this.tweens.add({
-            targets: this.redFlash,
-            alpha: 0,
-            duration: 500,
-          });
-
-          // Floating wrong text
-          this.showFloatingText(
-            GRID_X + GRID_W / 2,
-            GRID_Y + GRID_H / 2,
-            "WRONG!",
-            "#ff4444",
-            "32px",
-          );
-
-          // Place cracked shape
-          this.placeShapeOnGrid(0x993333, false);
-
-          if (this.lives <= 0) {
-            // No-fail: refill hearts and keep building.
-            this.lives = 3;
-            this.showFloatingText(
-              GRID_X + GRID_W / 2,
-              GRID_Y + GRID_H / 2 + 44,
-              "♥ Refilled — keep going!",
-              "#44cc88",
-              "24px",
-            );
-          }
-        }
-
-        this.updateHUD();
-
-        // Check for row clears after placing
-        this.time.delayedCall(800, () => {
-          this.checkRowClears();
-          // Level up every 5 shapes with phase transition
-          if (this.shapesPlaced > 0 && this.shapesPlaced % 5 === 0) {
-            this.level++;
-            this.dropSpeed = Math.min(1.5, this.dropSpeed + 0.1);
-            SFX.levelUp();
-            this.showPhaseTransition(`LEVEL ${this.level}!`);
-          }
-        });
-
-        this.time.delayedCall(1800, () => {
-          this.nextQuestion();
-        });
-      };
-
-      GameScene.prototype.placeShapeOnGrid = function (color, correct) {
-        this.shapesPlaced++;
-        const shapeW = randInt(2, Math.min(4, GRID_COLS - this.shapeCol));
-        const tex = correct ? this.getBlockTexture(color) : "block_cracked";
-
-        for (let c = this.shapeCol; c < this.shapeCol + shapeW; c++) {
-          let targetRow = GRID_ROWS - 1;
-          for (let r = GRID_ROWS - 1; r >= 0; r--) {
-            if (this.grid[r][c] !== 0) {
-              targetRow = r - 1;
-            } else {
-              targetRow = r;
-              break;
-            }
-          }
-          if (targetRow < 0) {
-            // Grid is full — the city is complete; end on the normal
-            // results screen (never a lose state).
-            this.endGame();
-            return;
-          }
-
-          this.grid[targetRow][c] = 1;
-          const px = GRID_X + c * CELL + 1;
-          const py = GRID_Y + targetRow * CELL + 1;
-          const block = this.add
-            .image(px + CELL / 2 - 1, GRID_Y - 30, tex)
-            .setOrigin(0.5);
-          this.gridSprites[targetRow][c] = block;
-
-          SFX.drop();
-          // Easing refinement: a weighty settle (back-out overshoot tuned so
-          // the block "lands" without the jittery multi-bounce). Under reduced
-          // motion, fall straight in with a gentle decelerate and no overshoot.
-          this.tweens.add({
-            targets: block,
-            y: py + CELL / 2 - 1,
-            duration: this.reduceMotion ? 200 : 340 + targetRow * 26,
-            ease: this.reduceMotion ? "Cubic.easeOut" : "Back.easeOut",
-            easeParams: this.reduceMotion ? undefined : [1.6],
-            delay: this.reduceMotion ? 0 : c * 50,
-          });
-
-          if (correct) {
-            this.sparkles.emitParticleAt(px + CELL / 2, py + CELL / 2);
-          } else {
-            this.breakParticles.emitParticleAt(px + CELL / 2, py + CELL / 2);
-          }
-        }
-
-        this.shapeCol = randInt(0, GRID_COLS - 3);
-      };
-
-      GameScene.prototype.getBlockTexture = function (color) {
-        if (color === 0x4488ff) return "block_blue";
-        if (color === 0xff8844) return "block_orange";
-        if (color === 0x44cc88) return "block_green";
-        if (color === 0xcc44cc) return "block_purple";
-        if (color === 0xddaa00) return "block_gold";
-        return "block_gray";
-      };
-
-      GameScene.prototype.checkRowClears = function () {
-        let cleared = 0;
-        for (let r = GRID_ROWS - 1; r >= 0; r--) {
-          let full = true;
-          for (let c = 0; c < GRID_COLS; c++) {
-            if (this.grid[r][c] === 0) {
-              full = false;
-              break;
-            }
-          }
-          if (full) {
-            cleared++;
-            this.rowsCleared++;
-            for (let c = 0; c < GRID_COLS; c++) {
-              const sprite = this.gridSprites[r][c];
-              if (sprite) {
-                this.sparkles.emitParticleAt(sprite.x, sprite.y);
-                this.tweens.add({
-                  targets: sprite,
-                  scaleX: 0,
-                  scaleY: 0,
-                  alpha: 0,
-                  duration: 300,
-                  delay: c * 30,
-                  onComplete: () => sprite.destroy(),
-                });
-              }
-              this.grid[r][c] = 0;
-              this.gridSprites[r][c] = null;
-            }
-            this.time.delayedCall(400, () => {
-              for (let rr = r; rr > 0; rr--) {
-                for (let cc = 0; cc < GRID_COLS; cc++) {
-                  this.grid[rr][cc] = this.grid[rr - 1][cc];
-                  this.gridSprites[rr][cc] = this.gridSprites[rr - 1][cc];
-                  if (this.gridSprites[rr][cc]) {
-                    this.tweens.add({
-                      targets: this.gridSprites[rr][cc],
-                      y: GRID_Y + rr * CELL + CELL / 2 - 1,
-                      duration: 200,
-                    });
-                  }
-                }
-              }
-              for (let cc = 0; cc < GRID_COLS; cc++) {
-                this.grid[0][cc] = 0;
-                this.gridSprites[0][cc] = null;
-              }
-            });
-          }
-        }
-
-        if (cleared > 0) {
-          SFX.rowClear();
-          const bonus = cleared * 200 * (cleared > 1 ? 2 : 1);
-          this.score += bonus;
-          this.cameras.main.shake(150, 0.01);
-
-          this.showFloatingText(
-            GRID_X + GRID_W / 2,
-            GRID_Y + GRID_H / 2,
-            cleared > 1 ? `${cleared} ROWS! +${bonus}` : `ROW CLEAR! +${bonus}`,
-            "#ffdd00",
-            "24px",
-          );
-
-          this.updateHUD();
-        }
-      };
-
       GameScene.prototype.endGame = function () {
-        if (this.lives > 0) SFX.win();
+        SFX.win();
         this.time.delayedCall(500, () => {
           this.scene.start("Results", {
             score: this.score,
             maxCombo: this.maxCombo,
-            lives: this.lives,
             totalCorrect: this.totalCorrect,
             totalWrong: this.totalWrong,
-            difficulty: this.difficulty,
-            level: this.level,
-            rowsCleared: this.rowsCleared,
-            shapesPlaced: this.shapesPlaced,
+            levelNum: this.levelNum,
+            stage: this.stage,
+            rounds: this.maxRounds,
+            buildings: this.shapesPlaced,
           });
         });
       };
 
       GameScene.prototype.updateHUD = function () {
-        this.scoreText.setText(`Score: ${this.score}`);
-        this.levelText.setText(`Level ${this.level}`);
+        this.scoreText.setText("Score: " + this.score);
+        this.levelText.setText(
+          "Level " + this.levelNum + " • Stage " + this.stage,
+        );
         this.livesText.setText(
           "♥".repeat(this.lives) + "♡".repeat(Math.max(0, 3 - this.lives)),
         );
-        this.rowsClearedText.setText(`Rows: ${this.rowsCleared}`);
-        const prog = this.questionsAsked / this.maxQuestions;
-        this.progressBarFill.width = prog * 140;
-        this.progressText.setText(
-          `${this.questionsAsked}/${this.maxQuestions}`,
-        );
-        // Power-up button text
-        this.powerUpBtns.forEach((pu) => {
-          const count = this.powerUps[pu.key];
-          pu.text.setText(`${pu.label} (${count})`);
-          pu.bg.setAlpha(count > 0 ? 1 : 0.3);
-        });
+        this.buildingsText.setText("Buildings: " + this.shapesPlaced);
+        this.progressBarFill.width = (this.roundsAsked / this.maxRounds) * 200;
+        this.progressText.setText(this.roundsAsked + "/" + this.maxRounds);
       };
-
-      GameScene.prototype.update = function () {};
 
       // ── RESULTS ──
       function ResultScene() {
@@ -2047,8 +2228,7 @@
           d = this.d;
         this.add.rectangle(cx, H / 2, W, H, 0x0a1a2e);
 
-        const pct =
-          (d.totalCorrect / Math.max(1, d.totalCorrect + d.totalWrong)) * 100;
+        const pct = (d.totalCorrect / Math.max(1, d.rounds)) * 100;
         const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
 
         try {
@@ -2056,10 +2236,10 @@
             EduPulse.record({
               activityTitle: document.title,
               score: d.totalCorrect,
-              maxScore: d.totalCorrect + d.totalWrong,
+              maxScore: d.rounds,
               stars: stars,
               problemsCorrect: d.totalCorrect,
-              problemsAttempted: d.totalCorrect + d.totalWrong,
+              problemsAttempted: d.rounds,
               percent: Math.round(pct),
             });
         } catch (e) {}
@@ -2077,6 +2257,18 @@
         } else {
           SFX.win();
         }
+
+        srSay(
+          "City complete! You built " +
+            d.buildings +
+            " buildings and locked " +
+            d.totalCorrect +
+            " of " +
+            d.rounds +
+            " blueprints on the first try. Final score " +
+            d.score +
+            ".",
+        );
 
         // City skyline celebration
         const colors = [0x4488ff, 0x44cc88, 0xff8844, 0xcc44cc, 0xddaa00];
@@ -2129,7 +2321,7 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 60, "Your city is built!", {
+          .text(cx, 60, "Every blueprint became a building!", {
             fontSize: "15px",
             color: "#88aacc",
           })
@@ -2140,7 +2332,7 @@
         for (let i = 0; i < 3; i++) {
           const sx = cx - 60 + i * 60;
           // Empty star background
-          const emptyStar = this.add
+          this.add
             .text(sx, starY, "☆", {
               fontSize: "42px",
               color: "#334455",
@@ -2194,34 +2386,29 @@
         const stats = [
           { label: "Final Score", val: String(d.score), color: "#44cc88" },
           {
-            label: "Shapes Placed",
-            val: String(d.shapesPlaced),
+            label: "Buildings Built",
+            val: String(d.buildings),
             color: "#4488ff",
           },
-          { label: "Correct", val: String(d.totalCorrect), color: "#44cc88" },
-          { label: "Wrong", val: String(d.totalWrong), color: "#ff4444" },
           {
-            label: "Rows Cleared",
-            val: String(d.rowsCleared),
-            color: "#ffdd00",
+            label: "First-Try Locks",
+            val: d.totalCorrect + " / " + d.rounds,
+            color: "#44cc88",
           },
-          { label: "Max Combo", val: `x${d.maxCombo}`, color: "#ffaa00" },
-          { label: "Level Reached", val: String(d.level), color: "#88aacc" },
-          {
-            label: "Difficulty",
-            val: d.difficulty.toUpperCase(),
-            color: "#cc88ff",
-          },
+          { label: "Wrong Locks", val: String(d.totalWrong), color: "#ffaa66" },
+          { label: "Best Streak", val: "x" + d.maxCombo, color: "#ffaa00" },
+          { label: "Stage Reached", val: String(d.stage), color: "#88aacc" },
+          { label: "Level", val: "Level " + d.levelNum, color: "#cc88ff" },
         ];
         stats.forEach((s, i) => {
-          const y = statsStartY + i * 38;
-          this.add.rectangle(cx, y, 400, 30, 0x112233, 0.8);
+          const y = statsStartY + i * 40;
+          this.add.rectangle(cx, y, 400, 32, 0x112233, 0.8);
           this.add
-            .text(cx - 170, y, s.label, { fontSize: "14px", color: "#6688aa" })
+            .text(cx - 170, y, s.label, { fontSize: "15px", color: "#6688aa" })
             .setOrigin(0, 0.5);
           const v = this.add
             .text(cx + 170, y, s.val, {
-              fontSize: "16px",
+              fontSize: "17px",
               fontStyle: "bold",
               color: s.color,
             })
@@ -2256,7 +2443,7 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 492, `${Math.round(pct)}% Accuracy`, {
+          .text(cx, 492, `${Math.round(pct)}% First-Try Accuracy`, {
             fontSize: "15px",
             color: "#88aacc",
           })
@@ -2288,7 +2475,7 @@
         retry.on("pointerdown", () => {
           this.cameras.main.fadeOut(300);
           this.time.delayedCall(300, () =>
-            this.scene.start("Game", { difficulty: d.difficulty }),
+            this.scene.start("Game", { level: d.levelNum }),
           );
         });
 
@@ -2316,9 +2503,9 @@
 
       // ── Canvas accessibility (additive) ──
       // The whole game renders into one Phaser <canvas>. Give assistive tech a
-      // label and make the canvas keyboard-focusable so the existing keyboard
-      // controls (number keys, Q/W, Space) are discoverable. Does not alter any
-      // game logic — purely descriptive attributes + a focus affordance.
+      // label and make the canvas keyboard-focusable so the keyboard controls
+      // are discoverable. Prompts and results are mirrored into the #aa-sr
+      // aria-live region as the game runs.
       aaGame.events.once("ready", function () {
         try {
           var cv = aaGame.canvas;
@@ -2327,9 +2514,10 @@
           cv.setAttribute(
             "aria-label",
             "Area Architect city builder math game. " +
-              "Calculate the area of each shape to construct your city. " +
-              "Use number keys 1 to 4 to choose an answer, Q for the 50/50 " +
-              "power-up, W for double points, and Space to start.",
+              "Build each shape to match the blueprint. " +
+              "Use the Up and Down arrows to choose a dimension, " +
+              "Left and Right arrows to size it, and Enter to lock in " +
+              "your build. Every control can also be tapped.",
           );
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
@@ -2353,5 +2541,22 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
     <script src="/assets/game-access.js" defer></script>
     <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#aa-sr",
+            standard: "6.G.1",
+            staticHints: [
+              "Count the unit squares your shape covers on the grid. Is that more or fewer than the blueprint asks for?",
+              "Watch the live readout as you step one dimension up or down — which number in the formula are you changing?",
+              "Set up the formula with your numbers. For a triangle, the dashed rectangle shows why you take half; for the L-shape, add the two rectangle pieces.",
+            ],
+          });
+      });
+    </script>
+    <!-- ghl-injected:end -->
   </body>
 </html>

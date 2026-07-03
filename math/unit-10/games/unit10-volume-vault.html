@@ -393,6 +393,9 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
     <link rel="stylesheet" href="/assets/game-access.css" />
     <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
   </head>
   <body>
     <div id="vv-bg" aria-hidden="true"></div>
@@ -1008,5 +1011,23 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
     <script src="/assets/game-access.js" defer></script>
     <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#vv-sr",
+            standard: "6.G.2",
+            accept: "^Round \\d",
+            staticHints: [
+              "Picture the vault as layers of unit cubes: how many cubes would fill just the flat bottom layer?",
+              "Length × width tells you how many cubes sit in ONE layer of the vault.",
+              "Multiply one layer by the height (the number of layers) — then adjust one dimension at a time until the product hits the target.",
+            ],
+          });
+      });
+    </script>
+    <!-- ghl-injected:end -->
   </body>
 </html>

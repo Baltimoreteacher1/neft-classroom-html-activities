@@ -507,15 +507,15 @@
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <link rel="stylesheet" href="/assets/game-access.css">
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <link rel="stylesheet" href="/assets/game-hint-ladder.css">
-  <!-- ghl-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
     <div id="ff-sr" role="status" aria-live="polite"></div>
@@ -1092,16 +1092,16 @@
           try {
             GameFX.burst(window.innerWidth / 2, window.innerHeight / 3);
           } catch (e) {}
-        if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(true), 1500);
+        if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(), 1500);
         else setTimeout(() => loadRound(S.round + 1), 1500);
       }
 
-      function endGame(won) {
+      function endGame() {
         const stars = S.mistakes === 0 ? 3 : S.mistakes <= 2 ? 2 : 1;
         $("r-stars").textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
         $("r-score").textContent = S.score;
         $("r-correct").textContent = S.correctActions;
-        $("r-rounds").textContent = won ? ROUNDS : S.round;
+        $("r-rounds").textContent = ROUNDS;
         let high = 0;
         try {
           high = Number(localStorage.getItem(LS_KEY) || 0);
@@ -1156,25 +1156,30 @@
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <script src="/assets/game-access.js" defer></script>
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <script src="/assets/game-hint-ladder.js" defer></script>
-  <script>
-      window.addEventListener('DOMContentLoaded', function () {
-        if (window.NeftHintLadder) window.NeftHintLadder.watch({
-          sourceSelector: "#ff-sr",
-          standard: "6.NS.4",
-          staticHints: ["What factors do these numbers share? Start by listing the factors of each.","GCF is the biggest factor they share; LCM is the smallest multiple they share. Which does the task ask for?","Set it up: compare your lists (or prime factors) and pick the shared value — you name the final one."]
-        });
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#ff-sr",
+            standard: "6.NS.4",
+            staticHints: [
+              "What factors do these numbers share? Start by listing the factors of each.",
+              "GCF is the biggest factor they share; LCM is the smallest multiple they share. Which does the task ask for?",
+              "Set it up: compare your lists (or prime factors) and pick the shared value — you name the final one.",
+            ],
+          });
       });
     </script>
-  <!-- ghl-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
-  <script src="/assets/canvas-bridge.js" defer></script>
-  <!-- canvas-bridge-injected:end -->
-</body>
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+  </body>
 </html>

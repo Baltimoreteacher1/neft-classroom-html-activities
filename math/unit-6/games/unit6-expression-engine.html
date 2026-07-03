@@ -69,6 +69,9 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
     <link rel="stylesheet" href="/assets/game-access.css" />
     <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
   </head>
   <body>
     <!-- ARIA live region: announces answer-submission results (correct /
@@ -2146,5 +2149,23 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
     <script src="/assets/game-access.js" defer></script>
     <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#ee-live",
+            standard: "6.EE.1-2",
+            accept: "^Part \\d",
+            staticHints: [
+              "Read the expression piece by piece: which operations do you see, and which one must happen first (parentheses, exponents, multiply/divide, add/subtract)?",
+              "Substituting a value for a variable? Replace the variable EVERYWHERE it appears before you compute anything.",
+              "Combine only like terms — terms with the exact same variable part — then work the order of operations one small step at a time.",
+            ],
+          });
+      });
+    </script>
+    <!-- ghl-injected:end -->
   </body>
 </html>

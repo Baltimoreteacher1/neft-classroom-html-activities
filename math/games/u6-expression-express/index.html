@@ -124,15 +124,15 @@
     <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
     <script src="/assets/game-juice.js"></script>
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <link rel="stylesheet" href="/assets/game-access.css">
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <link rel="stylesheet" href="/assets/game-hint-ladder.css">
-  <!-- ghl-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated star-field (behind the Phaser canvas). -->
     <div id="ee-bg" data-parallax aria-hidden="true">
@@ -937,7 +937,6 @@
           window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
         this.score = 0;
-        this.lives = 3;
         this.streak = 0;
         this.solved = 0;
         this.target = 10; // win when this many expressions are assembled
@@ -962,10 +961,6 @@
         this.scoreText = this.add.text(16, 12, "Score: 0", {
           ...hudStyle,
           color: "#c8a0e0",
-        });
-        this.livesText = this.add.text(16, 36, "❤❤❤", {
-          ...hudStyle,
-          color: "#ff8f8f",
         });
         this.streakText = this.add
           .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#ffd24a" })
@@ -1092,8 +1087,9 @@
           )
           .setOrigin(0.5);
 
-        this.redFlash = this.add
-          .rectangle(W / 2, H / 2, W, H, 0xff3333, 0)
+        // Brief calm amber tint for a not-yet attempt (no-fail practice).
+        this.amberTint = this.add
+          .rectangle(W / 2, H / 2, W, H, 0xf0b44a, 0)
           .setDepth(90);
 
         // Drag plumbing (Phaser drag events at scene scope).
@@ -1555,8 +1551,7 @@
           SFX.bad();
           JUICE.audio.wrong();
           this.streak = 0;
-          this.lives--;
-          this.flashRed();
+          this.flashAmber();
           JUICE.shake(this, 0.009);
           this.slots.forEach((s) => s.rect.setStrokeStyle(3, 0xc23b3b));
           this.feedback
@@ -1608,14 +1603,8 @@
 
       GameScene.prototype.afterAttempt = function () {
         this.updateHUD();
-        if (this.lives <= 0) {
-          // No-fail practice: refill hearts and keep going. Mistakes teach;
-          // they never end the game (calm, self-paced classroom mode).
-          this.lives = 3;
-          this.updateHUD();
-        }
         if (this.solved >= this.target) {
-          this.endGame(true);
+          this.endGame();
           return;
         }
         this.time.delayedCall(this.reduceMotion ? 500 : 900, () => {
@@ -1624,27 +1613,25 @@
         });
       };
 
-      GameScene.prototype.flashRed = function () {
+      GameScene.prototype.flashAmber = function () {
         if (this.reduceMotion) return;
-        this.redFlash.setAlpha(0.35);
-        this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 350 });
+        this.amberTint.setAlpha(0.18);
+        this.tweens.add({ targets: this.amberTint, alpha: 0, duration: 350 });
       };
 
       GameScene.prototype.updateHUD = function () {
         this.scoreText.setText("Score: " + this.score);
-        this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
         this.streakText.setText("Streak: " + this.streak);
         this.progressText.setText(this.solved + " / " + this.target);
       };
 
-      GameScene.prototype.endGame = function (won) {
+      GameScene.prototype.endGame = function () {
         this.locked = true;
         this.time.delayedCall(500, () => {
           this.scene.start("Result", {
             score: this.score,
             solved: this.solved,
             target: this.target,
-            won: won,
           });
         });
       };
@@ -1673,10 +1660,10 @@
         }
 
         this.add
-          .text(cx, 110, d.won ? "FULL STEAM AHEAD!" : "OUT OF LIVES", {
+          .text(cx, 110, "FULL STEAM AHEAD!", {
             fontFamily: "Impact, sans-serif",
             fontSize: "44px",
-            color: d.won ? "#b06fd4" : "#ff8f8f",
+            color: "#b06fd4",
             stroke: "#140c20",
             strokeThickness: 5,
           })
@@ -1716,11 +1703,9 @@
           })
           .setOrigin(0.5);
 
-        if (d.won) {
-          SFX.win();
-          JUICE.audio.fanfare();
-          JUICE.confetti(this, 2);
-        } else SFX.lose();
+        SFX.win();
+        JUICE.audio.fanfare();
+        JUICE.confetti(this, 2);
 
         try {
           window.EduPulse &&
@@ -1732,14 +1717,7 @@
               problemsAttempted: d.solved,
             });
         } catch (e) {}
-        srSay(
-          (d.won ? "You won! " : "Game over. ") +
-            "Final score " +
-            d.score +
-            ", " +
-            stars +
-            " stars.",
-        );
+        srSay("You won! Final score " + d.score + ", " + stars + " stars.");
 
         const btn = this.add
           .rectangle(cx, 400, 220, 54, 0x7a3fb0)
@@ -1823,25 +1801,30 @@
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <script src="/assets/game-access.js" defer></script>
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <script src="/assets/game-hint-ladder.js" defer></script>
-  <script>
-      window.addEventListener('DOMContentLoaded', function () {
-        if (window.NeftHintLadder) window.NeftHintLadder.watch({
-          sourceSelector: "#ee-sr",
-          standard: "6.EE.1",
-          staticHints: ["What is the expression asking you to do first? Look for exponents and grouping.","Follow order of operations (PEMDAS); remember an exponent is repeated multiplication.","Set it up: substitute the values and write each step, then compute the last one yourself."]
-        });
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#ee-sr",
+            standard: "6.EE.1",
+            staticHints: [
+              "What is the expression asking you to do first? Look for exponents and grouping.",
+              "Follow order of operations (PEMDAS); remember an exponent is repeated multiplication.",
+              "Set it up: substitute the values and write each step, then compute the last one yourself.",
+            ],
+          });
       });
     </script>
-  <!-- ghl-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
-  <script src="/assets/canvas-bridge.js" defer></script>
-  <!-- canvas-bridge-injected:end -->
-</body>
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+  </body>
 </html>

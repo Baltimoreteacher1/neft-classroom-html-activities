@@ -93,18 +93,18 @@
     <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
     <script src="/assets/game-juice.js"></script>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <link rel="stylesheet" href="/assets/game-access.css">
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <link rel="stylesheet" href="/assets/game-hint-ladder.css">
-  <!-- ghl-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <div id="loader">
       <div class="spinner"></div>
@@ -690,7 +690,7 @@
             this.tries = 0;
             this.revealCorrect = null;
             if (this.idx >= rounds.length) {
-              this.finish(true);
+              this.finish();
               return;
             }
             const r = rounds[this.idx];
@@ -788,13 +788,12 @@
             }
           }
 
-          finish(won) {
+          finish() {
             JUICE.audio.musicStop();
             this.scene.start("Result", {
               score: this.score,
               correct: this.correctCount,
               total: rounds.length,
-              won,
             });
           }
 
@@ -1433,11 +1432,11 @@
             const ratio = d.total ? d.correct / d.total : 0;
             const stars = ratio >= 0.85 ? 3 : ratio >= 0.5 ? 2 : 1;
             this.add
-              .text(W / 2, 150, d.won ? "REVIEW COMPLETE!" : "OUT OF HEARTS", {
+              .text(W / 2, 150, "REVIEW COMPLETE!", {
                 fontFamily: "Nunito, Segoe UI, sans-serif",
                 fontSize: "46px",
                 fontStyle: "bold",
-                color: d.won ? "#34d399" : "#fca5a5",
+                color: "#34d399",
               })
               .setOrigin(0.5);
             // Stars pop in one at a time with a "collect" blip for a payoff beat.
@@ -1481,13 +1480,9 @@
               )
               .setOrigin(0.5);
             // Celebration + meta-progression payout.
-            if (d.won) {
-              JUICE.audio.fanfare();
-              JUICE.confetti(this, 1);
-            } else {
-              JUICE.audio.wrong();
-            }
-            const bonusXp = d.correct * 10 + (d.won ? 50 : 0) + stars * 15;
+            JUICE.audio.fanfare();
+            JUICE.confetti(this, 1);
+            const bonusXp = d.correct * 10 + 50 + stars * 15;
             JUICE.award(bonusXp, "practice-arcade-complete");
             this.add
               .text(W / 2, 360, "+" + bonusXp + " XP", {
@@ -1509,7 +1504,7 @@
                 });
             } catch (e) {}
             srSay(
-              (d.won ? "Review complete. " : "Out of hearts. ") +
+              "Review complete. " +
                 d.correct +
                 " of " +
                 d.total +
@@ -1620,26 +1615,31 @@
     <!-- Student Passport (meta-progression pill; boots itself, award() guarded) -->
     <script src="/assets/lesson-passport.js" defer></script>
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <script src="/assets/game-access.js" defer></script>
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <script src="/assets/game-hint-ladder.js" defer></script>
-  <script>
-      window.addEventListener('DOMContentLoaded', function () {
-        if (window.NeftHintLadder) window.NeftHintLadder.watch({
-          sourceSelector: "#pa-sr",
-          standard: "",
-          accept: "(^Round \\d|\\bOptions:|\\bLeft cards:|\\bSteps:)",
-          staticHints: ["Read the problem again slowly. What is it giving you, and what is it asking you to find?","What one idea or rule from this lesson connects what you have to what you need?","Set it up: write the first step using that rule, then work it through — you finish the last part."]
-        });
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#pa-sr",
+            standard: "",
+            accept: "(^Round \\d|\\bOptions:|\\bLeft cards:|\\bSteps:)",
+            staticHints: [
+              "Read the problem again slowly. What is it giving you, and what is it asking you to find?",
+              "What one idea or rule from this lesson connects what you have to what you need?",
+              "Set it up: write the first step using that rule, then work it through — you finish the last part.",
+            ],
+          });
       });
     </script>
-  <!-- ghl-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
-  <script src="/assets/canvas-bridge.js" defer></script>
-  <!-- canvas-bridge-injected:end -->
-</body>
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+  </body>
 </html>
