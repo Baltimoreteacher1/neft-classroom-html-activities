@@ -12,7 +12,13 @@
  *   node tools/inject-game-access.js --dry-run  # report only
  *   node tools/inject-game-access.js --revert   # remove the injected blocks
  */
-import { readdirSync, statSync, readFileSync, writeFileSync, existsSync } from "fs";
+import {
+  readdirSync,
+  statSync,
+  readFileSync,
+  writeFileSync,
+  existsSync,
+} from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -47,9 +53,52 @@ const ROOTS = [
   "number-system",
   "ratios-proportions",
   "surface-area-review",
+  // Flagship per-unit 2D games + standard-coded game pages (2026-07 games
+  // audit): the calm/a11y layer was missing from every game outside the
+  // canonical math/games arcade. Game folders only — never whole unit dirs.
+  "math/unit-1/games",
+  "math/unit-2/games",
+  "math/unit-3/games",
+  "math/unit-4/games",
+  "math/unit-5/games",
+  "math/unit-6/games",
+  "math/unit-7/games",
+  "math/unit-8/games",
+  "math/unit-9/games",
+  "math/unit-10/games",
+  "math/statistics/games",
+  "math/mcap-review-game",
+  "math/unit-1/6-ns-b-2game",
+  "math/unit-1/6-ns-b-3game",
+  "math/unit-1/supplemental/6-1game",
+  "math/unit-2/6-ns-a-1game",
+  "math/unit-3/6-rp-1game",
+  "math/unit-4/6-rp-a-2game",
+  "math/unit-4/6-rp-a-3game",
+  "math/unit-5/supplemental/parallelogramandrhombusgame",
+  "math/unit-7/6-ns-c-5game",
+  "math/unit-7/6-ns-c-6game",
+  "math/unit-7/6-ns-c-8game",
+  "math/unit-8/game-equations-quest",
+  "math/unit-9/6-ee-9gamereview",
+  "math/unit-9/6-ee-c-9martiangame",
+  "math/unit-9/6-ee-c-9variablevelocitygame",
+  "math/unit-9/cloudflare-pages-game-for-6-ee-9",
+  "math/unit-9/game-variable-voyage",
+  "math/unit-9/variablecomparisongame",
+  "math/statistics/6-sp-a-1game",
+  "math/statistics/6-sp-a-1game-2",
+  "math/statistics/6-sp-b-5-data-detective-game",
+  "math/statistics/mean-median-mode-game",
 ];
 
-const SKIP_DIRS = new Set(["node_modules", "dist", "vendor", "engine3d", ".git"]);
+const SKIP_DIRS = new Set([
+  "node_modules",
+  "dist",
+  "vendor",
+  "engine3d",
+  ".git",
+]);
 
 const args = new Set(process.argv.slice(2));
 const DRY = args.has("--dry-run");
@@ -108,8 +157,14 @@ function processFile(file) {
     return;
   }
 
-  html = html.replace(/<\/head>/i, `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n</head>`);
-  html = html.replace(/<\/body>/i, `  ${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n</body>`);
+  html = html.replace(
+    /<\/head>/i,
+    `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n</head>`,
+  );
+  html = html.replace(
+    /<\/body>/i,
+    `  ${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n</body>`,
+  );
   if (!DRY) writeFileSync(file, html);
   report.injected++;
 }
@@ -121,7 +176,9 @@ for (const r of ROOTS) {
 }
 files.forEach(processFile);
 
-console.log(`Game Access injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`);
+console.log(
+  `Game Access injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`,
+);
 console.log("  HTML scanned     :", report.scanned);
 if (REVERT) {
   console.log("  reverted         :", report.reverted);

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Area Architect — City Builder | Unit 5</title>
     <style>
       * {
@@ -11,7 +11,8 @@
         padding: 0;
         box-sizing: border-box;
       }
-      html, body {
+      html,
+      body {
         width: 100%;
         height: 100%;
         margin: 0;
@@ -131,9 +132,12 @@
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+  </head>
   <body>
     <!-- Bespoke animated parallax cityscape (behind the Phaser canvas).
          Decorative only: aria-hidden, pointer-events:none, reduced-motion safe. -->
@@ -1533,7 +1537,7 @@
       };
 
       GameScene.prototype.nextQuestion = function () {
-        if (this.questionsAsked >= this.maxQuestions || this.lives <= 0) {
+        if (this.questionsAsked >= this.maxQuestions) {
           this.endGame();
           return;
         }
@@ -1669,7 +1673,6 @@
         const q = this.currentQ;
         const chosen = q.choices[idx];
         const isCorrect = chosen === q.answer;
-        const answerTime = (Date.now() - this.questionStartTime) / 1000;
 
         this.formulaText.setText(q.formula);
 
@@ -1681,20 +1684,6 @@
 
           let pts = 100 + this.combo * 20;
           if (this.level > 1) pts += this.level * 10;
-
-          // Time bonus
-          let timeBonus = 0;
-          if (answerTime < 3) {
-            timeBonus = 50;
-            this.speedText
-              .setText("SPEED BONUS +50")
-              .setColor("#44cc88")
-              .setAlpha(1);
-          } else if (answerTime < 5) {
-            timeBonus = 25;
-            this.speedText.setText("QUICK +25").setColor("#88aacc").setAlpha(1);
-          }
-          pts += timeBonus;
 
           // Double points power-up
           if (this.doublePointsActive) {
@@ -1842,9 +1831,15 @@
           this.placeShapeOnGrid(0x993333, false);
 
           if (this.lives <= 0) {
-            SFX.lose();
-            this.time.delayedCall(1500, () => this.endGame());
-            return;
+            // No-fail: refill hearts and keep building.
+            this.lives = 3;
+            this.showFloatingText(
+              GRID_X + GRID_W / 2,
+              GRID_Y + GRID_H / 2 + 44,
+              "♥ Refilled — keep going!",
+              "#44cc88",
+              "24px",
+            );
           }
         }
 
@@ -1883,7 +1878,8 @@
             }
           }
           if (targetRow < 0) {
-            this.lives = 0;
+            // Grid is full — the city is complete; end on the normal
+            // results screen (never a lose state).
             this.endGame();
             return;
           }
@@ -2051,7 +2047,6 @@
           d = this.d;
         this.add.rectangle(cx, H / 2, W, H, 0x0a1a2e);
 
-        const won = d.lives > 0;
         const pct =
           (d.totalCorrect / Math.max(1, d.totalCorrect + d.totalWrong)) * 100;
         const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
@@ -2079,10 +2074,8 @@
         // Play appropriate sound
         if (stars === 3) {
           SFX.win3star();
-        } else if (won) {
-          SFX.win();
         } else {
-          SFX.lose();
+          SFX.win();
         }
 
         // City skyline celebration
@@ -2097,50 +2090,46 @@
             bw,
             bh,
             colors[i % colors.length],
-            won ? 0.6 : 0.2,
+            0.6,
           );
-          if (won) {
-            for (let wy = H - bh + 8; wy < H - 8; wy += 16) {
-              for (let wx = bx - bw / 2 + 6; wx < bx + bw / 2 - 6; wx += 12) {
-                this.add.rectangle(wx, wy, 5, 7, 0xffdd88, 0.7);
-              }
+          for (let wy = H - bh + 8; wy < H - 8; wy += 16) {
+            for (let wx = bx - bw / 2 + 6; wx < bx + bw / 2 - 6; wx += 12) {
+              this.add.rectangle(wx, wy, 5, 7, 0xffdd88, 0.7);
             }
           }
         }
         this.add.rectangle(cx, H - 4, W, 8, 0x1a3a2e);
 
         // Celebration particles
-        if (won) {
-          const burstCount = stars === 3 ? 8 : stars === 2 ? 5 : 3;
-          for (let i = 0; i < burstCount; i++) {
-            this.time.delayedCall(i * 300, () => {
-              const p = this.add.particles(0, 0, "confetti", {
-                speed: { min: 60, max: 250 },
-                angle: { min: 0, max: 360 },
-                scale: { start: 1.5, end: 0 },
-                rotate: { min: 0, max: 360 },
-                lifespan: 1500,
-                quantity: 20,
-                tint: [0x44cc88, 0x4488ff, 0xffdd00, 0xff8844, 0xcc44cc],
-                gravityY: 150,
-              });
-              p.emitParticleAt(randInt(100, W - 100), randInt(30, 150));
-              this.time.delayedCall(1600, () => p.destroy());
+        const burstCount = stars === 3 ? 8 : stars === 2 ? 5 : 3;
+        for (let i = 0; i < burstCount; i++) {
+          this.time.delayedCall(i * 300, () => {
+            const p = this.add.particles(0, 0, "confetti", {
+              speed: { min: 60, max: 250 },
+              angle: { min: 0, max: 360 },
+              scale: { start: 1.5, end: 0 },
+              rotate: { min: 0, max: 360 },
+              lifespan: 1500,
+              quantity: 20,
+              tint: [0x44cc88, 0x4488ff, 0xffdd00, 0xff8844, 0xcc44cc],
+              gravityY: 150,
             });
-          }
+            p.emitParticleAt(randInt(100, W - 100), randInt(30, 150));
+            this.time.delayedCall(1600, () => p.destroy());
+          });
         }
 
         this.add
-          .text(cx, 30, won ? "CITY COMPLETE!" : "CONSTRUCTION HALTED", {
+          .text(cx, 30, "CITY COMPLETE!", {
             fontSize: "36px",
             fontStyle: "bold",
-            color: won ? "#44cc88" : "#ff4444",
+            color: "#44cc88",
             stroke: "#000",
             strokeThickness: 4,
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 60, won ? "Your city is built!" : "Out of lives!", {
+          .text(cx, 60, "Your city is built!", {
             fontSize: "15px",
             color: "#88aacc",
           })
@@ -2358,8 +2347,11 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+  </body>
 </html>

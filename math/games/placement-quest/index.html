@@ -71,6 +71,10 @@
         display: flex;
         justify-content: center;
       }
+      .quest-map svg {
+        max-width: 100%;
+        height: auto;
+      }
       .question-box {
         background: rgba(15, 23, 42, 0.8);
         border: 1px solid var(--sky);
@@ -148,15 +152,15 @@
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <link rel="stylesheet" href="/assets/game-access.css">
-  <!-- gacc-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <div class="container">
       <div class="header-bar">
@@ -198,15 +202,16 @@
 
           <!-- Stepping stones -->
           <circle cx="40" cy="40" r="8" fill="#10b981" />
-          <circle cx="100" cy="32" r="8" fill="#475569" id="stone-1" />
-          <circle cx="160" cy="27" r="8" fill="#475569" id="stone-2" />
-          <circle cx="220" cy="28" r="8" fill="#475569" id="stone-3" />
-          <circle cx="280" cy="36" r="8" fill="#475569" id="stone-4" />
-          <circle cx="340" cy="45" r="8" fill="#475569" id="stone-5" />
-          <circle cx="400" cy="48" r="8" fill="#475569" id="stone-6" />
-          <circle cx="460" cy="45" r="8" fill="#475569" id="stone-7" />
-          <circle cx="510" cy="42" r="8" fill="#475569" id="stone-8" />
-          <circle cx="560" cy="40" r="8" fill="#475569" id="stone-9" />
+          <circle cx="92" cy="31" r="8" fill="#475569" id="stone-1" />
+          <circle cx="144" cy="26" r="8" fill="#475569" id="stone-2" />
+          <circle cx="196" cy="27" r="8" fill="#475569" id="stone-3" />
+          <circle cx="248" cy="33" r="8" fill="#475569" id="stone-4" />
+          <circle cx="300" cy="40" r="8" fill="#475569" id="stone-5" />
+          <circle cx="352" cy="45" r="8" fill="#475569" id="stone-6" />
+          <circle cx="404" cy="47" r="8" fill="#475569" id="stone-7" />
+          <circle cx="456" cy="46" r="8" fill="#475569" id="stone-8" />
+          <circle cx="508" cy="43" r="8" fill="#475569" id="stone-9" />
+          <circle cx="560" cy="40" r="8" fill="#475569" id="stone-10" />
         </svg>
       </div>
 
@@ -214,9 +219,15 @@
       <div id="play-screen" class="question-box">
         <p
           id="question-text"
+          aria-live="polite"
           style="font-weight: 700; font-size: 17px; margin-bottom: 12px"
         ></p>
-        <div class="choices-grid" id="choices-container"></div>
+        <div
+          class="choices-grid"
+          id="choices-container"
+          role="group"
+          aria-labelledby="question-text"
+        ></div>
         <p
           id="feedback-line"
           class="feedback-line"
@@ -282,74 +293,85 @@
           c: ["4", "8", "16", "48"],
           a: 1,
           domain: "Unit 1: Prime Factors",
+          why: "16 = 2×8 and 24 = 3×8, so 8 is the biggest factor they share.",
         },
         {
           q: "Compute: 12.45 + 3.8",
           c: ["12.83", "15.25", "16.25", "16.5"],
           a: 2,
           domain: "Unit 1: Decimals",
+          why: "Line up the decimal points: 12.45 + 3.80 = 16.25.",
         },
         {
           q: "Divide: 3/4 ÷ 1/8",
           c: ["6", "3/32", "1/6", "4"],
           a: 0,
           domain: "Unit 2: Fraction Division",
+          why: "Dividing asks how many 1/8s fit in 3/4 — that's 3/4 × 8 = 6.",
         },
         {
           q: "A recipe uses 3 cups of flour for every 2 cups of sugar. What is the unit rate of flour per cup of sugar?",
           c: ["1.5 cups", "0.67 cups", "5 cups", "6 cups"],
           a: 0,
           domain: "Unit 3: Ratios & Rates",
+          why: "Per ONE cup of sugar means 3 ÷ 2 = 1.5 cups of flour.",
         },
         {
           q: "A shirt is on sale for 25% off its original price of $40. What is the sale price?",
           c: ["$10", "$25", "$30", "$38"],
           a: 2,
           domain: "Unit 4: Percents",
+          why: "25% of $40 is $10 off, so you pay $40 − $10 = $30.",
         },
         {
           q: "Find the area of a triangle with a base of 8 cm and a height of 5 cm.",
           c: ["40 cm²", "20 cm²", "13 cm²", "10 cm²"],
           a: 1,
           domain: "Unit 5: Area",
+          why: "A triangle is half a rectangle: ½ × 8 × 5 = 20 cm².",
         },
         {
           q: "Evaluate: 3² - 2 × 3",
           c: ["3", "15", "21", "9"],
           a: 0,
           domain: "Unit 6: Expressions & Exponents",
+          why: "Exponents and multiplication first: 9 − 6 = 3.",
         },
         {
           q: "Solve for x: x + 9 = 25",
           c: ["34", "16", "14", "1.5"],
           a: 1,
           domain: "Unit 7: Equations",
+          why: "Undo the +9 by subtracting 9 from both sides: x = 25 − 9 = 16.",
         },
         {
           q: "Find the median of this data set: 3, 5, 8, 9, 12",
           c: ["7.4", "8", "9", "12"],
           a: 1,
           domain: "Unit 8: Statistics",
+          why: "The median is the middle value when ordered — 8 is 3rd of 5.",
         },
         {
           q: "Which point lies in Quadrant II of the coordinate plane?",
           c: ["(2, 3)", "(-2, 3)", "(-2, -3)", "(2, -3)"],
           a: 1,
           domain: "Unit 9: Coordinate Plane",
+          why: "Quadrant II is up-left: x is negative, y is positive.",
         },
       ];
 
-      // Coordinate nodes mapped to stones
+      // Coordinate nodes mapped to stones (start + stone-1..stone-10)
       const coordinates = [
         { x: 40, y: 40 },
-        { x: 100, y: 32 },
-        { x: 160, y: 27 },
-        { x: 220, y: 28 },
-        { x: 280, y: 36 },
-        { x: 340, y: 45 },
-        { x: 400, y: 48 },
-        { x: 460, y: 45 },
-        { x: 510, y: 42 },
+        { x: 92, y: 31 },
+        { x: 144, y: 26 },
+        { x: 196, y: 27 },
+        { x: 248, y: 33 },
+        { x: 300, y: 40 },
+        { x: 352, y: 45 },
+        { x: 404, y: 47 },
+        { x: 456, y: 46 },
+        { x: 508, y: 43 },
         { x: 560, y: 40 },
       ];
 
@@ -421,7 +443,7 @@
             btn.style.borderColor = "#10b981";
             btn.style.background = "rgba(16,185,129,0.28)";
           }
-          feedback.textContent = "✓ Correct!";
+          feedback.textContent = "✓ Correct!" + (q.why ? " " + q.why : "");
           feedback.className = "feedback-line good";
           const stone = document.getElementById(`stone-${currentIdx + 1}`);
           if (stone) stone.setAttribute("fill", "#10b981");
@@ -433,7 +455,9 @@
             btn.style.borderColor = "#f43f5e";
             btn.style.background = "rgba(244,63,94,0.22)";
           }
-          feedback.textContent = "✗ Not quite — the correct answer is shown.";
+          feedback.textContent =
+            "✗ Not quite — the correct answer is shown." +
+            (q.why ? " " + q.why : "");
           feedback.className = "feedback-line bad";
           const stone = document.getElementById(`stone-${currentIdx + 1}`);
           if (stone) stone.setAttribute("fill", "#f43f5e");
@@ -455,7 +479,7 @@
             currentIdx++;
             loadQuestion();
           },
-          correct ? 900 : 1700,
+          correct ? 900 : 3400, // wrong answers linger so the "why" is readable
         );
       }
 
@@ -530,10 +554,10 @@
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <script src="/assets/game-access.js" defer></script>
-  <!-- gacc-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
   </body>
 </html>

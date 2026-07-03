@@ -69,12 +69,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Small ratios · always shows the rule · 5 lives",
+        desc: "Small ratios · always shows the rule",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Scaling & missing values · less help · 3 lives",
+        desc: "Scaling & missing values · less help",
       },
     },
   },
@@ -124,17 +124,17 @@ export const GAMES_2D = {
       0: {
         label: "Level 0",
         sub: "Most support",
-        desc: "Tiny ratios · the matching guide stays on screen · 5 lives",
+        desc: "Tiny ratios · the matching guide stays on screen",
       },
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Simplest-form orders · color preview helps you check · 4 lives",
+        desc: "Simplest-form orders · color preview helps you check",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Scaled-up orders · serve a smaller equivalent batch · 3 lives",
+        desc: "Scaled-up orders · serve a smaller equivalent batch",
       },
     },
   },
@@ -181,12 +181,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Smaller numbers · slower fall · more time to sort",
+        desc: "Smaller numbers · sort at your own pace",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Bigger numbers · faster fall · GCF & LCM rounds",
+        desc: "Bigger numbers · GCF & LCM rounds",
       },
     },
   },
@@ -229,12 +229,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "One-step rules · slower asteroids · the table is shown",
+        desc: "One-step rules · the table is shown",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Two-step rules · faster asteroids · find the rule yourself",
+        desc: "Two-step rules · find the rule yourself",
       },
     },
   },
@@ -281,9 +281,9 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "One-step equations · the rule is shown · 5 lives",
+        desc: "One-step equations · the rule is shown",
       },
-      2: { label: "Level 2", sub: "Challenge", desc: "Two-step equations · less help · 3 lives" },
+      2: { label: "Level 2", sub: "Challenge", desc: "Two-step equations · less help" },
     },
   },
 
@@ -324,12 +324,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Whole-number unit rates · the division is shown · 5 lives",
+        desc: "Whole-number unit rates · the division is shown",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Bigger numbers · figure the rate yourself · 3 lives",
+        desc: "Bigger numbers · figure the rate yourself",
       },
     },
   },
@@ -370,12 +370,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Whole-number corridors · the grid shows each board's spot · 5 lives",
+        desc: "Whole-number corridors · the grid shows each board's spot",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Mixed-number corridors · figure out the fit yourself · 3 lives",
+        desc: "Mixed-number corridors · figure out the fit yourself",
       },
     },
   },
@@ -416,12 +416,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Smaller base & height · formula and square-count scaffold shown · 5 lives",
+        desc: "Smaller base & height · formula and square-count scaffold shown",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Bigger base & height · less help, trickier distractors · 3 lives",
+        desc: "Bigger base & height · less help, trickier distractors",
       },
     },
   },
@@ -460,12 +460,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Smaller numbers · the substitution is shown · 5 lives",
+        desc: "Smaller numbers · the substitution is shown",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Bigger numbers · compute y on your own · 3 lives",
+        desc: "Bigger numbers · compute y on your own",
       },
     },
   },
@@ -506,12 +506,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Whole-dollar unit prices · the division is shown · 5 lives",
+        desc: "Whole-dollar unit prices · the division is shown",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Prices with cents · percent-off discounts · 3 lives",
+        desc: "Prices with cents · percent-off discounts",
       },
     },
   },
@@ -550,12 +550,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Smaller numbers · step-by-step rule shown · 5 lives",
+        desc: "Smaller numbers · step-by-step rule shown",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Bigger numbers · work it out yourself · 3 lives",
+        desc: "Bigger numbers · work it out yourself",
       },
     },
   },
@@ -594,12 +594,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Smaller numbers · steps shown · 5 lives",
+        desc: "Smaller numbers · steps shown",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Bigger numbers · work it out yourself · 3 lives",
+        desc: "Bigger numbers · work it out yourself",
       },
     },
   },
@@ -640,12 +640,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Smaller numbers · the substitution is shown · 5 lives",
+        desc: "Smaller numbers · the substitution is shown",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Bigger numbers · evaluate it yourself · 3 lives",
+        desc: "Bigger numbers · evaluate it yourself",
       },
     },
   },
@@ -684,12 +684,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Smaller numbers · worked-out scaffold shown · 5 fuel cells",
+        desc: "Smaller numbers · worked-out scaffold shown",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Bigger numbers · two variable slots · 3 fuel cells",
+        desc: "Bigger numbers · two variable slots",
       },
     },
   },
@@ -729,12 +729,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Smaller numbers · solving steps shown · 5 lives",
+        desc: "Smaller numbers · solving steps shown",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Bigger numbers · solve it on your own · 3 lives",
+        desc: "Bigger numbers · solve it on your own",
       },
     },
   },
@@ -776,12 +776,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Clear-cut questions · 8 pollers · guided edits · 5 lives",
+        desc: "Clear-cut questions · 8 pollers · guided edits",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Subtler questions · 16 pollers · freer edits · 3 lives",
+        desc: "Subtler questions · 16 pollers · freer edits",
       },
     },
   },
@@ -822,12 +822,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Smaller numbers · steps of 1 · target hint shown · 5 lives",
+        desc: "Smaller numbers · steps of 1 · target hint shown",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Bigger numbers · less help · add and remove values · 3 lives",
+        desc: "Bigger numbers · less help · add and remove values",
       },
     },
   },
@@ -915,12 +915,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "2-digit ore ÷ 1-digit crew · multiplication strip shown · 5 hull",
+        desc: "2-digit ore ÷ 1-digit crew · multiplication strip shown",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "3–4-digit ore ÷ 2-digit crew · estimate it yourself · 3 hull",
+        desc: "3–4-digit ore ÷ 2-digit crew · estimate it yourself",
       },
     },
   },
@@ -961,12 +961,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Tenths ruler · add & subtract · big pour buttons · 5 lives",
+        desc: "Tenths ruler · add & subtract · big pour buttons",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Hundredths ruler · all four operations · exact match · 3 lives",
+        desc: "Hundredths ruler · all four operations · exact match",
       },
     },
   },
@@ -1006,17 +1006,17 @@ export const GAMES_2D = {
       0: {
         label: "Level 0",
         sub: "Most support",
-        desc: "Explorer · small numbers · the rule stays on screen · most lives",
+        desc: "Explorer · small numbers · the rule stays on screen",
       },
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Challenge · bigger numbers · less help · fewer lives",
+        desc: "Challenge · bigger numbers · less help",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Survival · one life · place each integer with no scaffold",
+        desc: "Expert · place each integer with no scaffold",
       },
     },
   },
@@ -1059,12 +1059,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Quadrants & worded points · the rule is shown after a miss · 3 lives",
+        desc: "Quadrants & worded points · the rule is shown after a miss",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Reflections & opposites · figure out the spot yourself · 3 lives",
+        desc: "Reflections & opposites · figure out the spot yourself",
       },
     },
   },
@@ -1109,12 +1109,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Smaller grid · plot prompts name the steps · 5 lives",
+        desc: "Smaller grid · plot prompts name the steps",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Bigger grid · measure distances yourself · 3 lives",
+        desc: "Bigger grid · measure distances yourself",
       },
     },
   },
@@ -1156,12 +1156,12 @@ export const GAMES_2D = {
       1: {
         label: "Level 1",
         sub: "Support",
-        desc: "Clear-cut questions · fewer pollers · guided hints · 5 lives",
+        desc: "Clear-cut questions · fewer pollers · guided hints",
       },
       2: {
         label: "Level 2",
         sub: "Challenge",
-        desc: "Subtler questions · more pollers · less help · 3 lives",
+        desc: "Subtler questions · more pollers · less help",
       },
     },
   },

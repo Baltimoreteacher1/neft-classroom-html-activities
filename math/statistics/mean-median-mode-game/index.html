@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Sports Analytics Manager — Mean, Median, Mode</title>
     <meta
       name="description"
@@ -427,9 +427,12 @@
     <!-- Games-2D metadata source of truth (must load before the game script) -->
     <script src="/assets/games2d-data.js"></script>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+  </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
     <div id="ff-sr" role="status" aria-live="polite"></div>
@@ -954,18 +957,25 @@
             "good",
           );
           $("hud-score").textContent = S.score;
-          if (window.GameFX && GameFX.successBurst)
+          if (window.GameFX && GameFX.celebrate)
             try {
-              GameFX.successBurst();
+              GameFX.celebrate($("feedback"));
             } catch (e) {}
-          if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(true), 1400);
+          if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(), 1400);
           else setTimeout(() => loadRound(S.round + 1), 1400);
         } else {
           S.lives--;
           SFX.bad();
+          if (S.lives <= 0) {
+            // No-fail: refill lives instead of ending the game early.
+            S.lives = S.level === 1 ? 5 : 3;
+            setTimeout(
+              () => flash("Lives refilled — keep going! 💛", "good"),
+              1600,
+            );
+          }
           $("hud-lives").textContent = "●".repeat(S.lives) || "—";
           flash(nudge(cur), "bad");
-          if (S.lives <= 0) return endGame(false);
         }
       }
 
@@ -985,13 +995,13 @@
         }`;
       }
 
-      function endGame(won) {
+      function endGame() {
         const pct = ROUNDS ? S.targetsHit / ROUNDS : 0;
         const stars = pct >= 0.95 ? 3 : pct >= 0.7 ? 2 : pct >= 0.4 ? 1 : 0;
         $("r-stars").textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
         $("r-score").textContent = S.score;
         $("r-correct").textContent = S.targetsHit;
-        $("r-rounds").textContent = won ? ROUNDS : S.round + 1;
+        $("r-rounds").textContent = ROUNDS;
         let high = 0;
         try {
           high = Number(localStorage.getItem(LS_KEY) || 0);
@@ -1015,14 +1025,7 @@
               standard: STANDARD,
             });
         } catch (e) {}
-        srSay(
-          (won ? "Season complete. " : "Out of lives. ") +
-            "Score " +
-            S.score +
-            ", " +
-            stars +
-            " stars.",
-        );
+        srSay("Season complete. Score " + S.score + ", " + stars + " stars.");
         show("result");
       }
 
@@ -1050,8 +1053,11 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+  </body>
 </html>

@@ -99,7 +99,8 @@
     if (!p || !p.itemText) return Promise.resolve(null);
     // state.rung is already incremented to the 1-based rung being requested;
     // RUNG_FRAMING is 0-indexed, so subtract 1 to escalate 0 -> 1 -> 2.
-    var framing = RUNG_FRAMING[Math.min(state.rung - 1, RUNG_FRAMING.length - 1)];
+    var framing =
+      RUNG_FRAMING[Math.min(state.rung - 1, RUNG_FRAMING.length - 1)];
     var body = {
       mode: "hint",
       standard: clamp(p.standard, 40),
@@ -296,8 +297,20 @@
         els.more.disabled = true; // ladder + explanation complete
       })
       .catch(function () {
+        // Network/timeout must never leave the student with nothing —
+        // mirror the non-ok path with the static big-idea fallback.
         to.done();
+        var step = doc.createElement("div");
+        step.className = "nt-hl-step nt-hl-step-explain";
+        var body = doc.createElement("p");
+        body.className = "nt-hl-step-text";
+        body.textContent =
+          "Think about the big idea: this kind of problem is about a relationship you can scale up or down. Re-read the numbers and ask what stays the same.";
+        step.appendChild(body);
+        els.steps.appendChild(step);
+        setBadge(false);
         setBusy(false);
+        els.more.disabled = true; // ladder + explanation complete
       });
   }
 

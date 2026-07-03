@@ -45,9 +45,12 @@
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+  </head>
   <body>
     <div id="game"></div>
     <script>
@@ -55,19 +58,21 @@
       // DISCOUNT DASH — SALE RUNNER  (Neft Teacher)
       // Grade 6: 6.RP.A.3c — percent of a quantity (discounts, sale price).
       //
-      // REAL GAME: A 3-lane endless runner. The shopper sprints down a mall
-      // aisle that scrolls toward the player. Deal-pads appear across the
-      // lanes, each a SAME item at a different "% off". The player must steer
-      // (lane-change) into the lane holding the BEST DEAL — the lowest sale
-      // price = original × (1 − pct/100) — and grab it before it whizzes past.
-      // Grabbing the cheaper deal banks the savings; grabbing the worse one
-      // (or a "full price" trap) costs a life. Speed ramps up, a coin combo
-      // builds, and the percent math is the split-second steering decision.
+      // REAL GAME: A 3-lane, SELF-PACED aisle runner. Deal rows drift in at a
+      // gentle constant speed, then STOP at the decision zone and wait as long
+      // as the student needs. Each lane shows the SAME item at its own price
+      // and "% off"; the student taps the lane with the BEST DEAL — the lowest
+      // sale price = original × (1 − pct/100). Correct grabs bank the savings
+      // and build a combo; wrong grabs cost a heart, but hearts refill at zero
+      // (no-fail) and the run always finishes its full round count.
       // ───────────────────────────────────────────────────────────
       const W = 1024,
         H = 768;
       const LS_KEY = "discountdash_runner_hi";
       const LANES = [W / 2 - 240, W / 2, W / 2 + 240];
+      // Self-paced run: fixed number of deal rows, gentle constant scroll.
+      const TOTAL_ROUNDS = 12;
+      const BASE_SPEED = 2.2;
 
       // ── Reduced-motion guard (bespoke FX respect prefers-reduced-motion) ──
       // Live-tracked so an OS-level toggle is honored without a reload.
@@ -163,12 +168,16 @@
             sale: Math.round(cellBase * (1 - p / 100) * 100) / 100,
           };
         });
-        // best deal = lowest sale price
+        // best deal = lowest sale price; when two lanes tie at the same
+        // rounded-cents price, EVERY tied lane counts as correct.
         let bestIdx = 0;
         cells.forEach((c, i) => {
           if (c.sale < cells[bestIdx].sale) bestIdx = i;
         });
-        return { emoji, base, cells, bestIdx };
+        const bestIdxs = cells
+          .map((c, i) => i)
+          .filter((i) => cells[i].sale === cells[bestIdx].sale);
+        return { emoji, base, cells, bestIdx, bestIdxs };
       }
 
       class BootScene extends Phaser.Scene {
@@ -207,7 +216,7 @@
             .text(
               W / 2,
               320,
-              "Sprint the aisle. Each lane shows the same kind of item\nat its own price and % off. Steer into the lane with the\nLOWEST sale price to grab the best deal!",
+              "Stroll the aisle. Each lane shows the same kind of item\nat its own price and % off. Every row STOPS and waits —\ntake your time, then pick the lane with the LOWEST sale price!",
               {
                 fontFamily: "Segoe UI",
                 fontSize: "21px",
@@ -221,7 +230,7 @@
             .text(
               W / 2,
               440,
-              "← →  or  A / D  to change lanes    •    sale price = price × (1 − %/100)",
+              "Tap a lane, or ← → / A D + Enter    •    sale price = price × (1 − %/100)",
               {
                 fontFamily: "Segoe UI",
                 fontSize: "18px",
@@ -293,11 +302,15 @@
           this.combo = 0;
           this.round = 1;
           this.lane = 1;
-          this.speed = 2.2;
+          this.speed = BASE_SPEED;
           this.gameOver = false;
           this.rows = [];
           this.rowGap = 360;
           this.distSinceRow = 0;
+          // Self-paced decision: the row that is stopped at the decision zone,
+          // waiting for the student to pick a lane (no time pressure).
+          this.waitingRow = null;
+          this.prompt = null;
 
           // ── Parallax mall storefront background (multi-speed layers) ──
           // Three depth bands of procedural storefronts scroll DOWN with the
@@ -369,8 +382,23 @@
           this.input.keyboard.on("keydown-RIGHT", () => this.move(1));
           this.input.keyboard.on("keydown-A", () => this.move(-1));
           this.input.keyboard.on("keydown-D", () => this.move(1));
+          this.input.keyboard.on("keydown-ENTER", () => this.confirmGrab());
+          this.input.keyboard.on("keydown-SPACE", () => this.confirmGrab());
           this.input.on("pointerdown", (p) => {
-            if (p.x < W / 2 - 60) this.move(-1);
+            if (this.waitingRow) {
+              // Row is stopped: a tap picks that lane directly.
+              let li = 0,
+                bd = Infinity;
+              LANES.forEach((lx, i) => {
+                const d = Math.abs(p.x - lx);
+                if (d < bd) {
+                  bd = d;
+                  li = i;
+                }
+              });
+              this.setLane(li);
+              this.confirmGrab();
+            } else if (p.x < W / 2 - 60) this.move(-1);
             else if (p.x > W / 2 + 60) this.move(1);
           });
 
@@ -462,7 +490,11 @@
         }
 
         move(dir) {
-          const nl = Phaser.Math.Clamp(this.lane + dir, 0, 2);
+          this.setLane(this.lane + dir);
+        }
+
+        setLane(nl) {
+          nl = Phaser.Math.Clamp(nl, 0, 2);
           if (nl !== this.lane) {
             this.lane = nl;
             sfx.swish();
@@ -473,6 +505,39 @@
               ease: "Quad.out",
             });
           }
+        }
+
+        // Student confirms the stopped row at the current lane (Enter/Space,
+        // or a lane tap which calls setLane first). Fully self-paced.
+        confirmGrab() {
+          const row = this.waitingRow;
+          if (!row || row.scored || this.gameOver) return;
+          this.waitingRow = null;
+          if (this.prompt) {
+            this.prompt.destroy();
+            this.prompt = null;
+          }
+          this.grabCell(row, this.lane);
+        }
+
+        showGrabPrompt() {
+          if (this.prompt) return;
+          this.prompt = this.add
+            .text(
+              W / 2,
+              H - 40,
+              "Take your time — tap the lane with the LOWEST sale price",
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "20px",
+                fontStyle: "700",
+                color: "#74c0fc",
+                backgroundColor: "#0a1830",
+                padding: { x: 14, y: 6 },
+              },
+            )
+            .setOrigin(0.5)
+            .setDepth(25);
         }
 
         spawnRow() {
@@ -523,13 +588,20 @@
             }
             return c;
           });
-          this.rows.push({ data, cells, y, scored: false });
+          this.rows.push({
+            data,
+            cells,
+            y,
+            scored: false,
+            roundNum: this.round,
+          });
         }
 
         grabCell(row, laneIdx) {
           row.scored = true;
           const rm = reducedMotion();
-          const isBest = laneIdx === row.data.bestIdx;
+          // Ties at the same rounded-cents sale price: either lane is correct.
+          const isBest = row.data.bestIdxs.includes(laneIdx);
           if (isBest) {
             const cell = row.data.cells[laneIdx];
             const saved = cell.base - cell.sale;
@@ -589,8 +661,19 @@
               "#ff6b6b",
             );
           }
+          if (this.lives <= 0) {
+            // No-fail: refill hearts and keep the spree going.
+            this.lives = 3;
+            this.time.delayedCall(700, () =>
+              this.popText("♥ Refilled — keep going!", "#51cf66"),
+            );
+          }
           this.updateHUD();
-          if (this.lives <= 0) this.endGame();
+          // The run always finishes at its normal round count (when the last
+          // spawned row has been decided).
+          if (row.roundNum >= TOTAL_ROUNDS) {
+            this.time.delayedCall(1400, () => this.endGame());
+          }
         }
 
         // Gold glow + quick pop around the pad the player correctly grabbed.
@@ -730,7 +813,11 @@
             this.savHud.setText("SAVED  " + money(this.savings));
           }
           this.comboHud.setText(
-            "ROUND " + this.round + (this.combo > 1 ? "   x" + this.combo : ""),
+            "ROUND " +
+              this.round +
+              "/" +
+              TOTAL_ROUNDS +
+              (this.combo > 1 ? "   x" + this.combo : ""),
           );
         }
 
@@ -754,7 +841,9 @@
         update(time, delta) {
           if (this.gameOver) return;
           const dt = delta / 16.67;
-          const v = this.speed * dt;
+          // While a row waits at the decision zone the aisle pauses entirely:
+          // the math choice is never made under time pressure.
+          const v = this.waitingRow ? 0 : this.speed * dt;
           const rm = reducedMotion();
 
           // ── Parallax storefront drift (far layers move slower) ──
@@ -777,27 +866,30 @@
             if (s.y > H + 30) s.y -= 14 * 60;
           });
 
-          // move rows down, detect grab line near player
+          // move rows down; a row that reaches the decision zone STOPS and
+          // waits for the student's lane choice (no forced auto-grab).
           for (let i = this.rows.length - 1; i >= 0; i--) {
             const row = this.rows[i];
             row.y += v;
-            row.cells.forEach((c) => (c.y = row.y));
-            // grab zone aligned to player row
             if (!row.scored && row.y >= H - 150) {
-              this.grabCell(row, this.lane);
+              row.y = H - 150;
+              if (!this.waitingRow) {
+                this.waitingRow = row;
+                this.showGrabPrompt();
+              }
             }
+            row.cells.forEach((c) => (c.y = row.y));
             if (row.y > H + 100) {
               row.cells.forEach((c) => c.destroy());
               this.rows.splice(i, 1);
             }
           }
 
-          // spawn next row by distance
+          // spawn next row by distance — gentle constant speed, fixed round count
           this.distSinceRow += v;
-          if (this.distSinceRow >= this.rowGap) {
+          if (this.distSinceRow >= this.rowGap && this.round < TOTAL_ROUNDS) {
             this.distSinceRow = 0;
             this.round++;
-            this.speed = Math.min(5, 2.2 + this.round * 0.15);
             this.spawnRow();
             this.updateHUD();
           }
@@ -928,8 +1020,11 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+  </body>
 </html>

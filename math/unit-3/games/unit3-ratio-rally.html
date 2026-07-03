@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Ratio Rally — Racing Game | Unit 3</title>
     <style>
       * {
@@ -11,7 +11,8 @@
         padding: 0;
         box-sizing: border-box;
       }
-      html, body {
+      html,
+      body {
         width: 100%;
         height: 100%;
         margin: 0;
@@ -32,7 +33,10 @@
         z-index: 50;
         padding: 6px 12px;
         border-radius: 8px;
-        font: 600 13px/1 "Segoe UI", system-ui, sans-serif;
+        font:
+          600 13px/1 "Segoe UI",
+          system-ui,
+          sans-serif;
         color: #e6f1ff;
         background: rgba(10, 22, 40, 0.7);
         border: 1px solid rgba(120, 160, 220, 0.5);
@@ -68,9 +72,12 @@
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+  </head>
   <body>
     <a class="nt-back-hub" href="../index.html" aria-label="Back to Unit 3 hub"
       >← Back to Unit&nbsp;3</a
@@ -277,9 +284,7 @@
             // Drop any distractor that is actually equivalent to the answer.
             choices = [
               answer,
-              ...choices
-                .slice(1)
-                .filter((c) => !ratioEquiv(c, answer)),
+              ...choices.slice(1).filter((c) => !ratioEquiv(c, answer)),
             ];
           } else if (type === 2) {
             const a = randInt(2, 6),
@@ -1678,9 +1683,9 @@
           .setOrigin(0.5)
           .setDepth(17);
 
-        // Speed indicator
+        // Calm reminder — no time pressure
         const speedInd = this.add
-          .text(W / 2, H / 2 - 50, "Answer fast for bonus points!", {
+          .text(W / 2, H / 2 - 50, "Take your time — think it through.", {
             fontSize: "11px",
             color: "#88ccaa",
           })
@@ -1740,7 +1745,6 @@
             btns.forEach((b) => b.disableInteractive());
 
             const isCorrect = c === q.answer;
-            const answerTime = (Date.now() - this.questionStartTime) / 1000;
 
             if (isCorrect) {
               SFX.correct();
@@ -1748,9 +1752,7 @@
               if (this.combo > this.maxCombo) this.maxCombo = this.combo;
               this.totalCorrect++;
 
-              // Time bonus: faster = more points
-              let timeBonus = Math.max(0, Math.floor((10 - answerTime) * 10));
-              let pts = 150 + this.combo * 25 + timeBonus;
+              let pts = 150 + this.combo * 25;
               if (this.doublePointsActive) {
                 pts *= 2;
                 this.doublePointsActive = false;
@@ -1771,8 +1773,7 @@
               this.confettiEmitter.emitParticleAt(W / 2, H / 2);
 
               // Floating score text
-              let scoreLabel = `+${pts}`;
-              if (timeBonus > 0) scoreLabel += ` (FAST!)`;
+              const scoreLabel = `+${pts}`;
               const floatTxt = this.add
                 .text(W / 2, H / 2 - 20, scoreLabel, {
                   fontSize: "28px",
@@ -1827,7 +1828,7 @@
                 .setDepth(17);
               elems.push(fb, floatTxt);
             } else {
-              SFX.glassBreak();
+              SFX.wrong();
               this.combo = 0;
               this.streakLabel.setText("");
               this.streakBg.setAlpha(0);
@@ -1850,8 +1851,8 @@
                 onComplete: () => redFlash.destroy(),
               });
 
-              // Strong camera shake for wrong
-              this.cameras.main.shake(350, 0.03);
+              // Gentle camera nudge for wrong
+              this.cameras.main.shake(200, 0.01);
 
               const fb = this.add
                 .text(W / 2, H / 2 + 110, `Wrong! Answer: ${q.answer}`, {
@@ -1866,22 +1867,19 @@
               elems.push(fb, redFlash);
 
               if (this.lives <= 0) {
-                SFX.lose();
-                this.time.delayedCall(1500, () => {
-                  elems.forEach((e) => {
-                    if (e && e.destroy) e.destroy();
-                  });
-                  this.scene.start("Results", {
-                    score: this.score,
-                    maxCombo: this.maxCombo,
-                    lives: 0,
-                    totalCorrect: this.totalCorrect,
-                    totalWrong: this.totalWrong,
-                    difficulty: this.difficulty,
-                    checkpointsHit: this.checkpointsHit,
-                  });
-                });
-                return;
+                // No-fail: refill hearts and keep racing to the finish.
+                this.lives = 3;
+                const refill = this.add
+                  .text(W / 2, H / 2 + 145, "♥ Refilled — keep going!", {
+                    fontSize: "18px",
+                    color: "#22cc66",
+                    fontStyle: "bold",
+                    stroke: "#000",
+                    strokeThickness: 2,
+                  })
+                  .setOrigin(0.5)
+                  .setDepth(17);
+                elems.push(refill);
               }
             }
 
@@ -2061,7 +2059,6 @@
           d = this.d;
         this.add.rectangle(cx, H / 2, W, H, 0x0a1628);
 
-        const won = d.lives > 0;
         const pct =
           (d.totalCorrect / Math.max(1, d.totalCorrect + d.totalWrong)) * 100;
         const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
@@ -2086,49 +2083,41 @@
           localStorage.setItem(LS_KEY, String(d.score));
         }
 
-        if (won) {
-          if (stars === 3) SFX.winElaborate();
-          else SFX.win();
-        } else {
-          SFX.lose();
-        }
+        if (stars === 3) SFX.winElaborate();
+        else SFX.win();
 
         // Victory confetti
-        if (won) {
-          for (let i = 0; i < 8; i++) {
-            this.time.delayedCall(i * 250, () => {
-              const p = this.add.particles(0, 0, "confetti", {
-                speed: { min: 60, max: 250 },
-                scale: { start: 1.5, end: 0 },
-                lifespan: 900,
-                quantity: 15,
-                tint: [0x00ccff, 0xff8800, 0x22cc66, 0xff4488, 0xffdd00],
-                angle: { min: 0, max: 360 },
-                rotate: { min: 0, max: 360 },
-                gravityY: 150,
-              });
-              p.emitParticleAt(randInt(100, W - 100), randInt(50, 200));
-              this.time.delayedCall(1000, () => p.destroy());
+        for (let i = 0; i < 8; i++) {
+          this.time.delayedCall(i * 250, () => {
+            const p = this.add.particles(0, 0, "confetti", {
+              speed: { min: 60, max: 250 },
+              scale: { start: 1.5, end: 0 },
+              lifespan: 900,
+              quantity: 15,
+              tint: [0x00ccff, 0xff8800, 0x22cc66, 0xff4488, 0xffdd00],
+              angle: { min: 0, max: 360 },
+              rotate: { min: 0, max: 360 },
+              gravityY: 150,
             });
-          }
+            p.emitParticleAt(randInt(100, W - 100), randInt(50, 200));
+            this.time.delayedCall(1000, () => p.destroy());
+          });
         }
 
         this.add
-          .text(cx, 30, won ? "RACE COMPLETE!" : "RACE OVER!", {
+          .text(cx, 30, "RACE COMPLETE!", {
             fontSize: "40px",
             fontStyle: "bold",
-            color: won ? "#22cc66" : "#ff4444",
+            color: "#22cc66",
             stroke: "#000",
             strokeThickness: 4,
           })
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            68,
-            won ? "You crossed the finish line!" : "Better luck next race!",
-            { fontSize: "16px", color: "#88aacc" },
-          )
+          .text(cx, 68, "You crossed the finish line!", {
+            fontSize: "16px",
+            color: "#88aacc",
+          })
           .setOrigin(0.5);
 
         // Star rating with animated fill
@@ -2242,23 +2231,21 @@
         });
 
         const gradeY = statsStartY + stats.length * 42 + 18;
-        const grade =
+        const cheer =
           pct >= 90
-            ? "A+"
-            : pct >= 80
-              ? "A"
-              : pct >= 70
-                ? "B"
-                : pct >= 60
-                  ? "C"
-                  : "D";
+            ? "Superstar racing!"
+            : pct >= 70
+              ? "Great driving — strong math!"
+              : pct >= 50
+                ? "Good effort — keep practicing!"
+                : "Every lap makes you stronger!";
         this.add
-          .text(cx, gradeY, grade, {
-            fontSize: "48px",
+          .text(cx, gradeY, cheer, {
+            fontSize: "26px",
             fontStyle: "bold",
-            color: pct >= 80 ? "#22cc66" : pct >= 60 ? "#ffaa00" : "#ff4444",
+            color: "#22cc66",
             stroke: "#000",
-            strokeThickness: 4,
+            strokeThickness: 3,
           })
           .setOrigin(0.5);
         this.add
@@ -2334,8 +2321,11 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+  </body>
 </html>

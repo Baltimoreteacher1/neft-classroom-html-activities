@@ -131,15 +131,15 @@
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <link rel="stylesheet" href="/assets/game-access.css">
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <link rel="stylesheet" href="/assets/game-hint-ladder.css">
-  <!-- ghl-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative drifting wireframe-cube field (behind the Phaser canvas). -->
     <div id="vb-bg" data-parallax aria-hidden="true">
@@ -458,7 +458,11 @@
         const V = b.l * b.w * b.h;
         if (t.mode === "dims") return b.l === t.l && b.w === t.w && b.h === t.h;
         if (t.mode === "volume") return V === t.V;
-        return b.l === t.l && b.w === t.w && V === t.V; // "third"
+        // "third": a base with length/width swapped is the same prism —
+        // accept either orientation as long as the volume matches.
+        const baseMatches =
+          (b.l === t.l && b.w === t.w) || (b.l === t.w && b.w === t.l);
+        return baseMatches && V === t.V;
       }
       // The cubes to show after a wrong answer (the correct build).
       function correctBuild(t) {
@@ -1002,7 +1006,7 @@
             {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "13px",
-              color: "#7fb8a0",
+              color: "#9fd6bd",
               align: "center",
             },
           )
@@ -1572,17 +1576,22 @@
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <script src="/assets/game-access.js" defer></script>
-  <!-- gacc-injected:end -->
-  <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
-  <script src="/assets/game-hint-ladder.js" defer></script>
-  <script>
-      window.addEventListener('DOMContentLoaded', function () {
-        if (window.NeftHintLadder) window.NeftHintLadder.watch({
-          sourceSelector: "#vb-sr",
-          standard: "6.G.2",
-          staticHints: ["What three measurements build a volume? Picture filling the solid with unit cubes.","Volume = length × width × height (for fractional edges, multiply the fractions).","Set it up: write length × width × height with the numbers, then do the multiplying."]
-        });
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#vb-sr",
+            standard: "6.G.2",
+            staticHints: [
+              "What three measurements build a volume? Picture filling the solid with unit cubes.",
+              "Volume = length × width × height (for fractional edges, multiply the fractions).",
+              "Set it up: write length × width × height with the numbers, then do the multiplying.",
+            ],
+          });
       });
     </script>
   <!-- ghl-injected:end -->

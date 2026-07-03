@@ -122,6 +122,9 @@
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
   </head>
   <body>
     <!-- On-screen touch controls: mirror the existing keyboard scheme.
@@ -1212,7 +1215,7 @@
         }
 
         loadQuestion() {
-          if (this.qIndex >= this.totalQ || this.lives <= 0) {
+          if (this.qIndex >= this.totalQ) {
             this.endGame();
             return;
           }
@@ -1497,10 +1500,9 @@
             .setDepth(8);
           this.qGroup.add(this.fbObj);
 
-          // Shot clock REMOVED — no timed pressure (teacher preference: calm, self-paced games).
-          // shotClock stays defined so the optional speed BONUS still computes, but it never
-          // counts down and never calls timeOut(); students get unlimited time per question.
-          this.shotClock = 30;
+          // Shot clock REMOVED — no timed pressure (teacher preference: calm,
+          // self-paced games). No countdown, no time-based scoring; students
+          // get unlimited time per question.
         }
 
         drawShotClockRing(pct) {
@@ -1599,44 +1601,6 @@
           this.buildPowerUpButtons();
         }
 
-        timeOut() {
-          if (this.answered) return;
-          this.answered = true;
-          this.lives--;
-          this.streak = 0;
-          this.comboMultiplier = 1;
-          this.losses++;
-          const q = this.questions[this.qIndex];
-
-          if (this.progDots[this.qIndex]) {
-            this.progDots[this.qIndex].setFillStyle(0xef4444);
-          }
-
-          const ci = this.answerBtns.findIndex((b) => b.optText === q.correct);
-          if (ci >= 0) {
-            this.answerBtns[ci].bg.setFillStyle(0x22c55e, 0.5);
-            this.answerBtns[ci].bg.setStrokeStyle(2, 0x22c55e);
-          }
-          this.fbObj.setText("SHOT CLOCK VIOLATION! Answer: " + q.correct);
-          this.fbObj.setColor("#ef4444");
-          sfx.miss();
-          sfx.glassBreak();
-          safeShake(this, 300, 0.02);
-          if (!RM.on) this.cameras.main.flash(200, 255, 0, 0, true);
-          this.showFloatingText(
-            W / 2,
-            H / 2 - 50,
-            "TIME OUT!",
-            "#ef4444",
-            "28px",
-          );
-          this.updateHUD();
-          this.time.delayedCall(2500, () => {
-            this.qIndex++;
-            this.loadQuestion();
-          });
-        }
-
         submitAnswer(idx) {
           if (this.answered) return;
           if (this.answerBtns[idx].eliminated) return;
@@ -1645,15 +1609,12 @@
           const q = this.questions[this.qIndex];
           const chosen = this.answerBtns[idx].optText;
           const correct = chosen === q.correct;
-          const elapsed = (Date.now() - this.questionStartTime) / 1000;
-          const fastAnswer = elapsed < 5;
 
           if (correct) {
-            // Calculate score
+            // Calculate score (no time-based bonus — calm, self-paced)
             let basePoints = q.tier * 10;
             let streakBonus = Math.min(this.streak, 5) * 5;
-            let timeBonus = fastAnswer ? 10 : this.shotClock > 20 ? 5 : 0;
-            let subtotal = basePoints + streakBonus + timeBonus;
+            let subtotal = basePoints + streakBonus;
             if (this.doublePointsActive) subtotal *= 2;
 
             this.score += subtotal;
@@ -1682,16 +1643,6 @@
               "#22c55e",
             );
 
-            if (fastAnswer) {
-              sfx.timeBonus();
-              this.showFloatingText(
-                W / 2,
-                100,
-                "SPEED BONUS!",
-                "#00d4ff",
-                "16px",
-              );
-            }
             if (this.doublePointsActive) {
               this.showFloatingText(W / 2, 120, "DOUBLE!", "#a78bfa", "16px");
             }
@@ -1787,6 +1738,21 @@
             this.spawnConfetti(btn.bg.x, btn.bg.y, 10 + this.streak * 2);
           } else {
             this.lives--;
+            if (this.lives <= 0) {
+              // No-fail: refill lives instead of ending the run early.
+              this.lives = 3;
+              this.showFloatingText(
+                W / 2,
+                H / 2 + 40,
+                "Refilled — keep going!",
+                "#22c55e",
+                "22px",
+              );
+              try {
+                const sr = document.getElementById("sr-status");
+                if (sr) sr.textContent = "Lives refilled. Keep going!";
+              } catch (e) {}
+            }
             this.streak = 0;
             this.comboMultiplier = 1;
             this.losses++;
@@ -1924,24 +1890,9 @@
           }
 
           this.hudPhase.setText(q ? phaseNames[q.phase] || "" : "");
-          const el = Math.floor((Date.now() - this.startTime) / 1000);
-          const m = Math.floor(el / 60),
-            s = el % 60;
-          this.hudTimer.setText(`${m}:${s < 10 ? "0" : ""}${s}`);
-
-          // Speed indicator
-          if (!this.answered) {
-            const qEl = (Date.now() - this.questionStartTime) / 1000;
-            if (qEl < 5) {
-              this.speedIndicator.setText("FAST").setColor("#22c55e");
-            } else if (qEl < 10) {
-              this.speedIndicator.setText("OK").setColor("#fbbf24");
-            } else {
-              this.speedIndicator.setText("").setColor("#ef4444");
-            }
-          } else {
-            this.speedIndicator.setText("");
-          }
+          // Calm play: no on-screen clock and no answer-speed indicator.
+          this.hudTimer.setText("");
+          this.speedIndicator.setText("");
         }
 
         update(time) {
@@ -2450,5 +2401,8 @@
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
   </body>
 </html>

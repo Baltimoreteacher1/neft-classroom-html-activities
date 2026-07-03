@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Fraction Foundry — Divide Fractions | Unit 2</title>
     <meta
       name="description"
@@ -15,7 +15,8 @@
         padding: 0;
         box-sizing: border-box;
       }
-      html, body {
+      html,
+      body {
         width: 100%;
         height: 100%;
         margin: 0;
@@ -135,9 +136,12 @@
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated foundry-ember field (behind the Phaser canvas).
          Decorative only: aria-hidden, pointer-events:none, reduced-motion safe. -->
@@ -432,8 +436,9 @@
         init() {
           if (!this.ctx) {
             try {
-              this.ctx = new (window.AudioContext ||
-                window.webkitAudioContext)();
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
             } catch (e) {}
           }
         },
@@ -1069,7 +1074,9 @@
             const bonus = Math.min(this.streak, 5) * 20;
             const gain = base + bonus;
             this.score += gain;
-            this.fbText.setColor("#6bd18b").setText(`✓ +${gain}   ${q.explain}`);
+            this.fbText
+              .setColor("#6bd18b")
+              .setText(`✓ +${gain}   ${q.explain}`);
             SFX.correct();
             this.burst(cont.x, cont.y, C.good);
             this.setSR(`Correct. ${q.explain}`);
@@ -1082,11 +1089,33 @@
             SFX.wrong();
             if (!reducedMotion()) this.cameras.main.shake(170, 0.006);
             this.setSR(`Not quite. ${q.explain}`);
+            if (this.lives <= 0) {
+              // No-fail: refill hearts and keep the run going.
+              this.lives = START_LIVES;
+              const refill = this.add
+                .text(W / 2, H / 2, "❤ Refilled — keep going!", {
+                  fontFamily: "Segoe UI, sans-serif",
+                  fontSize: "26px",
+                  fontStyle: "bold",
+                  color: "#6bd18b",
+                })
+                .setOrigin(0.5)
+                .setDepth(15);
+              this.tweens.add({
+                targets: refill,
+                y: refill.y - 50,
+                alpha: 0,
+                duration: 1400,
+                onComplete: () => refill.destroy(),
+              });
+              this.setSR(
+                `Not quite. ${q.explain} Hearts refilled — keep going!`,
+              );
+            }
           }
           this.refreshHUD();
 
           this.time.delayedCall(correct ? 1100 : 1900, () => {
-            if (this.lives <= 0) return this.gameOver();
             if (this.qInLevel >= this.qPerLevel) return this.completeLevel();
             this.nextQuestion();
           });
@@ -1159,7 +1188,6 @@
               this.scene.start("Result", {
                 score: this.score,
                 lives: this.lives,
-                won: true,
               });
             } else {
               this.scene.start("Game", {
@@ -1172,15 +1200,6 @@
           this.setSR(
             `Level ${this.levelIndex + 1} complete. ${this.correctInLevel} of ${this.qPerLevel} correct. Score ${this.score}.`,
           );
-        }
-
-        gameOver() {
-          SFX.lose();
-          this.scene.start("Result", {
-            score: this.score,
-            lives: 0,
-            won: false,
-          });
         }
 
         confetti() {
@@ -1216,7 +1235,6 @@
         }
         init(data) {
           this.score = data.score || 0;
-          this.won = !!data.won;
         }
         create() {
           this.cameras.main.setBackgroundColor(C.bg);
@@ -1240,14 +1258,14 @@
               });
           } catch (e) {}
 
-          if (this.won) SFX.win();
+          SFX.win();
 
           this.add
-            .text(cx, 150, this.won ? "FOUNDRY MASTERED!" : "FORGE COOLED", {
+            .text(cx, 150, "FOUNDRY MASTERED!", {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "46px",
               fontStyle: "900",
-              color: this.won ? "#6bd18b" : "#ff9b9b",
+              color: "#6bd18b",
             })
             .setOrigin(0.5);
 
@@ -1283,9 +1301,7 @@
             .text(
               cx,
               372,
-              this.won
-                ? "You divided whole numbers, fractions, and mixed numbers — and saw every quotient in the bar models."
-                : "Tip: dividing by a fraction means multiplying by its reciprocal (flip it!). Try again.",
+              "You divided whole numbers, fractions, and mixed numbers — and saw every quotient in the bar models.",
               {
                 fontFamily: "Segoe UI, sans-serif",
                 fontSize: "16px",
@@ -1310,7 +1326,7 @@
 
           const el = document.getElementById("ff-sr");
           if (el)
-            el.textContent = `${this.won ? "Foundry mastered" : "Forge cooled"}. Final score ${this.score}, ${stars} stars.`;
+            el.textContent = `Foundry mastered. Final score ${this.score}, ${stars} stars.`;
         }
         btn(x, y, label, color, cb) {
           const b = this.add
@@ -1376,8 +1392,11 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+  </body>
 </html>

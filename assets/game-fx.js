@@ -21,13 +21,17 @@
   if (window.GameFX && window.GameFX.comboInjected) return;
 
   var reduce = !!(
-    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
 
   var COLORS = ["#1aa179", "#f0a400", "#3b7dd8", "#e0542f", "#9b5de5"];
-  var SUCCESS_CLASS = /(^|\s)(right|correct|is-correct|is-right|ok|success|won|gfx-correct)(\s|$)/i;
-  var WRONG_CLASS = /(^|\s)(wrong|incorrect|is-incorrect|is-wrong|fail|error|gfx-wrong)(\s|$)/i;
-  var INTERACTIVE = /(^|\s)(opt|option|choice|answer|tile|card|btn|cell|key)(\s|$)/i;
+  var SUCCESS_CLASS =
+    /(^|\s)(right|correct|is-correct|is-right|ok|success|won|gfx-correct)(\s|$)/i;
+  var WRONG_CLASS =
+    /(^|\s)(wrong|incorrect|is-incorrect|is-wrong|fail|error|gfx-wrong)(\s|$)/i;
+  var INTERACTIVE =
+    /(^|\s)(opt|option|choice|answer|tile|card|btn|cell|key)(\s|$)/i;
 
   var DICT = {
     es: {
@@ -123,7 +127,10 @@
       try {
         var anim = s.animate(
           [
-            { transform: "translate(-50%,-50%) scale(1.3) rotate(0deg)", opacity: 1 },
+            {
+              transform: "translate(-50%,-50%) scale(1.3) rotate(0deg)",
+              opacity: 1,
+            },
             {
               transform:
                 "translate(calc(-50% + " +
@@ -169,7 +176,8 @@
     init: function () {
       if (this.ctx) return;
       try {
-        var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        var AudioContextClass =
+          window.AudioContext || window.webkitAudioContext;
         this.ctx = new AudioContextClass();
       } catch (e) {}
     },
@@ -283,7 +291,9 @@
 
     if (window.speechSynthesis && window.speechSynthesis.speaking) {
       window.speechSynthesis.cancel();
-      btn.textContent = document.body.classList.contains("es") ? "🔊 Leer" : "🔊 Read";
+      btn.textContent = document.body.classList.contains("es")
+        ? "🔊 Leer"
+        : "🔊 Read";
       return;
     }
 
@@ -361,12 +371,17 @@
           activeScene.lives = 99;
           activeScene.level = (activeScene.level || 1) + 1;
 
-          if (typeof activeScene.winLevel === "function") activeScene.winLevel();
-          else if (typeof activeScene.nextLevel === "function") activeScene.nextLevel();
-          else if (typeof activeScene.endGame === "function") activeScene.endGame(true);
+          if (typeof activeScene.winLevel === "function")
+            activeScene.winLevel();
+          else if (typeof activeScene.nextLevel === "function")
+            activeScene.nextLevel();
+          else if (typeof activeScene.endGame === "function")
+            activeScene.endGame(true);
           else {
             var keys = Object.keys(pg.scene.keys);
-            var endScene = keys.find((k) => /result|win|end|score|victory/i.test(k));
+            var endScene = keys.find((k) =>
+              /result|win|end|score|victory/i.test(k),
+            );
             if (endScene) activeScene.scene.start(endScene);
           }
           alert("Auto-win triggered on Phaser Game scene!");
@@ -408,31 +423,30 @@
         var activeScene = pg.scene.getScenes(true)[0];
         if (activeScene) {
           activeScene.lives = 99;
-          if (activeScene.livesLabel) activeScene.livesLabel.setText("Lives: 99");
+          if (activeScene.livesLabel)
+            activeScene.livesLabel.setText("Lives: 99");
           alert("Lives set to 99 inside Phaser Scene!");
         }
       } catch (e) {}
     }
     if (typeof window.S !== "undefined") {
       window.S.lives = 99;
-      var hudLives = document.getElementById("hud-lives") || document.getElementById("r-lives");
+      var hudLives =
+        document.getElementById("hud-lives") ||
+        document.getElementById("r-lives");
       if (hudLives) hudLives.textContent = "❤️❤️❤️ (99)";
       alert("Lives set to 99 in state S!");
     }
   }
 
-  function cheatFreezeTimer() {
-    if (typeof window.S !== "undefined") {
-      window.S.time = 9999;
-      window.S.timer = 9999;
+  // Teacher-mode gate — shares the sticky key set by the password-gated
+  // Teacher toggle (engine/core/teacher-mode.js). No student path IN.
+  function isTeacherDevice() {
+    try {
+      return localStorage.getItem("nt-teacher-mode") === "1";
+    } catch (e) {
+      return false;
     }
-    var maxId = setInterval(function () {}, 9999);
-    for (var i = 0; i < maxId; i++) {
-      try {
-        clearInterval(i);
-      } catch (e) {}
-    }
-    alert("Countdown Timers frozen!");
   }
 
   // --- Confetti Burst ---
@@ -453,7 +467,10 @@
           [
             { transform: "translate(0, 0) scale(1)", opacity: 1 },
             {
-              transform: "translate(" + (Math.random() * 100 - 50) + "px, 250px) scale(0)",
+              transform:
+                "translate(" +
+                (Math.random() * 100 - 50) +
+                "px, 250px) scale(0)",
               opacity: 0,
             },
           ],
@@ -491,7 +508,8 @@
           var api = scorm.api;
           if (scorm.version === "1.2") {
             api.LMSSetValue("cmi.core.score.raw", String(score));
-            if (maxScore) api.LMSSetValue("cmi.core.score.max", String(maxScore));
+            if (maxScore)
+              api.LMSSetValue("cmi.core.score.max", String(maxScore));
             api.LMSSetValue("cmi.core.lesson_status", "completed");
             api.LMSCommit("");
           } else {
@@ -530,7 +548,9 @@
             window.parent.postMessage(
               {
                 type: "lti.frameResize",
-                height: document.body.scrollHeight || document.documentElement.scrollHeight,
+                height:
+                  document.body.scrollHeight ||
+                  document.documentElement.scrollHeight,
               },
               "*",
             );
@@ -552,6 +572,8 @@
 
   window.toggleGameLanguage = function () {
     var isEs = !document.body.classList.contains("es");
+    // Keep html[lang] in sync so game-access TTS picks the matching voice.
+    document.documentElement.lang = isEs ? "es" : "en";
     translateDOM(isEs);
     var btn = document.getElementById("btn-game-lang");
     if (btn) btn.textContent = isEs ? "🌐 Idioma: ES" : "🌐 Language: EN";
@@ -561,7 +583,8 @@
   window.toggleGameSound = function () {
     AudioSynth.muted = !AudioSynth.muted;
     var btn = document.getElementById("btn-game-sound");
-    if (btn) btn.textContent = AudioSynth.muted ? "🔇 Sound: OFF" : "🔊 Sound: ON";
+    if (btn)
+      btn.textContent = AudioSynth.muted ? "🔇 Sound: OFF" : "🔊 Sound: ON";
     if (!AudioSynth.muted) AudioSynth.startMusic();
     else AudioSynth.stopMusic();
   };
@@ -578,12 +601,12 @@
   };
 
   window.toggleCheatConsole = function () {
+    if (!isTeacherDevice()) return;
     var el = document.getElementById("teacher-cheat-console");
     if (el) el.classList.toggle("show");
   };
   window.cheatAutoWin = cheatAutoWin;
   window.cheatAddLives = cheatAddLives;
-  window.cheatFreezeTimer = cheatFreezeTimer;
 
   function ready(fn) {
     if (document.readyState === "loading") {
@@ -594,12 +617,17 @@
   }
 
   ready(function () {
-    if (reduce || !document.body) return;
+    if (!document.body) return;
 
     LMSBridge.initResizeHelper();
 
-    // Start background retro music loop
-    AudioSynth.startMusic();
+    // game-access.js owns Read-aloud where present; game-juice.js owns music
+    // where present — avoid double TTS buttons / double music loops.
+    var hasAccess = !!document.querySelector('script[src*="game-access"]');
+    var hasJuice = !!document.querySelector('script[src*="game-juice"]');
+
+    // Start background retro music loop (motion-safe users only, one loop max)
+    if (!reduce && !hasJuice) AudioSynth.startMusic();
 
     // 1. Inject Floating Bilingual, Sound, Contrast, Controls & TTS Toolbar
     var toolbar = document.createElement("div");
@@ -607,7 +635,7 @@
     toolbar.className = "no-print";
     toolbar.innerHTML = `
       <button class="pub-btn" id="btn-game-lang" onclick="toggleGameLanguage()">🌐 Language: EN</button>
-      <button class="pub-btn" id="btn-game-read" onclick="readGameAloud()">🔊 Read</button>
+      ${hasAccess ? "" : '<button class="pub-btn" id="btn-game-read" onclick="readGameAloud()">🔊 Read</button>'}
       <button class="pub-btn" id="btn-game-sound" onclick="toggleGameSound()">🔊 Sound: ON</button>
       <button class="pub-btn" id="btn-game-contrast" onclick="toggleGameContrast()">🌓 Contrast: NORM</button>
       <button class="pub-btn" id="btn-game-controls" onclick="toggleControlsDialog()">⌨️ Controls</button>
@@ -620,11 +648,13 @@
     comboHud.className = "no-print";
     document.body.appendChild(comboHud);
 
-    // 3. Inject Hidden Teacher Cheat Console
-    var consoleDiv = document.createElement("div");
-    consoleDiv.id = "teacher-cheat-console";
-    consoleDiv.className = "no-print";
-    consoleDiv.innerHTML = `
+    // 3. Inject Hidden Teacher Cheat Console — teacher-mode devices only
+    // (sticky nt-teacher-mode key; students have no path in).
+    if (isTeacherDevice()) {
+      var consoleDiv = document.createElement("div");
+      consoleDiv.id = "teacher-cheat-console";
+      consoleDiv.className = "no-print";
+      consoleDiv.innerHTML = `
       <h4>
         <span>🔑 Teacher Grading & Cheats</span>
         <button class="close-btn" onclick="toggleCheatConsole()">×</button>
@@ -632,9 +662,9 @@
       <p style="font-size:11px;color:#94a3b8;margin:0 0 10px;">Diagnostics options for checking gameplay:</p>
       <button class="cheat-btn" onclick="cheatAutoWin()">⚡ Skip to End / Auto-Win</button>
       <button class="cheat-btn" onclick="cheatAddLives()">💖 Add Unlimited Lives</button>
-      <button class="cheat-btn" onclick="cheatFreezeTimer()">⏱️ Freeze Game Timers</button>
     `;
-    document.body.appendChild(consoleDiv);
+      document.body.appendChild(consoleDiv);
+    }
 
     // 4. Inject Keyboard Controls Dialog
     var controlsDiv = document.createElement("div");
@@ -667,39 +697,43 @@
       spawnClickRipple(e.clientX, e.clientY);
     });
 
-    // 6. Listen for Ctrl+Shift+T or triple click on game title / header
-    document.addEventListener("keydown", function (e) {
-      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "t") {
-        e.preventDefault();
-        toggleCheatConsole();
-      }
-    });
-
-    var header =
-      document.querySelector("h1") ||
-      document.querySelector("h2") ||
-      document.querySelector(".hero");
-    if (header) {
-      var clicks = 0;
-      header.addEventListener("click", function () {
-        clicks++;
-        if (clicks >= 3) {
-          toggleCheatConsole();
-          clicks = 0;
+    // 6. Cheat-console openers — teacher-mode devices only
+    if (isTeacherDevice()) {
+      document.addEventListener("keydown", function (e) {
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "t") {
+          e.preventDefault();
+          window.toggleCheatConsole();
         }
-        setTimeout(function () {
-          clicks = 0;
-        }, 1000);
       });
+
+      var header =
+        document.querySelector("h1") ||
+        document.querySelector("h2") ||
+        document.querySelector(".hero");
+      if (header) {
+        var clicks = 0;
+        header.addEventListener("click", function () {
+          clicks++;
+          if (clicks >= 3) {
+            window.toggleCheatConsole();
+            clicks = 0;
+          }
+          setTimeout(function () {
+            clicks = 0;
+          }, 1000);
+        });
+      }
     }
 
     // 7. Auto-confetti and LMS score reporting listener
     var observer = new MutationObserver(function (mutations) {
       mutations.forEach(function (mutation) {
-        if (mutation.type === "attributes" && mutation.attributeName === "class") {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "class"
+        ) {
           var target = mutation.target;
           var isWin =
-            target.classList.contains("game-over") ||
             target.classList.contains("won") ||
             target.classList.contains("success");
           var isWrong =
@@ -722,7 +756,8 @@
                 try {
                   var activeScene = pg.scene.getScenes(true)[0];
                   if (activeScene) {
-                    finalScore = activeScene.score || activeScene.finalScore || 0;
+                    finalScore =
+                      activeScene.score || activeScene.finalScore || 0;
                     finalStars = activeScene.stars || 3;
                   }
                 } catch (e) {}
@@ -750,7 +785,8 @@
         var obs = new MutationObserver(function (muts) {
           for (var i = 0; i < muts.length; i++) {
             var t = muts[i].target;
-            if (!t || t.nodeType !== 1 || typeof t.className !== "string") continue;
+            if (!t || t.nodeType !== 1 || typeof t.className !== "string")
+              continue;
 
             var isCorrect = SUCCESS_CLASS.test(t.className);
             var isIncorrect = WRONG_CLASS.test(t.className);
@@ -789,14 +825,16 @@
     try {
       var heroes = document.querySelectorAll("[data-parallax], .ghero");
       Array.prototype.forEach.call(heroes, function (h) {
-        var layer = h.querySelector("[data-parallax-layer]") || h.querySelector(".deco");
+        var layer =
+          h.querySelector("[data-parallax-layer]") || h.querySelector(".deco");
         if (!layer) return;
         h.addEventListener("pointermove", function (e) {
           var r = h.getBoundingClientRect();
           if (!r.width) return;
           var dx = (e.clientX - r.left) / r.width - 0.5;
           var dy = (e.clientY - r.top) / r.height - 0.5;
-          layer.style.transform = "translate(" + dx * 16 + "px," + dy * 16 + "px)";
+          layer.style.transform =
+            "translate(" + dx * 16 + "px," + dy * 16 + "px)";
         });
         h.addEventListener("pointerleave", function () {
           layer.style.transform = "";
