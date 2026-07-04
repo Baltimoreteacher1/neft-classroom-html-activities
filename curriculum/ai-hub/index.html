@@ -5356,7 +5356,7 @@
           }
           
           const rawQ = sessionDialogues[0].q;
-          const adaptedQ = adaptTutorMessage(rawQ, STATE.promptSelections.role, STATE.promptSelections.help);
+          const adaptedQ = adaptTutorMessage(rawQ, STATE.promptSelections.role, STATE.promptSelections.help, true);
           appendTutorMessage("bot", introExplanation + adaptedQ);
         }, 1200);
       }
@@ -5551,13 +5551,10 @@
         return wordBanks[unitNum] || "math, calculate, values, steps";
       }
 
-      function adaptTutorMessage(text, role, helpMode) {
+      function adaptTutorMessage(text, role, helpMode, isFirstTurn = false) {
         let adapted = text;
 
         const isBuddy = role.includes("Buddy") || role.includes("Friendly");
-        const levelPrefix = isBuddy 
-          ? "Hey friend! 🎒 Let's learn together. 🌟 " 
-          : "Hello! Let's examine this math step: 👩‍🏫 ";
         
         if (isBuddy) {
           adapted = adapted.replace("Let's", "Let's work together to")
@@ -5585,7 +5582,14 @@
           }
         }
 
-        return levelPrefix + adapted;
+        if (isFirstTurn) {
+          const prefix = isBuddy 
+            ? "Hey friend! 🎒 Let's learn together. 🌟 " 
+            : "Hello! Let's examine this math step: 👩‍🏫 ";
+          return prefix + adapted;
+        }
+
+        return adapted;
       }
 
       function toggleToolsDrawer() {
