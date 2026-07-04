@@ -3,7 +3,6 @@ const fs = require('fs');
 const path = require('path');
 
 const server = http.createServer((req, res) => {
-  // Strip query string/hashes
   const urlPath = req.url.split('?')[0].split('#')[0];
   let filePath = path.join(__dirname, urlPath === '/' ? 'index.html' : urlPath);
   
@@ -29,7 +28,12 @@ const server = http.createServer((req, res) => {
         res.end('Internal Server Error: ' + err.code);
       }
     } else {
-      res.writeHead(200, { 'Content-Type': contentType });
+      res.writeHead(200, { 
+        'Content-Type': contentType,
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      });
       res.end(content, 'utf-8');
     }
   });
