@@ -5418,18 +5418,36 @@
         const dialogue = sessionDialogues[STATE.currentDialogueIndex];
         const isLastStep = (STATE.currentDialogueIndex === sessionDialogues.length - 1);
         
-        let isCorrect = false;
-        if (isLastStep) {
-          isCorrect = text.length > 2; // accept reflection answers
-        } else {
-          const cleanUserText = text.toLowerCase().replace(/[\$\s+]/g, "").replace(",", ".");
-          isCorrect = dialogue.expected.some(exp => cleanUserText.includes(exp.toLowerCase()));
+        const query = text.toLowerCase();
+        let chatbotResponse = null;
+
+        // Check if the user is asking a general tutor question instead of just typing the raw math answer
+        if (query.includes("hello") || query.includes("hi ") || query.includes("hey") || query.includes("greetings")) {
+          chatbotResponse = `Hello there! I am your <strong>${STATE.promptSelections.role || "AI Tutor"}</strong>. I'm here to help you solve: <code>${document.getElementById("current-math-problem").textContent}</code>. Let's look at the current step:<br><br>${dialogue.q}`;
+        } else if (query.includes("help") || query.includes("stuck") || query.includes("explain") || query.includes("how") || query.includes("why") || query.includes("what is") || query.includes("formula")) {
+          chatbotResponse = `Sure! Let me break it down. 💡 <strong>Explanation:</strong> ${dialogue.hint}<br><br>Give it a try! What value do you get?`;
+        } else if (query.includes("answer") || query.includes("give me") || query.includes("tell me")) {
+          chatbotResponse = `I can't give away the final answer directly, but here is a big clue: ${dialogue.hint} Let's try to calculate it together!`;
         }
 
         showTypingIndicator();
 
         setTimeout(() => {
           hideTypingIndicator();
+
+          if (chatbotResponse) {
+            const adaptedMsg = adaptTutorMessage(chatbotResponse, STATE.promptSelections.role, STATE.promptSelections.help);
+            appendTutorMessage("bot", adaptedMsg);
+            return;
+          }
+
+          let isCorrect = false;
+          if (isLastStep) {
+            isCorrect = text.length > 2; // accept reflection answers
+          } else {
+            const cleanUserText = text.toLowerCase().replace(/[\$\s+]/g, "").replace(",", ".");
+            isCorrect = dialogue.expected.some(exp => cleanUserText.includes(exp.toLowerCase()));
+          }
 
           if (isCorrect) {
             STATE.currentDialogueIndex++;
