@@ -1218,8 +1218,40 @@
           );
         }
         if (ddLevel === 1) {
-          // Support: count + the formula hint always visible.
-          this.subReadout.setText("Dots: " + tot + "   ·   " + STAT.mean.hint);
+          // Support tier: a LIVE step coach. It always names the next move so
+          // the abstract "hit the mean" task becomes a follow-the-steps
+          // procedure — add a high dot to raise the mean, a low dot to lower it.
+          const t = this.problem.target;
+          const mean = statOf(this.counts, this.lo, "mean");
+          let step, col;
+          if (mean === null) {
+            step = "Step 1: tap a column to add your first dot.";
+            col = "#9cc4dd";
+          } else if (Math.abs(mean - t) < 1e-9) {
+            step = "✓ Mean = " + t + " — press LOCK IN!";
+            col = "#4fd18b";
+          } else if (mean < t) {
+            step =
+              "Mean is " +
+              numStr(mean) +
+              ", need " +
+              t +
+              " — too LOW. Add a dot on a HIGH number (try " +
+              this.hi +
+              ").";
+            col = "#ffcd4d";
+          } else {
+            step =
+              "Mean is " +
+              numStr(mean) +
+              ", need " +
+              t +
+              " — too HIGH. Add a dot on a LOW number (try " +
+              this.lo +
+              ").";
+            col = "#ffcd4d";
+          }
+          this.subReadout.setText(step).setColor(col);
         } else {
           // Enrichment: show all four live stats, fewer words.
           const mean = statOf(this.counts, this.lo, "mean");
@@ -1268,6 +1300,12 @@
             ".";
         }
         this.bannerText.setText(goal);
+        // Persistent procedure reminder for the support tier.
+        this.bannerLabel.setText(
+          ddLevel === 1
+            ? "STEPS: mean too LOW? add HIGH dots.  too HIGH? add LOW dots."
+            : "BUILD THE LINE PLOT",
+        );
         this.redrawDots();
         this.updateReadout();
         const givenN = this.given.reduce((a, b) => a + b, 0);
