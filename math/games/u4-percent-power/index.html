@@ -213,10 +213,14 @@
       // Phaser 3 — Grade 6 Math — Percent of a number, sale price, %↔decimal
       // Mechanic (math-as-mechanic, no reflex/timer): the bar IS the whole.
       // Drag the handle (or nudge ±5% with ← → / A D) to SHADE a percent, then
-      // press Lock In. Two live readouts — the percent and the part it equals —
-      // update as you move, so the percent↔part relationship is the action.
-      // A wrong shade (wrong math) never costs anything — this is no-fail
-      // practice — the marker animates to the correct spot to teach.
+      // press Lock In. The percent dial shows the student's OWN shading; the
+      // "part it equals" readout stays HIDDEN so the student must COMPUTE — not
+      // hunt for a number to appear. Help is EARNED: after several moves or a
+      // wrong lock-in, a benchmark hint appears (Tier 1), then the live part
+      // readout switches on (Tier 2). A clean first-try solve scores full
+      // points; a helped solve still counts but scores less and resets the
+      // independent-solve streak. No-fail: after 3 tries the answer is taught
+      // and play continues.
       // Difficulty rises by level: more framings (find the part → decimal →
       // find the percent → sale price).
 
@@ -390,6 +394,43 @@
         };
       }
 
+      // ── Earned-help hint text (Tier 1). Guides the METHOD without stating the
+      // numeric answer; framing-aware so each problem type gets a real strategy.
+      function scaffoldHint(p) {
+        const tenth = p.whole / 10;
+        if (p.kind === "decimal")
+          return "Turn the decimal into a percent: move the point two places right (× 100).";
+        if (p.kind === "percent") {
+          const part = (p.targetPct / 100) * p.whole;
+          return (
+            "Start with 10%: 10% of " +
+            p.whole +
+            " = " +
+            tenth +
+            ". How many 10%s make " +
+            part +
+            "?"
+          );
+        }
+        if (p.kind === "sale") {
+          const off = 100 - p.targetPct;
+          return (
+            "Off + paid = 100%. If " +
+            off +
+            "% is taken off, what percent do you PAY? Then shade that."
+          );
+        }
+        return (
+          "Find 10% first: 10% of " +
+          p.whole +
+          " = " +
+          tenth +
+          ", then build up to " +
+          p.targetPct +
+          "%."
+        );
+      }
+
       const config = {
         type: Phaser.AUTO,
         width: W,
@@ -484,7 +525,7 @@
           .text(
             cx,
             230,
-            "Shade the bar to BUILD the answer. Drag the handle (or use\n← →) to set the percent, watch the part update, then Lock In!",
+            "Shade the bar to BUILD the answer. Drag the handle (or use\n← →) to set the percent, then Lock In! Stuck? Keep trying —\nhints appear to help you solve it.",
             {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "16px",
@@ -717,6 +758,10 @@
         this.locked = false;
         this.dragging = false;
         this.markerPct = 50; // current shaded percent (multiple of 5)
+        this.moves = 0; // adjustments on the current problem (help trigger)
+        this.wrongThisProblem = 0;
+        this.scaffoldTier = 0; // 0 none · 1 benchmark hint · 2 live part readout
+        this.usedHelp = false; // scaffold shown or wrong try → reduced score
       };
 
       GameScene.prototype.create = function () {
@@ -779,6 +824,21 @@
             strokeThickness: 3,
             align: "center",
             wordWrap: { width: W - 80 },
+          })
+          .setOrigin(0.5)
+          .setAlpha(0);
+
+        // Earned-help hint line (Tier 1 benchmark). Hidden until unlocked.
+        this.hintText = this.add
+          .text(W / 2, 436, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#ffd24a",
+            stroke: "#0a160b",
+            strokeThickness: 3,
+            align: "center",
+            wordWrap: { width: W - 120 },
           })
           .setOrigin(0.5)
           .setAlpha(0);
@@ -895,6 +955,7 @@
           if (this.locked) return;
           if (inBand(p.y)) {
             this.dragging = true;
+            this.registerMove();
             this.setMarker(xToPct(p.x));
           }
         });
@@ -906,6 +967,7 @@
         });
         const nudge = (d) => {
           if (this.locked) return;
+          this.registerMove();
           this.setMarker(this.markerPct + d);
           SFX.coin();
         };
@@ -927,7 +989,9 @@
         this.handle.x = x;
         this.knob.x = x;
         this.pctReadout.setText(this.markerPct + "%");
-        if (this.problem) {
+        // The part readout is EARNED — only shown once the Tier-2 scaffold
+        // unlocks, so students compute the part instead of hunting for it.
+        if (this.problem && this.scaffoldTier >= 2) {
           const part = (this.problem.whole * this.markerPct) / 100;
           const partStr = Number.isInteger(part)
             ? String(part)
@@ -935,11 +999,41 @@
           this.partReadout.setText(
             "= " + partStr + " of " + this.problem.whole,
           );
+        } else {
+          this.partReadout.setText("");
         }
+      };
+
+      // ── Earned help ─────────────────────────────────────────────────────
+      // Each adjustment on the current problem is a "move." After enough moves
+      // (or a wrong lock-in) the scaffold ladder unlocks — help, not answers.
+      GameScene.prototype.registerMove = function () {
+        if (this.locked) return;
+        this.moves += 1;
+        if (this.moves === 6) this.setScaffold(1);
+        else if (this.moves === 12) this.setScaffold(2);
+      };
+
+      GameScene.prototype.setScaffold = function (tier) {
+        if (!this.problem || tier <= this.scaffoldTier) return;
+        this.scaffoldTier = tier;
+        this.usedHelp = true;
+        const hint = scaffoldHint(this.problem);
+        const note =
+          tier >= 2 ? "  ·  Now watch the part update as you move." : "";
+        this.hintText.setText("💡 " + hint + note).setAlpha(1);
+        // Tier 2 switches on the live part readout (refresh to populate it).
+        if (tier >= 2) this.setMarker(this.markerPct);
+        srSay("Hint: " + hint);
       };
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
+        this.moves = 0;
+        this.wrongThisProblem = 0;
+        this.scaffoldTier = 0;
+        this.usedHelp = false;
+        if (this.hintText) this.hintText.setAlpha(0).setText("");
         this.problem = barProblem(this.level);
         this.bannerLabel.setText(this.problem.label);
         this.bannerText.setText(this.problem.prompt);
@@ -963,44 +1057,77 @@
         if (correct) {
           SFX.good();
           this.solved++;
-          this.streak++;
-          const bonus = Math.min(this.streak, 5) * 5;
-          this.score += 20 + bonus;
           this.fill.setFillStyle(0x36a35b);
           this.burst.setPosition(pctToX(this.markerPct), BAR_Y);
           this.burst.explode(16);
-          this.flash(W / 2, 200, "Correct! ✓", "#8fd6a0");
-          this.feedback.setText("Correct! " + this.problem.why).setAlpha(1);
-          srSay("Correct. " + this.problem.why);
+          if (this.usedHelp) {
+            // Solved with a scaffold (or after a wrong try): still a win, fewer
+            // points, and the independent-solve streak resets.
+            this.streak = 0;
+            this.score += 10;
+            this.flash(W / 2, 200, "You worked it out! ✓", "#8fd6a0");
+            this.feedback
+              .setText("Nice — you got it. " + this.problem.why)
+              .setAlpha(1);
+            srSay("Correct with help. " + this.problem.why);
+          } else {
+            // Clean first-try solve with no help — full points + streak bonus.
+            this.streak++;
+            const bonus = Math.min(this.streak, 5) * 5;
+            this.score += 20 + bonus;
+            this.flash(W / 2, 200, "Correct! ✓", "#8fd6a0");
+            this.feedback.setText("Correct! " + this.problem.why).setAlpha(1);
+            srSay("Correct. " + this.problem.why);
+          }
+          this.hintText.setAlpha(0);
           this.afterAttempt(true);
         } else {
           SFX.bad();
+          this.wrongThisProblem += 1;
+          this.usedHelp = true;
           this.streak = 0;
-          // Calm amber "check again" tint (no red flash, no lost hearts).
-          this.fill.setFillStyle(0xd4952a);
-          this.feedback.setText("Not quite — " + this.problem.why).setAlpha(1);
-          srSay("Not quite. " + this.problem.why);
-          // Teach: show the correct shade and glide the handle to it, then go on.
-          const ghost = this.add
-            .rectangle(
-              BAR_X0,
-              BAR_Y,
-              (BAR_W * this.problem.targetPct) / 100,
-              BAR_H,
-              0x8fd6a0,
-              0.35,
-            )
-            .setOrigin(0, 0.5)
-            .setDepth(5);
-          this.tweens.add({
-            targets: [this.handle, this.knob],
-            x: pctToX(this.problem.targetPct),
-            duration: this.reduceMotion ? 0 : 600,
-            onComplete: () => {
-              ghost.destroy();
-              this.afterAttempt(false);
-            },
-          });
+          if (this.wrongThisProblem >= 3) {
+            // No-fail last resort: after 3 tries, teach the answer and move on.
+            this.fill.setFillStyle(0xd4952a);
+            this.feedback
+              .setText("Here's how it works — " + this.problem.why)
+              .setAlpha(1);
+            srSay("The answer. " + this.problem.why);
+            const ghost = this.add
+              .rectangle(
+                BAR_X0,
+                BAR_Y,
+                (BAR_W * this.problem.targetPct) / 100,
+                BAR_H,
+                0x8fd6a0,
+                0.35,
+              )
+              .setOrigin(0, 0.5)
+              .setDepth(5);
+            this.tweens.add({
+              targets: [this.handle, this.knob],
+              x: pctToX(this.problem.targetPct),
+              duration: this.reduceMotion ? 0 : 600,
+              onComplete: () => {
+                ghost.destroy();
+                this.hintText.setAlpha(0);
+                this.afterAttempt(false);
+              },
+            });
+          } else {
+            // Wrong, but they keep the SAME problem — unlock a hint and let them
+            // try again. Calm amber blip, no lost hearts, no answer reveal.
+            this.setScaffold(this.wrongThisProblem === 1 ? 1 : 2);
+            this.fill.setFillStyle(0xd4952a);
+            this.feedback.setText("Not quite — try again.").setAlpha(1);
+            srSay("Not quite. Try again with the hint.");
+            this.updateHUD();
+            this.locked = false;
+            this.time.delayedCall(700, () => {
+              this.feedback.setAlpha(0);
+              this.fill.setFillStyle(0x2d874b);
+            });
+          }
         }
       };
 
