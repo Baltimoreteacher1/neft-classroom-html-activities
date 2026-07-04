@@ -4337,6 +4337,8 @@
       // ============================================================================
       // STATE MACHINE
       // ============================================================================
+      let sessionDialogues = [];
+
       const STATE = {
         role: "",
         selectedUnit: 1,
@@ -5309,6 +5311,12 @@
 
         chatLog.appendChild(row);
         chatLog.scrollTop = chatLog.scrollHeight;
+      }
+
+      function handleChatKeyDown(event) {
+        if (event.key === "Enter") {
+          sendChatAnswer();
+        }
       }
 
       function sendChatAnswer() {

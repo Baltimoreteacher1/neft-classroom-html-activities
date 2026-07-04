@@ -34,11 +34,7 @@
   }
   function toB64url(str) {
     var utf8 = unescape(encodeURIComponent(str));
-    return global
-      .btoa(utf8)
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=+$/, "");
+    return global.btoa(utf8).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   }
   function fromB64url(b64) {
     b64 = String(b64).replace(/-/g, "+").replace(/_/g, "/");

@@ -32,14 +32,8 @@ function ensureCodec() {
 
 function buildPayload(state, config) {
   const s = state.get();
-  const totalStars = (s.phases || []).reduce(
-    (sum, p) => sum + (p.stars || 0),
-    0,
-  );
-  const percent =
-    s.totalAttempts > 0
-      ? Math.round((s.totalCorrect / s.totalAttempts) * 100)
-      : 0;
+  const totalStars = (s.phases || []).reduce((sum, p) => sum + (p.stars || 0), 0);
+  const percent = s.totalAttempts > 0 ? Math.round((s.totalCorrect / s.totalAttempts) * 100) : 0;
   return {
     studentName: s.studentName || "",
     classPeriod: s.studentPeriod || "",
