@@ -4183,17 +4183,27 @@
       let sessionDialogues = [];
 
       const BUILDER_ROLES = [
-        { label: "Student Helper", desc: "Friendly tutor for students" },
-        { label: "Math Teacher", desc: "Clear lesson-style explanation" },
-        { label: "Math Expert", desc: "Precise vocabulary and reasoning" },
-        { label: "Spanish/English Support Helper", desc: "Bilingual vocabulary and sentence frames" }
+        { label: "Friendly Peer Buddy 🤖", desc: "Casually supportive peer tutor" },
+        { label: "Math Coach 👩‍🏫", desc: "Structured, teaching-focused guide" }
       ];
 
       const HELP_LEVELS = [
-        { label: "Hint only", desc: "Smallest help; I still solve it." },
-        { label: "Similar example", desc: "Show one like it, not my exact problem." },
-        { label: "Step-by-step coaching", desc: "Guide me one step at a time." },
-        { label: "Reteach and practice", desc: "Most help; explain, model, then give practice." }
+        { label: "Just Hints 💡", desc: "Gives clues, doesn't tell the answers" },
+        { label: "Step-by-Step 🚶‍♂️", desc: "Solve the problem one simple question at a time" },
+        { label: "Explain First 🧠", desc: "Reteaches the concept before starting" }
+      ];
+
+      const ALL_TOPICS = [
+        { unit: 1, label: "🔢 Unit 1: Decimals & Factors" },
+        { unit: 2, label: "🍰 Unit 2: Dividing Fractions" },
+        { unit: 3, label: "📊 Unit 3: Ratios & Rates" },
+        { unit: 4, label: "🏷️ Unit 4: Percentages & Taxes" },
+        { unit: 5, label: "📐 Unit 5: Polygon Area" },
+        { unit: 6, label: "📦 Unit 6: Volume & Surface Area" },
+        { unit: 7, label: "⚖️ Unit 7: Equations & Balancing" },
+        { unit: 8, label: "📈 Unit 8: Mean, Median & Stats" },
+        { unit: 9, label: "📍 Unit 9: Coordinate Grid" },
+        { unit: 10, label: "💳 Unit 10: Money & Budgets" }
       ];
 
       // Bilingual parent workspace dictionary
@@ -4901,6 +4911,15 @@
                     </div>
                   </div>
 
+                  <!-- Math Concept Aid Card (Visuals & Aids) -->
+                  <div class="math-guide-card" style="background: linear-gradient(135deg, rgba(155, 114, 203, 0.12) 0%, rgba(66, 133, 244, 0.12) 100%); border: 1.5px solid rgba(155, 114, 203, 0.3); border-radius: 12px; padding: 12px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
+                    <div style="font-size: 1.5rem; line-height: 1;">💡</div>
+                    <div style="flex: 1;">
+                      <h5 style="margin: 0 0 4px; font-family: var(--font-heading); font-weight: 800; font-size: 0.85rem; color: #c58af9;">Math Concept Assistant</h5>
+                      <p id="math-guide-desc" style="margin: 0; font-size: 0.78rem; color: #cbd5e1; line-height: 1.4;"></p>
+                    </div>
+                  </div>
+
                   <div class="math-box">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                       <span class="math-label">Math Homework Challenge</span>
@@ -4910,37 +4929,29 @@
                   </div>
                   
                   <div class="builder-section" id="prompt-builder-area">
-                    <h4 class="visual-options-title">Build a prompt to turn AI into your math tutor:</h4>
+                    <h4 class="visual-options-title">Configure your AI Math Buddy:</h4>
                     
-                    <div class="builder-grid">
+                    <div class="builder-grid" style="grid-template-columns: repeat(3, 1fr); gap: 12px;">
                       <div class="builder-col">
-                        <span class="col-label">1. Choose Role</span>
-                        ${getUnitRoles(STATE.selectedUnit).map((r) => `<button type="button" class="builder-chip" data-value="${escapeForAttr(r.label)}" aria-label="Choose role: ${escapeForAttr(r.label)}" onclick="selectBuilderChip('role', this)">${r.label}<small>${r.desc}</small></button>`).join('')}
+                        <span class="col-label">🤖 1. Choose Tutor Role</span>
+                        ${BUILDER_ROLES.map((r) => `<button type="button" class="builder-chip" data-value="${escapeForAttr(r.label)}" aria-label="Choose role: ${escapeForAttr(r.label)}" onclick="selectBuilderChip('role', this)">${r.label}<small>${r.desc}</small></button>`).join('')}
                       </div>
-                      <div class="builder-col">
-                        <span class="col-label">2. Choose Lesson</span>
-                        ${getUnitLessons(STATE.selectedUnit).map((lesson) => {
-                          const idx = getLessonExampleIndex(STATE.selectedUnit, lesson.id);
-                          const label = `Lesson ${lesson.id.replace("-", ".")}: ${lesson.title}`;
-                          return `<button type="button" class="builder-chip" data-value="${escapeForAttr(label)}" data-example-index="${idx}" aria-label="Choose ${escapeForAttr(label)}" onclick="selectBuilderChip('topic', this)">${label}</button>`;
+                      <div class="builder-col" style="max-height: 250px; overflow-y: auto;">
+                        <span class="col-label">📚 2. Choose Topic</span>
+                        ${ALL_TOPICS.map((topic) => {
+                          const isSelected = STATE.selectedUnit === topic.unit;
+                          return `<button type="button" class="builder-chip ${isSelected ? 'selected' : ''}" data-value="${escapeForAttr(topic.label)}" data-unit="${topic.unit}" aria-label="Choose ${escapeForAttr(topic.label)}" onclick="selectTopicChip(this, ${topic.unit})">${topic.label}</button>`;
                         }).join('')}
                       </div>
                       <div class="builder-col">
-                        <span class="col-label">3. Choose Help Amount</span>
-                        ${HELP_LEVELS.map((h) => `<button type="button" class="builder-chip" data-value="${escapeForAttr(h.label + ': ' + h.desc)}" aria-label="Choose help amount: ${escapeForAttr(h.label)}" onclick="selectBuilderChip('help', this)">${h.label}<small>${h.desc}</small></button>`).join('')}
-                      </div>
-                      <div class="builder-col">
-                        <span class="col-label">4. Choose Level</span>
-                        <button type="button" class="builder-chip" data-value="absolute_beginner" onclick="selectBuilderChip('level', this)">Absolute Beginner 🧒</button>
-                        <button type="button" class="builder-chip" data-value="beginner" onclick="selectBuilderChip('level', this)">Beginner 🎒</button>
-                        <button type="button" class="builder-chip" data-value="understanding" onclick="selectBuilderChip('level', this)">Understanding 🧠</button>
-                        <button type="button" class="builder-chip" data-value="expert" onclick="selectBuilderChip('level', this)">Expert 🎓</button>
+                        <span class="col-label">💡 3. Choose Help Amount</span>
+                        ${HELP_LEVELS.map((h) => `<button type="button" class="builder-chip" data-value="${escapeForAttr(h.label)}" aria-label="Choose help: ${escapeForAttr(h.label)}" onclick="selectBuilderChip('help', this)">${h.label}<small>${h.desc}</small></button>`).join('')}
                       </div>
                     </div>
 
                     <div class="prompt-preview">
                       <span class="preview-label">Prompt Preview</span>
-                      <p class="preview-text" id="prompt-preview-text">Please click one piece from each column above...</p>
+                      <p class="preview-text" id="prompt-preview-text">Please click one option from each column above...</p>
                     </div>
 
                     <div style="display: flex; gap: 10px; margin-top: 12px;">
@@ -4955,8 +4966,18 @@
 
                   <div class="result-alert" id="result-feedback"></div>
 
-                  <div class="chat-workspace" id="chat-console">
-                    <div class="chat-box" id="chat-log"></div>
+                  <div class="chat-workspace" id="chat-console" style="display: none; border-radius: 12px; overflow: hidden; border: 1.5px solid var(--bg-panel-border); background: var(--bg-panel-bg); margin-top: 16px;">
+                    <!-- Dialogue Progress Stepper -->
+                    <div class="chat-stepper" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--bg-panel-border); padding: 8px 16px; font-size: 0.75rem; color: var(--text-secondary);">
+                      <span>Tutor Dialogue Progress:</span>
+                      <div style="display: flex; gap: 6px;" id="dialogue-steps-indicator">
+                        <span class="step-dot active" title="Warmup">1</span>
+                        <span class="step-dot" title="Step 1">2</span>
+                        <span class="step-dot" title="Step 2">3</span>
+                        <span class="step-dot" title="Reflection">4</span>
+                      </div>
+                    </div>
+                    <div class="chat-box" id="chat-log" style="max-height: 280px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px;"></div>
                     <div class="chat-input-bar">
                       <input type="text" id="chat-input" class="chat-text-input" placeholder="Type your math answer here..." onkeydown="handleChatKeyDown(event)" />
                       <button class="chat-send-btn" onclick="sendChatAnswer()">Send</button>
@@ -5178,10 +5199,9 @@
         const submitBtn = document.getElementById("submit-prompt");
         const copyBtn = document.getElementById("copy-prompt-student");
 
-        if (STATE.promptSelections.role && STATE.promptSelections.topic && STATE.promptSelections.help && STATE.promptSelections.level) {
-          const levelName = LEVELS[STATE.promptSelections.level].name;
-          const article = (STATE.promptSelections.level === 'absolute_beginner' || STATE.promptSelections.level === 'understanding' || STATE.promptSelections.level === 'expert') ? 'an' : 'a';
-          previewText.innerHTML = `Act as a <strong>${STATE.promptSelections.role}</strong>. I need help with <strong>${STATE.promptSelections.topic}</strong>. Please help me by <strong>${STATE.promptSelections.help}</strong> for ${article} <strong>${levelName}</strong> level of explanation.`;
+        if (STATE.promptSelections.role && STATE.promptSelections.topic && STATE.promptSelections.help) {
+          const widaName = document.querySelector("#select-esol-level option:checked")?.textContent || "Level 3: Expanding";
+          previewText.innerHTML = `Act as a <strong>${STATE.promptSelections.role}</strong>. I need help with <strong>${STATE.promptSelections.topic}</strong>. Please help me by <strong>${STATE.promptSelections.help}</strong>, adjusted for my <strong>${widaName}</strong> needs.`;
           previewText.style.color = "var(--text-primary)";
           submitBtn.removeAttribute("disabled");
           copyBtn.removeAttribute("disabled");
@@ -5190,15 +5210,49 @@
           if (STATE.promptSelections.role) parts.push("Act as a " + STATE.promptSelections.role + ".");
           if (STATE.promptSelections.topic) parts.push("I need help with " + STATE.promptSelections.topic + ".");
           if (STATE.promptSelections.help) parts.push("Please help me by " + STATE.promptSelections.help);
-          if (STATE.promptSelections.level) {
-            const levelName = LEVELS[STATE.promptSelections.level].name;
-            const article = (STATE.promptSelections.level === 'absolute_beginner' || STATE.promptSelections.level === 'understanding' || STATE.promptSelections.level === 'expert') ? 'an' : 'a';
-            parts.push(`for ${article} ${levelName} level of explanation.`);
-          }
           
-          previewText.textContent = parts.length > 0 ? parts.join(' ') + '...' : "Please click one piece from each column above...";
+          previewText.textContent = parts.length > 0 ? parts.join(' ') + '...' : "Please click one option from each column above...";
           previewText.style.color = "var(--text-secondary)";
         }
+      }
+
+      function selectTopicChip(element, unitNum) {
+        STATE.selectedUnit = unitNum;
+        STATE.selectedExample = 0; // Default to first example
+        
+        // Update labels on the left panel
+        const unitTitle = document.getElementById("ws-unit-title");
+        if (unitTitle) unitTitle.textContent = UNIT_DATA[unitNum].name;
+        const problemEl = document.getElementById("current-math-problem");
+        if (problemEl) problemEl.textContent = UNIT_DATA[unitNum].examples[0].mathProblem;
+        const ccssEl = document.getElementById("current-math-ccss");
+        if (ccssEl) ccssEl.textContent = UNIT_DATA[unitNum].examples[0].ccss;
+        
+        // Highlight active chip
+        element.parentNode.querySelectorAll(".builder-chip").forEach(chip => chip.classList.remove("selected"));
+        element.classList.add("selected");
+        
+        // Update guide card description
+        const guides = {
+          1: "Decimal Operations: Line up decimal points for addition/subtraction. For multiplication, count total decimal places.",
+          2: "Fraction Division: Keep the first fraction, change sign to multiply, and flip the second fraction (Keep-Change-Flip).",
+          3: "Ratios: A comparison of two values. Scale up or down by multiplying or dividing both values by the same factor.",
+          4: "Percents: Percent means 'per 100'. Convert a percent to a decimal by dividing by 100 before multiplying.",
+          5: "Area of Polygons: Triangle area = (base × height) ÷ 2. Parallelogram = base × height. Trapezoid = (b1 + b2) × h ÷ 2.",
+          6: "Volume & Surface Area: Volume of rectangular prism = l × w × h. Surface Area = 2lw + 2lh + 2wh.",
+          7: "Equations: Isolate the variable by doing inverse operations (undo addition with subtraction, multiplication with division).",
+          8: "Statistics: Mean = sum ÷ quantity. Median = middle value of sorted list. Range = maximum - minimum.",
+          9: "Coordinate Plane: Four quadrants starting top-right (I) going counter-clockwise. Coordinates are written as (x, y).",
+          10: "Financial Literacy: Sales tax and interest are added to the cost. Discounts are subtracted from the price."
+        };
+        const descEl = document.getElementById("math-guide-desc");
+        if (descEl) descEl.innerHTML = guides[unitNum];
+
+        // Draw the visualization
+        drawVisualModel(0);
+        
+        // Trigger generic chip selection
+        selectChip('topic', element.dataset.value, element, 0);
       }
 
       function selectBuilderChip(category, element) {
@@ -5235,11 +5289,11 @@
         const activePromptInfo = document.getElementById("active-prompt-info");
         const activePromptSummary = document.getElementById("active-prompt-summary");
         if (activePromptInfo && activePromptSummary) {
-          const levelObj = LEVELS[STATE.promptSelections.level] || { name: STATE.promptSelections.level };
+          const widaName = document.querySelector("#select-esol-level option:checked")?.textContent || "Level 3: Expanding";
           activePromptSummary.innerHTML = `<strong>Role:</strong> ${STATE.promptSelections.role}<br>
-                                               <strong>Goal:</strong> Help with ${STATE.promptSelections.topic}<br>
-                                               <strong>Scaffolding:</strong> ${STATE.promptSelections.help}<br>
-                                               <strong>Explanations:</strong> ${levelObj.name}`;
+                                               <strong>Topic:</strong> ${STATE.promptSelections.topic}<br>
+                                               <strong>Help:</strong> ${STATE.promptSelections.help}<br>
+                                               <strong>Support Level:</strong> ${widaName}`;
           activePromptInfo.style.display = "block";
         }
         
@@ -5250,6 +5304,22 @@
         }
       }
 
+      function updateDialogueStepper() {
+        const dots = document.querySelectorAll("#dialogue-steps-indicator .step-dot");
+        dots.forEach((dot, idx) => {
+          dot.classList.remove("active", "completed");
+          if (idx < STATE.currentDialogueIndex) {
+            dot.classList.add("completed");
+            dot.innerHTML = "✓";
+          } else if (idx === STATE.currentDialogueIndex) {
+            dot.classList.add("active");
+            dot.innerHTML = idx + 1;
+          } else {
+            dot.innerHTML = idx + 1;
+          }
+        });
+      }
+
       function startTutorChat() {
         const chatConsole = document.getElementById("chat-console");
         const chatLog = document.getElementById("chat-log");
@@ -5257,19 +5327,37 @@
         if (chatConsole) chatConsole.style.display = "block";
         if (chatLog) chatLog.innerHTML = "";
         STATE.currentDialogueIndex = 0;
+        updateDialogueStepper();
 
         sessionDialogues = buildSessionDialogues(STATE.selectedUnit, STATE.selectedExample);
 
-        const levelName = LEVELS[STATE.promptSelections.level].name;
-        const article = (STATE.promptSelections.level === 'absolute_beginner' || STATE.promptSelections.level === 'understanding' || STATE.promptSelections.level === 'expert') ? 'an' : 'a';
-        appendTutorMessage("user", `Act as a ${STATE.promptSelections.role}. I need help with ${STATE.promptSelections.topic}. Please help me by ${STATE.promptSelections.help} for ${article} ${levelName} level of explanation.`);
+        const widaName = document.querySelector("#select-esol-level option:checked")?.textContent || "Level 3: Expanding";
+        appendTutorMessage("user", `Act as a ${STATE.promptSelections.role}. I need help with ${STATE.promptSelections.topic}. Please help me by ${STATE.promptSelections.help}, adapted for my language level: ${widaName}.`);
 
         showTypingIndicator();
         setTimeout(() => {
           hideTypingIndicator();
+          
+          let introExplanation = "";
+          if (STATE.promptSelections.help.includes("Explain First")) {
+            const explanationCatalog = {
+              1: "<strong>How to Multiply/Divide Decimals:</strong> We can ignore the decimal point first, multiply or divide as if they are whole numbers, and then place the decimal back based on the total decimal places. Let's practice!",
+              2: "<strong>How to Divide Fractions:</strong> We use the Keep-Change-Flip (KCF) rule. Keep the first fraction, change division to multiplication, and flip the second fraction upside down. Let's do it!",
+              3: "<strong>Understanding Ratios & Rates:</strong> A ratio compares two quantities. A unit rate compares a quantity to exactly one unit, making it simple to scale up or compare options!",
+              4: "<strong>Calculating Percents:</strong> Percent means 'out of 100'. We can convert a percent to a decimal or fraction to easily calculate tax, tips, or discounts!",
+              5: "<strong>Finding Polygon Area:</strong> We can find the area of composite or complex shapes by dividing (decomposing) them into simpler rectangles, finding their individual areas, and adding them!",
+              6: "<strong>Volume and Surface Area:</strong> Volume measures the 3D space inside a shape (length × width × height). Surface area is the sum of the areas of all the flat faces of its net!",
+              7: "<strong>Balancing Equations:</strong> To solve for a variable, we must isolate it by doing the opposite (inverse) operation on both sides of the equal sign to keep it balanced!",
+              8: "<strong>Statistical Measures:</strong> Mean is the average (sum of all numbers divided by the count). Median is the middle number when the list is sorted in order!",
+              9: "<strong>Coordinate Grid:</strong> The coordinates are written as (x, y). Reflecting a point across the x-axis keeps x the same but flips the sign of y!",
+              10: "<strong>Money & Interest:</strong> Sales tax and interest add extra charges or savings, while discounts subtract from the total cost. Let's calculate!"
+            };
+            introExplanation = `<div style="background: rgba(139, 92, 246, 0.1); border: 1.5px dashed rgba(139, 92, 246, 0.3); padding: 12px; border-radius: 8px; margin-bottom: 12px; color: var(--text-primary); font-size: 0.85rem; line-height: 1.45;">🎓 <strong>Tutor Concept Lesson:</strong><br>${explanationCatalog[STATE.selectedUnit] || ''}</div>`;
+          }
+          
           const rawQ = sessionDialogues[0].q;
-          const adaptedQ = adaptTutorMessage(rawQ, STATE.promptSelections.role, STATE.promptSelections.level);
-          appendTutorMessage("bot", adaptedQ);
+          const adaptedQ = adaptTutorMessage(rawQ, STATE.promptSelections.role, STATE.promptSelections.help);
+          appendTutorMessage("bot", introExplanation + adaptedQ);
         }, 1200);
       }
 
@@ -5345,11 +5433,12 @@
 
           if (isCorrect) {
             STATE.currentDialogueIndex++;
+            updateDialogueStepper();
             drawVisualModel(STATE.currentDialogueIndex);
 
             if (STATE.currentDialogueIndex < sessionDialogues.length) {
               const rawQ = sessionDialogues[STATE.currentDialogueIndex].q;
-              const adaptedQ = adaptTutorMessage(rawQ, STATE.promptSelections.role, STATE.promptSelections.level);
+              const adaptedQ = adaptTutorMessage(rawQ, STATE.promptSelections.role, STATE.promptSelections.help);
               appendTutorMessage("bot", adaptedQ);
             } else {
               if (!STATE.completedChallenges[STATE.selectedUnit]) {
@@ -5384,19 +5473,23 @@
             const userVal = parseFloat(text.replace(/[^0-9.]/g, ""));
             const expectedVal = parseFloat(dialogue.expected[0]);
             
-            if (!isNaN(userVal) && !isNaN(expectedVal)) {
-              if (userVal === expectedVal * 10 || userVal === expectedVal * 100) {
-                responseText = "It looks like you did the math right, but did you place the decimal point correctly? Check place value!";
-              } else if (userVal === expectedVal / 10 || userVal === expectedVal / 100) {
-                responseText = "Double check your decimal positions. Did you move it too far?";
+            if (STATE.promptSelections.help.includes("Just Hints")) {
+              responseText = `Not quite. 💡 <strong>Hint:</strong> ${dialogue.hint} Think about it and try again!`;
+            } else {
+              if (!isNaN(userVal) && !isNaN(expectedVal)) {
+                if (userVal === expectedVal * 10 || userVal === expectedVal * 100) {
+                  responseText = "It looks like you did the math right, but did you place the decimal point correctly? Check place value!";
+                } else if (userVal === expectedVal / 10 || userVal === expectedVal / 100) {
+                  responseText = "Double check your decimal positions. Did you move it too far?";
+                }
+              }
+              
+              if (!responseText) {
+                responseText = `Not quite! Let's think: ${dialogue.hint} Try again!`;
               }
             }
-            
-            if (!responseText) {
-              responseText = `Not quite! Let's think: ${dialogue.hint} Try again!`;
-            }
 
-            const adaptedMsg = adaptTutorMessage(responseText, STATE.promptSelections.role, STATE.promptSelections.level);
+            const adaptedMsg = adaptTutorMessage(responseText, STATE.promptSelections.role, STATE.promptSelections.help);
             appendTutorMessage("bot", adaptedMsg);
           }
         }, 1000);
@@ -5458,16 +5551,19 @@
         return wordBanks[unitNum] || "math, calculate, values, steps";
       }
 
-      function adaptTutorMessage(text, role, level) {
+      function adaptTutorMessage(text, role, helpMode) {
         let adapted = text;
 
-        const prefixes = {
-          absolute_beginner: "Hey friend! 🎒 Let's learn together. 🌟 ",
-          beginner: "Let's take it step-by-step: ✏️ ",
-          understanding: "Let's review the mathematical steps: 🧠 ",
-          expert: "Greetings, advanced learner. Let's analyze this formally: 🎓 "
-        };
-        const levelPrefix = prefixes[level] || "";
+        const isBuddy = role.includes("Buddy") || role.includes("Friendly");
+        const levelPrefix = isBuddy 
+          ? "Hey friend! 🎒 Let's learn together. 🌟 " 
+          : "Hello! Let's examine this math step: 👩‍🏫 ";
+        
+        if (isBuddy) {
+          adapted = adapted.replace("Let's", "Let's work together to")
+                           .replace("What is", "Can you figure out what is")
+                           .replace("Think:", "Buddy Tip: 💡");
+        }
         
         if (STATE.esolLevel === 1 || role === "Spanish/English Support Helper") {
           Object.keys(BILINGUAL_GLOSSARY).forEach(term => {

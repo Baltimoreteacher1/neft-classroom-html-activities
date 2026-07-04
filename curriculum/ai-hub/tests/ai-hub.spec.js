@@ -21,10 +21,6 @@ async function submitPromptStudent(page) {
   const helpChip = page.locator('div.builder-col:nth-child(3) .builder-chip').first();
   await helpChip.click();
 
-  // 4. Click first chip in Level column
-  const levelChip = page.locator('div.builder-col:nth-child(4) .builder-chip').first();
-  await levelChip.click();
-
   // Submit
   const submitBtn = page.locator('#submit-prompt');
   await expect(submitBtn).not.toBeDisabled();
