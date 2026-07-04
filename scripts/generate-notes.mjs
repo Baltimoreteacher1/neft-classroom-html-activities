@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
 import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
+import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -156,25 +157,52 @@ function popoverScript() {
   return `<script>
   (function () {
     var pop = null;
-    function ensure(){ if(pop) return pop; pop=document.createElement('div'); pop.className='nt-popover';
+    var overlay = null;
+    function ensure(){ 
+      if(pop) return pop; 
+      pop=document.createElement('div'); 
+      pop.className='nt-popover';
       pop.innerHTML='<button type="button" class="nt-pop-close" aria-label="Close">×</button><img alt="" /><h4></h4><p></p>';
-      document.body.appendChild(pop); pop.querySelector('.nt-pop-close').addEventListener('click', hide); return pop; }
-    function hide(){ if(pop) pop.classList.remove('open'); }
-    function show(btn){ var p=ensure(), img=p.querySelector('img'), src=btn.getAttribute('data-img')||'';
+      overlay=document.createElement('div');
+      overlay.className='nt-popover-overlay';
+      document.body.appendChild(overlay);
+      document.body.appendChild(pop); 
+      pop.querySelector('.nt-pop-close').addEventListener('click', hide); 
+      overlay.addEventListener('click', hide);
+      return pop; 
+    }
+    function hide(){ 
+      if(pop) pop.classList.remove('open'); 
+      if(overlay) overlay.classList.remove('active');
+    }
+    function show(btn){ 
+      var p=ensure(), img=p.querySelector('img'), src=btn.getAttribute('data-img')||'';
       if(src){ img.src=src; img.style.display=''; img.onerror=function(){img.style.display='none';}; } else { img.style.display='none'; }
-      p.querySelector('h4').textContent=btn.getAttribute('data-term')||'';
-      p.querySelector('p').textContent=btn.getAttribute('data-def')||'';
+      var term = btn.getAttribute('data-term') || '';
+      var termEs = btn.getAttribute('data-term-es') || '';
+      var def = btn.getAttribute('data-def') || '';
+      var defEs = btn.getAttribute('data-def-es') || '';
+      p.querySelector('h4').innerHTML = term + (termEs ? ' <span class="es-term">/ ' + termEs + '</span>' : '');
+      p.querySelector('p').innerHTML = '<span class="def-en">' + def + '</span>' + (defEs ? '<span class="def-es">' + defEs + '</span>' : '');
       p.classList.add('open');
-      var r=btn.getBoundingClientRect(), pw=p.offsetWidth, ph=p.offsetHeight, top=r.bottom+8, left=r.left;
-      if(left+pw>window.innerWidth-8) left=window.innerWidth-pw-8; if(left<8) left=8;
-      if(top+ph>window.innerHeight-8) top=r.top-ph-8; if(top<8) top=8;
-      p.style.left=left+'px'; p.style.top=top+'px'; }
+      if (window.innerWidth <= 640) {
+        if(overlay) overlay.classList.add('active');
+      } else {
+        if(overlay) overlay.classList.remove('active');
+        var r=btn.getBoundingClientRect(), pw=p.offsetWidth, ph=p.offsetHeight, top=r.bottom+8, left=r.left;
+        if(left+pw>window.innerWidth-8) left=window.innerWidth-pw-8; if(left<8) left=8;
+        if(top+ph>window.innerHeight-8) top=r.top-ph-8; if(top<8) top=8;
+        p.style.left=left+'px'; p.style.top=top+'px'; 
+      }
+    }
     document.addEventListener('click', function(e){
       var btn=e.target.closest?e.target.closest('[data-popover]'):null;
       if(btn){ e.preventDefault(); show(btn); return; }
       if(pop && !e.target.closest('.nt-popover')) hide();
     });
     document.addEventListener('keydown', function(e){ if(e.key==='Escape') hide(); });
+    window.addEventListener('resize', hide);
+    window.addEventListener('scroll', hide, { passive: true });
   })();
 </script>`;
 }
@@ -214,8 +242,10 @@ function popoverize(text, vocab) {
     if (!re.test(out)) return;
     out = out.replace(re, (m, g1) => {
       const img = resolveVocabImage(item.term, item.image).replace(/^\//, "../../");
+      const termEsAttr = item.termEs ? ` data-term-es="${esc(item.termEs)}"` : "";
+      const defEsAttr = item.definitionEs ? ` data-def-es="${esc(item.definitionEs)}"` : "";
       tokens.push(
-        `<button type="button" class="li-pop" data-popover data-term="${esc(item.term)}" data-def="${esc(item.definition)}" data-img="${esc(img)}" aria-label="What does ${esc(item.term)} mean?">${g1}<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>`,
+        `<button type="button" class="li-pop" data-popover data-term="${esc(item.term)}"${termEsAttr} data-def="${esc(item.definition)}"${defEsAttr} data-img="${esc(img)}" aria-label="${g1} — what does ${esc(item.term)} mean?">${g1}<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>`,
       );
       used.add(item.term);
       return MARK_A + (tokens.length - 1) + MARK_B;
@@ -598,7 +628,9 @@ function guidedNotesFill(cfg = {}) {
     .map((v) => {
       const imgSrc = resolveVocabImage(v.term, v.image).replace(/^\//, "../../");
       const def = esc(v.definition || "Tap to learn this word.");
-      return `<button type="button" class="gn-bank-word" data-popover data-term="${esc(v.term)}" data-def="${def}" data-img="${esc(imgSrc)}" aria-label="Show the meaning and picture for ${esc(v.term)}">${esc(v.term)}<span class="gn-info" aria-hidden="true">ⓘ</span></button>`;
+      const termEsAttr = v.termEs ? ` data-term-es="${esc(v.termEs)}"` : "";
+      const defEsAttr = v.definitionEs ? ` data-def-es="${esc(v.definitionEs)}"` : "";
+      return `<button type="button" class="gn-bank-word" data-popover data-term="${esc(v.term)}"${termEsAttr} data-def="${def}"${defEsAttr} data-img="${esc(imgSrc)}" aria-label="Show the meaning and picture for ${esc(v.term)}">${esc(v.term)}<span class="gn-info" aria-hidden="true">ⓘ</span></button>`;
     })
     .join("");
 
@@ -610,11 +642,11 @@ function guidedNotesFill(cfg = {}) {
       // Drop a styled write-on blank where the term goes.
       sentence = esc(v.cloze).replace(
         /_{2,}/g,
-        `<input class="gn-blank" type="text" data-nt-field />`,
+        `<input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />`,
       );
     } else {
       // No prepared cloze — fall back to "____ : plain-language meaning".
-      sentence = `<input class="gn-blank" type="text" data-nt-field /> &mdash; ${esc(v.definition || "Write what this word means.")}`;
+      sentence = `<input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" /> &mdash; ${esc(v.definition || "Write what this word means.")}`;
     }
     keyRows.push({ label: `Notes ${num}`, answer: v.term });
     return `<li class="gn-line"><span class="gn-num">${num}</span><span class="gn-sentence">${sentence}</span></li>`;
@@ -860,21 +892,27 @@ function notesSection(cfg = {}, worked = null, fillHtml = "") {
   const launch = cfg.launch || {};
   const explore = cfg.explore || {};
 
-  // Plain-language "what we're learning today" — prefer the content objective,
-  // fall back to the language objective, then the lesson theme/title.
-  const learningRaw =
-    cfg.contentObjective ||
-    cfg.languageObjective ||
-    (cfg.title ? `We are learning about ${cfg.title}.` : "");
-  const learningHtml = learningRaw
+  // Today's objectives — each shown WITH its label (Content / Language) so the
+  // objective type is always clear, not merged into one anonymous line.
+  const hasObjectives = cfg.contentObjective || cfg.languageObjective;
+  const learningHtml = hasObjectives
     ? `<div class="notes-learning">
       <span class="notes-learning-icon" aria-hidden="true">🎯</span>
       <div>
-        <p class="notes-learning-label">What we're learning today</p>
-        <p class="notes-learning-text">${esc(learningRaw)}</p>
+        <p class="notes-learning-label">Today's objectives</p>
+        ${cfg.contentObjective ? `<p class="notes-learning-text"><strong>Content Objective:</strong> ${esc(cfg.contentObjective)}</p>` : ""}
+        ${cfg.languageObjective ? `<p class="notes-learning-text"><strong>Language Objective:</strong> ${esc(cfg.languageObjective)}</p>` : ""}
       </div>
     </div>`
-    : "";
+    : cfg.title
+      ? `<div class="notes-learning">
+      <span class="notes-learning-icon" aria-hidden="true">🎯</span>
+      <div>
+        <p class="notes-learning-label">What we're learning today</p>
+        <p class="notes-learning-text">We are learning about ${esc(cfg.title)}.</p>
+      </div>
+    </div>`
+      : "";
 
   // This packet is JUST note-taking now. The explanation + worked examples live
   // in Learn It; vocabulary lives in the Vocab tab; problems live in Practice.
@@ -994,6 +1032,25 @@ function reflectSection(reflect = {}) {
 </section>`;
 }
 
+// Per-distractor "why this is wrong" guidance for an MCQ, rendered only for the
+// incorrect choices (keyed off correctIndex) and only when the config supplies
+// an explicit `choiceExplanations` array. Additive/forward-compatible: nothing
+// renders until a lesson opts in, with zero generator changes required.
+function distractorWhyHtml(it) {
+  const why = it && it.choiceExplanations;
+  if (!Array.isArray(why) || !Array.isArray(it.choices)) return "";
+  const lines = it.choices
+    .map((c, j) =>
+      j === it.correctIndex || !why[j]
+        ? ""
+        : `<li><strong>${choiceLetter(j)}) why this is wrong:</strong> <span class="ak-why">${esc(
+            why[j],
+          )}</span></li>`,
+    )
+    .filter(Boolean);
+  return lines.length ? `<ul class="ak-distractors">${lines.join("")}</ul>` : "";
+}
+
 function answerKeySection(
   practice = {},
   reflect = {},
@@ -1022,9 +1079,24 @@ function answerKeySection(
       );
     });
   }
-  // Try It picks mirrored from tryItSection logic (same exclusion).
-  const items = gatherPractice(practice).filter((it) => it.stem && !usedStems.has(it.stem));
+  // Try It picks mirrored from tryItSection logic (same exclusion). Fall back to
+  // the config's practice when the caller passes an empty object so the teacher
+  // copy actually shows the independent-practice answers + misconception notes.
+  const effectivePractice =
+    gatherPractice(practice).length || !config ? practice : config.practice || {};
+  const items = gatherPractice(effectivePractice).filter(
+    (it) => it.stem && !usedStems.has(it.stem),
+  );
   const tryPicks = items.slice(-2).length ? items.slice(-2) : items.slice(0, 2);
+  // Misconception-targeted teacher note from the previously unused commonMistake
+  // field — surfaced once at the head of the independent-practice answers.
+  if (tryPicks.length && effectivePractice.commonMistake) {
+    rows.push(
+      `<li><strong>Watch for this mistake:</strong> <span class="ak-why">${esc(
+        effectivePractice.commonMistake,
+      )}</span></li>`,
+    );
+  }
   tryPicks.forEach((it) => {
     let ans = "";
     if (Array.isArray(it.choices) && typeof it.correctIndex === "number") {
@@ -1035,7 +1107,7 @@ function answerKeySection(
     rows.push(
       `<li><strong>Try It ${n++}:</strong> ${esc(ans)}${
         it.explanation ? ` <span class="ak-why">— ${esc(it.explanation)}</span>` : ""
-      }</li>`,
+      }${distractorWhyHtml(it)}</li>`,
     );
   });
 
@@ -1063,8 +1135,9 @@ function answerKeySection(
 function styles(printTitle = "") {
   const safeTitle = String(printTitle).replace(/["\\]/g, "");
   return `<style>
+${EDITORIAL_FONT_IMPORT}
 :root{
-  --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
+  --navy:#12355b;--teal:#1fa6a2;--teal-ink:#0c6f6b;--teal-light:#dff2ee;--amber:#f2c15b;
   --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
 }
 *{box-sizing:border-box}
@@ -1077,7 +1150,7 @@ body{margin:0;background:var(--cream);color:var(--ink);
 .print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
   padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
 header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
-header.packet .eyebrow{color:var(--teal);font-weight:700;letter-spacing:.04em;
+header.packet .eyebrow{color:var(--teal-ink);font-weight:700;letter-spacing:.04em;
   text-transform:uppercase;font-size:13px;margin:0;}
 header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
   margin:6px 0 4px;font-size:26px;}
@@ -1109,14 +1182,14 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 14px;page-break-inside:avoid;}
 .notes-learning-icon{font-size:22px;line-height:1;flex:0 0 auto;}
 .notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
-  text-transform:uppercase;color:var(--teal);}
+  text-transform:uppercase;color:var(--teal-ink);}
 .notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
 /* Learn It — textbook-style concept teaching block (explains the math first) */
 .learnit{border:1.5px solid var(--teal);border-radius:14px;background:#fff;
   padding:18px 20px;margin:0 0 18px;page-break-inside:avoid;
   box-shadow:0 1px 0 var(--teal-light);}
 .learnit-eyebrow{margin:0 0 4px;font-size:12px;font-weight:800;letter-spacing:.05em;
-  text-transform:uppercase;color:var(--teal);}
+  text-transform:uppercase;color:var(--teal-ink);}
 .learnit-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
   font-size:21px;margin:0 0 10px;line-height:1.25;}
 .learnit-intro{font-size:17px;line-height:1.7;color:var(--ink);margin:0 0 12px;font-weight:500;}
@@ -1149,13 +1222,13 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .gn-subhead-note{margin:-4px 0 12px;font-size:14px;color:var(--muted);}
 /* Learn It — clean, publisher-style teaching page (single accent, lots of air) */
 .li{max-width:none;}
-.li-kicker{margin:0 0 4px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);}
+.li-kicker{margin:0 0 4px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--teal-ink);}
 .li-title{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:26px;line-height:1.2;margin:0 0 14px;}
 .li-intro{font-size:17px;line-height:1.7;color:var(--ink);margin:0 0 20px;max-width:60ch;}
 .li-keyidea{border-left:4px solid var(--teal);background:var(--teal-light);border-radius:0 10px 10px 0;
   padding:14px 18px;margin:0 0 24px;}
 .li-keyidea-label{display:block;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--teal);margin-bottom:4px;}
+  color:var(--teal-ink);margin-bottom:4px;}
 .li-keyidea p{margin:0;font-size:17px;line-height:1.6;color:var(--navy);font-weight:600;}
 .li-seeit{background:#fbfdfc;border:1px solid var(--line);border-radius:14px;padding:18px 20px;}
 .li-figure{margin:0 0 16px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:#fff;}
@@ -1180,19 +1253,36 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-steps>li:not(:last-child)::after{content:"";position:absolute;left:16px;top:36px;bottom:2px;width:2px;background:var(--line);}
 .li-block-practice{background:#fbfdfc;border:1px solid var(--line);border-radius:14px;padding:22px 24px;}
 /* Tap-to-define pop-up triggers inside Learn It steps */
-.li-pop{display:inline;border:0;background:transparent;padding:0;font:inherit;font-size:inherit;color:var(--teal);
+.li-pop{display:inline;border:0;background:transparent;padding:0;font:inherit;font-size:inherit;color:var(--teal-ink);
   font-weight:700;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;}
 .li-pop:hover{color:var(--navy);}
 .li-pop-i{font-size:.7em;vertical-align:super;margin-left:1px;opacity:.8;}
-.li-pop-demo{color:var(--teal);font-weight:700;text-decoration:underline;text-decoration-style:dotted;}
-.nt-popover{position:fixed;z-index:9999;max-width:280px;background:#fff;border:2px solid var(--teal);
-  border-radius:14px;box-shadow:0 12px 32px rgba(18,53,91,.22);padding:14px 16px;display:none;}
-.nt-popover.open{display:block;}
+.li-pop-demo{color:var(--teal-ink);font-weight:700;text-decoration:underline;text-decoration-style:dotted;}
+.nt-popover-overlay{position:fixed;inset:0;z-index:9998;background:rgba(18,53,91,0.4);opacity:0;transition:opacity 0.2s ease;pointer-events:none;}
+.nt-popover-overlay.active{opacity:1;pointer-events:auto;}
+.nt-popover{position:fixed;z-index:9999;max-width:290px;background:rgba(255,255,255,0.96);border:1.5px solid rgba(31,166,162,0.45);
+  border-radius:14px;box-shadow:0 12px 32px rgba(18,53,91,.18), 0 1px 3px rgba(0,0,0,0.05);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  padding:16px;opacity:0;transform:scale(0.95) translateY(5px);transition:opacity 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);pointer-events:none;}
+.nt-popover.open{opacity:1;transform:scale(1) translateY(0);pointer-events:auto;}
 .nt-popover img{display:block;width:100%;max-height:150px;object-fit:contain;border-radius:8px;background:#f0faf8;margin-bottom:10px;}
 .nt-popover h4{margin:0 0 6px;color:var(--navy);font-size:18px;font-family:Outfit,system-ui,sans-serif;}
+.nt-popover h4 .es-term{font-weight:400;color:var(--muted);font-size:0.95em;}
 .nt-popover p{margin:0;font-size:15px;line-height:1.5;color:var(--ink);}
+.nt-popover p .def-en{display:block;}
+.nt-popover p .def-es{display:block;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-style:italic;color:var(--muted);font-size:14px;}
 .nt-popover .nt-pop-close{position:absolute;top:6px;right:8px;border:none;background:transparent;font-size:20px;line-height:1;color:var(--muted);cursor:pointer;}
-@media print{.li-pop{color:#000;}.li-pop-i,.nt-popover{display:none!important;}}
+@media (max-width: 640px) {
+  .nt-popover {
+    position: fixed; bottom: 0; left: 0 !important; right: 0 !important; top: auto !important;
+    max-width: 100% !important; width: 100% !important; border-radius: 20px 20px 0 0 !important;
+    border: none !important; border-top: 1.5px solid rgba(31, 166, 162, 0.3) !important;
+    box-shadow: 0 -8px 30px rgba(18, 53, 91, 0.15) !important;
+    transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.32, 0.94, 0.6, 1);
+    background: #ffffff; padding: 24px 20px 30px;
+  }
+  .nt-popover.open { transform: translateY(0); }
+}
+@media print{.li-pop{color:#000;}.li-pop-i,.nt-popover,.nt-popover-overlay{display:none!important;}}
 .li-steps-fill>li{padding-bottom:20px;}
 .li-input{display:block;width:100%;margin-top:10px;border:0;border-bottom:2px solid var(--teal);
   padding:7px 4px;font:inherit;font-size:16px;color:var(--navy);background:transparent;}
@@ -1202,14 +1292,14 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   position:relative;background:#fff;}
 .li-work-label{position:absolute;top:8px;left:12px;font-size:12px;font-weight:700;color:var(--muted);}
 .li-answer{display:flex;align-items:center;gap:12px;margin:4px 0 0;flex-wrap:wrap;}
-.li-answer-label{flex:0 0 auto;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--teal);}
+.li-answer-label{flex:0 0 auto;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-ink);}
 .li-input-answer{flex:1;min-width:160px;margin-top:0;}
 .li-list{margin:0 0 14px;padding-left:22px;}
 .li-list>li{font-size:17px;line-height:1.65;margin:0 0 6px;color:var(--ink);}
 .li-problem-q{font-size:18px;line-height:1.6;font-weight:600;color:var(--navy);margin:6px 0 12px;
   padding:12px 16px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:0 10px 10px 0;}
 .li-check{margin-top:12px;}
-.li-check>summary{cursor:pointer;display:inline-block;font-weight:800;color:var(--teal);font-size:15px;
+.li-check>summary{cursor:pointer;display:inline-block;font-weight:800;color:var(--teal-ink);font-size:15px;
   list-style:none;padding:6px 0;}
 .li-check>summary::-webkit-details-marker{display:none;}
 .li-check>summary::before{content:"👁️ ";}
@@ -1242,7 +1332,7 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .vx-say:hover{background:var(--teal-light);}
 .vx-def{margin:0;font-size:15px;line-height:1.55;color:var(--ink);}
 .vx-langs{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline;margin:0 0 8px;font-size:13px;color:var(--muted);}
-.vx-lang b{color:var(--teal);font-size:10px;font-weight:800;letter-spacing:.04em;margin-right:3px;}
+.vx-lang b{color:var(--teal-ink);font-size:10px;font-weight:800;letter-spacing:.04em;margin-right:3px;}
 .vx-langsep{color:var(--line);}
 .vx-def-es{margin:6px 0 0;padding-left:10px;border-left:2px solid var(--teal-light);
   font-size:13.5px;line-height:1.5;color:var(--muted);font-style:italic;}
@@ -1259,7 +1349,7 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .vx-mfeedback{margin:12px 0 0;font-size:15px;font-weight:700;}
 .vx-mfeedback.vx-ok{color:#2e9e5b;}
 .vx-bank{border:2px dashed var(--teal);border-radius:12px;background:#f0faf8;padding:12px 14px;margin-bottom:16px;}
-.vx-bank-label{display:block;font-weight:800;color:var(--teal);font-size:12px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;}
+.vx-bank-label{display:block;font-weight:800;color:var(--teal-ink);font-size:12px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;}
 .vx-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
 .vx-bankword{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:5px 14px;font-weight:700;font-size:14px;}
 .vx-clozelist{list-style:none;margin:0;padding:0;}
@@ -1313,7 +1403,7 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .wk-plabel{font-weight:700;color:var(--navy);}
 .wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
 .wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
-.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal-ink);background:var(--teal-light);
   border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
 .wk-step-blank{display:flex;align-items:center;gap:8px;}
 .wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
@@ -1343,7 +1433,7 @@ input.writeline{border:none;border-bottom:1px solid #b9c6d3;background:transpare
 input.gn-blank{background:transparent;font:inherit;font-weight:700;color:var(--navy);text-align:center;
   padding:1px 6px;border-radius:4px;}
 input.writeline:focus,input.gn-blank:focus{outline:none;background-color:#fff7e6;}
-.nt-save{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--teal);
+.nt-save{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--teal-ink);
   background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:5px 12px;white-space:nowrap;}
 .nt-clear{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;
   font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;}
@@ -1369,13 +1459,15 @@ input.writeline:focus,input.gn-blank:focus{outline:none;background-color:#fff7e6
 .ak-list li{margin:8px 0;}
 .ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
 .ak-why{color:var(--muted);font-style:italic;}
+.ak-distractors{margin:4px 0 0;padding-left:18px;list-style:none;}
+.ak-distractors li{margin:3px 0;font-size:13.5px;color:var(--muted);}
 footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   color:var(--muted);font-size:12px;text-align:center;}
 .level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
   font-weight:700;letter-spacing:.02em;padding:2px 9px;border-radius:999px;vertical-align:middle;
   margin-left:8px;text-transform:none;}
-.level-1{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal);}
-.level-2{background:#fef0d8;color:#9a6b12;border:1px solid var(--amber);}
+.level-1{background:var(--teal-light);color:var(--teal-ink);border:1px solid var(--teal);}
+.level-2{background:#fef0d8;color:#7a540e;border:1px solid var(--amber);}
 .level-note{margin:-4px 0 12px;font-size:13.5px;color:var(--muted);}
 .flagship-badge{display:inline-block;font-size:13px;font-weight:700;background:var(--amber);
   color:var(--navy);border-radius:999px;padding:3px 12px;vertical-align:middle;font-family:Calibri,system-ui,sans-serif;}
@@ -1399,7 +1491,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 .twr-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--teal);
   background:var(--teal-light);border-radius:999px;padding:1px 9px;margin-left:6px;vertical-align:middle;}
 .twr-model{background:var(--teal-light);border-radius:6px;padding:8px 10px;margin:0 0 8px;font-size:14px;}
-.twr-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.twr-label{font-weight:700;color:var(--teal-ink);margin-right:4px;}
 .twr-frame{margin:4px 0 4px;font-size:14px;}
 .twr-en{font-weight:600;}
 .twr-es{display:block;color:var(--muted);font-style:italic;font-size:13px;}
@@ -1425,7 +1517,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   padding:10px 12px;margin:0;}
 .tt-support .level-tag,.tt-extend .level-tag{margin:0 0 6px;}
 .tt-kernel{margin:6px 0;font-size:14px;}
-.tt-kernel-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.tt-kernel-label{font-weight:700;color:var(--teal-ink);margin-right:4px;}
 .tt-stems{margin:6px 0;}
 .tt-mini-label{font-weight:700;color:var(--navy);margin-right:4px;}
 .tt-wordbank{margin:6px 0;font-size:13.5px;}
@@ -1751,6 +1843,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     border: 1px dashed #000 !important;
   }
 }
+${EDITORIAL_OVERRIDES}
 </style>
 </style>`;
 }
@@ -1787,7 +1880,7 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
   .gn-pointer{margin:10px 0 14px;padding:10px 14px;background:var(--teal-light);border-radius:10px;font-size:14px;color:var(--navy);}
   .gn-fill{margin:6px 0 4px;}
   .gn-bank{border:2px dashed var(--teal);border-radius:12px;background:#f0faf8;padding:12px 14px;margin-bottom:14px;}
-  .gn-bank-label{display:block;font-weight:800;color:var(--teal);font-size:13px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px;}
+  .gn-bank-label{display:block;font-weight:800;color:var(--teal-ink);font-size:13px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px;}
   .gn-bank-words{display:flex;flex-wrap:wrap;gap:8px;}
   .gn-bank-word{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:5px 14px;font-weight:700;font-size:14px;}
   .gn-bank-hint{margin:8px 0 0;font-size:12px;color:#5a6b78;font-style:italic;}
@@ -1800,15 +1893,32 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
   /* Tap-to-define word-bank pop-ups (with picture) */
   .gn-bank-word{cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
   .gn-info{font-size:12px;color:var(--teal);font-weight:700;}
-  .nt-popover{position:fixed;z-index:9999;max-width:280px;background:#fff;border:2px solid var(--teal);
-    border-radius:14px;box-shadow:0 12px 32px rgba(18,53,91,.22);padding:14px 16px;display:none;}
-  .nt-popover.open{display:block;}
+  .nt-popover-overlay{position:fixed;inset:0;z-index:9998;background:rgba(18,53,91,0.4);opacity:0;transition:opacity 0.2s ease;pointer-events:none;}
+  .nt-popover-overlay.active{opacity:1;pointer-events:auto;}
+  .nt-popover{position:fixed;z-index:9999;max-width:290px;background:rgba(255,255,255,0.96);border:1.5px solid rgba(31,166,162,0.45);
+    border-radius:14px;box-shadow:0 12px 32px rgba(18,53,91,.18), 0 1px 3px rgba(0,0,0,0.05);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    padding:16px;opacity:0;transform:scale(0.95) translateY(5px);transition:opacity 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);pointer-events:none;}
+  .nt-popover.open{opacity:1;transform:scale(1) translateY(0);pointer-events:auto;}
   .nt-popover img{display:block;width:100%;max-height:150px;object-fit:contain;border-radius:8px;
     background:#f0faf8;margin-bottom:10px;}
   .nt-popover h4{margin:0 0 6px;color:var(--navy);font-size:17px;font-family:Outfit,system-ui,sans-serif;}
+  .nt-popover h4 .es-term{font-weight:400;color:var(--muted);font-size:0.95em;}
   .nt-popover p{margin:0;font-size:14.5px;line-height:1.5;color:var(--ink);}
+  .nt-popover p .def-en{display:block;}
+  .nt-popover p .def-es{display:block;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-style:italic;color:var(--muted);font-size:14px;}
   .nt-popover .nt-pop-close{position:absolute;top:6px;right:8px;border:none;background:transparent;
     font-size:20px;line-height:1;color:var(--muted);cursor:pointer;}
+  @media (max-width: 640px) {
+    .nt-popover {
+      position: fixed; bottom: 0; left: 0 !important; right: 0 !important; top: auto !important;
+      max-width: 100% !important; width: 100% !important; border-radius: 20px 20px 0 0 !important;
+      border: none !important; border-top: 1.5px solid rgba(31, 166, 162, 0.3) !important;
+      box-shadow: 0 -8px 30px rgba(18, 53, 91, 0.15) !important;
+      transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.32, 0.94, 0.6, 1);
+      background: #ffffff; padding: 24px 20px 30px;
+    }
+    .nt-popover.open { transform: translateY(0); }
+  }
   /* Larger, clearer Watch & Try worked visuals */
   .notes-gr-step .wk-problem{font-size:15.5px;line-height:1.6;background:#f7fafc;border-radius:8px;padding:8px 12px;}
   .notes-gr-step .wk-steps .wk-step{font-size:15px;line-height:1.7;margin:7px 0;}
@@ -1862,7 +1972,7 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
     .gn-num{background:#000;}
     .gn-blank{border-bottom-color:#000;}
     .gn-subhead,.gn-directions{color:#000;}
-    .nt-popover{display:none!important;}
+    .nt-popover,.nt-popover-overlay{display:none!important;}
     .ss-item{border-color:#000;border-left-color:#000;break-inside:avoid;}
     .ss-grip,.ss-move{display:none;}
   }
@@ -1930,35 +2040,52 @@ ${autoSaveScript(`nt-notes:${esc(id)}`)}
   // Tap-to-define word-bank pop-ups (term + plain meaning + picture).
   (function () {
     var pop = null;
+    var overlay = null;
     function ensurePop() {
       if (pop) return pop;
       pop = document.createElement('div');
       pop.className = 'nt-popover';
       pop.innerHTML = '<button type="button" class="nt-pop-close" aria-label="Close">×</button>' +
         '<img alt="" /><h4></h4><p></p>';
+      overlay = document.createElement('div');
+      overlay.className = 'nt-popover-overlay';
+      document.body.appendChild(overlay);
       document.body.appendChild(pop);
       pop.querySelector('.nt-pop-close').addEventListener('click', hidePop);
+      overlay.addEventListener('click', hidePop);
       return pop;
     }
-    function hidePop() { if (pop) pop.classList.remove('open'); }
+    function hidePop() { 
+      if (pop) pop.classList.remove('open'); 
+      if (overlay) overlay.classList.remove('active');
+    }
     function showPop(btn) {
       var p = ensurePop();
       var img = p.querySelector('img');
       var src = btn.getAttribute('data-img') || '';
       if (src) { img.src = src; img.style.display = ''; img.onerror = function () { img.style.display = 'none'; }; }
       else { img.style.display = 'none'; }
-      p.querySelector('h4').textContent = btn.getAttribute('data-term') || '';
-      p.querySelector('p').textContent = btn.getAttribute('data-def') || '';
+      var term = btn.getAttribute('data-term') || '';
+      var termEs = btn.getAttribute('data-term-es') || '';
+      var def = btn.getAttribute('data-def') || '';
+      var defEs = btn.getAttribute('data-def-es') || '';
+      p.querySelector('h4').innerHTML = term + (termEs ? ' <span class="es-term">/ ' + termEs + '</span>' : '');
+      p.querySelector('p').innerHTML = '<span class="def-en">' + def + '</span>' + (defEs ? '<span class="def-es">' + defEs + '</span>' : '');
       p.classList.add('open');
-      var r = btn.getBoundingClientRect();
-      var top = r.bottom + 8, left = r.left;
-      var pw = p.offsetWidth, ph = p.offsetHeight;
-      if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
-      if (left < 8) left = 8;
-      if (top + ph > window.innerHeight - 8) top = r.top - ph - 8;
-      if (top < 8) top = 8;
-      p.style.left = left + 'px';
-      p.style.top = top + 'px';
+      if (window.innerWidth <= 640) {
+        if (overlay) overlay.classList.add('active');
+      } else {
+        if (overlay) overlay.classList.remove('active');
+        var r = btn.getBoundingClientRect();
+        var top = r.bottom + 8, left = r.left;
+        var pw = p.offsetWidth, ph = p.offsetHeight;
+        if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+        if (left < 8) left = 8;
+        if (top + ph > window.innerHeight - 8) top = r.top - ph - 8;
+        if (top < 8) top = 8;
+        p.style.left = left + 'px';
+        p.style.top = top + 'px';
+      }
     }
     document.addEventListener('click', function (e) {
       var btn = e.target.closest ? e.target.closest('[data-popover]') : null;
@@ -1966,6 +2093,8 @@ ${autoSaveScript(`nt-notes:${esc(id)}`)}
       if (pop && !e.target.closest('.nt-popover')) hidePop();
     });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hidePop(); });
+    window.addEventListener('resize', hidePop);
+    window.addEventListener('scroll', hidePop, { passive: true });
   })();
 
   // Interactive "put the steps in order" — drag, ▲▼ buttons, or keyboard.
@@ -2125,12 +2254,19 @@ function buildLearnPage(id, cfg, isFlagship) {
   const flagBadge = isFlagship ? `<span class="flagship-badge">Flagship</span>` : "";
 
   const learnBlock = conceptLearnBlock(cfg, { expanded: true });
-  const objective = cfg.contentObjective || cfg.languageObjective || "";
+  const objectivesIntro = [
+    cfg.contentObjective
+      ? `<p class="learnit-intro"><strong>Content Objective:</strong> ${esc(cfg.contentObjective)}</p>`
+      : "",
+    cfg.languageObjective
+      ? `<p class="learnit-intro"><strong>Language Objective:</strong> ${esc(cfg.languageObjective)}</p>`
+      : "",
+  ].join("");
   const body =
     learnBlock ||
     `<div class="learnit"><p class="learnit-eyebrow">📖 Learn It</p>
       <h3 class="learnit-head">${esc(cfg.title || "Today's math")}</h3>
-      ${objective ? `<p class="learnit-intro">${esc(objective)}</p>` : ""}
+      ${objectivesIntro}
       <p class="learnit-bridge">Your teacher will walk through how to solve this together.</p>
     </div>`;
 
@@ -2147,8 +2283,13 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
   .learn-intro-note .lin-icon{font-size:22px;line-height:1;flex:0 0 auto;}
   .learn-intro-note p{margin:0;font-size:14.5px;color:var(--navy);font-weight:600;}
   .learn-listen{margin:0 0 18px;}
-  .li-listen-btn{background:var(--teal);color:#fff;border:0;border-radius:999px;padding:11px 20px;font-weight:800;font-size:15px;cursor:pointer;}
+  .li-listen-btn{background:var(--teal-ink);color:#fff;border:0;border-radius:999px;padding:11px 20px;font-weight:800;font-size:15px;cursor:pointer;}
   .li-listen-btn:hover{background:var(--navy);}
+  .learn-actions{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 18px;}
+  .li-workbench-btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;
+    background:linear-gradient(135deg,#4f46e5,#0e8a7d);color:#fff;border:0;border-radius:999px;
+    padding:11px 20px;font-weight:800;font-size:15px;cursor:pointer;}
+  .li-workbench-btn:hover{filter:brightness(1.08);}
   .li-reading{background:#fff3cd;box-shadow:0 0 0 3px #fff3cd, 0 0 0 5px var(--amber);border-radius:6px;}
 </style>
 <script>
@@ -2177,7 +2318,10 @@ ${readAloudScript()}
     <span class="lin-icon" aria-hidden="true">🧭</span>
     <p>Read this first. It explains what we are learning and shows you exactly how to solve it — step by step. Then head to the lesson activities and practice.</p>
   </div>
-  <div class="learn-listen no-print"><button type="button" id="li-listen" class="li-listen-btn">🔊 Listen to this page</button></div>
+  <div class="learn-actions no-print">
+    <button type="button" id="li-listen" class="li-listen-btn">🔊 Listen to this page</button>
+    <a class="li-workbench-btn" href="/curriculum/math-workbench/" target="_blank" rel="noopener" title="Open the Math Workbench scratch space in a new tab">✱ Math Workbench</a>
+  </div>
   ${body}
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson ${esc(id)}${standard ? " · " + standard : ""}</footer>
 </main>

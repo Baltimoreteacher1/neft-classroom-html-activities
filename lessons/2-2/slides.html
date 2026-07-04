@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
     :root {
       --ref-navy: #1C2E42;
       --ref-teal: #387F84;
@@ -1112,10 +1113,32 @@
     .cfu-card { text-align:center; }
     .cfu-poll { display:flex; gap:8px; justify-content:center; margin:12px 0; }
     .cfu-btn { flex:none; min-width:100px; }
-    .diff-paths-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+    .diff-paths-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; }
     .diff-path { border:2px solid var(--path-color, var(--teal)); border-radius:8px; padding:10px; }
     .diff-path-label { font-size:11px; font-weight:800; color:var(--navy); margin-bottom:6px; }
     .diff-path-stem { font-size:10px; line-height:1.4; margin:0; }
+    /* Read-aloud (TTS) button — additive, accessible, never shown in print */
+    .read-aloud-btn { display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-left:6px; padding:0; width:1.7em; height:1.7em; min-width:1.7em; border:1.5px solid var(--teal); border-radius:50%; background:var(--white,#fff); color:var(--navy); font-size:0.78em; line-height:1; cursor:pointer; transition:transform .12s ease, background .12s ease; }
+    .read-aloud-btn:hover { background:var(--teal-light); transform:scale(1.08); }
+    .read-aloud-btn:active { transform:scale(0.96); }
+    .read-aloud-btn:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    @media print { .read-aloud-btn { display:none !important; } }
+    /* Bilingual Spanish stem line under English — gated by .bilingual-on (default on) */
+    .stem-es { display:block; margin-top:2px; font-size:0.82em; font-style:italic; color:var(--navy); opacity:0.72; }
+    body:not(.bilingual-on) .stem-es,
+    body:not(.bilingual-on) .objective-text-es,
+    body:not(.bilingual-on) .vocab-term-es,
+    body:not(.bilingual-on) .vocab-definition-es { display:none; }
+    .tt-stems-extend { margin-top:8px; padding-top:8px; border-top:1px dashed var(--gray,#ccc); }
+    .tt-stem-extend { opacity:0.92; }
+    /* Header accessibility / language controls */
+    .a11y-controls { display:flex; align-items:center; gap:8px; }
+    .a11y-btn { font-size:12px; font-weight:700; color:var(--navy); background:var(--white,#fff); border:1.5px solid var(--teal); border-radius:16px; padding:5px 12px; cursor:pointer; }
+    .a11y-btn[aria-pressed="false"] { opacity:0.55; }
+    .a11y-btn:focus-visible, .a11y-rate select:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    .a11y-rate { display:inline-flex; align-items:center; gap:4px; font-size:12px; color:var(--navy); }
+    .a11y-rate select { font-size:12px; border:1.5px solid var(--teal); border-radius:14px; padding:4px 8px; background:var(--white,#fff); color:var(--navy); cursor:pointer; }
+    @media print { .a11y-controls { display:none !important; } }
     .workspace-table { width:100%; border-collapse:collapse; font-size:11px; }
     .workspace-table th, .workspace-table td { border:1px solid #dadce0; padding:6px 8px; text-align:center; }
     .workspace-table th { background:var(--teal-light); font-weight:800; }
@@ -2012,12 +2035,20 @@
       .presenter-hud { font-size: 10px; padding: 6px 10px; }
     }
     
+.slide-main-title,.title-heading,.g-doc-title,.section-divider-title,
+.post-it-title,.g-title-block h1,.g-title-block h2,h1,h2{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
   </style>
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
 </head>
-<body>
+<body class="bilingual-on">
 
   <!-- Google Slides Chrome Bar -->
   <header class="g-chrome">
@@ -2036,6 +2067,16 @@
       </div>
     </div>
     <div class="g-right">
+      <div class="a11y-controls" role="group" aria-label="Accessibility and language controls">
+        <button class="a11y-btn" id="bilingual-toggle" aria-pressed="true" onclick="toggleBilingual(this)" title="Show or hide Spanish support">🌐 Español</button>
+        <label class="a11y-rate" title="Read-aloud speed">🔊
+          <select id="tts-rate-select" aria-label="Read-aloud speed" onchange="setSlideTtsRate(this.value)">
+            <option value="0.7">Slow</option>
+            <option value="0.85" selected>Normal</option>
+            <option value="1">Fast</option>
+          </select>
+        </label>
+      </div>
       
       <button class="btn-present" onclick="enterFullscreen()">
         ▶ Present
@@ -2385,13 +2426,13 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <h2 class="card-title">🎯 Content Objective <span class="bilingual-tag">/ Objetivo de contenido</span></h2>
-    <p class="objective-text">I can divide a whole number by a fraction by multiplying by the reciprocal.</p>
+    <p class="objective-text">I can divide a whole number by a fraction by multiplying by the reciprocal.<button type="button" class="read-aloud-btn" aria-label="Read the content objective aloud" title="Read the content objective aloud" data-speak="I can divide a whole number by a fraction by multiplying by the reciprocal." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
   </div>
       <aside class="ref-side-panel">
         <div class="ref-side-header">Today&#039;s Objectives</div>
         <div class="ref-side-body">
     <h2 class="card-title">🗣️ Language Objective <span class="bilingual-tag">/ Objetivo de lenguaje</span></h2>
-    <p class="objective-text">I can explain my steps using the words fraction, reciprocal, quotient, and Keep, Change, Flip.</p>
+    <p class="objective-text">I can explain my steps using the words fraction, reciprocal, quotient, and Keep, Change, Flip.<button type="button" class="read-aloud-btn" aria-label="Read the language objective aloud" title="Read the language objective aloud" data-speak="I can explain my steps using the words fraction, reciprocal, quotient, and Keep, Change, Flip." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     
     <p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Read objectives aloud. Ask: What will you be able to do by the end of class?</p>
     <p class="ref-teacher-note ref-note-ask"><span>❓</span> Which vocabulary words do you already know? Which are new?</p>
@@ -2548,7 +2589,7 @@
     <div class="ref-curious-layout">
       <div class="ref-visual-prompt">
         <span class="ref-prompt-badge">Visual Prompt</span>
-        <p class="ref-instruction">Detective Agency Case File</p><p class="card-desc">Agent Park has 4 pounds of evidence powder. Each testing bag holds exactly 1/2 pound. He needs to prepare as many testing bags as possible before the lab deadline. How many bags can he fill?</p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><line x1="40" y1="120" x2="400" y2="120" stroke="#17324D" stroke-width="2"/><line x1="40" y1="120" x2="48" y2="114" stroke="#17324D" stroke-width="2"/><line x1="40" y1="120" x2="48" y2="126" stroke="#17324D" stroke-width="2"/><line x1="400" y1="120" x2="392" y2="114" stroke="#17324D" stroke-width="2"/><line x1="400" y1="120" x2="392" y2="126" stroke="#17324D" stroke-width="2"/><line x1="100" y1="112" x2="100" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="100" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">-2</text><line x1="160" y1="112" x2="160" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="160" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">-1</text><line x1="220" y1="112" x2="220" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="220" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">0</text><line x1="280" y1="112" x2="280" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="280" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">1</text><line x1="340" y1="112" x2="340" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="340" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">2</text><circle cx="280" cy="120" r="5" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/></svg>
+        <p class="ref-instruction">Detective Agency Case File</p><p class="card-desc">Agent Park has 4 pounds of evidence powder. Each testing bag holds exactly 1/2 pound. He needs to prepare as many testing bags as possible before the lab deadline. How many bags can he fill?<button type="button" class="read-aloud-btn" aria-label="Read the prompt aloud" title="Read the prompt aloud" data-speak="Agent Park has 4 pounds of evidence powder. Each testing bag holds exactly 1/2 pound. He needs to prepare as many testing bags as possible before the lab deadline. How many bags can he fill?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><line x1="40" y1="120" x2="400" y2="120" stroke="#17324D" stroke-width="2"/><line x1="40" y1="120" x2="48" y2="114" stroke="#17324D" stroke-width="2"/><line x1="40" y1="120" x2="48" y2="126" stroke="#17324D" stroke-width="2"/><line x1="400" y1="120" x2="392" y2="114" stroke="#17324D" stroke-width="2"/><line x1="400" y1="120" x2="392" y2="126" stroke="#17324D" stroke-width="2"/><line x1="100" y1="112" x2="100" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="100" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">-2</text><line x1="160" y1="112" x2="160" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="160" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">-1</text><line x1="220" y1="112" x2="220" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="220" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">0</text><line x1="280" y1="112" x2="280" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="280" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">1</text><line x1="340" y1="112" x2="340" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="340" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">2</text><circle cx="280" cy="120" r="5" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/></svg>
       </div>
       <div class="ref-nw-stack">
         <div class="ref-nw-panel ref-nw-notice">
@@ -2850,31 +2891,31 @@
       </thead>
       <tbody>
     <tr>
-      <td class="ref-vocab-term">Whole Number<br/><em>Número entero</em></td>
+      <td class="ref-vocab-term">Whole Number<button type="button" class="read-aloud-btn" aria-label="Read Whole Number and its meaning aloud" title="Read Whole Number and its meaning aloud" data-speak="Whole Number. A counting number with no fraction or decimal, like 0, 1, 2, 3." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Número entero</em><button type="button" class="read-aloud-btn" aria-label="Leer Número entero en español" title="Leer Número entero en español" data-speak="Número entero. Un número de contar sin fracción ni decimal, como 0, 1, 2, 3." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A counting number with no fraction or decimal, like 0, 1, 2, 3.<br/><em>Un número de contar sin fracción ni decimal, como 0, 1, 2, 3.</em></td>
       <td></td>
       <td class="ref-vocab-visual">4 is a whole number; as a fraction it is 4/1</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Fraction<br/><em>Fracción</em></td>
+      <td class="ref-vocab-term">Fraction<button type="button" class="read-aloud-btn" aria-label="Read Fraction and its meaning aloud" title="Read Fraction and its meaning aloud" data-speak="Fraction. A number that shows part of a whole, like 3/4." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Fracción</em><button type="button" class="read-aloud-btn" aria-label="Leer Fracción en español" title="Leer Fracción en español" data-speak="Fracción. Un número que muestra una parte de un todo, como 3/4." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A number that shows part of a whole, like 3/4.<br/><em>Un número que muestra una parte de un todo, como 3/4.</em></td>
       <td></td>
       <td class="ref-vocab-visual">1/2 means 1 out of 2 equal parts — like cutting a sandwich in half and taking one piece</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Reciprocal<br/><em>Recíproco</em></td>
+      <td class="ref-vocab-term">Reciprocal<button type="button" class="read-aloud-btn" aria-label="Read Reciprocal and its meaning aloud" title="Read Reciprocal and its meaning aloud" data-speak="Reciprocal. A fraction turned upside down." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Recíproco</em><button type="button" class="read-aloud-btn" aria-label="Leer Recíproco en español" title="Leer Recíproco en español" data-speak="Recíproco. Una fracción volteada de arriba abajo." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A fraction turned upside down.<br/><em>Una fracción volteada de arriba abajo.</em></td>
       <td></td>
       <td class="ref-vocab-visual">The reciprocal of 2/3 is 3/2. Flip the fraction to divide: 6 ÷ 2/3 = 6 × 3/2</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Keep, Change, Flip<br/><em>Mantener, cambiar, invertir</em></td>
+      <td class="ref-vocab-term">Keep, Change, Flip<button type="button" class="read-aloud-btn" aria-label="Read Keep, Change, Flip and its meaning aloud" title="Read Keep, Change, Flip and its meaning aloud" data-speak="Keep, Change, Flip. A way to divide fractions: keep the first, change ÷ to ×, flip the second." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Mantener, cambiar, invertir</em><button type="button" class="read-aloud-btn" aria-label="Leer Mantener, cambiar, invertir en español" title="Leer Mantener, cambiar, invertir en español" data-speak="Mantener, cambiar, invertir. Una manera de dividir fracciones: deja la primera, cambia ÷ por ×, voltea la segunda." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A way to divide fractions: keep the first, change ÷ to ×, flip the second.<br/><em>Una manera de dividir fracciones: deja la primera, cambia ÷ por ×, voltea la segunda.</em></td>
       <td></td>
       <td class="ref-vocab-visual">6 ÷ 1/3 → Keep 6, Change ÷ to ×, Flip 1/3 to 3/1 → 6 × 3 = 18</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Quotient<br/><em>Cociente</em></td>
+      <td class="ref-vocab-term">Quotient<button type="button" class="read-aloud-btn" aria-label="Read Quotient and its meaning aloud" title="Read Quotient and its meaning aloud" data-speak="Quotient. The answer when you divide." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Cociente</em><button type="button" class="read-aloud-btn" aria-label="Leer Cociente en español" title="Leer Cociente en español" data-speak="Cociente. La respuesta cuando divides." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>The answer when you divide.<br/><em>La respuesta cuando divides.</em></td>
       <td></td>
       <td class="ref-vocab-visual">In 4 ÷ 1/2 = 8, the quotient is 8</td>
@@ -3010,10 +3051,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">Agent Park has 4 pounds of evidence powder and fills bags that hold 1/2 pound each. How many bags can he fill, and how do you know?</p>
+        <p class="card-desc tt-question">Agent Park has 4 pounds of evidence powder and fills bags that hold 1/2 pound each. How many bags can he fill, and how do you know?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="Agent Park has 4 pounds of evidence powder and fills bags that hold 1/2 pound each. How many bags can he fill, and how do you know?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ 1/2 pound fits into 4 pounds a total of ___ times.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ I know because each pound holds ___ bags, so ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('1/2 pound fits into 4 pounds a total of ___ times.')">✍️ 1/2 pound fits into 4 pounds a total of ___ times.<span class="stem-es">1/2 libra cabe en 4 libras un total de ___ veces.</span></div><div class="tt-stem" onclick="insertAtCursor('I know because each pound holds ___ bags, so ___.')">✍️ I know because each pound holds ___ bags, so ___.<span class="stem-es">Lo sé porque cada libra contiene ___ bolsas, así que ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ Dividing 4 by 1/2 makes the answer larger because ___.</div><div class="tt-stem tt-stem-extend">➕ Dividing by less than one whole means ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">whole number</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">fraction</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">quotient</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-launch">
@@ -3207,10 +3249,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">How does &#039;Keep, Change, Flip&#039; turn 6 ÷ 1/3 into a multiplication problem?</p>
+        <p class="card-desc tt-question">How does &#039;Keep, Change, Flip&#039; turn 6 ÷ 1/3 into a multiplication problem?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="How does &#039;Keep, Change, Flip&#039; turn 6 ÷ 1/3 into a multiplication problem?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ I keep ___, change the sign to ___, and flip ___ to ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ So 6 ÷ 1/3 becomes 6 × ___, which equals ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('I keep ___, change the sign to ___, and flip ___ to ___.')">✍️ I keep ___, change the sign to ___, and flip ___ to ___.<span class="stem-es">Mantengo ___, cambio el signo a ___, y volteo ___ a ___.</span></div><div class="tt-stem" onclick="insertAtCursor('So 6 ÷ 1/3 becomes 6 × ___, which equals ___.')">✍️ So 6 ÷ 1/3 becomes 6 × ___, which equals ___.<span class="stem-es">Entonces 6 ÷ 1/3 se convierte en 6 × ___, que es igual a ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ Multiplying by the reciprocal works because ___.</div><div class="tt-stem tt-stem-extend">➕ Both methods give ___ because ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">reciprocal</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">Keep, Change, Flip</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">quotient</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-explore">
@@ -3410,7 +3453,7 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <span class="ref-error-badge">⚠ Find the Division Error</span>
-    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.</p>
+    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.<button type="button" class="read-aloud-btn" aria-label="Read the directions aloud" title="Read the directions aloud" data-speak="A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     <div class="ref-student-work-box">
       <div class="ref-work-label">Student&apos;s work — read every step:</div>
       <div class="ea-steps">
@@ -3717,11 +3760,11 @@
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🔍 DETECTIVE AGENCY</span></div>
     <h3 class="slide-main-title">Differentiation Paths</h3>
     <div class="slide-card">
-      <span class="slide-badge badge-teal">🎯 THREE PATHS</span>
+      <span class="slide-badge badge-teal">🎯 CHOOSE YOUR LEVEL</span>
       <div class="teacher-cue teacher-cue-say">
     <span class="teacher-cue-icon">👩‍🏫</span>
     <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">All students work on math — choose the path that matches readiness.</span>
+    <span class="teacher-cue-text">Everyone works on the same math goal — pick the level of support that fits today.</span>
   </div>
       <div class="teacher-cue teacher-cue-time">
     <span class="teacher-cue-icon">⏱️</span>
@@ -3729,17 +3772,21 @@
     <span class="teacher-cue-text">8–10 min independent or partner</span>
   </div>
       <div class="diff-paths-grid">
+        <div class="diff-path" style="--path-color:var(--coral, #e07a5f)">
+      <div class="diff-path-label">🧩 Level 0 · Most support</div>
+      <p class="diff-path-stem">Step-by-step with a worked model and sentence frames.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Step-by-step with a worked model and sentence frames." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
+    </div>
         <div class="diff-path" style="--path-color:var(--amber)">
-      <div class="diff-path-label">🌱 Approaching</div>
-      <p class="diff-path-stem">What is 6 ÷ 1/3?</p>
+      <div class="diff-path-label">🌱 Level 1 · Support</div>
+      <p class="diff-path-stem">What is 6 ÷ 1/3?<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="What is 6 ÷ 1/3?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--teal)">
-      <div class="diff-path-label">🎯 On-Level</div>
-      <p class="diff-path-stem">Core practice aligned to the standard.</p>
+      <div class="diff-path-label">🎯 Level 2 · Core</div>
+      <p class="diff-path-stem">Core practice aligned to the standard.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Core practice aligned to the standard." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--navy)">
-      <div class="diff-path-label">🚀 Challenge</div>
-      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.</p>
+      <div class="diff-path-label">🚀 Level 2+ · Enrichment</div>
+      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Extension with error analysis or multi-step reasoning." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
       </div>
     </div></div>
@@ -3899,10 +3946,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">When would dividing a whole number by a fraction help you in real life?</p>
+        <p class="card-desc tt-question">When would dividing a whole number by a fraction help you in real life?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="When would dividing a whole number by a fraction help you in real life?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ Dividing a whole number by a fraction is useful when ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ For example, ___ pounds split into ___-pound portions makes ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('Dividing a whole number by a fraction is useful when ___.')">✍️ Dividing a whole number by a fraction is useful when ___.<span class="stem-es">Dividir un número entero entre una fracción es útil cuando ___.</span></div><div class="tt-stem" onclick="insertAtCursor('For example, ___ pounds split into ___-pound portions makes ___.')">✍️ For example, ___ pounds split into ___-pound portions makes ___.<span class="stem-es">Por ejemplo, ___ libras divididas en porciones de ___ libra hace ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ This is not always true because ___.</div><div class="tt-stem tt-stem-extend">➕ Multiplying by a reciprocal makes the answer bigger only when ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">whole number</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">fraction</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">reciprocal</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-connect">
@@ -4426,6 +4474,66 @@
         }
       }, 1000);
     }
+
+    // -----------------------------------------------------------------
+    // READ-ALOUD (Text-to-Speech) — accessibility + Level 1 language support
+    // Reads slide text via the browser Web Speech API. Rate is saved so a
+    // teacher/student preference persists across slides and lessons.
+    // -----------------------------------------------------------------
+    const SLIDE_TTS_RATE_KEY = 'neft-slide-tts-rate';
+    function getSlideTtsRate() {
+      const saved = parseFloat(localStorage.getItem(SLIDE_TTS_RATE_KEY));
+      return (saved && saved >= 0.5 && saved <= 1.5) ? saved : 0.85;
+    }
+    function setSlideTtsRate(rate) {
+      const r = parseFloat(rate);
+      if (r && r >= 0.5 && r <= 1.5) localStorage.setItem(SLIDE_TTS_RATE_KEY, String(r));
+    }
+    function speakText(text, lang) {
+      if (!('speechSynthesis' in window) || !text) return;
+      try {
+        // A second tap on a speaking button stops it (toggle behavior).
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          return;
+        }
+        const utter = new SpeechSynthesisUtterance(String(text).replace(/[✍️🎯🗣️👂✓✗⚠➡️•]/g, ' ').trim());
+        utter.rate = getSlideTtsRate();
+        utter.lang = lang || 'en-US';
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+      } catch (e) { /* speech not available */ }
+    }
+    // Read-aloud buttons carry their text in data-speak (and optional data-lang).
+    function speakFromButton(btn) {
+      if (!btn) return;
+      speakText(btn.getAttribute('data-speak') || '', btn.getAttribute('data-lang') || 'en-US');
+    }
+    window.speakText = speakText;
+    window.speakFromButton = speakFromButton;
+    window.setSlideTtsRate = setSlideTtsRate;
+    window.getSlideTtsRate = getSlideTtsRate;
+
+    // Bilingual (Spanish support) toggle — persists per browser.
+    const SLIDE_BILINGUAL_KEY = 'neft-slide-bilingual';
+    function applyBilingual(on) {
+      document.body.classList.toggle('bilingual-on', on);
+      const btn = document.getElementById('bilingual-toggle');
+      if (btn) btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    function toggleBilingual(btn) {
+      const on = !document.body.classList.contains('bilingual-on');
+      localStorage.setItem(SLIDE_BILINGUAL_KEY, on ? '1' : '0');
+      applyBilingual(on);
+    }
+    window.toggleBilingual = toggleBilingual;
+    // Restore saved accessibility preferences on load.
+    (function initA11yPrefs() {
+      const savedBi = localStorage.getItem(SLIDE_BILINGUAL_KEY);
+      if (savedBi !== null) applyBilingual(savedBi === '1');
+      const rateSel = document.getElementById('tts-rate-select');
+      if (rateSel) rateSel.value = String(getSlideTtsRate());
+    })();
 
     // CFU thumb responses
     const cfuResponses = {};
@@ -5787,8 +5895,8 @@
     
   </script>
 
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
-</body>
+  </body>
 </html>

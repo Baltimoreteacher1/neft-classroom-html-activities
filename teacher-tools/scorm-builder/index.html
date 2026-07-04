@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SCORM Builder · Neft Teacher</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <style>
+      :root {
+        --bg: #0b111d;
+        --bg-2: #0d1422;
+        --panel: #161f33;
+        --panel-2: #1d2942;
+        --field: #0b1220;
+        --line: #283755;
+        --line-soft: #20304d;
+        --ink: #eef3fc;
+        --muted: #9aabca;
+        --faint: #6f819f;
+        --accent: #5b95ff;
+        --good: #34c77b;
+        --radius: 14px;
+        --radius-sm: 9px;
+        --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.55);
+        --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.4);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.5 system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        background:
+          radial-gradient(
+            1200px 600px at 80% -10%,
+            rgba(91, 149, 255, 0.12),
+            transparent 60%
+          ),
+          var(--bg);
+        background-attachment: fixed;
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+      }
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 12;
+        padding: 14px 24px;
+        border-bottom: 1px solid var(--line-soft);
+        background: rgba(11, 17, 29, 0.82);
+        backdrop-filter: saturate(140%) blur(10px);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      header h1 {
+        font-size: 19px;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .brand-mark {
+        display: inline-grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        font-size: 18px;
+        background: linear-gradient(160deg, var(--accent), #3f6fd6);
+        box-shadow: var(--shadow-sm);
+      }
+      header .sub {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .spacer {
+        flex: 1;
+      }
+      main {
+        padding: 24px 22px 64px;
+        max-width: 720px;
+        margin: 0 auto;
+      }
+      .card {
+        background: linear-gradient(180deg, var(--panel), var(--bg-2));
+        border: 1px solid var(--line-soft);
+        border-radius: var(--radius);
+        padding: 22px;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 18px;
+      }
+      label.field {
+        display: block;
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      label.field span.lbl {
+        display: block;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 5px;
+        font-size: 14px;
+      }
+      input[type="text"] {
+        width: 100%;
+        font: inherit;
+        font-size: 15px;
+        background: var(--field);
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        padding: 11px 13px;
+      }
+      input::placeholder {
+        color: var(--faint);
+      }
+      input:focus {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+        border-color: var(--accent);
+      }
+      .hint {
+        font-size: 12.5px;
+        color: var(--faint);
+        margin-top: 5px;
+      }
+      .modes {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 1fr 1fr;
+        margin-bottom: 4px;
+      }
+      .mode {
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        padding: 13px 14px;
+        cursor: pointer;
+        background: var(--field);
+        transition:
+          border-color 0.14s,
+          background 0.14s;
+      }
+      .mode:hover {
+        border-color: var(--accent);
+      }
+      .mode.sel {
+        border-color: var(--accent);
+        background: rgba(91, 149, 255, 0.1);
+      }
+      .mode .t {
+        font-weight: 700;
+        font-size: 14.5px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .mode .d {
+        font-size: 12.5px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+      }
+      .btn {
+        font: inherit;
+        font-size: 15px;
+        cursor: pointer;
+        border: 1px solid var(--line);
+        background: var(--panel-2);
+        color: var(--ink);
+        border-radius: var(--radius-sm);
+        padding: 12px 20px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+      }
+      .btn.dl {
+        background: linear-gradient(160deg, var(--good), #1f9e5d);
+        border-color: transparent;
+        color: #042617;
+      }
+      .btn:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .filename {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 13px;
+        color: var(--accent);
+      }
+      .note {
+        font-size: 13.5px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .note strong {
+        color: var(--ink);
+      }
+      h2 {
+        font-size: 16px;
+        margin: 0 0 14px;
+      }
+      a {
+        color: var(--accent);
+      }
+      ol {
+        margin: 6px 0 0;
+        padding-left: 20px;
+      }
+      ol li {
+        margin-bottom: 5px;
+        font-size: 13.5px;
+        color: var(--muted);
+      }
+    </style>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+</head>
+  <body>
+    <!-- canvas-console-banner:begin -->
+    <div style="background:#12355b;color:#fff;padding:8px 16px;font:600 0.85rem system-ui,sans-serif;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span>🎛 Part of the</span><a href="/teacher-tools/canvas-console/" style="color:#f2a93b;text-decoration:underline">Canvas Console</a><span>— every Canvas tool in one place.</span></div>
+    <!-- canvas-console-banner:end -->
+
+    <header>
+      <h1><span class="brand-mark">📦</span> SCORM Builder</h1>
+      <span class="sub">Download a Canvas-ready package · Neft Teacher</span>
+      <span class="spacer"></span>
+      <a class="btn" href="/teacher-tools/">← Tools</a>
+    </header>
+
+    <main>
+      <div class="card">
+        <label class="field">
+          <span class="lbl">Activity</span>
+          <input
+            id="activity"
+            type="text"
+            placeholder="e.g. 1-3   or   /ratio-color-mixer/   or a full eduwonderlab.com link"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <div class="hint">
+            A lesson number (<code>1-3</code>), a site path
+            (<code>/fractions-soccer/</code>), or paste the activity's full
+            eduwonderlab.com URL.
+          </div>
+        </label>
+
+        <label class="field">
+          <span class="lbl">Title shown in Canvas (optional)</span>
+          <input
+            id="title"
+            type="text"
+            placeholder="e.g. Unit 1 Lesson 3: Ratios"
+            autocomplete="off"
+          />
+        </label>
+
+        <span
+          class="lbl"
+          style="font-size: 14px; color: var(--ink); font-weight: 600"
+          >How should grades be recorded?</span
+        >
+        <div class="modes" id="modes" style="margin-top: 6px">
+          <div class="mode sel" data-mode="codes">
+            <div class="t">📗 Save codes → Google Sheets</div>
+            <div class="d">
+              Students enter a save code; work flows to your live Google Sheets.
+              No Canvas grading setup needed.
+            </div>
+          </div>
+          <div class="mode" data-mode="canvas">
+            <div class="t">🎓 Canvas auto-grade</div>
+            <div class="d">
+              Score posts straight to the Canvas gradebook (needs SCORM grading
+              enabled by your district).
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a class="btn dl" id="download" href="#">⬇ Download SCORM package</a>
+          <span class="filename" id="fname"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>How to use it</h2>
+        <ol>
+          <li>Pick the activity and a grading mode above, then Download.</li>
+          <li>
+            In Canvas: <strong>Assignments → + Assignment</strong>, set
+            Submission Type to <strong>External Tool / SCORM</strong>, and
+            upload the .zip (same steps you already use).
+          </li>
+          <li>
+            Publish. Students open it inside Canvas — it plays the
+            <strong>live</strong> activity.
+          </li>
+        </ol>
+        <p class="note" style="margin-top: 14px">
+          <strong>You can keep editing the activity afterward.</strong> The
+          package loads the live page, so changes you make on the site show up
+          in Canvas automatically — no need to re-download or re-upload.
+        </p>
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var $ = function (id) {
+          return document.getElementById(id);
+        };
+        var mode = "codes";
+
+        $("modes").addEventListener("click", function (e) {
+          var card = e.target.closest(".mode");
+          if (!card) return;
+          mode = card.getAttribute("data-mode");
+          Array.prototype.forEach.call(
+            document.querySelectorAll(".mode"),
+            function (m) {
+              m.classList.toggle("sel", m === card);
+            },
+          );
+          update();
+        });
+
+        $("activity").addEventListener("input", update);
+        $("title").addEventListener("input", update);
+
+        function slug(s) {
+          return (
+            String(s || "")
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/^-+|-+$/g, "")
+              .slice(0, 60) || "activity"
+          );
+        }
+        function idFromActivity(a) {
+          a = (a || "").trim();
+          if (!a) return "";
+          if (/^https?:\/\//i.test(a) || a.indexOf("/") !== -1) {
+            var parts = a
+              .replace(/[?#].*$/, "")
+              .split("/")
+              .filter(Boolean);
+            return slug(parts[parts.length - 1] || "activity");
+          }
+          return slug(a);
+        }
+
+        function update() {
+          var activity = $("activity").value.trim();
+          var title = $("title").value.trim();
+          var url =
+            "/api/scorm?activity=" +
+            encodeURIComponent(activity) +
+            "&mode=" +
+            mode +
+            (title ? "&title=" + encodeURIComponent(title) : "");
+          var link = $("download");
+          if (activity) {
+            link.setAttribute("href", url);
+            link.style.opacity = "1";
+            link.style.pointerEvents = "auto";
+            $("fname").textContent =
+              "neft-" +
+              idFromActivity(activity) +
+              (mode === "codes" ? "-codes" : "") +
+              ".zip";
+          } else {
+            link.setAttribute("href", "#");
+            link.style.opacity = "0.5";
+            link.style.pointerEvents = "none";
+            $("fname").textContent = "Enter an activity above";
+          }
+        }
+        update();
+      })();
+    </script>
+  </body>
+</html>

@@ -4,6 +4,7 @@
   <link rel="stylesheet" href="/assets/shared.css">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/assets/math-mobile.css">
   <title>6.SP.A.1 Statistical Questions Review</title>
   <style>
     :root{
@@ -85,10 +86,33 @@
     }
   
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+    /* --- responsive tablet/phone refinements (additive) --- */
+    @media (max-width: 900px){
+      .wrap{padding:14px}
+      .hero{padding:22px}
+      .topbar{flex-direction:column;align-items:stretch}
+      .topbar .hud{justify-content:flex-start}
+    }
+    @media (max-width: 640px){
+      .wrap{padding:10px}
+      .hero{padding:18px;border-radius:22px}
+      h1{font-size:clamp(24px,7vw,32px)}
+      .sub{font-size:15px}
+      .panel{padding:16px;border-radius:18px}
+      .tabs{gap:8px}
+      .tab-btn{flex:1 1 auto;text-align:center}
+      .topbar .hud{flex-wrap:wrap}
+      .topbar .action{flex:1 1 auto;text-align:center}
+      .btn-row{flex-wrap:wrap}
+      .choice{width:100%;text-align:left}
+    }
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
 </head>
 <body>
   <div class="wrap">
@@ -512,5 +536,8 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>

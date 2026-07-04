@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Ratio Kitchen — 6.RP.A.1</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
     <script>
@@ -26,7 +27,12 @@
         padding: 0;
         box-sizing: border-box;
       }
+      html,
       body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
         background: #14082a;
         overflow: hidden;
       }
@@ -39,11 +45,35 @@
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
+  </head>
   <body>
     <div id="game-container"></div>
+    <!-- Visually-hidden live region: mirrors each ratio order for assistive
+         tech and the shared hint ladder. Additive only. -->
+    <div
+      id="rk-sr"
+      role="status"
+      aria-live="polite"
+      style="
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      "
+    ></div>
     <script>
       (() => {
         // ════════════════════════════════════════════════════════════════
@@ -531,7 +561,7 @@
                 x + 36,
                 y + 4,
                 150,
-                56,
+                72,
                 "+ ADD",
                 0x2e7d46,
                 () => this.addScoop(i),
@@ -539,8 +569,8 @@
               const remBtn = this.makeBtn(
                 x + 122,
                 y - 40,
-                40,
-                36,
+                48,
+                48,
                 "−",
                 0x6a3a52,
                 () => this.removeScoop(i),
@@ -673,6 +703,14 @@
             else if (r.type === "missing")
               task = `${r.preseed[0]} ${r.ia.name} are already poured.\nAdd ${r.ib.name} to keep ${r.a} : ${r.b}.`;
             this.orderTask.setText(task);
+
+            // Mirror the order into the hidden live region (assistive tech +
+            // shared hint ladder). Additive: never touches gameplay/scoring.
+            const rkSr = document.getElementById("rk-sr");
+            if (rkSr)
+              rkSr.textContent =
+                `New order: ratio ${r.a} to ${r.b}, ${r.ia.name} to ${r.ib.name}. ` +
+                task.replace(/\n/g, " ");
 
             // fill-line note
             this.fillNote.setText(
@@ -883,9 +921,16 @@
               this.lives--;
               this.attempts = 0;
               if (this.lives <= 0) {
-                this.updateHUD();
-                this.time.delayedCall(900, () => this.endGame());
-                return;
+                // No-fail: refill lives instead of closing the kitchen early.
+                // The run always continues to its normal round count.
+                this.lives = this.tier === 1 ? 5 : 3;
+                this.time.delayedCall(1400, () => {
+                  this.flash(
+                    this.feedback,
+                    "💛 Lives refilled — keep cooking!",
+                    "#bff7cf",
+                  );
+                });
               }
             }
             this.updateHUD();
@@ -1201,7 +1246,31 @@
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#rk-sr",
+            standard: "6.RP.1",
+            accept: "^New order",
+            staticHints: [
+              "A ratio compares two amounts: for every so-many of the first ingredient, there are so-many of the second. Say the order out loud that way.",
+              "You don't have to match the exact numbers — scale BOTH tubes by the same amount and the ratio stays true (4:6 still serves a 2:3 order).",
+              "Check a pour with cross products: your first count × the order's second number should equal your second count × the order's first number.",
+            ],
+          });
+      });
+    </script>
+    <!-- ghl-injected:end -->
+  </body>
 </html>

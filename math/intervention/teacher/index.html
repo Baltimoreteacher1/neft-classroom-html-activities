@@ -21,7 +21,26 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/math/intervention/assets/intervention.css" />
-  </head>
+    <link rel="manifest" href="/math/intervention/manifest.webmanifest" />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <link rel="apple-touch-icon" href="/assets/favicon.svg" />
+    <script>
+      // Register the offline service worker so stations keep working without
+      // wifi once visited (classroom-friendly). Scoped to /math/intervention/.
+      if ("serviceWorker" in navigator) {
+        addEventListener("load", function () {
+          navigator.serviceWorker
+            .register("/math/intervention/sw.js", {
+              scope: "/math/intervention/",
+            })
+            .catch(function () {});
+        });
+      }
+    </script>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+</head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="topbar">
@@ -51,15 +70,137 @@
       <section class="block">
         <div class="wrap">
           <div class="section-head">
+            <span class="eyebrow">Teacher edition overview</span>
+            <h2>Implementation guide for a publishable intervention block</h2>
+            <p>This guide is built to support tutoring, pull-out intervention, stations, after-school programs, and independent recovery without changing the core routine from topic to topic.</p>
+          </div>
+          <div class="quality-grid">
+            <article><b>Planning</b><h3>Before instruction</h3><p>Assign the pre-quiz, preview vocabulary, choose the pathway, and prepare the concrete model for the topic.</p></article>
+            <article><b>Instruction</b><h3>During instruction</h3><p>Open the larger concept, teach the focused mini-lesson students need, then release students into Practice, Smart Review, fluency, and print work.</p></article>
+            <article><b>Evidence</b><h3>After instruction</h3><p>Collect exit tickets, performance tasks, and post-quiz data to decide whether students need reteach, practice, or extension.</p></article>
+            <article><b>Equity</b><h3>Access for all learners</h3><p>Use read-aloud, discourse frames, family letters, vocabulary routines, and Talk-Write-Revise supports every cycle.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="wrap">
+          <div class="section-head">
             <span class="eyebrow">How to run it</span>
             <h2>The four-part routine</h2>
-            <p>Each unit is a self-paced station. Reserve 2–4 short sessions per unit.</p>
+            <p>Each unit is a self-paced station with an explicit concept opening and smaller mini-lessons inside the broader topic. Reserve 2–4 short sessions per unit.</p>
           </div>
           <div class="routine">
             <div class="rstep"><div class="rnum">Step 1</div><h4>Assign the Pre-Quiz</h4><p>Use the student Google Form to baseline. The teacher form auto-grades with the key.</p></div>
-            <div class="rstep"><div class="rnum">Step 2</div><h4>Run the station</h4><p>Students work Learn → Practice → Fluency → Game, then a printable worksheet.</p></div>
+            <div class="rstep"><div class="rnum">Step 2</div><h4>Teach the mini-lesson</h4><p>Open the concept spine, pick the mini-lesson students need, and use the model before practice.</p></div>
             <div class="rstep"><div class="rnum">Step 3</div><h4>Send home</h4><p>Print the family letter and exit ticket; assign Level 1 or Level 2 supports as needed.</p></div>
             <div class="rstep"><div class="rnum">Step 4</div><h4>Post-Quiz &amp; review</h4><p>Re-assess with the post-quiz to measure growth and regroup.</p></div>
+          </div>
+          <div class="architecture-grid">
+            <article class="arch-card">
+              <span class="arch-num">A</span>
+              <h3>Reteach group</h3>
+              <p>Pre-quiz below 50% or diagnostic below 50%. Start with Concept Lab, worked examples, and a teacher-led model.</p>
+            </article>
+            <article class="arch-card">
+              <span class="arch-num">B</span>
+              <h3>Guided practice group</h3>
+              <p>Scores from 50% to 79%. Assign Practice, Smart Review, Error Clinic, and Worksheet A before the post-quiz.</p>
+            </article>
+            <article class="arch-card">
+              <span class="arch-num">C</span>
+              <h3>Extension group</h3>
+              <p>Scores 80%+. Use Fluency, Game, Worksheet B challenge, and the transfer prompt to keep growth moving.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Concept-to-mini-lesson map</span>
+            <h2>Open the larger idea, then teach the smaller pieces</h2>
+            <p>This map prevents the intervention from feeling disjointed: every student-facing activity should connect back to the same concept spine.</p>
+          </div>
+          <div class="sos-wrap">
+            <table class="sos evidence-table">
+              <thead><tr><th>Unit</th><th>Larger concept</th><th>Mini-lessons</th><th>Teacher use</th></tr></thead>
+              <tbody>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/number-operations/" target="_blank" rel="noopener"><span>🔢</span>Whole-Number Operations &amp; Fluency</a></td>
+              <td>The big idea: Whole-Number Operations &amp; Fluency is about choosing a representation, keeping quantities organized, and defending the strategy.</td>
+              <td>1. Multiply → 2. Divide → 3. Estimate → 4. Order of operations</td>
+              <td>Open the concept, teach one mini-lesson, collect evidence, then decide whether to reteach, practice, or extend.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/factors-multiples/" target="_blank" rel="noopener"><span>🧱</span>Factors, Multiples &amp; Primes</a></td>
+              <td>The big idea: Factors, Multiples &amp; Primes is about choosing a representation, keeping quantities organized, and defending the strategy.</td>
+              <td>1. GCF &amp; LCM → 2. Primes → 3. Factor trees → 4. Distributive</td>
+              <td>Open the concept, teach one mini-lesson, collect evidence, then decide whether to reteach, practice, or extend.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/fraction-sense/" target="_blank" rel="noopener"><span>🍕</span>Fraction Sense</a></td>
+              <td>The big idea: Fraction Sense is about choosing a representation, keeping quantities organized, and defending the strategy.</td>
+              <td>1. Equivalence → 2. Add / subtract → 3. Multiply / divide → 4. Simplify</td>
+              <td>Open the concept, teach one mini-lesson, collect evidence, then decide whether to reteach, practice, or extend.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/decimals-place-value/" target="_blank" rel="noopener"><span>💯</span>Decimals &amp; Place Value</a></td>
+              <td>The big idea: Decimals &amp; Place Value is about choosing a representation, keeping quantities organized, and defending the strategy.</td>
+              <td>1. Place value → 2. Compare &amp; round → 3. Operate → 4. Money</td>
+              <td>Open the concept, teach one mini-lesson, collect evidence, then decide whether to reteach, practice, or extend.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/ratios-rates/" target="_blank" rel="noopener"><span>⚖️</span>Ratios &amp; Rates</a></td>
+              <td>The big idea: Ratios &amp; Rates is about choosing a representation, keeping quantities organized, and defending the strategy.</td>
+              <td>1. Ratios → 2. Equivalent ratios → 3. Unit rate → 4. Better buy</td>
+              <td>Open the concept, teach one mini-lesson, collect evidence, then decide whether to reteach, practice, or extend.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/percents/" target="_blank" rel="noopener"><span>📊</span>Percents &amp; Proportions</a></td>
+              <td>The big idea: Percents &amp; Proportions is about choosing a representation, keeping quantities organized, and defending the strategy.</td>
+              <td>1. % of a number → 2. Conversions → 3. Find the whole → 4. Discounts</td>
+              <td>Open the concept, teach one mini-lesson, collect evidence, then decide whether to reteach, practice, or extend.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/integers-number-line/" target="_blank" rel="noopener"><span>🌡️</span>Integers &amp; the Number Line</a></td>
+              <td>The big idea: Integers &amp; the Number Line is about choosing a representation, keeping quantities organized, and defending the strategy.</td>
+              <td>1. Negatives → 2. Absolute value → 3. Opposites → 4. Add / subtract</td>
+              <td>Open the concept, teach one mini-lesson, collect evidence, then decide whether to reteach, practice, or extend.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/coordinate-plane/" target="_blank" rel="noopener"><span>🧭</span>The Coordinate Plane</a></td>
+              <td>The big idea: The Coordinate Plane is about choosing a representation, keeping quantities organized, and defending the strategy.</td>
+              <td>1. Plot points → 2. Quadrants → 3. Distance → 4. Reflections</td>
+              <td>Open the concept, teach one mini-lesson, collect evidence, then decide whether to reteach, practice, or extend.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/expressions/" target="_blank" rel="noopener"><span>🧮</span>Expressions &amp; Properties</a></td>
+              <td>The big idea: Expressions &amp; Properties is about choosing a representation, keeping quantities organized, and defending the strategy.</td>
+              <td>1. Exponents → 2. Evaluate → 3. Write expressions → 4. Like terms</td>
+              <td>Open the concept, teach one mini-lesson, collect evidence, then decide whether to reteach, practice, or extend.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/equations-inequalities/" target="_blank" rel="noopener"><span>➗</span>One-Step Equations &amp; Inequalities</a></td>
+              <td>The big idea: One-Step Equations &amp; Inequalities is about choosing a representation, keeping quantities organized, and defending the strategy.</td>
+              <td>1. Solve 1-step → 2. Check → 3. Inequalities → 4. Variables</td>
+              <td>Open the concept, teach one mini-lesson, collect evidence, then decide whether to reteach, practice, or extend.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/geometry-measure/" target="_blank" rel="noopener"><span>📐</span>Area, Surface Area &amp; Volume</a></td>
+              <td>The big idea: Area, Surface Area &amp; Volume is about choosing a representation, keeping quantities organized, and defending the strategy.</td>
+              <td>1. Area → 2. Composite area → 3. Volume → 4. Surface area</td>
+              <td>Open the concept, teach one mini-lesson, collect evidence, then decide whether to reteach, practice, or extend.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/statistics-data/" target="_blank" rel="noopener"><span>📈</span>Statistics &amp; Data</a></td>
+              <td>The big idea: Statistics &amp; Data is about choosing a representation, keeping quantities organized, and defending the strategy.</td>
+              <td>1. Mean / median → 2. Range &amp; MAD → 3. Dot plots → 4. Histograms</td>
+              <td>Open the concept, teach one mini-lesson, collect evidence, then decide whether to reteach, practice, or extend.</td>
+            </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
@@ -161,6 +302,202 @@
             </tr>
               </tbody>
             </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Small-group playbook</span>
+            <h2>What to reteach when students miss it</h2>
+            <p>This table turns results into teacher action: identify the misconception, choose the model, and require a complete math-talk explanation.</p>
+          </div>
+          <div class="sos-wrap">
+            <table class="sos evidence-table">
+              <thead><tr><th>Unit</th><th>Likely gap</th><th>Best model</th><th>Discourse frame</th></tr></thead>
+              <tbody>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/number-operations/" target="_blank" rel="noopener"><span>🔢</span>Whole-Number Operations &amp; Fluency</a></td>
+              <td>Students often know the procedure but lose place value, skip a remainder, or stop checking whether the answer is reasonable.</td>
+              <td>Build the operation with arrays, factor rainbows, or place-value boxes before recording an algorithm.</td>
+              <td>My estimate was ___, so my exact answer is reasonable because ___.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/factors-multiples/" target="_blank" rel="noopener"><span>🧱</span>Factors, Multiples &amp; Primes</a></td>
+              <td>Students often know the procedure but lose place value, skip a remainder, or stop checking whether the answer is reasonable.</td>
+              <td>Build the operation with arrays, factor rainbows, or place-value boxes before recording an algorithm.</td>
+              <td>My estimate was ___, so my exact answer is reasonable because ___.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/fraction-sense/" target="_blank" rel="noopener"><span>🍕</span>Fraction Sense</a></td>
+              <td>Students may compare digits instead of values, treat denominators as whole-number size, or forget that decimals and fractions can represent the same amount.</td>
+              <td>Use area models, number lines, and place-value charts so students see the size of each quantity.</td>
+              <td>These two values are equivalent because I can show them as ___ and ___.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/decimals-place-value/" target="_blank" rel="noopener"><span>💯</span>Decimals &amp; Place Value</a></td>
+              <td>Students may compare digits instead of values, treat denominators as whole-number size, or forget that decimals and fractions can represent the same amount.</td>
+              <td>Use area models, number lines, and place-value charts so students see the size of each quantity.</td>
+              <td>These two values are equivalent because I can show them as ___ and ___.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/ratios-rates/" target="_blank" rel="noopener"><span>⚖️</span>Ratios &amp; Rates</a></td>
+              <td>Students may answer procedurally without explaining why the method works for ratios &amp; Rates.</td>
+              <td>Represent ratios &amp; Rates with a visual model, a table, and an equation.</td>
+              <td>My strategy works because ___.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/percents/" target="_blank" rel="noopener"><span>📊</span>Percents &amp; Proportions</a></td>
+              <td>Students may answer procedurally without explaining why the method works for percents &amp; Proportions.</td>
+              <td>Represent percents &amp; Proportions with a visual model, a table, and an equation.</td>
+              <td>My strategy works because ___.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/integers-number-line/" target="_blank" rel="noopener"><span>🌡️</span>Integers &amp; the Number Line</a></td>
+              <td>Students may answer procedurally without explaining why the method works for integers &amp; the Number Line.</td>
+              <td>Represent integers &amp; the Number Line with a visual model, a table, and an equation.</td>
+              <td>My strategy works because ___.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/coordinate-plane/" target="_blank" rel="noopener"><span>🧭</span>The Coordinate Plane</a></td>
+              <td>Students may answer procedurally without explaining why the method works for the Coordinate Plane.</td>
+              <td>Represent the Coordinate Plane with a visual model, a table, and an equation.</td>
+              <td>My strategy works because ___.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/expressions/" target="_blank" rel="noopener"><span>🧮</span>Expressions &amp; Properties</a></td>
+              <td>Students may combine unlike terms, reverse an inequality incorrectly, or solve without checking the answer in context.</td>
+              <td>Use balance models, substitution tables, and color-coded terms before simplifying symbolically.</td>
+              <td>I kept the equation balanced by ___, and I checked it by ___.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/equations-inequalities/" target="_blank" rel="noopener"><span>➗</span>One-Step Equations &amp; Inequalities</a></td>
+              <td>Students may combine unlike terms, reverse an inequality incorrectly, or solve without checking the answer in context.</td>
+              <td>Use balance models, substitution tables, and color-coded terms before simplifying symbolically.</td>
+              <td>I kept the equation balanced by ___, and I checked it by ___.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/geometry-measure/" target="_blank" rel="noopener"><span>📐</span>Area, Surface Area &amp; Volume</a></td>
+              <td>Students may answer procedurally without explaining why the method works for area, Surface Area &amp; Volume.</td>
+              <td>Represent area, Surface Area &amp; Volume with a visual model, a table, and an equation.</td>
+              <td>My strategy works because ___.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/statistics-data/" target="_blank" rel="noopener"><span>📈</span>Statistics &amp; Data</a></td>
+              <td>Students may answer procedurally without explaining why the method works for statistics &amp; Data.</td>
+              <td>Represent statistics &amp; Data with a visual model, a table, and an equation.</td>
+              <td>My strategy works because ___.</td>
+            </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Assessment blueprint</span>
+            <h2>Multiple measures for readiness, growth, and transfer</h2>
+            <p>Every topic now includes a consistent evidence chain, so a teacher can defend placement decisions and document progress with more than one score.</p>
+          </div>
+          <div class="sos-wrap">
+            <table class="sos evidence-table">
+              <thead><tr><th>Unit</th><th>Essential question</th><th>Evidence chain</th><th>Reteach signal</th></tr></thead>
+              <tbody>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/number-operations/" target="_blank" rel="noopener"><span>🔢</span>Whole-Number Operations &amp; Fluency</a></td>
+              <td>How do mathematicians use multiply, divide, estimate, and order of operations to make sense of real problems and defend an answer?</td>
+              <td>Pre-quiz, diagnostic, Smart Review, exit ticket, performance task, post-quiz.</td>
+              <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/factors-multiples/" target="_blank" rel="noopener"><span>🧱</span>Factors, Multiples &amp; Primes</a></td>
+              <td>How do mathematicians use gcf &amp; lcm, primes, factor trees, and distributive to make sense of real problems and defend an answer?</td>
+              <td>Pre-quiz, diagnostic, Smart Review, exit ticket, performance task, post-quiz.</td>
+              <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/fraction-sense/" target="_blank" rel="noopener"><span>🍕</span>Fraction Sense</a></td>
+              <td>How do mathematicians use equivalence, add / subtract, multiply / divide, and simplify to make sense of real problems and defend an answer?</td>
+              <td>Pre-quiz, diagnostic, Smart Review, exit ticket, performance task, post-quiz.</td>
+              <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/decimals-place-value/" target="_blank" rel="noopener"><span>💯</span>Decimals &amp; Place Value</a></td>
+              <td>How do mathematicians use place value, compare &amp; round, operate, and money to make sense of real problems and defend an answer?</td>
+              <td>Pre-quiz, diagnostic, Smart Review, exit ticket, performance task, post-quiz.</td>
+              <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/ratios-rates/" target="_blank" rel="noopener"><span>⚖️</span>Ratios &amp; Rates</a></td>
+              <td>How do mathematicians use ratios, equivalent ratios, unit rate, and better buy to make sense of real problems and defend an answer?</td>
+              <td>Pre-quiz, diagnostic, Smart Review, exit ticket, performance task, post-quiz.</td>
+              <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/percents/" target="_blank" rel="noopener"><span>📊</span>Percents &amp; Proportions</a></td>
+              <td>How do mathematicians use % of a number, conversions, find the whole, and discounts to make sense of real problems and defend an answer?</td>
+              <td>Pre-quiz, diagnostic, Smart Review, exit ticket, performance task, post-quiz.</td>
+              <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/integers-number-line/" target="_blank" rel="noopener"><span>🌡️</span>Integers &amp; the Number Line</a></td>
+              <td>How do mathematicians use negatives, absolute value, opposites, and add / subtract to make sense of real problems and defend an answer?</td>
+              <td>Pre-quiz, diagnostic, Smart Review, exit ticket, performance task, post-quiz.</td>
+              <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/coordinate-plane/" target="_blank" rel="noopener"><span>🧭</span>The Coordinate Plane</a></td>
+              <td>How do mathematicians use plot points, quadrants, distance, and reflections to make sense of real problems and defend an answer?</td>
+              <td>Pre-quiz, diagnostic, Smart Review, exit ticket, performance task, post-quiz.</td>
+              <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/expressions/" target="_blank" rel="noopener"><span>🧮</span>Expressions &amp; Properties</a></td>
+              <td>How do mathematicians use exponents, evaluate, write expressions, and like terms to make sense of real problems and defend an answer?</td>
+              <td>Pre-quiz, diagnostic, Smart Review, exit ticket, performance task, post-quiz.</td>
+              <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/equations-inequalities/" target="_blank" rel="noopener"><span>➗</span>One-Step Equations &amp; Inequalities</a></td>
+              <td>How do mathematicians use solve 1-step, check, inequalities, and variables to make sense of real problems and defend an answer?</td>
+              <td>Pre-quiz, diagnostic, Smart Review, exit ticket, performance task, post-quiz.</td>
+              <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/geometry-measure/" target="_blank" rel="noopener"><span>📐</span>Area, Surface Area &amp; Volume</a></td>
+              <td>How do mathematicians use area, composite area, volume, and surface area to make sense of real problems and defend an answer?</td>
+              <td>Pre-quiz, diagnostic, Smart Review, exit ticket, performance task, post-quiz.</td>
+              <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+            </tr>
+            <tr>
+              <td><a class="sos-topic" href="/math/intervention/statistics-data/" target="_blank" rel="noopener"><span>📈</span>Statistics &amp; Data</a></td>
+              <td>How do mathematicians use mean / median, range &amp; mad, dot plots, and histograms to make sense of real problems and defend an answer?</td>
+              <td>Pre-quiz, diagnostic, Smart Review, exit ticket, performance task, post-quiz.</td>
+              <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+            </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Fidelity checklist</span>
+            <h2>Run every topic with the same high-quality routine</h2>
+            <p>Use this checklist during walkthroughs, tutoring, or lesson review to keep the intervention consistent and publisher-ready.</p>
+          </div>
+          <div class="fidelity-grid">
+            <label><input type="checkbox" /> Students see the objective, essential question, vocabulary, and success criteria before practice.</label>
+            <label><input type="checkbox" /> Teacher uses a concrete or visual model before symbolic practice.</label>
+            <label><input type="checkbox" /> Students complete at least one self-checking practice set and one print/constructed response item.</label>
+            <label><input type="checkbox" /> Error Clinic is used for the highest-leverage misconception.</label>
+            <label><input type="checkbox" /> Students use a discourse frame or Talk-Write-Revise routine.</label>
+            <label><input type="checkbox" /> Post-quiz, exit ticket, and performance task evidence are used to choose the next pathway.</label>
           </div>
         </div>
       </section>

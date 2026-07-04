@@ -8,6 +8,7 @@
 
 import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 
 const root = join(import.meta.dirname, "..");
 const lessonsDir = join(root, "lessons");
@@ -75,6 +76,7 @@ function buildHandout(config) {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${esc(config.title)} — Student Handout</title>
   <style>
+    ${EDITORIAL_FONT_IMPORT}
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&family=Hanken+Grotesk:wght@400;600&display=swap');
     * { box-sizing: border-box; }
     body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; }
@@ -95,9 +97,11 @@ function buildHandout(config) {
       .no-print { display: none; }
       .box { break-inside: avoid; }
     }
+    ${EDITORIAL_OVERRIDES}
   </style>
 </head>
 <body>
+<main>
   <div class="no-print" style="text-align:right; margin-bottom:12px;">
     <button onclick="window.print()" style="padding:8px 16px; font-weight:700; cursor:pointer;">🖨️ Print / Imprimir</button>
   </div>
@@ -109,9 +113,10 @@ function buildHandout(config) {
 
   <div class="bilingual">
     <div class="box">
-      <h2>Today's Goal / Meta de hoy</h2>
-      <p lang="en">${esc(config.contentObjective || "")}</p>
+      <h2>Objectives / Objetivos</h2>
+      ${config.contentObjective ? `<p lang="en"><strong>Content Objective:</strong> ${esc(config.contentObjective)}</p>` : ""}
       ${config.contentObjectiveEs ? `<p lang="es">${esc(config.contentObjectiveEs)}</p>` : ""}
+      ${config.languageObjective ? `<p lang="en"><strong>Language Objective:</strong> ${esc(config.languageObjective)}</p>` : ""}
     </div>
     <div class="box">
       <h2>Key Idea / Idea clave</h2>
@@ -148,6 +153,7 @@ function buildHandout(config) {
   </div>
 
   <footer class="footer">Neft Teacher · ${esc(config.lessonId)} · Printable student handout</footer>
+</main>
 </body>
 </html>`;
 }

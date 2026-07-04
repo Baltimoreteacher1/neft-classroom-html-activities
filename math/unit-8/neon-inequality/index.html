@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/assets/math-mobile.css">
   <meta name="description" content="Neon Inequality Gatekeeper: An interactive cybersecurity firewall mapping inequalities to number lines.">
   <title>Neon Inequality Gatekeeper | Neft Studio</title>
 
@@ -734,12 +735,54 @@
         max-height: none;
       }
     }
-  
+
+    /* ── Responsive: tablet ── */
+    @media (max-width: 900px) {
+      .hero {
+        padding: 24px;
+        margin: 16px 16px;
+      }
+      .hero h1 { font-size: 1.8rem; }
+      .hero-stats { flex-wrap: wrap; }
+      .studio-shell { padding: 0 16px 48px; }
+      .glass-panel { padding: 20px; }
+      .twr-lanes { grid-template-columns: 1fr 1fr; }
+      .diag-overlay {
+        width: auto;
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+      }
+      .hud-checklist { grid-template-columns: 1fr; }
+    }
+
+    /* ── Responsive: phone ── */
+    @media (max-width: 640px) {
+      .breadcrumb { margin: 16px 16px 0; flex-wrap: wrap; }
+      .hero { padding: 18px; margin: 12px 12px; }
+      .hero h1 { font-size: 1.5rem; }
+      .hero-stats { flex-direction: column; align-items: stretch; gap: 8px; }
+      .hero-stats .cyber-btn { justify-content: center; }
+      .studio-shell { padding: 0 12px 36px; gap: 16px; }
+      .glass-panel { padding: 16px; gap: 18px; }
+      .panel-meta { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .model-viewport { min-height: 200px; }
+      .model-viewport svg { height: auto; }
+      .gate-controllers { padding: 16px; }
+      .toggle-group { flex-wrap: wrap; gap: 8px; }
+      .twr-lanes { grid-template-columns: 1fr; }
+      .equation-display { font-size: 1.15rem; }
+      .glossary-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
+
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
 </head>
 <body>
   <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -1512,5 +1555,8 @@
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>

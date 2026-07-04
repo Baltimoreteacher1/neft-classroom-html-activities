@@ -30,7 +30,7 @@
     -->
     <iframe
       id="lesson"
-      src="{{LESSON_URL}}?lms=scorm&embed=1"
+      src="{{LESSON_URL}}{{LAUNCH_QUERY}}"
       allow="fullscreen; clipboard-write"
       title="{{TITLE}}"
     ></iframe>

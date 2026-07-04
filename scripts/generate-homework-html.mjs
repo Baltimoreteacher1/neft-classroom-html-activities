@@ -2,15 +2,18 @@ import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
+import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import {
   selectQuickCheckProblems,
   renderWelcomeBanner,
   renderQuickCheckIntro,
   renderHomeworkTabs,
   renderLearnTab,
+  renderArcadeTabPanel,
   renderWordsTab,
   renderTogetherTab,
   renderCheckTab,
+  renderWorkbenchTab,
   renderHelpTab,
   renderMoreTab,
   renderPlayTabPanel,
@@ -21,6 +24,11 @@ import {
   HOMEWORK_TABS_JS,
 } from "./homework-guided-notes.mjs";
 import { HOMEWORK_GAME_JS } from "./homework-games.mjs";
+import {
+  detectVisualTopic,
+  selectMorePracticeProblems,
+  selectTieredQuickCheckProblems,
+} from "./homework-alignment.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -222,6 +230,17 @@ function lessonConfigs() {
     if (!existsSync(cfgPath)) continue;
     try {
       const config = JSON.parse(readFileSync(cfgPath, "utf8"));
+      // Merge curated bilingual family-homework notes from sidecar data file.
+      // Sidecar keeps lesson configs lean; inline config.familyNotes wins on conflict.
+      const notesPath = join(root, "data", "family-homework-notes", `${dir.name}.json`);
+      if (existsSync(notesPath)) {
+        try {
+          const notes = JSON.parse(readFileSync(notesPath, "utf8"));
+          config.familyNotes = { ...notes, ...(config.familyNotes || {}) };
+        } catch (e) {
+          console.error(`Bad family-homework sidecar for ${dir.name}: ${e.message}`);
+        }
+      }
       out.push({ id: dir.name, config });
     } catch (err) {
       console.error(`Skipping ${dir.name}: ${err.message}`);
@@ -239,7 +258,223 @@ function lessonConfigs() {
   return out;
 }
 
-function renderProblem(it, pIdx) {
+// ---------------------------------------------------------------------------
+// Family-homework problem scaffolding
+// Every Quick Check problem gets clear step-by-step guidance, a visual model to
+// reason with, and room to show work — on screen (saved) and in print.
+// ---------------------------------------------------------------------------
+
+// Topic-aware one-liners woven into the step guide (bilingual + what to draw).
+const TOPIC_GUIDE = {
+  exponents: {
+    en: "Write the base, then multiply it by itself once for each exponent.",
+    es: "Escribe la base y multiplícala por sí misma una vez por cada exponente.",
+    draw: "Show the repeated multiplication (example: 2³ = 2 × 2 × 2).",
+    drawEs: "Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).",
+  },
+  ratios: {
+    en: "Find the unit rate or use a ratio table to scale up or down.",
+    es: "Halla la tasa unitaria o usa una tabla de razones para escalar.",
+    draw: "Fill the ratio table — keep both rows multiplying by the same number.",
+    drawEs: "Llena la tabla de razones — multiplica ambas filas por el mismo número.",
+  },
+  area: {
+    en: "Count or multiply the units that cover the shape (base × height).",
+    es: "Cuenta o multiplica las unidades que cubren la figura (base × altura).",
+    draw: "Outline the shape on the grid and count the square units inside.",
+    drawEs: "Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.",
+  },
+  volume: {
+    en: "Multiply length × width × height to fill the box with unit cubes.",
+    es: "Multiplica largo × ancho × alto para llenar la caja con cubos.",
+    draw: "Label the prism with its length, width, and height.",
+    drawEs: "Rotula el prisma con su largo, ancho y alto.",
+  },
+  "surface-area": {
+    en: "Find the area of every face, then add them all together.",
+    es: "Halla el área de cada cara y luego súmalas todas.",
+    draw: "Label each face of the prism, then write its area.",
+    drawEs: "Rotula cada cara del prisma y escribe su área.",
+  },
+  "coordinate-plane": {
+    en: "Start at (0, 0). Move right/left for x, then up/down for y.",
+    es: "Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.",
+    draw: "Plot each point on the grid and label it (x, y).",
+    drawEs: "Marca cada punto en la cuadrícula y rotúlalo (x, y).",
+  },
+  "number-line": {
+    en: "Place each number on the line — order tells you which is greater.",
+    es: "Coloca cada número en la recta — el orden dice cuál es mayor.",
+    draw: "Mark the numbers on the number line in order.",
+    drawEs: "Marca los números en la recta numérica en orden.",
+  },
+  fractions: {
+    en: "Use a common denominator, or a number line, before you compare or add.",
+    es: "Usa un denominador común, o una recta numérica, antes de comparar o sumar.",
+    draw: "Split the number line into equal parts to show the fractions.",
+    drawEs: "Divide la recta numérica en partes iguales para mostrar las fracciones.",
+  },
+  decimals: {
+    en: "Line up the decimal points and keep each digit in its place value.",
+    es: "Alinea los puntos decimales y mantén cada dígito en su valor posicional.",
+    draw: "Mark the decimals on the number line between the whole numbers.",
+    drawEs: "Marca los decimales en la recta numérica entre los enteros.",
+  },
+  equations: {
+    en: "Keep both sides equal — do the same thing to undo the operation.",
+    es: "Mantén ambos lados iguales — haz lo mismo para deshacer la operación.",
+    draw: "Picture a balance: what you do to one side, do to the other.",
+    drawEs: "Imagina una balanza: lo que haces a un lado, hazlo al otro.",
+  },
+  inequalities: {
+    en: "Solve like an equation, then shade the side that makes it true.",
+    es: "Resuelve como una ecuación y luego sombrea el lado que es verdadero.",
+    draw: "On the number line, use an open/closed circle and shade the solutions.",
+    drawEs: "En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.",
+  },
+  expressions: {
+    en: "Combine like terms; substitute the value, then follow the order of operations.",
+    es: "Combina términos semejantes; sustituye el valor y sigue el orden de operaciones.",
+    draw: "Box each term so you can see what to combine.",
+    drawEs: "Encierra cada término para ver qué combinar.",
+  },
+  statistics: {
+    en: "Organize the data first, then find the center or spread you need.",
+    es: "Organiza los datos primero, luego halla el centro o la dispersión.",
+    draw: "Plot each data value above the number line.",
+    drawEs: "Marca cada valor de datos sobre la recta numérica.",
+  },
+  factors: {
+    en: "List factors or multiples in order so none are missed.",
+    es: "Enumera factores o múltiplos en orden para no olvidar ninguno.",
+    draw: "Make a factor list or a tree to break the number apart.",
+    drawEs: "Haz una lista de factores o un árbol para descomponer el número.",
+  },
+  fallback: {
+    en: "Take it one step at a time and show how you got each number.",
+    es: "Hazlo paso a paso y muestra cómo obtuviste cada número.",
+    draw: "Draw a quick model — a picture, a number line, or a table.",
+    drawEs: "Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.",
+  },
+};
+
+// Blank, annotatable manipulatives (families draw on / print). Static by design.
+const SVG_NUMBER_LINE = `<svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/>${[
+  0, 1, 2, 3, 4, 5, 6, 7, 8,
+]
+  .map((i) => {
+    const x = 30 + i * 33;
+    return `<line x1="${x}" y1="28" x2="${x}" y2="40" stroke="#12355b" stroke-width="1.5"/>`;
+  })
+  .join("")}</svg>`;
+
+const SVG_GRID = `<svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/>${Array.from({ length: 14 }, (_, i) => `<line x1="${10 + (i + 1) * 20}" y1="10" x2="${10 + (i + 1) * 20}" y2="150" stroke="#d6e2ee" stroke-width="1"/>`).join("")}${Array.from({ length: 6 }, (_, i) => `<line x1="10" y1="${10 + (i + 1) * 20}" x2="310" y2="${10 + (i + 1) * 20}" stroke="#d6e2ee" stroke-width="1"/>`).join("")}</svg>`;
+
+const SVG_COORD = `<svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid">${Array.from({ length: 9 }, (_, i) => `<line x1="${20 + i * 20}" y1="20" x2="${20 + i * 20}" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="${20 + i * 20}" x2="180" y2="${20 + i * 20}" stroke="#d6e2ee" stroke-width="1"/>`).join("")}<line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>`;
+
+const SVG_RATIO_TABLE = `<svg viewBox="0 0 320 110" class="hw-visual-svg" role="img" aria-label="Blank ratio table"><rect x="10" y="15" width="300" height="80" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="10" y1="55" x2="310" y2="55" stroke="#12355b" stroke-width="1.5"/>${[85, 160, 235].map((x) => `<line x1="${x}" y1="15" x2="${x}" y2="95" stroke="#12355b" stroke-width="1.5"/>`).join("")}</svg>`;
+
+const SVG_PRISM = `<svg viewBox="0 0 220 140" class="hw-visual-svg" role="img" aria-label="Rectangular prism to label"><rect x="40" y="45" width="110" height="70" fill="#ffffff" stroke="#12355b" stroke-width="2"/><polygon points="40,45 75,20 185,20 150,45" fill="#eef5f4" stroke="#12355b" stroke-width="2"/><polyline points="150,45 185,20 185,90 150,115" fill="none" stroke="#12355b" stroke-width="2"/><line x1="150" y1="115" x2="185" y2="90" stroke="#12355b" stroke-width="2"/></svg>`;
+
+const SVG_BALANCE = `<svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>`;
+
+const SVG_EXP = `<svg viewBox="0 0 320 70" class="hw-visual-svg" role="img" aria-label="Repeated multiplication boxes">${[0, 1, 2, 3].map((i) => `<rect x="${15 + i * 78}" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/>${i < 3 ? `<text x="${72 + i * 78}" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text>` : ""}`).join("")}</svg>`;
+
+const TOPIC_VISUAL = {
+  exponents: SVG_EXP,
+  ratios: SVG_RATIO_TABLE,
+  area: SVG_GRID,
+  volume: SVG_PRISM,
+  "surface-area": SVG_PRISM,
+  "coordinate-plane": SVG_COORD,
+  "number-line": SVG_NUMBER_LINE,
+  fractions: SVG_NUMBER_LINE,
+  decimals: SVG_NUMBER_LINE,
+  equations: SVG_BALANCE,
+  inequalities: SVG_NUMBER_LINE,
+  expressions: SVG_GRID,
+  statistics: SVG_NUMBER_LINE,
+  factors: SVG_GRID,
+  fallback: SVG_GRID,
+};
+
+// Topics whose manipulative becomes a structured, tap-to-graph interactive widget
+// (hydrated client-side by the NeftGraph module). The static SVG above stays as the
+// no-JS / print fallback — progressive enhancement, nothing breaks without scripts.
+const INTERACTIVE_VISUAL = {
+  "number-line": "number-line",
+  fractions: "number-line",
+  decimals: "number-line",
+  inequalities: "number-line",
+  statistics: "number-line",
+  "coordinate-plane": "coordinate-plane",
+  area: "grid",
+  expressions: "grid",
+};
+function interactiveType(topic) {
+  return INTERACTIVE_VISUAL[topic] || null;
+}
+
+function topicGuide(topic) {
+  return TOPIC_GUIDE[topic] || TOPIC_GUIDE.fallback;
+}
+
+// Collapsible "How to solve it" routine — visible guidance, bilingual.
+function renderStepGuide(topic) {
+  const g = topicGuide(topic);
+  return `
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">${esc(g.draw)}</span><span class="lang-es" lang="es">${esc(g.drawEs)}</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">${esc(g.en)}</span><span class="lang-es" lang="es">${esc(g.es)}</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>`;
+}
+
+// Visual model + "show your work" space. Persists (saveState) and prints with lines.
+function renderWorkspace(topic, pIdx) {
+  const g = topicGuide(topic);
+  const visual = TOPIC_VISUAL[topic] || SVG_GRID;
+  const itype = interactiveType(topic);
+
+  // Interactive graphing topics (number line, coordinate plane, grid): the static
+  // SVG is hydrated into a tap-to-graph widget by NeftGraph. A hidden input lets
+  // the answer persist through the existing saveState()/loadState() pipeline.
+  const visualBlock = itype
+    ? `<div class="hw-visual-frame hw-interactive" data-interactive="${itype}" data-pidx="${pIdx}">
+            ${visual}
+            <div class="hw-graph-controls" data-graph-controls></div>
+            <button type="button" class="hw-graph-reset" data-graph-reset><span class="lang-en">↺ Reset</span><span class="lang-es" lang="es">↺ Reiniciar</span></button>
+            <div class="hw-graph-readout" data-graph-readout role="status" aria-live="polite"></div>
+            <input type="hidden" class="custom-input" name="graph_${pIdx}" data-graph-state value="" />
+          </div>`
+    : `<div class="hw-visual-frame hw-drawable" data-draw-frame>
+            ${visual}
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>`;
+
+  const caption = itype
+    ? `<span class="lang-en">👆 Tap to graph: ${esc(g.draw)}</span><span class="lang-es" lang="es">👆 Toca para graficar: ${esc(g.drawEs)}</span>`
+    : `<span class="lang-en">✏️ Draw your model: ${esc(g.draw)}</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: ${esc(g.drawEs)}</span>`;
+
+  return `
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption">${caption}</div>
+          ${visualBlock}
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_${pIdx}"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_${pIdx}" name="work_${pIdx}" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>`;
+}
+
+function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
   const type = it.type;
   let problemSubtype = "";
 
@@ -478,10 +713,13 @@ function renderProblem(it, pIdx) {
       </div>
     `;
   } else if (type === "error-analysis") {
+    // Canonical schema (see ERROR_ANALYSIS_SCHEMA in generate-worksheets.mjs):
+    // errorStep (0-based) + correctWork + optional explanation (the "why").
     const title = it.title || "Analyze the worked steps";
     const workedExample = it.workedExample || [];
     const errorStep = it.errorStep !== undefined ? it.errorStep : 0;
     const correctWork = it.correctWork || "";
+    const explanation = it.explanation || "";
 
     content = `
       <div class="problem-body">
@@ -496,7 +734,7 @@ function renderProblem(it, pIdx) {
               .map(
                 (step, sIdx) => `
               <div class="worked-step" id="step_q_${pIdx}_${sIdx + 1}">
-                <span class="step-badge">Step ${sIdx + 1}</span>
+                <span class="step-badge">Step ${sIdx + 1} / Paso ${sIdx + 1}</span>
                 <span class="step-label">${esc(step.label)}:</span>
                 <span class="step-work">${esc(step.work)}</span>
               </div>
@@ -524,6 +762,7 @@ function renderProblem(it, pIdx) {
           
           <div class="reveal-box" id="error_correct_work_${pIdx}" style="display:none;">
             <strong>Correct Work Reference:</strong> ${esc(correctWork)}
+            ${explanation ? `<br /><strong>Why:</strong> ${esc(explanation)}` : ""}
           </div>
         </div>
       </div>
@@ -578,14 +817,22 @@ function renderProblem(it, pIdx) {
   }
 
   const displayType = problemSubtype || type;
+  const computational = [
+    "multiple-choice",
+    "fill-table",
+    "error-analysis",
+    "open-response",
+  ].includes(type);
+  const scaffold = renderStepGuide(topic) + (computational ? renderWorkspace(topic, pIdx) : "");
   return `
     <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
       <div class="problem-header-row">
-        <div class="problem-number-badge">Quick Check ${pIdx + 1}</div>
+        <div class="problem-number-badge">${esc(opts.badge || "Quick Check")} ${opts.num || pIdx + 1}</div>
         <div class="problem-type-badge">${esc(displayType.replace(/-/g, " ").toUpperCase())}</div>
       </div>
-      <div class="problem-hint-row">${renderProblemHintButton(it)}</div>
+      <div class="problem-hint-row">${renderProblemHintButton(it, TOPIC_VISUAL[topic] || SVG_GRID)}</div>
       ${content}
+      ${scaffold}
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(${pIdx})" aria-label="Check answer for problem ${pIdx + 1}">
           ✓ Check This Problem / Revisar
@@ -600,17 +847,39 @@ function generateHtml(lessonId, config) {
   const title = config.title || "Lesson Practice";
   const vocab = config.vocabulary || [];
 
-  const selected = selectProblems(config.practice || {}, config);
+  // Two-tier Quick Check: easy "warm-up" problems first to practice the concept,
+  // then a harder "level up" set — clearly sectioned. Indices stay contiguous so
+  // per-problem checking/scoring keeps working across all sections.
+  const { warmup, challenge } = selectTieredQuickCheckProblems(config.practice || {}, config);
+  const coreSelected = [...warmup, ...challenge];
+  const moreSelected = selectMorePracticeProblems(config.practice || {}, config, coreSelected);
+  const topic = detectVisualTopic(config);
 
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
   const quickCheckIntroHtml = renderQuickCheckIntro();
-  const problemsHtml = selected.map((p, idx) => renderProblem(p, idx)).join("\n");
+  const warmupHtml = warmup
+    .map((p, idx) =>
+      renderProblem(p, idx, topic, { badge: "Warm-up / Calentamiento", num: idx + 1 }),
+    )
+    .join("\n");
+  const challengeHtml = challenge
+    .map((p, idx) =>
+      renderProblem(p, warmup.length + idx, topic, { badge: "Level up / Reto", num: idx + 1 }),
+    )
+    .join("\n");
+  const morePracticeHtml = moreSelected
+    .map((p, idx) =>
+      renderProblem(p, coreSelected.length + idx, topic, { badge: "Bonus / Más", num: idx + 1 }),
+    )
+    .join("\n");
 
   const tabPanels = [
     renderLearnTab(config),
+    renderArcadeTabPanel(lessonId),
     renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
     renderTogetherTab(config),
-    renderCheckTab(quickCheckIntroHtml, problemsHtml),
+    renderCheckTab(quickCheckIntroHtml, warmupHtml, challengeHtml, morePracticeHtml),
+    renderWorkbenchTab(),
     renderHelpTab(config),
     renderMoreTab(config, lessonId),
     renderPlayTabPanel(config),
@@ -630,10 +899,12 @@ function generateHtml(lessonId, config) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
+${EDITORIAL_FONT_IMPORT}
 :root {
   --navy: #12355b;
   --navy-light: #18466f;
   --teal: #1fa6a2;
+--teal-ink: #0c6f6b;
   --teal-light: #dff2ee;
   --amber: #f2c15b;
   --amber-light: #fef7e0;
@@ -1142,6 +1413,132 @@ header.homework-header h1 {
   color: var(--navy);
   margin: 0 0 18px 0;
   line-height: 1.45;
+}
+
+/* ---- Family scaffolding: step guide, visual model, show-your-work ---- */
+.hw-step-guide {
+  margin: 14px 0;
+  border: 1.5px solid var(--teal);
+  border-radius: 12px;
+  background: var(--teal-light);
+  overflow: hidden;
+}
+.hw-step-guide > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 11px 16px;
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--navy);
+  background: rgba(31, 166, 162, 0.16);
+}
+.hw-step-guide > summary::-webkit-details-marker { display: none; }
+.hw-step-guide > summary::after { content: " ▾"; color: var(--teal); }
+.hw-step-guide[open] > summary::after { content: " ▴"; }
+.hw-steps {
+  margin: 0;
+  padding: 12px 18px 14px 34px;
+  display: grid;
+  gap: 9px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--navy);
+}
+.hw-steps li { padding-left: 4px; }
+.hw-steps strong { color: var(--navy); }
+
+.hw-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  margin: 14px 0 4px;
+}
+@media (min-width: 640px) {
+  .hw-workspace { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+}
+.hw-visual-caption, .hw-work-label {
+  display: block;
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+.hw-visual-frame {
+  border: 1.5px dashed #9bb6cf;
+  border-radius: 12px;
+  background: #fbfdff;
+  padding: 8px;
+  text-align: center;
+}
+.hw-visual-svg { width: 100%; height: auto; max-height: 180px; }
+/* Drawable model area: students draw directly on the grid (mouse/touch/stylus). */
+.hw-visual-frame.hw-drawable { position: relative; }
+.hw-draw-canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  touch-action: none; cursor: crosshair; border-radius: 12px;
+}
+.hw-draw-clear {
+  position: absolute; top: 6px; right: 6px; z-index: 2;
+  font-family: var(--font-display); font-size: 12px; font-weight: 700;
+  background: #ffffff; color: var(--navy);
+  border: 1px solid var(--line); border-radius: 8px; padding: 3px 9px; cursor: pointer;
+}
+.hw-draw-clear:hover { border-color: var(--teal); }
+@media print { .hw-draw-clear { display: none; } }
+
+/* Interactive tap-to-graph widgets (number line, coordinate plane, grid) */
+.hw-visual-frame.hw-interactive { position: relative; }
+.hw-interactive .hw-visual-svg { touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+.hw-interactive .ng-hit { cursor: pointer; fill: transparent; }
+.hw-interactive .ng-tick-lbl, .hw-interactive .ng-axis-lbl { font-family: "Outfit", sans-serif; font-size: 11px; font-weight: 700; fill: var(--navy); }
+.hw-interactive .ng-point { fill: var(--teal); stroke: var(--navy); stroke-width: 2; cursor: pointer; }
+.hw-interactive .ng-point.is-open { fill: #ffffff; }
+.hw-interactive .ng-ray { stroke: var(--teal); stroke-width: 5; stroke-linecap: round; }
+.hw-interactive .ng-plot { fill: var(--teal); stroke: var(--navy); stroke-width: 1.5; cursor: pointer; }
+.hw-interactive .ng-plot-lbl { font-family: "Outfit", sans-serif; font-size: 10px; font-weight: 700; fill: var(--navy); }
+.hw-interactive .ng-cell { fill: transparent; cursor: pointer; }
+.hw-interactive .ng-cell.is-on { fill: rgba(31,166,162,0.45); }
+.hw-graph-controls { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 8px; }
+.hw-graph-controls:empty { display: none; }
+.hw-graph-controls button {
+  font-family: var(--font-display); font-size: 12.5px; font-weight: 700;
+  background: #ffffff; color: var(--navy);
+  border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 11px; min-height: 36px; cursor: pointer;
+}
+.hw-graph-controls button:hover { border-color: var(--teal); }
+.hw-graph-controls button[aria-pressed="true"] { background: var(--teal-ink); color: #ffffff; border-color: var(--teal-ink); }
+.hw-graph-reset {
+  position: absolute; top: 6px; right: 6px; z-index: 2;
+  font-family: var(--font-display); font-size: 12px; font-weight: 700;
+  background: #ffffff; color: var(--navy);
+  border: 1px solid var(--line); border-radius: 8px; padding: 3px 9px; cursor: pointer;
+}
+.hw-graph-reset:hover { border-color: var(--teal); }
+.hw-graph-readout {
+  margin-top: 8px; font-family: "Outfit", sans-serif; font-weight: 800;
+  font-size: 14px; color: var(--navy); min-height: 18px;
+}
+.hw-graph-readout:empty { display: none; }
+@media print { .hw-graph-reset, .hw-graph-controls { display: none; } }
+.hw-work-input {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  line-height: 28px;
+  background-color: #fbfdff;
+  background-image: repeating-linear-gradient(#fbfdff 0, #fbfdff 27px, #d6e2ee 27px, #d6e2ee 28px);
+  font-family: inherit;
+}
+
+@media print {
+  .hw-step-guide { break-inside: avoid; border-color: #888; background: #fff; }
+  .hw-step-guide > summary { background: #f0f0f0; }
+  .hw-step-guide[open] > summary::after, .hw-step-guide > summary::after { content: ""; }
+  .hw-workspace { break-inside: avoid; }
+  .hw-work-input { min-height: 130px; border: 1px solid #888; }
+  .hw-visual-frame { border-color: #888; }
 }
 
 /* Custom styled inputs, checkboxes, and select dropdowns */
@@ -1708,7 +2105,7 @@ header.homework-header h1 {
 }
 
 .word-chip:hover {
-  background: var(--teal);
+  background: var(--teal-ink);
   color: var(--white);
 }
 
@@ -1894,8 +2291,13 @@ header.homework-header h1 {
 }
 
 .btn-primary {
-  background: var(--teal);
+  background: var(--teal-ink);
   color: var(--white);
+}
+
+.btn .lang-en,
+.btn .lang-es {
+  color: inherit;
 }
 
 .btn-primary:hover {
@@ -1932,6 +2334,7 @@ header.homework-header h1 {
   }
   .action-buttons button {
     flex: 1;
+    min-height: 44px;
     justify-content: center;
   }
 }
@@ -2029,11 +2432,12 @@ body { font-size: 15px; line-height: 1.58; }
   .worked-step { break-inside: avoid; box-shadow: none; }
   .card { box-shadow: none; }
 }
+${EDITORIAL_OVERRIDES}
 </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" role="main">
 
   ${welcomeHtml}
 
@@ -2050,7 +2454,7 @@ ${helpModalHtml}
     
     <div class="score-progress-container">
       <div class="score-text">
-        Progress / Progreso: <span id="progress_text">0 / ${selected.length} Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / ${coreSelected.length} Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -2059,12 +2463,14 @@ ${helpModalHtml}
     
     <div class="action-buttons">
       <button class="btn btn-secondary" onclick="resetWorksheet()">Reset / Reiniciar</button>
-      <button class="btn btn-primary" onclick="checkWorksheet()" aria-label="Check all problems on this page">Check All / Revisar todo</button>
+      <button class="btn btn-primary" onclick="checkWorksheet()">Check All / Revisar todo</button>
     </div>
   </div>
 </div>
 
 <script>
+window.LESSON_ID = "${escAttr(lessonId)}";
+window.LESSON_TITLE = "${escAttr(title)}";
 ${HOMEWORK_TABS_JS}
 ${HOMEWORK_GAME_JS}
 // Sound engine
@@ -2510,9 +2916,10 @@ function normalizeMath(val) {
 }
 
 function updateProgress() {
-  const problems = document.querySelectorAll(".problem-section");
+  const problems = Array.from(document.querySelectorAll(".problem-section"))
+    .filter((s) => !s.closest(".more-practice"));
   let completedCount = 0;
-  
+
   problems.forEach((section, idx) => {
     const type = section.dataset.problemType;
     let hasValue = false;
@@ -2900,9 +3307,10 @@ function checkProblem(idx, options) {
 }
 
 function updateScoreSummary() {
-  const problems = document.querySelectorAll(".problem-section");
-  const checked = Array.from(problems).filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
-  const correctCount = Array.from(problems).filter((s) => s.classList.contains("correct")).length;
+  const problems = Array.from(document.querySelectorAll(".problem-section"))
+    .filter((s) => !s.closest(".more-practice"));
+  const checked = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
+  const correctCount = problems.filter((s) => s.classList.contains("correct")).length;
   const total = problems.length;
   if (checked.length > 0) {
     document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
@@ -2913,15 +3321,18 @@ function updateScoreSummary() {
 }
 
 function checkWorksheet() {
-  const problems = document.querySelectorAll(".problem-section");
+  const problems = Array.from(document.querySelectorAll(".problem-section"));
   let correctCount = 0;
 
-  problems.forEach((section, idx) => {
+  problems.forEach((section) => {
+    const idx = parseInt((section.id || "").replace("problem_", ""), 10);
+    if (Number.isNaN(idx)) return;
     const result = checkProblem(idx, { silent: true });
-    if (result.correct) correctCount++;
+    // Only core (non-optional) problems count toward the worksheet score.
+    if (result.correct && !section.closest(".more-practice")) correctCount++;
   });
 
-  const total = problems.length;
+  const total = problems.filter((s) => !s.closest(".more-practice")).length;
   document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
   document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
 
@@ -3019,6 +3430,221 @@ function resetWorksheet() {
   }
 }
 
+// ---- Interactive tap-to-graph widgets (number line / coordinate plane / grid) ----
+// Progressive enhancement: hydrates the static .hw-visual-svg fallbacks into
+// structured manipulatives. State persists via the hidden [data-graph-state] input,
+// which rides the existing saveState()/loadState() pipeline.
+var NeftGraph = (function () {
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function el(name, attrs) {
+    var e = document.createElementNS(SVGNS, name);
+    if (attrs) { for (var k in attrs) e.setAttribute(k, attrs[k]); }
+    return e;
+  }
+  function bi(en, es) {
+    return '<span class="lang-en">' + en + '</span><span class="lang-es" lang="es">' + es + '</span>';
+  }
+  function readState(frame) {
+    var inp = frame.querySelector("[data-graph-state]");
+    if (!inp || !inp.value) return null;
+    try { return JSON.parse(inp.value); } catch (e) { return null; }
+  }
+  function writeState(frame, state) {
+    var inp = frame.querySelector("[data-graph-state]");
+    if (inp) inp.value = state ? JSON.stringify(state) : "";
+    if (typeof saveState === "function") saveState();
+  }
+  function setReadout(frame, html) {
+    var r = frame.querySelector("[data-graph-readout]");
+    if (r) r.innerHTML = html || "";
+  }
+  function makeBtn(html, onClick) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.innerHTML = html;
+    b.addEventListener("click", onClick);
+    return b;
+  }
+
+  // ----- Number line: tap a tick to set the boundary, toggle open/closed, shade a ray -----
+  function initNumberLine(frame) {
+    var MIN = -5, MAX = 5, x0 = 24, x1 = 320, y = 46;
+    var stepX = (x1 - x0) / (MAX - MIN);
+    var state = readState(frame) || { v: null, closed: true, dir: null };
+    var oldSvg = frame.querySelector(".hw-visual-svg");
+    var svg = el("svg", { viewBox: "0 0 344 96", "class": "hw-visual-svg", role: "img", "aria-label": "Interactive number line" });
+    var rayLayer = el("g"), pointLayer = el("g");
+    svg.appendChild(el("line", { x1: 14, y1: y, x2: 330, y2: y, stroke: "#12355b", "stroke-width": 2 }));
+    svg.appendChild(el("polygon", { points: "330," + y + " 320," + (y - 5) + " 320," + (y + 5), fill: "#12355b" }));
+    svg.appendChild(el("polygon", { points: "14," + y + " 24," + (y - 5) + " 24," + (y + 5), fill: "#12355b" }));
+    function xFor(v) { return x0 + (v - MIN) * stepX; }
+    for (var v = MIN; v <= MAX; v++) {
+      var x = xFor(v);
+      svg.appendChild(el("line", { x1: x, y1: y - 6, x2: x, y2: y + 6, stroke: "#12355b", "stroke-width": 1.5 }));
+      var lbl = el("text", { x: x, y: y + 22, "text-anchor": "middle", "class": "ng-tick-lbl" });
+      lbl.textContent = String(v);
+      svg.appendChild(lbl);
+      (function (val, cx) {
+        var hit = el("rect", { x: cx - stepX / 2, y: 6, width: stepX, height: 60, "class": "ng-hit" });
+        hit.addEventListener("click", function () { state.v = val; render(); });
+        svg.appendChild(hit);
+      })(v, x);
+    }
+    svg.appendChild(rayLayer);
+    svg.appendChild(pointLayer);
+    oldSvg.parentNode.replaceChild(svg, oldSvg);
+
+    var controls = frame.querySelector("[data-graph-controls]");
+    controls.innerHTML = "";
+    var bCircle = makeBtn("", function () { state.closed = !state.closed; render(); });
+    var bLeft = makeBtn(bi("◀ Shade left", "◀ Sombrear izq."), function () { state.dir = state.dir === "left" ? null : "left"; render(); });
+    var bRight = makeBtn(bi("Shade right ▶", "Sombrear der. ▶"), function () { state.dir = state.dir === "right" ? null : "right"; render(); });
+    controls.appendChild(bCircle); controls.appendChild(bLeft); controls.appendChild(bRight);
+
+    function render() {
+      while (rayLayer.firstChild) rayLayer.removeChild(rayLayer.firstChild);
+      while (pointLayer.firstChild) pointLayer.removeChild(pointLayer.firstChild);
+      bCircle.innerHTML = state.closed ? bi("● Closed", "● Cerrado") : bi("○ Open", "○ Abierto");
+      bLeft.setAttribute("aria-pressed", state.dir === "left" ? "true" : "false");
+      bRight.setAttribute("aria-pressed", state.dir === "right" ? "true" : "false");
+      if (state.v != null) {
+        var px = xFor(state.v);
+        if (state.dir === "left") rayLayer.appendChild(el("line", { x1: 14, y1: y, x2: px, y2: y, "class": "ng-ray" }));
+        if (state.dir === "right") rayLayer.appendChild(el("line", { x1: px, y1: y, x2: 330, y2: y, "class": "ng-ray" }));
+        var pt = el("circle", { cx: px, cy: y, r: 7, "class": "ng-point" + (state.closed ? "" : " is-open") });
+        pt.addEventListener("click", function () { state.closed = !state.closed; render(); });
+        pointLayer.appendChild(pt);
+      }
+      if (state.v == null) {
+        setReadout(frame, "");
+      } else if (!state.dir) {
+        setReadout(frame, bi("Point at " + state.v, "Punto en " + state.v));
+      } else {
+        var op = state.dir === "right" ? (state.closed ? "≥" : ">") : (state.closed ? "≤" : "<");
+        setReadout(frame, bi("Your graph: x " + op + " " + state.v, "Tu gráfica: x " + op + " " + state.v));
+      }
+      writeState(frame, (state.v == null && state.dir == null) ? null : state);
+    }
+    frame.querySelector("[data-graph-reset]").addEventListener("click", function () {
+      state = { v: null, closed: true, dir: null }; render();
+    });
+    render();
+  }
+
+  // ----- Coordinate plane: tap a lattice point to plot/remove an ordered pair -----
+  function initCoordinatePlane(frame) {
+    var MIN = -5, MAX = 5, O = 120, STEP = 20; // origin at (120,120); 5*20=100 -> 20..220
+    var state = readState(frame) || { pts: [] };
+    var oldSvg = frame.querySelector(".hw-visual-svg");
+    var svg = el("svg", { viewBox: "0 0 240 240", "class": "hw-visual-svg", role: "img", "aria-label": "Interactive coordinate plane" });
+    function sx(x) { return O + x * STEP; }
+    function sy(yv) { return O - yv * STEP; }
+    for (var i = MIN; i <= MAX; i++) {
+      svg.appendChild(el("line", { x1: sx(i), y1: sy(MAX), x2: sx(i), y2: sy(MIN), stroke: "#d6e2ee", "stroke-width": 1 }));
+      svg.appendChild(el("line", { x1: sx(MIN), y1: sy(i), x2: sx(MAX), y2: sy(i), stroke: "#d6e2ee", "stroke-width": 1 }));
+    }
+    svg.appendChild(el("line", { x1: O, y1: sy(MAX) - 6, x2: O, y2: sy(MIN) + 6, stroke: "#12355b", "stroke-width": 2 }));
+    svg.appendChild(el("line", { x1: sx(MIN) - 6, y1: O, x2: sx(MAX) + 6, y2: O, stroke: "#12355b", "stroke-width": 2 }));
+    var xlbl = el("text", { x: sx(MAX) + 2, y: O + 14, "class": "ng-axis-lbl" }); xlbl.textContent = "x"; svg.appendChild(xlbl);
+    var ylbl = el("text", { x: O + 4, y: sy(MAX) + 2, "class": "ng-axis-lbl" }); ylbl.textContent = "y"; svg.appendChild(ylbl);
+    var plotLayer = el("g");
+    for (var gx = MIN; gx <= MAX; gx++) {
+      for (var gy = MIN; gy <= MAX; gy++) {
+        (function (px, py) {
+          var hit = el("circle", { cx: sx(px), cy: sy(py), r: 9, "class": "ng-hit" });
+          hit.addEventListener("click", function () { toggle(px, py); });
+          svg.appendChild(hit);
+        })(gx, gy);
+      }
+    }
+    svg.appendChild(plotLayer);
+    oldSvg.parentNode.replaceChild(svg, oldSvg);
+
+    function toggle(x, y) {
+      var idx = -1;
+      for (var i = 0; i < state.pts.length; i++) { if (state.pts[i][0] === x && state.pts[i][1] === y) { idx = i; break; } }
+      if (idx >= 0) state.pts.splice(idx, 1); else state.pts.push([x, y]);
+      render();
+    }
+    function render() {
+      while (plotLayer.firstChild) plotLayer.removeChild(plotLayer.firstChild);
+      var parts = [];
+      for (var i = 0; i < state.pts.length; i++) {
+        var p = state.pts[i];
+        plotLayer.appendChild(el("circle", { cx: sx(p[0]), cy: sy(p[1]), r: 4.5, "class": "ng-plot" }));
+        var t = el("text", { x: sx(p[0]) + 6, y: sy(p[1]) - 5, "class": "ng-plot-lbl" });
+        t.textContent = "(" + p[0] + ", " + p[1] + ")";
+        plotLayer.appendChild(t);
+        parts.push("(" + p[0] + ", " + p[1] + ")");
+      }
+      if (!parts.length) setReadout(frame, "");
+      else setReadout(frame, bi("Points: " + parts.join("  "), "Puntos: " + parts.join("  ")));
+      writeState(frame, state.pts.length ? state : null);
+    }
+    frame.querySelector("[data-graph-reset]").addEventListener("click", function () { state = { pts: [] }; render(); });
+    render();
+  }
+
+  // ----- Grid: tap cells to shade a model / count square units -----
+  function initGrid(frame) {
+    var COLS = 12, ROWS = 6, CELL = 24, PAD = 6;
+    var W = COLS * CELL + PAD * 2, H = ROWS * CELL + PAD * 2;
+    var state = readState(frame) || { cells: [] };
+    var on = {}; for (var i = 0; i < state.cells.length; i++) on[state.cells[i]] = true;
+    var oldSvg = frame.querySelector(".hw-visual-svg");
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, "class": "hw-visual-svg", role: "img", "aria-label": "Interactive grid" });
+    svg.appendChild(el("rect", { x: PAD, y: PAD, width: COLS * CELL, height: ROWS * CELL, fill: "#ffffff", stroke: "#12355b", "stroke-width": 1.5 }));
+    var cellLayer = el("g");
+    svg.appendChild(cellLayer);
+    for (var c = 0; c <= COLS; c++) svg.appendChild(el("line", { x1: PAD + c * CELL, y1: PAD, x2: PAD + c * CELL, y2: PAD + ROWS * CELL, stroke: "#d6e2ee", "stroke-width": 1 }));
+    for (var r = 0; r <= ROWS; r++) svg.appendChild(el("line", { x1: PAD, y1: PAD + r * CELL, x2: PAD + COLS * CELL, y2: PAD + r * CELL, stroke: "#d6e2ee", "stroke-width": 1 }));
+    for (var rr = 0; rr < ROWS; rr++) {
+      for (var cc = 0; cc < COLS; cc++) {
+        (function (row, col) {
+          var key = row + "," + col;
+          var rect = el("rect", { x: PAD + col * CELL, y: PAD + row * CELL, width: CELL, height: CELL, "class": "ng-cell" + (on[key] ? " is-on" : "") });
+          rect.addEventListener("click", function () {
+            if (on[key]) { delete on[key]; rect.setAttribute("class", "ng-cell"); }
+            else { on[key] = true; rect.setAttribute("class", "ng-cell is-on"); }
+            commit();
+          });
+          cellLayer.appendChild(rect);
+        })(rr, cc);
+      }
+    }
+    oldSvg.parentNode.replaceChild(svg, oldSvg);
+    function commit() {
+      var keys = Object.keys(on);
+      if (!keys.length) setReadout(frame, "");
+      else setReadout(frame, bi("Shaded: " + keys.length + " square units", "Sombreado: " + keys.length + " unidades cuadradas"));
+      writeState(frame, keys.length ? { cells: keys } : null);
+    }
+    frame.querySelector("[data-graph-reset]").addEventListener("click", function () {
+      on = {};
+      var rects = cellLayer.querySelectorAll(".ng-cell");
+      for (var i = 0; i < rects.length; i++) rects[i].setAttribute("class", "ng-cell");
+      commit();
+    });
+    commit();
+  }
+
+  function initAll() {
+    var frames = document.querySelectorAll(".hw-visual-frame.hw-interactive");
+    for (var i = 0; i < frames.length; i++) {
+      var f = frames[i];
+      if (f.getAttribute("data-ng-ready")) continue;
+      f.setAttribute("data-ng-ready", "1");
+      var type = f.getAttribute("data-interactive");
+      try {
+        if (type === "number-line") initNumberLine(f);
+        else if (type === "coordinate-plane") initCoordinatePlane(f);
+        else if (type === "grid") initGrid(f);
+      } catch (e) { /* fail safe: keep static fallback */ }
+    }
+  }
+  return { initAll: initAll };
+})();
+
 // Initial configuration
 window.onload = function() {
   const hadSavedState = !!localStorage.getItem(STORAGE_KEY);
@@ -3030,6 +3656,7 @@ window.onload = function() {
     });
   }
   updateProgress();
+  NeftGraph.initAll();
 
   document.addEventListener("dragend", function() {
     document.querySelectorAll(".drag-card.dragging, .drag-order-row.dragging")
@@ -3101,12 +3728,58 @@ window.onload = function() {
 </html>`;
 }
 
+// Split an inline-bilingual label ("🔵 English / Español") into language spans so
+// the existing language-mode toggle (body.lang-mode-es hides .lang-en, etc.) can
+// show only the chosen language. A leading icon/symbol cluster is kept outside the
+// spans so it stays visible in every mode. Text without a " / " separator is left
+// untouched (nothing to split — e.g. content that has no Spanish counterpart).
+function wrapBilingualLabel(raw) {
+  if (!raw || !raw.includes(" / ")) return raw;
+  const text = raw.trim();
+  const iconMatch = text.match(/^([^\p{L}\p{N}]*)(.*)$/u);
+  const icon = iconMatch[1] || "";
+  const rest = iconMatch[2];
+  const sep = rest.indexOf(" / ");
+  if (sep === -1) return raw;
+  const en = rest.slice(0, sep).trim();
+  const es = rest.slice(sep + 3).trim();
+  if (!en || !es) return raw;
+  const iconHtml = icon ? `${icon.trim()} ` : "";
+  return `${iconHtml}<span class="lang-en">${en}</span><span class="lang-es" lang="es">${es}</span>`;
+}
+
+// Build-time pass over the assembled homework HTML. Each rule targets a stable
+// class/handler so only known UI labels (never per-lesson math text) are rewritten.
+function localizeBilingualLabels(html) {
+  const rules = [
+    // Section headings (h2/h3.section-title) — plain text, no nested markup.
+    /(<h[23] class="section-title">)([^<]*)(<\/h[23]>)/g,
+    // Guided-step badges, vocab flip prompt.
+    /(<span class="step-badge">)([^<]*)(<\/span>)/g,
+    /(<div class="flip-prompt">)([^<]*)(<\/div>)/g,
+    // Bilingual action buttons, keyed on stable class or handler.
+    /(<button[^>]*class="[^"]*print-all-btn[^"]*"[^>]*>)([^<]*)(<\/button>)/g,
+    /(<button[^>]*class="[^"]*btn-check-one[^"]*"[^>]*>)([^<]*)(<\/button>)/g,
+    /(<button[^>]*class="[^"]*hw-game-restart[^"]*"[^>]*>)([^<]*)(<\/button>)/g,
+    /(<button[^>]*class="[^"]*help-pop-btn[^"]*"[^>]*>)([^<]*)(<\/button>)/g,
+    /(<button[^>]*onclick="checkWorksheet\(\)"[^>]*>)([^<]*)(<\/button>)/g,
+  ];
+  let out = html;
+  for (const re of rules) {
+    out = out.replace(
+      re,
+      (_m, open, inner, close) => `${open}${wrapBilingualLabel(inner)}${close}`,
+    );
+  }
+  return out;
+}
+
 function main() {
   const lessons = lessonConfigs();
   let count = 0;
 
   for (const { id, config } of lessons) {
-    const homeworkHtml = generateHtml(id, config);
+    const homeworkHtml = localizeBilingualLabels(generateHtml(id, config));
     const lessonPath = join(lessonsDir, id, "homework.html");
     writeFileSync(lessonPath, homeworkHtml);
     count++;

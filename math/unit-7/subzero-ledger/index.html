@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/assets/math-mobile.css">
   <meta name="description" content="Sub-Zero Ledger & Altitude Compass: An interactive polar laboratory mapping negative integers and absolute value to vertical meters and ledgers.">
   <title>Sub-Zero Ledger & Altitude Compass | Neft Studio</title>
 
@@ -719,7 +720,70 @@
         max-height: none;
       }
     }
-  
+
+    /* ── Responsive: tablet ── */
+    @media (max-width: 900px) {
+      .studio-shell {
+        grid-template-columns: 1fr;
+      }
+      .polar-split {
+        grid-template-columns: 1fr;
+      }
+      .twr-lanes {
+        grid-template-columns: 1fr;
+      }
+      .hero {
+        padding: 24px;
+      }
+      .diag-overlay {
+        width: calc(100vw - 32px);
+        max-width: 420px;
+      }
+    }
+
+    /* ── Responsive: phone ── */
+    @media (max-width: 640px) {
+      .hero {
+        padding: 18px;
+        margin: 16px;
+      }
+      .hero h1 {
+        font-size: 1.6rem;
+      }
+      .hero-stats {
+        flex-wrap: wrap;
+      }
+      .hero-stats .cyber-btn {
+        flex: 1 1 auto;
+        justify-content: center;
+      }
+      .studio-shell {
+        padding: 0 16px 40px;
+      }
+      .glass-panel {
+        padding: 18px;
+      }
+      .ledger-row {
+        flex-wrap: wrap;
+        align-items: flex-start;
+      }
+      .ledger-inputs {
+        flex-wrap: wrap;
+        width: 100%;
+      }
+      .panel-meta {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .diag-overlay {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        width: auto;
+        max-width: none;
+      }
+    }
+
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -728,6 +792,9 @@
   <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
   <link rel="stylesheet" href="/assets/game-fx.css">
   <!-- gfx-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
 </head>
 <body>
   <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -1636,5 +1703,8 @@
   <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
   <script src="/assets/game-fx.js" defer></script>
   <!-- gfx-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>

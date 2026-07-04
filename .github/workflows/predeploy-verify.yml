@@ -74,6 +74,10 @@ jobs:
   claude-predeploy-verify:
     name: Claude pre-deploy verification
     needs: build
+    # claude-code-action only supports PR / comment contexts ("Unsupported event
+    # type: push"), and PRs are where this gate blocks a merge to main anyway.
+    # On direct pushes to main, validate + build still run; this stage is skipped.
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     # Read-only: Claude inspects the change but must not write, commit, or deploy.
     permissions:

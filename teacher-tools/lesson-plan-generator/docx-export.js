@@ -42,12 +42,18 @@
       BorderStyle,
     } = d;
 
-    const border = { style: BorderStyle.SINGLE, size: 8, color: "000000" };
+    const border = { style: BorderStyle.SINGLE, size: 4, color: "CBD5E1" };
     const cellBorders = {
       top: border,
       bottom: border,
       left: border,
       right: border,
+    };
+    const cellMargins = {
+      top: 120,
+      bottom: 120,
+      left: 180,
+      right: 180,
     };
 
     const txt = (s) => String(s == null ? "" : s);
@@ -119,7 +125,12 @@
     const cell = (content, opts = {}) =>
       new TableCell({
         borders: cellBorders,
-        shading: opts.head ? { fill: GREY } : undefined,
+        margins: cellMargins,
+        shading: opts.head
+          ? { fill: TEAL }
+          : opts.shading
+            ? { fill: opts.shading }
+            : undefined,
         width: opts.width
           ? { size: opts.width, type: WidthType.PERCENTAGE }
           : undefined,
@@ -127,7 +138,12 @@
           typeof c === "string"
             ? new Paragraph({
                 children: [
-                  new TextRun({ text: txt(c), size: 20, bold: !!opts.head }),
+                  new TextRun({
+                    text: txt(c),
+                    size: 20,
+                    bold: !!opts.head,
+                    color: opts.head ? "FFFFFF" : undefined,
+                  }),
                 ],
               })
             : c,
@@ -145,15 +161,79 @@
             ),
           }),
           ...rows.map(
-            (r) =>
+            (r, rowIndex) =>
               new TableRow({
                 children: r.map((c, i) =>
-                  cell(c, { width: widths && widths[i] }),
+                  cell(c, {
+                    width: widths && widths[i],
+                    shading: rowIndex % 2 === 1 ? "F8FAFC" : undefined,
+                  }),
                 ),
               }),
           ),
         ],
       });
+
+    const callout = (content, title) => {
+      const calloutBorders = {
+        top: { style: BorderStyle.NONE, size: 0, color: "auto" },
+        bottom: { style: BorderStyle.NONE, size: 0, color: "auto" },
+        left: { style: BorderStyle.SINGLE, size: 24, color: TEAL },
+        right: { style: BorderStyle.NONE, size: 0, color: "auto" },
+      };
+
+      const children = [];
+      if (title) {
+        children.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: txt(title),
+                bold: true,
+                size: 22,
+                color: TEAL,
+              }),
+            ],
+            spacing: { after: 60 },
+          }),
+        );
+      }
+
+      const contentList = Array.isArray(content) ? content : [content];
+      contentList.forEach((c) => {
+        if (typeof c === "string") {
+          children.push(
+            new Paragraph({
+              children: [new TextRun({ text: txt(c), size: 20 })],
+              spacing: { after: 40 },
+            }),
+          );
+        } else {
+          children.push(c);
+        }
+      });
+
+      if (children.length > 0 && children[children.length - 1].spacing) {
+        children[children.length - 1].spacing.after = 0;
+      }
+
+      return new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                borders: calloutBorders,
+                margins: { top: 140, bottom: 140, left: 200, right: 140 },
+                shading: { fill: "F8FAFC" },
+                children: children,
+              }),
+            ],
+          }),
+        ],
+        spacing: { before: 120, after: 120 },
+      });
+    };
 
     return {
       H1,
@@ -165,6 +245,7 @@
       pageBreak,
       table,
       sub,
+      callout,
       TextRun,
       Paragraph,
     };
@@ -173,6 +254,8 @@
   /* ---------- TEACHER-FACING body ---------- */
   function teacherBody(plan, k) {
     const h = plan.header;
+    const t = plan.timing || {};
+    const at = (n) => (n ? ` · ${n}` : ""); // time chip suffix for headings
     const out = [];
     out.push(k.H1(h.title));
     out.push(
@@ -186,6 +269,40 @@
         ]
           .filter(Boolean)
           .join("   |   "),
+      ),
+    );
+
+    // Lesson at a Glance (the 5-second scan read)
+    const stdCodes = h.standards
+      .map((s) => s.code || s.desc)
+      .filter(Boolean)
+      .join(", ");
+    const flowStr = (h.pacing || [])
+      .map(([name, t]) => `${name} ${t}`)
+      .join("  →  ");
+    const glanceRow = (label, val) =>
+      new k.Paragraph({
+        children: [
+          new k.TextRun({ text: label + ": ", bold: true, size: 20 }),
+          new k.TextRun({ text: String(val == null ? "" : val), size: 20 }),
+        ],
+        spacing: { after: 60 },
+      });
+    out.push(
+      k.callout(
+        [
+          glanceRow("I Can", h.iCan),
+          glanceRow("Essential Question", h.essentialQuestion),
+          stdCodes ? glanceRow("Standard(s)", stdCodes) : null,
+          new k.Paragraph({
+            children: [
+              new k.TextRun({ text: "Flow: ", bold: true, size: 20 }),
+              new k.TextRun({ text: flowStr, size: 20 }),
+            ],
+            spacing: { after: 0 },
+          }),
+        ].filter(Boolean),
+        "Lesson at a Glance",
       ),
     );
 
@@ -215,10 +332,34 @@
     // 2 · Teacher Snapshot
     const s = plan.snapshot;
     out.push(k.H2("2 · Teacher Snapshot"));
-    out.push(k.runs([{ t: "Learning today: ", b: true }, { t: s.learning }]));
-    out.push(k.runs([{ t: "Why it matters: ", b: true }, { t: s.why }]));
     out.push(
-      k.runs([{ t: "By the end, students can: ", b: true }, { t: s.byEnd }]),
+      k.callout([
+        new k.Paragraph({
+          children: [
+            new k.TextRun({ text: "Learning today: ", bold: true, size: 20 }),
+            new k.TextRun({ text: s.learning, size: 20 }),
+          ],
+          spacing: { after: 60 },
+        }),
+        new k.Paragraph({
+          children: [
+            new k.TextRun({ text: "Why it matters: ", bold: true, size: 20 }),
+            new k.TextRun({ text: s.why, size: 20 }),
+          ],
+          spacing: { after: 60 },
+        }),
+        new k.Paragraph({
+          children: [
+            new k.TextRun({
+              text: "By the end, students can: ",
+              bold: true,
+              size: 20,
+            }),
+            new k.TextRun({ text: s.byEnd, size: 20 }),
+          ],
+          spacing: { after: 0 },
+        }),
+      ]),
     );
     out.push(k.H3("Anticipated misconceptions"));
     out.push(...k.bullets(s.misconceptions));
@@ -241,7 +382,7 @@
     );
 
     // 4 · Do Now
-    out.push(k.H2("4 · Do Now / Warm-Up (3–5 min)"));
+    out.push(k.H2("4 · Do Now / Warm-Up" + at(t.doNow)));
     out.push(k.P(plan.doNow.directions, { italics: true }));
     out.push(
       k.table(
@@ -255,7 +396,7 @@
     );
 
     // 5 · Mini-Lesson
-    out.push(k.H2("5 · Mini-Lesson / Direct Instruction"));
+    out.push(k.H2("5 · Mini-Lesson / Direct Instruction" + at(t.mini)));
     out.push(k.P(plan.mini.teacherExplanation));
     out.push(k.P(plan.mini.gradualRelease, { italics: true }));
     out.push(k.H3("Student notes"));
@@ -283,7 +424,7 @@
     );
 
     // 6 · Guided
-    out.push(k.H2("6 · Guided Practice"));
+    out.push(k.H2("6 · Guided Practice" + at(t.guided)));
     out.push(
       k.table(
         ["#", "Problem", "Answer", "Teacher prompt"],
@@ -302,7 +443,9 @@
 
     // 7 · Collaborative
     const c = plan.collaborative;
-    out.push(k.H2("7 · Collaborative / Partner Activity"));
+    out.push(
+      k.H2("7 · Collaborative / Partner Activity" + at(t.collaborative)),
+    );
     out.push(
       k.runs([
         { t: "Student directions: ", b: true },
@@ -325,7 +468,7 @@
     );
 
     // 8 · Independent
-    out.push(k.H2("8 · Independent Practice"));
+    out.push(k.H2("8 · Independent Practice" + at(t.independent)));
     out.push(
       k.table(
         ["#", "Type", "Problem", "Answer key"],
@@ -353,7 +496,7 @@
 
     // 9 · Writing / TWR
     const w = plan.writing;
-    out.push(k.H2("9 · Writing / TWR Connection"));
+    out.push(k.H2("9 · Writing / TWR Connection" + at(t.writing)));
     out.push(k.runs([{ t: "Kernel sentence: ", b: true }, { t: w.kernel }]));
     out.push(
       k.table(
@@ -413,7 +556,7 @@
     out.push(...k.bullets(cf.decisionPoints));
 
     // 12 · Exit Ticket
-    out.push(k.H2("12 · Exit Ticket"));
+    out.push(k.H2("12 · Exit Ticket" + at(t.exit)));
     out.push(
       k.table(
         ["#", "Question", "Answer key"],
@@ -534,7 +677,12 @@
 
     out.push(k.H2("Writing"));
     out.push(k.P(plan.writing.kernel, { bold: true }));
+    out.push(k.P("Complete the sentence using because, but, and so:"));
     out.push(k.P("Because: " + plan.writing.because));
+    out.push(space(1));
+    out.push(k.P("But: " + plan.writing.but));
+    out.push(space(1));
+    out.push(k.P("So: " + plan.writing.so));
     out.push(space(1));
     out.push(
       k.P("Word bank: " + plan.writing.wordBank.join(", "), { italics: true }),

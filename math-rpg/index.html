@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Number Realm — a story-driven math RPG for Grade 6, built as a term-long campaign. One realm per unit, a persistent hero who levels up across all realms, a shop, abilities, per-standard mastery, achievements, and a Daily Quest to keep your streak alive. Works offline; progress saves automatically."
+    />
+    <title>⚔️ Number Realm — A Grade 6 Math Campaign</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <link rel="stylesheet" href="/math-rpg/engine/rpg.css" />
+    <style>
+      body { background: var(--bg, #f6f7f2); margin: 0; color: var(--ink, #17202a); }
+      .nr-wrap { max-width: 1000px; margin: 0 auto; padding: 1.25rem; }
+      .nr-back { display: inline-block; margin-bottom: 1rem; color: var(--teal, #0f766e); font-weight: 700; text-decoration: none; }
+      .nr-back:hover { text-decoration: underline; }
+      .nr-hero {
+        background: radial-gradient(1200px 400px at 80% -10%, rgba(109, 40, 217, 0.20), transparent), linear-gradient(135deg, #0f766e, #115e59);
+        color: #fff; border-radius: 22px; padding: clamp(1.5rem, 5vw, 2.6rem);
+        box-shadow: 0 22px 55px rgba(23, 32, 42, 0.25); position: relative; overflow: hidden;
+      }
+      .nr-hero h1 { font-size: clamp(2rem, 6vw, 3.2rem); margin: 0 0 0.4rem; line-height: 1.05; }
+      .nr-hero p { font-size: clamp(1rem, 2.5vw, 1.15rem); max-width: 62ch; line-height: 1.55; margin: 0.35rem 0; opacity: 0.95; }
+      .nr-hero .emoji-row { font-size: clamp(1.6rem, 6vw, 2.2rem); letter-spacing: 0.2rem; margin-bottom: 0.6rem; }
+      /* Hero profile bar */
+      .nr-profile {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.75rem;
+        background: #fff; border: 1px solid var(--line, #d8dfdc); border-radius: 16px;
+        padding: 1rem; margin: 1.25rem 0; box-shadow: 0 10px 30px rgba(23,32,42,0.08);
+      }
+      .nr-stat { text-align: center; }
+      .nr-stat b { display: block; font-size: 1.5rem; line-height: 1.1; }
+      .nr-stat span { font-size: 0.8rem; color: var(--muted, #5b6773); font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+      .nr-xpbar { height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; margin-top: 0.4rem; }
+      .nr-xpbar > span { display: block; height: 100%; background: #6d28d9; }
+      /* Daily strip */
+      .nr-daily {
+        display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem;
+        background: linear-gradient(120deg, rgba(194,65,12,0.10), rgba(183,121,31,0.10));
+        border: 1px solid var(--line, #d8dfdc); border-radius: 14px; padding: 0.85rem 1.1rem; margin: 1rem 0;
+      }
+      .nr-daily strong { font-size: 1.05rem; }
+      .nr-daily .sub { font-size: 0.88rem; color: var(--muted, #5b6773); }
+      .nr-how { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.9rem; margin: 1.5rem 0; }
+      .nr-how div { background: #fff; border: 1px solid var(--line, #d8dfdc); border-radius: 14px; padding: 1rem; font-size: 0.96rem; }
+      .nr-how strong { display: block; font-size: 1.02rem; margin-bottom: 0.2rem; }
+      h2.nr-section { margin: 2rem 0 0.4rem; font-size: 1.5rem; }
+      .nr-section-sub { color: var(--muted, #5b6773); margin: 0 0 0.9rem; }
+      .nr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; }
+      .nr-card {
+        display: flex; flex-direction: column; gap: 0.35rem; text-decoration: none; color: inherit;
+        background: #fff; border: 2px solid var(--line, #d8dfdc); border-radius: 16px; padding: 1.1rem;
+        transition: transform 0.12s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      }
+      .nr-card:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(23, 32, 42, 0.16); border-color: var(--accent, #0f766e); }
+      .nr-card:focus-visible { outline: 3px solid #1d4ed8; outline-offset: 2px; }
+      .nr-card.locked { opacity: 0.6; }
+      .nr-card.finale { background: linear-gradient(135deg, #2e1065, #4c1d95); color: #fff; border-color: #4c1d95; }
+      .nr-card.finale .std, .nr-card.finale .unit { color: rgba(255,255,255,0.85); }
+      .nr-card .top { display: flex; align-items: center; justify-content: space-between; }
+      .nr-card .emoji { font-size: 2.3rem; line-height: 1; }
+      .nr-card .unit { font-size: 0.78rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted, #5b6773); }
+      .nr-card h3 { margin: 0.15rem 0; font-size: 1.2rem; line-height: 1.2; }
+      .nr-card .std { font-size: 0.85rem; color: var(--muted, #5b6773); }
+      .nr-badge { align-self: flex-start; margin-top: 0.35rem; font-size: 0.8rem; font-weight: 700; border-radius: 999px; padding: 0.2rem 0.7rem; background: #eef4f3; color: var(--teal-dark, #115e59); }
+      .nr-badge.done { background: rgba(22, 163, 74, 0.15); color: #15803d; }
+      .nr-badge.started { background: rgba(183, 121, 31, 0.15); color: #b7791f; }
+      .nr-badge.locked { background: rgba(100,116,139,0.15); color: #475569; }
+      .nr-achs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0 0; }
+      .nr-ach { font-size: 1.4rem; filter: grayscale(1); opacity: 0.4; }
+      .nr-ach.got { filter: none; opacity: 1; }
+      footer.nr-foot { margin: 2.5rem 0 1rem; color: var(--muted, #5b6773); font-size: 0.9rem; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <div class="nr-wrap">
+      <a class="nr-back" href="/">← Classroom home</a>
+      <header class="nr-hero">
+        <div class="emoji-row" aria-hidden="true">🧭 ⚔️ 🐉 ✨ 🏆 🌌</div>
+        <h1>Number Realm</h1>
+        <p>A story-driven math <strong>campaign</strong> for Grade 6 — one realm for every unit, played across the whole term. Battle monsters by solving real math problems, level up one hero across all realms, spend gold in the shop, unlock abilities, and build mastery of every standard.</p>
+        <p style="opacity:0.85;font-size:1rem;">No login needed. Progress saves automatically, and a resume code lets you continue on any device. Come back for the <strong>Daily Quest</strong> to keep your streak alive.</p>
+      </header>
+
+      <section class="nr-profile" id="nr-profile" aria-label="Your hero"></section>
+
+      <div class="nr-daily" id="nr-daily"></div>
+
+      <div class="nr-how">
+        <div><strong>🗺️ A term-long journey</strong>Play each realm as your class reaches that unit. Ten realms + a Catch-Up garden + a Saga Finale.</div>
+        <div><strong>🦉 Ask the Sage</strong>Stuck? Get a Socratic hint that guides your thinking without giving the answer away.</div>
+        <div><strong>🛒 Grow your hero</strong>Earn gold and XP, buy potions and charms, and unlock abilities like Focus and Power Strike.</div>
+        <div><strong>🎓 Build mastery</strong>Every answer builds per-standard mastery your teacher can see. Chase all 13 achievements.</div>
+      </div>
+
+      <h2 class="nr-section">The Campaign</h2>
+      <p class="nr-section-sub">Start at the Gateway Gardens, then take on the ten realms in any order your class is ready for.</p>
+      <div class="nr-grid" id="nr-grid"></div>
+
+      <h2 class="nr-section">Achievements</h2>
+      <p class="nr-section-sub" id="nr-ach-count">Collect trophies as you play.</p>
+      <div class="nr-achs" id="nr-achs"></div>
+
+      <footer class="nr-foot">
+        Number Realm · a classroom math campaign · Grade 6 (CCSS 6.NS, 6.RP, 6.EE, 6.SP, 6.G)
+      </footer>
+    </div>
+
+    <script src="/math-rpg/engine/profile.js"></script>
+    <script src="/math-rpg/engine/items.js"></script>
+    <script>
+      (function () {
+        var PROFILE = window.MRPG_PROFILE;
+        var ITEMS = window.MRPG_ITEMS;
+        var REALMS = [
+          { n: 0, key: 0, emoji: "🌱", realm: "The Gateway Gardens", std: "Readiness · warm-up", accent: "#0d9488" },
+          { n: 1, key: 1, emoji: "🧭", realm: "The Foundry of Factors", std: "6.NS · Number Sense", accent: "#475569" },
+          { n: 2, key: 2, emoji: "⛵", realm: "The Fractured Isles", std: "6.NS.A · Fraction Division", accent: "#0891b2" },
+          { n: 3, key: 3, emoji: "🧕", realm: "The Ratio Bazaar", std: "6.RP · Ratios", accent: "#0f766e" },
+          { n: 4, key: 4, emoji: "🧗", realm: "Percent Peaks", std: "6.RP · Rates & Percents", accent: "#b45309" },
+          { n: 5, key: 5, emoji: "🛡️", realm: "The Tiled Territories", std: "6.G.A.1 · Area", accent: "#15803d" },
+          { n: 6, key: 6, emoji: "🧙", realm: "Variable Vale", std: "6.EE · Expressions", accent: "#6d28d9" },
+          { n: 7, key: 7, emoji: "⚔️", realm: "The Balance Citadel", std: "6.EE.B · Equations", accent: "#be123c" },
+          { n: 8, key: 8, emoji: "🔬", realm: "The Data Delta", std: "6.SP · Statistics", accent: "#0369a1" },
+          { n: 9, key: 9, emoji: "🚀", realm: "The Coordinate Cosmos", std: "6.NS.C · Coordinate Plane", accent: "#4338ca" },
+          { n: 10, key: 10, emoji: "🏛️", realm: "The Solid Sanctum", std: "6.G.A · Volume & Surface Area", accent: "#9333ea" },
+        ];
+
+        function progressFor(n) {
+          try { var raw = localStorage.getItem("mrpg:unit" + n); return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
+        }
+        function realmsCleared() {
+          var c = 0;
+          for (var i = 1; i <= 10; i++) { var g = progressFor(i); if (g && g.done) c++; }
+          return c;
+        }
+
+        var pr = PROFILE ? PROFILE.get() : null;
+
+        // ---- profile bar ----
+        var prof = document.getElementById("nr-profile");
+        if (pr) {
+          var xpPct = pr.xpNext ? Math.round((pr.xp / pr.xpNext) * 100) : 0;
+          prof.innerHTML =
+            '<div class="nr-stat"><b>' + (pr.avatar || "🧑‍🎓") + "</b><span>" + (pr.name || "Hero") + "</span></div>" +
+            '<div class="nr-stat"><b>' + pr.level + '</b><span>Level</span><div class="nr-xpbar"><span style="width:' + xpPct + '%"></span></div></div>' +
+            '<div class="nr-stat"><b>🪙 ' + pr.gold + "</b><span>Gold</span></div>" +
+            '<div class="nr-stat"><b>🔥 ' + pr.daily.streak + "</b><span>Day streak</span></div>" +
+            '<div class="nr-stat"><b>' + realmsCleared() + '/10</b><span>Realms</span></div>' +
+            '<div class="nr-stat"><b>' + (pr.stats ? pr.stats.problemsSolved : 0) + "</b><span>Solved</span></div>";
+        } else {
+          prof.innerHTML = '<div class="nr-stat" style="grid-column:1/-1"><b>Ready to begin?</b><span>Enter any realm to create your hero</span></div>';
+        }
+
+        // ---- daily ----
+        var daily = document.getElementById("nr-daily");
+        var today = (function () { var d = new Date(); var z = new Date(d.getTime() - d.getTimezoneOffset() * 60000); return z.toISOString().slice(0, 10); })();
+        var done = pr && pr.daily.completed && pr.daily.completed[today];
+        daily.innerHTML =
+          "<div><strong>" + (done ? "✅ Daily Quest done today" : "🗓️ Daily Quest awaits") + "</strong>" +
+          '<div class="sub">' + (done ? "Come back tomorrow to grow your streak." : "Open any realm and tap “Start Daily” for a mixed challenge and bonus rewards.") + "</div></div>" +
+          '<div><a class="nr-badge ' + (done ? "done" : "started") + '" style="text-decoration:none;font-size:0.95rem;padding:0.4rem 0.9rem;" href="/math-rpg/unit-3/">' + (done ? "Streak: " + pr.daily.streak + " days" : "Go to a realm →") + "</a></div>";
+
+        // ---- realm grid ----
+        var grid = document.getElementById("nr-grid");
+        var cleared = realmsCleared();
+        REALMS.forEach(function (r) {
+          var g = progressFor(r.key);
+          var badgeText = "Start adventure →", badgeCls = "nr-badge";
+          if (g) {
+            var cc = g.cleared ? Object.keys(g.cleared).length : 0;
+            if (g.done) { badgeText = "🏆 Realm cleared"; badgeCls = "nr-badge done"; }
+            else if (cc > 0 || g.seenIntro) { badgeText = "▶ In progress · " + cc + " cleared"; badgeCls = "nr-badge started"; }
+          }
+          var a = document.createElement("a");
+          a.className = "nr-card";
+          a.href = "/math-rpg/unit-" + r.n + "/";
+          a.style.setProperty("--accent", r.accent);
+          a.setAttribute("aria-label", (r.n === 0 ? "Gateway Gardens" : "Unit " + r.n) + ": " + r.realm + " — " + r.std);
+          a.innerHTML =
+            '<div class="top"><span class="emoji" aria-hidden="true">' + r.emoji + '</span><span class="unit">' + (r.n === 0 ? "Warm-up" : "Unit " + r.n) + "</span></div>" +
+            "<h3>" + r.realm + "</h3><span class=\"std\">" + r.std + "</span>" +
+            '<span class="' + badgeCls + '">' + badgeText + "</span>";
+          grid.appendChild(a);
+        });
+        // Finale card (gated)
+        var fin = progressFor("finale");
+        var finUnlocked = cleared >= 10;
+        var fa = document.createElement("a");
+        fa.className = "nr-card finale" + (finUnlocked ? "" : " locked");
+        fa.href = "/math-rpg/finale/";
+        fa.setAttribute("aria-label", "Saga Finale: The Rift at the End of Numbers" + (finUnlocked ? "" : " (locked)"));
+        var finBadge = (fin && fin.done) ? '<span class="nr-badge done">👑 The Null undone</span>'
+          : finUnlocked ? '<span class="nr-badge started">🔥 Unlocked — face The Null</span>'
+          : '<span class="nr-badge locked">🔒 Clear all 10 realms (' + cleared + "/10)</span>";
+        fa.innerHTML =
+          '<div class="top"><span class="emoji" aria-hidden="true">🌌</span><span class="unit">Finale</span></div>' +
+          "<h3>The Rift at the End of Numbers</h3><span class=\"std\">All Grade 6 standards</span>" + finBadge;
+        grid.appendChild(fa);
+
+        // ---- achievements strip ----
+        var achWrap = document.getElementById("nr-achs");
+        if (ITEMS) {
+          var got = 0;
+          ITEMS.ACHIEVEMENTS.forEach(function (ac) {
+            var has = pr && pr.achievements && pr.achievements[ac.id];
+            if (has) got++;
+            var span = document.createElement("span");
+            span.className = "nr-ach" + (has ? " got" : "");
+            span.textContent = ac.emoji;
+            span.title = ac.name + (has ? " — earned" : " — " + ac.hint);
+            achWrap.appendChild(span);
+          });
+          document.getElementById("nr-ach-count").textContent = "Earned " + got + " of " + ITEMS.ACHIEVEMENTS.length + " trophies.";
+        }
+      })();
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
+</html>

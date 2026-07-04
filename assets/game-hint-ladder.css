@@ -1,0 +1,219 @@
+/* Neft Game Hint Ladder — styling for the Socratic hint widget.
+ * Pairs with assets/game-hint-ladder.js. Bottom-LEFT so it never collides with
+ * the bottom-right Calm & Accessible controls (assets/game-access.css).
+ */
+
+.nt-hl-root {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  z-index: 2147482900;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
+
+.nt-hl-fab {
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 2px solid #fcd34d;
+  border-radius: 999px;
+  background: #fffbeb;
+  color: #78350f;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(120, 53, 15, 0.22);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.nt-hl-fab:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(120, 53, 15, 0.3);
+}
+.nt-hl-fab:active {
+  transform: translateY(0);
+}
+
+.nt-hl-panel {
+  position: absolute;
+  left: 0;
+  bottom: 56px;
+  width: min(92vw, 360px);
+  max-height: min(70vh, 520px);
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 16px 44px rgba(15, 23, 42, 0.28);
+  padding: 14px 14px 12px;
+  color: #0f172a;
+}
+.nt-hl-panel[hidden] {
+  display: none;
+}
+
+.nt-hl-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.nt-hl-title {
+  font-size: 16px;
+  font-weight: 800;
+}
+.nt-hl-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.nt-hl-badge[hidden] {
+  display: none;
+}
+.nt-hl-badge-ai {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.nt-hl-close {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: #64748b;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 8px;
+}
+.nt-hl-close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.nt-hl-step {
+  display: flex;
+  gap: 10px;
+  padding: 10px 4px;
+  border-top: 1px dashed #e2e8f0;
+  animation: nt-hl-in 0.18s ease;
+}
+.nt-hl-step:first-of-type {
+  border-top: none;
+}
+.nt-hl-step-n {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fcd34d;
+  color: #78350f;
+  font-weight: 800;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.nt-hl-step-text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+}
+.nt-hl-step-explain {
+  background: #f0f9ff;
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 8px;
+}
+.nt-hl-step-explain .nt-hl-step-text {
+  color: #0c4a6e;
+}
+
+.nt-hl-more {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  margin-top: 10px;
+  min-height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.nt-hl-more:hover {
+  background: #1d4ed8;
+}
+.nt-hl-more:disabled {
+  background: #cbd5e1;
+  color: #64748b;
+  cursor: default;
+}
+
+.nt-hl-empty {
+  color: #475569;
+  font-size: 14px;
+  padding: 6px 2px 2px;
+}
+
+.nt-hl-foot {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #64748b;
+  text-align: center;
+}
+
+.nt-hl-fab:focus-visible,
+.nt-hl-more:focus-visible,
+.nt-hl-close:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+@keyframes nt-hl-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Calm mode / reduced motion: drop the entrance animation. */
+html.nt-calm .nt-hl-step,
+html.nt-calm .nt-hl-fab {
+  animation: none !important;
+  transition: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nt-hl-step,
+  .nt-hl-fab {
+    animation: none !important;
+  }
+}
+
+@media print {
+  .nt-hl-root {
+    display: none !important;
+  }
+}

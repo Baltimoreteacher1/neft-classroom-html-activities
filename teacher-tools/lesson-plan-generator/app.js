@@ -38,6 +38,7 @@
     outputCard: $("outputCard"),
     lessonOutput: $("lessonOutput"),
     printBtn: $("printBtn"),
+    reshuffleBtn: $("reshuffleBtn"),
     downloadDocxBtn: $("downloadDocxBtn"),
     downloadDocBtn: $("downloadDocBtn"),
     downloadMdBtn: $("downloadMdBtn"),
@@ -57,6 +58,7 @@
 
   let uploadedExtract = null; // { text, name, kind }
   let lastPlan = null;
+  let reshuffleNonce = 0; // bumped by "Reshuffle numbers" to vary the seeded problem numbers
 
   /* ===================== THEME ===================== */
   function initTheme() {
@@ -94,10 +96,15 @@
     const li = els.pipeline.querySelector(`[data-stage="${stage}"]`);
     if (li) li.className = state;
   }
-  const tick = () => new Promise((r) => setTimeout(r, 80));
+  const tick = () => new Promise((r) => setTimeout(r, 12));
 
   /* ===================== SOURCE EXTRACTION ===================== */
   async function extractPptx(arrayBuffer) {
+    if (typeof JSZip === "undefined") {
+      throw new Error(
+        "Slide reader library (jszip) failed to load. Copy the slide text and paste it into the text box instead.",
+      );
+    }
     const zip = await JSZip.loadAsync(arrayBuffer);
     const slideFiles = Object.keys(zip.files)
       .filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n))
@@ -107,16 +114,25 @@
         return na - nb;
       });
     if (!slideFiles.length) throw new Error("No slides found in the .pptx.");
-    const parts = [];
-    for (const name of slideFiles) {
+
+    const results = [];
+    for (let i = 0; i < slideFiles.length; i++) {
+      const name = slideFiles[i];
       const xml = await zip.files[name].async("string");
       const runs = [...xml.matchAll(/<a:t>([\s\S]*?)<\/a:t>/g)].map((m) =>
         decodeXml(m[1]),
       );
       const n = (name.match(/slide(\d+)/) || [])[1];
       const text = runs.join(" ").replace(/\s+/g, " ").trim();
-      if (text) parts.push(`--- Slide ${n} ---\n${text}`);
+      results.push({ n, text });
+      els.fileStatus.textContent = `Reading slide ${i + 1} of ${slideFiles.length}…`;
+      if (i % 3 === 0) {
+        await yieldCpu();
+      }
     }
+    const parts = results
+      .filter((r) => r.text)
+      .map((r) => `--- Slide ${r.n} ---\n${r.text}`);
     return parts.join("\n\n");
   }
 
@@ -139,20 +155,23 @@
   async function extractPdf(arrayBuffer) {
     let pdfjs;
     try {
-      pdfjs = await import("./vendor/pdf.min.mjs");
+      pdfjs =
+        await import("/teacher-tools/lesson-plan-generator/vendor/pdf.min.mjs");
     } catch (e) {
       throw new Error(
         "PDF reader (pdf.js) could not load. Copy the PDF text and paste it into the box instead.",
       );
     }
     try {
-      pdfjs.GlobalWorkerOptions.workerSrc = "./vendor/pdf.worker.min.mjs";
+      pdfjs.GlobalWorkerOptions.workerSrc =
+        "/teacher-tools/lesson-plan-generator/vendor/pdf.worker.min.mjs";
     } catch (_) {
       /* ignore */
     }
     const doc = await pdfjs.getDocument({ data: new Uint8Array(arrayBuffer) })
       .promise;
-    const out = [];
+
+    const results = [];
     for (let p = 1; p <= doc.numPages; p++) {
       const page = await doc.getPage(p);
       const content = await page.getTextContent();
@@ -161,8 +180,15 @@
         .join(" ")
         .replace(/\s+/g, " ")
         .trim();
-      if (txt) out.push(`--- Page ${p} ---\n${txt}`);
+      results.push({ p, txt });
+      els.fileStatus.textContent = `Reading page ${p} of ${doc.numPages}…`;
+      if (p % 2 === 0) {
+        await yieldCpu();
+      }
     }
+    const out = results
+      .filter((r) => r.txt)
+      .map((r) => `--- Page ${r.p} ---\n${r.txt}`);
     const text = out.join("\n\n");
     if (!text)
       throw new Error(
@@ -180,12 +206,39 @@
       .replace(/&amp;/g, "&");
   }
 
+  const yieldCpu = () =>
+    new Promise((resolve) => {
+      if (document.hidden) {
+        setTimeout(resolve, 0);
+      } else {
+        requestAnimationFrame(resolve);
+      }
+    });
+
+  function setFileReading(reading) {
+    if (reading) {
+      els.generateBtn.disabled = true;
+      els.generateBtn.textContent = "Reading file...";
+    } else {
+      els.generateBtn.disabled = false;
+      els.generateBtn.textContent = "✦ Generate Lesson Plan";
+    }
+  }
+
+  const MAX_UPLOAD_BYTES = 25 * 1024 * 1024; // 25 MB — larger files stall in-browser parsing
+
   async function handleFile(file) {
     const name = file.name || "file";
     const lower = name.toLowerCase();
     els.fileStatus.className = "file-status";
     els.fileStatus.textContent = `Reading "${name}"…`;
+    setFileReading(true);
     try {
+      if (file.size > MAX_UPLOAD_BYTES) {
+        throw new Error(
+          `This file is ${(file.size / (1024 * 1024)).toFixed(1)} MB, which is too large to read in the browser (limit ${MAX_UPLOAD_BYTES / (1024 * 1024)} MB). Copy the text and paste it into the box instead, or export a smaller/text-only version of the file.`,
+        );
+      }
       let text = "";
       let kind = "";
       if (lower.endsWith(".pptx")) {
@@ -206,15 +259,17 @@
       uploadedExtract = { text, name, kind };
       els.fileStatus.className = "file-status ok";
       els.fileStatus.innerHTML =
-        `<strong>${escapeHtml(name)}</strong> (${kind})<br>` +
+        `<strong>${esc(name)}</strong> (${kind})<br>` +
         `<span class="extract-ok">Extracted ✓ (${text.length.toLocaleString()} characters)</span> — review the text below, then click Generate.`;
       els.sourceText.value = text;
     } catch (e) {
       uploadedExtract = null;
       els.fileStatus.className = "file-status bad";
-      els.fileStatus.innerHTML = `<strong>Could not read this file:</strong> ${escapeHtml(
+      els.fileStatus.innerHTML = `<strong>Could not read this file:</strong> ${esc(
         e.message,
       )}`;
+    } finally {
+      setFileReading(false);
     }
   }
 
@@ -240,15 +295,19 @@
       .split("\n")
       .map((l) => l.trim())
       .filter(Boolean);
-    const SENT = "␟";
-    const segText = text
-      .replace(/([.!?])\s+(?=[^0-9])/g, "$1" + SENT)
-      .replace(/[\r\n]+/g, SENT)
-      .replace(/[;•]/g, SENT);
-    const segments = segText
-      .split(SENT)
-      .map((s) => s.replace(/^[.!?\s]+/, "").trim())
-      .filter(Boolean);
+
+    const segments = [];
+    const rawSegs = text.split(/[\n;•]+/);
+    for (const rSeg of rawSegs) {
+      const trimmed = rSeg.trim();
+      if (!trimmed) continue;
+      // Split sentences lookbehind-free: period-space followed by capital letter
+      const parts = trimmed.split(/\.\s+(?=[A-Z])/);
+      for (const p of parts) {
+        const cleaned = p.trim().replace(/^[.!?\s]+/, "");
+        if (cleaned) segments.push(cleaned);
+      }
+    }
 
     const grab = (re, segRe) => {
       const sr = segRe || re;
@@ -468,12 +527,22 @@
       .join("") +
     "</ul>";
   const kv = (label, val) =>
-    `<p><strong>${esc(label)}:</strong> ${esc(val)}</p>`;
+    `<p class="lp-kv"><strong>${esc(label)}:</strong> ${esc(val)}</p>`;
+  // Scannable callout for "what the teacher actually does / decides" lines.
+  const note = (label, val) =>
+    `<p class="lp-note"><strong>${esc(label)}:</strong> ${esc(val)}</p>`;
+  const noteList = (label, arr) =>
+    `<div class="lp-note"><strong>${esc(label)}:</strong>` + ul(arr) + `</div>`;
 
   function renderPlanHtml(plan) {
     const h = plan.header;
-    const sec = (n, title, inner) =>
-      `<section class="lp-block"><h2 class="lp-sec">${n} · ${esc(title)}</h2>${inner}</section>`;
+    // Optional 4th arg = a time chip shown on the section heading.
+    const sec = (n, title, inner, time) =>
+      `<section class="lp-block"><h2 class="lp-sec">${n} · ${esc(title)}` +
+      (time
+        ? `<span class="lp-time"><span aria-hidden="true">⏱</span> ${esc(time)}</span>`
+        : "") +
+      `</h2>${inner}</section>`;
     const rows = [];
 
     rows.push(
@@ -487,6 +556,30 @@
         ]
           .filter(Boolean)
           .join(" &nbsp;|&nbsp; ")}</p>`,
+    );
+
+    // ---- Lesson at a Glance (scan band: the 5-second read) ----
+    const stdCodes = h.standards
+      .map((s) => s.code || s.desc)
+      .filter(Boolean)
+      .join(", ");
+    const flow = (h.pacing || [])
+      .map(
+        ([name, t]) =>
+          `<span class="flow-step">${esc(name)} <em>${esc(t)}</em></span>`,
+      )
+      .join('<span class="flow-arrow" aria-hidden="true">→</span>');
+    rows.push(
+      `<section class="lp-glance">` +
+        `<div class="glance-grid">` +
+        `<div><span class="glance-label">I Can</span>${esc(h.iCan)}</div>` +
+        `<div><span class="glance-label">Essential Question</span>${esc(h.essentialQuestion)}</div>` +
+        (stdCodes
+          ? `<div><span class="glance-label">Standard(s)</span>${esc(stdCodes)}</div>`
+          : "") +
+        `</div>` +
+        (flow ? `<div class="lp-flow">${flow}</div>` : "") +
+        `</section>`,
     );
 
     // 1 Header
@@ -551,13 +644,14 @@
     rows.push(
       sec(
         4,
-        "Do Now / Warm-Up (3–5 min)",
+        "Do Now / Warm-Up",
         `<p><em>${esc(plan.doNow.directions)}</em></p>` +
           tableHtml(
             ["Level", "Question", "Answer key"],
             plan.doNow.items.map((it) => [it.level, it.q, it.a]),
           ) +
-          kv("Teacher move", plan.doNow.teacherMove),
+          note("Teacher move", plan.doNow.teacherMove),
+        plan.timing && plan.timing.doNow,
       ),
     );
 
@@ -577,6 +671,7 @@
           ul(m.worked.thinkAloud.map((t) => `“${t}”`)) +
           kv("Common mistake", m.worked.commonMistake) +
           kv("Correction", m.worked.correction),
+        plan.timing && plan.timing.mini,
       ),
     );
 
@@ -589,9 +684,10 @@
           ["#", "Problem", "Answer", "Teacher prompt"],
           plan.guided.items.map((it, i) => [i + 1, it.q, it.a, it.prompt]),
         ) +
-          `<p><em>${esc(plan.guided.turnAndTalk)}</em></p>` +
+          note("Turn & Talk", plan.guided.turnAndTalk) +
           "<p><strong>Sentence starters:</strong></p>" +
           ul(plan.guided.sentenceStarters),
+        plan.timing && plan.timing.guided,
       ),
     );
 
@@ -607,6 +703,7 @@
           "<p><strong>Discussion prompts:</strong></p>" +
           ul(c.discussionPrompts) +
           kv("Written response (TWR)", c.twrWritten),
+        plan.timing && plan.timing.collaborative,
       ),
     );
 
@@ -621,6 +718,7 @@
         ) +
           kv("Show your thinking", plan.independent.showThinking) +
           kv("Extension", plan.independent.extension),
+        plan.timing && plan.timing.independent,
       ),
     );
 
@@ -637,6 +735,7 @@
           ul(w.frames) +
           kv("Word bank", w.wordBank.join(", ")) +
           kv("Expected response", w.expected),
+        plan.timing && plan.timing.writing,
       ),
     );
 
@@ -675,9 +774,7 @@
             ["Guided practice", cf.guided],
             ["Independent practice", cf.independent],
           ],
-        ) +
-          "<p><strong>Teacher decision points:</strong></p>" +
-          ul(cf.decisionPoints),
+        ) + noteList("Teacher decision points", cf.decisionPoints),
       ),
     );
 
@@ -691,7 +788,8 @@
           plan.exit.items.map((it, i) => [i + 1, it.q, it.a]),
         ) +
           kv("Confidence / reflection", plan.exit.confidence.q) +
-          kv("Tomorrow, based on results", plan.exit.tomorrow),
+          note("Tomorrow, based on results", plan.exit.tomorrow),
+        plan.timing && plan.timing.exit,
       ),
     );
 
@@ -717,8 +815,8 @@
       sec(
         14,
         "Printable Student Version",
-        "<p>A clean, answer-free student handout (with response space) is generated automatically and included as the second part of the downloaded Word document — ready to print or upload to Canvas.</p>" +
-          "<p class='muted small'>It mirrors the Do Now, notes, guided & independent practice, writing, and exit ticket above, without teacher notes or answer keys.</p>",
+        "<p>A clean, answer-free student handout (with response space) is added as part 2 of the downloaded Word doc — ready to print or post to Canvas.</p>" +
+          "<p class='muted small'>Mirrors the Do Now, notes, practice, writing, and exit ticket above — no teacher notes or answer keys. See the <strong>Student Handout</strong> tab to preview it.</p>",
       ),
     );
 
@@ -803,7 +901,7 @@
     await tick();
     let plan;
     try {
-      const content = window.LPGContent.build(map, fields);
+      const content = window.LPGContent.build(map, fields, reshuffleNonce);
       plan = window.LPGModel.build(map, fields, content);
     } catch (e) {
       setStage("build", "fail");
@@ -821,10 +919,13 @@
     renderQA(checks, null);
 
     lastPlan = plan;
-    els.lessonOutput.innerHTML = renderPlanHtml(plan);
+    renderCurrentTab();
     els.downloadDocxBtn.disabled = false;
     els.outputCard.hidden = false;
     els.outputCard.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    // Save to history
+    saveToHistory(fields, rawSource);
   }
 
   /* ===================== EXPORTS ===================== */
@@ -852,6 +953,11 @@ xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-
   th,td{border:1px solid #000;padding:6px 8px;text-align:left;vertical-align:top;}
   th{background:#eef2f6;}
   ul,ol{margin:5px 0;padding-left:22px;}
+  .lp-glance{background:#f0fdfa;border:1px solid #99f6e4;padding:8px 12px;margin:0 0 14px;}
+  .glance-label{display:block;font-size:8pt;font-weight:bold;text-transform:uppercase;color:#115e59;}
+  .lp-flow{margin-top:8px;font-size:9.5pt;font-weight:bold;}
+  .lp-time{float:right;font-size:9pt;font-weight:bold;color:#115e59;}
+  .lp-note{background:#f1f5f9;border-left:3px solid #0f766e;padding:6px 10px;margin:8px 0;}
 </style></head><body>${body}</body></html>`;
   }
 
@@ -874,6 +980,10 @@ xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-
       `*${[h.date && "Date: " + h.date, h.grade, h.course, h.unit && "Unit: " + h.unit, h.length].filter(Boolean).join(" · ")}*`,
       "",
     );
+    const flowStr = (h.pacing || [])
+      .map(([name, t]) => `${name} ${t}`)
+      .join(" → ");
+    if (flowStr) L.push(`**At a glance:** ${flowStr}`, "");
     L.push("## Lesson Header");
     L.push(
       `- Standards: ${h.standards.map((s) => (s.code ? s.code + " — " : "") + (s.desc || "")).join("; ")}`,
@@ -943,6 +1053,7 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       els.fStandards.value = "6.RP.A.2 — unit rate";
       els.fWida.value = "Level 2 (Emerging)";
       uploadedExtract = null;
+      reshuffleNonce = 0;
       els.fileStatus.className = "file-status";
       els.fileStatus.textContent = "";
     });
@@ -953,12 +1064,19 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
         (e) => (e.value = ""),
       );
       uploadedExtract = null;
+      reshuffleNonce = 0;
       els.fileInput.value = "";
       els.fileStatus.className = "file-status";
       els.fileStatus.textContent = "";
       els.statusCard.hidden = true;
       els.outputCard.hidden = true;
       els.downloadDocxBtn.disabled = true;
+    });
+
+    els.reshuffleBtn.addEventListener("click", () => {
+      if (!lastPlan) return;
+      reshuffleNonce++;
+      generate();
     });
 
     els.fileInput.addEventListener("change", (e) => {
@@ -1025,7 +1143,264 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
         "text/markdown",
       );
     });
+
+    // Wire output tabs
+    const tabTeacher = $("tabTeacher");
+    const tabStudent = $("tabStudent");
+    if (tabTeacher && tabStudent) {
+      tabTeacher.addEventListener("click", () => {
+        currentTab = "teacher";
+        tabTeacher.classList.add("active");
+        tabStudent.classList.remove("active");
+        renderCurrentTab();
+      });
+      tabStudent.addEventListener("click", () => {
+        currentTab = "student";
+        tabStudent.classList.add("active");
+        tabTeacher.classList.remove("active");
+        renderCurrentTab();
+      });
+    }
+
+    // Render history on load
+    renderHistoryRow();
   }
+
+  /* ===================== STUDENT HANDOUT PREVIEW ===================== */
+  function renderStudentHandoutHtml(plan) {
+    const h = plan.header;
+    const out = [];
+
+    out.push(`<div class="student-handout-preview">`);
+    out.push(`<h1>Student Version — ${esc(h.title)}</h1>`);
+    out.push(
+      `<div class="student-meta">Name: _______________________ &nbsp;&nbsp;&nbsp;&nbsp; Date: ${esc(h.date || "____________")}</div>`,
+    );
+    out.push(`<p><strong>Objective:</strong> ${esc(h.iCan)}</p>`);
+    out.push(
+      `<p><strong>Essential Question:</strong> ${esc(h.essentialQuestion)}</p>`,
+    );
+
+    // Do Now
+    out.push(`<h2>Do Now</h2>`);
+    out.push(
+      `<p class="student-instructions">${esc(plan.doNow.directions)}</p>`,
+    );
+    plan.doNow.items.forEach((it, i) => {
+      out.push(`<p>${i + 1}. (${esc(it.level)}) ${esc(it.q)}</p>`);
+      out.push(`<div class="student-response-lines"></div>`);
+    });
+
+    // Notes
+    out.push(`<h2>Class Notes</h2>`);
+    out.push(`<ul class="student-bullet-list">`);
+    plan.mini.studentNotes.forEach((n) => out.push(`<li>${esc(n)}</li>`));
+    out.push(`</ul>`);
+    out.push(
+      `<p><strong>Worked Example:</strong> ${esc(plan.mini.worked.problem)}</p>`,
+    );
+    out.push(`<div class="student-response-box"></div>`);
+
+    // Guided Practice
+    out.push(`<h2>Guided Practice</h2>`);
+    plan.guided.items.forEach((it, i) => {
+      out.push(`<p>${i + 1}. ${esc(it.q)}</p>`);
+      out.push(`<div class="student-response-lines"></div>`);
+    });
+    out.push(
+      `<p><strong>Sentence starters:</strong></p><ul class="student-bullet-list">` +
+        plan.guided.sentenceStarters.map((s) => `<li>${esc(s)}</li>`).join("") +
+        `</ul>`,
+    );
+
+    // Partner Activity
+    out.push(`<h2>Partner Activity</h2>`);
+    out.push(`<p>${esc(plan.collaborative.studentDirections)}</p>`);
+    out.push(
+      `<p><strong>Write together:</strong> ${esc(plan.collaborative.twrWritten)}</p>`,
+    );
+    out.push(`<div class="student-response-box"></div>`);
+
+    // Independent Practice
+    out.push(`<h2>Independent Practice</h2>`);
+    plan.independent.items.forEach((it, i) => {
+      out.push(`<p>${i + 1}. (${esc(it.type)}) ${esc(it.q)}</p>`);
+      out.push(`<div class="student-response-lines"></div>`);
+    });
+    out.push(
+      `<p><strong>Show your thinking:</strong> ${esc(plan.independent.showThinking)}</p>`,
+    );
+    out.push(`<div class="student-response-box"></div>`);
+
+    // Writing
+    out.push(`<h2>Writing (TWR)</h2>`);
+    out.push(
+      `<p><strong>Kernel sentence:</strong> ${esc(plan.writing.kernel)}</p>`,
+    );
+    out.push(
+      `<p>Complete the sentence using <em>because</em>, <em>but</em>, and <em>so</em>:</p>`,
+    );
+    out.push(
+      `<p>• Because: __________________________________________________________________</p>`,
+    );
+    out.push(
+      `<p>• But: ______________________________________________________________________</p>`,
+    );
+    out.push(
+      `<p>• So: _______________________________________________________________________</p>`,
+    );
+    out.push(
+      `<p class="student-instructions">Word bank: ${esc(plan.writing.wordBank.join(", "))}</p>`,
+    );
+    out.push(`<div class="student-response-box"></div>`);
+
+    // Exit Ticket
+    out.push(`<h2>Exit Ticket</h2>`);
+    plan.exit.items.forEach((it, i) => {
+      out.push(`<p>${i + 1}. ${esc(it.q)}</p>`);
+      out.push(`<div class="student-response-lines"></div>`);
+    });
+    out.push(`<p>${esc(plan.exit.confidence.q)}</p>`);
+    out.push(`<div class="student-response-lines"></div>`);
+
+    out.push(`</div>`);
+    return out.join("\n");
+  }
+
+  let currentTab = "teacher";
+
+  function renderCurrentTab() {
+    if (!lastPlan) return;
+    if (currentTab === "teacher") {
+      els.lessonOutput.innerHTML = renderPlanHtml(lastPlan);
+    } else {
+      els.lessonOutput.innerHTML = renderStudentHandoutHtml(lastPlan);
+    }
+  }
+
+  /* ===================== HISTORY MANAGER ===================== */
+  const HIST_KEY = "nt_lpg_history_v1";
+
+  function getHistory() {
+    try {
+      const data = localStorage.getItem(HIST_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function saveHistory(list) {
+    try {
+      localStorage.setItem(HIST_KEY, JSON.stringify(list.slice(0, 10)));
+    } catch (_) {}
+  }
+
+  function saveToHistory(fields, rawSource) {
+    const list = getHistory();
+    const title = fields.topic || fields.focus || "Untitled Lesson";
+    const date = fields.date || new Date().toISOString().slice(0, 10);
+    const standard = fields.standards || "";
+
+    let strippedUpload = null;
+    if (uploadedExtract) {
+      strippedUpload = {
+        name: uploadedExtract.name,
+        kind: uploadedExtract.kind,
+      };
+    }
+
+    const entry = {
+      id: Date.now().toString(),
+      title,
+      date,
+      standard,
+      fields,
+      source: rawSource,
+      uploadedExtract: strippedUpload,
+    };
+
+    const filtered = list.filter((item) => item.title !== title);
+    filtered.unshift(entry);
+
+    saveHistory(filtered);
+    renderHistoryRow();
+  }
+
+  function deleteHistory(id, e) {
+    if (e) e.stopPropagation();
+    const list = getHistory();
+    const filtered = list.filter((item) => item.id !== id);
+    saveHistory(filtered);
+    renderHistoryRow();
+  }
+
+  function loadHistory(id) {
+    const list = getHistory();
+    const entry = list.find((item) => item.id === id);
+    if (!entry) return;
+
+    els.fDate.value = entry.fields.date || "";
+    els.fGrade.value = entry.fields.grade || "";
+    els.fCourse.value = entry.fields.course || "";
+    els.fUnit.value = entry.fields.unit || "";
+    els.fFocus.value = entry.fields.focus || "";
+    els.fStandards.value = entry.fields.standards || "";
+    els.fLength.value = entry.fields.length || "";
+    els.fSkill.value = entry.fields.skill || "";
+    els.fWida.value = entry.fields.wida || "";
+    els.fSped.value = entry.fields.sped || "";
+    els.fNotes.value = entry.fields.notes || "";
+
+    if (entry.source) {
+      els.sourceText.value = entry.source;
+    }
+
+    if (entry.uploadedExtract) {
+      uploadedExtract = {
+        name: entry.uploadedExtract.name,
+        kind: entry.uploadedExtract.kind,
+        text: entry.source || "",
+      };
+      els.fileStatus.className = "file-status ok";
+      els.fileStatus.innerHTML = `<span class="extract-ok">Loaded:</span> ${esc(uploadedExtract.name)}`;
+    } else {
+      uploadedExtract = null;
+      els.fileStatus.textContent = "";
+    }
+
+    generate();
+  }
+
+  function renderHistoryRow() {
+    const list = getHistory();
+    const row = $("historyRow");
+    const chips = $("historyChips");
+    if (!row || !chips) return;
+
+    if (list.length === 0) {
+      row.hidden = true;
+      return;
+    }
+
+    row.hidden = false;
+    chips.innerHTML = list
+      .map((item) => {
+        const displayTitle =
+          item.title.length > 25 ? item.title.slice(0, 25) + "…" : item.title;
+        const desc = item.standard
+          ? `${displayTitle} (${item.standard.split(" ")[0]})`
+          : displayTitle;
+        return `<div class="history-chip" onclick="window.__LPG_LOAD_HIST__('${item.id}')" title="Click to load: ${esc(item.title)}">
+        <span>🕒 ${esc(desc)}</span>
+        <button type="button" class="delete-hist-btn" onclick="window.__LPG_DEL_HIST__('${item.id}', event)" title="Delete saved lesson">×</button>
+      </div>`;
+      })
+      .join("");
+  }
+
+  window.__LPG_LOAD_HIST__ = loadHistory;
+  window.__LPG_DEL_HIST__ = deleteHistory;
 
   window.__LPG__ = { buildContentMap, gatherFields, runQA, renderPlanHtml };
 

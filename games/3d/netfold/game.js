@@ -1020,9 +1020,9 @@ export default {
             },
           ],
           howToWinEn:
-            "A net is correct when it folds into the target solid. Surface area is the total area of all its faces. Match all the solids before your tries run out.",
+            "A net is correct when it folds into the target solid. Take your time: count the faces and check their shapes and sizes against the gold solid before you fold. Surface area is the total area of all its faces. Match all the solids to win — there is no clock.",
           howToWinEs:
-            "Una red es correcta cuando se pliega para formar el sólido objetivo. El área de superficie es el área total de todas sus caras. Empareja todos los sólidos antes de quedarte sin intentos.",
+            "Una red es correcta cuando se pliega para formar el sólido objetivo. Tómate tu tiempo: cuenta las caras y compara sus formas y tamaños con el sólido dorado antes de plegar. El área de superficie es el área total de todas sus caras. Empareja todos los sólidos para ganar — no hay reloj.",
           onStart: beginGameplay,
           onPlayAgain: () => location.reload(),
         });

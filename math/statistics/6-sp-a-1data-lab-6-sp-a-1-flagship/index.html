@@ -4,6 +4,7 @@
   <link rel="stylesheet" href="/assets/shared.css">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/assets/math-mobile.css">
   <title>6.SP.A.1 Statistical Question Data Lab</title>
   <style>
     :root{
@@ -46,10 +47,30 @@
     .badge{display:inline-block;padding:8px 12px;border-radius:999px;background:#fff5e8;color:#9a4e00;font-weight:900;border:1px solid #ffd2b8}
     @media (max-width: 900px){.grid,.data-grid,.responses{grid-template-columns:1fr}}
     @media print{.toolbar,.action{display:none!important}.panel{box-shadow:none}}
+    /* --- responsive tablet/phone refinements (additive) --- */
+    @media (max-width: 900px){
+      .wrap{padding:14px}
+      .hero{padding:22px;border-radius:22px}
+      .toolbar{flex-direction:column;align-items:stretch}
+      .toolbar > div{justify-content:flex-start}
+    }
+    @media (max-width: 640px){
+      .wrap{padding:10px}
+      .hero{padding:18px;border-radius:18px}
+      h1{font-size:clamp(24px,7vw,32px)}
+      .sub{font-size:15px}
+      .panel{padding:16px;border-radius:18px}
+      .toolbar{gap:8px}
+      .toolbar .action,.toolbar .pill{width:100%;text-align:center}
+      .chartWrap{overflow-x:auto}
+    }
   </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
 </head>
 <body>
   <div class="wrap">
@@ -238,5 +259,8 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>

@@ -21,45 +21,17 @@ import { fileURLToPath } from "url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-const MARK = "nsr-injected";
-const CSS_REF = "/shared/save-resume/save-resume-styles.css";
-const JS_REF = "/shared/save-resume/save-resume-engine.js";
-
-// Keep these IN SYNC with tools/inject-save-resume.js.
-const SKIP_DIRS = new Set([
-  "node_modules",
-  "dist",
-  ".git",
-  ".github",
-  ".claude",
-  ".wrangler",
-  ".vscode",
-  "scripts",
-  "engine",
-  "functions",
-  "migrations",
-  "workers",
-  "shared",
-  "tools",
-]);
-const SKIP_TOPLEVEL = new Set([
-  "dashboard",
-  "teacher-data-dashboard",
-  "teacher-tools",
-  "access-teacher",
-  "neft-school-hub",
-  "neft-data-studio",
-  "results-worker",
-  "directory",
-  "data",
-  "assets",
-  "docs",
-  "curriculum",
-]);
-const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
-// Teacher-facing pages (any nested ".../teacher/..." path) have no student
-// state, so they are intentionally excluded from save/resume integration.
-const SKIP_PATH_RE = /(^|\/)teacher(\/|$)/i;
+// Skip rules + ref/marker strings are shared with the injector via one module,
+// so the audit can never drift out of sync with what inject-save-resume.js does.
+import {
+  MARK,
+  CSS_REF,
+  JS_REF,
+  SKIP_DIRS,
+  SKIP_TOPLEVEL,
+  SKIP_FILE_RE,
+  SKIP_PATH_RE,
+} from "./save-resume-config.js";
 
 const issues = [];
 const stats = {
@@ -68,6 +40,7 @@ const stats = {
   missingRefs: [],
   duplicates: [],
   brokenStructure: [],
+  unsentineled: [],
   skipped: 0,
 };
 
@@ -128,13 +101,23 @@ function check(file) {
   if (begins !== ends) {
     stats.brokenStructure.push(`${rel} (begin=${begins}, end=${ends})`);
   }
+  // Sentinel coverage: the injector wraps the stylesheet (before </head>) and
+  // the engine (before </body>) in its own marker, so a canonically-integrated
+  // page has exactly TWO begin markers. Both refs present but begins !== 2 means
+  // the page carries raw refs the injector won't recognize — it would duplicate
+  // them on the next `fix:save-resume`. This is the drift that hit the
+  // projects/version-b and math-rpg pages; flag it so it's caught, not shipped.
+  if (begins !== 2) {
+    stats.unsentineled.push(`${rel} (marker begins=${begins}, expected 2)`);
+  }
   // Light structural sanity.
   if (!/<html[\s>]/i.test(html)) {
     stats.brokenStructure.push(`${rel} (no <html>)`);
   }
   if (
     stats.duplicates[stats.duplicates.length - 1] !== rel &&
-    stats.brokenStructure[stats.brokenStructure.length - 1] !== rel
+    stats.brokenStructure[stats.brokenStructure.length - 1] !== rel &&
+    stats.unsentineled[stats.unsentineled.length - 1] !== rel
   ) {
     stats.ok++;
   }
@@ -160,9 +143,39 @@ console.log("Duplicate refs     :", stats.duplicates.length);
 if (stats.duplicates.length) console.log("   →", stats.duplicates.slice(0, 20));
 console.log("Structure warnings :", stats.brokenStructure.length);
 if (stats.brokenStructure.length) console.log("   →", stats.brokenStructure.slice(0, 20));
+console.log("Unsentineled refs  :", stats.unsentineled.length);
+if (stats.unsentineled.length) console.log("   →", stats.unsentineled.slice(0, 20));
 
 const problems =
-  issues.length + stats.missingRefs.length + stats.duplicates.length + stats.brokenStructure.length;
+  issues.length +
+  stats.missingRefs.length +
+  stats.duplicates.length +
+  stats.brokenStructure.length +
+  stats.unsentineled.length;
 if (issues.length) console.log("\nIssues:\n  " + issues.join("\n  "));
 console.log("\nRESULT:", problems === 0 ? "PASS ✅" : `FAIL ❌ (${problems} problem group(s))`);
+if (problems) {
+  // Remediation guidance: missing refs self-heal via the idempotent injector;
+  // duplicates/structure warnings usually mean a page carries pre-existing raw
+  // refs (outside the sentinel) and needs a manual look.
+  if (stats.missingRefs.length) {
+    console.log(
+      "\n→ Fix missing refs (idempotent, reversible): npm run fix:save-resume" +
+        "\n  (dry-run first: node tools/inject-save-resume.js --dry-run)",
+    );
+  }
+  if (stats.unsentineled.length) {
+    console.log(
+      "\n→ Unsentineled pages carry raw save-resume refs the injector can't see;" +
+        "\n  running fix:save-resume would duplicate them. Strip the raw <link>/" +
+        "\n  <script> refs from those pages, then run: npm run fix:save-resume",
+    );
+  }
+  if (stats.duplicates.length || stats.brokenStructure.length) {
+    console.log(
+      "\n→ Duplicate/structure warnings usually mean raw save-resume refs exist" +
+        "\n  outside the nsr-injected sentinel; inspect those pages by hand.",
+    );
+  }
+}
 process.exit(problems === 0 ? 0 : 1);

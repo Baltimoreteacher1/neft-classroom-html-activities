@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <title>World Architect Geometry Challenge</title>
     <style>
       :root {
@@ -1252,10 +1253,19 @@
           border: none;
         }
       }
+          .checklist li:has(input[type="checkbox"]:checked) {
+        color: var(--muted) !important;
+        opacity: 0.65;
+        text-decoration: line-through;
+        transition: all 0.25s ease;
+      }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
 </head>
   <body>
     <header class="site-header">
@@ -1336,7 +1346,7 @@
           <div class="form-panel">
             <div class="field">
               <label for="student-name">Student First Name</label>
-              <input id="student-name" type="text" placeholder="e.g. Maria" />
+              <input id="student-name" type="text" placeholder="" />
             </div>
             <div class="field">
               <label for="student-last">Last Initial</label>
@@ -1344,12 +1354,12 @@
                 id="student-last"
                 type="text"
                 maxlength="2"
-                placeholder="e.g. R"
+                placeholder=""
               />
             </div>
             <div class="field">
               <label for="student-period">Class Period</label>
-              <input id="student-period" type="text" placeholder="e.g. 3" />
+              <input id="student-period" type="text" placeholder="" />
             </div>
             <div class="field">
               <label for="student-date">Date</label>
@@ -1366,7 +1376,11 @@
               </p>
             </div>
             <div class="route-controls">
-              <select id="preset-select" onchange="applyPreset(this.value)">
+              <select
+                id="preset-select"
+                aria-label="Choose a preset expedition route"
+                onchange="applyPreset(this.value)"
+              >
                 <option value="balanced">Balanced Route — 6 stops</option>
                 <option value="ancient">Ancient Wonders — 5 stops</option>
                 <option value="modern">Modern Skylines — 5 stops</option>
@@ -2465,10 +2479,14 @@
       }
 
       function sentenceStarterButtons(targetId) {
-        return SENTENCE_STARTERS.map(
-          (starter) =>
-            `<button type="button" class="starter-chip" draggable="true" ondragstart="dragStarter(event, ${JSON.stringify(starter)})" onclick="insertStarter('${targetId}', ${JSON.stringify(starter)})">${escapeHtml(starter.trim())}...</button>`,
-        ).join("");
+        const tid = escapeHtml(targetId);
+        return SENTENCE_STARTERS.map((starter) => {
+          // HTML-escape the JSON so embedded quotes survive inside the
+          // double-quoted inline handler attributes (the browser decodes
+          // &quot; back to " when it compiles the handler).
+          const arg = escapeHtml(JSON.stringify(starter));
+          return `<button type="button" class="starter-chip" draggable="true" ondragstart="dragStarter(event, ${arg})" onclick="insertStarter('${tid}', ${arg})">${escapeHtml(starter.trim())}...</button>`;
+        }).join("");
       }
       function dragStarter(event, starter) {
         event.dataTransfer.setData("text/plain", starter);
@@ -2624,7 +2642,7 @@
                         id="data-${d.id}-${key.replace(/\s+/g, '_')}" 
                         style="width:90px; padding:6px 8px; border:1.5px solid var(--line); border-radius:8px; text-align:right;"
                         value="${escapeHtml(savedVal)}" 
-                        placeholder="e.g. ${row[1]}"
+                        placeholder=""
                         oninput="updateResearchedData('${d.id}', '${key}', this.value)">
                       <span style="font-weight:bold; color:var(--navy); min-width:24px; text-align:left;">${escapeHtml(row[2])}</span>
                     </div>
@@ -3068,7 +3086,6 @@
       <td>${escapeHtml(r.substitution || "—")}</td>
     </tr>`;
           })
-          .join("")
           .join("");
 
         $("submit-period").value = state.student.period
@@ -3157,9 +3174,7 @@
   <style>body{font-family:Arial,sans-serif;line-height:1.45;margin:32px;color:#222} h1{color:#1C2E42} .box{border:2px solid #1C2E42;border-radius:12px;padding:18px}
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style></head>
-  <body><h1>World Architect Geometry Challenge Submission</h1><div class="box">${escaped}</div>  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+  <body><h1>World Architect Geometry Challenge Submission</h1><div class="box">${escaped}</div>
 </body></html>`;
       }
       function safeFilename() {
@@ -3320,5 +3335,11 @@
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
-  </body>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+</body>
 </html>

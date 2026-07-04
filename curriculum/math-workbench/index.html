@@ -6,9 +6,12 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
+    <meta name="theme-color" content="#205fa6" />
+    <meta name="color-scheme" content="light" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta
       name="description"
-      content="Math Workbench — an interactive whiteboard for Grade 6 math. Draggable numbers and symbols, freehand writing, separator and cross-out lines, 2D and 3D shapes, and a full formula reference for PreK–6 math."
+      content="Math Workbench — a guided, accessible Grade 6 math workspace with publisher-style problem templates, draggable models, freehand writing, scaffolded support cards, calculator, and a PreK–Algebra reference bank."
     />
     <title>Math Workbench — Mr. Neft's Math Class</title>
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
@@ -34,6 +37,9 @@
         --line-2: #e8eef6;
         --paper: #ffffff;
         --bg: #eef3f9;
+        --cream: #fffaf0;
+        --cream-line: #eadfc9;
+        --indigo: #25345d;
         --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
         --shadow: 0 6px 20px rgba(15, 23, 42, 0.1);
         --shadow-lg: 0 18px 50px rgba(15, 23, 42, 0.18);
@@ -163,6 +169,11 @@
         border-color: var(--line);
         color: var(--ink);
       }
+      .tbtn[aria-pressed="true"] {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: #fff;
+      }
       .tbtn.solid {
         background: var(--teal);
         border-color: var(--teal);
@@ -171,6 +182,16 @@
       .tbtn.solid:hover {
         background: var(--teal-d);
         color: #fff;
+      }
+      .tbtn.premium {
+        background: linear-gradient(135deg, var(--indigo), var(--teal));
+        border-color: transparent;
+        color: #fff;
+        box-shadow: 0 8px 22px rgba(32, 95, 166, 0.22);
+      }
+      .tbtn.premium:hover {
+        color: #fff;
+        filter: brightness(1.04);
       }
       .tbtn.ghost {
         border-color: transparent;
@@ -347,6 +368,34 @@
       .flyout.open {
         display: block;
       }
+      .flyout-close {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 30px;
+        height: 30px;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 9px;
+        color: #5e6e85;
+        font-size: 1.25rem;
+        font-weight: 800;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 2;
+        transition:
+          border-color 0.12s,
+          color 0.12s,
+          background 0.12s;
+      }
+      .flyout-close:hover {
+        border-color: var(--teal);
+        color: var(--teal);
+        background: rgba(32, 95, 166, 0.06);
+      }
       @keyframes pop {
         from {
           opacity: 0;
@@ -388,15 +437,38 @@
           opacity 0.18s,
           transform 0.18s;
         z-index: 60;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
       }
       .wb-toast.show {
         opacity: 1;
         transform: translateX(-50%) translateY(0);
       }
+      .wb-toast-action {
+        pointer-events: auto;
+        min-height: 32px;
+        padding: 4px 12px;
+        border: none;
+        border-radius: 999px;
+        background: #ffd54a;
+        color: #1f2937;
+        font: inherit;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .wb-toast-action:hover {
+        background: #ffe07a;
+      }
+      .wb-toast-action:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
       .flyout h3 {
         margin: 0 0 3px;
         font-size: 0.98rem;
         font-weight: 900;
+        padding-right: 34px;
       }
       .flyout p.hint {
         margin: 0 0 11px;
@@ -519,9 +591,188 @@
         position: relative;
         flex: 1;
         min-width: 0;
-        overflow: hidden;
+        overflow-y: auto;
+        overflow-x: hidden;
         background-color: var(--paper);
-        touch-action: none;
+        /* Patterns are painted on this element; "local" makes them scroll with
+           the content so ink stays aligned to the grid at any scroll depth. */
+        background-attachment: local;
+        /* Allow vertical finger-scroll across pages; drawing tools flip the
+           board to touch-action:none so strokes are never hijacked by a pan. */
+        touch-action: pan-y;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: #b9c8dc transparent;
+      }
+      .workspace::-webkit-scrollbar {
+        width: 12px;
+      }
+      .workspace::-webkit-scrollbar-thumb {
+        background: #b9c8dc;
+        border: 3px solid var(--paper);
+        border-radius: 999px;
+      }
+      .workspace::-webkit-scrollbar-thumb:hover {
+        background: #9db2cc;
+      }
+      /* Tall scrolling sheet that holds the paper, ink, and floating objects. */
+      .sheet {
+        position: relative;
+        width: 100%;
+        min-height: 100%;
+      }
+      /* Page tabs — a vertical strip on the right edge. Each tab is its own
+         whiteboard page; the page beneath scrolls vertically on its own. */
+      .page-tabs {
+        position: absolute;
+        right: 0;
+        top: 84px;
+        bottom: 18px;
+        z-index: 16;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 7px;
+        pointer-events: none;
+      }
+      .page-tabs-list {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        max-height: 100%;
+        padding: 2px 0;
+        pointer-events: auto;
+        scrollbar-width: none;
+      }
+      .page-tabs-list::-webkit-scrollbar {
+        display: none;
+      }
+      .page-tab {
+        flex: none;
+        width: 42px;
+        height: 42px;
+        border: 1px solid var(--line);
+        border-right: none;
+        border-radius: 12px 0 0 12px;
+        background: #fff;
+        box-shadow: var(--shadow-sm);
+        color: var(--muted);
+        font-weight: 800;
+        font-size: 0.95rem;
+        font-variant-numeric: tabular-nums;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          background 0.12s,
+          color 0.12s,
+          border-color 0.12s,
+          width 0.12s;
+      }
+      .page-tab:hover {
+        color: var(--teal);
+        border-color: var(--teal);
+        width: 48px;
+      }
+      .page-tab.active {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: #fff;
+        width: 48px;
+      }
+      .page-tab-add {
+        flex: none;
+        pointer-events: auto;
+        width: 42px;
+        height: 42px;
+        border: 1px dashed #b9c8dc;
+        border-right: none;
+        border-radius: 12px 0 0 12px;
+        background: #f5f8fc;
+        color: var(--teal);
+        font-size: 1.35rem;
+        font-weight: 800;
+        line-height: 1;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          background 0.12s,
+          width 0.12s;
+      }
+      .page-tab-add:hover {
+        background: rgba(32, 95, 166, 0.1);
+        width: 48px;
+      }
+      .page-tab-add:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .page-tab-copy {
+        flex: none;
+        pointer-events: auto;
+        width: 42px;
+        height: 38px;
+        border: 1px solid var(--line);
+        border-right: none;
+        border-radius: 12px 0 0 12px;
+        background: #fff;
+        color: var(--teal);
+        font-size: 1rem;
+        line-height: 1;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.85;
+        transition:
+          background 0.12s,
+          width 0.12s,
+          opacity 0.12s;
+      }
+      .page-tab-copy:hover {
+        background: rgba(32, 95, 166, 0.1);
+        opacity: 1;
+        width: 48px;
+      }
+      .page-tab-copy:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+      .page-tab-del {
+        flex: none;
+        pointer-events: auto;
+        width: 42px;
+        height: 38px;
+        border: 1px solid var(--line);
+        border-right: none;
+        border-radius: 12px 0 0 12px;
+        background: #fff;
+        font-size: 1rem;
+        line-height: 1;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.85;
+        transition:
+          background 0.12s,
+          width 0.12s,
+          opacity 0.12s;
+      }
+      .page-tab-del:hover {
+        background: #fdeced;
+        opacity: 1;
+        width: 48px;
+      }
+      .page-tab-del:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
       }
       .workspace.bg-grid {
         background-image:
@@ -689,6 +940,22 @@
           center 0;
         background-repeat: repeat, repeat, no-repeat, no-repeat;
       }
+      .bg-opt .sw.numberline {
+        background-image:
+          linear-gradient(#14223a 2px, transparent 2px),
+          linear-gradient(
+            90deg,
+            rgba(32, 95, 166, 0.6) 1.4px,
+            transparent 1.4px
+          );
+        background-size:
+          100% 50%,
+          7px 100%;
+        background-position:
+          0 center,
+          center 0;
+        background-repeat: no-repeat, repeat-x;
+      }
       #bgLayer {
         position: absolute;
         inset: 0;
@@ -701,10 +968,144 @@
         width: 100%;
         height: 100%;
       }
+      .guide-drawer {
+        position: absolute;
+        top: 14px;
+        left: calc(var(--rail-w) + 14px);
+        z-index: 24;
+        width: min(420px, calc(100vw - var(--rail-w) - 28px));
+        max-height: calc(100% - 28px);
+        overflow-y: auto;
+        background:
+          linear-gradient(180deg, rgba(255, 250, 240, 0.97), #ffffff 72%),
+          radial-gradient(
+            circle at 14% 0%,
+            rgba(217, 119, 6, 0.12),
+            transparent 32%
+          );
+        border: 1px solid var(--cream-line);
+        border-radius: 18px;
+        box-shadow: var(--shadow-lg);
+        padding: 16px;
+        transform: translateX(-10px);
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          opacity 0.16s,
+          transform 0.16s;
+      }
+      .guide-drawer.open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(0);
+      }
+      .guide-head {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .guide-badge {
+        flex: none;
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        background: linear-gradient(135deg, var(--indigo), var(--green));
+        font-size: 1.35rem;
+        box-shadow: var(--shadow-sm);
+      }
+      .guide-head h2 {
+        margin: 0;
+        font-size: 1.12rem;
+        line-height: 1.1;
+        font-weight: 900;
+      }
+      .guide-head p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.35;
+        font-weight: 700;
+      }
+      .guide-close {
+        margin-left: auto;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--muted);
+        font-size: 1.25rem;
+        font-weight: 900;
+      }
+      .guide-section-title {
+        margin: 14px 0 8px;
+        font-size: 0.7rem;
+        font-weight: 900;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--green-d);
+      }
+      .template-grid,
+      .support-grid {
+        display: grid;
+        gap: 9px;
+      }
+      .template-card,
+      .support-card {
+        width: 100%;
+        text-align: left;
+        border: 1.5px solid var(--line);
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 12px;
+        padding: 12px;
+        color: var(--ink);
+        display: grid;
+        gap: 5px;
+        transition:
+          border-color 0.12s,
+          box-shadow 0.16s,
+          transform 0.08s;
+      }
+      .template-card:hover,
+      .support-card:hover {
+        border-color: var(--teal);
+        box-shadow: var(--shadow);
+        transform: translateY(-1px);
+      }
+      .template-card b,
+      .support-card b {
+        font-size: 0.95rem;
+        font-weight: 900;
+      }
+      .template-card span,
+      .support-card span {
+        color: var(--muted);
+        font-size: 0.78rem;
+        line-height: 1.35;
+        font-weight: 700;
+      }
+      .template-card small {
+        color: var(--green-d);
+        font-size: 0.68rem;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      /* The canvas fills the whole multi-page sheet and scrolls natively with
+         the paper, ink, and objects — so there is no scroll-sync math and a
+         stroke can never split or drift. Device size is capped in sizeCanvas()
+         so it stays within the browser's maximum canvas dimensions. */
       #board {
         position: absolute;
         inset: 0;
         z-index: 1;
+      }
+      body[data-draw="1"] #board {
+        touch-action: none;
       }
       #overlay {
         position: absolute;
@@ -746,6 +1147,8 @@
         user-select: none;
         transform-origin: top left;
         will-change: transform;
+        /* Dragging an object must never be hijacked into a page scroll. */
+        touch-action: none;
       }
       .obj.sel .obj-inner {
         outline: 2px dashed var(--teal);
@@ -985,6 +1388,69 @@
       }
       .formulaobj sub {
         font-size: 0.62em;
+      }
+      .guideobj {
+        width: min(560px, calc(100vw - 120px));
+        background:
+          linear-gradient(180deg, rgba(255, 250, 240, 0.98), #fff),
+          radial-gradient(
+            circle at top right,
+            rgba(44, 125, 107, 0.12),
+            transparent 38%
+          );
+        border: 1.5px solid var(--cream-line);
+        border-left: 7px solid var(--amber);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        padding: 15px 17px;
+        font-family: "Atkinson Hyperlegible", "Nunito", sans-serif;
+        color: var(--ink);
+      }
+      .guideobj .go-kicker {
+        margin: 0 0 5px;
+        color: var(--green-d);
+        font-size: 0.68rem;
+        font-weight: 900;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+      .guideobj .go-title {
+        margin: 0 0 8px;
+        font-size: 1.18rem;
+        line-height: 1.18;
+        font-weight: 900;
+      }
+      .guideobj .go-prompt {
+        margin: 0 0 10px;
+        color: var(--ink);
+        font-size: 0.94rem;
+        line-height: 1.4;
+        font-weight: 700;
+      }
+      .guideobj ol,
+      .guideobj ul {
+        margin: 0;
+        padding-left: 1.15rem;
+        display: grid;
+        gap: 5px;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.35;
+        font-weight: 700;
+      }
+      .guideobj .go-footer {
+        margin-top: 11px;
+        border-top: 1px solid var(--cream-line);
+        padding-top: 9px;
+        color: var(--green-d);
+        font-size: 0.8rem;
+        line-height: 1.35;
+        font-weight: 800;
+      }
+      .workbook-print-head {
+        display: none;
+        position: relative;
+        z-index: 5;
       }
       .ifr {
         display: inline-flex;
@@ -1347,6 +1813,13 @@
       .obj.sel .obj-tools {
         display: flex;
       }
+      /* Near the top of the sheet the toolbar flips below the object so its
+         controls stay on-screen instead of clipping above the workspace. */
+      .obj-tools.below {
+        top: auto;
+        bottom: -14px;
+        transform: translate(-50%, 100%);
+      }
       .obj-tools button {
         width: 36px;
         height: 36px;
@@ -1375,6 +1848,18 @@
         align-self: center;
         margin: 0 2px;
       }
+      /* On touch hardware (Chromebooks / tablets) grow the object controls to
+         the 44px minimum touch-target size so small fingers can hit them. */
+      @media (pointer: coarse) {
+        .obj-tools button {
+          width: 44px;
+          height: 44px;
+        }
+        .obj-tools .mini-sw {
+          width: 36px;
+          height: 36px;
+        }
+      }
 
       /* hint when empty */
       .empty-hint {
@@ -1385,7 +1870,7 @@
         text-align: center;
         color: #6b7c93;
         pointer-events: none;
-        z-index: 0;
+        z-index: 4;
         max-width: 420px;
         padding: 0 20px;
       }
@@ -1441,12 +1926,24 @@
 
       /* ============================ Formula dock (bottom) ============================ */
       .dock {
+        position: relative;
         background: linear-gradient(180deg, #f5f8fc, #ffffff);
         border-top: 1px solid var(--line);
         box-shadow: 0 -3px 14px rgba(15, 23, 42, 0.05);
         z-index: 15;
         min-width: 0;
         overflow: hidden;
+      }
+      /* Slim accent rule along the top edge of the reference bank. */
+      .dock::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--teal), var(--teal-2, #2c7d6b));
+        opacity: 0.85;
       }
       .dock-head {
         display: flex;
@@ -1482,6 +1979,16 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        cursor: pointer;
+        transition:
+          border-color 0.12s,
+          background 0.12s,
+          box-shadow 0.12s;
+      }
+      .dock-toggle:hover {
+        border-color: var(--teal);
+        background: rgba(32, 95, 166, 0.06);
+        box-shadow: var(--shadow-sm);
       }
       .dock-tabs {
         display: flex;
@@ -1609,6 +2116,7 @@
         gap: 8px;
       }
       .formula-card {
+        position: relative;
         text-align: left;
         border: 1.5px solid var(--line);
         background: #fff;
@@ -1621,6 +2129,44 @@
           border-color 0.12s,
           box-shadow 0.15s,
           transform 0.08s;
+      }
+      .formula-card .fc-say {
+        position: absolute;
+        top: 7px;
+        right: 7px;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9px;
+        border: 1.5px solid var(--line);
+        background: #f5f8fc;
+        color: var(--teal);
+        font-size: 0.95rem;
+        line-height: 1;
+        cursor: pointer;
+        opacity: 0;
+        transition:
+          opacity 0.12s,
+          background 0.12s;
+      }
+      .formula-card:hover .fc-say {
+        opacity: 1;
+      }
+      .formula-card .fc-say:hover {
+        background: rgba(32, 95, 166, 0.12);
+      }
+      .formula-card .fc-say.speaking {
+        opacity: 1;
+        background: var(--teal);
+        color: #fff;
+      }
+      /* On touch (no hover) keep the read-aloud button reachable. */
+      @media (hover: none) {
+        .formula-card .fc-say {
+          opacity: 0.7;
+        }
       }
       .formula-card:hover {
         border-color: var(--green);
@@ -1774,10 +2320,29 @@
           display: none;
         }
         .tbtn {
-          padding: 0 11px;
+          width: 44px;
+          height: 44px;
+          justify-content: center;
+          padding: 0;
         }
         .flyout {
           width: min(280px, calc(100vw - var(--rail-w) - 14px));
+        }
+        .guide-drawer {
+          left: calc(var(--rail-w) + 8px);
+          width: calc(100vw - var(--rail-w) - 16px);
+          top: 8px;
+          max-height: calc(100% - 16px);
+          border-radius: 15px;
+        }
+        .guideobj {
+          width: min(460px, calc(100vw - 96px));
+        }
+        .modal {
+          align-self: start;
+          margin-top: 12px;
+          max-height: calc(100dvh - 32px);
+          padding: 20px 22px 22px;
         }
         .tool {
           max-height: 50px;
@@ -1869,10 +2434,50 @@
         .obj-tools,
         .rs,
         .bg-dock,
+        .guide-drawer,
         .numline-head,
         .tool-head,
         .empty-hint {
           display: none !important;
+        }
+        .workbook-print-head {
+          display: grid;
+          grid-template-columns: 1.2fr 0.8fr 0.8fr;
+          gap: 10px;
+          align-items: end;
+          margin: 0 0 16px;
+          padding: 14px 16px;
+          border: 2px solid #14223a;
+          border-radius: 12px;
+          background: #fff;
+          break-inside: avoid;
+          font-family: "Atkinson Hyperlegible", "Nunito", sans-serif;
+        }
+        .workbook-print-head h2 {
+          grid-column: 1 / -1;
+          margin: 0 0 3px;
+          font-size: 18pt;
+          line-height: 1.05;
+        }
+        .workbook-print-head p {
+          margin: 0;
+          font-size: 9pt;
+          font-weight: 700;
+          color: #33485f;
+        }
+        .print-field {
+          border-bottom: 1.5px solid #14223a;
+          min-height: 24px;
+          font-size: 9pt;
+          font-weight: 800;
+          color: #33485f;
+        }
+        .print-field span {
+          display: block;
+          font-size: 7pt;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #5b6b82;
         }
         .app {
           height: auto;
@@ -1886,22 +2491,21 @@
         }
       }
     </style>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
   </head>
   <body data-draw="0">
     <div class="app">
       <!-- ===================== Top bar ===================== -->
       <header class="topbar">
-        <a
-          class="brand home-link"
-          href="/curriculum/"
-          title="Back to Curriculum Hub"
-        >
+        <div class="brand">
           <span class="logo" aria-hidden="true">∑</span>
           <span class="titles">
             <span class="eyebrow">Mr. Neft · Grade 6 Math</span>
             <h1>Math Workbench</h1>
           </span>
-        </a>
+        </div>
         <div class="top-actions">
           <span
             id="savePill"
@@ -1915,6 +2519,38 @@
             title="Change the background (graph, dots, coordinate plane…)"
           >
             <span class="i">🎨</span><span class="txt">Background</span>
+          </button>
+          <button
+            class="tbtn"
+            id="snapBtn"
+            title="Snap to grid — line up your numbers and tiles neatly"
+            aria-pressed="false"
+          >
+            <span class="i">▦</span><span class="txt">Align</span>
+          </button>
+          <button
+            class="tbtn solid"
+            id="calcBtn"
+            title="Open the calculator (basic by default; switch to graphing at the bottom)"
+            aria-pressed="false"
+          >
+            <span class="i">🧮</span><span class="txt">Calculator</span>
+          </button>
+          <button
+            class="tbtn premium"
+            id="guideBtn"
+            title="Open guided problem templates and support cards"
+            aria-expanded="false"
+          >
+            <span class="i">◆</span><span class="txt">Guided Practice</span>
+          </button>
+          <button
+            class="tbtn premium"
+            id="coachBtn"
+            title="Ask the Math Coach for a hint or an explanation"
+            aria-pressed="false"
+          >
+            <span class="i">💡</span><span class="txt">Math Coach</span>
           </button>
           <button class="tbtn" id="undoBtn" title="Undo (Ctrl+Z)" disabled>
             <span class="i">↶</span><span class="txt">Undo</span>
@@ -1937,6 +2573,26 @@
             <span class="i">⤓</span><span class="txt">Save / Print</span>
           </button>
           <button
+            class="tbtn"
+            id="backupBtn"
+            title="Save a re-openable copy of all your pages to a file"
+          >
+            <span class="i">💾</span><span class="txt">Backup</span>
+          </button>
+          <button
+            class="tbtn"
+            id="openBtn"
+            title="Open a Workbench file you saved before"
+          >
+            <span class="i">📂</span><span class="txt">Open</span>
+          </button>
+          <input
+            type="file"
+            id="openFile"
+            accept="application/json,.json"
+            hidden
+          />
+          <button
             class="tbtn solid"
             id="helpBtn"
             title="How to use the Workbench"
@@ -1947,7 +2603,7 @@
       </header>
 
       <!-- ===================== Stage ===================== -->
-      <div class="stage">
+      <main class="stage" aria-label="Math Workbench canvas and tools">
         <!-- Tool rail -->
         <nav class="rail" id="rail" aria-label="Tools">
           <div class="op-quick" role="group" aria-label="Insert an operation">
@@ -2042,35 +2698,84 @@
         <!-- Flyout palette -->
         <section class="flyout" id="flyout" aria-label="Tool options"></section>
 
-        <!-- Workspace -->
-        <div class="workspace" id="workspace">
-          <div id="bgLayer" aria-hidden="true"></div>
-          <canvas id="board"></canvas>
-          <div id="overlay"></div>
-          <div class="empty-hint" id="emptyHint">
-            <div class="big">✏️➗📐</div>
-            <h2>Your math workspace</h2>
-            <p>
-              Pick a tool on the left to write, stamp numbers, set up problems,
-              and drop in shapes. Tap <b>Help</b> any time.
-            </p>
-            <p class="starter-lbl">Or start with one of these:</p>
-            <div class="starter-row" id="starterRow">
-              <button class="starter" data-starter="grid">
-                📈 Coordinate plane
-              </button>
-              <button class="starter" data-starter="numline">
-                📏 Number line
-              </button>
-              <button class="starter" data-starter="division">
-                ➗ Long division
-              </button>
-              <button class="starter" data-starter="fraction">
-                ½ Fraction
-              </button>
+        <!-- Workspace (scrolls vertically across multiple whiteboard pages) -->
+        <div
+          class="workspace"
+          id="workspace"
+          role="region"
+          aria-label="Scrollable whiteboard workspace"
+          tabindex="0"
+        >
+          <div class="sheet" id="sheet">
+            <section class="workbook-print-head" aria-hidden="true">
+              <h2>Math Workbench Student Page</h2>
+              <p>
+                Show your model, your math, and one sentence explaining your
+                reasoning.
+              </p>
+              <div class="print-field"><span>Name</span></div>
+              <div class="print-field"><span>Date</span></div>
+              <div class="print-field"><span>Class / Skill</span></div>
+            </section>
+            <div id="bgLayer" aria-hidden="true"></div>
+            <canvas id="board"></canvas>
+            <div id="overlay"></div>
+            <div class="empty-hint" id="emptyHint">
+              <div class="big" aria-hidden="true">◆</div>
+              <h2>Start with a guided math workspace</h2>
+              <p>
+                Choose a template, then write, drag, draw, and explain your
+                thinking.
+              </p>
+              <p class="starter-lbl">Fast start</p>
+              <div class="starter-row" id="starterRow">
+                <button class="starter" data-starter="equation">
+                  Equation steps
+                </button>
+                <button class="starter" data-starter="ratio">
+                  Ratio table
+                </button>
+                <button class="starter" data-starter="grid">
+                  Coordinate grid
+                </button>
+                <button class="starter" data-starter="fraction">
+                  Fraction frame
+                </button>
+              </div>
             </div>
           </div>
         </div>
+
+        <aside
+          class="guide-drawer"
+          id="guideDrawer"
+          aria-label="Guided practice templates"
+          aria-hidden="true"
+          inert
+        >
+          <div class="guide-head">
+            <span class="guide-badge" aria-hidden="true">◆</span>
+            <div>
+              <h2>Guided Practice Studio</h2>
+              <p>
+                Stamp a publisher-style workspace, then use the board to show
+                thinking.
+              </p>
+            </div>
+            <button
+              class="guide-close"
+              id="guideClose"
+              type="button"
+              aria-label="Close guided practice"
+            >
+              ×
+            </button>
+          </div>
+          <p class="guide-section-title">Problem templates</p>
+          <div class="template-grid" id="templateGrid"></div>
+          <p class="guide-section-title">Student supports</p>
+          <div class="support-grid" id="supportGrid"></div>
+        </aside>
 
         <!-- Background side dock -->
         <div class="bg-dock" id="bgDock">
@@ -2102,9 +2807,41 @@
             <button class="bg-opt" data-bg="coord" role="menuitem">
               <span class="sw coord"></span> Coordinate plane
             </button>
+            <button class="bg-opt" data-bg="numberline" role="menuitem">
+              <span class="sw numberline"></span> Number line
+            </button>
           </div>
         </div>
-      </div>
+
+        <!-- Page tabs (right side): each page is its own whiteboard surface -->
+        <div class="page-tabs" id="pageTabs" aria-label="Whiteboard pages">
+          <div class="page-tabs-list" id="pageTabsList" tabindex="0"></div>
+          <button
+            class="page-tab-add"
+            id="addPageBtn"
+            title="Add a new page (up to 20)"
+            aria-label="Add a new page"
+          >
+            ＋
+          </button>
+          <button
+            class="page-tab-copy"
+            id="copyPageBtn"
+            title="Copy this page to a new page"
+            aria-label="Copy the current page"
+          >
+            ⧉
+          </button>
+          <button
+            class="page-tab-del"
+            id="delPageBtn"
+            title="Delete the current page"
+            aria-label="Delete the current page"
+          >
+            🗑
+          </button>
+        </div>
+      </main>
 
       <!-- ===================== Formula dock ===================== -->
       <footer class="dock" id="dock">
@@ -2113,8 +2850,8 @@
             ><span class="ic">📚</span> Formula &amp; Reference Bank</span
           >
           <span class="sub"
-            >PreK&nbsp;–&nbsp;Grade&nbsp;6 · open a category, then tap a card to
-            drop it on the board</span
+            >PreK&nbsp;–&nbsp;Algebra · open a category, then tap a card to drop
+            it on the board</span
           >
           <button class="dock-toggle" id="dockToggle">
             <span id="dockToggleIc">▴</span>
@@ -2135,12 +2872,22 @@
         role="dialog"
         aria-modal="true"
         aria-labelledby="helpTitle"
+        tabindex="-1"
       >
         <h2 id="helpTitle">How to use the Math Workbench</h2>
         <p class="lead">
-          Everything you need to work out a problem — all in one place.
+          Pick a guided template, show your model, and explain your thinking —
+          all in one place.
         </p>
         <ul>
+          <li>
+            <span class="k">◆</span
+            ><span
+              ><b>Start with Guided Practice.</b> Choose an equation, ratio,
+              geometry, coordinate, data, or word-problem workspace. Each one
+              drops the model and writing frames you need.</span
+            >
+          </li>
           <li>
             <span class="k">✏️</span
             ><span
@@ -2153,8 +2900,18 @@
             <span class="k">✥</span
             ><span
               ><b>Move &amp; edit.</b> With <b>Move</b>, drag anything around.
-              Tap an item to select it — a tiny toolbar lets you delete,
-              duplicate, resize, or recolor it.</span
+              Tap an item to select it — a tiny toolbar lets you bring it to the
+              front, send it to the back, resize, recolor, duplicate
+              (<b>Ctrl</b>+<b>D</b>), or delete it.</span
+            >
+          </li>
+          <li>
+            <span class="k">▦</span
+            ><span
+              ><b>Align &amp; reuse.</b> Turn on <b>Align</b> in the top bar and
+              items snap to the grid so columns line up neatly. Use the
+              <b>⧉</b> button on the page tabs to copy the whole page and try a
+              problem again.</span
             >
           </li>
           <li>
@@ -2186,7 +2943,8 @@
             <span class="k">📚</span
             ><span
               ><b>Formula bank.</b> Open a topic at the bottom and tap any
-              formula to drop a reminder card onto your board.</span
+              formula to drop a reminder card onto your board. Tap the
+              <b>🔊</b> on a card to hear it read aloud.</span
             >
           </li>
           <li>
@@ -2213,6 +2971,7 @@
       const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
       const workspace = $("#workspace");
+      const sheet = $("#sheet");
       const overlay = $("#overlay");
       const canvas = $("#board");
       const ctx = canvas.getContext("2d");
@@ -2238,11 +2997,20 @@
         "#c4b5fd",
       ];
 
-      const state = {
-        strokes: [], // { tool, color, size, pts:[{x,y}] }
-        objects: [], // see makeObject
+      // `state` is the ACTIVE page; the notebook holds every page (tab). All
+      // drawing/object code reads `state`, so switching tabs is just a reassign.
+      let state = {
+        strokes: [], // { tool, color, size, pts:[{x,y}] } — document coords
+        objects: [], // see makeObject — x,y are document coords
         bg: "blank", // blank | grid | graphfine | dot | lined
+        pages: 3, // vertical screens of writing room on this page
+        scroll: 0, // remembered scroll position of this page
       };
+      const notebook = { boards: [state], active: 0 };
+      const MAX_TABS = 20; // number of page tabs
+      const MAX_VPAGES = 30; // vertical screens a single page can grow to
+      const DEFAULT_VPAGES = 3; // starting vertical room on a fresh page
+      let DPR = 1; // device-pixel ratio captured in sizeCanvas()
       let tool = "move";
       let penColor = PEN_COLORS[0];
       let hiColor = HI_COLORS[0];
@@ -2250,6 +3018,55 @@
       let selectedId = null;
       let uid = 1;
       const nid = () => "o" + uid++ + "_" + ((performance.now() | 0) % 100000);
+
+      /* ----------------------- Snap to grid ----------------------- */
+      // Optional alignment aid: when on, dropped/dragged objects land on a
+      // 28px lattice (matching the graph-grid background) so students can line
+      // up column arithmetic, place value, and ratio tables neatly.
+      const SNAP_STEP = 28;
+      let snapOn = false;
+      try {
+        snapOn = localStorage.getItem("mw_snap") === "1";
+      } catch (e) {}
+      const snapVal = (n) =>
+        snapOn ? Math.round(n / SNAP_STEP) * SNAP_STEP : n;
+      function setSnap(on) {
+        snapOn = !!on;
+        try {
+          localStorage.setItem("mw_snap", snapOn ? "1" : "0");
+        } catch (e) {}
+        const b = $("#snapBtn");
+        if (b) b.setAttribute("aria-pressed", snapOn ? "true" : "false");
+        document.body.classList.toggle("snap-on", snapOn);
+      }
+
+      /* ----------------------- Read aloud (text-to-speech) ----------------------- */
+      // Accessibility / decoding support for emerging and multilingual readers:
+      // speak a reference card's name and plain-language note aloud. Uses the
+      // browser's built-in speechSynthesis — no network, no keys, works offline.
+      // Symbols/equations read poorly, so callers pass the words to speak.
+      const canSpeak =
+        typeof window !== "undefined" && "speechSynthesis" in window;
+      function speak(text, onDone) {
+        if (!canSpeak || !text) {
+          if (onDone) onDone();
+          return;
+        }
+        try {
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(String(text));
+          u.rate = 0.95;
+          u.pitch = 1;
+          u.lang = "en-US";
+          if (onDone) {
+            u.onend = onDone;
+            u.onerror = onDone;
+          }
+          window.speechSynthesis.speak(u);
+        } catch (e) {
+          if (onDone) onDone();
+        }
+      }
 
       /* ----------------------- Undo / redo history ----------------------- */
       const history = [];
@@ -2259,6 +3076,7 @@
           strokes: state.strokes,
           objects: state.objects,
           bg: state.bg,
+          pages: state.pages,
         });
       }
       function pushHistory() {
@@ -2271,12 +3089,34 @@
         updateUndoButtons();
         persist();
       }
+      // Advance the id counter past anything we just loaded so freshly
+      // stamped objects can never reuse a restored object's id (which would
+      // make select / duplicate / delete act on the wrong element).
+      function seedUidFromObjects(objs) {
+        let maxN = 0;
+        for (const o of objs || []) {
+          const m = /^o(\d+)_/.exec(o && o.id);
+          if (m) maxN = Math.max(maxN, +m[1]);
+        }
+        if (maxN >= uid) uid = maxN + 1;
+      }
       function applySnap(snap) {
-        const d = JSON.parse(snap);
-        state.strokes = d.strokes || [];
-        state.objects = d.objects || [];
-        state.bg = d.bg || "blank";
+        let d;
+        try {
+          d = JSON.parse(snap);
+        } catch (e) {
+          d = null;
+        }
+        // Defend against corrupt or partially-written saved state so a single
+        // bad localStorage value can never white-screen the workbench.
+        if (!d || typeof d !== "object") d = {};
+        state.strokes = Array.isArray(d.strokes) ? d.strokes : [];
+        state.objects = Array.isArray(d.objects) ? d.objects : [];
+        state.bg = typeof d.bg === "string" ? d.bg : "blank";
+        state.pages = clampPages(d.pages);
+        seedUidFromObjects(state.objects);
         renderAll();
+        applySheet();
       }
       function flushPendingHistory() {
         // A debounced erase snapshot may be queued; commit it before any
@@ -2312,24 +3152,105 @@
       /* ----------------------- Persistence ----------------------- */
       const LS_KEY = "neft.mathWorkbench.v1";
       let saveTimer = null;
+      function boardData(b) {
+        return {
+          strokes: b.strokes,
+          objects: b.objects,
+          bg: b.bg,
+          pages: b.pages,
+          scroll: b.scroll || 0,
+        };
+      }
+      function notebookSnapshot() {
+        // Keep the active page's scroll current before serializing.
+        notebook.boards[notebook.active].scroll = workspace.scrollTop;
+        return JSON.stringify({
+          v: 2,
+          active: notebook.active,
+          boards: notebook.boards.map(boardData),
+        });
+      }
+      function coerceBoard(d) {
+        d = d && typeof d === "object" ? d : {};
+        return {
+          strokes: Array.isArray(d.strokes) ? d.strokes : [],
+          objects: Array.isArray(d.objects) ? d.objects : [],
+          bg: typeof d.bg === "string" ? d.bg : "blank",
+          pages: clampPages(d.pages),
+          scroll: Number(d.scroll) || 0,
+        };
+      }
+      // Load a saved notebook; transparently upgrades the old single-page format.
+      function loadNotebook(raw) {
+        let d;
+        try {
+          d = JSON.parse(raw);
+        } catch (e) {
+          d = null;
+        }
+        if (!d || typeof d !== "object") d = {};
+        const boards =
+          Array.isArray(d.boards) && d.boards.length
+            ? d.boards.map(coerceBoard)
+            : [coerceBoard(d)]; // old format: the whole object was one page
+        notebook.boards = boards;
+        notebook.active = Math.min(
+          Math.max(0, d.active | 0),
+          boards.length - 1,
+        );
+        state = notebook.boards[notebook.active];
+        for (const b of boards) seedUidFromObjects(b.objects);
+        renderAll();
+        applySheet();
+        renderTabs();
+        workspace.scrollTop = state.scroll || 0;
+      }
+      let saveFailNotified = false;
+      function writeNow() {
+        const pill = $("#savePill");
+        try {
+          localStorage.setItem(LS_KEY, notebookSnapshot());
+          if (pill) pill.textContent = "Saved";
+          saveFailNotified = false;
+          return true;
+        } catch (e) {
+          if (pill) pill.textContent = "Not saved";
+          // Don't let a full or blocked storage fail silently — tell the
+          // student once and offer a file backup so their work isn't lost.
+          if (!saveFailNotified) {
+            saveFailNotified = true;
+            showToast("Can't auto-save — save a copy to be safe", {
+              label: "Save a copy",
+              fn: () => downloadNotebook(),
+            });
+          }
+          return false;
+        }
+      }
       function persist() {
         const pill = $("#savePill");
-        pill.textContent = "Saving…";
+        if (pill) pill.textContent = "Saving…";
         clearTimeout(saveTimer);
-        saveTimer = setTimeout(() => {
-          try {
-            localStorage.setItem(LS_KEY, snapshot());
-            pill.textContent = "Saved";
-          } catch (e) {
-            pill.textContent = "Not saved";
-          }
-        }, 350);
+        saveTimer = setTimeout(writeNow, 350);
       }
+      // Commit any debounced save immediately on exit so the last strokes are
+      // never lost when a student closes the tab or switches apps.
+      function flushSave() {
+        if (saveTimer) {
+          clearTimeout(saveTimer);
+          saveTimer = null;
+          writeNow();
+        }
+      }
+      window.addEventListener("pagehide", flushSave);
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") flushSave();
+      });
       function restore() {
         try {
           const raw = localStorage.getItem(LS_KEY);
           if (raw) {
-            applySnap(raw);
+            loadNotebook(raw);
             return true;
           }
         } catch (e) {}
@@ -2337,22 +3258,247 @@
       }
 
       /* ----------------------- Canvas sizing ----------------------- */
+      // Safe across Chrome / Firefox / Safari / iOS (all allow >= 16384px).
+      const MAX_CANVAS_PX = 16384;
       function sizeCanvas() {
-        const r = workspace.getBoundingClientRect();
-        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-        canvas.width = Math.round(r.width * dpr);
-        canvas.height = Math.round(r.height * dpr);
-        canvas.style.width = r.width + "px";
-        canvas.style.height = r.height + "px";
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        // The canvas spans the FULL multi-page sheet and scrolls natively with
+        // everything else — so strokes never split or drift. Device dimensions
+        // are capped so a very tall sheet stays within the browser's limit.
+        const cssW = workspace.clientWidth;
+        const cssH = sheetHeight();
+        let dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const longest = Math.max(cssW, cssH);
+        if (longest * dpr > MAX_CANVAS_PX) dpr = MAX_CANVAS_PX / longest;
+        DPR = dpr;
+        canvas.width = Math.round(cssW * dpr);
+        canvas.height = Math.round(cssH * dpr);
+        canvas.style.width = cssW + "px";
+        canvas.style.height = cssH + "px";
         renderCanvas();
         if (state.bg === "coord") buildCoordBg();
+        else if (state.bg === "numberline") buildNumberLineBg();
       }
       function renderCanvas() {
-        const r = workspace.getBoundingClientRect();
-        ctx.clearRect(0, 0, r.width, r.height);
+        // Clear by the canvas's own device-pixel size (fast, never triggers
+        // layout) — runs on every highlighter pointermove frame.
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
+        // Strokes are in document coordinates and the canvas fills the sheet
+        // 1:1, so no scroll offset is needed.
+        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
         for (const st of state.strokes) drawStroke(st);
       }
+      /* --------------- Pages (tabs) + per-page vertical scroll --------------- */
+      function clampPages(n) {
+        n = Math.round(Number(n) || DEFAULT_VPAGES);
+        return Math.max(1, Math.min(MAX_VPAGES, n));
+      }
+      function pageUnit() {
+        // One vertical "screen" of writing room. Floor keeps short Chromebooks
+        // usable.
+        return Math.max(workspace.clientHeight || 480, 480);
+      }
+      // How far down the lowest ink / object reaches, in document pixels.
+      function contentBottom() {
+        let b = 0;
+        for (const st of state.strokes)
+          for (const p of st.pts) if (p.y > b) b = p.y;
+        for (const o of state.objects) if ((o.y || 0) + 120 > b) b = o.y + 120;
+        return b;
+      }
+      function sheetHeight() {
+        const unit = pageUnit();
+        let h = state.pages * unit;
+        const cb = contentBottom() + 100;
+        if (cb > h) h = cb;
+        return Math.round(h);
+      }
+      function applySheet() {
+        sheet.style.minHeight = sheetHeight() + "px";
+        // Resize the canvas to match the (possibly taller) page and repaint.
+        sizeCanvas();
+      }
+      // Extend this page's vertical room when content reaches the bottom, so a
+      // page keeps scrolling further down as the student writes.
+      function growToFit() {
+        const unit = pageUnit();
+        const needed = clampPages(Math.ceil((contentBottom() + 40) / unit));
+        if (needed > state.pages) {
+          state.pages = needed;
+          applySheet();
+        }
+      }
+      // Endless feel: when the student scrolls near the bottom, add another
+      // screen of room (up to MAX_VPAGES).
+      function growOnScroll() {
+        if (
+          workspace.scrollTop + workspace.clientHeight >= sheetHeight() - 90 &&
+          state.pages < MAX_VPAGES
+        ) {
+          state.pages++;
+          applySheet();
+          persist();
+        }
+      }
+
+      /* --------------- Notebook: each page (tab) is its own board ----------- */
+      function blankBoard() {
+        return {
+          strokes: [],
+          objects: [],
+          bg: "blank",
+          pages: DEFAULT_VPAGES,
+          scroll: 0,
+        };
+      }
+      function renderTabs() {
+        const list = $("#pageTabsList");
+        if (!list) return;
+        list.innerHTML = "";
+        notebook.boards.forEach((b, i) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "page-tab" + (i === notebook.active ? " active" : "");
+          btn.textContent = i + 1;
+          btn.title = "Go to page " + (i + 1);
+          btn.setAttribute("aria-label", "Go to page " + (i + 1));
+          btn.setAttribute(
+            "aria-current",
+            i === notebook.active ? "page" : "false",
+          );
+          btn.addEventListener("click", () => switchBoard(i));
+          list.appendChild(btn);
+        });
+        const add = $("#addPageBtn");
+        if (add) add.disabled = notebook.boards.length >= MAX_TABS;
+        const copy = $("#copyPageBtn");
+        if (copy) copy.disabled = notebook.boards.length >= MAX_TABS;
+        const del = $("#delPageBtn");
+        if (del) {
+          del.disabled = notebook.boards.length <= 1;
+          del.title =
+            "Delete page " + (notebook.active + 1) + " (the current page)";
+        }
+        // Keep the active tab visible if the strip overflows.
+        const activeEl = list.children[notebook.active];
+        if (activeEl && activeEl.scrollIntoView)
+          activeEl.scrollIntoView({ block: "nearest" });
+      }
+      function switchBoard(i) {
+        if (i < 0 || i >= notebook.boards.length || i === notebook.active) {
+          renderTabs();
+          return;
+        }
+        flushPendingHistory();
+        // Remember where we were on the page we are leaving.
+        notebook.boards[notebook.active].scroll = workspace.scrollTop;
+        notebook.active = i;
+        state = notebook.boards[i];
+        selectedId = null;
+        seedUidFromObjects(state.objects);
+        renderAll();
+        applySheet();
+        // Each page keeps its own undo history; start a fresh baseline.
+        history.length = 0;
+        hpos = -1;
+        history.push(snapshot());
+        hpos = 0;
+        updateUndoButtons();
+        workspace.scrollTop = state.scroll || 0;
+        renderTabs();
+        persist();
+      }
+      function addBoard() {
+        if (notebook.boards.length >= MAX_TABS) {
+          showToast("That's the most pages (" + MAX_TABS + ")");
+          return;
+        }
+        notebook.boards.push(blankBoard());
+        switchBoard(notebook.boards.length - 1);
+        showToast("Page " + notebook.boards.length + " added");
+      }
+      // Duplicate the current page onto a fresh page right after it, so a
+      // student can re-try a problem or a teacher can hand out a worked model
+      // and a blank copy. Object ids are regenerated so the two pages stay
+      // fully independent (select/duplicate/delete never cross pages).
+      function copyBoard() {
+        if (notebook.boards.length >= MAX_TABS) {
+          showToast("That's the most pages (" + MAX_TABS + ")");
+          return;
+        }
+        flushPendingHistory();
+        notebook.boards[notebook.active].scroll = workspace.scrollTop;
+        const clone = JSON.parse(
+          JSON.stringify(notebook.boards[notebook.active]),
+        );
+        (clone.objects || []).forEach((o) => {
+          o.id = nid();
+        });
+        const at = notebook.active + 1;
+        notebook.boards.splice(at, 0, clone);
+        switchBoard(at);
+        showToast("Page copied to page " + (at + 1));
+      }
+      // Delete the current page. There must always be at least one page; a page
+      // with any ink/objects asks for confirmation first.
+      function deleteBoard(i) {
+        if (i < 0 || i >= notebook.boards.length) return;
+        if (notebook.boards.length <= 1) {
+          showToast("You need at least one page");
+          return;
+        }
+        // Save the leaving page's scroll, then remove the target page. The
+        // removed board is kept so the student can restore it from the toast —
+        // page delete is fully reversible, no scary "can't be undone" prompt.
+        const removed = notebook.boards[i];
+        notebook.boards[notebook.active].scroll = workspace.scrollTop;
+        notebook.boards.splice(i, 1);
+        let na = notebook.active;
+        if (i < na) na = na - 1;
+        else if (i === na) na = Math.min(na, notebook.boards.length - 1);
+        notebook.active = na;
+        state = notebook.boards[na];
+        selectedId = null;
+        seedUidFromObjects(state.objects);
+        renderAll();
+        applySheet();
+        history.length = 0;
+        hpos = -1;
+        history.push(snapshot());
+        hpos = 0;
+        updateUndoButtons();
+        workspace.scrollTop = state.scroll || 0;
+        renderTabs();
+        persist();
+        showToast("Page " + (i + 1) + " deleted", {
+          label: "Undo",
+          fn: () => restoreBoard(removed, i),
+        });
+      }
+      // Put a deleted page back where it was (or as close as the current page
+      // count allows) and jump to it.
+      function restoreBoard(board, index) {
+        if (notebook.boards.length >= MAX_TABS) {
+          showToast("Can't restore — that's the most pages (" + MAX_TABS + ")");
+          return;
+        }
+        const at = Math.min(Math.max(0, index), notebook.boards.length);
+        notebook.boards.splice(at, 0, board);
+        renderTabs();
+        switchBoard(at);
+        showToast("Page restored");
+      }
+      $("#addPageBtn").addEventListener("click", addBoard);
+      $("#copyPageBtn").addEventListener("click", copyBoard);
+      $("#delPageBtn").addEventListener("click", () =>
+        deleteBoard(notebook.active),
+      );
+      $("#snapBtn").addEventListener("click", () => {
+        setSnap(!snapOn);
+        showToast(snapOn ? "Align on — items snap to the grid" : "Align off");
+      });
       function drawStroke(st) {
         const pts = st.pts;
         if (!pts.length) return;
@@ -2375,39 +3521,95 @@
 
       /* ----------------------- Drawing interaction ----------------------- */
       let drawing = null;
+      function ptFromRect(e, r) {
+        // Convert a viewport point to document coordinates by adding the live
+        // scroll offset, so ink lands at the right depth on a scrolled page.
+        return {
+          x: e.clientX - r.left,
+          y: e.clientY - r.top + workspace.scrollTop,
+        };
+      }
+      // Canvas, paper, ink, and objects all live in the sheet and scroll
+      // together natively — nothing to repaint. Just extend the page when the
+      // student reaches the bottom (rAF-throttled) for an endless feel.
+      let scrollRaf = 0;
+      workspace.addEventListener(
+        "scroll",
+        () => {
+          if (scrollRaf) return;
+          scrollRaf = requestAnimationFrame(() => {
+            scrollRaf = 0;
+            growOnScroll();
+          });
+        },
+        { passive: true },
+      );
       function localPt(e) {
-        const r = workspace.getBoundingClientRect();
-        return { x: e.clientX - r.left, y: e.clientY - r.top };
+        return ptFromRect(e, workspace.getBoundingClientRect());
       }
       canvas.addEventListener("pointerdown", (e) => {
         if (document.body.dataset.draw !== "1") return;
+        // Palm rejection on touch hardware: once a stroke is in progress, ignore
+        // any additional pointer (a resting palm or a second finger) so it can
+        // never lay down stray ink while the student is writing. Likewise skip
+        // non-primary touch points entirely.
+        if (drawing) return;
+        if (e.pointerType === "touch" && e.isPrimary === false) return;
         canvas.setPointerCapture(e.pointerId);
-        const p = localPt(e);
+        // Measure the workspace once and reuse it for the whole stroke. The
+        // pointer is captured and nothing mutates layout mid-gesture, so this
+        // avoids a getBoundingClientRect() (a synchronous layout query) on
+        // every pointermove — and on every coalesced sample within it.
+        const rect = workspace.getBoundingClientRect();
+        const p = ptFromRect(e, rect);
         if (tool === "eraser") {
           eraseAt(p);
-          drawing = { erase: true };
+          drawing = { erase: true, rect, pointerId: e.pointerId };
           return;
         }
         const color = tool === "highlighter" ? hiColor : penColor;
         const size =
           tool === "highlighter" ? Math.max(penSize * 3, 14) : penSize;
-        drawing = { tool, color, size, pts: [p] };
+        drawing = { tool, color, size, pts: [p], rect, pointerId: e.pointerId };
       });
       canvas.addEventListener("pointermove", (e) => {
         if (!drawing) return;
-        const p = localPt(e);
+        // Only the pointer that started the stroke may extend it — a palm or
+        // second finger firing pointermove must not bend the active line.
+        if (drawing.pointerId != null && e.pointerId !== drawing.pointerId)
+          return;
+        const rect = drawing.rect;
         if (drawing.erase) {
-          eraseAt(p);
+          eraseAt(ptFromRect(e, rect));
           return;
         }
-        drawing.pts.push(p);
-        // incremental draw
-        drawStroke(drawing);
+        // Capture coalesced samples so fast strokes on a stylus / touch screen
+        // stay smooth instead of rendering as long straight chords.
+        const events =
+          typeof e.getCoalescedEvents === "function"
+            ? e.getCoalescedEvents()
+            : null;
+        if (events && events.length) {
+          for (const ce of events) drawing.pts.push(ptFromRect(ce, rect));
+        } else {
+          drawing.pts.push(ptFromRect(e, rect));
+        }
+        if (drawing.tool === "highlighter") {
+          // A highlighter is semi-transparent: re-stroking the whole growing
+          // path each frame (the cheap pen path) would re-multiply the alpha
+          // and darken the ink to near-opaque. Repaint committed strokes, then
+          // lay down the in-progress stroke once for a correct single pass.
+          renderCanvas();
+          drawStroke(drawing);
+        } else {
+          drawStroke(drawing);
+        }
       });
       function endDraw() {
         if (!drawing) return;
         if (!drawing.erase && drawing.pts && drawing.pts.length) {
           state.strokes.push(drawing);
+          growToFit();
           pushHistory();
           updateEmpty();
         }
@@ -2445,20 +3647,32 @@
       }
 
       /* ----------------------- Object model ----------------------- */
-      function makeObject(type, props) {
+      function newBoardObject(type, props) {
         const r = workspace.getBoundingClientRect();
         const o = Object.assign(
           {
             id: nid(),
             type,
             x: Math.round(r.width / 2 - 40 + (Math.random() * 60 - 30)),
-            y: Math.round(r.height / 2 - 50 + (Math.random() * 50 - 25)),
+            // Drop new items into the middle of the page the student is
+            // currently looking at (document coords = scroll offset + view).
+            y: Math.round(
+              workspace.scrollTop +
+                r.height / 2 -
+                50 +
+                (Math.random() * 50 - 25),
+            ),
             scale: 1,
             color: null,
           },
           props || {},
         );
+        return o;
+      }
+      function makeObject(type, props) {
+        const o = newBoardObject(type, props);
         state.objects.push(o);
+        growToFit();
         renderAll();
         selectObject(o.id);
         pushHistory();
@@ -2479,7 +3693,10 @@
 
       let toastEl = null,
         toastT = null;
-      function showToast(msg) {
+      // showToast(msg) — quick status; or showToast(msg, {label, fn}) to attach
+      // a single action button (e.g. "Undo") that stays up longer so the
+      // student can react before it fades. Used to make page delete reversible.
+      function showToast(msg, action) {
         if (!toastEl) {
           toastEl = document.createElement("div");
           toastEl.className = "wb-toast";
@@ -2487,12 +3704,29 @@
           toastEl.setAttribute("aria-live", "polite");
           document.body.appendChild(toastEl);
         }
-        toastEl.textContent = msg;
+        toastEl.textContent = "";
+        const label = document.createElement("span");
+        label.textContent = msg;
+        toastEl.appendChild(label);
+        let life = 1500;
+        if (action && action.label && typeof action.fn === "function") {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "wb-toast-action";
+          btn.textContent = action.label;
+          btn.addEventListener("click", () => {
+            clearTimeout(toastT);
+            toastEl.classList.remove("show");
+            action.fn();
+          });
+          toastEl.appendChild(btn);
+          life = 6000; // leave time to act on the offered action
+        }
         // reflow so re-triggering the transition works
         void toastEl.offsetWidth;
         toastEl.classList.add("show");
         clearTimeout(toastT);
-        toastT = setTimeout(() => toastEl.classList.remove("show"), 1500);
+        toastT = setTimeout(() => toastEl.classList.remove("show"), life);
       }
 
       function objById(id) {
@@ -2528,6 +3762,8 @@
         const bgLayer = $("#bgLayer");
         if (state.bg === "coord") {
           buildCoordBg();
+        } else if (state.bg === "numberline") {
+          buildNumberLineBg();
         } else {
           bgLayer.innerHTML = "";
           if (state.bg && state.bg !== "blank")
@@ -2652,17 +3888,135 @@
           g += lab(cx + 6, cy - n * u + 4, n);
         }
         g += lab(cx + 6, cy + 15, "0");
+        // Lock the plane to the first screenful (explicit px size) so it is not
+        // stretched down the full multi-page sheet by the 100%-sized #bgLayer.
         bgLayer.innerHTML =
           '<svg viewBox="0 0 ' +
           w +
           " " +
           h +
-          '" preserveAspectRatio="none">' +
+          '" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:' +
+          w +
+          "px;height:" +
+          h +
+          'px">' +
+          g +
+          "</svg>";
+      }
+
+      // Full-width horizontal number line background, -25 to 25.
+      function buildNumberLineBg() {
+        const bgLayer = $("#bgLayer");
+        const r = workspace.getBoundingClientRect();
+        const w = Math.max(100, Math.round(r.width));
+        const h = Math.max(100, Math.round(r.height));
+        const margin = 48;
+        const usable = Math.max(40, w - margin * 2);
+        // Fit as many whole numbers as stay readable, centered on 0, then label
+        // EVERY integer (taller ticks on multiples of 5 keep the grouping).
+        const slot = 26; // minimum px per labeled number
+        const maxN = Math.max(5, Math.floor(usable / 2 / slot));
+        const MIN = -maxN,
+          MAX = maxN;
+        const range = MAX - MIN;
+        const u = usable / range;
+        const cy = Math.round(h / 2);
+        const xFor = (n) => Math.round(margin + (n - MIN) * u);
+        const axisColor = "#14223a";
+        const tickColor = "rgba(32,95,166,0.7)";
+        const aL = xFor(MIN) - 16,
+          aR = xFor(MAX) + 16;
+        let g = "";
+        // main axis
+        g +=
+          '<line x1="' +
+          aL +
+          '" y1="' +
+          cy +
+          '" x2="' +
+          aR +
+          '" y2="' +
+          cy +
+          '" stroke="' +
+          axisColor +
+          '" stroke-width="2.5"/>';
+        // arrowheads (both ends)
+        g +=
+          '<polygon points="' +
+          aR +
+          "," +
+          cy +
+          " " +
+          (aR - 11) +
+          "," +
+          (cy - 7) +
+          " " +
+          (aR - 11) +
+          "," +
+          (cy + 7) +
+          '" fill="' +
+          axisColor +
+          '"/>' +
+          '<polygon points="' +
+          aL +
+          "," +
+          cy +
+          " " +
+          (aL + 11) +
+          "," +
+          (cy - 7) +
+          " " +
+          (aL + 11) +
+          "," +
+          (cy + 7) +
+          '" fill="' +
+          axisColor +
+          '"/>';
+        const lab = (x, y, t) =>
+          '<text x="' +
+          x +
+          '" y="' +
+          y +
+          '" text-anchor="middle" font-family="Atkinson Hyperlegible, Nunito, sans-serif" font-size="12" font-weight="700" fill="#33485f">' +
+          t +
+          "</text>";
+        // ticks every integer; labels + taller ticks every 5
+        for (let n = MIN; n <= MAX; n++) {
+          const x = xFor(n);
+          const major = n % 5 === 0;
+          const half = major ? 13 : 7;
+          g +=
+            '<line x1="' +
+            x +
+            '" y1="' +
+            (cy - half) +
+            '" x2="' +
+            x +
+            '" y2="' +
+            (cy + half) +
+            '" stroke="' +
+            (major ? axisColor : tickColor) +
+            '" stroke-width="' +
+            (major ? 2 : 1) +
+            '"/>';
+          g += lab(x, cy + 30, n);
+        }
+        bgLayer.innerHTML =
+          '<svg viewBox="0 0 ' +
+          w +
+          " " +
+          h +
+          '" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:' +
+          w +
+          "px;height:" +
+          h +
+          'px">' +
           g +
           "</svg>";
       }
 
       function updateEmpty() {
+        if (!emptyHint) return;
         emptyHint.style.display =
           state.objects.length || state.strokes.length ? "none" : "block";
       }
@@ -2754,10 +4108,16 @@
       function miniTools(o, opts = {}) {
         const wrap = document.createElement("div");
         wrap.className = "obj-tools";
+        // Flip the toolbar below the object when it sits near the top of the
+        // sheet, so the resize/duplicate/delete controls never clip off-screen.
+        if ((o.y || 0) < 56) wrap.classList.add("below");
         const mk = (label, title, cls, fn) => {
           const b = document.createElement("button");
+          b.type = "button";
           b.textContent = label;
           b.title = title;
+          // Icon glyphs are not readable by assistive tech — name each control.
+          b.setAttribute("aria-label", title);
           if (cls) b.className = cls;
           b.addEventListener("pointerdown", (e) => {
             e.stopPropagation();
@@ -2787,8 +4147,10 @@
         }
         if (opts.color) {
           const sw = document.createElement("button");
+          sw.type = "button";
           sw.className = "mini-sw";
           sw.title = "Change color";
+          sw.setAttribute("aria-label", "Change color");
           const cur = o.color || opts.color;
           sw.style.background = cur;
           sw.addEventListener("pointerdown", (e) => e.stopPropagation());
@@ -2802,25 +4164,75 @@
           });
           wrap.appendChild(sw);
         }
-        mk("⧉", "Duplicate", "", () => {
-          const copy = JSON.parse(JSON.stringify(o));
-          copy.id = nid();
-          copy.x += 24;
-          copy.y += 24;
-          state.objects.push(copy);
-          renderAll();
-          selectObject(copy.id);
-          pushHistory();
-        });
+        mk("⤒", "Bring to front", "", () => bringObjectToFront(o.id));
+        mk("⤓", "Send to back", "", () => sendObjectToBack(o.id));
+        mk("⧉", "Duplicate", "", () => duplicateObject(o.id));
         mk("✕", "Delete", "del", () => deleteObject(o.id));
         return wrap;
       }
 
+      // Objects paint in array order (last = on top), so z-ordering is just an
+      // array move. Used by the mini-toolbar and keyboard shortcuts.
+      function duplicateObject(id) {
+        const o = objById(id);
+        if (!o) return;
+        const copy = JSON.parse(JSON.stringify(o));
+        copy.id = nid();
+        copy.x += 24;
+        copy.y += 24;
+        state.objects.push(copy);
+        renderAll();
+        selectObject(copy.id);
+        pushHistory();
+      }
+      function bringObjectToFront(id) {
+        const i = state.objects.findIndex((o) => o.id === id);
+        if (i < 0 || i === state.objects.length - 1) return;
+        state.objects.push(state.objects.splice(i, 1)[0]);
+        renderAll();
+        selectObject(id);
+        pushHistory();
+      }
+      function sendObjectToBack(id) {
+        const i = state.objects.findIndex((o) => o.id === id);
+        if (i <= 0) return;
+        state.objects.unshift(state.objects.splice(i, 1)[0]);
+        renderAll();
+        selectObject(id);
+        pushHistory();
+      }
+
+      // A short spoken name for an object, so screen-reader users know what
+      // they have focused and (via the global keydown) can move/delete it.
+      function objAriaLabel(o) {
+        switch (o && o.type) {
+          case "tile":
+            return (o.kind === "op" ? "Symbol " : "Number ") + (o.value || "");
+          case "text":
+            return "Text" + (o.text ? ": " + o.text : " box");
+          case "fraction":
+            return "Fraction " + (o.num || "") + " over " + (o.den || "");
+          case "line":
+            return "Line";
+          default:
+            return ((o && o.type) || "Object").replace(/[-_]/g, " ");
+        }
+      }
       function buildObjEl(o) {
         normScale(o);
         const el = document.createElement("div");
         el.className = "obj";
         el.dataset.id = o.id;
+        // Keyboard operability (WCAG 2.1.1): every object is focusable, names
+        // itself to assistive tech, and selects itself on focus so the arrow
+        // keys / Delete handled in the global keydown act on it.
+        el.tabIndex = 0;
+        el.setAttribute("role", "group");
+        el.setAttribute(
+          "aria-label",
+          objAriaLabel(o) + " — arrow keys move, Delete removes",
+        );
+        el.addEventListener("focus", () => selectObject(o.id));
         const inner = document.createElement("div");
         inner.className = "obj-inner";
         if (o.type === "line") {
@@ -2847,6 +4259,7 @@
           t.spellcheck = false;
           t.textContent = o.text || "";
           if (o.color) t.style.color = o.color;
+          if (o.size) t.style.fontSize = o.size;
           bindEditable(t, (v) => (o.text = v));
           inner.appendChild(t);
           toolOpts = { color: penColor };
@@ -2942,6 +4355,31 @@
           f.className = "formulaobj";
           f.innerHTML = o.html;
           inner.appendChild(f);
+          toolOpts = { resize: true };
+        } else if (o.type === "guide") {
+          const g = document.createElement("div");
+          g.className = "guideobj";
+          const steps = (o.steps || [])
+            .map((s) => "<li>" + s + "</li>")
+            .join("");
+          const listTag = o.bullets ? "ul" : "ol";
+          g.innerHTML =
+            '<p class="go-kicker">' +
+            (o.kicker || "Guided workspace") +
+            '</p><div class="go-title">' +
+            (o.title || "Math task") +
+            '</div><p class="go-prompt">' +
+            (o.prompt || "") +
+            "</p>" +
+            "<" +
+            listTag +
+            ">" +
+            steps +
+            "</" +
+            listTag +
+            ">" +
+            (o.footer ? '<div class="go-footer">' + o.footer + "</div>" : "");
+          inner.appendChild(g);
           toolOpts = { resize: true };
         } else if (o.type === "numline") {
           inner.appendChild(buildNumLine(o));
@@ -3069,10 +4507,9 @@
       }
 
       function numLineSVG(min, max) {
-        const range = max - min;
-        // choose a step so labels stay legible (<= ~25 labels)
-        let step = 1;
-        if (range > 25) step = Math.ceil(range / 25);
+        // Label every whole number; spacing keeps each legible and the object
+        // simply grows wider (and can be scaled down) for larger ranges.
+        const step = 1;
         const spacing = 36;
         const pad = 26;
         const ticks = [];
@@ -3817,12 +5254,17 @@
         zero.className = "chip-btn";
         zero.textContent = "Zero pair";
         zero.title = "Add one +1 and one −1";
+        const cancel = document.createElement("button");
+        cancel.className = "chip-btn";
+        cancel.textContent = "Cancel pairs";
+        cancel.title =
+          "Take away matched +1 and −1 pairs — the sum stays the same";
         const clr = document.createElement("button");
         clr.className = "chip-btn";
         clr.textContent = "Clear";
         const sum = document.createElement("span");
         sum.className = "chip-sum";
-        head.append(addP, addN, zero, clr, sum);
+        head.append(addP, addN, zero, cancel, clr, sum);
         const tray = document.createElement("div");
         tray.className = "chip-tray";
         function render() {
@@ -3853,6 +5295,7 @@
         addP.addEventListener("pointerdown", (e) => e.stopPropagation());
         addN.addEventListener("pointerdown", (e) => e.stopPropagation());
         zero.addEventListener("pointerdown", (e) => e.stopPropagation());
+        cancel.addEventListener("pointerdown", (e) => e.stopPropagation());
         clr.addEventListener("pointerdown", (e) => e.stopPropagation());
         addP.addEventListener("click", (e) => {
           e.stopPropagation();
@@ -3866,6 +5309,30 @@
           e.stopPropagation();
           o.chips.push(1, -1);
           render();
+          pushHistory();
+        });
+        // Remove every matched +1/−1 pair at once. The leftover is |sum| chips
+        // of the dominant sign, so the Sum is unchanged — the core "zero pairs
+        // make zero" idea (6.NS). No-op (with a nudge) if nothing can cancel.
+        cancel.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const pos = o.chips.filter((v) => v > 0).length;
+          const neg = o.chips.length - pos;
+          if (!pos || !neg) {
+            showToast("No + and − pair to cancel yet");
+            return;
+          }
+          const total = o.chips.reduce((a, b) => a + b, 0);
+          o.chips = [];
+          for (let i = 0; i < Math.abs(total); i++)
+            o.chips.push(total > 0 ? 1 : -1);
+          render();
+          showToast(
+            Math.min(pos, neg) +
+              " zero pair" +
+              (Math.min(pos, neg) === 1 ? "" : "s") +
+              " removed — sum stays the same",
+          );
           pushHistory();
         });
         clr.addEventListener("click", (e) => {
@@ -4662,6 +6129,24 @@
         const up = (e) => {
           if (!start) return;
           start = null;
+          if (snapOn) {
+            o.x = Math.max(0, snapVal(o.x));
+            o.y = Math.max(0, snapVal(o.y));
+            if (o.type === "line") {
+              el.style.transform =
+                "translate(" +
+                o.x +
+                "px," +
+                o.y +
+                "px) rotate(" +
+                (o.angle || 0) +
+                "deg) scale(" +
+                (o.scale || 1) +
+                ")";
+            } else {
+              applyTransform(el, o);
+            }
+          }
           pushHistory();
         };
         el.addEventListener("pointerup", up);
@@ -4675,7 +6160,7 @@
           const r = workspace.getBoundingClientRect();
           const move = (ev) => {
             const cx = o.x + r.left;
-            const cy = o.y + r.top + 11;
+            const cy = o.y + r.top + 11 - workspace.scrollTop;
             const dx = ev.clientX - cx;
             const dy = ev.clientY - cy;
             o.len = Math.max(30, Math.round(Math.hypot(dx, dy)));
@@ -4789,8 +6274,13 @@
         if (DRAW_TOOLS.has(t)) deselect();
         // flyout
         const fb = btn && btn.dataset.flyout;
-        if (fb) openFlyout(fb, t);
-        else if (
+        if (fb) {
+          // Clicking the rail button whose flyout is already open closes it
+          // (toggle), so a tapped-open palette never gets stuck on screen.
+          if (flyout.classList.contains("open") && flyout.dataset.kind === fb)
+            closeFlyout();
+          else openFlyout(fb, t);
+        } else if (
           !["number", "operation", "setup", "shapes", "tools"].includes(t)
         )
           closeFlyout();
@@ -4812,9 +6302,22 @@
       const flyout = $("#flyout");
       function closeFlyout() {
         flyout.classList.remove("open");
+        flyout.dataset.kind = "";
+      }
+      // A persistent close (×) button so the palette can always be dismissed,
+      // even after stamping several tiles. Re-appended after each innerHTML set.
+      function addFlyoutClose() {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "flyout-close";
+        b.setAttribute("aria-label", "Close this panel");
+        b.textContent = "×";
+        b.addEventListener("click", closeFlyout);
+        flyout.appendChild(b);
       }
       function openFlyout(kind, t) {
         flyout.classList.add("open");
+        flyout.dataset.kind = kind;
         if (kind === "pen") {
           flyout.innerHTML = penFlyoutHTML(t);
           wirePenFlyout(t);
@@ -5123,6 +6626,7 @@
             grid2.appendChild(b);
           });
         }
+        addFlyoutClose();
       }
       const ANGLE_ICON =
         '<svg viewBox="0 0 90 70" width="84" height="64"><path d="M14 56 A40 40 0 0 1 40 24" fill="none" stroke="#d97706" stroke-width="2.5"/><line x1="14" y1="56" x2="82" y2="56" stroke="#205fa6" stroke-width="3"/><line x1="14" y1="56" x2="74" y2="22" stroke="#205fa6" stroke-width="3"/><circle cx="14" cy="56" r="3" fill="#14223a"/></svg>';
@@ -5261,9 +6765,11 @@
         });
       }
 
-      // close flyout when clicking workspace (but keep palette tools available)
-      workspace.addEventListener("pointerdown", () => {
-        if (["pen", "highlighter"].includes(tool)) return;
+      // Close the flyout palette when the student touches the board itself, so
+      // it never lingers over the workspace after a tile has been stamped.
+      workspace.addEventListener("pointerdown", (e) => {
+        if (flyout.classList.contains("open") && !e.target.closest("#flyout"))
+          closeFlyout();
       });
 
       /* ===================================================================
@@ -5925,6 +7431,235 @@
           ],
         },
         {
+          id: "eq2",
+          em: "🧮",
+          name: "Two-Step & Multi-Step Equations",
+          items: [
+            {
+              name: "Two-step equation",
+              eq: "ax + b = c",
+              note: "Undo + or − first, then undo × or ÷. Example: 2x + 3 = 11 → x = 4.",
+            },
+            {
+              name: "Variables on both sides",
+              eq: "ax + b = cx + d",
+              note: "Move the variable to one side and the numbers to the other.",
+            },
+            {
+              name: "Distribute, then solve",
+              eq: "a(x + b) = c",
+              note: "Multiply through the parentheses first, then solve.",
+            },
+            {
+              name: "Inverse operations",
+              eq: "do the opposite to both sides",
+              note: "+ undoes −, × undoes ÷. Keep both sides equal.",
+            },
+            {
+              name: "Check a solution",
+              eq: "substitute x back in",
+              note: "Put your answer in the original equation — both sides should match.",
+            },
+          ],
+        },
+        {
+          id: "exp",
+          em: "²",
+          name: "Exponents & Scientific Notation",
+          items: [
+            {
+              name: "Product rule",
+              eq: "a<sup>m</sup> · a<sup>n</sup> = a<sup>m+n</sup>",
+              note: "Same base: add the exponents.",
+            },
+            {
+              name: "Quotient rule",
+              eq: "a<sup>m</sup> ÷ a<sup>n</sup> = a<sup>m−n</sup>",
+              note: "Same base: subtract the exponents.",
+            },
+            {
+              name: "Power of a power",
+              eq: "(a<sup>m</sup>)<sup>n</sup> = a<sup>m·n</sup>",
+              note: "Multiply the exponents.",
+            },
+            {
+              name: "Zero exponent",
+              eq: "a<sup>0</sup> = 1",
+              note: "Any nonzero number to the 0 power is 1.",
+            },
+            {
+              name: "Negative exponent",
+              eq: 'a<sup>−n</sup> = <span class="ifr"><span>1</span><span>a<sup>n</sup></span></span>',
+              note: "Move it to make the exponent positive.",
+            },
+            {
+              name: "Scientific notation",
+              eq: "a × 10<sup>n</sup>,  1 ≤ a &lt; 10",
+              note: "For very big or small numbers. Example: 4.2 × 10³ = 4200.",
+            },
+          ],
+        },
+        {
+          id: "roots",
+          em: "√",
+          name: "Roots & Pythagorean Theorem",
+          items: [
+            {
+              name: "Square root",
+              eq: "√(a²) = a",
+              note: "Undoes squaring. √25 = 5 because 5² = 25.",
+            },
+            {
+              name: "Perfect squares",
+              eq: "1, 4, 9, 16, 25, 36, 49 …",
+              note: "The squares of whole numbers.",
+            },
+            {
+              name: "Pythagorean theorem",
+              eq: "a² + b² = c²",
+              note: "Right triangles: c is the hypotenuse (longest side).",
+            },
+            {
+              name: "Find the hypotenuse",
+              eq: "c = √(a² + b²)",
+              note: "Add the squares of the legs, then take the square root.",
+            },
+            {
+              name: "Distance between points",
+              eq: "d = √((x₂−x₁)² + (y₂−y₁)²)",
+              note: "The Pythagorean theorem on the coordinate plane.",
+            },
+          ],
+        },
+        {
+          id: "linear",
+          em: "📈",
+          name: "Linear Equations & Slope",
+          items: [
+            {
+              name: "Slope (rate of change)",
+              eq: 'm = <span class="ifr"><span>y₂ − y₁</span><span>x₂ − x₁</span></span>',
+              note: "Rise over run — how steep the line is.",
+            },
+            {
+              name: "Slope-intercept form",
+              eq: "y = mx + b",
+              note: "m = slope, b = y-intercept (where it crosses the y-axis).",
+            },
+            {
+              name: "Point-slope form",
+              eq: "y − y₁ = m(x − x₁)",
+              note: "Use a slope and one point to write the line.",
+            },
+            {
+              name: "Standard form",
+              eq: "Ax + By = C",
+              note: "Another way to write a linear equation.",
+            },
+            {
+              name: "x- and y-intercepts",
+              eq: "x-int: y = 0,  y-int: x = 0",
+              note: "Where the line crosses each axis.",
+            },
+          ],
+        },
+        {
+          id: "systems",
+          em: "⚖️",
+          name: "Systems & Inequalities",
+          items: [
+            {
+              name: "System of equations",
+              eq: "two lines → one (x, y)",
+              note: "The solution is the point where the lines cross.",
+            },
+            {
+              name: "Substitution",
+              eq: "solve one, plug into the other",
+              note: "Replace a variable with its expression.",
+            },
+            {
+              name: "Elimination",
+              eq: "add/subtract to cancel a variable",
+              note: "Make opposite coefficients, then add the equations.",
+            },
+            {
+              name: "Inequality symbols",
+              eq: "&lt; , &gt; , ≤ , ≥",
+              note: "Open dot for &lt; &gt;, closed dot for ≤ ≥.",
+            },
+            {
+              name: "Flip the sign",
+              eq: "−x &lt; a → x &gt; −a",
+              note: "Multiply or divide by a negative → flip the inequality.",
+            },
+          ],
+        },
+        {
+          id: "poly",
+          em: "✖️",
+          name: "Polynomials & Factoring",
+          items: [
+            {
+              name: "Add/subtract polynomials",
+              eq: "combine like terms",
+              note: "Only combine terms with the same variable and power.",
+            },
+            {
+              name: "Multiply binomials (FOIL)",
+              eq: "(a+b)(c+d) = ac+ad+bc+bd",
+              note: "First, Outer, Inner, Last.",
+            },
+            {
+              name: "Factor out the GCF",
+              eq: "ab + ac = a(b + c)",
+              note: "Pull out the greatest common factor.",
+            },
+            {
+              name: "Difference of squares",
+              eq: "a² − b² = (a+b)(a−b)",
+              note: "Two perfect squares with a minus between them.",
+            },
+            {
+              name: "Factor a trinomial",
+              eq: "x² + bx + c = (x+m)(x+n)",
+              note: "Find m, n with m+n = b and m·n = c.",
+            },
+          ],
+        },
+        {
+          id: "quad",
+          em: "ƒ",
+          name: "Quadratics & Functions",
+          items: [
+            {
+              name: "Quadratic equation",
+              eq: "ax² + bx + c = 0",
+              note: "An equation with a squared term.",
+            },
+            {
+              name: "Quadratic formula",
+              eq: 'x = <span class="ifr"><span>−b ± √(b² − 4ac)</span><span>2a</span></span>',
+              note: "Solves any quadratic ax² + bx + c = 0.",
+            },
+            {
+              name: "Discriminant",
+              eq: "b² − 4ac",
+              note: "Positive → 2 solutions · 0 → one · negative → none (real).",
+            },
+            {
+              name: "Function notation",
+              eq: "f(x) = output",
+              note: "f(2) means the output when x = 2.",
+            },
+            {
+              name: "Vertex form",
+              eq: "y = a(x − h)² + k",
+              note: "(h, k) is the vertex — the turning point.",
+            },
+          ],
+        },
+        {
           id: "talk",
           em: "💬",
           name: "Math Talk",
@@ -6074,7 +7809,7 @@
       // The reference bank is an accordion: each category is a card that drops
       // down to reveal its formulas. renderTabs is kept as a no-op hook so the
       // existing call sites still work.
-      function renderTabs() {
+      function hideDockTabs() {
         dockTabs.style.display = "none";
       }
       function buildFormulaCard(t, it) {
@@ -6116,6 +7851,36 @@
             });
           }
         });
+        // Read-aloud helper: a small speaker in the card corner speaks the
+        // words (name + plain-language note, or the sentence frame for stems)
+        // without stamping the card. Symbols/equations are skipped — they read
+        // poorly aloud. Only shown when the browser supports speech.
+        if (canSpeak) {
+          const sayText =
+            t.kind === "stem"
+              ? it.eq
+              : it.name + (it.note ? ". " + it.note : "");
+          const say = document.createElement("span");
+          say.className = "fc-say";
+          say.setAttribute("role", "button");
+          say.setAttribute("tabindex", "0");
+          say.setAttribute("aria-label", "Read aloud: " + it.name);
+          say.textContent = "🔊";
+          const doSay = (e) => {
+            if (e) {
+              e.stopPropagation();
+              e.preventDefault();
+            }
+            say.classList.add("speaking");
+            speak(sayText, () => say.classList.remove("speaking"));
+          };
+          say.addEventListener("pointerdown", (e) => e.stopPropagation());
+          say.addEventListener("click", doSay);
+          say.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") doSay(e);
+          });
+          c.appendChild(say);
+        }
         return c;
       }
       function renderFormulas() {
@@ -6195,10 +7960,400 @@
         try {
           localStorage.setItem("neft.mathWorkbench.dockOpen", open ? "1" : "0");
         } catch (e) {}
-        // Recompute canvas size — the workspace just grew/shrank.
+        // Recompute sheet + canvas size — the workspace just grew/shrank.
         clearTimeout(rsz);
-        rsz = setTimeout(sizeCanvas, 210);
+        rsz = setTimeout(applySheet, 210);
       });
+
+      /* ----------------------- Guided templates ----------------------- */
+      const GUIDE_TEMPLATES = [
+        {
+          id: "equation",
+          tag: "Expressions & equations",
+          title: "Equation Solver Workspace",
+          desc: "Step boxes, balance language, and a check-your-answer frame.",
+          bg: "lined",
+          items(x, y) {
+            return [
+              {
+                type: "guide",
+                x,
+                y,
+                title: "Solve an equation with inverse operations",
+                prompt:
+                  "Write the equation, isolate the variable, and check by substituting your answer.",
+                steps: [
+                  "Circle the variable term.",
+                  "Undo addition or subtraction first.",
+                  "Undo multiplication or division.",
+                  "Substitute your solution back into the original equation.",
+                ],
+                footer:
+                  "Sentence frame: The solution is ___ because when I substitute it, both sides equal ___.",
+              },
+              {
+                type: "text",
+                x: x + 18,
+                y: y + 235,
+                size: "1.15rem",
+                text: "Original equation: ____________________",
+              },
+              {
+                type: "text",
+                x: x + 18,
+                y: y + 292,
+                size: "1.15rem",
+                text: "Step 1: ______________________________",
+              },
+              {
+                type: "text",
+                x: x + 18,
+                y: y + 349,
+                size: "1.15rem",
+                text: "Step 2: ______________________________",
+              },
+              {
+                type: "formula",
+                x: x + 18,
+                y: y + 410,
+                html: "<b>Check:</b>&nbsp; Replace the variable with your answer.",
+              },
+            ];
+          },
+        },
+        {
+          id: "ratio",
+          tag: "Ratios & proportions",
+          title: "Ratio Table + Double Number Line",
+          desc: "Two linked models for equivalent ratios and unit rate.",
+          bg: "grid",
+          items(x, y) {
+            return [
+              {
+                type: "guide",
+                x,
+                y,
+                title: "Represent a ratio two ways",
+                prompt:
+                  "Use the table and number line to show the same relationship.",
+                steps: [
+                  "Label both quantities.",
+                  "Find the multiplier between columns.",
+                  "Identify the unit rate.",
+                  "Write one sentence explaining what the ratio means.",
+                ],
+                footer:
+                  "Math talk: For every ___, there are ___. The unit rate is ___.",
+              },
+              { type: "ratiotable", x: x + 30, y: y + 238, cols: 4 },
+              { type: "dblnumline", x: x + 30, y: y + 390, intervals: 4 },
+            ];
+          },
+        },
+        {
+          id: "geometry",
+          tag: "Geometry",
+          title: "Area / Perimeter Model",
+          desc: "Diagram, formula card, measurements, and final claim.",
+          bg: "graphfine",
+          items(x, y) {
+            return [
+              {
+                type: "guide",
+                x,
+                y,
+                title: "Model area and perimeter",
+                prompt:
+                  "Draw or drag a shape, label measurements, choose the formula, and explain the units.",
+                steps: [
+                  "Mark the base, height, length, width, or radius.",
+                  "Write the formula before substituting numbers.",
+                  "Include square units for area or units for perimeter.",
+                ],
+                footer:
+                  "Sentence frame: I used ___ because the figure is ___. My answer is ___ units.",
+              },
+              {
+                type: "shape2d",
+                x: x + 48,
+                y: y + 240,
+                shape: "rectangle",
+                label: "label measurements",
+              },
+              {
+                type: "formula",
+                x: x + 250,
+                y: y + 255,
+                html: "<b>Area:</b>&nbsp; A = l × w<br><b>Perimeter:</b>&nbsp; P = 2(l + w)",
+              },
+              {
+                type: "text",
+                x: x + 30,
+                y: y + 405,
+                size: "1.1rem",
+                text: "Substitution: __________________________",
+              },
+            ];
+          },
+        },
+        {
+          id: "coordinate",
+          tag: "Coordinate plane",
+          title: "Graph + Explain Coordinates",
+          desc: "Coordinate grid with ordered-pair reading support.",
+          bg: "coord",
+          items(x, y) {
+            return [
+              {
+                type: "guide",
+                x,
+                y,
+                title: "Graph ordered pairs",
+                prompt:
+                  "Plot each point, name its quadrant, and describe the movement from the origin.",
+                steps: [
+                  "Move left/right first for x.",
+                  "Move up/down second for y.",
+                  "Write the ordered pair as (x, y).",
+                  "Check the quadrant or axis.",
+                ],
+                footer:
+                  "Language frame: From the origin, I moved ___ on the x-axis and ___ on the y-axis.",
+              },
+              { type: "coordgrid", x: x + 28, y: y + 245, min: -5, max: 5 },
+              {
+                type: "text",
+                x: x + 330,
+                y: y + 275,
+                size: "1.05rem",
+                text: "Points:\nA (__, __)\nB (__, __)\nC (__, __)",
+              },
+            ];
+          },
+        },
+        {
+          id: "statistics",
+          tag: "Statistics",
+          title: "Data Display + Claim",
+          desc: "Dot plot, distribution language, and evidence sentence.",
+          bg: "dot",
+          items(x, y) {
+            return [
+              {
+                type: "guide",
+                x,
+                y,
+                title: "Analyze a data set",
+                prompt:
+                  "Build the display, describe the center and spread, then write a claim with evidence.",
+                steps: [
+                  "Add dots for each data value.",
+                  "Look for clusters, gaps, peaks, and outliers.",
+                  "Estimate the center.",
+                  "Support your claim with at least two data details.",
+                ],
+                footer: "Claim frame: The data show ___ because ___ and ___.",
+              },
+              {
+                type: "dotplot",
+                x: x + 24,
+                y: y + 245,
+                min: 0,
+                max: 10,
+                counts: {},
+              },
+              { type: "boxplot", x: x + 24, y: y + 405 },
+            ];
+          },
+        },
+        {
+          id: "word",
+          tag: "Word problems",
+          title: "Read, Model, Solve, Explain",
+          desc: "A full problem-solving organizer with ESOL-friendly language.",
+          bg: "lined",
+          items(x, y) {
+            return [
+              {
+                type: "guide",
+                x,
+                y,
+                title: "Turn a story problem into math",
+                prompt:
+                  "Use the organizer to identify what is known, what is unknown, and which operation fits.",
+                steps: [
+                  "Underline the question.",
+                  "List the important numbers and units.",
+                  "Choose a model: tape diagram, table, number line, or equation.",
+                  "Solve and explain what the answer means in the story.",
+                ],
+                footer:
+                  "TWR frame: I know ___. I need to find ___. I used ___ because ___.",
+              },
+              { type: "tape", x: x + 28, y: y + 250, parts: 4 },
+              {
+                type: "text",
+                x: x + 28,
+                y: y + 360,
+                size: "1.05rem",
+                text: "Known: ______________________\nUnknown: ____________________\nOperation/model: _____________",
+              },
+            ];
+          },
+        },
+      ];
+      const SUPPORT_CARDS = [
+        {
+          id: "hint",
+          title: "Hint Ladder",
+          desc: "A three-step nudge students can use before asking for help.",
+          item: {
+            type: "guide",
+            kicker: "Student support",
+            title: "Hint ladder",
+            prompt: "Try these before you ask for the answer.",
+            bullets: true,
+            steps: [
+              "What is the question asking?",
+              "Which model matches the problem?",
+              "What can you do first without solving the whole thing?",
+            ],
+            footer:
+              "Teacher check: I tried a model, a label, or a sentence first.",
+          },
+        },
+        {
+          id: "vocab",
+          title: "Math Vocabulary Card",
+          desc: "Academic language frame for multilingual learners.",
+          item: {
+            type: "guide",
+            kicker: "Vocabulary",
+            title: "Word / Meaning / Example",
+            prompt: "Use this card for one important math word.",
+            bullets: true,
+            steps: [
+              "Word: __________",
+              "Student-friendly meaning: __________",
+              "Example or picture: __________",
+              "In Spanish or home language: __________",
+            ],
+          },
+        },
+        {
+          id: "explain",
+          title: "Explain Your Reasoning",
+          desc: "TWR sentence stems for a complete math response.",
+          item: {
+            type: "guide",
+            kicker: "Written response",
+            title: "Explain your reasoning",
+            prompt: "Write a complete math explanation.",
+            bullets: true,
+            steps: [
+              "First, I noticed ___.",
+              "I used ___ because ___.",
+              "My work shows ___.",
+              "So my answer is ___ because ___.",
+            ],
+          },
+        },
+      ];
+      function guideOrigin() {
+        const left = Math.max(22, Math.min(86, workspace.clientWidth * 0.07));
+        const currentViewTop = workspace.scrollTop + 42;
+        const nextOpenLine =
+          state.objects.length || state.strokes.length
+            ? contentBottom() + 44
+            : currentViewTop;
+        return { x: left, y: Math.max(currentViewTop, nextOpenLine) };
+      }
+      function stampObjects(items, label, bg) {
+        deselect();
+        const made = items.map((it) => newBoardObject(it.type, it));
+        state.objects.push(...made);
+        if (bg) state.bg = bg;
+        growToFit();
+        renderAll();
+        if (made.length) selectObject(made[0].id);
+        pushHistory();
+        closeGuideDrawer();
+        showToast(label + " added");
+      }
+      function stampTemplate(id) {
+        const template = GUIDE_TEMPLATES.find((t) => t.id === id);
+        if (!template) return;
+        const p = guideOrigin();
+        stampObjects(template.items(p.x, p.y), template.title, template.bg);
+      }
+      function stampSupport(id) {
+        const support = SUPPORT_CARDS.find((s) => s.id === id);
+        if (!support) return;
+        const p = guideOrigin();
+        stampObjects(
+          [Object.assign({}, support.item, { x: p.x, y: p.y })],
+          support.title,
+        );
+      }
+      function renderGuideDrawer() {
+        const templateGrid = $("#templateGrid");
+        if (templateGrid) {
+          templateGrid.innerHTML = "";
+          GUIDE_TEMPLATES.forEach((t) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "template-card";
+            b.dataset.template = t.id;
+            b.innerHTML =
+              "<small>" +
+              t.tag +
+              "</small><b>" +
+              t.title +
+              "</b><span>" +
+              t.desc +
+              "</span>";
+            b.addEventListener("click", () => stampTemplate(t.id));
+            templateGrid.appendChild(b);
+          });
+        }
+        const supportGrid = $("#supportGrid");
+        if (supportGrid) {
+          supportGrid.innerHTML = "";
+          SUPPORT_CARDS.forEach((s) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "support-card";
+            b.dataset.support = s.id;
+            b.innerHTML = "<b>" + s.title + "</b><span>" + s.desc + "</span>";
+            b.addEventListener("click", () => stampSupport(s.id));
+            supportGrid.appendChild(b);
+          });
+        }
+      }
+      function openGuideDrawer() {
+        const drawer = $("#guideDrawer");
+        drawer.classList.add("open");
+        drawer.setAttribute("aria-hidden", "false");
+        drawer.inert = false;
+        $("#guideBtn").setAttribute("aria-expanded", "true");
+        closeFlyout();
+        $("#bgPanel").classList.remove("open");
+      }
+      function closeGuideDrawer() {
+        const drawer = $("#guideDrawer");
+        if (!drawer) return;
+        drawer.classList.remove("open");
+        drawer.setAttribute("aria-hidden", "true");
+        drawer.inert = true;
+        const btn = $("#guideBtn");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+      }
+      function toggleGuideDrawer() {
+        const drawer = $("#guideDrawer");
+        drawer.classList.contains("open")
+          ? closeGuideDrawer()
+          : openGuideDrawer();
+      }
 
       /* ----------------------- Top-bar actions ----------------------- */
       $("#undoBtn").addEventListener("click", undo);
@@ -6217,6 +8372,11 @@
         e.stopPropagation();
         toggleBgPanel();
       });
+      $("#guideBtn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleGuideDrawer();
+      });
+      $("#guideClose").addEventListener("click", closeGuideDrawer);
       $$(".bg-opt").forEach((b) => {
         b.addEventListener("click", () => {
           state.bg = b.dataset.bg;
@@ -6227,18 +8387,23 @@
       document.addEventListener("pointerdown", (e) => {
         if (!e.target.closest("#bgDock") && !e.target.closest("#bgTopBtn"))
           bgPanel.classList.remove("open");
+        if (!e.target.closest("#guideDrawer") && !e.target.closest("#guideBtn"))
+          closeGuideDrawer();
       });
       $("#clearBtn").addEventListener("click", () => {
         if (!state.objects.length && !state.strokes.length) return;
         if (
           confirm(
-            "Clear the whole board? This cannot be undone after you leave.",
+            "Clear everything on this page? You can put it back right away with Undo (Ctrl+Z).",
           )
         ) {
           state.objects = [];
           state.strokes = [];
+          state.pages = DEFAULT_VPAGES;
           selectedId = null;
           renderAll();
+          applySheet();
+          workspace.scrollTop = 0;
           pushHistory();
         }
       });
@@ -6246,13 +8411,82 @@
         deselect();
         setTimeout(() => window.print(), 60);
       });
+
+      /* --------- Backup / restore: a re-openable copy of the notebook --------
+       * Gives students and teachers a real, portable export of their work and a
+       * recovery path when browser storage is full or blocked (see writeNow).
+       * Pure client-side JSON download/upload — no network, no dependencies. */
+      function downloadNotebook() {
+        try {
+          const data = notebookSnapshot();
+          const blob = new Blob([data], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          const d = new Date();
+          const stamp =
+            d.getFullYear() +
+            "-" +
+            String(d.getMonth() + 1).padStart(2, "0") +
+            "-" +
+            String(d.getDate()).padStart(2, "0");
+          a.href = url;
+          a.download = "math-workbench-" + stamp + ".json";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 2000);
+          showToast("Saved a copy to your downloads");
+        } catch (e) {
+          showToast("Couldn't save a copy");
+        }
+      }
+      const backupBtn = $("#backupBtn");
+      if (backupBtn) backupBtn.addEventListener("click", downloadNotebook);
+      const openFile = $("#openFile");
+      const openBtn = $("#openBtn");
+      if (openBtn && openFile)
+        openBtn.addEventListener("click", () => openFile.click());
+      if (openFile)
+        openFile.addEventListener("change", () => {
+          const file = openFile.files && openFile.files[0];
+          openFile.value = ""; // allow re-opening the same file later
+          if (!file) return;
+          const hasWork = notebook.boards.some(
+            (b) => b.strokes.length || b.objects.length,
+          );
+          if (
+            hasWork &&
+            !confirm(
+              "Open this file? It replaces the pages you have open now. " +
+                "Use Backup first if you want to keep them.",
+            )
+          )
+            return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              loadNotebook(String(reader.result || ""));
+              history.length = 0;
+              hpos = -1;
+              history.push(snapshot());
+              hpos = 0;
+              updateUndoButtons();
+              persist();
+              showToast("Opened your saved Workbench");
+            } catch (e) {
+              showToast("That file couldn't be opened");
+            }
+          };
+          reader.onerror = () => showToast("That file couldn't be read");
+          reader.readAsText(file);
+        });
       let helpReturnFocus = null;
       function openHelp() {
         helpReturnFocus = document.activeElement;
         const m = $("#helpModal");
         m.classList.add("open");
-        const close = $("#helpClose");
-        if (close) close.focus();
+        const dialog = $(".modal", m);
+        if (dialog) dialog.focus({ preventScroll: true });
       }
       function closeHelp() {
         $("#helpModal").classList.remove("open");
@@ -6284,6 +8518,7 @@
       });
 
       /* ----------------------- Keyboard ----------------------- */
+      let nudgeT = null; // debounce timer for arrow-key object nudging
       window.addEventListener("keydown", (e) => {
         if (
           e.target.isContentEditable ||
@@ -6301,6 +8536,13 @@
           redo();
           return;
         }
+        if ((e.metaKey || e.ctrlKey) && k === "d") {
+          if (selectedId) {
+            e.preventDefault();
+            duplicateObject(selectedId);
+          }
+          return;
+        }
         if (k === "delete" || k === "backspace") {
           if (selectedId) {
             e.preventDefault();
@@ -6308,9 +8550,37 @@
           }
           return;
         }
+        if (
+          selectedId &&
+          (k === "arrowup" ||
+            k === "arrowdown" ||
+            k === "arrowleft" ||
+            k === "arrowright")
+        ) {
+          const o = objById(selectedId);
+          if (o) {
+            e.preventDefault();
+            const step = e.shiftKey ? 16 : 4; // Shift = bigger jumps
+            if (k === "arrowup") o.y -= step;
+            else if (k === "arrowdown") o.y += step;
+            else if (k === "arrowleft") o.x -= step;
+            else o.x += step;
+            o.y = Math.max(0, o.y);
+            o.x = Math.max(0, o.x);
+            const el = overlay.querySelector('[data-id="' + selectedId + '"]');
+            if (el) applyTransform(el, o);
+            growToFit();
+            // Coalesce a run of nudges into one undo step + one save.
+            clearTimeout(nudgeT);
+            nudgeT = setTimeout(pushHistory, 350);
+          }
+          return;
+        }
         if (k === "escape") {
+          if (canSpeak) window.speechSynthesis.cancel();
           deselect();
           closeFlyout();
+          closeGuideDrawer();
           $("#bgPanel").classList.remove("open");
           if ($("#helpModal").classList.contains("open")) closeHelp();
           return;
@@ -6332,7 +8602,7 @@
       let rsz;
       window.addEventListener("resize", () => {
         clearTimeout(rsz);
-        rsz = setTimeout(sizeCanvas, 120);
+        rsz = setTimeout(applySheet, 120);
       });
 
       function setupAccessibility() {
@@ -6358,9 +8628,23 @@
         }
         const board = $("#board");
         if (board) board.setAttribute("aria-label", "Drawing area");
-        $("#rail").setAttribute("role", "toolbar");
+        $$(".opq").forEach((b) => {
+          if (!b.getAttribute("aria-label") && b.title)
+            b.setAttribute("aria-label", b.title);
+        });
+        $$(".bg-opt").forEach((b) => {
+          if (!b.getAttribute("aria-label"))
+            b.setAttribute("aria-label", "Use " + b.textContent.trim());
+        });
+        const dockToggle = $("#dockToggle");
+        if (dockToggle)
+          dockToggle.setAttribute("aria-label", "Show or hide formula bank");
+        const bgTab = $("#bgTab");
+        if (bgTab) bgTab.setAttribute("aria-label", "Change paper background");
         // One-tap starter templates on the empty board.
         const starters = {
+          equation: () => stampTemplate("equation"),
+          ratio: () => stampTemplate("ratio"),
           grid: () => makeObject("coordgrid", { min: -5, max: 5 }),
           numline: () => makeObject("numline", { min: -10, max: 10 }),
           division: SPAWN_TOOLS.division,
@@ -6375,9 +8659,12 @@
       }
       function init() {
         document.body.dataset.level = currentLevel;
+        hideDockTabs();
+        renderGuideDrawer();
         renderTabs();
         renderFormulas();
         setupAccessibility();
+        setSnap(snapOn);
         // Dock starts collapsed so the full left tool rail is reachable.
         // On tall desktop screens, honor the student's last-remembered choice.
         let dockOpen = false;
@@ -6388,7 +8675,7 @@
         dock.classList.toggle("open", dockOpen);
         setDockToggle(dockOpen);
         const had = restore();
-        sizeCanvas();
+        applySheet();
         if (!had) {
           renderAll();
         }
@@ -6398,18 +8685,1083 @@
         pushHistory();
         updateUndoButtons();
         updateEmpty();
-        // first-visit help, or deep link via #help
+        // Open help only when explicitly deep-linked, so the top tools remain
+        // immediately usable for first-time students.
         try {
-          if (
-            location.hash === "#help" ||
-            !localStorage.getItem("neft.mathWorkbench.seen")
-          ) {
+          if (location.hash === "#help") {
             openHelp();
-            localStorage.setItem("neft.mathWorkbench.seen", "1");
           }
         } catch (e) {}
       }
       init();
+    </script>
+
+    <!-- ===== Floating graphing calculator (GeoGebra graphing app, no API key) ===== -->
+    <div
+      id="calcPanel"
+      class="calc-panel"
+      hidden
+      role="dialog"
+      aria-label="Calculator"
+    >
+      <div class="calc-head" id="calcHead">
+        <span class="calc-title">🧮 Calculator</span>
+        <div class="calc-head-actions">
+          <button
+            type="button"
+            id="calcReset"
+            class="calc-hbtn"
+            title="Clear the calculator"
+          >
+            ↺
+          </button>
+          <button
+            type="button"
+            id="calcClose"
+            class="calc-hbtn"
+            title="Close calculator"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+      <div class="calc-body">
+        <div id="calcBasic" class="calc-basic">
+          <div class="calc-display">
+            <div id="calcExpr" class="calc-expr"></div>
+            <div id="calcOut" class="calc-out">0</div>
+          </div>
+          <div class="calc-keys">
+            <button type="button" class="calc-key calc-fn" data-act="clear">
+              C
+            </button>
+            <button type="button" class="calc-key calc-fn" data-act="back">
+              ⌫
+            </button>
+            <button type="button" class="calc-key calc-fn" data-act="percent">
+              %
+            </button>
+            <button type="button" class="calc-key calc-op" data-op="/">
+              ÷
+            </button>
+            <button type="button" class="calc-key" data-num="7">7</button>
+            <button type="button" class="calc-key" data-num="8">8</button>
+            <button type="button" class="calc-key" data-num="9">9</button>
+            <button type="button" class="calc-key calc-op" data-op="*">
+              ×
+            </button>
+            <button type="button" class="calc-key" data-num="4">4</button>
+            <button type="button" class="calc-key" data-num="5">5</button>
+            <button type="button" class="calc-key" data-num="6">6</button>
+            <button type="button" class="calc-key calc-op" data-op="-">
+              −
+            </button>
+            <button type="button" class="calc-key" data-num="1">1</button>
+            <button type="button" class="calc-key" data-num="2">2</button>
+            <button type="button" class="calc-key" data-num="3">3</button>
+            <button type="button" class="calc-key calc-op" data-op="+">
+              +
+            </button>
+            <button type="button" class="calc-key calc-fn" data-act="negate">
+              ±
+            </button>
+            <button type="button" class="calc-key" data-num="0">0</button>
+            <button type="button" class="calc-key" data-act="dot">.</button>
+            <button type="button" class="calc-key calc-eq" data-act="equals">
+              =
+            </button>
+          </div>
+        </div>
+        <div id="calcGraphWrap" class="calc-applet-wrap" hidden>
+          <div id="ggbCalc"></div>
+          <div id="calcLoading" class="calc-loading">Loading calculator…</div>
+        </div>
+      </div>
+      <div class="calc-modes" role="group" aria-label="Calculator mode">
+        <button type="button" class="calc-mode is-active" data-mode="basic">
+          Basic
+        </button>
+        <button type="button" class="calc-mode" data-mode="graphing">
+          Graphing
+        </button>
+      </div>
+    </div>
+    <style>
+      .calc-panel {
+        position: fixed;
+        top: 92px;
+        right: 24px;
+        z-index: 9999;
+        width: 420px;
+        background: #fff;
+        border: 1px solid #cdd8e3;
+        border-radius: 14px;
+        box-shadow: 0 18px 50px rgba(18, 53, 91, 0.28);
+        overflow: hidden;
+        font-family: "Atkinson Hyperlegible", "Nunito", sans-serif;
+        display: flex;
+        flex-direction: column;
+        max-height: 90vh;
+      }
+      .calc-panel[hidden] {
+        display: none !important;
+      }
+      .calc-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 9px 12px;
+        background: linear-gradient(135deg, #12355b, #1fa6a2);
+        color: #fff;
+        cursor: move;
+        user-select: none;
+        touch-action: none;
+      }
+      .calc-title {
+        font-weight: 800;
+        font-size: 14px;
+      }
+      .calc-head-actions {
+        display: flex;
+        gap: 4px;
+      }
+      .calc-hbtn {
+        background: rgba(255, 255, 255, 0.18);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        width: 28px;
+        height: 28px;
+        font-size: 15px;
+        line-height: 1;
+        cursor: pointer;
+      }
+      .calc-hbtn:hover {
+        background: rgba(255, 255, 255, 0.34);
+      }
+      .calc-body {
+        position: relative;
+        max-width: 94vw;
+      }
+      .calc-applet-wrap {
+        position: relative;
+        width: 420px;
+        height: 560px;
+        max-width: 94vw;
+      }
+      .calc-applet-wrap[hidden],
+      .calc-basic[hidden] {
+        display: none !important;
+      }
+      #ggbCalc {
+        width: 100%;
+        height: 100%;
+      }
+      .calc-basic {
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .calc-display {
+        background: #0f1f33;
+        color: #fff;
+        border-radius: 12px;
+        padding: 14px 16px;
+        text-align: right;
+        min-height: 78px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        gap: 4px;
+        overflow: hidden;
+      }
+      .calc-expr {
+        font-size: 14px;
+        color: #9fb3cd;
+        min-height: 18px;
+        word-break: break-all;
+      }
+      .calc-out {
+        font-size: 34px;
+        font-weight: 800;
+        line-height: 1.1;
+        word-break: break-all;
+      }
+      .calc-keys {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+      .calc-key {
+        border: 1px solid #d6e0ea;
+        background: #f4f8fc;
+        color: #12355b;
+        border-radius: 12px;
+        font-size: 20px;
+        font-weight: 700;
+        padding: 16px 0;
+        cursor: pointer;
+        user-select: none;
+        transition:
+          background 0.12s ease,
+          transform 0.05s ease;
+      }
+      .calc-key:hover {
+        background: #e7f0f9;
+      }
+      .calc-key:active {
+        transform: scale(0.96);
+      }
+      .calc-fn {
+        background: #eef2f6;
+        color: #5f6f80;
+      }
+      .calc-op {
+        background: #e3f3f1;
+        color: #11807c;
+      }
+      .calc-eq {
+        background: linear-gradient(135deg, #12355b, #1fa6a2);
+        color: #fff;
+        border: none;
+      }
+      .calc-eq:hover {
+        filter: brightness(1.06);
+        background: linear-gradient(135deg, #12355b, #1fa6a2);
+      }
+      .calc-modes {
+        display: flex;
+        gap: 6px;
+        padding: 8px 12px 12px;
+        border-top: 1px solid #e6edf4;
+      }
+      .calc-mode {
+        flex: 1;
+        border: 1px solid #d6e0ea;
+        background: #fff;
+        color: #5f6f80;
+        border-radius: 10px;
+        padding: 9px 0;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .calc-mode.is-active {
+        background: #12355b;
+        border-color: #12355b;
+        color: #fff;
+      }
+      .calc-loading {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #5f6f80;
+        font-size: 14px;
+      }
+      @media (max-width: 520px) {
+        .calc-panel {
+          right: 8px;
+          left: 8px;
+          width: auto;
+        }
+        .calc-applet-wrap {
+          width: auto;
+          height: 70vh;
+        }
+      }
+    </style>
+    <script>
+      (function () {
+        var panel = document.getElementById("calcPanel"),
+          btn = document.getElementById("calcBtn"),
+          closeBtn = document.getElementById("calcClose"),
+          resetBtn = document.getElementById("calcReset"),
+          head = document.getElementById("calcHead"),
+          loading = document.getElementById("calcLoading");
+        var ready = false,
+          busy = false,
+          api = null;
+        function loadScript(src) {
+          return new Promise(function (res, rej) {
+            var s = document.createElement("script");
+            s.src = src;
+            s.onload = res;
+            s.onerror = rej;
+            document.head.appendChild(s);
+          });
+        }
+        function fail() {
+          if (loading)
+            loading.textContent =
+              "Could not load the calculator. Check your internet connection and try again.";
+          busy = false;
+        }
+        function inject() {
+          if (ready || busy) return;
+          busy = true;
+          var go = function () {
+            try {
+              var applet = new GGBApplet(
+                {
+                  appName: "graphing",
+                  width: 420,
+                  height: 560,
+                  showToolBar: true,
+                  showAlgebraInput: true,
+                  showMenuBar: false,
+                  showResetIcon: false,
+                  enableShiftDragZoom: true,
+                  enableRightClick: false,
+                  errorDialogsActive: false,
+                  useBrowserForJS: false,
+                  showZoomButtons: true,
+                  appletOnLoad: function (a) {
+                    api = a;
+                    ready = true;
+                    busy = false;
+                    if (loading) loading.style.display = "none";
+                  },
+                },
+                true,
+              );
+              applet.inject("ggbCalc");
+            } catch (e) {
+              fail();
+            }
+          };
+          if (window.GGBApplet) go();
+          else
+            loadScript("https://www.geogebra.org/apps/deployggb.js")
+              .then(go)
+              .catch(fail);
+        }
+        function open() {
+          panel.hidden = false;
+          btn && btn.setAttribute("aria-pressed", "true");
+          setMode("basic");
+        }
+        function close() {
+          panel.hidden = true;
+          btn && btn.setAttribute("aria-pressed", "false");
+        }
+        if (btn)
+          btn.addEventListener("click", function () {
+            panel.hidden ? open() : close();
+          });
+        if (closeBtn) closeBtn.addEventListener("click", close);
+
+        var basicWrap = document.getElementById("calcBasic"),
+          graphWrap = document.getElementById("calcGraphWrap"),
+          modeBtns = panel.querySelectorAll(".calc-mode"),
+          mode = "basic";
+        function setMode(next) {
+          mode = next;
+          basicWrap.hidden = next !== "basic";
+          graphWrap.hidden = next !== "graphing";
+          for (var i = 0; i < modeBtns.length; i++)
+            modeBtns[i].classList.toggle(
+              "is-active",
+              modeBtns[i].getAttribute("data-mode") === next,
+            );
+          if (next === "graphing") inject();
+        }
+        for (var m = 0; m < modeBtns.length; m++)
+          modeBtns[m].addEventListener("click", function () {
+            setMode(this.getAttribute("data-mode"));
+          });
+
+        var exprEl = document.getElementById("calcExpr"),
+          outEl = document.getElementById("calcOut"),
+          keysEl = document.querySelector(".calc-keys"),
+          buf = "",
+          justEq = false;
+        var SYM = { "*": " × ", "/": " ÷ ", "+": " + ", "-": " − " };
+        function fmt(n) {
+          if (!isFinite(n)) return "Error";
+          var r = Math.round((n + Number.EPSILON) * 1e10) / 1e10;
+          return String(r);
+        }
+        function evalBuf(s) {
+          var clean = s.replace(/[+\-*/.]\s*$/, "");
+          if (!clean) return null;
+          if (!/^[0-9+\-*/.]+$/.test(clean)) return null;
+          try {
+            var v = Function('"use strict";return (' + clean + ")")();
+            return typeof v === "number" ? v : null;
+          } catch (e) {
+            return null;
+          }
+        }
+        function dispOf(s) {
+          return s.replace(/[*/+\-]/g, function (c) {
+            return SYM[c] || c;
+          });
+        }
+        function render(result) {
+          var disp = dispOf(buf);
+          exprEl.textContent = disp;
+          if (result === "clear") {
+            outEl.textContent = "0";
+            return;
+          }
+          if (result != null) {
+            outEl.textContent = result;
+            return;
+          }
+          var v = evalBuf(buf);
+          outEl.textContent =
+            v == null || !isFinite(v) ? disp.trim() || "0" : fmt(v);
+        }
+        function lastNumber(s) {
+          var mm = s.match(/(\d*\.?\d+)$/);
+          return mm ? mm[1] : "";
+        }
+        function pressNum(d) {
+          if (justEq) {
+            buf = "";
+            justEq = false;
+          }
+          var num = lastNumber(buf);
+          if (num === "0") buf = buf.slice(0, -1) + d;
+          else buf += d;
+          render();
+        }
+        function pressDot() {
+          if (justEq) {
+            buf = "";
+            justEq = false;
+          }
+          var num = lastNumber(buf);
+          if (num.indexOf(".") !== -1) return;
+          if (!num) buf += "0";
+          buf += ".";
+          render();
+        }
+        function pressOp(op) {
+          justEq = false;
+          if (!buf) {
+            if (op === "-") {
+              buf = "-";
+              render();
+            }
+            return;
+          }
+          if (/[+\-*/]$/.test(buf)) buf = buf.slice(0, -1);
+          buf += op;
+          render();
+        }
+        function pressPercent() {
+          justEq = false;
+          var num = lastNumber(buf);
+          if (!num) return;
+          var pct = fmt(parseFloat(num) / 100);
+          buf = buf.slice(0, buf.length - num.length) + pct;
+          render();
+        }
+        function pressNegate() {
+          justEq = false;
+          var num = lastNumber(buf);
+          if (!num) return;
+          var start = buf.length - num.length;
+          if (buf[start - 1] === "-") {
+            buf = buf.slice(0, start - 1) + num;
+          } else {
+            buf = buf.slice(0, start) + "-" + num;
+          }
+          render();
+        }
+        function pressEquals() {
+          var v = evalBuf(buf);
+          if (v == null) return;
+          exprEl.textContent = dispOf(buf).trim();
+          if (!isFinite(v)) {
+            outEl.textContent = "Error";
+            buf = "";
+            justEq = false;
+            return;
+          }
+          buf = fmt(v);
+          outEl.textContent = buf;
+          justEq = true;
+        }
+        function clearAll() {
+          buf = "";
+          justEq = false;
+          render("clear");
+        }
+        if (keysEl)
+          keysEl.addEventListener("click", function (e) {
+            var k = e.target.closest(".calc-key");
+            if (!k) return;
+            if (k.hasAttribute("data-num"))
+              return pressNum(k.getAttribute("data-num"));
+            if (k.hasAttribute("data-op"))
+              return pressOp(k.getAttribute("data-op"));
+            var act = k.getAttribute("data-act");
+            if (act === "dot") return pressDot();
+            if (act === "percent") return pressPercent();
+            if (act === "negate") return pressNegate();
+            if (act === "equals") return pressEquals();
+            if (act === "back") {
+              justEq = false;
+              buf = buf.slice(0, -1);
+              return render();
+            }
+            if (act === "clear") return clearAll();
+          });
+        if (resetBtn)
+          resetBtn.addEventListener("click", function () {
+            if (mode === "graphing") {
+              try {
+                if (api && api.reset) api.reset();
+              } catch (e) {}
+            } else {
+              clearAll();
+            }
+          });
+
+        var drag = false,
+          sx = 0,
+          sy = 0,
+          ox = 0,
+          oy = 0;
+        head.addEventListener("pointerdown", function (e) {
+          if (e.target.closest(".calc-hbtn")) return;
+          drag = true;
+          var r = panel.getBoundingClientRect();
+          ox = r.left;
+          oy = r.top;
+          sx = e.clientX;
+          sy = e.clientY;
+          panel.style.right = "auto";
+          panel.style.left = ox + "px";
+          panel.style.top = oy + "px";
+          try {
+            head.setPointerCapture(e.pointerId);
+          } catch (_) {}
+        });
+        head.addEventListener("pointermove", function (e) {
+          if (!drag) return;
+          var nx = Math.max(
+            0,
+            Math.min(window.innerWidth - 60, ox + e.clientX - sx),
+          );
+          var ny = Math.max(
+            0,
+            Math.min(window.innerHeight - 40, oy + e.clientY - sy),
+          );
+          panel.style.left = nx + "px";
+          panel.style.top = ny + "px";
+        });
+        head.addEventListener("pointerup", function (e) {
+          drag = false;
+          try {
+            head.releasePointerCapture(e.pointerId);
+          } catch (_) {}
+        });
+      })();
+    </script>
+
+    <!-- ===== Math Coach — AI hints & explanations via /api/tutor (health-gated) ===== -->
+    <div
+      id="coachPanel"
+      class="coach-panel"
+      hidden
+      role="dialog"
+      aria-label="Math Coach"
+    >
+      <div class="coach-head" id="coachHead">
+        <span class="coach-title">💡 Math Coach</span>
+        <div class="coach-head-actions">
+          <button
+            type="button"
+            id="coachClear"
+            class="coach-hbtn"
+            title="Start a new chat"
+          >
+            ↺
+          </button>
+          <button
+            type="button"
+            id="coachClose"
+            class="coach-hbtn"
+            title="Close the Math Coach"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+      <div class="coach-log" id="coachLog" aria-live="polite"></div>
+      <div class="coach-input">
+        <textarea
+          id="coachInput"
+          rows="2"
+          placeholder="Type your problem or question… e.g. How do I add 3/4 + 1/6?"
+          aria-label="Ask the Math Coach"
+        ></textarea>
+      </div>
+      <div class="coach-modes" id="coachModes">
+        <button type="button" class="coach-mode" data-mode="hint">
+          🧭 Hint
+        </button>
+        <button type="button" class="coach-mode" data-mode="explain">
+          📘 Explain why
+        </button>
+        <button type="button" class="coach-mode" data-mode="teach">
+          🎓 Teach me
+        </button>
+      </div>
+      <p class="coach-foot">
+        The coach gives hints and explanations — not the final answer. It can
+        read what's on your page.
+      </p>
+    </div>
+    <style>
+      .coach-panel {
+        position: fixed;
+        top: 92px;
+        right: 24px;
+        z-index: 9999;
+        width: 380px;
+        max-width: 94vw;
+        background: #fff;
+        border: 1px solid #cdd8e3;
+        border-radius: 14px;
+        box-shadow: 0 18px 50px rgba(18, 53, 91, 0.28);
+        overflow: hidden;
+        font-family: "Atkinson Hyperlegible", "Nunito", sans-serif;
+        display: flex;
+        flex-direction: column;
+        max-height: 82vh;
+      }
+      .coach-panel[hidden] {
+        display: none !important;
+      }
+      .coach-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 9px 12px;
+        background: linear-gradient(135deg, #4338a6, #1fa6a2);
+        color: #fff;
+        cursor: move;
+        user-select: none;
+        touch-action: none;
+      }
+      .coach-title {
+        font-weight: 800;
+        font-size: 14px;
+      }
+      .coach-head-actions {
+        display: flex;
+        gap: 4px;
+      }
+      .coach-hbtn {
+        background: rgba(255, 255, 255, 0.18);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        width: 28px;
+        height: 28px;
+        font-size: 15px;
+        line-height: 1;
+        cursor: pointer;
+      }
+      .coach-hbtn:hover {
+        background: rgba(255, 255, 255, 0.34);
+      }
+      .coach-log {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        min-height: 120px;
+        background: #f7fafd;
+      }
+      .coach-msg {
+        max-width: 88%;
+        padding: 9px 12px;
+        border-radius: 13px;
+        font-size: 0.92rem;
+        line-height: 1.42;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .coach-msg.student {
+        align-self: flex-end;
+        background: #205fa6;
+        color: #fff;
+        border-bottom-right-radius: 4px;
+      }
+      .coach-msg.coach {
+        align-self: flex-start;
+        background: #fff;
+        border: 1.5px solid #dbe6f1;
+        color: var(--ink);
+        border-bottom-left-radius: 4px;
+        position: relative;
+        padding-right: 34px;
+      }
+      .coach-msg.error {
+        align-self: center;
+        background: #fdecec;
+        color: #9a2a2a;
+        font-size: 0.85rem;
+      }
+      .coach-msg.hint-lead {
+        align-self: center;
+        background: transparent;
+        color: var(--muted);
+        font-size: 0.85rem;
+        padding: 2px;
+      }
+      .coach-say {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 24px;
+        height: 24px;
+        border: none;
+        background: #eef4fb;
+        color: var(--teal);
+        border-radius: 7px;
+        font-size: 0.8rem;
+        line-height: 1;
+        cursor: pointer;
+      }
+      .coach-say:hover {
+        background: #dce8f6;
+      }
+      .coach-typing {
+        align-self: flex-start;
+        color: var(--muted);
+        font-size: 0.85rem;
+        padding: 6px 12px;
+      }
+      .coach-input {
+        padding: 8px 10px 0;
+      }
+      .coach-input textarea {
+        width: 100%;
+        box-sizing: border-box;
+        resize: none;
+        border: 1.5px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 10px;
+        font: inherit;
+        font-size: 0.92rem;
+      }
+      .coach-input textarea:focus {
+        outline: none;
+        border-color: var(--teal);
+      }
+      .coach-modes {
+        display: flex;
+        gap: 6px;
+        padding: 8px 10px 4px;
+        flex-wrap: wrap;
+      }
+      .coach-mode {
+        flex: 1 1 auto;
+        border: 1.5px solid var(--line);
+        background: #fff;
+        border-radius: 10px;
+        padding: 8px 6px;
+        font: inherit;
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: var(--indigo);
+        cursor: pointer;
+        transition:
+          background 0.12s,
+          border-color 0.12s;
+      }
+      .coach-mode:hover {
+        background: rgba(67, 56, 166, 0.08);
+        border-color: var(--indigo);
+      }
+      .coach-mode:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .coach-foot {
+        margin: 4px 12px 12px;
+        font-size: 0.72rem;
+        color: var(--muted);
+        line-height: 1.35;
+      }
+      @media (max-width: 560px) {
+        .coach-panel {
+          top: auto;
+          bottom: 12px;
+          right: 12px;
+          left: 12px;
+          width: auto;
+          max-height: 72vh;
+        }
+      }
+    </style>
+    <script>
+      (function () {
+        var ENDPOINT = "/api/tutor";
+        var MAX_HISTORY = 8;
+        var panel = document.getElementById("coachPanel"),
+          btn = document.getElementById("coachBtn"),
+          head = document.getElementById("coachHead"),
+          closeBtn = document.getElementById("coachClose"),
+          clearBtn = document.getElementById("coachClear"),
+          log = document.getElementById("coachLog"),
+          input = document.getElementById("coachInput"),
+          modeWrap = document.getElementById("coachModes"),
+          modeBtns = panel.querySelectorAll(".coach-mode");
+        var history = [],
+          busy = false,
+          checkedHealth = false,
+          canSpeak = "speechSynthesis" in window;
+
+        function scrollDown() {
+          log.scrollTop = log.scrollHeight;
+        }
+        function addMsg(role, text) {
+          var m = document.createElement("div");
+          m.className = "coach-msg " + role;
+          m.textContent = text;
+          if (role === "coach" && canSpeak) {
+            var say = document.createElement("button");
+            say.type = "button";
+            say.className = "coach-say";
+            say.textContent = "🔊";
+            say.title = "Read this aloud";
+            say.setAttribute("aria-label", "Read this answer aloud");
+            say.addEventListener("click", function () {
+              try {
+                window.speechSynthesis.cancel();
+                var u = new SpeechSynthesisUtterance(text);
+                u.rate = 0.95;
+                u.lang = "en-US";
+                window.speechSynthesis.speak(u);
+              } catch (e) {}
+            });
+            m.appendChild(say);
+          }
+          log.appendChild(m);
+          scrollDown();
+          return m;
+        }
+        function lead(text) {
+          var p = document.createElement("div");
+          p.className = "coach-msg hint-lead";
+          p.textContent = text;
+          log.appendChild(p);
+          scrollDown();
+        }
+        // Read whatever the student has placed on the current page so the coach
+        // can reason about their actual work. Pulled from the rendered overlay
+        // so this stays decoupled from the main script's internal state.
+        function gatherBoardText() {
+          var parts = [];
+          var els = document.querySelectorAll("#overlay .obj");
+          for (var i = 0; i < els.length; i++) {
+            var t = (els[i].textContent || "").replace(/\s+/g, " ").trim();
+            if (t) parts.push(t);
+          }
+          var joined = parts.join("  |  ");
+          return joined.length > 1200 ? joined.slice(0, 1200) + "…" : joined;
+        }
+        function setBusy(b) {
+          busy = b;
+          for (var i = 0; i < modeBtns.length; i++) modeBtns[i].disabled = b;
+        }
+        function ensureHealth() {
+          if (checkedHealth) return;
+          checkedHealth = true;
+          fetch(ENDPOINT + "/health", { method: "GET" })
+            .then(function (r) {
+              return r.json();
+            })
+            .then(function (d) {
+              if (!d || !d.live) {
+                setBusy(true);
+                lead(
+                  "The Math Coach is resting right now. Try your Formula Bank and Guided Practice — you've got this!",
+                );
+              }
+            })
+            .catch(function () {});
+        }
+        function send(mode) {
+          if (busy) return;
+          var q = (input.value || "").trim();
+          var board = gatherBoardText();
+          if (!q && !board) {
+            lead(
+              "Type your problem above, or add some work to the page first.",
+            );
+            input.focus();
+            return;
+          }
+          var echo =
+            q ||
+            (mode === "hint"
+              ? "Hint for my work, please."
+              : mode === "explain"
+                ? "Explain the math on my page."
+                : "Teach me this.");
+          addMsg("student", echo);
+          input.value = "";
+          setBusy(true);
+          var typing = document.createElement("div");
+          typing.className = "coach-typing";
+          typing.textContent = "Coach is thinking…";
+          log.appendChild(typing);
+          scrollDown();
+
+          fetch(ENDPOINT, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              mode: mode,
+              standard: "",
+              itemText: q,
+              studentWork: board,
+              history: history.slice(-MAX_HISTORY),
+            }),
+          })
+            .then(function (r) {
+              return r
+                .json()
+                .catch(function () {
+                  return null;
+                })
+                .then(function (data) {
+                  return { status: r.status, ok: r.ok, data: data };
+                });
+            })
+            .then(function (res) {
+              if (typing.parentNode) typing.parentNode.removeChild(typing);
+              if (res.ok && res.data && res.data.reply) {
+                var reply = String(res.data.reply);
+                addMsg("coach", reply);
+                history.push({ role: "user", text: echo });
+                history.push({ role: "assistant", text: reply });
+                if (history.length > MAX_HISTORY * 2)
+                  history = history.slice(-MAX_HISTORY * 2);
+              } else if (res.status === 429) {
+                addMsg(
+                  "error",
+                  "You're asking quickly! Wait a few seconds and try again.",
+                );
+              } else {
+                addMsg(
+                  "error",
+                  "The coach is offline right now. Try again in a moment.",
+                );
+              }
+            })
+            .catch(function () {
+              if (typing.parentNode) typing.parentNode.removeChild(typing);
+              addMsg(
+                "error",
+                "Couldn't reach the coach. Check your connection and try again.",
+              );
+            })
+            .then(function () {
+              setBusy(false);
+            });
+        }
+        function open() {
+          panel.hidden = false;
+          btn && btn.setAttribute("aria-pressed", "true");
+          ensureHealth();
+          if (!log.children.length) {
+            lead(
+              "Hi! Write your problem above, then pick Hint, Explain why, or Teach me.",
+            );
+          }
+          setTimeout(function () {
+            input.focus();
+          }, 40);
+        }
+        function close() {
+          panel.hidden = true;
+          btn && btn.setAttribute("aria-pressed", "false");
+          if (canSpeak)
+            try {
+              window.speechSynthesis.cancel();
+            } catch (e) {}
+        }
+        if (btn)
+          btn.addEventListener("click", function () {
+            panel.hidden ? open() : close();
+          });
+        if (closeBtn) closeBtn.addEventListener("click", close);
+        if (clearBtn)
+          clearBtn.addEventListener("click", function () {
+            history = [];
+            log.innerHTML = "";
+            lead("New chat. What are you working on?");
+            input.focus();
+          });
+        for (var i = 0; i < modeBtns.length; i++) {
+          modeBtns[i].addEventListener("click", function () {
+            send(this.getAttribute("data-mode"));
+          });
+        }
+        input.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            send("hint");
+          }
+        });
+
+        // Drag by the header (mirrors the calculator panel).
+        var drag = false,
+          sx = 0,
+          sy = 0,
+          ox = 0,
+          oy = 0;
+        head.addEventListener("pointerdown", function (e) {
+          if (e.target.closest(".coach-hbtn")) return;
+          drag = true;
+          var r = panel.getBoundingClientRect();
+          ox = r.left;
+          oy = r.top;
+          sx = e.clientX;
+          sy = e.clientY;
+          panel.style.right = "auto";
+          panel.style.left = ox + "px";
+          panel.style.top = oy + "px";
+          try {
+            head.setPointerCapture(e.pointerId);
+          } catch (_) {}
+        });
+        head.addEventListener("pointermove", function (e) {
+          if (!drag) return;
+          var nx = Math.max(
+            0,
+            Math.min(window.innerWidth - 60, ox + e.clientX - sx),
+          );
+          var ny = Math.max(
+            0,
+            Math.min(window.innerHeight - 40, oy + e.clientY - sy),
+          );
+          panel.style.left = nx + "px";
+          panel.style.top = ny + "px";
+        });
+        head.addEventListener("pointerup", function (e) {
+          drag = false;
+          try {
+            head.releasePointerCapture(e.pointerId);
+          } catch (_) {}
+        });
+      })();
     </script>
   </body>
 </html>

@@ -43,8 +43,10 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
 .ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
 .ws-bub-sm{width:20px;height:20px;font-size:11px;}
 .ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
-.ws-correct{font-weight:700;color:var(--teal);}
+.ws-correct{font-weight:700;color:var(--teal-ink);}
 .ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
 .ws-match{display:flex;gap:24px;flex-wrap:wrap;}
 .ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
 .ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
@@ -75,9 +77,71 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
   @page{margin:1.5cm;}
   a{color:#000;}
 }
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
 </style>
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+
+
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/3-7/worksheet.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Ratio and Rate Problem Solving — Practice Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="Ratio and Rate Problem Solving — Practice Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Ratio and Rate Problem Solving — Practice Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/3-7/worksheet.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
 </head>
 <body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.3</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">Ratio and Rate Problem Solving</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Rate</span><span class="ws-bankword">Unit rate</span><span class="ws-bankword">Per</span><span class="ws-bankword">Problem solving</span><span class="ws-bankword">Proportion</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Read the problem:</b> A store sells 6 oranges for $4.50. What is the cost of 10 oranges?</li><li><b>Find the unit rate:</b> $4.50 ÷ 6 = $0.75 per orange</li><li><b>Multiply for 10 oranges:</b> $0.75 + 10 = $10.75</li><li><b>Answer:</b> 10 oranges cost $10.75</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A bakery makes 24 cookies in 3 batches. What is the unit rate of cookies per batch?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>8 cookies per batch</li><li class="ws-opt"><span class="ws-bub">B</span>3 cookies per batch</li><li class="ws-opt"><span class="ws-bub">C</span>24 cookies per batch</li><li class="ws-opt"><span class="ws-bub">D</span>6 cookies per batch</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Apples cost $5 for 4 pounds. What is the cost per pound?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$1.25</li><li class="ws-opt"><span class="ws-bub">B</span>$0.80</li><li class="ws-opt"><span class="ws-bub">C</span>$1.50</li><li class="ws-opt"><span class="ws-bub">D</span>$4.00</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A cyclist rides 36 miles in 3 hours. At the same rate, how far will she ride in 5 hours?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>60 miles</li><li class="ws-opt"><span class="ws-bub">B</span>48 miles</li><li class="ws-opt"><span class="ws-bub">C</span>72 miles</li><li class="ws-opt"><span class="ws-bub">D</span>45 miles</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A printer prints 45 pages in 9 minutes. How many pages does it print per minute?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>5 pages per minute</li><li class="ws-opt"><span class="ws-bub">B</span>9 pages per minute</li><li class="ws-opt"><span class="ws-bub">C</span>4 pages per minute</li><li class="ws-opt"><span class="ws-bub">D</span>45 pages per minute</li></ol></div></li></ol>
+  </section>
 <section class="ws-page">
     <header class="ws-head">
     <div class="ws-head-top">
@@ -89,15 +153,16 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     <section class="ws-bank">
-    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
     <div class="ws-bankwords"><span class="ws-bankword">Rate</span><span class="ws-bankword">Unit rate</span><span class="ws-bankword">Per</span><span class="ws-bankword">Problem solving</span><span class="ws-bankword">Proportion</span></div>
   </section><section class="ws-example">
-    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
     <ol class="ws-example-steps"><li><b>Read the problem:</b> A store sells 6 oranges for $4.50. What is the cost of 10 oranges?</li><li><b>Find the unit rate:</b> $4.50 ÷ 6 = $0.75 per orange</li><li><b>Multiply for 10 oranges:</b> $0.75 + 10 = $10.75</li><li><b>Answer:</b> 10 oranges cost $10.75</li></ol>
   </section>
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A bakery makes 24 cookies in 3 batches. What is the unit rate of cookies per batch?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>8 cookies per batch</li><li class="ws-opt"><span class="ws-bub">B</span>3 cookies per batch</li><li class="ws-opt"><span class="ws-bub">C</span>24 cookies per batch</li><li class="ws-opt"><span class="ws-bub">D</span>6 cookies per batch</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Apples cost $5 for 4 pounds. What is the cost per pound?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$1.25</li><li class="ws-opt"><span class="ws-bub">B</span>$0.80</li><li class="ws-opt"><span class="ws-bub">C</span>$1.50</li><li class="ws-opt"><span class="ws-bub">D</span>$4.00</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A cyclist rides 36 miles in 3 hours. At the same rate, how far will she ride in 5 hours?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>60 miles</li><li class="ws-opt"><span class="ws-bub">B</span>48 miles</li><li class="ws-opt"><span class="ws-bub">C</span>72 miles</li><li class="ws-opt"><span class="ws-bub">D</span>45 miles</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A printer prints 45 pages in 9 minutes. How many pages does it print per minute?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>5 pages per minute</li><li class="ws-opt"><span class="ws-bub">B</span>9 pages per minute</li><li class="ws-opt"><span class="ws-bub">C</span>4 pages per minute</li><li class="ws-opt"><span class="ws-bub">D</span>45 pages per minute</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
-  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Miles driven</td><td></td><td></td><td></td></tr><tr><td>Cost of juice</td><td></td><td></td><td></td></tr><tr><td>Words typed</td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Ratio and Rate Problem Solving.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Find the unit rate by dividing, then multiply it to find the amount you need.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Miles driven</td><td></td><td></td><td></td></tr><tr><td>Cost of juice</td><td></td><td></td><td></td></tr><tr><td>Words typed</td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Bagel Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A bakery sells 4 bagels for $6. How much do 12 bagels cost at the same rate?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the unit rate</span><span class="ws-step-w">$6 ÷ 4 = $1.50 per bagel</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find the cost of 12 bagels</span><span class="ws-step-w">$1.50 + 12 = $13.50</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">12 bagels cost $13.50</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
   </section>
@@ -112,13 +177,46 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
   <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>4</td><td></td></tr><tr><td>8</td><td></td></tr><tr><td>12</td><td></td></tr><tr><td>20</td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A car travels 150 miles in 3 hours. A bus travels 200 miles in 5 hours. Which vehicle is faster?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>The car</li><li class="ws-opt"><span class="ws-bub">B</span>The bus</li><li class="ws-opt"><span class="ws-bub">C</span>Same speed</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Sort each rate problem by the strategy that works BEST to solve it.</p>
   <p class="ws-prompt">Categories: <b>unit-rate · ratio-table</b></p>
-  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span>Find cost per pound when 5 lb costs $12</li><li><span class="ws-blank ws-blank-sm"></span>If 3 shirts cost $24, find cost of 9 shirts</li><li><span class="ws-blank ws-blank-sm"></span>A car goes 55 mph — how far in 4 hours?</li><li><span class="ws-blank ws-blank-sm"></span>Scale a recipe from 4 servings to 20 servings</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A runner goes 6 miles in 48 minutes. Place markers showing distance at 0, 16, 32, and 48 minutes.</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Ratio and Rate Problem Solving.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Find the unit rate by dividing, then multiply it to find the amount you need.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span>Find cost per pound when 5 lb costs $12</li><li><span class="ws-blank ws-blank-sm"></span>If 3 shirts cost $24, find cost of 9 shirts</li><li><span class="ws-blank ws-blank-sm"></span>A car goes 55 mph — how far in 4 hours?</li><li><span class="ws-blank ws-blank-sm"></span>Scale a recipe from 4 servings to 20 servings</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A runner goes 6 miles in 48 minutes. Place markers showing distance at 0, 16, 32, and 48 minutes.</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Smoothie Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A smoothie stand makes 18 smoothies in 6 minutes. How many smoothies can it make in 10 minutes at the same rate?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the unit rate</span><span class="ws-step-w">6 minutes ÷ 18 smoothies = 0.33 minute per smoothie</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find smoothies in 10 minutes</span><span class="ws-step-w">0.33 × 10 = about 3.3 smoothies</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">About 3 smoothies in 10 minutes</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.3</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">Ratio and Rate Problem Solving</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find Mia's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A store sells 6 oranges for $4.50. What is the cost of 10 oranges?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the unit rate</span><span class="ws-step-w">$4.50 ÷ 6 = $0.75 per orange</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Multiply for 10 oranges</span><span class="ws-step-w">$0.75 + 10 = $10.75</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">10 oranges cost $10.75</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem"></p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>1</td><td></td><td></td><td></td></tr><tr><td>2</td><td></td><td></td><td></td></tr><tr><td>5</td><td></td><td></td><td></td></tr><tr><td>10</td><td></td><td></td><td></td></tr></tbody></table></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.3</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Ratio and Rate Problem Solving</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A bakery makes 24 cookies in 3 batches. What is the unit rate of cookies per batch?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>8 cookies per batch</li><li class="ws-opt"><span class="ws-bub">B</span>3 cookies per batch</li><li class="ws-opt"><span class="ws-bub">C</span>24 cookies per batch</li><li class="ws-opt"><span class="ws-bub">D</span>6 cookies per batch</li></ol><p class="ws-keynote">Unit rate: 24 cookies ÷ 3 batches = 8 cookies per batch.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio and Rate Problem Solving is skipping the key idea: &quot;Find the unit rate by dividing, then multiply it to find the amount you need.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Apples cost $5 for 4 pounds. What is the cost per pound?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$1.25</li><li class="ws-opt"><span class="ws-bub">B</span>$0.80</li><li class="ws-opt"><span class="ws-bub">C</span>$1.50</li><li class="ws-opt"><span class="ws-bub">D</span>$4.00</li></ol><p class="ws-keynote">Unit rate: $5 ÷ 4 pounds = $1.25 per pound.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio and Rate Problem Solving is skipping the key idea: &quot;Find the unit rate by dividing, then multiply it to find the amount you need.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A cyclist rides 36 miles in 3 hours. At the same rate, how far will she ride in 5 hours?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>60 miles</li><li class="ws-opt"><span class="ws-bub">B</span>48 miles</li><li class="ws-opt"><span class="ws-bub">C</span>72 miles</li><li class="ws-opt"><span class="ws-bub">D</span>45 miles</li></ol><p class="ws-keynote">Unit rate: 36 ÷ 3 = 12 miles per hour. In 5 hours: 12 × 5 = 60 miles.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio and Rate Problem Solving is skipping the key idea: &quot;Find the unit rate by dividing, then multiply it to find the amount you need.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A printer prints 45 pages in 9 minutes. How many pages does it print per minute?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5 pages per minute</li><li class="ws-opt"><span class="ws-bub">B</span>9 pages per minute</li><li class="ws-opt"><span class="ws-bub">C</span>4 pages per minute</li><li class="ws-opt"><span class="ws-bub">D</span>45 pages per minute</li></ol><p class="ws-keynote">Unit rate: 45 ÷ 9 = 5 pages per minute.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio and Rate Problem Solving is skipping the key idea: &quot;Find the unit rate by dividing, then multiply it to find the amount you need.&quot; — always check your work against this rule before you submit.</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -131,11 +229,12 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
-    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A bakery makes 24 cookies in 3 batches. What is the unit rate of cookies per batch?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>8 cookies per batch</li><li class="ws-opt"><span class="ws-bub">B</span>3 cookies per batch</li><li class="ws-opt"><span class="ws-bub">C</span>24 cookies per batch</li><li class="ws-opt"><span class="ws-bub">D</span>6 cookies per batch</li></ol><p class="ws-keynote">Unit rate: 24 cookies ÷ 3 batches = 8 cookies per batch.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Apples cost $5 for 4 pounds. What is the cost per pound?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$1.25</li><li class="ws-opt"><span class="ws-bub">B</span>$0.80</li><li class="ws-opt"><span class="ws-bub">C</span>$1.50</li><li class="ws-opt"><span class="ws-bub">D</span>$4.00</li></ol><p class="ws-keynote">Unit rate: $5 ÷ 4 pounds = $1.25 per pound.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A cyclist rides 36 miles in 3 hours. At the same rate, how far will she ride in 5 hours?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>60 miles</li><li class="ws-opt"><span class="ws-bub">B</span>48 miles</li><li class="ws-opt"><span class="ws-bub">C</span>72 miles</li><li class="ws-opt"><span class="ws-bub">D</span>45 miles</li></ol><p class="ws-keynote">Unit rate: 36 ÷ 3 = 12 miles per hour. In 5 hours: 12 × 5 = 60 miles.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A printer prints 45 pages in 9 minutes. How many pages does it print per minute?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5 pages per minute</li><li class="ws-opt"><span class="ws-bub">B</span>9 pages per minute</li><li class="ws-opt"><span class="ws-bub">C</span>4 pages per minute</li><li class="ws-opt"><span class="ws-bub">D</span>45 pages per minute</li></ol><p class="ws-keynote">Unit rate: 45 ÷ 9 = 5 pages per minute.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
-  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Miles driven</td><td>120 miles</td><td>4 hours</td><td>30 miles per hour</td></tr><tr><td>Cost of juice</td><td>$6.00</td><td>8 bottles</td><td></td></tr><tr><td>Words typed</td><td>180 words</td><td>3 minutes</td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Ratio and Rate Problem Solving.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Find the unit rate by dividing, then multiply it to find the amount you need.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A bakery makes 24 cookies in 3 batches. What is the unit rate of cookies per batch?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>8 cookies per batch</li><li class="ws-opt"><span class="ws-bub">B</span>3 cookies per batch</li><li class="ws-opt"><span class="ws-bub">C</span>24 cookies per batch</li><li class="ws-opt"><span class="ws-bub">D</span>6 cookies per batch</li></ol><p class="ws-keynote">Unit rate: 24 cookies ÷ 3 batches = 8 cookies per batch.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio and Rate Problem Solving is skipping the key idea: &quot;Find the unit rate by dividing, then multiply it to find the amount you need.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Apples cost $5 for 4 pounds. What is the cost per pound?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$1.25</li><li class="ws-opt"><span class="ws-bub">B</span>$0.80</li><li class="ws-opt"><span class="ws-bub">C</span>$1.50</li><li class="ws-opt"><span class="ws-bub">D</span>$4.00</li></ol><p class="ws-keynote">Unit rate: $5 ÷ 4 pounds = $1.25 per pound.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio and Rate Problem Solving is skipping the key idea: &quot;Find the unit rate by dividing, then multiply it to find the amount you need.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A cyclist rides 36 miles in 3 hours. At the same rate, how far will she ride in 5 hours?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>60 miles</li><li class="ws-opt"><span class="ws-bub">B</span>48 miles</li><li class="ws-opt"><span class="ws-bub">C</span>72 miles</li><li class="ws-opt"><span class="ws-bub">D</span>45 miles</li></ol><p class="ws-keynote">Unit rate: 36 ÷ 3 = 12 miles per hour. In 5 hours: 12 × 5 = 60 miles.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio and Rate Problem Solving is skipping the key idea: &quot;Find the unit rate by dividing, then multiply it to find the amount you need.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A printer prints 45 pages in 9 minutes. How many pages does it print per minute?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5 pages per minute</li><li class="ws-opt"><span class="ws-bub">B</span>9 pages per minute</li><li class="ws-opt"><span class="ws-bub">C</span>4 pages per minute</li><li class="ws-opt"><span class="ws-bub">D</span>45 pages per minute</li></ol><p class="ws-keynote">Unit rate: 45 ÷ 9 = 5 pages per minute.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio and Rate Problem Solving is skipping the key idea: &quot;Find the unit rate by dividing, then multiply it to find the amount you need.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Miles driven</td><td>120 miles</td><td>4 hours</td><td>30 miles per hour</td></tr><tr><td>Cost of juice</td><td>$6.00</td><td>8 bottles</td><td></td></tr><tr><td>Words typed</td><td>180 words</td><td>3 minutes</td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Bagel Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A bakery sells 4 bagels for $6. How much do 12 bagels cost at the same rate?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the unit rate</span><span class="ws-step-w">$6 ÷ 4 = $1.50 per bagel</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find the cost of 12 bagels</span><span class="ws-step-w">$1.50 + 12 = $13.50</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">12 bagels cost $13.50</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: The unit rate of $1.50 per bagel is correct, but you multiply to find the total, not add: $1.50 × 12 = $18. So 12 bagels cost $18.</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -148,13 +247,36 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
-  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>4</td><td>5</td></tr><tr><td>8</td><td></td></tr><tr><td>12</td><td></td></tr><tr><td>20</td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A car travels 150 miles in 3 hours. A bus travels 200 miles in 5 hours. Which vehicle is faster?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>The car</li><li class="ws-opt"><span class="ws-bub">B</span>The bus</li><li class="ws-opt"><span class="ws-bub">C</span>Same speed</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol><p class="ws-keynote">Car: 150÷3 = 50 mph. Bus: 200÷5 = 40 mph. The car travels faster at 50 mph vs. 40 mph.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Sort each rate problem by the strategy that works BEST to solve it.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>4</td><td>5</td></tr><tr><td>8</td><td></td></tr><tr><td>12</td><td></td></tr><tr><td>20</td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A car travels 150 miles in 3 hours. A bus travels 200 miles in 5 hours. Which vehicle is faster?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>The car</li><li class="ws-opt"><span class="ws-bub">B</span>The bus</li><li class="ws-opt"><span class="ws-bub">C</span>Same speed</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol><p class="ws-keynote">Car: 150÷3 = 50 mph. Bus: 200÷5 = 40 mph. The car travels faster at 50 mph vs. 40 mph.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio and Rate Problem Solving is skipping the key idea: &quot;Find the unit rate by dividing, then multiply it to find the amount you need.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Sort each rate problem by the strategy that works BEST to solve it.</p>
   <p class="ws-prompt">Categories: <b>unit-rate · ratio-table</b></p>
-  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">unit-rate</span>Find cost per pound when 5 lb costs $12</li><li><span class="ws-blank ws-blank-sm">ratio-table</span>If 3 shirts cost $24, find cost of 9 shirts</li><li><span class="ws-blank ws-blank-sm">unit-rate</span>A car goes 55 mph — how far in 4 hours?</li><li><span class="ws-blank ws-blank-sm">ratio-table</span>Scale a recipe from 4 servings to 20 servings</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A runner goes 6 miles in 48 minutes. Place markers showing distance at 0, 16, 32, and 48 minutes.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Ratio and Rate Problem Solving.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Find the unit rate by dividing, then multiply it to find the amount you need.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">unit-rate</span>Find cost per pound when 5 lb costs $12</li><li><span class="ws-blank ws-blank-sm">ratio-table</span>If 3 shirts cost $24, find cost of 9 shirts</li><li><span class="ws-blank ws-blank-sm">unit-rate</span>A car goes 55 mph — how far in 4 hours?</li><li><span class="ws-blank ws-blank-sm">ratio-table</span>Scale a recipe from 4 servings to 20 servings</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A runner goes 6 miles in 48 minutes. Place markers showing distance at 0, 16, 32, and 48 minutes.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Smoothie Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A smoothie stand makes 18 smoothies in 6 minutes. How many smoothies can it make in 10 minutes at the same rate?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the unit rate</span><span class="ws-step-w">6 minutes ÷ 18 smoothies = 0.33 minute per smoothie</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find smoothies in 10 minutes</span><span class="ws-step-w">0.33 × 10 = about 3.3 smoothies</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">About 3 smoothies in 10 minutes</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: The unit rate was divided in the wrong order. The question asks for smoothies, so find smoothies per minute: 18 smoothies ÷ 6 minutes = 3 smoothies per minute. Then 3 × 10 = 30 smoothies in 10 minutes.</p></div></li></ol>
   </section>
-</body>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.3</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Ratio and Rate Problem Solving</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find Mia's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A store sells 6 oranges for $4.50. What is the cost of 10 oranges?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the unit rate</span><span class="ws-step-w">$4.50 ÷ 6 = $0.75 per orange</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Multiply for 10 oranges</span><span class="ws-step-w">$0.75 + 10 = $10.75</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">10 oranges cost $10.75</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: $0.75 × 10 = $7.50 (multiply the unit rate, don't add)</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem"></p><p class="ws-keynote">Sample: Factory A: 240 ÷ 8 = 30 widgets/hour. Factory B: 200 ÷ 5 = 40 widgets/hour. Factory B is faster. Together: (30 + 40) × 10 = 70 × 10 = 700 widgets in 10 hours. Look for: 30, 40, Factory B, faster, 700, together.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>1</td><td>$8</td><td>$4</td><td>Service B</td></tr><tr><td>2</td><td></td><td></td><td></td></tr><tr><td>5</td><td></td><td></td><td></td></tr><tr><td>10</td><td></td><td></td><td></td></tr></tbody></table></div></li></ol>
+  </section>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  </main>
+  </body>
 </html>

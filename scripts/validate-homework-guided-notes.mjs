@@ -31,6 +31,8 @@ const REQUIRED_MARKERS = [
   "normalizeMath",
   'class="homework-tab-bar"',
   'data-tab-panel="play"',
+  'data-tab-panel="workbench"',
+  "Math Workbench",
   "external-resource-list",
   "help_modal_overlay",
   "switchHomeworkTab",
@@ -68,16 +70,21 @@ for (const id of lessonIds) {
     }
   }
 
-  const quickChecks = (html.match(/Quick Check \d/g) || []).length;
-  if (quickChecks > 2) {
+  // Core Quick Check is split into a Warm-up tier and a Level-up (challenge) tier.
+  // Count both as the core problem set (Bonus/Más are excluded by design).
+  const quickChecks = (html.match(/(?:Warm-up \/ Calentamiento|Level up \/ Reto) \d/g) || [])
+    .length;
+  if (quickChecks > 6) {
     issues.push({ id, level: "HIGH", msg: `Too many quick check problems: ${quickChecks}` });
   }
   if (quickChecks === 0) {
     issues.push({ id, level: "HIGH", msg: "No quick check problems" });
   }
 
+  // Student practice tools (AI Learning Lab + Math Workbench) are allowed links.
+  const htmlNoAiHub = html.replace(/\/curriculum\/(ai-hub|math-workbench)\/[^"'\s]*/gi, "");
   if (
-    /\/curriculum\//i.test(html) ||
+    /\/curriculum\//i.test(htmlNoAiHub) ||
     /Curriculum Hub/i.test(html) ||
     /Back to curriculum/i.test(html)
   ) {

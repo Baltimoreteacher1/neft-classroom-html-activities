@@ -1,1481 +1,1045 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <title>Mars Colony Explorer | 6.EE.C.9</title>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
-    <script>
-      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
-      // (document.write blocks parsing so the mirror is ready before the game script runs).
-      if (typeof Phaser === "undefined") {
-        document.write(
-          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
-        );
-      }
-      // If both CDNs are unreachable, show a clear message instead of a blank page.
-      window.addEventListener("load", function () {
-        if (typeof Phaser === "undefined") {
-          document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
-        }
-      });
-    </script>
+    <meta
+      name="description"
+      content="Mars Rover: a Grade 6 math-as-mechanic game for 6.EE.C.9 — evaluate the rule y = m·x + b for a given x, then set the rover's drive distance to that value to clear each crater."
+    />
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-      html,
+      :root {
+        --rust: #c1502e;
+        --rust-bright: #e0683f;
+        --gold: #e6a532;
+        --ink: #1a0c06;
+        --panel: #2a1810;
+        --line: #50301f;
+        --txt: #f4e6d8;
+        --muted: #c39b80;
+        --sky: #160a05;
+        --good: #66d39a;
+        --bad: #f0976b;
+      }
       body {
-        width: 100%;
-        height: 100%;
+        background: var(--panel);
+        min-height: 100vh;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--txt);
+        overflow-x: hidden;
+      }
+      #ff-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
         overflow: hidden;
-        background: #000;
+        pointer-events: none;
+        background: radial-gradient(
+          130% 90% at 50% 0%,
+          #3a1d10 0%,
+          #2a1810 55%,
+          #160a05 100%
+        );
       }
-      #game-container {
-        width: 100%;
-        height: 100%;
+      .ff-mote {
+        position: absolute;
+        border-radius: 50%;
+        background: #f0b27a;
+        opacity: 0.4;
+        animation: ffTwinkle var(--tw, 3s) ease-in-out infinite;
       }
-      canvas {
+      @keyframes ffTwinkle {
+        0%,
+        100% {
+          opacity: 0.12;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 0.55;
+          transform: scale(1.2);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .ff-mote {
+          animation: none !important;
+          opacity: 0.3 !important;
+        }
+        * {
+          scroll-behavior: auto !important;
+        }
+        .rover-anim {
+          transition: none !important;
+        }
+      }
+      #ff-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      #wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 18px 16px 48px;
+        min-height: 100vh;
+      }
+      .screen {
+        display: none;
+      }
+      .screen.on {
         display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      h1 {
+        font-size: clamp(1.6rem, 4vw, 2.3rem);
+        color: #fff;
+        letter-spacing: 0.5px;
+      }
+      .sub {
+        color: var(--muted);
+        margin-top: 4px;
+        font-size: 0.95rem;
+      }
+      .card {
+        background: rgba(42, 24, 16, 0.85);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px;
+        margin: 16px 0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      }
+      .btn {
+        font:
+          600 1rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 13px 22px;
+        color: var(--ink);
+        background: var(--rust);
+        color: #fff;
+        transition:
+          transform 0.12s,
+          background 0.12s;
+      }
+      .btn:hover {
+        background: var(--rust-bright);
+        transform: translateY(-1px);
+      }
+      .btn:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 3px;
+      }
+      .btn.ghost {
+        background: #3a241a;
+        color: #d6b79c;
+      }
+      .btn.ghost:hover {
+        background: #4a2f20;
+      }
+      .btn.big {
+        padding: 18px 26px;
+        font-size: 1.1rem;
+      }
+      .vocab {
+        display: grid;
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .vrow {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        background: #20120a;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .vterm {
+        color: var(--gold);
+        font-weight: 700;
+        min-width: 150px;
+      }
+      .vdef {
+        color: var(--txt);
+      }
+      .levels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .levels {
+          grid-template-columns: 1fr;
+        }
+      }
+      .level-pick {
+        text-align: left;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+        padding: 18px;
+        background: #20120a;
+        border: 1px solid var(--line);
+        color: var(--txt);
+        border-radius: 14px;
+        cursor: pointer;
+      }
+      .level-pick:hover {
+        border-color: var(--rust-bright);
+        background: #2c1a10;
+      }
+      .level-pick:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      .level-pick b {
+        color: #fff;
+        font-size: 1.15rem;
+      }
+      .level-pick .tag {
+        color: var(--rust-bright);
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .level-pick .desc {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .hud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .hud .pill {
+        background: #20120a;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-weight: 700;
+      }
+      .hud .pill small {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .lives {
+        color: var(--bad);
+        letter-spacing: 2px;
+        font-size: 1.1rem;
+      }
+      .target {
+        text-align: center;
+        margin: 6px 0 14px;
+      }
+      .target .nums {
+        font-size: clamp(1.3rem, 4vw, 1.9rem);
+        font-weight: 800;
+        color: #fff;
+      }
+      .target .nums code {
+        color: var(--gold);
+        background: #20120a;
+        padding: 2px 8px;
+        border-radius: 8px;
+      }
+      .prompt {
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      /* terrain track */
+      .track {
+        position: relative;
+        height: 132px;
+        margin: 12px 0 8px;
+        border-radius: 14px;
+        background: linear-gradient(180deg, #2c160c 0%, #45230f 100%);
+        border: 1px solid var(--line);
+        overflow: hidden;
+      }
+      .ground {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 40px;
+        background: repeating-linear-gradient(
+          90deg,
+          #5a3018 0,
+          #5a3018 8px,
+          #4a2613 8px,
+          #4a2613 16px
+        );
+        border-top: 2px solid #7a4422;
+      }
+      .crater {
+        position: absolute;
+        bottom: 40px;
+        width: 8%;
+        height: 28px;
+        background: radial-gradient(
+          ellipse at 50% 100%,
+          #120804 40%,
+          transparent 70%
+        );
+        border-top: 3px dashed var(--gold);
+        text-align: center;
+        font-size: 0.7rem;
+        color: var(--gold);
+        font-weight: 700;
+      }
+      .rover-anim {
+        position: absolute;
+        bottom: 42px;
+        font-size: 2rem;
+        transition: left 0.7s cubic-bezier(0.45, 0.05, 0.3, 1);
+        will-change: left;
+        z-index: 2;
+      }
+      .ruler {
+        position: absolute;
+        left: 6%;
+        right: 6%;
+        bottom: 36px;
+        height: 2px;
+        background: rgba(230, 165, 50, 0.35);
+      }
+      .ruler .tick {
+        position: absolute;
+        top: -6px;
+        width: 1px;
+        height: 8px;
+        background: rgba(230, 165, 50, 0.5);
+        font-size: 0;
+      }
+      .ruler .tick span {
+        position: absolute;
+        top: 8px;
+        left: -4px;
+        font-size: 0.6rem;
+        color: var(--muted);
+      }
+      /* stepper */
+      .stepper {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        align-items: center;
+        margin: 14px 0 4px;
+      }
+      .stepper .sbtn {
+        font:
+          800 1.6rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        width: 58px;
+        height: 58px;
+        border-radius: 14px;
+        border: none;
+        cursor: pointer;
+        color: #fff;
+        background: #3a241a;
+        box-shadow: 0 4px 0 #1f130b;
+      }
+      .stepper .sbtn:hover {
+        background: #4a2f20;
+      }
+      .stepper .sbtn:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      .stepper .dial {
+        min-width: 130px;
+        text-align: center;
+        background: #20120a;
+        border: 2px solid var(--line);
+        border-radius: 14px;
+        padding: 10px 14px;
+      }
+      .stepper .dial b {
+        display: block;
+        font-size: 2.2rem;
+        color: var(--gold);
+        line-height: 1;
+      }
+      .stepper .dial small {
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+      .drive-row {
+        display: flex;
+        justify-content: center;
+        margin-top: 12px;
+      }
+      .feedback {
+        min-height: 24px;
+        text-align: center;
+        margin: 12px 0 2px;
+        font-weight: 600;
+      }
+      .feedback.bad {
+        color: var(--bad);
+      }
+      .feedback.good {
+        color: var(--good);
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-align: center;
+        margin-top: 6px;
+      }
+      .scaffold {
+        text-align: center;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      .scaffold code {
+        color: var(--gold);
+        background: #20120a;
+        padding: 2px 6px;
+        border-radius: 6px;
+      }
+      .result-stars {
+        font-size: 2rem;
+        color: var(--gold);
+        letter-spacing: 6px;
+        text-align: center;
+        margin: 10px 0;
+      }
+      .result-stat {
+        display: flex;
+        justify-content: space-between;
+        max-width: 320px;
+        margin: 6px auto;
+        color: var(--muted);
+      }
+      .result-stat b {
+        color: var(--txt);
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
-  </head>
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+    <!-- Games-2D metadata source of truth (must load before the game script) -->
+    <script src="/assets/games2d-data.js"></script>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <link rel="stylesheet" href="/assets/game-access.css">
+  <!-- gacc-injected:end -->
+</head>
   <body>
-    <div id="game-container"></div>
+    <div id="ff-bg" aria-hidden="true"></div>
+    <div id="ff-sr" role="status" aria-live="polite"></div>
+
+    <main id="wrap">
+      <!-- VOCAB GATE -->
+      <section id="screen-vocab" class="screen on" aria-labelledby="vh">
+        <h1 id="vh">🚀 Mars Rover</h1>
+        <p class="sub">
+          Drive the rover by evaluating a rule · Equations &amp; tables ·
+          6.EE.C.9
+        </p>
+        <div class="card">
+          <h2 style="color: #fff; font-size: 1.2rem">Words to know first</h2>
+          <div class="vocab" id="vocab-list"></div>
+          <button class="btn big" id="vocab-go">I'm ready →</button>
+        </div>
+      </section>
+
+      <!-- LEVEL SELECT -->
+      <section id="screen-level" class="screen" aria-labelledby="lh">
+        <h1 id="lh">Choose your level</h1>
+        <p class="sub">You can change this any time by playing again.</p>
+        <div class="card">
+          <div class="levels" id="level-list"></div>
+        </div>
+      </section>
+
+      <!-- PLAY -->
+      <section id="screen-play" class="screen" aria-labelledby="ph">
+        <h1 id="ph" style="position: absolute; left: -9999px">
+          Mars Rover play
+        </h1>
+        <div class="hud">
+          <span class="pill"
+            ><small>Crater</small> <span id="hud-round">1</span>/<span
+              id="hud-total"
+              >5</span
+            ></span
+          >
+          <span class="pill"
+            ><small>Score</small> <span id="hud-score">0</span></span
+          >
+          <span class="pill"
+            ><small>Lives</small>
+            <span class="lives" id="hud-lives">●●●●●</span></span
+          >
+        </div>
+        <div class="card">
+          <div class="target">
+            <div class="nums">
+              Rule: <code id="t-rule">y = 2·x + 1</code> &nbsp; with &nbsp;
+              <code id="t-x">x = 3</code>
+            </div>
+            <div class="prompt" id="t-prompt">
+              Work out <b>y</b>, set the dial to that drive distance, then press
+              Drive to clear the crater.
+            </div>
+          </div>
+
+          <div class="track" aria-hidden="true">
+            <div class="ruler" id="ruler"></div>
+            <div class="crater" id="crater">crater</div>
+            <div class="ground"></div>
+            <div class="rover-anim" id="rover">🛺</div>
+          </div>
+
+          <div class="stepper">
+            <button class="sbtn" id="dec" aria-label="Decrease drive distance">
+              −
+            </button>
+            <div class="dial">
+              <b id="dial-val">0</b>
+              <small>drive distance</small>
+            </div>
+            <button class="sbtn" id="inc" aria-label="Increase drive distance">
+              +
+            </button>
+          </div>
+          <div class="drive-row">
+            <button class="btn big" id="drive">🚀 Drive</button>
+          </div>
+
+          <div
+            class="feedback"
+            id="feedback"
+            role="status"
+            aria-live="assertive"
+          ></div>
+          <p class="hint" id="hint"></p>
+          <div class="scaffold" id="scaffold"></div>
+        </div>
+      </section>
+
+      <!-- RESULT -->
+      <section id="screen-result" class="screen" aria-labelledby="rh">
+        <h1 id="rh">Mission report</h1>
+        <div class="card">
+          <div class="result-stars" id="r-stars">★★★</div>
+          <div class="result-stat"><span>Score</span><b id="r-score">0</b></div>
+          <div class="result-stat">
+            <span>Craters cleared</span><b id="r-correct">0</b>
+          </div>
+          <div class="result-stat">
+            <span>Drives attempted</span><b id="r-rounds">0</b>
+          </div>
+          <div class="result-stat" id="r-high-row" style="display: none">
+            <span>★ New high score!</span><b id="r-high">0</b>
+          </div>
+          <div class="row">
+            <button class="btn big" id="r-again">Play again</button>
+            <a class="btn ghost big" href="/math/games/">All games</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
     <script>
-      (() => {
-        // ════════════════════════════════════════════════════════════════
-        //  MARS COLONY EXPLORER — 6.EE.C.9 (y = kx relationships & tables)
-        //  THE MATH IS THE MECHANIC — "Drive the Relationship":
-        //  The rover's MOTION obeys the equation. There is NO A/B/C/D gate.
-        //
-        //  • FUEL-CELL PATH rounds: numbered fuel cells sit at grid points
-        //    (x, y). The rover may only drive THROUGH cells where y = k·x.
-        //    Driving the correct path IS identifying the proportional
-        //    relationship. A wrong cell vents oxygen (visible drain).
-        //
-        //  • INTERCEPT rounds (Level 2): a supply pod drifts across a sector.
-        //    The player SETS the rover's speed rule d = k·t by choosing k.
-        //    Wrong k under/overshoots visibly; correct k meets the pod.
-        //
-        //  Level 1 (Support): small k, table scaffold, fewer cells, 5 O2 buffer.
-        //  Level 2 (Challenge): larger k, intercept puzzles, less scaffold.
-        // ════════════════════════════════════════════════════════════════
-
-        // ─── SOUND ENGINE ───
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        let actx = null;
-        function ensureAudio() {
-          if (!actx && AudioCtx) actx = new AudioCtx();
-          if (actx && actx.state === "suspended") actx.resume();
+      // ── Decorative drifting motes (reduced-motion safe) ──
+      (function () {
+        var host = document.getElementById("ff-bg");
+        if (!host) return;
+        var reduce =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var n = reduce ? 10 : 26;
+        for (var i = 0; i < n; i++) {
+          var d = document.createElement("div");
+          d.className = "ff-mote";
+          var sz = 2 + Math.random() * 4;
+          d.style.width = d.style.height = sz.toFixed(1) + "px";
+          d.style.left = (Math.random() * 100).toFixed(2) + "%";
+          d.style.top = (Math.random() * 100).toFixed(2) + "%";
+          d.style.setProperty("--tw", (2 + Math.random() * 4).toFixed(2) + "s");
+          d.style.animationDelay = "-" + (Math.random() * 4).toFixed(2) + "s";
+          host.appendChild(d);
         }
-        function beep(freq, dur, type = "sine", vol = 0.12) {
-          if (!actx) return;
-          try {
-            const o = actx.createOscillator(),
-              g = actx.createGain();
-            o.connect(g);
-            g.connect(actx.destination);
-            o.frequency.value = freq;
-            o.type = type;
-            g.gain.setValueAtTime(vol, actx.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
-            o.start();
-            o.stop(actx.currentTime + dur);
-          } catch (e) {}
-        }
-        const sfxDrive = () =>
-          beep(300 + Math.random() * 40, 0.05, "square", 0.05);
-        const sfxGood = () => {
-          beep(620, 0.08);
-          setTimeout(() => beep(880, 0.1), 70);
-        };
-        const sfxBad = () => beep(150, 0.24, "sawtooth", 0.09);
-        const sfxClear = () =>
-          [523, 659, 784, 1047].forEach((f, i) =>
-            setTimeout(() => beep(f, 0.13), i * 90),
-          );
-        const sfxClick = () => beep(440, 0.05, "sine", 0.08);
-        const sfxLaunch = () => {
-          beep(440, 0.12, "triangle", 0.1);
-          setTimeout(() => beep(660, 0.18, "triangle", 0.1), 120);
-        };
-
-        // ─── PALETTE (colourblind-safe: colour is NEVER the only cue; every
-        //     cell shows its number, the path shows numeric coords, correct/
-        //     wrong states also use ✓ / ✗ glyphs + shape) ───
-        const W = 800,
-          H = 600;
-        const TILE = 64;
-        const C = {
-          bg: 0x1a0f0a,
-          sky: 0x06111d,
-          panel: 0x0a1a2e,
-          stroke: 0x336699,
-          good: 0x00e08a, // teal-green
-          goodCss: "#00e08a",
-          bad: 0xff5a5a, // warm red
-          badCss: "#ff5a5a",
-          rule: 0xffcc33, // amber
-          ruleCss: "#ffcc33",
-          dim: 0x9bb0c9,
-          dimCss: "#9bb0c9",
-          rover: 0xff7744,
-        };
-
-        // ─── MATH HELPERS ───
-        const rnd = (n) => Math.floor(Math.random() * n);
-        const pick = (arr) => arr[rnd(arr.length)];
-        function shuffle(arr) {
-          const a = [...arr];
-          for (let i = a.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [a[i], a[j]] = [a[j], a[i]];
-          }
-          return a;
-        }
-        // THE satisfies-equation test. A grid point (gx, gy) is "on the path"
-        // for rule y = k·x exactly when gy === k·gx. (Integers only by design.)
-        const onPath = (gx, gy, k) => gy === k * gx;
-
-        // ─── ROUND GENERATOR (procedural + solvability-verified) ───
-        // The playfield is a coordinate grid. x runs across columns, y runs UP
-        // the rows (origin bottom-left). A round scatters fuel cells; the rover
-        // must visit, in order, every cell where y = k·x for x = 1,2,3,...
-        const GRID_COLS = 9; // x from 0..8
-        const GRID_ROWS = 8; // y from 0..7 (screen rows flipped)
-
-        // Build the list of correct path coordinates for rule y=kx that fit grid.
-        function pathCoords(k) {
-          const pts = [];
-          for (let x = 1; x < GRID_COLS; x++) {
-            const y = k * x;
-            if (y >= GRID_ROWS) break;
-            pts.push({ x, y });
-          }
-          return pts;
-        }
-
-        function makeFuelRound(tier, themeIx) {
-          // Level 1: small k so the path has >=3 cells; Level 2: larger k.
-          const kPool = tier === 1 ? [1, 2, 3] : [2, 3, 4, 5];
-          let k,
-            path,
-            guard = 0;
-          do {
-            k = pick(kPool);
-            path = pathCoords(k);
-            guard++;
-          } while (path.length < (tier === 1 ? 3 : 2) && guard < 30);
-
-          // Decoy cells: grid points NOT on the path. We pick a controlled set so
-          // wrong choices are pedagogically tempting (off-by-one in y, or y=kx±1,
-          // or a DIFFERENT but plausible rule). Never place a decoy that is also
-          // on the true path.
-          const onSet = new Set(path.map((p) => p.x + "," + p.y));
-          const decoyPool = [];
-          for (let x = 1; x < GRID_COLS; x++) {
-            for (let y = 1; y < GRID_ROWS; y++) {
-              const key = x + "," + y;
-              if (onSet.has(key)) continue;
-              // weight: keep close-call decoys (near the line) preferentially
-              const near = Math.abs(y - k * x) <= Math.max(2, k);
-              if (near) decoyPool.push({ x, y, near: true });
-              else if (Math.random() < 0.25)
-                decoyPool.push({ x, y, near: false });
-            }
-          }
-          const nDecoys = tier === 1 ? 4 : 7;
-          const decoys = shuffle(decoyPool).slice(0, nDecoys);
-
-          // Table scaffold rows (x -> y) shown on Level 1 always, Level 2 partial.
-          const tableRows = path
-            .slice(0, tier === 1 ? path.length : Math.min(2, path.length))
-            .map((p) => ({ x: p.x, y: p.y }));
-
-          return {
-            mode: "fuel",
-            k,
-            path, // ordered correct cells
-            decoys,
-            tableRows,
-            theme: THEMES[themeIx % THEMES.length],
-          };
-        }
-
-        // Intercept round (Level 2): a supply pod travels the grid; the player
-        // sets k for d = k·t so the rover reaches the pod's column at the right
-        // time. Correct k is computed from the pod's constant motion so a valid
-        // answer ALWAYS exists.
-        function makeInterceptRound(themeIx) {
-          // Pod moves right at podSpeed columns per "tick"; the rover, launched
-          // from x=0, must arrive at the pod's row at matching t. The relationship
-          // the student must satisfy: distance d = k·t where k is the rover speed
-          // (cells per tick) needed to meet the pod. We choose a target meet at
-          // t = T ticks, column = meetX; correct k = meetX / T (kept integer).
-          const T = 2 + rnd(3); // 2..4 ticks
-          const kAns = 2 + rnd(4); // 2..5  (the speed the student must pick)
-          const meetX = kAns * T; // guaranteed integer column
-          // Offer a k-dial range that contains the answer and plausible misses.
-          const kOptions = [];
-          for (let kk = Math.max(1, kAns - 3); kk <= kAns + 3; kk++)
-            kOptions.push(kk);
-          return {
-            mode: "intercept",
-            k: kAns,
-            T,
-            meetX,
-            kOptions,
-            theme: THEMES[themeIx % THEMES.length],
-          };
-        }
-
-        // Sector themes — flavour + the proportional context (rate words).
-        const THEMES = [
-          {
-            name: "Logistics Bay",
-            unit: "crates",
-            per: "minute",
-            icon: "\u{1F4E6}",
-          },
-          {
-            name: "Water Works",
-            unit: "liters",
-            per: "day",
-            icon: "\u{1F4A7}",
-          },
-          {
-            name: "Energy Core",
-            unit: "cells",
-            per: "cycle",
-            icon: "\u{26A1}",
-          },
-          { name: "Ice Mine", unit: "blocks", per: "hour", icon: "\u{1F9CA}" },
-          {
-            name: "Comms Array",
-            unit: "signals",
-            per: "scan",
-            icon: "\u{1F4E1}",
-          },
-        ];
-
-        // ════════════════════════════════════════════════════════════════
-        //  BOOT — generate textures
-        // ════════════════════════════════════════════════════════════════
-        class BootScene extends Phaser.Scene {
-          constructor() {
-            super("Boot");
-          }
-          create() {
-            const g = this.make.graphics({ add: false });
-            // Rover
-            g.fillStyle(C.rover, 1);
-            g.fillRoundedRect(3, 6, 26, 20, 4);
-            g.fillStyle(0xffd0a8, 1);
-            g.fillRect(10, 10, 12, 8);
-            g.fillStyle(0x552200, 1);
-            g.fillRect(2, 4, 28, 3);
-            g.fillRect(2, 25, 28, 3);
-            g.generateTexture("rover", 32, 32);
-            g.clear();
-            // Supply pod
-            g.fillStyle(0x9b6bff, 1);
-            g.fillRoundedRect(2, 2, 28, 28, 6);
-            g.fillStyle(0xd9c4ff, 1);
-            g.fillRect(8, 8, 16, 6);
-            g.lineStyle(2, 0xffffff, 0.7);
-            g.strokeRoundedRect(2, 2, 28, 28, 6);
-            g.generateTexture("pod", 32, 32);
-            g.clear();
-            // Spark
-            g.fillStyle(0xffe08a, 1);
-            g.fillCircle(3, 3, 3);
-            g.generateTexture("spark", 6, 6);
-            g.clear();
-            g.destroy();
-            this.scene.start("Title");
-          }
-        }
-
-        // ════════════════════════════════════════════════════════════════
-        //  TITLE — real Level 1 / Level 2 choice
-        // ════════════════════════════════════════════════════════════════
-        class TitleScene extends Phaser.Scene {
-          constructor() {
-            super("Title");
-          }
-          create() {
-            ensureAudio();
-            this.cameras.main.setBackgroundColor(C.sky);
-            for (let i = 0; i < 50; i++)
-              this.add.circle(
-                Phaser.Math.Between(0, W),
-                Phaser.Math.Between(0, H),
-                Phaser.Math.FloatBetween(0.5, 2),
-                0xffffff,
-                Phaser.Math.FloatBetween(0.1, 0.4),
-              );
-
-            this.add
-              .text(W / 2, 64, "MARS COLONY EXPLORER", {
-                fontSize: "40px",
-                fontFamily: "monospace",
-                fontStyle: "bold",
-                color: "#ff7744",
-                stroke: "#441100",
-                strokeThickness: 4,
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 104, "Drive the rover along the line y = k·x", {
-                fontSize: "16px",
-                fontFamily: "Arial",
-                color: "#ffcc88",
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(
-                W / 2,
-                132,
-                "6.EE.C.9 — Variables, tables & the equation y = kx",
-                { fontSize: "12px", fontFamily: "Arial", color: "#886644" },
-              )
-              .setOrigin(0.5);
-
-            // Mini demo: 3 cells, only (1,k),(2,2k)... lie on the rule.
-            this.add
-              .text(
-                W / 2,
-                176,
-                "Only drive through fuel cells where y = k·x.\nA wrong cell vents your oxygen. The PATH is the proof.",
-                {
-                  fontSize: "13px",
-                  fontFamily: "Arial",
-                  color: "#9bb0c9",
-                  align: "center",
-                  lineSpacing: 5,
-                },
-              )
-              .setOrigin(0.5);
-
-            const rover = this.add.image(W / 2, 250, "rover").setScale(3);
-            this.tweens.add({
-              targets: rover,
-              x: { from: W / 2 - 60, to: W / 2 + 60 },
-              duration: 1600,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut",
-            });
-
-            const tiers = [
-              {
-                t: 1,
-                label: "LEVEL 1",
-                sub: "Support",
-                desc: "Small k (1–3) · table shown · fewer cells · +O2 buffer",
-                col: C.good,
-              },
-              {
-                t: 2,
-                label: "LEVEL 2",
-                sub: "Challenge",
-                desc: "Bigger k (2–5) · partial table · intercept the supply pod",
-                col: C.rule,
-              },
-            ];
-            tiers.forEach((d, i) => {
-              const x = W / 2 + (i === 0 ? -170 : 170),
-                y = 380;
-              const card = this.add
-                .rectangle(x, y, 300, 132, C.panel, 0.95)
-                .setStrokeStyle(3, C.stroke)
-                .setInteractive({ useHandCursor: true });
-              this.add
-                .text(x, y - 40, d.label, {
-                  fontSize: "26px",
-                  fontFamily: "monospace",
-                  fontStyle: "bold",
-                  color: "#fff",
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y - 12, d.sub, {
-                  fontSize: "15px",
-                  fontFamily: "Arial",
-                  color: Phaser.Display.Color.IntegerToColor(d.col).rgba,
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y + 26, d.desc, {
-                  fontSize: "11.5px",
-                  fontFamily: "Arial",
-                  color: "#c9d6e8",
-                  align: "center",
-                  wordWrap: { width: 272 },
-                })
-                .setOrigin(0.5);
-              card.on("pointerover", () => {
-                card.setStrokeStyle(3, d.col);
-                card.setScale(1.04);
-              });
-              card.on("pointerout", () => {
-                card.setStrokeStyle(3, C.stroke);
-                card.setScale(1);
-              });
-              card.on("pointerdown", () => {
-                ensureAudio();
-                sfxLaunch();
-                this.scene.start("Explore", { tier: d.t });
-              });
-            });
-
-            this.add
-              .text(
-                W / 2,
-                500,
-                "MOVE: Arrow keys / WASD  ·  drive onto a cell to claim it",
-                {
-                  fontSize: "12px",
-                  fontFamily: "monospace",
-                  color: "#aaccee",
-                },
-              )
-              .setOrigin(0.5);
-            this.add
-              .text(
-                W / 2,
-                524,
-                "TOUCH: drag anywhere to steer  ·  Intercept: tap −/+ to set k, then LAUNCH",
-                {
-                  fontSize: "12px",
-                  fontFamily: "monospace",
-                  color: "#aaccee",
-                },
-              )
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 556, "Press H for a rule hint anytime", {
-                fontSize: "11px",
-                fontFamily: "Arial",
-                color: "#776655",
-              })
-              .setOrigin(0.5);
-          }
-        }
-
-        // ════════════════════════════════════════════════════════════════
-        //  EXPLORE — the core "Drive the Relationship" scene
-        // ════════════════════════════════════════════════════════════════
-        class ExploreScene extends Phaser.Scene {
-          constructor() {
-            super("Explore");
-          }
-          init(data) {
-            this.tier = data.tier || 1;
-            this.score = 0;
-            this.oxygen = 100;
-            this.streak = 0;
-            this.bestStreak = 0;
-            this.correct = 0; // cells/intercepts done right
-            this.attempted = 0;
-            this.roundIx = 0;
-            this.sectorsCleared = 0;
-            // Level 1: 4 fuel rounds. Level 2: 3 fuel + 2 intercept = 5 rounds.
-            this.totalRounds = this.tier === 1 ? 4 : 5;
-          }
-
-          create() {
-            this.cameras.main.setBackgroundColor(C.bg);
-
-            // ── Grid geometry. Playfield occupies the centre; HUD on top. ──
-            this.gridX0 = 150; // left pixel of column 0
-            this.gridY0 = 540; // bottom pixel of row 0 (y grows UP from here)
-            this.cell = 56; // pixel spacing between grid points
-
-            this.gridGfx = this.add.graphics().setDepth(1);
-            this.cellLayer = this.add.container().setDepth(3);
-            this.trailGfx = this.add.graphics().setDepth(2);
-
-            this.rover = this.add
-              .image(0, 0, "rover")
-              .setScale(0.95)
-              .setDepth(8);
-            this.pod = this.add
-              .image(0, 0, "pod")
-              .setVisible(false)
-              .setDepth(7);
-
-            this.sparks = this.add.particles(0, 0, "spark", {
-              speed: { min: 50, max: 160 },
-              angle: { min: 0, max: 360 },
-              lifespan: 420,
-              scale: { start: 0.9, end: 0 },
-              alpha: { start: 1, end: 0 },
-              blendMode: "ADD",
-              emitting: false,
-            });
-            this.sparks.setDepth(9);
-
-            this.buildHUD();
-            this.buildPanels();
-            this.bindInput();
-
-            this.loadRound();
-          }
-
-          // ── pixel position of grid point (gx, gy) ──
-          px(gx) {
-            return this.gridX0 + gx * this.cell;
-          }
-          py(gy) {
-            return this.gridY0 - gy * this.cell;
-          }
-
-          buildHUD() {
-            this.add.rectangle(W / 2, 18, W, 36, 0x000000, 0.72).setDepth(50);
-            this.hScore = this.add
-              .text(10, 5, "SCORE 0", {
-                fontSize: "13px",
-                fontFamily: "monospace",
-                fontStyle: "bold",
-                color: "#ffcc33",
-              })
-              .setDepth(51);
-            this.hO2 = this.add
-              .text(W / 2, 5, "O2 100%", {
-                fontSize: "13px",
-                fontFamily: "monospace",
-                color: "#00e08a",
-              })
-              .setOrigin(0.5, 0)
-              .setDepth(51);
-            this.hRound = this.add
-              .text(W - 10, 5, "", {
-                fontSize: "12px",
-                fontFamily: "monospace",
-                color: "#70ddff",
-              })
-              .setOrigin(1, 0)
-              .setDepth(51);
-            this.o2BarBg = this.add
-              .rectangle(W / 2, 32, W - 24, 4, 0x333333, 0.6)
-              .setDepth(51);
-            this.o2Fill = this.add
-              .rectangle(12, 32, W - 24, 4, C.good, 0.85)
-              .setOrigin(0, 0.5)
-              .setDepth(52);
-          }
-
-          buildPanels() {
-            // Left rule + table card
-            this.add
-              .rectangle(70, 300, 132, 360, C.panel, 0.92)
-              .setStrokeStyle(2, C.stroke)
-              .setDepth(40);
-            this.ruleTitle = this.add
-              .text(70, 140, "", {
-                fontSize: "13px",
-                fontFamily: "monospace",
-                color: "#70ddff",
-                align: "center",
-                wordWrap: { width: 120 },
-              })
-              .setOrigin(0.5)
-              .setDepth(41);
-            this.ruleBig = this.add
-              .text(70, 190, "", {
-                fontSize: "30px",
-                fontFamily: "monospace",
-                fontStyle: "bold",
-                color: "#ffcc33",
-              })
-              .setOrigin(0.5)
-              .setDepth(41);
-            this.tableText = this.add
-              .text(70, 320, "", {
-                fontSize: "16px",
-                fontFamily: "monospace",
-                color: "#dfeaf7",
-                align: "center",
-                lineSpacing: 5,
-              })
-              .setOrigin(0.5)
-              .setDepth(41);
-
-            // Task banner (top of grid)
-            this.taskText = this.add
-              .text(470, 60, "", {
-                fontSize: "15px",
-                fontFamily: "Arial",
-                fontStyle: "bold",
-                color: "#ffe9b8",
-                align: "center",
-                wordWrap: { width: 560 },
-              })
-              .setOrigin(0.5)
-              .setDepth(41);
-
-            // Feedback (diagnostic, never gives the cell away)
-            this.feedback = this.add
-              .text(470, 560, "", {
-                fontSize: "14px",
-                fontFamily: "Arial",
-                fontStyle: "bold",
-                color: "#fff",
-                align: "center",
-                wordWrap: { width: 580 },
-              })
-              .setOrigin(0.5)
-              .setDepth(60);
-
-            // Intercept k-dial (hidden unless intercept round)
-            this.dial = this.add
-              .container(470, 500)
-              .setDepth(45)
-              .setVisible(false);
-            const dbg = this.add
-              .rectangle(0, 0, 360, 60, C.panel, 0.95)
-              .setStrokeStyle(2, C.stroke);
-            this.kMinus = this.add
-              .rectangle(-150, 0, 48, 44, 0x442d6a)
-              .setStrokeStyle(2, 0x6a3a52)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(-150, 0, "−", {
-                fontSize: "26px",
-                fontFamily: "Arial Black",
-                color: "#fff",
-              })
-              .setOrigin(0.5)
-              .setDepth(46);
-            this.kVal = this.add
-              .text(-60, 0, "", {
-                fontSize: "18px",
-                fontFamily: "monospace",
-                fontStyle: "bold",
-                color: "#ffcc33",
-              })
-              .setOrigin(0.5);
-            this.kPlus = this.add
-              .rectangle(30, 0, 48, 44, 0x2e6a46)
-              .setStrokeStyle(2, 0x3a8f5a)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(30, 0, "+", {
-                fontSize: "26px",
-                fontFamily: "Arial Black",
-                color: "#fff",
-              })
-              .setOrigin(0.5)
-              .setDepth(46);
-            this.launchBtn = this.add
-              .rectangle(135, 0, 110, 44, 0xf6a83a)
-              .setStrokeStyle(2, 0x000000, 0.25)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(135, 0, "LAUNCH", {
-                fontSize: "16px",
-                fontFamily: "Arial Black",
-                color: "#1a0d05",
-              })
-              .setOrigin(0.5)
-              .setDepth(46);
-            this.dial.add([
-              dbg,
-              this.kMinus,
-              this.kVal,
-              this.kPlus,
-              this.launchBtn,
-            ]);
-            this.kMinus.on("pointerdown", () => this.nudgeK(-1));
-            this.kPlus.on("pointerdown", () => this.nudgeK(1));
-            this.launchBtn.on("pointerdown", () => this.launchIntercept());
-
-            // Hint button (always available)
-            this.hintBtn = this.add
-              .rectangle(720, 60, 110, 36, 0x33405a)
-              .setStrokeStyle(2, C.stroke)
-              .setInteractive({ useHandCursor: true })
-              .setDepth(45);
-            this.add
-              .text(720, 60, "\u{1F4A1} Hint", {
-                fontSize: "14px",
-                fontFamily: "Arial",
-                fontStyle: "bold",
-                color: "#ffe9b8",
-              })
-              .setOrigin(0.5)
-              .setDepth(46);
-            this.hintBtn.on("pointerdown", () => this.showHint());
-          }
-
-          bindInput() {
-            this.cursors = this.input.keyboard.createCursorKeys();
-            this.wasd = this.input.keyboard.addKeys("W,A,S,D");
-            this.input.keyboard.on("keydown-H", () => this.showHint());
-            this.moveCooldown = 0;
-            // touch drag → discrete step toward drag direction
-            this.touchDir = null;
-            this.input.on("pointerdown", (p) => {
-              ensureAudio();
-              if (this.mode === "fuel") this.touchStart = { x: p.x, y: p.y };
-            });
-            this.input.on("pointerup", () => {
-              this.touchStart = null;
-            });
-            this.input.on("pointermove", (p) => {
-              if (!this.touchStart || this.mode !== "fuel" || this.busy) return;
-              const dx = p.x - this.touchStart.x,
-                dy = p.y - this.touchStart.y;
-              if (Math.abs(dx) < 26 && Math.abs(dy) < 26) return;
-              if (Math.abs(dx) > Math.abs(dy))
-                this.stepRover(dx > 0 ? 1 : -1, 0);
-              else this.stepRover(0, dy > 0 ? -1 : 1); // screen-down = grid-down
-              this.touchStart = { x: p.x, y: p.y };
-            });
-          }
-
-          loadRound() {
-            this.busy = false;
-            this.feedback.setText("");
-            const fuelRounds = this.tier === 1 ? this.totalRounds : 3;
-            let round;
-            if (this.tier === 2 && this.roundIx >= fuelRounds) {
-              round = makeInterceptRound(this.roundIx);
-            } else {
-              round = makeFuelRound(this.tier, this.roundIx);
-            }
-            this.round = round;
-            this.mode = round.mode;
-
-            // rule card
-            const th = round.theme;
-            this.ruleTitle.setText(
-              th.icon + " " + th.name + "\n" + th.unit + " per " + th.per,
-            );
-            this.hRound.setText(
-              "Round " + (this.roundIx + 1) + "/" + this.totalRounds,
-            );
-
-            if (this.mode === "fuel") this.setupFuelRound(round);
-            else this.setupInterceptRound(round);
-
-            this.updateHUD();
-          }
-
-          setupFuelRound(r) {
-            this.dial.setVisible(false);
-            this.pod.setVisible(false);
-            // Rule display: on Level 1 we reveal k via a table; Level 2 shows the
-            // FORM y=kx and a partial table, never the full path — the student
-            // must infer k and then DRIVE it.
-            this.ruleBig.setText("y = " + r.k + "·x");
-            const rows = r.tableRows
-              .map((t) => t.x + "    →    " + t.y)
-              .join("\n");
-            this.tableText.setText(
-              " x   →   y\n" +
-                "————\n" +
-                rows +
-                (this.tier === 2 ? "\n ?   →   ?" : ""),
-            );
-            this.taskText.setText(
-              "Drive ONLY through fuel cells where  y = " +
-                r.k +
-                "·x.  Collect them in order (x = 1, 2, 3 …). A wrong cell vents O2.",
-            );
-
-            // place rover at origin (0,0)
-            this.roverG = { x: 0, y: 0 };
-            this.rover.setPosition(this.px(0), this.py(0)).setVisible(true);
-            this.rover.setAngle(0);
-
-            // build cells: correct path + decoys, all rendered identically so
-            // colour/position never reveals the answer until claimed.
-            this.pathIx = 0; // how many correct cells claimed
-            this.cells = [];
-            const all = shuffle([
-              ...r.path.map((p) => ({ ...p, good: true })),
-              ...r.decoys.map((p) => ({ ...p, good: false })),
-            ]);
-            this.cellLayer.removeAll(true);
-            this.trailGfx.clear();
-            this.drawGrid();
-            all.forEach((c) => {
-              const cx = this.px(c.x),
-                cy = this.py(c.y);
-              const box = this.add
-                .rectangle(cx, cy, 40, 40, 0x24405e, 0.92)
-                .setStrokeStyle(2, 0x5577aa);
-              const lbl = this.add
-                .text(cx, cy - 2, "(" + c.x + "," + c.y + ")", {
-                  fontSize: "11px",
-                  fontFamily: "monospace",
-                  fontStyle: "bold",
-                  color: "#dfeaf7",
-                })
-                .setOrigin(0.5);
-              this.cellLayer.add([box, lbl]);
-              c.box = box;
-              c.lbl = lbl;
-              c.claimed = false;
-              this.cells.push(c);
-            });
-          }
-
-          drawGrid() {
-            const g = this.gridGfx;
-            g.clear();
-            g.lineStyle(1, 0x3a5070, 0.45);
-            for (let x = 0; x < GRID_COLS; x++) {
-              g.beginPath();
-              g.moveTo(this.px(x), this.py(0));
-              g.lineTo(this.px(x), this.py(GRID_ROWS - 1));
-              g.strokePath();
-            }
-            for (let y = 0; y < GRID_ROWS; y++) {
-              g.beginPath();
-              g.moveTo(this.px(0), this.py(y));
-              g.lineTo(this.px(GRID_COLS - 1), this.py(y));
-              g.strokePath();
-            }
-            // axes emphasis
-            g.lineStyle(2, 0x6688aa, 0.8);
-            g.beginPath();
-            g.moveTo(this.px(0), this.py(0));
-            g.lineTo(this.px(GRID_COLS - 1), this.py(0));
-            g.strokePath();
-            g.beginPath();
-            g.moveTo(this.px(0), this.py(0));
-            g.lineTo(this.px(0), this.py(GRID_ROWS - 1));
-            g.strokePath();
-          }
-
-          // discrete grid step; the rover only moves one grid unit at a time
-          stepRover(dx, dy) {
-            if (this.busy || this.mode !== "fuel") return;
-            const nx = this.roverG.x + dx,
-              ny = this.roverG.y + dy;
-            if (nx < 0 || nx >= GRID_COLS || ny < 0 || ny >= GRID_ROWS) return;
-            this.roverG = { x: nx, y: ny };
-            sfxDrive();
-            this.tweens.add({
-              targets: this.rover,
-              x: this.px(nx),
-              y: this.py(ny),
-              duration: 120,
-              onComplete: () => this.checkCell(),
-            });
-            // tilt toward motion
-            if (dx !== 0) this.rover.setFlipX(dx < 0);
-          }
-
-          checkCell() {
-            const here = this.cells.find(
-              (c) =>
-                !c.claimed && c.x === this.roverG.x && c.y === this.roverG.y,
-            );
-            if (!here) return;
-            // THE math test: is (x,y) on y = k·x ?
-            const correct = onPath(here.x, here.y, this.round.k);
-            // We also require IN-ORDER collection (next expected x).
-            const expected = this.round.path[this.pathIx];
-            const inOrder =
-              correct &&
-              expected &&
-              here.x === expected.x &&
-              here.y === expected.y;
-
-            this.attempted++;
-            if (correct && inOrder) {
-              here.claimed = true;
-              here.box
-                .setFillStyle(C.good, 0.95)
-                .setStrokeStyle(3, 0xffffff, 0.9);
-              here.lbl.setColor("#06301f");
-              this.add
-                .text(here.box.x, here.box.y - 22, "✓", {
-                  fontSize: "16px",
-                  fontFamily: "Arial Black",
-                  color: "#00e08a",
-                })
-                .setOrigin(0.5)
-                .setDepth(9);
-              this.sparks.emitParticleAt(here.box.x, here.box.y, 8);
-              sfxGood();
-              this.correct++;
-              this.streak++;
-              if (this.streak > this.bestStreak) this.bestStreak = this.streak;
-              this.score += 50 * Math.min(4, 1 + Math.floor(this.streak / 3));
-              this.oxygen = Math.min(100, this.oxygen + 4);
-              // trail to show the satisfied line
-              this.drawTrail(here);
-              this.pathIx++;
-              this.flash(
-                "✓ " +
-                  here.y +
-                  " = " +
-                  this.round.k +
-                  "·" +
-                  here.x +
-                  " — on the line!",
-                C.goodCss,
-              );
-              if (this.pathIx >= this.round.path.length)
-                this.completeFuelRound();
-            } else if (correct && !inOrder) {
-              // right rule, wrong order — gentle nudge, no O2 loss
-              const want = expected ? "x = " + expected.x : "the next cell";
-              this.flash(
-                "Right rule, wrong order. Collect cells left-to-right: next is " +
-                  want +
-                  ".",
-                C.ruleCss,
-              );
-              this.streak = 0;
-            } else {
-              // WRONG cell — vent oxygen, mark it, teach WHY it fails
-              here.claimed = true;
-              here.box
-                .setFillStyle(C.bad, 0.85)
-                .setStrokeStyle(3, 0x000000, 0.4);
-              here.lbl.setColor("#3a0000");
-              this.add
-                .text(here.box.x, here.box.y - 22, "✗", {
-                  fontSize: "16px",
-                  fontFamily: "Arial Black",
-                  color: "#ff5a5a",
-                })
-                .setOrigin(0.5)
-                .setDepth(9);
-              sfxBad();
-              this.cameras.main.shake(180, 0.006);
-              this.streak = 0;
-              const drain = this.tier === 1 ? 8 : 12;
-              this.oxygen = Math.max(0, this.oxygen - drain);
-              this.flash(
-                "✗ " +
-                  this.round.k +
-                  "·" +
-                  here.x +
-                  " = " +
-                  this.round.k * here.x +
-                  ", not " +
-                  here.y +
-                  ". That cell is off the line — back up and try y = k·x.",
-                C.badCss,
-              );
-              this.updateHUD();
-              if (this.oxygen <= 0) {
-                this.busy = true;
-                this.time.delayedCall(900, () => this.endGame(false));
-              }
-            }
-            this.updateHUD();
-          }
-
-          drawTrail() {
-            // redraw the proportional line through all claimed correct cells
-            const g = this.trailGfx;
-            g.clear();
-            g.lineStyle(4, C.good, 0.55);
-            g.beginPath();
-            g.moveTo(this.px(0), this.py(0));
-            for (
-              let i = 0;
-              i < this.pathIx + 1 && i < this.round.path.length;
-              i++
-            ) {
-              const p = this.round.path[i];
-              g.lineTo(this.px(p.x), this.py(p.y));
-            }
-            g.strokePath();
-          }
-
-          completeFuelRound() {
-            this.busy = true;
-            sfxClear();
-            this.sectorsCleared++;
-            this.cameras.main.flash(180, 0, 90, 50);
-            this.flash(
-              "✅ Sector clear! Every cell satisfied y = " +
-                this.round.k +
-                "·x.",
-              C.goodCss,
-            );
-            this.time.delayedCall(1300, () => this.nextRound());
-          }
-
-          // ── INTERCEPT MODE ──
-          setupInterceptRound(r) {
-            this.busy = false;
-            this.cellLayer.removeAll(true);
-            this.trailGfx.clear();
-            this.drawGrid();
-            this.ruleBig.setText("d = k·t");
-            this.tableText.setText(
-              "Pod meets you\nat t = " +
-                r.T +
-                " ticks,\ncolumn x = " +
-                r.meetX +
-                ".\n\nPick k so the\nrover's distance\nd = k·t lands\nthere on time.",
-            );
-            this.taskText.setText(
-              "INTERCEPT: the pod is at column " +
-                r.meetX +
-                " after " +
-                r.T +
-                " ticks. Set the rover's speed k so d = k·t reaches it. Wrong k under/overshoots.",
-            );
-            this.kChoice = r.kOptions[Math.floor(r.kOptions.length / 2)];
-            this.kVal.setText("k = " + this.kChoice);
-            this.dial.setVisible(true);
-
-            // place rover at origin, pod at the meet column on row meet (we use a
-            // visual meet row = min(meetX's height, top); pod drifts in)
-            this.meetRow = Math.min(GRID_ROWS - 1, r.T); // visual anchor
-            this.roverG = { x: 0, y: 0 };
-            this.rover
-              .setPosition(this.px(0), this.py(this.meetRow))
-              .setVisible(true)
-              .setFlipX(false);
-            this.pod
-              .setPosition(this.px(r.meetX), this.py(this.meetRow))
-              .setVisible(true);
-            this.tweens.add({
-              targets: this.pod,
-              y: this.py(this.meetRow) - 6,
-              duration: 700,
-              yoyo: true,
-              repeat: -1,
-            });
-          }
-
-          nudgeK(d) {
-            if (this.mode !== "intercept" || this.busy) return;
-            const opts = this.round.kOptions;
-            let i = opts.indexOf(this.kChoice) + d;
-            i = Math.max(0, Math.min(opts.length - 1, i));
-            this.kChoice = opts[i];
-            this.kVal.setText("k = " + this.kChoice);
-            sfxClick();
-          }
-
-          launchIntercept() {
-            if (this.mode !== "intercept" || this.busy) return;
-            this.busy = true;
-            this.attempted++;
-            const r = this.round;
-            const landX = this.kChoice * r.T; // d = k·t at t = T
-            const correct = landX === r.meetX; // satisfies the relationship
-            const targetPx = this.px(Math.min(GRID_COLS - 1, landX));
-            this.tweens.killTweensOf(this.pod);
-            this.tweens.add({
-              targets: this.rover,
-              x: targetPx,
-              duration: 900,
-              ease: "Sine.easeIn",
-              onComplete: () => {
-                if (correct) {
-                  this.sparks.emitParticleAt(this.pod.x, this.pod.y, 14);
-                  sfxClear();
-                  this.cameras.main.flash(180, 0, 90, 50);
-                  this.correct++;
-                  this.sectorsCleared++;
-                  this.streak++;
-                  if (this.streak > this.bestStreak)
-                    this.bestStreak = this.streak;
-                  this.score += 120;
-                  this.flash(
-                    "✅ Intercept! d = " +
-                      this.kChoice +
-                      "·" +
-                      r.T +
-                      " = " +
-                      landX +
-                      " = meet column. Perfect speed.",
-                    C.goodCss,
-                  );
-                  this.updateHUD();
-                  this.time.delayedCall(1300, () => this.nextRound());
-                } else {
-                  sfxBad();
-                  this.cameras.main.shake(220, 0.008);
-                  this.streak = 0;
-                  this.oxygen = Math.max(0, this.oxygen - 12);
-                  const over = landX > r.meetX;
-                  this.flash(
-                    "✗ d = " +
-                      this.kChoice +
-                      "·" +
-                      r.T +
-                      " = " +
-                      landX +
-                      " — you " +
-                      (over ? "OVERSHOT" : "fell short") +
-                      ". Need d = " +
-                      r.meetX +
-                      " at t = " +
-                      r.T +
-                      ". What k makes k·" +
-                      r.T +
-                      " = " +
-                      r.meetX +
-                      "?",
-                    C.badCss,
-                  );
-                  this.updateHUD();
-                  if (this.oxygen <= 0) {
-                    this.time.delayedCall(900, () => this.endGame(false));
-                  } else {
-                    // reset rover & pod for another try
-                    this.time.delayedCall(1500, () => {
-                      this.rover.setPosition(this.px(0), this.py(this.meetRow));
-                      this.pod.setPosition(
-                        this.px(r.meetX),
-                        this.py(this.meetRow),
-                      );
-                      this.tweens.add({
-                        targets: this.pod,
-                        y: this.py(this.meetRow) - 6,
-                        duration: 700,
-                        yoyo: true,
-                        repeat: -1,
-                      });
-                      this.busy = false;
-                    });
-                  }
-                }
-              },
-            });
-          }
-
-          nextRound() {
-            this.roundIx++;
-            if (this.roundIx >= this.totalRounds) {
-              this.endGame(true);
-            } else {
-              this.loadRound();
-            }
-          }
-
-          showHint() {
-            sfxClick();
-            const r = this.round;
-            if (this.mode === "fuel") {
-              const ex = r.path[Math.min(this.pathIx, r.path.length - 1)];
-              this.flash(
-                "\u{1F4A1} Multiply x by " +
-                  r.k +
-                  " to get y. For x = " +
-                  ex.x +
-                  ", y must be " +
-                  r.k +
-                  "·" +
-                  ex.x +
-                  " = " +
-                  r.k * ex.x +
-                  ".",
-                C.ruleCss,
-                3400,
-              );
-            } else {
-              this.flash(
-                "\u{1F4A1} You need d = " +
-                  r.meetX +
-                  " when t = " +
-                  r.T +
-                  ". Solve k·" +
-                  r.T +
-                  " = " +
-                  r.meetX +
-                  " → k = " +
-                  r.meetX +
-                  " ÷ " +
-                  r.T +
-                  ".",
-                C.ruleCss,
-                3400,
-              );
-            }
-          }
-
-          flash(msg, color = "#ffffff", hold = 2400) {
-            this.feedback.setText(msg).setColor(color).setAlpha(1);
-            this.tweens.killTweensOf(this.feedback);
-            this.time.delayedCall(hold, () => {
-              if (this.feedback.text === msg)
-                this.tweens.add({
-                  targets: this.feedback,
-                  alpha: 0,
-                  duration: 400,
-                });
-            });
-          }
-
-          updateHUD() {
-            this.hScore.setText("SCORE " + this.score);
-            this.hO2.setText("O2 " + this.oxygen + "%");
-            this.hO2.setColor(this.oxygen > 30 ? "#00e08a" : "#ff5a5a");
-            this.o2Fill.width = (W - 24) * (this.oxygen / 100);
-            this.o2Fill.setFillStyle(this.oxygen > 30 ? C.good : C.bad, 0.85);
-          }
-
-          update() {
-            if (this.mode !== "fuel" || this.busy) return;
-            // keyboard discrete movement with a small cooldown
-            this.moveCooldown -= this.game.loop.delta;
-            if (this.moveCooldown > 0) return;
-            let dx = 0,
-              dy = 0;
-            if (this.cursors.left.isDown || this.wasd.A.isDown) dx = -1;
-            else if (this.cursors.right.isDown || this.wasd.D.isDown) dx = 1;
-            else if (this.cursors.up.isDown || this.wasd.W.isDown)
-              dy = 1; // grid up
-            else if (this.cursors.down.isDown || this.wasd.S.isDown) dy = -1;
-            if (dx !== 0 || dy !== 0) {
-              this.stepRover(dx, dy);
-              this.moveCooldown = 150;
-            }
-          }
-
-          endGame(won) {
-            this.busy = true;
-            this.cameras.main.fadeOut(420, 0, 0, 0);
-            this.time.delayedCall(420, () =>
-              this.scene.start("Results", {
-                tier: this.tier,
-                score: this.score,
-                correct: this.correct,
-                attempted: this.attempted,
-                bestStreak: this.bestStreak,
-                sectorsCleared: this.sectorsCleared,
-                totalRounds: this.totalRounds,
-                oxygen: this.oxygen,
-                won,
-              }),
-            );
-          }
-        }
-
-        // ════════════════════════════════════════════════════════════════
-        //  RESULTS — EduPulse.record, standard 6.EE.C.9
-        // ════════════════════════════════════════════════════════════════
-        class ResultsScene extends Phaser.Scene {
-          constructor() {
-            super("Results");
-          }
-          init(d) {
-            Object.assign(this, d);
-          }
-          create() {
-            this.cameras.main.setBackgroundColor(C.sky);
-            this.cameras.main.fadeIn(420);
-            for (let i = 0; i < 50; i++)
-              this.add.circle(
-                Phaser.Math.Between(0, W),
-                Phaser.Math.Between(0, H),
-                Phaser.Math.FloatBetween(0.5, 1.5),
-                0xffffff,
-                Phaser.Math.FloatBetween(0.1, 0.4),
-              );
-
-            const pct =
-              this.attempted > 0
-                ? Math.round((this.correct / this.attempted) * 100)
-                : 0;
-
-            try {
-              window.EduPulse &&
-                EduPulse.record({
-                  activityTitle: document.title,
-                  score: this.correct,
-                  maxScore: this.attempted,
-                  percent: pct,
-                  problemsCorrect: this.correct,
-                  problemsAttempted: this.attempted,
-                  standard: "6.EE.C.9",
-                });
-            } catch (e) {}
-
-            const allClear =
-              this.won && this.sectorsCleared >= this.totalRounds;
-            const title = allClear
-              ? "COLONY ESTABLISHED!"
-              : this.oxygen <= 0
-                ? "OXYGEN DEPLETED"
-                : "EXPLORATION ENDED";
-            const tc = allClear
-              ? "#ffcc33"
-              : this.oxygen <= 0
-                ? "#ff5a5a"
-                : "#ff8844";
-
-            this.add
-              .text(W / 2, 70, title, {
-                fontSize: "34px",
-                fontFamily: "monospace",
-                fontStyle: "bold",
-                color: tc,
-                stroke: "#222",
-                strokeThickness: 3,
-              })
-              .setOrigin(0.5);
-
-            this.add
-              .text(W / 2, 140, String(this.score), {
-                fontSize: "54px",
-                fontFamily: "monospace",
-                fontStyle: "bold",
-                color: "#ffcc33",
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 178, "POINTS", {
-                fontSize: "12px",
-                fontFamily: "monospace",
-                color: "#888",
-              })
-              .setOrigin(0.5);
-
-            let grade, gc;
-            if (pct >= 90) {
-              grade = "S RANK — y=kx MASTER";
-              gc = "#ffcc33";
-            } else if (pct >= 75) {
-              grade = "A RANK — Pathfinder";
-              gc = "#00e08a";
-            } else if (pct >= 60) {
-              grade = "B RANK — Navigator";
-              gc = "#70ddff";
-            } else {
-              grade = "KEEP DRIVING THE LINE";
-              gc = "#ff8844";
-            }
-            this.add
-              .text(W / 2, 212, grade, {
-                fontSize: "18px",
-                fontFamily: "monospace",
-                fontStyle: "bold",
-                color: gc,
-              })
-              .setOrigin(0.5);
-
-            [
-              { l: "Cells on-line", v: this.correct + "/" + this.attempted },
-              { l: "Accuracy", v: pct + "%" },
-              { l: "Best Streak", v: String(this.bestStreak) },
-              { l: "Sectors", v: this.sectorsCleared + "/" + this.totalRounds },
-            ].forEach((s, i) => {
-              const x = W / 2 - 180 + i * 120;
-              this.add
-                .rectangle(x, 290, 105, 64, 0x112233, 0.85)
-                .setStrokeStyle(1, C.stroke);
-              this.add
-                .text(x, 278, s.v, {
-                  fontSize: "20px",
-                  fontFamily: "monospace",
-                  fontStyle: "bold",
-                  color: "#70ddff",
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(x, 302, s.l, {
-                  fontSize: "10px",
-                  fontFamily: "Arial",
-                  color: "#999",
-                })
-                .setOrigin(0.5);
-            });
-
-            this.add
-              .text(
-                W / 2,
-                362,
-                "You proved y = k·x by DRIVING it: every claimed cell made y equal k times x.",
-                {
-                  fontSize: "12.5px",
-                  fontFamily: "Arial",
-                  color: "#bcd0e8",
-                  align: "center",
-                  wordWrap: { width: 560 },
-                },
-              )
-              .setOrigin(0.5);
-
-            const mkBtn = (x, label, col, txtCol, cb) => {
-              const b = this.add
-                .rectangle(x, 430, 220, 52, col)
-                .setStrokeStyle(2, 0x000000, 0.2)
-                .setInteractive({ useHandCursor: true });
-              this.add
-                .text(x, 430, label, {
-                  fontSize: "18px",
-                  fontFamily: "monospace",
-                  fontStyle: "bold",
-                  color: txtCol,
-                })
-                .setOrigin(0.5);
-              b.on("pointerover", () => b.setScale(1.05));
-              b.on("pointerout", () => b.setScale(1));
-              b.on("pointerdown", () => {
-                ensureAudio();
-                sfxClick();
-                cb();
-              });
-              return b;
-            };
-            mkBtn(W / 2 - 125, "DRIVE AGAIN", 0xf6a83a, "#1a0d05", () =>
-              this.scene.start("Explore", { tier: this.tier }),
-            );
-            mkBtn(W / 2 + 125, "CHANGE LEVEL", 0x33405a, "#ffffff", () =>
-              this.scene.start("Title"),
-            );
-
-            this.add
-              .text(
-                W / 2,
-                510,
-                "6.EE.C.9 — y = kx relationships, tables & graphs",
-                {
-                  fontSize: "12px",
-                  fontFamily: "Arial",
-                  color: "#665544",
-                },
-              )
-              .setOrigin(0.5);
-          }
-        }
-
-        // ─── BOOT ───
-        const config = {
-          type: Phaser.AUTO,
-          width: W,
-          height: H,
-          parent: "game-container",
-          scale: {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH,
-          },
-          backgroundColor: "#06111d",
-          scene: [BootScene, TitleScene, ExploreScene, ResultsScene],
-        };
-        new Phaser.Game(config);
       })();
     </script>
+
+    <script>
+      // ════════════════════════════════════════════════════════════════════
+      //  MARS ROVER — "Evaluate to Drive"  ·  Grade 6  ·  6.EE.C.9
+      //  THE MATH IS THE MECHANIC:
+      //  Each crater shows a rule y = m·x + b and a value for x. The student
+      //  computes y, then SETS the rover's drive distance to that value on a
+      //  stepper dial and presses Drive. The rover travels exactly that many
+      //  units. The correct y is COMPUTED from the rule (m*x+b) — never a
+      //  hardcoded index. Land on the crater rim => cleared. Short/long => the
+      //  rover stalls (life lost + a diagnostic nudge tied to the mistake).
+      //  No multiple choice; the player PRODUCES the quantity.
+      // ════════════════════════════════════════════════════════════════════
+      const STANDARD = "6.EE.C.9";
+      const ACTIVITY_TITLE = "Mars Rover — 6.EE.C.9";
+      const LS_KEY = "mars_rover_highscore";
+      const ROUNDS = 5;
+
+      // Metadata source of truth: window.Games2DData (from scripts/games2d/data.mjs
+      // via assets/games2d-data.js). Inline fallback keeps the page alive if the
+      // artifact fails to load.
+      const DATA = (window.Games2DData &&
+        window.Games2DData["6-ee-c-9martiangame"]) || {
+        ccss: "6.EE.C.9",
+        title: "Mars Rover",
+        vocab: [
+          {
+            term: "independent variable",
+            defn: "The input you are given — here it's x, the value you plug into the rule.",
+          },
+          {
+            term: "dependent variable",
+            defn: "The output you compute — here it's y, the drive distance the rule produces from x.",
+          },
+          {
+            term: "evaluate an expression",
+            defn: "Put the value of x into the rule and do the math to find y. Multiply first, then add.",
+          },
+        ],
+        misconceptions: [
+          {
+            tag: "ignored-constant",
+            trigger: "Drives m·x but forgets to add the constant b.",
+            feedback:
+              "Don't forget the + part of the rule. After multiplying, ADD the constant.",
+          },
+          {
+            tag: "order-of-operations",
+            trigger: "Adds before multiplying, e.g. (x + b) then ·m.",
+            feedback:
+              "Multiply m by x FIRST, then add b. Multiplication comes before addition.",
+          },
+        ],
+        tiers: {
+          1: {
+            label: "Level 1",
+            sub: "Support",
+            desc: "Smaller numbers · step-by-step rule shown · 5 lives",
+          },
+          2: {
+            label: "Level 2",
+            sub: "Challenge",
+            desc: "Bigger numbers · work it out yourself · 3 lives",
+          },
+        },
+      };
+
+      // ── Tiny WebAudio SFX ──
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+        },
+        play(t, f, d, v = 0.2) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              o = c.createOscillator(),
+              g = c.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            o.connect(g);
+            g.connect(c.destination);
+            o.start();
+            o.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        click() {
+          this.play("sine", 440, 0.05, 0.12);
+        },
+        good() {
+          this.play("sine", 660, 0.1, 0.3);
+          this.play("sine", 880, 0.15, 0.25);
+        },
+        bad() {
+          this.play("sawtooth", 180, 0.24, 0.18);
+        },
+        win() {
+          [523, 659, 784, 1046].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.18, 0.25), i * 90),
+          );
+        },
+      };
+
+      // ── State ──
+      const S = {
+        level: 1,
+        lives: 5,
+        score: 0,
+        round: 0,
+        cleared: 0,
+        attempts: 0,
+        puzzles: [],
+        cur: null,
+        dial: 0,
+        max: 30,
+      };
+
+      const $ = (id) => document.getElementById(id);
+      const srSay = (m) => {
+        const el = $("ff-sr");
+        if (el) {
+          el.textContent = "";
+          setTimeout(() => (el.textContent = m), 30);
+        }
+      };
+      const rint = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+
+      function show(screen) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("on"));
+        $("screen-" + screen).classList.add("on");
+      }
+
+      // Build one puzzle. The target y is COMPUTED from the rule, never stored
+      // as a flagged "right answer" — y = m*x + b, full stop.
+      function makePuzzle(level) {
+        let m, b, x, y;
+        do {
+          if (level === 1) {
+            m = rint(1, 4);
+            b = rint(0, 5);
+            x = rint(1, 5);
+          } else {
+            m = rint(2, 6);
+            b = rint(1, 9);
+            x = rint(2, 7);
+          }
+          y = m * x + b; // the rule IS the source of truth
+        } while (y < 1 || y > S.max); // keep it on the visible track
+        return { m, b, x, y };
+      }
+
+      function ruleText(p) {
+        return p.b === 0 ? "y = " + p.m + "·x" : "y = " + p.m + "·x + " + p.b;
+      }
+
+      // ── Vocab gate ──
+      function renderVocab() {
+        $("vocab-list").innerHTML = (DATA.vocab || [])
+          .map(
+            (v) =>
+              `<div class="vrow"><span class="vterm">${v.term}</span><span class="vdef">${v.defn}</span></div>`,
+          )
+          .join("");
+      }
+
+      // ── Level select ──
+      function renderLevels() {
+        const t = DATA.tiers || {};
+        $("level-list").innerHTML = Object.keys(t)
+          .map((k) => {
+            const tier = t[k];
+            return `<button class="level-pick" data-level="${k}">
+            <span class="tag">${tier.label} · ${tier.sub}</span>
+            <b>${k === "1" ? "Scout Rover" : "Pioneer Rover"}</b>
+            <span class="desc">${tier.desc}</span>
+          </button>`;
+          })
+          .join("");
+        $("level-list")
+          .querySelectorAll("[data-level]")
+          .forEach((el) =>
+            el.addEventListener("click", () =>
+              startGame(Number(el.dataset.level)),
+            ),
+          );
+      }
+
+      // ── Ruler ticks (visual model for the drive distance) ──
+      function buildRuler() {
+        const r = $("ruler");
+        r.innerHTML = "";
+        const step = 5;
+        for (let v = 0; v <= S.max; v += step) {
+          const t = document.createElement("span");
+          t.className = "tick";
+          t.style.left = (v / S.max) * 100 + "%";
+          const lab = document.createElement("span");
+          lab.textContent = v;
+          t.appendChild(lab);
+          r.appendChild(t);
+        }
+      }
+
+      // ── Game flow ──
+      function startGame(level) {
+        SFX.init();
+        S.level = level;
+        S.lives = level === 1 ? 5 : 3;
+        S.score = 0;
+        S.round = 0;
+        S.cleared = 0;
+        S.attempts = 0;
+        S.max = level === 1 ? 25 : 50;
+        S.puzzles = Array.from({ length: ROUNDS }, () => makePuzzle(level));
+        $("hud-total").textContent = ROUNDS;
+        buildRuler();
+        show("play");
+        loadRound(0);
+      }
+
+      function loadRound(i) {
+        S.round = i;
+        S.cur = S.puzzles[i];
+        S.dial = 0;
+        const p = S.cur;
+        $("hud-round").textContent = i + 1;
+        $("hud-score").textContent = S.score;
+        $("hud-lives").textContent = "●".repeat(S.lives) || "—";
+        $("t-rule").textContent = ruleText(p);
+        $("t-x").textContent = "x = " + p.x;
+        $("feedback").textContent = "";
+        $("feedback").className = "feedback";
+        $("dial-val").textContent = "0";
+        // crater sits at the computed y position on the track
+        const pos = 6 + (p.y / S.max) * 84; // 6%..90%
+        $("crater").style.left = pos + "%";
+        $("crater").textContent = "crater";
+        $("rover").style.left = "4%";
+        $("rover").textContent = "🛺";
+        $("hint").textContent =
+          S.level === 1
+            ? "Tip: multiply m by x first, then add the + number."
+            : "Evaluate the rule for this x, set the dial, and drive.";
+        $("scaffold").innerHTML =
+          S.level === 1
+            ? `Work it out: <code>${p.m} × ${p.x}${p.b ? " + " + p.b : ""} = ?</code>`
+            : "";
+        setDial(0);
+        srSay(
+          `Crater ${i + 1}. Rule ${ruleText(p)}, with x equals ${p.x}. Set the drive distance.`,
+        );
+      }
+
+      function setDial(v) {
+        S.dial = Math.max(0, Math.min(S.max, v));
+        $("dial-val").textContent = S.dial;
+        // preview the rover position as you dial
+        const pos = 4 + (S.dial / S.max) * 86;
+        $("rover").style.left = pos + "%";
+      }
+
+      function nudge(d) {
+        SFX.click();
+        setDial(S.dial + d);
+        srSay("Drive distance " + S.dial);
+      }
+
+      function drive() {
+        if (!S.cur) return;
+        const p = S.cur;
+        S.attempts++;
+        const guess = S.dial;
+        if (guess === p.y) {
+          // CORRECT — the rover reaches the crater
+          SFX.good();
+          S.score += S.level === 1 ? 20 : 30;
+          S.cleared++;
+          $("hud-score").textContent = S.score;
+          $("crater").textContent = "✓";
+          flash(
+            `Cleared! ${p.m}·${p.x}${p.b ? " + " + p.b : ""} = ${p.y}.`,
+            "good",
+          );
+          if (window.GameFX && GameFX.successBurst)
+            try {
+              GameFX.successBurst();
+            } catch (e) {}
+          if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(true), 1300);
+          else setTimeout(() => loadRound(S.round + 1), 1300);
+        } else {
+          // WRONG — rover stalls; lose a life; targeted misconception nudge
+          SFX.bad();
+          S.lives--;
+          $("hud-lives").textContent = "●".repeat(S.lives) || "—";
+          flash(nudgeFor(p, guess), "bad");
+          if (S.lives <= 0) {
+            setTimeout(() => endGame(false), 1200);
+          }
+        }
+      }
+
+      // Diagnostic feedback chosen by WHAT mistake the distance reveals.
+      function nudgeFor(p, guess) {
+        const m = DATA.misconceptions || [];
+        const short = guess < p.y;
+        if (guess === p.m * p.x && p.b !== 0)
+          return (
+            (m[0] && m[0].feedback) ||
+            "You multiplied but forgot to add " + p.b + "."
+          );
+        if (guess === (p.x + p.b) * p.m && p.b !== 0)
+          return (
+            (m[1] && m[1].feedback) ||
+            "Multiply " + p.m + " by " + p.x + " first, then add."
+          );
+        return short
+          ? "Too short — the rover fell into the crater. Recompute " +
+              p.m +
+              "·" +
+              p.x +
+              (p.b ? " + " + p.b : "") +
+              " and try again."
+          : "Too far — you overshot the crater. Recompute " +
+              p.m +
+              "·" +
+              p.x +
+              (p.b ? " + " + p.b : "") +
+              " and try again.";
+      }
+
+      function flash(msg, cls) {
+        const f = $("feedback");
+        f.textContent = msg;
+        f.className = "feedback " + cls;
+        srSay(msg);
+      }
+
+      function endGame(won) {
+        const pct = S.attempts ? S.cleared / S.attempts : 0;
+        const stars = pct >= 0.9 ? 3 : pct >= 0.6 ? 2 : pct >= 0.35 ? 1 : 0;
+        $("r-stars").textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
+        $("r-score").textContent = S.score;
+        $("r-correct").textContent = S.cleared;
+        $("r-rounds").textContent = S.attempts;
+        let high = 0;
+        try {
+          high = Number(localStorage.getItem(LS_KEY) || 0);
+        } catch (e) {}
+        if (S.score > high) {
+          try {
+            localStorage.setItem(LS_KEY, String(S.score));
+          } catch (e) {}
+          $("r-high").textContent = S.score;
+          $("r-high-row").style.display = "flex";
+        }
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: ACTIVITY_TITLE,
+              score: S.score,
+              stars: stars,
+              problemsCorrect: S.cleared,
+              problemsAttempted: S.attempts,
+              percent: Math.round(pct * 100),
+              standard: STANDARD,
+            });
+        } catch (e) {}
+        srSay(
+          (won ? "Mission complete. " : "Out of lives. ") +
+            "Score " +
+            S.score +
+            ", " +
+            stars +
+            " stars.",
+        );
+        show("result");
+      }
+
+      // ── Wiring ──
+      $("vocab-go").addEventListener("click", () => {
+        renderLevels();
+        show("level");
+      });
+      $("r-again").addEventListener("click", () => {
+        renderLevels();
+        show("level");
+      });
+      $("inc").addEventListener("click", () => nudge(1));
+      $("dec").addEventListener("click", () => nudge(-1));
+      $("drive").addEventListener("click", drive);
+
+      // Keyboard: arrows adjust dial, Enter drives
+      document.addEventListener("keydown", (e) => {
+        if (!$("screen-play").classList.contains("on")) return;
+        if (e.key === "ArrowUp" || e.key === "ArrowRight") {
+          e.preventDefault();
+          nudge(1);
+        } else if (e.key === "ArrowDown" || e.key === "ArrowLeft") {
+          e.preventDefault();
+          nudge(-1);
+        } else if (e.key === "Enter") {
+          e.preventDefault();
+          drive();
+        }
+      });
+
+      renderVocab();
+    </script>
+
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
-  </body>
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <script src="/assets/game-access.js" defer></script>
+  <!-- gacc-injected:end -->
+</body>
 </html>

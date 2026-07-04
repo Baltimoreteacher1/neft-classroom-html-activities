@@ -134,8 +134,33 @@
       .trim()
       .slice(0, 40);
   }
-  function getIdentity() {
+  // Canvas/SCORM/LTI launch identity: the SCORM SCO (and the LTI Worker) append
+  // ?sn=<roster name>&si=<roster id>. When present, the roster name wins over any
+  // locally-typed name so a student launched from Canvas is auto-identified — the
+  // same behavior the 74 engine lessons get, now for standalone activities too.
+  // Guarded on sn, so an ordinary visit to the live site is unaffected.
+  function launchIdentity() {
     return safe(
+      function () {
+        var sn = (new URLSearchParams(location.search).get("sn") || "").trim();
+        return sn ? { name: sn.slice(0, 60), section: "" } : null;
+      },
+      "identity-launch",
+      null,
+    );
+  }
+  function getIdentity() {
+    var launched = launchIdentity();
+    if (launched) {
+      safe(function () {
+        localStorage.setItem(IDENTITY_KEY, JSON.stringify(launched));
+      }, "identity-launch-persist");
+      safe(function () {
+        if (window.NeftIdentity) window.NeftIdentity.set({ name: launched.name, section: "" });
+      }, "identity-launch-share");
+      return launched;
+    }
+    var local = safe(
       function () {
         var raw = localStorage.getItem(IDENTITY_KEY);
         return raw ? JSON.parse(raw) : null;
@@ -143,6 +168,17 @@
       "identity-get",
       null,
     );
+    if (!local) local = { name: "", section: "" };
+    // Fill any missing field from the site-wide shared identity, so a name typed
+    // on a lesson cover screen or in an activity kit prefills here — never retyped.
+    if ((!local.name || !local.section) && window.NeftIdentity) {
+      var shared = window.NeftIdentity.get();
+      if (shared) {
+        if (!local.name && shared.name) local.name = shared.name;
+        if (!local.section && shared.section) local.section = shared.section;
+      }
+    }
+    return local;
   }
   function setIdentity(name, section) {
     var id = {
@@ -154,6 +190,10 @@
     safe(function () {
       localStorage.setItem(IDENTITY_KEY, JSON.stringify(id));
     }, "identity-set");
+    // Share outward so grade sync + curriculum progress sync use the same name.
+    safe(function () {
+      if (window.NeftIdentity) window.NeftIdentity.set({ name: id.name, section: id.section });
+    }, "identity-share");
     return id;
   }
   function clearIdentity() {
@@ -817,7 +857,10 @@
           else if (!isGame) openPanel(self); // session vanished; let them choose
         });
       } else if (this.cfg.autoStart && !isGame) {
-        openPanel(this); // first visit: show Start New / Continue with Code
+        // First visit: do not cover the page with the panel (it overlapped
+        // ~30% of lessons/projects on first paint). Autosave is already on;
+        // nudge toward the always-visible launcher instead of auto-opening.
+        showToast(this, "Your work saves automatically. Tap the 💾 button to save with a code.");
       }
     },
 

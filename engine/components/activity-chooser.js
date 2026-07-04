@@ -66,7 +66,7 @@ function ensureChooserStyles() {
     .activity-chooser .ac-tile:hover {
       transform: translateY(-6px);
       box-shadow: var(--shadow-lg);
-      border-color: var(--teal);
+      border-color: var(--teal-ink);
     }
     .activity-chooser .ac-tile:active {
       transform: translateY(-2px);
@@ -83,7 +83,7 @@ function ensureChooserStyles() {
     .activity-chooser .ac-back:focus-visible {
       outline: none;
       box-shadow: var(--shadow-glow);
-      border-color: var(--teal);
+      border-color: var(--teal-ink);
     }
     /* Activity transition: slide + fade when launching / returning */
     .activity-chooser .ac-view {

@@ -280,7 +280,7 @@ export function bilingualTermEl(term) {
     const es = document.createElement("div");
     es.lang = "es";
     es.style.cssText =
-      "font-style:italic; font-weight:600; font-size:1.05rem; color:var(--teal); margin-top:2px;";
+      "font-style:italic; font-weight:600; font-size:1.05rem; color:var(--teal-ink); margin-top:2px;";
     es.textContent = term.termEs;
     wrap.append(es);
   }
@@ -720,7 +720,7 @@ export function buildConfirmation(term) {
   if (term.termEs) {
     const es = document.createElement("div");
     es.lang = "es";
-    es.style.cssText = "font-style:italic; color:var(--teal); font-weight:600; margin-top:2px;";
+    es.style.cssText = "font-style:italic; color:var(--teal-ink); font-weight:600; margin-top:2px;";
     es.textContent = `¡Exploraste: ${term.termEs}!`;
     box.append(es);
   }

@@ -30,6 +30,123 @@
 (function (global) {
   "use strict";
 
+  /* ==========================================================================
+   * NeftIdentity — ONE student identity shared by every sync on the site.
+   *
+   * Hosted here because edupulse-bridge.js loads on every graded page, so a
+   * name + class typed ONCE anywhere (a lesson cover screen, a Save/Resume
+   * panel, an activity kit) is written through to every legacy store. Then:
+   *   - grade sync (EduPulse)            picks up the real name/section,
+   *   - the save-code gradebook roster   auto-fills (no teacher re-typing),
+   *   - curriculum lesson-progress sync  gets a stable student key.
+   *
+   * Reads merge across all known stores, so identity set in one place is found
+   * in every other. Idempotent + fail-safe: if localStorage is unavailable it
+   * degrades to today's behavior. Privacy is unchanged — this only consolidates
+   * the same name/section the gradebook already receives; it never invents data.
+   * Other scripts use it as an optional enhancement (window.NeftIdentity?.set),
+   * so nothing breaks on the rare page where this file is absent.
+   * ======================================================================== */
+  if (!global.NeftIdentity) {
+    (function () {
+      var ANON_KEY = "nt_anon_id";
+      function lsGet(k) {
+        try {
+          return localStorage.getItem(k) || "";
+        } catch (e) {
+          return "";
+        }
+      }
+      function lsSet(k, v) {
+        try {
+          // Allow "" so a name/section can be explicitly cleared, not just set.
+          if (v != null) localStorage.setItem(k, v);
+        } catch (e) {}
+      }
+      function jGet(k) {
+        try {
+          var r = localStorage.getItem(k);
+          return r ? JSON.parse(r) : null;
+        } catch (e) {
+          return null;
+        }
+      }
+      function jSet(k, o) {
+        try {
+          localStorage.setItem(k, JSON.stringify(o));
+        } catch (e) {}
+      }
+      function clean(s, n) {
+        return String(s == null ? "" : s)
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, n || 80);
+      }
+      function get() {
+        var nt = jGet("nt_student") || {};
+        var nsr = jGet("nsr:identity") || {};
+        var name = clean(
+          nt.alias ||
+            nsr.name ||
+            lsGet("edupulse_student_name") ||
+            lsGet("nt_student_name") ||
+            lsGet("ewl_student_name") ||
+            lsGet("nt_student_ref"),
+          60,
+        );
+        var section = clean(
+          nt.section ||
+            nsr.section ||
+            lsGet("edupulse_class_period") ||
+            lsGet("nt_class") ||
+            lsGet("nt_class_code"),
+          40,
+        );
+        return { name: name, section: section };
+      }
+      function set(info) {
+        info = info || {};
+        var cur = get();
+        var name = info.name != null ? clean(info.name, 60) : cur.name;
+        var section = info.section != null ? clean(info.section, 40) : cur.section;
+        // Write through to every store a reader anywhere on the site consults.
+        jSet("nt_student", { alias: name, section: section });
+        jSet("nsr:identity", { name: name, section: section });
+        lsSet("edupulse_student_name", name);
+        lsSet("edupulse_class_period", section);
+        lsSet("nt_student_ref", name);
+        try {
+          if (typeof CustomEvent === "function") {
+            global.dispatchEvent(
+              new CustomEvent("nt-identity-change", {
+                detail: { name: name, section: section },
+              }),
+            );
+          }
+        } catch (e) {}
+        return { name: name, section: section };
+      }
+      function studentId() {
+        var name = get().name;
+        var id = name
+          ? name
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/^-+|-+$/g, "")
+              .slice(0, 40)
+          : "";
+        if (id) return id;
+        var anon = lsGet(ANON_KEY);
+        if (!anon) {
+          anon = "anon-" + Math.random().toString(36).slice(2, 10);
+          lsSet(ANON_KEY, anon);
+        }
+        return anon;
+      }
+      global.NeftIdentity = { get: get, set: set, studentId: studentId };
+    })();
+  }
+
   /* -------------------- EWLScoreBridge (ported, unchanged contract) -------- */
   class EWLScoreBridge {
     constructor({ apiBase, ingestKey, deviceId } = {}) {
@@ -153,8 +270,9 @@
   /* studentId is REQUIRED by the Worker. Prefer the typed name (so the same
    * student groups in the gradebook); fall back to a persisted device id. */
   function resolveIdentity(typedName, typedPeriod) {
-    var name = (typedName || storedName() || "").trim();
-    var period = (typedPeriod || storedPeriod() || "").trim();
+    var shared = (global.NeftIdentity && global.NeftIdentity.get()) || { name: "", section: "" };
+    var name = (typedName || shared.name || storedName() || "").trim();
+    var period = (typedPeriod || shared.section || storedPeriod() || "").trim();
     var id = slug(name) || persist("edupulse_student_id", uuid);
     return { studentId: id, studentName: name, classPeriod: period };
   }
@@ -225,11 +343,84 @@
   var startedAt = Date.now();
   var sentHashes = {};
 
+  /* -------------------- Canvas completion code (math only) -------------------- */
+  /* The student-facing completion code is the same one the lesson engine shows.
+   * It is computed entirely client-side, so — unlike the gradebook POST below —
+   * it works on the public site even when no ingest key is configured. We only
+   * surface it for MATH activities (the ones with matching Canvas assignments),
+   * detected by a math CCSS standard on the score event or a math URL root. */
+  var CANVAS_CODE_UI_SRC = "/assets/canvas-code-ui.js";
+  function ensureCanvasCodeUI() {
+    if (global.NeftCanvasCodeUI) return Promise.resolve(global.NeftCanvasCodeUI);
+    return new Promise(function (resolve) {
+      var s = document.querySelector('script[src="' + CANVAS_CODE_UI_SRC + '"]');
+      if (!s) {
+        s = document.createElement("script");
+        s.src = CANVAS_CODE_UI_SRC;
+        document.body.appendChild(s);
+      }
+      s.addEventListener(
+        "load",
+        function () {
+          resolve(global.NeftCanvasCodeUI || null);
+        },
+        { once: true },
+      );
+      s.addEventListener(
+        "error",
+        function () {
+          resolve(null);
+        },
+        { once: true },
+      );
+      if (global.NeftCanvasCodeUI) resolve(global.NeftCanvasCodeUI);
+    });
+  }
+  function isMathContext(payload) {
+    try {
+      var std = String((payload && payload.standard) || "");
+      if (/^\s*\d\.(NS|RP|EE|G|SP|NF|OA|MD)\b/i.test(std)) return true;
+      var p = String(global.location.pathname || "");
+      return /(^|\/)(math|games|math-lab-missions)(\/|$)/i.test(p);
+    } catch (e) {
+      return false;
+    }
+  }
+  function maybeShowCanvasCode(payload) {
+    try {
+      if (global.NT_DISABLE_CANVAS_CODE) return;
+      if (!isMathContext(payload)) return;
+      // Idempotent: the engine (lessons) may have already shown the same modal.
+      if (document.getElementById("nt-canvas-code")) return;
+      var p = payload || {};
+      var id = resolveIdentity(p.studentName, p.classPeriod);
+      var score = p.score != null ? p.score : p.problemsCorrect;
+      var maxScore = p.maxScore != null ? p.maxScore : p.problemsAttempted;
+      var data = {
+        studentName: id.studentName,
+        classPeriod: id.classPeriod,
+        activityId: p.activityId || activityId(),
+        activityTitle: activityTitle(p.activityTitle),
+        score: score,
+        maxScore: maxScore,
+        percent: p.percent,
+        stars: p.stars,
+      };
+      ensureCanvasCodeUI().then(function (ui) {
+        if (ui && typeof ui.show === "function") ui.show(data);
+      });
+    } catch (e) {
+      /* never break the activity */
+    }
+  }
+
   /* Core send used by the auto-wraps and the public API. */
   function send(payload) {
     try {
-      if (!configured(bridge.ingestKey)) return; // inert until key pasted
       payload = payload || {};
+      // Show the student their Canvas code regardless of gradebook config.
+      maybeShowCanvasCode(payload);
+      if (!configured(bridge.ingestKey)) return; // gradebook POST is inert until key pasted
       var id = resolveIdentity(payload.studentName, payload.classPeriod);
       var aId = payload.activityId || activityId();
       var score = payload.score != null ? payload.score : payload.problemsCorrect;
@@ -367,6 +558,14 @@
     identify: function (student) {
       student = student || {};
       try {
+        // Propagate to the shared identity so the same name/section reaches the
+        // save-code gradebook and curriculum progress sync, not just EduPulse.
+        if (global.NeftIdentity && (student.studentName || student.classPeriod)) {
+          global.NeftIdentity.set({
+            name: student.studentName,
+            section: student.classPeriod,
+          });
+        }
         if (student.studentName) localStorage.setItem("edupulse_student_name", student.studentName);
         if (student.classPeriod) localStorage.setItem("edupulse_class_period", student.classPeriod);
       } catch (e) {}

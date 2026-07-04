@@ -16,6 +16,8 @@
 import { bootLesson } from "../../core/lesson-renderer.js";
 import "../../../assets/design-tokens.css";
 import "./flagship.css";
+// The editorial design layer is now loaded engine-wide by createApp
+// (engine/styles/editorial.css); flagship inherits it like every lesson.
 import { stackHtml, t } from "../../core/i18n.js";
 
 const PHASE_KEYS = ["launch", "vocab", "explore", "practice", "connect", "reflect"];

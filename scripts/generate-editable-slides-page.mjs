@@ -25,6 +25,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -129,7 +130,7 @@ function page({ id, unit, lesson, title, standard, contentObjective, languageObj
 <title>Editable Slides — ${esc(lessonNum)}: ${esc(title)}</title>
 <!-- generated:editable-slides lesson=${esc(id)} — regenerate: npm run generate-editable-slides -->
 <link rel="stylesheet" href="/assets/shared.css" />
-<style>${PALETTE}</style>
+<style>${EDITORIAL_FONT_IMPORT}${PALETTE}${EDITORIAL_OVERRIDES}</style>
 </head>
 <body>
 <div class="wrap">

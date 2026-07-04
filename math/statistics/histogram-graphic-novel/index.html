@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/assets/math-mobile.css">
   <title>Data Detectives: The Histogram Case</title>
   <link rel="stylesheet" href="/assets/shared.css" />
   <style>
@@ -567,11 +568,29 @@
       .finish-banner { width: 170px; }
       .cover-bars { right: 12px; transform: scale(0.85); transform-origin: right bottom; }
     }
+    /* --- responsive phone refinements (additive) --- */
+    @media (max-width: 640px) {
+      h1 { font-size: 1.85rem; }
+      .cover { min-height: 0; }
+      .cover-copy { padding: 18px; }
+      .reader-nav { flex-direction: column; align-items: stretch; }
+      .page-tabs { justify-content: center; }
+      .reader-nav > div:last-child { display: flex; gap: 8px; }
+      .reader-nav > div:last-child .control { flex: 1 1 auto; }
+      .comic-page { grid-template-columns: 1fr; }
+      .panel { min-height: 0; padding: 12px; }
+      .histogram { padding: 14px 8px 34px 36px; }
+      .scene-cover { min-height: 280px; }
+      .cover-bars { transform: scale(0.7); }
+    }
   </style>
 <style>/* a11y: respect reduced motion (parity with main accessibility pass) */@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}</style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
 </head>
 <body>
   <a class="skip-link" href="#reader">Skip to the comic reader</a>
@@ -870,5 +889,8 @@
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>

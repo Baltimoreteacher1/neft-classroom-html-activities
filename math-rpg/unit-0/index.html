@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Number Realm — Unit 0: The Gateway Gardens. A story-driven math RPG for Grade 6 (Grade 6 readiness — division, decimals, factors). Battle monsters by solving standards-aligned problems, earn gold, unlock abilities, and build mastery." />
+    <title>🌱 Number Realm · Unit 0: The Gateway Gardens</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/math-rpg/engine/rpg.css" />
+    <script>
+      window.NeftSaveResumeConfig = {
+        activityId: "math-rpg-unit-0",
+        activityPrefix: "RPG0",
+        activityTitle: "Number Realm — Unit 0: The Gateway Gardens",
+      };
+    </script>
+    <style>
+      body { background: var(--bg, #f6f7f2); margin: 0; }
+      .mrpg-topbar { max-width: 960px; margin: 0 auto; padding: 1rem 1rem 0; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+      .mrpg-topbar a { color: var(--teal, #0f766e); font-weight: 700; text-decoration: none; }
+      .mrpg-topbar a:hover { text-decoration: underline; }
+      .mrpg-topbar .crumb { color: var(--muted, #5b6773); font-weight: 600; font-size: .9rem; }
+      main { padding-bottom: 3rem; }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="mrpg-topbar">
+      <a href="/math-rpg/">← Number Realm</a>
+      <span class="crumb">Unit 0 · The Gateway Gardens</span>
+    </div>
+    <main>
+      <div id="mrpg-root" aria-label="Number Realm Unit 0 math adventure"></div>
+      <noscript>
+        <p style="max-width:640px;margin:2rem auto;padding:0 1rem;">
+          This math adventure needs JavaScript enabled. Please turn on JavaScript and reload,
+          or ask your teacher for the printable version.
+        </p>
+      </noscript>
+    </main>
+
+    <script src="/math-rpg/engine/profile.js" defer></script>
+    <script src="/math-rpg/engine/items.js" defer></script>
+    <script src="/math-rpg/engine/problems.js" defer></script>
+    <script src="/math-rpg/engine/diagrams.js" defer></script>
+    <script src="/math-rpg/units/unit-0.js" defer></script>
+    <script src="/math-rpg/engine/rpg.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        try {
+          if (window.NumberRealm && window.MRPG_UNITS && window.MRPG_UNITS[0]) {
+            window.NumberRealm.start({ unit: window.MRPG_UNITS[0], mount: "#mrpg-root" });
+          }
+        } catch (e) {
+          var r = document.getElementById("mrpg-root");
+          if (r) r.textContent = "Something went wrong loading the adventure. Please refresh.";
+        }
+      });
+    </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

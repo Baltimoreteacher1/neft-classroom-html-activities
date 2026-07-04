@@ -43,8 +43,10 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
 .ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
 .ws-bub-sm{width:20px;height:20px;font-size:11px;}
 .ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
-.ws-correct{font-weight:700;color:var(--teal);}
+.ws-correct{font-weight:700;color:var(--teal-ink);}
 .ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
 .ws-match{display:flex;gap:24px;flex-wrap:wrap;}
 .ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
 .ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
@@ -75,9 +77,71 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
   @page{margin:1.5cm;}
   a{color:#000;}
 }
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
 </style>
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+
+
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/3-2/worksheet.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Ratio Tables — Practice Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="Ratio Tables — Practice Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Ratio Tables — Practice Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/3-2/worksheet.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
 </head>
 <body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.3a</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">Ratio Tables</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Ratio table</span><span class="ws-bankword">Equivalent ratio</span><span class="ws-bankword">Scale factor</span><span class="ws-bankword">Pattern</span><span class="ws-bankword">Additive pattern</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Read the problem:</b> A recipe uses 5 cups of oats for every 2 cups of honey. Complete the table for 3 batches.</li><li><b>Find the scale factor:</b> 3 batches → multiply by 3</li><li><b>Scale the oats:</b> 5 × 3 = 15 cups of oats</li><li><b>Scale the honey:</b> 2 + 3 = 5 cups of honey</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 3 eggs for every 5 cups of flour. How many eggs are needed for 15 cups of flour?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>9</li><li class="ws-opt"><span class="ws-bub">B</span>6</li><li class="ws-opt"><span class="ws-bub">C</span>10</li><li class="ws-opt"><span class="ws-bub">D</span>12</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which row does NOT belong in a ratio table for 4:5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>6:10</li><li class="ws-opt"><span class="ws-bub">B</span>8:10</li><li class="ws-opt"><span class="ws-bub">C</span>12:15</li><li class="ws-opt"><span class="ws-bub">D</span>16:20</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A ratio table shows 3:7, 6:14, and 9:21. What is the next row?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12:28</li><li class="ws-opt"><span class="ws-bub">B</span>10:24</li><li class="ws-opt"><span class="ws-bub">C</span>12:24</li><li class="ws-opt"><span class="ws-bub">D</span>15:28</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A ratio table for 2:5 starts with 2:5, 4:10. What is the third row?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>6:15</li><li class="ws-opt"><span class="ws-bub">B</span>6:12</li><li class="ws-opt"><span class="ws-bub">C</span>8:15</li><li class="ws-opt"><span class="ws-bub">D</span>5:10</li></ol></div></li></ol>
+  </section>
 <section class="ws-page">
     <header class="ws-head">
     <div class="ws-head-top">
@@ -89,12 +153,13 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     <section class="ws-bank">
-    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
     <div class="ws-bankwords"><span class="ws-bankword">Ratio table</span><span class="ws-bankword">Equivalent ratio</span><span class="ws-bankword">Scale factor</span><span class="ws-bankword">Pattern</span><span class="ws-bankword">Additive pattern</span></div>
   </section><section class="ws-example">
-    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
     <ol class="ws-example-steps"><li><b>Read the problem:</b> A recipe uses 5 cups of oats for every 2 cups of honey. Complete the table for 3 batches.</li><li><b>Find the scale factor:</b> 3 batches → multiply by 3</li><li><b>Scale the oats:</b> 5 × 3 = 15 cups of oats</li><li><b>Scale the honey:</b> 2 + 3 = 5 cups of honey</li></ol>
   </section>
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 3 eggs for every 5 cups of flour. How many eggs are needed for 15 cups of flour?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>9</li><li class="ws-opt"><span class="ws-bub">B</span>6</li><li class="ws-opt"><span class="ws-bub">C</span>10</li><li class="ws-opt"><span class="ws-bub">D</span>12</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which row does NOT belong in a ratio table for 4:5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>6:10</li><li class="ws-opt"><span class="ws-bub">B</span>8:10</li><li class="ws-opt"><span class="ws-bub">C</span>12:15</li><li class="ws-opt"><span class="ws-bub">D</span>16:20</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A ratio table shows 3:7, 6:14, and 9:21. What is the next row?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12:28</li><li class="ws-opt"><span class="ws-bub">B</span>10:24</li><li class="ws-opt"><span class="ws-bub">C</span>12:24</li><li class="ws-opt"><span class="ws-bub">D</span>15:28</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A ratio table for 2:5 starts with 2:5, 4:10. What is the third row?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>6:15</li><li class="ws-opt"><span class="ws-bub">B</span>6:12</li><li class="ws-opt"><span class="ws-bub">C</span>8:15</li><li class="ws-opt"><span class="ws-bub">D</span>5:10</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
   <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>1</td><td></td><td></td></tr><tr><td>2</td><td></td><td></td></tr><tr><td>3</td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
   <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Ratio Tables.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: To keep a ratio the same, multiply both numbers by the same scale factor.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
@@ -112,6 +177,7 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
   <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>1</td><td></td><td></td></tr><tr><td>2</td><td></td><td></td></tr><tr><td>5</td><td></td><td></td></tr><tr><td>10</td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">In a ratio table, the ratio of sugar to butter is 3:2. If you use 12 cups of sugar, how many cups of butter do you need?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>8</li><li class="ws-opt"><span class="ws-bub">B</span>6</li><li class="ws-opt"><span class="ws-bub">C</span>10</li><li class="ws-opt"><span class="ws-bub">D</span>9</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which rows belong in a ratio table for 3:4? Sort them into correct and incorrect.</p>
   <p class="ws-prompt">Categories: <b>belongs · does-not-belong</b></p>
@@ -124,6 +190,38 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <header class="ws-head">
     <div class="ws-head-top">
       <span class="ws-std">6.RP.3a</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">Ratio Tables</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find Devon's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A recipe uses 5 cups of oats for every 2 cups of honey. Complete the table for 3 batches.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the scale factor</span><span class="ws-step-w">3 batches → multiply by 3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Scale the oats</span><span class="ws-step-w">5 × 3 = 15 cups of oats</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Scale the honey</span><span class="ws-step-w">2 + 3 = 5 cups of honey</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem"></p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>1</td><td></td><td></td></tr><tr><td>2</td><td></td><td></td></tr><tr><td>5</td><td></td><td></td></tr><tr><td>0.5</td><td></td><td></td></tr></tbody></table></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.3a</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Ratio Tables</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 3 eggs for every 5 cups of flour. How many eggs are needed for 15 cups of flour?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>9</li><li class="ws-opt"><span class="ws-bub">B</span>6</li><li class="ws-opt"><span class="ws-bub">C</span>10</li><li class="ws-opt"><span class="ws-bub">D</span>12</li></ol><p class="ws-keynote">The scale factor is 15 ÷ 5 = 3. Multiply the eggs by 3: 3 × 3 = 9 eggs.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio Tables is skipping the key idea: &quot;To keep a ratio the same, multiply both numbers by the same scale factor.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which row does NOT belong in a ratio table for 4:5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6:10</li><li class="ws-opt"><span class="ws-bub">B</span>8:10</li><li class="ws-opt"><span class="ws-bub">C</span>12:15</li><li class="ws-opt"><span class="ws-bub">D</span>16:20</li></ol><p class="ws-keynote">6:10 simplifies to 3:5, not 4:5. The other ratios (8:10, 12:15, 16:20) all simplify to 4:5.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio Tables is skipping the key idea: &quot;To keep a ratio the same, multiply both numbers by the same scale factor.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A ratio table shows 3:7, 6:14, and 9:21. What is the next row?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12:28</li><li class="ws-opt"><span class="ws-bub">B</span>10:24</li><li class="ws-opt"><span class="ws-bub">C</span>12:24</li><li class="ws-opt"><span class="ws-bub">D</span>15:28</li></ol><p class="ws-keynote">The pattern adds 3 to the first value and 7 to the second each time. After 9:21: 9+3=12 and 21+7=28. The next row is 12:28.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio Tables is skipping the key idea: &quot;To keep a ratio the same, multiply both numbers by the same scale factor.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A ratio table for 2:5 starts with 2:5, 4:10. What is the third row?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6:15</li><li class="ws-opt"><span class="ws-bub">B</span>6:12</li><li class="ws-opt"><span class="ws-bub">C</span>8:15</li><li class="ws-opt"><span class="ws-bub">D</span>5:10</li></ol><p class="ws-keynote">The additive pattern adds 2 to the first value and 5 to the second. 4+2=6 and 10+5=15. The third row is 6:15.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio Tables is skipping the key idea: &quot;To keep a ratio the same, multiply both numbers by the same scale factor.&quot; — always check your work against this rule before you submit.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.3a</span>
       <span class="ws-ver">Version A — Answer Key</span>
     </div>
     <h1 class="ws-title">Ratio Tables</h1>
@@ -131,11 +229,12 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
-    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 3 eggs for every 5 cups of flour. How many eggs are needed for 15 cups of flour?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>9</li><li class="ws-opt"><span class="ws-bub">B</span>6</li><li class="ws-opt"><span class="ws-bub">C</span>10</li><li class="ws-opt"><span class="ws-bub">D</span>12</li></ol><p class="ws-keynote">The scale factor is 15 ÷ 5 = 3. Multiply the eggs by 3: 3 × 3 = 9 eggs.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which row does NOT belong in a ratio table for 4:5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6:10</li><li class="ws-opt"><span class="ws-bub">B</span>8:10</li><li class="ws-opt"><span class="ws-bub">C</span>12:15</li><li class="ws-opt"><span class="ws-bub">D</span>16:20</li></ol><p class="ws-keynote">6:10 simplifies to 3:5, not 4:5. The other ratios (8:10, 12:15, 16:20) all simplify to 4:5.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A ratio table shows 3:7, 6:14, and 9:21. What is the next row?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12:28</li><li class="ws-opt"><span class="ws-bub">B</span>10:24</li><li class="ws-opt"><span class="ws-bub">C</span>12:24</li><li class="ws-opt"><span class="ws-bub">D</span>15:28</li></ol><p class="ws-keynote">The pattern adds 3 to the first value and 7 to the second each time. After 9:21: 9+3=12 and 21+7=28. The next row is 12:28.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A ratio table for 2:5 starts with 2:5, 4:10. What is the third row?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6:15</li><li class="ws-opt"><span class="ws-bub">B</span>6:12</li><li class="ws-opt"><span class="ws-bub">C</span>8:15</li><li class="ws-opt"><span class="ws-bub">D</span>5:10</li></ol><p class="ws-keynote">The additive pattern adds 2 to the first value and 5 to the second. 4+2=6 and 10+5=15. The third row is 6:15.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 3 eggs for every 5 cups of flour. How many eggs are needed for 15 cups of flour?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>9</li><li class="ws-opt"><span class="ws-bub">B</span>6</li><li class="ws-opt"><span class="ws-bub">C</span>10</li><li class="ws-opt"><span class="ws-bub">D</span>12</li></ol><p class="ws-keynote">The scale factor is 15 ÷ 5 = 3. Multiply the eggs by 3: 3 × 3 = 9 eggs.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio Tables is skipping the key idea: &quot;To keep a ratio the same, multiply both numbers by the same scale factor.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which row does NOT belong in a ratio table for 4:5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6:10</li><li class="ws-opt"><span class="ws-bub">B</span>8:10</li><li class="ws-opt"><span class="ws-bub">C</span>12:15</li><li class="ws-opt"><span class="ws-bub">D</span>16:20</li></ol><p class="ws-keynote">6:10 simplifies to 3:5, not 4:5. The other ratios (8:10, 12:15, 16:20) all simplify to 4:5.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio Tables is skipping the key idea: &quot;To keep a ratio the same, multiply both numbers by the same scale factor.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A ratio table shows 3:7, 6:14, and 9:21. What is the next row?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12:28</li><li class="ws-opt"><span class="ws-bub">B</span>10:24</li><li class="ws-opt"><span class="ws-bub">C</span>12:24</li><li class="ws-opt"><span class="ws-bub">D</span>15:28</li></ol><p class="ws-keynote">The pattern adds 3 to the first value and 7 to the second each time. After 9:21: 9+3=12 and 21+7=28. The next row is 12:28.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio Tables is skipping the key idea: &quot;To keep a ratio the same, multiply both numbers by the same scale factor.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A ratio table for 2:5 starts with 2:5, 4:10. What is the third row?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6:15</li><li class="ws-opt"><span class="ws-bub">B</span>6:12</li><li class="ws-opt"><span class="ws-bub">C</span>8:15</li><li class="ws-opt"><span class="ws-bub">D</span>5:10</li></ol><p class="ws-keynote">The additive pattern adds 2 to the first value and 5 to the second. 4+2=6 and 10+5=15. The third row is 6:15.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio Tables is skipping the key idea: &quot;To keep a ratio the same, multiply both numbers by the same scale factor.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
   <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>1</td><td>2</td><td>5</td></tr><tr><td>2</td><td></td><td></td></tr><tr><td>3</td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
   <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Ratio Tables.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: To keep a ratio the same, multiply both numbers by the same scale factor.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: Follow the key idea: To keep a ratio the same, multiply both numbers by the same scale factor.</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -148,13 +247,36 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
-  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>1</td><td>1</td><td>4</td></tr><tr><td>2</td><td></td><td></td></tr><tr><td>5</td><td></td><td></td></tr><tr><td>10</td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">In a ratio table, the ratio of sugar to butter is 3:2. If you use 12 cups of sugar, how many cups of butter do you need?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>8</li><li class="ws-opt"><span class="ws-bub">B</span>6</li><li class="ws-opt"><span class="ws-bub">C</span>10</li><li class="ws-opt"><span class="ws-bub">D</span>9</li></ol><p class="ws-keynote">Scale factor: 12 ÷ 3 = 4. Multiply butter by 4: 2 × 4 = 8 cups of butter.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which rows belong in a ratio table for 3:4? Sort them into correct and incorrect.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>1</td><td>1</td><td>4</td></tr><tr><td>2</td><td></td><td></td></tr><tr><td>5</td><td></td><td></td></tr><tr><td>10</td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">In a ratio table, the ratio of sugar to butter is 3:2. If you use 12 cups of sugar, how many cups of butter do you need?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>8</li><li class="ws-opt"><span class="ws-bub">B</span>6</li><li class="ws-opt"><span class="ws-bub">C</span>10</li><li class="ws-opt"><span class="ws-bub">D</span>9</li></ol><p class="ws-keynote">Scale factor: 12 ÷ 3 = 4. Multiply butter by 4: 2 × 4 = 8 cups of butter.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio Tables is skipping the key idea: &quot;To keep a ratio the same, multiply both numbers by the same scale factor.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which rows belong in a ratio table for 3:4? Sort them into correct and incorrect.</p>
   <p class="ws-prompt">Categories: <b>belongs · does-not-belong</b></p>
-  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">belongs</span>6:8</li><li><span class="ws-blank ws-blank-sm">belongs</span>9:12</li><li><span class="ws-blank ws-blank-sm">belongs</span>15:20</li><li><span class="ws-blank ws-blank-sm">does-not-belong</span>6:10</li><li><span class="ws-blank ws-blank-sm">does-not-belong</span>12:14</li><li><span class="ws-blank ws-blank-sm">does-not-belong</span>9:16</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A ratio table shows 5:8, 10:16, 15:24. What scale factor was used from the first row to the third row?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>3</li><li class="ws-opt"><span class="ws-bub">B</span>2</li><li class="ws-opt"><span class="ws-bub">C</span>5</li><li class="ws-opt"><span class="ws-bub">D</span>8</li></ol><p class="ws-keynote">From 5 to 15: 15 ÷ 5 = 3. From 8 to 24: 24 ÷ 8 = 3. The scale factor is 3.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">belongs</span>6:8</li><li><span class="ws-blank ws-blank-sm">belongs</span>9:12</li><li><span class="ws-blank ws-blank-sm">belongs</span>15:20</li><li><span class="ws-blank ws-blank-sm">does-not-belong</span>6:10</li><li><span class="ws-blank ws-blank-sm">does-not-belong</span>12:14</li><li><span class="ws-blank ws-blank-sm">does-not-belong</span>9:16</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A ratio table shows 5:8, 10:16, 15:24. What scale factor was used from the first row to the third row?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>3</li><li class="ws-opt"><span class="ws-bub">B</span>2</li><li class="ws-opt"><span class="ws-bub">C</span>5</li><li class="ws-opt"><span class="ws-bub">D</span>8</li></ol><p class="ws-keynote">From 5 to 15: 15 ÷ 5 = 3. From 8 to 24: 24 ÷ 8 = 3. The scale factor is 3.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio Tables is skipping the key idea: &quot;To keep a ratio the same, multiply both numbers by the same scale factor.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
   <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Ratio Tables.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: To keep a ratio the same, multiply both numbers by the same scale factor.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: Follow the key idea: To keep a ratio the same, multiply both numbers by the same scale factor.</p></div></li></ol>
   </section>
-</body>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.3a</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Ratio Tables</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find Devon's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A recipe uses 5 cups of oats for every 2 cups of honey. Complete the table for 3 batches.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the scale factor</span><span class="ws-step-w">3 batches → multiply by 3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Scale the oats</span><span class="ws-step-w">5 × 3 = 15 cups of oats</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Scale the honey</span><span class="ws-step-w">2 + 3 = 5 cups of honey</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 4. Correct work: 2 × 3 = 6 cups of honey (multiply, don't add the scale factor)</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem"></p><p class="ws-keynote">Sample: The last row is wrong. The pattern multiplies by the same scale factor. 4×1=4, 4×2=8, 4×3=12, so the 4th row should be 4×4=16 cups of flour and 3×4=12 cups of sugar → 16:12. The student added 2 to 12 instead of adding 4. Or: 12+4=16, not 12+2=14. Look for: 16:12, multiply, scale factor, added wrong, pattern.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>1</td><td>7</td><td>4</td></tr><tr><td>2</td><td></td><td></td></tr><tr><td>5</td><td></td><td></td></tr><tr><td>0.5</td><td></td><td></td></tr></tbody></table></div></li></ol>
+  </section>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  </main>
+  </body>
 </html>

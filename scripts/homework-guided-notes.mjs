@@ -41,6 +41,7 @@ function conceptIntro(config) {
 }
 
 function keyIdea(config) {
+  if (config.familyNotes?.bigIdea?.en) return config.familyNotes.bigIdea.en;
   const intro = conceptIntro(config);
   if (intro?.keyIdea) return intro.keyIdea;
   if (intro?.intro) return intro.intro;
@@ -49,6 +50,7 @@ function keyIdea(config) {
 }
 
 function keyIdeaEs(config) {
+  if (config.familyNotes?.bigIdea?.es) return config.familyNotes.bigIdea.es;
   return spanishKeyIdea(config);
 }
 
@@ -254,15 +256,377 @@ function tryTogetherActivity(config) {
       ? translateConceptLine(narrative.split(".")[0], config.vocabulary || []) ||
         "Usen la historia de la lección para conectar la matemática con la vida real."
       : "",
-    steps: steps.slice(0, 4),
+    steps: steps.slice(0, 6),
   };
+}
+
+// Compact, graduated practice ladder for the "Try Together" tab: real problems
+// drawn from the lesson's practice tiers, ordered EASIEST → HARDEST so families
+// build confidence first, then stretch. We only keep problem shapes that compact
+// cleanly to a one-line "question → answer" (multiple-choice, open-response) and
+// never include "find the error" / error-analysis here.
+function ladderCard(prob) {
+  if (!prob || typeof prob !== "object") return null;
+  if (prob.type === "multiple-choice") {
+    const q = prob.stem || prob.question || "";
+    if (!q || !Array.isArray(prob.choices) || !Number.isInteger(prob.correctIndex)) return null;
+    const a = prob.choices[prob.correctIndex];
+    if (a == null) return null;
+    return { q, a: String(a) };
+  }
+  if (prob.type === "open-response") {
+    const q = prob.prompt || prob.question || prob.stem || "";
+    if (!q) return null;
+    const a = prob.sampleAnswer || prob.answer || prob.exemplar || "";
+    return { q, a: String(a) };
+  }
+  return null;
+}
+
+export function buildTogetherLadder(config = {}) {
+  const p = config.practice || {};
+  // Difficulty ladder: 1★ approaching (scaffolded), 2★ on-level / optional,
+  // 3★ extending (stretch). Take a few from each so the set spans easy → hard.
+  const tiers = [
+    { keys: ["approaching"], stars: "★", labelEn: "Start easy", labelEs: "Empieza fácil", take: 2 },
+    {
+      keys: ["onLevel", "optional"],
+      stars: "★★",
+      labelEn: "Keep going",
+      labelEs: "Sigan",
+      take: 2,
+    },
+    { keys: ["extending"], stars: "★★★", labelEn: "Challenge", labelEs: "Reto", take: 1 },
+  ];
+
+  const ladder = [];
+  for (const tier of tiers) {
+    let taken = 0;
+    for (const key of tier.keys) {
+      const arr = Array.isArray(p[key]) ? p[key] : [];
+      for (const prob of arr) {
+        if (taken >= tier.take) break;
+        const card = ladderCard(prob);
+        if (!card) continue;
+        if (ladder.some((x) => x.q === card.q)) continue;
+        ladder.push({ ...card, stars: tier.stars, tierEn: tier.labelEn, tierEs: tier.labelEs });
+        taken += 1;
+      }
+    }
+  }
+  return ladder;
 }
 
 function stuckTips(config) {
   const custom = config.familyNotes?.stuckTips;
   if (custom) return custom;
 
-  return {
+  const topic = detectVisualTopic(config);
+
+  const tipsByTopic = {
+    ratios: {
+      say: [
+        {
+          en: "Let's make a ratio table. How do we get from the first batch to the second?",
+          es: "Hagamos una tabla de razones. ¿Cómo pasamos de la primera tanda a la segunda?",
+        },
+        {
+          en: "If we double one ingredient, what must we do to the other to keep the taste the same?",
+          es: "Si duplicamos un ingrediente, ¿qué debemos hacer al otro para mantener el mismo sabor?",
+        },
+        {
+          en: "Are we multiplying or dividing both numbers by the same value?",
+          es: "¿Estamos multiplicando o dividiendo ambos números por el mismo valor?",
+        },
+      ],
+      dontSay: [
+        {
+          en: "Just add the same number to both columns.",
+          es: "Solo suma el mismo número a ambas columnas.",
+        },
+        {
+          en: "Cross multiply and divide.",
+          es: "Multiplica en cruz y divide.",
+        },
+        {
+          en: "Don't write down the units, they don't matter.",
+          es: "No escribas las unidades, no importan.",
+        },
+      ],
+    },
+    exponents: {
+      say: [
+        {
+          en: "Remember, 3⁴ means 3 is multiplied 4 times: 3 × 3 × 3 × 3. What is the base?",
+          es: "Recuerda, 3⁴ significa que 3 se multiplica 4 veces: 3 × 3 × 3 × 3. ¿Cuál es la base?",
+        },
+        {
+          en: "Let's write it out as a multiplication chain first.",
+          es: "Escribámoslo como una cadena de multiplicación primero.",
+        },
+        {
+          en: "How does the exponent compare to adding 3 four times?",
+          es: "¿Cómo se compara el exponente con sumar 3 cuatro veces?",
+        },
+      ],
+      dontSay: [
+        {
+          en: "3⁴ is just 3 × 4.",
+          es: "3⁴ es solo 3 × 4.",
+        },
+        {
+          en: "The exponent is the number you multiply the base by.",
+          es: "El exponente es el número por el que multiplicas la base.",
+        },
+        {
+          en: "It doesn't matter what order you multiply.",
+          es: "No importa en qué orden multipliques.",
+        },
+      ],
+    },
+    equations: {
+      say: [
+        {
+          en: "An equation is like a balanced scale. If we do something to one side, what must we do to the other?",
+          es: "Una ecuación es como una balanza equilibrada. Si hacemos algo a un lado, ¿qué debemos hacer al otro?",
+        },
+        {
+          en: "What operation undoes addition? What operation undoes multiplication?",
+          es: "¿Qué operación deshace la suma? ¿Qué operación deshace la multiplicación?",
+        },
+        {
+          en: "Let's read the equation like a story: 'some number x plus 5 is 12'. What is the hidden number?",
+          es: "Leamos la ecuación como una historia: 'un número x más 5 es 12'. ¿Cuál es el número oculto?",
+        },
+      ],
+      dontSay: [
+        {
+          en: "Move the number to the other side and change the sign.",
+          es: "Mueve el número al otro lado y cambia el signo.",
+        },
+        {
+          en: "Just guess and check until it works.",
+          es: "Solo adivina y prueba hasta que funcione.",
+        },
+        {
+          en: "Leave the variable on whatever side it started without balancing.",
+          es: "Deja la variable en el lado que comenzó sin equilibrar.",
+        },
+      ],
+    },
+    inequalities: {
+      say: [
+        {
+          en: "Does the boundary circle need to be open (not included) or closed (included)?",
+          es: "¿El círculo del límite debe estar abierto (no incluido) o cerrado (incluido)?",
+        },
+        {
+          en: "Let's test a number like 0 or 10. Does it make the inequality true?",
+          es: "Probemos un número como 0 o 10. ¿Hace que la desigualdad sea verdadera?",
+        },
+        {
+          en: "Which direction should we shade to show all possible answers?",
+          es: "¿En qué dirección debemos sombrear para mostrar todas las respuestas posibles?",
+        },
+      ],
+      dontSay: [
+        {
+          en: "The arrow always points the same way as the inequality sign.",
+          es: "La flecha siempre apunta en la misma dirección que el signo de desigualdad.",
+        },
+        {
+          en: "There is only one single correct answer.",
+          es: "Solo hay una única respuesta correcta.",
+        },
+        {
+          en: "An inequality is exactly the same as an equation.",
+          es: "Una desigualdad es exactamente lo mismo que una ecuación.",
+        },
+      ],
+    },
+    expressions: {
+      say: [
+        {
+          en: "What is the difference between a variable (letter) and a coefficient (number multiplied by it)?",
+          es: "¿Cuál es la diferencia entre una variable (letra) y un coeficiente (número multiplicado por ella)?",
+        },
+        {
+          en: "Can we group the terms that look alike (like terms)?",
+          es: "¿Podemos agrupar los términos que se parecen (términos semejantes)?",
+        },
+        {
+          en: "Let's substitute a number for the variable and evaluate it.",
+          es: "Sustituyamos un número en la variable y evaluémoslo.",
+        },
+      ],
+      dontSay: [
+        {
+          en: "Just combine 3x and 5 to get 8x.",
+          es: "Solo combina 3x y 5 para obtener 8x.",
+        },
+        {
+          en: "Solve for x.",
+          es: "Resuelve para x.",
+        },
+        {
+          en: "Variables are just placeholder symbols that don't represent values.",
+          es: "Las variables son solo símbolos de marcador de posición que no representan valores.",
+        },
+      ],
+    },
+    area: {
+      say: [
+        {
+          en: "Let's identify the base and the height. Are they perpendicular (forming a 90-degree L-shape)?",
+          es: "Identifiquemos la base y la altura. ¿Son perpendiculares (formando una L de 90 grados)?",
+        },
+        {
+          en: "For a triangle, why do we divide the base × height by 2? How does it relate to a rectangle?",
+          es: "Para un triángulo, ¿por qué dividimos la base × altura entre 2? ¿Cómo se relaciona con un rectángulo?",
+        },
+        {
+          en: "Can we decompose this composite shape into smaller rectangles or triangles?",
+          es: "¿Podemos descomponer esta figura compuesta en rectángulos o triángulos más pequeños?",
+        },
+      ],
+      dontSay: [
+        {
+          en: "Use the slanted side as the height.",
+          es: "Usa el lado inclinado como la altura.",
+        },
+        {
+          en: "Area is just adding all the sides together.",
+          es: "El área es solo sumar todos los lados.",
+        },
+        {
+          en: "You always multiply by 1/2 for every shape.",
+          es: "Siempre multiplicas por 1/2 para cada figura.",
+        },
+      ],
+    },
+    volume: {
+      say: [
+        {
+          en: "Let's count how many cubes fit in the bottom layer first, then multiply by how many layers tall it is.",
+          es: "Contemos cuántos cubos caben en la capa inferior primero, luego multipliquemos por cuántas capas de altura tiene.",
+        },
+        {
+          en: "Volume is the space inside. How does base area relate to the length × width?",
+          es: "El volumen es el espacio interior. ¿Cómo se relaciona el área de la base con el largo × ancho?",
+        },
+        {
+          en: "What units do we use for volume? (Cubic units like in³).",
+          es: "¿Qué unidades usamos para el volumen? (Unidades cúbicas como in³).",
+        },
+      ],
+      dontSay: [
+        {
+          en: "Just add length, width, and height.",
+          es: "Solo suma el largo, el ancho y la altura.",
+        },
+        {
+          en: "Area and volume are the same thing.",
+          es: "El área y el volumen son lo mismo.",
+        },
+        {
+          en: "Use square units for volume.",
+          es: "Usa unidades cuadradas para el volumen.",
+        },
+      ],
+    },
+    fractions: {
+      say: [
+        {
+          en: "How many halves are in 3 wholes? Let's draw 3 circles and cut each in half.",
+          es: "¿Cuántos medios hay en 3 enteros? Dibujemos 3 círculos y cortemos cada uno a la mitad.",
+        },
+        {
+          en: "What does the reciprocal mean? How does dividing by a fraction relate to multiplying by its reciprocal?",
+          es: "¿Qué significa el recíproco? ¿Cómo se relaciona dividir por una fracción con multiplicar por su recíproco?",
+        },
+        {
+          en: "Can we write a story problem for this, like sharing food?",
+          es: "¿Contamos una historia para esto, como compartir comida?",
+        },
+      ],
+      dontSay: [
+        {
+          en: "Just flip and multiply without thinking why.",
+          es: "Solo voltea y multiplica sin pensar por qué.",
+        },
+        {
+          en: "The answer must always be smaller when you divide.",
+          es: "La respuesta siempre debe ser menor cuando divides.",
+        },
+        {
+          en: "Cross multiply the numerators directly.",
+          es: "Multiplica en cruz los numeradores directamente.",
+        },
+      ],
+    },
+    decimals: {
+      say: [
+        {
+          en: "Let's line up the decimal points. Why is place value important here?",
+          es: "Alineemos los puntos decimales. ¿Por qué es importante el valor posicional aquí?",
+        },
+        {
+          en: "If we multiply 0.5 by 0.2, what is a reasonable estimate? Is it larger or smaller than the factors?",
+          es: "Si multiplicamos 0.5 por 0.2, ¿cuál es una estimación razonable? ¿Es mayor o menor que los factores?",
+        },
+        {
+          en: "Let's think of decimals as money (cents). What is $1.50 plus $0.25?",
+          es: "Pensemos en los decimales como dinero (centavos). ¿Cuánto es $1.50 más $0.25?",
+        },
+      ],
+      dontSay: [
+        {
+          en: "Line up the numbers to the right like in whole numbers.",
+          es: "Alinea los números a la derecha como en los números enteros.",
+        },
+        {
+          en: "Just drop the decimal point down anywhere.",
+          es: "Solo baja el punto decimal en cualquier lugar.",
+        },
+        {
+          en: "Adding zeros at the end changes the value.",
+          es: "Agregar ceros al final cambia el valor.",
+        },
+      ],
+    },
+    factors: {
+      say: [
+        {
+          en: "Let's build a factor tree. What are two numbers that multiply to this number?",
+          es: "Hagamos un árbol de factores. ¿Cuáles son dos números que multiplicados dan este número?",
+        },
+        {
+          en: "Is this number prime (only 1 and itself) or composite (has other factors)?",
+          es: "¿Este número es primo (solo 1 y sí mismo) o compuesto (tiene otros factores)?",
+        },
+        {
+          en: "What is the Greatest Common Factor? What is the largest factor they share?",
+          es: "¿Cuál es el Máximo Común Divisor? ¿Cuál es el factor más grande que comparten?",
+        },
+      ],
+      dontSay: [
+        {
+          en: "Multiples and factors are the same.",
+          es: "Los múltiplos y los factores son lo mismo.",
+        },
+        {
+          en: "Every odd number is prime.",
+          es: "Todo número impar es primo.",
+        },
+        {
+          en: "Prime numbers always end in odd digits except 2.",
+          es: "Los números primos siempre terminan en dígitos impares excepto el 2.",
+        },
+      ],
+    },
+  };
+
+  const pick = tipsByTopic[topic] || {
     say: [
       {
         en: "What do you already know that could help?",
@@ -292,6 +656,8 @@ function stuckTips(config) {
       },
     ],
   };
+
+  return pick;
 }
 
 function conceptVisualSvg(config) {
@@ -364,6 +730,19 @@ function conceptVisualSvg(config) {
         <rect x="168" y="112" width="212" height="16" fill="#1fa6a2" opacity="0.35"/>
         <text x="40" y="155" font-size="12" fill="#21313f">Open circle · shade the solution side</text>
         <text x="40" y="172" font-size="12" fill="#21313f" lang="es">Círculo abierto · sombrea el lado de la solución</text>
+      </svg>`;
+  }
+
+  if (topic === "properties") {
+    return `
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Properties of operations">
+        <rect x="8" y="14" width="404" height="172" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
+        <text x="210" y="40" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Properties / Propiedades</text>
+        <text x="28" y="76" font-size="13" font-weight="700" fill="#1fa6a2">Commutative / Conmutativa</text>
+        <text x="28" y="98" font-size="18" font-weight="800" fill="#12355b">a + b = b + a</text>
+        <text x="28" y="128" font-size="13" font-weight="700" fill="#1fa6a2">Associative / Asociativa</text>
+        <text x="28" y="150" font-size="18" font-weight="800" fill="#12355b">(a + b) + c = a + (b + c)</text>
+        <text x="28" y="178" font-size="13" font-weight="700" fill="#1fa6a2">Distributive / Distributiva: a(b + c) = a·b + a·c</text>
       </svg>`;
   }
 
@@ -499,7 +878,7 @@ function conceptVisualSvg(config) {
 
 function helpButton(label, payload) {
   const data = String(JSON.stringify(payload)).replace(/&/g, "&amp;").replace(/'/g, "&#39;");
-  return `<button type="button" class="help-pop-btn" data-help='${data}' onclick="openHelpModalFromBtn(this)" aria-label="${esc(label)}">${label}</button>`;
+  return `<button type="button" class="help-pop-btn" data-help='${data}' onclick="openHelpModalFromBtn(this)">${label}</button>`;
 }
 
 export function selectQuickCheckProblems(practice = {}, config = {}) {
@@ -527,13 +906,36 @@ export function renderWelcomeBanner(config, lessonId) {
         <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
         <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
       </p>
+      
+      <!-- Modern language mode selector -->
+      <div class="lang-selector-card">
+        <span class="lang-selector-title">Language / Idioma:</span>
+        <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector">
+          <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')">
+            🇺🇸🇪🇸 Bilingual / Bilíngüe
+          </button>
+          <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')">
+            🇺🇸 English Only
+          </button>
+          <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')">
+            🇪🇸 Solo Español
+          </button>
+        </div>
+      </div>
     </header>`;
 }
 
 export function renderLearningTonight(config) {
   const { en, es } = learningTonight(config);
-  const langObj = config.languageObjective || "";
-  const langObjEs = languageTonightEs(config);
+  const vocab = (config.vocabulary || []).slice(0, 5);
+  const wordsEn = vocab
+    .map((v) => v.term)
+    .filter(Boolean)
+    .join(", ");
+  const wordsEs = vocab
+    .map((v) => v.termEs || v.term)
+    .filter(Boolean)
+    .join(", ");
 
   return `
     <section class="guided-section card section-learn" aria-label="What we are learning tonight">
@@ -542,12 +944,12 @@ export function renderLearningTonight(config) {
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">${esc(en.charAt(0).toUpperCase() + en.slice(1))}.</p>
-          ${langObj ? `<p class="learning-sub">Also practice saying: <em>${esc(plainObjective(langObj))}</em></p>` : ""}
+          ${wordsEn ? `<p class="learning-sub">Practice using these words while you work: <em>${esc(wordsEn)}</em>.</p>` : ""}
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">${esc(es.endsWith(".") ? es : `${es}.`)}</p>
-          ${langObj ? `<p class="learning-sub">También practiquen: <em>${esc(langObjEs.replace(/^Puedo\s/i, "").replace(/\.$/, ""))}</em></p>` : ""}
+          ${wordsEs ? `<p class="learning-sub">Practiquen usar estas palabras al trabajar: <em>${esc(wordsEs)}</em>.</p>` : ""}
         </div>
       </div>
     </section>`;
@@ -613,27 +1015,85 @@ export function renderTryTogether(config) {
       </p>
       <ol class="together-steps">
         ${activity.steps
-          .map(
-            (step, i) => `
-          <li class="together-step step-color-${(i % 4) + 1}">
+          .map((step, i) => {
+            const hintEn = step.hint || "Read it again slowly. What is the first small step?";
+            const hintEs =
+              step.hintEs || "Léanlo de nuevo despacio. ¿Cuál es el primer paso pequeño?";
+            const hintBtn = helpButton("💡 Hint / Pista", {
+              titleEn: `Step ${i + 1} hint`,
+              titleEs: `Pista del paso ${i + 1}`,
+              en: hintEn,
+              es: hintEs,
+            });
+            const helpBtn = step.helpEn
+              ? helpButton("🤝 More help / Más ayuda", {
+                  titleEn: `Step ${i + 1} — more help`,
+                  titleEs: `Paso ${i + 1} — más ayuda`,
+                  en: step.helpEn,
+                  es: step.helpEs || hintEs,
+                })
+              : "";
+            return `
+          <li class="together-step together-step--compact step-color-${(i % 4) + 1}">
             <div class="together-step-head">
               <span class="step-badge">Step ${i + 1} / Paso ${i + 1}</span>
+              <div class="together-step-actions">
+                ${hintBtn}
+                ${helpBtn}
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> ${esc(step.en)}</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> ${esc(step.es)}</p>
-            ${
-              step.hint
-                ? `<p class="step-hint">💡 ${esc(step.hint)} · ${esc(
-                    step.hintEs ||
-                      "Tómense su tiempo — el proceso importa más que la respuesta perfecta.",
-                  )}</p>`
-                : ""
-            }
-          </li>`,
-          )
+            <p class="lang-en">${esc(step.en)}</p>
+            <p class="lang-es" lang="es">${esc(step.es)}</p>
+            <div class="together-fill">
+              <textarea id="together_${i}" name="together_${i}" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step ${i + 1}"></textarea>
+            </div>
+          </li>`;
+          })
           .join("")}
       </ol>
+      ${renderTogetherLadder(config)}
     </section>`;
+}
+
+// Graduated practice ladder rendered under the guided steps — compact problems
+// families do side by side, easiest first, with a no-JS reveal for each answer.
+function renderTogetherLadder(config) {
+  const ladder = buildTogetherLadder(config);
+  if (!ladder.length) return "";
+
+  const items = ladder
+    .map((item, i) => {
+      const answer = item.a
+        ? `<details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">${esc(item.a)}</p>
+           </details>`
+        : "";
+      return `
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">${item.stars}</span>
+            <span class="ladder-tier"><span class="lang-en">${esc(item.tierEn)}</span><span class="lang-es" lang="es">${esc(item.tierEs)}</span></span>
+          </div>
+          <p class="ladder-q">${esc(item.q)}</p>
+          <input type="text" id="ladder_${i}" name="ladder_${i}" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem ${i + 1}" />
+          ${answer}
+        </li>`;
+    })
+    .join("");
+
+  return `
+    <div class="together-ladder">
+      <h3 class="ladder-title">
+        <span class="lang-en">📈 Practice ladder — easiest first</span>
+        <span class="lang-es" lang="es">📈 Escalera de práctica — del más fácil al más difícil</span>
+      </h3>
+      <p class="ladder-note bilingual-block">
+        <span class="lang-en">Do these together. Start at ★ and climb to ★★★ when ready.</span>
+        <span class="lang-es" lang="es">Háganlos juntos. Empiecen en ★ y suban a ★★★ cuando estén listos.</span>
+      </p>
+      <ol class="ladder-list">${items}</ol>
+    </div>`;
 }
 
 export function renderStuckSection(config) {
@@ -683,6 +1143,93 @@ export function renderCelebration() {
         <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
+
+      <div class="parent-signoff-container card-ish">
+        <h3 class="signoff-title">✍️ Parent Sign-off & Feedback / Firma del padre y comentarios</h3>
+        
+        <!-- Active Form -->
+        <div id="signoff_form_wrapper">
+          <div class="signoff-field checkbox-field">
+            <label class="checkbox-label">
+              <input type="checkbox" id="parent_reviewed_checkbox" onchange="toggleSignoffSubmitBtn()" />
+              <span class="lang-en">I reviewed this homework with my student tonight.</span>
+              <span class="lang-es" lang="es">Revisé esta tarea con mi estudiante esta noche.</span>
+            </label>
+          </div>
+          
+          <div class="signoff-field text-field">
+            <label for="parent_name_input">
+              <span class="lang-en">Parent/Guardian Name:</span>
+              <span class="lang-es" lang="es">Nombre del padre/tutor:</span>
+            </label>
+            <input type="text" id="parent_name_input" placeholder="e.g. Maria Lopez" oninput="toggleSignoffSubmitBtn()" />
+          </div>
+
+          <div class="signoff-field textarea-field">
+            <label for="parent_note_input">
+              <span class="lang-en">Note to Teacher (optional):</span>
+              <span class="lang-es" lang="es">Nota para el maestro (opcional):</span>
+            </label>
+            <textarea id="parent_note_input" rows="3" placeholder="e.g. Student did great with equations but struggled with drawing the number line."></textarea>
+          </div>
+
+          <button type="button" id="submit_signoff_btn" class="signoff-submit-btn" disabled onclick="saveParentSignoff()">
+            <span class="lang-en">Confirm & Save / Confirmar y Guardar</span>
+          </button>
+        </div>
+
+        <!-- Confirmed View -->
+        <div id="signoff_confirmed_wrapper" hidden>
+          <div class="certificate-badge">
+            <div class="cert-check">🏆</div>
+            <div class="cert-info">
+              <h4 class="cert-header">
+                <span class="lang-en">Homework Review Verified!</span>
+                <span class="lang-es" lang="es">¡Revisión de tarea verificada!</span>
+              </h4>
+              <p class="cert-detail"><strong id="display_parent_name"></strong></p>
+              <p class="cert-date"><span class="lang-en">Signed on:</span><span class="lang-es" lang="es">Firmado el:</span> <span id="display_signoff_date"></span></p>
+              <div id="display_parent_note_box" class="cert-note-box" hidden>
+                <p class="cert-note-title"><strong>Note to teacher / Nota para el maestro:</strong></p>
+                <p id="display_parent_note" class="cert-note-content"></p>
+              </div>
+            </div>
+          </div>
+          <div class="cert-actions">
+            <button type="button" class="btn btn-secondary print-cert-btn" onclick="window.print()">
+              <span class="lang-en">🖨️ Print Certificate / Imprimir certificado</span>
+            </button>
+            <button type="button" class="edit-signoff-btn" onclick="editParentSignoff()">
+              <span class="lang-en">Edit sign-off / Editar firma</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Print-Only Certificate Layout -->
+      <div class="print-only-certificate" id="print_only_certificate">
+        <div class="print-cert-header">
+          <h2>EDU WONDERLAB MATH</h2>
+          <h3>Family Math Night Completion Certificate</h3>
+        </div>
+        <div class="print-cert-body">
+          <p>This certifies that the homework for <strong><span id="print_lesson_title"></span></strong> was completed and reviewed collaboratively.</p>
+          <div class="print-cert-signatures">
+            <div class="print-sig-block">
+              <p class="sig-line" id="print_parent_name"></p>
+              <p class="sig-label">Parent/Guardian Signature</p>
+            </div>
+            <div class="print-sig-block">
+              <p class="sig-line" id="print_signoff_date"></p>
+              <p class="sig-label">Date</p>
+            </div>
+          </div>
+          <div class="print-cert-note" id="print_parent_note_wrapper" style="display:none;">
+            <p class="note-heading"><strong>Parent Note to Teacher:</strong></p>
+            <p id="print_parent_note" class="note-body"></p>
+          </div>
+        </div>
+      </div>
     </section>`;
 }
 
@@ -691,8 +1238,8 @@ export function renderQuickCheckIntro() {
     <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
       <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
       <p class="bilingual-block">
-        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
-        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+        <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
       </p>
     </section>`;
 }
@@ -772,12 +1319,121 @@ export function renderTogetherTab(config) {
   return `<div ${tabPanelAttrs("together", true)}>${inner}</div>`;
 }
 
-export function renderCheckTab(quickCheckIntro, problemsHtml) {
+export function renderCheckTab(quickCheckIntro, warmupHtml, challengeHtml = "", moreHtml = "") {
   const intro = quickCheckIntro.replace(/<section[^>]*>|<\/section>/g, "");
+
+  const warmupBlock = warmupHtml
+    ? `
+      <section class="practice-tier practice-tier-warmup" aria-label="Warm-up practice">
+        <div class="practice-tier-head">
+          <span class="practice-tier-badge tier-warmup">1</span>
+          <div class="practice-tier-titles">
+            <h3 class="practice-tier-title">
+              <span class="lang-en">🌱 Warm-up — start here</span>
+              <span class="lang-es" lang="es">🌱 Calentamiento — empiecen aquí</span>
+            </h3>
+            <p class="practice-tier-sub bilingual-block">
+              <span class="lang-en">Easier problems to practice the idea. Do these first together.</span>
+              <span class="lang-es" lang="es">Problemas más fáciles para practicar la idea. Hagan estos primero juntos.</span>
+            </p>
+          </div>
+        </div>
+        <section class="problems-container" aria-label="Practice problems">${warmupHtml}</section>
+      </section>`
+    : "";
+
+  const challengeBlock = challengeHtml
+    ? `
+      <section class="practice-tier practice-tier-challenge" aria-label="Challenge practice">
+        <div class="practice-tier-head">
+          <span class="practice-tier-badge tier-challenge">2</span>
+          <div class="practice-tier-titles">
+            <h3 class="practice-tier-title">
+              <span class="lang-en">🚀 Level up — a little harder</span>
+              <span class="lang-es" lang="es">🚀 Sube de nivel — un poco más difícil</span>
+            </h3>
+            <p class="practice-tier-sub bilingual-block">
+              <span class="lang-en">Try these once the warm-up feels easy. It's okay to use the steps and pictures.</span>
+              <span class="lang-es" lang="es">Intenten estos cuando el calentamiento sea fácil. Está bien usar los pasos y los dibujos.</span>
+            </p>
+          </div>
+        </div>
+        <section class="problems-container" aria-label="Practice problems">${challengeHtml}</section>
+      </section>`
+    : "";
+
+  const more = moreHtml
+    ? `
+      <details class="more-practice">
+        <summary>
+          <span class="lang-en">➕ More practice — open for extra problems</span>
+          <span class="lang-es" lang="es">➕ Más práctica — abre para más problemas</span>
+        </summary>
+        <p class="more-practice-note bilingual-block">
+          <span class="lang-en">Optional. Only if your student wants more — these are bonus problems.</span>
+          <span class="lang-es" lang="es">Opcional. Solo si tu estudiante quiere más — son problemas adicionales.</span>
+        </p>
+        <section class="problems-container more-practice-container" aria-label="More practice">${moreHtml}</section>
+      </details>`
+    : "";
+
   return `
     <div ${tabPanelAttrs("check", true)}>
       ${intro}
-      <main class="problems-container">${problemsHtml}</main>
+      ${warmupBlock}
+      ${challengeBlock}
+      ${more}
+    </div>`;
+}
+
+// Math Workbench tab — embeds the shared whiteboard so families can show their
+// work without leaving the homework page. The iframe is lazy-loaded on first
+// open (see HOMEWORK_TABS_JS) so it never slows down the rest of the page.
+// Practice Arcade for tonight's lesson — links to the shared per-lesson game
+// engine (math/games/practice-arcade). Iframe is lazy-loaded on first open so
+// the Phaser game never slows down the rest of the homework page.
+export function renderArcadeTabPanel(lessonId) {
+  const url = `/math/games/practice-arcade/?lesson=${encodeURIComponent(lessonId)}`;
+  return `
+    <div ${tabPanelAttrs("arcade", true)}>
+      <section class="guided-section card section-arcade" aria-label="Practice Arcade">
+        <h2 class="section-title">🕹️ Practice Arcade / Sala de juegos</h2>
+        <p class="bilingual-block">
+          <span class="lang-en">A quick, no-timer review game for tonight's lesson — sort, match, and choose. A wrong answer just gives a hint and lets your student try again.</span>
+          <span class="lang-es" lang="es">Un juego de repaso sin reloj para la lección de hoy — clasificar, emparejar y elegir. Si se equivocan, reciben una pista y pueden intentar de nuevo.</span>
+        </p>
+        <p class="workbench-openrow">
+          <a class="btn btn-secondary" href="${url}" target="_blank" rel="noopener">
+            <span class="lang-en">↗ Play full screen</span>
+            <span class="lang-es" lang="es">↗ Jugar en pantalla completa</span>
+          </a>
+        </p>
+        <div class="workbench-frame-wrap">
+          <iframe class="arcade-frame" data-src="${url}" title="Practice Arcade" loading="lazy"></iframe>
+        </div>
+      </section>
+    </div>`;
+}
+
+export function renderWorkbenchTab() {
+  return `
+    <div ${tabPanelAttrs("workbench", true)}>
+      <section class="guided-section card section-workbench" aria-label="Math Workbench">
+        <h2 class="section-title">🧮 Math Workbench / Pizarra de matemáticas</h2>
+        <p class="bilingual-block">
+          <span class="lang-en">A digital scratch pad to draw models, line up decimals, and show your work — right here while you practice.</span>
+          <span class="lang-es" lang="es">Una pizarra digital para dibujar modelos, alinear decimales y mostrar el trabajo — aquí mismo mientras practican.</span>
+        </p>
+        <p class="workbench-openrow">
+          <a class="btn btn-secondary" href="/curriculum/math-workbench/" target="_blank" rel="noopener">
+            <span class="lang-en">↗ Open full screen</span>
+            <span class="lang-es" lang="es">↗ Abrir en pantalla completa</span>
+          </a>
+        </p>
+        <div class="workbench-frame-wrap">
+          <iframe class="workbench-frame" data-src="/curriculum/math-workbench/" title="Math Workbench" loading="lazy"></iframe>
+        </div>
+      </section>
     </div>`;
 }
 
@@ -807,6 +1463,22 @@ export function renderMoreTab(config, lessonId) {
     <div ${tabPanelAttrs("more", true)}>
       <section class="guided-section card section-more" aria-label="Learn more online">
         <h2 class="section-title">🌐 Learn more online / Aprende más en línea</h2>
+        <a href="/curriculum/ai-hub/#students" target="_blank" rel="noopener" class="ai-lab-cta">
+          <span class="ai-lab-emoji" aria-hidden="true">🤖</span>
+          <span class="ai-lab-text">
+            <span class="lang-en"><strong>Practice with the AI Learning Lab</strong> — your student can ask questions and get safe, step-by-step help on tonight's topic.</span>
+            <span class="lang-es" lang="es"><strong>Practica con el Laboratorio de IA</strong> — tu estudiante puede hacer preguntas y recibir ayuda segura, paso a paso, sobre el tema de hoy.</span>
+          </span>
+          <span class="ai-lab-arrow" aria-hidden="true">→</span>
+        </a>
+        <a href="/curriculum/math-workbench/" target="_blank" rel="noopener" class="ai-lab-cta workbench-cta">
+          <span class="ai-lab-emoji" aria-hidden="true">📝</span>
+          <span class="ai-lab-text">
+            <span class="lang-en"><strong>Open the Math Workbench</strong> — a digital whiteboard to draw, write, and work out problems together.</span>
+            <span class="lang-es" lang="es"><strong>Abre el Cuaderno de Matemáticas</strong> — una pizarra digital para dibujar, escribir y resolver problemas juntos.</span>
+          </span>
+          <span class="ai-lab-arrow" aria-hidden="true">→</span>
+        </a>
         <p class="bilingual-block">
           <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
           <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
@@ -834,7 +1506,7 @@ export function renderPlayTabPanel(config) {
   return `<div ${tabPanelAttrs("play", true)}>${inner}</div>`;
 }
 
-export function renderProblemHintButton(problem) {
+export function renderProblemHintButton(problem, visual = "") {
   const hintEn =
     problem.hints?.[0] ||
     problem.explanation ||
@@ -845,6 +1517,9 @@ export function renderProblemHintButton(problem) {
     titleEs: "Pista antes de revisar",
     en: hintEn,
     es: hintEs,
+    visual,
+    frameEn: "Draw it first, then solve. Try saying: “This problem is asking me to…”",
+    frameEs: "Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”",
   });
 }
 
@@ -853,14 +1528,20 @@ export function renderDoneTab() {
   return `<div ${tabPanelAttrs("done", true)}>${inner}</div>`;
 }
 
+// Order follows the real family-homework flow: understand the concept, learn the
+// vocab (vocab before any activity), do the guided activity together, work it on
+// the scratch pad, check understanding, then practice games, then reference
+// help/links, then finish. Tab nav + progress read this DOM order directly.
 const HOMEWORK_TABS = [
   { id: "learn", icon: "📖", en: "Learn", es: "Aprender" },
   { id: "words", icon: "📚", en: "Words", es: "Palabras" },
   { id: "together", icon: "🤝", en: "Together", es: "Juntos" },
+  { id: "workbench", icon: "🧮", en: "Workbench", es: "Pizarra" },
   { id: "check", icon: "✅", en: "Check", es: "Repaso" },
+  { id: "arcade", icon: "🕹️", en: "Arcade", es: "Sala de juegos" },
+  { id: "play", icon: "🎮", en: "Play", es: "Jugar" },
   { id: "help", icon: "💬", en: "Help", es: "Ayuda" },
   { id: "more", icon: "🌐", en: "More", es: "Más" },
-  { id: "play", icon: "🎮", en: "Play", es: "Jugar" },
   { id: "done", icon: "🎉", en: "Done", es: "Listo" },
 ];
 
@@ -897,8 +1578,14 @@ export function renderHelpModal() {
       <div class="help-modal" role="dialog" aria-modal="true" aria-labelledby="help_modal_title" onclick="event.stopPropagation()">
         <button type="button" class="help-modal-close" onclick="closeHelpModal()" aria-label="Close help">✕</button>
         <h3 id="help_modal_title" class="help-modal-title"></h3>
+        <div class="help-modal-visual" id="help_modal_visual" hidden></div>
         <p class="help-modal-body lang-en" id="help_modal_en"></p>
         <p class="help-modal-body lang-es" lang="es" id="help_modal_es"></p>
+        <div class="help-modal-frame" id="help_modal_frame" hidden>
+          <span class="help-frame-tag">✏️ Sentence starter / Para empezar</span>
+          <span class="help-frame-en lang-en" id="help_modal_frame_en"></span>
+          <span class="help-frame-es lang-es" lang="es" id="help_modal_frame_es"></span>
+        </div>
       </div>
     </div>`;
 }
@@ -932,6 +1619,14 @@ function switchHomeworkTab(tabId) {
   const total = document.querySelector('.homework-tabs-shell')?.dataset.tabCount || '8';
   if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
   if (tabId === 'play' && typeof initHomeworkGame === 'function') initHomeworkGame();
+  if (tabId === 'workbench') {
+    var wf = document.querySelector('.workbench-frame');
+    if (wf && !wf.getAttribute('src') && wf.dataset.src) wf.setAttribute('src', wf.dataset.src);
+  }
+  if (tabId === 'arcade') {
+    var af = document.querySelector('.arcade-frame');
+    if (af && !af.getAttribute('src') && af.dataset.src) af.setAttribute('src', af.dataset.src);
+  }
   const activeBtn = document.getElementById('hw_tab_' + tabId);
   if (activeBtn) {
     activeBtn.scrollIntoView({ inline: 'nearest', block: 'nearest', behavior: 'smooth' });
@@ -954,6 +1649,21 @@ function openHelpModal(data) {
     (data.titleEn || 'Help') + ' / ' + (data.titleEs || 'Ayuda');
   document.getElementById('help_modal_en').textContent = data.en || '';
   document.getElementById('help_modal_es').textContent = data.es || '';
+  var vis = document.getElementById('help_modal_visual');
+  if (vis) {
+    if (data.visual) { vis.innerHTML = data.visual; vis.hidden = false; }
+    else { vis.innerHTML = ''; vis.hidden = true; }
+  }
+  var frame = document.getElementById('help_modal_frame');
+  if (frame) {
+    if (data.frameEn || data.frameEs) {
+      document.getElementById('help_modal_frame_en').textContent = data.frameEn || '';
+      document.getElementById('help_modal_frame_es').textContent = data.frameEs || '';
+      frame.hidden = false;
+    } else {
+      frame.hidden = true;
+    }
+  }
   overlay.hidden = false;
   document.body.classList.add('help-modal-open');
   overlay.querySelector('.help-modal-close')?.focus();
@@ -974,6 +1684,136 @@ function triggerCelebration() {
   document.querySelector('.section-celebrate')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
+function setLanguageMode(mode) {
+  try { localStorage.setItem('hw_lang_mode', mode); } catch(e) {}
+  document.body.classList.remove('lang-mode-bilingual', 'lang-mode-en', 'lang-mode-es');
+  document.body.classList.add('lang-mode-' + mode);
+  document.querySelectorAll('.lang-toggle-btn').forEach(function(btn) {
+    const active = btn.getAttribute('data-lang-mode') === mode;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+}
+
+function toggleSignoffSubmitBtn() {
+  const checkbox = document.getElementById('parent_reviewed_checkbox');
+  const nameInput = document.getElementById('parent_name_input');
+  const submitBtn = document.getElementById('submit_signoff_btn');
+  if (checkbox && nameInput && submitBtn) {
+    submitBtn.disabled = !(checkbox.checked && nameInput.value.trim().length > 0);
+  }
+}
+
+function saveParentSignoff() {
+  const nameVal = document.getElementById('parent_name_input')?.value.trim();
+  const noteVal = document.getElementById('parent_note_input')?.value.trim();
+  const checked = document.getElementById('parent_reviewed_checkbox')?.checked;
+  const lessonId = window.LESSON_ID || 'general';
+  const lessonTitle = window.LESSON_TITLE || "Tonight's Lesson";
+  
+  if (!checked || !nameVal) return;
+  
+  const signoffDate = new Date().toLocaleDateString(undefined, { 
+    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+  });
+  
+  const payload = {
+    parentName: nameVal,
+    note: noteVal,
+    date: signoffDate,
+    lessonTitle: lessonTitle
+  };
+  
+  try {
+    localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
+  } catch(e) {}
+  
+  updateSignoffUI(payload);
+}
+
+function updateSignoffUI(data) {
+  const nameEl = document.getElementById('display_parent_name');
+  if (nameEl) nameEl.textContent = data.parentName;
+  
+  const dateEl = document.getElementById('display_signoff_date');
+  if (dateEl) dateEl.textContent = data.date;
+  
+  const noteBox = document.getElementById('display_parent_note_box');
+  const noteEl = document.getElementById('display_parent_note');
+  if (noteBox && noteEl) {
+    if (data.note) {
+      noteEl.textContent = data.note;
+      noteBox.hidden = false;
+    } else {
+      noteBox.hidden = true;
+    }
+  }
+  
+  const formWrap = document.getElementById('signoff_form_wrapper');
+  const confWrap = document.getElementById('signoff_confirmed_wrapper');
+  if (formWrap) formWrap.hidden = true;
+  if (confWrap) confWrap.hidden = false;
+  
+  const printTitle = document.getElementById('print_lesson_title');
+  if (printTitle) printTitle.textContent = data.lessonTitle;
+  
+  const printName = document.getElementById('print_parent_name');
+  if (printName) printName.textContent = data.parentName;
+  
+  const printDate = document.getElementById('print_signoff_date');
+  if (printDate) printDate.textContent = data.date.split(' at ')[0];
+  
+  const printNoteWrapper = document.getElementById('print_parent_note_wrapper');
+  const printNote = document.getElementById('print_parent_note');
+  if (printNoteWrapper && printNote) {
+    if (data.note) {
+      printNote.textContent = data.note;
+      printNoteWrapper.style.display = 'block';
+    } else {
+      printNoteWrapper.style.display = 'none';
+    }
+  }
+  
+  const printCert = document.getElementById('print_only_certificate');
+  if (printCert) printCert.classList.add('is-signed');
+}
+
+function editParentSignoff() {
+  const formWrap = document.getElementById('signoff_form_wrapper');
+  const confWrap = document.getElementById('signoff_confirmed_wrapper');
+  if (formWrap) formWrap.hidden = false;
+  if (confWrap) confWrap.hidden = true;
+  
+  const printCert = document.getElementById('print_only_certificate');
+  if (printCert) printCert.classList.remove('is-signed');
+}
+
+function restoreParentSignoff() {
+  try {
+    const langMode = localStorage.getItem('hw_lang_mode') || 'bilingual';
+    setLanguageMode(langMode);
+  } catch(e) {
+    setLanguageMode('bilingual');
+  }
+
+  const lessonId = window.LESSON_ID || 'general';
+  try {
+    const saved = localStorage.getItem('hw_parent_signoff_' + lessonId);
+    if (saved) {
+      const data = JSON.parse(saved);
+      const nameInput = document.getElementById('parent_name_input');
+      const noteInput = document.getElementById('parent_note_input');
+      const checkbox = document.getElementById('parent_reviewed_checkbox');
+      if (nameInput) nameInput.value = data.parentName || '';
+      if (noteInput) noteInput.value = data.note || '';
+      if (checkbox) checkbox.checked = true;
+      toggleSignoffSubmitBtn();
+      
+      updateSignoffUI(data);
+    }
+  } catch(e) {}
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   syncHomeworkChromeHeights();
   window.addEventListener('resize', syncHomeworkChromeHeights);
@@ -985,7 +1825,48 @@ document.addEventListener('DOMContentLoaded', function() {
     if (last && document.getElementById('hw_tab_' + last)) switchHomeworkTab(last);
     else switchHomeworkTab('learn');
   } catch(e) {}
+  restoreParentSignoff();
+  initDrawCanvases();
 });
+
+// Make every "Draw your model" grid an actual drawable surface (mouse + touch + stylus).
+function initDrawCanvases() {
+  document.querySelectorAll('[data-draw-frame]').forEach(function(frame) {
+    const canvas = frame.querySelector('[data-draw-canvas]');
+    if (!canvas || canvas.dataset.ready) return;
+    canvas.dataset.ready = '1';
+    const ctx = canvas.getContext('2d');
+    let drawing = false, last = null;
+    function resize() {
+      const r = frame.getBoundingClientRect();
+      if (!r.width) return;
+      const prev = canvas.toDataURL && canvas.width ? canvas.toDataURL() : null;
+      canvas.width = Math.round(r.width); canvas.height = Math.round(r.height);
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 2.5; ctx.strokeStyle = '#12355b';
+      if (prev) { const img = new Image(); img.onload = function(){ ctx.drawImage(img,0,0,canvas.width,canvas.height); }; img.src = prev; }
+    }
+    function pos(e) {
+      const r = canvas.getBoundingClientRect();
+      const t = e.touches ? e.touches[0] : e;
+      return { x: t.clientX - r.left, y: t.clientY - r.top };
+    }
+    function start(e) { drawing = true; last = pos(e); e.preventDefault(); }
+    function move(e) {
+      if (!drawing) return;
+      const p = pos(e);
+      ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+      last = p; e.preventDefault();
+    }
+    function end() { drawing = false; }
+    canvas.addEventListener('pointerdown', start);
+    canvas.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', end);
+    const clearBtn = frame.querySelector('[data-draw-clear]');
+    if (clearBtn) clearBtn.addEventListener('click', function(){ ctx.clearRect(0,0,canvas.width,canvas.height); });
+    resize();
+    window.addEventListener('resize', resize);
+  });
+}
 `;
 
 export const GUIDED_NOTES_CSS = `
@@ -1047,11 +1928,15 @@ export const GUIDED_NOTES_CSS = `
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--teal);
+  color: var(--teal-ink);
   margin-bottom: 6px;
 }
 .lang-en { margin: 0 0 6px; }
-.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+/* Spanish is a primary language for our families: keep it fully legible, not a faded subtitle. */
+.lang-es { margin: 0; color: var(--ink); font-style: normal; }
+.step-badge .lang-en, .step-badge .lang-es { color: inherit; }
+.lang-en + .lang-es, .worked-step .lang-es { padding-left: 10px; border-left: 3px solid var(--teal); }
+.welcome-lead .lang-es { color: rgba(255, 255, 255, 0.94); border-left: 3px solid var(--amber); padding-left: 10px; display: inline-block; margin-top: 6px; }
 .learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
 .learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
 
@@ -1233,8 +2118,8 @@ export const GUIDED_NOTES_CSS = `
 .homework-tab-btn:hover { border-color: var(--teal); color: var(--navy); }
 .homework-tab-btn:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
 .homework-tab-btn.is-active {
-  background: var(--teal);
-  border-color: var(--teal);
+  background: var(--teal-ink);
+  border-color: var(--teal-ink);
   color: var(--white);
   box-shadow: 0 2px 8px rgba(31,166,162,0.30);
 }
@@ -1289,7 +2174,120 @@ export const GUIDED_NOTES_CSS = `
 .help-modal-body { margin: 0 0 10px; font-size: 15px; line-height: 1.5; }
 body.help-modal-open { overflow: hidden; }
 
+/* Visual aid + sentence frame inside help popups */
+.help-modal-visual {
+  margin: 0 0 14px; padding: 10px; border-radius: var(--radius-sm);
+  background: var(--cream); border: 1px solid var(--line); text-align: center;
+}
+.help-modal-visual[hidden] { display: none !important; }
+.help-modal-visual svg { max-width: 100%; height: auto; }
+.help-modal-frame {
+  display: flex; flex-direction: column; gap: 4px;
+  margin: 12px 0 0; padding: 12px 14px;
+  background: var(--teal-light); border-left: 4px solid var(--teal);
+  border-radius: var(--radius-sm); font-size: 14px; line-height: 1.5;
+}
+.help-modal-frame[hidden] { display: none !important; }
+.help-frame-tag { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--teal); }
+.help-frame-es { color: var(--muted); }
+
+/* Guided "Try together" fill-in spaces + step actions */
+.together-fill { margin: 10px 0 6px; }
+.together-fill-label { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.together-fill-input {
+  width: 100%; min-height: 48px; padding: 10px 12px;
+  border: 2px dashed var(--teal); border-radius: var(--radius-sm);
+  background: #fffef8; font-size: 15px; line-height: 1.5; resize: vertical;
+}
+.together-fill-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
+.together-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+/* Compact "Try Together" steps: tighter padding, inline action buttons, single-row input. */
+.together-steps { gap: 8px; }
+.together-step--compact { padding: 9px 11px; }
+.together-step--compact .together-step-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.together-step--compact .step-badge { margin-bottom: 0; }
+.together-step--compact .together-step-actions { margin-top: 0; }
+.together-step--compact p { margin: 6px 0 0; font-size: 14px; }
+.together-step--compact .together-fill { margin: 7px 0 0; }
+.together-step--compact .together-fill-input { min-height: 40px; }
+
+/* Graduated practice ladder under the guided steps. */
+.together-ladder { margin-top: 16px; padding-top: 14px; border-top: 2px dashed var(--line); }
+.ladder-title { font-family: var(--font-display); font-size: 16px; margin: 0 0 4px; color: var(--navy); }
+.ladder-note { font-size: 13px; margin: 0 0 12px; }
+.ladder-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; counter-reset: ladder; }
+.ladder-item { border: 1px solid var(--line); border-left: 4px solid #5b8def; border-radius: var(--radius-sm); padding: 9px 11px; background: var(--white); }
+.ladder-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.ladder-stars { color: #f5a623; font-size: 13px; letter-spacing: 1px; }
+.ladder-tier { font-family: var(--font-display); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--navy); }
+.ladder-q { margin: 0 0 8px; font-size: 14.5px; line-height: 1.4; }
+.ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
+.ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
+.ladder-answer { margin-top: 7px; }
+.ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
+.ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
+
+/* "More practice" accordion in the Check tab */
+/* Tiered practice sections (warm-up first, then a harder challenge set) */
+.practice-tier { margin: 0 0 22px; }
+.practice-tier + .practice-tier { margin-top: 4px; }
+.practice-tier-head {
+  display: flex; align-items: center; gap: 12px; margin: 0 0 10px;
+  padding: 12px 16px; border-radius: var(--radius-md);
+}
+.practice-tier-warmup .practice-tier-head { background: var(--teal-light); }
+.practice-tier-challenge .practice-tier-head { background: var(--amber-light, #fdf3dd); }
+.practice-tier-badge {
+  flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; font-size: 18px; color: #fff;
+}
+.practice-tier-badge.tier-warmup { background: var(--teal-ink); }
+.practice-tier-badge.tier-challenge { background: var(--amber-strong, #d99a1c); }
+.practice-tier-titles { min-width: 0; }
+.practice-tier-title {
+  margin: 0; font-family: var(--font-display); font-weight: 800;
+  color: var(--navy); font-size: clamp(1.02rem, 2.4vw, 1.2rem);
+}
+.practice-tier-sub { margin: 2px 0 0; font-size: 13px; color: var(--muted, #5f6f80); }
+
+/* Math Workbench tab */
+.section-workbench .workbench-openrow { margin: 4px 0 12px; }
+.workbench-frame-wrap {
+  border: 2px solid var(--teal); border-radius: var(--radius-md); overflow: hidden;
+  background: var(--white);
+}
+.workbench-frame, .arcade-frame { display: block; width: 100%; height: 72vh; min-height: 480px; border: 0; }
+
+.more-practice {
+  margin-top: 20px; border: 2px solid var(--teal); border-radius: var(--radius-md);
+  background: var(--teal-light); overflow: hidden;
+}
+.more-practice > summary {
+  cursor: pointer; list-style: none; padding: 14px 18px;
+  font-family: var(--font-display); font-weight: 800; color: var(--navy); font-size: 16px;
+}
+.more-practice > summary::-webkit-details-marker { display: none; }
+.more-practice[open] > summary { border-bottom: 1px solid var(--line); background: var(--white); }
+.more-practice-note { padding: 12px 18px 0; font-size: 13px; }
+.more-practice-container { padding: 8px 14px 14px; }
+
 .external-resource-list { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-direction: column; gap: 10px; }
+.ai-lab-cta {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px; margin-bottom: 16px;
+  border: none; border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--navy), var(--teal));
+  color: #fff; text-decoration: none;
+  box-shadow: var(--shadow-sm);
+}
+.ai-lab-cta:hover { filter: brightness(1.06); text-decoration: none; }
+.workbench-cta { background: linear-gradient(135deg, #5b8def, var(--teal)); }
+.ai-lab-emoji { font-size: 30px; line-height: 1; flex: 0 0 auto; }
+.ai-lab-text { flex: 1 1 auto; font-size: 14px; line-height: 1.45; }
+.ai-lab-text .lang-es { color: rgba(255,255,255,0.94); border-left-color: var(--amber); }
+.ai-lab-arrow { font-size: 22px; font-weight: 800; flex: 0 0 auto; }
 .external-resource-link {
   display: flex; flex-direction: column; gap: 4px;
   padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm);
@@ -1330,12 +2328,350 @@ body.help-modal-open { overflow: hidden; }
 }
 .problem-hint-row { margin: 8px 0 12px; }
 
+/* Language mode overrides */
+body.lang-mode-en .lang-es,
+body.lang-mode-en .welcome-title-es,
+body.lang-mode-en .tab-es,
+body.lang-mode-en .vocab-es,
+body.lang-mode-en .vocab-def-es,
+body.lang-mode-en .ext-title-es,
+body.lang-mode-en [lang="es"],
+body.lang-mode-en .bilingual-col.lang-es {
+  display: none !important;
+}
+
+body.lang-mode-es .lang-en,
+body.lang-mode-es .welcome-title-en,
+body.lang-mode-es .tab-en,
+body.lang-mode-es .vocab-def,
+body.lang-mode-es .ext-title-en,
+body.lang-mode-es .learning-big:not([lang="es"]),
+body.lang-mode-es .learning-sub:not([lang="es"]),
+body.lang-mode-es .bilingual-col.lang-en {
+  display: none !important;
+}
+
+body.lang-mode-en .bilingual-grid,
+body.lang-mode-es .bilingual-grid {
+  grid-template-columns: 1fr !important;
+}
+
+/* Premium language selector card styles */
+.lang-selector-card {
+  margin-top: 18px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.lang-selector-title {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--white);
+}
+.lang-selector-buttons {
+  display: flex;
+  gap: 8px;
+}
+.lang-toggle-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: var(--white);
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lang-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: var(--white);
+}
+.lang-toggle-btn.active {
+  background: var(--teal-ink);
+  border-color: var(--teal);
+  color: var(--white);
+  box-shadow: 0 4px 12px rgba(31, 166, 162, 0.35);
+}
+@media (max-width: 640px) {
+  .lang-selector-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .lang-selector-buttons {
+    flex-direction: column;
+  }
+  .lang-toggle-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Parent Sign-off container styling */
+.parent-signoff-container {
+  margin-top: 24px;
+  padding: 24px;
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 30px rgba(18, 53, 91, 0.06);
+  text-align: left;
+}
+.signoff-title {
+  margin: 0 0 16px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  color: var(--navy);
+  font-weight: 800;
+  border-bottom: 2px solid var(--teal-light);
+  padding-bottom: 8px;
+}
+.signoff-field {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.signoff-field label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.checkbox-field {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+}
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14.5px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--teal);
+  cursor: pointer;
+}
+.signoff-field input[type="text"],
+.signoff-field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 14px;
+  background: var(--cream);
+  color: var(--ink);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.signoff-field input[type="text"]:focus,
+.signoff-field textarea:focus {
+  outline: none;
+  border-color: var(--teal);
+  background: var(--white);
+}
+.signoff-submit-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  background: var(--teal-ink);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.signoff-submit-btn:disabled {
+  background: var(--line);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+.signoff-submit-btn:not(:disabled):hover {
+  background: var(--navy);
+  box-shadow: 0 4px 15px rgba(18, 53, 91, 0.15);
+}
+
+/* Certificate View */
+.certificate-badge {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  background: var(--teal-light);
+  border: 2px solid var(--teal);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.cert-check {
+  font-size: 40px;
+  line-height: 1;
+}
+.cert-info {
+  flex-grow: 1;
+}
+.cert-header {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--teal);
+  font-weight: 800;
+}
+.cert-detail {
+  font-size: 17px;
+  color: var(--navy);
+  margin: 0 0 2px;
+}
+.cert-date {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+}
+.cert-note-box {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: var(--white);
+  border-left: 3px solid var(--coral);
+  border-radius: var(--radius-xs);
+  text-align: left;
+}
+.cert-note-title {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: var(--coral);
+}
+.cert-note-content {
+  margin: 0;
+  font-size: 13.5px;
+  font-style: italic;
+  color: var(--ink);
+}
+.cert-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.print-cert-btn {
+  background: var(--navy);
+  color: var(--white);
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+.print-cert-btn:hover {
+  background: var(--teal-ink);
+}
+.edit-signoff-btn {
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.edit-signoff-btn:hover {
+  color: var(--coral);
+}
+
+/* Print Certificate specific layout */
+.print-only-certificate {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .homework-tab-btn, .hw-game-choice-btn, .help-pop-btn { transition: none; }
 }
 @media print {
-  .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn { display: none !important; }
+  .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
   body { padding-bottom: 0; }
+  
+  .print-only-certificate.is-signed {
+    display: block !important;
+    margin-top: 40px;
+    padding: 24px;
+    border: 4px double var(--navy) !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    text-align: center;
+    page-break-inside: avoid;
+  }
+  .print-cert-header h2 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    color: var(--muted) !important;
+    margin: 0 0 6px;
+  }
+  .print-cert-header h3 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--navy) !important;
+    margin: 0 0 20px;
+  }
+  .print-cert-body p {
+    font-size: 15px;
+    color: var(--ink) !important;
+    margin-bottom: 30px;
+  }
+  .print-cert-signatures {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+  }
+  .print-sig-block {
+    width: 40%;
+    text-align: center;
+  }
+  .sig-line {
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy) !important;
+    border-bottom: 1.5px solid var(--ink);
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+    min-height: 28px;
+  }
+  .sig-label {
+    font-size: 11px;
+    color: var(--muted) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .print-cert-note {
+    text-align: left;
+    background: #f9f9f9;
+    padding: 12px 16px;
+    border-left: 4px solid var(--coral);
+    border-radius: 4px;
+  }
+  .print-cert-note .note-heading {
+    font-size: 12px;
+    color: var(--coral) !important;
+    margin: 0 0 4px;
+  }
+  .print-cert-note .note-body {
+    font-size: 13.5px;
+    font-style: italic;
+    margin: 0;
+  }
 }
 `;

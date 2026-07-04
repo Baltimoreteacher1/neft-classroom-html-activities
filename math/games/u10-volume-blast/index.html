@@ -3,10 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Volume Blast — Volume of Rectangular Prisms Game | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
+    <title>Volume Blast — Unit-Cube Stacker | Neft Teacher</title>
     <meta
       name="description"
-      content="A 2D aim-and-blast game for Grade 6 lessons 10.1-10.5 (6.G.2): compute the volume of a rectangular prism, find a missing dimension, and handle fractional edges, then blast the crate with the correct answer."
+      content="A calm build-it math game for Grade 6 lessons 10.1-10.5 (6.G.2): stack real unit cubes to build a rectangular prism. Set length, width, and height with steppers, watch L × W × H update live, and lock in the matching volume. Three levels: build to given sizes, match a target volume or find a missing dimension, and build with half-unit edges (like 2½ × 3 × 4 = 30) for fractional edge lengths."
     />
     <style>
       * {
@@ -119,12 +120,25 @@
         }
       });
     </script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
-    <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
+    <!-- Student Passport (meta-progression: lifetime XP / streak / badges) -->
+    <link rel="stylesheet" href="/assets/lesson-passport.css" />
+    <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
+    <script src="/assets/game-juice.js"></script>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
   </head>
   <body>
     <!-- Decorative drifting wireframe-cube field (behind the Phaser canvas). -->
@@ -171,942 +185,1534 @@
 
     <script>
       // ════════════════════════════════════════════════════════════════════
-      //  VOLUME BLAST — CRATE CANNON   ·   Lessons 10.1-10.5 · 6.G.2
-      //  True 2D mechanic: a rectangular prism shows the problem. Four answer
-      //  crates float in an arc across the top. AIM the cannon (← → rotate) and
-      //  FIRE (Space) a cube-shell. Hit the crate whose number is the correct
-      //  volume / missing dimension. A real projectile flies, collides, and
-      //  resolves on impact. Hit the wrong crate or miss everything = lose a life.
-      //  Rising difficulty:
-      //   • Round 1 — V = l × w × h (whole numbers)
-      //   • Round 2 — missing dimension: h = V ÷ (l × w)
-      //   • Round 3 — fractional edge (one decimal dimension; compare ROUNDED)
+      //  VOLUME BLAST — UNIT-CUBE STACKER   ·   Lessons 10.1-10.5 · 6.G.2
+      //
+      //  Math IS the mechanic (calm, no timer, no reflex). A rectangular prism
+      //  is drawn as real stacked unit cubes. The student sets length, width,
+      //  and height with three +/- steppers (or ← → to pick the active side and
+      //  ↑ ↓ / A·D to change it). The prism REDRAWS with that many cubes and a
+      //  live readout shows  L × W × H = volume. Lock In checks the build:
+      //    • Level 1 (support)    — build a prism that is L long, W wide, H tall
+      //                              (dims given; live L×W×H readout + hints).
+      //    • Level 2 (enrichment) — build ANY prism with volume = target, OR
+      //                              given the volume + two sides, find the third
+      //                              (larger volumes, fewer hints).
+      //    • Level 3 (half units) — 6.G.2's defining feature: one edge is a
+      //                              mixed number like 2½ (its stepper moves by
+      //                              halves; the ½ layer draws as an amber slab).
+      //  EXACT ARITHMETIC: every dimension is stored as a DOUBLED int
+      //  (half-units): 5 means 2½. Volumes are computed in doubled units too,
+      //  so readouts like "2½ × 3 × 4 = 30" are exact — no floating point.
+      //  Misses never end the game — after a calm retry the prism redraws to
+      //  the CORRECT cubes with the reason, so every miss teaches (no-fail).
       // ════════════════════════════════════════════════════════════════════
-      const W = 900,
-        H = 620;
+      const W = 820,
+        H = 600;
+      const LS_KEY = "vb_cube_stacker_highscore";
 
+      // Theme palette (green "volume lab").
       const C = {
         bg: 0x0a241b,
         panel: 0x123026,
         panelEdge: 0x2a5a44,
+        btn: 0x1a4634,
         ink: "#eafff4",
         sub: "#a8d8c4",
-        accent: 0x4fd18b,
-        good: 0x4fd18b,
-        bad: 0xff6b6b,
-        gold: 0xffcd4d,
-        prism: 0x1a6fb5,
-        prismEdge: 0x6fb7e8,
-        crate: 0x1d4a38,
-        cannon: 0xd4952a,
-        shell: 0x4fd18b,
+        green: "#4fd18b",
+        gold: "#ffcd4d",
+        bad: "#ff8f8f",
+        accentN: 0x4fd18b,
+        goldN: 0xffcd4d,
+        badN: 0xff6b6b,
+        cubeTop: 0x5fe0a0,
+        cubeLeft: 0x2a9d6f,
+        cubeRight: 0x1c6f4d,
+        cubeEdge: 0x0a3a28,
+        halfTop: 0xffe08a,
+        halfLeft: 0xd9a642,
+        halfRight: 0xb5842b,
       };
+
+      // Dimensions are DOUBLED ints (half-units): 2 = one unit, 5 = 2½ units.
+      const DIM_MIN = 2,
+        DIM_MAX = 12; // 1 … 6 units — keeps the cube drawing readable
+      const TARGET_SOLVED = 10; // win condition
+
+      // Isometric unit-cube geometry (screen space; Scale.FIT maps to any size).
+      const HW = 16, // half-width of a cube's top rhombus
+        TH = 8, // quarter-height of the top rhombus
+        CH = 18; // vertical rise of a cube
+      const PRISM_CX = 410,
+        PRISM_CY = 338;
 
       const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
-      const choice = (arr) => arr[Math.floor(Math.random() * arr.length)];
       function shuffle(a) {
-        a = a.slice();
-        for (let i = a.length - 1; i > 0; i--) {
+        const r = a.slice();
+        for (let i = r.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [a[i], a[j]] = [a[j], a[i]];
+          [r[i], r[j]] = [r[j], r[i]];
         }
-        return a;
+        return r;
       }
-      const RM_QUERY =
+      function srSay(msg) {
+        const el = document.getElementById("vb-sr");
+        if (el) el.textContent = msg;
+      }
+      // Format a doubled int as an exact mixed number: 5 → "2½", 6 → "3",
+      // 1 → "½". Keeps every readout free of floating-point artifacts.
+      function fmtHalf(dbl) {
+        const whole = Math.floor(dbl / 2);
+        return dbl % 2 ? (whole ? whole + "½" : "½") : String(whole);
+      }
+      // Volume in DOUBLED cubic units from doubled dims (exact while at most
+      // one dimension is odd, which the steppers guarantee): dl·dw·dh / 4.
+      function volumeDoubled(dl, dw, dh) {
+        return (dl * dw * dh) / 4;
+      }
+      const reduceMQ =
         window.matchMedia &&
         window.matchMedia("(prefers-reduced-motion: reduce)");
-      const reducedMotion = () => !!(RM_QUERY && RM_QUERY.matches);
+      const reducedMotion = () => !!(reduceMQ && reduceMQ.matches);
 
-      const TOTAL_LEVELS = 3;
-      const ROUNDS_PER_LEVEL = 4;
-      const START_LIVES = 3;
+      // ── Shared "game feel" layer (guarded; safe no-ops if game-juice.js
+      //    failed to load, so the game keeps working). ──
+      const JUICE = window.GameJuice || {
+        reduceMotion: false,
+        audio: {
+          unlock() {},
+          tap() {},
+          pop() {},
+          correct() {},
+          wrong() {},
+          whoosh() {},
+          fanfare() {},
+          musicStart() {},
+          musicStop() {},
+        },
+        burst() {},
+        confetti() {},
+        shake() {},
+        floatText() {},
+        award() {},
+      };
 
-      const round2 = (n) => Math.round(n * 100) / 100;
-      // Compare answers by their ROUNDED STRING form to dodge float pitfalls
-      // (e.g. 0.5*3*5 must equal "7.5", never 7.499999…).
-      function fmtNum(n) {
-        const r = round2(n);
-        return Number.isInteger(r) ? String(r) : String(r);
-      }
+      // ── Local WebAudio blips (preserved shell SFX; silent without context) ──
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+        },
+        play(t, f, d, v = 0.18) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              o = c.createOscillator(),
+              g = c.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            o.connect(g);
+            g.connect(c.destination);
+            o.start();
+            o.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        good() {
+          this.play("sine", 660, 0.1, 0.25);
+          this.play("sine", 880, 0.14, 0.2);
+        },
+        bad() {
+          this.play("sawtooth", 200, 0.25, 0.18);
+          this.play("sawtooth", 150, 0.3, 0.14);
+        },
+        click() {
+          this.play("square", 720, 0.04, 0.07);
+        },
+        coin() {
+          this.play("square", 1040, 0.05, 0.08);
+        },
+        win() {
+          [523, 659, 784, 1047, 1318].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.25, 0.25), i * 110),
+          );
+        },
+      };
 
-      // ── Question generators (also exposed on window for stress tests) ──
+      // ── Run state (level select + vocab gate) ──
+      let vbLevel = 1; // 1 = support, 2 = enrichment, 3 = half units
+      let vbVocabSeen = false;
 
-      // ROUND 1: V = l × w × h with whole numbers.
-      function buildWhole(level) {
-        const hi = 6 + level; // dimension range grows slightly with level
-        const l = randInt(2, hi),
-          w = randInt(2, hi),
-          h = randInt(2, hi);
-        const ans = l * w * h;
-        return finishQ(
-          "whole",
-          { l, w, h },
-          ans,
-          "Box " + l + " × " + w + " × " + h + ".  Find the volume.",
-          "Use V = length × width × height.",
-          "V = " + l + " × " + w + " × " + h + " = " + ans + " cubic units.",
-        );
-      }
+      // ── Vocabulary gate (repo rule: term + Level-1 definition + emoji shown
+      //    BEFORE play). Five key words for volume of rectangular prisms. ──
+      const VOCAB_TERMS = [
+        {
+          term: "Volume",
+          def: "The amount of space inside a 3-D shape — how many unit cubes fill it. We measure it in cubic units.",
+          emoji: "🧊",
+        },
+        {
+          term: "Cubic unit",
+          def: "One single unit cube — a 1 by 1 by 1 block. We count how many fit inside, written as u³ (cubed).",
+          emoji: "⬛",
+        },
+        {
+          term: "Length",
+          def: "How long the box is — the number of cubes along one edge of the bottom.",
+          emoji: "📏",
+        },
+        {
+          term: "Width",
+          def: "How deep the box is — the number of cubes along the other edge of the bottom.",
+          emoji: "↔️",
+        },
+        {
+          term: "Height",
+          def: "How tall the box is — the number of cubes stacked up from the bottom.",
+          emoji: "⬆️",
+        },
+      ];
 
-      // ROUND 2: missing dimension — given V, l, w, find h = V ÷ (l × w).
-      function buildMissing(level) {
+      // ── Problem generator. The chosen level drives the framing. ──
+      // All dims in problems are DOUBLED ints; `dV` is the doubled volume.
+      function genProblem(level) {
+        if (level === 1) {
+          let l, w, h;
+          do {
+            l = randInt(1, 6);
+            w = randInt(1, 6);
+            h = randInt(1, 6);
+          } while (l * w * h < 2);
+          return {
+            mode: "dims",
+            l: l * 2,
+            w: w * 2,
+            h: h * 2,
+            dV: l * w * h * 2,
+            halfDim: null,
+            start: { l: 2, w: 2, h: 2 },
+            label: "Build the prism",
+            prompt:
+              "Build a prism that is " +
+              l +
+              " long, " +
+              w +
+              " wide, and " +
+              h +
+              " tall.",
+            hint:
+              "Set length to " +
+              l +
+              ", width to " +
+              w +
+              ", and height to " +
+              h +
+              ". Watch L × W × H grow.",
+            why:
+              l + " × " + w + " × " + h + " = " + l * w * h + " cubic units.",
+          };
+        }
+        if (level === 3) {
+          // Half-unit tier — 6.G.2's defining feature: one edge is a mixed
+          // number (n½). That stepper moves by halves; the others stay whole.
+          let dims, halfDim, dV;
+          do {
+            dims = {
+              l: randInt(1, 6) * 2,
+              w: randInt(1, 6) * 2,
+              h: randInt(1, 6) * 2,
+            };
+            halfDim = shuffle(["l", "w", "h"])[0];
+            dims[halfDim] = randInt(1, 5) * 2 + 1; // 1½ … 5½
+            dV = volumeDoubled(dims.l, dims.w, dims.h);
+          } while (dV < 8); // keep the build bigger than a couple of cubes
+          const step1 = (dims.l * dims.w) / 2; // (L × W) in doubled units
+          const halfName =
+            halfDim === "l" ? "length" : halfDim === "w" ? "width" : "height";
+          return {
+            mode: "dims",
+            l: dims.l,
+            w: dims.w,
+            h: dims.h,
+            dV: dV,
+            halfDim: halfDim,
+            start: { l: 2, w: 2, h: 2 },
+            label: "Build with half units",
+            prompt:
+              "Build a prism that is " +
+              fmtHalf(dims.l) +
+              " long, " +
+              fmtHalf(dims.w) +
+              " wide, and " +
+              fmtHalf(dims.h) +
+              " tall.",
+            hint:
+              "The " +
+              halfName +
+              " stepper moves by halves. Multiply the fractions to check the volume.",
+            why:
+              fmtHalf(dims.l) +
+              " × " +
+              fmtHalf(dims.w) +
+              " × " +
+              fmtHalf(dims.h) +
+              " = " +
+              fmtHalf(dV) +
+              " cubic units. Multiply the fractions: " +
+              fmtHalf(dims.l) +
+              " × " +
+              fmtHalf(dims.w) +
+              " = " +
+              fmtHalf(step1) +
+              ", then " +
+              fmtHalf(step1) +
+              " × " +
+              fmtHalf(dims.h) +
+              " = " +
+              fmtHalf(dV) +
+              ".",
+          };
+        }
+        // Level 2 — alternate two enrichment framings (whole units).
+        if (Math.random() < 0.55) {
+          const a = randInt(2, 6),
+            b = randInt(2, 6),
+            c = randInt(2, 6);
+          const V = a * b * c;
+          return {
+            mode: "volume",
+            dV: V * 2,
+            exa: { a: a * 2, b: b * 2, c: c * 2 },
+            halfDim: null,
+            start: { l: 2, w: 2, h: 2 },
+            label: "Match the volume",
+            prompt: "Build ANY prism with a volume of " + V + " cubic units.",
+            hint: "Find three numbers from 1–6 that multiply to " + V + ".",
+            why: "For example, " + a + " × " + b + " × " + c + " = " + V + ".",
+          };
+        }
         const l = randInt(2, 6),
           w = randInt(2, 6),
-          h = randInt(2, 8);
-        const V = l * w * h; // guarantees an exact integer height
-        return finishQ(
-          "missing",
-          { l, w, h, V, missing: "h" },
-          h,
-          "Volume = " + V + ".  Length = " + l + ", width = " + w + ".  Find the height.",
-          "Use h = V ÷ (l × w).",
-          "h = " + V + " ÷ (" + l + " × " + w + ") = " + V + " ÷ " + l * w + " = " + h + ".",
-        );
-      }
-
-      // ROUND 3: fractional edge — one decimal dimension; whole product result.
-      const FRAC_EDGES = [0.5, 1.5, 2.5, 3.5, 4.5];
-      function buildFraction(level) {
-        const frac = choice(FRAC_EDGES);
-        const w = randInt(2, 6),
           h = randInt(2, 6);
-        const ans = round2(frac * w * h);
-        return finishQ(
-          "fraction",
-          { l: frac, w, h },
-          ans,
-          "Box " + fmtNum(frac) + " × " + w + " × " + h + ".  Find the volume.",
-          "Multiply carefully — one edge is a decimal.",
-          "V = " + fmtNum(frac) + " × " + w + " × " + h + " = " + fmtNum(ans) + " cubic units.",
-        );
-      }
-
-      // Build four DISTINCT crates (by rounded-string form), exactly one correct.
-      function finishQ(kind, dims, answer, prompt, hint, why) {
-        const ansStr = fmtNum(answer);
-        const seen = {};
-        seen[ansStr] = true;
-        const labels = [ansStr];
-        const fracMode = kind === "fraction";
-        let guard = 0;
-        while (labels.length < 4 && guard < 80) {
-          guard++;
-          let cand;
-          if (fracMode) {
-            const step = (Math.random() < 0.5 ? 0.5 : 1) * randInt(1, 4) *
-              (Math.random() < 0.5 ? 1 : -1);
-            cand = round2(answer + step);
-          } else {
-            cand = answer + randInt(1, 6) * (Math.random() < 0.5 ? 1 : -1);
-          }
-          if (cand <= 0) continue;
-          const k = fmtNum(cand);
-          if (!seen[k]) {
-            seen[k] = true;
-            labels.push(k);
-          }
-        }
-        // deterministic padding so we always render 4 distinct crates
-        let pad = 1;
-        while (labels.length < 4) {
-          const cand = fracMode ? round2(answer + pad * 0.5) : answer + pad;
-          const k = fmtNum(cand);
-          if (cand > 0 && !seen[k]) {
-            seen[k] = true;
-            labels.push(k);
-          }
-          pad++;
-        }
+        const V = l * w * h;
         return {
-          kind,
-          dims,
-          answer,
-          answerStr: ansStr,
-          labels: shuffle(labels), // STRINGS — compared as rounded strings
-          prompt,
-          hint,
-          why,
+          mode: "third",
+          l: l * 2,
+          w: w * 2,
+          h: h * 2,
+          dV: V * 2,
+          halfDim: null,
+          start: { l: 2, w: 2, h: 2 },
+          label: "Find the missing height",
+          prompt:
+            "This prism holds " +
+            V +
+            " cubic units. Its base is " +
+            l +
+            " long and " +
+            w +
+            " wide. Build it to find the height.",
+          hint: "Height = " + V + " ÷ (" + l + " × " + w + ").",
+          why:
+            V +
+            " ÷ (" +
+            l +
+            " × " +
+            w +
+            ") = " +
+            V +
+            " ÷ " +
+            l * w +
+            " = " +
+            h +
+            ".",
         };
       }
-
-      function buildQuestion(level) {
-        if (level === 0) return buildWhole(level);
-        if (level === 1) return buildMissing(level);
-        return buildFraction(level);
+      // Does a built {l,w,h} (doubled ints) satisfy the target?
+      function isCorrect(t, b) {
+        const dV = volumeDoubled(b.l, b.w, b.h);
+        if (t.mode === "dims") return b.l === t.l && b.w === t.w && b.h === t.h;
+        if (t.mode === "volume") return dV === t.dV;
+        // "third": a base with length/width swapped is the same prism —
+        // accept either orientation as long as the volume matches.
+        const baseMatches =
+          (b.l === t.l && b.w === t.w) || (b.l === t.w && b.w === t.l);
+        return baseMatches && dV === t.dV;
       }
-      window.VolumeBlast = {
-        buildWhole,
-        buildMissing,
-        buildFraction,
-        buildQuestion,
-        fmtNum,
-        round2,
-      };
+      // The cubes to show after a wrong answer (the correct build).
+      function correctBuild(t) {
+        if (t.mode === "volume") return { l: t.exa.a, w: t.exa.b, h: t.exa.c };
+        return { l: t.l, w: t.w, h: t.h };
+      }
+      function goalLine(t) {
+        if (t.mode === "dims")
+          return (
+            "Goal:  " +
+            fmtHalf(t.l) +
+            " × " +
+            fmtHalf(t.w) +
+            " × " +
+            fmtHalf(t.h)
+          );
+        if (t.mode === "volume")
+          return "Goal volume:  " + fmtHalf(t.dV) + " u³";
+        return (
+          "Goal volume:  " +
+          fmtHalf(t.dV) +
+          " u³   (base " +
+          fmtHalf(t.l) +
+          " × " +
+          fmtHalf(t.w) +
+          ")"
+        );
+      }
+      // Expose generators for stress testing.
+      window.VolumeBlast = { genProblem, isCorrect, fmtHalf, volumeDoubled };
 
       // ════════════════════════════════════════════════════════════════════
       //  BOOT
       // ════════════════════════════════════════════════════════════════════
-      class BootScene extends Phaser.Scene {
-        constructor() {
-          super("Boot");
-        }
-        create() {
-          const g = this.make.graphics({ add: false });
-          g.fillStyle(0xffffff).fillCircle(4, 4, 4);
-          g.generateTexture("dot", 8, 8);
-          g.clear();
-          g.fillStyle(0xffffff).fillRect(0, 0, 8, 8);
-          g.generateTexture("cubechip", 8, 8);
-          g.clear();
-          g.destroy();
-          this.scene.start("Title");
-        }
+      function BootScene() {
+        Phaser.Scene.call(this, "Boot");
       }
+      BootScene.prototype = Object.create(Phaser.Scene.prototype);
+      BootScene.prototype.constructor = BootScene;
+      BootScene.prototype.create = function () {
+        const g = this.make.graphics({ add: false });
+        g.fillStyle(0xffffff);
+        g.fillCircle(5, 5, 5);
+        g.generateTexture("spark", 10, 10);
+        g.destroy();
+        this.scene.start("Title");
+      };
 
       // ════════════════════════════════════════════════════════════════════
       //  TITLE
       // ════════════════════════════════════════════════════════════════════
-      class TitleScene extends Phaser.Scene {
-        constructor() {
-          super("Title");
-        }
-        create() {
-          this.cameras.main.setBackgroundColor(C.bg);
-          const cx = W / 2;
-
-          // isometric prism emblem
-          const badge = this.add.container(cx, 150);
-          const g = this.add.graphics();
-          g.fillStyle(C.prism, 1).fillRect(-40, -20, 80, 56);
-          g.fillStyle(0x2a8fd8, 1);
-          g.beginPath();
-          g.moveTo(-40, -20);
-          g.lineTo(-20, -44);
-          g.lineTo(60, -44);
-          g.lineTo(40, -20);
-          g.closePath();
-          g.fillPath();
-          g.fillStyle(0x12568f, 1);
-          g.beginPath();
-          g.moveTo(40, -20);
-          g.lineTo(60, -44);
-          g.lineTo(60, 12);
-          g.lineTo(40, 36);
-          g.closePath();
-          g.fillPath();
-          g.lineStyle(2, C.prismEdge, 1).strokeRect(-40, -20, 80, 56);
-          badge.add(g);
-          if (!reducedMotion()) {
-            this.tweens.add({ targets: badge, y: 138, duration: 1600, yoyo: true, repeat: -1, ease: "Sine.inOut" });
-          }
-
-          this.add
-            .text(cx, 250, "VOLUME BLAST", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "56px",
-              fontStyle: "900",
-              color: "#eafff4",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(cx, 296, "Crate Cannon", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "26px",
-              fontStyle: "bold",
-              color: "#ffcd4d",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(
-              cx,
-              350,
-              "Solve the prism, then AIM the cannon and BLAST the crate\nwith the correct volume or missing dimension.",
-              {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "18px",
-                color: "#a8d8c4",
-                align: "center",
-                lineSpacing: 6,
-              },
-            )
-            .setOrigin(0.5);
-          this.add
-            .text(cx, 406, "Grade 6 · Lessons 10.1–10.5 · Standard 6.G.2", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "15px",
-              fontStyle: "bold",
-              color: "#4fd18b",
-            })
-            .setOrigin(0.5);
-
-          this.makeButton(cx, 474, "▶  START GAME", 0x1f7a52, () =>
-            this.scene.start("Game", { level: 0, score: 0, lives: START_LIVES }),
-          );
-          this.add
-            .text(
-              cx,
-              548,
-              "← → rotate the cannon · Space fires · or tap a crate to blast it.",
-              {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "14px",
-                color: "#7fb8a0",
-              },
-            )
-            .setOrigin(0.5);
-          this.makeLink(cx, 586, "← Back to Math Games");
-          this.setSR(
-            "Volume Blast, Crate Cannon. A game for the volume of rectangular prisms, standard 6.G.2. Press start to play.",
-          );
-        }
-        makeButton(x, y, label, color, cb) {
-          const b = this.add
-            .rectangle(x, y, 290, 56, color)
-            .setStrokeStyle(3, 0xffffff, 0.85)
-            .setInteractive({ useHandCursor: true });
-          this.add
-            .text(x, y, label, {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "22px",
-              fontStyle: "bold",
-              color: "#ffffff",
-            })
-            .setOrigin(0.5);
-          b.on("pointerover", () => b.setScale(1.04));
-          b.on("pointerout", () => b.setScale(1));
-          b.on("pointerdown", cb);
-          this.input.keyboard.once("keydown-SPACE", cb);
-          this.input.keyboard.once("keydown-ENTER", cb);
-          return b;
-        }
-        makeLink(x, y, label) {
-          const t = this.add
-            .text(x, y, label, {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "15px",
-              fontStyle: "bold",
-              color: "#a8d8c4",
-            })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true });
-          t.on("pointerover", () => t.setColor("#4fd18b"));
-          t.on("pointerout", () => t.setColor("#a8d8c4"));
-          t.on("pointerdown", () => {
-            window.location.href = "/math/games/";
-          });
-          return t;
-        }
-        setSR(msg) {
-          const el = document.getElementById("vb-sr");
-          if (el) el.textContent = msg;
-        }
+      function TitleScene() {
+        Phaser.Scene.call(this, "Title");
       }
+      TitleScene.prototype = Object.create(Phaser.Scene.prototype);
+      TitleScene.prototype.constructor = TitleScene;
+      TitleScene.prototype.create = function () {
+        const cx = W / 2;
+        this.cameras.main.setBackgroundColor(C.bg);
 
-      // ════════════════════════════════════════════════════════════════════
-      //  GAME
-      // ════════════════════════════════════════════════════════════════════
-      class GameScene extends Phaser.Scene {
-        constructor() {
-          super("Game");
-        }
-        init(data) {
-          this.levelIndex = data.level || 0;
-          this.score = data.score || 0;
-          this.lives = data.lives != null ? data.lives : START_LIVES;
-          this.streak = 0;
-          this.solved = 0;
-          this.locked = false;
-          this.crates = [];
-          this.shell = null;
-          this.aim = -Math.PI / 2; // straight up
-        }
-        create() {
-          this.cameras.main.setBackgroundColor(C.bg);
-          this.cannonX = W / 2;
-          this.cannonY = H - 60;
+        // isometric prism emblem (drawn from the same cube look as gameplay)
+        drawIsoCube(this.add.graphics(), cx, 118, 30, 15, 34);
 
-          this.buildHUD();
-          this.buildPanel();
-          this.buildCannon();
-
-          this.left = this.input.keyboard.addKey("LEFT");
-          this.right = this.input.keyboard.addKey("RIGHT");
-          this.aKey = this.input.keyboard.addKey("A");
-          this.dKey = this.input.keyboard.addKey("D");
-          this.input.keyboard.on("keydown-SPACE", () => this.fire());
-          this.input.keyboard.on("keydown-ENTER", () => this.fire());
-          // tap a crate to aim+fire at it
-          this.input.on("pointerdown", (p) => {
-            if (this.locked || this.shell) return;
-            // aim toward pointer then fire
-            this.aim = Math.atan2(p.y - this.cannonY, p.x - this.cannonX);
-            if (this.aim > -0.15) this.aim = -0.15; // never fire downward
-            if (this.aim < -Math.PI + 0.15) this.aim = -Math.PI + 0.15;
-            this.fire();
-          });
-
-          this.nextQuestion();
-          this.cameras.main.fadeIn(400);
-        }
-
-        buildHUD() {
-          this.add.rectangle(W / 2, 30, W, 60, C.panel).setDepth(1);
-          this.add.rectangle(W / 2, 60, W, 2, C.panelEdge).setDepth(1);
-          const mk = (x, label) => {
-            this.add
-              .text(x, 16, label, {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "12px",
-                color: "#7fb8a0",
-              })
-              .setOrigin(1, 0)
-              .setDepth(2);
-            return this.add
-              .text(x, 30, "", {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "22px",
-                fontStyle: "900",
-                color: "#eafff4",
-              })
-              .setOrigin(1, 0)
-              .setDepth(2);
-          };
-          this.add
-            .text(20, 18, "📦 Volume Blast", {
+        this.add
+          .text(cx, 196, "VOLUME BLAST", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "58px",
+            fontStyle: "900",
+            color: "#eafff4",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 242, "Unit-Cube Stacker", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "26px",
+            fontStyle: "bold",
+            color: "#ffcd4d",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            300,
+            "Stack unit cubes to BUILD a rectangular prism. Set the\nlength, width, and height — watch L × W × H — then Lock In.",
+            {
               fontFamily: "Segoe UI, sans-serif",
-              fontSize: "18px",
+              fontSize: "17px",
+              color: "#a8d8c4",
+              align: "center",
+              lineSpacing: 6,
+            },
+          )
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 350, "Grade 6 · Lessons 10.1–10.5 · Standard 6.G.2", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            fontStyle: "bold",
+            color: "#4fd18b",
+          })
+          .setOrigin(0.5);
+
+        const hs = localStorage.getItem(LS_KEY);
+        if (hs)
+          this.add
+            .text(cx, 382, "High Score: " + hs, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
               fontStyle: "bold",
               color: "#ffcd4d",
             })
-            .setDepth(2);
-          this.scoreT = mk(W - 20, "SCORE");
-          this.levelT = mk(W - 150, "ROUND");
-          this.streakT = mk(W - 290, "STREAK");
-          this.livesT = mk(W - 420, "LIVES");
+            .setOrigin(0.5);
 
-          const menu = this.add
-            .text(190, 30, "☰ Menu", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "14px",
-              fontStyle: "bold",
-              color: "#a8d8c4",
-            })
-            .setOrigin(0, 0.5)
-            .setDepth(2)
-            .setInteractive({ useHandCursor: true });
-          menu.on("pointerdown", () => this.scene.start("Title"));
-          menu.on("pointerover", () => menu.setColor("#4fd18b"));
-          menu.on("pointerout", () => menu.setColor("#a8d8c4"));
-          this.refreshHUD();
-        }
-        refreshHUD() {
-          this.scoreT.setText(String(this.score));
-          this.levelT.setText(`${this.levelIndex + 1} / ${TOTAL_LEVELS}`);
-          this.streakT.setText(this.streak > 0 ? `×${this.streak}` : "—");
-          this.livesT.setText("❤".repeat(Math.max(0, this.lives)) || "—");
-        }
-
-        buildPanel() {
-          // problem panel (top-center under HUD)
-          this.add
-            .rectangle(W / 2, 118, W - 60, 92, C.panel)
-            .setStrokeStyle(2, C.panelEdge)
-            .setDepth(1);
-          this.tagT = this.add
-            .text(W / 2, 86, "", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "14px",
-              fontStyle: "900",
-              color: "#4fd18b",
-            })
-            .setOrigin(0.5)
-            .setDepth(2);
-          this.promptT = this.add
-            .text(W / 2, 112, "", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "21px",
-              fontStyle: "bold",
-              color: "#eafff4",
-              align: "center",
-              wordWrap: { width: W - 100 },
-            })
-            .setOrigin(0.5)
-            .setDepth(2);
-          this.hintT = this.add
-            .text(W / 2, 144, "", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "14px",
-              color: "#a8d8c4",
-            })
-            .setOrigin(0.5)
-            .setDepth(2);
-
-          // prism diagram (left)
-          this.prismGfx = this.add.graphics().setDepth(2);
-          this.prismLabels = this.add.container(0, 0).setDepth(3);
-
-          // feedback (bottom)
-          this.fbText = this.add
-            .text(W / 2, H - 26, "", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "15px",
-              fontStyle: "bold",
-              color: "#a8d8c4",
-              align: "center",
-              wordWrap: { width: W - 80 },
-            })
-            .setOrigin(0.5)
-            .setDepth(4);
-        }
-
-        buildCannon() {
-          this.cannon = this.add.container(this.cannonX, this.cannonY).setDepth(6);
-          const base = this.add.circle(0, 6, 26, 0x123026).setStrokeStyle(3, C.cannon);
-          this.barrel = this.add
-            .rectangle(0, -22, 16, 46, C.cannon)
-            .setOrigin(0.5, 1)
-            .setStrokeStyle(2, 0x7a5510);
-          this.cannon.add([base, this.barrel]);
-          // aim guide line
-          this.aimGfx = this.add.graphics().setDepth(5);
-        }
-
-        drawPrism(dims, missing) {
-          const g = this.prismGfx;
-          g.clear();
-          this.prismLabels.removeAll(true);
-          // isometric box in a fixed spot lower-left of play area
-          const ox = 150,
-            oy = 320;
-          const fw = 120,
-            fh = 88,
-            dep = 44;
-          // front
-          g.fillStyle(C.prism, 0.9).fillRect(ox, oy, fw, fh);
-          g.lineStyle(2, C.prismEdge, 1).strokeRect(ox, oy, fw, fh);
-          // top
-          g.fillStyle(0x2a8fd8, 0.9);
-          g.beginPath();
-          g.moveTo(ox, oy);
-          g.lineTo(ox + dep, oy - dep);
-          g.lineTo(ox + fw + dep, oy - dep);
-          g.lineTo(ox + fw, oy);
-          g.closePath();
-          g.fillPath();
-          g.lineStyle(2, C.prismEdge, 1).strokePath();
-          // right side
-          g.fillStyle(0x12568f, 0.9);
-          g.beginPath();
-          g.moveTo(ox + fw, oy);
-          g.lineTo(ox + fw + dep, oy - dep);
-          g.lineTo(ox + fw + dep, oy + fh - dep);
-          g.lineTo(ox + fw, oy + fh);
-          g.closePath();
-          g.fillPath();
-          g.lineStyle(2, C.prismEdge, 1).strokePath();
-
-          const mkLbl = (x, y, txt, color) =>
-            this.prismLabels.add(
-              this.add
-                .text(x, y, txt, {
-                  fontFamily: "Segoe UI, sans-serif",
-                  fontSize: "16px",
-                  fontStyle: "bold",
-                  color: color || "#eafff4",
-                })
-                .setOrigin(0.5),
-            );
-          const lTxt = missing === "l" ? "?" : "l = " + fmtNum(dims.l);
-          const wTxt = "w = " + fmtNum(dims.w);
-          const hTxt = missing === "h" ? "h = ?" : "h = " + fmtNum(dims.h);
-          mkLbl(ox + fw / 2, oy + fh + 18, lTxt, missing === "l" ? "#ffcd4d" : "#eafff4");
-          mkLbl(ox + fw + dep + 26, oy + (fh - dep) / 2, wTxt);
-          mkLbl(ox - 26, oy + fh / 2, hTxt, missing === "h" ? "#ffcd4d" : "#eafff4");
-          if (missing === "h") {
-            mkLbl(ox + fw / 2, oy + fh / 2, "V = " + fmtNum(dims.V), "#ffcd4d");
-          }
-        }
-
-        nextQuestion() {
-          this.locked = false;
-          this.q = buildQuestion(this.levelIndex);
-          this.tagT.setText("ROUND " + (this.levelIndex + 1) + " · " +
-            (this.q.kind === "whole" ? "V = l × w × h"
-              : this.q.kind === "missing" ? "MISSING DIMENSION" : "FRACTIONAL EDGE"));
-          this.promptT.setText(this.q.prompt);
-          this.hintT.setText(this.q.hint);
-          this.drawPrism(this.q.dims, this.q.dims.missing);
-          this.fbText.setText("Aim with ← →, then press Space to fire at the correct crate.");
-          this.spawnCrates();
-          this.setSR(
-            this.q.prompt + " " + this.q.hint + " Crates: " + this.q.labels.join(", ") + ".",
-          );
-        }
-
-        spawnCrates() {
-          this.crates.forEach((c) => c.destroy());
-          this.crates = [];
-          // place four crates across an arc near the top of the play area
-          const slots = 4;
-          const xStart = 360,
-            xEnd = W - 70,
-            yTop = 210;
-          this.q.labels.forEach((label, i) => {
-            const x = xStart + ((xEnd - xStart) / (slots - 1)) * i;
-            const y = yTop + (i % 2 === 0 ? 0 : 56);
-            const cont = this.add.container(x, y).setDepth(5);
-            const isCorrect = label === this.q.answerStr;
-            const box = this.add
-              .rectangle(0, 0, 82, 58, C.crate)
-              .setStrokeStyle(3, C.panelEdge);
-            // crate cross-slats for a wooden look
-            const slatA = this.add.line(0, 0, -41, -29, 41, 29, 0x2a5a44).setLineWidth(1.5);
-            const slatB = this.add.line(0, 0, 41, -29, -41, 29, 0x2a5a44).setLineWidth(1.5);
-            const lab = this.add
-              .text(0, 0, label, {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "24px",
-                fontStyle: "900",
-                color: "#eafff4",
-              })
-              .setOrigin(0.5);
-            cont.add([box, slatA, slatB, lab]);
-            cont.box = box;
-            cont.label = label;
-            cont.correct = isCorrect;
-            cont.alive = true;
-            // gentle bobbing
-            if (!reducedMotion()) {
-              this.tweens.add({
-                targets: cont,
-                y: y + 14,
-                duration: 1200 + i * 130,
-                yoyo: true,
-                repeat: -1,
-                ease: "Sine.inOut",
-              });
-            }
-            this.crates.push(cont);
+        const start = () => {
+          SFX.init();
+          JUICE.audio.unlock();
+          SFX.coin();
+          this.scene.start("LevelSelect");
+        };
+        const btn = this.add
+          .rectangle(cx, 446, 280, 56, 0x1f7a52)
+          .setStrokeStyle(3, 0xffffff, 0.85)
+          .setInteractive({ useHandCursor: true });
+        const btnT = this.add
+          .text(cx, 446, "▶  START", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "23px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        if (!reducedMotion())
+          this.tweens.add({
+            targets: [btn, btnT],
+            scaleX: 1.04,
+            scaleY: 1.04,
+            duration: 850,
+            yoyo: true,
+            repeat: -1,
           });
+        btn.on("pointerover", () => btn.setFillStyle(0x2a9d6a));
+        btn.on("pointerout", () => btn.setFillStyle(0x1f7a52));
+        btn.on("pointerdown", start);
+        this.input.keyboard.on("keydown-SPACE", start);
+        this.input.keyboard.on("keydown-ENTER", start);
+
+        makeHubLink(this, cx, 522);
+        srSay(
+          "Volume Blast, Unit-Cube Stacker. A build-it game for the volume of " +
+            "rectangular prisms, standard 6.G.2. Press start to choose a level.",
+        );
+      };
+
+      // ════════════════════════════════════════════════════════════════════
+      //  LEVEL SELECT  (Level 1 = support · Level 2 = enrichment ·
+      //                 Level 3 = half-unit fractional edges)
+      // ════════════════════════════════════════════════════════════════════
+      function LevelSelectScene() {
+        Phaser.Scene.call(this, "LevelSelect");
+      }
+      LevelSelectScene.prototype = Object.create(Phaser.Scene.prototype);
+      LevelSelectScene.prototype.constructor = LevelSelectScene;
+      LevelSelectScene.prototype.create = function () {
+        const cx = W / 2;
+        this.cameras.main.setBackgroundColor(C.bg);
+        this.add
+          .text(cx, 90, "CHOOSE YOUR LEVEL", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "34px",
+            fontStyle: "900",
+            color: "#eafff4",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            132,
+            "Tap a card — or press 1, 2, or 3. Switch any time you play again.",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#a8d8c4",
+            },
+          )
+          .setOrigin(0.5);
+
+        const pick = (lvl) => {
+          vbLevel = lvl;
+          SFX.init();
+          JUICE.audio.unlock();
+          SFX.coin();
+          this.scene.start(vbVocabSeen ? "Game" : "Vocab");
+        };
+
+        this.makeCard(
+          cx,
+          204,
+          "LEVEL 1",
+          "Build it",
+          "I tell you the size. Build a prism that is L long, W wide, and H tall, then read the volume.",
+          0x4fd18b,
+          "#4fd18b",
+          () => pick(1),
+        );
+        this.makeCard(
+          cx,
+          330,
+          "LEVEL 2",
+          "Match Volume · Find a Missing Side",
+          "Match a target volume any way you like — or find a missing side when the volume is given. Bigger numbers, fewer hints.",
+          0x6fb7e8,
+          "#6fb7e8",
+          () => pick(2),
+        );
+        this.makeCard(
+          cx,
+          456,
+          "LEVEL 3",
+          "Half-Unit Builder",
+          "One edge is a mixed number like 2½ — its stepper moves by halves. Multiply the fractions: 2½ × 3 × 4 = 30.",
+          0xffcd4d,
+          "#ffcd4d",
+          () => pick(3),
+        );
+
+        this.input.keyboard.on("keydown-ONE", () => pick(1));
+        this.input.keyboard.on("keydown-TWO", () => pick(2));
+        this.input.keyboard.on("keydown-THREE", () => pick(3));
+
+        makeHubLink(this, cx, 556);
+        srSay(
+          "Choose your level. Level 1, build it: I give you the size. " +
+            "Level 2, challenge: match a volume or find a missing side. " +
+            "Level 3, half-unit builder: one edge is a mixed number like " +
+            "two and a half. Press 1, 2, or 3 to choose.",
+        );
+      };
+      LevelSelectScene.prototype.makeCard = function (
+        cx,
+        cy,
+        tag,
+        title,
+        desc,
+        accentN,
+        accentS,
+        cb,
+      ) {
+        const card = this.add
+          .rectangle(cx, cy, 560, 110, C.panel)
+          .setStrokeStyle(3, accentN)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx - 250, cy - 30, tag, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            fontStyle: "900",
+            color: accentS,
+          })
+          .setOrigin(0, 0.5);
+        this.add
+          .text(cx - 250, cy - 6, title, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "26px",
+            fontStyle: "900",
+            color: "#eafff4",
+          })
+          .setOrigin(0, 0.5);
+        this.add
+          .text(cx - 250, cy + 30, desc, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#a8d8c4",
+            wordWrap: { width: 500 },
+          })
+          .setOrigin(0, 0.5);
+        card.on("pointerover", () => card.setFillStyle(0x18402f));
+        card.on("pointerout", () => card.setFillStyle(C.panel));
+        card.on("pointerdown", cb);
+      };
+
+      // ════════════════════════════════════════════════════════════════════
+      //  VOCAB GATE  ·  Words to know first (shown BEFORE the first round)
+      // ════════════════════════════════════════════════════════════════════
+      function VocabScene() {
+        Phaser.Scene.call(this, "Vocab");
+      }
+      VocabScene.prototype = Object.create(Phaser.Scene.prototype);
+      VocabScene.prototype.constructor = VocabScene;
+      VocabScene.prototype.init = function () {
+        this.index = 0;
+      };
+      VocabScene.prototype.create = function () {
+        const cx = W / 2;
+        this.cameras.main.setBackgroundColor(C.bg);
+
+        this.add
+          .text(cx, 66, "WORDS TO KNOW FIRST", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "30px",
+            fontStyle: "900",
+            color: "#eafff4",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 102, "Learn these before you build any prisms.", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#a8d8c4",
+          })
+          .setOrigin(0.5);
+
+        this.add
+          .rectangle(cx, 320, 560, 320, C.panel)
+          .setStrokeStyle(2, C.panelEdge);
+
+        this.stepT = this.add
+          .text(cx, 186, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "13px",
+            fontStyle: "900",
+            color: "#4fd18b",
+          })
+          .setOrigin(0.5);
+        this.add
+          .rectangle(cx, 252, 110, 110, 0x0c2118)
+          .setStrokeStyle(2, C.panelEdge);
+        this.mediaT = this.add
+          .text(cx, 252, "", { fontSize: "62px" })
+          .setOrigin(0.5);
+        this.termT = this.add
+          .text(cx, 336, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "30px",
+            fontStyle: "900",
+            color: "#ffcd4d",
+          })
+          .setOrigin(0.5);
+        this.defT = this.add
+          .text(cx, 398, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            color: "#eafff4",
+            align: "center",
+            lineSpacing: 6,
+            wordWrap: { width: 500 },
+          })
+          .setOrigin(0.5);
+
+        this.dots = VOCAB_TERMS.map(() =>
+          this.add.circle(0, 0, 5, 0x2a5a44).setDepth(2),
+        );
+
+        const nextBtn = this.add
+          .rectangle(cx + 90, 510, 230, 52, 0x1f7a52)
+          .setStrokeStyle(3, 0xffffff, 0.85)
+          .setInteractive({ useHandCursor: true });
+        this.nextLbl = this.add
+          .text(cx + 90, 510, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        nextBtn.on("pointerover", () => nextBtn.setFillStyle(0x2a9d6a));
+        nextBtn.on("pointerout", () => nextBtn.setFillStyle(0x1f7a52));
+        nextBtn.on("pointerdown", () => this.advance());
+
+        const backBtn = this.add
+          .rectangle(cx - 120, 510, 130, 52, 0x183a2c)
+          .setStrokeStyle(2, C.panelEdge)
+          .setInteractive({ useHandCursor: true });
+        this.backLbl = this.add
+          .text(cx - 120, 510, "← Back", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#a8d8c4",
+          })
+          .setOrigin(0.5);
+        backBtn.on("pointerover", () => backBtn.setFillStyle(0x224c39));
+        backBtn.on("pointerout", () => backBtn.setFillStyle(0x183a2c));
+        backBtn.on("pointerdown", () => this.back());
+        this.backBtn = backBtn;
+
+        this.input.keyboard.on("keydown-SPACE", () => this.advance());
+        this.input.keyboard.on("keydown-ENTER", () => this.advance());
+        this.input.keyboard.on("keydown-RIGHT", () => this.advance());
+        this.input.keyboard.on("keydown-LEFT", () => this.back());
+
+        this.render();
+      };
+      VocabScene.prototype.render = function () {
+        const t = VOCAB_TERMS[this.index];
+        const last = this.index === VOCAB_TERMS.length - 1;
+        this.stepT.setText(
+          "WORD " + (this.index + 1) + " OF " + VOCAB_TERMS.length,
+        );
+        this.mediaT.setText(t.emoji);
+        this.termT.setText(t.term);
+        this.defT.setText(t.def);
+        this.nextLbl.setText(last ? "Start building ▶" : "Next →");
+        const showBack = this.index > 0;
+        this.backBtn.setVisible(showBack);
+        this.backLbl.setVisible(showBack);
+        const gap = 18;
+        const startX = W / 2 - (gap * (VOCAB_TERMS.length - 1)) / 2;
+        this.dots.forEach((d, n) => {
+          d.x = startX + n * gap;
+          d.y = 470;
+          d.setFillStyle(n === this.index ? 0x4fd18b : 0x2a5a44);
+        });
+        srSay(t.term + ". " + t.def);
+      };
+      VocabScene.prototype.advance = function () {
+        if (this.index < VOCAB_TERMS.length - 1) {
+          this.index++;
+          this.render();
+        } else {
+          vbVocabSeen = true;
+          this.scene.start("Game");
         }
-
-        update(time, delta) {
-          // aim control
-          if (!this.locked && !this.shell) {
-            const dt = delta / 1000;
-            const rate = 1.7 * dt;
-            if (this.left.isDown || this.aKey.isDown) this.aim -= rate;
-            if (this.right.isDown || this.dKey.isDown) this.aim += rate;
-            // clamp so the barrel always points upward into the play field
-            this.aim = Phaser.Math.Clamp(this.aim, -Math.PI + 0.15, -0.15);
-            this.barrel.rotation = this.aim + Math.PI / 2;
-            this.drawAimGuide();
-          }
-
-          // shell flight
-          if (this.shell) {
-            const dt = delta / 1000;
-            this.shell.x += this.shell.vx * dt;
-            this.shell.y += this.shell.vy * dt;
-            // collision with crates
-            for (const c of this.crates) {
-              if (!c.alive) continue;
-              if (
-                Math.abs(this.shell.x - c.x) <= 46 &&
-                Math.abs(this.shell.y - c.y) <= 34
-              ) {
-                this.hitCrate(c);
-                return;
-              }
-            }
-            // off-screen miss
-            if (
-              this.shell.x < -20 ||
-              this.shell.x > W + 20 ||
-              this.shell.y < 70 ||
-              this.shell.y > H + 20
-            ) {
-              this.shell.destroy();
-              this.shell = null;
-              this.resolveMissShot();
-            }
-          }
+      };
+      VocabScene.prototype.back = function () {
+        if (this.index > 0) {
+          this.index--;
+          this.render();
+        } else {
+          this.scene.start("LevelSelect");
         }
+      };
 
-        drawAimGuide() {
-          const g = this.aimGfx;
-          g.clear();
-          g.lineStyle(2, C.cannon, 0.35);
-          const len = 90;
-          g.lineBetween(
-            this.cannonX,
-            this.cannonY - 20,
-            this.cannonX + Math.cos(this.aim) * len,
-            this.cannonY - 20 + Math.sin(this.aim) * len,
-          );
-        }
+      // ════════════════════════════════════════════════════════════════════
+      //  GAME — the Unit-Cube Stacker
+      // ════════════════════════════════════════════════════════════════════
+      function GameScene() {
+        Phaser.Scene.call(this, "Game");
+      }
+      GameScene.prototype = Object.create(Phaser.Scene.prototype);
+      GameScene.prototype.constructor = GameScene;
 
-        fire() {
-          if (this.locked || this.shell) return;
-          const speed = 720;
-          const sx = this.cannonX + Math.cos(this.aim) * 46;
-          const sy = this.cannonY - 20 + Math.sin(this.aim) * 46;
-          const s = this.add
-            .rectangle(sx, sy, 16, 16, C.shell)
-            .setStrokeStyle(2, 0x0a3a28)
-            .setDepth(6);
-          s.vx = Math.cos(this.aim) * speed;
-          s.vy = Math.sin(this.aim) * speed;
-          this.shell = s;
-          this.aimGfx.clear();
-          if (!reducedMotion()) {
-            this.tweens.add({ targets: this.barrel, scaleY: { from: 0.82, to: 1 }, duration: 160 });
-          }
-        }
+      GameScene.prototype.init = function () {
+        this.reduceMotion = reducedMotion();
+        this.score = 0;
+        this.streak = 0;
+        this.solved = 0;
+        this.target = TARGET_SOLVED;
+        this.problem = null;
+        this.built = { l: 2, w: 2, h: 2 }; // doubled ints (half-units)
+        this.active = "l";
+        this.locked = false;
+        this.stepRefs = {};
+      };
 
-        hitCrate(crate) {
-          this.shell.destroy();
-          this.shell = null;
-          crate.alive = false;
-          this.locked = true;
-          if (crate.correct) {
-            crate.box.setFillStyle(0x1c5a3a).setStrokeStyle(3, C.good);
-            this.streak++;
-            this.solved++;
-            const gain = 100 + Math.min(this.streak, 5) * 20;
-            this.score += gain;
-            this.fbText.setColor("#4fd18b").setText("✓ +" + gain + "   " + this.q.why);
-            this.burst(crate.x, crate.y, C.good);
-            this.setSR("Correct. " + this.q.why);
-          } else {
-            crate.box.setFillStyle(0x5a1c1c).setStrokeStyle(3, C.bad);
-            this.streak = 0;
-            this.lives--;
-            this.fbText.setColor("#ff8f8f").setText(
-              "✗ That crate was " + crate.label + ". The answer is " +
-                this.q.answerStr + ". " + this.q.why,
-            );
-            this.burst(crate.x, crate.y, C.bad);
-            if (!reducedMotion()) this.cameras.main.shake(180, 0.006);
-            this.setSR("Not quite. " + this.q.why);
-          }
-          this.refreshHUD();
-          this.afterResolve(crate.correct);
-        }
+      GameScene.prototype.create = function () {
+        this.cameras.main.setBackgroundColor(C.bg);
+        JUICE.audio.unlock();
+        JUICE.audio.musicStart();
 
-        resolveMissShot() {
-          // a clean miss costs nothing but lets the student re-aim
-          if (this.locked) return;
-          this.fbText.setColor("#ffcd4d").setText("Missed every crate — aim again!");
-          this.setSR("The shell missed. Aim again and fire.");
-        }
+        // ── HUD ──
+        const hud = {
+          fontFamily: "Segoe UI, sans-serif",
+          fontSize: "18px",
+          fontStyle: "bold",
+        };
+        this.scoreText = this.add.text(16, 12, "Score: 0", {
+          ...hud,
+          color: "#8fe0bc",
+        });
+        // Calm, no-fail HUD: the heart line is static (mistakes never drain it).
+        this.livesText = this.add.text(16, 36, "❤ No-fail practice", {
+          ...hud,
+          color: "#ff8f8f",
+        });
+        this.streakText = this.add
+          .text(W - 16, 12, "Streak: 0", { ...hud, color: "#ffcd4d" })
+          .setOrigin(1, 0);
+        this.levelText = this.add
+          .text(W - 16, 36, "Level " + vbLevel, { ...hud, color: "#a8d8c4" })
+          .setOrigin(1, 0);
+        this.progressText = this.add
+          .text(W / 2, 12, "0 / " + this.target, { ...hud, color: "#a8d8c4" })
+          .setOrigin(0.5, 0);
 
-        afterResolve(correct) {
-          this.time.delayedCall(correct ? 1000 : 1700, () => {
-            if (this.lives <= 0) return this.gameOver();
-            if (this.solved >= ROUNDS_PER_LEVEL) return this.completeLevel();
-            this.nextQuestion();
-          });
-        }
+        // ── Problem banner ──
+        this.bannerLabel = this.add
+          .text(W / 2, 64, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            fontStyle: "900",
+            color: "#4fd18b",
+          })
+          .setOrigin(0.5);
+        this.bannerText = this.add
+          .text(W / 2, 90, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "21px",
+            fontStyle: "bold",
+            color: "#eafff4",
+            align: "center",
+            wordWrap: { width: W - 80 },
+          })
+          .setOrigin(0.5);
+        this.problemHint = this.add
+          .text(W / 2, 124, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#a8d8c4",
+            align: "center",
+            wordWrap: { width: W - 120 },
+          })
+          .setOrigin(0.5);
+        this.feedback = this.add
+          .text(W / 2, 156, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#ffcd4d",
+            align: "center",
+            wordWrap: { width: W - 80 },
+          })
+          .setOrigin(0.5)
+          .setAlpha(0);
 
-        burst(x, y, color) {
-          const p = this.add.particles(x, y, "cubechip", {
-            speed: { min: 80, max: 220 },
+        // ── Live readout (the heart of the mechanic) ──
+        this.readout = this.add
+          .text(W / 2, 196, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "40px",
+            fontStyle: "900",
+            color: "#eafff4",
+            stroke: "#0a241b",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5);
+        this.goalText = this.add
+          .text(W / 2, 230, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#ffcd4d",
+          })
+          .setOrigin(0.5);
+
+        // ── Prism canvas (redrawn on every change) ──
+        this.prismGfx = this.add.graphics();
+
+        // ── Steppers ──
+        this.makeStepper(200, "l", "Length");
+        this.makeStepper(410, "w", "Width");
+        this.makeStepper(620, "h", "Height");
+
+        // ── Lock In button ──
+        this.lockBtn = this.add
+          .rectangle(W / 2, 540, 260, 52, 0x1f7a52)
+          .setStrokeStyle(3, 0xffffff, 0.85)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(W / 2, 540, "LOCK IN  ✓", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "22px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.lockBtn.on("pointerover", () =>
+          this.lockBtn.setFillStyle(0x2a9d6a),
+        );
+        this.lockBtn.on("pointerout", () =>
+          this.lockBtn.setFillStyle(0x1f7a52),
+        );
+        this.lockBtn.on("pointerdown", () => this.lockIn());
+
+        // ── Controls hint ──
+        this.add
+          .text(
+            W / 2,
+            578,
+            "Tap − / +  ·  or ← → pick a side, ↑ ↓ (A·D) change it  ·  Enter = Lock In",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "13px",
+              color: "#9fd6bd",
+              align: "center",
+            },
+          )
+          .setOrigin(0.5);
+
+        // ── Effects ──
+        this.burstFx = this.add
+          .particles(0, 0, "spark", {
+            speed: { min: 80, max: 240 },
             angle: { min: 0, max: 360 },
-            scale: { start: 1, end: 0 },
-            rotate: { min: 0, max: 360 },
-            gravityY: 260,
-            lifespan: 700,
+            scale: { start: 1.1, end: 0 },
+            lifespan: 650,
+            emitting: false,
             quantity: 16,
-            tint: color === C.good ? [0x4fd18b, 0xd4952a, 0x1a6fb5] : [0xff6b6b, 0xc45a3c],
-          });
-          this.time.delayedCall(750, () => p.destroy());
-        }
+            tint: [0x4fd18b, 0xffcd4d, 0xffffff],
+          })
+          .setDepth(20);
 
-        completeLevel() {
-          this.score += 250;
-          this.refreshHUD();
-          const ov = this.add.container(0, 0).setDepth(20);
-          ov.add(this.add.rectangle(W / 2, H / 2, W, H, 0x05140d, 0.8));
-          ov.add(
-            this.add
-              .text(W / 2, 230, "ROUND CLEAR!", {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "42px",
-                fontStyle: "900",
-                color: "#4fd18b",
-              })
-              .setOrigin(0.5),
-          );
-          ov.add(
-            this.add
-              .text(W / 2, 292, "Volume round " + (this.levelIndex + 1) + " blasted!\n+250 bonus", {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "20px",
-                color: "#eafff4",
-                align: "center",
-                lineSpacing: 6,
-              })
-              .setOrigin(0.5),
-          );
-          this.confetti();
-          const last = this.levelIndex + 1 >= TOTAL_LEVELS;
-          const label = last ? "🏁  SEE RESULTS" : "▶  NEXT ROUND";
-          const btn = this.add
-            .rectangle(W / 2, 380, 300, 56, 0x1f7a52)
-            .setStrokeStyle(3, 0xffffff, 0.85)
-            .setDepth(21)
+        // ── Keyboard ──
+        this.input.keyboard.on("keydown-LEFT", () => this.selectDim(-1));
+        this.input.keyboard.on("keydown-RIGHT", () => this.selectDim(1));
+        this.input.keyboard.on("keydown-UP", () =>
+          this.changeDim(this.active, 1),
+        );
+        this.input.keyboard.on("keydown-DOWN", () =>
+          this.changeDim(this.active, -1),
+        );
+        this.input.keyboard.on("keydown-D", () =>
+          this.changeDim(this.active, 1),
+        );
+        this.input.keyboard.on("keydown-A", () =>
+          this.changeDim(this.active, -1),
+        );
+        this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
+        this.input.keyboard.on("keydown-SPACE", () => this.lockIn());
+
+        this.cameras.main.fadeIn(400);
+        this.newProblem();
+      };
+
+      // Build one stepper (name + minus + value + plus).
+      GameScene.prototype.makeStepper = function (cx, dim, label) {
+        const cy = 408;
+        const box = this.add
+          .rectangle(cx, cy, 196, 96, C.panel)
+          .setStrokeStyle(3, C.panelEdge)
+          .setInteractive({ useHandCursor: true });
+        box.on("pointerdown", () => {
+          this.active = dim;
+          this.updateSteppers();
+        });
+        this.add
+          .text(cx, cy - 30, label, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            fontStyle: "900",
+            color: "#a8d8c4",
+          })
+          .setOrigin(0.5);
+        const mkBtn = (bx, sym, delta) => {
+          const b = this.add
+            .rectangle(bx, cy + 12, 44, 44, C.btn)
+            .setStrokeStyle(2, C.panelEdge)
             .setInteractive({ useHandCursor: true });
           this.add
-            .text(W / 2, 380, label, {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "22px",
-              fontStyle: "bold",
-              color: "#fff",
-            })
-            .setOrigin(0.5)
-            .setDepth(22);
-          btn.on("pointerover", () => btn.setScale(1.04));
-          btn.on("pointerout", () => btn.setScale(1));
-          const go = () => {
-            if (last) {
-              this.scene.start("Result", { score: this.score, won: true });
-            } else {
-              this.scene.start("Game", {
-                level: this.levelIndex + 1,
-                score: this.score,
-                lives: this.lives,
-              });
-            }
-          };
-          btn.on("pointerdown", go);
-          this.input.keyboard.once("keydown-SPACE", go);
-          this.setSR("Round clear. Score " + this.score + ".");
-        }
-
-        gameOver() {
-          this.scene.start("Result", { score: this.score, won: false });
-        }
-
-        confetti() {
-          const p = this.add.particles(W / 2, -10, "cubechip", {
-            x: { min: 0, max: W },
-            y: -10,
-            speedY: { min: 120, max: 280 },
-            speedX: { min: -60, max: 60 },
-            angle: { min: 0, max: 360 },
-            rotate: { min: 0, max: 360 },
-            scale: { min: 0.6, max: 1.3 },
-            lifespan: 2600,
-            quantity: 3,
-            frequency: 40,
-            tint: [0xffcd4d, 0x4fd18b, 0x1a6fb5, 0xc45a3c],
-          });
-          this.time.delayedCall(1800, () => p.stop());
-        }
-
-        setSR(msg) {
-          const el = document.getElementById("vb-sr");
-          if (el) el.textContent = msg;
-        }
-      }
-
-      // ════════════════════════════════════════════════════════════════════
-      //  RESULT
-      // ════════════════════════════════════════════════════════════════════
-      class ResultScene extends Phaser.Scene {
-        constructor() {
-          super("Result");
-        }
-        init(data) {
-          this.score = data.score || 0;
-          this.won = !!data.won;
-        }
-        create() {
-          this.cameras.main.setBackgroundColor(C.bg);
-          const cx = W / 2;
-          const stars = this.score >= 1500 ? 3 : this.score >= 900 ? 2 : 1;
-          try {
-            window.EduPulse &&
-              EduPulse.record({
-                activityTitle: document.title,
-                score: this.score,
-                stars: stars,
-              });
-          } catch (e) {}
-          this.add
-            .text(cx, 150, this.won ? "VOLUME MASTERED!" : "OUT OF LIVES", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "46px",
-              fontStyle: "900",
-              color: this.won ? "#4fd18b" : "#ff8f8f",
-            })
-            .setOrigin(0.5);
-          for (let i = 0; i < 3; i++) {
-            this.add
-              .text(cx - 80 + i * 80, 240, i < stars ? "★" : "☆", {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "64px",
-                color: i < stars ? "#ffcd4d" : "#2a5a44",
-              })
-              .setOrigin(0.5);
-          }
-          this.add
-            .text(cx, 326, "Final Score: " + this.score, {
+            .text(bx, cy + 10, sym, {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "30px",
               fontStyle: "bold",
               color: "#eafff4",
             })
             .setOrigin(0.5);
-          this.add
-            .text(
-              cx,
-              372,
-              this.won
-                ? "You blasted whole-number, missing-dimension, and fractional-edge volumes."
-                : "Tip: V = l × w × h. To find a missing edge, divide V by the other two. Try again!",
-              {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "16px",
-                color: "#a8d8c4",
-                align: "center",
-                wordWrap: { width: 560 },
-              },
-            )
-            .setOrigin(0.5);
-          this.btn(cx - 150, 460, "↻  PLAY AGAIN", 0x1f7a52, () =>
-            this.scene.start("Game", { level: 0, score: 0, lives: START_LIVES }),
-          );
-          this.btn(cx + 150, 460, "🏠  ALL GAMES", 0x355a86, () => {
-            window.location.href = "/math/games/";
+          b.on("pointerover", () => b.setFillStyle(0x255a42));
+          b.on("pointerout", () => b.setFillStyle(C.btn));
+          b.on("pointerdown", () => {
+            this.active = dim;
+            this.changeDim(dim, delta);
           });
-          const el = document.getElementById("vb-sr");
-          if (el)
-            el.textContent =
-              (this.won ? "Volume mastered" : "Out of lives") +
-              ". Final score " + this.score + ", " + stars + " stars.";
+          return b;
+        };
+        mkBtn(cx - 66, "−", -1);
+        mkBtn(cx + 66, "+", 1);
+        const val = this.add
+          .text(cx, cy + 12, "1", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "34px",
+            fontStyle: "900",
+            color: "#eafff4",
+          })
+          .setOrigin(0.5);
+        // "moves by ½" tag — visible only on the half dimension (Level 3).
+        const halfTag = this.add
+          .text(cx, cy + 40, "moves by ½", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "12px",
+            fontStyle: "bold",
+            color: "#ffcd4d",
+          })
+          .setOrigin(0.5)
+          .setVisible(false);
+        this.stepRefs[dim] = { box, val, halfTag };
+      };
+
+      GameScene.prototype.selectDim = function (dir) {
+        const order = ["l", "w", "h"];
+        let i = order.indexOf(this.active) + dir;
+        i = (i + order.length) % order.length;
+        this.active = order[i];
+        SFX.click();
+        JUICE.audio.tap();
+        this.updateSteppers();
+        srSay(
+          (this.active === "l"
+            ? "Length"
+            : this.active === "w"
+              ? "Width"
+              : "Height") +
+            " selected, now " +
+            fmtHalf(this.built[this.active]) +
+            ".",
+        );
+      };
+
+      // Step one half-unit (doubled 1) on the designated half dimension
+      // (Level 3), one whole unit (doubled 2) otherwise. `dir` is −1 or +1.
+      GameScene.prototype.changeDim = function (dim, dir) {
+        if (this.locked) return;
+        const step = this.problem && this.problem.halfDim === dim ? 1 : 2;
+        const next = Phaser.Math.Clamp(
+          this.built[dim] + dir * step,
+          DIM_MIN,
+          DIM_MAX,
+        );
+        if (next === this.built[dim]) return;
+        this.built[dim] = next;
+        SFX.click();
+        JUICE.audio.pop();
+        this.redrawPrism();
+        this.updateReadout();
+        this.updateSteppers();
+        srSay(
+          (dim === "l" ? "Length" : dim === "w" ? "Width" : "Height") +
+            " " +
+            fmtHalf(next) +
+            ". Volume " +
+            fmtHalf(volumeDoubled(this.built.l, this.built.w, this.built.h)) +
+            " cubic units.",
+        );
+      };
+
+      GameScene.prototype.updateSteppers = function () {
+        ["l", "w", "h"].forEach((dim) => {
+          const r = this.stepRefs[dim];
+          if (!r) return;
+          r.val.setText(fmtHalf(this.built[dim]));
+          r.box.setStrokeStyle(3, dim === this.active ? C.goldN : C.panelEdge);
+          r.halfTag.setVisible(
+            !!(this.problem && this.problem.halfDim === dim),
+          );
+        });
+      };
+
+      GameScene.prototype.updateReadout = function () {
+        const b = this.built;
+        const dV = volumeDoubled(b.l, b.w, b.h);
+        this.readout.setText(
+          fmtHalf(b.l) +
+            " × " +
+            fmtHalf(b.w) +
+            " × " +
+            fmtHalf(b.h) +
+            " = " +
+            fmtHalf(dV) +
+            " u³",
+        );
+        const ok = this.problem && isCorrect(this.problem, b);
+        this.readout.setColor(ok ? "#4fd18b" : "#eafff4");
+      };
+
+      // Draw the prism as stacked iso boxes (painter's order). Dims are
+      // half-unit ints: full unit cubes plus, when a dimension is odd, a
+      // clearly-marked amber HALF slab along that dimension.
+      GameScene.prototype.redrawPrism = function () {
+        const g = this.prismGfx;
+        g.clear();
+        // Split a doubled dim into unit segments + an optional ½ segment.
+        const segs = (dbl) => {
+          const out = [];
+          const full = Math.floor(dbl / 2);
+          for (let n = 0; n < full; n++) out.push({ at: n, size: 1 });
+          if (dbl % 2) out.push({ at: full, size: 0.5 });
+          return out;
+        };
+        const li = segs(this.built.l),
+          wi = segs(this.built.w),
+          hi = segs(this.built.h);
+        const boxes = [];
+        let minX = Infinity,
+          maxX = -Infinity,
+          minY = Infinity,
+          maxY = -Infinity;
+        li.forEach((si) => {
+          wi.forEach((sj) => {
+            hi.forEach((sk) => {
+              const X = (si.at - sj.at) * HW;
+              const Y = (si.at + sj.at) * TH - (sk.at + sk.size - 1) * CH;
+              boxes.push({
+                X,
+                Y,
+                sx: si.size,
+                sy: sj.size,
+                sz: sk.size,
+                half: si.size < 1 || sj.size < 1 || sk.size < 1,
+                key: si.at + sj.at + sk.at,
+              });
+              if (X - sj.size * HW < minX) minX = X - sj.size * HW;
+              if (X + si.size * HW > maxX) maxX = X + si.size * HW;
+              if (Y < minY) minY = Y;
+              const bot = Y + (si.size + sj.size) * TH + sk.size * CH;
+              if (bot > maxY) maxY = bot;
+            });
+          });
+        });
+        const ox = PRISM_CX - (minX + maxX) / 2;
+        const oy = PRISM_CY - (minY + maxY) / 2;
+        boxes.sort((a, c) => a.key - c.key);
+        boxes.forEach((bx) =>
+          drawIsoBox(g, bx.X + ox, bx.Y + oy, bx.sx, bx.sy, bx.sz, bx.half),
+        );
+      };
+
+      GameScene.prototype.newProblem = function () {
+        this.locked = false;
+        this.missedOnce = false; // one free retry before the answer is shown
+        this.problem = genProblem(vbLevel);
+        this.built = {
+          l: this.problem.start.l,
+          w: this.problem.start.w,
+          h: this.problem.start.h,
+        };
+        this.active = "l";
+        this.bannerLabel.setText(this.problem.label.toUpperCase());
+        this.bannerText.setText(this.problem.prompt);
+        // Level 1 always shows the hint; Level 2 shows a lighter hint.
+        this.problemHint.setText(this.problem.hint);
+        this.goalText.setText(goalLine(this.problem));
+        this.feedback.setAlpha(0);
+        this.lockBtn.setFillStyle(0x1f7a52);
+        this.redrawPrism();
+        this.updateReadout();
+        this.updateSteppers();
+        srSay(
+          this.problem.prompt +
+            " " +
+            this.problem.hint +
+            " Use the steppers to build, then lock in.",
+        );
+      };
+
+      GameScene.prototype.lockIn = function () {
+        if (this.locked || !this.problem) return;
+        this.locked = true;
+        const correct = isCorrect(this.problem, this.built);
+        if (correct) {
+          SFX.good();
+          JUICE.audio.correct(this.streak);
+          this.solved++;
+          this.streak++;
+          const gain = 20 + Math.min(this.streak, 5) * 5;
+          this.score += gain;
+          JUICE.award(8 + Math.min(this.streak, 5), "u10-volume-blast");
+          this.burstFx.setPosition(PRISM_CX, PRISM_CY);
+          this.burstFx.explode(16);
+          JUICE.burst(
+            this,
+            PRISM_CX,
+            PRISM_CY,
+            [0x4fd18b, 0xffcd4d, 0xffffff],
+            16,
+          );
+          JUICE.floatText(
+            this,
+            PRISM_CX,
+            PRISM_CY - 60,
+            "+" + gain,
+            "#4fd18b",
+            34,
+          );
+          if (this.streak >= 2) JUICE.confetti(this, 1);
+          this.feedback
+            .setColor("#4fd18b")
+            .setText("✓ Correct!  " + this.problem.why)
+            .setAlpha(1);
+          srSay("Correct. " + this.problem.why);
+          this.afterAttempt(true);
+        } else if (!this.missedOnce) {
+          // First miss on this problem: a calm retry — no life lost and the
+          // correct build is NOT revealed, so the student can recount and retry.
+          this.missedOnce = true;
+          this.locked = false;
+          this.streak = 0;
+          SFX.bad();
+          JUICE.audio.wrong();
+          JUICE.shake(this, 0.006);
+          this.feedback
+            .setColor("#ffcd4d")
+            .setText(
+              "Not quite yet — check L × W × H, then try again. " +
+                (this.problem.hint || ""),
+            )
+            .setAlpha(1);
+          this.updateHUD();
+          srSay("Not quite. Try again. " + (this.problem.hint || ""));
+        } else {
+          SFX.bad();
+          JUICE.audio.wrong();
+          this.streak = 0;
+          this.feedback
+            .setColor("#ffcd4d")
+            .setText("✗ Not quite — " + this.problem.why)
+            .setAlpha(1);
+          srSay("Not quite. " + this.problem.why);
+          // Teach: redraw the prism as the CORRECT build, then continue.
+          const goal = correctBuild(this.problem);
+          this.built = { l: goal.l, w: goal.w, h: goal.h };
+          this.redrawPrism();
+          this.updateReadout();
+          this.updateSteppers();
+          this.afterAttempt(false);
         }
-        btn(x, y, label, color, cb) {
-          const b = this.add
-            .rectangle(x, y, 270, 56, color)
-            .setStrokeStyle(3, 0xffffff, 0.85)
-            .setInteractive({ useHandCursor: true });
+      };
+
+      GameScene.prototype.afterAttempt = function (correct) {
+        // No-fail practice: mistakes teach; they never end the game.
+        this.updateHUD();
+        if (this.solved >= this.target) return this.endGame();
+        this.time.delayedCall(correct ? 950 : 1700, () => {
+          this.newProblem();
+        });
+      };
+
+      GameScene.prototype.updateHUD = function () {
+        this.scoreText.setText("Score: " + this.score);
+        this.streakText.setText("Streak: " + this.streak);
+        this.levelText.setText("Level " + vbLevel);
+        this.progressText.setText(this.solved + " / " + this.target);
+      };
+
+      GameScene.prototype.endGame = function () {
+        this.locked = true;
+        JUICE.audio.musicStop();
+        this.time.delayedCall(500, () => {
+          this.scene.start("Result", {
+            score: this.score,
+            solved: this.solved,
+            target: this.target,
+          });
+        });
+      };
+
+      // ════════════════════════════════════════════════════════════════════
+      //  RESULT
+      // ════════════════════════════════════════════════════════════════════
+      function ResultScene() {
+        Phaser.Scene.call(this, "Result");
+      }
+      ResultScene.prototype = Object.create(Phaser.Scene.prototype);
+      ResultScene.prototype.constructor = ResultScene;
+      ResultScene.prototype.init = function (data) {
+        this.d = data || {};
+      };
+      ResultScene.prototype.create = function () {
+        const d = this.d;
+        const cx = W / 2;
+        this.cameras.main.setBackgroundColor(C.bg);
+
+        const stars =
+          d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+        if (d.score > hs) {
+          hs = d.score;
+          try {
+            localStorage.setItem(LS_KEY, String(hs));
+          } catch (e) {}
+        }
+
+        this.add
+          .text(cx, 120, "VOLUME MASTERED!", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "46px",
+            fontStyle: "900",
+            color: "#4fd18b",
+          })
+          .setOrigin(0.5);
+
+        for (let i = 0; i < 3; i++) {
           this.add
-            .text(x, y, label, {
+            .text(cx - 80 + i * 80, 200, i < stars ? "★" : "☆", {
               fontFamily: "Segoe UI, sans-serif",
-              fontSize: "20px",
-              fontStyle: "bold",
-              color: "#fff",
+              fontSize: "60px",
+              color: i < stars ? "#ffcd4d" : "#2a5a44",
             })
             .setOrigin(0.5);
-          b.on("pointerover", () => b.setScale(1.04));
-          b.on("pointerout", () => b.setScale(1));
-          b.on("pointerdown", cb);
         }
+
+        this.add
+          .text(cx, 280, "Score: " + d.score, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "30px",
+            fontStyle: "bold",
+            color: "#eafff4",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 318, "Built " + d.solved + " of " + d.target + " prisms", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            color: "#a8d8c4",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 348, "High Score: " + hs, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#ffcd4d",
+          })
+          .setOrigin(0.5);
+
+        SFX.win();
+        JUICE.audio.fanfare();
+        JUICE.confetti(this, 1);
+        JUICE.award(40, "u10-volume-blast");
+
+        // EduPulse reporting (guarded; safe no-op without bridge).
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: document.title,
+              score: d.score,
+              stars: stars,
+              standard: "6.G.2",
+              problemsAttempted: d.solved,
+            });
+        } catch (e) {}
+        srSay(
+          "Volume mastered! Final score " + d.score + ", " + stars + " stars.",
+        );
+
+        const again = this.add
+          .rectangle(cx - 150, 430, 270, 54, 0x1f7a52)
+          .setStrokeStyle(3, 0xffffff, 0.85)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx - 150, 430, "↻  PLAY AGAIN", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        const replay = () => this.scene.start("LevelSelect");
+        again.on("pointerover", () => again.setFillStyle(0x2a9d6a));
+        again.on("pointerout", () => again.setFillStyle(0x1f7a52));
+        again.on("pointerdown", replay);
+        this.input.keyboard.on("keydown-SPACE", replay);
+        this.input.keyboard.on("keydown-ENTER", replay);
+
+        const home = this.add
+          .rectangle(cx + 150, 430, 270, 54, 0x2a6f9d)
+          .setStrokeStyle(3, 0xffffff, 0.85)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx + 150, 430, "🏠  ALL GAMES", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        home.on("pointerover", () => home.setFillStyle(0x3585b8));
+        home.on("pointerout", () => home.setFillStyle(0x2a6f9d));
+        home.on("pointerdown", () => (window.location.href = "/math/games/"));
+      };
+
+      // ── Shared helpers ──────────────────────────────────────────────────
+      // Draw one isometric unit cube whose top vertex is at (X, Y).
+      function drawIsoCube(g, X, Y, hw, th, ch) {
+        // top
+        g.fillStyle(C.cubeTop, 1);
+        g.beginPath();
+        g.moveTo(X, Y);
+        g.lineTo(X + hw, Y + th);
+        g.lineTo(X, Y + 2 * th);
+        g.lineTo(X - hw, Y + th);
+        g.closePath();
+        g.fillPath();
+        g.lineStyle(1, C.cubeEdge, 0.85);
+        g.strokePath();
+        // left face
+        g.fillStyle(C.cubeLeft, 1);
+        g.beginPath();
+        g.moveTo(X - hw, Y + th);
+        g.lineTo(X, Y + 2 * th);
+        g.lineTo(X, Y + 2 * th + ch);
+        g.lineTo(X - hw, Y + th + ch);
+        g.closePath();
+        g.fillPath();
+        g.lineStyle(1, C.cubeEdge, 0.85);
+        g.strokePath();
+        // right face
+        g.fillStyle(C.cubeRight, 1);
+        g.beginPath();
+        g.moveTo(X, Y + 2 * th);
+        g.lineTo(X + hw, Y + th);
+        g.lineTo(X + hw, Y + th + ch);
+        g.lineTo(X, Y + 2 * th + ch);
+        g.closePath();
+        g.fillPath();
+        g.lineStyle(1, C.cubeEdge, 0.85);
+        g.strokePath();
       }
 
-      // ── launch ──
+      // Draw one isometric box spanning sx × sy × sz units, top-back vertex at
+      // (X, Y). Full unit cubes use the green faces; half slabs use amber so
+      // the ½ piece reads clearly against the whole cubes.
+      function drawIsoBox(g, X, Y, sx, sy, sz, half) {
+        const ux = sx * HW,
+          uy = sx * TH;
+        const vx = -sy * HW,
+          vy = sy * TH;
+        const dz = sz * CH;
+        const top = half ? C.halfTop : C.cubeTop;
+        const left = half ? C.halfLeft : C.cubeLeft;
+        const right = half ? C.halfRight : C.cubeRight;
+        // top face
+        g.fillStyle(top, 1);
+        g.beginPath();
+        g.moveTo(X, Y);
+        g.lineTo(X + ux, Y + uy);
+        g.lineTo(X + ux + vx, Y + uy + vy);
+        g.lineTo(X + vx, Y + vy);
+        g.closePath();
+        g.fillPath();
+        g.lineStyle(1, C.cubeEdge, 0.85);
+        g.strokePath();
+        // left face
+        g.fillStyle(left, 1);
+        g.beginPath();
+        g.moveTo(X + vx, Y + vy);
+        g.lineTo(X + ux + vx, Y + uy + vy);
+        g.lineTo(X + ux + vx, Y + uy + vy + dz);
+        g.lineTo(X + vx, Y + vy + dz);
+        g.closePath();
+        g.fillPath();
+        g.lineStyle(1, C.cubeEdge, 0.85);
+        g.strokePath();
+        // right face
+        g.fillStyle(right, 1);
+        g.beginPath();
+        g.moveTo(X + ux, Y + uy);
+        g.lineTo(X + ux + vx, Y + uy + vy);
+        g.lineTo(X + ux + vx, Y + uy + vy + dz);
+        g.lineTo(X + ux, Y + uy + dz);
+        g.closePath();
+        g.fillPath();
+        g.lineStyle(1, C.cubeEdge, 0.85);
+        g.strokePath();
+      }
+
+      function makeHubLink(scene, x, y) {
+        const t = scene.add
+          .text(x, y, "← Back to Math Games", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            fontStyle: "bold",
+            color: "#a8d8c4",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        t.on("pointerover", () => t.setColor("#4fd18b"));
+        t.on("pointerout", () => t.setColor("#a8d8c4"));
+        t.on("pointerdown", () => (window.location.href = "/math/games/"));
+        return t;
+      }
+
+      // ── Launch ──
       const config = {
         type: Phaser.AUTO,
         width: W,
@@ -1114,7 +1720,14 @@
         parent: document.body,
         backgroundColor: "#0a241b",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [BootScene, TitleScene, GameScene, ResultScene],
+        scene: [
+          BootScene,
+          TitleScene,
+          LevelSelectScene,
+          VocabScene,
+          GameScene,
+          ResultScene,
+        ],
       };
       const vbGame = new Phaser.Game(config);
 
@@ -1126,9 +1739,13 @@
           cv.setAttribute("role", "application");
           cv.setAttribute(
             "aria-label",
-            "Volume Blast Crate Cannon math game. Solve the rectangular prism, " +
-              "rotate the cannon with the left and right arrow keys, and press Space " +
-              "to fire at the crate with the correct volume.",
+            "Volume Blast Unit-Cube Stacker math game. Build a rectangular " +
+              "prism from unit cubes by setting its length, width, and height " +
+              "with the steppers, or use the left and right arrow keys to pick a " +
+              "side and the up and down arrows to change it. Watch the live " +
+              "length times width times height readout, then press Lock In, " +
+              "Enter, or Space. On Level 3 one edge is a mixed number and its " +
+              "stepper moves in half units.",
           );
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
@@ -1145,11 +1762,37 @@
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-    <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#vb-sr",
+            standard: "6.G.2",
+            staticHints: [
+              "What three measurements build a volume? Picture filling the solid with unit cubes.",
+              "Volume = length × width × height (for fractional edges, multiply the fractions).",
+              "Set it up: write length × width × height with the numbers, then do the multiplying.",
+            ],
+          });
+      });
+    </script>
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
   </body>
 </html>

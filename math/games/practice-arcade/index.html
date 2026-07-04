@@ -1,0 +1,1645 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
+    <title>Practice Arcade — Review Lab</title>
+    <meta
+      name="description"
+      content="A calm, self-paced review lab that turns each lesson's practice into real interactive challenges — sort into bins, match pairs, choose the answer, and spot the mistake. No timers, no twitch."
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: #0f172a;
+        overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        /* Stop the browser from treating a drag as scroll/zoom on tablets, so
+           Phaser receives the touch-drag gestures (drag-sort works on touch). */
+        touch-action: none;
+      }
+      canvas {
+        display: block;
+        margin: 0 auto;
+        touch-action: none;
+      }
+      canvas:focus-visible {
+        outline: 3px solid #38bdf8;
+        outline-offset: 4px;
+      }
+      #loader {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #0f172a;
+        color: #fff;
+        z-index: 10;
+        font-size: 18px;
+        font-weight: 700;
+        gap: 10px;
+      }
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.1);
+        border-top-color: #38bdf8;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .spinner {
+          animation: none;
+        }
+      }
+      /* Screen-reader live region (mirrors the prompt + result). */
+      #pa-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+    </style>
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+    </script>
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+    <!-- Student Passport (meta-progression: lifetime XP / streak / badges) -->
+    <link rel="stylesheet" href="/assets/lesson-passport.css" />
+    <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
+    <script src="/assets/game-juice.js"></script>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
+  <body>
+    <div id="loader">
+      <div class="spinner"></div>
+      <div id="loader-text">Loading Practice Arcade…</div>
+    </div>
+    <div id="pa-sr" role="status" aria-live="polite"></div>
+
+    <script>
+      // Failsafe: the scene classes below are declared as
+      // `class … extends Phaser.Scene`, evaluated the instant this script runs.
+      // If the Phaser engine failed to load (blocked CDN fallback on a school
+      // network, or a stale deploy missing the vendored file), that line throws
+      // and aborts the whole script — so the DOMContentLoaded handler at the
+      // bottom never registers and the loader spins on "Loading…" forever.
+      // Guard the game behind an engine check: when Phaser is missing, show an
+      // actionable error with a Reload button instead of a dead spinner.
+      if (typeof Phaser === "undefined") {
+        (function () {
+          function render() {
+            var loader = document.getElementById("loader");
+            if (!loader) return;
+            loader.innerHTML =
+              '<div style="max-width:30rem;text-align:center;color:#e2e8f0;' +
+              'font-family:system-ui,-apple-system,sans-serif;padding:1.5rem;line-height:1.5">' +
+              '<div style="font-size:2.6rem;margin-bottom:.4rem" aria-hidden="true">🎮⚠️</div>' +
+              '<div style="font-size:1.2rem;font-weight:800;margin-bottom:.5rem">' +
+              "Couldn't load the game engine</div>" +
+              '<div style="opacity:.85;margin-bottom:1.1rem">Check your internet ' +
+              "connection, then reload. If you're on the school network and it keeps " +
+              "failing, let your teacher know.</div>" +
+              '<button type="button" onclick="location.reload()" ' +
+              'style="background:#22d3ee;color:#0b1020;border:0;border-radius:.6rem;' +
+              'padding:.65rem 1.3rem;font-size:1rem;font-weight:800;cursor:pointer">' +
+              "Reload</button></div>";
+          }
+          if (document.readyState === "loading")
+            document.addEventListener("DOMContentLoaded", render);
+          else render();
+        })();
+      } else {
+        // ── PRACTICE ARCADE — REVIEW LAB ──────────────────────────────────────
+        // Universal per-lesson review game. Reads ?lesson=<id>, fetches that
+        // lesson's /lessons/<id>/config.json, and turns each practice item into a
+        // REAL interactive challenge matched to its type — sort into bins, match
+        // pairs, choose the answer, spot the mistake. Calm and self-paced: no
+        // timers, no falling targets, no aiming. Wrong MATH (not slow reflexes)
+        // costs a life, and every miss shows the explanation so it teaches.
+        const W = 960,
+          H = 720;
+        const MAX_ROUNDS = 8;
+        // Bright, high-contrast, kid-friendly palette. Vivid indigo/violet field
+        // with saturated tiles + cyan accent so white text stays legible. A fixed
+        // scheme (not the per-lesson dark theme) guarantees consistent contrast;
+        // per-lesson identity comes from the mascot emoji instead of color.
+        const PALETTE = {
+          bgTop: 0x6366f1, // indigo-500  (gradient top)
+          bgBot: 0x7c3aed, // violet-600  (gradient bottom)
+          panel: 0x312e81, // indigo-900 panel, reads under white text
+          panelLine: 0x67e8f9, // cyan-300 border
+          tile: 0x4f46e5, // indigo-600 tile
+          tileHi: 0x6366f1, // indigo-500 hover
+          good: 0x10b981, // emerald-500
+          bad: 0xf43f5e, // rose-500
+          accent: 0x22d3ee, // cyan-400
+          gold: 0xfacc15, // amber-300
+        };
+
+        let rounds = [];
+        let lessonTitle = "Lesson";
+        let activeLesson = "1-1";
+        let isReviewMode = false; // true for unit / multi-lesson cumulative review
+        let themeId = "default"; // lesson config "theme" id → palette
+        let mascot = "🎮"; // lesson config "themeEmoji" → guide character
+
+        // Resolve the shared game-feel layer; provide safe no-op fallbacks so the
+        // game still runs if /assets/game-juice.js failed to load.
+        const JUICE = window.GameJuice || {
+          reduceMotion: false,
+          audio: {
+            unlock() {},
+            tap() {},
+            pop() {},
+            correct() {},
+            wrong() {},
+            whoosh() {},
+            fanfare() {},
+            musicStart() {},
+            musicStop() {},
+          },
+          theme: () => ({
+            accent: "#38bdf8",
+            accentN: 0x38bdf8,
+            tileN: 0x334155,
+            botN: 0x1e293b,
+          }),
+          bgGradient() {},
+          popIn() {},
+          tilePop() {},
+          burst() {},
+          confetti() {},
+          shake() {},
+          floatText() {},
+          award() {},
+        };
+
+        function srSay(msg) {
+          const el = document.getElementById("pa-sr");
+          if (el) el.textContent = msg;
+        }
+        function shuffle(a) {
+          const r = a.slice();
+          for (let i = r.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [r[i], r[j]] = [r[j], r[i]];
+          }
+          return r;
+        }
+        // Tiny WebAudio blips (guarded; silent if no context / muted).
+        const SFX = {
+          ctx: null,
+          on: true,
+          init() {
+            if (!this.ctx)
+              try {
+                this.ctx = new (
+                  window.AudioContext || window.webkitAudioContext
+                )();
+              } catch (e) {}
+          },
+          beep(f, d, type = "sine", v = 0.15) {
+            if (!this.ctx || !this.on) return;
+            try {
+              const o = this.ctx.createOscillator(),
+                g = this.ctx.createGain();
+              o.type = type;
+              o.frequency.value = f;
+              g.gain.setValueAtTime(v, this.ctx.currentTime);
+              g.gain.exponentialRampToValueAtTime(
+                0.001,
+                this.ctx.currentTime + d,
+              );
+              o.connect(g);
+              g.connect(this.ctx.destination);
+              o.start();
+              o.stop(this.ctx.currentTime + d);
+            } catch (e) {}
+          },
+          good() {
+            this.beep(660, 0.1);
+            this.beep(880, 0.14);
+          },
+          bad() {
+            this.beep(200, 0.25, "sawtooth");
+          },
+          pick() {
+            this.beep(520, 0.05, "square", 0.08);
+          },
+          win() {
+            [523, 659, 784, 1047].forEach((f, i) =>
+              setTimeout(() => this.beep(f, 0.2), i * 110),
+            );
+          },
+        };
+
+        // ── Load content and build the round list ────────────────────────────
+        // Three modes (in priority order):
+        //   ?lessons=4-1,4-2   → cumulative review across the listed lessons
+        //   ?unit=4            → cumulative review across every lesson in unit 4
+        //   ?lesson=4-3        → single-lesson review (default)
+        async function loadLessonConfig() {
+          const params = new URLSearchParams(window.location.search);
+          const unit = params.get("unit");
+          const lessonsParam = params.get("lessons");
+          let ids;
+          let isGroup = true;
+          if (lessonsParam) {
+            ids = lessonsParam
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean);
+          } else if (unit) {
+            // Probe N-1 … N-9; missing lessons 404 and are skipped.
+            ids = [];
+            for (let k = 1; k <= 9; k++) ids.push(unit + "-" + k);
+          } else {
+            ids = [params.get("lesson") || "1-1"];
+            isGroup = false;
+          }
+
+          const firstTitles = [];
+          let gotTheme = false;
+          for (const id of ids) {
+            try {
+              const res = await fetch(
+                `/lessons/${encodeURIComponent(id)}/config.json`,
+              );
+              if (!res.ok) continue;
+              const data = await res.json();
+              if (data.title) firstTitles.push(data.title);
+              // Use the first lesson's theme as the visual identity for the run.
+              if (!gotTheme) {
+                if (data.theme) themeId = data.theme;
+                if (data.themeEmoji) mascot = data.themeEmoji;
+                gotTheme = true;
+              }
+              const opt = (data.practice && data.practice.optional) || [];
+              opt.forEach((it) => {
+                const r = buildRound(it);
+                if (r) rounds.push(r);
+              });
+            } catch (e) {
+              /* skip unreachable lesson */
+            }
+          }
+
+          // NOTE: the palette is intentionally a fixed bright scheme — we no
+          // longer recolor it from the per-lesson (dark) theme, which produced
+          // the muddy low-contrast look. Per-lesson identity = the mascot emoji.
+
+          isReviewMode = isGroup;
+          if (isGroup) {
+            rounds = shuffle(rounds);
+            lessonTitle = unit ? "Unit " + unit + " Review" : "Mixed Review";
+            activeLesson = unit ? "unit-" + unit : ids.join(",");
+          } else {
+            lessonTitle = firstTitles[0] || "Lesson";
+            activeLesson = ids[0];
+          }
+          document.title = `${lessonTitle} — Practice Arcade`;
+
+          if (rounds.length === 0) rounds = fallbackRounds();
+          rounds = rounds.slice(0, isGroup ? 12 : MAX_ROUNDS);
+
+          document.getElementById("loader").style.display = "none";
+          window.paGame = new Phaser.Game({
+            type: Phaser.AUTO,
+            width: W,
+            height: H,
+            backgroundColor: "#6366f1",
+            parent: document.body,
+            scale: {
+              mode: Phaser.Scale.FIT,
+              autoCenter: Phaser.Scale.CENTER_BOTH,
+            },
+            scene: [TitleScene, PlayScene, ResultScene],
+          });
+          window.paGame.events.once("ready", () => {
+            try {
+              const cv = window.paGame.canvas;
+              cv.setAttribute("role", "application");
+              cv.setAttribute(
+                "aria-label",
+                lessonTitle +
+                  " practice review. Each round is a sort, match, choose, or " +
+                  "spot-the-mistake challenge. Use a pointer or the number and " +
+                  "arrow keys; no timer.",
+              );
+              cv.setAttribute("aria-roledescription", "math review game");
+              if (!cv.hasAttribute("tabindex"))
+                cv.setAttribute("tabindex", "0");
+            } catch (e) {}
+          });
+        }
+
+        // Normalize a config practice item into a round descriptor the engine
+        // can render. Returns null for unsupported / malformed items.
+        function buildRound(it) {
+          if (!it || !it.type) return null;
+          if (it.type === "multiple-choice") {
+            if (!it.stem || !Array.isArray(it.choices) || it.choices.length < 2)
+              return null;
+            // Randomize the choice order. Every lesson config authors the correct
+            // answer first (correctIndex 0) and the renderer keeps that order, so
+            // without this the answer is always the top button — predictable and
+            // not a real check for understanding. Track the correct option text
+            // through the shuffle so correctIndex stays valid.
+            const ci = it.correctIndex || 0;
+            // Shuffle by identity (index-tagged), not by text, so a config with
+            // two identical choice strings can't mis-locate the correct answer.
+            const tagged = it.choices.map((text, idx) => ({ text, idx }));
+            const shuffled = shuffle(tagged);
+            const newIndex = shuffled.findIndex((t) => t.idx === ci);
+            return {
+              kind: "choose",
+              prompt: it.stem,
+              choices: shuffled.map((t) => t.text),
+              correctIndex: newIndex < 0 ? 0 : newIndex,
+              why: it.explanation || "",
+            };
+          }
+          if (it.type === "drag-sort") {
+            if (!Array.isArray(it.categories)) return null;
+            let items = it.items;
+            let cats = it.categories;
+            // Tolerate the alternate schema where items are nested inside each
+            // category ({categories:[{label, items:[...]}]}) instead of a flat
+            // items[] with a category field. Flatten it into the standard shape.
+            if (!Array.isArray(items)) {
+              const nested = cats.some((c) => Array.isArray(c.items));
+              if (!nested) return null;
+              // A single nested category is an ORDERING task, not a sort — skip it
+              // (it would collapse to one trivial bin); needs a dedicated mode.
+              if (cats.length < 2) return null;
+              items = [];
+              cats.forEach((c) => {
+                const id = c.id || c.label;
+                (c.items || []).forEach((x) => {
+                  const text = typeof x === "string" ? x : x && x.text;
+                  if (text != null)
+                    items.push({ text: String(text), category: id });
+                });
+              });
+            }
+            if (!Array.isArray(items)) return null;
+            return {
+              kind: "sort",
+              prompt: it.instructions || "Sort each tile into the right bin.",
+              items: items
+                .filter((x) => x && x.text != null && x.category != null)
+                .map((x) => ({ text: String(x.text), category: x.category })),
+              categories: cats.map((c) => ({
+                id: c.id || c.label,
+                label: c.label || c.id,
+              })),
+              why: "",
+            };
+          }
+          if (it.type === "matching-game") {
+            if (!Array.isArray(it.pairs) || it.pairs.length < 2) return null;
+            return {
+              kind: "match",
+              prompt: it.instructions || "Match each card to its partner.",
+              pairs: it.pairs
+                .filter((p) => p && p.term != null && p.match != null)
+                .slice(0, 5)
+                .map((p) => ({ term: String(p.term), match: String(p.match) })),
+              why: "",
+            };
+          }
+          if (it.type === "error-analysis") {
+            if (!Array.isArray(it.workedExample) || it.errorStep == null)
+              return null;
+            return {
+              kind: "fixit",
+              prompt: it.title || "Find the step with the mistake.",
+              steps: it.workedExample.map((s) => ({
+                label: s.label || "",
+                work: s.work || "",
+              })),
+              errorStep: it.errorStep,
+              why: it.correctWork || "",
+            };
+          }
+          return null;
+        }
+
+        function fallbackRounds() {
+          return [
+            {
+              kind: "choose",
+              prompt: "Which number is prime?",
+              choices: ["15", "21", "29", "35"],
+              correctIndex: 2,
+              why: "29 has only the factors 1 and 29, so it is prime.",
+            },
+            {
+              kind: "choose",
+              prompt: "What is the GCF of 12 and 18?",
+              choices: ["2", "3", "6", "12"],
+              correctIndex: 2,
+              why: "The greatest factor shared by 12 and 18 is 6.",
+            },
+          ];
+        }
+
+        // ── TITLE ────────────────────────────────────────────────────────────
+        class TitleScene extends Phaser.Scene {
+          constructor() {
+            super("Title");
+          }
+          create() {
+            drawStars(this);
+            this.add
+              .text(
+                W / 2,
+                150,
+                isReviewMode ? "UNIT REVIEW" : "PRACTICE ARCADE",
+                {
+                  fontFamily: "Nunito, Segoe UI, sans-serif",
+                  fontSize: "52px",
+                  fontStyle: "bold",
+                  color: "#38bdf8",
+                },
+              )
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 210, lessonTitle, {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "26px",
+                color: "#e2e8f0",
+                align: "center",
+                wordWrap: { width: W - 160 },
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(
+                W / 2,
+                300,
+                rounds.length +
+                  " review challenge" +
+                  (rounds.length === 1 ? "" : "s") +
+                  ": sort, match, choose, and fix mistakes.\n" +
+                  "Take your time — there is no timer. Tap, or use the number\n" +
+                  "and arrow keys. Wrong? No problem — you get a hint and can\n" +
+                  "try again until you've got it.",
+                {
+                  fontFamily: "Nunito, Segoe UI, sans-serif",
+                  fontSize: "18px",
+                  color: "#e0e7ff",
+                  align: "center",
+                },
+              )
+              .setOrigin(0.5);
+
+            const start = () => {
+              SFX.init();
+              JUICE.audio.unlock();
+              JUICE.audio.whoosh();
+              this.scene.start("Play");
+            };
+            makeButton(this, W / 2, 430, 260, 64, "START ▶", start);
+            this.input.keyboard.on("keydown-SPACE", start);
+            this.input.keyboard.on("keydown-ENTER", start);
+
+            makeLink(this, W / 2, 560, "← Back to lessons", () => {
+              window.location.href = "/curriculum/";
+            });
+            srSay(
+              lessonTitle +
+                " Practice Arcade. " +
+                rounds.length +
+                " challenges. Press Start.",
+            );
+          }
+        }
+
+        // ── PLAY (router over the round list) ─────────────────────────────────
+        class PlayScene extends Phaser.Scene {
+          constructor() {
+            super("Play");
+          }
+          create() {
+            this.reduce = !!(
+              window.matchMedia &&
+              window.matchMedia("(prefers-reduced-motion: reduce)").matches
+            );
+            this.idx = 0;
+            this.score = 0;
+            this.streak = 0;
+            this.correctCount = 0; // first-try solves (drives stars)
+            this.tries = 0; // attempts on the current round
+            this.th = JUICE.theme(themeId);
+            drawStars(this);
+            // Audio + ambient music (unlocked by the Start tap on the Title scene).
+            JUICE.audio.unlock();
+            JUICE.audio.musicStart();
+
+            // HUD
+            const hud = {
+              fontFamily: "Nunito, Segoe UI, sans-serif",
+              fontSize: "18px",
+              fontStyle: "bold",
+            };
+            // Left HUD starts at x≈110 to clear the Student Passport pill (a
+            // fixed DOM element the lesson-passport layer parks in the corner).
+            this.titleText = this.add.text(110, 14, lessonTitle.toUpperCase(), {
+              ...hud,
+              fontSize: "16px",
+              color: this.th.accent,
+            });
+            this.scoreText = this.add.text(110, 40, "Score: 0", {
+              ...hud,
+              color: "#ffffff",
+            });
+            this.progressText = this.add
+              .text(W / 2, 16, "", { ...hud, color: "#e0e7ff" })
+              .setOrigin(0.5, 0);
+            this.streakText = this.add
+              .text(W / 2, 44, "", { ...hud, color: "#facc15" })
+              .setOrigin(0.5, 0);
+            // No-fail arcade: instead of hearts, show first-try solves as a
+            // positive streak-of-mastery counter.
+            this.livesText = this.add
+              .text(W - 20, 16, "", {
+                ...hud,
+                fontSize: "20px",
+                color: "#fde047",
+              })
+              .setOrigin(1, 0);
+
+            // Prompt panel
+            this.promptPanel = this.add.graphics();
+            this.promptText = this.add
+              .text(W / 2, 130, "", {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "22px",
+                fontStyle: "bold",
+                color: "#ffffff",
+                align: "center",
+                wordWrap: { width: W - 200 },
+              })
+              .setOrigin(0.5);
+
+            // Feedback line
+            this.feedback = this.add
+              .text(W / 2, H - 38, "", {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "18px",
+                fontStyle: "bold",
+                color: "#facc15",
+                align: "center",
+                wordWrap: { width: W - 120 },
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
+
+            // Journey track: a goal flag the mascot walks toward, one step per round.
+            this.journeyY = 74;
+            this.add
+              .line(
+                0,
+                0,
+                120,
+                this.journeyY,
+                W - 70,
+                this.journeyY,
+                this.th.accentN,
+                0.4,
+              )
+              .setOrigin(0, 0)
+              .setLineWidth(2);
+            this.add.text(W - 60, this.journeyY - 12, "🏁", {
+              fontSize: "22px",
+            });
+            this.mascotObj = this.add
+              .text(120, this.journeyY, mascot, { fontSize: "40px" })
+              .setOrigin(0.5);
+
+            // Layer that holds per-round interactive objects (cleared each round)
+            this.layer = this.add.container(0, 0);
+            this.locked = false;
+            this.updateHUD();
+            this.startRound();
+          }
+
+          // Slide the mascot along the journey track toward the goal flag.
+          advanceJourney() {
+            if (!this.mascotObj) return;
+            const total = Math.max(1, rounds.length);
+            const x0 = 120,
+              x1 = W - 90;
+            const done = Math.min(this.idx + 1, total);
+            const tx = x0 + ((x1 - x0) * done) / total;
+            if (JUICE.reduceMotion) {
+              this.mascotObj.x = tx;
+              return;
+            }
+            this.tweens.add({
+              targets: this.mascotObj,
+              x: tx,
+              duration: 500,
+              ease: "Quad.InOut",
+            });
+          }
+
+          startRound() {
+            this.layer.removeAll(true);
+            // Clear stale per-round key handlers so they can't fire on the
+            // destroyed tiles of a previous round.
+            this.input.keyboard.removeAllListeners();
+            this.feedback.setAlpha(0);
+            this.locked = false;
+            this.tries = 0;
+            this.revealCorrect = null;
+            if (this.idx >= rounds.length) {
+              this.finish();
+              return;
+            }
+            const r = rounds[this.idx];
+            this.progressText.setText(
+              "Round " + (this.idx + 1) + " / " + rounds.length,
+            );
+            // Prompt panel sized to text
+            this.promptText.setText(r.prompt);
+            const ph = Math.max(70, this.promptText.height + 30);
+            this.promptPanel.clear();
+            this.promptPanel.fillStyle(PALETTE.panel, 0.95);
+            this.promptPanel.lineStyle(2, PALETTE.panelLine, 0.8);
+            this.promptPanel.fillRoundedRect(80, 92, W - 160, ph, 14);
+            this.promptPanel.strokeRoundedRect(80, 92, W - 160, ph, 14);
+            this.promptText.setY(92 + ph / 2);
+            srSay("Round " + (this.idx + 1) + ". " + r.prompt);
+
+            const kind = r.kind;
+            if (kind === "sort") this.renderSort(r);
+            else if (kind === "match") this.renderMatch(r);
+            else if (kind === "fixit") this.renderFixit(r);
+            else this.renderChoose(r);
+          }
+
+          // Resolve a round. Correct → reward + advance. Wrong → NO penalty and
+          // NO advance: the student gets a hint and tries again until they solve
+          // it (calm, no-fail practice). First-try solves drive the star score.
+          resolve(correct, why) {
+            if (this.locked) return;
+            const w = why || rounds[this.idx].why || "";
+            const cx = W / 2,
+              cy = 300;
+            if (correct) {
+              this.locked = true;
+              const firstTry = this.tries === 0;
+              this.streak = firstTry ? this.streak + 1 : 0;
+              if (firstTry) this.correctCount++;
+              const gained =
+                (firstTry ? 100 : 40) + Math.min(this.streak, 5) * 20;
+              this.score += gained;
+              // Juice escalates with the streak: more particles, bigger shake,
+              // a second burst + confetti once it's rolling.
+              JUICE.audio.correct(this.streak);
+              const n = 18 + Math.min(this.streak, 6) * 4;
+              JUICE.burst(
+                this,
+                cx,
+                cy,
+                [0x34d399, PALETTE.accent, 0xffffff],
+                n,
+              );
+              if (this.streak >= 5)
+                JUICE.burst(this, cx, cy + 60, [0xfacc15, 0xffffff], 16);
+              JUICE.shake(this, 0.005 + Math.min(this.streak, 5) * 0.001);
+              JUICE.floatText(this, cx, cy - 30, "+" + gained, "#34d399", 40);
+              this.mascotReact(true);
+              this.mascotSay(
+                firstTry
+                  ? this.streak >= 3
+                    ? "🔥 On fire!"
+                    : "Nice!"
+                  : "Got it! 🎉",
+              );
+              const xp = 10 + Math.min(this.streak, 5) * 2;
+              JUICE.award(xp, "practice-arcade");
+              if (this.streak >= 2) JUICE.confetti(this, 1);
+              this.flashEdge(PALETTE.good);
+              this.feedback
+                .setColor("#86efac")
+                .setText((firstTry ? "Correct! " : "Yes! ") + w)
+                .setAlpha(1);
+              srSay("Correct. " + w);
+              this.updateHUD();
+              this.advanceJourney();
+              this.time.delayedCall(1100, () => {
+                this.idx++;
+                this.startRound();
+              });
+            } else {
+              // Wrong: encourage + hint, keep the round open for another attempt.
+              this.tries++;
+              this.streak = 0;
+              JUICE.audio.wrong();
+              JUICE.shake(this, 0.006);
+              this.mascotReact(false);
+              this.mascotSay(
+                this.tries >= 2 ? "Use the hint 👀" : "Try again 👀",
+              );
+              this.flashEdge(PALETTE.bad);
+              const msg =
+                this.tries >= 2 && w ? "Hint: " + w : "Not quite — try again!";
+              this.feedback.setColor("#fde68a").setText(msg).setAlpha(1);
+              srSay("Not quite. Try again. " + (this.tries >= 2 ? w : ""));
+              this.updateHUD();
+            }
+          }
+
+          finish() {
+            JUICE.audio.musicStop();
+            this.scene.start("Result", {
+              score: this.score,
+              correct: this.correctCount,
+              total: rounds.length,
+            });
+          }
+
+          updateHUD() {
+            this.scoreText.setText("Score: " + this.score);
+            this.streakText.setText(
+              this.streak > 1 ? "🔥 Streak " + this.streak : "",
+            );
+            this.livesText.setText(
+              "⭐ " + this.correctCount + " / " + rounds.length,
+            );
+          }
+
+          flashEdge(color) {
+            if (this.reduce) return;
+            const r = this.add
+              .rectangle(W / 2, H / 2, W, H, color, 0.22)
+              .setDepth(50);
+            this.tweens.add({
+              targets: r,
+              alpha: 0,
+              duration: 350,
+              onComplete: () => r.destroy(),
+            });
+          }
+
+          // ── Renderer: CHOOSE (multiple-choice / generic select) ────────────
+          renderChoose(r) {
+            const startY = 92 + Math.max(70, this.promptText.height + 30) + 50;
+            const tileW = Math.min(560, W - 200);
+            const gap = 66;
+            const tiles = [];
+            r.choices.forEach((c, i) => {
+              const y = startY + i * gap;
+              const t = this.makeTile(W / 2, y, tileW, 52, i + 1 + ".  " + c);
+              this.layer.add(t.parts);
+              tiles.push(t);
+              t.bg.on(
+                "pointerover",
+                () => !this.locked && t.bg.setFillStyle(PALETTE.tileHi),
+              );
+              t.bg.on(
+                "pointerout",
+                () => !this.locked && t.bg.setFillStyle(PALETTE.tile),
+              );
+              t.bg.on("pointerdown", () => this.pickChoice(r, i, t));
+              this.input.keyboard.on("keydown-" + keyName(i + 1), () =>
+                this.pickChoice(r, i, t),
+              );
+            });
+            // On a miss, flash the correct choice green so the answer is visible.
+            this.revealCorrect = () => {
+              const ct = tiles[r.correctIndex];
+              if (ct) ct.bg.setFillStyle(PALETTE.good);
+            };
+            // Screen-reader: read out the options after the prompt.
+            srSay(
+              rounds[this.idx].prompt +
+                ". Options: " +
+                r.choices.map((c, i) => i + 1 + ", " + c).join("; ") +
+                ". Press a number to choose.",
+            );
+          }
+          pickChoice(r, i, t) {
+            if (this.locked) return;
+            SFX.pick();
+            const ok = i === r.correctIndex;
+            t.bg.setFillStyle(ok ? PALETTE.good : PALETTE.bad);
+            // Wrong pick: flash red, then reset so the student can try again.
+            if (!ok)
+              this.time.delayedCall(620, () => {
+                if (!this.locked) t.bg.setFillStyle(PALETTE.tile);
+              });
+            this.resolve(ok, r.why);
+          }
+
+          // ── Renderer: SORT (drag-sort into category bins) ──────────────────
+          renderSort(r) {
+            const cats = r.categories;
+            const binW = Math.min(260, (W - 120) / cats.length - 20);
+            const binH = 150;
+            const binY = H - 130;
+            const totalW = cats.length * binW + (cats.length - 1) * 24;
+            let bx = (W - totalW) / 2 + binW / 2;
+            this.bins = [];
+            cats.forEach((c) => {
+              const g = this.add.graphics();
+              g.fillStyle(PALETTE.panel, 0.9);
+              g.lineStyle(2, PALETTE.accent, 0.7);
+              g.fillRoundedRect(bx - binW / 2, binY - binH / 2, binW, binH, 12);
+              g.strokeRoundedRect(
+                bx - binW / 2,
+                binY - binH / 2,
+                binW,
+                binH,
+                12,
+              );
+              const lbl = this.add
+                .text(bx, binY - binH / 2 + 18, c.label, {
+                  fontFamily: "Nunito, Segoe UI, sans-serif",
+                  fontSize: "16px",
+                  fontStyle: "bold",
+                  color: "#7dd3fc",
+                  align: "center",
+                  wordWrap: { width: binW - 16 },
+                })
+                .setOrigin(0.5, 0);
+              this.layer.add(g);
+              this.layer.add(lbl);
+              this.bins.push({
+                id: c.id,
+                x: bx,
+                y: binY,
+                w: binW,
+                h: binH,
+                count: 0,
+              });
+              // Touch-friendly: an invisible tappable zone over the box so a
+              // student can TAP a tile then TAP a box to place it (canvas
+              // touch-drag is unreliable on some classroom tablets/Chromebooks).
+              const bi = this.bins.length - 1;
+              const zone = this.add
+                .zone(bx, binY, binW, binH)
+                .setInteractive({ useHandCursor: true });
+              zone.on("pointerup", () => this.placeHighlighted(bi));
+              this.layer.add(zone);
+              bx += binW + 24;
+            });
+
+            // Visible hint so the keyboard path (and drag) is discoverable.
+            const hint = this.add
+              .text(
+                W / 2,
+                binY - binH / 2 - 56,
+                "Tap a number, then tap a box to place it — or drag it. " +
+                  "(Keys 1–" +
+                  cats.length +
+                  " work too.) Then press CHECK.",
+                {
+                  fontFamily: "Nunito, Segoe UI, sans-serif",
+                  fontSize: "13px",
+                  color: "#e0e7ff",
+                  align: "center",
+                  wordWrap: { width: W - 160 },
+                },
+              )
+              .setOrigin(0.5);
+            this.layer.add(hint);
+
+            // Items in a row near the top of the play area
+            const items = shuffle(r.items);
+            const rowY = 92 + Math.max(70, this.promptText.height + 30) + 46;
+            const perRow = Math.min(items.length, 6);
+            const spacing = Math.min(150, (W - 120) / perRow);
+            let ix = (W - (perRow - 1) * spacing) / 2;
+            this.sortTiles = [];
+            this.sortHi = 0;
+            items.forEach((it, i) => {
+              const col = i % perRow;
+              const row = Math.floor(i / perRow);
+              const x = ix + col * spacing;
+              const y = rowY + row * 60;
+              const t = this.makeTile(x, y, spacing - 18, 46, it.text);
+              t.homeX = x;
+              t.homeY = y;
+              t.data = it;
+              t.assigned = null;
+              this.layer.add(t.parts);
+              // Drag the whole tile (the container), not its child rect — dragging
+              // a container child is the Phaser pitfall that broke this before.
+              // Disable the child's input so the container owns the pointer.
+              t.bg.disableInteractive();
+              t.parts.setInteractive(
+                new Phaser.Geom.Rectangle(
+                  -t.parts.width / 2,
+                  -t.parts.height / 2,
+                  t.parts.width,
+                  t.parts.height,
+                ),
+                Phaser.Geom.Rectangle.Contains,
+              );
+              this.input.setDraggable(t.parts);
+              // Position the tile from the pointer's world coords (Scale.FIT-
+              // correct). NOTE: dragX/dragY from the event do NOT update for a
+              // container nested in another container (this.layer), so we must use
+              // the pointer. We CENTRE the tile on the pointer (no grab offset) so
+              // the tile's centre — which dropTile tests against the bins — is
+              // exactly where the student is aiming. That makes it land in the box.
+              t.parts.on("dragstart", () => t.parts.setDepth(20));
+              t.parts.on("drag", (p) => {
+                if (t.assigned) return;
+                t.parts.x = p.worldX;
+                t.parts.y = p.worldY;
+              });
+              t.parts.on("dragend", () => {
+                t.parts.setDepth(0);
+                this.dropTile(t);
+              });
+              // Tap (not a drag) selects the tile so it can be placed by tapping a
+              // box or pressing its number — a reliable path on touch devices.
+              t.parts.on("pointerup", (p) => {
+                if (t.assigned) return;
+                const moved =
+                  Phaser.Math.Distance.Between(p.downX, p.downY, p.upX, p.upY) >
+                  12;
+                if (!moved) this.selectSortTile(t);
+              });
+              this.sortTiles.push(t);
+            });
+            this.highlightSort();
+
+            // Keyboard: number keys 1..N drop the highlighted tile into bin N
+            this.bins.forEach((b, bi) => {
+              this.input.keyboard.on("keydown-" + keyName(bi + 1), () =>
+                this.placeHighlighted(bi),
+              );
+            });
+            // Keyboard users confirm with Enter (the CHECK button is pointer-only).
+            this.input.keyboard.on("keydown-ENTER", () => this.checkSort(r));
+
+            const cb = makeButton(
+              this,
+              W / 2,
+              binY - binH / 2 - 28,
+              160,
+              42,
+              "CHECK ✓",
+              () => this.checkSort(r),
+            );
+            this.layer.add(cb.bg);
+            this.layer.add(cb.t);
+          }
+          highlightSort() {
+            if (!this.sortTiles) return;
+            // advance highlight to first unassigned
+            let n = this.sortTiles.findIndex((t) => !t.assigned);
+            this.sortHi = n < 0 ? 0 : n;
+            this.sortTiles.forEach((t, i) =>
+              t.bg.setStrokeStyle(
+                i === this.sortHi && !t.assigned ? 4 : 0,
+                0xfacc15,
+              ),
+            );
+          }
+          // Tap-select a tile: make it the active (highlighted) one so a bin tap
+          // or number key places it. Mirrors the keyboard highlight state.
+          selectSortTile(t) {
+            const i = this.sortTiles.indexOf(t);
+            if (i < 0 || t.assigned) return;
+            this.sortHi = i;
+            this.sortTiles.forEach((tt, j) =>
+              tt.bg.setStrokeStyle(j === i && !tt.assigned ? 4 : 0, 0xfacc15),
+            );
+            if (typeof srSay === "function")
+              srSay(t.data.text + " selected. Tap a box to place it.");
+          }
+          // Place the currently highlighted tile into bin index bi. Shared by the
+          // bin tap zones and the 1–N number keys.
+          placeHighlighted(bi) {
+            const t = this.sortTiles[this.sortHi];
+            if (t && !t.assigned) this.assignTile(t, bi);
+          }
+          dropTile(t) {
+            // The container is positioned in absolute (layer) space while dragging.
+            const gx = t.parts.x;
+            const gy = t.parts.y;
+            // Forgiving drop: pick the NEAREST bin and accept it if the release is
+            // anywhere near that bin (a generous margin around the box) OR simply
+            // in the lower "bins" zone. Kids shouldn't have to hit a small target
+            // pixel-perfectly — getting close to the right box is enough.
+            const MARGIN = 70;
+            let target = -1;
+            let bestD = Infinity;
+            this.bins.forEach((b, bi) => {
+              const d = Math.hypot(gx - b.x, gy - b.y);
+              if (d < bestD) {
+                bestD = d;
+                target = bi;
+              }
+            });
+            const b = target >= 0 ? this.bins[target] : null;
+            const nearBox =
+              b &&
+              Math.abs(gx - b.x) <= b.w / 2 + MARGIN &&
+              Math.abs(gy - b.y) <= b.h / 2 + MARGIN;
+            // Also accept if released anywhere in the horizontal band of the bins
+            // (so a drop that overshoots vertically still snaps to the nearest box).
+            const inBinsBand = b && gy >= b.y - b.h / 2 - MARGIN;
+            if (b && (nearBox || inBinsBand)) {
+              this.assignTile(t, target);
+            } else {
+              // released up near the staging row — snap back home
+              t.parts.x = t.homeX;
+              t.parts.y = t.homeY;
+            }
+          }
+          assignTile(t, bi) {
+            if (t.assigned) return;
+            JUICE.audio.pop();
+            const b = this.bins[bi];
+            t.assigned = b.id;
+            const slot = b.count++;
+            const tx = b.x - b.w / 2 + 14 + (slot % 2) * (b.w / 2);
+            const ty = b.y - b.h / 2 + 44 + Math.floor(slot / 2) * 30;
+            t.binSlot = { bi, slot }; // remembered so a wrong check can free it
+            // Snap with a springy tween so the drop has weight (absolute coords).
+            if (JUICE.reduceMotion) {
+              t.parts.x = tx;
+              t.parts.y = ty;
+            } else {
+              this.tweens.add({
+                targets: t.parts,
+                x: tx,
+                y: ty,
+                duration: 220,
+                ease: "Back.Out",
+              });
+            }
+            this.input.setDraggable(t.parts, false);
+            this.highlightSort();
+          }
+          checkSort(r) {
+            if (this.locked) return;
+            const unplaced = this.sortTiles.filter((t) => !t.assigned);
+            if (unplaced.length) {
+              this.feedback
+                .setColor("#fde68a")
+                .setText("Place every tile in a bin first.")
+                .setAlpha(1);
+              srSay("Place every tile in a bin first.");
+              return;
+            }
+            const allRight = this.sortTiles.every(
+              (t) => t.assigned === t.data.category,
+            );
+            this.sortTiles.forEach((t) =>
+              t.bg.setFillStyle(
+                t.assigned === t.data.category ? PALETTE.good : PALETTE.bad,
+              ),
+            );
+            if (allRight) {
+              this.resolve(true, "");
+              return;
+            }
+            // Wrong: keep the correctly-placed tiles, send the misplaced (red)
+            // ones home and make them draggable again for another try.
+            this.resolve(
+              false,
+              "Move the red tiles to the right bin, then check.",
+            );
+            this.time.delayedCall(720, () => {
+              if (this.locked) return;
+              this.sortTiles.forEach((t) => {
+                if (t.assigned !== t.data.category) {
+                  if (t.binSlot)
+                    this.bins[t.binSlot.bi].count = Math.max(
+                      0,
+                      this.bins[t.binSlot.bi].count - 1,
+                    );
+                  t.assigned = null;
+                  t.binSlot = null;
+                  t.bg.setFillStyle(PALETTE.tile);
+                  t.parts.x = t.homeX;
+                  t.parts.y = t.homeY;
+                  this.input.setDraggable(t.parts, true);
+                }
+              });
+              this.highlightSort();
+            });
+          }
+
+          // ── Renderer: MATCH (connect terms to partners) ────────────────────
+          renderMatch(r) {
+            const pairs = r.pairs;
+            const topY = 92 + Math.max(70, this.promptText.height + 30) + 40;
+            const gap = Math.min(74, (H - topY - 80) / pairs.length);
+            const leftX = W / 2 - 200;
+            const rightX = W / 2 + 200;
+            const terms = pairs.map((p, i) => ({ ...p, i }));
+            const matches = shuffle(pairs.map((p, i) => ({ ...p, i })));
+            this.matchSel = null;
+            this.matchLeft = [];
+            this.matchRight = [];
+            this.matchRemaining = pairs.length;
+            const LETTERS = ["A", "B", "C", "D", "E", "F", "G"];
+
+            terms.forEach((p, row) => {
+              const y = topY + row * gap;
+              const t = this.makeTile(
+                leftX,
+                y,
+                280,
+                48,
+                row + 1 + ".  " + p.term,
+              );
+              t.pairId = p.i;
+              t.side = "L";
+              t.expect = p.match; // value-based comparison (duplicate-text safe)
+              this.layer.add(t.parts);
+              t.bg.on("pointerdown", () => this.matchTap(t));
+              this.matchLeft.push(t);
+              this.input.keyboard.on("keydown-" + keyName(row + 1), () => {
+                if (!this.matchSel || this.matchSel.side === "R")
+                  this.matchTap(t);
+              });
+            });
+            matches.forEach((p, row) => {
+              const y = topY + row * gap;
+              const t = this.makeTile(
+                rightX,
+                y,
+                280,
+                48,
+                LETTERS[row] + ".  " + p.match,
+              );
+              t.pairId = p.i;
+              t.side = "R";
+              t.val = p.match;
+              this.layer.add(t.parts);
+              t.bg.on("pointerdown", () => this.matchTap(t));
+              this.matchRight.push(t);
+              if (LETTERS[row])
+                this.input.keyboard.on("keydown-" + LETTERS[row], () => {
+                  if (this.matchSel && this.matchSel.side === "L")
+                    this.matchTap(t);
+                });
+            });
+            // Screen-reader roster + instructions for keyboard users.
+            srSay(
+              rounds[this.idx].prompt +
+                ". Left cards: " +
+                terms.map((p, i) => i + 1 + " " + p.term).join("; ") +
+                ". Right cards: " +
+                matches.map((p, i) => LETTERS[i] + " " + p.match).join("; ") +
+                ". Press a number to pick a left card, then a letter to pick its match.",
+            );
+          }
+          matchTap(t) {
+            if (this.locked || t.done) return;
+            SFX.pick();
+            if (!this.matchSel) {
+              this.matchSel = t;
+              t.bg.setFillStyle(PALETTE.accent);
+              return;
+            }
+            if (this.matchSel === t) {
+              this.matchSel = null;
+              t.bg.setFillStyle(PALETTE.tile);
+              return;
+            }
+            if (this.matchSel.side === t.side) {
+              // re-select within same column
+              this.matchSel.bg.setFillStyle(PALETTE.tile);
+              this.matchSel = t;
+              t.bg.setFillStyle(PALETTE.accent);
+              return;
+            }
+            // attempt a pair — compare by VALUE so duplicate match text still works
+            const a = this.matchSel,
+              b = t;
+            const Ltile = a.side === "L" ? a : b;
+            const Rtile = a.side === "L" ? b : a;
+            if (Ltile.expect === Rtile.val) {
+              a.bg.setFillStyle(PALETTE.good);
+              b.bg.setFillStyle(PALETTE.good);
+              a.done = b.done = true;
+              a.bg.disableInteractive();
+              b.bg.disableInteractive();
+              this.matchSel = null;
+              this.matchRemaining--;
+              this.score += 20;
+              JUICE.audio.pop();
+              this.updateHUD();
+              if (this.matchRemaining <= 0)
+                this.resolve(true, "All pairs matched!");
+            } else {
+              a.bg.setFillStyle(PALETTE.bad);
+              b.bg.setFillStyle(PALETTE.bad);
+              this.matchSel = null;
+              const aa = a,
+                bb = b;
+              this.time.delayedCall(420, () => {
+                if (!aa.done) aa.bg.setFillStyle(PALETTE.tile);
+                if (!bb.done) bb.bg.setFillStyle(PALETTE.tile);
+              });
+              this.resolve(false, "That pair did not match.");
+            }
+          }
+
+          // ── Renderer: FIXIT (spot the step with the mistake) ───────────────
+          renderFixit(r) {
+            const topY = 92 + Math.max(70, this.promptText.height + 30) + 36;
+            const gap = Math.min(72, (H - topY - 70) / r.steps.length);
+            const tiles = [];
+            r.steps.forEach((s, i) => {
+              const y = topY + i * gap;
+              const label = (s.label ? s.label + ":  " : "") + s.work;
+              const t = this.makeTile(
+                W / 2,
+                y,
+                W - 220,
+                50,
+                i + 1 + ".  " + label,
+                "16px",
+              );
+              this.layer.add(t.parts);
+              tiles.push(t);
+              t.bg.on(
+                "pointerover",
+                () => !this.locked && t.bg.setFillStyle(PALETTE.tileHi),
+              );
+              t.bg.on(
+                "pointerout",
+                () => !this.locked && t.bg.setFillStyle(PALETTE.tile),
+              );
+              t.bg.on("pointerdown", () => this.pickFix(r, i, t));
+              this.input.keyboard.on("keydown-" + keyName(i + 1), () =>
+                this.pickFix(r, i, t),
+              );
+            });
+            this.revealCorrect = () => {
+              const ct = tiles[r.errorStep];
+              if (ct) ct.bg.setFillStyle(PALETTE.good);
+            };
+            srSay(
+              rounds[this.idx].prompt +
+                ". Steps: " +
+                r.steps
+                  .map(
+                    (s, i) =>
+                      i + 1 + ", " + ((s.label ? s.label + " " : "") + s.work),
+                  )
+                  .join("; ") +
+                ". Press the number of the step with the mistake.",
+            );
+          }
+          pickFix(r, i, t) {
+            if (this.locked) return;
+            SFX.pick();
+            const ok = i === r.errorStep;
+            t.bg.setFillStyle(ok ? PALETTE.good : PALETTE.bad);
+            // Wrong step: flash red, then reset so the student can try again.
+            if (!ok)
+              this.time.delayedCall(620, () => {
+                if (!this.locked) t.bg.setFillStyle(PALETTE.tile);
+              });
+            this.resolve(ok, r.why);
+          }
+
+          // ── Shared tile factory: returns {parts(container), bg, label} ─────
+          makeTile(x, y, w, h, text, fontSize) {
+            const c = this.add.container(x, y);
+            // Size the container so it can be made interactive/draggable as a
+            // whole (sort mode); a bright border defines the tile on the vivid bg.
+            c.setSize(w, h);
+            const bg = this.add
+              .rectangle(0, 0, w, h, PALETTE.tile)
+              .setStrokeStyle(2, PALETTE.panelLine, 0.55)
+              .setInteractive({ useHandCursor: true });
+            const label = this.add
+              .text(0, 0, text, {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: fontSize || "18px",
+                color: "#ffffff",
+                fontStyle: "bold",
+                align: "center",
+                wordWrap: { width: w - 20 },
+              })
+              .setOrigin(0.5);
+            c.add(bg);
+            c.add(label);
+            // Juice: tiles pop in on arrival and squash on tap for tactile feel.
+            JUICE.popIn(this, c, Math.random() * 120);
+            bg.on("pointerdown", () => {
+              JUICE.tilePop(this, c);
+              JUICE.audio.tap();
+            });
+            return { parts: c, bg, label, homeX: x, homeY: y };
+          }
+
+          // Mascot guide reacts to answers (cheer up / dip down).
+          mascotReact(good) {
+            if (!this.mascotObj) return;
+            if (JUICE.reduceMotion) return;
+            const lift = good ? -26 - Math.min(this.streak, 5) * 4 : 12;
+            this.tweens.add({
+              targets: this.mascotObj,
+              y: this.mascotObj.y + lift,
+              angle: good ? 0 : -12,
+              scale: good ? 1.25 + Math.min(this.streak, 5) * 0.05 : 0.92,
+              yoyo: true,
+              duration: good ? 260 : 200,
+              ease: "Quad.Out",
+            });
+          }
+          // Short speech bubble above the mascot — gives it personality.
+          mascotSay(text) {
+            if (!this.mascotObj) return;
+            if (this.mascotBubble) this.mascotBubble.destroy();
+            const bx = this.mascotObj.x + 70,
+              by = this.journeyY + 4;
+            const c = this.add.container(bx, by).setDepth(40);
+            const label = this.add
+              .text(0, 0, text, {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "15px",
+                fontStyle: "bold",
+                color: "#0a0f1f",
+              })
+              .setOrigin(0, 0.5);
+            const pad = 8;
+            const bg = this.add
+              .rectangle(-pad, 0, label.width + pad * 2, 28, 0xffffff, 0.95)
+              .setOrigin(0, 0.5);
+            c.add([bg, label]);
+            this.mascotBubble = c;
+            if (!JUICE.reduceMotion) JUICE.popIn(this, c);
+            this.time.delayedCall(1400, () => {
+              if (c.active) c.destroy();
+              if (this.mascotBubble === c) this.mascotBubble = null;
+            });
+          }
+        }
+
+        // ── RESULT ────────────────────────────────────────────────────────────
+        class ResultScene extends Phaser.Scene {
+          constructor() {
+            super("Result");
+          }
+          init(d) {
+            this.d = d;
+          }
+          create() {
+            drawStars(this);
+            const d = this.d;
+            const ratio = d.total ? d.correct / d.total : 0;
+            const stars = ratio >= 0.85 ? 3 : ratio >= 0.5 ? 2 : 1;
+            this.add
+              .text(W / 2, 150, "REVIEW COMPLETE!", {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "46px",
+                fontStyle: "bold",
+                color: "#34d399",
+              })
+              .setOrigin(0.5);
+            // Stars pop in one at a time with a "collect" blip for a payoff beat.
+            for (let i = 0; i < 3; i++) {
+              const earned = i < stars;
+              const star = this.add
+                .text(W / 2 - 60 + i * 60, 230, earned ? "★" : "☆", {
+                  fontSize: "56px",
+                  color: earned ? "#facc15" : "#475569",
+                })
+                .setOrigin(0.5);
+              if (earned && !JUICE.reduceMotion) {
+                star.setScale(0);
+                this.tweens.add({
+                  targets: star,
+                  scale: 1,
+                  ease: "Back.Out",
+                  duration: 320,
+                  delay: 300 + i * 320,
+                  onStart: () => JUICE.audio.pop(),
+                });
+              }
+            }
+            this.add
+              .text(
+                W / 2,
+                310,
+                "Score " +
+                  d.score +
+                  "\n" +
+                  d.correct +
+                  " of " +
+                  d.total +
+                  " correct",
+                {
+                  fontFamily: "Nunito, Segoe UI, sans-serif",
+                  fontSize: "24px",
+                  color: "#e2e8f0",
+                  align: "center",
+                },
+              )
+              .setOrigin(0.5);
+            // Celebration + meta-progression payout.
+            JUICE.audio.fanfare();
+            JUICE.confetti(this, 1);
+            const bonusXp = d.correct * 10 + 50 + stars * 15;
+            JUICE.award(bonusXp, "practice-arcade-complete");
+            this.add
+              .text(W / 2, 360, "+" + bonusXp + " XP", {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "22px",
+                fontStyle: "bold",
+                color: "#fde047",
+              })
+              .setOrigin(0.5);
+
+            try {
+              window.EduPulse &&
+                EduPulse.record({
+                  activityTitle: lessonTitle + " — Practice Arcade",
+                  score: d.score,
+                  stars,
+                  lesson: activeLesson,
+                  problemsAttempted: d.total,
+                });
+            } catch (e) {}
+            srSay(
+              "Review complete. " +
+                d.correct +
+                " of " +
+                d.total +
+                " correct. " +
+                stars +
+                " stars.",
+            );
+
+            makeButton(this, W / 2, 420, 220, 56, "PLAY AGAIN 🔁", () =>
+              window.location.reload(),
+            );
+            makeLink(this, W / 2, 510, "← Back to lessons", () => {
+              window.location.href = "/curriculum/";
+            });
+          }
+        }
+
+        // ── Shared helpers (scene-agnostic) ───────────────────────────────────
+        function drawStars(scene) {
+          // Bright vertical gradient (indigo → violet) painted directly, so the
+          // look no longer depends on the muted per-lesson theme. A soft field of
+          // white dots adds a little sparkle without lowering contrast.
+          const bg = scene.add.graphics();
+          bg.fillGradientStyle(
+            PALETTE.bgTop,
+            PALETTE.bgTop,
+            PALETTE.bgBot,
+            PALETTE.bgBot,
+            1,
+          );
+          bg.fillRect(0, 0, W, H);
+          const reduce =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          const g = scene.add.graphics();
+          g.fillStyle(0xffffff, 0.28);
+          const n = reduce ? 36 : 80;
+          for (let i = 0; i < n; i++)
+            g.fillCircle(
+              Phaser.Math.Between(0, W),
+              Phaser.Math.Between(0, H),
+              Phaser.Math.Between(1, 2),
+            );
+        }
+        function makeButton(scene, x, y, w, h, text, onClick) {
+          const bg = scene.add
+            .rectangle(x, y, w, h, 0x2563eb)
+            .setStrokeStyle(2, 0x38bdf8)
+            .setInteractive({ useHandCursor: true });
+          const t = scene.add
+            .text(x, y, text, {
+              fontFamily: "Nunito, Segoe UI, sans-serif",
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          bg.on("pointerover", () => bg.setFillStyle(0x3b82f6));
+          bg.on("pointerout", () => bg.setFillStyle(0x2563eb));
+          bg.on("pointerdown", onClick);
+          return { bg, t };
+        }
+        function makeLink(scene, x, y, text, onClick) {
+          const t = scene.add
+            .text(x, y, text, {
+              fontFamily: "Nunito, Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#7dd3fc",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+          t.on("pointerover", () => t.setColor("#bae6fd"));
+          t.on("pointerout", () => t.setColor("#7dd3fc"));
+          t.on("pointerdown", onClick);
+          return t;
+        }
+        // Map a 1-9 number to Phaser's digit key-code name (keydown-ONE … NINE).
+        function keyName(n) {
+          const names = [
+            "",
+            "ONE",
+            "TWO",
+            "THREE",
+            "FOUR",
+            "FIVE",
+            "SIX",
+            "SEVEN",
+            "EIGHT",
+            "NINE",
+          ];
+          return names[n] || "ONE";
+        }
+
+        // Init must survive deferred/async script execution (e.g. Cloudflare Rocket
+        // Loader), which runs this script AFTER DOMContentLoaded has already fired —
+        // a plain listener would never run and the loader would spin forever. Mirror
+        // the readyState guard used by the engine-error block above.
+        if (document.readyState === "loading") {
+          window.addEventListener("DOMContentLoaded", loadLessonConfig);
+        } else {
+          loadLessonConfig();
+        }
+      } // end engine guard (typeof Phaser === "undefined")
+    </script>
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+    <!-- Student Passport (meta-progression pill; boots itself, award() guarded) -->
+    <script src="/assets/lesson-passport.js" defer></script>
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#pa-sr",
+            standard: "",
+            accept: "(^Round \\d|\\bOptions:|\\bLeft cards:|\\bSteps:)",
+            staticHints: [
+              "Read the problem again slowly. What is it giving you, and what is it asking you to find?",
+              "What one idea or rule from this lesson connects what you have to what you need?",
+              "Set it up: write the first step using that rule, then work it through — you finish the last part.",
+            ],
+          });
+      });
+    </script>
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+  </body>
+</html>

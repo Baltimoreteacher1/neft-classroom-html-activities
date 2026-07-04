@@ -1,0 +1,15 @@
+# Cloudflare Pages headers for the Focus School PWA (noam.eduwonderlab.com).
+#
+# Always revalidate the service worker and HTML shell so a new deploy is picked
+# up immediately. `no-cache` does NOT mean "don't store" — it means the browser
+# must revalidate with the origin every time (a 304 when unchanged is cheap).
+# Once the new sw.js is fetched it re-precaches app.js/css behind it, and the
+# in-app controllerchange handler reloads to the fresh bundle automatically.
+/sw.js
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+/
+  Cache-Control: no-cache
+/manifest.webmanifest
+  Cache-Control: no-cache

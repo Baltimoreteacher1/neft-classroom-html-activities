@@ -4,6 +4,7 @@
   <link rel="stylesheet" href="/assets/shared.css">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/assets/math-mobile.css">
   <title>Decimal Operations Interactive Review</title>
   <style>
     :root {
@@ -736,6 +737,9 @@
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
 </head>
 <body>
 <!-- ══ VOCAB INTRO SLIDESHOW ══ -->
@@ -822,7 +826,7 @@ vsoRender();
     <section class="hero panel">
       <div class="hero-grid">
         <div>
-          <h1>Decimal Operations Interactive Review Studio <span onclick="toggleTeacherPanel()" style="cursor:pointer; opacity:0.25; font-size:0.95rem; vertical-align:middle; transition:0.2s ease; margin-left:6px;" id="teacher-lock-trigger" title="Teacher Admin Center">🔒</span></h1>
+          <h1>Decimal Operations Interactive Review Studio</h1>
           <p>Learn, practice, and play with adding, subtracting, multiplying, and dividing decimals.</p>
           <p><strong>Built for clarity:</strong> vertical worked examples, interactive step reveals, optional click-to-open hints, mixed practice, and two polished game tabs.</p>
           <p><strong>language-friendly supports:</strong> simplified directions, sentence frames, math vocabulary, visual cues, and guided scaffolds that only appear when needed.</p>
@@ -877,17 +881,6 @@ vsoRender();
           <strong>Add / Subtract:</strong> line up the decimal points.<br />
           <strong>Multiply:</strong> multiply first, then count decimal places.<br />
           <strong>Divide:</strong> make the divisor a whole number first.
-        </div>
-      </div>
-    </section>
-
-    <section class="teacher-admin-section" id="teacher-panel" style="display:none; margin-bottom: 20px;">
-      <div class="panel tool-card" style="border:1.5px solid rgba(193,125,17,0.3); background:rgba(193,125,17,0.03);">
-        <h2 style="color:var(--gold); font-size:1.1rem; font-weight:700; display:flex; align-items:center; gap:8px; margin:0 0 8px 0;">🔑 Teacher Control Center</h2>
-        <p style="font-size:0.82rem; color:var(--muted); margin:0 0 12px 0;">Administer student progress states and perform diagnostics checkups.</p>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="secondary-btn" onclick="resetAllProgress()" style="font-size:0.8rem; font-family:inherit; padding:6px 12px; border-radius:var(--radius-sm); border:1px solid var(--line); cursor:pointer;">🗑️ Reset All Scores</button>
-          <button class="primary-btn" onclick="masterAllProgress()" style="background:var(--gold); color:white; border:none; padding:6px 12px; border-radius:var(--radius-sm); font-size:0.8rem; font-family:inherit; cursor:pointer; font-weight:bold;">🎓 Master All Modules</button>
         </div>
       </div>
     </section>
@@ -1814,7 +1807,11 @@ vsoRender();
     document.getElementById("expandLearnBtn").addEventListener("click", expandAllLearnSteps);
     document.getElementById("collapseLearnBtn").addEventListener("click", collapseAllLearnSteps);
 
-    document.getElementById("resetProgressBtn").addEventListener("click", resetAllProgress);
+    document.getElementById("resetProgressBtn").addEventListener("click", function () {
+      if (confirm("Reset your scores for this activity? This reloads the page and clears your current progress.")) {
+        location.reload();
+      }
+    });
 
     function updateTrackBoard() {
       document.getElementById("trackPosition").textContent = state.trackPosition;
@@ -1923,5 +1920,8 @@ vsoRender();
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>

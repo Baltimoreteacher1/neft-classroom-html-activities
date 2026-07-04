@@ -9,8 +9,11 @@
 
    Public API (window.PK):
      toggleEs()                       — toggle EN/ES help (.pk-show-es on body)
-     setLevel(level, storageKey?)     — 'level-1' | 'level-2' tier; persists
+     setLevel(level, storageKey?)     — 'level-0' | 'level-1' | 'level-2' tier; persists
      initLevel(opts)                  — wire Level buttons + restore saved level
+     speak(text)                      — read text aloud (speechSynthesis, slow)
+     stopSpeaking()                   — cancel any in-progress read-aloud
+     initTts(opts?)                   — wire Read-Aloud toggle + tap-to-hear prompts
      checkWork(inputId, correct, tol) — green Correct / red Try again
      peerCompare(container, rows)     — render me-vs-partner stat cards
      statDiffCards(container, pairs)  — generic labeled stat cards
@@ -37,9 +40,12 @@
     document.body.classList.toggle("pk-show-es");
   };
 
-  /* ---------------- Level 1 / Level 2 tiers ---------------- */
+  /* ---------------- Level 0 / Level 1 / Level 2 tiers ----------------
+     Scheme is L0 < L1 < L2: Level 0 = most-supported (IEP / readiness),
+     Level 1 = on-grade support (default), Level 2 = enrichment. */
   PK.setLevel = function (level, storageKey) {
-    document.body.classList.remove("pk-level-1", "pk-level-2");
+    document.body.classList.remove("pk-level-0", "pk-level-1", "pk-level-2");
+    if (level === "level-0") document.body.classList.add("pk-level-0");
     if (level === "level-1") document.body.classList.add("pk-level-1");
     if (level === "level-2") document.body.classList.add("pk-level-2");
     document.querySelectorAll("[data-level-btn]").forEach((b) => {
@@ -73,6 +79,125 @@
       }
     }
     PK.setLevel(saved || opts.default || "level-1", opts.storageKey);
+  };
+
+  /* ---------------- Read-aloud (TTS) ----------------
+     Zero-dependency text-to-speech for Grade 6 readers who need support.
+     Uses the browser's built-in speechSynthesis at a slower rate. A toggle
+     button turns "tap any prompt to hear it" on/off; nothing autoplays. */
+  const TTS = {
+    on: false,
+    rate: 0.85,
+    supported:
+      typeof window !== "undefined" &&
+      "speechSynthesis" in window &&
+      typeof window.SpeechSynthesisUtterance === "function",
+  };
+
+  function pickVoice() {
+    if (!TTS.supported) return null;
+    const voices = window.speechSynthesis.getVoices() || [];
+    if (!voices.length) return null;
+    // Prefer an English voice; fall back to the platform default.
+    return (
+      voices.find((v) => /^en(-|_|$)/i.test(v.lang) && /female|samantha|google/i.test(v.name)) ||
+      voices.find((v) => /^en(-|_|$)/i.test(v.lang)) ||
+      voices[0]
+    );
+  }
+
+  PK.stopSpeaking = function () {
+    if (TTS.supported) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch (e) {
+        /* ignore */
+      }
+    }
+  };
+
+  PK.speak = function (text) {
+    if (!TTS.supported) return;
+    const clean = String(text == null ? "" : text)
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!clean) return;
+    PK.stopSpeaking();
+    try {
+      const u = new window.SpeechSynthesisUtterance(clean);
+      u.rate = TTS.rate;
+      u.pitch = 1;
+      const v = pickVoice();
+      if (v) {
+        u.voice = v;
+        u.lang = v.lang;
+      }
+      window.speechSynthesis.speak(u);
+    } catch (e) {
+      /* ignore speech errors */
+    }
+  };
+
+  // Text of a prompt element without its child controls (inputs/buttons).
+  function promptText(el) {
+    const clone = el.cloneNode(true);
+    clone
+      .querySelectorAll("input, textarea, select, button, .pk-tts-toggle")
+      .forEach((n) => n.remove());
+    return clone.textContent || "";
+  }
+
+  PK.setTts = function (on, storageKey) {
+    TTS.on = !!on;
+    document.body.classList.toggle("pk-tts-on", TTS.on);
+    document.querySelectorAll("[data-tts-toggle]").forEach((b) => {
+      b.setAttribute("aria-pressed", TTS.on ? "true" : "false");
+    });
+    if (!TTS.on) PK.stopSpeaking();
+    if (storageKey) {
+      try {
+        localStorage.setItem(storageKey + ":tts", TTS.on ? "1" : "0");
+      } catch (e) {
+        /* ignore */
+      }
+    }
+  };
+
+  PK.initTts = function (opts) {
+    opts = opts || {};
+    if (!TTS.supported) {
+      // Hide controls the injector added; the feature is unavailable here.
+      document.querySelectorAll("[data-tts-toggle]").forEach((b) => {
+        b.hidden = true;
+      });
+      return;
+    }
+    // Prime the voice list (some browsers populate it asynchronously).
+    if (typeof window.speechSynthesis.onvoiceschanged !== "undefined") {
+      window.speechSynthesis.onvoiceschanged = pickVoice;
+    }
+    document.querySelectorAll("[data-tts-toggle]").forEach((b) => {
+      b.addEventListener("click", () => PK.setTts(!TTS.on, opts.storageKey));
+    });
+    // Delegated tap-to-hear: only active while the toggle is on.
+    const SPEAKABLE = ".pk-mt-prompt, .task, .q-group, label.fld, .pk-step-title, .arc-banner";
+    document.addEventListener("click", (ev) => {
+      if (!TTS.on) return;
+      const target = ev.target;
+      if (target.closest("input, textarea, select, button, a")) return;
+      const el = target.closest(SPEAKABLE);
+      if (!el) return;
+      PK.speak(promptText(el));
+    });
+    let saved = null;
+    if (opts.storageKey) {
+      try {
+        saved = localStorage.getItem(opts.storageKey + ":tts");
+      } catch (e) {
+        saved = null;
+      }
+    }
+    PK.setTts(saved === "1", opts.storageKey);
   };
 
   /* ---------------- Self-check ---------------- */
@@ -559,6 +684,128 @@
       });
   }
 
+  /* ---- Click-to-enlarge reference diagrams ---------------------------------
+     Reference visuals (the "look here first" SVG/diagrams) become zoom targets.
+     Interactive visualizers re-render their own SVG after this script runs, so
+     we use EVENT DELEGATION for the click (survives any re-render) plus a
+     repeating decoration pass that (re)applies the affordance class + "Tap to
+     enlarge" hint as late-rendered visuals appear. Form controls inside a card
+     stay normally clickable — only the visual itself is the zoom target. */
+  function referenceVisual(zone) {
+    return zone.querySelector("svg, img, canvas");
+  }
+  function decorateReferenceVisuals(root) {
+    (root || document).querySelectorAll(".pk-scaffold-zone").forEach((zone) => {
+      const visual = referenceVisual(zone);
+      if (!visual || visual.classList.contains("pk-enlargeable")) return;
+      visual.classList.add("pk-enlargeable");
+      visual.setAttribute("role", "button");
+      visual.setAttribute("tabindex", "0");
+      visual.setAttribute("aria-label", "Enlarge this reference diagram");
+      const lbl = zone.querySelector(".pk-zone-label");
+      if (lbl && !lbl.querySelector(".pk-enlarge-hint")) {
+        const hint = document.createElement("span");
+        hint.className = "pk-enlarge-hint";
+        hint.textContent = "⤢ Tap to enlarge";
+        lbl.appendChild(hint);
+      }
+    });
+  }
+  function initReferenceLightbox() {
+    if (window.__pkRefLightbox) return;
+    window.__pkRefLightbox = true;
+    const fromZone = (target) => {
+      const zone = target.closest && target.closest(".pk-scaffold-zone");
+      if (!zone) return null;
+      const visual = target.closest("svg, img, canvas");
+      return visual && zone.contains(visual) ? visual : null;
+    };
+    document.addEventListener("click", (ev) => {
+      const visual = fromZone(ev.target);
+      if (visual) {
+        ev.preventDefault();
+        openReferenceLightbox(visual);
+      }
+    });
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key !== "Enter" && ev.key !== " ") return;
+      const visual = fromZone(ev.target);
+      if (visual) {
+        ev.preventDefault();
+        openReferenceLightbox(visual);
+      }
+    });
+    // Decorate now, after async visualizers render, and on later DOM changes.
+    decorateReferenceVisuals();
+    [150, 600, 1500].forEach((t) => setTimeout(() => decorateReferenceVisuals(), t));
+    if (typeof MutationObserver === "function") {
+      const obs = new MutationObserver(() => decorateReferenceVisuals());
+      obs.observe(document.body, { childList: true, subtree: true });
+    }
+  }
+
+  let pkLightbox = null;
+  let pkLightboxReturnFocus = null;
+  function ensureLightbox() {
+    if (pkLightbox) return pkLightbox;
+    const overlay = document.createElement("div");
+    overlay.className = "pk-lightbox";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "Enlarged reference diagram");
+    overlay.hidden = true;
+    overlay.innerHTML =
+      '<div class="pk-lightbox-stage" role="document">' +
+      '<button type="button" class="pk-lightbox-close" aria-label="Close enlarged view">✕ Close</button>' +
+      '<div class="pk-lightbox-content"></div>' +
+      "</div>";
+    document.body.appendChild(overlay);
+    const close = () => closeReferenceLightbox();
+    overlay.addEventListener("click", (ev) => {
+      if (ev.target === overlay) close();
+    });
+    overlay.querySelector(".pk-lightbox-close").addEventListener("click", close);
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key === "Escape" && !overlay.hidden) close();
+    });
+    pkLightbox = overlay;
+    return overlay;
+  }
+  function openReferenceLightbox(visual) {
+    const overlay = ensureLightbox();
+    const content = overlay.querySelector(".pk-lightbox-content");
+    content.innerHTML = "";
+    let clone;
+    if (visual.tagName.toLowerCase() === "canvas") {
+      clone = document.createElement("img");
+      try {
+        clone.src = visual.toDataURL("image/png");
+      } catch (e) {
+        return;
+      }
+    } else {
+      clone = visual.cloneNode(true);
+      clone.removeAttribute("role");
+      clone.removeAttribute("tabindex");
+      clone.removeAttribute("aria-label");
+      clone.classList.remove("pk-enlargeable");
+    }
+    clone.classList.add("pk-lightbox-figure");
+    content.appendChild(clone);
+    pkLightboxReturnFocus = visual;
+    overlay.hidden = false;
+    document.body.classList.add("pk-lightbox-open");
+    overlay.querySelector(".pk-lightbox-close").focus();
+  }
+  function closeReferenceLightbox() {
+    if (!pkLightbox || pkLightbox.hidden) return;
+    pkLightbox.hidden = true;
+    document.body.classList.remove("pk-lightbox-open");
+    if (pkLightboxReturnFocus && pkLightboxReturnFocus.focus) {
+      pkLightboxReturnFocus.focus();
+    }
+  }
+
   function wrapWorkspaces(stepBody) {
     const hints = Array.from(stepBody.querySelectorAll("details.hintbox"));
     hints.forEach((hint) => {
@@ -954,4 +1201,13 @@
   };
 
   window.PK = PK;
+
+  /* Boot the reference-diagram lightbox on every project page (idempotent;
+     delegation + observer make it independent of the tab/flow build). */
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initReferenceLightbox);
+  } else {
+    initReferenceLightbox();
+  }
+  window.addEventListener("load", () => decorateReferenceVisuals());
 })();

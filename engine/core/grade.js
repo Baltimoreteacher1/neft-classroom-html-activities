@@ -356,7 +356,7 @@ export function buildGradeCard(state, config) {
   wrap.innerHTML = `
     <h3 id="grade-heading" style="margin:0 0 var(--sp-3);">Your Grade</h3>
     <div style="display:flex; align-items:center; gap:var(--sp-4); flex-wrap:wrap; margin-bottom:var(--sp-4);">
-      <div style="font-size:2.6rem; font-weight:900; color:var(--teal);" aria-label="Score ${grade.pct} percent">${grade.pct}%</div>
+      <div style="font-size:2.6rem; font-weight:900; color:var(--teal-ink);" aria-label="Score ${grade.pct} percent">${grade.pct}%</div>
       <div>
         <div style="display:inline-block; padding:4px 14px; border-radius:999px; background:${bandColor}; color:#fff; font-weight:800; font-size:0.85rem;">${esc(grade.band)}</div>
         <div style="color:var(--muted); font-size:0.85rem; margin-top:4px;">${esc(correctLine)}</div>

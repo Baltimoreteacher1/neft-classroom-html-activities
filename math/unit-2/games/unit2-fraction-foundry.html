@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Fraction Foundry — Divide Fractions | Unit 2</title>
     <meta
       name="description"
@@ -14,7 +15,12 @@
         padding: 0;
         box-sizing: border-box;
       }
+      html,
       body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
         background: #1a0f06;
         overflow: hidden;
         font-family: "Segoe UI", system-ui, sans-serif;
@@ -129,6 +135,15 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
   </head>
   <body>
     <!-- Decorative animated foundry-ember field (behind the Phaser canvas).
@@ -222,14 +237,6 @@
       const reducedMotion = () => !!(FF_RM_QUERY && FF_RM_QUERY.matches);
       const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
       const choice = (arr) => arr[Math.floor(Math.random() * arr.length)];
-      function shuffle(a) {
-        a = a.slice();
-        for (let i = a.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [a[i], a[j]] = [a[j], a[i]];
-        }
-        return a;
-      }
       function gcd(a, b) {
         a = Math.abs(a);
         b = Math.abs(b);
@@ -247,8 +254,6 @@
         const g = gcd(n, d);
         return { n: n / g, d: d / g };
       }
-      const frMul = (a, b) => fr(a.n * b.n, a.d * b.d);
-      const frEq = (a, b) => a.n === b.n && a.d === b.d;
       const frVal = (f) => f.n / f.d;
       function frStr(f) {
         const { n, d } = f;
@@ -262,159 +267,116 @@
         return `${n}/${d}`;
       }
 
-      // ── Distractor builder: 4 shuffled options, exactly one correct, all ──
-      // distinct reduced fractions, all positive, never NaN. (Verified in Node.)
-      function buildChoices(answer, pool) {
-        const seen = new Set([answer.n + "/" + answer.d]);
-        const opts = [{ f: answer, correct: true }];
-        const cand = pool.slice();
-        while (opts.length < 4 && cand.length) {
-          const c = cand.shift();
-          if (!c) continue;
-          if (!Number.isFinite(c.n) || !Number.isFinite(c.d) || c.d === 0)
-            continue;
-          const cr = fr(c.n, c.d);
-          const key = cr.n + "/" + cr.d;
-          if (seen.has(key) || cr.n <= 0) continue;
-          seen.add(key);
-          opts.push({ f: cr, correct: false });
-        }
-        let guard = 0;
-        while (opts.length < 4 && guard++ < 60) {
-          const variant = choice([
-            fr(answer.n + 1, answer.d),
-            fr(answer.n, Math.max(1, answer.d + 1)),
-            fr(answer.n * 2, answer.d),
-            fr(answer.n + answer.d, answer.d),
-            fr(Math.max(1, answer.n - 1), answer.d),
-            fr(answer.n, answer.d === 1 ? 2 : 1),
-          ]);
-          const key = variant.n + "/" + variant.d;
-          if (seen.has(key) || variant.n <= 0) continue;
-          if (!Number.isFinite(variant.n) || !Number.isFinite(variant.d))
-            continue;
-          seen.add(key);
-          opts.push({ f: variant, correct: false });
-        }
-        let extra = 1;
-        while (opts.length < 4) {
-          const variant = fr(answer.n + answer.d * extra, answer.d);
-          const key = variant.n + "/" + variant.d;
-          if (!seen.has(key) && variant.n > 0) {
-            seen.add(key);
-            opts.push({ f: variant, correct: false });
-          }
-          extra++;
-          if (extra > 50) break;
-        }
-        return shuffle(opts.slice(0, 4));
+      // ── Question generator (the model IS the interaction) ──
+      // Two mechanics, five levels. Every quotient is a whole number so the
+      // bar model can literally show "how many fit":
+      //   L1 partition: whole ÷ unit fraction — slice each whole, count pieces
+      //   L2 partition: same, word problems + bigger numbers
+      //   L3 group:     whole ÷ fraction — slice, then bundle divisor groups
+      //   L4 group:     fraction ÷ fraction word problems
+      //   L5 group:     mixed number ÷ fraction
+      function groupCaseOk(level, dividend, divisor) {
+        const val = frVal(dividend);
+        if (!(val > 0) || val > 4 + 1e-9) return false;
+        if (level === 3)
+          return divisor.n >= 2 && dividend.d === 1 && dividend.n >= 2;
+        if (level === 4) return dividend.d > 1 && val <= 3 + 1e-9;
+        // level 5: a true mixed number (greater than 1, not whole)
+        return dividend.d > 1 && val > 1;
       }
 
-      // ── Question generator (matches the Node-tested module exactly) ──
-      // L1: whole ÷ unit fraction; L2: same, word problems + bigger;
-      // L3: fraction ÷ fraction; L4: fraction ÷ fraction word problems;
-      // L5: mixed number ÷ fraction.
       function makeQuestion(level) {
-        let dividend, divisor, answer, prompt, explain, visual, model;
-
-        if (level <= 1) {
-          const whole = randInt(2, 5);
-          const d = choice([2, 3, 4]);
-          dividend = fr(whole, 1);
-          divisor = fr(1, d);
-          answer = frMul(dividend, fr(d, 1));
-          model = "bar-whole-unit";
-          visual = { type: "wholeUnit", whole, parts: d };
-          prompt = `How many ${frStr(divisor)}-piece servings fit in ${whole} whole${whole > 1 ? "s" : ""}?`;
-          explain = `${whole} ÷ 1/${d} = ${whole} × ${d} = ${frStr(answer)}. Each whole holds ${d} pieces.`;
-        } else if (level === 2) {
-          const whole = randInt(2, 6);
-          const d = choice([2, 3, 4, 5]);
-          dividend = fr(whole, 1);
-          divisor = fr(1, d);
-          answer = frMul(dividend, fr(d, 1));
-          model = "bar-whole-unit";
-          visual = { type: "wholeUnit", whole, parts: d };
-          const ctx = choice([
-            { v: "cups", s: "scoops" },
-            { v: "meters", s: "ribbons" },
-            { v: "pizzas", s: "slices" },
-            { v: "liters", s: "bottles" },
-          ]);
-          prompt = `How many 1/${d}-${ctx.v.slice(0, -1)} ${ctx.s} fit in ${whole} ${ctx.v}?`;
-          explain = `${whole} ÷ 1/${d} = ${whole} × ${d} = ${frStr(answer)}.`;
-        } else if (level === 3) {
-          const d1 = choice([2, 3, 4, 6, 8]);
-          const n1 = randInt(1, d1 - 1);
-          const d2 = choice([2, 3, 4, 6, 8]);
-          const n2 = randInt(1, d2 - 1);
-          dividend = fr(n1, d1);
-          divisor = fr(n2, d2);
-          answer = frMul(dividend, fr(divisor.d, divisor.n));
-          model = "bar-fraction";
-          visual = { type: "fracDivide", a: dividend, b: divisor };
-          prompt = `Divide: ${frStr(dividend)} ÷ ${frStr(divisor)} = ?`;
-          explain = `Multiply by the reciprocal: ${frStr(dividend)} × ${frStr(fr(divisor.d, divisor.n))} = ${frStr(answer)}.`;
-        } else if (level === 4) {
-          const d1 = choice([2, 3, 4, 6, 8]);
-          const n1 = randInt(1, d1 - 1);
-          const d2 = choice([2, 3, 4]);
-          dividend = fr(n1, d1);
-          divisor = fr(1, d2);
-          answer = frMul(dividend, fr(divisor.d, divisor.n));
-          model = "bar-fraction";
-          visual = { type: "fracDivide", a: dividend, b: divisor };
-          const ctx = choice([
-            "cup of flour",
-            "yard of rope",
-            "pan of brownies",
-            "bottle of paint",
-          ]);
-          prompt = `A recipe uses 1/${d2} of a ${ctx} per batch. With ${frStr(dividend)} of a ${ctx}, how many batches?`;
-          explain = `${frStr(dividend)} ÷ ${frStr(divisor)} = ${frStr(dividend)} × ${frStr(fr(divisor.d, divisor.n))} = ${frStr(answer)}.`;
-        } else {
-          const wholePart = randInt(1, 3);
-          const dd = choice([2, 3, 4]);
-          const nn = randInt(1, dd - 1);
-          dividend = fr(wholePart * dd + nn, dd);
-          const d2 = choice([2, 3, 4]);
-          const n2 = randInt(1, d2 - 1);
-          divisor = fr(n2, d2);
-          answer = frMul(dividend, fr(divisor.d, divisor.n));
-          model = "bar-mixed";
-          visual = {
-            type: "mixedDivide",
-            a: dividend,
-            b: divisor,
-            mixedW: wholePart,
-            mixedN: nn,
-            mixedD: dd,
+        if (level <= 2) {
+          // ── partition mode: slice each whole into 1/d, count the pieces ──
+          const whole = level === 1 ? randInt(2, 4) : randInt(2, 6);
+          const d = level === 1 ? choice([2, 3, 4]) : choice([2, 3, 4, 5]);
+          const dividend = fr(whole, 1);
+          const divisor = fr(1, d);
+          const answer = whole * d;
+          let prompt;
+          if (level === 1) {
+            prompt = `How many 1/${d}-size pieces fit in ${whole} whole${whole > 1 ? "s" : ""}?   ${whole} ÷ 1/${d} = ?`;
+          } else {
+            const ctx = choice([
+              { v: "cups", s: "scoops" },
+              { v: "meters", s: "ribbons" },
+              { v: "pizzas", s: "slices" },
+              { v: "liters", s: "bottles" },
+            ]);
+            prompt = `How many 1/${d}-${ctx.v.slice(0, -1)} ${ctx.s} fit in ${whole} ${ctx.v}?   ${whole} ÷ 1/${d} = ?`;
+          }
+          return {
+            level,
+            mode: "partition",
+            dividend,
+            divisor,
+            whole,
+            d,
+            wholes: whole,
+            answer,
+            prompt,
+            explain: `${whole} ÷ 1/${d} = ${whole} × ${d} = ${answer}. Each whole holds ${d} pieces of size 1/${d}.`,
           };
-          prompt = `Divide: ${frStr(dividend)} ÷ ${frStr(divisor)} = ?`;
-          explain = `Write the mixed number as ${dividend.n}/${dividend.d}, then × reciprocal: ${dividend.n}/${dividend.d} × ${frStr(fr(divisor.d, divisor.n))} = ${frStr(answer)}.`;
         }
 
-        // distractor pool: classic fraction-division mistakes
-        const pool = [
-          frMul(dividend, divisor), // forgot to flip (multiplied straight)
-          fr(divisor.n * dividend.d, divisor.d * dividend.n), // flipped the wrong fraction
-          fr(answer.n + 1, answer.d),
-          fr(answer.n, answer.d + 1),
-          fr(dividend.n * divisor.d, divisor.n), // dropped a denominator
-          frMul(answer, fr(2, 1)),
-        ];
-        const choices = buildChoices(answer, pool);
-
+        // ── group mode: dividend = k × divisor, so exactly k groups fit ──
+        let divisor = fr(2, 3),
+          k = 3,
+          dividend = fr(2, 1);
+        let guard = 0,
+          ok = false;
+        while (guard++ < 80 && !ok) {
+          const d2 = level === 3 ? choice([2, 3, 4, 5, 6]) : choice([2, 3, 4]);
+          const n2 = randInt(1, d2 - 1);
+          divisor = fr(n2, d2);
+          k = randInt(2, 6);
+          dividend = fr(divisor.n * k, divisor.d);
+          ok = groupCaseOk(level, dividend, divisor);
+        }
+        if (!ok) {
+          // deterministic fallbacks (always valid for their level)
+          if (level === 3) {
+            divisor = fr(2, 3);
+            k = 3;
+            dividend = fr(2, 1); // 2 ÷ 2/3 = 3
+          } else if (level === 4) {
+            divisor = fr(1, 4);
+            k = 3;
+            dividend = fr(3, 4); // 3/4 ÷ 1/4 = 3
+          } else {
+            divisor = fr(1, 4);
+            k = 6;
+            dividend = fr(3, 2); // 1 1/2 ÷ 1/4 = 6
+          }
+        }
+        const answer = k;
+        let prompt;
+        if (level === 3) {
+          prompt = `How many groups of ${frStr(divisor)} fit in ${frStr(dividend)}?   ${frStr(dividend)} ÷ ${frStr(divisor)} = ?`;
+        } else if (level === 4) {
+          const ctx = choice([
+            { one: "cup of flour", many: "cups of flour" },
+            { one: "yard of rope", many: "yards of rope" },
+            { one: "pan of brownies", many: "pans of brownies" },
+            { one: "bottle of paint", many: "bottles of paint" },
+          ]);
+          const amount =
+            frVal(dividend) > 1
+              ? `${frStr(dividend)} ${ctx.many}`
+              : `${frStr(dividend)} of a ${ctx.one}`;
+          prompt = `A batch uses ${frStr(divisor)} of a ${ctx.one}. With ${amount}, how many full batches?   ${frStr(dividend)} ÷ ${frStr(divisor)} = ?`;
+        } else {
+          prompt = `Divide: ${frStr(dividend)} ÷ ${frStr(divisor)} = ?  (How many ${frStr(divisor)}-groups fit in ${frStr(dividend)}?)`;
+        }
         return {
           level,
-          model,
+          mode: "group",
           dividend,
           divisor,
+          wholes: Math.max(1, Math.ceil(frVal(dividend) - 1e-9)),
           answer,
           prompt,
-          explain,
-          visual,
-          choices,
+          explain: `${frStr(dividend)} ÷ ${frStr(divisor)} = ${answer}. The bar shows ${frStr(dividend)} split into ${answer} full groups of ${frStr(divisor)}.`,
         };
       }
 
@@ -424,8 +386,9 @@
         init() {
           if (!this.ctx) {
             try {
-              this.ctx = new (window.AudioContext ||
-                window.webkitAudioContext)();
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
             } catch (e) {}
           }
         },
@@ -561,7 +524,7 @@
             .text(
               cx,
               348,
-              "Split the bar models to see how many pieces fit. Divide whole\nnumbers, fractions, and mixed numbers across five rising levels.",
+              "YOU slice the bar models, then count pieces or bundle groups\nto forge each quotient. Five rising levels, no timer — take your time.",
               {
                 fontFamily: "Segoe UI, sans-serif",
                 fontSize: "17px",
@@ -603,16 +566,21 @@
           });
 
           this.add
-            .text(cx, 542, "Tap an answer, or use keys 1 – 4.", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "14px",
-              color: "#c79a6f",
-            })
+            .text(
+              cx,
+              542,
+              "Slice with + / − (or tap the buttons), tap the bar or use ← → to count, Enter to forge.",
+              {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "14px",
+                color: "#c79a6f",
+              },
+            )
             .setOrigin(0.5);
 
           this.makeLink(cx, 580, "← Back to Unit 2 hub");
           this.setSR(
-            "Fraction Foundry. A visual game for dividing fractions, standard 6.NS.1. Press start to play.",
+            "Fraction Foundry. Slice bar models yourself to divide fractions, standard 6.NS.1. Press start to play.",
           );
           this.input.keyboard.on("keydown-SPACE", () => {
             SFX.init();
@@ -678,22 +646,34 @@
           this.streak = 0;
           this.locked = false;
           this.qInLevel = 0;
-          this.qPerLevel = 4; // questions to clear a level
+          this.qPerLevel = 3; // rounds to clear a level (each is hands-on)
           this.correctInLevel = 0;
         }
         create() {
           this.cameras.main.setBackgroundColor(C.bg);
           this.buildHUD();
           this.buildModelArea();
-          this.buildQuestionPanel();
-          this.answerBtns = [];
-
-          ["ONE", "TWO", "THREE", "FOUR"].forEach((key, i) => {
-            this.input.keyboard.on("keydown-" + key, () => this.pick(i));
-          });
-
+          this.buildControlPanel();
+          this.bindKeys();
           this.nextQuestion();
           this.cameras.main.fadeIn(400);
+        }
+
+        // Every action has a keyboard path: + / − (or ↑ ↓) re-slice the bar,
+        // ← → adjust the piece / group count, Enter forges the answer.
+        bindKeys() {
+          const kb = this.input.keyboard;
+          const cuts = (d) => this.nudgeCuts(d);
+          const count = (d) => this.nudgeCount(d);
+          ["PLUS", "NUMPAD_ADD", "UP"].forEach((k) =>
+            kb.on("keydown-" + k, () => cuts(1)),
+          );
+          ["MINUS", "NUMPAD_SUBTRACT", "DOWN"].forEach((k) =>
+            kb.on("keydown-" + k, () => cuts(-1)),
+          );
+          kb.on("keydown-RIGHT", () => count(1));
+          kb.on("keydown-LEFT", () => count(-1));
+          kb.on("keydown-ENTER", () => this.forge());
         }
 
         // ── HUD ──
@@ -754,13 +734,13 @@
           this.livesT.setText("❤".repeat(Math.max(0, this.lives)) || "—");
         }
 
-        // ── Visual model area (left): bar / area partition models ──
+        // ── Visual model area (left): the bar model YOU slice and count ──
         buildModelArea() {
           this.add
             .rectangle(250, 350, 460, 480, C.panel)
             .setStrokeStyle(2, C.panelEdge);
           this.add
-            .text(250, 132, "VISUAL MODEL", {
+            .text(250, 132, "YOUR BAR MODEL — TAP IT", {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "13px",
               fontStyle: "bold",
@@ -768,13 +748,16 @@
             })
             .setOrigin(0.5);
           this.modelGfx = this.add.graphics();
-          this.modelLabels = []; // text objects to clear each question
+          this.modelLabels = []; // text objects to clear on each redraw
+          this.modelHits = []; // interactive tap zones (one per whole-bar row)
         }
 
         clearModel() {
           this.modelGfx.clear();
           this.modelLabels.forEach((t) => t.destroy());
           this.modelLabels = [];
+          this.modelHits.forEach((z) => z.destroy());
+          this.modelHits = [];
         }
 
         modelText(x, y, str, color, size, origin) {
@@ -790,121 +773,273 @@
           return t;
         }
 
-        // Draw the model for the current question. Each model literally shows
-        // the division: a whole/quantity split into divisor-sized pieces, and
-        // counting the pieces gives the quotient.
-        drawModel(q) {
-          this.clearModel();
-          const v = q.visual;
-          const left = 55,
-            right = 445,
-            fullW = right - left;
-          const g = this.modelGfx;
+        // ── Model state helpers ────────────────────────────────────────────
+        // At the current slicing, how many pieces make up the dividend and
+        // one divisor group? Valid only when both land on whole pieces.
+        sliceInfo() {
+          const q = this.current;
+          const aU = (q.dividend.n * this.cuts) / q.dividend.d;
+          const bU = (q.divisor.n * this.cuts) / q.divisor.d;
+          return {
+            aUnits: aU,
+            bUnits: bU,
+            valid: Number.isInteger(aU) && Number.isInteger(bU) && bU >= 1,
+          };
+        }
 
-          if (v.type === "wholeUnit") {
-            // `whole` bars, each split into `parts` equal pieces. The count of
-            // pieces is the quotient (whole ÷ 1/parts).
-            const rows = v.whole;
-            const top = 175;
-            const rowH = Math.min(46, (430 - top) / rows - 8);
-            for (let r = 0; r < rows; r++) {
-              const y = top + r * (rowH + 10);
-              // whole-bar outline
-              g.lineStyle(2, C.gold, 0.9);
-              g.strokeRect(left, y, fullW, rowH);
-              const pieceW = fullW / v.parts;
-              for (let p = 0; p < v.parts; p++) {
-                const px = left + p * pieceW;
-                g.fillStyle(p % 2 === 0 ? C.bar : C.molten, 0.85);
-                g.fillRect(px + 1.5, y + 1.5, pieceW - 3, rowH - 3);
-                this.modelText(
-                  px + pieceW / 2,
-                  y + rowH / 2,
-                  `1/${v.parts}`,
-                  "#2a1809",
-                  Math.min(13, pieceW / 3),
-                );
-              }
-              this.modelText(left - 8, y + rowH / 2, "1", "#e0b487", 14, 1);
-            }
-            this.modelText(
-              250,
-              440,
-              `${rows} whole(s) × ${v.parts} pieces each = count the pieces`,
-              "#e0b487",
-              12,
+        nudgeCuts(delta) {
+          if (this.locked || !this.current) return;
+          const max = this.current.mode === "partition" ? 10 : 12;
+          const next = Phaser.Math.Clamp(this.cuts + delta, 1, max);
+          if (next === this.cuts) return;
+          this.cuts = next;
+          // piece size changed, so any count made of old pieces resets
+          this.sel = 0;
+          this.groups = 0;
+          SFX.tick();
+          this.renderModel();
+        }
+
+        nudgeCount(delta) {
+          if (this.locked || !this.current) return;
+          const q = this.current;
+          if (q.mode === "partition") {
+            this.sel = Phaser.Math.Clamp(
+              this.sel + delta,
+              0,
+              q.whole * this.cuts,
             );
-          } else if (v.type === "fracDivide" || v.type === "mixedDivide") {
-            // Show the dividend bar (a/d filled within whole bars) overlaid
-            // with the divisor's piece size, so students see "how many divisor
-            // pieces fit in the dividend".
-            const a = v.a; // dividend fraction (may be improper for mixed)
-            const b = v.b; // divisor fraction
-            // common denominator to tile consistently
-            const denom = (a.d * b.d) / gcd(a.d, b.d);
-            const aUnits = a.n * (denom / a.d); // dividend in 1/denom units
-            const bUnits = b.n * (denom / b.d); // divisor in 1/denom units
-            const wholes = Math.max(1, Math.ceil(a.n / a.d));
-            const top = 180;
-            // tile of size 1/denom across `wholes` whole-bars
-            const totalUnits = wholes * denom;
-            const unitW = fullW / totalUnits;
-            const barY = top;
-            const barH = 54;
-            // background whole-bars
-            for (let wsi = 0; wsi < wholes; wsi++) {
-              const wx = left + wsi * denom * unitW;
-              g.lineStyle(2, C.gold, 0.8);
-              g.strokeRect(wx, barY, denom * unitW, barH);
-            }
-            // fill the dividend portion in 1/denom units
-            for (let u = 0; u < aUnits; u++) {
-              const ux = left + u * unitW;
-              g.fillStyle(C.bar, 0.9);
-              g.fillRect(ux + 1, barY + 1, unitW - 2, barH - 2);
-            }
-            // overlay divisor groupings (thick dividers every bUnits)
-            const groups = aUnits / bUnits; // = quotient value
-            g.lineStyle(3, 0x2a1809, 1);
-            for (let gi = 0; gi <= Math.floor(aUnits / bUnits + 1e-9); gi++) {
-              const gx = left + gi * bUnits * unitW;
-              g.lineBetween(gx, barY - 6, gx, barY + barH + 6);
-            }
-            // label each complete divisor-group
-            const wholeGroups = Math.floor(groups + 1e-9);
-            for (let gi = 0; gi < wholeGroups; gi++) {
-              const gxc = left + (gi + 0.5) * bUnits * unitW;
-              this.modelText(gxc, barY + barH / 2, frStr(b), "#2a1809", 13);
-            }
-            this.modelText(
-              250,
-              barY + barH + 34,
-              `Dividend ${frStr(a)} split into ${frStr(b)} pieces`,
-              "#e0b487",
-              13,
-            );
-            this.modelText(
-              250,
-              barY + barH + 58,
-              `Count the ${frStr(b)} groups that fit →`,
-              "#c79a6f",
-              12,
-            );
-            // mixed: show the equation
-            if (v.type === "mixedDivide") {
-              this.modelText(
-                250,
-                barY + barH + 92,
-                `${v.mixedW} ${v.mixedN}/${v.mixedD} = ${a.n}/${a.d}`,
-                "#ffcd4d",
-                15,
+          } else {
+            const info = this.sliceInfo();
+            if (!info.valid) {
+              this.say(
+                `Slice first: use + / − until ${frStr(q.divisor)} lines up with whole pieces.`,
               );
+              return;
             }
+            const maxG = Math.floor((q.wholes * this.cuts) / info.bUnits);
+            this.groups = Phaser.Math.Clamp(this.groups + delta, 0, maxG);
+          }
+          SFX.tick();
+          this.renderModel();
+        }
+
+        // Tap anywhere on a whole-bar row: pick pieces (partition) or bundle
+        // runs of pieces into divisor-sized groups (group mode).
+        tapRow(row, localX) {
+          if (this.locked || !this.current) return;
+          const q = this.current;
+          const pieceW = 390 / this.cuts;
+          const p = Phaser.Math.Clamp(
+            Math.floor(localX / pieceW),
+            0,
+            this.cuts - 1,
+          );
+          const u = row * this.cuts + p; // global piece index
+          if (q.mode === "partition") {
+            // prefix-select up to the tapped piece; tap the last one to undo
+            this.sel = u + 1 === this.sel ? u : u + 1;
+          } else {
+            const info = this.sliceInfo();
+            if (!info.valid) {
+              this.say(
+                `Slice first: use + / − until ${frStr(q.divisor)} lines up with whole pieces.`,
+              );
+              return;
+            }
+            const gi = Math.floor(u / info.bUnits); // group holding this piece
+            const maxG = Math.floor((q.wholes * this.cuts) / info.bUnits);
+            const want = gi + 1;
+            this.groups = want === this.groups ? gi : Math.min(want, maxG);
+          }
+          SFX.tick();
+          this.renderModel();
+        }
+
+        addRowHitZone(x, y, w, h, row) {
+          const z = this.add
+            .zone(x, y, w, h)
+            .setOrigin(0)
+            .setInteractive({ useHandCursor: true });
+          z.on("pointerdown", (pointer, localX) => this.tapRow(row, localX));
+          this.modelHits.push(z);
+        }
+
+        say(msg) {
+          this.fbText.setColor("#ffcd4d").setText(msg);
+          this.setSR(msg);
+        }
+
+        // ── Redraw the whole model + readouts from current state ──
+        renderModel() {
+          this.clearModel();
+          const q = this.current;
+          this.cutsVal.setText(frStr(fr(1, this.cuts)));
+          if (q.mode === "partition") {
+            this.countVal.setText(String(this.sel));
+            this.drawPartition(q);
+          } else {
+            this.countVal.setText(String(this.groups));
+            this.drawGroups(q);
           }
         }
 
-        // ── Question panel (right): prompt + answer choices ──
-        buildQuestionPanel() {
+        // Partition mode: `whole` bars; the student slices each into `cuts`
+        // pieces and prefix-selects pieces to count how many 1/d fill them.
+        drawPartition(q) {
+          const g = this.modelGfx;
+          const left = 55,
+            fullW = 390,
+            top = 170;
+          const rows = q.whole;
+          const rowH = Math.min(52, (420 - top) / rows - 12);
+          const pieceW = fullW / this.cuts;
+          for (let r = 0; r < rows; r++) {
+            const y = top + r * (rowH + 12);
+            for (let p = 0; p < this.cuts; p++) {
+              const u = r * this.cuts + p;
+              const px = left + p * pieceW;
+              const picked = u < this.sel;
+              g.fillStyle(picked ? C.molten : C.barEmpty, picked ? 0.95 : 0.9);
+              g.fillRect(px + 1.5, y + 1.5, pieceW - 3, rowH - 3);
+              if (picked) {
+                g.lineStyle(2, C.gold, 1);
+                g.strokeRect(px + 1.5, y + 1.5, pieceW - 3, rowH - 3);
+              }
+              if (this.cuts > 1 && pieceW >= 34)
+                this.modelText(
+                  px + pieceW / 2,
+                  y + rowH / 2,
+                  `1/${this.cuts}`,
+                  picked ? "#2a1809" : "#8a6a48",
+                  Math.min(14, pieceW / 3),
+                );
+            }
+            // slice lines + whole-bar outline on top
+            g.lineStyle(1, 0x6b3d18, 0.9);
+            for (let p = 1; p < this.cuts; p++) {
+              const sx = left + p * pieceW;
+              g.lineBetween(sx, y, sx, y + rowH);
+            }
+            g.lineStyle(2, C.gold, 0.9);
+            g.strokeRect(left, y, fullW, rowH);
+            this.modelText(left - 10, y + rowH / 2, "1", "#e0b487", 14, 1);
+            this.addRowHitZone(left, y, fullW, rowH, r);
+          }
+          this.modelText(
+            250,
+            452,
+            this.cuts === 1
+              ? "Press + to slice every whole into equal pieces."
+              : `Each whole = ${this.cuts} pieces of 1/${this.cuts}. Tap pieces to count them.`,
+            "#e0b487",
+            13,
+          );
+          this.readout.setText(
+            `${q.whole} whole${q.whole > 1 ? "s" : ""} ÷ 1/${q.d} → ${this.sel} piece${this.sel === 1 ? "" : "s"} picked`,
+          );
+        }
+
+        // Group mode: shade the dividend, slice, then bundle runs of pieces
+        // into groups the size of the divisor. Full groups = the quotient.
+        drawGroups(q) {
+          const g = this.modelGfx;
+          const left = 55,
+            fullW = 390,
+            top = 170;
+          const rows = q.wholes;
+          const rowH = Math.min(58, (420 - top) / rows - 12);
+          const pieceW = fullW / this.cuts;
+          const val = frVal(q.dividend);
+          const info = this.sliceInfo();
+          const grouped = info.valid ? this.groups * info.bUnits : 0;
+
+          for (let r = 0; r < rows; r++) {
+            const y = top + r * (rowH + 12);
+            // 1) shade the dividend amount continuously (works even when the
+            //    current slicing does not line up with it)
+            const frac = Phaser.Math.Clamp(val - r, 0, 1);
+            if (frac > 0) {
+              g.fillStyle(C.bar, 0.55);
+              g.fillRect(left + 1.5, y + 1.5, fullW * frac - 3, rowH - 3);
+            }
+            // 2) bundled pieces: bright molten, alternating per group
+            for (let p = 0; p < this.cuts; p++) {
+              const u = r * this.cuts + p;
+              if (u >= grouped) break;
+              const gi = Math.floor(u / info.bUnits);
+              const px = left + p * pieceW;
+              const inDividend = u < info.aUnits;
+              if (inDividend) {
+                g.fillStyle(gi % 2 === 0 ? C.molten : 0xe8431f, 0.95);
+                g.fillRect(px + 1.5, y + 1.5, pieceW - 3, rowH - 3);
+              } else {
+                // group ran past the dividend — empty piece inside a group
+                g.fillStyle(C.bad, 0.28);
+                g.fillRect(px + 1.5, y + 1.5, pieceW - 3, rowH - 3);
+                g.lineStyle(2, C.bad, 0.9);
+                g.strokeRect(px + 1.5, y + 1.5, pieceW - 3, rowH - 3);
+              }
+            }
+            // 3) slice lines + whole-bar outline
+            g.lineStyle(1, 0x6b3d18, 0.9);
+            for (let p = 1; p < this.cuts; p++) {
+              const sx = left + p * pieceW;
+              g.lineBetween(sx, y, sx, y + rowH);
+            }
+            g.lineStyle(2, C.gold, 0.9);
+            g.strokeRect(left, y, fullW, rowH);
+            this.modelText(left - 10, y + rowH / 2, "1", "#e0b487", 14, 1);
+            this.addRowHitZone(left, y, fullW, rowH, r);
+          }
+
+          // 4) thick group boundaries + a number on each bundled group
+          if (info.valid && this.groups > 0) {
+            g.lineStyle(3, 0x2a1809, 1);
+            for (let gi = 0; gi <= this.groups; gi++) {
+              const idx = gi * info.bUnits;
+              const r = Math.floor(idx / this.cuts);
+              const col = idx % this.cuts;
+              if (r >= rows && col === 0) continue; // boundary at the very end
+              const rr = Math.min(r, rows - 1);
+              const bx = left + (r >= rows ? this.cuts : col) * pieceW;
+              const by = top + rr * (rowH + 12);
+              g.lineBetween(bx, by - 4, bx, by + rowH + 4);
+            }
+            for (let gi = 0; gi < this.groups; gi++) {
+              const mid = gi * info.bUnits + (info.bUnits - 1) / 2;
+              const r = Math.floor(mid / this.cuts);
+              const col = mid - r * this.cuts;
+              this.modelText(
+                left + (col + 0.5) * pieceW,
+                top + r * (rowH + 12) + rowH / 2,
+                String(gi + 1),
+                "#2a1809",
+                Math.min(16, pieceW / 2 + 6),
+              );
+            }
+          }
+
+          this.modelText(
+            250,
+            452,
+            info.valid
+              ? `Shaded bar = ${frStr(q.dividend)}. Tap pieces to bundle groups of ${frStr(q.divisor)}.`
+              : `Shaded bar = ${frStr(q.dividend)}. Slice with + until ${frStr(q.divisor)} lines up with whole pieces.`,
+            "#e0b487",
+            13,
+          );
+          this.readout.setText(
+            info.valid
+              ? `${frStr(q.dividend)} ÷ ${frStr(q.divisor)} → ${this.groups} full group${this.groups === 1 ? "" : "s"}`
+              : this.cuts === 1
+                ? `Press + to slice the bar into equal pieces.`
+                : `Pieces of 1/${this.cuts} don't line up with ${frStr(q.divisor)} yet — keep slicing.`,
+          );
+        }
+
+        // ── Control panel (right): prompt, live readout, steppers, FORGE ──
+        buildControlPanel() {
           this.add
             .rectangle(700, 350, 360, 480, C.panel)
             .setStrokeStyle(2, C.panelEdge);
@@ -917,7 +1052,7 @@
             })
             .setOrigin(0.5);
           this.qText = this.add
-            .text(700, 210, "", {
+            .text(700, 196, "", {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "19px",
               fontStyle: "bold",
@@ -927,8 +1062,70 @@
               lineSpacing: 5,
             })
             .setOrigin(0.5);
+          this.readout = this.add
+            .text(700, 264, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "17px",
+              fontStyle: "bold",
+              color: "#ffcd4d",
+              align: "center",
+              wordWrap: { width: 330 },
+              lineSpacing: 4,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(700, 306, "PIECE SIZE — keys + / −", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "12px",
+              fontStyle: "bold",
+              color: "#c79a6f",
+            })
+            .setOrigin(0.5);
+          this.mkStepBtn(588, 342, "−", () => this.nudgeCuts(-1));
+          this.mkStepBtn(812, 342, "+", () => this.nudgeCuts(1));
+          this.cutsVal = this.add
+            .text(700, 342, "1", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "30px",
+              fontStyle: "900",
+              color: "#fdeede",
+            })
+            .setOrigin(0.5);
+          this.caption2 = this.add
+            .text(700, 390, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "12px",
+              fontStyle: "bold",
+              color: "#c79a6f",
+            })
+            .setOrigin(0.5);
+          this.mkStepBtn(588, 426, "−", () => this.nudgeCount(-1));
+          this.mkStepBtn(812, 426, "+", () => this.nudgeCount(1));
+          this.countVal = this.add
+            .text(700, 426, "0", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "30px",
+              fontStyle: "900",
+              color: "#ffb347",
+            })
+            .setOrigin(0.5);
+          const fbtn = this.add
+            .rectangle(700, 490, 300, 54, 0xc4661a)
+            .setStrokeStyle(3, 0xffcd4d, 0.9)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(700, 490, "🔨 FORGE — Enter", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5);
+          fbtn.on("pointerover", () => fbtn.setScale(1.04));
+          fbtn.on("pointerout", () => fbtn.setScale(1));
+          fbtn.on("pointerdown", () => this.forge());
           this.fbText = this.add
-            .text(700, 535, "", {
+            .text(700, 526, "", {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "14px",
               fontStyle: "bold",
@@ -940,148 +1137,169 @@
             .setOrigin(0.5, 0);
         }
 
-        kindLabel(model) {
-          if (model === "bar-whole-unit") return "WHOLE ÷ UNIT FRACTION";
-          if (model === "bar-fraction") return "FRACTION ÷ FRACTION";
-          return "MIXED NUMBER ÷ FRACTION";
+        // Big calm stepper button (60×52 — comfy tap target, no dragging).
+        mkStepBtn(x, y, label, cb) {
+          const b = this.add
+            .rectangle(x, y, 60, 52, 0x3a2410)
+            .setStrokeStyle(2, C.panelEdge)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(x, y, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "28px",
+              fontStyle: "bold",
+              color: "#ffb347",
+            })
+            .setOrigin(0.5);
+          b.on("pointerover", () => b.setFillStyle(0x5a3614));
+          b.on("pointerout", () => b.setFillStyle(0x3a2410));
+          b.on("pointerdown", cb);
+          return b;
         }
 
-        // ── question lifecycle ──
+        kindLabel(q) {
+          if (q.mode === "partition")
+            return "WHOLE ÷ UNIT FRACTION · SLICE & COUNT";
+          if (q.level === 3) return "WHOLE ÷ FRACTION · SLICE & GROUP";
+          if (q.level === 4) return "FRACTION ÷ FRACTION · SLICE & GROUP";
+          return "MIXED NUMBER ÷ FRACTION · SLICE & GROUP";
+        }
+
+        // ── round lifecycle ──
         nextQuestion() {
           this.locked = false;
+          this.missesThisRound = 0;
           const q = makeQuestion(this.levelIndex + 1);
           this.current = q;
-          this.kindChip.setText(this.kindLabel(q.model));
+          this.cuts = 1;
+          this.sel = 0;
+          this.groups = 0;
+          this.kindChip.setText(this.kindLabel(q));
           this.qText.setText(q.prompt);
           this.fbText.setText("");
-          this.drawModel(q);
-          this.drawAnswers(q.choices);
+          this.caption2.setText(
+            q.mode === "partition"
+              ? "PIECES PICKED — keys ← →"
+              : "FULL GROUPS — keys ← →",
+          );
+          this.renderModel();
           this.setSR(
-            `Level ${this.levelIndex + 1}. ${q.prompt} Options: ${q.choices
-              .map((c, i) => `${i + 1}, ${frStr(c.f)}`)
-              .join(". ")}.`,
+            `Level ${this.levelIndex + 1}. ${q.prompt} Slice the bar with plus and minus. ` +
+              (q.mode === "partition"
+                ? "Tap the bar or use left and right arrows to pick pieces. "
+                : "Tap the bar or use left and right arrows to bundle full groups. ") +
+              "Press Enter to forge your answer.",
           );
         }
 
-        drawAnswers(choices) {
-          (this.answerBtns || []).forEach((o) => o.destroy());
-          this.answerBtns = [];
-          const bw = 150,
-            bh = 56,
-            gapx = 20,
-            gapy = 16;
-          const cols = 2;
-          const x0 = 700 - (bw + gapx) / 2;
-          const y0 = 320;
-          choices.forEach((c, i) => {
-            const r = Math.floor(i / cols),
-              cc = i % cols;
-            const x = x0 + cc * (bw + gapx);
-            const y = y0 + r * (bh + gapy);
-            const cont = this.add.container(x, y).setDepth(6);
-            const rect = this.add
-              .rectangle(0, 0, bw, bh, 0x3a2410)
-              .setStrokeStyle(2, C.panelEdge);
-            this.makeInteractive(rect, bw, bh);
-            const num = this.add
-              .text(-bw / 2 + 14, 0, String(i + 1), {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "13px",
-                fontStyle: "bold",
-                color: "#c79a6f",
-              })
-              .setOrigin(0, 0.5);
-            const lab = this.add
-              .text(8, 0, frStr(c.f), {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "22px",
-                fontStyle: "bold",
-                color: "#fdeede",
-              })
-              .setOrigin(0.5);
-            cont.add([rect, num, lab]);
-            cont.rect = rect;
-            cont.choice = c;
-            rect.on("pointerover", () => {
-              if (!this.locked) {
-                rect.setFillStyle(0x5a3614);
-                SFX.tick();
-              }
-            });
-            rect.on("pointerout", () => {
-              if (!this.locked) rect.setFillStyle(0x3a2410);
-            });
-            rect.on("pointerdown", () => this.pick(i));
-            this.answerBtns.push(cont);
-          });
-        }
-
-        // Enlarged touch hit area for small fingers; visuals unchanged.
-        makeInteractive(rect, bw, bh) {
-          const padX = 8,
-            padY = 7;
-          try {
-            rect.setInteractive(
-              new Phaser.Geom.Rectangle(
-                -bw / 2 - padX,
-                -bh / 2 - padY,
-                bw + padX * 2,
-                bh + padY * 2,
-              ),
-              Phaser.Geom.Rectangle.Contains,
-            );
-            if (rect.input) rect.input.cursor = "pointer";
-          } catch (e) {
-            rect.setInteractive({ useHandCursor: true });
-          }
-        }
-
-        pick(i) {
-          if (this.locked) return;
-          const btns = this.answerBtns;
-          if (!btns || !btns[i]) return;
-          this.locked = true;
-          SFX.init();
-          const cont = btns[i];
-          const correct = cont.choice.correct;
+        // Judge the MODEL, not a picked option: the slicing and the count the
+        // student built must show the division. Returns { correct, why }.
+        judge() {
           const q = this.current;
+          if (q.mode === "partition") {
+            if (this.cuts !== q.d)
+              return {
+                correct: false,
+                why:
+                  this.cuts === 1
+                    ? `The wholes aren't sliced yet. Use + to slice each whole into ${q.d} equal pieces of 1/${q.d}.`
+                    : `Your pieces are 1/${this.cuts} each, but the problem asks about 1/${q.d}-size pieces. Re-slice each whole into ${q.d} equal pieces.`,
+              };
+            if (this.sel !== q.answer)
+              return {
+                correct: false,
+                why: `Right piece size (1/${q.d}), but you picked ${this.sel}. Each whole holds ${q.d} pieces of 1/${q.d} — count every piece in all ${q.whole} wholes.`,
+              };
+            return { correct: true };
+          }
+          const info = this.sliceInfo();
+          if (!info.valid)
+            return {
+              correct: false,
+              why:
+                this.cuts === 1
+                  ? `The bar isn't sliced yet. Use + to slice until ${frStr(q.divisor)} lines up with whole pieces.`
+                  : `Pieces of 1/${this.cuts} don't line up with ${frStr(q.divisor)}. Slice so ${frStr(q.divisor)} is a whole number of pieces.`,
+            };
+          if (this.groups !== q.answer) {
+            if (info.bUnits > 1 && this.groups === info.aUnits)
+              return {
+                correct: false,
+                why: `You made groups of 1/${this.cuts}, but we need groups of ${frStr(q.divisor)} — each group takes ${info.bUnits} pieces of 1/${this.cuts}.`,
+              };
+            if (this.groups > q.answer)
+              return {
+                correct: false,
+                why: `Group ${this.groups} reaches past the shaded ${frStr(q.dividend)} — it has empty pieces, so it is not a full group of ${frStr(q.divisor)}.`,
+              };
+            return {
+              correct: false,
+              why: `You bundled ${this.groups} group${this.groups === 1 ? "" : "s"} of ${frStr(q.divisor)}, but shaded pieces are still left over — more full groups fit.`,
+            };
+          }
+          return { correct: true };
+        }
 
-          btns.forEach((b) => {
-            if (b.choice.correct)
-              b.rect.setFillStyle(0x1c5a2a).setStrokeStyle(3, C.good);
-          });
-          if (!correct)
-            cont.rect.setFillStyle(0x5a1c1c).setStrokeStyle(3, C.bad);
+        forge() {
+          if (this.locked || !this.current) return;
+          SFX.init();
+          const q = this.current;
+          const res = this.judge();
 
-          this.qInLevel++;
-          if (correct) {
+          if (res.correct) {
+            this.locked = true;
             this.streak++;
             this.correctInLevel++;
-            const base = 100;
-            const bonus = Math.min(this.streak, 5) * 20;
-            const gain = base + bonus;
+            this.qInLevel++;
+            const gain = 100 + Math.min(this.streak, 5) * 20;
             this.score += gain;
-            this.fbText.setColor("#6bd18b").setText(`✓ +${gain}   ${q.explain}`);
-            SFX.correct();
-            this.burst(cont.x, cont.y, C.good);
-            this.setSR(`Correct. ${q.explain}`);
-          } else {
-            this.streak = 0;
-            this.lives--;
             this.fbText
-              .setColor("#ff9b9b")
-              .setText(`✗ Answer: ${frStr(q.answer)}.  ${q.explain}`);
-            SFX.wrong();
-            if (!reducedMotion()) this.cameras.main.shake(170, 0.006);
-            this.setSR(`Not quite. ${q.explain}`);
+              .setColor("#6bd18b")
+              .setText(`✓ +${gain}   ${q.explain}`);
+            SFX.correct();
+            this.burst(700, 490, C.good);
+            this.setSR(`Correct. ${q.explain}`);
+            this.refreshHUD();
+            this.time.delayedCall(1500, () => {
+              if (this.qInLevel >= this.qPerLevel) return this.completeLevel();
+              this.nextQuestion();
+            });
+            return;
+          }
+
+          // Wrong forge: explain WHY from the model state, then let the
+          // student adjust the same model and forge again — self-paced.
+          this.streak = 0;
+          this.lives--;
+          this.missesThisRound++;
+          this.fbText.setColor("#ff9b9b").setText(`✗ Not yet — ${res.why}`);
+          SFX.wrong();
+          if (!reducedMotion()) this.cameras.main.shake(170, 0.006);
+          this.setSR(`Not yet. ${res.why} Adjust the model and forge again.`);
+          if (this.lives <= 0) {
+            // No-fail: refill hearts and keep the run going.
+            this.lives = START_LIVES;
+            const refill = this.add
+              .text(W / 2, H / 2, "❤ Refilled — keep going!", {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "26px",
+                fontStyle: "bold",
+                color: "#6bd18b",
+              })
+              .setOrigin(0.5)
+              .setDepth(15);
+            this.tweens.add({
+              targets: refill,
+              y: refill.y - 50,
+              alpha: 0,
+              duration: 1400,
+              onComplete: () => refill.destroy(),
+            });
+            this.setSR(
+              `Not yet. ${res.why} Hearts refilled — keep going, adjust the model and forge again.`,
+            );
           }
           this.refreshHUD();
-
-          this.time.delayedCall(correct ? 1100 : 1900, () => {
-            if (this.lives <= 0) return this.gameOver();
-            if (this.qInLevel >= this.qPerLevel) return this.completeLevel();
-            this.nextQuestion();
-          });
         }
 
         burst(x, y, color) {
@@ -1151,7 +1369,6 @@
               this.scene.start("Result", {
                 score: this.score,
                 lives: this.lives,
-                won: true,
               });
             } else {
               this.scene.start("Game", {
@@ -1164,15 +1381,6 @@
           this.setSR(
             `Level ${this.levelIndex + 1} complete. ${this.correctInLevel} of ${this.qPerLevel} correct. Score ${this.score}.`,
           );
-        }
-
-        gameOver() {
-          SFX.lose();
-          this.scene.start("Result", {
-            score: this.score,
-            lives: 0,
-            won: false,
-          });
         }
 
         confetti() {
@@ -1208,7 +1416,6 @@
         }
         init(data) {
           this.score = data.score || 0;
-          this.won = !!data.won;
         }
         create() {
           this.cameras.main.setBackgroundColor(C.bg);
@@ -1232,14 +1439,14 @@
               });
           } catch (e) {}
 
-          if (this.won) SFX.win();
+          SFX.win();
 
           this.add
-            .text(cx, 150, this.won ? "FOUNDRY MASTERED!" : "FORGE COOLED", {
+            .text(cx, 150, "FOUNDRY MASTERED!", {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "46px",
               fontStyle: "900",
-              color: this.won ? "#6bd18b" : "#ff9b9b",
+              color: "#6bd18b",
             })
             .setOrigin(0.5);
 
@@ -1275,9 +1482,7 @@
             .text(
               cx,
               372,
-              this.won
-                ? "You divided whole numbers, fractions, and mixed numbers — and saw every quotient in the bar models."
-                : "Tip: dividing by a fraction means multiplying by its reciprocal (flip it!). Try again.",
+              "You divided whole numbers, fractions, and mixed numbers — by slicing, counting, and grouping every bar model yourself.",
               {
                 fontFamily: "Segoe UI, sans-serif",
                 fontSize: "16px",
@@ -1302,7 +1507,7 @@
 
           const el = document.getElementById("ff-sr");
           if (el)
-            el.textContent = `${this.won ? "Foundry mastered" : "Forge cooled"}. Final score ${this.score}, ${stars} stars.`;
+            el.textContent = `Foundry mastered. Final score ${this.score}, ${stars} stars.`;
         }
         btn(x, y, label, color, cb) {
           const b = this.add
@@ -1343,9 +1548,9 @@
           cv.setAttribute("role", "application");
           cv.setAttribute(
             "aria-label",
-            "Fraction Foundry math game. Divide whole numbers, fractions, and " +
-              "mixed numbers using visual bar models. Use number keys 1 to 4 to " +
-              "choose an answer.",
+            "Fraction Foundry math game. Divide fractions by slicing bar models " +
+              "yourself. Use plus and minus keys to slice, left and right arrow " +
+              "keys to count pieces or groups, and Enter to forge your answer.",
           );
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
@@ -1368,5 +1573,28 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#ff-sr",
+            standard: "6.NS.1",
+            staticHints: [
+              "Look at one piece after you slice: what fraction of a whole is it? The divisor names the piece size you need.",
+              "Division asks 'how many of this size fit?' Slice each whole so the divisor lines up with whole pieces, then count pieces or bundle equal groups.",
+              "Set it up: slice using the divisor's denominator, shade or spot the dividend on the bar, then count how many divisor-size pieces or full groups fill it.",
+            ],
+          });
+      });
+    </script>
+    <!-- ghl-injected:end -->
   </body>
 </html>

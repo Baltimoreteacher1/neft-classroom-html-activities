@@ -1,4 +1,5 @@
 @import url("../../assets/design-tokens.css");
+@import url("../../assets/mobile-access.css");
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,700;1,400&display=swap");
 
 /* ── Reveal Math Activities — Design System ── */
@@ -474,13 +475,13 @@ h4 {
 }
 
 .btn-primary {
-  background: var(--teal);
+  background: var(--teal-ink);
   color: white;
-  box-shadow: 0 4px 12px rgba(31, 166, 162, 0.3);
+  box-shadow: 0 4px 12px rgba(12, 111, 107, 0.32);
 }
 
 .btn-primary:hover {
-  background: #1a918e;
+  background: #0a5b58;
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgba(31, 166, 162, 0.4);
 }
@@ -497,7 +498,7 @@ h4 {
 
 .btn-secondary:hover {
   border-color: var(--teal);
-  color: var(--teal);
+  color: var(--teal-ink);
 }
 
 .btn-amber {
@@ -560,7 +561,7 @@ h4 {
   border-bottom: 2px solid var(--teal);
   padding: 2px 4px;
   margin: 0 4px;
-  color: var(--teal);
+  color: var(--teal-ink);
   font-weight: 700;
 }
 
@@ -781,6 +782,153 @@ h4 {
     opacity: 0;
     transform: translateY(100vh) rotate(720deg) scale(0.5);
   }
+}
+
+/* ── Objective vocabulary terms + glossary popup ── */
+/* Underlined key vocab words inside the Content/Language objectives. Tapping one
+   opens .obj-popup-backdrop with a simple explanation + a visual. */
+.obj-term {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--teal, #1c8c8c);
+}
+.obj-term:hover,
+.obj-term:focus-visible {
+  text-decoration-style: solid;
+  background: var(--teal-light, rgba(28, 140, 140, 0.12));
+  border-radius: 4px;
+  outline: none;
+}
+
+@keyframes objFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.obj-popup-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4, 18px);
+  background: rgba(15, 23, 42, 0.55);
+  animation: objFadeIn 0.15s ease;
+}
+.obj-popup-backdrop[hidden] {
+  display: none;
+}
+
+.obj-popup {
+  position: relative;
+  width: min(420px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--white, #fff);
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.3);
+  padding: var(--sp-6, 24px) var(--sp-5, 20px) var(--sp-5, 20px);
+  text-align: center;
+  animation: bannerIn 0.2s var(--ease-spring, ease);
+}
+
+.obj-popup-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--cream, #f4f1ea);
+  color: var(--navy, #1f2a44);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.obj-popup-close:hover {
+  background: var(--teal-light, rgba(28, 140, 140, 0.15));
+}
+
+.obj-popup-term {
+  margin: 0 0 var(--sp-3, 14px);
+  color: var(--teal, #1c8c8c);
+  text-transform: capitalize;
+}
+
+.obj-popup-translation {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2, 10px);
+  margin: 0 0 var(--sp-3, 14px);
+  padding: var(--sp-2, 10px) var(--sp-3, 14px);
+  background: var(--teal-light, rgba(28, 140, 140, 0.12));
+  border-radius: var(--radius-md, 12px);
+}
+.obj-popup-translation[hidden] {
+  display: none;
+}
+.obj-popup-tr-label {
+  font-weight: 700;
+  color: var(--teal, #1c8c8c);
+}
+.obj-popup-tr-es {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--navy, #1f2a44);
+}
+
+.obj-popup-visual {
+  margin: 0 0 var(--sp-3, 14px);
+}
+.obj-popup-img {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+  margin: 0 auto var(--sp-2, 10px);
+}
+.obj-popup-example {
+  margin: 0;
+  font-weight: 600;
+  color: var(--navy, #1f2a44);
+}
+.obj-popup-example[hidden] {
+  display: none;
+}
+
+.obj-popup-def {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--navy, #1f2a44);
+}
+.obj-popup-def-es {
+  margin: var(--sp-2, 10px) 0 0;
+  font-style: italic;
+  color: var(--gray-600, #555);
+}
+.obj-popup-def-es[hidden] {
+  display: none;
+}
+
+body.obj-popup-open {
+  overflow: hidden;
 }
 
 /* ── Phase Transition ── */
@@ -1145,8 +1293,12 @@ h4 {
   outline-offset: 2px;
 }
 
-/* ── Responsive (Chromebook min 1024px) ── */
-@media (max-width: 1100px) {
+/* ── Responsive (Chromebook min 1024px) ──
+   Narrow the sidebar for tablet / small-laptop ONLY. This MUST be a min-width
+   range: without the 769px floor it also matches phone widths and, because it
+   is declared after the max-width:768px stack rule above, would override it —
+   pinning a 220px sidebar on phones and squeezing content to a sliver. */
+@media (min-width: 769px) and (max-width: 1100px) {
   .app {
     grid-template-columns: 220px minmax(0, 1fr);
   }
@@ -1214,11 +1366,21 @@ h4 {
   border: 1px solid rgba(18, 53, 91, 0.06);
 }
 .identity-hero {
-  background: linear-gradient(
-    135deg,
-    var(--theme-hero-from) 0%,
-    var(--theme-hero-to) 100%
-  );
+  /* Dark scrim over the theme gradient — themes with a light "to" color
+     (e.g. bright blues) washed out white text toward the bottom of the hero.
+     The scrim deepens toward the bottom to keep text AA-legible on every
+     theme while preserving the theme hue. */
+  background:
+    linear-gradient(
+      180deg,
+      rgba(6, 17, 38, 0.1) 0%,
+      rgba(6, 17, 38, 0.45) 100%
+    ),
+    linear-gradient(
+      135deg,
+      var(--theme-hero-from) 0%,
+      var(--theme-hero-to) 100%
+    );
   color: white;
   padding: var(--sp-7) var(--sp-6) var(--sp-6);
   text-align: center;
@@ -1265,7 +1427,7 @@ h4 {
 }
 .identity-sub {
   font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 255, 255, 0.95);
   margin: 0 0 var(--sp-4);
 }
 .identity-time {
@@ -1338,7 +1500,7 @@ h4 {
 .identity-btn {
   margin-top: var(--sp-3);
   padding: 12px;
-  background: var(--teal);
+  background: var(--teal-ink);
   color: white;
   border: none;
   border-radius: var(--radius-md);
@@ -1415,6 +1577,34 @@ h4 {
   box-shadow: 0 1px 4px rgba(18, 53, 91, 0.06);
 }
 
+/* Ready-to-export / required-section readiness chip (sits before the buttons) */
+.export-readiness {
+  margin-right: auto;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  line-height: 1.3;
+}
+.export-readiness:empty {
+  display: none;
+}
+.export-readiness.is-ready {
+  color: var(--success, #0f7c4a);
+  background: var(--success-bg, #e6f7ef);
+}
+.export-readiness.is-incomplete {
+  color: var(--hint, #875f00);
+  background: var(--hint-bg, #fef7e0);
+}
+@media (max-width: 768px) {
+  .export-readiness {
+    flex: 1 1 100%;
+    margin-right: 0;
+    order: -1;
+  }
+}
+
 .export-btn {
   display: inline-flex;
   align-items: center;
@@ -1455,7 +1645,7 @@ h4 {
 
 .export-btn-secondary:hover {
   border-color: var(--teal);
-  color: var(--teal);
+  color: var(--teal-ink);
   transform: translateY(-1px);
 }
 
@@ -1837,7 +2027,7 @@ body:has(.identity-screen) .export-toolbar {
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--teal);
+  color: var(--teal-ink);
   background: var(--teal-light);
   padding: 4px 10px;
   border-radius: var(--radius-full);
@@ -1853,7 +2043,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 .problem-tier-badge.tier-level1 {
   background: var(--teal-light);
-  color: var(--teal);
+  color: var(--teal-ink);
 }
 .problem-tier-badge.tier-core {
   background: rgba(233, 196, 106, 0.25);
@@ -2180,7 +2370,7 @@ body:has(.identity-screen) .export-toolbar {
 .flip-prompt {
   font-size: 0.68rem;
   font-weight: 800;
-  color: var(--teal);
+  color: var(--teal-ink);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-top: auto;
@@ -2208,7 +2398,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .vocab-def-es {
   font-size: 0.82rem;
-  color: var(--amber);
+  color: var(--amber-ink);
   margin: var(--sp-2) 0 0;
   font-style: italic;
 }
@@ -2251,6 +2441,12 @@ body:has(.identity-screen) .export-toolbar {
   font-style: italic;
   margin-top: var(--sp-2);
   line-height: 1.4;
+}
+
+/* On the dark cover hero the illustration caption sits on navy — muted gray
+   is near-invisible there, so use a legible light tone (AA on navy). */
+.lesson-cover-art .theme-illustration-caption {
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .launch-narrative {
@@ -2759,9 +2955,10 @@ body:has(.identity-screen) .export-toolbar {
   text-align: left;
   margin: var(--sp-4) 0;
   padding: var(--sp-4);
-  background: rgba(255, 255, 255, 0.65);
+  background: #ffffff;
   border: 1px solid rgba(56, 127, 132, 0.25);
   border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .cover-goal-label {
@@ -2770,7 +2967,7 @@ body:has(.identity-screen) .export-toolbar {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--teal);
+  color: var(--teal-ink);
   margin-bottom: var(--sp-2);
 }
 
@@ -2778,6 +2975,7 @@ body:has(.identity-screen) .export-toolbar {
   margin: 0;
   font-weight: 600;
   line-height: 1.5;
+  color: var(--ink);
 }
 
 .cover-stats-row {
@@ -2790,7 +2988,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .cover-stat strong {
-  color: var(--navy);
+  color: var(--amber);
   font-family: var(--font-display);
 }
 
@@ -2842,7 +3040,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .cover-phase-chip {
   padding: 4px 10px;
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.92);
   border: 1px solid var(--line);
   border-radius: var(--radius-full);
   font-size: 0.72rem;
@@ -2872,11 +3070,17 @@ body:has(.identity-screen) .export-toolbar {
 .standards-explainer-panel {
   margin-top: var(--sp-2);
   padding: var(--sp-3);
-  background: white;
+  background: #ffffff;
+  color: var(--ink);
+  border: 1px solid rgba(56, 127, 132, 0.25);
   border-radius: var(--radius-sm);
   font-size: 0.88rem;
   line-height: 1.5;
   text-align: left;
+  box-shadow: var(--shadow-sm);
+}
+.standards-explainer-panel strong {
+  color: var(--teal-ink);
 }
 
 /* ── Phase accent moods ── */
@@ -3130,6 +3334,24 @@ body:has(.identity-screen) .export-toolbar {
   background: linear-gradient(135deg, rgba(42, 157, 143, 0.06), white);
 }
 
+/* Connect written-response block. */
+.connect-prompt-label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 var(--sp-3);
+  line-height: 1.5;
+}
+.connect-charcount {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: var(--sp-1);
+  text-align: right;
+}
+.connect-charcount.is-ready {
+  color: var(--success);
+}
+
 .connect-scenario-header {
   display: flex;
   gap: var(--sp-3);
@@ -3176,7 +3398,7 @@ body:has(.identity-screen) .export-toolbar {
   font-family: var(--font-display);
   font-weight: 900;
   font-size: 1.4rem;
-  color: var(--teal);
+  color: var(--teal-ink);
   margin-top: var(--sp-2);
 }
 
@@ -3275,7 +3497,162 @@ body:has(.identity-screen) .export-toolbar {
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--teal);
+  color: var(--teal-ink);
+}
+
+/* ── Exit-to-Student pill (shown ONLY while in Teacher Mode) ──
+   Students never see this; entry to Teacher Mode is the password-gated
+   button on the lesson login screen (.identity-teacher). */
+.mode-toggle-pill {
+  position: fixed;
+  bottom: 14px;
+  left: 14px;
+  z-index: 9600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--teal, #128a87);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.82rem;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(18, 53, 91, 0.3);
+}
+.mode-toggle-pill:hover {
+  filter: brightness(1.08);
+}
+@media print {
+  .mode-toggle-pill {
+    display: none;
+  }
+}
+
+/* Teacher-only "Skip" on interactive items (advance without doing the work). */
+.teacher-skip {
+  display: inline-flex;
+  margin-top: var(--sp-3, 12px);
+  border: 1px dashed var(--teal, #128a87);
+  color: var(--teal, #128a87);
+  background: rgba(18, 138, 135, 0.06);
+}
+.teacher-pager {
+  margin-top: var(--sp-2, 8px);
+}
+
+/* ── Password-gated Teacher entry on the lesson login screen ── */
+.identity-teacher {
+  margin-top: var(--sp-3, 12px);
+  text-align: center;
+}
+.identity-teacher-btn {
+  background: none;
+  border: 1px solid var(--navy, #12355b);
+  color: var(--navy, #12355b);
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 7px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.identity-teacher-btn:hover {
+  background: rgba(18, 53, 91, 0.06);
+}
+.identity-teacher-unlock {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.identity-teacher-pin {
+  flex: 1 1 160px;
+  max-width: 220px;
+  padding: 8px 12px;
+  border: 1px solid var(--gray-300, #cbd5e1);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+.identity-teacher-go {
+  background: var(--navy, #12355b);
+  color: #fff;
+  border: 0;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.identity-teacher-go:hover {
+  filter: brightness(1.08);
+}
+.identity-teacher-err {
+  flex-basis: 100%;
+  margin: 2px 0 0;
+  color: var(--amber, #c85a3a);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.identity-teacher.is-on {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.identity-teacher-label {
+  font-weight: 800;
+  font-size: 0.82rem;
+  color: var(--teal, #128a87);
+}
+.identity-teacher-exit {
+  background: none;
+  border: 1px solid var(--gray-300, #cbd5e1);
+  color: var(--navy, #12355b);
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.identity-teacher-exit:hover {
+  background: rgba(18, 53, 91, 0.06);
+}
+
+/* ── Teacher projection tools ── */
+.teacher-proj-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+.teacher-timer {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.teacher-timer-display {
+  font-family: var(--font-display, system-ui);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.1rem;
+  color: var(--navy);
+  min-width: 3.6em;
+}
+/* Hide the answer key on screen when projecting (toggle). */
+.teacher-panel.answers-hidden [data-bind="answer-key"] {
+  display: none;
+}
+/* Projector view — enlarge the lesson body for whole-class display. Uses zoom
+   (well-supported on the Chromebooks/Chrome used in class) so layout reflows. */
+html.projector .main {
+  zoom: 1.22;
+}
+@media print {
+  html.projector .main {
+    zoom: 1;
+  }
 }
 
 .teacher-pacing-list {
@@ -3326,7 +3703,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .math-eq {
   font-weight: 800;
-  color: var(--teal);
+  color: var(--teal-ink);
   padding: 0 2px;
 }
 
@@ -3342,7 +3719,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 .i18n-es {
   font-size: 0.82em;
-  opacity: 0.72;
+  opacity: 0.92;
   font-style: italic;
 }
 .i18n-btn .i18n-es {
@@ -3368,7 +3745,7 @@ body:has(.identity-screen) .export-toolbar {
 .welcome-teacher-panel h5 {
   margin: 0 0 var(--sp-2);
   font-size: 0.88rem;
-  color: var(--teal);
+  color: var(--teal-ink);
 }
 .certificate-download-btn {
   margin-right: var(--sp-2);
@@ -3618,6 +3995,102 @@ body:has(.identity-screen) .export-toolbar {
   flex-direction: column;
   gap: var(--sp-2);
 }
+/* Minimum-word goal counter (writing scaffold) */
+.syw-wordcount {
+  align-self: flex-end;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.syw-wordcount.is-ready {
+  color: var(--success, #0f7c4a);
+}
+.syw-wordcount.is-ready::before {
+  content: "✓ ";
+}
+
+/* ── "I'm stuck" student support bar (engine/core/stuck-support.js) ────────── */
+.stuck-support {
+  margin: var(--sp-4) 0;
+  border: 1px dashed var(--teal);
+  border-radius: var(--radius-md, 12px);
+  background: var(--teal-light, #dff2ee);
+  overflow: hidden;
+}
+.stuck-toggle {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: var(--sp-3) var(--sp-4);
+  font-family: var(--font-display, system-ui);
+  font-weight: 800;
+  font-size: 0.98rem;
+  color: var(--navy);
+  cursor: pointer;
+}
+.stuck-body {
+  padding: 0 var(--sp-4) var(--sp-4);
+}
+.stuck-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+.stuck-chip {
+  border: 1.5px solid var(--teal);
+  background: #fff;
+  color: var(--navy);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  min-height: 40px;
+}
+.stuck-chip:hover {
+  background: var(--teal-light);
+}
+.stuck-chip.is-active {
+  background: var(--teal);
+  color: #fff;
+}
+.stuck-panel {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm, 8px);
+  padding: var(--sp-4);
+  line-height: 1.6;
+}
+.stuck-panel p {
+  margin: 0 0 var(--sp-2);
+}
+.stuck-vocab,
+.stuck-frames {
+  margin: 0;
+  padding-left: 1.1em;
+  line-height: 1.8;
+}
+.stuck-es {
+  color: var(--muted);
+  font-style: italic;
+}
+.stuck-blank {
+  display: inline-block;
+  min-width: 90px;
+  border-bottom: 2px solid var(--navy);
+  margin: 0 4px;
+}
+.stuck-frame {
+  font-weight: 600;
+  color: var(--navy);
+}
+@media (max-width: 768px) {
+  .stuck-chip {
+    flex: 1 1 calc(50% - var(--sp-2));
+  }
+}
 .syw-label {
   font-family: var(--font-display);
   font-weight: 800;
@@ -3671,4 +4144,151 @@ textarea.syw-input {
   .syw-card {
     break-inside: avoid;
   }
+}
+
+/* ── Word-problem annotation ────────────────────────────────────────────────
+   Toolbar + marks that let students highlight, underline, and bold the text of
+   a word problem (see engine/core/annotate.js). */
+.annot-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0 0 var(--sp-2);
+}
+.annot-tip {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted, #5e6e7e);
+}
+.annot-btn {
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--navy);
+  background: var(--card, #fff);
+  border: 1.5px solid var(--line, #e4ddc9);
+  border-radius: 999px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    transform 0.08s ease;
+}
+.annot-btn:hover {
+  background: var(--cream, #fdf3e0);
+  border-color: var(--gold, #d4952a);
+}
+.annot-btn:active {
+  transform: translateY(1px);
+}
+.annot-erase {
+  color: var(--coral, #d9795d);
+}
+.annotatable {
+  cursor: text;
+}
+/* The marks themselves. */
+.annot-hl {
+  background: linear-gradient(transparent 35%, rgba(255, 214, 89, 0.75) 35%);
+  border-radius: 2px;
+}
+.annot-ul {
+  text-decoration: underline;
+  text-decoration-color: var(--teal, #2a9d8f);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+.annot-bd {
+  font-weight: 800;
+  color: var(--navy);
+}
+@media (prefers-reduced-motion: reduce) {
+  .annot-btn {
+    transition: none;
+  }
+}
+
+/* ── Skill practice (lead "solve these" problems in the Practice phase) ──────
+   Class-based replacement for the old inline-styled cards, so numbering and
+   spacing match the rest of the design system. */
+.skill-practice {
+  border-left: 4px solid var(--navy, #264653);
+}
+.skill-practice .sp-intro {
+  margin: 0 0 var(--sp-3);
+  color: var(--ink);
+}
+.sp-problem {
+  background: var(--card, #fff);
+  border: 1px solid var(--line, #e4ddc9);
+  border-radius: var(--radius-md, 12px);
+  padding: var(--sp-3, 14px) var(--sp-4, 16px);
+  margin-bottom: var(--sp-3, 12px);
+}
+.sp-problem:last-of-type {
+  margin-bottom: 0;
+}
+.sp-stem {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  align-items: baseline;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  font-weight: 600;
+  color: var(--navy, #264653);
+  margin: 0 0 var(--sp-3);
+}
+/* The annotation toolbar (annotate.js) is injected as a child of this flex
+   row. Force it onto its own full-width line ABOVE the number + question so it
+   never wedges between them and pushes the problem text off to the side. */
+.sp-stem .annot-bar {
+  flex: 0 0 100%;
+  order: -1;
+}
+.sp-num {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.7rem;
+  height: 1.7rem;
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  background: var(--navy, #264653);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+.sp-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: var(--sp-2);
+}
+.sp-answer-label {
+  font-weight: 700;
+  color: var(--navy, #264653);
+}
+.sp-answer {
+  border: 0;
+  border-bottom: 2px solid var(--teal, #2a9d8f);
+  font: inherit;
+  font-size: 1rem;
+  padding: 4px 6px;
+}
+.sp-reveal[hidden] {
+  display: none;
+}
+.sp-reveal {
+  margin-top: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: 8px;
+  background: rgba(42, 157, 143, 0.08);
+  border: 1px solid var(--teal, #2a9d8f);
 }

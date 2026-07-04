@@ -66,6 +66,44 @@ function injectDragSortStyles() {
 export function renderDragSort(container, config) {
   injectDragSortStyles();
   const { items, categories, onComplete } = config;
+  // Normalize a plain-string category ("Statistical Question") to the {id,label}
+  // object the core renderer expects.
+  const toCat = (c) => (typeof c === "string" ? { id: c, label: c } : c);
+
+  // `cards` shape: lessons author the sortable items as `cards: [{text, correct}]`
+  // (where `correct` is an index into `categories`) or `[{text, category}]`, with
+  // `categories` as plain strings. Left unhandled, `items` is undefined and the
+  // core crashes on `items.map`. Map it to the core's {text, category} shape.
+  if (!Array.isArray(items) && Array.isArray(config.cards) && Array.isArray(categories)) {
+    const cats = categories.map(toCat);
+    const resolved = config.cards.map((c) => ({
+      text: c.text != null ? String(c.text) : String(c.label ?? ""),
+      category:
+        typeof c.category === "string"
+          ? c.category
+          : typeof c.correct === "number"
+            ? cats[c.correct]?.id
+            : undefined,
+    }));
+    return renderDragSortCore(container, {
+      items: resolved,
+      categories: cats,
+      onComplete,
+    });
+  }
+  // Some lessons author an ORDERING task as a flat `items` array (the presented/
+  // scrambled set) plus a separate `correctOrder` array (the target sequence),
+  // with no `categories` field at all. Left unhandled, `categories.length` below
+  // throws ("Cannot read properties of undefined") and the activity renders
+  // blank. `correctOrder` is the authored answer key — use it (not `items`,
+  // which may already be pre-shuffled) as the steps renderDragOrder checks against.
+  if (Array.isArray(items) && Array.isArray(config.correctOrder) && !Array.isArray(categories)) {
+    return renderDragOrder(container, {
+      steps: config.correctOrder,
+      label: config.label,
+      onComplete,
+    });
+  }
   // Some lessons author drag-sort WITHOUT a top-level `items` array, nesting the
   // content inside `categories[].items` instead. Left unhandled, `[...items]`
   // below throws ("items is not iterable") and the activity renders blank.
@@ -93,7 +131,11 @@ export function renderDragSort(container, config) {
       });
     }
   }
-  return renderDragSortCore(container, { items, categories, onComplete });
+  return renderDragSortCore(container, {
+    items,
+    categories: Array.isArray(categories) ? categories.map(toCat) : categories,
+    onComplete,
+  });
 }
 
 // Accessible "put these in the correct order" interaction. Renders the steps

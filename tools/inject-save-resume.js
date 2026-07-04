@@ -33,53 +33,27 @@ import { dirname } from "path";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-const MARK = "nsr-injected"; // sentinel in an HTML comment
-const LINK_TAG = '<link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">';
-const SCRIPT_TAG = '<script src="/shared/save-resume/save-resume-engine.js" defer></script>';
-const BEGIN = `<!-- ${MARK}:begin (multi-day save/resume — tools/inject-save-resume.js) -->`;
-const END = `<!-- ${MARK}:end -->`;
-
-// Directories never to enter (build, deps, dev, generated, infra).
-const SKIP_DIRS = new Set([
-  "node_modules",
-  "dist",
-  ".git",
-  ".github",
-  ".claude",
-  ".wrangler",
-  ".vscode",
-  "scripts", // build scripts, not lessons
-  "engine", // bundled by vite, not standalone pages
-  "functions", // backend
-  "migrations",
-  "workers",
-  "shared", // the engine itself
-  "tools",
-]);
-
-// Top-level surfaces that are NOT student activities (teacher/admin/infra).
-// These get skipped to avoid showing a student "save your work" widget where it
-// makes no sense. Adjust here if a surface should be included.
-const SKIP_TOPLEVEL = new Set([
-  "dashboard",
-  "teacher-data-dashboard",
-  "teacher-tools",
-  "neft-school-hub",
-  "neft-data-studio",
-  "results-worker",
-  "directory",
-  "data",
-  "assets",
-  "docs",
-  "curriculum", // curriculum hub/index pages, not activities
-]);
-
-// Filename patterns that are not student-facing activities.
-const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
+// Shared skip rules + ref/marker strings live in ONE module so the injector and
+// the audit (tools/audit-save-resume-integration.js) can never drift apart.
+// The injector applies SKIP_PATH_RE to injection only (revert stays allowed).
+import {
+  MARK,
+  LINK_TAG,
+  SCRIPT_TAG,
+  BEGIN,
+  END,
+  SKIP_DIRS,
+  SKIP_TOPLEVEL,
+  SKIP_FILE_RE,
+  SKIP_PATH_RE as SKIP_INJECT_PATH_RE,
+} from "./save-resume-config.js";
 
 const args = new Set(process.argv.slice(2));
 const DRY = args.has("--dry-run");
 const REVERT = args.has("--revert");
+// Optional path-substring filter (e.g. --match=living-school/neft-city-) that
+// limits BOTH inject and revert to matching files instead of every page.
+const MATCH = [...args].find((a) => a.startsWith("--match="))?.slice("--match=".length) || null;
 
 const report = {
   scanned: 0,
@@ -125,6 +99,9 @@ function handleFile(file) {
     report.skippedFile.push(rel);
     return;
   }
+  // Path-substring filter (applies to BOTH inject and revert). Checked before
+  // any disk read so non-matching files cost no I/O in a large repo.
+  if (MATCH && !rel.includes(MATCH)) return;
   let html;
   try {
     html = readFileSync(file, "utf8");
@@ -142,6 +119,12 @@ function handleFile(file) {
     return;
   }
 
+  // Inject-only path exclusions (revert above is intentionally exempt).
+  if (SKIP_INJECT_PATH_RE.test(rel)) {
+    report.skippedFile.push(rel);
+    return;
+  }
+
   if (html.includes(MARK)) {
     report.alreadyInjected++;
     return;
@@ -153,9 +136,14 @@ function handleFile(file) {
     return;
   }
 
-  // Inject the stylesheet before </head> and the script before </body>.
+  // Inject the stylesheet before </head> (first/real head) and the script before
+  // the LAST </body> — the real document close. The first </body> can be a literal
+  // inside a JS template string (print/report generators); injecting there would
+  // put the </script> inside the page's main inline script and terminate it early.
   let out = html.replace(/<\/head>/i, `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n</head>`);
-  out = out.replace(/<\/body>/i, `  ${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n</body>`);
+  const bodies = [...out.matchAll(/<\/body>/gi)];
+  const at = bodies[bodies.length - 1].index;
+  out = out.slice(0, at) + `${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n  ` + out.slice(at);
   if (!DRY) writeFileSync(file, out);
   report.injected++;
 }

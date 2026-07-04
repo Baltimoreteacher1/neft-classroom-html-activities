@@ -2,11 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ratio Rush — Lessons 3.1–3.5 Game | Neft Teacher</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
+    <title>Ratio Rush — Double Number Line | Neft Teacher</title>
     <meta
       name="description"
-      content="A 2D lily-pad hopper game for Grade 6 lessons 3.1–3.5: ratios, equivalent ratios, and unit rates (6.RP.1–3). Hop to the pad with the correct answer."
+      content="A calm build-it math game for Grade 6 ratios (6.RP.3): line up two number lines so the pair stays in ratio. Slide the knob to fill a missing value, build a full equivalent ratio, or find the unit rate — then Lock In. A live readout shows your ratio and whether it is equivalent."
     />
     <style>
       * {
@@ -41,33 +42,43 @@
         pointer-events: none;
         background: radial-gradient(
           130% 90% at 50% 0%,
-          #154a4a 0%,
-          #0c2a2e 55%,
-          #07191c 100%
+          #11484c 0%,
+          #0c2f33 55%,
+          #07201f 100%
         );
       }
-      .rr-mote {
+      #rr-bg-layer {
+        position: absolute;
+        inset: -6% -6%;
+        will-change: transform;
+        transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+      }
+      .rr-spark {
         position: absolute;
         border-radius: 50%;
-        background: #aef0d8;
-        opacity: 0.4;
+        background: #8ff0d8;
+        opacity: 0.5;
         animation: rrTwinkle var(--tw, 3s) ease-in-out infinite;
       }
       @keyframes rrTwinkle {
         0%,
         100% {
-          opacity: 0.12;
+          opacity: 0.15;
           transform: scale(0.8);
         }
         50% {
-          opacity: 0.6;
+          opacity: 0.75;
           transform: scale(1.2);
         }
       }
       @media (prefers-reduced-motion: reduce) {
-        .rr-mote {
+        #rr-bg-layer {
+          transition: none !important;
+          transform: none !important;
+        }
+        .rr-spark {
           animation: none !important;
-          opacity: 0.35 !important;
+          opacity: 0.4 !important;
         }
       }
       #rr-sr {
@@ -96,73 +107,155 @@
       window.addEventListener("load", function () {
         if (typeof Phaser === "undefined") {
           document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#aef0d8">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#8ff0d8">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
         }
       });
     </script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
-    <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- Student Passport (meta-progression: lifetime XP / streak / badges) -->
+    <link rel="stylesheet" href="/assets/lesson-passport.css" />
+    <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
+    <script src="/assets/game-juice.js"></script>
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- Socratic hint ladder (opt-in; reuses /api/tutor, falls back to static hints) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
   </head>
   <body>
-    <div id="rr-bg" aria-hidden="true"></div>
+    <!-- Decorative animated spark-field (behind the Phaser canvas). -->
+    <div id="rr-bg" data-parallax aria-hidden="true">
+      <div id="rr-bg-layer" data-parallax-layer></div>
+    </div>
+    <!-- Screen-reader live region: mirrors the current problem + result. -->
     <div id="rr-sr" role="status" aria-live="polite"></div>
     <script>
+      // Decorative spark-field builder (reduced-motion safe; pointer-neutral).
       (function () {
-        var host = document.getElementById("rr-bg");
-        if (!host) return;
-        var reduce =
+        "use strict";
+        var reduceMQ =
           window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        var n = reduce ? 10 : 26;
-        for (var i = 0; i < n; i++) {
-          var d = document.createElement("div");
-          d.className = "rr-mote";
-          var sz = 2 + Math.random() * 4;
-          d.style.width = d.style.height = sz.toFixed(1) + "px";
-          d.style.left = (Math.random() * 100).toFixed(2) + "%";
-          d.style.top = (Math.random() * 100).toFixed(2) + "%";
-          d.style.setProperty("--tw", (2 + Math.random() * 4).toFixed(2) + "s");
-          d.style.animationDelay = "-" + (Math.random() * 4).toFixed(2) + "s";
-          host.appendChild(d);
+          window.matchMedia("(prefers-reduced-motion: reduce)");
+        var layer = document.getElementById("rr-bg-layer");
+        if (!layer) return;
+        function rnd(a, b) {
+          return a + Math.random() * (b - a);
         }
+        function build() {
+          layer.textContent = "";
+          var reduce = !!(reduceMQ && reduceMQ.matches);
+          var n = reduce ? 16 : 34;
+          for (var i = 0; i < n; i++) {
+            var s = document.createElement("div");
+            s.className = "rr-spark";
+            var sz = rnd(2, 5);
+            s.style.width = s.style.height = sz.toFixed(1) + "px";
+            s.style.left = rnd(0, 100).toFixed(2) + "%";
+            s.style.top = rnd(0, 100).toFixed(2) + "%";
+            s.style.setProperty("--tw", rnd(2.2, 5).toFixed(2) + "s");
+            s.style.animationDelay = "-" + rnd(0, 4).toFixed(2) + "s";
+            layer.appendChild(s);
+          }
+        }
+        build();
+        var driver = false;
+        function onMove(e) {
+          var dx = e.clientX / (window.innerWidth || 1) - 0.5;
+          var dy = e.clientY / (window.innerHeight || 1) - 0.5;
+          layer.style.transform =
+            "translate3d(" +
+            (dx * 20).toFixed(2) +
+            "px," +
+            (dy * 12).toFixed(2) +
+            "px,0)";
+        }
+        function attach() {
+          if (driver || (reduceMQ && reduceMQ.matches)) return;
+          driver = true;
+          window.addEventListener("pointermove", onMove, { passive: true });
+        }
+        function detach() {
+          if (!driver) return;
+          driver = false;
+          window.removeEventListener("pointermove", onMove);
+          layer.style.transform = "";
+        }
+        attach();
+        if (reduceMQ) {
+          var onChange = function () {
+            build();
+            if (reduceMQ.matches) detach();
+            else attach();
+          };
+          if (reduceMQ.addEventListener)
+            reduceMQ.addEventListener("change", onChange);
+          else if (reduceMQ.addListener) reduceMQ.addListener(onChange);
+        }
+        var rt;
+        window.addEventListener("resize", function () {
+          clearTimeout(rt);
+          rt = setTimeout(build, 200);
+        });
       })();
     </script>
     <script>
-      // ════════════════════════════════════════════════════════════════════
-      // RATIO RUSH — Lily-Pad Hopper  ·  Grade 6  ·  6.RP.1–3
-      // Lessons 3.1–3.5: simplify ratios, equivalent ratios, unit rates.
-      //
-      // MECHANIC: Your frog stands on a river bank. Each turn, three lily pads
-      //   appear ahead — left, center, right — each carrying a candidate answer.
-      //   Read the prompt, then HOP onto the pad with the correct answer
-      //   (← / ↑ / → , or A / W / D, or tap a pad). Land right → the frog leaps
-      //   forward and the river scrolls; land on a wrong pad → splash (lose a
-      //   life). Pads bob faster each round.
-      //
-      // FLOAT SAFETY: every answer is a ratio STRING ("a:b") or an INTEGER
-      //   produced from integer arithmetic; correctness is a string/int compare,
-      //   never a float ==.
-      // ════════════════════════════════════════════════════════════════════
-      const LS_KEY = "rr_ratio_rush_highscore";
-      const W = 800,
-        H = 600;
-      const ACTIVITY_TITLE = "Ratio Rush — Lessons 3.1–3.5";
-      const STANDARD = "6.RP.3";
+      // ── RATIO RUSH — DOUBLE NUMBER LINE ──
+      // Phaser 3 — Grade 6 Math — Equivalent ratios, ratio tables, unit rate.
+      // Mechanic (math-as-mechanic, no reflex/timer): TWO aligned number lines
+      // are the ratio table. A base ratio a:b is given; you slide a knob (snaps
+      // to whole ticks) on one line so the live pair STAYS in the ratio. A live
+      // readout shows the current ratio c:d and whether it is equivalent
+      // (a·d = b·c by cross-multiply). Lock In commits. A wrong lock-in (wrong
+      // MATH, not slow reflexes) never costs anything — this is no-fail
+      // practice — the knob glides to the correct spot and a green ghost
+      // marker shows the right value, so it teaches.
+      // Levels raise the framing: fill ONE missing value → build a FULL
+      // equivalent ratio (both knobs) → find the UNIT RATE (per 1). Whole,
+      // friendly numbers only; every value lives on a 0–10 line.
 
+      const W = 820,
+        H = 600;
+      const LS_KEY = "rr_double_number_line_highscore";
+      // Number-line geometry in game space. Phaser Scale.FIT maps pointer
+      // coordinates into this space, so drag math works at any screen size.
+      const LINE_X0 = 150,
+        LINE_X1 = 710,
+        TOP_Y = 320,
+        BOT_Y = 430;
+      const LW = LINE_X1 - LINE_X0;
+      const MAXV = 10; // both lines run 0…10, one tick per whole number
+      function tickX(v) {
+        return LINE_X0 + (LW * v) / MAXV;
+      }
+      function xToVal(x) {
+        // Snap to whole-number ticks; all targets are whole numbers ≤ 10.
+        return Phaser.Math.Clamp(
+          Math.round(((x - LINE_X0) / LW) * MAXV),
+          0,
+          MAXV,
+        );
+      }
+
+      // ── Audio (tiny WebAudio blips; gracefully no-op without a context) ──
       const SFX = {
         ctx: null,
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (window.AudioContext ||
-                window.webkitAudioContext)();
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
             } catch (e) {}
         },
-        play(t, f, d, v = 0.2) {
+        play(t, f, d, v = 0.18) {
           if (!this.ctx) return;
           try {
             const c = this.ctx,
@@ -178,56 +271,28 @@
             o.stop(c.currentTime + d);
           } catch (e) {}
         },
-        noise(d, v = 0.1) {
-          if (!this.ctx) return;
-          try {
-            const c = this.ctx,
-              n = c.sampleRate * d,
-              buf = c.createBuffer(1, n, c.sampleRate),
-              dt = buf.getChannelData(0);
-            for (let i = 0; i < n; i++) dt[i] = Math.random() * 2 - 1;
-            const s = c.createBufferSource();
-            s.buffer = buf;
-            const g = c.createGain();
-            g.gain.setValueAtTime(v, c.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
-            s.connect(g);
-            g.connect(c.destination);
-            s.start();
-            s.stop(c.currentTime + d);
-          } catch (e) {}
+        good() {
+          this.play("sine", 660, 0.1, 0.25);
+          this.play("sine", 880, 0.14, 0.2);
         },
-        hop() {
-          this.play("sine", 520, 0.08, 0.18);
-          this.play("sine", 780, 0.1, 0.16);
+        bad() {
+          this.play("sawtooth", 200, 0.25, 0.18);
+          this.play("sawtooth", 150, 0.3, 0.14);
         },
-        splash() {
-          this.noise(0.22, 0.13);
-          this.play("sawtooth", 180, 0.26, 0.15);
+        miss() {
+          this.play("triangle", 240, 0.16, 0.12);
         },
-        tick() {
-          this.play("square", 600, 0.03, 0.07);
+        coin() {
+          this.play("square", 1040, 0.05, 0.08);
         },
-        streak(n) {
-          [523, 659, 784, 988, 1175]
-            .slice(0, Math.min(n, 5))
-            .forEach((f, i) =>
-              setTimeout(() => this.play("sine", f, 0.12, 0.2), i * 55),
-            );
-        },
-        levelUp() {
+        level() {
           [523, 659, 784, 1047].forEach((f, i) =>
             setTimeout(() => this.play("sine", f, 0.15, 0.22), i * 70),
           );
         },
         win() {
           [523, 659, 784, 1047, 1318].forEach((f, i) =>
-            setTimeout(() => this.play("sine", f, 0.22, 0.28), i * 110),
-          );
-        },
-        lose() {
-          [400, 350, 300, 200].forEach((f, i) =>
-            setTimeout(() => this.play("sawtooth", f, 0.28, 0.15), i * 170),
+            setTimeout(() => this.play("sine", f, 0.25, 0.25), i * 110),
           );
         },
       };
@@ -235,114 +300,254 @@
       function randInt(a, b) {
         return Math.floor(Math.random() * (b - a + 1)) + a;
       }
-      function shuffle(a) {
-        const r = a.slice();
-        for (let i = r.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [r[i], r[j]] = [r[j], r[i]];
-        }
-        return r;
+      function pick(arr) {
+        return arr[randInt(0, arr.length - 1)];
       }
-
-      // Coprime pairs — simplest-form ratio bases.
-      const COPRIME_PAIRS = [
-        [1, 2], [1, 3], [1, 4], [1, 5], [2, 3], [2, 5], [3, 4], [3, 5],
-        [4, 5], [3, 7], [2, 7], [5, 7], [5, 8], [5, 9], [4, 7], [3, 8],
-      ];
-
-      const UNIT_RATE_TEMPLATES = [
-        { tmpl: (t, c) => "$" + t + " for " + c + " items", unit: "$ per item", word: "item" },
-        { tmpl: (t, c) => t + " miles in " + c + " hours", unit: "mph", word: "hour" },
-        { tmpl: (t, c) => t + " words in " + c + " minutes", unit: "words/min", word: "minute" },
-        { tmpl: (t, c) => "$" + t + " for " + c + " pounds", unit: "$ per lb", word: "pound" },
-        { tmpl: (t, c) => t + " pages in " + c + " days", unit: "pages/day", word: "day" },
-      ];
-
-      // Build 3 distinct pad labels (strings) with exactly one correct.
-      function buildPads(correctLabel, makeWrong) {
-        const set = new Set([correctLabel]);
-        let guard = 0;
-        while (set.size < 3 && guard++ < 200) {
-          const w = makeWrong();
-          if (w && w !== correctLabel) set.add(w);
-        }
-        const labels = shuffle(Array.from(set));
-        return { labels: labels, correctIndex: labels.indexOf(correctLabel) };
-      }
-
-      // round 1: simplify ratio  (bigA:bigB -> a:b)
-      // round 2: equivalent ratio missing value  (a:b = ?:b·k)
-      // round 3: unit rate  (total ÷ count = rate)
-      function genQuestion(round) {
-        if (round === 1) {
-          const pair = COPRIME_PAIRS[randInt(0, COPRIME_PAIRS.length - 1)];
-          const a = pair[0],
-            b = pair[1];
-          const k = randInt(2, 6);
-          const bigA = a * k,
-            bigB = b * k;
-          const correct = a + ":" + b;
-          const g = buildPads(correct, () => {
-            const dp = COPRIME_PAIRS[randInt(0, COPRIME_PAIRS.length - 1)];
-            return dp[0] + ":" + dp[1];
-          });
-          return {
-            tag: "Simplify Ratios",
-            prompt: bigA + " : " + bigB,
-            why:
-              bigA + ":" + bigB + " = " + a + ":" + b + " (÷" + k + " each).",
-            pads: g.labels,
-            correctIndex: g.correctIndex,
-          };
-        }
-        if (round === 2) {
-          const pair = COPRIME_PAIRS[randInt(0, COPRIME_PAIRS.length - 1)];
-          const a = pair[0],
-            b = pair[1];
-          const k = randInt(2, 8);
-          const ans = a * k; // missing value
-          const bigB = b * k;
-          const g = buildPads(String(ans), () => {
-            const delta = randInt(1, 5) * (Math.random() < 0.5 ? 1 : -1);
-            let v = ans + delta;
-            if (v < 1 || v === ans) v = ans + randInt(1, 5);
-            return String(v);
-          });
-          return {
-            tag: "Equivalent Ratios",
-            prompt: a + " : " + b + " = ? : " + bigB,
-            why:
-              a + ":" + b + " = " + ans + ":" + bigB + " (×" + k + " each).",
-            pads: g.labels,
-            correctIndex: g.correctIndex,
-          };
-        }
-        // round 3 — unit rate
-        const tpl = UNIT_RATE_TEMPLATES[randInt(0, UNIT_RATE_TEMPLATES.length - 1)];
-        const count = randInt(2, 9);
-        const rate = randInt(3, 15);
-        const total = rate * count;
-        const g = buildPads(String(rate), () => {
-          const delta = randInt(1, 6) * (Math.random() < 0.5 ? 1 : -1);
-          let v = rate + delta;
-          if (v < 1 || v === rate) v = rate + randInt(1, 6);
-          return String(v);
-        });
-        return {
-          tag: "Unit Rates",
-          prompt: tpl.tmpl(total, count),
-          why:
-            total + " ÷ " + count + " = " + rate + " " + tpl.unit + " (per " + tpl.word + ").",
-          pads: g.labels,
-          correctIndex: g.correctIndex,
-        };
-      }
-
       function srSay(msg) {
-        try {
-          const el = document.getElementById("rr-sr");
-          if (el) el.textContent = msg;
-        } catch (e) {}
+        const el = document.getElementById("rr-sr");
+        if (el) el.textContent = msg;
+      }
+
+      // Resolve the shared game-feel layer; provide safe no-op fallbacks so the
+      // game still runs if /assets/game-juice.js failed to load.
+      const JUICE = window.GameJuice || {
+        reduceMotion: false,
+        audio: {
+          unlock() {},
+          correct() {},
+          wrong() {},
+          fanfare() {},
+        },
+        burst() {},
+        confetti() {},
+        shake() {},
+        floatText() {},
+        award() {},
+      };
+
+      // ── Problem generator (double number line) ──────────────────────────
+      // Every problem reduces to one tactile action: slide a knob so the live
+      // pair on the two number lines is equivalent to a base ratio a:b. Three
+      // framings scale with level (all whole numbers, every value ≤ 10):
+      //   "one"  : fill ONE missing value — top locked at c (a multiple of a),
+      //            slide the bottom knob to the matching d.
+      //   "full" : build a FULL equivalent ratio different from a:b — both knobs.
+      //   "unit" : find the UNIT RATE — top locked at 1, slide bottom to b÷a.
+      const CONTEXTS = [
+        { a: "cups berry", b: "cups mango" },
+        { a: "miles", b: "minutes" },
+        { a: "dollars", b: "tickets" },
+        { a: "red beads", b: "blue beads" },
+        { a: "scoops", b: "cups water" },
+        { a: "apples", b: "oranges" },
+      ];
+      // Base ratios with both terms ≤ 5 (so doubling stays ≤ 10).
+      const BASE_POOL = [
+        [1, 2],
+        [2, 3],
+        [3, 4],
+        [2, 5],
+        [1, 3],
+        [3, 5],
+        [4, 5],
+        [1, 4],
+        [2, 1],
+        [3, 2],
+        [4, 3],
+      ];
+      // Unit-rate bases need b divisible by a (so b÷a is a whole number), both
+      // terms ≤ 10 (the number line is 0–10), and a > 1 so the unit rate b÷a is
+      // NOT already equal to the start value b — the student must actually
+      // divide and move the knob (a = 1 would leave the answer pre-placed).
+      const UNIT_POOL = [
+        [2, 4],
+        [2, 6],
+        [2, 8],
+        [2, 10],
+        [3, 6],
+        [3, 9],
+        [4, 8],
+        [5, 10],
+      ];
+
+      // Track 1 (support): stay on "fill one missing value" with small ratios,
+      // easing into unit rate late. Track 2 (enrichment): build full equivalent
+      // ratios and find unit rates from the start.
+      function kindForTrack(track, level) {
+        if (track === 1) return level <= 4 ? "one" : "unit";
+        if (level <= 2) return "full";
+        if (level <= 4) return "unit";
+        return "full";
+      }
+
+      // Authored, answer-free hint rungs for the Socratic hint ladder. Used
+      // whenever the AI tutor endpoint is offline/unconfigured, so hints always
+      // work. Each rung escalates (notice -> strategy -> set up the step) and
+      // never states the final numeric answer.
+      function ratioStaticHints(p) {
+        if (p.kind === "unit") {
+          return [
+            "You have " +
+              p.a +
+              " " +
+              p.nameA +
+              " for " +
+              p.b +
+              " " +
+              p.nameB +
+              ". You want the amount for just 1 " +
+              p.nameA +
+              ". What do you do to " +
+              p.a +
+              " to make it 1?",
+            "A unit rate is 'per 1'. Divide BOTH parts of the ratio by " +
+              p.a +
+              " so the top becomes 1.",
+            "Set it up: the bottom value = " +
+              p.b +
+              " ÷ " +
+              p.a +
+              ". Work that out, then slide the bottom knob to it.",
+          ];
+        }
+        if (p.kind === "full") {
+          return [
+            "An equivalent ratio keeps the same relationship. If you make the top bigger, what must happen to the bottom?",
+            "Pick a multiplier like ×2 or ×3, then multiply BOTH " +
+              p.a +
+              " and " +
+              p.b +
+              " by that same number.",
+            "Set it up: choose your k, then top = " +
+              p.a +
+              "×k and bottom = " +
+              p.b +
+              "×k. Move both knobs there — don't leave it at " +
+              p.a +
+              ":" +
+              p.b +
+              ".",
+          ];
+        }
+        // kind === "one": one knob is fixed; find the matching value.
+        return [
+          "One knob is already set. Compare it to the base number it lines up with — how many times bigger is it?",
+          "Find the scale factor by dividing the fixed value by its base number, then apply that SAME factor to the other part.",
+          "Set it up: multiply the other base number by that scale factor, then slide the movable knob there.",
+        ];
+      }
+
+      function makeProblem(level, track) {
+        const kind = kindForTrack(track, level);
+        const ctx = pick(CONTEXTS);
+        if (kind === "unit") {
+          const [a, b] = pick(UNIT_POOL);
+          const d = b / a; // whole-number unit rate
+          return {
+            kind,
+            a,
+            b,
+            nameA: ctx.a,
+            nameB: ctx.b,
+            topFixed: 1, // top knob locked at 1
+            botFixed: null, // bottom knob is the action
+            startTop: 1,
+            startBot: b, // start at the base value (not the answer)
+            targetTop: 1,
+            targetBot: d,
+            label: "Find the unit rate",
+            prompt:
+              "Ratio is " +
+              a +
+              " " +
+              ctx.a +
+              " : " +
+              b +
+              " " +
+              ctx.b +
+              ". Slide the bottom knob to show how many " +
+              ctx.b +
+              " for 1 " +
+              ctx.a +
+              ".",
+            why:
+              a +
+              ":" +
+              b +
+              " = 1:" +
+              d +
+              ", so " +
+              d +
+              " " +
+              ctx.b +
+              " per 1 " +
+              ctx.a +
+              ".",
+          };
+        }
+        if (kind === "full") {
+          const [a, b] = pick(BASE_POOL);
+          return {
+            kind,
+            a,
+            b,
+            nameA: ctx.a,
+            nameB: ctx.b,
+            topFixed: null,
+            botFixed: null,
+            startTop: a, // both movable; start on the base (must change it)
+            startBot: Math.min(MAXV, b + 1),
+            targetTop: 2 * a, // a worked example for teaching
+            targetBot: 2 * b,
+            label: "Build an equivalent ratio",
+            prompt:
+              "Move BOTH knobs to build a DIFFERENT ratio that is equal to " +
+              a +
+              ":" +
+              b +
+              " (" +
+              ctx.a +
+              " : " +
+              ctx.b +
+              ").",
+            why: a + ":" + b + " = " + 2 * a + ":" + 2 * b + " (×2).",
+          };
+        }
+        // kind === "one"
+        let a, b, k;
+        do {
+          [a, b] = pick(BASE_POOL);
+          k = pick([2, 3]);
+        } while (a * k > MAXV || b * k > MAXV);
+        const c = a * k,
+          d = b * k;
+        return {
+          kind,
+          a,
+          b,
+          nameA: ctx.a,
+          nameB: ctx.b,
+          topFixed: c, // top locked at the multiple
+          botFixed: null, // bottom knob is the action
+          startTop: c,
+          startBot: b, // start on the base value (not the answer)
+          targetTop: c,
+          targetBot: d,
+          label: "Fill the missing value",
+          prompt:
+            "Keep the ratio " +
+            a +
+            ":" +
+            b +
+            ". The top shows " +
+            c +
+            " " +
+            ctx.a +
+            " — slide the bottom knob to the matching " +
+            ctx.b +
+            ".",
+          why: a + ":" + b + " = " + c + ":" + d + " (×" + k + ").",
+        };
       }
 
       const config = {
@@ -352,681 +557,1165 @@
         parent: document.body,
         backgroundColor: "#0c2a2e",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [],
+        scene: [
+          BootScene,
+          TitleScene,
+          VocabScene,
+          PickScene,
+          GameScene,
+          ResultScene,
+        ],
       };
 
-      const PAD_X = [W * 0.24, W * 0.5, W * 0.76];
-      const PAD_Y = 250;
+      // Chosen difficulty track: 1 = support, 2 = enrichment. Set on PickScene
+      // before every run; drives the problem generator and on-screen scaffolding.
+      let rrTrack = 1;
 
-      class BootScene extends Phaser.Scene {
-        constructor() {
-          super("Boot");
-        }
-        create() {
-          const g = this.make.graphics({ add: false });
-          g.fillStyle(0xffffff);
-          g.fillRect(0, 0, 7, 4);
-          g.generateTexture("confetti", 7, 4);
-          g.clear();
-          g.fillStyle(0xffffff);
-          g.fillCircle(4, 4, 4);
-          g.generateTexture("drop", 8, 8);
-          g.destroy();
-          this.scene.start("Title");
-        }
+      // ── Vocab gate state (repo rule: term + Level-1 definition + image/emoji
+      // shown BEFORE the first round). Shown by default; skippable only on a
+      // replay within the same page session. ──
+      let rrVocabSeen = false;
+
+      // Key words for THIS game's topic (ratios). Each has a student-facing
+      // (Level 1) definition and an emoji so a visual always shows even with no
+      // network/images.
+      const RR_VOCAB = [
+        {
+          term: "Ratio",
+          emoji: "⚖️",
+          def: "A way to compare two amounts. 2:3 means 2 of one thing for every 3 of another.",
+        },
+        {
+          term: "Rate",
+          emoji: "🚗",
+          def: "A ratio that compares two different units, like miles to minutes.",
+        },
+        {
+          term: "Equivalent ratio",
+          emoji: "🟰",
+          def: "A ratio equal to another. 2:3 and 4:6 are equivalent — same comparison.",
+        },
+        {
+          term: "Per",
+          emoji: "➗",
+          def: "“For each one.” 3 cups per 1 scoop means 3 cups for every 1 scoop.",
+        },
+        {
+          term: "Unit rate",
+          emoji: "1️⃣",
+          def: "How much you get for just 1. If 2 cost $6, the unit rate is $3 per 1.",
+        },
+      ];
+
+      // ── BOOT ──
+      function BootScene() {
+        Phaser.Scene.call(this, "Boot");
       }
+      BootScene.prototype = Object.create(Phaser.Scene.prototype);
+      BootScene.prototype.constructor = BootScene;
+      BootScene.prototype.create = function () {
+        const g = this.make.graphics({ add: false });
+        g.fillStyle(0xffffff);
+        g.fillCircle(4, 4, 4);
+        g.generateTexture("dot", 8, 8);
+        g.clear();
+        g.fillStyle(0x8ff0d8);
+        g.fillCircle(5, 5, 5);
+        g.generateTexture("spark", 10, 10);
+        g.destroy();
+        this.scene.start("Title");
+      };
 
-      class TitleScene extends Phaser.Scene {
-        constructor() {
-          super("Title");
-        }
-        create() {
-          const cx = W / 2;
-          this.reduce =
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          this.add.rectangle(cx, H / 2, W, H, 0x0c2a2e);
-          this.add
-            .text(cx, 120, "RATIO", {
-              fontSize: "70px",
-              fontFamily: "Impact, sans-serif",
-              color: "#6be0c0",
-              stroke: "#07191c",
-              strokeThickness: 6,
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(cx, 188, "RUSH", {
-              fontSize: "70px",
-              fontFamily: "Impact, sans-serif",
-              color: "#d4952a",
-              stroke: "#07191c",
-              strokeThickness: 6,
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(cx, 245, "Lily-Pad Hopper  ·  Lessons 3.1–3.5  ·  6.RP.1–3", {
-              fontSize: "15px",
-              color: "#9fd6c0",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(
-              cx,
-              300,
-              "Read each ratio or unit-rate problem, then HOP your frog\nonto the lily pad with the correct answer.",
-              { fontSize: "15px", color: "#7fb3a0", align: "center" },
-            )
-            .setOrigin(0.5);
-          this.add
-            .text(cx, 356, "← ↑ → or A/W/D to hop   ·   tap a pad on touch", {
-              fontSize: "14px",
-              color: "#6ba390",
-            })
-            .setOrigin(0.5);
-
-          const hs = localStorage.getItem(LS_KEY);
-          if (hs)
-            this.add
-              .text(cx, 392, "HIGH SCORE: " + hs, {
-                fontSize: "15px",
-                color: "#d4952a",
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5);
-
-          const btn = this.add
-            .rectangle(cx, 450, 260, 56, 0x0e8a7d)
-            .setInteractive({ useHandCursor: true });
-          const btnT = this.add
-            .text(cx, 450, "START HOPPING ▶", {
-              fontSize: "22px",
-              fontStyle: "bold",
-              color: "#062420",
-            })
-            .setOrigin(0.5);
-          if (!this.reduce)
-            this.tweens.add({
-              targets: [btn, btnT],
-              scaleX: 1.05,
-              scaleY: 1.05,
-              duration: 800,
-              yoyo: true,
-              repeat: -1,
-            });
-          const go = () => {
-            SFX.init();
-            SFX.tick();
-            this.cameras.main.fadeOut(300);
-            this.time.delayedCall(300, () => this.scene.start("Game"));
-          };
-          btn.on("pointerover", () => btn.setFillStyle(0x12a596));
-          btn.on("pointerout", () => btn.setFillStyle(0x0e8a7d));
-          btn.on("pointerdown", go);
-          this.input.keyboard.on("keydown-SPACE", go);
-          this.input.keyboard.on("keydown-ENTER", go);
-
-          const hub = this.add
-            .text(cx, 555, "← Back to Games hub", {
-              fontSize: "15px",
-              fontStyle: "bold",
-              color: "#6ba390",
-            })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true });
-          hub.on("pointerover", () => hub.setColor("#6be0c0"));
-          hub.on("pointerout", () => hub.setColor("#6ba390"));
-          hub.on("pointerdown", () => (window.location.href = "/math/games/"));
-
-          this.cameras.main.fadeIn(400);
-        }
+      // ── TITLE ──
+      function TitleScene() {
+        Phaser.Scene.call(this, "Title");
       }
-
-      class GameScene extends Phaser.Scene {
-        constructor() {
-          super("Game");
-        }
-        init() {
-          this.reduce =
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          this.score = 0;
-          this.lives = 3;
-          this.streak = 0;
-          this.maxStreak = 0;
-          this.correct = 0;
-          this.qIndex = 0;
-          this.TOTAL = 12;
-          this.level = 1;
-          this.busy = false;
-          this.pads = [];
-          this.bobT = 0;
-        }
-        roundFor(i) {
-          return i < 4 ? 1 : i < 8 ? 2 : 3;
-        }
-        create() {
-          const cx = W / 2;
-          this.add.rectangle(cx, H / 2, W, H, 0x123a3e); // water
-          // gentle water stripes
-          this.stripes = [];
-          for (let y = 140; y < H; y += 46) {
-            const s = this.add.rectangle(cx, y, W, 3, 0x1c5054, 0.4);
-            this.stripes.push(s);
-          }
-
-          // HUD
-          this.add.rectangle(cx, 24, W, 48, 0x07191c, 0.92).setDepth(8);
-          this.scoreText = this.add
-            .text(16, 12, "Score: 0", {
-              fontSize: "20px",
-              color: "#6be0c0",
-              fontStyle: "bold",
-            })
-            .setDepth(9);
-          this.livesText = this.add
-            .text(W - 16, 12, "❤❤❤", { fontSize: "20px", color: "#ff7b6b" })
-            .setOrigin(1, 0)
-            .setDepth(9);
-          this.streakText = this.add
-            .text(cx, 12, "Streak: 0", {
+      TitleScene.prototype = Object.create(Phaser.Scene.prototype);
+      TitleScene.prototype.constructor = TitleScene;
+      TitleScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x0c2a2e);
+        this.add
+          .text(cx, 120, "RATIO RUSH", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "64px",
+            color: "#6be0c0",
+            stroke: "#06201f",
+            strokeThickness: 6,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 175, "Double Number Line", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "26px",
+            color: "#9fe6cf",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            232,
+            "Line up the two number lines so the pair stays in ratio.\nSlide the knob (or use ← →), watch the live readout, then Lock In!",
+            {
+              fontFamily: "Segoe UI, sans-serif",
               fontSize: "16px",
-              color: "#d4952a",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5, 0)
-            .setDepth(9);
-
-          // prompt
-          this.add.rectangle(cx, 80, 420, 60, 0x07191c, 0.92).setDepth(8);
-          this.tagText = this.add
-            .text(cx, 62, "", { fontSize: "13px", color: "#9fd6c0" })
-            .setOrigin(0.5)
-            .setDepth(9);
-          this.promptText = this.add
-            .text(cx, 88, "", {
-              fontSize: "24px",
-              color: "#ffffff",
-              fontStyle: "bold",
+              color: "#bfe6da",
               align: "center",
-              wordWrap: { width: 400 },
-            })
-            .setOrigin(0.5)
-            .setDepth(9);
-          this.qnumText = this.add
-            .text(cx, 118, "", { fontSize: "12px", color: "#7fb3a0" })
-            .setOrigin(0.5)
-            .setDepth(9);
+            },
+          )
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 295, "Drag or ← → / A·D · 6.RP.3 · Lessons 3.1–3.5", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#7fc4b3",
+          })
+          .setOrigin(0.5);
 
-          // Frog
-          this.frogHome = { x: cx, y: H - 80 };
-          this.frog = this.add.container(this.frogHome.x, this.frogHome.y).setDepth(16);
-          const fg = this.add.graphics();
-          fg.fillStyle(0x57c84a, 1);
-          fg.fillEllipse(0, 0, 50, 40);
-          fg.fillStyle(0x57c84a, 1);
-          fg.fillCircle(-13, -16, 9);
-          fg.fillCircle(13, -16, 9);
-          fg.fillStyle(0xffffff, 1);
-          fg.fillCircle(-13, -17, 5);
-          fg.fillCircle(13, -17, 5);
-          fg.fillStyle(0x103018, 1);
-          fg.fillCircle(-13, -17, 2.5);
-          fg.fillCircle(13, -17, 2.5);
-          this.frog.add(fg);
-
-          // bank under frog
+        const hs = localStorage.getItem(LS_KEY);
+        if (hs)
           this.add
-            .ellipse(this.frogHome.x, this.frogHome.y + 26, 96, 30, 0x2d6a3a)
-            .setDepth(15);
-
-          // particles
-          this.confetti = this.add
-            .particles(0, 0, "confetti", {
-              speed: { min: 80, max: 280 },
-              angle: { min: 0, max: 360 },
-              scale: { start: 1.4, end: 0.2 },
-              rotate: { min: 0, max: 360 },
-              lifespan: 1100,
-              gravityY: 240,
-              emitting: false,
-              quantity: 22,
-              tint: [0x6be0c0, 0xd4952a, 0x57c84a, 0x1a6fb5],
-            })
-            .setDepth(40);
-          this.splashParticles = this.add
-            .particles(0, 0, "drop", {
-              speed: { min: 60, max: 220 },
-              scale: { start: 1.4, end: 0 },
-              lifespan: 500,
-              emitting: false,
-              quantity: 16,
-              tint: [0x6be0c0, 0x9fd6ff, 0xffffff],
-              gravityY: 300,
-            })
-            .setDepth(40);
-          this.redFlash = this.add
-            .rectangle(cx, H / 2, W, H, 0x2255cc, 0)
-            .setDepth(35);
-          this.feedback = this.add
-            .text(cx, 155, "", {
+            .text(cx, 330, "High Score: " + hs, {
+              fontFamily: "Segoe UI, sans-serif",
               fontSize: "16px",
-              color: "#fff",
+              color: "#ffd24a",
               fontStyle: "bold",
-              align: "center",
-              wordWrap: { width: W - 80 },
             })
-            .setOrigin(0.5)
-            .setAlpha(0)
-            .setDepth(20);
+            .setOrigin(0.5);
 
-          // input
-          this.input.keyboard.on("keydown-LEFT", () => this.choose(0));
-          this.input.keyboard.on("keydown-A", () => this.choose(0));
-          this.input.keyboard.on("keydown-UP", () => this.choose(1));
-          this.input.keyboard.on("keydown-W", () => this.choose(1));
-          this.input.keyboard.on("keydown-RIGHT", () => this.choose(2));
-          this.input.keyboard.on("keydown-D", () => this.choose(2));
-          this.input.on("pointerdown", (p) => {
-            let best = -1,
-              bd = Infinity;
-            this.pads.forEach((pad, i) => {
-              const dx = pad.sprite.x - p.worldX,
-                dy = pad.sprite.y - p.worldY;
-              const dist = dx * dx + dy * dy;
-              if (dist < bd && dist <= 70 * 70) {
-                bd = dist;
-                best = i;
-              }
-            });
-            if (best >= 0) this.choose(best);
-          });
-
-          this.nextQuestion();
-          this.cameras.main.fadeIn(350);
-        }
-
-        nextQuestion() {
-          if (this.qIndex >= this.TOTAL || this.lives <= 0) {
-            this.endGame();
-            return;
-          }
-          const round = this.roundFor(this.qIndex);
-          if (round !== this.level && this.qIndex > 0) SFX.levelUp();
-          this.level = round;
-          this.q = genQuestion(round);
-          this.qIndex++;
-          this.busy = false;
-
-          this.tagText.setText(this.q.tag);
-          this.promptText.setText(this.q.prompt);
-          this.qnumText.setText(this.qIndex + " / " + this.TOTAL);
-          this.feedback.setAlpha(0);
-          // reset frog to bank
-          this.frog.setPosition(this.frogHome.x, this.frogHome.y).setScale(1);
-
-          srSay(
-            this.q.tag +
-              ". " +
-              this.q.prompt +
-              ". Pads: left " +
-              this.q.pads[0] +
-              ", center " +
-              this.q.pads[1] +
-              ", right " +
-              this.q.pads[2] +
-              ". Hop to the correct pad.",
-          );
-
-          // build pads
-          this.pads.forEach((p) => p.sprite.destroy());
-          this.pads = [];
-          this.bobAmp = this.reduce ? 0 : 4 + (this.level - 1) * 4;
-          this.bobSpeed = 0.002 + (this.level - 1) * 0.0012;
-          for (let i = 0; i < 3; i++) {
-            const c = this.add.container(PAD_X[i], PAD_Y).setDepth(14);
-            const pad = this.add.graphics();
-            pad.fillStyle(0x2f8f5a, 0.95);
-            pad.fillEllipse(0, 0, 120, 70);
-            pad.lineStyle(4, 0x6be0c0, 0.85);
-            pad.strokeEllipse(0, 0, 120, 70);
-            // decorative notch (simple triangle wedge — safe across Phaser builds)
-            pad.fillStyle(0x123a3e, 1);
-            pad.beginPath();
-            pad.moveTo(60, 0);
-            pad.lineTo(30, -16);
-            pad.lineTo(30, 16);
-            pad.closePath();
-            pad.fillPath();
-            c.add(pad);
-            c.add(
-              this.add
-                .text(0, 0, this.q.pads[i], {
-                  fontSize: "24px",
-                  color: "#ffffff",
-                  fontStyle: "bold",
-                })
-                .setOrigin(0.5),
-            );
-            this.pads.push({
-              sprite: c,
-              baseY: PAD_Y + (i % 2) * 18,
-              phase: i * 1.3,
-              label: this.q.pads[i],
-              correct: i === this.q.correctIndex,
-            });
-            c.y = this.pads[i].baseY;
-          }
-        }
-
-        update(time, delta) {
-          this.bobT += delta;
-          if (!this.reduce) {
-            this.pads.forEach((p) => {
-              p.sprite.y =
-                p.baseY + Math.sin(this.bobT * this.bobSpeed + p.phase) * this.bobAmp;
-            });
-            // drift water stripes downward for motion
-            this.stripes.forEach((s) => {
-              s.y += 0.02 * delta;
-              if (s.y > H + 4) s.y = 138;
-            });
-          }
-        }
-
-        choose(i) {
-          if (this.busy || !this.pads[i]) return;
-          this.busy = true;
+        const btn = this.add
+          .rectangle(cx, 400, 240, 58, 0x1f8a6b)
+          .setInteractive({ useHandCursor: true });
+        const btnT = this.add
+          .text(cx, 400, "START ▶", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "24px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.tweens.add({
+          targets: [btn, btnT],
+          scaleX: 1.05,
+          scaleY: 1.05,
+          duration: 800,
+          yoyo: true,
+          repeat: -1,
+        });
+        const start = () => {
           SFX.init();
-          const pad = this.pads[i];
-          const right = pad.correct;
+          SFX.coin();
+          JUICE.audio.unlock();
+          // Show the vocab gate before the first round; on a replay (already
+          // seen this session) jump straight to the level picker.
+          this.scene.start(rrVocabSeen ? "Pick" : "Vocab");
+        };
+        btn.on("pointerover", () => btn.setFillStyle(0x27a883));
+        btn.on("pointerout", () => btn.setFillStyle(0x1f8a6b));
+        btn.on("pointerdown", start);
+        this.input.keyboard.on("keydown-SPACE", start);
+        this.input.keyboard.on("keydown-ENTER", start);
 
-          // hop the frog onto the chosen pad
-          this.tweens.add({
-            targets: this.frog,
-            x: pad.sprite.x,
-            y: pad.sprite.y - 8,
-            scaleY: { from: 1, to: 1.25 },
-            duration: this.reduce ? 1 : 260,
-            ease: "Quad.easeOut",
-            yoyo: false,
-            onComplete: () => this.frog.setScale(1),
-          });
-          SFX.hop();
+        const hub = this.add
+          .text(cx, 540, "← Back to Math Games", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            color: "#7fc4b3",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        hub.on("pointerover", () => hub.setColor("#ffd24a"));
+        hub.on("pointerout", () => hub.setColor("#7fc4b3"));
+        hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+        srSay("Ratio Rush Double Number Line. Press Start to play.");
+      };
 
-          if (right) {
-            this.correct++;
-            this.streak++;
-            this.maxStreak = Math.max(this.maxStreak, this.streak);
-            const gained = 10 + Math.min(this.streak, 5) * 2;
-            this.score += gained;
-            if (this.streak >= 3) SFX.streak(this.streak);
-            this.confetti.emitParticleAt(pad.sprite.x, pad.sprite.y);
-            this.flash(
-              "✓ +" +
-                gained +
-                (this.streak > 1 ? "   🔥 ×" + this.streak : "") +
-                "   " +
-                this.q.why,
-              "#9fffc0",
-            );
-            srSay("Correct! " + this.q.why);
-            try {
-              if (window.GameFX && GameFX.celebrate && this.streak >= 3)
-                GameFX.celebrate(document.querySelector("canvas"));
-            } catch (e) {}
-            this.updateHUD();
-            this.time.delayedCall(950, () => this.nextQuestion());
-          } else {
-            this.streak = 0;
-            this.lives--;
-            SFX.splash();
-            this.splashParticles.emitParticleAt(pad.sprite.x, pad.sprite.y);
-            this.doBlueFlash();
-            // sink the frog a touch
-            if (!this.reduce)
-              this.tweens.add({
-                targets: this.frog,
-                y: pad.sprite.y + 14,
-                alpha: { from: 1, to: 0.6 },
-                duration: 250,
-                yoyo: true,
-                onComplete: () => this.frog.setAlpha(1),
-              });
-            this.flash("💦 Splash! " + this.q.why + "  (−1 ❤)", "#9fd6ff");
-            srSay("Splash. " + this.q.why);
-            // highlight correct pad
-            const cp = this.pads[this.q.correctIndex];
-            if (cp)
-              this.tweens.add({
-                targets: cp.sprite,
-                scale: { from: 1, to: 1.18 },
-                duration: 300,
-                yoyo: true,
-                repeat: 1,
-              });
-            this.updateHUD();
-            this.time.delayedCall(1600, () => this.nextQuestion());
-          }
-        }
-
-        flash(msg, color) {
-          this.feedback.setText(msg).setColor(color).setAlpha(1).setScale(0.85);
-          this.tweens.add({
-            targets: this.feedback,
-            scale: 1,
-            duration: this.reduce ? 1 : 220,
-            ease: "Back.easeOut",
-          });
-        }
-        doBlueFlash() {
-          if (this.reduce) return;
-          this.redFlash.setAlpha(0.3);
-          this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 350 });
-        }
-        updateHUD() {
-          this.scoreText.setText("Score: " + this.score);
-          this.streakText.setText("Streak: " + this.streak);
-          this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
-        }
-        endGame() {
-          this.scene.start("Result", {
-            score: this.score,
-            correct: this.correct,
-            attempted: this.qIndex,
-            maxStreak: this.maxStreak,
-            outOfLives: this.lives <= 0,
-          });
-        }
+      // ── VOCAB GATE ──
+      // Repo rule: term + Level-1 definition + image/emoji shown BEFORE play.
+      function VocabScene() {
+        Phaser.Scene.call(this, "Vocab");
       }
+      VocabScene.prototype = Object.create(Phaser.Scene.prototype);
+      VocabScene.prototype.constructor = VocabScene;
+      VocabScene.prototype.init = function () {
+        this.idx = 0;
+      };
+      VocabScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x0c2a2e);
+        this.add
+          .text(cx, 70, "WORDS TO KNOW FIRST", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "34px",
+            color: "#6be0c0",
+            stroke: "#06201f",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
 
-      class ResultScene extends Phaser.Scene {
-        constructor() {
-          super("Result");
-        }
-        init(data) {
-          this.d = data;
-        }
-        create() {
-          const cx = W / 2;
-          const d = this.d;
-          this.reduce =
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          this.add.rectangle(cx, H / 2, W, H, 0x0c2a2e);
-          const pct = d.attempted ? (d.correct / d.attempted) * 100 : 0;
-          const stars = pct >= 90 ? 3 : pct >= 65 ? 2 : pct >= 40 ? 1 : 0;
-          const won = !d.outOfLives;
-          if (stars >= 2) SFX.win();
-          else SFX.lose();
+        // Card surface.
+        this.add
+          .rectangle(cx, 320, 560, 320, 0x0a3338)
+          .setStrokeStyle(2, 0x1f8a6b);
 
+        this.stepText = this.add
+          .text(cx, 185, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            fontStyle: "bold",
+            color: "#7fc4b3",
+          })
+          .setOrigin(0.5);
+        this.emojiText = this.add
+          .text(cx, 250, "", { fontSize: "76px" })
+          .setOrigin(0.5);
+        this.termText = this.add
+          .text(cx, 330, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "32px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.defText = this.add
+          .text(cx, 400, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            color: "#bfe6da",
+            align: "center",
+            wordWrap: { width: 500 },
+          })
+          .setOrigin(0.5);
+
+        // Next / Start button.
+        const nextBtn = this.add
+          .rectangle(cx + 90, 510, 220, 52, 0x1f8a6b)
+          .setInteractive({ useHandCursor: true });
+        const nextT = this.add
+          .text(cx + 90, 510, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        nextBtn.on("pointerover", () => nextBtn.setFillStyle(0x27a883));
+        nextBtn.on("pointerout", () => nextBtn.setFillStyle(0x1f8a6b));
+        nextBtn.on("pointerdown", () => this.advance());
+        this.nextBtn = nextBtn;
+        this.nextT = nextT;
+
+        // Back button (hidden on the first card).
+        const backBtn = this.add
+          .rectangle(cx - 120, 510, 130, 52, 0x163f44)
+          .setInteractive({ useHandCursor: true });
+        const backT = this.add
+          .text(cx - 120, 510, "← Back", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#9fd6c8",
+          })
+          .setOrigin(0.5);
+        backBtn.on("pointerover", () => backBtn.setFillStyle(0x1f565d));
+        backBtn.on("pointerout", () => backBtn.setFillStyle(0x163f44));
+        backBtn.on("pointerdown", () => this.goBack());
+        this.backBtn = backBtn;
+        this.backT = backT;
+
+        this.input.keyboard.on("keydown-SPACE", () => this.advance());
+        this.input.keyboard.on("keydown-ENTER", () => this.advance());
+        this.input.keyboard.on("keydown-RIGHT", () => this.advance());
+        this.input.keyboard.on("keydown-LEFT", () => this.goBack());
+
+        this.renderCard();
+      };
+      VocabScene.prototype.renderCard = function () {
+        const v = RR_VOCAB[this.idx];
+        const last = this.idx === RR_VOCAB.length - 1;
+        this.stepText.setText(
+          "Key word " + (this.idx + 1) + " of " + RR_VOCAB.length,
+        );
+        this.emojiText.setText(v.emoji);
+        this.termText.setText(v.term);
+        this.defText.setText(v.def);
+        this.nextT.setText(last ? "Start playing ▶" : "Next →");
+        const showBack = this.idx > 0;
+        this.backBtn.setVisible(showBack);
+        this.backT.setVisible(showBack);
+        srSay(v.term + ". " + v.def);
+      };
+      VocabScene.prototype.advance = function () {
+        if (this.idx < RR_VOCAB.length - 1) {
+          this.idx++;
+          this.renderCard();
+        } else {
+          rrVocabSeen = true;
+          this.scene.start("Pick");
+        }
+      };
+      VocabScene.prototype.goBack = function () {
+        if (this.idx > 0) {
+          this.idx--;
+          this.renderCard();
+        }
+      };
+
+      // ── LEVEL PICKER ──
+      // Two choices: support vs. enrichment (no level jargon shown to students).
+      //   Level 1 = support    → small ratios, fill one missing value, more help.
+      //   Level 2 = enrichment → bigger / unit-rate, full equivalent ratios.
+      function PickScene() {
+        Phaser.Scene.call(this, "Pick");
+      }
+      PickScene.prototype = Object.create(Phaser.Scene.prototype);
+      PickScene.prototype.constructor = PickScene;
+      PickScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x0c2a2e);
+        this.add
+          .text(cx, 80, "CHOOSE YOUR LEVEL", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "40px",
+            color: "#6be0c0",
+            stroke: "#06201f",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            130,
+            "Both teach ratios — pick the one that fits you today.",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#bfe6da",
+            },
+          )
+          .setOrigin(0.5);
+
+        const card = (x, accent, num, name, lines, track) => {
+          const box = this.add
+            .rectangle(x, 350, 320, 320, 0x0a3338)
+            .setStrokeStyle(3, accent)
+            .setInteractive({ useHandCursor: true });
           this.add
-            .text(cx, 70, won ? "REACHED THE BANK!" : "OUT OF LIVES", {
-              fontSize: "36px",
-              fontStyle: "bold",
-              color: won ? "#6be0c0" : "#ff7b6b",
-              stroke: "#07191c",
+            .text(x, 235, "Level " + num, {
+              fontFamily: "Impact, sans-serif",
+              fontSize: "44px",
+              color: Phaser.Display.Color.IntegerToColor(accent).rgba,
+              stroke: "#06201f",
               strokeThickness: 4,
             })
             .setOrigin(0.5);
-
-          for (let i = 0; i < 3; i++) {
-            const sx = cx - 70 + i * 70;
-            this.add
-              .text(sx, 150, "☆", { fontSize: "54px", color: "#2a4a48" })
-              .setOrigin(0.5);
-            if (i < stars) {
-              const s = this.add
-                .text(sx, 150, "★", { fontSize: "54px", color: "#d4952a" })
-                .setOrigin(0.5)
-                .setScale(0);
-              this.tweens.add({
-                targets: s,
-                scale: 1,
-                duration: this.reduce ? 1 : 380,
-                delay: 250 + i * 220,
-                ease: "Back.easeOut",
-              });
-            }
-          }
-
-          const prevHigh = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
-          const isNewHigh = d.score > prevHigh;
-          if (isNewHigh && d.score > 0)
-            localStorage.setItem(LS_KEY, String(d.score));
-
-          const stats = [
-            ["Final Score", String(d.score)],
-            ["Pads Cleared", d.correct + " / " + d.attempted],
-            ["Accuracy", Math.round(pct) + "%"],
-            ["Best Streak", "×" + d.maxStreak],
-          ];
-          stats.forEach((s, i) => {
-            const y = 230 + i * 42;
-            this.add.rectangle(cx, y, 380, 34, 0x07191c, 0.85);
-            this.add
-              .text(cx - 165, y, s[0], { fontSize: "15px", color: "#7fb3a0" })
-              .setOrigin(0, 0.5);
-            this.add
-              .text(cx + 165, y, s[1], {
-                fontSize: "17px",
-                color: "#6be0c0",
-                fontStyle: "bold",
-              })
-              .setOrigin(1, 0.5);
-          });
-
-          if (isNewHigh && d.score > 0)
-            this.add
-              .text(cx, 415, "★ NEW HIGH SCORE! ★", {
-                fontSize: "18px",
-                color: "#d4952a",
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5);
-
-          try {
-            window.EduPulse &&
-              EduPulse.record({
-                activityTitle: ACTIVITY_TITLE,
-                score: d.score,
-                stars: stars,
-                problemsCorrect: d.correct,
-                problemsAttempted: d.attempted,
-                percent: Math.round(pct),
-                standard: STANDARD,
-              });
-          } catch (e) {}
-
-          srSay(
-            (won ? "Reached the bank. " : "Out of lives. ") +
-              "Score " +
-              d.score +
-              ", " +
-              d.correct +
-              " of " +
-              d.attempted +
-              " correct, " +
-              stars +
-              " stars.",
-          );
-
-          const retry = this.add
-            .rectangle(cx - 95, 470, 170, 46, 0x0e8a7d)
-            .setInteractive({ useHandCursor: true });
           this.add
-            .text(cx - 95, 470, "HOP AGAIN", {
-              fontSize: "17px",
+            .text(x, 285, name, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "20px",
               fontStyle: "bold",
-              color: "#062420",
+              color: "#ffffff",
             })
             .setOrigin(0.5);
-          retry.on("pointerover", () => retry.setFillStyle(0x12a596));
-          retry.on("pointerout", () => retry.setFillStyle(0x0e8a7d));
-          retry.on("pointerdown", () => {
-            SFX.tick();
+          this.add
+            .text(x, 360, lines, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              color: "#bfe6da",
+              align: "center",
+              wordWrap: { width: 280 },
+              lineSpacing: 4,
+            })
+            .setOrigin(0.5);
+          const go = this.add
+            .text(x, 460, "PLAY ▶", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          const choose = () => {
+            rrTrack = track;
+            SFX.coin();
+            JUICE.audio.unlock();
             this.scene.start("Game");
-          });
+          };
+          box.on("pointerover", () => box.setFillStyle(0x12463a));
+          box.on("pointerout", () => box.setFillStyle(0x0a3338));
+          box.on("pointerdown", choose);
+          go.setInteractive({ useHandCursor: true }).on("pointerdown", choose);
+          return choose;
+        };
 
-          const hub = this.add
-            .rectangle(cx + 95, 470, 170, 46, 0x1a3a3e)
-            .setInteractive({ useHandCursor: true });
-          this.add
-            .text(cx + 95, 470, "ALL GAMES", {
-              fontSize: "17px",
-              fontStyle: "bold",
-              color: "#9fd6c0",
-            })
-            .setOrigin(0.5);
-          hub.on("pointerover", () => hub.setFillStyle(0x244c50));
-          hub.on("pointerout", () => hub.setFillStyle(0x1a3a3e));
-          hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+        const chooseL1 = card(
+          cx - 175,
+          0x34d399,
+          "1",
+          "Support",
+          "Small ratios.\nFill ONE missing value.\nExtra labels and hints.",
+          1,
+        );
+        const chooseL2 = card(
+          cx + 175,
+          0xffd24a,
+          "2",
+          "Enrichment",
+          "Bigger & unit-rate ratios.\nBuild a FULL equal ratio.\nFewer hints.",
+          2,
+        );
 
-          this.input.keyboard.on("keydown-SPACE", () => this.scene.start("Game"));
+        this.add
+          .text(cx, 540, "Press 1 or 2 to choose", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#7fc4b3",
+          })
+          .setOrigin(0.5);
+        this.input.keyboard.on("keydown-ONE", chooseL1);
+        this.input.keyboard.on("keydown-TWO", chooseL2);
+        this.input.keyboard.on("keydown-NUMPAD_ONE", chooseL1);
+        this.input.keyboard.on("keydown-NUMPAD_TWO", chooseL2);
+        srSay(
+          "Choose your level. Press 1 for Support, small ratios with more help. " +
+            "Press 2 for Enrichment, bigger and unit-rate ratios with fewer hints.",
+        );
+      };
 
-          if (won && stars >= 2 && !this.reduce) {
-            const p = this.add
-              .particles(0, 0, "confetti", {
-                speed: { min: 60, max: 240 },
-                angle: { min: 0, max: 360 },
-                scale: { start: 1.4, end: 0 },
-                rotate: { min: 0, max: 360 },
-                lifespan: 1500,
-                gravityY: 160,
-                quantity: 20,
-                tint: [0x6be0c0, 0xd4952a, 0x57c84a, 0x1a6fb5],
-              })
-              .setDepth(40);
-            for (let i = 0; i < 5; i++)
-              this.time.delayedCall(i * 280, () =>
-                p.emitParticleAt(randInt(120, W - 120), randInt(40, 140)),
-              );
-          }
-          this.cameras.main.fadeIn(400);
-        }
+      // ── GAME ──
+      function GameScene() {
+        Phaser.Scene.call(this, "Game");
       }
+      GameScene.prototype = Object.create(Phaser.Scene.prototype);
+      GameScene.prototype.constructor = GameScene;
 
-      config.scene = [BootScene, TitleScene, GameScene, ResultScene];
-      const game = new Phaser.Game(config);
+      GameScene.prototype.init = function () {
+        this.reduceMotion = !!(
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        );
+        this.track = rrTrack; // 1 = support, 2 = enrichment
+        this.score = 0;
+        this.streak = 0;
+        this.level = 1;
+        this.solved = 0; // problems answered correctly
+        this.target = 10; // win condition: solve this many problems
+        this.problem = null;
+        this.locked = false;
+        this.dragging = null; // "top" | "bottom" | null
+        this.topVal = 0;
+        this.botVal = 0;
+        this.active = "bottom"; // keyboard-active line
+      };
 
-      game.events.once("ready", function () {
+      GameScene.prototype.create = function () {
+        this.add.rectangle(W / 2, H / 2, W, H, 0x0c2a2e);
+
+        // HUD (same layout as the shell's other games)
+        const hudStyle = {
+          fontFamily: "Segoe UI, sans-serif",
+          fontSize: "18px",
+          fontStyle: "bold",
+        };
+        this.scoreText = this.add.text(16, 12, "Score: 0", {
+          ...hudStyle,
+          color: "#8ff0d8",
+        });
+        // Decorative hearts: this is no-fail practice, so they never decrease.
+        this.add.text(16, 36, "❤❤❤", {
+          ...hudStyle,
+          color: "#ff8f8f",
+        });
+        this.streakText = this.add
+          .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#ffd24a" })
+          .setOrigin(1, 0);
+        this.levelText = this.add
+          .text(
+            W - 16,
+            36,
+            this.track === 1 ? "Level 1 · Support" : "Level 2 · Enrich",
+            { ...hudStyle, color: this.track === 1 ? "#8ff0d8" : "#ffd24a" },
+          )
+          .setOrigin(1, 0);
+        this.progressText = this.add
+          .text(W / 2, 12, "0 / " + this.target, {
+            ...hudStyle,
+            color: "#bfe6da",
+          })
+          .setOrigin(0.5, 0);
+
+        // Problem banner
+        this.bannerLabel = this.add
+          .text(W / 2, 70, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#7fc4b3",
+          })
+          .setOrigin(0.5);
+        this.bannerText = this.add
+          .text(W / 2, 102, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "19px",
+            fontStyle: "bold",
+            color: "#ffffff",
+            align: "center",
+            wordWrap: { width: W - 90 },
+          })
+          .setOrigin(0.5);
+
+        this.feedback = this.add
+          .text(W / 2, 160, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#ffd24a",
+            stroke: "#06201f",
+            strokeThickness: 3,
+            align: "center",
+            wordWrap: { width: W - 90 },
+          })
+          .setOrigin(0.5)
+          .setAlpha(0);
+
+        // Live readout — the heart of the mechanic: the current ratio and an
+        // equivalence chip, both updating as a knob moves.
+        this.ratioReadout = this.add
+          .text(W / 2, 205, "0 : 0", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "50px",
+            color: "#ffd24a",
+            stroke: "#06201f",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.chipBg = this.add
+          .rectangle(W / 2, 250, 240, 30, 0x163f44)
+          .setStrokeStyle(2, 0x1f8a6b);
+        this.chipText = this.add
+          .text(W / 2, 250, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#bfe6da",
+          })
+          .setOrigin(0.5);
+
+        // ── Two number lines (top + bottom) ──
+        this.buildLine(TOP_Y, "top");
+        this.buildLine(BOT_Y, "bottom");
+
+        // Lock-in button
+        this.lockBtn = this.add
+          .rectangle(W / 2, 505, 240, 52, 0x1f8a6b)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(W / 2, 505, "LOCK IN ✓", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "22px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.lockBtn.on("pointerover", () =>
+          this.lockBtn.setFillStyle(0x27a883),
+        );
+        this.lockBtn.on("pointerout", () =>
+          this.lockBtn.setFillStyle(0x1f8a6b),
+        );
+        this.lockBtn.on("pointerdown", () => this.lockIn());
+
+        // Hint
+        this.add
+          .text(
+            W / 2,
+            550,
+            "Drag a knob or press ← → (A·D) to move by 1. ↑ ↓ switch lines. Enter = lock in.",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "13px",
+              color: "#7fc4b3",
+              align: "center",
+            },
+          )
+          .setOrigin(0.5);
+
+        // Support-track scaffold tip (extra help on Level 1 only).
+        if (this.track === 1) {
+          this.add
+            .text(
+              W / 2,
+              572,
+              "Tip: the glowing dots show the starting ratio — keep your pair equal to it.",
+              {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "12px",
+                color: "#8ff0d8",
+                align: "center",
+              },
+            )
+            .setOrigin(0.5);
+        }
+
+        // Particles (reused from the shell)
+        this.burst = this.add
+          .particles(0, 0, "spark", {
+            speed: { min: 80, max: 240 },
+            angle: { min: 0, max: 360 },
+            scale: { start: 1.2, end: 0 },
+            lifespan: 600,
+            emitting: false,
+            quantity: 16,
+            tint: [0xffd24a, 0x8ff0d8, 0xffffff],
+          })
+          .setDepth(20);
+
+        // Input: drag a knob on whichever line you grab; arrows / A·D nudge ±1;
+        // up/down (W·S) switch the active line; Enter/Space lock in.
+        this.input.on("pointerdown", (p) => {
+          if (this.locked) return;
+          const line = this.lineAt(p.y);
+          if (line && this.isMovable(line)) {
+            this.dragging = line;
+            this.active = line;
+            this.setKnob(line, xToVal(p.x));
+          }
+        });
+        this.input.on("pointermove", (p) => {
+          if (this.dragging && !this.locked)
+            this.setKnob(this.dragging, xToVal(p.x));
+        });
+        this.input.on("pointerup", () => {
+          this.dragging = null;
+        });
+        const nudge = (d) => {
+          if (this.locked) return;
+          const line = this.active;
+          if (!this.isMovable(line)) return;
+          const cur = line === "top" ? this.topVal : this.botVal;
+          this.setKnob(line, cur + d);
+          SFX.coin();
+        };
+        const switchLine = (line) => {
+          if (this.isMovable(line)) this.active = line;
+          this.refreshActiveCue();
+        };
+        this.input.keyboard.on("keydown-LEFT", () => nudge(-1));
+        this.input.keyboard.on("keydown-RIGHT", () => nudge(1));
+        this.input.keyboard.on("keydown-A", () => nudge(-1));
+        this.input.keyboard.on("keydown-D", () => nudge(1));
+        this.input.keyboard.on("keydown-UP", () => switchLine("top"));
+        this.input.keyboard.on("keydown-DOWN", () => switchLine("bottom"));
+        this.input.keyboard.on("keydown-W", () => switchLine("top"));
+        this.input.keyboard.on("keydown-S", () => switchLine("bottom"));
+        this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
+        this.input.keyboard.on("keydown-SPACE", () => this.lockIn());
+
+        this.cameras.main.fadeIn(400);
+        this.newProblem();
+      };
+
+      // Build the static parts of a number line + its movable knob.
+      GameScene.prototype.buildLine = function (y, which) {
+        // Track.
+        this.add.rectangle(LINE_X0, y, LW, 4, 0x1f8a6b).setOrigin(0, 0.5);
+        // Ticks + number labels.
+        for (let v = 0; v <= MAXV; v++) {
+          const x = tickX(v);
+          this.add.rectangle(x, y, 2, 14, 0x2f6b63).setOrigin(0.5);
+          this.add
+            .text(x, y + 14, String(v), {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "12px",
+              color: "#7fc4b3",
+            })
+            .setOrigin(0.5, 0);
+        }
+        // Line name (set per problem).
+        const nameText = this.add
+          .text(20, y - 12, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            fontStyle: "bold",
+            color: "#bfe6da",
+            wordWrap: { width: 120 },
+          })
+          .setOrigin(0, 0.5);
+        // Faint base-ratio anchor marker (shows where a / b sit).
+        const anchor = this.add
+          .circle(LINE_X0, y, 9, 0x6be0c0, 0.35)
+          .setDepth(4);
+        const anchorLbl = this.add
+          .text(LINE_X0, y - 24, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "12px",
+            color: "#6be0c0",
+          })
+          .setOrigin(0.5)
+          .setAlpha(0.7);
+        // Movable / fixed knob + its value label.
+        const knob = this.add
+          .circle(LINE_X0, y, 16, 0xffd24a)
+          .setStrokeStyle(3, 0xb87b1d)
+          .setDepth(10);
+        const knobVal = this.add
+          .text(LINE_X0, y - 30, "0", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#ffffff",
+            stroke: "#06201f",
+            strokeThickness: 3,
+          })
+          .setOrigin(0.5)
+          .setDepth(11);
+        const refs = { y, name: nameText, anchor, anchorLbl, knob, knobVal };
+        if (which === "top") this.topLine = refs;
+        else this.botLine = refs;
+      };
+
+      GameScene.prototype.lineAt = function (y) {
+        if (Math.abs(y - TOP_Y) <= 45) return "top";
+        if (Math.abs(y - BOT_Y) <= 45) return "bottom";
+        return null;
+      };
+      GameScene.prototype.isMovable = function (line) {
+        if (!this.problem) return false;
+        return line === "top"
+          ? this.problem.topFixed === null
+          : this.problem.botFixed === null;
+      };
+
+      GameScene.prototype.setKnob = function (line, val) {
+        val = Phaser.Math.Clamp(val, 0, MAXV);
+        const refs = line === "top" ? this.topLine : this.botLine;
+        if (line === "top") this.topVal = val;
+        else this.botVal = val;
+        refs.knob.x = tickX(val);
+        refs.knobVal.x = tickX(val);
+        refs.knobVal.setText(String(val));
+        this.refreshReadout();
+      };
+
+      GameScene.prototype.refreshReadout = function () {
+        const p = this.problem;
+        if (!p) return;
+        const c = this.topVal,
+          d = this.botVal;
+        this.ratioReadout.setText(c + " : " + d);
+        const equiv = p.a * d === p.b * c;
+        let txt,
+          color = "#bfe6da",
+          fill = 0x163f44;
+        if (c === 0 || d === 0) {
+          txt = "Move both above 0";
+        } else if (p.kind === "full" && c === p.a && d === p.b) {
+          txt = "Same ratio — make a NEW one";
+          color = "#ffd24a";
+          fill = 0x3a3416;
+        } else if (equiv) {
+          txt = "Equivalent ✓";
+          color = "#8ff0d8";
+          fill = 0x12463a;
+        } else {
+          txt = "Not equal ✗";
+          color = "#ff9f9f";
+          fill = 0x3a1616;
+        }
+        this.chipText.setText(txt).setColor(color);
+        this.chipBg.setFillStyle(fill);
+      };
+
+      GameScene.prototype.refreshActiveCue = function () {
+        // Subtle ring on the active movable knob (keyboard focus aid).
+        [this.topLine, this.botLine].forEach((refs, i) => {
+          const line = i === 0 ? "top" : "bottom";
+          if (this.isMovable(line) && this.active === line)
+            refs.knob.setStrokeStyle(4, 0xffffff);
+          else
+            refs.knob.setStrokeStyle(
+              3,
+              this.isMovable(line) ? 0xb87b1d : 0x4f5b58,
+            );
+        });
+      };
+
+      GameScene.prototype.newProblem = function () {
+        this.locked = false;
+        const p = makeProblem(this.level, this.track);
+        this.problem = p;
+
+        // Publish the current problem to the Socratic hint ladder (opt-in, safe:
+        // no-op if the module didn't load). Resets the ladder for each problem.
+        if (window.NeftHintLadder) {
+          window.NeftHintLadder.setProblem({
+            itemText: p.label + ". " + p.prompt,
+            standard: "6.RP.3",
+            staticHints: ratioStaticHints(p),
+          });
+        }
+
+        this.bannerLabel.setText(p.label);
+        this.bannerText.setText(p.prompt);
+
+        // Line names.
+        this.topLine.name.setText(p.nameA);
+        this.botLine.name.setText(p.nameB);
+
+        // Base-ratio anchors at a / b. Track 1 (support) shows them brightly
+        // with number labels; track 2 (enrichment) keeps them faint and unlabeled
+        // for less scaffolding.
+        const support = this.track === 1;
+        this.topLine.anchor.x = tickX(p.a);
+        this.topLine.anchor.setAlpha(support ? 0.6 : 0.5);
+        this.topLine.anchorLbl.x = tickX(p.a);
+        this.topLine.anchorLbl
+          .setText(support ? p.a + "" : "")
+          .setVisible(support);
+        this.botLine.anchor.x = tickX(p.b);
+        this.botLine.anchor.setAlpha(support ? 0.6 : 0.5);
+        this.botLine.anchorLbl.x = tickX(p.b);
+        this.botLine.anchorLbl
+          .setText(support ? p.b + "" : "")
+          .setVisible(support);
+
+        // Knob colors: fixed knobs are muted, movable knobs are gold.
+        const setLook = (line, fixed) => {
+          const refs = line === "top" ? this.topLine : this.botLine;
+          refs.knob.setFillStyle(fixed ? 0x4f7a73 : 0xffd24a);
+          refs.knob.setStrokeStyle(3, fixed ? 0x4f5b58 : 0xb87b1d);
+        };
+        setLook("top", p.topFixed !== null);
+        setLook("bottom", p.botFixed !== null);
+
+        // Default keyboard-active line = a movable one (prefer bottom).
+        this.active = this.problem.botFixed === null ? "bottom" : "top";
+
+        // Initial knob positions.
+        this.setKnob("top", p.startTop);
+        this.setKnob("bottom", p.startBot);
+        this.refreshActiveCue();
+
+        srSay(
+          p.label +
+            ". " +
+            p.prompt +
+            " Drag the gold knob to set your answer, then lock it in.",
+        );
+      };
+
+      GameScene.prototype.lockIn = function () {
+        if (this.locked || !this.problem) return;
+        const p = this.problem;
+        const c = this.topVal,
+          d = this.botVal;
+        const equiv = p.a * d === p.b * c;
+        const sameAsBase = c === p.a && d === p.b;
+        const correct =
+          c > 0 && d > 0 && equiv && !(p.kind === "full" && sameAsBase);
+        this.locked = true;
+
+        if (correct) {
+          SFX.good();
+          JUICE.audio.correct(this.streak);
+          this.solved++;
+          this.streak++;
+          const bonus = Math.min(this.streak, 5) * 5;
+          const gained = 20 + bonus;
+          this.score += gained;
+          this.burst.setPosition(tickX(d), BOT_Y);
+          this.burst.explode(16);
+          JUICE.burst(
+            this,
+            tickX(c),
+            TOP_Y,
+            [0x34d399, 0x8ff0d8, 0xffffff],
+            14,
+          );
+          JUICE.floatText(this, W / 2, 230, "+" + gained, "#8ff0d8", 34);
+          JUICE.shake(this, 0.004 + Math.min(this.streak, 5) * 0.001);
+          JUICE.award(gained, "u3-ratio-rush");
+          if (this.streak >= 2) JUICE.confetti(this, 1);
+          this.flash(W / 2, 180, "Correct! ✓", "#8ff0d8");
+          this.feedback.setText("Correct! " + p.why).setAlpha(1);
+          srSay("Correct. " + p.why);
+          this.afterAttempt(true);
+        } else {
+          SFX.bad();
+          JUICE.audio.wrong();
+          JUICE.shake(this, 0.008);
+          this.streak = 0;
+          this.feedback.setText("Not quite — " + p.why).setAlpha(1);
+          srSay("Not quite. " + p.why);
+          // Teach: show the correct value(s) with green ghost markers and glide
+          // the movable knob(s) to the right spot, then continue.
+          const ghosts = [];
+          const makeGhost = (line, val) => {
+            const refs = line === "top" ? this.topLine : this.botLine;
+            ghosts.push(
+              this.add
+                .circle(tickX(val), refs.y, 13, 0x8ff0d8, 0.5)
+                .setDepth(6),
+            );
+          };
+          const tweenTargets = [];
+          if (p.topFixed === null) {
+            makeGhost("top", p.targetTop);
+            tweenTargets.push({
+              o: this.topLine.knob,
+              x: tickX(p.targetTop),
+            });
+            tweenTargets.push({
+              o: this.topLine.knobVal,
+              x: tickX(p.targetTop),
+            });
+            this.topLine.knobVal.setText(String(p.targetTop));
+          }
+          if (p.botFixed === null) {
+            makeGhost("bottom", p.targetBot);
+            tweenTargets.push({
+              o: this.botLine.knob,
+              x: tickX(p.targetBot),
+            });
+            tweenTargets.push({
+              o: this.botLine.knobVal,
+              x: tickX(p.targetBot),
+            });
+            this.botLine.knobVal.setText(String(p.targetBot));
+          }
+          this.ratioReadout.setText(p.targetTop + " : " + p.targetBot);
+          let done = false;
+          const finish = () => {
+            if (done) return;
+            done = true;
+            ghosts.forEach((g) => g.destroy());
+            this.afterAttempt(false);
+          };
+          if (this.reduceMotion || tweenTargets.length === 0) {
+            tweenTargets.forEach((t) => (t.o.x = t.x));
+            this.time.delayedCall(400, finish);
+          } else {
+            this.tweens.add({
+              targets: tweenTargets.map((t) => t.o),
+              duration: 600,
+              ease: "Quad.Out",
+              x: function (target) {
+                const m = tweenTargets.find((t) => t.o === target);
+                return m ? m.x : target.x;
+              },
+              onComplete: finish,
+            });
+          }
+        }
+      };
+
+      GameScene.prototype.afterAttempt = function (correct) {
+        // Level up every 2 correct (raises the framing: one → full → unit).
+        const newLevel = Math.min(8, 1 + Math.floor(this.solved / 2));
+        if (newLevel > this.level) {
+          this.level = newLevel;
+          SFX.level();
+          this.flash(W / 2, 180, "STAGE " + this.level + "!", "#ffd24a");
+        }
+        this.updateHUD();
+        if (this.solved >= this.target) {
+          this.endGame();
+          return;
+        }
+        this.time.delayedCall(950, () => {
+          this.feedback.setAlpha(0);
+          this.newProblem();
+        });
+      };
+
+      GameScene.prototype.flash = function (x, y, text, color) {
+        const ft = this.add
+          .text(x, y, text, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "26px",
+            fontStyle: "bold",
+            color: color,
+            stroke: "#06201f",
+            strokeThickness: 4,
+          })
+          .setOrigin(0.5)
+          .setDepth(40);
+        this.tweens.add({
+          targets: ft,
+          y: y - 50,
+          alpha: { from: 1, to: 0 },
+          duration: this.reduceMotion ? 500 : 900,
+          onComplete: () => ft.destroy(),
+        });
+      };
+
+      GameScene.prototype.updateHUD = function () {
+        this.scoreText.setText("Score: " + this.score);
+        this.streakText.setText("Streak: " + this.streak);
+        this.levelText.setText(
+          this.track === 1 ? "Level 1 · Support" : "Level 2 · Enrich",
+        );
+        this.progressText.setText(this.solved + " / " + this.target);
+      };
+
+      // Reached only by solving all target problems (mistakes never end the
+      // game), so the Result scene is always a win.
+      GameScene.prototype.endGame = function () {
+        this.locked = true;
+        this.time.delayedCall(500, () => {
+          this.scene.start("Result", {
+            score: this.score,
+            solved: this.solved,
+            target: this.target,
+          });
+        });
+      };
+
+      // ── RESULT ──
+      function ResultScene() {
+        Phaser.Scene.call(this, "Result");
+      }
+      ResultScene.prototype = Object.create(Phaser.Scene.prototype);
+      ResultScene.prototype.constructor = ResultScene;
+      ResultScene.prototype.init = function (data) {
+        this.data2 = data;
+      };
+      ResultScene.prototype.create = function () {
+        const d = this.data2;
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x0c2a2e);
+        // The game only ends when every problem is solved — always a full win.
+        const stars = 3;
+        // High score
+        let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+        if (d.score > hs) {
+          hs = d.score;
+          try {
+            localStorage.setItem(LS_KEY, String(hs));
+          } catch (e) {}
+        }
+
+        this.add
+          .text(cx, 110, "RATIOS MASTERED!", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "48px",
+            color: "#8ff0d8",
+            stroke: "#06201f",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+
+        const starStr = "★".repeat(stars) + "☆".repeat(3 - stars);
+        this.add
+          .text(cx, 185, starStr, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "48px",
+            color: "#ffd24a",
+          })
+          .setOrigin(0.5);
+
+        this.add
+          .text(cx, 255, "Score: " + d.score, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "30px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(
+            cx,
+            295,
+            "Solved " + d.solved + " of " + d.target + " problems",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              color: "#bfe6da",
+            },
+          )
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 325, "High Score: " + hs, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#ffd24a",
+          })
+          .setOrigin(0.5);
+
+        SFX.win();
+        JUICE.audio.fanfare();
+        JUICE.confetti(this, 2);
+
+        // EduPulse reporting (guarded; safe no-op without bridge).
         try {
-          const cv = game.canvas;
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: document.title,
+              score: d.score,
+              stars: stars,
+              standard: "6.RP.3",
+              problemsAttempted: d.solved,
+            });
+        } catch (e) {}
+        srSay("You won! Final score " + d.score + ", " + stars + " stars.");
+
+        const btn = this.add
+          .rectangle(cx, 400, 220, 54, 0x1f8a6b)
+          .setInteractive({ useHandCursor: true });
+        const btnT = this.add
+          .text(cx, 400, "PLAY AGAIN 🔁", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        // Return to the level picker (consistent with the other games) so a
+        // student can switch Level 1 / Level 2 on replay.
+        const again = () => this.scene.start("Pick");
+        btn.on("pointerover", () => btn.setFillStyle(0x27a883));
+        btn.on("pointerout", () => btn.setFillStyle(0x1f8a6b));
+        btn.on("pointerdown", again);
+        this.input.keyboard.on("keydown-SPACE", again);
+        this.input.keyboard.on("keydown-ENTER", again);
+
+        const hub = this.add
+          .text(cx, 480, "← Back to Math Games", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            color: "#7fc4b3",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        hub.on("pointerover", () => hub.setColor("#ffd24a"));
+        hub.on("pointerout", () => hub.setColor("#7fc4b3"));
+        hub.on("pointerdown", () => (window.location.href = "/math/games/"));
+      };
+
+      // ── Launch ──
+      const rrGame = new Phaser.Game(config);
+
+      // Canvas accessibility (additive; no gameplay change).
+      rrGame.events.once("ready", function () {
+        try {
+          const cv = rrGame.canvas;
           if (!cv) return;
           cv.setAttribute("role", "application");
           cv.setAttribute(
             "aria-label",
-            "Ratio Rush lily-pad hopper math game. Read each ratio or unit-rate " +
-              "problem, then hop your frog with the left, up, and right arrow keys " +
-              "(or A, W, D) onto the lily pad showing the correct answer. Press " +
-              "Space to start.",
+            "Ratio Rush Double Number Line math game. A ratio problem appears " +
+              "at the top; drag a knob, or use the arrow keys (left and right to " +
+              "move, up and down to switch lines) or A and D, to line up the two " +
+              "number lines so the pair stays in ratio, then press Lock In, " +
+              "Enter, or Space.",
           );
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
           cv.addEventListener("pointerdown", function () {
             try {
+              cv.focus({ preventScroll: true });
+            } catch (e) {
               cv.focus();
-            } catch (e) {}
+            }
           });
         } catch (e) {}
       });
@@ -1034,11 +1723,23 @@
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-    <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
+    <!-- Student Passport (meta-progression pill; boots itself, award() guarded) -->
+    <script src="/assets/lesson-passport.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
   </body>
 </html>

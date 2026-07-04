@@ -2,23 +2,54 @@ import { createState, normalizeStudentId, findSavedStudents } from "./state.js";
 import { createEngagement } from "../engagement/engagement.js";
 import { mountExportToolbar } from "./export.js";
 import { reportScore } from "./score-reporter.js";
-import { showCanvasCode } from "./canvas-code.js";
+import { completeLesson } from "./grade-emit.js";
 import { runComponentList } from "../components/activity-chooser.js";
 import {
   renderComponent,
   resolveContentObjective,
   resolveLanguageObjective,
+  linkifyObjectiveTerms,
+  wireObjectiveTermPopups,
 } from "./lesson-renderer.js";
 import { buildLessonCoverExtras, mountCoverArt, applyPhaseAccent } from "./premium.js";
 import { mountTeacherPanel, buildWelcomeTeacherNotes, isTeacherMode } from "./teacher-mode.js";
 import { t, stackHtml, phaseName } from "./i18n.js";
+import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
 import "@engine/styles/design-system.css";
 import "@engine/styles/themes.css";
+import "@engine/styles/editorial.css";
 
 export function createApp(config) {
   const root = document.getElementById("app");
   root.innerHTML = "";
   root.className = "app";
+  // a11y: the rendered lesson is the page's primary content (landmark-one-main).
+  root.setAttribute("role", "main");
+  // Publisher-grade editorial design layer (engine/styles/editorial.css) — the
+  // approved look now applies to EVERY lesson, not just flagship pilots.
+  document.body.classList.add("editorial");
+
+  // High Contrast stylesheet overrides
+  const hcSheet = document.createElement("style");
+  hcSheet.textContent = `
+    body.high-contrast {
+      filter: contrast(1.4) !important;
+      background: #000 !important;
+      color: #fff !important;
+    }
+    body.high-contrast input,
+    body.high-contrast select,
+    body.high-contrast button {
+      border: 2px solid #fff !important;
+      outline: 2px solid #000 !important;
+      background: #000 !important;
+      color: #fff !important;
+    }
+  `;
+  document.head.append(hcSheet);
+
+  // Easy teacher-mode access: sticky per-device toggle + Alt+Shift+T + badge.
+  initTeacherAccess();
   // Browser tab / SEO title (the engine shell ships a generic <title>).
   if (config.title) {
     const bits = [config.title];
@@ -161,7 +192,12 @@ function injectSeoMeta(config) {
   upsertMetaName("description", description);
 
   if (config.lessonId) {
-    upsertLinkRel("canonical", `/lessons/${config.lessonId}/`);
+    // Absolute URL — Lighthouse/SEO rejects relative rel=canonical values.
+    const origin =
+      typeof location !== "undefined" && /^https?:/.test(location.origin)
+        ? location.origin
+        : "https://eduwonderlab.com";
+    upsertLinkRel("canonical", `${origin}/lessons/${config.lessonId}/`);
   }
 }
 
@@ -244,11 +280,29 @@ function mountWelcomeGoogleSlidesLink(lessonId, slot) {
   loadGoogleSlidesUrlMap().then((map) => {
     const url = map && map[lessonId];
     if (!url) return;
-    slot.innerHTML = ` · <a href="${escHtml(url)}" target="_blank" rel="noopener" style="color:var(--teal); font-weight:700;">↗ ${stackHtml(t("googleSlides", "en"), t("googleSlides", "es"))}</a>`;
+    slot.innerHTML = ` · <a href="${escHtml(url)}" target="_blank" rel="noopener" style="color:var(--teal-ink); font-weight:700;">↗ ${stackHtml(t("googleSlides", "en"), t("googleSlides", "es"))}</a>`;
   });
 }
 
 function showIdentityScreen(root, config) {
+  // Canvas/SCORM auto-identify: when the SCORM wrapper hands us the LMS student
+  // name (sn) — and optional roster id (si) — skip the name-entry screen and
+  // launch straight in, already identified. Guarded on `sn` so a normal visit
+  // to the live site is byte-identical to before.
+  const launchParams = new URLSearchParams(window.location.search);
+  const lmsName = (launchParams.get("sn") || "").trim();
+  if (lmsName) {
+    const lmsId = (launchParams.get("si") || "").trim();
+    const studentId = normalizeStudentId(lmsId || lmsName);
+    try {
+      window.NeftIdentity?.set({ name: lmsName, section: "" });
+    } catch {
+      /* identity is an enhancement — never block launching the lesson */
+    }
+    initMainApp(root, config, studentId, lmsName, "");
+    return;
+  }
+
   const themeEmoji = config.themeEmoji || "📐";
   const saved = findSavedStudents(config.lessonId);
   const homeworkHtmlHref = `/lessons/${encodeURIComponent(config.lessonId)}/homework.html`;
@@ -274,7 +328,7 @@ function showIdentityScreen(root, config) {
           config.readiness
             ? `<a class="identity-readiness" href="/lessons/${encodeURIComponent(config.lessonId)}/readiness/" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; background:var(--cream,#fdf3e0); border:1px solid var(--gold,#d4952a); border-radius:12px; padding:12px 16px; margin:0 0 16px; text-align:left;">
                 <span style="font-size:1.5rem;" aria-hidden="true">📚</span>
-                <span><strong>${t("newToTopic")}</strong> ${t("getReadyDesc")} <span style="white-space:nowrap; font-weight:700; color:var(--blue,#1a6fb5);">${t("startArrow")}</span></span>
+                <span><strong>${t("newToTopic")}</strong> ${t("getReadyDesc")} <span style="white-space:nowrap; font-weight:700; color:#155fa0;">${t("startArrow")}</span></span>
               </a>`
             : ""
         }
@@ -291,12 +345,13 @@ function showIdentityScreen(root, config) {
           <input id="id-period" type="text" placeholder="${t("periodPlaceholder")}" autocomplete="off" />
           <button id="id-start" class="identity-btn" disabled>${stackHtml(t("startActivity", "en"), t("startActivity", "es"))}</button>
         </div>
+        <div id="identity-teacher-slot"></div>
         <p id="welcome-resource-links" style="margin:var(--sp-4) 0 0; font-size:0.82rem; text-align:center;">
-          <a href="${homeworkHtmlHref}" style="color:var(--teal); font-weight:700;">🏠 ${stackHtml(t("familyHomework", "en"), t("familyHomework", "es"))}</a>
+          <a href="${homeworkHtmlHref}" style="color:var(--teal-ink); font-weight:700;">🏠 ${stackHtml(t("familyHomework", "en"), t("familyHomework", "es"))}</a>
           · <a href="/lessons/${encodeURIComponent(config.lessonId)}/notes.html" style="color:var(--navy); font-weight:700;">📝 ${stackHtml(t("guidedNotes", "en"), t("guidedNotes", "es"))}</a>
-          · <a href="${slidesHref}" target="_blank" rel="noopener" style="color:var(--blue,#1a6fb5); font-weight:700;">📊 ${stackHtml(t("lessonSlides", "en"), t("lessonSlides", "es"))}</a>
+          · <a href="${slidesHref}" target="_blank" rel="noopener" style="color:#155fa0; font-weight:700;">📊 ${stackHtml(t("lessonSlides", "en"), t("lessonSlides", "es"))}</a>
           <span id="welcome-google-slides-slot"></span>
-          · <a href="${handoutHref}" target="_blank" rel="noopener" style="color:var(--amber,#c85a3a); font-weight:700;">📄 ${stackHtml(t("studentHandout", "en"), t("studentHandout", "es"))}</a>
+          · <a href="${handoutHref}" target="_blank" rel="noopener" style="color:var(--amber-ink); font-weight:700;">📄 ${stackHtml(t("studentHandout", "en"), t("studentHandout", "es"))}</a>
         </p>
         ${saved.length ? `<div class="identity-saved" id="id-saved-list"></div>` : ""}
       </div>
@@ -309,10 +364,15 @@ function showIdentityScreen(root, config) {
     screen.querySelector("#welcome-google-slides-slot"),
   );
 
+  // Teacher pacing notes are teacher-only: shown on the cover when ?teacher=1,
+  // never to students. (Students previously saw this panel — removed.)
   const teacherSlot = screen.querySelector("#welcome-teacher-slot");
-  if (teacherSlot && !isTeacherMode()) {
+  if (teacherSlot && isTeacherMode()) {
     teacherSlot.append(buildWelcomeTeacherNotes(config));
   }
+
+  // Password-gated Teacher entry, right under the Start button.
+  mountIdentityTeacherButton(screen.querySelector("#identity-teacher-slot"));
 
   const coverExtras = screen.querySelector("#cover-extras");
   if (coverExtras) {
@@ -322,21 +382,26 @@ function showIdentityScreen(root, config) {
     if (artSlot) mountCoverArt(artSlot, config);
     const stdBtn = coverExtras.querySelector('[data-action="standards-explainer"]');
     if (stdBtn) {
-      stdBtn.addEventListener("click", () => {
-        const open = stdBtn.getAttribute("aria-expanded") === "true";
-        stdBtn.setAttribute("aria-expanded", String(!open));
+      // Show the standard explainer by default (no click required); the button
+      // remains a toggle so it can be collapsed.
+      const buildStandardsPanel = () => {
         let panel = coverExtras.querySelector(".standards-explainer-panel");
-        if (!open && !panel) {
+        if (!panel) {
           panel = document.createElement("div");
           panel.className = "standards-explainer-panel";
           panel.innerHTML = `
             <p><strong>${escHtml(config.standard)}</strong> — This lesson aligns to Grade 6 Reveal Math standards.</p>
-            <p>${escHtml(resolveContentObjective(config))}</p>
-            <p style="color:var(--muted); font-size:0.88rem;">Use <code>?teacher=1</code> in the URL for pacing guide, answer keys, and listen-fors.</p>`;
+            <p>${escHtml(resolveContentObjective(config))}</p>`;
           stdBtn.after(panel);
-        } else if (panel) {
-          panel.hidden = open;
         }
+        return panel;
+      };
+      buildStandardsPanel();
+      stdBtn.setAttribute("aria-expanded", "true");
+      stdBtn.addEventListener("click", () => {
+        const open = stdBtn.getAttribute("aria-expanded") === "true";
+        stdBtn.setAttribute("aria-expanded", String(!open));
+        buildStandardsPanel().hidden = open;
       });
     }
   }
@@ -393,8 +458,16 @@ function showIdentityScreen(root, config) {
     const name = nameInput.value.trim();
     if (!name) return;
     const studentId = normalizeStudentId(name);
+    const period = periodInput.value.trim();
+    // Share the typed identity site-wide so grade sync, the save-code gradebook,
+    // and curriculum progress sync all pick it up without the student retyping.
+    try {
+      window.NeftIdentity?.set({ name, section: period });
+    } catch {
+      /* identity is an enhancement — never block launching the lesson */
+    }
     screen.remove();
-    initMainApp(root, config, studentId, name, periodInput.value.trim());
+    initMainApp(root, config, studentId, name, period);
   }
 
   setTimeout(() => nameInput.focus(), 100);
@@ -424,6 +497,154 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   main.setAttribute("role", "main");
 
   root.append(sidebar, main);
+
+  // ---- Publisher-Grade Accessibility & Drawing Overlay ----
+  (function initA11yAndDrawing() {
+    // 1. Accessibility Controls
+    const a11yBar = document.createElement("div");
+    a11yBar.id = "lesson-a11y-bar";
+    a11yBar.style.cssText =
+      "display:flex; gap:8px; padding:8px 12px; margin-bottom:12px; flex-wrap:wrap; justify-content:center; border-bottom:1px solid rgba(255,255,255,0.1);";
+    a11yBar.innerHTML = `
+      <button class="pub-btn" id="btn-lesson-read" type="button" style="padding:4px 8px; font-size:11px; flex:1; min-width:80px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:6px; cursor:pointer;">🔊 Read Aloud</button>
+      <button class="pub-btn" id="btn-lesson-contrast" type="button" style="padding:4px 8px; font-size:11px; flex:1; min-width:80px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:6px; cursor:pointer;">🌓 Contrast: NORM</button>
+      <button class="pub-btn" id="btn-lesson-draw" type="button" style="padding:4px 8px; font-size:11px; flex:1; min-width:80px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:6px; cursor:pointer;">✏️ Draw: OFF</button>
+    `;
+
+    // Insert into sidebar before student-info or progress
+    const sidebarProgress =
+      sidebar.querySelector(".sidebar-progress") || sidebar.querySelector(".student-info");
+    if (sidebarProgress) {
+      sidebarProgress.parentNode.insertBefore(a11yBar, sidebarProgress);
+    } else {
+      sidebar.append(a11yBar);
+    }
+
+    // 2. High Contrast toggle handler
+    const contrastBtn = a11yBar.querySelector("#btn-lesson-contrast");
+    contrastBtn.addEventListener("click", () => {
+      const hc = document.body.classList.toggle("high-contrast");
+      contrastBtn.textContent = hc ? "🌓 Contrast: HIGH" : "🌓 Contrast: NORM";
+      contrastBtn.style.background = hc ? "#f59e0b" : "rgba(255,255,255,0.1)";
+      contrastBtn.style.color = hc ? "#000" : "#fff";
+    });
+
+    // 3. Read Aloud toggle handler
+    const readBtn = a11yBar.querySelector("#btn-lesson-read");
+    readBtn.addEventListener("click", () => {
+      if (window.speechSynthesis && window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        readBtn.textContent = "🔊 Read Aloud";
+        readBtn.style.background = "rgba(255,255,255,0.1)";
+        return;
+      }
+      readBtn.textContent = "⏹️ Stop";
+      readBtn.style.background = "#ef4444";
+
+      const texts = [];
+      document
+        .querySelectorAll(".section-title, .section-desc, p, li, h1, h2, h3, .problem-prompt")
+        .forEach((el) => {
+          if (
+            el.offsetParent !== null &&
+            !el.closest("#lesson-a11y-bar") &&
+            !el.closest(".sidebar")
+          ) {
+            texts.push(el.textContent.trim());
+          }
+        });
+      const speechText = texts.slice(0, 8).join(". ");
+      const utterance = new SpeechSynthesisUtterance(speechText);
+      utterance.onend = () => {
+        readBtn.textContent = "🔊 Read Aloud";
+        readBtn.style.background = "rgba(255,255,255,0.1)";
+      };
+      window.speechSynthesis.speak(utterance);
+    });
+
+    // 4. Whiteboard Canvas Drawing Overlay
+    const canvas = document.createElement("canvas");
+    canvas.id = "lesson-drawing-canvas";
+    canvas.style.cssText =
+      "position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:9998; display:none;";
+    main.append(canvas);
+
+    const ctx = canvas.getContext("2d");
+    let drawing = false;
+    let color = "#ef4444";
+    let width = 3;
+
+    function resizeCanvas() {
+      canvas.width = main.clientWidth;
+      canvas.height = main.clientHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+
+    // Drawing event listeners
+    canvas.addEventListener("pointerdown", (e) => {
+      drawing = true;
+      ctx.beginPath();
+      const rect = canvas.getBoundingClientRect();
+      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    });
+
+    canvas.addEventListener("pointermove", (e) => {
+      if (!drawing) return;
+      ctx.lineWidth = width;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = color;
+      const rect = canvas.getBoundingClientRect();
+      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.stroke();
+    });
+
+    canvas.addEventListener("pointerup", () => {
+      drawing = false;
+    });
+    canvas.addEventListener("pointerleave", () => {
+      drawing = false;
+    });
+
+    // Drawing Tool controls HUD
+    const drawHud = document.createElement("div");
+    drawHud.id = "lesson-draw-hud";
+    drawHud.style.cssText =
+      "position:fixed; bottom:24px; left:270px; background:rgba(15,23,42,0.9); border:1px solid rgba(255,255,255,0.15); border-radius:30px; padding:6px 12px; display:none; gap:8px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.25);";
+    drawHud.innerHTML = `
+      <button class="color-btn" data-color="#ef4444" style="width:20px; height:20px; border-radius:50%; border:2px solid #fff; background:#ef4444; cursor:pointer; padding:0;"></button>
+      <button class="color-btn" data-color="#3b82f6" style="width:20px; height:20px; border-radius:50%; border:none; background:#3b82f6; cursor:pointer; padding:0;"></button>
+      <button class="color-btn" data-color="#10b981" style="width:20px; height:20px; border-radius:50%; border:none; background:#10b981; cursor:pointer; padding:0;"></button>
+      <button class="color-btn" data-color="rgba(253,224,71,0.5)" style="width:20px; height:20px; border-radius:50%; border:none; background:#fde047; cursor:pointer; padding:0;"></button>
+      <button id="draw-clear-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:700; cursor:pointer; margin-left:8px;">Clear</button>
+    `;
+    document.body.append(drawHud);
+
+    // Color controls wiring
+    drawHud.querySelectorAll(".color-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        color = btn.dataset.color;
+        width = color.startsWith("rgba") ? 12 : 3; // Highlighter width is larger
+        drawHud.querySelectorAll(".color-btn").forEach((b) => (b.style.border = "none"));
+        btn.style.border = "2px solid #fff";
+      });
+    });
+
+    drawHud.querySelector("#draw-clear-btn").addEventListener("click", () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    // Toggle draw mode
+    const drawBtn = a11yBar.querySelector("#btn-lesson-draw");
+    drawBtn.addEventListener("click", () => {
+      const active = canvas.style.display === "none";
+      canvas.style.display = active ? "block" : "none";
+      drawHud.style.display = active ? "flex" : "none";
+      canvas.style.pointerEvents = active ? "auto" : "none";
+      drawBtn.textContent = active ? "✏️ Draw: ON" : "✏️ Draw: OFF";
+      drawBtn.style.background = active ? "#10b981" : "rgba(255,255,255,0.1)";
+      if (active) resizeCanvas();
+    });
+  })();
 
   mountTeacherPanel(root, config, state);
 
@@ -473,7 +694,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       if (window.AudioSynth) window.AudioSynth.tada();
       if (window.fireConfetti) window.fireConfetti();
       ensureEduPulse().finally(() => reportScore(state, config));
-      showCanvasCode(state, config);
+      completeLesson(state, config);
     }
   });
 
@@ -647,7 +868,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       const objectiveCard = ({ accent, color, icon, label, text, key, prompt, starter }) =>
         `<div class="card ${accent} obj-card" style="margin-bottom:var(--sp-4, 18px); padding:var(--sp-5, 22px);">
           <div style="font-size:1.15rem; font-weight:800; color:var(${color}); margin-bottom:var(--sp-2, 8px);">${icon} ${label}</div>
-          <p style="margin:0 0 var(--sp-4, 18px); font-size:1.45rem; line-height:1.6; font-weight:600; color:var(--navy, #264653);">${highlightKeyWords(text)}</p>
+          <p style="margin:0 0 var(--sp-4, 18px); font-size:1.45rem; line-height:1.6; font-weight:600; color:var(--navy, #264653);">${linkifyObjectiveTerms(text, config.vocabulary || [])}</p>
           <div style="display:flex; flex-direction:column; gap:var(--sp-2, 8px); background:#fff; border:2px solid var(${color}); border-radius:var(--radius-md, 12px); padding:var(--sp-3, 14px) var(--sp-4, 18px); margin-bottom:var(--sp-3, 12px);">
             <div style="font-weight:800; color:var(--navy, #264653); font-size:1.05rem;">Can I do this?</div>
             <label style="display:flex; align-items:center; gap:10px; font-size:1.2rem; cursor:pointer;"><input type="checkbox" data-obj-check="${key}-before" style="width:22px; height:22px; flex:0 0 auto;" /> <span>⏱️ <strong>Before</strong> the lesson — I can do this.</span></label>
@@ -665,14 +886,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         <div class="extra-head" style="margin-bottom:var(--sp-4, 18px);">
           <div>
             <div class="section-title" style="font-size:2rem;">🎯 Today's Goals</div>
-            <div class="section-desc" style="font-size:1.1rem;">Read each goal. The <u class="obj-key">underlined</u> words are important math words. Check a box before we start, and again at the end.</div>
+            <div class="section-desc" style="font-size:1.1rem;">Read each goal. <strong>Tap</strong> an <u class="obj-key">underlined</u> word to see what it means in English and Spanish. Check a box before we start, and again at the end.</div>
           </div>
         </div>
         ${objectiveCard({
           accent: "card-teal",
           color: "--teal",
           icon: "📘",
-          label: "What I will learn",
+          label: "Content Objective — What I will learn",
           text: content,
           key: "content",
           prompt:
@@ -683,7 +904,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           accent: "card-coral",
           color: "--coral",
           icon: "🗣️",
-          label: "Words I will use",
+          label: "Language Objective — Words I will use",
           text: language,
           key: "language",
           prompt:
@@ -692,6 +913,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         })}
       `;
       phaseContainer.append(el);
+
+      // Make the underlined vocab terms tap-to-open the glossary popup here too,
+      // exactly like the Launch objectives (shared engine machinery).
+      wireObjectiveTermPopups(el, config.vocabulary || []);
 
       // Persist the before/after self-check on this device.
       const objKey = "nt-obj:" + config.lessonId;

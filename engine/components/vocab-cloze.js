@@ -125,7 +125,7 @@ export function renderVocabCloze(container, { terms, onComplete }) {
       display:inline-block; min-width:120px; padding:4px 12px; margin:0 4px;
       border:2px dashed var(--teal); border-radius:var(--radius-sm);
       background:var(--teal-light); text-align:center; font-weight:700;
-      color:var(--teal); vertical-align:middle; transition:all var(--duration-fast) ease;
+      color:var(--teal-ink); vertical-align:middle; transition:all var(--duration-fast) ease;
       cursor:pointer; min-height:32px;
     `;
     blank.textContent = " ";

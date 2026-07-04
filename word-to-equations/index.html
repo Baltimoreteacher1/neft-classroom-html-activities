@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <meta
       name="description"
       content="Word-to-Equations: Interactive algebraic balance sandbox utilizing SVG rotational physics to translate verbal math stories into balanced equations."
@@ -515,12 +516,100 @@
           display: none !important;
         }
       }
-    
+
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+
+      /* ===== Responsive: tablet (<=900px) ===== */
+      @media (max-width: 900px) {
+        header {
+          padding: 14px 18px;
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+        .header-controls {
+          flex-wrap: wrap;
+        }
+        .app-grid {
+          grid-template-columns: 1fr;
+          gap: 18px;
+          margin: 18px auto;
+          padding: 0 16px;
+        }
+        .sidebar {
+          gap: 16px;
+        }
+        .card,
+        .work-card,
+        .variable-slider-card {
+          padding: 20px;
+        }
+        .drag-pool {
+          flex-wrap: wrap;
+        }
+      }
+
+      /* ===== Responsive: phone (<=640px) ===== */
+      @media (max-width: 640px) {
+        header {
+          padding: 12px 14px;
+        }
+        .brand h1 {
+          font-size: 1.2rem;
+        }
+        .brand span {
+          font-size: 1.4rem;
+        }
+        .header-controls {
+          width: 100%;
+        }
+        .header-controls .btn {
+          flex: 1 1 auto;
+          justify-content: center;
+        }
+        .app-grid {
+          gap: 14px;
+          margin: 14px auto;
+          padding: 0 12px;
+        }
+        .card,
+        .work-card,
+        .variable-slider-card {
+          padding: 16px;
+          border-radius: var(--radius-md);
+        }
+        .card h2 {
+          font-size: 1.1rem;
+        }
+        .work-card-title {
+          font-size: 1rem;
+        }
+        /* Keep the interactive SVG balance scale fluid (viewBox scales it) */
+        .svg-viewport {
+          width: 100%;
+          max-width: 100%;
+          height: auto;
+        }
+        .equation-panel {
+          font-size: 1rem;
+          padding: 12px;
+        }
+        .drag-pool {
+          flex-wrap: wrap;
+          gap: 10px;
+          padding: 12px;
+        }
+        .drag-tile {
+          flex: 1 1 auto;
+          text-align: center;
+        }
+      }
 </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
 </head>
   <body>
     <header>
@@ -1605,5 +1694,11 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+  <script src="/assets/canvas-bridge.js" defer></script>
+  <!-- canvas-bridge-injected:end -->
 </body>
 </html>

@@ -20,10 +20,14 @@
   "use strict";
 
   const clean = (s) => (s == null ? "" : String(s).trim());
-  const firstSentence = (s) =>
-    clean(s)
-      .replace(/\s+/g, " ")
-      .split(/(?<=[.!?])\s/)[0];
+  const firstSentence = (s) => {
+    const cleaned = clean(s).replace(/\s+/g, " ");
+    const match = cleaned.match(/[.!?](?:\s|$)/);
+    if (match) {
+      return cleaned.slice(0, match.index + 1);
+    }
+    return cleaned;
+  };
 
   function deriveICan(objective, topic) {
     let o = clean(objective);
@@ -63,7 +67,7 @@
         .filter(Boolean)
         .map((s) => {
           const m = s.match(
-            /(6\.[A-Z]{1,3}(?:\.[A-Z])?\.\d+[a-z]?)\s*[-–—:]?\s*(.*)/i,
+            /(\d+\.[A-Z]{1,3}(?:\.[A-Z])?\.\d+[a-z]?)\s*[-–—:]?\s*(.*)/i,
           );
           return m ? { code: m[1], desc: m[2] || "" } : { code: "", desc: s };
         });
@@ -102,10 +106,30 @@
             "Optional: manipulatives / grid paper",
           ];
 
+    // ---------- Pacing (drives the at-a-glance flow + section time chips) ----------
+    const timing = {
+      doNow: "3–5 min",
+      mini: "15 min",
+      guided: "10 min",
+      collaborative: "8 min",
+      independent: "12 min",
+      writing: "5 min",
+      exit: "5 min",
+    };
+    const pacing = [
+      ["Do Now", timing.doNow],
+      ["Mini-Lesson", timing.mini],
+      ["Guided", timing.guided],
+      ["Partner", timing.collaborative],
+      ["Independent", timing.independent],
+      ["Writing", timing.writing],
+      ["Exit", timing.exit],
+    ];
+
     // ---------- Section 2: Teacher Snapshot ----------
     const snapshot = {
-      learning: `Students are learning to ${clean(topic).toLowerCase()} (${content.topicLabel}).`,
-      why: `This skill builds the foundation for later Grade ${grade} work and shows up in everyday situations, so students see math as useful, not just procedural.`,
+      learning: `Students learn to ${clean(topic).toLowerCase()} (${content.topicLabel}).`,
+      why: `Builds toward later Grade ${grade} work and shows up in real life — math as useful, not just procedural.`,
       byEnd: firstSentence(objective) || objective,
       misconceptions: content.misconceptions.map((m) => m.error),
       lookFors: [
@@ -118,10 +142,10 @@
     // ---------- Section 4: Do Now ----------
     const doNow = {
       directions:
-        "Work silently for 3–5 minutes. Try every question; star the one you are unsure about.",
+        "Silent, 3–5 min. Try every question; star the one you're unsure about.",
       items: content.doNow,
       teacherMove:
-        "Circulate and note 1–2 student approaches to surface in the mini-lesson; quick thumbs-up/sideways/down check before moving on.",
+        "Circulate; note 1–2 approaches to surface in the mini-lesson. Thumbs check before moving on.",
     };
 
     // ---------- Section 5: Mini-Lesson ----------
@@ -129,7 +153,7 @@
     const mini = {
       teacherExplanation:
         (sourceMini ? sourceMini + " " : "") +
-        `Connect to the objective, then model the skill explicitly with a think-aloud before any guided work.`,
+        `Connect to the objective, then model the skill with a think-aloud before guided work.`,
       studentNotes: [
         `Today's goal: ${iCan}`,
         `Key idea: ${content.worked.problem}`,
@@ -155,9 +179,9 @@
     const collaborative = {
       studentDirections: content.collabTask,
       teacherDirections:
-        "Assign A/B partners; set a 6–8 minute timer; monitor math talk and prompt with the discussion questions. Each pair turns in ONE shared answer.",
+        "A/B partners; 6–8 min timer; monitor math talk. Each pair turns in ONE shared answer.",
       accountability:
-        "Both partners must be able to explain the answer; cold-call one partner from two pairs to share.",
+        "Both partners must be able to explain it; cold-call one partner from two pairs.",
       discussionPrompts: [
         "How did you decide which strategy to use?",
         "Where could someone make a mistake on this problem?",
@@ -273,7 +297,9 @@
         essentialQuestion: essentialQuestion(topic, content.topicLabel),
         languageObjective,
         materials,
+        pacing,
       },
+      timing,
       snapshot,
       vocab: content.vocab,
       doNow,

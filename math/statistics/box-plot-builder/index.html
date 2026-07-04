@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/assets/math-mobile.css">
   <title>Dynamic Box Plot & Dot Plot Builder</title>
   <meta name="description" content="Drag data points to build dynamic dot plots, frequency histograms, and box plots in real time. Grade 6 statistics activities." />
   
@@ -431,10 +432,26 @@
     }
   
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+    /* --- responsive tablet/phone refinements (additive) --- */
+    @media (max-width: 900px) {
+      .main-container { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .board-card { padding: 16px; }
+      .board-header { flex-direction: column; align-items: stretch; gap: 12px; }
+      .controls-row { flex-direction: column; }
+      .controls-row .btn { width: 100%; }
+      .stats-banner { grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); }
+      .chart-tabs { flex-wrap: wrap; }
+      .challenges-card { padding: 16px; }
+    }
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
 </head>
 <body>
 
@@ -1138,5 +1155,8 @@
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>

@@ -4,20 +4,22 @@ import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 // ============================================================================
 // Unit 7 — SUBMARINE: DEEP DIVE  (CCSS 6.NS.C.5–7)
-// REAL-TIME UNDERWATER RUNNER on a VERTICAL number line. The submarine
-// auto-travels forward; the whole sea (kelp, bubbles, depth markers) scrolls
-// toward the camera for a true sense of motion. The player drives the sub
-// UP/DOWN in real time along the number line (0 = sea level at the middle,
-// positives above, negatives below).
+// SELF-PACED UNDERWATER number-line explorer. NO TIMER, NO RUSH. The submarine
+// hovers in place and the player drives it UP/DOWN freely along a VERTICAL
+// number line (0 = sea level at the middle, positives above, negatives below).
+// The student can pause and think for as long as they like — nothing moves on
+// a clock and nothing is ever lost to being slow.
 //
-// Collectible TOKENS and hazard MINES stream toward the sub at specific
-// integer depths. Each round the HUD "Your task" panel poses a goal:
+// Each round, a small WAVE of labeled markers appears and simply HOVERS at
+// fixed integer depths: one collectible TOKEN carries the correct answer, the
+// rest are decoy MINES. The HUD "Your task" panel poses a goal:
 //   "Grab -4" · "Grab the OPPOSITE of 3" · "Grab |x| = 4 from the surface" ·
 //   "Dive to the GREATER of -2 and 4" · "Grab the LEAST of -4, 1, 5".
-// The player must COMPUTE the correct depth and be there when the token
-// arrives. Grab the right token → points + combo + boost. Touch a wrong-number
-// mine (or miss/grab the wrong one) → damage, screen shake, lose a life.
-// Clear every goal → surface and win.
+// The player COMPUTES the correct depth, steers the sub to that marker, and
+// presses CONFIRM (Enter / ✓) to grab it. Grab the right token → points +
+// streak. Confirm on a wrong-number mine → a gentle "not it, try again"; you
+// stay in the round and can keep thinking. (Wrong MATH costs a life, never
+// slowness.) Clear every goal → surface and win.
 //
 // The integer math is reused verbatim from the existing round bank so the
 // curriculum stays exact; computeTarget() derives the one correct depth and
@@ -47,15 +49,15 @@ const COLORS = {
 const UNIT = 0.62; // world units per integer step (vertical)
 
 // World layout. The sub sits at a fixed x/z and only moves in y (its depth on
-// the number line). Tokens/mines/scenery spawn far ahead at -z and scroll
-// toward +z (toward the camera) to fake forward travel.
+// the number line). The round's markers hover at a fixed z near the sub so the
+// player can line up the right depth and confirm — no streaming, no timer.
+// Ambient scenery (kelp, bubbles) drifts gently for atmosphere only and never
+// affects gameplay.
 const SUB_X = 0; // sub's fixed lateral position
 const SUB_Z = 5.5; // sub's fixed forward position (near camera)
-const SPAWN_Z = -34; // where tokens/scenery appear far ahead
-const DESPAWN_Z = 11; // past the camera → recycle
-const GRAB_Z = SUB_Z; // a streamer is "at" the sub when its z reaches here
-const GRAB_REACH = UNIT * 0.62; // vertical tolerance to grab/collide
-const GRAB_Z_REACH = 1.3; // forward tolerance around the sub plane
+const MARKER_Z = SUB_Z - 1.2; // where the round's hovering markers sit
+const DESPAWN_Z = 11; // scenery wrap point
+const GRAB_REACH = UNIT * 0.62; // vertical tolerance to grab a marker at your depth
 
 // ---- Round bank (6.NS.C.5–7) — reused verbatim from the prior build --------
 // Every target is an exact integer (computeTarget verifies the math). Level 1 =
@@ -208,11 +210,14 @@ export default {
       return new THREE.Mesh(g, m);
     };
 
-    // ---- Tuning (Level 2 = faster scroll, tighter spacing) ------------------
-    const BASE_SPEED = level === 2 ? 12 : 9; // z-units / sec scroll = forward speed
-    const MAX_SPEED = level === 2 ? 20 : 15;
-    const VERT_SPEED = level === 2 ? 9.5 : 8; // sub vertical units / sec
-    const START_LIVES = level === 2 ? 4 : 6;
+    // ---- Tuning -------------------------------------------------------------
+    // Levels differ ONLY by MATH DIFFICULTY (range + number of decoys, set in
+    // makeLevel above) — never by speed or timing. Movement speed is identical
+    // and generous so steering is comfortable, and scenery drifts at a calm,
+    // fixed pace purely for atmosphere (it has no gameplay effect).
+    const DRIFT_SPEED = 2.2; // ambient kelp/bubble drift, z-units/sec (cosmetic)
+    const VERT_SPEED = 8; // sub vertical units / sec (held-key dive)
+    const START_LIVES = level === 2 ? 4 : 6; // a few extra tries for harder math
 
     // ---- Side number-line spine + ticks + integer labels --------------------
     // A vertical glowing spine to the left, a tick + dark chip label at every
@@ -295,9 +300,10 @@ export default {
     seabed.position.set(0, columnBotY - UNIT, SUB_Z - 4);
     group.add(seabed);
 
-    // ---- Scrolling kelp (THE speed cue) -------------------------------------
-    // Stalks far behind the play plane that march toward the camera and wrap,
-    // selling continuous forward motion at all times.
+    // ---- Drifting kelp (ambient atmosphere only) ----------------------------
+    // Stalks far behind the play plane that drift gently toward the camera and
+    // wrap. Purely cosmetic — they set an undersea mood and never pressure the
+    // player or affect the math.
     const kelpMat = new THREE.MeshStandardMaterial({
       color: COLORS.kelp,
       emissive: COLORS.kelp,
@@ -323,7 +329,7 @@ export default {
       kelp.push(k);
     }
 
-    // ---- Scrolling bubble columns (extra motion + life) ---------------------
+    // ---- Drifting bubble columns (ambient motion + life, cosmetic) ----------
     const bubbleMat = new THREE.PointsMaterial({
       color: COLORS.bubble,
       size: 0.12,
@@ -417,10 +423,11 @@ export default {
     depthLabel.position.set(SUB_X + 1.1, yFor(0), SUB_Z);
     group.add(depthLabel);
 
-    // ---- Streamer pool (tokens + mines) -------------------------------------
-    // A streamer is a labeled disc at an integer depth that scrolls toward the
+    // ---- Marker pool (tokens + mines) ---------------------------------------
+    // A marker is a labeled disc that HOVERS at a fixed integer depth beside the
     // sub. token=collectible (correct answer green), mine=hazard (red). We pool
-    // a handful and recycle them as a "wave" for each round.
+    // a handful and reuse them as a "wave" for each round. Markers stay put so
+    // the student can read every label and steer at their own pace.
     const STREAMER_POOL = 6;
     const streamers = [];
     const tokenGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.16, 18);
@@ -494,8 +501,6 @@ export default {
     let round = null;
     let roundIndex = 0;
     let targetInt = null;
-    let speed = BASE_SPEED;
-    let boostT = 0;
     let flash = null; // { color, t }
     let streak = 0;
     let bestStreak = 0;
@@ -505,9 +510,7 @@ export default {
     let gameOver = false;
     let surfacing = false; // win cinematic — sub rises to surface
     let roundCleared = false; // current goal token grabbed, waiting to advance
-    let traveled = 0; // scroll distance accumulated this round
-    let nextWaveDist = 6; // distance before this round's wave spawns
-    let waveSpawned = false; // a wave for the current goal is in flight / passed
+    let waveSpawned = false; // this round's markers are placed and hovering
 
     let unbindFrame = null;
     let unbindPress = null;
@@ -631,10 +634,10 @@ export default {
       return cands;
     }
 
-    // ---- Spawn the wave of streamers for the current round ------------------
+    // ---- Place the wave of markers for the current round --------------------
     // One token carries the CORRECT integer; the rest are mines at decoy
-    // depths. They share a z so the player meets them as a single "gate" and
-    // must already be at the right depth.
+    // depths. They all hover at MARKER_Z so the player can read every label,
+    // think it through, steer to the right depth, and confirm — no timer.
     function spawnWave() {
       const decoys = decoyDepths(targetInt);
       // Choose up to 3 distinct decoy depths.
@@ -659,7 +662,7 @@ export default {
         s.active = true;
         s.resolved = false;
         s.obj.visible = true;
-        s.obj.position.set(0, yFor(spec.value), SPAWN_Z);
+        s.obj.position.set(0, yFor(spec.value), MARKER_Z);
         s.tokenMesh.visible = spec.kind === "token";
         s.mineMesh.visible = spec.kind === "mine";
         // Tokens show the number plainly; mines too (they must read each label
@@ -687,10 +690,9 @@ export default {
       round = cfg.rounds[roundIndex];
       targetInt = computeTarget(round);
       roundCleared = false;
-      traveled = 0;
-      nextWaveDist = 6;
       waveSpawned = false;
       clearWave();
+      spawnWave(); // markers hover in place right away — no timed entrance
       updateHud();
       announceTask();
       caption(taskText());
@@ -700,10 +702,10 @@ export default {
         clarity.setTarget(taskText());
       }
       if (cfg.hints) {
-        hud.message("Up/Down to set your depth. Catch the green token!", {
-          tone: "info",
-          duration: 2600,
-        });
+        hud.message(
+          "Take your time. Steer to your depth, then press Enter / ✓ to grab.",
+          { tone: "info", duration: 2600 },
+        );
       }
       feel.sfx("select");
     }
@@ -725,9 +727,7 @@ export default {
         absolute: Math.abs(targetInt),
       });
 
-      // Boost forward speed (sense of acceleration), flash + particles.
-      speed = Math.min(MAX_SPEED, speed + 2.5 + Math.min(streak, 4) * 0.4);
-      boostT = 0.6;
+      // Celebrate the correct grab — flash + particles (no speed change).
       flash = { color: COLORS.good, t: 0.35 };
       feel.sfx("correct");
       if (!reduced) feel.shake(0.16, 0.25);
@@ -775,7 +775,6 @@ export default {
       if (typeof hud.setStreak === "function") hud.setStreak(0);
       lives = Math.max(0, lives - 1);
       if (typeof hud.setLives === "function") hud.setLives(lives);
-      speed = Math.max(BASE_SPEED, speed - 2.5);
       flash = { color: COLORS.bad, t: 0.4 };
       feel.sfx("wrong");
       if (!reduced) feel.shake(0.32, 0.35);
@@ -793,25 +792,12 @@ export default {
       if (lives <= 0) loseGame();
     }
 
-    // A wrong streamer reached the sub plane.
+    // The player deliberately confirmed on a wrong-number mine. A MATH miss
+    // (not a timing one): cost a life but leave the wave hovering so they can
+    // rethink and try the same round again at their own pace.
     function onHitMine(s) {
-      s.resolved = true;
-      s.obj.visible = false;
-      // Once the goal token is grabbed, the round is won — don't punish a mine
-      // that brushes past during the short advance window.
       if (roundCleared || gameOver) return;
-      damage(`Mine! ${s.value} is not it.`);
-    }
-
-    // The whole wave passed without the correct token being grabbed.
-    function onMissedWave() {
-      if (roundCleared || gameOver) return;
-      damage("Missed the token!");
-      // Re-arm: respawn the same goal's wave so the round is still winnable.
-      if (!gameOver) {
-        traveled = 0;
-        nextWaveDist = 4;
-      }
+      damage(`That is ${s.value} — not it. Rework the math and try again.`);
     }
 
     // ---- Real-time vertical movement ---------------------------------------
@@ -832,6 +818,32 @@ export default {
       feel.sfx("pop");
       hud.message(`|${n}| = ${av}`, { tone: "info", duration: 1800 });
       later(() => caption(taskText()), 1800);
+    }
+
+    // ---- Grab the marker at the sub's current depth (self-paced confirm) -----
+    // The player steers to a depth and presses Confirm. We grab the hovering
+    // marker (token or mine) that shares the sub's integer depth. If none is
+    // there, just read out the depth as a gentle nudge — never a penalty.
+    function grabHere() {
+      if (!started || gameOver || surfacing || roundCleared) return;
+      const here = subInt();
+      const s = streamers.find(
+        (m) => m.active && !m.resolved && Math.round(m.depth) === here,
+      );
+      if (!s) {
+        readOut(); // nothing at this depth — no penalty, just orient the player
+        return;
+      }
+      s.resolved = true;
+      if (s.correct) {
+        s.obj.visible = false;
+        onGrabCorrect(s);
+      } else {
+        onHitMine(s);
+        // Re-arm the mine so the round stays fully replayable at the student's
+        // pace (the marker keeps hovering for another attempt).
+        s.resolved = false;
+      }
     }
 
     // ---- Win / lose ---------------------------------------------------------
@@ -889,7 +901,7 @@ export default {
         clarity.lose({
           titleEn: "Hull breached!",
           badge: "🌊",
-          stats: `${msg} Tip: work out the depth FIRST (opposite of n = -n; |n| = distance from 0; greater = higher on the line), then steer there before the wave arrives.`,
+          stats: `${msg} Tip: there is no clock — take your time. Work out the depth (opposite of n = -n; |n| = distance from 0; greater = higher on the line), steer the sub there, then press Enter / ✓ to grab.`,
         });
       }
     }
@@ -899,12 +911,9 @@ export default {
       const playing = started && !gameOver;
       const d = Math.min(dt, 0.05); // clamp tab-switch hiccups
 
-      // Ease speed back to base when not boosting.
-      if (playing && !surfacing) {
-        if (boostT > 0) boostT = Math.max(0, boostT - d);
-        else speed += (BASE_SPEED - speed) * Math.min(1, d * 1.2);
-      }
-      const scroll = playing ? speed * d : BASE_SPEED * 0.25 * d; // idle drift
+      // Ambient scenery drift only — a calm, constant cosmetic pace with NO
+      // gameplay effect. Gameplay never advances on this clock.
+      const drift = DRIFT_SPEED * d;
 
       // ---- Continuous vertical control (held keys / d-pad) ------------------
       if (playing && !surfacing) {
@@ -933,10 +942,10 @@ export default {
         portMat.emissiveIntensity = 0.7 + Math.sin(t * 3) * 0.25;
       }
 
-      // ---- Scroll the world toward the camera (forward motion) -------------
-      if (scroll > 0) {
+      // ---- Drift ambient scenery (cosmetic only, never gameplay) -----------
+      if (drift > 0) {
         for (const k of kelp) {
-          k.position.z += scroll;
+          k.position.z += drift;
           if (k.position.z > DESPAWN_Z) {
             k.position.z -= KELP_SPAN;
             k.position.y = columnBotY + 1.4 + Math.random() * 0.6;
@@ -945,10 +954,10 @@ export default {
             k.position.x =
               k.userData.baseX + Math.sin(t * 1.2 + k.userData.phase) * 0.18;
         }
-        // Bubbles drift up + scroll forward.
+        // Bubbles drift up + gently toward the camera.
         const bp = bubbleGeo.attributes.position.array;
         for (let i = 0; i < BUBBLE_N; i++) {
-          bp[i * 3 + 2] += scroll;
+          bp[i * 3 + 2] += drift;
           bp[i * 3 + 1] += d * 0.6;
           if (bp[i * 3 + 2] > DESPAWN_Z) bp[i * 3 + 2] -= KELP_SPAN;
           if (bp[i * 3 + 1] > columnTopY + 1) bp[i * 3 + 1] = columnBotY;
@@ -956,60 +965,26 @@ export default {
         bubbleGeo.attributes.position.needsUpdate = true;
       }
 
-      // ---- Wave logic: spawn, scroll streamers, resolve grabs/hits ----------
+      // ---- Marker logic: hover in place, highlight the one at your depth ----
+      // Markers never move toward the sub and never pass it. They simply wait
+      // at fixed depths until the student steers over one and presses Confirm
+      // (handled in grabHere). There is NO timing window and NO miss-by-time.
       if (playing && !surfacing) {
-        traveled += scroll;
-        // Spawn this round's single wave once we've traveled far enough.
-        if (!roundCleared && !waveSpawned && traveled >= nextWaveDist) {
-          spawnWave();
-        }
-
-        let activeRemain = false;
         for (const s of streamers) {
-          if (!s.active) continue;
-          s.obj.position.z += scroll;
-          // Spin mines for menace; bob tokens.
+          if (!s.active || s.resolved) continue;
+          // Idle spin/bob for life — purely visual.
           if (!reduced) {
             if (s.kind === "mine") s.mineMesh.rotation.y += d * 2.2;
             else s.tokenMesh.rotation.z += d * 1.4;
+            s.obj.position.y =
+              yFor(s.depth) + Math.sin(t * 1.5 + s.depth) * 0.04;
           }
-          // Live "in-range" cue: brighten the streamer at the sub's depth.
-          const dy = Math.abs(s.obj.position.y - subY);
-          const near = dy < GRAB_REACH * 1.6;
+          // Live "lined-up" cue: brighten the marker the sub is level with, so
+          // the student can confirm they are at the right depth before grabbing.
+          const dy = Math.abs(yFor(s.depth) - subY);
+          const near = dy < GRAB_REACH;
           const mat = s.kind === "token" ? s.tokenMat : s.mineMat;
           mat.emissiveIntensity = near ? 0.95 : s.kind === "token" ? 0.55 : 0.5;
-
-          // Collision window: streamer crossing the sub's z plane.
-          if (
-            !s.resolved &&
-            s.obj.position.z >= GRAB_Z - GRAB_Z_REACH &&
-            s.obj.position.z <= GRAB_Z + GRAB_Z_REACH &&
-            dy < GRAB_REACH
-          ) {
-            s.resolved = true;
-            if (s.correct) {
-              s.obj.visible = false;
-              onGrabCorrect(s);
-            } else {
-              onHitMine(s);
-            }
-          }
-
-          // Passed the sub (recycle the slot).
-          if (s.obj.position.z > DESPAWN_Z) {
-            s.active = false;
-            s.obj.visible = false;
-          } else {
-            activeRemain = true;
-          }
-        }
-
-        // The wave spawned, fully passed, and the correct token was never
-        // grabbed → a miss. Damage once and re-arm with a fresh wave so the
-        // round stays winnable.
-        if (waveSpawned && !roundCleared && !activeRemain) {
-          waveSpawned = false;
-          onMissedWave();
         }
       }
 
@@ -1080,7 +1055,6 @@ export default {
       lives = START_LIVES;
       gameOver = false;
       surfacing = false;
-      speed = BASE_SPEED;
       subDepthY = yFor(0);
       if (typeof hud.setLives === "function") hud.setLives(lives);
       if (typeof hud.setStreak === "function") hud.setStreak(0);
@@ -1105,7 +1079,7 @@ export default {
         if (!started || gameOver) return;
         if (name === "up") moveStep(1);
         else if (name === "down") moveStep(-1);
-        else if (name === "confirm") readOut();
+        else if (name === "confirm") grabHere();
       });
 
       // Tap above/below the sub to nudge depth (mobile + mouse).
@@ -1132,9 +1106,9 @@ export default {
           announce,
           title: "Submarine — Deep Dive the Number Line",
           objectiveEn:
-            "Your sub dives forward on its own. Read the task at the top, then move the sub UP or DOWN with the arrows so you are at the right depth when the green token streams in. Grab the correct number; dodge the red mines.",
+            "No clock, no rush — take all the time you need. Read the task at the top and work out the right depth. The markers just hover in place: move the sub UP or DOWN with the arrows until you are level with the GREEN token, then press Enter / ✓ to grab it. The red mines are wrong numbers — leave them alone.",
           objectiveEs:
-            "Tu submarino avanza solo. Lee la tarea de arriba y mueve el submarino ARRIBA o ABAJO para estar a la profundidad correcta cuando llegue la ficha verde. Atrapa el número correcto y esquiva las minas rojas.",
+            "Sin reloj, sin prisa: tómate el tiempo que necesites. Lee la tarea de arriba y calcula la profundidad correcta. Las fichas se quedan quietas: mueve el submarino ARRIBA o ABAJO hasta quedar al nivel de la ficha VERDE y pulsa Enter / ✓ para atraparla. Las minas rojas son números incorrectos: déjalas en paz.",
           standard: "6.NS.C.5–7 · Integers, Opposites & Absolute Value",
           controls: [
             {
@@ -1149,8 +1123,10 @@ export default {
             },
             {
               key: "Enter / ✓",
-              actionEn: "Read out your depth and its distance from 0",
-              actionEs: "Di tu profundidad y su distancia desde 0",
+              actionEn:
+                "Grab the marker at your depth (or read your depth if none is there)",
+              actionEs:
+                "Atrapa la ficha a tu profundidad (o di tu profundidad si no hay ninguna)",
             },
             {
               key: "Tap / d-pad",
@@ -1164,9 +1140,9 @@ export default {
             },
           ],
           howToWinEn:
-            "Each round names a target — a number, an opposite, an absolute value, or the greater/least of a set. Work out the depth, be there when the wave arrives, and grab the GREEN token. Red mines cost a life. Grab every token to surface and win. A 3+ streak earns bonus points!",
+            "Each round names a target — a number, an opposite, an absolute value, or the greater/least of a set. There is no timer: think it through, steer the sub to that depth, and press Enter / ✓ to grab the GREEN token. Confirming on a red mine just means 'not it, try again' — the markers keep hovering, so you can rethink the math as long as you like. Grab every token to surface and win. A 3+ streak earns bonus points!",
           howToWinEs:
-            "Cada ronda nombra un objetivo. Calcula la profundidad, llega a tiempo y atrapa la ficha verde. Las minas rojas cuestan una vida. Atrapa todas para ganar.",
+            "Cada ronda nombra un objetivo. No hay reloj: piénsalo, lleva el submarino a esa profundidad y pulsa Enter / ✓ para atrapar la ficha VERDE. Si eliges una mina roja, solo significa «no es, inténtalo otra vez» — las fichas siguen ahí para que repases las matemáticas con calma. Atrapa todas para salir a la superficie y ganar.",
           onStart: beginGameplay,
           onPlayAgain: () => location.reload(),
         });

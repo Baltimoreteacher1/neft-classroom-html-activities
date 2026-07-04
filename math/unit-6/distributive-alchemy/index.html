@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <meta name="description" content="Distributive Alchemy Lab: An interactive algebra game. Model the distributive property a(b + c) = ab + ac visually using alchemical potion grids.">
     <title>Distributive Alchemy Lab | Visual Algebra Game</title>
     <!-- Google Fonts -->
@@ -589,10 +590,33 @@
             background: rgba(6, 3, 12, 0.8);
             font-family: var(--font-display);
         }
+
+        /* Responsive: tablet/phone (additive) */
+        @media (max-width: 900px) {
+            header { padding: 14px 18px; flex-wrap: wrap; gap: 12px; }
+            .app-grid { padding: 0 16px; margin: 16px auto; }
+            .potion-brew-panel { flex-wrap: wrap; }
+            .diagnostics-panel { left: 16px; right: 16px; width: auto; }
+        }
+        @media (max-width: 640px) {
+            header { padding: 12px 14px; }
+            .logo-title { font-size: 1.3rem; }
+            .header-buttons { width: 100%; flex-wrap: wrap; }
+            .header-buttons .btn { flex: 1; justify-content: center; }
+            .app-grid { padding: 0 12px; gap: 16px; }
+            .glass-panel { padding: 16px; }
+            .viewport-svg { height: 280px; }
+            .potion-brew-panel { flex-direction: column; align-items: stretch; gap: 14px; }
+            .sentence-builder-zone div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+            .diagnostics-panel { bottom: 12px; left: 12px; right: 12px; }
+        }
     </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
 </head>
 <body>
 
@@ -1467,5 +1491,8 @@
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>

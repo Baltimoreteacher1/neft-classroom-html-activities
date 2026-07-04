@@ -19,7 +19,8 @@ import {
  * gameModule must export createGame(ctx). ctx is documented in README.md.
  *
  * options:
- *   level           - 1 | 2 | undefined (undefined => show level select UI)
+ *   level           - 0 | 1 | 2 | undefined (undefined => show level select UI)
+ *                     0 = most-supported (IEP), 1 = support, 2 = enrichment
  *   gameId          - string id for scoring/progress (defaults to gameModule.id)
  *   vocab           - terms array [{term,definition,image?,emoji?}]; falls back to gameModule.vocab
  *   sceneOpts       - passed to createScene
@@ -46,8 +47,11 @@ export function mountGame(mountEl, gameModule, options = {}) {
   flushQueue();
 
   function start(level) {
-    const lvl = level || 1;
-    // Vocab-first gate is part of Level 1; by default it ALWAYS shows before play.
+    // Level may be 0 (most-supported/IEP), 1 or 2. Default to 1 only when
+    // undefined — never coerce a valid 0 to 1.
+    const lvl = level == null ? 1 : level;
+    // Vocab-first gate is part of every level; by default it ALWAYS shows
+    // before play. (Vocab is especially important for Level 0.)
     const showVocab = vocab.length && !(options.skipVocabForL2 && lvl === 2);
     announcer = createAnnouncer(mountEl);
     if (showVocab) {
@@ -59,6 +63,11 @@ export function mountGame(mountEl, gameModule, options = {}) {
     } else {
       boot(lvl);
     }
+  }
+
+  // Accepts an explicit level of 0, 1 or 2 (0 is falsy, so test for null).
+  function hasExplicitLevel() {
+    return options.level === 0 || options.level === 1 || options.level === 2;
   }
 
   function boot(level) {
@@ -87,11 +96,16 @@ export function mountGame(mountEl, gameModule, options = {}) {
     // gameModule.totalSteps or options.totalSteps, else we show a running count.
     const totalSteps = options.totalSteps || gameModule.totalSteps || 0;
 
+    // The game's declarative standard travels with every score row so the
+    // results pipeline can group by CCSS standard without a second lookup.
+    const standard = gameModule.standard || "";
+
     function onScore(points, meta = {}) {
       totalScore += points;
       hud.setScore(totalScore);
+      const correct = points >= 0;
       // A non-negative score is treated as a successful step → advance + streak.
-      if (points >= 0) {
+      if (correct) {
         stepsDone += 1;
         streak += 1;
         if (typeof hud.setProgress === "function")
@@ -102,20 +116,31 @@ export function mountGame(mountEl, gameModule, options = {}) {
         streak = 0;
         if (typeof hud.setStreak === "function") hud.setStreak(0);
       }
+      // Misconception / sub-skill tagging for the results pipeline: a game
+      // passes meta.misconceptionTag (or meta.skillTag) per step so a teacher
+      // can see WHICH sub-skill failed, not just the raw score. We surface a
+      // single canonical `misconceptionTag` field on the payload.
+      const misconceptionTag =
+        meta.misconceptionTag || meta.skillTag || meta.tag || null;
       const payload = {
         gameId,
+        standard,
         level,
         points,
+        correct,
         total: totalScore,
         steps: stepsDone,
+        misconceptionTag,
         ...meta,
       };
       reportScore(payload);
       saveProgress({
         gameId,
+        standard,
         level,
         total: totalScore,
         steps: stepsDone,
+        misconceptionTag,
         ...meta,
       });
       if (typeof options.onScore === "function") options.onScore(payload);
@@ -145,8 +170,8 @@ export function mountGame(mountEl, gameModule, options = {}) {
     if (game && typeof game.start === "function") game.start();
   }
 
-  // Entry: explicit level skips selection; otherwise show level select.
-  if (options.level === 1 || options.level === 2) {
+  // Entry: explicit level (0, 1 or 2) skips selection; otherwise show select.
+  if (hasExplicitLevel()) {
     start(options.level);
   } else {
     showLevelSelect(mountEl, { onSelect: start });

@@ -25,11 +25,13 @@ import {
 } from "../components/activity-chooser.js";
 import { buildGradeCard } from "./grade.js";
 import { createProblemCard, problemTypeLabel } from "./problem-shell.js";
+import { enableWordProblemAnnotation } from "./annotate.js";
 import { renderThemeIllustration } from "./theme-illustrations.js";
 import { deriveWorkedSteps } from "./worked-steps.js";
+import { isTeacherMode } from "./teacher-mode.js";
+import { mountStuckSupport } from "./stuck-support.js";
 import {
   buildPhaseTransitionMeta,
-  renderLaunchStoryBeats,
   buildPrintableSummary,
   checkBadges,
   getBadgeDefs,
@@ -39,6 +41,7 @@ import { mountHintLadder } from "./hint-ladder.js";
 import { renderMathText } from "./math-typography.js";
 import { t, stackHtml, phaseName, badgeName } from "./i18n.js";
 import { mountCertificateDownload } from "./certificate-export.js";
+import resolveVocabImage, { vocabImageAlt } from "./vocab-images.js";
 
 export function bootLesson(config) {
   createApp({
@@ -523,6 +526,8 @@ function renderLearnItBridge(host, ctx, config) {
     <button type="button" class="btn btn-primary" data-open-learn style="flex:0 0 auto;">Open Learn It →</button>`;
   const btn = card.querySelector("[data-open-learn]");
   if (btn) {
+    // Open Learn It as its own page in a new tab so students keep the lesson
+    // open behind it (rather than replacing the Launch view inline).
     btn.addEventListener("click", () => {
       if (ctx && typeof ctx.openExtra === "function") ctx.openExtra("learn");
       else window.open(`/lessons/${config.lessonId}/learn.html`, "_blank", "noopener");
@@ -900,6 +905,20 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
         body.append(continueBtn);
       }
   }
+
+  // Teacher Mode: let a teacher advance past any item WITHOUT doing the work,
+  // so they can walk/project the whole lesson freely. Students never see this.
+  // It runs the same completion path as a correct answer, so the practice
+  // sequence (and phase) advances normally.
+  if (isTeacherMode()) {
+    const skip = document.createElement("button");
+    skip.type = "button";
+    skip.className = "btn btn-secondary btn-sm teacher-skip no-print";
+    skip.textContent = "⏭ Next (teacher)";
+    skip.title = "Teacher Mode — advance without answering";
+    skip.addEventListener("click", () => wrappedOnAnswer(true));
+    body.append(skip);
+  }
 }
 
 // Readable, non-blank fallback for component types the renderer does not know.
@@ -1048,7 +1067,6 @@ function renderNoticeAndWonder(host, config, state) {
   const head = document.createElement("div");
   head.className = "nw-head";
   head.innerHTML = `
-    <div class="nw-eyebrow">Be Curious</div>
     <h3 class="nw-title">👀 Notice &amp; Wonder</h3>`;
   card.append(head);
 
@@ -1189,6 +1207,7 @@ function renderShowYourWork(host, config, state) {
   if (hasAuthored && wp.text) {
     const p = document.createElement("p");
     p.className = "wp-text";
+    p.setAttribute("data-annotate", "word-problem");
     p.textContent = String(wp.text);
     card.append(p);
   } else {
@@ -1230,45 +1249,26 @@ function renderShowYourWork(host, config, state) {
     input.value = get(key);
     input.addEventListener("input", () => set(key, input.value));
     wrap.append(input);
+    // Optional minimum-word goal with a live counter (writing scaffold #4).
+    if (opts.minWords) {
+      const counter = document.createElement("div");
+      counter.className = "syw-wordcount";
+      const countWords = (v) => (v.trim() ? v.trim().split(/\s+/).length : 0);
+      const update = () => {
+        const n = countWords(input.value);
+        counter.textContent = `${n} / ${opts.minWords} words`;
+        counter.classList.toggle("is-ready", n >= opts.minWords);
+      };
+      input.addEventListener("input", update);
+      update();
+      wrap.append(counter);
+    }
     return wrap;
   };
 
-  // TEACH 2 (L4): student selects a strategy. Chips set a persisted plan field.
-  const planWrap = document.createElement("div");
-  planWrap.className = "syw-field";
-  planWrap.innerHTML = `<div class="syw-label">🧭 My plan <span class="syw-hint">Pick a strategy — you can choose more than one</span></div>`;
-  const chips = document.createElement("div");
-  chips.className = "nw-chips";
-  chips.setAttribute("role", "group");
-  chips.setAttribute("aria-label", "Choose a strategy");
-  const planTA = document.createElement("textarea");
-  planTA.id = "syw-plan";
-  planTA.className = "text-input syw-input";
-  planTA.rows = 2;
-  planTA.placeholder = "My plan is to…";
-  planTA.value = get("plan");
-  planTA.addEventListener("input", () => set("plan", planTA.value));
-  [
-    "Draw a model or picture",
-    "Write an equation",
-    "Make a table",
-    "Look for a pattern",
-    "Break it into smaller steps",
-    "Estimate first",
-  ].forEach((s) => {
-    const chip = document.createElement("button");
-    chip.type = "button";
-    chip.className = "nw-chip";
-    chip.textContent = s;
-    chip.addEventListener("click", () => {
-      const needsSpace = planTA.value && !/\s$/.test(planTA.value);
-      planTA.value = `${planTA.value}${needsSpace ? " " : ""}${s}. `;
-      planTA.focus();
-      set("plan", planTA.value);
-    });
-    chips.append(chip);
-  });
-  planWrap.append(chips, planTA);
+  // Shared "I'm stuck" support bar — hint / first step / example / vocab /
+  // sentence starter / simpler words, available on every lesson's solve.
+  mountStuckSupport(card, { config, state });
 
   const steps = document.createElement("div");
   steps.className = "syw-steps";
@@ -1279,18 +1279,14 @@ function renderShowYourWork(host, config, state) {
     field("find", "2 · What I need to find", "", {
       placeholder: "I need to find…",
     }),
-    planWrap,
     field("work", "3 · My work", "show each step", {
       rows: 5,
+      minWords: 15,
       placeholder: "Step 1…\nStep 2…",
     }),
     field("answer", "4 · My answer", "label your units", {
       single: true,
       placeholder: "My answer is…",
-    }),
-    // TEACH 3 (L4): justify with evidence.
-    field("why", "5 · How I know it's right", "justify with evidence", {
-      placeholder: "I know my answer makes sense because…",
     }),
   );
   card.append(steps);
@@ -1391,23 +1387,181 @@ function renderLaunchHeader(el, state, config) {
   });
 }
 
+// Escape a string for safe use inside a RegExp.
+function escapeRegExp(s) {
+  return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// Underline every lesson-vocabulary term that appears inside an objective and
+// turn it into a tap-to-open button. `escapedText` is the already-HTML-escaped
+// objective string (from resolveContentObjective / resolveLanguageObjective);
+// the vocab terms are plain words, so matching on the escaped text is safe.
+// Each match is wrapped in <button class="obj-term" data-term-idx="…"> so a
+// single delegated handler can open the glossary popup for that term. Terms not
+// present in the objective are simply left untouched.
+export function linkifyObjectiveTerms(escapedText, vocab) {
+  if (!escapedText || !Array.isArray(vocab) || !vocab.length) return escapedText;
+  // Only linkify terms that actually have something to show in the popup —
+  // otherwise students tap an underlined word and get an empty/dead popup. A
+  // term needs a definition (EN or ES) or an authored visual/example to qualify.
+  const hasPopupContent = (v) => !!(v && (v.definition || v.definitionEs || v.visual || v.example));
+  // Skip very short terms to avoid noisy matches inside ordinary words.
+  const entries = vocab
+    .map((v, i) => ({ i, term: String((v && v.term) || "").trim() }))
+    .filter((e) => e.term.length > 2 && hasPopupContent(vocab[e.i]));
+  if (!entries.length) return escapedText;
+  // Normalize for lookup: lowercase and drop a single trailing plural "s".
+  const norm = (s) => s.toLowerCase().replace(/s$/, "").trim();
+  const lookup = new Map();
+  for (const e of entries) {
+    if (!lookup.has(norm(e.term))) lookup.set(norm(e.term), e.i);
+  }
+  // Longest term first so "composite number" wins over "number".
+  const alt = [...entries]
+    .sort((a, b) => b.term.length - a.term.length)
+    .map((e) => escapeRegExp(e.term))
+    .join("|");
+  const re = new RegExp(`\\b(?:${alt})(?:es|s)?\\b`, "gi");
+  return escapedText.replace(re, (match) => {
+    const idx = lookup.has(norm(match)) ? lookup.get(norm(match)) : -1;
+    if (idx < 0) return match;
+    return `<button type="button" class="obj-term" data-term-idx="${idx}" aria-haspopup="dialog">${match}</button>`;
+  });
+}
+
+// Singleton glossary popup shared across all objective terms on the page.
+let objectivePopupEl = null;
+let objectivePopupKeyHandler = null;
+let objectivePopupLastFocus = null;
+
+function getObjectivePopup() {
+  if (objectivePopupEl) return objectivePopupEl;
+  const backdrop = document.createElement("div");
+  backdrop.className = "obj-popup-backdrop";
+  backdrop.hidden = true;
+  backdrop.innerHTML = `
+    <div class="obj-popup" role="dialog" aria-modal="true" aria-labelledby="obj-popup-term">
+      <button type="button" class="obj-popup-close" aria-label="Close">&times;</button>
+      <h3 id="obj-popup-term" class="obj-popup-term"></h3>
+      <p class="obj-popup-translation">
+        <span class="obj-popup-tr-label">Español:</span>
+        <span class="obj-popup-tr-es" lang="es"></span>
+      </p>
+      <figure class="obj-popup-visual">
+        <img class="obj-popup-img" alt="" />
+        <figcaption class="obj-popup-example"></figcaption>
+      </figure>
+      <p class="obj-popup-def"></p>
+      <p class="obj-popup-def-es" lang="es"></p>
+    </div>`;
+  document.body.append(backdrop);
+  backdrop.addEventListener("click", (e) => {
+    if (e.target === backdrop) closeObjectivePopup();
+  });
+  backdrop.querySelector(".obj-popup-close").addEventListener("click", () => closeObjectivePopup());
+  objectivePopupEl = backdrop;
+  return backdrop;
+}
+
+function openObjectiveTermPopup(entry) {
+  if (!entry) return;
+  const backdrop = getObjectivePopup();
+  const term = String(entry.term || "").trim();
+  backdrop.querySelector(".obj-popup-term").textContent = term;
+
+  // Spanish translation of the word itself (e.g. Ratio → Razón). Hidden when
+  // the vocab entry has no termEs so we never show an empty "Español:" row.
+  const trRow = backdrop.querySelector(".obj-popup-translation");
+  const trEs = backdrop.querySelector(".obj-popup-tr-es");
+  const termEs = entry.termEs ? String(entry.termEs).trim() : "";
+  if (termEs) {
+    trEs.textContent = termEs;
+    trRow.hidden = false;
+  } else {
+    trEs.textContent = "";
+    trRow.hidden = true;
+  }
+
+  const img = backdrop.querySelector(".obj-popup-img");
+  img.src = resolveVocabImage(term, entry.image);
+  img.alt = vocabImageAlt(term, entry.definition);
+
+  const ex = backdrop.querySelector(".obj-popup-example");
+  const visual = entry.visual ? String(entry.visual) : "";
+  ex.textContent = visual;
+  ex.hidden = !visual;
+
+  backdrop.querySelector(".obj-popup-def").textContent = entry.definition
+    ? String(entry.definition)
+    : "";
+
+  const esEl = backdrop.querySelector(".obj-popup-def-es");
+  if (entry.definitionEs) {
+    esEl.textContent = String(entry.definitionEs);
+    esEl.hidden = false;
+  } else {
+    esEl.textContent = "";
+    esEl.hidden = true;
+  }
+
+  objectivePopupLastFocus = document.activeElement;
+  backdrop.hidden = false;
+  document.body.classList.add("obj-popup-open");
+  backdrop.querySelector(".obj-popup-close").focus();
+  objectivePopupKeyHandler = (e) => {
+    if (e.key === "Escape") closeObjectivePopup();
+  };
+  document.addEventListener("keydown", objectivePopupKeyHandler);
+}
+
+function closeObjectivePopup() {
+  if (!objectivePopupEl) return;
+  objectivePopupEl.hidden = true;
+  document.body.classList.remove("obj-popup-open");
+  if (objectivePopupKeyHandler) {
+    document.removeEventListener("keydown", objectivePopupKeyHandler);
+    objectivePopupKeyHandler = null;
+  }
+  if (objectivePopupLastFocus && typeof objectivePopupLastFocus.focus === "function") {
+    objectivePopupLastFocus.focus();
+  }
+  objectivePopupLastFocus = null;
+}
+
+// Delegate clicks on underlined objective terms to the shared glossary popup.
+export function wireObjectiveTermPopups(block, vocab) {
+  if (!block.querySelector(".obj-term")) return;
+  block.addEventListener("click", (e) => {
+    const btn = e.target.closest(".obj-term");
+    if (!btn || !block.contains(btn)) return;
+    const idx = Number(btn.dataset.termIdx);
+    if (Number.isInteger(idx)) openObjectiveTermPopup(vocab[idx]);
+  });
+}
+
 // Content / Language "I can…" objectives. Rendered AFTER the "Be Curious"
 // Notice & Wonder card so students get curious about the scenario before they
-// read the formal goals (see renderLaunchPhase ordering).
+// read the formal goals (see renderLaunchPhase ordering). Key vocabulary words
+// named in the objectives are underlined and open a tap-to-view popup with a
+// simple kid-friendly explanation + a visual (see linkifyObjectiveTerms).
 function renderObjectives(el, config) {
+  const vocab = Array.isArray(config.vocabulary) ? config.vocabulary : [];
+  const contentHtml = linkifyObjectiveTerms(resolveContentObjective(config), vocab);
+  const languageHtml = linkifyObjectiveTerms(resolveLanguageObjective(config), vocab);
   const block = document.createElement("div");
   block.className = "launch-objectives grid-2";
   block.innerHTML = `
     <div class="card card-teal launch-objective">
-      <h4 style="color:var(--teal); margin-bottom:var(--sp-2);">Content Objective</h4>
-      <p style="margin:0; font-weight:600;">${resolveContentObjective(config)}</p>
+      <h4 style="color:var(--teal-ink); margin-bottom:var(--sp-2);">Content Objective</h4>
+      <p style="margin:0; font-weight:600;">${contentHtml}</p>
     </div>
     <div class="card card-coral launch-objective">
       <h4 style="color:var(--coral); margin-bottom:var(--sp-2);">Language Objective</h4>
-      <p style="margin:0; font-weight:600;">${resolveLanguageObjective(config)}</p>
+      <p style="margin:0; font-weight:600;">${languageHtml}</p>
     </div>
   `;
   el.append(block);
+  wireObjectiveTermPopups(block, vocab);
 }
 
 function renderLaunchPhase(el, state, ctx, config) {
@@ -1418,43 +1572,31 @@ function renderLaunchPhase(el, state, ctx, config) {
   // notice/wonder capture and we skip the generic grid below — no duplicates.
   const hasRevealNW = !!(config.noticeAndWonder && typeof config.noticeAndWonder === "object");
 
+  // Top: student identity (name / period), homework link, pre-lesson hint.
   renderLaunchHeader(el, state, config);
 
-  // "Be Curious" (Notice & Wonder, Reveal data-context) now renders BEFORE the
-  // objectives so students explore the scenario first, then read the "I can…"
-  // goals. No-op when config.noticeAndWonder is absent.
-  renderNoticeAndWonder(el, config, state);
-
-  // Content / Language objectives, immediately after the curiosity hook.
+  // Objectives sit directly under the header — the formal "I can…" goals.
   renderObjectives(el, config);
 
+  // ── Be Curious ────────────────────────────────────────────────────────────
+  // Its own part, right under the objectives: the Reveal Notice & Wonder
+  // routine. Students get curious about today's math BEFORE the formal Launch
+  // problem below. No-op when the lesson has no Notice & Wonder.
   phaseHeader(
     el,
-    "🚀",
-    "section-icon-amber",
-    "Launch",
-    "Read the scenario. What do you notice? What do you wonder?",
+    "🔭",
+    "section-icon-teal",
+    "Be Curious",
+    "Look at today's scene. What do you notice? What do you wonder?",
   );
 
-  instructionCallout(
-    el,
-    "👀",
-    "<strong>Your job:</strong> Read the story below. Write one thing you <strong>notice</strong> (a fact or pattern) and one thing you <strong>wonder</strong> (a question). Short answers are fine!",
-  );
+  // Notice & Wonder (Reveal data-context). No-op when absent.
+  renderNoticeAndWonder(el, config, state);
 
-  // Tap-to-reveal story beats for multi-sentence narratives
-  renderLaunchStoryBeats(el, config);
-
-  const scenario = document.createElement("div");
-  scenario.className = "card launch-scenario-card";
-  scenario.innerHTML = `
-    <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
-    <p class="launch-narrative">${renderMathText(cfg.narrative)}</p>`;
-  if (cfg.contextImage || config.theme) {
-    renderThemeIllustration(scenario, config.theme, cfg.contextImage || null);
-  }
-  el.append(scenario);
-
+  // The observation visual + generic Notice/Wonder belong with the "Be Curious"
+  // image — the thing students observe — NOT the Launch word problem. They are
+  // rendered here, before Launch, so "I notice / I wonder" matches the Be Curious
+  // visual rather than the scenario.
   // Opt-in concrete data visual so "I notice / I wonder" has something to see.
   renderLaunchVisual(el, cfg.visual);
 
@@ -1469,7 +1611,7 @@ function renderLaunchPhase(el, state, ctx, config) {
 
     const noticeCard = document.createElement("div");
     noticeCard.className = "card card-teal";
-    noticeCard.innerHTML = `<h4 style="color:var(--teal); margin-bottom:var(--sp-3);">👀 I Notice...</h4>
+    noticeCard.innerHTML = `<h4 style="color:var(--teal-ink); margin-bottom:var(--sp-3);">👀 I Notice...</h4>
       ${(cfg.noticePrompts || []).map((p) => `<div class="sentence-frame" style="margin-bottom:var(--sp-2);"><span style="font-weight:600;">${esc(p)}</span></div>`).join("")}`;
     noticeTA = document.createElement("textarea");
     noticeTA.className = "text-input";
@@ -1495,6 +1637,21 @@ function renderLaunchPhase(el, state, ctx, config) {
     el.append(grid);
   }
 
+  // ── Launch ────────────────────────────────────────────────────────────────
+  // Now the application scenario and the guided solve — the word problem lives
+  // here, after Be Curious / Notice & Wonder.
+  phaseHeader(el, "🚀", "section-icon-amber", "Launch", "Read the problem, then show your work.");
+
+  const scenario = document.createElement("div");
+  scenario.className = "card launch-scenario-card";
+  scenario.innerHTML = `
+    <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
+    <p class="launch-narrative" data-annotate="word-problem">${renderMathText(cfg.narrative)}</p>`;
+  if (cfg.contextImage || config.theme) {
+    renderThemeIllustration(scenario, config.theme, cfg.contextImage || null);
+  }
+  el.append(scenario);
+
   // Hand off to the full step-by-step Learn It page — the single place the
   // concept is taught. (Concept teaching no longer renders inside Launch; it
   // used to triple-render here, in Learn It, and in Notes.)
@@ -1513,6 +1670,9 @@ function renderLaunchPhase(el, state, ctx, config) {
 
   // Inline Reveal Math slides for this section (launch + instruction).
   renderRevealSlides(el, config, ["launch", "instruction"]);
+
+  // Let students mark up the word problems (highlight / underline / bold).
+  enableWordProblemAnnotation(el);
 
   const btn = document.createElement("button");
   btn.className = "btn btn-primary btn-lg mt-6";
@@ -1592,7 +1752,7 @@ function renderExplorePhase(el, state, ctx, config) {
       if (cfg.discourse) {
         const disc = document.createElement("div");
         disc.className = "card card-teal mt-6";
-        disc.innerHTML = `<h4 style="color:var(--teal); margin-bottom:var(--sp-3);">💬 Discuss</h4>`;
+        disc.innerHTML = `<h4 style="color:var(--teal-ink); margin-bottom:var(--sp-3);">💬 Discuss</h4>`;
         renderOpenResponse(disc, {
           prompt: cfg.discourse.prompt,
           sentenceFrame: cfg.discourse.sentenceFrame,
@@ -1709,12 +1869,12 @@ function renderSkillPractice(host, config, state) {
     .slice(0, 3);
   if (!pool.length) return;
 
+  const total = pool.length;
   const card = document.createElement("div");
   card.className = "card skill-practice";
-  card.style.cssText = "border-left:4px solid var(--navy,#264653);";
   card.innerHTML = `
     <h4 style="color:var(--navy,#264653); margin:0 0 var(--sp-2,8px);">✏️ Practice the skill — solve these</h4>
-    <p style="margin:0 0 var(--sp-3,12px);">Work each problem. Show your steps, write your answer, then tap <strong>Check answer</strong>.</p>`;
+    <p class="sp-intro">Work each problem. Show your steps, write your answer, then tap <strong>Check answer</strong>.</p>`;
 
   pool.forEach((it, i) => {
     const answer =
@@ -1722,16 +1882,15 @@ function renderSkillPractice(host, config, state) {
         ? it.choices[it.correctIndex]
         : it.sampleAnswer || it.answer || "";
     const wrap = document.createElement("div");
-    wrap.style.cssText =
-      "background:#fff; border:1px solid var(--line,#e4ddc9); border-radius:var(--radius-md,12px); padding:var(--sp-3,14px) var(--sp-4,16px); margin-bottom:var(--sp-3,12px);";
+    wrap.className = "sp-problem";
     wrap.innerHTML = `
-      <p style="font-size:1.15rem; font-weight:600; color:var(--navy,#264653); margin:0 0 var(--sp-2,8px);"><strong>Problem ${i + 1}.</strong> ${esc(it.stem)}</p>
-      <textarea class="sp-work" rows="3" placeholder="Show your steps here…" style="width:100%; box-sizing:border-box; border:1.5px solid var(--line,#e4ddc9); border-radius:8px; padding:8px 10px; font:inherit; font-size:1rem; resize:vertical;"></textarea>
-      <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:var(--sp-2,8px);">
-        <label style="font-weight:700; color:var(--navy,#264653);">My answer: <input class="sp-answer" type="text" style="border:0; border-bottom:2px solid var(--teal,#2a9d8f); font:inherit; font-size:1rem; padding:4px 6px;" /></label>
+      <p class="sp-stem"><span class="sp-num" aria-hidden="true">${i + 1}</span><span class="sp-stem-text" data-annotate="word-problem"><span class="sr-only">Problem ${i + 1} of ${total}. </span>${esc(it.stem)}</span></p>
+      <textarea class="sp-work text-input" rows="3" placeholder="Show your steps here…"></textarea>
+      <div class="sp-row">
+        <label class="sp-answer-label">My answer: <input class="sp-answer" type="text" /></label>
         <button type="button" class="btn btn-secondary sp-check">Check answer</button>
       </div>
-      <div class="sp-reveal" hidden style="margin-top:var(--sp-2,8px); padding:var(--sp-2,8px) var(--sp-3,12px); background:rgba(42,157,143,0.08); border:1px solid var(--teal,#2a9d8f); border-radius:8px;"></div>`;
+      <div class="sp-reveal" hidden></div>`;
 
     const workEl = wrap.querySelector(".sp-work");
     const ansEl = wrap.querySelector(".sp-answer");
@@ -1764,6 +1923,8 @@ function renderSkillPractice(host, config, state) {
   });
 
   host.append(card);
+  // Let students mark up each problem stem (highlight / underline / bold).
+  enableWordProblemAnnotation(card);
 }
 
 function renderPracticePhase(el, state, ctx, config) {
@@ -1788,10 +1949,14 @@ function renderPracticePhase(el, state, ctx, config) {
   // interactive games/sorts below.
   renderSkillPractice(el, config, state);
 
-  // Non-stigmatizing Level 1 / Level 2 / Adaptive selector.
+  // Non-stigmatizing Level 1 / Level 2 / Adaptive selector. Changing the level
+  // immediately re-serves a problem at the chosen tier — without an onChange the
+  // pick only took effect on the next item, so the selector looked broken.
   const selectorSlot = document.createElement("div");
   el.append(selectorSlot);
-  mountLevelSelector(selectorSlot, state);
+  mountLevelSelector(selectorSlot, state, () => {
+    if (seq.servedCount < seq.total) next();
+  });
 
   // Sticky practice score bar
   const scoreBar = document.createElement("div");
@@ -1964,12 +2129,6 @@ function renderConnectPhase(el, state, ctx, config) {
     "Where does this math live in the wild?",
   );
 
-  instructionCallout(
-    el,
-    "🌍",
-    "<strong>Real-world math:</strong> Read the scenario. Talk with a partner using Turn & Talk, then write how this connects to today's lesson using math vocabulary.",
-  );
-
   const card = document.createElement("div");
   card.className = "card connect-scenario-card";
   card.innerHTML = `
@@ -2010,8 +2169,7 @@ function renderConnectPhase(el, state, ctx, config) {
 
   const label = document.createElement("label");
   label.setAttribute("for", fieldId);
-  label.style.cssText =
-    "display:block; font-size:1rem; font-weight:600; margin:0 0 var(--sp-3); line-height:1.5;";
+  label.className = "connect-prompt-label";
   label.textContent = promptText;
   respCard.append(label);
 
@@ -2032,8 +2190,7 @@ function renderConnectPhase(el, state, ctx, config) {
   respCard.append(textarea);
 
   const charCount = document.createElement("div");
-  charCount.style.cssText =
-    "font-size:0.78rem; color:var(--muted); margin-top:var(--sp-1); text-align:right;";
+  charCount.className = "connect-charcount";
   const updateCount = () => {
     const len = textarea.value.trim().length;
     charCount.textContent = `${len} / ${minLength} characters minimum`;
@@ -2139,7 +2296,7 @@ function renderReflectPhase(el, state, ctx, config) {
   // One thing I learned (exit ticket prep)
   const learnedCard = document.createElement("div");
   learnedCard.className = "card card-amber";
-  learnedCard.innerHTML = `<h4 style="color:var(--amber); margin-bottom:var(--sp-3);">✨ ${stackHtml(t("oneThingToday", "en"), t("oneThingToday", "es"))}</h4>`;
+  learnedCard.innerHTML = `<h4 style="color:var(--amber-ink); margin-bottom:var(--sp-3);">✨ ${stackHtml(t("oneThingToday", "en"), t("oneThingToday", "es"))}</h4>`;
   const learnedTA = document.createElement("textarea");
   learnedTA.className = "text-input";
   learnedTA.rows = 2;
@@ -2156,7 +2313,7 @@ function renderReflectPhase(el, state, ctx, config) {
   confCard.className = "card card-teal confidence-card";
   const savedConf = Number(state.getResponse(4, "confidence")) || 3;
   confCard.innerHTML = `
-    <h4 style="color:var(--teal); margin-bottom:var(--sp-3);">${t("howConfident")} ${esc(config.title)}?</h4>
+    <h4 style="color:var(--teal-ink); margin-bottom:var(--sp-3);">${t("howConfident")} ${esc(config.title)}?</h4>
     <div class="confidence-slider-wrap">
       <input type="range" class="confidence-slider" min="1" max="5" step="1" value="${savedConf}" aria-label="Confidence level 1 to 5" />
       <div class="confidence-labels">
@@ -2238,7 +2395,7 @@ function renderObjectiveReview(state, config) {
   ];
 
   card.innerHTML = `
-    <h4 id="obj-review-title" style="color:var(--teal); margin-bottom:var(--sp-2);">✅ ${stackHtml(t("didIGetIt", "en"), t("didIGetIt", "es"))}</h4>
+    <h4 id="obj-review-title" style="color:var(--teal-ink); margin-bottom:var(--sp-2);">✅ ${stackHtml(t("didIGetIt", "en"), t("didIGetIt", "es"))}</h4>
     <p style="color:var(--muted); margin:0 0 var(--sp-4); font-size:0.92rem;">Check off each goal you can do. Be honest — it helps you know what to practice!</p>
   `;
 
@@ -2257,7 +2414,7 @@ function renderObjectiveReview(state, config) {
 
     const text = document.createElement("div");
     text.innerHTML = `
-      <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.04em; color:var(--teal); margin-bottom:2px;">${item.label}</div>
+      <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.04em; color:var(--teal-ink); margin-bottom:2px;">${item.label}</div>
       <div style="font-weight:600;">${item.html}</div>
     `;
 

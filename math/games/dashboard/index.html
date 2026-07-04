@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <meta
       name="description"
       content="Teacher analytics dashboard for the Grade 6 math games — reads EduPulse and Save/Resume data stored on this device to show attempts, best scores, stars, mastery signals, and a needs-review callout. Fully client-side; nothing leaves this browser."
@@ -10,10 +11,19 @@
     <title>Math Games — Teacher Dashboard | Neft Teacher</title>
     <link rel="stylesheet" href="/assets/shared.css" />
     <link rel="stylesheet" href="./styles.css" />
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
-    <!-- nsr-injected:end -->
-  </head>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+  <link rel="stylesheet" href="/assets/game-fx.css">
+  <!-- gfx-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <link rel="stylesheet" href="/assets/game-access.css">
+  <!-- gacc-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
   <body>
     <a class="skip-link" href="#dash-main">Skip to dashboard</a>
     <main class="page-shell">
@@ -51,6 +61,8 @@
           ↻ Refresh
         </button>
         <button class="dash-btn" id="btn-print" type="button">⎙ Print</button>
+        <button class="dash-btn" id="btn-import-backups" type="button" onclick="triggerBackupImport()">📂 Import Backups</button>
+        <input type="file" id="file-import-backups" multiple accept=".json" style="display:none;" onchange="handleBackupImport(event)" />
         <button class="dash-btn primary" id="btn-export" type="button">
           ⤓ Export CSV
         </button>
@@ -165,6 +177,38 @@
        * ================================================================== */
       (function () {
         var LS_PREFIX = "nsr:";
+        
+        window.triggerBackupImport = function() {
+          document.getElementById('file-import-backups').click();
+        };
+        
+        window.handleBackupImport = function(event) {
+          var files = event.target.files;
+          if (!files.length) return;
+          var loaded = 0;
+          Array.prototype.forEach.call(files, function(file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+              try {
+                var data = JSON.parse(e.target.result);
+                if (data && (data.activityId || data.studentName)) {
+                  var code = data.code || ('IMP-' + Math.random().toString(36).substring(2, 6).toUpperCase());
+                  var key = "nsr:rec:" + code;
+                  localStorage.setItem(key, JSON.stringify(data));
+                  loaded++;
+                }
+              } catch(err) {
+                console.error("Error parsing backup file", err);
+              }
+              if (loaded === files.length) {
+                alert("Successfully imported " + loaded + " student backup(s)!");
+                window.location.reload();
+              }
+            };
+            reader.readAsText(file);
+          });
+        };
+
 
         /* ---------- tiny safe helpers ---------- */
         function safe(fn, fallback) {
@@ -808,8 +852,17 @@
 
     <script src="/assets/app.js" defer></script>
     <script src="/assets/nt-page-enhance.js" defer></script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-    <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+  <script src="/assets/game-fx.js" defer></script>
+  <!-- gfx-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <script src="/assets/game-access.js" defer></script>
+  <!-- gacc-injected:end -->
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
   </body>
 </html>

@@ -28,9 +28,13 @@ import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 import { BANK, UNITS } from "./problems.js";
 
 // ---- Difficulty shaping ----------------------------------------------------
-// Level 1 (support): fewer phases, more lives, more hint. Level 2 (enrichment):
-// all phases, fewer lives, faster boss. Each phase needs N correct hits to
-// drain the boss; later phases need more hits → difficulty scales.
+// Self-paced: there is NO timer and no time pressure of any kind. The ONLY
+// difference between levels is MATH DIFFICULTY (which units/phases you face) and
+// how much support you get — never speed. Level 1 (support): fewer phases (a
+// focused set of core strands), more lives, EN/ES support text. Level 2
+// (enrichment): the full 10-unit boss rush, fewer lives. Each phase needs N
+// CORRECT hits to drain the boss; later phases need more hits → difficulty
+// scales by how many right answers it takes, not by any clock.
 function buildPlan(level) {
   const support = level !== 2;
   // Phases = ordered subset of units. Level 1 fights a focused 6-phase gauntlet;
@@ -42,17 +46,10 @@ function buildPlan(level) {
     support,
     phaseUnits,
     startLives: support ? 5 : 3,
-    // Hits to clear a phase grows as you go deeper (min 3, +1 every 2 phases).
+    // Correct hits to clear a phase grows as you go deeper (min 3, +1 every 2
+    // phases). This is the only difficulty ramp — students still take as long
+    // as they want on every single question.
     hitsForPhase: (idx) => (support ? 3 : 3) + Math.floor(idx / 2),
-    // Per-question answer time. Level 1 gets a generous clock (or none on the
-    // very first phase) so the timer pressures without overwhelming; Level 2 is
-    // faster and tightens slightly as phases get deeper. null/0 = no timer.
-    answerSeconds: (idx) =>
-      support
-        ? idx === 0
-          ? 0
-          : 30
-        : Math.max(16, 24 - Math.floor(idx / 2) * 2),
     bilingual: support, // Level 1 may include EN/ES support text
   };
 }
@@ -122,9 +119,8 @@ export default {
     const timers = new Set();
     const frameUnsubs = [];
 
-    // ----- per-question answer timer -----
-    let qTimeLeft = 0; // seconds remaining on the current question
-    let qTimeMax = 0; // seconds the current question started with (0 = no timer)
+    // Self-paced: no per-question timer. Students answer at their own pace; the
+    // boss only reacts to CORRECT vs WRONG answers, never to elapsed time.
 
     function later(fn, ms) {
       const t = setTimeout(() => {
@@ -336,15 +332,14 @@ export default {
 
     // Always-visible BOSS HP bar (top-center). The engine HUD shows score/lives/
     // streak/phase progress but has no health gauge, so we own this one. It shows
-    // the boss name, a fill that drains as the boss takes hits, and the answer
-    // timer for the current question.
+    // the boss name and a fill that drains as the boss takes hits. There is no
+    // timer — the game is fully self-paced.
     const hpWrap = document.createElement("div");
     hpWrap.className = "bb-hpwrap";
     hpWrap.innerHTML = `
       <div class="bb-hp-head">
         <span class="bb-hp-name" data-bb="hpname">Boss</span>
         <span class="bb-hp-num" data-bb="hpnum"></span>
-        <span class="bb-timer" data-bb="timer" hidden></span>
       </div>
       <div class="bb-hp-track" role="progressbar" aria-label="Boss health"
            aria-valuemin="0" aria-valuemax="100" data-bb="hptrack">
@@ -355,7 +350,6 @@ export default {
     const hpNumEl = hpWrap.querySelector('[data-bb="hpnum"]');
     const hpFillEl = hpWrap.querySelector('[data-bb="hpfill"]');
     const hpTrackEl = hpWrap.querySelector('[data-bb="hptrack"]');
-    const timerEl = hpWrap.querySelector('[data-bb="timer"]');
 
     function renderHpBar() {
       const { meta } = phaseIndexUnitMeta();
@@ -367,17 +361,6 @@ export default {
       const hue = 8 + frac * 152; // ~160 (teal-green) full → ~8 (red) empty
       hpFillEl.style.background = `linear-gradient(90deg,hsl(${hue},70%,52%),hsl(${hue + 18},75%,62%))`;
       hpTrackEl.setAttribute("aria-valuenow", String(Math.round(frac * 100)));
-    }
-
-    function renderTimer() {
-      if (qTimeMax <= 0) {
-        timerEl.hidden = true;
-        return;
-      }
-      timerEl.hidden = false;
-      const s = Math.max(0, Math.ceil(qTimeLeft));
-      timerEl.textContent = `⏱ ${s}s`;
-      timerEl.classList.toggle("bb-timer--low", s <= 5);
     }
 
     // Lives are rendered as hearts in the HUD via hud.setLives, but we also keep
@@ -445,10 +428,6 @@ export default {
         if (clarity.setTarget)
           clarity.setTarget(`${meta.theme} · ${meta.standard}`);
       }
-      // Start the per-question answer clock (0 = no timer this phase).
-      qTimeMax = plan.answerSeconds(phaseIndex) || 0;
-      qTimeLeft = qTimeMax;
-      renderTimer();
       announce(`Phase ${phaseIndex + 1}. ${currentQ.q}`);
       caption(currentQ.q);
     }
@@ -475,8 +454,6 @@ export default {
     function choose(choice, btn) {
       if (answered || gameOver) return;
       answered = true;
-      qTimeMax = 0; // stop the clock for this question
-      renderTimer();
       const correct = choice === correctValue;
       // lock all buttons, mark correct/incorrect
       const btns = [...choicesEl.querySelectorAll(".bb-choice")];
@@ -541,22 +518,6 @@ export default {
           later(() => nextQuestion(), 1500);
         }
       });
-    }
-
-    // Time ran out: reveal the correct answer, lock buttons, and take a hit —
-    // handled exactly like a wrong answer but with a clear "Out of time" tell.
-    function timeOut() {
-      if (answered || gameOver || !started) return;
-      answered = true;
-      qTimeMax = 0;
-      renderTimer();
-      const btns = [...choicesEl.querySelectorAll(".bb-choice")];
-      btns.forEach((b) => {
-        b.disabled = true;
-        const val = b.querySelector(".bb-val").textContent;
-        if (val === correctValue) b.classList.add("is-correct");
-      });
-      bossAttack("⏱ Out of time! ");
     }
 
     function bossAttack(reason = "") {
@@ -772,15 +733,8 @@ export default {
     let elapsed = 0;
     const unsub = onFrame((dt) => {
       elapsed += dt;
-      // answer countdown — only while a timed question is live and unanswered
-      if (started && !gameOver && !answered && qTimeMax > 0) {
-        qTimeLeft -= dt;
-        renderTimer();
-        if (qTimeLeft <= 0) {
-          qTimeLeft = 0;
-          timeOut();
-        }
-      }
+      // No answer countdown: the game is self-paced, so the frame loop only
+      // drives idle/visual motion below.
       if (!reduced) {
         boss.position.y = 1.1 + Math.sin(elapsed * 1.4) * 0.18;
         boss.rotation.y += dt * 0.25;
@@ -932,7 +886,7 @@ export default {
         `<div class="bb-small">MCAP BOSS BATTLE</div>
          <div class="bb-big">${meta.title}</div>
          <div class="bb-small">Phase 1 of ${plan.phaseUnits.length} · ${meta.theme}</div>
-         <div class="bb-tip">Answer questions to attack. Wrong answers cost a life. Keys: 1-4 or A-D.</div>`,
+         <div class="bb-tip">Take your time — no timer. Answer questions to attack. Wrong answers cost a life. Keys: 1-4 or A-D.</div>`,
         1900,
       );
       later(() => {
@@ -999,9 +953,9 @@ export default {
             },
           ],
           howToWinEn:
-            "A correct answer hits the boss and drains its health bar; a wrong answer (or running out of time) lets the boss strike back and costs a life. Clear every phase before your hearts run out. Watch the red HP bar up top — when it empties, the phase is cleared!",
+            "Take all the time you need — there is no timer. A correct answer hits the boss and drains its health bar; a wrong answer lets the boss strike back and costs a life. Clear every phase before your hearts run out. Watch the red HP bar up top — when it empties, the phase is cleared!",
           howToWinEs:
-            "Una respuesta correcta daña al jefe; una incorrecta o sin tiempo te quita una vida. Supera todas las fases antes de quedarte sin corazones.",
+            "Tómate el tiempo que necesites — no hay reloj. Una respuesta correcta daña al jefe; una incorrecta te quita una vida. Supera todas las fases antes de quedarte sin corazones.",
           startLabelEn: "Start battle",
           onStart: beginPlay,
           onPlayAgain: () => location.reload(),
@@ -1064,9 +1018,6 @@ function injectStyles() {
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1 1 auto;}
   .bb-hp-num{font-size:11.5px;font-weight:700;color:rgba(255,255,255,.85);
     white-space:nowrap;}
-  .bb-timer{font-size:12px;font-weight:800;color:var(--amber,#f2c15b);
-    white-space:nowrap;}
-  .bb-timer--low{color:#ff6a5a;}
   .bb-hp-track{height:13px;border-radius:999px;background:rgba(0,0,0,.42);
     border:1px solid rgba(255,255,255,.25);overflow:hidden;
     box-shadow:0 2px 8px rgba(0,0,0,.4),inset 0 1px 2px rgba(0,0,0,.5);}

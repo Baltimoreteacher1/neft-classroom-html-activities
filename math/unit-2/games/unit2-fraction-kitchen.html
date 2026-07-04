@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Fraction Kitchen — Pour Master</title>
     <style>
       * {
@@ -30,7 +31,10 @@
         z-index: 50;
         padding: 6px 12px;
         border-radius: 8px;
-        font: 600 13px/1 "Segoe UI", system-ui, sans-serif;
+        font:
+          600 13px/1 "Segoe UI",
+          system-ui,
+          sans-serif;
         color: #f0e6ff;
         background: rgba(26, 18, 48, 0.75);
         border: 1px solid rgba(150, 120, 200, 0.5);
@@ -62,12 +66,36 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
   </head>
   <body>
     <a class="nt-back-hub" href="../index.html" aria-label="Back to Unit 2 hub"
       >← Back to Unit&nbsp;2</a
     >
     <div id="game"></div>
+    <!-- Visually-hidden live region: mirrors the current pour order for
+         assistive tech and the shared hint ladder. Additive only. -->
+    <div
+      id="fk-sr"
+      role="status"
+      aria-live="polite"
+      style="
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      "
+    ></div>
     <script>
       // ───────────────────────────────────────────────────────────
       // FRACTION KITCHEN — POUR MASTER  (Neft Teacher)
@@ -224,7 +252,7 @@
             .text(
               W / 2,
               320,
-              "Each order needs a fraction of a jug, like 3/4.\nHOLD to pour. RELEASE the instant the liquid\nhits the target line. Stop too late and it spills!",
+              "Each order needs a fraction of a jug, like 3/4.\nHOLD to pour slowly, RELEASE near the target line.\nNo timer, no rush — overfilling just starts the next order.",
               {
                 fontFamily: "Segoe UI",
                 fontSize: "21px",
@@ -238,7 +266,7 @@
             .text(
               W / 2,
               440,
-              "HOLD  Space / Click / Tap  to pour    •    Watch for equivalent fractions!",
+              "HOLD  Space / Click / Tap  to pour slowly    •    Watch for equivalent fractions!",
               {
                 fontFamily: "Segoe UI",
                 fontSize: "18px",
@@ -505,6 +533,11 @@
           this.orderText.setText(
             `${o.food}   —   fill to  ${o.shownNum}/${o.shownDen}`,
           );
+          // Mirror the order into the hidden live region (assistive tech +
+          // shared hint ladder). Additive: never touches gameplay/scoring.
+          const fkSr = document.getElementById("fk-sr");
+          if (fkSr)
+            fkSr.textContent = `Order for ${o.food}: fill the jug to ${o.shownNum}/${o.shownDen}. The jug is marked in ${o.jugDen}ths.`;
 
           // Equivalent-fraction hint: dedicated text that scales + glows so
           // students notice they must convert against the jug's gradations.
@@ -663,19 +696,19 @@
             label = "PERFECT POUR!";
             color = "#51cf66";
             sfx.perfect();
-          } else if (err <= tol * 0.5) {
+          } else if (err <= tol * 0.95) {
             pts = 50;
             this.combo = 0;
             label = "Close enough!";
             color = "#a9e34b";
             sfx.good();
           } else {
+            // Missed the line — no penalty, just try the next order (calm).
             pts = 0;
             this.combo = 0;
-            label = "Off the line!";
+            label = "Just over — try the next one!";
             color = "#ff922b";
             sfx.spill();
-            this.lives--;
           }
           this.score += pts;
           this.flashLabel(label, color, pts);
@@ -693,7 +726,7 @@
           this.pouring = false;
           this.stopPourFx();
           this.combo = 0;
-          this.lives--;
+          // No life lost on overfill (calm/forgiving) — just move to next order.
           sfx.spill();
           // Splash particle burst over the jug rim on overfill.
           this.splash(this.jugX, this.jugTop + 6);
@@ -783,10 +816,11 @@
             this.streamPhase += dt * 0.35;
           }
 
-          // ── Gameplay (UNCHANGED rate + overfill rule) ───────────────────
+          // ── Gameplay: slow, steady pour (calm — no reflex timing, no round
+          //    speed-up). Teacher preference: students fill at their own pace.
           if (!this.locked) {
             if (this.pouring) {
-              const rate = (0.00028 + this.round * 0.00003) * delta;
+              const rate = 0.00011 * delta;
               this.fill += rate;
               this.tiltTarget = -28; // spout tilts as it pours
               sfx.pour();
@@ -922,5 +956,29 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#fk-sr",
+            standard: "6.NS.1",
+            accept: "^Order ",
+            staticHints: [
+              "Look at the jug: how many equal parts do the lines split it into? Each line marks one unit fraction of the whole jug.",
+              "If the order's fraction uses a different denominator than the jug's lines, find an equivalent fraction that matches the jug's parts.",
+              "Set it up: decide how many jug lines up from the bottom the order needs, then pour slowly and release right at that line.",
+            ],
+          });
+      });
+    </script>
+    <!-- ghl-injected:end -->
   </body>
 </html>

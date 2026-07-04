@@ -1,0 +1,191 @@
+/* projects-coach.css — AI Socratic coach dock for unit projects.
+   Health-gated: the dock only mounts when /api/tutor reports a live backend,
+   so with no ANTHROPIC_API_KEY configured nothing renders (zero impact).
+   Namespaced .ntc-* to avoid collisions. */
+
+.ntc-launch {
+  position: fixed;
+  right: 16px;
+  bottom: 74px; /* sits above the .ntf-fab summary button */
+  z-index: 9001;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border: none;
+  border-radius: 999px;
+  background: #0f7d5b;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(15, 125, 91, 0.35);
+}
+.ntc-launch:hover {
+  background: #0c6a4d;
+}
+.ntc-launch:focus-visible {
+  outline: 3px solid #8fd3bd;
+  outline-offset: 2px;
+}
+
+.ntc-panel {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 9002;
+  width: min(360px, calc(100vw - 32px));
+  max-height: min(560px, calc(100vh - 32px));
+  display: none;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #d7ddea;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+.ntc-panel.open {
+  display: flex;
+}
+
+.ntc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #0f7d5b;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+.ntc-head button {
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ntc-note {
+  padding: 8px 14px;
+  font-size: 0.76rem;
+  color: #6b7280;
+  background: #f6f8fb;
+  border-bottom: 1px solid #eef1f6;
+}
+
+.ntc-log {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #fbfcfe;
+}
+.ntc-msg {
+  max-width: 90%;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.ntc-msg.me {
+  align-self: flex-end;
+  background: #e8f0ff;
+  color: #16324f;
+}
+.ntc-msg.coach {
+  align-self: flex-start;
+  background: #eafaf3;
+  color: #0d3b2c;
+  border: 1px solid #cdeee0;
+}
+.ntc-msg.sys {
+  align-self: center;
+  background: #fff4e5;
+  color: #7a4b00;
+  font-size: 0.82rem;
+}
+.ntc-typing {
+  align-self: flex-start;
+  color: #0f7d5b;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.ntc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 14px 0;
+}
+.ntc-chip {
+  border: 1px solid #cfd6e2;
+  background: #f4f7fb;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #29405c;
+  cursor: pointer;
+}
+.ntc-chip:hover {
+  background: #e7eef7;
+}
+.ntc-chip:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.ntc-compose {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px 14px;
+  align-items: flex-end;
+}
+.ntc-compose textarea {
+  flex: 1 1 auto;
+  min-height: 40px;
+  max-height: 110px;
+  box-sizing: border-box;
+  padding: 9px 11px;
+  border: 1px solid #c8cfdd;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 0.9rem;
+  resize: none;
+}
+.ntc-compose textarea:focus {
+  outline: none;
+  border-color: #0f7d5b;
+  box-shadow: 0 0 0 3px rgba(15, 125, 91, 0.15);
+}
+.ntc-send {
+  flex: 0 0 auto;
+  border: none;
+  background: #0f7d5b;
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ntc-send:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+@media print {
+  .ntc-launch,
+  .ntc-panel {
+    display: none !important;
+  }
+}

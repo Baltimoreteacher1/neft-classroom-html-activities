@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Coordinate Treasure Hunt — 6.NS.C.6</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
     <script>
@@ -28,7 +29,11 @@
         padding: 0;
         box-sizing: border-box;
       }
-      body {
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
         background: #051225;
         overflow: hidden;
         font-family: "Segoe UI", system-ui, sans-serif;
@@ -45,14 +50,22 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <link rel="stylesheet" href="/assets/game-access.css">
+  <!-- gacc-injected:end -->
 </head>
   <body>
     <div id="game-container"></div>
+    <!-- games-2d metadata source of truth (window.Games2DData) -->
+    <script src="/assets/games2d-data.js"></script>
     <script>
       // ============================================================
       //  COORDINATE TREASURE HUNT — 6.NS.C.6
@@ -62,6 +75,14 @@
       const W = 800,
         H = 600;
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+      // Metadata source of truth: window.Games2DData (from scripts/games2d/data.mjs
+      // via assets/games2d-data.js). The vocab-gate art (drawn pictures) stays
+      // inline; the term + definition TEXT is pulled from the SoT when present so
+      // teachers edit copy in one place. Inline values below act as a fallback.
+      const GAME_ID = "6-ns-c-6game";
+      const GAME_DATA =
+        (window.Games2DData && window.Games2DData[GAME_ID]) || {};
 
       function synth(f, d, t = "square", v = 0.1) {
         try {
@@ -109,6 +130,210 @@
           [b[i], b[j]] = [b[j], b[i]];
         }
         return b;
+      }
+
+      // ============================================================
+      // VOCAB GATE — term + plain definition + picture BEFORE play.
+      // Self-contained (no module deps). Mirrors engine3d/vocab-gate.js.
+      // ============================================================
+      class VocabScene extends Phaser.Scene {
+        constructor() {
+          super("Vocab");
+        }
+        init(data) {
+          this.shipTint = data.shipTint || 0x8b5cf6;
+        }
+        create() {
+          if (audioCtx.state === "suspended") audioCtx.resume();
+          this.cameras.main.setBackgroundColor("#0a1f3c");
+
+          // Term + plain-language definition + simple drawn picture.
+          this.terms = [
+            {
+              term: "Coordinate plane",
+              def: "A flat grid made by a left-right line (x-axis) and an up-down line (y-axis) that cross at the center.",
+              draw: (g) => {
+                g.lineStyle(3, 0x38bdf8, 1);
+                g.lineBetween(20, 90, 160, 90);
+                g.lineBetween(90, 20, 90, 160);
+              },
+            },
+            {
+              term: "Ordered pair (x, y)",
+              def: "Two numbers that name one point. The first number (x) is left/right. The second number (y) is up/down.",
+              draw: (g) => {
+                g.lineStyle(2, 0x38bdf8, 0.6);
+                g.lineBetween(20, 130, 160, 130);
+                g.lineBetween(50, 20, 50, 160);
+                g.fillStyle(0xfbbf24, 1);
+                g.fillCircle(120, 60, 9);
+              },
+            },
+            {
+              term: "Quadrant",
+              def: "One of the 4 corners of the plane. They are numbered I, II, III, IV starting top-right and going counter-clockwise.",
+              draw: (g) => {
+                g.lineStyle(2, 0x38bdf8, 0.6);
+                g.lineBetween(20, 90, 160, 90);
+                g.lineBetween(90, 20, 90, 160);
+                g.fillStyle(0x10b981, 0.4);
+                g.fillRect(92, 22, 66, 66);
+                g.fillStyle(0x3b82f6, 0.4);
+                g.fillRect(22, 22, 66, 66);
+                g.fillStyle(0xf59e0b, 0.4);
+                g.fillRect(22, 92, 66, 66);
+                g.fillStyle(0xec4899, 0.4);
+                g.fillRect(92, 92, 66, 66);
+              },
+            },
+            {
+              term: "Opposite / reflection",
+              def: "Reflecting a point flips it to the other side of an axis. Flipping the sign of x mirrors left-right; flipping y mirrors up-down.",
+              draw: (g) => {
+                g.lineStyle(2, 0x38bdf8, 0.6);
+                g.lineBetween(90, 20, 90, 160);
+                g.lineBetween(20, 90, 160, 90);
+                g.fillStyle(0xfbbf24, 1);
+                g.fillCircle(130, 55, 8);
+                g.fillStyle(0x4ade80, 1);
+                g.fillCircle(50, 55, 8);
+                g.lineStyle(2, 0xffffff, 0.4);
+                g.lineBetween(58, 55, 122, 55);
+              },
+            },
+          ];
+
+          // Overlay term + definition text from the source of truth (data.mjs),
+          // keeping the inline drawn picture for each card. Falls back to inline
+          // copy if the artifact is missing or has fewer entries.
+          const sotVocab = (GAME_DATA && GAME_DATA.vocab) || [];
+          this.terms.forEach((card, i) => {
+            const src = sotVocab[i];
+            if (src) {
+              card.term = src.term || card.term;
+              card.def = src.defn || src.def || card.def;
+            }
+          });
+
+          this.idx = 0;
+          this.renderCard();
+        }
+
+        renderCard() {
+          if (this.cardGroup) this.cardGroup.forEach((o) => o.destroy());
+          this.cardGroup = [];
+          const t = this.terms[this.idx];
+          const last = this.idx === this.terms.length - 1;
+
+          const push = (o) => {
+            this.cardGroup.push(o);
+            return o;
+          };
+
+          push(
+            this.add
+              .text(
+                W / 2,
+                70,
+                `KEY WORD ${this.idx + 1} OF ${this.terms.length}`,
+                {
+                  fontSize: "15px",
+                  color: "#38bdf8",
+                  fontStyle: "bold",
+                },
+              )
+              .setOrigin(0.5),
+          );
+
+          // Picture
+          const pic = this.add.graphics();
+          pic.fillStyle(0x102a4c, 1);
+          pic.fillRoundedRect(W / 2 - 90, 100, 180, 180, 16);
+          pic.lineStyle(2, 0x1e3a5f, 1);
+          pic.strokeRoundedRect(W / 2 - 90, 100, 180, 180, 16);
+          pic.translateCanvas(W / 2 - 90, 110);
+          t.draw(pic);
+          push(pic);
+
+          push(
+            this.add
+              .text(W / 2, 310, t.term, {
+                fontSize: "30px",
+                color: "#fbbf24",
+                fontStyle: "bold",
+                align: "center",
+              })
+              .setOrigin(0.5),
+          );
+          push(
+            this.add
+              .text(W / 2, 380, t.def, {
+                fontSize: "17px",
+                color: "#cbd5e1",
+                wordWrap: { width: 560 },
+                align: "center",
+                lineSpacing: 4,
+              })
+              .setOrigin(0.5),
+          );
+
+          // Next / Start button
+          const by = 500;
+          const btn = push(
+            this.add
+              .image(W / 2, by, "btn")
+              .setScale(1.15)
+              .setInteractive({ useHandCursor: true }),
+          );
+          push(
+            this.add
+              .text(W / 2, by, last ? "START PLAYING ▶" : "NEXT →", {
+                fontSize: "18px",
+                color: "#4ade80",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5),
+          );
+          btn.on("pointerover", () => btn.setScale(1.2));
+          btn.on("pointerout", () => btn.setScale(1.15));
+          btn.on("pointerdown", () => {
+            synth(500, 0.08);
+            if (last) {
+              this.scene.start("Game", { shipTint: this.shipTint });
+            } else {
+              this.idx++;
+              this.renderCard();
+            }
+          });
+
+          if (this.idx > 0) {
+            const back = push(
+              this.add
+                .text(W / 2 - 230, by, "← Back", {
+                  fontSize: "15px",
+                  color: "#94a3b8",
+                })
+                .setOrigin(0.5)
+                .setInteractive({ useHandCursor: true }),
+            );
+            back.on("pointerdown", () => {
+              this.idx = Math.max(0, this.idx - 1);
+              this.renderCard();
+            });
+          }
+
+          // Progress dots
+          for (let n = 0; n < this.terms.length; n++) {
+            push(
+              this.add.circle(
+                W / 2 - (this.terms.length - 1) * 8 + n * 16,
+                550,
+                5,
+                n === this.idx ? 0x38bdf8 : 0x334155,
+              ),
+            );
+          }
+        }
       }
 
       // ============================================================
@@ -394,7 +619,7 @@
             this.cameras.main.fadeOut(400);
             this.time.delayedCall(400, () => {
               const tints = [0x8b5cf6, 0x0ea5e9, 0xfbbf24];
-              this.scene.start("Game", { shipTint: tints[this.selectedShip] });
+              this.scene.start("Vocab", { shipTint: tints[this.selectedShip] });
             });
           });
 
@@ -429,89 +654,101 @@
           this.lives = 3;
           this.combo = 0;
           this.maxCombo = 0;
-          this.treasuresFound = 0;
-          this.totalTreasures = 3 + Math.min(this.level, 4);
           this.qCorrect = 0;
           this.qTotal = 0;
           this.canMove = true;
-          this.questionActive = false;
           this.gridRange = 6; // -6 to 6
           this.cellSize = 40;
           this.shipGridX = 0;
           this.shipGridY = 0;
           this.moveDelay = 0;
+          // How many missions (treasures) this voyage.
+          this.totalMissions = 3 + Math.min(this.level - 1, 3);
+          this.missionsDone = 0;
+          this.missionLocked = false; // true while showing result of a drop
         }
 
         create() {
           if (audioCtx.state === "suspended") audioCtx.resume();
           this.cameras.main.setBackgroundColor("#051225");
 
-          // Grid dimensions
           const range = this.gridRange;
           const cs = this.cellSize;
-          const gridW = (range * 2 + 1) * cs;
-          const gridH = (range * 2 + 1) * cs;
           const ox = W / 2; // origin screen x
-          const oy = H / 2 - 20; // origin screen y
+          const oy = H / 2 + 20; // origin screen y (room for prompt at top)
 
           this.ox = ox;
           this.oy = oy;
           this.cs = cs;
           this.range = range;
 
-          // Draw ocean background
+          // Ocean background
           for (let gx = -range; gx <= range; gx++) {
             for (let gy = -range; gy <= range; gy++) {
               const sx = ox + gx * cs;
               const sy = oy - gy * cs;
-              const tile = this.add.image(sx, sy, "water").setAlpha(0.3);
+              this.add.image(sx, sy, "water").setAlpha(0.3);
             }
           }
 
-          // Draw grid lines
           this.drawGrid();
 
-          // Quadrant labels
-          const qlSize = "14px";
-          const qlAlpha = 0.2;
+          // Quadrant labels (faint, for orientation — they do NOT reveal answers)
+          const qlSize = "20px";
+          const qlAlpha = 0.18;
+          const half = (range * cs) / 2;
           this.add
-            .text(ox + (range * cs) / 2, oy - (range * cs) / 2, "I", {
+            .text(ox + half, oy - half, "I", {
               fontSize: qlSize,
               color: "#4ade80",
+              fontStyle: "bold",
             })
             .setOrigin(0.5)
             .setAlpha(qlAlpha);
           this.add
-            .text(ox - (range * cs) / 2, oy - (range * cs) / 2, "II", {
+            .text(ox - half, oy - half, "II", {
               fontSize: qlSize,
               color: "#38bdf8",
+              fontStyle: "bold",
             })
             .setOrigin(0.5)
             .setAlpha(qlAlpha);
           this.add
-            .text(ox - (range * cs) / 2, oy + (range * cs) / 2, "III", {
+            .text(ox - half, oy + half, "III", {
               fontSize: qlSize,
               color: "#fbbf24",
+              fontStyle: "bold",
             })
             .setOrigin(0.5)
             .setAlpha(qlAlpha);
           this.add
-            .text(ox + (range * cs) / 2, oy + (range * cs) / 2, "IV", {
+            .text(ox + half, oy + half, "IV", {
               fontSize: qlSize,
               color: "#c084fc",
+              fontStyle: "bold",
             })
             .setOrigin(0.5)
             .setAlpha(qlAlpha);
 
-          // Place treasures
-          this.treasures = [];
-          this.placeTreasures();
+          // Marker (used by reflection missions — the point to transform)
+          this.marker = this.add
+            .image(ox, oy, "map_pin")
+            .setScale(2)
+            .setDepth(6)
+            .setVisible(false);
+          this.markerLabel = this.add
+            .text(ox, oy - 18, "", {
+              fontSize: "12px",
+              color: "#fca5a5",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5)
+            .setDepth(7)
+            .setVisible(false);
 
-          // Place rocks/obstacles
-          this.rocks = [];
-          this.placeRocks();
-
-          // Place coins (bonus)
+          // Decorative coins (bonus collectibles — navigation reward only)
           this.coins = [];
           this.placeCoins();
 
@@ -522,10 +759,11 @@
             .setTint(this.shipTint)
             .setDepth(10);
 
-          // Coordinate label following ship
+          // Coordinate label following ship — this is the ONLY readout, it shows
+          // where the SHIP is, never where the target is.
           this.coordLabel = this.add
-            .text(ox, oy + 22, "(0, 0)", {
-              fontSize: "12px",
+            .text(ox, oy + 24, "(0, 0)", {
+              fontSize: "14px",
               color: "#fbbf24",
               fontStyle: "bold",
               stroke: "#000",
@@ -534,34 +772,29 @@
             .setOrigin(0.5)
             .setDepth(11);
 
-          // HUD
           this.createHUD();
 
-          // Controls
           this.cursors = this.input.keyboard.createCursorKeys();
           this.wasd = this.input.keyboard.addKeys("W,A,S,D");
+          this.spaceKey = this.input.keyboard.addKey(
+            Phaser.Input.Keyboard.KeyCodes.SPACE,
+          );
+          this.spaceKey.on("down", () => this.dropAnchor());
 
-          // Touch controls
           this.createTouchControls();
+          this.createAnchorButton();
 
-          // Level intro
+          // Build all missions for this voyage, then start the first.
+          this.buildMissions();
           this.showLevelIntro();
 
           this.cameras.main.fadeIn(500);
-
-          // Target arrow (points to nearest treasure)
-          this.targetArrow = this.add
-            .image(ox, oy - 30, "compass")
-            .setScale(1.5)
-            .setDepth(12)
-            .setAlpha(0.7);
         }
 
         drawGrid() {
           const g = this.add.graphics();
           const { ox, oy, cs, range } = this;
 
-          // Grid lines
           g.lineStyle(1, 0x38bdf8, 0.08);
           for (let i = -range; i <= range; i++) {
             g.moveTo(ox + i * cs, oy - range * cs);
@@ -571,7 +804,6 @@
           }
           g.strokePath();
 
-          // Axes (thicker)
           g.lineStyle(2, 0x38bdf8, 0.4);
           g.moveTo(ox - range * cs, oy);
           g.lineTo(ox + range * cs, oy);
@@ -579,122 +811,61 @@
           g.lineTo(ox, oy + range * cs);
           g.strokePath();
 
-          // Axis labels
           for (let i = -range; i <= range; i++) {
             if (i === 0) continue;
-            // x-axis
             this.add
-              .text(ox + i * cs, oy + 10, `${i}`, {
-                fontSize: "9px",
+              .text(ox + i * cs, oy + 6, `${i}`, {
+                fontSize: "10px",
                 color: "#64748b",
               })
               .setOrigin(0.5, 0);
-            // y-axis
             this.add
               .text(ox - 14, oy - i * cs, `${i}`, {
-                fontSize: "9px",
+                fontSize: "10px",
                 color: "#64748b",
               })
               .setOrigin(0.5);
           }
-          // Origin
-          this.add.text(ox - 10, oy + 10, "0", {
-            fontSize: "10px",
+          this.add.text(ox - 10, oy + 6, "0", {
+            fontSize: "11px",
             color: "#fbbf24",
           });
-
-          // Axis names
           this.add
-            .text(ox + range * cs + 5, oy, "x", {
-              fontSize: "12px",
+            .text(ox + range * cs + 6, oy, "x", {
+              fontSize: "13px",
               color: "#38bdf8",
               fontStyle: "bold",
             })
             .setOrigin(0, 0.5);
           this.add
             .text(ox, oy - range * cs - 12, "y", {
-              fontSize: "12px",
+              fontSize: "13px",
               color: "#38bdf8",
               fontStyle: "bold",
             })
             .setOrigin(0.5);
         }
 
-        placeTreasures() {
-          const used = new Set();
-          used.add("0,0");
-          for (let i = 0; i < this.totalTreasures; i++) {
-            let gx, gy;
-            do {
-              gx = Phaser.Math.Between(-this.range + 1, this.range - 1);
-              gy = Phaser.Math.Between(-this.range + 1, this.range - 1);
-            } while (used.has(`${gx},${gy}`));
-            used.add(`${gx},${gy}`);
-
-            const sx = this.ox + gx * this.cs;
-            const sy = this.oy - gy * this.cs;
-            const t = this.add
-              .image(sx, sy, "treasure")
-              .setScale(2)
-              .setDepth(5);
-            this.tweens.add({
-              targets: t,
-              y: sy - 5,
-              duration: 800 + i * 100,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.InOut",
-            });
-
-            // Glow
-            const gl = this.add.circle(sx, sy, 12, 0xfbbf24, 0.15).setDepth(4);
-            this.tweens.add({
-              targets: gl,
-              scale: 2,
-              alpha: 0,
-              duration: 1200,
-              repeat: -1,
-            });
-
-            this.treasures.push({ gx, gy, sprite: t, glow: gl, found: false });
-          }
-          this.usedCells = used;
-        }
-
-        placeRocks() {
-          const count = 3 + this.level * 2;
-          for (let i = 0; i < count; i++) {
-            let gx, gy;
-            do {
-              gx = Phaser.Math.Between(-this.range + 1, this.range - 1);
-              gy = Phaser.Math.Between(-this.range + 1, this.range - 1);
-            } while (this.usedCells.has(`${gx},${gy}`));
-            this.usedCells.add(`${gx},${gy}`);
-
-            const sx = this.ox + gx * this.cs;
-            const sy = this.oy - gy * this.cs;
-            this.add
-              .image(sx, sy, "rock")
-              .setScale(2)
-              .setDepth(3)
-              .setAlpha(0.7);
-            this.rocks.push({ gx, gy });
-          }
-        }
-
         placeCoins() {
-          const count = 5 + this.level * 2;
+          const count = 4 + this.level;
+          const used = new Set(["0,0"]);
           for (let i = 0; i < count; i++) {
-            let gx, gy;
+            let gx,
+              gy,
+              tries = 0;
             do {
               gx = Phaser.Math.Between(-this.range + 1, this.range - 1);
               gy = Phaser.Math.Between(-this.range + 1, this.range - 1);
-            } while (this.usedCells.has(`${gx},${gy}`));
-            this.usedCells.add(`${gx},${gy}`);
-
+              tries++;
+            } while (used.has(`${gx},${gy}`) && tries < 30);
+            used.add(`${gx},${gy}`);
             const sx = this.ox + gx * this.cs;
             const sy = this.oy - gy * this.cs;
-            const c = this.add.image(sx, sy, "coin").setScale(1.5).setDepth(4);
+            const c = this.add
+              .image(sx, sy, "coin")
+              .setScale(1.4)
+              .setDepth(4)
+              .setAlpha(0.85);
             this.tweens.add({
               targets: c,
               y: sy - 4,
@@ -707,9 +878,284 @@
           }
         }
 
+        // ----------------------------------------------------------------
+        // MISSION GENERATION — MATH IS THE MECHANIC.
+        // The prompt asks the student to REASON about a coordinate; it never
+        // states the target screen position and there are no answer options.
+        // Each mission validates the ship's grid cell, so wrong math places the
+        // ship in the wrong place = a visible miss.
+        // ----------------------------------------------------------------
+        buildMissions() {
+          this.missions = [];
+          const R = this.range - 1; // keep targets off the very edge
+          const nz = (lo, hi) => {
+            // random int in [lo,hi] excluding 0
+            let v;
+            do {
+              v = Phaser.Math.Between(lo, hi);
+            } while (v === 0);
+            return v;
+          };
+          const quadName = ["I", "II", "III", "IV"];
+
+          const makers = [
+            // 0) Quadrant — any cell in the named quadrant is correct.
+            () => {
+              const qi = Phaser.Math.Between(0, 3);
+              const sx = qi === 0 || qi === 3 ? 1 : -1;
+              const sy = qi === 0 || qi === 1 ? 1 : -1;
+              return {
+                prompt: `Sail to ANY point in Quadrant ${quadName[qi]}, then drop anchor.`,
+                hint: "Quadrant I = (+x, +y), II = (-x, +y), III = (-x, -y), IV = (+x, -y).",
+                test: (x, y) => Math.sign(x) === sx && Math.sign(y) === sy,
+              };
+            },
+            // 1) Ordered pair from a worded description (must compute x and y).
+            () => {
+              const x = nz(-R, R);
+              const y = nz(-R, R);
+              const xPhrase =
+                x < 0
+                  ? `${Math.abs(x)} to the LEFT of 0`
+                  : `${x} to the RIGHT of 0`;
+              const yPhrase =
+                y < 0 ? `${Math.abs(y)} DOWN from 0` : `${y} UP from 0`;
+              return {
+                prompt: `Sail to the point that is ${xPhrase} and ${yPhrase}.`,
+                hint: "Left = negative x, right = positive x. Up = positive y, down = negative y.",
+                test: (gx, gy) => gx === x && gy === y,
+              };
+            },
+            // 2) Reflection across the x-axis (marker shown, target = (a, -b)).
+            () => {
+              const a = nz(-R, R);
+              const b = nz(-R, R);
+              return {
+                marker: { gx: a, gy: b },
+                prompt: `Sail to the REFLECTION of the marked point across the x-axis.`,
+                hint: "Reflecting across the x-axis keeps x the same and flips the sign of y.",
+                test: (gx, gy) => gx === a && gy === -b,
+              };
+            },
+            // 3) Reflection across the y-axis (marker shown, target = (-a, b)).
+            () => {
+              const a = nz(-R, R);
+              const b = nz(-R, R);
+              return {
+                marker: { gx: a, gy: b },
+                prompt: `Sail to the REFLECTION of the marked point across the y-axis.`,
+                hint: "Reflecting across the y-axis keeps y the same and flips the sign of x.",
+                test: (gx, gy) => gx === -a && gy === b,
+              };
+            },
+            // 4) Opposite of both coordinates (marker shown, target = (-a,-b)).
+            () => {
+              const a = nz(-R, R);
+              const b = nz(-R, R);
+              return {
+                marker: { gx: a, gy: b },
+                prompt: `Sail to the point whose coordinates are the OPPOSITES of the marked point's.`,
+                hint: "The opposite of a number flips its sign: opposite of 3 is -3, opposite of -5 is 5.",
+                test: (gx, gy) => gx === -a && gy === -b,
+              };
+            },
+            // 5) Distance from origin — any cell with |x|+|y| = d is correct.
+            () => {
+              const d = Phaser.Math.Between(3, Math.min(R + 2, 8));
+              return {
+                prompt: `Sail to ANY point that is exactly ${d} steps from the center (count |x| + |y|), then drop anchor.`,
+                hint: "Steps = the distance along x plus the distance along y, ignoring signs.",
+                test: (gx, gy) =>
+                  Math.abs(gx) + Math.abs(gy) === d && (gx !== 0 || gy !== 0),
+              };
+            },
+          ];
+
+          // Early levels favor the simpler mission types.
+          const pool =
+            this.level === 1
+              ? [0, 1, 5]
+              : this.level === 2
+                ? [0, 1, 2, 3, 5]
+                : [0, 1, 2, 3, 4, 5];
+
+          for (let i = 0; i < this.totalMissions; i++) {
+            const type = Phaser.Utils.Array.GetRandom(pool);
+            this.missions.push(makers[type]());
+          }
+        }
+
+        startMission() {
+          if (this.missionsDone >= this.missions.length) {
+            this.levelComplete();
+            return;
+          }
+          const m = this.missions[this.missionsDone];
+          this.activeMission = m;
+
+          // Show/hide the reference marker.
+          if (m.marker) {
+            const sx = this.ox + m.marker.gx * this.cs;
+            const sy = this.oy - m.marker.gy * this.cs;
+            this.marker.setPosition(sx, sy).setVisible(true);
+            this.markerLabel
+              .setText(`marked point (${m.marker.gx}, ${m.marker.gy})`)
+              .setPosition(sx, sy - 20)
+              .setVisible(true);
+          } else {
+            this.marker.setVisible(false);
+            this.markerLabel.setVisible(false);
+          }
+
+          this.promptText.setText(m.prompt);
+          this.hintText.setText("");
+          this.missionLabel.setText(
+            `Mission ${this.missionsDone + 1} of ${this.missions.length}`,
+          );
+          this.missionLocked = false;
+          this.canMove = true;
+        }
+
+        // ----------------------------------------------------------------
+        // DROP ANCHOR — the win condition. The student decides WHERE the math
+        // says to go, then commits. No options, no announced coordinates.
+        // ----------------------------------------------------------------
+        dropAnchor() {
+          if (!this.canMove || this.missionLocked || !this.activeMission)
+            return;
+          this.missionLocked = true;
+          this.canMove = false;
+          this.qTotal++;
+
+          const x = this.shipGridX;
+          const y = this.shipGridY;
+          const ok = this.activeMission.test(x, y);
+
+          if (ok) {
+            this.qCorrect++;
+            this.missionsDone++;
+            this.combo++;
+            if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+            const pts = 200 * this.combo;
+            this.score += pts;
+            sndTreasure();
+            this.showTreasureAt(x, y, pts);
+          } else {
+            this.combo = 0;
+            this.lives--;
+            sndWrong();
+            this.showMiss(x, y);
+          }
+          this.updateHUD();
+        }
+
+        showTreasureAt(x, y, pts) {
+          const sx = this.ox + x * this.cs;
+          const sy = this.oy - y * this.cs;
+
+          const chest = this.add
+            .image(sx, sy, "treasure")
+            .setScale(0.5)
+            .setDepth(20);
+          this.tweens.add({
+            targets: chest,
+            scale: 3,
+            duration: 350,
+            ease: "Back.Out",
+          });
+          this.add
+            .particles(sx, sy, "particle", {
+              speed: { min: 60, max: 200 },
+              scale: { start: 1.6, end: 0 },
+              lifespan: 700,
+              quantity: 18,
+              tint: 0xfbbf24,
+              emitting: false,
+            })
+            .explode(18);
+
+          const fb = this.add
+            .text(sx, sy - 40, `Treasure! +${pts}`, {
+              fontSize: "20px",
+              color: "#4ade80",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5)
+            .setDepth(21);
+          this.tweens.add({
+            targets: fb,
+            y: fb.y - 30,
+            alpha: 0,
+            duration: 1400,
+            onComplete: () => fb.destroy(),
+          });
+
+          if (window.GameFX && GameFX.successBurst) {
+            try {
+              GameFX.successBurst();
+            } catch (e) {}
+          }
+
+          this.time.delayedCall(1500, () => {
+            chest.destroy();
+            if (this.lives <= 0) {
+              this.endGame();
+              return;
+            }
+            this.startMission();
+          });
+        }
+
+        showMiss(x, y) {
+          const sx = this.ox + x * this.cs;
+          const sy = this.oy - y * this.cs;
+          this.cameras.main.shake(220, 0.008);
+
+          // Visible miss: a red splash X on the wrong cell.
+          const miss = this.add.graphics().setDepth(20);
+          miss.lineStyle(4, 0xf87171, 1);
+          miss.lineBetween(sx - 14, sy - 14, sx + 14, sy + 14);
+          miss.lineBetween(sx + 14, sy - 14, sx - 14, sy + 14);
+          const ring = this.add.circle(sx, sy, 6, 0xf87171, 0.4).setDepth(19);
+          this.tweens.add({ targets: ring, scale: 4, alpha: 0, duration: 600 });
+
+          const fb = this.add
+            .text(sx, sy - 38, "Splash! Not here.", {
+              fontSize: "18px",
+              color: "#f87171",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5)
+            .setDepth(21);
+          this.tweens.add({
+            targets: fb,
+            y: fb.y - 24,
+            alpha: 0,
+            duration: 1500,
+            onComplete: () => fb.destroy(),
+          });
+
+          // A hint re-states the RULE, never the target coordinates.
+          this.hintText.setText("Hint: " + (this.activeMission.hint || ""));
+
+          this.time.delayedCall(900, () => {
+            miss.destroy();
+            if (this.lives <= 0) {
+              this.endGame();
+              return;
+            }
+            // Same mission stays active — try again. No giveaway.
+            this.missionLocked = false;
+            this.canMove = true;
+          });
+        }
+
         createHUD() {
           this.add.rectangle(W / 2, 18, W, 36, 0x0f172a, 0.9).setDepth(100);
-
           this.scoreText = this.add
             .text(12, 8, "Score: 0", {
               fontSize: "14px",
@@ -717,14 +1163,9 @@
               fontStyle: "bold",
             })
             .setDepth(101);
-
-          this.treasureText = this.add
-            .text(12, 24, `Treasures: 0/${this.totalTreasures}`, {
-              fontSize: "12px",
-              color: "#c084fc",
-            })
+          this.missionLabel = this.add
+            .text(12, 24, "Mission 1", { fontSize: "12px", color: "#c084fc" })
             .setDepth(101);
-
           this.levelText = this.add
             .text(W / 2, 8, `Level ${this.level}`, {
               fontSize: "14px",
@@ -733,16 +1174,11 @@
             })
             .setOrigin(0.5, 0)
             .setDepth(101);
-
           this.comboText = this.add
-            .text(W / 2, 24, "", {
-              fontSize: "11px",
-              color: "#4ade80",
-            })
+            .text(W / 2, 24, "", { fontSize: "11px", color: "#4ade80" })
             .setOrigin(0.5, 0)
             .setDepth(101);
 
-          // Hearts
           this.hearts = [];
           for (let i = 0; i < 3; i++) {
             this.hearts.push(
@@ -753,11 +1189,28 @@
             );
           }
 
-          // Target display
-          this.targetText = this.add
-            .text(W / 2, H - 14, "Navigate to the treasure coordinates!", {
+          // Mission prompt (the math instruction) — top banner.
+          this.add
+            .rectangle(W / 2, 56, W - 24, 40, 0x102a4c, 0.85)
+            .setDepth(100);
+          this.promptText = this.add
+            .text(W / 2, 56, "", {
+              fontSize: "16px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+              align: "center",
+              wordWrap: { width: W - 60 },
+            })
+            .setOrigin(0.5)
+            .setDepth(101);
+
+          // Hint line (only fills after a miss).
+          this.hintText = this.add
+            .text(W / 2, H - 16, "", {
               fontSize: "13px",
-              color: "#94a3b8",
+              color: "#fbbf24",
+              align: "center",
+              wordWrap: { width: W - 60 },
               stroke: "#000",
               strokeThickness: 3,
             })
@@ -768,58 +1221,27 @@
         createTouchControls() {
           const a = 0.25,
             s = 36;
-
-          // D-pad style
           const bx = 70,
-            by = H - 65;
-          this.tUp = this.add
-            .circle(bx, by - s, s, 0x38bdf8, a)
-            .setDepth(200)
-            .setInteractive();
-          this.add
-            .text(bx, by - s, "^", {
-              fontSize: "22px",
-              color: "#fff",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5)
-            .setDepth(201);
-          this.tDown = this.add
-            .circle(bx, by + s, s, 0x38bdf8, a)
-            .setDepth(200)
-            .setInteractive();
-          this.add
-            .text(bx, by + s, "v", {
-              fontSize: "22px",
-              color: "#fff",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5)
-            .setDepth(201);
-          this.tLeft = this.add
-            .circle(bx - s, by, s, 0x38bdf8, a)
-            .setDepth(200)
-            .setInteractive();
-          this.add
-            .text(bx - s, by, "<", {
-              fontSize: "22px",
-              color: "#fff",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5)
-            .setDepth(201);
-          this.tRight = this.add
-            .circle(bx + s, by, s, 0x38bdf8, a)
-            .setDepth(200)
-            .setInteractive();
-          this.add
-            .text(bx + s, by, ">", {
-              fontSize: "22px",
-              color: "#fff",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5)
-            .setDepth(201);
+            by = H - 75;
+          const mk = (dx, dy, sym) => {
+            const c = this.add
+              .circle(bx + dx, by + dy, s, 0x38bdf8, a)
+              .setDepth(200)
+              .setInteractive();
+            this.add
+              .text(bx + dx, by + dy, sym, {
+                fontSize: "22px",
+                color: "#fff",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5)
+              .setDepth(201);
+            return c;
+          };
+          this.tUp = mk(0, -s, "^");
+          this.tDown = mk(0, s, "v");
+          this.tLeft = mk(-s, 0, "<");
+          this.tRight = mk(s, 0, ">");
 
           this.touchDir = null;
           const setDir = (d) => () => {
@@ -828,26 +1250,46 @@
           const clearDir = () => {
             this.touchDir = null;
           };
-          this.tUp.on("pointerdown", setDir("up"));
-          this.tUp.on("pointerup", clearDir);
-          this.tUp.on("pointerout", clearDir);
-          this.tDown.on("pointerdown", setDir("down"));
-          this.tDown.on("pointerup", clearDir);
-          this.tDown.on("pointerout", clearDir);
-          this.tLeft.on("pointerdown", setDir("left"));
-          this.tLeft.on("pointerup", clearDir);
-          this.tLeft.on("pointerout", clearDir);
-          this.tRight.on("pointerdown", setDir("right"));
-          this.tRight.on("pointerup", clearDir);
-          this.tRight.on("pointerout", clearDir);
+          [
+            ["tUp", "up"],
+            ["tDown", "down"],
+            ["tLeft", "left"],
+            ["tRight", "right"],
+          ].forEach(([k, d]) => {
+            this[k].on("pointerdown", setDir(d));
+            this[k].on("pointerup", clearDir);
+            this[k].on("pointerout", clearDir);
+          });
+        }
+
+        createAnchorButton() {
+          const x = W - 90,
+            y = H - 75;
+          const btn = this.add
+            .image(x, y, "btn")
+            .setScale(0.62)
+            .setDepth(200)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(x, y, "DROP\nANCHOR", {
+              fontSize: "14px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+              align: "center",
+            })
+            .setOrigin(0.5)
+            .setDepth(201);
+          btn.on("pointerover", () => btn.setScale(0.66));
+          btn.on("pointerout", () => btn.setScale(0.62));
+          btn.on("pointerdown", () => this.dropAnchor());
         }
 
         showLevelIntro() {
           const ov = this.add
-            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.75)
+            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.78)
             .setDepth(500);
           const t1 = this.add
-            .text(W / 2, H / 2 - 40, `Level ${this.level}`, {
+            .text(W / 2, H / 2 - 50, `Level ${this.level}`, {
               fontSize: "44px",
               color: "#fbbf24",
               fontStyle: "bold",
@@ -859,11 +1301,13 @@
           const t2 = this.add
             .text(
               W / 2,
-              H / 2 + 10,
-              `Find ${this.totalTreasures} treasures on the coordinate plane!`,
+              H / 2 + 4,
+              `Read each mission. Sail to the right spot, then DROP ANCHOR.`,
               {
                 fontSize: "16px",
-                color: "#94a3b8",
+                color: "#cbd5e1",
+                align: "center",
+                wordWrap: { width: 560 },
               },
             )
             .setOrigin(0.5)
@@ -871,12 +1315,9 @@
           const t3 = this.add
             .text(
               W / 2,
-              H / 2 + 40,
-              "Use coordinates (x, y) to navigate. x = left/right, y = up/down",
-              {
-                fontSize: "13px",
-                color: "#64748b",
-              },
+              H / 2 + 50,
+              `Move: Arrow keys / WASD / touch  •  Anchor: SPACE or the button`,
+              { fontSize: "13px", color: "#64748b", align: "center" },
             )
             .setOrigin(0.5)
             .setDepth(501);
@@ -885,26 +1326,24 @@
           this.tweens.add({
             targets: [ov, t1, t2, t3],
             alpha: 0,
-            delay: 2000,
+            delay: 2200,
             duration: 500,
             onComplete: () => {
               ov.destroy();
               t1.destroy();
               t2.destroy();
               t3.destroy();
-              this.canMove = true;
+              this.startMission();
             },
           });
         }
 
         moveShip(dx, dy) {
-          if (!this.canMove || this.questionActive) return;
+          if (!this.canMove || this.missionLocked) return;
           if (this.moveDelay > 0) return;
 
           const nx = this.shipGridX + dx;
           const ny = this.shipGridY + dy;
-
-          // Bounds check
           if (
             nx < -this.range ||
             nx > this.range ||
@@ -913,13 +1352,6 @@
           )
             return;
 
-          // Rock check
-          if (this.rocks.some((r) => r.gx === nx && r.gy === ny)) {
-            sndWrong();
-            this.cameras.main.shake(100, 0.005);
-            return;
-          }
-
           sndMove();
           this.shipGridX = nx;
           this.shipGridY = ny;
@@ -927,7 +1359,6 @@
 
           const sx = this.ox + nx * this.cs;
           const sy = this.oy - ny * this.cs;
-
           this.tweens.add({
             targets: this.ship,
             x: sx,
@@ -939,27 +1370,26 @@
           this.tweens.add({
             targets: this.coordLabel,
             x: sx,
-            y: sy + 22,
+            y: sy + 24,
             duration: 120,
           });
 
-          // Rotate ship
           if (dx > 0) this.ship.setAngle(-90);
           else if (dx < 0) this.ship.setAngle(90);
           else if (dy > 0) this.ship.setAngle(0);
           else if (dy < 0) this.ship.setAngle(180);
 
-          // Check coin
+          // Bonus coin pickup (navigation reward, not the win condition).
           const coin = this.coins.find(
             (c) => !c.collected && c.gx === nx && c.gy === ny,
           );
           if (coin) {
             coin.collected = true;
-            sndTreasure();
-            this.score += 50;
+            this.score += 25;
+            sndCorrect();
             const ft = this.add
-              .text(coin.sprite.x, coin.sprite.y - 15, "+50", {
-                fontSize: "14px",
+              .text(coin.sprite.x, coin.sprite.y - 15, "+25", {
+                fontSize: "13px",
                 color: "#fbbf24",
                 fontStyle: "bold",
                 stroke: "#000",
@@ -969,7 +1399,7 @@
               .setDepth(50);
             this.tweens.add({
               targets: ft,
-              y: ft.y - 25,
+              y: ft.y - 22,
               alpha: 0,
               duration: 600,
               onComplete: () => ft.destroy(),
@@ -977,500 +1407,17 @@
             coin.sprite.destroy();
             this.updateHUD();
           }
-
-          // Check treasure
-          const tr = this.treasures.find(
-            (t) => !t.found && t.gx === nx && t.gy === ny,
-          );
-          if (tr) {
-            tr.found = true;
-            this.treasuresFound++;
-            tr.sprite.destroy();
-            tr.glow.destroy();
-
-            // Treasure found! Ask question
-            this.showTreasureQuestion(tr);
-          }
-
-          // Update target arrow
-          this.updateTargetArrow();
-        }
-
-        updateTargetArrow() {
-          const nearest = this.treasures
-            .filter((t) => !t.found)
-            .sort((a, b) => {
-              const da =
-                Math.abs(a.gx - this.shipGridX) +
-                Math.abs(a.gy - this.shipGridY);
-              const db =
-                Math.abs(b.gx - this.shipGridX) +
-                Math.abs(b.gy - this.shipGridY);
-              return da - db;
-            })[0];
-
-          if (nearest) {
-            const angle = Phaser.Math.Angle.Between(
-              this.shipGridX,
-              this.shipGridY,
-              nearest.gx,
-              nearest.gy,
-            );
-            this.targetArrow.setAngle(Phaser.Math.RadToDeg(angle) + 90);
-            this.targetArrow.setPosition(this.ship.x, this.ship.y - 28);
-            this.targetText.setText(
-              `Nearest treasure: look for (${nearest.gx}, ${nearest.gy})`,
-            );
-          } else {
-            this.targetArrow.setVisible(false);
-          }
-        }
-
-        showTreasureQuestion(treasure) {
-          sndTreasure();
-          this.questionActive = true;
-          this.canMove = false;
-
-          // Particle burst
-          const sx = this.ox + treasure.gx * this.cs;
-          const sy = this.oy - treasure.gy * this.cs;
-          this.add
-            .particles(sx, sy, "particle", {
-              speed: { min: 60, max: 180 },
-              scale: { start: 1.5, end: 0 },
-              lifespan: 600,
-              quantity: 15,
-              tint: 0xfbbf24,
-              emitting: false,
-            })
-            .explode(15);
-
-          // Generate question about coordinates
-          const q = this.genCoordQuestion(treasure);
-          this.showQuestionOverlay(q);
-        }
-
-        genCoordQuestion(treasure) {
-          const type = Phaser.Math.Between(0, 5);
-          const tx = treasure.gx,
-            ty = treasure.gy;
-
-          if (type === 0) {
-            return {
-              q: `You found treasure at (${tx}, ${ty}). Which quadrant is this?`,
-              ans:
-                tx > 0 && ty > 0
-                  ? "I"
-                  : tx < 0 && ty > 0
-                    ? "II"
-                    : tx < 0 && ty < 0
-                      ? "III"
-                      : tx > 0 && ty < 0
-                        ? "IV"
-                        : tx === 0 || ty === 0
-                          ? "Axis"
-                          : "I",
-              opts: shuffle(["I", "II", "III", "IV"]).slice(0, 3),
-            };
-          } else if (type === 1) {
-            return {
-              q: `The treasure is at (${tx}, ${ty}). What is the opposite of the x-coordinate?`,
-              ans: `${-tx}`,
-              opts: shuffle([`${-tx}`, `${tx}`, `${-ty}`]),
-            };
-          } else if (type === 2) {
-            return {
-              q: `Treasure at (${tx}, ${ty}). If you reflect across the y-axis, what is the new x?`,
-              ans: `${-tx}`,
-              opts: shuffle([`${-tx}`, `${tx}`, `${ty}`]),
-            };
-          } else if (type === 3) {
-            return {
-              q: `(${tx}, ${ty}) — Is the y-coordinate positive, negative, or zero?`,
-              ans: ty > 0 ? "Positive" : ty < 0 ? "Negative" : "Zero",
-              opts: shuffle(["Positive", "Negative", "Zero"]),
-            };
-          } else if (type === 4) {
-            const dist = Math.abs(tx) + Math.abs(ty);
-            return {
-              q: `How many steps from the origin (0,0) to (${tx}, ${ty})? (|x|+|y|)`,
-              ans: `${dist}`,
-              opts: shuffle([
-                `${dist}`,
-                `${dist + 2}`,
-                `${Math.abs(dist - 3)}`,
-              ]),
-            };
-          } else {
-            return {
-              q: `At (${tx}, ${ty}), which direction is x from the origin?`,
-              ans: tx > 0 ? "Right" : tx < 0 ? "Left" : "On y-axis",
-              opts: shuffle(["Right", "Left", "On y-axis"]),
-            };
-          }
-        }
-
-        showQuestionOverlay(q) {
-          this.qOverlay = this.add
-            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.85)
-            .setDepth(600);
-          this.qElements = [];
-
-          const title = this.add
-            .text(W / 2, 85, "TREASURE FOUND!", {
-              fontSize: "24px",
-              color: "#fbbf24",
-              fontStyle: "bold",
-              stroke: "#000",
-              strokeThickness: 4,
-            })
-            .setOrigin(0.5)
-            .setDepth(601);
-          this.qElements.push(title);
-
-          const qText = this.add
-            .text(W / 2, 135, q.q, {
-              fontSize: "20px",
-              color: "#e2e8f0",
-              fontStyle: "bold",
-              wordWrap: { width: 600 },
-              align: "center",
-              stroke: "#000",
-              strokeThickness: 4,
-            })
-            .setOrigin(0.5)
-            .setDepth(601);
-          this.qElements.push(qText);
-
-          // We will render different visual interfaces based on the question answer type
-          const isQuadrant = ["I", "II", "III", "IV", "Axis"].includes(q.ans);
-          const isSign = ["Positive", "Negative", "Zero"].includes(q.ans);
-          const isDir = ["Left", "Right", "On y-axis"].includes(q.ans);
-          const isNumeric = !isQuadrant && !isSign && !isDir;
-
-          let chosenVal = null;
-          let submitBtn = null;
-          let submitTxt = null;
-
-          const createSubmitButton = (y = 420) => {
-            submitBtn = this.add
-              .image(W / 2, y, "btn")
-              .setScale(1.1)
-              .setDepth(601)
-              .setInteractive({ useHandCursor: true });
-            submitTxt = this.add
-              .text(W / 2, y, "SUBMIT ANSWER", {
-                fontSize: "18px",
-                color: "#fbbf24",
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5)
-              .setDepth(602);
-            this.qElements.push(submitBtn, submitTxt);
-
-            submitBtn.on("pointerdown", () => submitAnswer());
-            submitBtn.on("pointerover", () => submitBtn.setScale(1.15));
-            submitBtn.on("pointerout", () => submitBtn.setScale(1.1));
-          };
-
-          const submitAnswer = () => {
-            if (submitBtn) submitBtn.disableInteractive();
-            this.qElements.forEach(e => {
-              if (e.input) e.disableInteractive();
-            });
-
-            this.qTotal++;
-            const isCorrect = String(chosenVal) === String(q.ans);
-
-            if (isCorrect) {
-              sndCorrect();
-              this.qCorrect++;
-              this.combo++;
-              if (this.combo > this.maxCombo) this.maxCombo = this.combo;
-              const pts = 300 * this.combo;
-              this.score += pts;
-
-              const fb = this.add
-                .text(W / 2, 490, `Correct! +${pts}`, {
-                  fontSize: "22px",
-                  color: "#4ade80",
-                  fontStyle: "bold",
-                  stroke: "#000000",
-                  strokeThickness: 3
-                })
-                .setOrigin(0.5)
-                .setDepth(601);
-              this.qElements.push(fb);
-            } else {
-              sndWrong();
-              this.combo = 0;
-              this.lives--;
-
-              const fb = this.add
-                .text(W / 2, 490, `Incorrect. Correct Answer: ${q.ans}`, {
-                  fontSize: "20px",
-                  color: "#f87171",
-                  fontStyle: "bold",
-                  stroke: "#000000",
-                  strokeThickness: 3
-                })
-                .setOrigin(0.5)
-                .setDepth(601);
-              this.qElements.push(fb);
-            }
-
-            this.updateHUD();
-
-            this.time.delayedCall(2200, () => {
-              this.qElements.forEach((e) => e.destroy());
-              this.qOverlay.destroy();
-              this.questionActive = false;
-              this.canMove = true;
-
-              if (this.lives <= 0) {
-                this.endGame();
-                return;
-              }
-              if (this.treasuresFound >= this.totalTreasures)
-                this.levelComplete();
-            });
-          };
-
-          // RENDER INTERFACES
-          if (isQuadrant) {
-            // Quadrant Clicker (visual 2x2 grid)
-            const gridX = W / 2;
-            const gridY = 270;
-            const size = 100; // size of each quadrant box
-
-            const quads = [
-              { name: "II", x: gridX - size/2 - 5, y: gridY - size/2 - 5, color: 0x3b82f6 },
-              { name: "I", x: gridX + size/2 + 5, y: gridY - size/2 - 5, color: 0x10b981 },
-              { name: "III", x: gridX - size/2 - 5, y: gridY + size/2 + 5, color: 0xf59e0b },
-              { name: "IV", x: gridX + size/2 + 5, y: gridY + size/2 + 5, color: 0xec4899 }
-            ];
-
-            const visualCards = [];
-            quads.forEach(qd => {
-              const bg = this.add.rectangle(qd.x, qd.y, size, size, 0x1e293b)
-                .setDepth(601)
-                .setStrokeStyle(2, 0x475569)
-                .setInteractive({ useHandCursor: true });
-              const label = this.add.text(qd.x, qd.y, qd.name, {
-                fontSize: "24px",
-                fontStyle: "bold",
-                color: "#94a3b8"
-              }).setOrigin(0.5).setDepth(602);
-              this.qElements.push(bg, label);
-              visualCards.push({ bg, label, qd });
-
-              bg.on("pointerdown", () => {
-                visualCards.forEach(c => {
-                  c.bg.setFillStyle(0x1e293b);
-                  c.bg.setStrokeStyle(2, 0x475569);
-                  c.label.setColor("#94a3b8");
-                });
-                bg.setFillStyle(qd.color, 0.4);
-                bg.setStrokeStyle(3, qd.color);
-                label.setColor("#ffffff");
-                chosenVal = qd.name;
-                sndMove();
-              });
-            });
-
-            // Axis button below
-            const axisBtn = this.add.rectangle(gridX, gridY + size + 20, size * 2 + 10, 32, 0x1e293b)
-              .setDepth(601)
-              .setStrokeStyle(2, 0x475569)
-              .setInteractive({ useHandCursor: true });
-            const axisTxt = this.add.text(gridX, gridY + size + 20, "On Axis (x or y = 0)", {
-              fontSize: "13px",
-              color: "#94a3b8"
-            }).setOrigin(0.5).setDepth(602);
-            this.qElements.push(axisBtn, axisTxt);
-
-            axisBtn.on("pointerdown", () => {
-              visualCards.forEach(c => {
-                c.bg.setFillStyle(0x1e293b);
-                c.bg.setStrokeStyle(2, 0x475569);
-                c.label.setColor("#94a3b8");
-              });
-              axisBtn.setFillStyle(0x64748b, 0.4);
-              axisBtn.setStrokeStyle(3, 0xfbbf24);
-              axisTxt.setColor("#ffffff");
-              chosenVal = "Axis";
-              sndMove();
-            });
-
-            createSubmitButton(400);
-
-          } else if (isSign || isDir) {
-            // Option switches (e.g. POSITIVE / ZERO / NEGATIVE)
-            const options = isSign ? ["Positive", "Negative", "Zero"] : ["Left", "Right", "On y-axis"];
-            const labels = isSign ? ["POSITIVE (+)", "NEGATIVE (-)", "ZERO (0)"] : ["LEFT (←)", "RIGHT (→)", "ON Y-AXIS (•)"];
-            const colors = [0x10b981, 0xef4444, 0xfbbf24];
-
-            const visualBtns = [];
-            options.forEach((opt, i) => {
-              const bx = W / 2 - 170 + i * 170;
-              const by = 260;
-              const bg = this.add.rectangle(bx, by, 150, 48, 0x1e293b)
-                .setDepth(601)
-                .setStrokeStyle(2, 0x475569)
-                .setInteractive({ useHandCursor: true });
-              const label = this.add.text(bx, by, labels[i], {
-                fontSize: "14px",
-                fontStyle: "bold",
-                color: "#94a3b8"
-              }).setOrigin(0.5).setDepth(602);
-              this.qElements.push(bg, label);
-              visualBtns.push({ bg, label, opt, color: colors[i] });
-
-              bg.on("pointerdown", () => {
-                visualBtns.forEach(b => {
-                  b.bg.setFillStyle(0x1e293b);
-                  b.bg.setStrokeStyle(2, 0x475569);
-                  b.label.setColor("#94a3b8");
-                });
-                bg.setFillStyle(colors[i], 0.3);
-                bg.setStrokeStyle(3, colors[i]);
-                label.setColor("#ffffff");
-                chosenVal = opt;
-                sndMove();
-              });
-            });
-
-            createSubmitButton(350);
-
-          } else {
-            // Numeric number line drag slider (range from -12 to 12)
-            const nlWidth = 520;
-            const nlY = 240;
-            const qRange = 12;
-
-            // Draw line
-            const line = this.add.rectangle(W / 2, nlY, nlWidth, 3, 0x38bdf8, 0.6)
-              .setDepth(601);
-            this.qElements.push(line);
-
-            // Ticks
-            for (let v = -qRange; v <= qRange; v++) {
-              const px = W / 2 + (v / qRange) * (nlWidth / 2);
-              const tick = this.add.rectangle(px, nlY, 1, v === 0 ? 16 : 8, v === 0 ? 0xfbbf24 : 0x38bdf8, 0.6)
-                .setDepth(601);
-              this.qElements.push(tick);
-
-              if (v % 2 === 0) {
-                const lbl = this.add.text(px, nlY + 14, `${v}`, {
-                  fontSize: "10px",
-                  color: v === 0 ? "#fbbf24" : "#64748b"
-                }).setOrigin(0.5, 0).setDepth(601);
-                this.qElements.push(lbl);
-              }
-            }
-
-            // Drag Selector Container (starts at 0)
-            const selectorCont = this.add.container(W / 2, nlY).setDepth(605);
-            this.qElements.push(selectorCont);
-            chosenVal = 0;
-
-            const pointerGfx = this.add.graphics();
-            pointerGfx.fillStyle(0xfbbf24, 1);
-            pointerGfx.fillTriangle(0, 0, -10, -18, 10, -18);
-            selectorCont.add(pointerGfx);
-
-            const valText = this.add.text(0, -36, "0", {
-              fontSize: "18px",
-              fontFamily: "Segoe UI, Arial, sans-serif",
-              fontStyle: "bold",
-              color: "#fbbf24",
-              stroke: "#000000",
-              strokeThickness: 3
-            }).setOrigin(0.5);
-            selectorCont.add(valText);
-
-            // Draggable
-            const hitArea = new Phaser.Geom.Rectangle(-25, -45, 50, 50);
-            selectorCont.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
-            this.input.setDraggable(selectorCont);
-
-            const updateSelectorFromValue = (v) => {
-              const currentVal = Phaser.Math.Clamp(v, -qRange, qRange);
-              const snappedX = W / 2 + (currentVal / qRange) * (nlWidth / 2);
-              selectorCont.x = snappedX;
-              valText.setText(String(currentVal));
-              chosenVal = String(currentVal);
-              sndMove();
-            };
-
-            selectorCont.on('drag', (pointer, dragX, dragY) => {
-              const minX = W / 2 - nlWidth / 2;
-              const maxX = W / 2 + nlWidth / 2;
-              const clampedX = Phaser.Math.Clamp(dragX, minX, maxX);
-              const val = Math.round(((clampedX - (W / 2)) / (nlWidth / 2)) * qRange);
-              updateSelectorFromValue(val);
-            });
-
-            // Tap zone
-            const clickZone = this.add.rectangle(W / 2, nlY, nlWidth + 40, 50, 0x000000, 0.001)
-              .setDepth(601)
-              .setInteractive({ useHandCursor: true });
-            this.qElements.push(clickZone);
-
-            clickZone.on('pointerdown', (pointer) => {
-              const minX = W / 2 - nlWidth / 2;
-              const maxX = W / 2 + nlWidth / 2;
-              const clampedX = Phaser.Math.Clamp(pointer.x, minX, maxX);
-              const val = Math.round(((clampedX - (W / 2)) / (nlWidth / 2)) * qRange);
-              updateSelectorFromValue(val);
-            });
-
-            // Help guide text
-            const guideTxt = this.add.text(W / 2, 310, "Drag pointer or Tap line  |  Use ←/→ and ENTER keys", {
-              fontSize: "12px",
-              color: "#94a3b8",
-              fontStyle: "italic"
-            }).setOrigin(0.5).setDepth(601);
-            this.qElements.push(guideTxt);
-
-            // Keyboard support for numeric values
-            const onKeyDown = (event) => {
-              if (!this.questionActive) return;
-              const currentVal = parseInt(valText.text, 10);
-              if (event.key === "ArrowLeft" || event.key === "a" || event.key === "A") {
-                event.preventDefault();
-                updateSelectorFromValue(currentVal - 1);
-              } else if (event.key === "ArrowRight" || event.key === "d" || event.key === "D") {
-                event.preventDefault();
-                updateSelectorFromValue(currentVal + 1);
-              } else if (event.key === "Enter") {
-                event.preventDefault();
-                submitAnswer();
-              }
-            };
-            this.input.keyboard.on("keydown", onKeyDown);
-
-            // Clean up keyboard listener on destroy
-            const oldSubmit = submitAnswer;
-            // override to clean up key listener
-            this.qElements.push({
-              destroy: () => this.input.keyboard.off("keydown", onKeyDown)
-            });
-
-            createSubmitButton(360);
-          }
         }
 
         levelComplete() {
           sndLevelUp();
           this.canMove = false;
+          this.missionLocked = true;
 
-          const ov = this.add
-            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.85)
-            .setDepth(600);
+          this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.85).setDepth(600);
           this.add
             .text(W / 2, 130, "ALL TREASURES FOUND!", {
-              fontSize: "36px",
+              fontSize: "34px",
               color: "#fbbf24",
               fontStyle: "bold",
               stroke: "#000",
@@ -1488,21 +1435,16 @@
             })
             .setOrigin(0.5)
             .setDepth(601);
-
           this.add
             .text(
               W / 2,
               240,
-              `Score: ${this.score}  |  Correct: ${this.qCorrect}/${this.qTotal}  |  Combo: ${this.maxCombo}x`,
-              {
-                fontSize: "16px",
-                color: "#e2e8f0",
-              },
+              `Score: ${this.score}  |  Drops: ${this.qCorrect} good / ${this.qTotal} total  |  Combo: ${this.maxCombo}x`,
+              { fontSize: "15px", color: "#e2e8f0" },
             )
             .setOrigin(0.5)
             .setDepth(601);
 
-          // Confetti
           for (let i = 0; i < 30; i++) {
             const c = this.add
               .circle(
@@ -1558,7 +1500,7 @@
             this.scene.start("Results", {
               score: this.score,
               level: this.level,
-              treasures: this.treasuresFound,
+              treasures: this.missionsDone,
               qCorrect: this.qCorrect,
               qTotal: this.qTotal,
               maxCombo: this.maxCombo,
@@ -1569,12 +1511,13 @@
 
         endGame() {
           this.canMove = false;
+          this.missionLocked = true;
           this.cameras.main.shake(400, 0.02);
           this.time.delayedCall(500, () => {
             this.scene.start("Results", {
               score: this.score,
               level: this.level,
-              treasures: this.treasuresFound,
+              treasures: this.missionsDone,
               qCorrect: this.qCorrect,
               qTotal: this.qTotal,
               maxCombo: this.maxCombo,
@@ -1586,9 +1529,6 @@
 
         updateHUD() {
           this.scoreText.setText(`Score: ${this.score}`);
-          this.treasureText.setText(
-            `Treasures: ${this.treasuresFound}/${this.totalTreasures}`,
-          );
           if (this.combo > 1) this.comboText.setText(`${this.combo}x Combo!`);
           else this.comboText.setText("");
           for (let i = 0; i < 3; i++)
@@ -1598,7 +1538,6 @@
         update() {
           if (this.moveDelay > 0) this.moveDelay--;
 
-          // Keyboard
           if (
             Phaser.Input.Keyboard.JustDown(this.cursors.left) ||
             Phaser.Input.Keyboard.JustDown(this.wasd.A)
@@ -1620,7 +1559,6 @@
           )
             this.moveShip(0, -1);
 
-          // Touch
           if (this.touchDir && this.moveDelay <= 0) {
             if (this.touchDir === "left") this.moveShip(-1, 0);
             else if (this.touchDir === "right") this.moveShip(1, 0);
@@ -1775,7 +1713,7 @@
         height: H,
         parent: "game-container",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [BootScene, TitleScene, GameScene, ResultsScene],
+        scene: [BootScene, TitleScene, VocabScene, GameScene, ResultsScene],
         input: { activePointers: 3 },
       };
 
@@ -1785,10 +1723,16 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <script src="/assets/game-access.js" defer></script>
+  <!-- gacc-injected:end -->
 </body>
 </html>

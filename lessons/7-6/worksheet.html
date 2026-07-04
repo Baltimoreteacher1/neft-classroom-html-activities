@@ -43,8 +43,10 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
 .ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
 .ws-bub-sm{width:20px;height:20px;font-size:11px;}
 .ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
-.ws-correct{font-weight:700;color:var(--teal);}
+.ws-correct{font-weight:700;color:var(--teal-ink);}
 .ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
 .ws-match{display:flex;gap:24px;flex-wrap:wrap;}
 .ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
 .ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
@@ -75,9 +77,71 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
   @page{margin:1.5cm;}
   a{color:#000;}
 }
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
 </style>
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+
+
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/7-6/worksheet.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Solve and Graph Inequalities — Practice Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="Solve and Graph Inequalities — Practice Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Solve and Graph Inequalities — Practice Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/7-6/worksheet.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
 </head>
 <body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.5</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">Solve and Graph Inequalities</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Solve</span><span class="ws-bankword">Graph</span><span class="ws-bankword">Solution</span><span class="ws-bankword">Substitute</span><span class="ws-bankword">Solution set</span><span class="ws-bankword">Inverse operation</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Inequality:</b> x − 8 ≥ 15</li><li><b>Inverse operation:</b> Subtract 8 from both sides</li><li><b>Simplify:</b> x ≥ 7</li><li><b>Graph:</b> Closed circle at 7, shade right</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve: x + 6 &gt; 14</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x &gt; 8</li><li class="ws-opt"><span class="ws-bub">B</span>x &gt; 20</li><li class="ws-opt"><span class="ws-bub">C</span>x &lt; 8</li><li class="ws-opt"><span class="ws-bub">D</span>x = 8</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Solve: x − 9 ≤ 3</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x ≤ 12</li><li class="ws-opt"><span class="ws-bub">B</span>x ≤ 6</li><li class="ws-opt"><span class="ws-bub">C</span>x ≥ 12</li><li class="ws-opt"><span class="ws-bub">D</span>x = 12</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve: x + 10 ≥ 25</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x ≥ 15</li><li class="ws-opt"><span class="ws-bub">B</span>x ≥ 35</li><li class="ws-opt"><span class="ws-bub">C</span>x ≤ 15</li><li class="ws-opt"><span class="ws-bub">D</span>x = 15</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve: x − 4 &lt; 11</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x &lt; 15</li><li class="ws-opt"><span class="ws-bub">B</span>x &lt; 7</li><li class="ws-opt"><span class="ws-bub">C</span>x &gt; 15</li><li class="ws-opt"><span class="ws-bub">D</span>x = 15</li></ol></div></li></ol>
+  </section>
 <section class="ws-page">
     <header class="ws-head">
     <div class="ws-head-top">
@@ -89,14 +153,15 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     <section class="ws-bank">
-    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
     <div class="ws-bankwords"><span class="ws-bankword">Solve</span><span class="ws-bankword">Graph</span><span class="ws-bankword">Solution</span><span class="ws-bankword">Substitute</span><span class="ws-bankword">Solution set</span><span class="ws-bankword">Inverse operation</span></div>
   </section><section class="ws-example">
-    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
     <ol class="ws-example-steps"><li><b>Inequality:</b> x − 8 ≥ 15</li><li><b>Inverse operation:</b> Subtract 8 from both sides</li><li><b>Simplify:</b> x ≥ 7</li><li><b>Graph:</b> Closed circle at 7, shade right</li></ol>
   </section>
-    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve: x + 6 &gt; 14</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x &gt; 8</li><li class="ws-opt"><span class="ws-bub">B</span>x &gt; 20</li><li class="ws-opt"><span class="ws-bub">C</span>x &lt; 8</li><li class="ws-opt"><span class="ws-bub">D</span>x = 8</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Solve: x − 9 ≤ 3</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x ≤ 12</li><li class="ws-opt"><span class="ws-bub">B</span>x ≤ 6</li><li class="ws-opt"><span class="ws-bub">C</span>x ≥ 12</li><li class="ws-opt"><span class="ws-bub">D</span>x = 12</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve: x + 10 ≥ 25</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x ≥ 15</li><li class="ws-opt"><span class="ws-bub">B</span>x ≥ 35</li><li class="ws-opt"><span class="ws-bub">C</span>x ≤ 15</li><li class="ws-opt"><span class="ws-bub">D</span>x = 15</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve: x − 4 &lt; 11</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x &lt; 15</li><li class="ws-opt"><span class="ws-bub">B</span>x &lt; 7</li><li class="ws-opt"><span class="ws-bub">C</span>x &gt; 15</li><li class="ws-opt"><span class="ws-bub">D</span>x = 15</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Solve x + 3 &gt; 9, then graph the solution on the number line.</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Solve and Graph Inequalities.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve: x + 6 &gt; 14</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x &gt; 8</li><li class="ws-opt"><span class="ws-bub">B</span>x &gt; 20</li><li class="ws-opt"><span class="ws-bub">C</span>x &lt; 8</li><li class="ws-opt"><span class="ws-bub">D</span>x = 8</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Solve: x − 9 ≤ 3</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x ≤ 12</li><li class="ws-opt"><span class="ws-bub">B</span>x ≤ 6</li><li class="ws-opt"><span class="ws-bub">C</span>x ≥ 12</li><li class="ws-opt"><span class="ws-bub">D</span>x = 12</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve: x + 10 ≥ 25</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x ≥ 15</li><li class="ws-opt"><span class="ws-bub">B</span>x ≥ 35</li><li class="ws-opt"><span class="ws-bub">C</span>x ≤ 15</li><li class="ws-opt"><span class="ws-bub">D</span>x = 15</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve: x − 4 &lt; 11</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x &lt; 15</li><li class="ws-opt"><span class="ws-bub">B</span>x &lt; 7</li><li class="ws-opt"><span class="ws-bub">C</span>x &gt; 15</li><li class="ws-opt"><span class="ws-bub">D</span>x = 15</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Solve x + 3 &gt; 9, then graph the solution on the number line.</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Catch the Wrong Inverse Operation</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Inequality</span><span class="ws-step-w">x + 6 &gt; 14</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Inverse operation</span><span class="ws-step-w">Add 6 to both sides</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">x &gt; 20</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Graph</span><span class="ws-step-w">Open circle at 20, shade right</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
   </section>
@@ -111,13 +176,46 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve each inequality, describe the inverse operation, and describe the graph.</p>
   <table class="ws-table"><thead><tr><th>Inequality</th><th>Inverse Operation</th><th>Solution</th><th>Graph Description</th></tr></thead><tbody><tr><td>x + 11 ≥ 20</td><td></td><td></td><td></td></tr><tr><td>x − 3 &lt; 7</td><td></td><td></td><td></td></tr><tr><td>x + 8 ≤ 20</td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Is x = 5 a solution to x + 4 &gt; 12?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>No, because 5 + 4 = 9, and 9 is not greater than 12</li><li class="ws-opt"><span class="ws-bub">B</span>Yes, because 5 + 4 = 9</li><li class="ws-opt"><span class="ws-bub">C</span>Yes, because 5 &gt; 4</li><li class="ws-opt"><span class="ws-bub">D</span>No, because 5 &lt; 12</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve each inequality first, then sort by whether x = 10 is a solution.</p>
   <p class="ws-prompt">Categories: <b></b></p>
-  <ul class="ws-sort"></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve the inequality x + 7 ≥ 19 using the balance scale. What is the boundary value?</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Solve and Graph Inequalities.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ul class="ws-sort"></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve the inequality x + 7 ≥ 19 using the balance scale. What is the boundary value?</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Catch the Open vs. Closed Circle Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Inequality</span><span class="ws-step-w">x − 4 ≥ 9</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Inverse operation</span><span class="ws-step-w">Add 4 to both sides</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">x ≥ 13</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Graph</span><span class="ws-step-w">Open circle at 13, shade right</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.5</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">Solve and Graph Inequalities</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find the Solving Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Inequality</span><span class="ws-step-w">x − 8 ≥ 15</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Inverse operation</span><span class="ws-step-w">Subtract 8 from both sides</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">x ≥ 7</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Graph</span><span class="ws-step-w">Closed circle at 7, shade right</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A detective has a budget of at most $100 for supplies. She already spent $37 on gloves. Write an inequality for the remaining amount r she can spend, solve it, graph it, and name three possible values for r.</p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve each inequality and verify by testing two values.</p>
+  <table class="ws-table"><thead><tr><th>Inequality</th><th>Solution</th><th>Test x = 5</th><th>Test x = 20</th></tr></thead><tbody><tr><td>x + 8 &gt; 15</td><td></td><td></td><td></td></tr><tr><td>x − 6 ≤ 10</td><td></td><td></td><td></td></tr></tbody></table></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.5</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Solve and Graph Inequalities</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve: x + 6 &gt; 14</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x &gt; 8</li><li class="ws-opt"><span class="ws-bub">B</span>x &gt; 20</li><li class="ws-opt"><span class="ws-bub">C</span>x &lt; 8</li><li class="ws-opt"><span class="ws-bub">D</span>x = 8</li></ol><p class="ws-keynote">Subtract 6 from both sides: x &gt; 14 − 6 = 8. Graph: open circle at 8, shade right.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve and Graph Inequalities is skipping the key idea: &quot;Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Solve: x − 9 ≤ 3</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x ≤ 12</li><li class="ws-opt"><span class="ws-bub">B</span>x ≤ 6</li><li class="ws-opt"><span class="ws-bub">C</span>x ≥ 12</li><li class="ws-opt"><span class="ws-bub">D</span>x = 12</li></ol><p class="ws-keynote">Add 9 to both sides: x ≤ 3 + 9 = 12. Graph: closed circle at 12, shade left.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve and Graph Inequalities is skipping the key idea: &quot;Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve: x + 10 ≥ 25</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x ≥ 15</li><li class="ws-opt"><span class="ws-bub">B</span>x ≥ 35</li><li class="ws-opt"><span class="ws-bub">C</span>x ≤ 15</li><li class="ws-opt"><span class="ws-bub">D</span>x = 15</li></ol><p class="ws-keynote">Subtract 10 from both sides: x ≥ 25 − 10 = 15. Graph: closed circle at 15, shade right.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve and Graph Inequalities is skipping the key idea: &quot;Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve: x − 4 &lt; 11</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x &lt; 15</li><li class="ws-opt"><span class="ws-bub">B</span>x &lt; 7</li><li class="ws-opt"><span class="ws-bub">C</span>x &gt; 15</li><li class="ws-opt"><span class="ws-bub">D</span>x = 15</li></ol><p class="ws-keynote">Add 4 to both sides: x &lt; 11 + 4 = 15. Graph: open circle at 15, shade left.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve and Graph Inequalities is skipping the key idea: &quot;Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.&quot; — always check your work against this rule before you submit.</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -130,10 +228,11 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
-    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve: x + 6 &gt; 14</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x &gt; 8</li><li class="ws-opt"><span class="ws-bub">B</span>x &gt; 20</li><li class="ws-opt"><span class="ws-bub">C</span>x &lt; 8</li><li class="ws-opt"><span class="ws-bub">D</span>x = 8</li></ol><p class="ws-keynote">Subtract 6 from both sides: x &gt; 14 − 6 = 8. Graph: open circle at 8, shade right.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Solve: x − 9 ≤ 3</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x ≤ 12</li><li class="ws-opt"><span class="ws-bub">B</span>x ≤ 6</li><li class="ws-opt"><span class="ws-bub">C</span>x ≥ 12</li><li class="ws-opt"><span class="ws-bub">D</span>x = 12</li></ol><p class="ws-keynote">Add 9 to both sides: x ≤ 3 + 9 = 12. Graph: closed circle at 12, shade left.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve: x + 10 ≥ 25</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x ≥ 15</li><li class="ws-opt"><span class="ws-bub">B</span>x ≥ 35</li><li class="ws-opt"><span class="ws-bub">C</span>x ≤ 15</li><li class="ws-opt"><span class="ws-bub">D</span>x = 15</li></ol><p class="ws-keynote">Subtract 10 from both sides: x ≥ 25 − 10 = 15. Graph: closed circle at 15, shade right.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve: x − 4 &lt; 11</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x &lt; 15</li><li class="ws-opt"><span class="ws-bub">B</span>x &lt; 7</li><li class="ws-opt"><span class="ws-bub">C</span>x &gt; 15</li><li class="ws-opt"><span class="ws-bub">D</span>x = 15</li></ol><p class="ws-keynote">Add 4 to both sides: x &lt; 11 + 4 = 15. Graph: open circle at 15, shade left.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Solve x + 3 &gt; 9, then graph the solution on the number line.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Solve and Graph Inequalities.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve: x + 6 &gt; 14</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x &gt; 8</li><li class="ws-opt"><span class="ws-bub">B</span>x &gt; 20</li><li class="ws-opt"><span class="ws-bub">C</span>x &lt; 8</li><li class="ws-opt"><span class="ws-bub">D</span>x = 8</li></ol><p class="ws-keynote">Subtract 6 from both sides: x &gt; 14 − 6 = 8. Graph: open circle at 8, shade right.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve and Graph Inequalities is skipping the key idea: &quot;Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Solve: x − 9 ≤ 3</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x ≤ 12</li><li class="ws-opt"><span class="ws-bub">B</span>x ≤ 6</li><li class="ws-opt"><span class="ws-bub">C</span>x ≥ 12</li><li class="ws-opt"><span class="ws-bub">D</span>x = 12</li></ol><p class="ws-keynote">Add 9 to both sides: x ≤ 3 + 9 = 12. Graph: closed circle at 12, shade left.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve and Graph Inequalities is skipping the key idea: &quot;Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve: x + 10 ≥ 25</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x ≥ 15</li><li class="ws-opt"><span class="ws-bub">B</span>x ≥ 35</li><li class="ws-opt"><span class="ws-bub">C</span>x ≤ 15</li><li class="ws-opt"><span class="ws-bub">D</span>x = 15</li></ol><p class="ws-keynote">Subtract 10 from both sides: x ≥ 25 − 10 = 15. Graph: closed circle at 15, shade right.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve and Graph Inequalities is skipping the key idea: &quot;Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve: x − 4 &lt; 11</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x &lt; 15</li><li class="ws-opt"><span class="ws-bub">B</span>x &lt; 7</li><li class="ws-opt"><span class="ws-bub">C</span>x &gt; 15</li><li class="ws-opt"><span class="ws-bub">D</span>x = 15</li></ol><p class="ws-keynote">Add 4 to both sides: x &lt; 11 + 4 = 15. Graph: open circle at 15, shade left.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve and Graph Inequalities is skipping the key idea: &quot;Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Solve x + 3 &gt; 9, then graph the solution on the number line.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Catch the Wrong Inverse Operation</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Inequality</span><span class="ws-step-w">x + 6 &gt; 14</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Inverse operation</span><span class="ws-step-w">Add 6 to both sides</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">x &gt; 20</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Graph</span><span class="ws-step-w">Open circle at 20, shade right</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: The variable side shows + 6, so the inverse is to SUBTRACT 6, not add. Subtract 6 from both sides: x &gt; 14 − 6 = 8. Graph: open circle at 8 (because &gt; does not include 8), shade right.</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -146,13 +245,36 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve each inequality, describe the inverse operation, and describe the graph.</p>
-  <table class="ws-table"><thead><tr><th>Inequality</th><th>Inverse Operation</th><th>Solution</th><th>Graph Description</th></tr></thead><tbody><tr><td>x + 11 ≥ 20</td><td>Subtract 11</td><td>x ≥ 9</td><td>Closed circle at 9, shade right</td></tr><tr><td>x − 3 &lt; 7</td><td>Add 3</td><td>x &lt; 10</td><td>Open circle at 10, shade left</td></tr><tr><td>x + 8 ≤ 20</td><td>Subtract 8</td><td>x ≤ 12</td><td>Closed circle at 12, shade left</td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Is x = 5 a solution to x + 4 &gt; 12?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>No, because 5 + 4 = 9, and 9 is not greater than 12</li><li class="ws-opt"><span class="ws-bub">B</span>Yes, because 5 + 4 = 9</li><li class="ws-opt"><span class="ws-bub">C</span>Yes, because 5 &gt; 4</li><li class="ws-opt"><span class="ws-bub">D</span>No, because 5 &lt; 12</li></ol><p class="ws-keynote">Substitute: 5 + 4 = 9. Since 9 &gt; 12 is false, x = 5 is NOT a solution.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve each inequality first, then sort by whether x = 10 is a solution.</p>
+  <table class="ws-table"><thead><tr><th>Inequality</th><th>Inverse Operation</th><th>Solution</th><th>Graph Description</th></tr></thead><tbody><tr><td>x + 11 ≥ 20</td><td>Subtract 11</td><td>x ≥ 9</td><td>Closed circle at 9, shade right</td></tr><tr><td>x − 3 &lt; 7</td><td>Add 3</td><td>x &lt; 10</td><td>Open circle at 10, shade left</td></tr><tr><td>x + 8 ≤ 20</td><td>Subtract 8</td><td>x ≤ 12</td><td>Closed circle at 12, shade left</td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Is x = 5 a solution to x + 4 &gt; 12?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>No, because 5 + 4 = 9, and 9 is not greater than 12</li><li class="ws-opt"><span class="ws-bub">B</span>Yes, because 5 + 4 = 9</li><li class="ws-opt"><span class="ws-bub">C</span>Yes, because 5 &gt; 4</li><li class="ws-opt"><span class="ws-bub">D</span>No, because 5 &lt; 12</li></ol><p class="ws-keynote">Substitute: 5 + 4 = 9. Since 9 &gt; 12 is false, x = 5 is NOT a solution.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve and Graph Inequalities is skipping the key idea: &quot;Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve each inequality first, then sort by whether x = 10 is a solution.</p>
   <p class="ws-prompt">Categories: <b></b></p>
-  <ul class="ws-sort"></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve the inequality x + 7 ≥ 19 using the balance scale. What is the boundary value?</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Solve and Graph Inequalities.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Solve with inverse operations, then graph the solution set: open circle for &lt; or &gt;, closed for ≤ or ≥.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ul class="ws-sort"></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve the inequality x + 7 ≥ 19 using the balance scale. What is the boundary value?</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Catch the Open vs. Closed Circle Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Inequality</span><span class="ws-step-w">x − 4 ≥ 9</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Inverse operation</span><span class="ws-step-w">Add 4 to both sides</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">x ≥ 13</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Graph</span><span class="ws-step-w">Open circle at 13, shade right</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 4. Correct work: The solving is correct: x ≥ 13. But the symbol ≥ means 'greater than OR equal to,' so 13 IS a solution and must be included. Use a CLOSED circle at 13 (not open), then shade right.</p></div></li></ol>
   </section>
-</body>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.5</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Solve and Graph Inequalities</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find the Solving Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Inequality</span><span class="ws-step-w">x − 8 ≥ 15</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Inverse operation</span><span class="ws-step-w">Subtract 8 from both sides</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">x ≥ 7</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Graph</span><span class="ws-step-w">Closed circle at 7, shade right</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: The inverse of subtracting 8 is ADDING 8, not subtracting. Add 8 to both sides: x ≥ 15 + 8 = 23. Graph: closed circle at 23, shade right.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A detective has a budget of at most $100 for supplies. She already spent $37 on gloves. Write an inequality for the remaining amount r she can spend, solve it, graph it, and name three possible values for r.</p><p class="ws-keynote">Look for: 100, 63, at most, closed, left, less than or equal to, solution set.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve each inequality and verify by testing two values.</p>
+  <table class="ws-table"><thead><tr><th>Inequality</th><th>Solution</th><th>Test x = 5</th><th>Test x = 20</th></tr></thead><tbody><tr><td>x + 8 &gt; 15</td><td>x &gt; 7</td><td>5 + 8 = 13 &gt; 15? No</td><td>20 + 8 = 28 &gt; 15? Yes</td></tr><tr><td>x − 6 ≤ 10</td><td>x ≤ 16</td><td>5 − 6 = −1 ≤ 10? Yes</td><td>20 − 6 = 14 ≤ 10? No</td></tr></tbody></table></div></li></ol>
+  </section>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  </main>
+  </body>
 </html>

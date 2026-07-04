@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mastery Dashboard · Neft Teacher</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <style>
+      :root {
+        --bg: #0f1623;
+        --panel: #18233a;
+        --panel-2: #1f2d49;
+        --line: #2c3c5e;
+        --ink: #eaf0fb;
+        --muted: #9fb0cf;
+        --accent: #4f8bff;
+        --good: #2fbf71;
+        --warn: #e0a32e;
+        --bad: #e5564b;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.5 system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+      }
+      header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      header h1 {
+        font-size: 20px;
+        margin: 0;
+      }
+      header .sub {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .spacer {
+        flex: 1;
+      }
+      main {
+        padding: 24px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+        border: 1px solid var(--line);
+        background: var(--panel-2);
+        color: var(--ink);
+        border-radius: 8px;
+        padding: 8px 14px;
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      button:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+      }
+      input {
+        font: inherit;
+        background: #0c1320;
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 12px;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 14px;
+        margin-bottom: 24px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .card .n {
+        font-size: 30px;
+        font-weight: 700;
+      }
+      .card .l {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      section.block {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 8px 0;
+        margin-bottom: 24px;
+      }
+      section.block h2 {
+        font-size: 15px;
+        margin: 8px 16px 4px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 16px;
+        border-top: 1px solid var(--line);
+      }
+      th {
+        color: var(--muted);
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+      }
+      td.num,
+      th.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      .bar {
+        height: 8px;
+        border-radius: 5px;
+        background: #0c1320;
+        overflow: hidden;
+        min-width: 80px;
+      }
+      .bar > span {
+        display: block;
+        height: 100%;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        background: var(--panel-2);
+      }
+      .gate {
+        max-width: 440px;
+        margin: 12vh auto;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 28px;
+      }
+      .gate h2 {
+        margin-top: 0;
+      }
+      .gate p {
+        color: var(--muted);
+      }
+      .gate .row {
+        display: flex;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .gate input {
+        flex: 1;
+      }
+      .msg {
+        color: var(--warn);
+        min-height: 20px;
+        margin-top: 10px;
+        font-size: 14px;
+      }
+      .hidden {
+        display: none !important;
+      }
+      a {
+        color: var(--accent);
+      }
+      .foot {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 8px;
+      }
+    </style>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+</head>
+  <body>
+    <!-- Gate -->
+    <div id="gate" class="gate">
+      <h2>🔐 Mastery Dashboard</h2>
+      <p>
+        Teacher access only. Enter the dashboard key to view student mastery
+        data.
+      </p>
+      <div class="row">
+        <input
+          id="keyInput"
+          type="password"
+          placeholder="Teacher key"
+          autocomplete="off"
+        />
+        <button class="primary" id="enterBtn">View</button>
+      </div>
+      <div class="msg" id="gateMsg"></div>
+      <p class="foot">
+        Set the <code>TEACHER_KEY</code> environment variable on the Pages
+        project to enable this dashboard. Data is read-only and never exposed
+        without the key.
+      </p>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="app" class="hidden">
+      <header>
+        <h1>📊 Mastery Dashboard</h1>
+        <span class="sub" id="meta"></span>
+        <div class="spacer"></div>
+        <button id="refreshBtn">↻ Refresh</button>
+        <button id="lockBtn">Lock</button>
+      </header>
+      <main>
+        <div class="cards" id="summary"></div>
+
+        <section class="block">
+          <h2>By Student</h2>
+          <table id="studentTable">
+            <thead>
+              <tr>
+                <th data-k="name">Student</th>
+                <th class="num" data-k="attempts">Attempts</th>
+                <th class="num" data-k="accuracy">Accuracy</th>
+                <th class="num" data-k="masteries">Mastery</th>
+                <th class="num" data-k="hints">Hints</th>
+                <th class="num" data-k="lessons">Lessons</th>
+                <th data-k="last">Last active</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </section>
+
+        <section class="block">
+          <h2>By Standard</h2>
+          <table id="standardTable">
+            <thead>
+              <tr>
+                <th data-k="standard">Standard</th>
+                <th class="num" data-k="students">Students</th>
+                <th class="num" data-k="attempts">Attempts</th>
+                <th class="num" data-k="accuracy">Accuracy</th>
+                <th class="num" data-k="masteries">Masteries</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </section>
+
+        <p class="foot" id="emptyNote"></p>
+      </main>
+    </div>
+
+    <script>
+      "use strict";
+      var LS_KEY = "nt_teacher_key";
+      var ENDPOINT = "/api/progress/telemetry";
+      var raw = [];
+
+      var $ = function (s) {
+        return document.querySelector(s);
+      };
+      function esc(s) {
+        return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+        });
+      }
+      function pct(n) {
+        return (n * 100).toFixed(0) + "%";
+      }
+      function color(a) {
+        return a >= 0.8
+          ? "var(--good)"
+          : a >= 0.5
+            ? "var(--warn)"
+            : "var(--bad)";
+      }
+      function fmtDate(s) {
+        if (!s) return "—";
+        try {
+          var d = new Date(s);
+          return (
+            d.toLocaleDateString() +
+            " " +
+            d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+          );
+        } catch (e) {
+          return s;
+        }
+      }
+
+      async function load(key) {
+        var res = await fetch(
+          ENDPOINT + "?key=" + encodeURIComponent(key) + "&limit=5000",
+          {
+            headers: { "x-teacher-key": key },
+          },
+        );
+        if (res.status === 401) throw new Error("Wrong key.");
+        if (res.status === 503)
+          throw new Error(
+            "Dashboard not enabled (TEACHER_KEY not set on the server).",
+          );
+        if (!res.ok) throw new Error("Server error (" + res.status + ").");
+        var data = await res.json();
+        return (data && data.events) || [];
+      }
+
+      function aggregate(events) {
+        var students = {},
+          standards = {};
+        var masteryTotal = 0,
+          attemptTotal = 0,
+          correctTotal = 0;
+        events.forEach(function (e) {
+          var who = e.studentName || "Anonymous";
+          var st =
+            students[who] ||
+            (students[who] = {
+              name: who,
+              attempts: 0,
+              correct: 0,
+              masteries: 0,
+              hints: 0,
+              lessons: {},
+              last: "",
+            });
+          if (e.lessonSlug) st.lessons[e.lessonSlug] = 1;
+          if (e.at > st.last) st.last = e.at;
+          var sd = e.standard || "(none)";
+          var sg =
+            standards[sd] ||
+            (standards[sd] = {
+              standard: sd,
+              attempts: 0,
+              correct: 0,
+              masteries: 0,
+              students: {},
+            });
+          sg.students[who] = 1;
+          if (e.type === "item_attempt") {
+            st.attempts++;
+            sg.attempts++;
+            attemptTotal++;
+            if (e.props && e.props.correct === true) {
+              st.correct++;
+              sg.correct++;
+              correctTotal++;
+            }
+          } else if (e.type === "mastery_reached") {
+            st.masteries++;
+            sg.masteries++;
+            masteryTotal++;
+          } else if (e.type === "hint_used") {
+            st.hints++;
+          }
+        });
+        var sList = Object.keys(students).map(function (k) {
+          var s = students[k];
+          return {
+            name: s.name,
+            attempts: s.attempts,
+            correct: s.correct,
+            accuracy: s.attempts ? s.correct / s.attempts : 0,
+            masteries: s.masteries,
+            hints: s.hints,
+            lessons: Object.keys(s.lessons).length,
+            last: s.last,
+          };
+        });
+        var stdList = Object.keys(standards).map(function (k) {
+          var s = standards[k];
+          return {
+            standard: s.standard,
+            attempts: s.attempts,
+            accuracy: s.attempts ? s.correct / s.attempts : 0,
+            masteries: s.masteries,
+            students: Object.keys(s.students).length,
+          };
+        });
+        return {
+          students: sList,
+          standards: stdList,
+          masteryTotal: masteryTotal,
+          attemptTotal: attemptTotal,
+          accuracy: attemptTotal ? correctTotal / attemptTotal : 0,
+        };
+      }
+
+      function bar(a) {
+        return (
+          '<div class="bar"><span style="width:' +
+          pct(a) +
+          ";background:" +
+          color(a) +
+          '"></span></div>'
+        );
+      }
+
+      function render(events) {
+        var agg = aggregate(events);
+        $("#summary").innerHTML = [
+          ["Students", agg.students.length],
+          ["Item attempts", agg.attemptTotal],
+          ["Overall accuracy", pct(agg.accuracy)],
+          ["Masteries reached", agg.masteryTotal],
+          ["Standards touched", agg.standards.length],
+        ]
+          .map(function (c) {
+            return (
+              '<div class="card"><div class="n">' +
+              esc(c[1]) +
+              '</div><div class="l">' +
+              esc(c[0]) +
+              "</div></div>"
+            );
+          })
+          .join("");
+
+        agg.students.sort(function (a, b) {
+          return b.attempts - a.attempts;
+        });
+        $("#studentTable tbody").innerHTML =
+          agg.students
+            .map(function (s) {
+              return (
+                "<tr><td>" +
+                esc(s.name) +
+                '</td><td class="num">' +
+                s.attempts +
+                '</td><td class="num">' +
+                (s.attempts
+                  ? '<div style="display:flex;gap:8px;align-items:center;justify-content:flex-end">' +
+                    bar(s.accuracy) +
+                    "<span>" +
+                    pct(s.accuracy) +
+                    "</span></div>"
+                  : "—") +
+                '</td><td class="num">' +
+                s.masteries +
+                '</td><td class="num">' +
+                s.hints +
+                '</td><td class="num">' +
+                s.lessons +
+                "</td><td>" +
+                esc(fmtDate(s.last)) +
+                "</td></tr>"
+              );
+            })
+            .join("") ||
+          '<tr><td colspan="7" style="color:var(--muted)">No student activity yet.</td></tr>';
+
+        agg.standards.sort(function (a, b) {
+          return b.attempts - a.attempts;
+        });
+        $("#standardTable tbody").innerHTML =
+          agg.standards
+            .map(function (s) {
+              return (
+                '<tr><td><span class="pill">' +
+                esc(s.standard) +
+                '</span></td><td class="num">' +
+                s.students +
+                '</td><td class="num">' +
+                s.attempts +
+                '</td><td class="num">' +
+                (s.attempts
+                  ? '<div style="display:flex;gap:8px;align-items:center;justify-content:flex-end">' +
+                    bar(s.accuracy) +
+                    "<span>" +
+                    pct(s.accuracy) +
+                    "</span></div>"
+                  : "—") +
+                '</td><td class="num">' +
+                s.masteries +
+                "</td></tr>"
+              );
+            })
+            .join("") ||
+          '<tr><td colspan="5" style="color:var(--muted)">No data yet.</td></tr>';
+
+        $("#meta").textContent = events.length + " events";
+        $("#emptyNote").textContent = events.length
+          ? ""
+          : "No telemetry recorded yet — data appears as students work through lessons.";
+      }
+
+      function showApp(events) {
+        raw = events;
+        $("#gate").classList.add("hidden");
+        $("#app").classList.remove("hidden");
+        render(events);
+      }
+
+      async function enter(key) {
+        $("#gateMsg").textContent = "Loading…";
+        try {
+          var events = await load(key);
+          localStorage.setItem(LS_KEY, key);
+          $("#gateMsg").textContent = "";
+          showApp(events);
+        } catch (err) {
+          $("#gateMsg").textContent = err.message || "Failed.";
+          localStorage.removeItem(LS_KEY);
+        }
+      }
+
+      $("#enterBtn").addEventListener("click", function () {
+        enter($("#keyInput").value.trim());
+      });
+      $("#keyInput").addEventListener("keydown", function (e) {
+        if (e.key === "Enter") enter(e.target.value.trim());
+      });
+      $("#refreshBtn").addEventListener("click", async function () {
+        var key = localStorage.getItem(LS_KEY);
+        if (key) {
+          try {
+            showApp(await load(key));
+          } catch (e) {
+            /* ignore */
+          }
+        }
+      });
+      $("#lockBtn").addEventListener("click", function () {
+        localStorage.removeItem(LS_KEY);
+        location.reload();
+      });
+
+      // Auto-enter if a key is remembered.
+      (function () {
+        var saved = localStorage.getItem(LS_KEY);
+        if (saved) enter(saved);
+      })();
+    </script>
+  </body>
+</html>

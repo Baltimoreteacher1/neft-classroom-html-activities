@@ -43,8 +43,10 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
 .ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
 .ws-bub-sm{width:20px;height:20px;font-size:11px;}
 .ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
-.ws-correct{font-weight:700;color:var(--teal);}
+.ws-correct{font-weight:700;color:var(--teal-ink);}
 .ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
 .ws-match{display:flex;gap:24px;flex-wrap:wrap;}
 .ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
 .ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
@@ -75,9 +77,71 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
   @page{margin:1.5cm;}
   a{color:#000;}
 }
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
 </style>
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+
+
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/3-1-flagship/worksheet.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Understand Ratios — Practice Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="Understand Ratios — Practice Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Understand Ratios — Practice Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/3-1-flagship/worksheet.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
 </head>
 <body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.1</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">Understand Ratios</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Ratio</span><span class="ws-bankword">Comparison</span><span class="ws-bankword">Part-to-part</span><span class="ws-bankword">Part-to-whole</span><span class="ws-bankword">Colon notation</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Read the problem:</b> A trail mix has 6 almonds, 4 raisins, and 2 cashews. Write the ratio of raisins to total pieces.</li><li><b>Count total pieces:</b> 6 + 4 + 2 = 12</li><li><b>Write the ratio:</b> 4:8</li><li><b>Answer:</b> The ratio of raisins to total is 4:8.</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 4 cups of milk and 1 cup of cream. What is the ratio of milk to cream?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>4:1</li><li class="ws-opt"><span class="ws-bub">B</span>1:4</li><li class="ws-opt"><span class="ws-bub">C</span>4:5</li><li class="ws-opt"><span class="ws-bub">D</span>5:1</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Chef Reyes uses 6 strawberries and 2 bananas in a smoothie. What is the part-to-whole ratio of bananas to total fruit?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2:8</li><li class="ws-opt"><span class="ws-bub">B</span>6:2</li><li class="ws-opt"><span class="ws-bub">C</span>2:6</li><li class="ws-opt"><span class="ws-bub">D</span>8:2</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">In a class of 30 students, 18 are girls. What is the part-to-part ratio of boys to girls?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12:18</li><li class="ws-opt"><span class="ws-bub">B</span>18:12</li><li class="ws-opt"><span class="ws-bub">C</span>18:30</li><li class="ws-opt"><span class="ws-bub">D</span>12:30</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A pet store has 5 dogs and 9 cats. What is the ratio of dogs to cats?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>5:9</li><li class="ws-opt"><span class="ws-bub">B</span>9:5</li><li class="ws-opt"><span class="ws-bub">C</span>5:14</li><li class="ws-opt"><span class="ws-bub">D</span>14:5</li></ol></div></li></ol>
+  </section>
 <section class="ws-page">
     <header class="ws-head">
     <div class="ws-head-top">
@@ -89,16 +153,17 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     <section class="ws-bank">
-    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
     <div class="ws-bankwords"><span class="ws-bankword">Ratio</span><span class="ws-bankword">Comparison</span><span class="ws-bankword">Part-to-part</span><span class="ws-bankword">Part-to-whole</span><span class="ws-bankword">Colon notation</span></div>
   </section><section class="ws-example">
-    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
     <ol class="ws-example-steps"><li><b>Read the problem:</b> A trail mix has 6 almonds, 4 raisins, and 2 cashews. Write the ratio of raisins to total pieces.</li><li><b>Count total pieces:</b> 6 + 4 + 2 = 12</li><li><b>Write the ratio:</b> 4:8</li><li><b>Answer:</b> The ratio of raisins to total is 4:8.</li></ol>
   </section>
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 4 cups of milk and 1 cup of cream. What is the ratio of milk to cream?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>4:1</li><li class="ws-opt"><span class="ws-bub">B</span>1:4</li><li class="ws-opt"><span class="ws-bub">C</span>4:5</li><li class="ws-opt"><span class="ws-bub">D</span>5:1</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Chef Reyes uses 6 strawberries and 2 bananas in a smoothie. What is the part-to-whole ratio of bananas to total fruit?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2:8</li><li class="ws-opt"><span class="ws-bub">B</span>6:2</li><li class="ws-opt"><span class="ws-bub">C</span>2:6</li><li class="ws-opt"><span class="ws-bub">D</span>8:2</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">In a class of 30 students, 18 are girls. What is the part-to-part ratio of boys to girls?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12:18</li><li class="ws-opt"><span class="ws-bub">B</span>18:12</li><li class="ws-opt"><span class="ws-bub">C</span>18:30</li><li class="ws-opt"><span class="ws-bub">D</span>12:30</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A pet store has 5 dogs and 9 cats. What is the ratio of dogs to cats?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>5:9</li><li class="ws-opt"><span class="ws-bub">B</span>9:5</li><li class="ws-opt"><span class="ws-bub">C</span>5:14</li><li class="ws-opt"><span class="ws-bub">D</span>14:5</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Sort each statement: does it describe a ratio or NOT describe a ratio?</p>
   <p class="ws-prompt">Categories: <b>ratio · not-ratio</b></p>
-  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span>7 pencils for every 3 erasers</li><li><span class="ws-blank ws-blank-sm"></span>10 red beads to 4 blue beads</li><li><span class="ws-blank ws-blank-sm"></span>There are 15 chairs in the room</li><li><span class="ws-blank ws-blank-sm"></span>The pizza was delicious</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Understand Ratios.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: A ratio compares two quantities, and the order you write them in matters.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span>7 pencils for every 3 erasers</li><li><span class="ws-blank ws-blank-sm"></span>10 red beads to 4 blue beads</li><li><span class="ws-blank ws-blank-sm"></span>There are 15 chairs in the room</li><li><span class="ws-blank ws-blank-sm"></span>The pizza was delicious</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Spot Marco's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A recipe uses 2 cups of oil and 5 cups of water. Write the ratio of oil to water.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the amounts</span><span class="ws-step-w">Oil = 2 cups, water = 5 cups.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Write the ratio</span><span class="ws-step-w">Oil to water = 5:2.</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
   </section>
@@ -113,13 +178,47 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Sort each statement — is it a part-to-part ratio or a part-to-whole ratio?</p>
   <p class="ws-prompt">Categories: <b>part-to-part · part-to-whole</b></p>
   <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span>3 boys to 5 girls in cooking class</li><li><span class="ws-blank ws-blank-sm"></span>5 girls out of 8 students total</li><li><span class="ws-blank ws-blank-sm"></span>2 cups sugar to 3 cups flour</li><li><span class="ws-blank ws-blank-sm"></span>4 vegetarian dishes out of 10 total dishes</li><li><span class="ws-blank ws-blank-sm"></span>7 savory items to 3 sweet items</li><li><span class="ws-blank ws-blank-sm"></span>3 sweet items out of 10 total items</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A fruit salad has 5 pieces of melon, 3 pieces of pineapple, and 2 grapes. What is the ratio of pineapple to melon?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>3:5</li><li class="ws-opt"><span class="ws-bub">B</span>5:3</li><li class="ws-opt"><span class="ws-bub">C</span>3:10</li><li class="ws-opt"><span class="ws-bub">D</span>3:2</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
-  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>4 cats to 7 dogs</td><td></td><td></td><td></td></tr><tr><td>9 red out of 15 total</td><td></td><td></td><td></td></tr><tr><td>5 wins to 3 losses</td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A parking lot has 10 cars and 6 trucks. What is the part-to-whole ratio of trucks to total vehicles?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>6:16</li><li class="ws-opt"><span class="ws-bub">B</span>10:6</li><li class="ws-opt"><span class="ws-bub">C</span>6:10</li><li class="ws-opt"><span class="ws-bub">D</span>16:6</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Understand Ratios.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: A ratio compares two quantities, and the order you write them in matters.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>4 cats to 7 dogs</td><td></td><td></td><td></td></tr><tr><td>9 red out of 15 total</td><td></td><td></td><td></td></tr><tr><td>5 wins to 3 losses</td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A parking lot has 10 cars and 6 trucks. What is the part-to-whole ratio of trucks to total vehicles?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>6:16</li><li class="ws-opt"><span class="ws-bub">B</span>10:6</li><li class="ws-opt"><span class="ws-bub">C</span>6:10</li><li class="ws-opt"><span class="ws-bub">D</span>16:6</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot Dana's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A bowl has 3 apples and 4 oranges. Write the part-to-whole ratio of apples to total fruit.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the total</span><span class="ws-step-w">3 + 4 = 7 pieces of fruit total.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Write the ratio</span><span class="ws-step-w">Apples to total = 3:4.</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.1</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">Understand Ratios</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find Aliya's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A trail mix has 6 almonds, 4 raisins, and 2 cashews. Write the ratio of raisins to total pieces.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Count total pieces</span><span class="ws-step-w">6 + 4 + 2 = 12</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Write the ratio</span><span class="ws-step-w">4:8</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">The ratio of raisins to total is 4:8.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem"></p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A classroom has 12 boys and 8 girls. Sort each ratio statement as either CORRECT or INCORRECT.</p>
+  <p class="ws-prompt">Categories: <b>correct · incorrect</b></p>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span>Boys to girls = 12:8</li><li><span class="ws-blank ws-blank-sm"></span>Girls to total = 8:20</li><li><span class="ws-blank ws-blank-sm"></span>Boys to total = 12:8</li><li><span class="ws-blank ws-blank-sm"></span>Girls to boys = 12:8</li></ul></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.1</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Understand Ratios</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 4 cups of milk and 1 cup of cream. What is the ratio of milk to cream?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>4:1</li><li class="ws-opt"><span class="ws-bub">B</span>1:4</li><li class="ws-opt"><span class="ws-bub">C</span>4:5</li><li class="ws-opt"><span class="ws-bub">D</span>5:1</li></ol><p class="ws-keynote">A ratio compares quantities in the order given. Milk to cream = 4 to 1, or 4:1.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is skipping the key idea: &quot;A ratio compares two quantities, and the order you write them in matters.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Chef Reyes uses 6 strawberries and 2 bananas in a smoothie. What is the part-to-whole ratio of bananas to total fruit?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>2:8</li><li class="ws-opt"><span class="ws-bub">B</span>6:2</li><li class="ws-opt"><span class="ws-bub">C</span>2:6</li><li class="ws-opt"><span class="ws-bub">D</span>8:2</li></ol><p class="ws-keynote">Total fruit = 6 + 2 = 8. The part-to-whole ratio of bananas to total fruit is 2:8.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is skipping the key idea: &quot;A ratio compares two quantities, and the order you write them in matters.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">In a class of 30 students, 18 are girls. What is the part-to-part ratio of boys to girls?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12:18</li><li class="ws-opt"><span class="ws-bub">B</span>18:12</li><li class="ws-opt"><span class="ws-bub">C</span>18:30</li><li class="ws-opt"><span class="ws-bub">D</span>12:30</li></ol><p class="ws-keynote">Boys = 30 − 18 = 12. Part-to-part ratio of boys to girls = 12:18. (Order matters!)</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is skipping the key idea: &quot;A ratio compares two quantities, and the order you write them in matters.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A pet store has 5 dogs and 9 cats. What is the ratio of dogs to cats?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5:9</li><li class="ws-opt"><span class="ws-bub">B</span>9:5</li><li class="ws-opt"><span class="ws-bub">C</span>5:14</li><li class="ws-opt"><span class="ws-bub">D</span>14:5</li></ol><p class="ws-keynote">The ratio of dogs to cats compares dogs first, then cats: 5 to 9, or 5:9.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is skipping the key idea: &quot;A ratio compares two quantities, and the order you write them in matters.&quot; — always check your work against this rule before you submit.</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -132,12 +231,13 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
-    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 4 cups of milk and 1 cup of cream. What is the ratio of milk to cream?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>4:1</li><li class="ws-opt"><span class="ws-bub">B</span>1:4</li><li class="ws-opt"><span class="ws-bub">C</span>4:5</li><li class="ws-opt"><span class="ws-bub">D</span>5:1</li></ol><p class="ws-keynote">A ratio compares quantities in the order given. Milk to cream = 4 to 1, or 4:1.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Chef Reyes uses 6 strawberries and 2 bananas in a smoothie. What is the part-to-whole ratio of bananas to total fruit?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>2:8</li><li class="ws-opt"><span class="ws-bub">B</span>6:2</li><li class="ws-opt"><span class="ws-bub">C</span>2:6</li><li class="ws-opt"><span class="ws-bub">D</span>8:2</li></ol><p class="ws-keynote">Total fruit = 6 + 2 = 8. The part-to-whole ratio of bananas to total fruit is 2:8.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">In a class of 30 students, 18 are girls. What is the part-to-part ratio of boys to girls?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12:18</li><li class="ws-opt"><span class="ws-bub">B</span>18:12</li><li class="ws-opt"><span class="ws-bub">C</span>18:30</li><li class="ws-opt"><span class="ws-bub">D</span>12:30</li></ol><p class="ws-keynote">Boys = 30 − 18 = 12. Part-to-part ratio of boys to girls = 12:18. (Order matters!)</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A pet store has 5 dogs and 9 cats. What is the ratio of dogs to cats?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5:9</li><li class="ws-opt"><span class="ws-bub">B</span>9:5</li><li class="ws-opt"><span class="ws-bub">C</span>5:14</li><li class="ws-opt"><span class="ws-bub">D</span>14:5</li></ol><p class="ws-keynote">The ratio of dogs to cats compares dogs first, then cats: 5 to 9, or 5:9.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Sort each statement: does it describe a ratio or NOT describe a ratio?</p>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 4 cups of milk and 1 cup of cream. What is the ratio of milk to cream?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>4:1</li><li class="ws-opt"><span class="ws-bub">B</span>1:4</li><li class="ws-opt"><span class="ws-bub">C</span>4:5</li><li class="ws-opt"><span class="ws-bub">D</span>5:1</li></ol><p class="ws-keynote">A ratio compares quantities in the order given. Milk to cream = 4 to 1, or 4:1.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is skipping the key idea: &quot;A ratio compares two quantities, and the order you write them in matters.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Chef Reyes uses 6 strawberries and 2 bananas in a smoothie. What is the part-to-whole ratio of bananas to total fruit?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>2:8</li><li class="ws-opt"><span class="ws-bub">B</span>6:2</li><li class="ws-opt"><span class="ws-bub">C</span>2:6</li><li class="ws-opt"><span class="ws-bub">D</span>8:2</li></ol><p class="ws-keynote">Total fruit = 6 + 2 = 8. The part-to-whole ratio of bananas to total fruit is 2:8.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is skipping the key idea: &quot;A ratio compares two quantities, and the order you write them in matters.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">In a class of 30 students, 18 are girls. What is the part-to-part ratio of boys to girls?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12:18</li><li class="ws-opt"><span class="ws-bub">B</span>18:12</li><li class="ws-opt"><span class="ws-bub">C</span>18:30</li><li class="ws-opt"><span class="ws-bub">D</span>12:30</li></ol><p class="ws-keynote">Boys = 30 − 18 = 12. Part-to-part ratio of boys to girls = 12:18. (Order matters!)</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is skipping the key idea: &quot;A ratio compares two quantities, and the order you write them in matters.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A pet store has 5 dogs and 9 cats. What is the ratio of dogs to cats?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5:9</li><li class="ws-opt"><span class="ws-bub">B</span>9:5</li><li class="ws-opt"><span class="ws-bub">C</span>5:14</li><li class="ws-opt"><span class="ws-bub">D</span>14:5</li></ol><p class="ws-keynote">The ratio of dogs to cats compares dogs first, then cats: 5 to 9, or 5:9.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is skipping the key idea: &quot;A ratio compares two quantities, and the order you write them in matters.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Sort each statement: does it describe a ratio or NOT describe a ratio?</p>
   <p class="ws-prompt">Categories: <b>ratio · not-ratio</b></p>
-  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">ratio</span>7 pencils for every 3 erasers</li><li><span class="ws-blank ws-blank-sm">ratio</span>10 red beads to 4 blue beads</li><li><span class="ws-blank ws-blank-sm">not-ratio</span>There are 15 chairs in the room</li><li><span class="ws-blank ws-blank-sm">not-ratio</span>The pizza was delicious</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Understand Ratios.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: A ratio compares two quantities, and the order you write them in matters.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">ratio</span>7 pencils for every 3 erasers</li><li><span class="ws-blank ws-blank-sm">ratio</span>10 red beads to 4 blue beads</li><li><span class="ws-blank ws-blank-sm">not-ratio</span>There are 15 chairs in the room</li><li><span class="ws-blank ws-blank-sm">not-ratio</span>The pizza was delicious</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Spot Marco's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A recipe uses 2 cups of oil and 5 cups of water. Write the ratio of oil to water.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the amounts</span><span class="ws-step-w">Oil = 2 cups, water = 5 cups.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Write the ratio</span><span class="ws-step-w">Oil to water = 5:2.</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: Order matters: 'oil to water' lists oil first. The correct ratio is 2:5, not 5:2.</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -150,13 +250,37 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Sort each statement — is it a part-to-part ratio or a part-to-whole ratio?</p>
   <p class="ws-prompt">Categories: <b>part-to-part · part-to-whole</b></p>
-  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">part-to-part</span>3 boys to 5 girls in cooking class</li><li><span class="ws-blank ws-blank-sm">part-to-whole</span>5 girls out of 8 students total</li><li><span class="ws-blank ws-blank-sm">part-to-part</span>2 cups sugar to 3 cups flour</li><li><span class="ws-blank ws-blank-sm">part-to-whole</span>4 vegetarian dishes out of 10 total dishes</li><li><span class="ws-blank ws-blank-sm">part-to-part</span>7 savory items to 3 sweet items</li><li><span class="ws-blank ws-blank-sm">part-to-whole</span>3 sweet items out of 10 total items</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A fruit salad has 5 pieces of melon, 3 pieces of pineapple, and 2 grapes. What is the ratio of pineapple to melon?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>3:5</li><li class="ws-opt"><span class="ws-bub">B</span>5:3</li><li class="ws-opt"><span class="ws-bub">C</span>3:10</li><li class="ws-opt"><span class="ws-bub">D</span>3:2</li></ol><p class="ws-keynote">The ratio of pineapple to melon compares pineapple (3) to melon (5), so the ratio is 3:5.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
-  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>4 cats to 7 dogs</td><td>4 to 7</td><td>4:7</td><td>4/7</td></tr><tr><td>9 red out of 15 total</td><td></td><td></td><td></td></tr><tr><td>5 wins to 3 losses</td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A parking lot has 10 cars and 6 trucks. What is the part-to-whole ratio of trucks to total vehicles?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6:16</li><li class="ws-opt"><span class="ws-bub">B</span>10:6</li><li class="ws-opt"><span class="ws-bub">C</span>6:10</li><li class="ws-opt"><span class="ws-bub">D</span>16:6</li></ol><p class="ws-keynote">Total vehicles = 10 + 6 = 16. The ratio of trucks to total is 6:16.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Understand Ratios.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: A ratio compares two quantities, and the order you write them in matters.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">part-to-part</span>3 boys to 5 girls in cooking class</li><li><span class="ws-blank ws-blank-sm">part-to-whole</span>5 girls out of 8 students total</li><li><span class="ws-blank ws-blank-sm">part-to-part</span>2 cups sugar to 3 cups flour</li><li><span class="ws-blank ws-blank-sm">part-to-whole</span>4 vegetarian dishes out of 10 total dishes</li><li><span class="ws-blank ws-blank-sm">part-to-part</span>7 savory items to 3 sweet items</li><li><span class="ws-blank ws-blank-sm">part-to-whole</span>3 sweet items out of 10 total items</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A fruit salad has 5 pieces of melon, 3 pieces of pineapple, and 2 grapes. What is the ratio of pineapple to melon?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>3:5</li><li class="ws-opt"><span class="ws-bub">B</span>5:3</li><li class="ws-opt"><span class="ws-bub">C</span>3:10</li><li class="ws-opt"><span class="ws-bub">D</span>3:2</li></ol><p class="ws-keynote">The ratio of pineapple to melon compares pineapple (3) to melon (5), so the ratio is 3:5.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is skipping the key idea: &quot;A ratio compares two quantities, and the order you write them in matters.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>4 cats to 7 dogs</td><td>4 to 7</td><td>4:7</td><td>4/7</td></tr><tr><td>9 red out of 15 total</td><td></td><td></td><td></td></tr><tr><td>5 wins to 3 losses</td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A parking lot has 10 cars and 6 trucks. What is the part-to-whole ratio of trucks to total vehicles?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6:16</li><li class="ws-opt"><span class="ws-bub">B</span>10:6</li><li class="ws-opt"><span class="ws-bub">C</span>6:10</li><li class="ws-opt"><span class="ws-bub">D</span>16:6</li></ol><p class="ws-keynote">Total vehicles = 10 + 6 = 16. The ratio of trucks to total is 6:16.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is skipping the key idea: &quot;A ratio compares two quantities, and the order you write them in matters.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot Dana's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A bowl has 3 apples and 4 oranges. Write the part-to-whole ratio of apples to total fruit.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the total</span><span class="ws-step-w">3 + 4 = 7 pieces of fruit total.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Write the ratio</span><span class="ws-step-w">Apples to total = 3:4.</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: A part-to-whole ratio compares the part to the total, not to the other part. The correct ratio is 3:7 (3 apples out of 7 total), not 3:4.</p></div></li></ol>
   </section>
-</body>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.RP.1</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Understand Ratios</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find Aliya's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A trail mix has 6 almonds, 4 raisins, and 2 cashews. Write the ratio of raisins to total pieces.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Count total pieces</span><span class="ws-step-w">6 + 4 + 2 = 12</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Write the ratio</span><span class="ws-step-w">4:8</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">The ratio of raisins to total is 4:8.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: The total is 12, not 8. The correct ratio is 4:12.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem"></p><p class="ws-keynote">Sample: Part-to-part: red to blue = 8:6. Part-to-whole: green to total = 4:18. The difference is that part-to-part compares two individual groups, while part-to-whole compares one group to the entire collection (8 + 6 + 4 = 18). Look for: part-to-part, part-to-whole, 18, total, compare, individual.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A classroom has 12 boys and 8 girls. Sort each ratio statement as either CORRECT or INCORRECT.</p>
+  <p class="ws-prompt">Categories: <b>correct · incorrect</b></p>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">correct</span>Boys to girls = 12:8</li><li><span class="ws-blank ws-blank-sm">correct</span>Girls to total = 8:20</li><li><span class="ws-blank ws-blank-sm">incorrect</span>Boys to total = 12:8</li><li><span class="ws-blank ws-blank-sm">incorrect</span>Girls to boys = 12:8</li></ul></div></li></ol>
+  </section>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  </main>
+  </body>
 </html>

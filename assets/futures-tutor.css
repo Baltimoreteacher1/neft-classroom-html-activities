@@ -1,0 +1,293 @@
+/* Neft Teacher — Futures Tutor styles (additive, namespaced nt-fx-).
+ * Calm, no-timer study companion. Bottom-LEFT launcher to avoid colliding with
+ * the Math Workbench / classic tutor launchers (bottom-right). All motion is
+ * gated behind .nt-fx-noanim (set when prefers-reduced-motion). Tap targets are
+ * >=44px for mobile (matches assets/mobile-access.css intent). */
+
+.nt-fx-launch {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 2147483000;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 16px 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #5b6cff 0%, #8b3dff 100%);
+  color: #fff;
+  font:
+    600 15px/1 "Plus Jakarta Sans",
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    sans-serif;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(91, 108, 255, 0.35);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.nt-fx-launch:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(91, 108, 255, 0.45);
+}
+.nt-fx-launch:focus-visible {
+  outline: 3px solid #ffd166;
+  outline-offset: 2px;
+}
+.nt-fx-launch-lbl {
+  font-size: 14px;
+}
+
+.nt-fx-panel {
+  position: fixed;
+  left: 16px;
+  bottom: 74px;
+  z-index: 2147483000;
+  width: min(380px, calc(100vw - 32px));
+  max-height: min(70vh, 620px);
+  display: none;
+  flex-direction: column;
+  background: #ffffff;
+  color: #1a1a2e;
+  border: 1px solid #e6e6f0;
+  border-radius: 18px;
+  box-shadow: 0 18px 50px rgba(20, 20, 60, 0.28);
+  overflow: hidden;
+}
+.nt-fx-panel.nt-fx-show {
+  display: flex;
+  animation: nt-fx-in 0.18s ease;
+}
+.nt-fx-panel.nt-fx-noanim.nt-fx-show {
+  animation: none;
+}
+@keyframes nt-fx-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nt-fx-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #5b6cff 0%, #8b3dff 100%);
+  color: #fff;
+}
+.nt-fx-title {
+  flex: 1;
+  margin: 0;
+  font:
+    700 15px/1.2 "Plus Jakarta Sans",
+    system-ui,
+    sans-serif;
+}
+.nt-fx-mini {
+  min-height: 32px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.nt-fx-mini:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+.nt-fx-mini:focus-visible {
+  outline: 2px solid #ffd166;
+  outline-offset: 1px;
+}
+.nt-fx-x {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.nt-fx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 12px 4px;
+}
+.nt-fx-chip {
+  min-height: 36px;
+  padding: 6px 10px;
+  border: 1px solid #d8d8ea;
+  border-radius: 999px;
+  background: #f5f5fb;
+  color: #33335a;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease;
+}
+.nt-fx-chip:hover {
+  background: #ecebff;
+}
+.nt-fx-chip-on {
+  background: #5b6cff;
+  border-color: #5b6cff;
+  color: #fff;
+}
+.nt-fx-chip:focus-visible {
+  outline: 2px solid #5b6cff;
+  outline-offset: 2px;
+}
+
+.nt-fx-log {
+  flex: 1;
+  min-height: 120px;
+  overflow-y: auto;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.nt-fx-turn {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.nt-fx-user {
+  flex-direction: row-reverse;
+}
+.nt-fx-who {
+  flex: 0 0 auto;
+  font-size: 18px;
+  line-height: 1.4;
+}
+.nt-fx-bubble {
+  max-width: 82%;
+  padding: 8px 12px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.nt-fx-assistant .nt-fx-bubble {
+  background: #f0f0fb;
+  color: #1a1a2e;
+  border-bottom-left-radius: 4px;
+}
+.nt-fx-user .nt-fx-bubble {
+  background: #5b6cff;
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.nt-fx-pending {
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.nt-fx-worklabel {
+  padding: 6px 12px 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #55556e;
+}
+.nt-fx-work {
+  margin: 0 12px;
+  padding: 8px 10px;
+  border: 1px solid #d8d8ea;
+  border-radius: 10px;
+  font:
+    400 14px/1.4 system-ui,
+    sans-serif;
+  resize: vertical;
+}
+.nt-fx-work:focus-visible {
+  outline: 2px solid #5b6cff;
+  outline-offset: 1px;
+  border-color: #5b6cff;
+}
+
+.nt-fx-actions {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px 12px;
+}
+.nt-fx-btn {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.nt-fx-mic {
+  flex: 0 0 auto;
+  background: #ecebff;
+  color: #33335a;
+}
+.nt-fx-mic[aria-pressed="true"] {
+  background: #ff5a7a;
+  color: #fff;
+}
+.nt-fx-send {
+  flex: 1;
+  background: #5b6cff;
+  color: #fff;
+}
+.nt-fx-btn:hover {
+  filter: brightness(0.97);
+}
+.nt-fx-btn:focus-visible {
+  outline: 3px solid #ffd166;
+  outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .nt-fx-panel {
+    background: #17172a;
+    color: #ececf6;
+    border-color: #2b2b45;
+  }
+  .nt-fx-chip {
+    background: #1f1f38;
+    border-color: #33334d;
+    color: #cfcfe6;
+  }
+  .nt-fx-chip:hover {
+    background: #26264a;
+  }
+  .nt-fx-assistant .nt-fx-bubble {
+    background: #21213c;
+    color: #ececf6;
+  }
+  .nt-fx-worklabel {
+    color: #a9a9c4;
+  }
+  .nt-fx-work {
+    background: #1f1f38;
+    border-color: #33334d;
+    color: #ececf6;
+  }
+  .nt-fx-mic {
+    background: #26264a;
+    color: #cfcfe6;
+  }
+}
+
+/* When this launcher and the Math Workbench launcher share bottom-left,
+ * stack the Workbench above it so both stay >=44px unobscured tap targets
+ * (Lighthouse target-size). Progressive enhancement via :has(). */
+body:has(.nt-fx-launch) #mwb-launcher {
+  bottom: max(76px, calc(env(safe-area-inset-bottom) + 64px));
+}

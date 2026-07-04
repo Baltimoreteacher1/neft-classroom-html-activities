@@ -21,7 +21,29 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/math/intervention/assets/intervention.css" />
-  </head>
+    <link rel="manifest" href="/math/intervention/manifest.webmanifest" />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <link rel="apple-touch-icon" href="/assets/favicon.svg" />
+    <script>
+      // Register the offline service worker so stations keep working without
+      // wifi once visited (classroom-friendly). Scoped to /math/intervention/.
+      if ("serviceWorker" in navigator) {
+        addEventListener("load", function () {
+          navigator.serviceWorker
+            .register("/math/intervention/sw.js", {
+              scope: "/math/intervention/",
+            })
+            .catch(function () {});
+        });
+      }
+    </script>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="topbar">
@@ -52,6 +74,14 @@
                 <span class="g-pill">📚 4 lessons</span>
                 <span class="g-pill">⏱ 30 min</span>
               </div>
+              <div class="g-launch">
+                <h4>Core question</h4>
+                <p>How can I model, solve, and explain statistics &amp; Data so another student understands my thinking?</p>
+                <h4>Concept spine</h4>
+                <p>Understand the situation, represent it, choose the strategy, then prove the answer.</p>
+                <h4>Evidence of mastery</h4>
+                <p>Score 80% or higher, correct one missed item in Smart Review, and write a complete explanation using at least one vocabulary word.</p>
+              </div>
             </div>
             <div class="g-side">
               <h4 class="g-sub">Key vocabulary</h4>
@@ -64,12 +94,34 @@
               </ul>
             </div>
           </div>
+          <div class="mission-strip" aria-label="Topic mission">
+            <article>
+              <span>Mission</span>
+              <h3>Rebuild statistics &amp; Data</h3>
+              <p>Move from model to strategy to independent proof using mean / median, range &amp; mad, dot plots, and histograms.</p>
+            </article>
+            <article>
+              <span>Success looks like</span>
+              <h3>Show, solve, explain</h3>
+              <p>Students can represent the idea, solve accurately, and justify why the answer makes sense.</p>
+            </article>
+            <article>
+              <span>Teacher evidence</span>
+              <h3>6.SP.A–B</h3>
+              <p>Look for accurate use of mean / median, range &amp; mad, dot plots, and histograms and a clear explanation.</p>
+            </article>
+          </div>
           <div class="tabs" role="tablist">
+            <button class="tab" role="tab" data-tab="concept">🧭 Concept Lab</button>
+            <button class="tab" role="tab" data-tab="lessons">🧱 Mini-Lessons</button>
+            <button class="tab" role="tab" data-tab="path">🗺️ Lesson Path</button>
             <button class="tab" role="tab" data-tab="learn">📖 Learn</button>
             <button class="tab" role="tab" data-tab="diagnostic">🩺 Diagnostic</button>
             <button class="tab" role="tab" data-tab="practice">✏️ Practice</button>
             <button class="tab" role="tab" data-tab="fluency">⚡ Fluency</button>
             <button class="tab" role="tab" data-tab="game">🎮 Game</button>
+            <button class="tab" role="tab" data-tab="clinic">🛠️ Error Clinic</button>
+            <button class="tab" role="tab" data-tab="task">🏗️ Performance Task</button>
             <button class="tab" role="tab" data-tab="vocab">🗂️ Vocabulary</button>
             <button class="tab" role="tab" data-tab="worksheet">🖨️ Printables</button>
             <button class="tab" role="tab" data-tab="quizzes">📋 Pre/Post Quiz</button>
@@ -80,6 +132,215 @@
 
       <section class="block">
         <div class="wrap">
+          <div class="panel" id="panel-concept">
+            <h3>Larger concept</h3>
+            <p>Before students chase speed, they build the whole idea. Use this as the opening map for a small group, tutoring block, or independent recovery path.</p>
+            <div class="publisher-note">
+              <span>Concept spine</span>
+              <p>The big idea: Statistics &amp; Data is about choosing a representation, keeping quantities organized, and defending the strategy.</p>
+            </div>
+            <div class="concept-map">
+              <article class="concept-step">
+                <span>Understand</span>
+                <h4>Name the quantities</h4>
+                <p>Students identify what is known, what is unknown, and which vocabulary from statistics &amp; Data matters.</p>
+              </article>
+              <article class="concept-step">
+                <span>Represent</span>
+                <h4>Build the model</h4>
+                <p>Represent statistics &amp; Data with a visual model, a table, and an equation.</p>
+              </article>
+              <article class="concept-step">
+                <span>Strategize</span>
+                <h4>Choose the tool</h4>
+                <p>Students connect the model to mean / median, range &amp; mad, dot plots, and histograms and explain why that tool fits.</p>
+              </article>
+              <article class="concept-step">
+                <span>Prove</span>
+                <h4>Justify and revise</h4>
+                <p>Students use the discourse frame, check for the likely misconception, and revise the written explanation.</p>
+              </article></div>
+            <div class="publisher-note publisher-note-soft">
+              <span>Teacher frame</span>
+              <p>Open with the larger concept before students touch the practice set: What does the situation mean, what model fits it, and how will we know the answer is reasonable?</p>
+            </div>
+            <h3 style="margin-top:22px">Essential question</h3>
+            <p>How do mathematicians use mean / median, range &amp; mad, dot plots, and histograms to make sense of real problems and defend an answer?</p>
+            <div class="move-grid">
+              <article class="move-card">
+                <span>Launch</span>
+                <h4>Make the gap visible</h4>
+                <p>Students preview mean / median, range &amp; mad, dot plots, and histograms with one low-floor problem, one model, and one vocabulary check.</p>
+              </article>
+              <article class="move-card">
+                <span>Model</span>
+                <h4>Connect concrete to symbolic</h4>
+                <p>Represent statistics &amp; Data with a visual model, a table, and an equation.</p>
+              </article>
+              <article class="move-card">
+                <span>Explain</span>
+                <h4>Require math talk</h4>
+                <p>Students complete the frame: "My strategy works because ___."</p>
+              </article>
+              <article class="move-card">
+                <span>Transfer</span>
+                <h4>Apply in context</h4>
+                <p>Ask students to create a new problem that uses the same structure.</p>
+              </article></div>
+            <div class="anchor-board">
+              <div>
+                <span class="anchor-label">Model it</span>
+                <p>Represent statistics &amp; Data with a visual model, a table, and an equation.</p>
+              </div>
+              <div>
+                <span class="anchor-label">Say it</span>
+                <p>My strategy works because ___.</p>
+              </div>
+              <div>
+                <span class="anchor-label">Extend it</span>
+                <p>Ask students to create a new problem that uses the same structure.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" id="panel-lessons">
+            <h3>Mini-lessons inside the larger topic</h3>
+            <p>Teach the big idea first, then open one mini-lesson at a time. Each mini-lesson has a narrow objective, one teacher move, one model, practice, an error to catch, and evidence to collect.</p>
+            <div class="mini-lesson-list">
+              <article class="mini-lesson">
+                <div class="mini-num">Lesson 1</div>
+                <div class="mini-body">
+                  <span>Open the concept</span>
+                  <h4>Mean / median</h4>
+                  <p class="mini-objective">I can explain what mean / median means before I calculate.</p>
+                  <dl>
+                    <dt>Teacher move</dt><dd>Launch with a low-floor context and ask students to show mean / median with a model before naming a rule.</dd>
+                    <dt>Model or example</dt><dd>Find the mean of 4, 8, 6, 2, and 5. Work it aloud, then cover the steps and ask students to rebuild the reasoning.</dd>
+                    <dt>Student practice</dt><dd>Which question is a statistical question (it has answers that vary)? | What is the mode of this data set: 2, 3, 3, 5, 7? | What is the range of this data set: 3, 8, 5, 15, 7?</dd>
+                    <dt>Error to catch</dt><dd>Students may answer procedurally without explaining why the method works for statistics &amp; Data.</dd>
+                    <dt>Evidence</dt><dd>Annotated model and one accurate independent item.</dd>
+                  </dl>
+                </div>
+              </article>
+              <article class="mini-lesson">
+                <div class="mini-num">Lesson 2</div>
+                <div class="mini-body">
+                  <span>Build the next piece</span>
+                  <h4>Range &amp; MAD</h4>
+                  <p class="mini-objective">I can use range &amp; MAD as one part of solving statistics &amp; Data problems.</p>
+                  <dl>
+                    <dt>Teacher move</dt><dd>Use the previous mini-lesson as the anchor, then add range &amp; MAD with one worked example and one parallel try-it item.</dd>
+                    <dt>Model or example</dt><dd>Find the median of 7, 3, 9, 5, 3, and 11. Work it aloud, then cover the steps and ask students to rebuild the reasoning.</dd>
+                    <dt>Student practice</dt><dd>What is the mean (average) of 10, 20, and 30? | What is the median of the data set 2, 4, 6, 8? | On a dot plot, what does a stack of 4 dots above the number 6 mean?</dd>
+                    <dt>Error to catch</dt><dd>Students may treat range &amp; MAD as a shortcut instead of connecting it back to the model.</dd>
+                    <dt>Evidence</dt><dd>Annotated model and one accurate independent item.</dd>
+                  </dl>
+                </div>
+              </article>
+              <article class="mini-lesson">
+                <div class="mini-num">Lesson 3</div>
+                <div class="mini-body">
+                  <span>Build the next piece</span>
+                  <h4>Dot plots</h4>
+                  <p class="mini-objective">I can use dot plots as one part of solving statistics &amp; Data problems.</p>
+                  <dl>
+                    <dt>Teacher move</dt><dd>Use the previous mini-lesson as the anchor, then add dot plots with one worked example and one parallel try-it item.</dd>
+                    <dt>Model or example</dt><dd>Find the mean absolute deviation (MAD) of 5, 8, 8, 11, and 13. Work it aloud, then cover the steps and ask students to rebuild the reasoning.</dd>
+                    <dt>Student practice</dt><dd>What is the mean of 6, 6, 6, and 6? | What is the median of 7, 2, 9, 4, 5 (put in order first)? | A histogram bar covers ages 10-14 and has a height of 8. What does this show?</dd>
+                    <dt>Error to catch</dt><dd>Students may treat dot plots as a shortcut instead of connecting it back to the model.</dd>
+                    <dt>Evidence</dt><dd>Annotated model and one accurate independent item.</dd>
+                  </dl>
+                </div>
+              </article>
+              <article class="mini-lesson">
+                <div class="mini-num">Lesson 4</div>
+                <div class="mini-body">
+                  <span>Connect and transfer</span>
+                  <h4>Histograms</h4>
+                  <p class="mini-objective">I can use histograms as one part of solving statistics &amp; Data problems.</p>
+                  <dl>
+                    <dt>Teacher move</dt><dd>Use the previous mini-lesson as the anchor, then add histograms with one worked example and one parallel try-it item.</dd>
+                    <dt>Model or example</dt><dd>Find the mean of 4, 8, 6, 2, and 5. Work it aloud, then cover the steps and ask students to rebuild the reasoning.</dd>
+                    <dt>Student practice</dt><dd>What is the mean of 12, 15, 9, 12, and 17? | What is the range of test scores 85, 90, 95, 80, 100? | In a box plot, what does the line inside the box represent?</dd>
+                    <dt>Error to catch</dt><dd>Students may treat histograms as a shortcut instead of connecting it back to the model.</dd>
+                    <dt>Evidence</dt><dd>Exit ticket plus revised explanation.</dd>
+                  </dl>
+                </div>
+              </article></div>
+            <div class="lesson-bridge">
+              <h4>How the pieces connect</h4>
+              <p>Students should not experience these as separate activities. Each mini-lesson adds one piece to the same concept spine: understand, represent, strategize, and prove.</p>
+            </div>
+          </div>
+
+          <div class="panel" id="panel-path">
+            <h3>Five-session lesson path</h3>
+            <p>This is the teacher-ready pacing model for intervention blocks, tutoring, pull-out groups, or independent catch-up work.</p>
+            <div class="lesson-path">
+              <article class="lesson-card">
+                <span>Session 1</span>
+                <h4>Diagnose and name the gap</h4>
+                <dl>
+                  <dt>Teacher move</dt><dd>Assign the pre-quiz, sort students into groups, and launch one low-floor model.</dd>
+                  <dt>Student work</dt><dd>Take the pre-quiz, complete the diagnostic, and write one goal for the topic.</dd>
+                  <dt>Evidence</dt><dd>Pre-quiz score, diagnostic score, student goal.</dd>
+                </dl>
+              </article>
+              <article class="lesson-card">
+                <span>Session 2</span>
+                <h4>Build the concept</h4>
+                <dl>
+                  <dt>Teacher move</dt><dd>Represent statistics &amp; Data with a visual model, a table, and an equation.</dd>
+                  <dt>Student work</dt><dd>Annotate the worked examples and complete the concept lab discussion frame.</dd>
+                  <dt>Evidence</dt><dd>Annotated example, vocabulary sentence, model check.</dd>
+                </dl>
+              </article>
+              <article class="lesson-card">
+                <span>Session 3</span>
+                <h4>Practice with feedback</h4>
+                <dl>
+                  <dt>Teacher move</dt><dd>Conference with students using Smart Review misses and the Error Clinic protocol.</dd>
+                  <dt>Student work</dt><dd>Complete Practice, Smart Review, and the fluency drill until one score improves.</dd>
+                  <dt>Evidence</dt><dd>Practice percent, cleared Smart Review item, fluency count.</dd>
+                </dl>
+              </article>
+              <article class="lesson-card">
+                <span>Session 4</span>
+                <h4>Apply and transfer</h4>
+                <dl>
+                  <dt>Teacher move</dt><dd>Assign Worksheet B and the performance task; listen for the discourse frame.</dd>
+                  <dt>Student work</dt><dd>Solve a contextual problem, explain the strategy, and revise the explanation.</dd>
+                  <dt>Evidence</dt><dd>Performance task, revised explanation, exit ticket.</dd>
+                </dl>
+              </article>
+              <article class="lesson-card">
+                <span>Session 5</span>
+                <h4>Reassess and reflect</h4>
+                <dl>
+                  <dt>Teacher move</dt><dd>Assign the post-quiz, compare growth, and select the next intervention move.</dd>
+                  <dt>Student work</dt><dd>Take the post-quiz and complete a reflection on what changed.</dd>
+                  <dt>Evidence</dt><dd>Post-quiz score, reflection, next-step recommendation.</dd>
+                </dl>
+              </article></div>
+            <h3 style="margin-top:24px">Placement pathways</h3>
+            <p>Use the pre-quiz and diagnostic score to select the right route without lowering the grade-level expectation.</p>
+            <div class="pathway-grid">
+              <article class="pathway-card">
+                <span>Pre-quiz or diagnostic below 50%</span>
+                <h4>Intensive reteach</h4>
+                <p>Teacher-led model, manipulatives, read-aloud question support, Worksheet A odd items, then one Smart Review item.</p>
+              </article>
+              <article class="pathway-card">
+                <span>50% to 79% or inconsistent explanations</span>
+                <h4>Guided practice</h4>
+                <p>Concept Lab, worked examples, Practice, Error Clinic, Worksheet A/B mix, and an exit ticket conference.</p>
+              </article>
+              <article class="pathway-card">
+                <span>80%+ with clear explanation</span>
+                <h4>Extension and transfer</h4>
+                <p>Worksheet B challenge, performance task, student-created example, and peer teaching using the discourse frame.</p>
+              </article></div>
+          </div>
           <div class="panel" id="panel-learn">
             <h3>Worked examples</h3>
             <p>Study these three examples — easy to challenge — then head to Practice.</p>
@@ -124,18 +385,89 @@
 
           <div class="panel" id="panel-game">
             <h3>Answer Drop</h3>
-            <p>Tap the falling tile that matches the problem. Five lives — how high can you climb?</p>
+            <p>Tap a falling tile — or press number keys <strong>1–4</strong> — to match the problem. Five lives — how high can you climb?</p>
             <div class="game-stage" id="game-stage">
-              <div class="game-hud"></div>
-              <canvas></canvas>
+              <div class="game-hud" aria-hidden="true"></div>
+              <canvas role="img" aria-label="Answer Drop game. Tap the falling tile that matches the problem shown at the bottom, or press number keys 1 to 4 to pick the tile in that column."></canvas>
               <div class="game-overlay">
                 <div>
                   <h3>Answer Drop</h3>
-                  <p>Click the tile that solves the problem before it hits the bottom.</p>
+                  <p>Click the tile that solves the problem — or use number keys 1–4 — before it hits the bottom.</p>
                   <button class="btn btn-primary" id="game-stage-start" type="button">▶ Play</button>
                 </div>
               </div>
             </div>
+          </div>
+
+          <div class="panel" id="panel-clinic">
+            <h3>Error clinic</h3>
+            <p>Use this as a quick conference script after a missed diagnostic, a worksheet error, or a low post-quiz score.</p>
+            <div class="clinic-grid">
+              <article class="clinic-card">
+                <span>Likely misconception</span>
+                <p>Students may answer procedurally without explaining why the method works for statistics &amp; Data.</p>
+              </article>
+              <article class="clinic-card">
+                <span>Teacher move</span>
+                <p>Look for accurate use of mean / median, range &amp; mad, dot plots, and histograms and a clear explanation.</p>
+              </article>
+              <article class="clinic-card">
+                <span>Student self-check</span>
+                <p>Can I show the problem with a model, name the operation or relationship, and explain why my answer is reasonable?</p>
+              </article>
+            </div>
+            <div class="conference-script">
+              <h4>Two-minute conference</h4>
+              <ol>
+                <li>Ask the student to point to the exact step where the answer changed.</li>
+                <li>Have the student restate the problem using one vocabulary word from this topic.</li>
+                <li>Rebuild one simpler example together, then ask the student to solve a parallel problem alone.</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="panel" id="panel-task">
+            <h3>Performance task</h3>
+            <p>Students apply statistics &amp; Data in a short constructed-response task. This gives publishers, teachers, and families evidence beyond multiple choice.</p>
+            <div class="task-card">
+              <span>Scenario</span>
+              <h4>Statistics &amp; Data in the real world</h4>
+              <p>Create a realistic situation where someone must use mean / median, range &amp; mad, dot plots, and histograms. Solve it two ways: first with a model or diagram, then with numbers or symbols. Finish by explaining why the answer is reasonable.</p>
+            </div>
+            <div class="task-columns">
+              <div>
+                <h4>Student deliverables</h4>
+                <ul>
+                  <li>A labeled model, diagram, table, or number line.</li>
+                  <li>A complete solution with units or labels.</li>
+                  <li>A written explanation using at least one vocabulary word.</li>
+                  <li>A revised answer after checking for the common misconception.</li>
+                </ul>
+              </div>
+              <div>
+                <h4>Notebook prompts</h4>
+                <ol><li>Before I solve, the quantities I notice are ___ and ___.</li><li>A model that helps me understand statistics &amp; Data is ___ because ___.</li><li>One mistake a student might make is ___; I would fix it by ___.</li><li>My post-quiz goal is ___, and the evidence I will use is ___.</li></ol>
+              </div>
+            </div>
+            <table class="rubric">
+              <tbody>
+              <tr>
+                <th>4 · Publishes math thinking</th>
+                <td>Accurate answer, efficient strategy, clear model, complete explanation, and correct vocabulary.</td>
+              </tr>
+              <tr>
+                <th>3 · Meets standard</th>
+                <td>Accurate answer and a mostly clear strategy with enough explanation to follow the thinking.</td>
+              </tr>
+              <tr>
+                <th>2 · Developing</th>
+                <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+              </tr>
+              <tr>
+                <th>1 · Needs reteach</th>
+                <td>Misconception is still present; student needs a concrete model and a smaller parallel problem.</td>
+              </tr></tbody>
+            </table>
           </div>
 
           <div class="panel" id="panel-fluency">
@@ -243,6 +575,69 @@
               <div class="answer-key"><h3>Answer Key (teacher)</h3><ol><li>How many minutes does each student spend on homework?</li><li>6</li><li>14</li><li>9</li></ol></div>
             </div>
 
+            <div class="worksheet">
+              <div class="ws-header">
+                <h2>📈 Statistics &amp; Data <span class="ws-variant">Student Notebook Page</span></h2>
+                <div class="ws-name">Name: ____________________  Date: __________</div>
+              </div>
+              <div class="print-notebook">
+                <h3>Essential question</h3>
+                <p>How do mathematicians use mean / median, range &amp; mad, dot plots, and histograms to make sense of real problems and defend an answer?</p>
+                <h3>Success criteria</h3>
+                <ul><li>I can represent the math with a model, table, number line, diagram, or equation.</li><li>I can use mean / median, range &amp; mad, dot plots, and histograms accurately and explain why the strategy fits the problem.</li><li>I can find and correct an error by naming the misconception.</li><li>I can prove growth with a post-quiz score, an exit ticket, and a written explanation.</li></ul>
+                <h3>Reflection prompts</h3>
+                <ol><li>Before I solve, the quantities I notice are ___ and ___.</li><li>A model that helps me understand statistics &amp; Data is ___ because ___.</li><li>One mistake a student might make is ___; I would fix it by ___.</li><li>My post-quiz goal is ___, and the evidence I will use is ___.</li></ol>
+                <h3>Mini-lesson map</h3>
+                <table class="rubric mini-print-map"><tbody>
+                <tr>
+                  <th>Mini-Lesson 1: Mean / median</th>
+                  <td>I can explain what mean / median means before I calculate.</td>
+                  <td>Annotated model and one accurate independent item.</td>
+                </tr>
+                <tr>
+                  <th>Mini-Lesson 2: Range &amp; MAD</th>
+                  <td>I can use range &amp; MAD as one part of solving statistics &amp; Data problems.</td>
+                  <td>Annotated model and one accurate independent item.</td>
+                </tr>
+                <tr>
+                  <th>Mini-Lesson 3: Dot plots</th>
+                  <td>I can use dot plots as one part of solving statistics &amp; Data problems.</td>
+                  <td>Annotated model and one accurate independent item.</td>
+                </tr>
+                <tr>
+                  <th>Mini-Lesson 4: Histograms</th>
+                  <td>I can use histograms as one part of solving statistics &amp; Data problems.</td>
+                  <td>Exit ticket plus revised explanation.</td>
+                </tr></tbody></table>
+              </div>
+            </div>
+
+            <div class="worksheet">
+              <div class="ws-header">
+                <h2>📈 Statistics &amp; Data <span class="ws-variant">Performance Task</span></h2>
+                <div class="ws-name">Name: ____________________  Date: __________</div>
+              </div>
+              <p><strong>Task:</strong> Create and solve a realistic situation that uses mean / median, range &amp; mad, dot plots, and histograms. Show a model, solve with numbers, and explain why the answer is reasonable.</p>
+              <div class="blank-lines"></div>
+              <table class="rubric print-rubric"><tbody>
+              <tr>
+                <th>4 · Publishes math thinking</th>
+                <td>Accurate answer, efficient strategy, clear model, complete explanation, and correct vocabulary.</td>
+              </tr>
+              <tr>
+                <th>3 · Meets standard</th>
+                <td>Accurate answer and a mostly clear strategy with enough explanation to follow the thinking.</td>
+              </tr>
+              <tr>
+                <th>2 · Developing</th>
+                <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+              </tr>
+              <tr>
+                <th>1 · Needs reteach</th>
+                <td>Misconception is still present; student needs a concrete model and a smaller parallel problem.</td>
+              </tr></tbody></table>
+            </div>
+
             <div class="family-letter">
               <div class="ws-header">
                 <h2>👪 Family Letter <span class="ws-variant">Statistics &amp; Data</span></h2>
@@ -273,11 +668,19 @@
           <div class="panel" id="panel-supports">
             <h3>Track your learning</h3>
             <p>Check each box when you can do it on your own.</p>
-            <ul class="ican-list"><li><label><input type="checkbox" /> <span>I can write statistical questions and find and compare the mean, median, mode, range, and mean absolute deviation of a data set, and read dot plots, histograms, and box plots.</span></label></li><li><label><input type="checkbox" /> <span>I can use mean / median.</span></label></li><li><label><input type="checkbox" /> <span>I can use range &amp; mad.</span></label></li><li><label><input type="checkbox" /> <span>I can use dot plots.</span></label></li><li><label><input type="checkbox" /> <span>I can use histograms.</span></label></li></ul>
+            <ul class="ican-list"><li><label><input type="checkbox" /> <span>I can write statistical questions and find and compare the mean, median, mode, range, and mean absolute deviation of a data set, and read dot plots, histograms, and box plots.</span></label></li><li><label><input type="checkbox" /> <span>I can choose a strategy for mean / median, range &amp; mad, dot plots, and histograms.</span></label></li><li><label><input type="checkbox" /> <span>I can explain each step using topic vocabulary.</span></label></li><li><label><input type="checkbox" /> <span>I can check whether my answer is reasonable.</span></label></li></ul>
             <h3 style="margin-top:22px">Differentiation</h3>
             <div class="levels">
               <div class="level"><h4>Level 1 — Support</h4><p>Level 1 (support): use the Materials manipulatives, study the worked examples, and work one step at a time.</p></div>
               <div class="level"><h4>Level 2 — Stretch</h4><p>Level 2 (stretch): finish the ★ challenge on Worksheet B and explain your reasoning in words.</p></div>
+            </div>
+            <h3 style="margin-top:22px">Success criteria</h3>
+            <ul class="criteria-list"><li>I can represent the math with a model, table, number line, diagram, or equation.</li><li>I can use mean / median, range &amp; mad, dot plots, and histograms accurately and explain why the strategy fits the problem.</li><li>I can find and correct an error by naming the misconception.</li><li>I can prove growth with a post-quiz score, an exit ticket, and a written explanation.</li></ul>
+            <h3 style="margin-top:22px">Language supports</h3>
+            <div class="support-note">
+              <p>Preteach the key vocabulary, then ask students to use it in a complete sentence.</p>
+              <p><strong>Talk frame:</strong> My strategy works because ___.</p>
+              <p><strong>Talk-Write-Revise:</strong> say the strategy with a partner, write one complete explanation, then revise it with a vocabulary word.</p>
             </div>
           </div>
         </div>
@@ -293,6 +696,9 @@
         </p>
       </div>
     </footer>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
   </body>
 </html>
     <script>window.TOPIC = {"slug":"statistics-data","title":"Statistics & Data","bank":[{"prompt":"Which question is a statistical question (it has answers that vary)?","answer":"How tall are the students in my class?","options":["How tall are the students in my class?","How tall am I?","What is my shoe size?","How old is the teacher?"],"explain":"A statistical question expects many different answers, like the varying heights of students."},{"prompt":"What is the mode of this data set: 2, 3, 3, 5, 7?","answer":"3","options":["3","5","7","2"],"explain":"The mode is the value that appears most often, and 3 appears twice."},{"prompt":"What is the range of this data set: 3, 8, 5, 15, 7?","answer":"12","options":["12","15","8","10"],"explain":"Range is the largest value minus the smallest: 15 - 3 = 12."},{"prompt":"What is the mean (average) of 10, 20, and 30?","answer":"20","options":["20","30","60","15"],"explain":"Add them (60) and divide by 3 to get 20."},{"prompt":"What is the median of the data set 2, 4, 6, 8?","answer":"5","options":["5","4","6","8"],"explain":"With four numbers, average the two middle ones: (4 + 6) / 2 = 5."},{"prompt":"On a dot plot, what does a stack of 4 dots above the number 6 mean?","answer":"The value 6 appears 4 times","options":["The value 6 appears 4 times","The value 6 appears 1 time","The total is 24","The value 4 appears 6 times"],"explain":"Each dot stands for one data point, so 4 dots above 6 means 6 occurred 4 times."},{"prompt":"What is the mean of 6, 6, 6, and 6?","answer":"6","options":["6","24","0","12"],"explain":"When all values are the same, the mean equals that value: 6."},{"prompt":"What is the median of 7, 2, 9, 4, 5 (put in order first)?","answer":"5","options":["5","9","4","7"],"explain":"Ordered: 2, 4, 5, 7, 9. The middle value is 5."},{"prompt":"A histogram bar covers ages 10-14 and has a height of 8. What does this show?","answer":"8 people are ages 10 to 14","options":["8 people are ages 10 to 14","8 people are exactly age 10","The mean age is 8","There are 8 age groups"],"explain":"A histogram bar's height is the frequency, so 8 people fall in the 10-14 group."},{"prompt":"What is the mean of 12, 15, 9, 12, and 17?","answer":"13","options":["13","12","15","14"],"explain":"Sum is 65; 65 / 5 = 13."},{"prompt":"What is the range of test scores 85, 90, 95, 80, 100?","answer":"20","options":["20","15","100","90"],"explain":"Range = highest - lowest = 100 - 80 = 20."},{"prompt":"In a box plot, what does the line inside the box represent?","answer":"The median","options":["The median","The mean","The range","The mode"],"explain":"The line inside a box plot marks the median, the middle of the data."},{"prompt":"What is the median of 14, 8, 22, 5, 17?","answer":"14","options":["14","8","17","13"],"explain":"Ordered: 5, 8, 14, 17, 22. The middle value is 14."},{"prompt":"A box plot has minimum 4 and maximum 24. What is the range?","answer":"20","options":["20","24","28","12"],"explain":"Range = max - min = 24 - 4 = 20."},{"prompt":"What is the mean absolute deviation (MAD) of 2, 4, 6, 8?","answer":"2","options":["2","5","6","4"],"explain":"Mean is 5; distances are 3,1,1,3; average distance = 8/4 = 2."},{"prompt":"Five friends scored 7, 9, 9, 11, 14 points. What is the mean number of points?","answer":"10","options":["10","9","11","50"],"explain":"Sum is 50; 50 / 5 = 10 points."},{"prompt":"A store sold these many shirts over 6 days: 3, 7, 7, 9, 12, 14. What is the median?","answer":"8","options":["8","7","9","7.5"],"explain":"The two middle values are 7 and 9; (7 + 9) / 2 = 8."},{"prompt":"Maria's quiz scores are 88, 92, 76, and 84. What is her mean score?","answer":"85","options":["85","84","88","80"],"explain":"Sum is 340; 340 / 4 = 85."},{"prompt":"Which measure is most affected by one very large outlier value?","answer":"Mean","options":["Mean","Median","Mode","Range of the middle half"],"explain":"The mean uses every value, so one extreme number pulls it up or down a lot."},{"prompt":"Daily temperatures were 60, 64, 64, 68, 74 degrees. What is the mode?","answer":"64","options":["64","68","66","74"],"explain":"64 appears twice, more than any other value, so it is the mode."},{"prompt":"A basketball player scored a mean of 20 points over 4 games. What was her total points?","answer":"80","options":["80","24","20","5"],"explain":"Total = mean x number of games = 20 x 4 = 80 points."},{"prompt":"Three test scores are 75, 85, and 90. What score is needed on a 4th test to average 80?","answer":"70","options":["70","80","75","85"],"explain":"Needed total is 80 x 4 = 320; 320 - (75+85+90) = 70."},{"prompt":"Data set: 5, 8, 8, 11, 13. The mean is 9. What is the mean absolute deviation (MAD)?","answer":"2.4","options":["2.4","8","9","2"],"explain":"Distances from 9 are 4,1,1,2,4 (sum 12); 12 / 5 = 2.4."},{"prompt":"Two classes have the same mean test score, but Class A has MAD 2 and Class B has MAD 9. What does this tell you?","answer":"Class A's scores are more clustered together","options":["Class A's scores are more clustered together","Class B's scores are more clustered together","Class A has a higher average","Class B has fewer students"],"explain":"A smaller MAD means the data is closer to the mean, so Class A is more clustered."}]};</script>

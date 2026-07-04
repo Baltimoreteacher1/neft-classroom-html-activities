@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
+    <title>Math Placement Quest — Grade 6 Diagnostic Game</title>
+    <meta
+      name="description"
+      content="Help the explorer navigate the grid by solving Grade 6 diagnostic math challenges."
+    />
+    <style>
+      :root {
+        --sky: #38bdf8;
+        --emerald: #10b981;
+        --indigo: #6366f1;
+        --dark: #0f172a;
+        --slate: #1e293b;
+        --text: #f8fafc;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--dark);
+        color: var(--text);
+        font-family: "Outfit", system-ui, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 24px;
+      }
+      .container {
+        max-width: 800px;
+        width: 100%;
+        background: var(--slate);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 12px;
+      }
+      .header-bar h1 {
+        font-size: 20px;
+        color: var(--sky);
+        font-weight: 800;
+      }
+      .stats-row {
+        display: flex;
+        gap: 16px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .quest-map {
+        background: #020617;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        justify-content: center;
+      }
+      .quest-map svg {
+        max-width: 100%;
+        height: auto;
+      }
+      .question-box {
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid var(--sky);
+        border-radius: 12px;
+        padding: 20px;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      .choices-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .choice-btn {
+        background: var(--slate);
+        border: 1.5px solid rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        color: var(--text);
+        padding: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: left;
+      }
+      .choice-btn:hover {
+        background: rgba(56, 189, 248, 0.1);
+        border-color: var(--sky);
+      }
+      .result-screen {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 16px;
+        padding: 40px 20px;
+      }
+      .badge-svg {
+        width: 120px;
+        height: 120px;
+      }
+      .feedback-line {
+        min-height: 22px;
+        margin-top: 12px;
+        font-weight: 700;
+        font-size: 15px;
+      }
+      .feedback-line.good {
+        color: #34d399;
+      }
+      .feedback-line.bad {
+        color: #fca5a5;
+      }
+      .choice-btn:disabled {
+        cursor: default;
+        opacity: 0.95;
+      }
+      .choice-btn:focus-visible {
+        outline: 3px solid var(--sky);
+        outline-offset: 2px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #map-player {
+          transition: none !important;
+        }
+      }
+      @media (max-width: 600px) {
+        .choices-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
+  <body>
+    <div class="container">
+      <div class="header-bar">
+        <h1>🧭 Math Placement Quest</h1>
+        <div class="stats-row">
+          <span>Question: <span id="q-num">1</span>/10</span>
+          <span>Score: <span id="q-score">0</span></span>
+        </div>
+      </div>
+
+      <!-- Stepping stones quest map SVG -->
+      <div class="quest-map">
+        <svg
+          width="600"
+          height="80"
+          viewBox="0 0 600 80"
+          style="background: #020617"
+        >
+          <!-- Connective path line -->
+          <path
+            d="M 40 40 Q 150 15, 300 40 T 560 40"
+            fill="none"
+            stroke="#1e293b"
+            stroke-width="6"
+            stroke-dasharray="10 5"
+          />
+
+          <!-- Moving Explorer Character Icon -->
+          <circle
+            id="map-player"
+            cx="40"
+            cy="40"
+            r="14"
+            fill="#38bdf8"
+            stroke="#fff"
+            stroke-width="2"
+            style="transition: all 0.5s ease"
+          />
+
+          <!-- Stepping stones -->
+          <circle cx="40" cy="40" r="8" fill="#10b981" />
+          <circle cx="92" cy="31" r="8" fill="#475569" id="stone-1" />
+          <circle cx="144" cy="26" r="8" fill="#475569" id="stone-2" />
+          <circle cx="196" cy="27" r="8" fill="#475569" id="stone-3" />
+          <circle cx="248" cy="33" r="8" fill="#475569" id="stone-4" />
+          <circle cx="300" cy="40" r="8" fill="#475569" id="stone-5" />
+          <circle cx="352" cy="45" r="8" fill="#475569" id="stone-6" />
+          <circle cx="404" cy="47" r="8" fill="#475569" id="stone-7" />
+          <circle cx="456" cy="46" r="8" fill="#475569" id="stone-8" />
+          <circle cx="508" cy="43" r="8" fill="#475569" id="stone-9" />
+          <circle cx="560" cy="40" r="8" fill="#475569" id="stone-10" />
+        </svg>
+      </div>
+
+      <!-- Play Screen -->
+      <div id="play-screen" class="question-box">
+        <p
+          id="question-text"
+          aria-live="polite"
+          style="font-weight: 700; font-size: 17px; margin-bottom: 12px"
+        ></p>
+        <div
+          class="choices-grid"
+          id="choices-container"
+          role="group"
+          aria-labelledby="question-text"
+        ></div>
+        <p
+          id="feedback-line"
+          class="feedback-line"
+          role="status"
+          aria-live="polite"
+        ></p>
+      </div>
+
+      <!-- Results Screen -->
+      <div id="results-screen" class="result-screen">
+        <svg class="badge-svg" viewBox="0 0 100 100">
+          <polygon
+            points="50,5 90,25 90,75 50,95 10,75 10,25"
+            fill="#6366f1"
+            stroke="#fff"
+            stroke-width="3"
+          />
+          <circle cx="50" cy="50" r="30" fill="#4f46e5" />
+          <text
+            x="50"
+            y="58"
+            font-size="24"
+            font-weight="bold"
+            fill="#fff"
+            text-anchor="middle"
+          >
+            👑
+          </text>
+        </svg>
+        <h2
+          style="
+            color: var(--emerald);
+            font-size: 26px;
+            font-weight: 800;
+            margin-top: 10px;
+          "
+        >
+          Quest Completed!
+        </h2>
+        <p style="font-size: 16px; max-width: 500px" id="feedback-text"></p>
+        <button
+          onclick="window.location.reload()"
+          class="choice-btn"
+          style="
+            text-align: center;
+            background: var(--sky);
+            color: #000;
+            border: none;
+            margin-top: 20px;
+            font-weight: 800;
+            padding: 12px 30px;
+          "
+        >
+          Play Again
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const questions = [
+        {
+          q: "What is the greatest common factor (GCF) of 16 and 24?",
+          c: ["4", "8", "16", "48"],
+          a: 1,
+          domain: "Unit 1: Prime Factors",
+          why: "16 = 2×8 and 24 = 3×8, so 8 is the biggest factor they share.",
+        },
+        {
+          q: "Compute: 12.45 + 3.8",
+          c: ["12.83", "15.25", "16.25", "16.5"],
+          a: 2,
+          domain: "Unit 1: Decimals",
+          why: "Line up the decimal points: 12.45 + 3.80 = 16.25.",
+        },
+        {
+          q: "Divide: 3/4 ÷ 1/8",
+          c: ["6", "3/32", "1/6", "4"],
+          a: 0,
+          domain: "Unit 2: Fraction Division",
+          why: "Dividing asks how many 1/8s fit in 3/4 — that's 3/4 × 8 = 6.",
+        },
+        {
+          q: "A recipe uses 3 cups of flour for every 2 cups of sugar. What is the unit rate of flour per cup of sugar?",
+          c: ["1.5 cups", "0.67 cups", "5 cups", "6 cups"],
+          a: 0,
+          domain: "Unit 3: Ratios & Rates",
+          why: "Per ONE cup of sugar means 3 ÷ 2 = 1.5 cups of flour.",
+        },
+        {
+          q: "A shirt is on sale for 25% off its original price of $40. What is the sale price?",
+          c: ["$10", "$25", "$30", "$38"],
+          a: 2,
+          domain: "Unit 4: Percents",
+          why: "25% of $40 is $10 off, so you pay $40 − $10 = $30.",
+        },
+        {
+          q: "Find the area of a triangle with a base of 8 cm and a height of 5 cm.",
+          c: ["40 cm²", "20 cm²", "13 cm²", "10 cm²"],
+          a: 1,
+          domain: "Unit 5: Area",
+          why: "A triangle is half a rectangle: ½ × 8 × 5 = 20 cm².",
+        },
+        {
+          q: "Evaluate: 3² - 2 × 3",
+          c: ["3", "15", "21", "9"],
+          a: 0,
+          domain: "Unit 6: Expressions & Exponents",
+          why: "Exponents and multiplication first: 9 − 6 = 3.",
+        },
+        {
+          q: "Solve for x: x + 9 = 25",
+          c: ["34", "16", "14", "1.5"],
+          a: 1,
+          domain: "Unit 7: Equations",
+          why: "Undo the +9 by subtracting 9 from both sides: x = 25 − 9 = 16.",
+        },
+        {
+          q: "Find the median of this data set: 3, 5, 8, 9, 12",
+          c: ["7.4", "8", "9", "12"],
+          a: 1,
+          domain: "Unit 8: Statistics",
+          why: "The median is the middle value when ordered — 8 is 3rd of 5.",
+        },
+        {
+          q: "Which point lies in Quadrant II of the coordinate plane?",
+          c: ["(2, 3)", "(-2, 3)", "(-2, -3)", "(2, -3)"],
+          a: 1,
+          domain: "Unit 9: Coordinate Plane",
+          why: "Quadrant II is up-left: x is negative, y is positive.",
+        },
+      ];
+
+      // Coordinate nodes mapped to stones (start + stone-1..stone-10)
+      const coordinates = [
+        { x: 40, y: 40 },
+        { x: 92, y: 31 },
+        { x: 144, y: 26 },
+        { x: 196, y: 27 },
+        { x: 248, y: 33 },
+        { x: 300, y: 40 },
+        { x: 352, y: 45 },
+        { x: 404, y: 47 },
+        { x: 456, y: 46 },
+        { x: 508, y: 43 },
+        { x: 560, y: 40 },
+      ];
+
+      let currentIdx = 0;
+      let score = 0;
+      let correctCount = 0;
+      let answered = false; // one graded answer per question (real diagnostic)
+      const missedDomains = [];
+
+      function loadQuestion() {
+        if (currentIdx >= questions.length) {
+          showResults();
+          return;
+        }
+        answered = false;
+
+        document.getElementById("q-num").textContent = currentIdx + 1;
+
+        const q = questions[currentIdx];
+        document.getElementById("question-text").textContent = q.q;
+
+        const feedback = document.getElementById("feedback-line");
+        feedback.textContent = "";
+        feedback.className = "feedback-line";
+
+        const container = document.getElementById("choices-container");
+        container.innerHTML = "";
+
+        q.c.forEach((choice, index) => {
+          const btn = document.createElement("button");
+          btn.className = "choice-btn";
+          btn.type = "button";
+          btn.textContent = choice;
+          btn.onclick = () => selectChoice(index, btn);
+          container.appendChild(btn);
+        });
+        // Move keyboard focus to the first option so the question is announced.
+        const first = container.querySelector("button");
+        if (first) first.focus();
+      }
+
+      // A true diagnostic: each question is graded ONCE, then we always advance.
+      // Correct answers earn points; wrong answers reveal the right choice and
+      // record the domain to review. Nobody is forced to retry until "right,"
+      // so the final Level Badge reflects real readiness.
+      function selectChoice(index, btn) {
+        if (answered) return;
+        answered = true;
+
+        const q = questions[currentIdx];
+        const correct = index === q.a;
+        const buttons = document.querySelectorAll(
+          "#choices-container .choice-btn",
+        );
+        buttons.forEach((b, i) => {
+          b.disabled = true;
+          if (i === q.a) {
+            b.style.borderColor = "#10b981";
+            b.style.background = "rgba(16,185,129,0.18)";
+          }
+        });
+
+        const feedback = document.getElementById("feedback-line");
+        if (correct) {
+          score += 1000;
+          correctCount++;
+          document.getElementById("q-score").textContent = score;
+          if (btn) {
+            btn.style.borderColor = "#10b981";
+            btn.style.background = "rgba(16,185,129,0.28)";
+          }
+          feedback.textContent = "✓ Correct!" + (q.why ? " " + q.why : "");
+          feedback.className = "feedback-line good";
+          const stone = document.getElementById(`stone-${currentIdx + 1}`);
+          if (stone) stone.setAttribute("fill", "#10b981");
+          document.body.classList.add("gfx-correct");
+          setTimeout(() => document.body.classList.remove("gfx-correct"), 200);
+        } else {
+          missedDomains.push(q.domain);
+          if (btn) {
+            btn.style.borderColor = "#f43f5e";
+            btn.style.background = "rgba(244,63,94,0.22)";
+          }
+          feedback.textContent =
+            "✗ Not quite — the correct answer is shown." +
+            (q.why ? " " + q.why : "");
+          feedback.className = "feedback-line bad";
+          const stone = document.getElementById(`stone-${currentIdx + 1}`);
+          if (stone) stone.setAttribute("fill", "#f43f5e");
+          document.body.classList.add("gfx-wrong");
+          setTimeout(() => document.body.classList.remove("gfx-wrong"), 200);
+        }
+
+        // Advance the explorer icon on every answer (right or wrong).
+        const nextCoord =
+          coordinates[Math.min(currentIdx + 1, coordinates.length - 1)];
+        const player = document.getElementById("map-player");
+        if (player) {
+          player.setAttribute("cx", nextCoord.x);
+          player.setAttribute("cy", nextCoord.y);
+        }
+
+        setTimeout(
+          () => {
+            currentIdx++;
+            loadQuestion();
+          },
+          correct ? 900 : 3400, // wrong answers linger so the "why" is readable
+        );
+      }
+
+      function showResults() {
+        document.getElementById("play-screen").style.display = "none";
+        document.getElementById("results-screen").style.display = "flex";
+
+        const total = questions.length;
+        const stars = correctCount >= 9 ? 3 : correctCount >= 5 ? 2 : 1;
+
+        let placement = "Explorer";
+        if (correctCount >= 9) placement = "Math Overlord";
+        else if (correctCount >= 7) placement = "Equation Knight";
+        else if (correctCount >= 5) placement = "Fraction Champion";
+        else if (correctCount >= 3) placement = "Ratio Scout";
+
+        // De-duplicate the domains that were missed → concrete review targets.
+        const focus = missedDomains.filter(
+          (d, i) => missedDomains.indexOf(d) === i,
+        );
+        const focusHtml = focus.length
+          ? "Areas to review: <strong>" + focus.join(", ") + "</strong>."
+          : "You answered every question correctly — outstanding readiness!";
+
+        document.getElementById("feedback-text").innerHTML =
+          "You answered <strong>" +
+          correctCount +
+          " of " +
+          total +
+          "</strong> correctly (" +
+          score +
+          " points) and earned the <strong>" +
+          placement +
+          " Badge</strong>!<br><br>" +
+          focusHtml;
+
+        // Report to the EduPulse gradebook (guarded; safe no-op without bridge).
+        try {
+          if (window.EduPulse)
+            window.EduPulse.record({
+              activityTitle: document.title,
+              score: score,
+              stars: stars,
+              standard: "Grade 6 Diagnostic",
+              problemsAttempted: total,
+            });
+        } catch (e) {}
+
+        // Report final score to an embedding LMS, if any.
+        if (window.parent && window.parent.postMessage) {
+          window.parent.postMessage(
+            {
+              type: "game_completed",
+              score: score,
+              maxScore: 10000,
+              completed: true,
+            },
+            "*",
+          );
+        }
+
+        // Celebrate!
+        document.body.classList.add("won");
+      }
+
+      window.addEventListener("DOMContentLoaded", loadQuestion);
+    </script>
+    <!-- EduPulse reporting (sends the diagnostic result to the gradebook). -->
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
+</html>

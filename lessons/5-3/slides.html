@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
     :root {
       --ref-navy: #1C2E42;
       --ref-teal: #387F84;
@@ -1112,10 +1113,32 @@
     .cfu-card { text-align:center; }
     .cfu-poll { display:flex; gap:8px; justify-content:center; margin:12px 0; }
     .cfu-btn { flex:none; min-width:100px; }
-    .diff-paths-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+    .diff-paths-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; }
     .diff-path { border:2px solid var(--path-color, var(--teal)); border-radius:8px; padding:10px; }
     .diff-path-label { font-size:11px; font-weight:800; color:var(--navy); margin-bottom:6px; }
     .diff-path-stem { font-size:10px; line-height:1.4; margin:0; }
+    /* Read-aloud (TTS) button — additive, accessible, never shown in print */
+    .read-aloud-btn { display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-left:6px; padding:0; width:1.7em; height:1.7em; min-width:1.7em; border:1.5px solid var(--teal); border-radius:50%; background:var(--white,#fff); color:var(--navy); font-size:0.78em; line-height:1; cursor:pointer; transition:transform .12s ease, background .12s ease; }
+    .read-aloud-btn:hover { background:var(--teal-light); transform:scale(1.08); }
+    .read-aloud-btn:active { transform:scale(0.96); }
+    .read-aloud-btn:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    @media print { .read-aloud-btn { display:none !important; } }
+    /* Bilingual Spanish stem line under English — gated by .bilingual-on (default on) */
+    .stem-es { display:block; margin-top:2px; font-size:0.82em; font-style:italic; color:var(--navy); opacity:0.72; }
+    body:not(.bilingual-on) .stem-es,
+    body:not(.bilingual-on) .objective-text-es,
+    body:not(.bilingual-on) .vocab-term-es,
+    body:not(.bilingual-on) .vocab-definition-es { display:none; }
+    .tt-stems-extend { margin-top:8px; padding-top:8px; border-top:1px dashed var(--gray,#ccc); }
+    .tt-stem-extend { opacity:0.92; }
+    /* Header accessibility / language controls */
+    .a11y-controls { display:flex; align-items:center; gap:8px; }
+    .a11y-btn { font-size:12px; font-weight:700; color:var(--navy); background:var(--white,#fff); border:1.5px solid var(--teal); border-radius:16px; padding:5px 12px; cursor:pointer; }
+    .a11y-btn[aria-pressed="false"] { opacity:0.55; }
+    .a11y-btn:focus-visible, .a11y-rate select:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    .a11y-rate { display:inline-flex; align-items:center; gap:4px; font-size:12px; color:var(--navy); }
+    .a11y-rate select { font-size:12px; border:1.5px solid var(--teal); border-radius:14px; padding:4px 8px; background:var(--white,#fff); color:var(--navy); cursor:pointer; }
+    @media print { .a11y-controls { display:none !important; } }
     .workspace-table { width:100%; border-collapse:collapse; font-size:11px; }
     .workspace-table th, .workspace-table td { border:1px solid #dadce0; padding:6px 8px; text-align:center; }
     .workspace-table th { background:var(--teal-light); font-weight:800; }
@@ -2012,12 +2035,20 @@
       .presenter-hud { font-size: 10px; padding: 6px 10px; }
     }
     
+.slide-main-title,.title-heading,.g-doc-title,.section-divider-title,
+.post-it-title,.g-title-block h1,.g-title-block h2,h1,h2{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
   </style>
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
 </head>
-<body>
+<body class="bilingual-on">
 
   <!-- Google Slides Chrome Bar -->
   <header class="g-chrome">
@@ -2036,6 +2067,16 @@
       </div>
     </div>
     <div class="g-right">
+      <div class="a11y-controls" role="group" aria-label="Accessibility and language controls">
+        <button class="a11y-btn" id="bilingual-toggle" aria-pressed="true" onclick="toggleBilingual(this)" title="Show or hide Spanish support">🌐 Español</button>
+        <label class="a11y-rate" title="Read-aloud speed">🔊
+          <select id="tts-rate-select" aria-label="Read-aloud speed" onchange="setSlideTtsRate(this.value)">
+            <option value="0.7">Slow</option>
+            <option value="0.85" selected>Normal</option>
+            <option value="1">Fast</option>
+          </select>
+        </label>
+      </div>
       
       <button class="btn-present" onclick="enterFullscreen()">
         ▶ Present
@@ -2390,13 +2431,13 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <h2 class="card-title">🎯 Content Objective <span class="bilingual-tag">/ Objetivo de contenido</span></h2>
-    <p class="objective-text">I can find the area of a triangle using the formula A = ½ × base × height.</p>
+    <p class="objective-text">I can find the area of a triangle using the formula A = ½ × base × height.<button type="button" class="read-aloud-btn" aria-label="Read the content objective aloud" title="Read the content objective aloud" data-speak="I can find the area of a triangle using the formula A = ½ × base × height." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
   </div>
       <aside class="ref-side-panel">
         <div class="ref-side-header">Today&#039;s Objectives</div>
         <div class="ref-side-body">
     <h2 class="card-title">🗣️ Language Objective <span class="bilingual-tag">/ Objetivo de lenguaje</span></h2>
-    <p class="objective-text">I can explain my steps using the words base, height, area, and perpendicular.</p>
+    <p class="objective-text">I can explain my steps using the words base, height, area, and perpendicular.<button type="button" class="read-aloud-btn" aria-label="Read the language objective aloud" title="Read the language objective aloud" data-speak="I can explain my steps using the words base, height, area, and perpendicular." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     
     <p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Read objectives aloud. Ask: What will you be able to do by the end of class?</p>
     <p class="ref-teacher-note ref-note-ask"><span>❓</span> Which vocabulary words do you already know? Which are new?</p>
@@ -2553,7 +2594,7 @@
     <div class="ref-curious-layout">
       <div class="ref-visual-prompt">
         <span class="ref-prompt-badge">Visual Prompt</span>
-        <p class="ref-instruction">Blueprint Review</p><p class="card-desc">Your architecture firm is designing a park with triangular garden beds. The client wants to know exactly how much soil to order, which means calculating the area of each triangular section. The first garden has a base of 12 feet and a height of 8 feet.</p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><polygon points="80,180 220,50 360,180" fill="#DFF2EE" stroke="#17324D" stroke-width="2"/><line x1="80" y1="195" x2="360" y2="195" stroke="#17324D" stroke-width="1.5" stroke-dasharray="3,3"/><text x="200" y="212" font-family="Outfit, sans-serif" font-size="11" fill="#17324D" font-weight="bold">Base (b)</text><line x1="220" y1="50" x2="220" y2="180" stroke="#F2C15B" stroke-width="1.5" stroke-dasharray="4,4"/><text x="230" y="115" font-family="Outfit, sans-serif" font-size="11" fill="#17324D" font-weight="bold">Height (h)</text></svg>
+        <p class="ref-instruction">Blueprint Review</p><p class="card-desc">Your architecture firm is designing a park with triangular garden beds. The client wants to know exactly how much soil to order, which means calculating the area of each triangular section. The first garden has a base of 12 feet and a height of 8 feet.<button type="button" class="read-aloud-btn" aria-label="Read the prompt aloud" title="Read the prompt aloud" data-speak="Your architecture firm is designing a park with triangular garden beds. The client wants to know exactly how much soil to order, which means calculating the area of each triangular section. The first garden has a base of 12 feet and a height of 8 feet." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><polygon points="80,180 220,50 360,180" fill="#DFF2EE" stroke="#17324D" stroke-width="2"/><line x1="80" y1="195" x2="360" y2="195" stroke="#17324D" stroke-width="1.5" stroke-dasharray="3,3"/><text x="200" y="212" font-family="Outfit, sans-serif" font-size="11" fill="#17324D" font-weight="bold">Base (b)</text><line x1="220" y1="50" x2="220" y2="180" stroke="#F2C15B" stroke-width="1.5" stroke-dasharray="4,4"/><text x="230" y="115" font-family="Outfit, sans-serif" font-size="11" fill="#17324D" font-weight="bold">Height (h)</text></svg>
       </div>
       <div class="ref-nw-stack">
         <div class="ref-nw-panel ref-nw-notice">
@@ -2869,37 +2910,37 @@
       </thead>
       <tbody>
     <tr>
-      <td class="ref-vocab-term">Base<br/><em>Base</em></td>
+      <td class="ref-vocab-term">Base<button type="button" class="read-aloud-btn" aria-label="Read Base and its meaning aloud" title="Read Base and its meaning aloud" data-speak="Base. A side of the triangle you use to find the area." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Base</em><button type="button" class="read-aloud-btn" aria-label="Leer Base en español" title="Leer Base en español" data-speak="Base. Un lado del triángulo que usas para hallar el área." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A side of the triangle you use to find the area.<br/><em>Un lado del triángulo que usas para hallar el área.</em></td>
       <td></td>
       <td class="ref-vocab-visual">If the bottom of a triangle is 10 cm, then b = 10 cm in the formula A = ½ × b × h</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Height<br/><em>Altura</em></td>
+      <td class="ref-vocab-term">Height<button type="button" class="read-aloud-btn" aria-label="Read Height and its meaning aloud" title="Read Height and its meaning aloud" data-speak="Height. The straight-up distance from the base to the top corner." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Altura</em><button type="button" class="read-aloud-btn" aria-label="Leer Altura en español" title="Leer Altura en español" data-speak="Altura. La distancia recta desde la base hasta la esquina de arriba." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>The straight-up distance from the base to the top corner.<br/><em>La distancia recta desde la base hasta la esquina de arriba.</em></td>
       <td></td>
       <td class="ref-vocab-visual">A dashed vertical line from the top point straight down to the base at a 90° angle — like dropping a plumb line</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Area<br/><em>Área</em></td>
+      <td class="ref-vocab-term">Area<button type="button" class="read-aloud-btn" aria-label="Read Area and its meaning aloud" title="Read Area and its meaning aloud" data-speak="Area. How much space is inside a flat shape." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Área</em><button type="button" class="read-aloud-btn" aria-label="Leer Área en español" title="Leer Área en español" data-speak="Área. Cuánto espacio hay dentro de una figura plana." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>How much space is inside a flat shape.<br/><em>Cuánto espacio hay dentro de una figura plana.</em></td>
       <td></td>
       <td class="ref-vocab-visual">A triangle with b = 8 and h = 6 has area = ½ × 8 × 6 = 24 sq units — exactly half the rectangle around it</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Perpendicular<br/><em>Perpendicular</em></td>
+      <td class="ref-vocab-term">Perpendicular<button type="button" class="read-aloud-btn" aria-label="Read Perpendicular and its meaning aloud" title="Read Perpendicular and its meaning aloud" data-speak="Perpendicular. Two lines that meet to make a square corner (90 degrees)." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Perpendicular</em><button type="button" class="read-aloud-btn" aria-label="Leer Perpendicular en español" title="Leer Perpendicular en español" data-speak="Perpendicular. Dos líneas que se unen formando una esquina recta (90 grados)." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>Two lines that meet to make a square corner (90 degrees).<br/><em>Dos líneas que se unen formando una esquina recta (90 grados).</em></td>
       <td></td>
       <td class="ref-vocab-visual">The corner of a book or a door frame — the edges meet at exactly 90°, shown by a small square symbol</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Composite figure<br/><em>Figura compuesta</em></td>
+      <td class="ref-vocab-term">Composite figure<button type="button" class="read-aloud-btn" aria-label="Read Composite figure and its meaning aloud" title="Read Composite figure and its meaning aloud" data-speak="Composite figure. A shape made by putting two or more simple shapes together." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Figura compuesta</em><button type="button" class="read-aloud-btn" aria-label="Leer Figura compuesta en español" title="Leer Figura compuesta en español" data-speak="Figura compuesta. Una figura formada al juntar dos o más figuras simples." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A shape made by putting two or more simple shapes together.<br/><em>Una figura formada al juntar dos o más figuras simples.</em></td>
       <td></td>
       <td class="ref-vocab-visual">A house shape = a rectangle (the walls) + a triangle (the roof); total area = rectangle area + triangle area</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Formula<br/><em>Fórmula</em></td>
+      <td class="ref-vocab-term">Formula<button type="button" class="read-aloud-btn" aria-label="Read Formula and its meaning aloud" title="Read Formula and its meaning aloud" data-speak="Formula. A math rule written with symbols." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Fórmula</em><button type="button" class="read-aloud-btn" aria-label="Leer Fórmula en español" title="Leer Fórmula en español" data-speak="Fórmula. Una regla matemática escrita con símbolos." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A math rule written with symbols.<br/><em>Una regla matemática escrita con símbolos.</em></td>
       <td></td>
       <td class="ref-vocab-visual">A = ½ × b × h means Area equals one-half times base times height; for b = 12 and h = 8, A = 48</td>
@@ -3035,10 +3076,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">The triangular garden bed has a base of 12 feet and a height of 8 feet. Which measurement is the height, and how is it different from the slanted side?</p>
+        <p class="card-desc tt-question">The triangular garden bed has a base of 12 feet and a height of 8 feet. Which measurement is the height, and how is it different from the slanted side?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="The triangular garden bed has a base of 12 feet and a height of 8 feet. Which measurement is the height, and how is it different from the slanted side?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The height is the ___ distance from the base to the top corner.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ It is different from the slanted side because ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('The height is the ___ distance from the base to the top corner.')">✍️ The height is the ___ distance from the base to the top corner.<span class="stem-es">La altura es la distancia ___ desde la base hasta la esquina de arriba.</span></div><div class="tt-stem" onclick="insertAtCursor('It is different from the slanted side because ___.')">✍️ It is different from the slanted side because ___.<span class="stem-es">Es diferente del lado inclinado porque ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ It ___ matter which side is the base because ___.</div><div class="tt-stem tt-stem-extend">➕ No matter which base I choose, the area is the same since ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">base</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">height</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">perpendicular</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">area</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">formula</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-launch">
@@ -3232,10 +3274,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">On the grid your triangle (base 12, height 8) fits inside a 12 by 8 rectangle. Why do we divide by 2 to find the triangle&#039;s area?</p>
+        <p class="card-desc tt-question">On the grid your triangle (base 12, height 8) fits inside a 12 by 8 rectangle. Why do we divide by 2 to find the triangle&#039;s area?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="On the grid your triangle (base 12, height 8) fits inside a 12 by 8 rectangle. Why do we divide by 2 to find the triangle&#039;s area?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ A triangle is half of a ___ with the same base and height.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ So the area is 1/2 times 12 times 8, which equals ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The rectangle&#039;s area is ___, so the triangle is ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('A triangle is half of a ___ with the same base and height.')">✍️ A triangle is half of a ___ with the same base and height.<span class="stem-es">Un triángulo es la mitad de un ___ con la misma base y altura.</span></div><div class="tt-stem" onclick="insertAtCursor('So the area is 1/2 times 12 times 8, which equals ___.')">✍️ So the area is 1/2 times 12 times 8, which equals ___.<span class="stem-es">Entonces el área es 1/2 por 12 por 8, que es ___.</span></div><div class="tt-stem" onclick="insertAtCursor('The rectangle&#039;s area is ___, so the triangle is ___.')">✍️ The rectangle&#039;s area is ___, so the triangle is ___.<span class="stem-es">El área del rectángulo es ___, entonces el triángulo es ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ They ___ have the same base and height because ___.</div><div class="tt-stem tt-stem-extend">➕ A counterexample is a triangle with base ___ and height ___, which also gives ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">base</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">height</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">area</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">perpendicular</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">formula</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-explore">
@@ -3466,7 +3509,7 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <span class="ref-error-badge">⚠ Find the Area Error</span>
-    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.</p>
+    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.<button type="button" class="read-aloud-btn" aria-label="Read the directions aloud" title="Read the directions aloud" data-speak="A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     <div class="ref-student-work-box">
       <div class="ref-work-label">Student&apos;s work — read every step:</div>
       <div class="ea-steps">
@@ -3773,11 +3816,11 @@
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📐 ARCHITECTURE FIRM</span></div>
     <h3 class="slide-main-title">Differentiation Paths</h3>
     <div class="slide-card">
-      <span class="slide-badge badge-teal">🎯 THREE PATHS</span>
+      <span class="slide-badge badge-teal">🎯 CHOOSE YOUR LEVEL</span>
       <div class="teacher-cue teacher-cue-say">
     <span class="teacher-cue-icon">👩‍🏫</span>
     <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">All students work on math — choose the path that matches readiness.</span>
+    <span class="teacher-cue-text">Everyone works on the same math goal — pick the level of support that fits today.</span>
   </div>
       <div class="teacher-cue teacher-cue-time">
     <span class="teacher-cue-icon">⏱️</span>
@@ -3785,17 +3828,21 @@
     <span class="teacher-cue-text">8–10 min independent or partner</span>
   </div>
       <div class="diff-paths-grid">
+        <div class="diff-path" style="--path-color:var(--coral, #e07a5f)">
+      <div class="diff-path-label">🧩 Level 0 · Most support</div>
+      <p class="diff-path-stem">Step-by-step with a worked model and sentence frames.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Step-by-step with a worked model and sentence frames." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
+    </div>
         <div class="diff-path" style="--path-color:var(--amber)">
-      <div class="diff-path-label">🌱 Approaching</div>
-      <p class="diff-path-stem">What is the area of a triangle with base 10 cm and height 6 cm?</p>
+      <div class="diff-path-label">🌱 Level 1 · Support</div>
+      <p class="diff-path-stem">What is the area of a triangle with base 10 cm and height 6 cm?<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="What is the area of a triangle with base 10 cm and height 6 cm?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--teal)">
-      <div class="diff-path-label">🎯 On-Level</div>
-      <p class="diff-path-stem">Core practice aligned to the standard.</p>
+      <div class="diff-path-label">🎯 Level 2 · Core</div>
+      <p class="diff-path-stem">Core practice aligned to the standard.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Core practice aligned to the standard." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--navy)">
-      <div class="diff-path-label">🚀 Challenge</div>
-      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.</p>
+      <div class="diff-path-label">🚀 Level 2+ · Enrichment</div>
+      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Extension with error analysis or multi-step reasoning." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
       </div>
     </div></div>
@@ -3955,10 +4002,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">The homeowner paints a triangular A-frame wall with base 20 ft and height 14 ft; one can covers 50 sq ft. Talk through how many cans are needed.</p>
+        <p class="card-desc tt-question">The homeowner paints a triangular A-frame wall with base 20 ft and height 14 ft; one can covers 50 sq ft. Talk through how many cans are needed.<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="The homeowner paints a triangular A-frame wall with base 20 ft and height 14 ft; one can covers 50 sq ft. Talk through how many cans are needed." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The wall&#039;s area is 1/2 times 20 times 14, which equals ___ square feet.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ She needs ___ cans because ___ divided by 50 equals ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('The wall&#039;s area is 1/2 times 20 times 14, which equals ___ square feet.')">✍️ The wall&#039;s area is 1/2 times 20 times 14, which equals ___ square feet.<span class="stem-es">El área de la pared es 1/2 por 20 por 14, que es ___ pies cuadrados.</span></div><div class="tt-stem" onclick="insertAtCursor('She needs ___ cans because ___ divided by 50 equals ___.')">✍️ She needs ___ cans because ___ divided by 50 equals ___.<span class="stem-es">Necesita ___ latas porque ___ entre 50 es ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ She must round up to ___ cans because ___.</div><div class="tt-stem tt-stem-extend">➕ The leftover paint covers about ___ sq ft, since ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">triangle</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">base</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">height</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">area</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">formula</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-connect">
@@ -4482,6 +4530,66 @@
         }
       }, 1000);
     }
+
+    // -----------------------------------------------------------------
+    // READ-ALOUD (Text-to-Speech) — accessibility + Level 1 language support
+    // Reads slide text via the browser Web Speech API. Rate is saved so a
+    // teacher/student preference persists across slides and lessons.
+    // -----------------------------------------------------------------
+    const SLIDE_TTS_RATE_KEY = 'neft-slide-tts-rate';
+    function getSlideTtsRate() {
+      const saved = parseFloat(localStorage.getItem(SLIDE_TTS_RATE_KEY));
+      return (saved && saved >= 0.5 && saved <= 1.5) ? saved : 0.85;
+    }
+    function setSlideTtsRate(rate) {
+      const r = parseFloat(rate);
+      if (r && r >= 0.5 && r <= 1.5) localStorage.setItem(SLIDE_TTS_RATE_KEY, String(r));
+    }
+    function speakText(text, lang) {
+      if (!('speechSynthesis' in window) || !text) return;
+      try {
+        // A second tap on a speaking button stops it (toggle behavior).
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          return;
+        }
+        const utter = new SpeechSynthesisUtterance(String(text).replace(/[✍️🎯🗣️👂✓✗⚠➡️•]/g, ' ').trim());
+        utter.rate = getSlideTtsRate();
+        utter.lang = lang || 'en-US';
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+      } catch (e) { /* speech not available */ }
+    }
+    // Read-aloud buttons carry their text in data-speak (and optional data-lang).
+    function speakFromButton(btn) {
+      if (!btn) return;
+      speakText(btn.getAttribute('data-speak') || '', btn.getAttribute('data-lang') || 'en-US');
+    }
+    window.speakText = speakText;
+    window.speakFromButton = speakFromButton;
+    window.setSlideTtsRate = setSlideTtsRate;
+    window.getSlideTtsRate = getSlideTtsRate;
+
+    // Bilingual (Spanish support) toggle — persists per browser.
+    const SLIDE_BILINGUAL_KEY = 'neft-slide-bilingual';
+    function applyBilingual(on) {
+      document.body.classList.toggle('bilingual-on', on);
+      const btn = document.getElementById('bilingual-toggle');
+      if (btn) btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    function toggleBilingual(btn) {
+      const on = !document.body.classList.contains('bilingual-on');
+      localStorage.setItem(SLIDE_BILINGUAL_KEY, on ? '1' : '0');
+      applyBilingual(on);
+    }
+    window.toggleBilingual = toggleBilingual;
+    // Restore saved accessibility preferences on load.
+    (function initA11yPrefs() {
+      const savedBi = localStorage.getItem(SLIDE_BILINGUAL_KEY);
+      if (savedBi !== null) applyBilingual(savedBi === '1');
+      const rateSel = document.getElementById('tts-rate-select');
+      if (rateSel) rateSel.value = String(getSlideTtsRate());
+    })();
 
     // CFU thumb responses
     const cfuResponses = {};
@@ -5843,8 +5951,8 @@
     
   </script>
 
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
-</body>
+  </body>
 </html>

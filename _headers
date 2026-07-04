@@ -9,13 +9,17 @@
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-  # Framing policy: allow this site to be embedded by itself, by Canvas LMS
-  # (all *.instructure.com subdomains, incl. bcps.instructure.com), and by SCORM
-  # players — SCORM Cloud (*.scorm.com) and Rustici-engine content hosts
-  # (*.scormcontent.com), which is how SCORM packages iframe the live lesson and
-  # report grades. CSP frame-ancestors replaces the old X-Frame-Options:
-  # SAMEORIGIN (which blocked all cross-origin framing). Everyone else is blocked.
-  Content-Security-Policy: frame-ancestors 'self' https://*.instructure.com https://*.scorm.com https://*.scormcontent.com
+  # Framing policy: allow this site to be embedded by itself, by Canvas LMS, and
+  # by ANY https LMS/SCORM player. BCPS Canvas's SCORM tool iframes the live
+  # lesson from its own (non-SCORM-Cloud) https domain, and Cloudflare APPENDS
+  # per-path CSP headers rather than overriding them — two CSP headers are
+  # enforced as their intersection (most restrictive) — so a /lessons/* override
+  # can't loosen a strict global. The global itself must permit https framers.
+  # `'self' https:` allows any https ancestor (every LMS/SCORM host) while still
+  # blocking non-https (data:/blob: opaque) framing. Lesson pages carry no auth
+  # or sensitive one-click actions, so this is low clickjacking risk. This is
+  # what lets a SCORM-embedded lesson render inside Canvas and report its grade.
+  Content-Security-Policy: frame-ancestors 'self' https:
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
   Cache-Control: public, max-age=0, must-revalidate
 

@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/assets/math-mobile.css">
 <title>Martian Fuel Pod — Algebraic Equation Balance Scale</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet" />
 <style>
@@ -384,11 +385,33 @@ header p {
   box-shadow: 0 0 20px var(--neon-green);
 }
 
+/* RESPONSIVE (tablet/phone) */
+@media (max-width: 900px) {
+  header { padding: 22px 16px; margin-bottom: 22px; }
+  header h1 { font-size: 2.2rem; }
+  .scale-visualizer #scaleSvg { max-width: 100%; height: auto; }
+}
+
+@media (max-width: 640px) {
+  header { padding: 18px 14px; }
+  header h1 { font-size: 1.7rem; }
+  header p { letter-spacing: 2px; font-size: 0.82rem; }
+  .panel { padding: 16px; }
+  .eq-display { font-size: 1.6rem; }
+  .cockpit-keypad { grid-template-columns: 1fr; gap: 10px; }
+  .cockpit-header { flex-wrap: wrap; gap: 8px; }
+  .success-content { padding: 28px 20px; }
+  .success-content h2 { font-size: 1.7rem; }
+}
+
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
 </head>
 <body>
 
@@ -968,5 +991,8 @@ window.addEventListener("load", () => {
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>

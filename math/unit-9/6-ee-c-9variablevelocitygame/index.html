@@ -1,1238 +1,1071 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Variable Velocity - Racing Game | 6.EE.C.9</title>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
-    <script>
-      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
-      // (document.write blocks parsing so the mirror is ready before the game script runs).
-      if (typeof Phaser === "undefined") {
-        document.write(
-          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
-        );
-      }
-      // If both CDNs are unreachable, show a clear message instead of a blank page.
-      window.addEventListener("load", function () {
-        if (typeof Phaser === "undefined") {
-          document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
-        }
-      });
-    </script>
+    <meta
+      name="description"
+      content="Variable Velocity: a Grade 6 math-as-mechanic game for 6.EE.C.9 — evaluate y = m·x + b for a given x, then STEER your car into the lane numbered with the value you computed. Wrong math crashes; correct math scores."
+    />
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-      html,
+      :root {
+        --teal: #0e8a7d;
+        --teal-bright: #12a596;
+        --gold: #d4952a;
+        --ink: #06202c;
+        --panel: #0f2b3c;
+        --line: #1f4a5b;
+        --road: #10243a;
+        --txt: #dff1f0;
+        --muted: #8fb6bf;
+      }
       body {
-        width: 100%;
-        height: 100%;
+        background: var(--panel);
+        min-height: 100vh;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--txt);
+        overflow-x: hidden;
+      }
+      #ff-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
         overflow: hidden;
-        background: #000;
+        pointer-events: none;
+        background: radial-gradient(
+          130% 90% at 50% 0%,
+          #134a5a 0%,
+          #0f2b3c 55%,
+          #08202c 100%
+        );
       }
-      #game-container {
-        width: 100%;
-        height: 100%;
+      .ff-mote {
+        position: absolute;
+        border-radius: 50%;
+        background: #7fd6c8;
+        opacity: 0.4;
+        animation: ffTwinkle var(--tw, 3s) ease-in-out infinite;
       }
-      canvas {
+      @keyframes ffTwinkle {
+        0%,
+        100% {
+          opacity: 0.12;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 0.6;
+          transform: scale(1.2);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .ff-mote {
+          animation: none !important;
+          opacity: 0.35 !important;
+        }
+        * {
+          scroll-behavior: auto !important;
+          animation-duration: 0.001s !important;
+        }
+      }
+      #ff-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      #wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 18px 16px 48px;
+        min-height: 100vh;
+      }
+      .screen {
+        display: none;
+      }
+      .screen.on {
         display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      h1 {
+        font-size: clamp(1.6rem, 4vw, 2.3rem);
+        color: #fff;
+        letter-spacing: 0.5px;
+      }
+      .sub {
+        color: var(--muted);
+        margin-top: 4px;
+        font-size: 0.95rem;
+      }
+      .card {
+        background: rgba(13, 41, 56, 0.82);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px;
+        margin: 16px 0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+      }
+      .btn {
+        font:
+          600 1rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 13px 22px;
+        color: var(--ink);
+        background: var(--teal);
+        transition:
+          transform 0.12s,
+          background 0.12s,
+          box-shadow 0.12s;
+      }
+      .btn:hover {
+        background: var(--teal-bright);
+        transform: translateY(-1px);
+      }
+      .btn:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 3px;
+      }
+      .btn.ghost {
+        background: #1a3a48;
+        color: #9fc6cf;
+      }
+      .btn.ghost:hover {
+        background: #244c5c;
+      }
+      .btn.big {
+        padding: 18px 26px;
+        font-size: 1.1rem;
+      }
+      .vocab {
+        display: grid;
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .vrow {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .vterm {
+        color: var(--gold);
+        font-weight: 700;
+        min-width: 140px;
+      }
+      .vdef {
+        color: var(--txt);
+      }
+      .vimg {
+        flex: 0 0 auto;
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        background: #0b2330;
+        border: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        line-height: 1;
+      }
+      .vbody {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      @media (max-width: 560px) {
+        .vterm {
+          min-width: 0;
+        }
+      }
+      .levels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .levels {
+          grid-template-columns: 1fr;
+        }
+      }
+      .level-pick {
+        text-align: left;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+        padding: 18px;
+        background: #0c2532;
+        border: 1px solid var(--line);
+        color: var(--txt);
+        border-radius: 14px;
+        cursor: pointer;
+      }
+      .level-pick:hover {
+        border-color: var(--teal-bright);
+        background: #102f3f;
+      }
+      .level-pick:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 3px;
+      }
+      .level-pick b {
+        color: #fff;
+        font-size: 1.15rem;
+      }
+      .level-pick .tag {
+        color: var(--teal-bright);
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .level-pick .desc {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .hud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .hud .pill {
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-weight: 700;
+      }
+      .hud .pill small {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .lives {
+        color: #e06b6b;
+        letter-spacing: 2px;
+        font-size: 1.1rem;
+      }
+      .target {
+        text-align: center;
+        margin: 6px 0 14px;
+      }
+      .target .rule {
+        font-size: clamp(1.4rem, 5vw, 2rem);
+        font-weight: 800;
+        color: #fff;
+      }
+      .target .rule span {
+        color: var(--gold);
+      }
+      .prompt {
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      /* Road + lanes */
+      .road {
+        position: relative;
+        background: var(--road);
+        border: 2px solid var(--line);
+        border-radius: 16px;
+        padding: 12px;
+        margin: 10px 0 6px;
+      }
+      .lanes {
+        display: grid;
+        gap: 8px;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        overflow-x: auto;
+        padding-bottom: 4px;
+      }
+      .lane {
+        min-width: 64px;
+        min-height: 96px;
+        border-radius: 12px;
+        border: 2px dashed var(--line);
+        background: #0b2330;
+        color: var(--txt);
+        font:
+          800 1.4rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+        padding: 8px 4px 10px;
+        transition:
+          transform 0.1s,
+          border-color 0.15s,
+          background 0.15s;
+      }
+      .lane:hover {
+        border-color: var(--teal-bright);
+        background: #11384a;
+        transform: translateY(-2px);
+      }
+      .lane:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      .lane .marker {
+        font-size: 1.6rem;
+        line-height: 1;
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+      .lane.car .marker {
+        opacity: 1;
+      }
+      .lane.crash {
+        animation: shakeLane 0.4s;
+        border-color: #e06b6b;
+      }
+      @keyframes shakeLane {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-6px);
+        }
+        75% {
+          transform: translateX(6px);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .lane.crash {
+          animation: none;
+        }
+      }
+      .lanenum {
+        color: var(--muted);
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      /* Compute scaffold */
+      .compute {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: center;
+        margin: 14px 0 4px;
+      }
+      .compute .eqshow {
+        font-weight: 800;
+        font-size: 1.15rem;
+        color: #fff;
+      }
+      .compute input {
+        width: 96px;
+        font:
+          800 1.4rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        text-align: center;
+        padding: 10px;
+        border-radius: 12px;
+        border: 2px solid var(--line);
+        background: #0c2532;
+        color: var(--gold);
+      }
+      .compute input:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      .scaffold {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.92rem;
+        margin: 4px 0 2px;
+      }
+      .scaffold code {
+        color: var(--gold);
+        background: #0c2532;
+        padding: 2px 6px;
+        border-radius: 6px;
+      }
+      .feedback {
+        min-height: 24px;
+        text-align: center;
+        margin: 10px 0;
+        font-weight: 600;
+      }
+      .feedback.bad {
+        color: #f0a06b;
+      }
+      .feedback.good {
+        color: #79d39a;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-align: center;
+        margin-top: 6px;
+      }
+      .result-stars {
+        font-size: 2rem;
+        color: var(--gold);
+        letter-spacing: 6px;
+        text-align: center;
+        margin: 10px 0;
+      }
+      .result-stat {
+        display: flex;
+        justify-content: space-between;
+        max-width: 320px;
+        margin: 6px auto;
+        color: var(--muted);
+      }
+      .result-stat b {
+        color: var(--txt);
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
-  </head>
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+    <!-- Games-2D metadata source of truth (must load before the game script) -->
+    <script src="/assets/games2d-data.js"></script>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <link rel="stylesheet" href="/assets/game-access.css">
+  <!-- gacc-injected:end -->
+</head>
   <body>
-    <div id="game-container"></div>
+    <div id="ff-bg" aria-hidden="true"></div>
+    <div id="ff-sr" role="status" aria-live="polite"></div>
+
+    <main id="wrap">
+      <!-- VOCAB GATE -->
+      <section id="screen-vocab" class="screen on" aria-labelledby="vh">
+        <h1 id="vh">🏎️ Variable Velocity</h1>
+        <p class="sub">Unit 9 · Evaluate y = m·x + b to steer · 6.EE.C.9</p>
+        <div class="card">
+          <h2 style="color: #fff; font-size: 1.2rem">Words to know first</h2>
+          <div class="vocab" id="vocab-list"></div>
+          <button class="btn big" id="vocab-go">I'm ready →</button>
+        </div>
+      </section>
+
+      <!-- LEVEL SELECT -->
+      <section id="screen-level" class="screen" aria-labelledby="lh">
+        <h1 id="lh">Choose your level</h1>
+        <p class="sub">You can change this any time by playing again.</p>
+        <div class="card">
+          <div class="levels" id="level-list"></div>
+        </div>
+      </section>
+
+      <!-- PLAY -->
+      <section id="screen-play" class="screen" aria-labelledby="ph">
+        <h1 id="ph" style="position: absolute; left: -9999px">
+          Variable Velocity play
+        </h1>
+        <div class="hud">
+          <span class="pill"
+            ><small>Round</small> <span id="hud-round">1</span>/<span
+              id="hud-total"
+              >6</span
+            ></span
+          >
+          <span class="pill"
+            ><small>Score</small> <span id="hud-score">0</span></span
+          >
+          <span class="pill"
+            ><small>Lives</small>
+            <span class="lives" id="hud-lives">●●●●●</span></span
+          >
+        </div>
+        <div class="card">
+          <div class="target">
+            <div class="rule">
+              Rule: y = <span id="t-m">2</span>·x + <span id="t-b">1</span>
+            </div>
+            <div class="prompt" id="t-prompt">
+              Your x is <b id="t-x">3</b>. Compute y, then steer into lane y.
+            </div>
+          </div>
+
+          <div class="compute">
+            <span class="eqshow"
+              >y = <span id="c-m">2</span> × <span id="c-x">3</span> +
+              <span id="c-b">1</span> =</span
+            >
+            <label for="c-y" style="position: absolute; left: -9999px"
+              >Computed value of y</label
+            >
+            <input
+              id="c-y"
+              type="number"
+              inputmode="numeric"
+              autocomplete="off"
+              aria-describedby="t-prompt"
+            />
+          </div>
+          <p class="scaffold" id="scaffold"></p>
+
+          <div class="road" aria-hidden="false">
+            <p style="text-align: center; color: var(--muted); margin: 0 0 8px">
+              Numbered lanes — type your y above (or click a lane) to steer:
+            </p>
+            <div
+              class="lanes"
+              id="lanes"
+              role="group"
+              aria-label="Numbered driving lanes"
+            ></div>
+          </div>
+
+          <div
+            class="feedback"
+            id="feedback"
+            role="status"
+            aria-live="assertive"
+          ></div>
+          <p class="hint" id="hint"></p>
+        </div>
+      </section>
+
+      <!-- RESULT -->
+      <section id="screen-result" class="screen" aria-labelledby="rh">
+        <h1 id="rh">Checkered flag</h1>
+        <div class="card">
+          <div class="result-stars" id="r-stars">★★★</div>
+          <div class="result-stat"><span>Score</span><b id="r-score">0</b></div>
+          <div class="result-stat">
+            <span>Lanes nailed</span><b id="r-correct">0</b>
+          </div>
+          <div class="result-stat">
+            <span>Rounds raced</span><b id="r-rounds">0</b>
+          </div>
+          <div class="result-stat" id="r-high-row" style="display: none">
+            <span>★ New high score!</span><b id="r-high">0</b>
+          </div>
+          <div class="row">
+            <button class="btn big" id="r-again">Play again</button>
+            <a class="btn ghost big" href="/math/games/">All games</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
     <script>
-      (() => {
-        // ════════════════════════════════════════════════════════════════
-        //  VARIABLE VELOCITY RACING — 6.EE.C.9 (rate, y = kx, dependent &
-        //  independent variables).  THE MATH IS THE MECHANIC.
-        //
-        //  Your car's distance is the LIVE function  d = k · t.  You set the
-        //  RATE k with the throttle (Up/Down).  The on-track speed IS k, so
-        //  raising k visibly accelerates the car.  t (time) is the independent
-        //  variable; d (distance) is the dependent variable that k controls.
-        //
-        //  Round types — both SOLVED with the throttle, never a menu:
-        //   • INTERCEPT — a rival drone runs d = m·t.  Pick k so YOU reach the
-        //     finish line D at the EXACT same time t* as the drone (k = D/t*).
-        //   • TIE — the rival's equation is shown, d = m·t + b.  Choose your k
-        //     so you are tied with the rival at a stated time T  (solve
-        //     k·T = m·T + b  →  k = m + b/T).  Designed so k is a clean value.
-        //  A distance-time graph fills LIVE as you drive: the slope of your
-        //  line IS your rate k. No A/B/C/D. No dead controls.
-        // ════════════════════════════════════════════════════════════════
-
-        // ─── SOUND ENGINE ───
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        let actx = null;
-        function ensureAudio() {
-          if (!actx && AudioCtx) actx = new AudioCtx();
-          if (actx && actx.state === "suspended") actx.resume();
+      // ── Decorative drifting motes (reduced-motion safe) ──
+      (function () {
+        var host = document.getElementById("ff-bg");
+        if (!host) return;
+        var reduce =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var n = reduce ? 10 : 26;
+        for (var i = 0; i < n; i++) {
+          var d = document.createElement("div");
+          d.className = "ff-mote";
+          var sz = 2 + Math.random() * 4;
+          d.style.width = d.style.height = sz.toFixed(1) + "px";
+          d.style.left = (Math.random() * 100).toFixed(2) + "%";
+          d.style.top = (Math.random() * 100).toFixed(2) + "%";
+          d.style.setProperty("--tw", (2 + Math.random() * 4).toFixed(2) + "s");
+          d.style.animationDelay = "-" + (Math.random() * 4).toFixed(2) + "s";
+          host.appendChild(d);
         }
-        function beep(freq, dur, type = "sine", vol = 0.16) {
-          if (!actx) return;
-          const o = actx.createOscillator(),
-            g = actx.createGain();
-          o.connect(g);
-          g.connect(actx.destination);
-          o.frequency.value = freq;
-          o.type = type;
-          g.gain.setValueAtTime(vol, actx.currentTime);
-          g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
-          o.start();
-          o.stop(actx.currentTime + dur);
-        }
-        const sfxUp = () =>
-          beep(360 + Math.random() * 40, 0.05, "sawtooth", 0.08);
-        const sfxDown = () => beep(220, 0.06, "sawtooth", 0.08);
-        const sfxWin = () => {
-          beep(523, 0.08);
-          setTimeout(() => beep(659, 0.08), 70);
-          setTimeout(() => beep(880, 0.18), 150);
-        };
-        const sfxLose = () => beep(150, 0.26, "square", 0.1);
-        const sfxLevel = () =>
-          [523, 659, 784, 1047].forEach((f, i) =>
-            setTimeout(() => beep(f, 0.14), i * 90),
-          );
-        const sfxClick = () => beep(440, 0.05, "sine", 0.09);
-        const sfxEngine = () => beep(110, 0.04, "triangle", 0.05);
-
-        // ─── PALETTE (colourblind-safe: every coloured object is also labelled
-        //     and uses a distinct shape/texture, never colour alone) ───
-        const W = 1024,
-          H = 768;
-        const C = {
-          bg: 0x0a0a2e,
-          panel: 0x141442,
-          panelHi: 0x1d1d5c,
-          gold: 0xf6c343,
-          white: 0xffffff,
-          dim: 0x9aa6d6,
-          // player = teal/circle, rival = orange/diamond (CB-distinct pair)
-          you: 0x35d0c0,
-          youCss: "#35d0c0",
-          rival: 0xff8a3d,
-          rivalCss: "#ff8a3d",
-          green: 0x2ec26b,
-          red: 0xe7556b,
-          track: 0x121233,
-          stroke: 0x3a3a86,
-        };
-
-        // ─── MATH HELPERS ───
-        const rnd = (n) => Math.floor(Math.random() * n);
-        const pick = (arr) => arr[rnd(arr.length)];
-        const round1 = (x) => Math.round(x * 10) / 10;
-        // throttle step: k moves in increments of STEP so every reachable
-        // rate is an exact multiple of STEP (solvability is provable).
-        const STEP = 0.5;
-        const K_MIN = 0.5;
-        const K_MAX = 12;
-        // snap a real number to the throttle grid
-        const onGrid = (k) =>
-          Math.abs(k / STEP - Math.round(k / STEP)) < 1e-9 &&
-          k >= K_MIN - 1e-9 &&
-          k <= K_MAX + 1e-9;
-
-        // ─── ROUND GENERATOR ───────────────────────────────────────────────
-        //  Every generated round is VERIFIED solvable: the winning k is an
-        //  exact multiple of STEP and lies inside [K_MIN, K_MAX].  We resample
-        //  until that holds, so the player can always reach the answer.
-        //  tier 1 = Support (whole-number-friendly, slower clock, generous
-        //  tolerance, hint always offered).  tier 2 = Challenge.
-        function makeRound(tier, index) {
-          let attempts = 0;
-          while (attempts++ < 400) {
-            const type =
-              tier === 1
-                ? index % 2 === 0
-                  ? "intercept"
-                  : "tie"
-                : pick(["intercept", "tie", "intercept", "tie", "intercept"]);
-
-            if (type === "intercept") {
-              // Rival drone: d = m·t.  Finish distance D.  Drone reaches D at
-              // t* = D/m.  Player must run k = D/t* = m  → BUT we hide that by
-              // phrasing via the meeting time, and we let D differ so k must be
-              // computed as D / t*.  We choose t* and D so k is on-grid.
-              const tStar = tier === 1 ? 2 + rnd(4) : 2 + rnd(7); // whole meeting time
-              const k = pickGridK(tier); // the player's required rate
-              const D = round1(k * tStar); // finish distance the player must hit at t*
-              // rival speed m so the rival ALSO arrives at D exactly at t*:
-              const m = round1(D / tStar); // == k, but presented as the drone's speed
-              if (!onGrid(k) || D <= 0 || D > K_MAX * (tier === 1 ? 8 : 11) + 1)
-                continue;
-              return {
-                type,
-                tier,
-                k, // winning rate
-                D, // finish distance
-                tStar, // intended meeting time
-                rivalM: m,
-                rivalB: 0,
-                T: tStar,
-              };
-            } else {
-              // TIE: rival d = m·t + b (head start b).  At time T the player
-              // must be tied:  k·T = m·T + b  →  k = m + b/T.
-              const T = tier === 1 ? 2 + rnd(4) : 2 + rnd(7);
-              const m = tier === 1 ? 1 + rnd(3) : 1 + rnd(5); // rival rate (whole)
-              // choose b so that b/T is an exact multiple of STEP and k on-grid
-              const bUnits = tier === 1 ? 1 + rnd(3) : 1 + rnd(6); // half-steps of b/T
-              const b = round1(bUnits * STEP * T); // head start
-              const k = round1(m + bUnits * STEP); // required rate
-              const D = round1(k * T); // both reach this distance at T
-              if (!onGrid(k) || k <= m || D > K_MAX * (tier === 1 ? 8 : 11) + 1)
-                continue;
-              return { type, tier, k, D, tStar: T, rivalM: m, rivalB: b, T };
-            }
-          }
-          // Deterministic fallback (always on-grid & solvable)
-          return {
-            type: "intercept",
-            tier,
-            k: 3,
-            D: 9,
-            tStar: 3,
-            rivalM: 3,
-            rivalB: 0,
-            T: 3,
-          };
-        }
-        function pickGridK(tier) {
-          // pick a rate on the STEP grid; tier 1 favours whole numbers
-          const lo = 1,
-            hi = tier === 1 ? 6 : 10;
-          if (tier === 1) return lo + rnd(hi - lo + 1); // whole number
-          const halfSteps =
-            Math.round(lo / STEP) + rnd(Math.round((hi - lo) / STEP) + 1);
-          return round1(halfSteps * STEP);
-        }
-
-        // ════════════════════════════════════════════════════════════════
-        //  TITLE SCENE — real Level 1 / Level 2 choice
-        // ════════════════════════════════════════════════════════════════
-        class TitleScene extends Phaser.Scene {
-          constructor() {
-            super("TitleScene");
-          }
-          create() {
-            this.cameras.main.setBackgroundColor(C.bg);
-            this.add
-              .text(W / 2, 96, "VARIABLE VELOCITY", {
-                fontSize: "62px",
-                fontFamily: "Arial Black, sans-serif",
-                color: "#f6c343",
-                stroke: "#000",
-                strokeThickness: 7,
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(
-                W / 2,
-                150,
-                "6.EE.C.9 — your throttle IS the rate  d = k · t",
-                {
-                  fontSize: "20px",
-                  fontFamily: "Arial",
-                  color: "#c9d2ff",
-                },
-              )
-              .setOrigin(0.5);
-            this.add
-              .text(
-                W / 2,
-                206,
-                "Time t is the independent variable. Distance d depends on it.\n" +
-                  "Set the RATE k with the throttle — your speed becomes k and the\n" +
-                  "car accelerates. Pick k to catch the rival at the exact finish.",
-                {
-                  fontSize: "16px",
-                  fontFamily: "Arial",
-                  color: "#9aa6d6",
-                  align: "center",
-                  lineSpacing: 6,
-                },
-              )
-              .setOrigin(0.5);
-
-            this.drawDemo(W / 2, 360);
-
-            const tiers = [
-              {
-                t: 1,
-                label: "Level 1",
-                sub: "Support",
-                desc: "Whole-number rates · slower clock · roomy timing · hint ready",
-                col: C.green,
-              },
-              {
-                t: 2,
-                label: "Level 2",
-                sub: "Challenge",
-                desc: "Half-step rates · head-start rivals · tight intercepts",
-                col: C.gold,
-              },
-            ];
-            tiers.forEach((d, i) => {
-              const x = W / 2 + (i === 0 ? -200 : 200),
-                y = 560;
-              const card = this.add
-                .rectangle(x, y, 330, 140, C.panel)
-                .setStrokeStyle(3, C.stroke)
-                .setInteractive({ useHandCursor: true });
-              this.add
-                .text(x, y - 42, d.label, {
-                  fontSize: "30px",
-                  fontFamily: "Arial Black",
-                  color: "#fff",
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y - 12, d.sub, {
-                  fontSize: "16px",
-                  fontFamily: "Arial",
-                  color: Phaser.Display.Color.IntegerToColor(d.col).rgba,
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y + 30, d.desc, {
-                  fontSize: "12.5px",
-                  fontFamily: "Arial",
-                  color: "#c9d2ff",
-                  align: "center",
-                  wordWrap: { width: 300 },
-                })
-                .setOrigin(0.5);
-              card.on("pointerover", () => {
-                card.setStrokeStyle(3, d.col);
-                card.setScale(1.04);
-              });
-              card.on("pointerout", () => {
-                card.setStrokeStyle(3, C.stroke);
-                card.setScale(1);
-              });
-              card.on("pointerdown", () => {
-                ensureAudio();
-                sfxClick();
-                this.cameras.main.fadeOut(350, 0, 0, 0);
-                this.time.delayedCall(350, () =>
-                  this.scene.start("RaceScene", { tier: d.t }),
-                );
-              });
-            });
-
-            this.add
-              .text(
-                W / 2,
-                688,
-                "Throttle:  ▲ / ▼  or  W / S  (also tap the + RATE / − RATE pads)  ·  Enter / GO launches the race  ·  H = hint",
-                { fontSize: "12px", color: "#6f79b0", align: "center" },
-              )
-              .setOrigin(0.5);
-            this.cameras.main.fadeIn(400);
-          }
-          drawDemo(cx, cy) {
-            // mini distance-time graph: two lines, slope = rate
-            const ox = cx - 150,
-              oy = cy + 60,
-              gw = 300,
-              gh = 110;
-            const g = this.add.graphics();
-            g.lineStyle(2, C.stroke, 1);
-            g.strokeRect(ox, oy - gh, gw, gh);
-            // axes labels
-            this.add.text(ox - 6, oy - gh - 18, "d (distance)", {
-              fontSize: "12px",
-              color: "#9aa6d6",
-            });
-            this.add
-              .text(ox + gw, oy + 6, "t (time) →", {
-                fontSize: "12px",
-                color: "#9aa6d6",
-              })
-              .setOrigin(1, 0);
-            // your line, slope k=4 (teal)
-            g.lineStyle(4, C.you, 1).beginPath();
-            g.moveTo(ox, oy);
-            g.lineTo(ox + gw, oy - gh);
-            g.strokePath();
-            // rival line, slope shallower (orange, dashed look via dots)
-            g.lineStyle(4, C.rival, 0.95).beginPath();
-            g.moveTo(ox, oy);
-            g.lineTo(ox + gw, oy - gh * 0.55);
-            g.strokePath();
-            this.add
-              .text(ox + gw + 12, oy - gh, "● YOU  d = k·t", {
-                fontSize: "13px",
-                fontFamily: "Arial Black",
-                color: C.youCss,
-              })
-              .setOrigin(0, 0.5);
-            this.add
-              .text(ox + gw + 12, oy - gh * 0.55, "◆ RIVAL", {
-                fontSize: "13px",
-                fontFamily: "Arial Black",
-                color: C.rivalCss,
-              })
-              .setOrigin(0, 0.5);
-            this.add
-              .text(cx, oy + 30, "Steeper line = bigger rate k = faster car", {
-                fontSize: "13px",
-                color: "#f6c343",
-              })
-              .setOrigin(0.5);
-          }
-        }
-
-        // ════════════════════════════════════════════════════════════════
-        //  RACE SCENE — the throttle IS the equation
-        // ════════════════════════════════════════════════════════════════
-        class RaceScene extends Phaser.Scene {
-          constructor() {
-            super("RaceScene");
-          }
-          init(data) {
-            this.tier = data.tier || 1;
-          }
-
-          create() {
-            this.cameras.main.setBackgroundColor(C.bg);
-            this.cameras.main.fadeIn(350);
-
-            // run state
-            this.score = 0;
-            this.streak = 0;
-            this.bestStreak = 0;
-            this.wins = 0;
-            this.raced = 0;
-            this.level = 1;
-            this.lives = this.tier === 1 ? 5 : 3;
-            this.roundIx = 0;
-            this.goalRaces = this.tier === 1 ? 8 : 10;
-
-            // backdrop + track
-            this.add.rectangle(W / 2, H / 2, W, H, C.bg);
-            this.add.rectangle(W / 2, 28, W, 56, 0x06061f, 0.96); // HUD
-
-            this.hScore = this.add.text(24, 14, "0", {
-              fontSize: "26px",
-              fontFamily: "Arial Black",
-              color: "#f6c343",
-            });
-            this.add.text(26, 42, "POINTS", {
-              fontSize: "10px",
-              color: "#7e88c0",
-            });
-            this.hLevel = this.add
-              .text(W / 2, 12, "Level 1", {
-                fontSize: "16px",
-                fontFamily: "Arial Black",
-                color: "#fff",
-              })
-              .setOrigin(0.5, 0);
-            this.hRaces = this.add
-              .text(W / 2, 36, "Race 1", { fontSize: "12px", color: "#9aa6d6" })
-              .setOrigin(0.5, 0);
-            this.hLives = this.add
-              .text(W - 24, 16, "", { fontSize: "20px" })
-              .setOrigin(1, 0);
-            this.hStreak = this.add
-              .text(W - 24, 42, "", { fontSize: "13px", color: "#f6c343" })
-              .setOrigin(1, 0);
-
-            // ── Mission panel (left) ──
-            this.add
-              .rectangle(176, 250, 312, 360, C.panel)
-              .setStrokeStyle(3, C.stroke);
-            this.add
-              .text(176, 96, "\u{1F3C1} MISSION", {
-                fontSize: "18px",
-                fontFamily: "Arial Black",
-                color: "#f6c343",
-              })
-              .setOrigin(0.5);
-            this.mEq = this.add
-              .text(176, 150, "", {
-                fontSize: "26px",
-                fontFamily: "Arial Black",
-                color: "#fff",
-                align: "center",
-                lineSpacing: 4,
-              })
-              .setOrigin(0.5);
-            this.mTask = this.add
-              .text(176, 230, "", {
-                fontSize: "15px",
-                fontFamily: "Arial",
-                fontStyle: "bold",
-                color: "#ffe9a8",
-                align: "center",
-                wordWrap: { width: 280 },
-                lineSpacing: 5,
-              })
-              .setOrigin(0.5);
-            this.mVars = this.add
-              .text(176, 350, "", {
-                fontSize: "13px",
-                fontFamily: "Arial",
-                color: "#9aa6d6",
-                align: "center",
-                wordWrap: { width: 280 },
-                lineSpacing: 4,
-              })
-              .setOrigin(0.5);
-
-            // ── Distance-time graph (right) — fills live while driving ──
-            this.gOX = 632;
-            this.gOY = 420;
-            this.gW = 350;
-            this.gH = 300;
-            this.graph = this.add.graphics();
-            this.graphDyn = this.add.graphics(); // live traces
-            this.add.text(
-              this.gOX - 6,
-              this.gOY - this.gH - 22,
-              "d (distance)",
-              {
-                fontSize: "12px",
-                color: "#9aa6d6",
-              },
-            );
-            this.add
-              .text(this.gOX + this.gW, this.gOY + 8, "t (time) →", {
-                fontSize: "12px",
-                color: "#9aa6d6",
-              })
-              .setOrigin(1, 0);
-            this.gLegendYou = this.add.text(
-              this.gOX + 8,
-              this.gOY - this.gH + 6,
-              "● YOU  d = k·t",
-              {
-                fontSize: "13px",
-                fontFamily: "Arial Black",
-                color: C.youCss,
-              },
-            );
-            this.gLegendRival = this.add.text(
-              this.gOX + 8,
-              this.gOY - this.gH + 28,
-              "◆ RIVAL",
-              {
-                fontSize: "13px",
-                fontFamily: "Arial Black",
-                color: C.rivalCss,
-              },
-            );
-
-            // ── Track lanes (center band) ──
-            this.trackTop = 470;
-            this.trackBot = 560;
-            this.trackL = 360;
-            this.trackR = 624;
-            this.add
-              .rectangle(
-                (this.trackL + this.trackR) / 2,
-                (this.trackTop + this.trackBot) / 2,
-                this.trackR - this.trackL,
-                this.trackBot - this.trackTop,
-                C.track,
-              )
-              .setStrokeStyle(2, C.stroke);
-
-            // car (teal circle = YOU) and drone (orange diamond = RIVAL)
-            this.youY = this.trackTop + 24;
-            this.rivalY = this.trackTop + 62;
-            this.youCar = this.add.circle(this.trackL, this.youY, 12, C.you);
-            this.youTag = this.add
-              .text(this.trackL, this.youY - 22, "YOU", {
-                fontSize: "11px",
-                fontFamily: "Arial Black",
-                color: C.youCss,
-              })
-              .setOrigin(0.5);
-            this.rivalCar = this.add
-              .star(this.trackL, this.rivalY, 4, 6, 12, C.rival)
-              .setAngle(45);
-            this.rivalTag = this.add
-              .text(this.trackL, this.rivalY + 22, "RIVAL", {
-                fontSize: "11px",
-                fontFamily: "Arial Black",
-                color: C.rivalCss,
-              })
-              .setOrigin(0.5);
-            // finish line
-            this.finishX = this.add.graphics();
-
-            // ── Throttle control (the heart of the game) ──
-            this.add
-              .rectangle(176, 565, 312, 150, C.panelHi)
-              .setStrokeStyle(3, C.gold);
-            this.add
-              .text(176, 510, "THROTTLE  =  RATE k", {
-                fontSize: "15px",
-                fontFamily: "Arial Black",
-                color: "#f6c343",
-              })
-              .setOrigin(0.5);
-            this.kText = this.add
-              .text(176, 556, "", {
-                fontSize: "44px",
-                fontFamily: "Arial Black",
-                color: "#35d0c0",
-              })
-              .setOrigin(0.5);
-            this.kEqLive = this.add
-              .text(176, 596, "", {
-                fontSize: "16px",
-                fontFamily: "Arial",
-                color: "#c9d2ff",
-              })
-              .setOrigin(0.5);
-            // big touch pads
-            this.upBtn = this.makeBtn(
-              96,
-              640,
-              120,
-              48,
-              "+ RATE  ▲",
-              0x1f7d4d,
-              () => this.adjustK(+STEP),
-              "16px",
-            );
-            this.downBtn = this.makeBtn(
-              256,
-              640,
-              120,
-              48,
-              "− RATE  ▼",
-              0x7d3a52,
-              () => this.adjustK(-STEP),
-              "16px",
-            );
-
-            // ── GO / launch ──
-            this.goBtn = this.makeBtn(
-              420,
-              700,
-              190,
-              56,
-              "\u{1F6A6} GO!",
-              0xf6c343,
-              () => this.launch(),
-              "24px",
-              0x10102e,
-            );
-            this.hintBtn = this.makeBtn(
-              630,
-              700,
-              140,
-              50,
-              "\u{1F4A1} Hint",
-              0x2a2a66,
-              () => this.showHint(),
-              "16px",
-            );
-            this.resetBtn = this.makeBtn(
-              790,
-              700,
-              150,
-              50,
-              "↶ Reset k",
-              0x2a2a66,
-              () => this.resetK(),
-              "16px",
-            );
-            this.feedback = this.add
-              .text(490, 642, "", {
-                fontSize: "16px",
-                fontFamily: "Arial",
-                fontStyle: "bold",
-                color: "#fff",
-                align: "center",
-                wordWrap: { width: 540 },
-              })
-              .setOrigin(0.5);
-
-            // keyboard
-            this.input.keyboard.on("keydown", (e) => {
-              const key = e.key.toLowerCase();
-              if (e.key === "ArrowUp" || key === "w") {
-                e.preventDefault?.();
-                this.adjustK(+STEP);
-              } else if (e.key === "ArrowDown" || key === "s") {
-                e.preventDefault?.();
-                this.adjustK(-STEP);
-              } else if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault?.();
-                this.launch();
-              } else if (key === "h") this.showHint();
-            });
-
-            this.racing = false;
-            this.loadRound();
-          }
-
-          makeBtn(
-            x,
-            y,
-            w,
-            h,
-            label,
-            color,
-            cb,
-            fs = "18px",
-            txtColor = 0xffffff,
-          ) {
-            const r = this.add
-              .rectangle(x, y, w, h, color)
-              .setStrokeStyle(2, 0x000000, 0.25)
-              .setInteractive({ useHandCursor: true });
-            const t = this.add
-              .text(x, y, label, {
-                fontSize: fs,
-                fontFamily: "Arial Black",
-                color: Phaser.Display.Color.IntegerToColor(txtColor).rgba,
-              })
-              .setOrigin(0.5);
-            r.on("pointerover", () => r.setScale(1.05));
-            r.on("pointerout", () => r.setScale(1));
-            r.on("pointerdown", () => {
-              ensureAudio();
-              cb();
-            });
-            r._t = t;
-            return r;
-          }
-
-          loadRound() {
-            this.round = makeRound(this.tier, this.roundIx);
-            const r = this.round;
-            this.racing = false;
-            this.k = this.tier === 1 ? 1 : K_MIN; // player's starting rate
-            this.feedback.setText("");
-            this.youCar.x = this.trackL;
-            this.rivalCar.x = this.trackL;
-            this.youTag.x = this.trackL;
-            this.rivalTag.x = this.trackL;
-
-            // mission text per type
-            if (r.type === "intercept") {
-              this.mEq.setText("Your car:\nd = k · t");
-              this.mTask.setText(
-                `Catch the RIVAL at the finish!\nThe rival drone moves d = ${r.rivalM} · t and the\nfinish is ${r.D} units away.\nPick the rate k so YOU reach the finish at the\nsame time the drone does.`,
-              );
-              this.mVars.setText(
-                "t = time (independent) · d = distance (depends on t).\nDrive, watch your line on the graph, then GO.",
-              );
-            } else {
-              this.mEq.setText(`Rival:\nd = ${r.rivalM}·t + ${r.rivalB}`);
-              this.mTask.setText(
-                `The rival has a head start of ${r.rivalB} units.\nYour car is d = k · t.\nChoose k so you are TIED with the rival at\nexactly t = ${r.T}.`,
-              );
-              this.mVars.setText(
-                `Solve k·${r.T} = ${r.rivalM}·${r.T} + ${r.rivalB}.\nUse the throttle to set that k, then GO.`,
-              );
-            }
-
-            this.updateHUD();
-            this.redrawGraph();
-            this.updateThrottle();
-          }
-
-          // graph mapping: t in [0, tMax], d in [0, dMax]
-          tMax() {
-            return Math.max(this.round.T + 1, this.round.tStar + 1, 6);
-          }
-          dMax() {
-            return Math.max(this.round.D * 1.15, K_MAX * this.tMax() * 0.4, 8);
-          }
-          gx(t) {
-            return this.gOX + (t / this.tMax()) * this.gW;
-          }
-          gy(d) {
-            return this.gOY - (d / this.dMax()) * this.gH;
-          }
-
-          redrawGraph() {
-            const g = this.graph;
-            g.clear();
-            // frame + gridlines
-            g.lineStyle(2, C.stroke, 1).strokeRect(
-              this.gOX,
-              this.gOY - this.gH,
-              this.gW,
-              this.gH,
-            );
-            g.lineStyle(1, C.stroke, 0.4);
-            for (let i = 1; i <= 5; i++) {
-              const y = this.gOY - (i / 5) * this.gH;
-              g.beginPath();
-              g.moveTo(this.gOX, y);
-              g.lineTo(this.gOX + this.gW, y);
-              g.strokePath();
-            }
-            // finish-distance reference line (dashed gold)
-            const fy = this.gy(this.round.D);
-            g.lineStyle(2, C.gold, 0.8);
-            for (let x = this.gOX; x < this.gOX + this.gW; x += 14) {
-              g.beginPath();
-              g.moveTo(x, fy);
-              g.lineTo(Math.min(x + 8, this.gOX + this.gW), fy);
-              g.strokePath();
-            }
-            // rival full line (preview): d = m t + b
-            g.lineStyle(3, C.rival, 0.85).beginPath();
-            g.moveTo(this.gx(0), this.gy(this.round.rivalB));
-            const rEnd = this.round.rivalM * this.tMax() + this.round.rivalB;
-            g.lineTo(
-              this.gx(this.tMax()),
-              this.gy(Math.min(rEnd, this.dMax())),
-            );
-            g.strokePath();
-            // your PREVIEW line for current k (thin teal) so slope feedback is live
-            g.lineStyle(2, C.you, 0.45).beginPath();
-            g.moveTo(this.gx(0), this.gy(0));
-            const yEnd = Math.min(this.k * this.tMax(), this.dMax());
-            const yEndT = yEnd / this.k;
-            g.lineTo(this.gx(yEndT), this.gy(yEnd));
-            g.strokePath();
-            this.graphDyn.clear();
-          }
-
-          updateThrottle() {
-            this.kText.setText("k = " + round1(this.k));
-            this.kEqLive.setText(
-              `d = ${round1(this.k)} · t  (slope = ${round1(this.k)})`,
-            );
-            // colour the rate against the rival's so steeper reads instantly
-            this.kText.setColor(C.youCss);
-            this.redrawGraph();
-          }
-
-          adjustK(delta) {
-            if (this.racing) return;
-            const nk = Math.min(K_MAX, Math.max(K_MIN, round1(this.k + delta)));
-            if (nk === this.k) {
-              sfxDown();
-              return;
-            }
-            this.k = nk;
-            delta > 0 ? sfxUp() : sfxDown();
-            this.updateThrottle();
-          }
-          resetK() {
-            if (this.racing) return;
-            sfxClick();
-            this.k = this.tier === 1 ? 1 : K_MIN;
-            this.feedback.setText("");
-            this.updateThrottle();
-          }
-
-          launch() {
-            if (this.racing) return;
-            this.racing = true;
-            this.feedback.setText("");
-            ensureAudio();
-            // animate t from 0 to tMax; positions are LIVE functions of k.
-            const r = this.round;
-            const dur = this.tier === 1 ? 2600 : 2000;
-            const startX = this.trackL;
-            const span = this.trackR - this.trackL;
-            this.graphDyn.clear();
-            const youTrace = [];
-            const rivalTrace = [];
-            this.tweens.addCounter({
-              from: 0,
-              to: this.tMax(),
-              duration: dur,
-              ease: "Linear",
-              onUpdate: (tw) => {
-                const t = tw.getValue();
-                const yourD = this.k * t; // d = k t  (the mechanic)
-                const rivalD = r.rivalM * t + r.rivalB; // rival line
-                // map distance to track x (finish = D at trackR)
-                const yx = startX + Math.min(yourD / r.D, 1) * span;
-                const rx = startX + Math.min(rivalD / r.D, 1) * span;
-                this.youCar.x = yx;
-                this.youTag.x = yx;
-                this.rivalCar.x = rx;
-                this.rivalTag.x = rx;
-                if (Math.random() < 0.5) sfxEngine();
-                // live graph traces
-                youTrace.push([
-                  this.gx(t),
-                  this.gy(Math.min(yourD, this.dMax())),
-                ]);
-                rivalTrace.push([
-                  this.gx(t),
-                  this.gy(Math.min(rivalD, this.dMax())),
-                ]);
-                this.graphDyn.clear();
-                this.drawTrace(youTrace, C.you, 4);
-                this.drawTrace(rivalTrace, C.rival, 3);
-              },
-              onComplete: () => this.judge(),
-            });
-          }
-
-          drawTrace(pts, color, width) {
-            if (pts.length < 2) return;
-            this.graphDyn.lineStyle(width, color, 1).beginPath();
-            this.graphDyn.moveTo(pts[0][0], pts[0][1]);
-            for (let i = 1; i < pts.length; i++)
-              this.graphDyn.lineTo(pts[i][0], pts[i][1]);
-            this.graphDyn.strokePath();
-          }
-
-          judge() {
-            const r = this.round;
-            // Player wins if their rate equals the required winning rate k*.
-            // (Both round types reduce to: choose k = r.k.)  We compare the
-            // throttle value to r.k with a tolerance that is tier-aware.
-            const tol = this.tier === 1 ? 0.01 : 0.01; // STEP grid makes this exact
-            const win = Math.abs(this.k - r.k) <= tol;
-            // also compute meeting distances for honest feedback
-            const yourAtT = round1(this.k * r.T);
-            const rivalAtT = round1(r.rivalM * r.T + r.rivalB);
-
-            if (win) {
-              this.onWin();
-              return;
-            }
-            // ── diagnostic, NON-giveaway feedback that teaches rate/slope ──
-            sfxLose();
-            this.streak = 0;
-            this.cameras.main.shake(160, 0.006);
-            let msg;
-            if (this.k < r.k) {
-              msg =
-                r.type === "intercept"
-                  ? `Too slow — your line is less steep than the rival's, so the drone reaches the finish first. A bigger k makes a steeper line. At t=${r.T} you went ${yourAtT}, the rival ${rivalAtT}.`
-                  : `Not tied yet — at t=${r.T} you only reached ${yourAtT} but the rival reached ${rivalAtT}. Your rate k is too small; raise the slope.`;
-            } else {
-              msg =
-                r.type === "intercept"
-                  ? `Too fast — your steeper line shoots past the finish before the drone arrives. Lower k a little so the lines meet at the finish. At t=${r.T} you went ${yourAtT}, the rival ${rivalAtT}.`
-                  : `Overshot — at t=${r.T} you reached ${yourAtT} but the rival is at ${rivalAtT}. Your rate is too big; ease the slope down to tie.`;
-            }
-            this.flash(this.feedback, "❌ " + msg, "#ffb4b4", 3400);
-            this.racing = false;
-
-            // a miss costs a life only after a nudge so Support stays gentle
-            r._misses = (r._misses || 0) + 1;
-            if (r._misses >= (this.tier === 1 ? 3 : 2)) {
-              this.lives--;
-              r._misses = 0;
-              if (this.lives <= 0) {
-                this.updateHUD();
-                this.time.delayedCall(1200, () => this.endGame());
-                return;
-              }
-            }
-            this.updateHUD();
-            // reset cars for another adjustment+attempt of the SAME round
-            this.time.delayedCall(1400, () => {
-              this.youCar.x = this.trackL;
-              this.rivalCar.x = this.trackL;
-              this.youTag.x = this.trackL;
-              this.rivalTag.x = this.trackL;
-              this.redrawGraph();
-            });
-          }
-
-          onWin() {
-            sfxWin();
-            this.wins++;
-            this.raced++;
-            this.streak++;
-            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
-            const combo = Math.min(4, 1 + Math.floor(this.streak / 3));
-            const firstTry = !this.round._misses ? 70 : 0;
-            const pts = (100 + firstTry + this.streak * 8) * combo;
-            this.score += pts;
-            const r = this.round;
-            this.flash(
-              this.feedback,
-              `✅ Photo finish! k = ${round1(this.k)} made d = ${round1(this.k)}·t meet the rival exactly.  +${pts}${combo > 1 ? " x" + combo : ""}`,
-              "#bff7cf",
-              1500,
-            );
-            this.confetti();
-
-            if (this.wins % 3 === 0) {
-              this.level++;
-              sfxLevel();
-            }
-            this.updateHUD();
-            const done = this.raced >= this.goalRaces;
-            this.time.delayedCall(1500, () => {
-              if (done) this.endGame();
-              else {
-                this.roundIx++;
-                this.loadRound();
-              }
-            });
-          }
-
-          showHint() {
-            sfxClick();
-            const r = this.round;
-            let h;
-            if (r.type === "intercept") {
-              h = `\u{1F4A1} The rival reaches the finish (${r.D} units) at time t = ${r.D} ÷ ${r.rivalM} = ${round1(r.D / r.rivalM)}. You need d = ${r.D} at that same time, so k = distance ÷ time = ${r.D} ÷ ${round1(r.D / r.rivalM)}. Set that rate.`;
-            } else {
-              h = `\u{1F4A1} Tie means same distance at t = ${r.T}. Rival's distance there is ${r.rivalM}·${r.T} + ${r.rivalB} = ${round1(r.rivalM * r.T + r.rivalB)}. Your distance is k·${r.T}, so k = ${round1(r.rivalM * r.T + r.rivalB)} ÷ ${r.T}.`;
-            }
-            this.flash(this.feedback, h, "#ffe9a8", 4200);
-          }
-
-          confetti() {
-            for (let i = 0; i < 22; i++) {
-              const p = this.add.circle(
-                this.trackR,
-                this.youY,
-                2 + Math.random() * 3,
-                [C.gold, C.you, C.green, C.white][rnd(4)],
-              );
-              this.tweens.add({
-                targets: p,
-                x: this.trackR + (Math.random() - 0.5) * 260,
-                y: this.youY + (Math.random() - 0.5) * 180,
-                alpha: 0,
-                scale: 0,
-                duration: 600 + Math.random() * 400,
-                onComplete: () => p.destroy(),
-              });
-            }
-          }
-
-          flash(obj, msg, color = "#ffffff", hold = 2600) {
-            obj.setText(msg).setColor(color).setAlpha(1);
-            this.tweens.killTweensOf(obj);
-            this.time.delayedCall(hold, () => {
-              if (obj.text === msg)
-                this.tweens.add({ targets: obj, alpha: 0.0, duration: 400 });
-            });
-          }
-
-          updateHUD() {
-            this.hScore.setText(this.score.toLocaleString());
-            this.hLevel.setText("Level " + this.level);
-            this.hRaces.setText(
-              "Race " + Math.min(this.raced + 1, this.goalRaces),
-            );
-            this.hLives.setText("❤️".repeat(Math.max(0, this.lives)));
-            this.hStreak.setText(
-              this.streak >= 3 ? "\u{1F525} streak " + this.streak : "",
-            );
-          }
-
-          endGame() {
-            this.cameras.main.fadeOut(450, 0, 0, 0);
-            this.time.delayedCall(450, () =>
-              this.scene.start("ResultScene", {
-                tier: this.tier,
-                score: this.score,
-                wins: this.wins,
-                raced: this.raced,
-                goal: this.goalRaces,
-                bestStreak: this.bestStreak,
-                level: this.level,
-              }),
-            );
-          }
-        }
-
-        // ════════════════════════════════════════════════════════════════
-        //  RESULT SCENE
-        // ════════════════════════════════════════════════════════════════
-        class ResultScene extends Phaser.Scene {
-          constructor() {
-            super("ResultScene");
-          }
-          init(d) {
-            Object.assign(this, d);
-          }
-          create() {
-            this.cameras.main.setBackgroundColor(C.bg);
-            this.cameras.main.fadeIn(450);
-            const goal = this.goal || (this.tier === 1 ? 8 : 10);
-            const pct = goal > 0 ? Math.round((this.wins / goal) * 100) : 0;
-
-            try {
-              window.EduPulse &&
-                EduPulse.record({
-                  activityTitle: document.title,
-                  score: this.wins,
-                  maxScore: goal,
-                  problemsCorrect: this.wins,
-                  problemsAttempted: this.raced,
-                  standard: "6.EE.C.9",
-                });
-            } catch (e) {}
-
-            let rank, emoji;
-            if (pct >= 90) {
-              rank = "GRAND PRIX CHAMPION!";
-              emoji = "\u{1F3C6}";
-            } else if (pct >= 75) {
-              rank = "PODIUM FINISH!";
-              emoji = "\u{1F947}";
-            } else if (pct >= 50) {
-              rank = "RACE FINISHER";
-              emoji = "\u{1F3CE}️";
-            } else {
-              rank = "KEEP TUNING THE RATE!";
-              emoji = "\u{1F527}";
-            }
-
-            this.add
-              .text(W / 2, 110, emoji, { fontSize: "76px" })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 196, "CHECKERED FLAG", {
-                fontSize: "46px",
-                fontFamily: "Arial Black",
-                color: "#f6c343",
-                stroke: "#000",
-                strokeThickness: 4,
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 250, rank, {
-                fontSize: "24px",
-                fontFamily: "Arial",
-                fontStyle: "bold",
-                color: "#fff",
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 312, this.score.toLocaleString(), {
-                fontSize: "58px",
-                fontFamily: "Arial Black",
-                color: "#f6c343",
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 352, "POINTS", {
-                fontSize: "13px",
-                color: "#7e88c0",
-              })
-              .setOrigin(0.5);
-
-            const stats = [
-              { l: "Races won", v: `${this.wins}/${goal}` },
-              { l: "Best streak", v: this.bestStreak },
-              { l: "Level reached", v: this.level },
-            ];
-            stats.forEach((s, i) => {
-              const x = 282 + i * 230,
-                y = 440;
-              this.add
-                .rectangle(x, y, 200, 96, C.panel)
-                .setStrokeStyle(2, C.stroke);
-              this.add
-                .text(x, y - 12, String(s.v), {
-                  fontSize: "30px",
-                  fontFamily: "Arial Black",
-                  color: "#f6c343",
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y + 26, s.l, { fontSize: "13px", color: "#c9d2ff" })
-                .setOrigin(0.5);
-            });
-
-            const again = this.add
-              .rectangle(W / 2 - 130, 580, 240, 58, C.gold)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(W / 2 - 130, 580, "RACE AGAIN", {
-                fontSize: "22px",
-                fontFamily: "Arial Black",
-                color: "#10102e",
-              })
-              .setOrigin(0.5);
-            again.on("pointerdown", () => {
-              ensureAudio();
-              sfxClick();
-              this.scene.start("RaceScene", { tier: this.tier });
-            });
-            again.on("pointerover", () => again.setScale(1.05));
-            again.on("pointerout", () => again.setScale(1));
-
-            const menu = this.add
-              .rectangle(W / 2 + 130, 580, 240, 58, C.panel)
-              .setStrokeStyle(2, C.stroke)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(W / 2 + 130, 580, "CHANGE LEVEL", {
-                fontSize: "20px",
-                fontFamily: "Arial Black",
-                color: "#fff",
-              })
-              .setOrigin(0.5);
-            menu.on("pointerdown", () => {
-              ensureAudio();
-              sfxClick();
-              this.scene.start("TitleScene");
-            });
-            menu.on("pointerover", () => menu.setScale(1.05));
-            menu.on("pointerout", () => menu.setScale(1));
-
-            for (let i = 0; i < 28; i++) {
-              const p = this.add
-                .circle(
-                  Math.random() * W,
-                  Math.random() * H,
-                  2 + Math.random() * 3,
-                  [C.gold, C.you, C.rival, C.green][rnd(4)],
-                )
-                .setAlpha(0.7);
-              this.tweens.add({
-                targets: p,
-                y: p.y - 200 - Math.random() * 300,
-                alpha: 0,
-                duration: 2000 + Math.random() * 2000,
-                delay: Math.random() * 1000,
-                repeat: -1,
-                ease: "Power1",
-              });
-            }
-          }
-        }
-
-        // ─── BOOT ───
-        new Phaser.Game({
-          type: Phaser.AUTO,
-          parent: "game-container",
-          width: W,
-          height: H,
-          backgroundColor: "#0a0a2e",
-          scale: {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH,
-          },
-          scene: [TitleScene, RaceScene, ResultScene],
-        });
       })();
     </script>
+
+    <script>
+      // ════════════════════════════════════════════════════════════════════
+      //  VARIABLE VELOCITY — Grade 6 · 6.EE.C.9  ·  THE MATH IS THE MECHANIC.
+      //
+      //  Each round shows a rule  y = m·x + b  and a value of x.  The player
+      //  must EVALUATE the rule for that x and STEER into the lane numbered
+      //  with the value they computed — by typing y (which drives the car to
+      //  lane y) or clicking the lane equal to their answer.  The steering
+      //  input IS the computed quantity: a wrong value drives into the wrong
+      //  lane → visible crash + misconception nudge + a life lost.  No A/B/C/D,
+      //  no precomputed correct lane in the markup; lanes are just numbers.
+      // ════════════════════════════════════════════════════════════════════
+      const STANDARD = "6.EE.C.9";
+      const ACTIVITY_TITLE = "Variable Velocity";
+      const LS_KEY = "vv_variable_velocity_highscore";
+      const ROUNDS = 6;
+      const GAME_ID = "6-ee-c-9variablevelocitygame";
+
+      // Metadata source of truth: window.Games2DData (from scripts/games2d/data.mjs
+      // via assets/games2d-data.js). Inline fallback keeps the page alive if the
+      // artifact fails to load.
+      const DATA = (window.Games2DData && window.Games2DData[GAME_ID]) || {
+        ccss: "6.EE.C.9",
+        title: "Variable Velocity",
+        vocab: [
+          {
+            term: "independent variable",
+            defn: "The input you are given (here, x). You plug it into the rule — it does not depend on anything else.",
+          },
+          {
+            term: "dependent variable",
+            defn: "The output (here, y). Its value depends on the rule and the x you put in.",
+          },
+          {
+            term: "evaluate",
+            defn: "To find the value of an expression by substituting a number for the variable, then doing the math (multiply before you add).",
+          },
+        ],
+        misconceptions: [
+          {
+            tag: "skips-multiplication",
+            trigger: "Student adds m + x + b instead of multiplying m·x first.",
+            feedback:
+              "Multiply m·x BEFORE you add b. Order of operations: times before plus.",
+          },
+          {
+            tag: "drops-constant",
+            trigger: "Student computes m·x but forgets to add the constant b.",
+            feedback:
+              "After m·x, don't forget the + b. The constant shifts every lane up.",
+          },
+        ],
+        tiers: {
+          1: {
+            label: "Level 1",
+            sub: "Support",
+            desc: "Smaller numbers · steps shown · 5 lives",
+          },
+          2: {
+            label: "Level 2",
+            sub: "Challenge",
+            desc: "Bigger numbers · work it out yourself · 3 lives",
+          },
+        },
+      };
+
+      // ── Tiny WebAudio SFX ──
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+        },
+        play(t, f, d, v = 0.2) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              o = c.createOscillator(),
+              g = c.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            o.connect(g);
+            g.connect(c.destination);
+            o.start();
+            o.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        good() {
+          this.play("sine", 660, 0.1, 0.3);
+          this.play("sine", 880, 0.15, 0.25);
+        },
+        bad() {
+          this.play("sawtooth", 160, 0.26, 0.2);
+        },
+        win() {
+          [523, 659, 784, 1046].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.18, 0.25), i * 90),
+          );
+        },
+      };
+
+      // ── Round generator: y = m·x + b, give x, lane answer = m*x+b ──
+      const rnd = (n) => Math.floor(Math.random() * n);
+      function makeRound(level) {
+        // Level 1: small whole numbers, b can be 0..4, result kept modest.
+        // Level 2: bigger m and x, larger b.
+        const m = level === 1 ? 2 + rnd(3) : 3 + rnd(6); // 2..4 / 3..8
+        const x = level === 1 ? 2 + rnd(4) : 3 + rnd(6); // 2..5 / 3..8
+        const b = level === 1 ? rnd(5) : 2 + rnd(8); // 0..4 / 2..9
+        const y = m * x + b;
+        return { m, x, b, y };
+      }
+
+      // Build the set of lane numbers shown for a round. Always includes the
+      // correct value y plus nearby distractor lanes (common wrong answers like
+      // m*x without +b, m+x+b, etc). Lanes are a SHUFFLED list of plain numbers
+      // with NO correctness flag — the correct lane is whichever equals y.
+      function makeLanes(round) {
+        const { m, x, b, y } = round;
+        const cand = new Set([y]);
+        // pedagogically meaningful neighbours (not marked, just present)
+        [
+          m * x,
+          m + x + b,
+          m * x - b,
+          y + b,
+          y - 1,
+          y + 1,
+          y + m,
+          y - m,
+        ].forEach((v) => {
+          if (v > 0 && v !== y) cand.add(v);
+        });
+        // fill with nearby numbers so a contiguous lane road exists
+        let lo = y - 2;
+        while (cand.size < 7) {
+          if (lo > 0) cand.add(lo);
+          lo++;
+          if (lo > y + 6) break;
+        }
+        // SHUFFLE (Fisher–Yates): the correct lane y must not sit in a
+        // predictable position. With sorted lanes the answer always landed in
+        // the upper half (distractors y-1/y-2 pinned it down), letting a player
+        // pick by position instead of by computing y. Shuffling makes the
+        // evaluation the only way to choose the right lane.
+        const lanes = [...cand];
+        for (let i = lanes.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [lanes[i], lanes[j]] = [lanes[j], lanes[i]];
+        }
+        return lanes;
+      }
+
+      // ── State ──
+      const S = {
+        level: 1,
+        lives: 5,
+        score: 0,
+        round: 0,
+        hits: 0,
+        rounds: [],
+        cur: null,
+        locked: false,
+      };
+
+      const $ = (id) => document.getElementById(id);
+      const srSay = (m) => {
+        const el = $("ff-sr");
+        if (el) {
+          el.textContent = "";
+          setTimeout(() => (el.textContent = m), 30);
+        }
+      };
+
+      function show(screen) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("on"));
+        $("screen-" + screen).classList.add("on");
+      }
+
+      // ── Vocab gate ──
+      // Per-term visual for the vocab gate (term + definition + image). The
+      // metadata carries no image URLs, so we map each term to a meaningful
+      // emoji glyph (with a default), mirroring the engine3d vocab-gate which
+      // falls back to emoji/placeholder when no image asset exists.
+      const VOCAB_ICON = {
+        "independent variable": "🎚️",
+        "dependent variable": "📈",
+        evaluate: "🧮",
+      };
+      function vocabImage(term) {
+        return VOCAB_ICON[(term || "").toLowerCase()] || "🔢";
+      }
+      function renderVocab() {
+        $("vocab-list").innerHTML = (DATA.vocab || [])
+          .map(
+            (v) =>
+              `<div class="vrow"><span class="vimg" role="img" aria-label="${v.term} icon">${vocabImage(v.term)}</span><span class="vbody"><span class="vterm">${v.term}</span><span class="vdef">${v.defn}</span></span></div>`,
+          )
+          .join("");
+      }
+
+      // ── Level select ──
+      function renderLevels() {
+        const t = DATA.tiers || {};
+        $("level-list").innerHTML = Object.keys(t)
+          .map((k) => {
+            const tier = t[k];
+            return `<button class="level-pick" data-level="${k}">
+            <span class="tag">${tier.label} · ${tier.sub}</span>
+            <b>${k === "1" ? "Rookie Driver" : "Pro Racer"}</b>
+            <span class="desc">${tier.desc}</span>
+          </button>`;
+          })
+          .join("");
+        $("level-list")
+          .querySelectorAll("[data-level]")
+          .forEach((el) =>
+            el.addEventListener("click", () =>
+              startGame(Number(el.dataset.level)),
+            ),
+          );
+      }
+
+      // ── Game flow ──
+      function startGame(level) {
+        SFX.init();
+        S.level = level;
+        S.lives = level === 1 ? 5 : 3;
+        S.score = 0;
+        S.round = 0;
+        S.hits = 0;
+        S.rounds = Array.from({ length: ROUNDS }, () => makeRound(level));
+        $("hud-total").textContent = ROUNDS;
+        show("play");
+        loadRound(0);
+      }
+
+      function loadRound(i) {
+        S.round = i;
+        S.cur = S.rounds[i];
+        S.locked = false;
+        const r = S.cur;
+        r.lanes = makeLanes(r);
+        $("hud-round").textContent = i + 1;
+        $("hud-score").textContent = S.score;
+        $("hud-lives").textContent = "●".repeat(S.lives) || "—";
+        $("t-m").textContent = r.m;
+        $("t-b").textContent = r.b;
+        $("t-x").textContent = r.x;
+        $("c-m").textContent = r.m;
+        $("c-x").textContent = r.x;
+        $("c-b").textContent = r.b;
+        $("c-y").value = "";
+        $("feedback").textContent = "";
+        $("feedback").className = "feedback";
+        $("hint").textContent =
+          S.level === 1
+            ? "Tip: multiply m·x first, then add b. Type that y and you'll steer there."
+            : "Evaluate y = m·x + b for the given x, then steer into that lane.";
+        $("scaffold").innerHTML =
+          S.level === 1
+            ? `Step 1: <code>${r.m} × ${r.x} = ${r.m * r.x}</code> &nbsp; Step 2: <code>${r.m * r.x} + ${r.b} = ?</code>`
+            : "";
+        renderLanes();
+        srSay(
+          `Round ${i + 1}. Rule y equals ${r.m} times x plus ${r.b}. Your x is ${r.x}. Compute y and steer into that lane.`,
+        );
+        setTimeout(() => $("c-y").focus(), 50);
+      }
+
+      function renderLanes() {
+        const host = $("lanes");
+        host.innerHTML = "";
+        S.cur.lanes.forEach((n) => {
+          const b = document.createElement("button");
+          b.className = "lane";
+          b.dataset.lane = n;
+          b.setAttribute(
+            "aria-label",
+            `Lane ${n}. Steer here if you computed y equals ${n}.`,
+          );
+          b.innerHTML = `<span class="marker" aria-hidden="true">🏎️</span><span class="lanenum">lane</span>${n}`;
+          b.addEventListener("click", () => steer(n));
+          host.appendChild(b);
+        });
+      }
+
+      // Drive the car into the lane the player chose. Correct math (lane === y)
+      // scores; any other lane crashes.
+      function steer(laneNum) {
+        if (S.locked) return;
+        const r = S.cur;
+        const laneEl = $("lanes").querySelector(`[data-lane="${laneNum}"]`);
+        document
+          .querySelectorAll(".lane")
+          .forEach((el) => el.classList.remove("car"));
+        if (laneEl) laneEl.classList.add("car");
+
+        if (laneNum === r.y) {
+          S.locked = true;
+          S.score += S.level === 1 ? 10 : 15;
+          S.hits++;
+          $("hud-score").textContent = S.score;
+          SFX.good();
+          if (window.GameFX && GameFX.successBurst)
+            try {
+              GameFX.successBurst();
+            } catch (e) {}
+          flash(
+            `Clean line! y = ${r.m}×${r.x} + ${r.b} = ${r.y}. Lane ${r.y} ✔`,
+            "good",
+          );
+          if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(true), 1300);
+          else setTimeout(() => loadRound(S.round + 1), 1300);
+        } else {
+          // wrong lane → crash + misconception nudge + life
+          S.lives--;
+          SFX.bad();
+          $("hud-lives").textContent = "●".repeat(S.lives) || "—";
+          if (laneEl) {
+            laneEl.classList.add("crash");
+            setTimeout(() => laneEl.classList.remove("crash"), 420);
+          }
+          flash(nudgeFor(laneNum, r), "bad");
+          if (S.lives <= 0) {
+            S.locked = true;
+            setTimeout(() => endGame(false), 900);
+          }
+        }
+      }
+
+      // Diagnostic, non-giveaway nudge based on the wrong lane chosen.
+      function nudgeFor(laneNum, r) {
+        const m = DATA.misconceptions || [];
+        if (laneNum === r.m * r.x)
+          return (
+            (m[1] && m[1].feedback) ||
+            "Close — that's only m·x. Don't forget to add b."
+          );
+        if (laneNum === r.m + r.x + r.b)
+          return (
+            (m[0] && m[0].feedback) ||
+            "That's m + x + b. You must MULTIPLY m·x first, then add b."
+          );
+        if (laneNum < r.y)
+          return "Crash — that lane is too low. Recheck m·x, then add b.";
+        return "Crash — that lane is too high. Recheck m·x before adding b.";
+      }
+
+      function flash(msg, cls) {
+        const f = $("feedback");
+        f.textContent = msg;
+        f.className = "feedback " + cls;
+        srSay(msg);
+      }
+
+      // Typing y in the input steers to that lane (Enter confirms).
+      function submitTyped() {
+        if (S.locked) return;
+        const v = $("c-y").value.trim();
+        if (v === "") {
+          flash("Type the y you computed, then press Enter to steer.", "bad");
+          return;
+        }
+        steer(Number(v));
+      }
+
+      function endGame(won) {
+        const total = ROUNDS;
+        const pct = total ? S.hits / total : 0;
+        const stars = pct >= 0.95 ? 3 : pct >= 0.7 ? 2 : pct >= 0.4 ? 1 : 0;
+        $("r-stars").textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
+        $("r-score").textContent = S.score;
+        $("r-correct").textContent = S.hits;
+        $("r-rounds").textContent = won ? ROUNDS : S.round;
+        let high = 0;
+        try {
+          high = Number(localStorage.getItem(LS_KEY) || 0);
+        } catch (e) {}
+        if (S.score > high) {
+          try {
+            localStorage.setItem(LS_KEY, String(S.score));
+          } catch (e) {}
+          $("r-high").textContent = S.score;
+          $("r-high-row").style.display = "flex";
+        }
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: ACTIVITY_TITLE,
+              score: S.score,
+              stars: stars,
+              problemsCorrect: S.hits,
+              problemsAttempted: total,
+              percent: Math.round(pct * 100),
+              standard: STANDARD,
+            });
+        } catch (e) {}
+        srSay(
+          (won ? "Race complete. " : "Out of lives. ") +
+            "Score " +
+            S.score +
+            ", " +
+            stars +
+            " stars.",
+        );
+        show("result");
+      }
+
+      // ── Wiring ──
+      $("vocab-go").addEventListener("click", () => {
+        renderLevels();
+        show("level");
+      });
+      $("r-again").addEventListener("click", () => {
+        renderLevels();
+        show("level");
+      });
+      $("c-y").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          submitTyped();
+        }
+      });
+
+      renderVocab();
+    </script>
+
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
-  </body>
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <script src="/assets/game-access.js" defer></script>
+  <!-- gacc-injected:end -->
+</body>
 </html>

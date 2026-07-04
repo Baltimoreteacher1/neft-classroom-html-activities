@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Standards Heatmap (MCAP) — Teacher Tools</title>
+    <link rel="stylesheet" href="/assets/brain/brain.css" />
+    <style>
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        max-width: 1100px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        color: #1a1a2e;
+      }
+      h1 {
+        margin-bottom: 0.2rem;
+      }
+      .lead {
+        opacity: 0.75;
+        margin-top: 0;
+      }
+      .badge {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #fff;
+        background: #4f6ef7;
+        border-radius: 999px;
+        padding: 0.15rem 0.6rem;
+        vertical-align: middle;
+      }
+      .panel {
+        border: 1px solid #e6e8f0;
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        margin: 1.25rem 0;
+        background: #fbfbfe;
+        overflow-x: auto;
+      }
+      .key {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        font-size: 0.85rem;
+        margin: 0.5rem 0 1rem;
+      }
+      .key span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .sw {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        display: inline-block;
+      }
+      .note {
+        font-size: 0.85rem;
+        opacity: 0.7;
+      }
+    </style>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+</head>
+  <body>
+    <h1>🧠 Standards Heatmap <span class="badge">Teacher</span></h1>
+    <p class="lead">
+      Per-standard (2025 MCAP) mastery from real activity results (the Math Brain
+      content graph). Complements the telemetry
+      <a href="/teacher-tools/mastery/">Mastery Dashboard</a>.
+    </p>
+    <div class="key">
+      <span
+        ><i class="sw" style="background: #bfe6c9"></i> Proficient (≥80%)</span
+      >
+      <span
+        ><i class="sw" style="background: #fde9b0"></i> Developing
+        (50–79%)</span
+      >
+      <span
+        ><i class="sw" style="background: #f8c9c5"></i> Struggling
+        (&lt;50%)</span
+      >
+      <span
+        ><i class="sw" style="background: #ececec"></i> Not yet assessed</span
+      >
+    </div>
+    <div class="panel">
+      <div id="heatmap"></div>
+    </div>
+    <p class="note">
+      Shows this device's mastery today. A class roster lights up automatically
+      once a results backend is wired — the renderer already accepts a roster.
+      Hover any cell for the standard and score.
+    </p>
+
+    <h2 style="margin-top: 2rem">🎯 Assign the next step</h2>
+    <p class="lead">
+      For each standard: the current mastery band and a one-click link to the
+      right activity to assign — <strong>struggling → on-ramp</strong>,
+      <strong>developing → core practice</strong>,
+      <strong>proficient → enrichment</strong>. Turns the heatmap into action.
+    </p>
+    <div class="panel">
+      <div id="differentiation"></div>
+    </div>
+
+    <script src="/assets/brain/mastery-engine.js"></script>
+    <script src="/assets/brain/recommend-engine.js"></script>
+    <script src="/assets/brain/brain.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftBrain && NeftBrain.renderHeatmap) {
+          NeftBrain.renderHeatmap("#heatmap").catch(function () {
+            document.getElementById("heatmap").innerHTML =
+              "<p class='note'>Mastery data unavailable (content graph not built).</p>";
+          });
+        }
+        if (window.NeftBrain && NeftBrain.renderDifferentiation) {
+          NeftBrain.renderDifferentiation("#differentiation").catch(function () {
+            document.getElementById("differentiation").innerHTML =
+              "<p class='note'>Differentiation data unavailable (content graph not built).</p>";
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

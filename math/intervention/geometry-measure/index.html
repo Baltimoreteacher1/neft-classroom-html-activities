@@ -21,7 +21,29 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/math/intervention/assets/intervention.css" />
-  </head>
+    <link rel="manifest" href="/math/intervention/manifest.webmanifest" />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <link rel="apple-touch-icon" href="/assets/favicon.svg" />
+    <script>
+      // Register the offline service worker so stations keep working without
+      // wifi once visited (classroom-friendly). Scoped to /math/intervention/.
+      if ("serviceWorker" in navigator) {
+        addEventListener("load", function () {
+          navigator.serviceWorker
+            .register("/math/intervention/sw.js", {
+              scope: "/math/intervention/",
+            })
+            .catch(function () {});
+        });
+      }
+    </script>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="topbar">
@@ -52,6 +74,14 @@
                 <span class="g-pill">📚 4 lessons</span>
                 <span class="g-pill">⏱ 30 min</span>
               </div>
+              <div class="g-launch">
+                <h4>Core question</h4>
+                <p>How can I model, solve, and explain area, Surface Area &amp; Volume so another student understands my thinking?</p>
+                <h4>Concept spine</h4>
+                <p>Understand the situation, represent it, choose the strategy, then prove the answer.</p>
+                <h4>Evidence of mastery</h4>
+                <p>Score 80% or higher, correct one missed item in Smart Review, and write a complete explanation using at least one vocabulary word.</p>
+              </div>
             </div>
             <div class="g-side">
               <h4 class="g-sub">Key vocabulary</h4>
@@ -64,12 +94,34 @@
               </ul>
             </div>
           </div>
+          <div class="mission-strip" aria-label="Topic mission">
+            <article>
+              <span>Mission</span>
+              <h3>Rebuild area, Surface Area &amp; Volume</h3>
+              <p>Move from model to strategy to independent proof using area, composite area, volume, and surface area.</p>
+            </article>
+            <article>
+              <span>Success looks like</span>
+              <h3>Show, solve, explain</h3>
+              <p>Students can represent the idea, solve accurately, and justify why the answer makes sense.</p>
+            </article>
+            <article>
+              <span>Teacher evidence</span>
+              <h3>6.G.A.1–4</h3>
+              <p>Look for accurate use of area, composite area, volume, and surface area and a clear explanation.</p>
+            </article>
+          </div>
           <div class="tabs" role="tablist">
+            <button class="tab" role="tab" data-tab="concept">🧭 Concept Lab</button>
+            <button class="tab" role="tab" data-tab="lessons">🧱 Mini-Lessons</button>
+            <button class="tab" role="tab" data-tab="path">🗺️ Lesson Path</button>
             <button class="tab" role="tab" data-tab="learn">📖 Learn</button>
             <button class="tab" role="tab" data-tab="diagnostic">🩺 Diagnostic</button>
             <button class="tab" role="tab" data-tab="practice">✏️ Practice</button>
             <button class="tab" role="tab" data-tab="fluency">⚡ Fluency</button>
             <button class="tab" role="tab" data-tab="game">🎮 Game</button>
+            <button class="tab" role="tab" data-tab="clinic">🛠️ Error Clinic</button>
+            <button class="tab" role="tab" data-tab="task">🏗️ Performance Task</button>
             <button class="tab" role="tab" data-tab="vocab">🗂️ Vocabulary</button>
             <button class="tab" role="tab" data-tab="worksheet">🖨️ Printables</button>
             <button class="tab" role="tab" data-tab="quizzes">📋 Pre/Post Quiz</button>
@@ -80,6 +132,215 @@
 
       <section class="block">
         <div class="wrap">
+          <div class="panel" id="panel-concept">
+            <h3>Larger concept</h3>
+            <p>Before students chase speed, they build the whole idea. Use this as the opening map for a small group, tutoring block, or independent recovery path.</p>
+            <div class="publisher-note">
+              <span>Concept spine</span>
+              <p>The big idea: Area, Surface Area &amp; Volume is about choosing a representation, keeping quantities organized, and defending the strategy.</p>
+            </div>
+            <div class="concept-map">
+              <article class="concept-step">
+                <span>Understand</span>
+                <h4>Name the quantities</h4>
+                <p>Students identify what is known, what is unknown, and which vocabulary from area, Surface Area &amp; Volume matters.</p>
+              </article>
+              <article class="concept-step">
+                <span>Represent</span>
+                <h4>Build the model</h4>
+                <p>Represent area, Surface Area &amp; Volume with a visual model, a table, and an equation.</p>
+              </article>
+              <article class="concept-step">
+                <span>Strategize</span>
+                <h4>Choose the tool</h4>
+                <p>Students connect the model to area, composite area, volume, and surface area and explain why that tool fits.</p>
+              </article>
+              <article class="concept-step">
+                <span>Prove</span>
+                <h4>Justify and revise</h4>
+                <p>Students use the discourse frame, check for the likely misconception, and revise the written explanation.</p>
+              </article></div>
+            <div class="publisher-note publisher-note-soft">
+              <span>Teacher frame</span>
+              <p>Open with the larger concept before students touch the practice set: What does the situation mean, what model fits it, and how will we know the answer is reasonable?</p>
+            </div>
+            <h3 style="margin-top:22px">Essential question</h3>
+            <p>How do mathematicians use area, composite area, volume, and surface area to make sense of real problems and defend an answer?</p>
+            <div class="move-grid">
+              <article class="move-card">
+                <span>Launch</span>
+                <h4>Make the gap visible</h4>
+                <p>Students preview area, composite area, volume, and surface area with one low-floor problem, one model, and one vocabulary check.</p>
+              </article>
+              <article class="move-card">
+                <span>Model</span>
+                <h4>Connect concrete to symbolic</h4>
+                <p>Represent area, Surface Area &amp; Volume with a visual model, a table, and an equation.</p>
+              </article>
+              <article class="move-card">
+                <span>Explain</span>
+                <h4>Require math talk</h4>
+                <p>Students complete the frame: "My strategy works because ___."</p>
+              </article>
+              <article class="move-card">
+                <span>Transfer</span>
+                <h4>Apply in context</h4>
+                <p>Ask students to create a new problem that uses the same structure.</p>
+              </article></div>
+            <div class="anchor-board">
+              <div>
+                <span class="anchor-label">Model it</span>
+                <p>Represent area, Surface Area &amp; Volume with a visual model, a table, and an equation.</p>
+              </div>
+              <div>
+                <span class="anchor-label">Say it</span>
+                <p>My strategy works because ___.</p>
+              </div>
+              <div>
+                <span class="anchor-label">Extend it</span>
+                <p>Ask students to create a new problem that uses the same structure.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" id="panel-lessons">
+            <h3>Mini-lessons inside the larger topic</h3>
+            <p>Teach the big idea first, then open one mini-lesson at a time. Each mini-lesson has a narrow objective, one teacher move, one model, practice, an error to catch, and evidence to collect.</p>
+            <div class="mini-lesson-list">
+              <article class="mini-lesson">
+                <div class="mini-num">Lesson 1</div>
+                <div class="mini-body">
+                  <span>Open the concept</span>
+                  <h4>Area</h4>
+                  <p class="mini-objective">I can explain what area means before I calculate.</p>
+                  <dl>
+                    <dt>Teacher move</dt><dd>Launch with a low-floor context and ask students to show area with a model before naming a rule.</dd>
+                    <dt>Model or example</dt><dd>Find the area of a triangle with base 8 cm and height 5 cm. Work it aloud, then cover the steps and ask students to rebuild the reasoning.</dd>
+                    <dt>Student practice</dt><dd>What is the area of a parallelogram with base 6 cm and height 4 cm? | What is the area of a rectangle that is 7 in long and 5 in wide? | A triangle has a base of 8 cm and a height of 5 cm. What is its area?</dd>
+                    <dt>Error to catch</dt><dd>Students may answer procedurally without explaining why the method works for area, Surface Area &amp; Volume.</dd>
+                    <dt>Evidence</dt><dd>Annotated model and one accurate independent item.</dd>
+                  </dl>
+                </div>
+              </article>
+              <article class="mini-lesson">
+                <div class="mini-num">Lesson 2</div>
+                <div class="mini-body">
+                  <span>Build the next piece</span>
+                  <h4>Composite area</h4>
+                  <p class="mini-objective">I can use composite area as one part of solving area, Surface Area &amp; Volume problems.</p>
+                  <dl>
+                    <dt>Teacher move</dt><dd>Use the previous mini-lesson as the anchor, then add composite area with one worked example and one parallel try-it item.</dd>
+                    <dt>Model or example</dt><dd>Find the area of a trapezoid with parallel sides 6 m and 10 m and a height of 4 m. Work it aloud, then cover the steps and ask students to rebuild the reasoning.</dd>
+                    <dt>Student practice</dt><dd>What is the area of a parallelogram with base 9 m and height 5 m? | A triangle has base 10 ft and height 6 ft. What is its area? | What is the area of a trapezoid with parallel sides 4 cm and 6 cm and height 3 cm?</dd>
+                    <dt>Error to catch</dt><dd>Students may treat composite area as a shortcut instead of connecting it back to the model.</dd>
+                    <dt>Evidence</dt><dd>Annotated model and one accurate independent item.</dd>
+                  </dl>
+                </div>
+              </article>
+              <article class="mini-lesson">
+                <div class="mini-num">Lesson 3</div>
+                <div class="mini-body">
+                  <span>Build the next piece</span>
+                  <h4>Volume</h4>
+                  <p class="mini-objective">I can use volume as one part of solving area, Surface Area &amp; Volume problems.</p>
+                  <dl>
+                    <dt>Teacher move</dt><dd>Use the previous mini-lesson as the anchor, then add volume with one worked example and one parallel try-it item.</dd>
+                    <dt>Model or example</dt><dd>A gift box is 5 in by 4 in by 3 in. Find its surface area, then its volume. Work it aloud, then cover the steps and ask students to rebuild the reasoning.</dd>
+                    <dt>Student practice</dt><dd>What is the area of a triangle with base 7 m and height 4 m? | What is the volume of a box that is 4 cm by 3 cm by 2 cm? | A trapezoid has parallel sides 6 in and 10 in and a height of 4 in. What is its area?</dd>
+                    <dt>Error to catch</dt><dd>Students may treat volume as a shortcut instead of connecting it back to the model.</dd>
+                    <dt>Evidence</dt><dd>Annotated model and one accurate independent item.</dd>
+                  </dl>
+                </div>
+              </article>
+              <article class="mini-lesson">
+                <div class="mini-num">Lesson 4</div>
+                <div class="mini-body">
+                  <span>Connect and transfer</span>
+                  <h4>Surface area</h4>
+                  <p class="mini-objective">I can use surface area as one part of solving area, Surface Area &amp; Volume problems.</p>
+                  <dl>
+                    <dt>Teacher move</dt><dd>Use the previous mini-lesson as the anchor, then add surface area with one worked example and one parallel try-it item.</dd>
+                    <dt>Model or example</dt><dd>Find the area of a triangle with base 8 cm and height 5 cm. Work it aloud, then cover the steps and ask students to rebuild the reasoning.</dd>
+                    <dt>Student practice</dt><dd>What is the surface area of a cube with edge length 5 cm? | What is the volume of a rectangular prism that is 5 m by 4 m by 3 m? | A triangle has base 9 cm and height 6 cm. What is its area?</dd>
+                    <dt>Error to catch</dt><dd>Students may treat surface area as a shortcut instead of connecting it back to the model.</dd>
+                    <dt>Evidence</dt><dd>Exit ticket plus revised explanation.</dd>
+                  </dl>
+                </div>
+              </article></div>
+            <div class="lesson-bridge">
+              <h4>How the pieces connect</h4>
+              <p>Students should not experience these as separate activities. Each mini-lesson adds one piece to the same concept spine: understand, represent, strategize, and prove.</p>
+            </div>
+          </div>
+
+          <div class="panel" id="panel-path">
+            <h3>Five-session lesson path</h3>
+            <p>This is the teacher-ready pacing model for intervention blocks, tutoring, pull-out groups, or independent catch-up work.</p>
+            <div class="lesson-path">
+              <article class="lesson-card">
+                <span>Session 1</span>
+                <h4>Diagnose and name the gap</h4>
+                <dl>
+                  <dt>Teacher move</dt><dd>Assign the pre-quiz, sort students into groups, and launch one low-floor model.</dd>
+                  <dt>Student work</dt><dd>Take the pre-quiz, complete the diagnostic, and write one goal for the topic.</dd>
+                  <dt>Evidence</dt><dd>Pre-quiz score, diagnostic score, student goal.</dd>
+                </dl>
+              </article>
+              <article class="lesson-card">
+                <span>Session 2</span>
+                <h4>Build the concept</h4>
+                <dl>
+                  <dt>Teacher move</dt><dd>Represent area, Surface Area &amp; Volume with a visual model, a table, and an equation.</dd>
+                  <dt>Student work</dt><dd>Annotate the worked examples and complete the concept lab discussion frame.</dd>
+                  <dt>Evidence</dt><dd>Annotated example, vocabulary sentence, model check.</dd>
+                </dl>
+              </article>
+              <article class="lesson-card">
+                <span>Session 3</span>
+                <h4>Practice with feedback</h4>
+                <dl>
+                  <dt>Teacher move</dt><dd>Conference with students using Smart Review misses and the Error Clinic protocol.</dd>
+                  <dt>Student work</dt><dd>Complete Practice, Smart Review, and the fluency drill until one score improves.</dd>
+                  <dt>Evidence</dt><dd>Practice percent, cleared Smart Review item, fluency count.</dd>
+                </dl>
+              </article>
+              <article class="lesson-card">
+                <span>Session 4</span>
+                <h4>Apply and transfer</h4>
+                <dl>
+                  <dt>Teacher move</dt><dd>Assign Worksheet B and the performance task; listen for the discourse frame.</dd>
+                  <dt>Student work</dt><dd>Solve a contextual problem, explain the strategy, and revise the explanation.</dd>
+                  <dt>Evidence</dt><dd>Performance task, revised explanation, exit ticket.</dd>
+                </dl>
+              </article>
+              <article class="lesson-card">
+                <span>Session 5</span>
+                <h4>Reassess and reflect</h4>
+                <dl>
+                  <dt>Teacher move</dt><dd>Assign the post-quiz, compare growth, and select the next intervention move.</dd>
+                  <dt>Student work</dt><dd>Take the post-quiz and complete a reflection on what changed.</dd>
+                  <dt>Evidence</dt><dd>Post-quiz score, reflection, next-step recommendation.</dd>
+                </dl>
+              </article></div>
+            <h3 style="margin-top:24px">Placement pathways</h3>
+            <p>Use the pre-quiz and diagnostic score to select the right route without lowering the grade-level expectation.</p>
+            <div class="pathway-grid">
+              <article class="pathway-card">
+                <span>Pre-quiz or diagnostic below 50%</span>
+                <h4>Intensive reteach</h4>
+                <p>Teacher-led model, manipulatives, read-aloud question support, Worksheet A odd items, then one Smart Review item.</p>
+              </article>
+              <article class="pathway-card">
+                <span>50% to 79% or inconsistent explanations</span>
+                <h4>Guided practice</h4>
+                <p>Concept Lab, worked examples, Practice, Error Clinic, Worksheet A/B mix, and an exit ticket conference.</p>
+              </article>
+              <article class="pathway-card">
+                <span>80%+ with clear explanation</span>
+                <h4>Extension and transfer</h4>
+                <p>Worksheet B challenge, performance task, student-created example, and peer teaching using the discourse frame.</p>
+              </article></div>
+          </div>
           <div class="panel" id="panel-learn">
             <h3>Worked examples</h3>
             <p>Study these three examples — easy to challenge — then head to Practice.</p>
@@ -124,18 +385,89 @@
 
           <div class="panel" id="panel-game">
             <h3>Answer Drop</h3>
-            <p>Tap the falling tile that matches the problem. Five lives — how high can you climb?</p>
+            <p>Tap a falling tile — or press number keys <strong>1–4</strong> — to match the problem. Five lives — how high can you climb?</p>
             <div class="game-stage" id="game-stage">
-              <div class="game-hud"></div>
-              <canvas></canvas>
+              <div class="game-hud" aria-hidden="true"></div>
+              <canvas role="img" aria-label="Answer Drop game. Tap the falling tile that matches the problem shown at the bottom, or press number keys 1 to 4 to pick the tile in that column."></canvas>
               <div class="game-overlay">
                 <div>
                   <h3>Answer Drop</h3>
-                  <p>Click the tile that solves the problem before it hits the bottom.</p>
+                  <p>Click the tile that solves the problem — or use number keys 1–4 — before it hits the bottom.</p>
                   <button class="btn btn-primary" id="game-stage-start" type="button">▶ Play</button>
                 </div>
               </div>
             </div>
+          </div>
+
+          <div class="panel" id="panel-clinic">
+            <h3>Error clinic</h3>
+            <p>Use this as a quick conference script after a missed diagnostic, a worksheet error, or a low post-quiz score.</p>
+            <div class="clinic-grid">
+              <article class="clinic-card">
+                <span>Likely misconception</span>
+                <p>Students may answer procedurally without explaining why the method works for area, Surface Area &amp; Volume.</p>
+              </article>
+              <article class="clinic-card">
+                <span>Teacher move</span>
+                <p>Look for accurate use of area, composite area, volume, and surface area and a clear explanation.</p>
+              </article>
+              <article class="clinic-card">
+                <span>Student self-check</span>
+                <p>Can I show the problem with a model, name the operation or relationship, and explain why my answer is reasonable?</p>
+              </article>
+            </div>
+            <div class="conference-script">
+              <h4>Two-minute conference</h4>
+              <ol>
+                <li>Ask the student to point to the exact step where the answer changed.</li>
+                <li>Have the student restate the problem using one vocabulary word from this topic.</li>
+                <li>Rebuild one simpler example together, then ask the student to solve a parallel problem alone.</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="panel" id="panel-task">
+            <h3>Performance task</h3>
+            <p>Students apply area, Surface Area &amp; Volume in a short constructed-response task. This gives publishers, teachers, and families evidence beyond multiple choice.</p>
+            <div class="task-card">
+              <span>Scenario</span>
+              <h4>Area, Surface Area &amp; Volume in the real world</h4>
+              <p>Create a realistic situation where someone must use area, composite area, volume, and surface area. Solve it two ways: first with a model or diagram, then with numbers or symbols. Finish by explaining why the answer is reasonable.</p>
+            </div>
+            <div class="task-columns">
+              <div>
+                <h4>Student deliverables</h4>
+                <ul>
+                  <li>A labeled model, diagram, table, or number line.</li>
+                  <li>A complete solution with units or labels.</li>
+                  <li>A written explanation using at least one vocabulary word.</li>
+                  <li>A revised answer after checking for the common misconception.</li>
+                </ul>
+              </div>
+              <div>
+                <h4>Notebook prompts</h4>
+                <ol><li>Before I solve, the quantities I notice are ___ and ___.</li><li>A model that helps me understand area, Surface Area &amp; Volume is ___ because ___.</li><li>One mistake a student might make is ___; I would fix it by ___.</li><li>My post-quiz goal is ___, and the evidence I will use is ___.</li></ol>
+              </div>
+            </div>
+            <table class="rubric">
+              <tbody>
+              <tr>
+                <th>4 · Publishes math thinking</th>
+                <td>Accurate answer, efficient strategy, clear model, complete explanation, and correct vocabulary.</td>
+              </tr>
+              <tr>
+                <th>3 · Meets standard</th>
+                <td>Accurate answer and a mostly clear strategy with enough explanation to follow the thinking.</td>
+              </tr>
+              <tr>
+                <th>2 · Developing</th>
+                <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+              </tr>
+              <tr>
+                <th>1 · Needs reteach</th>
+                <td>Misconception is still present; student needs a concrete model and a smaller parallel problem.</td>
+              </tr></tbody>
+            </table>
           </div>
 
           <div class="panel" id="panel-fluency">
@@ -243,6 +575,69 @@
               <div class="answer-key"><h3>Answer Key (teacher)</h3><ol><li>35 cm²</li><li>24 m²</li><li>24 cm²</li><li>60 cm³</li></ol></div>
             </div>
 
+            <div class="worksheet">
+              <div class="ws-header">
+                <h2>📐 Area, Surface Area &amp; Volume <span class="ws-variant">Student Notebook Page</span></h2>
+                <div class="ws-name">Name: ____________________  Date: __________</div>
+              </div>
+              <div class="print-notebook">
+                <h3>Essential question</h3>
+                <p>How do mathematicians use area, composite area, volume, and surface area to make sense of real problems and defend an answer?</p>
+                <h3>Success criteria</h3>
+                <ul><li>I can represent the math with a model, table, number line, diagram, or equation.</li><li>I can use area, composite area, volume, and surface area accurately and explain why the strategy fits the problem.</li><li>I can find and correct an error by naming the misconception.</li><li>I can prove growth with a post-quiz score, an exit ticket, and a written explanation.</li></ul>
+                <h3>Reflection prompts</h3>
+                <ol><li>Before I solve, the quantities I notice are ___ and ___.</li><li>A model that helps me understand area, Surface Area &amp; Volume is ___ because ___.</li><li>One mistake a student might make is ___; I would fix it by ___.</li><li>My post-quiz goal is ___, and the evidence I will use is ___.</li></ol>
+                <h3>Mini-lesson map</h3>
+                <table class="rubric mini-print-map"><tbody>
+                <tr>
+                  <th>Mini-Lesson 1: Area</th>
+                  <td>I can explain what area means before I calculate.</td>
+                  <td>Annotated model and one accurate independent item.</td>
+                </tr>
+                <tr>
+                  <th>Mini-Lesson 2: Composite area</th>
+                  <td>I can use composite area as one part of solving area, Surface Area &amp; Volume problems.</td>
+                  <td>Annotated model and one accurate independent item.</td>
+                </tr>
+                <tr>
+                  <th>Mini-Lesson 3: Volume</th>
+                  <td>I can use volume as one part of solving area, Surface Area &amp; Volume problems.</td>
+                  <td>Annotated model and one accurate independent item.</td>
+                </tr>
+                <tr>
+                  <th>Mini-Lesson 4: Surface area</th>
+                  <td>I can use surface area as one part of solving area, Surface Area &amp; Volume problems.</td>
+                  <td>Exit ticket plus revised explanation.</td>
+                </tr></tbody></table>
+              </div>
+            </div>
+
+            <div class="worksheet">
+              <div class="ws-header">
+                <h2>📐 Area, Surface Area &amp; Volume <span class="ws-variant">Performance Task</span></h2>
+                <div class="ws-name">Name: ____________________  Date: __________</div>
+              </div>
+              <p><strong>Task:</strong> Create and solve a realistic situation that uses area, composite area, volume, and surface area. Show a model, solve with numbers, and explain why the answer is reasonable.</p>
+              <div class="blank-lines"></div>
+              <table class="rubric print-rubric"><tbody>
+              <tr>
+                <th>4 · Publishes math thinking</th>
+                <td>Accurate answer, efficient strategy, clear model, complete explanation, and correct vocabulary.</td>
+              </tr>
+              <tr>
+                <th>3 · Meets standard</th>
+                <td>Accurate answer and a mostly clear strategy with enough explanation to follow the thinking.</td>
+              </tr>
+              <tr>
+                <th>2 · Developing</th>
+                <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+              </tr>
+              <tr>
+                <th>1 · Needs reteach</th>
+                <td>Misconception is still present; student needs a concrete model and a smaller parallel problem.</td>
+              </tr></tbody></table>
+            </div>
+
             <div class="family-letter">
               <div class="ws-header">
                 <h2>👪 Family Letter <span class="ws-variant">Area, Surface Area &amp; Volume</span></h2>
@@ -273,11 +668,19 @@
           <div class="panel" id="panel-supports">
             <h3>Track your learning</h3>
             <p>Check each box when you can do it on your own.</p>
-            <ul class="ican-list"><li><label><input type="checkbox" /> <span>I can find the area of triangles, parallelograms, trapezoids, and composite figures, and the surface area and volume of rectangular prisms.</span></label></li><li><label><input type="checkbox" /> <span>I can use area.</span></label></li><li><label><input type="checkbox" /> <span>I can use composite area.</span></label></li><li><label><input type="checkbox" /> <span>I can use volume.</span></label></li><li><label><input type="checkbox" /> <span>I can use surface area.</span></label></li></ul>
+            <ul class="ican-list"><li><label><input type="checkbox" /> <span>I can find the area of triangles, parallelograms, trapezoids, and composite figures, and the surface area and volume of rectangular prisms.</span></label></li><li><label><input type="checkbox" /> <span>I can choose a strategy for area, composite area, volume, and surface area.</span></label></li><li><label><input type="checkbox" /> <span>I can explain each step using topic vocabulary.</span></label></li><li><label><input type="checkbox" /> <span>I can check whether my answer is reasonable.</span></label></li></ul>
             <h3 style="margin-top:22px">Differentiation</h3>
             <div class="levels">
               <div class="level"><h4>Level 1 — Support</h4><p>Level 1 (support): use the Materials manipulatives, study the worked examples, and work one step at a time.</p></div>
               <div class="level"><h4>Level 2 — Stretch</h4><p>Level 2 (stretch): finish the ★ challenge on Worksheet B and explain your reasoning in words.</p></div>
+            </div>
+            <h3 style="margin-top:22px">Success criteria</h3>
+            <ul class="criteria-list"><li>I can represent the math with a model, table, number line, diagram, or equation.</li><li>I can use area, composite area, volume, and surface area accurately and explain why the strategy fits the problem.</li><li>I can find and correct an error by naming the misconception.</li><li>I can prove growth with a post-quiz score, an exit ticket, and a written explanation.</li></ul>
+            <h3 style="margin-top:22px">Language supports</h3>
+            <div class="support-note">
+              <p>Preteach the key vocabulary, then ask students to use it in a complete sentence.</p>
+              <p><strong>Talk frame:</strong> My strategy works because ___.</p>
+              <p><strong>Talk-Write-Revise:</strong> say the strategy with a partner, write one complete explanation, then revise it with a vocabulary word.</p>
             </div>
           </div>
         </div>
@@ -293,6 +696,9 @@
         </p>
       </div>
     </footer>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
   </body>
 </html>
     <script>window.TOPIC = {"slug":"geometry-measure","title":"Area, Surface Area & Volume","bank":[{"prompt":"What is the area of a parallelogram with base 6 cm and height 4 cm?","answer":"24 cm²","options":["24 cm²","10 cm²","20 cm²","48 cm²"],"explain":"Area of a parallelogram is base times height: 6 × 4 = 24."},{"prompt":"What is the area of a rectangle that is 7 in long and 5 in wide?","answer":"35 in²","options":["35 in²","24 in²","12 in²","70 in²"],"explain":"Area of a rectangle is length times width: 7 × 5 = 35."},{"prompt":"A triangle has a base of 8 cm and a height of 5 cm. What is its area?","answer":"20 cm²","options":["20 cm²","40 cm²","13 cm²","26 cm²"],"explain":"Triangle area is half the base times height: ½ × 8 × 5 = 20."},{"prompt":"What is the area of a parallelogram with base 9 m and height 5 m?","answer":"45 m²","options":["45 m²","28 m²","14 m²","90 m²"],"explain":"Area equals base times height: 9 × 5 = 45."},{"prompt":"A triangle has base 10 ft and height 6 ft. What is its area?","answer":"30 ft²","options":["30 ft²","60 ft²","16 ft²","32 ft²"],"explain":"Triangle area is ½ × base × height: ½ × 10 × 6 = 30."},{"prompt":"What is the area of a trapezoid with parallel sides 4 cm and 6 cm and height 3 cm?","answer":"15 cm²","options":["15 cm²","30 cm²","13 cm²","72 cm²"],"explain":"Add the two parallel sides, divide by 2, then multiply by height: (4+6)/2 × 3 = 15."},{"prompt":"What is the area of a triangle with base 7 m and height 4 m?","answer":"14 m²","options":["14 m²","28 m²","11 m²","22 m²"],"explain":"Triangle area is ½ × 7 × 4 = 14."},{"prompt":"What is the volume of a box that is 4 cm by 3 cm by 2 cm?","answer":"24 cm³","options":["24 cm³","9 cm³","26 cm³","52 cm³"],"explain":"Volume is length × width × height: 4 × 3 × 2 = 24."},{"prompt":"A trapezoid has parallel sides 6 in and 10 in and a height of 4 in. What is its area?","answer":"32 in²","options":["32 in²","64 in²","40 in²","20 in²"],"explain":"(6+10)/2 × 4 = 8 × 4 = 32."},{"prompt":"What is the surface area of a cube with edge length 5 cm?","answer":"150 cm²","options":["150 cm²","125 cm²","25 cm²","30 cm²"],"explain":"A cube has 6 equal square faces: 6 × (5×5) = 150."},{"prompt":"What is the volume of a rectangular prism that is 5 m by 4 m by 3 m?","answer":"60 m³","options":["60 m³","12 m³","94 m³","20 m³"],"explain":"Volume is 5 × 4 × 3 = 60."},{"prompt":"A triangle has base 9 cm and height 6 cm. What is its area?","answer":"27 cm²","options":["27 cm²","54 cm²","15 cm²","30 cm²"],"explain":"Triangle area is ½ × 9 × 6 = 27."},{"prompt":"What is the volume of a box that is 2½ ft by 4 ft by 3 ft?","answer":"30 ft³","options":["30 ft³","9½ ft³","24 ft³","15 ft³"],"explain":"Volume is 2½ × 4 × 3 = 30."},{"prompt":"A composite figure is a 8 cm by 5 cm rectangle with a triangle on top (base 8 cm, height 3 cm). What is the total area?","answer":"52 cm²","options":["52 cm²","40 cm²","64 cm²","46 cm²"],"explain":"Rectangle 8×5 = 40, triangle ½×8×3 = 12, total 40+12 = 52."},{"prompt":"What is the surface area of a rectangular prism that is 5 in by 4 in by 3 in?","answer":"94 in²","options":["94 in²","60 in²","47 in²","120 in²"],"explain":"Surface area is 2(lw+lh+wh) = 2(20+15+12) = 94."},{"prompt":"What is the area of a trapezoid with parallel sides 8 m and 12 m and height 5 m?","answer":"50 m²","options":["50 m²","100 m²","60 m²","25 m²"],"explain":"(8+12)/2 × 5 = 10 × 5 = 50."},{"prompt":"A flower bed is shaped like a triangle with base 12 ft and height 5 ft. How much area does it cover?","answer":"30 ft²","options":["30 ft²","60 ft²","17 ft²","34 ft²"],"explain":"Triangle area is ½ × 12 × 5 = 30."},{"prompt":"A fish tank is 5 dm long, 3 dm wide, and 2.5 dm tall. What is its volume?","answer":"37.5 dm³","options":["37.5 dm³","10.5 dm³","30 dm³","75 dm³"],"explain":"Volume is 5 × 3 × 2.5 = 37.5."},{"prompt":"A small box is ¾ ft by ½ ft by 2 ft. What is its volume?","answer":"¾ ft³","options":["¾ ft³","3¼ ft³","1½ ft³","1 ft³"],"explain":"Volume is ¾ × ½ × 2 = ¾."},{"prompt":"How many unit cubes with ⅓-ft edges fill a box that is 2 ft by 1 ft by ⅔ ft?","answer":"36 cubes","options":["36 cubes","12 cubes","4 cubes","27 cubes"],"explain":"Box volume is 2×1×⅔ = 4/3 ft³; each cube is 1/27 ft³, so (4/3)÷(1/27) = 36."},{"prompt":"You wrap a gift box that is 6 in by 2 in by 3 in. How much wrapping paper (surface area) do you need at minimum?","answer":"72 in²","options":["72 in²","36 in²","52 in²","144 in²"],"explain":"Surface area is 2(6×2 + 6×3 + 2×3) = 2(12+18+6) = 72."},{"prompt":"A garden is a rectangle 10 m by 6 m with a triangular section removed (base 6 m, height 4 m). What area is left?","answer":"48 m²","options":["48 m²","60 m²","36 m²","12 m²"],"explain":"Rectangle 10×6 = 60, triangle ½×6×4 = 12, remaining 60−12 = 48."},{"prompt":"A net shows a rectangular prism 10 cm by 4 cm by 5 cm. What is the total surface area?","answer":"220 cm²","options":["220 cm²","200 cm²","110 cm²","240 cm²"],"explain":"Surface area is 2(10×4 + 10×5 + 4×5) = 2(40+50+20) = 220."},{"prompt":"A trough is a rectangular prism 1½ ft by 2 ft by 2½ ft. What is its volume?","answer":"7½ ft³","options":["7½ ft³","6 ft³","5 ft³","9 ft³"],"explain":"Volume is 1½ × 2 × 2½ = 7½."}]};</script>

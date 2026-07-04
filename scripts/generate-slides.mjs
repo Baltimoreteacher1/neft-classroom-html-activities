@@ -2,6 +2,18 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { buildTptSlideDeckV3 } from "./lib/tpt-slide-deck-v3.mjs";
+import { EDITORIAL_FONT_IMPORT } from "./lib/editorial-print.mjs";
+
+// Editorial finish for slides: serif titles only. A deck is a presentation
+// medium with designed per-slide backgrounds, so (unlike the document
+// generators) we do NOT touch backgrounds — just bring the Fraunces serif to
+// titles so the deck matches the publisher-grade lessons.
+const SLIDES_EDITORIAL = `
+.slide-main-title,.title-heading,.g-doc-title,.section-divider-title,
+.post-it-title,.g-title-block h1,.g-title-block h2,h1,h2{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}`;
 import { getUnitPalette, paletteToCssVars } from "./lib/slide-theme-palettes.mjs";
 import { REFERENCE_CSS, tokensToCssVars } from "./lib/slide-reference-theme.mjs";
 
@@ -917,6 +929,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
+    ${EDITORIAL_FONT_IMPORT}
     :root {${tokensToCssVars(unitPalette, getThemeColor(data.theme))}
     }
     * { box-sizing: border-box; }
@@ -1992,10 +2005,32 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
     .cfu-card { text-align:center; }
     .cfu-poll { display:flex; gap:8px; justify-content:center; margin:12px 0; }
     .cfu-btn { flex:none; min-width:100px; }
-    .diff-paths-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+    .diff-paths-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; }
     .diff-path { border:2px solid var(--path-color, var(--teal)); border-radius:8px; padding:10px; }
     .diff-path-label { font-size:11px; font-weight:800; color:var(--navy); margin-bottom:6px; }
     .diff-path-stem { font-size:10px; line-height:1.4; margin:0; }
+    /* Read-aloud (TTS) button — additive, accessible, never shown in print */
+    .read-aloud-btn { display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-left:6px; padding:0; width:1.7em; height:1.7em; min-width:1.7em; border:1.5px solid var(--teal); border-radius:50%; background:var(--white,#fff); color:var(--navy); font-size:0.78em; line-height:1; cursor:pointer; transition:transform .12s ease, background .12s ease; }
+    .read-aloud-btn:hover { background:var(--teal-light); transform:scale(1.08); }
+    .read-aloud-btn:active { transform:scale(0.96); }
+    .read-aloud-btn:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    @media print { .read-aloud-btn { display:none !important; } }
+    /* Bilingual Spanish stem line under English — gated by .bilingual-on (default on) */
+    .stem-es { display:block; margin-top:2px; font-size:0.82em; font-style:italic; color:var(--navy); opacity:0.72; }
+    body:not(.bilingual-on) .stem-es,
+    body:not(.bilingual-on) .objective-text-es,
+    body:not(.bilingual-on) .vocab-term-es,
+    body:not(.bilingual-on) .vocab-definition-es { display:none; }
+    .tt-stems-extend { margin-top:8px; padding-top:8px; border-top:1px dashed var(--gray,#ccc); }
+    .tt-stem-extend { opacity:0.92; }
+    /* Header accessibility / language controls */
+    .a11y-controls { display:flex; align-items:center; gap:8px; }
+    .a11y-btn { font-size:12px; font-weight:700; color:var(--navy); background:var(--white,#fff); border:1.5px solid var(--teal); border-radius:16px; padding:5px 12px; cursor:pointer; }
+    .a11y-btn[aria-pressed="false"] { opacity:0.55; }
+    .a11y-btn:focus-visible, .a11y-rate select:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    .a11y-rate { display:inline-flex; align-items:center; gap:4px; font-size:12px; color:var(--navy); }
+    .a11y-rate select { font-size:12px; border:1.5px solid var(--teal); border-radius:14px; padding:4px 8px; background:var(--white,#fff); color:var(--navy); cursor:pointer; }
+    @media print { .a11y-controls { display:none !important; } }
     .workspace-table { width:100%; border-collapse:collapse; font-size:11px; }
     .workspace-table th, .workspace-table td { border:1px solid #dadce0; padding:6px 8px; text-align:center; }
     .workspace-table th { background:var(--teal-light); font-weight:800; }
@@ -2099,10 +2134,10 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
       .g-menu-bar { display: none; }
       .presenter-hud { font-size: 10px; padding: 6px 10px; }
     }
-    
+    ${SLIDES_EDITORIAL}
   </style>
 </head>
-<body>
+<body class="bilingual-on">
 
   <!-- Google Slides Chrome Bar -->
   <header class="g-chrome">
@@ -2121,6 +2156,16 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
       </div>
     </div>
     <div class="g-right">
+      <div class="a11y-controls" role="group" aria-label="Accessibility and language controls">
+        <button class="a11y-btn" id="bilingual-toggle" aria-pressed="true" onclick="toggleBilingual(this)" title="Show or hide Spanish support">🌐 Español</button>
+        <label class="a11y-rate" title="Read-aloud speed">🔊
+          <select id="tts-rate-select" aria-label="Read-aloud speed" onchange="setSlideTtsRate(this.value)">
+            <option value="0.7">Slow</option>
+            <option value="0.85" selected>Normal</option>
+            <option value="1">Fast</option>
+          </select>
+        </label>
+      </div>
       ${googleSlidesLinkHtml}
       <button class="btn-present" onclick="enterFullscreen()">
         ▶ Present
@@ -2359,6 +2404,66 @@ ${deck.thumbnailsHtml}
         }
       }, 1000);
     }
+
+    // -----------------------------------------------------------------
+    // READ-ALOUD (Text-to-Speech) — accessibility + Level 1 language support
+    // Reads slide text via the browser Web Speech API. Rate is saved so a
+    // teacher/student preference persists across slides and lessons.
+    // -----------------------------------------------------------------
+    const SLIDE_TTS_RATE_KEY = 'neft-slide-tts-rate';
+    function getSlideTtsRate() {
+      const saved = parseFloat(localStorage.getItem(SLIDE_TTS_RATE_KEY));
+      return (saved && saved >= 0.5 && saved <= 1.5) ? saved : 0.85;
+    }
+    function setSlideTtsRate(rate) {
+      const r = parseFloat(rate);
+      if (r && r >= 0.5 && r <= 1.5) localStorage.setItem(SLIDE_TTS_RATE_KEY, String(r));
+    }
+    function speakText(text, lang) {
+      if (!('speechSynthesis' in window) || !text) return;
+      try {
+        // A second tap on a speaking button stops it (toggle behavior).
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          return;
+        }
+        const utter = new SpeechSynthesisUtterance(String(text).replace(/[✍️🎯🗣️👂✓✗⚠➡️•]/g, ' ').trim());
+        utter.rate = getSlideTtsRate();
+        utter.lang = lang || 'en-US';
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+      } catch (e) { /* speech not available */ }
+    }
+    // Read-aloud buttons carry their text in data-speak (and optional data-lang).
+    function speakFromButton(btn) {
+      if (!btn) return;
+      speakText(btn.getAttribute('data-speak') || '', btn.getAttribute('data-lang') || 'en-US');
+    }
+    window.speakText = speakText;
+    window.speakFromButton = speakFromButton;
+    window.setSlideTtsRate = setSlideTtsRate;
+    window.getSlideTtsRate = getSlideTtsRate;
+
+    // Bilingual (Spanish support) toggle — persists per browser.
+    const SLIDE_BILINGUAL_KEY = 'neft-slide-bilingual';
+    function applyBilingual(on) {
+      document.body.classList.toggle('bilingual-on', on);
+      const btn = document.getElementById('bilingual-toggle');
+      if (btn) btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    function toggleBilingual(btn) {
+      const on = !document.body.classList.contains('bilingual-on');
+      localStorage.setItem(SLIDE_BILINGUAL_KEY, on ? '1' : '0');
+      applyBilingual(on);
+    }
+    window.toggleBilingual = toggleBilingual;
+    // Restore saved accessibility preferences on load.
+    (function initA11yPrefs() {
+      const savedBi = localStorage.getItem(SLIDE_BILINGUAL_KEY);
+      if (savedBi !== null) applyBilingual(savedBi === '1');
+      const rateSel = document.getElementById('tts-rate-select');
+      if (rateSel) rateSel.value = String(getSlideTtsRate());
+    })();
 
     // CFU thumb responses
     const cfuResponses = {};

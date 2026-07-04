@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/assets/math-mobile.css">
+  <title>On-Ramp 6.EE.A.2.B — Parts of an Expression (Terms, Coefficients, Factors, Constants)</title>
+  <style>
+    :root {
+      --navy: #1a2e42; --teal: #2d7a72; --amber: #c9922c; --terra: #b5614e;
+      --cream: #faf8f3; --ice: #e8f3f7; --ink: #1c1c1c; --muted: #5b6773;
+      --green: #1f6640; --green-bg: #e8f6ed; --red: #7a1e1e; --red-bg: #fdf0f0;
+      --warn-bg: #fff4de; --line: #d8dfdc; --r: 16px; --r-sm: 10px;
+    }
+    main { max-width: 880px; margin: 0 auto; padding: 24px 18px 64px; }
+    .hero { background: linear-gradient(135deg, var(--navy), var(--amber)); color: #fff;
+      border-radius: var(--r); padding: 26px 24px; box-shadow: 0 12px 36px rgba(26,46,66,.18); }
+    .hero .tag { display: inline-block; background: rgba(255,255,255,.18); border-radius: 999px;
+      padding: 4px 12px; font-size: .82rem; letter-spacing: .04em; }
+    .hero h1 { margin: 12px 0 6px; font-size: 1.55rem; line-height: 1.2; }
+    .hero .goal { margin: 0; font-size: 1.05rem; opacity: .95; }
+    .card { background: #fff; border: 1px solid var(--line); border-radius: var(--r);
+      padding: 20px 22px; margin: 18px 0; box-shadow: 0 4px 14px rgba(26,46,66,.06); }
+    .card h2 { margin: 0 0 10px; color: var(--navy); font-size: 1.2rem; }
+    .frames { background: var(--ice); border-left: 5px solid var(--teal); border-radius: var(--r-sm); padding: 14px 16px; }
+    .frames ul { margin: 8px 0 0; padding-left: 18px; } .frames li { margin: 6px 0; }
+    .word { display: inline-block; background: var(--warn-bg); border: 1px solid var(--amber);
+      border-radius: 8px; padding: 2px 8px; margin: 3px; font-weight: 600; color: #6b4a06; }
+    .expr { font-size: 2.4rem; text-align: center; letter-spacing: .12em; color: var(--navy);
+      margin: 14px 0; font-family: "DM Sans", system-ui, sans-serif; }
+    .legend { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .legend span { padding: 4px 10px; border-radius: 8px; font-size: .85rem; font-weight: 600; }
+    .L-term { background: #e8f3f7; color: var(--teal); }
+    .L-coef { background: var(--warn-bg); color: #6b4a06; }
+    .L-const { background: #f5e7de; color: var(--terra); }
+    .q { margin: 14px 0; }
+    .q p.prompt { font-weight: 600; margin: 0 0 10px; }
+    .choices { display: flex; flex-wrap: wrap; gap: 10px; }
+    .choice { min-height: 44px; padding: 10px 16px; border: 2px solid var(--line); background: var(--cream);
+      border-radius: 12px; font-size: 1rem; cursor: pointer; transition: .15s; }
+    .choice:hover { border-color: var(--teal); }
+    .choice:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+    .choice.correct { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+    .choice.wrong { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+    .fb { margin: 10px 0 0; padding: 10px 14px; border-radius: var(--r-sm); display: none; font-weight: 500; }
+    .fb.show { display: block; } .fb.ok { background: var(--green-bg); color: var(--green); }
+    .fb.no { background: var(--warn-bg); color: #6b4a06; }
+    .reflect textarea { width: 100%; min-height: 90px; border: 2px solid var(--line); border-radius: var(--r-sm);
+      padding: 12px; font: inherit; resize: vertical; }
+    .reflect textarea:focus-visible { outline: 3px solid var(--amber); outline-offset: 1px; border-color: var(--teal); }
+    .progress { font-size: .9rem; color: var(--muted); }
+    footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top: 28px; }
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+</head>
+<body data-onramp-ok="✅ Correct — you named that part precisely." data-onramp-retry="Check the Word Bank above — which word matches this part? Try again.">
+  <main>
+    <header class="hero">
+      <span class="tag">On-Ramp · Grade 6 · 6.EE.A.2.B</span>
+      <h1>Naming the Parts of an Expression</h1>
+      <p class="goal"><strong>I can</strong> point to the <em>terms</em>, <em>coefficients</em>, <em>factors</em>, and <em>constants</em> in an expression.</p>
+    </header>
+
+    <section class="card">
+      <h2>📘 Word Bank + Sentence Frames</h2>
+      <p>
+        <span class="word">term</span>
+        <span class="word">coefficient</span>
+        <span class="word">factor</span>
+        <span class="word">constant</span>
+        <span class="word">variable</span>
+      </p>
+      <div class="frames">
+        <ul>
+          <li><strong>Term</strong> = a part separated by + or −. ("3x" and "7" are terms.)</li>
+          <li><strong>Coefficient</strong> = the number multiplied by a variable. (In 3x, it is <strong>3</strong>.)</li>
+          <li><strong>Factor</strong> = something being multiplied. (In 3x, the factors are <strong>3</strong> and <strong>x</strong>.)</li>
+          <li><strong>Constant</strong> = a number by itself, no variable. (Here, <strong>7</strong>.)</li>
+          <li>Frame: "In ____, the coefficient is ____ and the constant is ____."</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>👀 See It: A Worked Example</h2>
+      <div class="expr"><span class="L-coef">3</span><span class="L-term">x</span> + <span class="L-const">7</span></div>
+      <div class="legend">
+        <span class="L-term">x = variable (part of term 3x)</span>
+        <span class="L-coef">3 = coefficient</span>
+        <span class="L-const">7 = constant</span>
+      </div>
+      <p style="margin-top:12px">The expression <strong>3x + 7</strong> has <strong>two terms</strong>: <em>3x</em> and <em>7</em>.
+      The term <em>3x</em> has two <strong>factors</strong> (3 and x). The <strong>coefficient</strong> is 3. The <strong>constant</strong> is 7.</p>
+    </section>
+
+    <section class="card">
+      <h2>✏️ Your Turn — Use the expression 5y + 9</h2>
+      <p class="progress"><span data-done>0</span> of 3 checks complete</p>
+
+      <div class="q" data-q>
+        <p class="prompt">1. What is the <strong>coefficient</strong> in 5y + 9?</p>
+        <div class="choices">
+          <button class="choice" data-correct>5</button>
+          <button class="choice">9</button>
+          <button class="choice">y</button>
+        </div>
+        <p class="fb"></p>
+      </div>
+
+      <div class="q" data-q>
+        <p class="prompt">2. What is the <strong>constant</strong> in 5y + 9?</p>
+        <div class="choices">
+          <button class="choice">5</button>
+          <button class="choice" data-correct>9</button>
+          <button class="choice">5y</button>
+        </div>
+        <p class="fb"></p>
+      </div>
+
+      <div class="q" data-q>
+        <p class="prompt">3. How many <strong>terms</strong> does 5y + 9 have?</p>
+        <div class="choices">
+          <button class="choice">1</button>
+          <button class="choice" data-correct>2</button>
+          <button class="choice">3</button>
+        </div>
+        <p class="fb"></p>
+      </div>
+    </section>
+
+    <section class="card reflect">
+      <h2>💬 Explain Your Thinking</h2>
+      <p>Describe the parts of <strong>4n + 2</strong>:</p>
+      <p class="frames" aria-hidden="true">
+        "In 4n + 2, the terms are ____ and ____. The coefficient is ____, and the constant is ____."
+      </p>
+      <span class="sr-only" id="reflect-frame">"In 4n + 2, the terms are blank and blank. The coefficient is blank, and the constant is blank."</span>
+      <textarea id="reflect" aria-describedby="reflect-frame" aria-label="Describe the parts of 4n + 2:" name="reflect-6eea2b" placeholder="Name each part here…"></textarea>
+    </section>
+
+    <footer>Mr. Neft's Classroom · ESOL Math On-Ramp · © <span data-current-year></span></footer>
+  </main>
+
+  <script src="/assets/app.js"></script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  <script src="/assets/onramp-quiz.js" defer></script>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+</body>
+</html>

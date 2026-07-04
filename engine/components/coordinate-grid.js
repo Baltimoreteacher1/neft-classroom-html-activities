@@ -1,9 +1,39 @@
-export function renderCoordinateGrid(
-  container,
-  { xMin, xMax, yMin, yMax, xStep, yStep, xLabel, yLabel, targets, label, showLine, onComplete },
-) {
+export function renderCoordinateGrid(container, config = {}) {
   injectCoordinateGridStyles();
-  targets = Array.isArray(targets) ? targets : [];
+  let { xMin, xMax, yMin, yMax, xStep, yStep, xLabel, yLabel, showLine, onComplete } = config;
+  // `targets` is the canonical field, but lessons also author the points to plot
+  // as `points`. Accept either, and `label`/`instructions` for the prompt.
+  let targets = Array.isArray(config.targets)
+    ? config.targets
+    : Array.isArray(config.points)
+      ? config.points
+      : [];
+  const label = config.label || config.instructions;
+
+  // Default the axis bounds/steps when a lesson omits them, otherwise toSvgX/Y
+  // divide by NaN and the grid renders blank. Derive a symmetric range that
+  // comfortably contains every target, rounded out to a whole step.
+  if (![xStep, yStep].every((s) => typeof s === "number" && s > 0)) {
+    xStep = typeof xStep === "number" && xStep > 0 ? xStep : 1;
+    yStep = typeof yStep === "number" && yStep > 0 ? yStep : 1;
+  }
+  const xs = targets.map((t) => Number(t.x)).filter(Number.isFinite);
+  const ys = targets.map((t) => Number(t.y)).filter(Number.isFinite);
+  const span = (vals, fallback) => {
+    if (!vals.length) return fallback;
+    const m = Math.max(5, Math.ceil(Math.max(...vals.map(Math.abs)) + 1));
+    return m;
+  };
+  if (typeof xMin !== "number" || typeof xMax !== "number") {
+    const m = span(xs, 10);
+    xMin = -m;
+    xMax = m;
+  }
+  if (typeof yMin !== "number" || typeof yMax !== "number") {
+    const m = span(ys, 10);
+    yMin = -m;
+    yMax = m;
+  }
 
   const wrapper = document.createElement("div");
   wrapper.className = "card cgrid-root";
@@ -59,13 +89,20 @@ export function renderCoordinateGrid(
   svgLine(svg, PAD.left, PAD.top, PAD.left, PAD.top + plotH, "#1fa6a2", 2);
   svgLine(svg, PAD.left, PAD.top + plotH, PAD.left + plotW, PAD.top + plotH, "#1fa6a2", 2);
 
-  // Tick labels
+  // Tick labels — sit just beside the axes through the origin when those axes
+  // are in view (so a 4-quadrant grid reads naturally), otherwise fall back to
+  // the outer border for single-quadrant grids. The 0 is omitted to avoid a
+  // collision at the origin.
+  const xLabelY = yMin <= 0 && yMax >= 0 ? toSvgY(0) + 14 : PAD.top + plotH + 16;
+  const yLabelX = xMin <= 0 && xMax >= 0 ? toSvgX(0) - 7 : PAD.left - 10;
   for (let x = xMin; x <= xMax; x += xStep) {
-    const t = svgText(svg, toSvgX(x), PAD.top + plotH + 18, String(x), "10px", "#5f6f80");
+    if (x === 0) continue;
+    const t = svgText(svg, toSvgX(x), xLabelY, String(x), "10px", "#5f6f80");
     t.setAttribute("text-anchor", "middle");
   }
   for (let y = yMin; y <= yMax; y += yStep) {
-    const t = svgText(svg, PAD.left - 10, toSvgY(y) + 4, String(y), "10px", "#5f6f80");
+    if (y === 0) continue;
+    const t = svgText(svg, yLabelX, toSvgY(y) + 4, String(y), "10px", "#5f6f80");
     t.setAttribute("text-anchor", "end");
   }
 
@@ -294,7 +331,7 @@ export function renderCoordinateGrid(
       "display:flex; align-items:center; gap:var(--sp-2); font-size:0.88rem; font-weight:600; margin-top:var(--sp-3); cursor:pointer;";
     const cb = document.createElement("input");
     cb.type = "checkbox";
-    cb.style.cssText = "width:18px; height:18px; accent-color:var(--teal);";
+    cb.style.cssText = "width:18px; height:18px; accent-color:var(--teal-ink);";
     lineToggle.append(cb, document.createTextNode(" Connect points with a line"));
     wrapper.append(lineToggle);
 

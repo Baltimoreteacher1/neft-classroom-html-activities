@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <meta name="description" content="MAD Balance Sandbox: An interactive statistics sandbox. Place weights on a balance scale, locate the mean as center of gravity, and calculate the Mean Absolute Deviation.">
     <title>MAD Balance Sandbox | Mean Absolute Deviation Visualizer</title>
     <!-- Google Fonts -->
@@ -594,6 +595,100 @@
             background: rgba(6, 4, 13, 0.8);
             font-family: var(--font-display);
         }
+
+        /* ===== Responsive additions (tablet) ===== */
+        @media (max-width: 900px) {
+            header {
+                flex-wrap: wrap;
+                gap: 12px;
+                padding: 14px 18px;
+            }
+            .header-buttons {
+                flex-wrap: wrap;
+            }
+            .app-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+                margin: 18px auto;
+                padding: 0 16px;
+            }
+            .preset-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .pivot-slider-panel {
+                grid-template-columns: 1fr;
+            }
+            .pivot-slider-panel .param-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .diagnostics-panel {
+                width: min(330px, calc(100vw - 32px));
+            }
+        }
+
+        /* ===== Responsive additions (phone) ===== */
+        @media (max-width: 640px) {
+            header {
+                padding: 12px 14px;
+            }
+            .logo-title {
+                font-size: 1.25rem;
+            }
+            .header-buttons {
+                width: 100%;
+            }
+            .header-buttons .btn {
+                flex: 1 1 auto;
+                justify-content: center;
+                padding: 9px 12px;
+                font-size: 0.82rem;
+            }
+            .app-grid {
+                padding: 0 12px;
+                gap: 14px;
+            }
+            .glass-panel {
+                padding: 16px;
+            }
+            .panel-title {
+                font-size: 1.1rem;
+            }
+            .quest-matching-hud {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .preset-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .preset-btn {
+                padding: 10px 6px;
+            }
+            #sentence-select-grid {
+                grid-template-columns: 1fr !important;
+            }
+            #btn-autobalance {
+                width: 100%;
+                justify-content: center;
+            }
+            /* Keep the SVG stage usable: container fluid, allow horizontal scroll
+               so the interactive beam never gets squashed below a usable size. */
+            .svg-container {
+                width: 100%;
+                max-width: 100%;
+                overflow-x: auto;
+            }
+            .viewport-svg {
+                min-width: 480px;
+                height: 320px;
+            }
+            .diagnostics-panel {
+                left: 16px;
+                right: 16px;
+                bottom: 16px;
+                width: auto;
+            }
+        }
     </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
@@ -601,6 +696,12 @@
   <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
   <link rel="stylesheet" href="/assets/game-fx.css">
   <!-- gfx-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <link rel="stylesheet" href="/assets/game-access.css">
+  <!-- gacc-injected:end -->
 </head>
 <body>
 
@@ -1659,5 +1760,14 @@
   <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
   <script src="/assets/game-fx.js" defer></script>
   <!-- gfx-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+  <script src="/assets/canvas-bridge.js" defer></script>
+  <!-- canvas-bridge-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <script src="/assets/game-access.js" defer></script>
+  <!-- gacc-injected:end -->
 </body>
 </html>

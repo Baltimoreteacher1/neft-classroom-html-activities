@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <meta name="description" content="Ratio Paint Mixer Lab: Mix pigments to study ratios, rates, and double number lines. Match target colors by pouring exact equivalent proportions.">
     <title>Ratio Paint Mixer Lab | Equivalent Ratios Lab</title>
     <!-- Google Fonts -->
@@ -498,10 +499,123 @@
             justify-content: space-between;
             align-items: center;
         }
+
+        /* ============================================
+           RESPONSIVE (additive) — tablets & phones
+           ============================================ */
+        @media (max-width: 900px) {
+            header {
+                padding: 14px 18px;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            .header-controls {
+                flex-wrap: wrap;
+                justify-content: flex-start;
+            }
+            .logo-title {
+                font-size: 1.35rem;
+            }
+            /* Sidebar already stacks below 1100px; ensure full-width fluid */
+            .app-grid {
+                grid-template-columns: 1fr;
+                max-width: 100%;
+                padding: 0 16px;
+                gap: 18px;
+            }
+            .glass-panel {
+                padding: 18px;
+            }
+            /* Keep the two paint sliders side-by-side on tablet but allow shrink */
+            .sliders-deck {
+                gap: 14px;
+            }
+            /* Make the SVG beaker stage fully fluid */
+            .viewport-svg-element {
+                max-width: 100%;
+            }
+            /* Pin the fixed diagnostics console fluidly to the edges */
+            .diagnostics-panel {
+                width: auto;
+                left: 16px;
+                right: 16px;
+                bottom: 16px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            header {
+                padding: 12px 14px;
+            }
+            .logo-icon {
+                font-size: 1.6rem;
+            }
+            .logo-title {
+                font-size: 1.15rem;
+            }
+            /* Header buttons stack full-width and wrap */
+            .header-controls {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .header-controls .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .app-grid {
+                padding: 0 12px;
+                margin: 16px auto;
+                gap: 14px;
+            }
+            .glass-panel {
+                padding: 14px;
+            }
+            .panel-title {
+                font-size: 1.1rem;
+            }
+            /* Single-column paint controls on phone */
+            .sliders-deck {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            /* Stack the ratio HUD readouts vertically */
+            .ratio-hud-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+                font-size: 1.05rem;
+                text-align: left;
+            }
+            /* Stack the HUD match/score metrics */
+            .matching-hud {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            /* Keep the interactive SVG beaker stage usable: fluid, scroll if needed */
+            #canvas-container {
+                overflow-x: auto;
+            }
+            .viewport-svg-element {
+                max-width: 100%;
+                height: auto;
+            }
+            /* Diagnostics console full-width on phone */
+            .diagnostics-panel {
+                left: 10px;
+                right: 10px;
+                bottom: 10px;
+                padding: 14px;
+            }
+        }
     </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
 </head>
 <body>
 
@@ -1196,5 +1310,11 @@
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+  <script src="/assets/canvas-bridge.js" defer></script>
+  <!-- canvas-bridge-injected:end -->
 </body>
 </html>

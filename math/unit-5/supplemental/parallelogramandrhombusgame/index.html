@@ -1,1400 +1,1232 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <title>Architecture Builder — Area of Parallelograms & Rhombuses</title>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
-    <script>
-      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
-      // (document.write blocks parsing so the mirror is ready before the game script runs).
-      if (typeof Phaser === "undefined") {
-        document.write(
-          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
-        );
-      }
-      // If both CDNs are unreachable, show a clear message instead of a blank page.
-      window.addEventListener("load", function () {
-        if (typeof Phaser === "undefined") {
-          document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
-        }
-      });
-    </script>
+    <meta
+      name="description"
+      content="Parallelogram Builder: a Grade 6 math-as-mechanic game for 6.G.A.1 — read the base and the perpendicular height off a sheared unit-grid parallelogram, dial them in, and PRODUCE the area as base × height. Using the slanted side never wins."
+    />
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-      body {
-        background: #0a1628;
-        overflow: hidden;
+      :root {
+        --teal: #0e8a7d;
+        --teal-bright: #12a596;
+        --gold: #d4952a;
+        --ink: #06202c;
+        --panel: #0f2b3c;
+        --line: #1f4a5b;
+        --cell: #2f7fd4;
+        --cellline: #bfe0ff;
+        --txt: #dff1f0;
+        --muted: #8fb6bf;
+        --slant: #e06b6b;
       }
-      #game-container {
-        width: 100vw;
-        height: 100vh;
+      body {
+        background: var(--panel);
+        min-height: 100vh;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--txt);
+        overflow-x: hidden;
+      }
+      #ff-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+        background: radial-gradient(
+          130% 90% at 50% 0%,
+          #134a5a 0%,
+          #0f2b3c 55%,
+          #08202c 100%
+        );
+      }
+      .ff-mote {
+        position: absolute;
+        border-radius: 50%;
+        background: #7fd6c8;
+        opacity: 0.4;
+        animation: ffTwinkle var(--tw, 3s) ease-in-out infinite;
+      }
+      @keyframes ffTwinkle {
+        0%,
+        100% {
+          opacity: 0.12;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 0.6;
+          transform: scale(1.2);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .ff-mote {
+          animation: none !important;
+          opacity: 0.35 !important;
+        }
+        * {
+          scroll-behavior: auto !important;
+          transition: none !important;
+        }
+      }
+      #ff-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      #wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 18px 16px 48px;
+        min-height: 100vh;
+      }
+      .screen {
+        display: none;
+      }
+      .screen.on {
+        display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      h1 {
+        font-size: clamp(1.6rem, 4vw, 2.3rem);
+        color: #fff;
+        letter-spacing: 0.5px;
+      }
+      .sub {
+        color: var(--muted);
+        margin-top: 4px;
+        font-size: 0.95rem;
+      }
+      .card {
+        background: rgba(13, 41, 56, 0.82);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px;
+        margin: 16px 0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+      }
+      .btn {
+        font:
+          600 1rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 13px 22px;
+        color: var(--ink);
+        background: var(--teal);
+        transition:
+          transform 0.12s,
+          background 0.12s,
+          box-shadow 0.12s;
+      }
+      .btn:hover {
+        background: var(--teal-bright);
+        transform: translateY(-1px);
+      }
+      .btn:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 3px;
+      }
+      .btn.ghost {
+        background: #1a3a48;
+        color: #9fc6cf;
+      }
+      .btn.ghost:hover {
+        background: #244c5c;
+      }
+      .btn.big {
+        padding: 18px 26px;
+        font-size: 1.1rem;
+      }
+      .vocab {
+        display: grid;
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .vrow {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .vterm {
+        color: var(--gold);
+        font-weight: 700;
+        min-width: 130px;
+      }
+      .vdef {
+        color: var(--txt);
+      }
+      .levels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .levels {
+          grid-template-columns: 1fr;
+        }
+      }
+      .level-pick {
+        text-align: left;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+        padding: 18px;
+        background: #0c2532;
+        border: 1px solid var(--line);
+        color: var(--txt);
+        border-radius: 14px;
+        cursor: pointer;
+      }
+      .level-pick:hover {
+        border-color: var(--teal-bright);
+        background: #102f3f;
+      }
+      .level-pick b {
+        color: #fff;
+        font-size: 1.15rem;
+      }
+      .level-pick .tag {
+        color: var(--teal-bright);
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .level-pick .desc {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .hud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .hud .pill {
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-weight: 700;
+      }
+      .hud .pill small {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .lives {
+        color: #e06b6b;
+        letter-spacing: 2px;
+        font-size: 1.1rem;
+      }
+      .target {
+        text-align: center;
+        margin: 6px 0 14px;
+      }
+      .target .nums {
+        font-size: clamp(1.3rem, 4.5vw, 2rem);
+        font-weight: 800;
+        color: #fff;
+      }
+      .target .nums span {
+        color: var(--gold);
+      }
+      .prompt {
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      /* ── Build board (the math-as-mechanic visual model) ── */
+      .board-wrap {
+        display: flex;
+        justify-content: center;
+        margin: 10px 0;
+      }
+      svg.board {
+        width: 100%;
+        max-width: 560px;
+        height: auto;
+        background: #0b2330;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        touch-action: none;
+      }
+      .shear-control {
+        text-align: center;
+        margin: 10px 0 4px;
+      }
+      .shear-control label {
+        color: var(--muted);
+        font-size: 0.9rem;
+        display: block;
+        margin-bottom: 6px;
+      }
+      input[type="range"].slider {
+        width: min(420px, 90%);
+        accent-color: var(--teal-bright);
+        cursor: pointer;
+      }
+      input[type="range"].slider:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 4px;
+      }
+      .readout {
+        display: flex;
+        gap: 18px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 10px 0 2px;
+      }
+      .readout .r {
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 8px 16px;
+      }
+      .readout .r b {
+        color: var(--gold);
+      }
+      .readout .r.slant b {
+        color: var(--slant);
+      }
+      /* ── Producer panel: two steppers the student dials, then BUILDS ── */
+      .build-q {
+        text-align: center;
+        color: var(--txt);
+        font-weight: 700;
+        margin: 16px 0 8px;
+      }
+      .dials {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        justify-content: center;
+        align-items: stretch;
+      }
+      .dial {
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        min-width: 180px;
+        text-align: center;
+      }
+      .dial .dlabel {
+        color: var(--teal-bright);
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+      }
+      .dial .dlabel small {
+        display: block;
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 0.78rem;
+        margin-top: 2px;
+      }
+      .stepper {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        align-items: center;
+      }
+      .step-btn {
+        font:
+          800 1.4rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        border: none;
+        border-radius: 10px;
+        width: 46px;
+        height: 46px;
+        color: var(--ink);
+        background: linear-gradient(180deg, #ffd98a, var(--gold));
+        box-shadow: 0 3px 0 #a86f16;
+      }
+      .step-btn:hover {
+        transform: translateY(-1px);
+      }
+      .step-btn:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .step-val {
+        font:
+          800 1.6rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        color: #fff;
+        min-width: 56px;
+        background: #08202c;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 0;
+      }
+      .build-preview {
+        text-align: center;
+        margin: 12px 0 2px;
+        font-weight: 700;
+        color: var(--txt);
+        font-size: 1.1rem;
+      }
+      .build-preview b {
+        color: var(--gold);
+      }
+      .build-row {
+        display: flex;
+        justify-content: center;
+        margin: 12px 0 2px;
+      }
+      .feedback {
+        min-height: 24px;
+        text-align: center;
+        margin: 10px 0;
+        font-weight: 600;
+      }
+      .feedback.bad {
+        color: #f0a06b;
+      }
+      .feedback.good {
+        color: #79d39a;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-align: center;
+        margin-top: 6px;
+      }
+      .factbox {
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-align: center;
+        margin-top: 8px;
+      }
+      .factbox code {
+        color: var(--gold);
+        background: #0c2532;
+        padding: 2px 6px;
+        border-radius: 6px;
+      }
+      .result-stars {
+        font-size: 2rem;
+        color: var(--gold);
+        letter-spacing: 6px;
+        text-align: center;
+        margin: 10px 0;
+      }
+      .result-stat {
+        display: flex;
+        justify-content: space-between;
+        max-width: 320px;
+        margin: 6px auto;
+        color: var(--muted);
+      }
+      .result-stat b {
+        color: var(--txt);
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
-  </head>
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+    <!-- Games-2D metadata source of truth (must load before the game script) -->
+    <script src="/assets/games2d-data.js"></script>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <link rel="stylesheet" href="/assets/game-access.css">
+  <!-- gacc-injected:end -->
+</head>
   <body>
-    <div id="game-container"></div>
+    <div id="ff-bg" aria-hidden="true"></div>
+    <div id="ff-sr" role="status" aria-live="polite"></div>
+
+    <main id="wrap">
+      <!-- VOCAB GATE -->
+      <section id="screen-vocab" class="screen on" aria-labelledby="vh">
+        <h1 id="vh">📐 Parallelogram Builder</h1>
+        <p class="sub">
+          Area of parallelograms — produce base × height · 6.G.A.1
+        </p>
+        <div class="card">
+          <h2 style="color: #fff; font-size: 1.2rem">Words to know first</h2>
+          <div class="vocab" id="vocab-list"></div>
+          <button class="btn big" id="vocab-go">I'm ready →</button>
+        </div>
+      </section>
+
+      <!-- LEVEL SELECT -->
+      <section id="screen-level" class="screen" aria-labelledby="lh">
+        <h1 id="lh">Choose your level</h1>
+        <p class="sub">You can change this any time by playing again.</p>
+        <div class="card">
+          <div class="levels" id="level-list"></div>
+        </div>
+      </section>
+
+      <!-- PLAY -->
+      <section id="screen-play" class="screen" aria-labelledby="ph">
+        <h1 id="ph" style="position: absolute; left: -9999px">
+          Parallelogram Builder play
+        </h1>
+        <div class="hud">
+          <span class="pill"
+            ><small>Round</small> <span id="hud-round">1</span>/<span
+              id="hud-total"
+              >5</span
+            ></span
+          >
+          <span class="pill"
+            ><small>Score</small> <span id="hud-score">0</span></span
+          >
+          <span class="pill"
+            ><small>Lives</small>
+            <span class="lives" id="hud-lives">●●●●●</span></span
+          >
+        </div>
+        <div class="card">
+          <div class="target">
+            <div class="nums">Read this parallelogram and BUILD its area</div>
+            <div class="prompt" id="t-prompt">
+              Each square is 1 square unit. Read the base and the perpendicular
+              height (the dashed line) off the figure — not the slanted side.
+            </div>
+          </div>
+
+          <div class="board-wrap">
+            <svg
+              class="board"
+              id="board"
+              viewBox="0 0 560 340"
+              role="img"
+              aria-labelledby="board-desc"
+            >
+              <desc id="board-desc">
+                A parallelogram drawn on a grid of unit squares with a dashed
+                perpendicular height marker and a slanted side.
+              </desc>
+            </svg>
+          </div>
+
+          <div class="shear-control">
+            <label for="shear">
+              Slide the top edge to see the squares stay conserved (optional):
+              <span id="shear-val">0</span> units
+            </label>
+            <input
+              type="range"
+              class="slider"
+              id="shear"
+              min="-4"
+              max="4"
+              step="1"
+              value="2"
+              aria-describedby="board-desc"
+            />
+          </div>
+
+          <div class="readout">
+            <span class="r"
+              >Unit squares on the grid: <b id="ro-cells">0</b></span
+            >
+            <span class="r slant"
+              >Slanted side length: <b id="ro-slant">0</b> (a trap — don't use
+              it)</span
+            >
+          </div>
+
+          <p class="build-q" id="build-q">
+            Dial the base and the perpendicular height, then press Build.
+          </p>
+          <div class="dials">
+            <div class="dial">
+              <div class="dlabel">
+                Base
+                <small>squares straight across the bottom</small>
+              </div>
+              <div class="stepper">
+                <button
+                  class="step-btn"
+                  id="base-dn"
+                  aria-label="Decrease base"
+                >
+                  −
+                </button>
+                <span
+                  class="step-val"
+                  id="base-val"
+                  role="status"
+                  aria-live="polite"
+                  aria-label="Base value"
+                  >1</span
+                >
+                <button
+                  class="step-btn"
+                  id="base-up"
+                  aria-label="Increase base"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div class="dial">
+              <div class="dlabel">
+                Height
+                <small>rows straight up (the dashed line)</small>
+              </div>
+              <div class="stepper">
+                <button
+                  class="step-btn"
+                  id="height-dn"
+                  aria-label="Decrease height"
+                >
+                  −
+                </button>
+                <span
+                  class="step-val"
+                  id="height-val"
+                  role="status"
+                  aria-live="polite"
+                  aria-label="Height value"
+                  >1</span
+                >
+                <button
+                  class="step-btn"
+                  id="height-up"
+                  aria-label="Increase height"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <p class="build-preview" id="build-preview">
+            Area = base × height = <b id="bp-b">1</b> × <b id="bp-h">1</b> =
+            <b id="bp-area">1</b> square units
+          </p>
+          <div class="build-row">
+            <button class="btn big" id="build-go">⚒️ Build the area</button>
+          </div>
+
+          <div
+            class="feedback"
+            id="feedback"
+            role="status"
+            aria-live="assertive"
+          ></div>
+          <p class="hint" id="hint"></p>
+          <div class="factbox" id="factbox"></div>
+        </div>
+      </section>
+
+      <!-- RESULT -->
+      <section id="screen-result" class="screen" aria-labelledby="rh">
+        <h1 id="rh">Build complete</h1>
+        <div class="card">
+          <div class="result-stars" id="r-stars">★★★</div>
+          <div class="result-stat"><span>Score</span><b id="r-score">0</b></div>
+          <div class="result-stat">
+            <span>Parallelograms built</span><b id="r-correct">0</b>
+          </div>
+          <div class="result-stat">
+            <span>Rounds played</span><b id="r-rounds">0</b>
+          </div>
+          <div class="result-stat" id="r-high-row" style="display: none">
+            <span>★ New high score!</span><b id="r-high">0</b>
+          </div>
+          <div class="row">
+            <button class="btn big" id="r-again">Play again</button>
+            <a class="btn ghost big" href="/math/games/">All games</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
     <script>
-      (() => {
-        // ════════════════════════════════════════════════════════════════
-        //  ARCHITECTURE BUILDER — area of parallelograms & rhombuses (6.G.1)
-        //  THE MATH IS THE MECHANIC. There are no A/B/C/D choices anywhere.
-        //  Three build tasks, all on a unit grid where 1 cell = 1 square unit:
-        //   • SHEAR: drag the top edge of a rectangle sideways. The slanted
-        //     off-cut animates across to fill the gap — the cell count never
-        //     changes, proving area = base × height stays constant.
-        //   • MISSING DIMENSION: a target area is locked; drag base / height
-        //     handles until base × height == target. The shape only "accepts"
-        //     a configuration that hits the target exactly.
-        //   • RHOMBUS BY DIAGONALS: drag the two diagonal endpoints. The
-        //     rhombus auto-fits inside its bounding rectangle, showing the
-        //     rhombus is exactly half the rectangle: A = ½ · d1 · d2.
-        //  The student PRODUCES the area by manipulation, then confirms it —
-        //  the answer is never offered as an option.
-        //  Level 1 (Support): integer base/height, gridlines + formula scaffold.
-        //  Level 2 (Challenge): adds missing-dimension + diagonal tasks, fewer guides.
-        // ════════════════════════════════════════════════════════════════
-
-        /* ─── SOUND ENGINE — Web Audio oscillator beeps ─── */
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        let actx = null;
-        function ensureAudio() {
-          if (!actx && AudioCtx) actx = new AudioCtx();
-          if (actx && actx.state === "suspended") actx.resume();
+      // ── Decorative drifting motes (reduced-motion safe) ──
+      (function () {
+        var host = document.getElementById("ff-bg");
+        if (!host) return;
+        var reduce =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var n = reduce ? 10 : 26;
+        for (var i = 0; i < n; i++) {
+          var d = document.createElement("div");
+          d.className = "ff-mote";
+          var sz = 2 + Math.random() * 4;
+          d.style.width = d.style.height = sz.toFixed(1) + "px";
+          d.style.left = (Math.random() * 100).toFixed(2) + "%";
+          d.style.top = (Math.random() * 100).toFixed(2) + "%";
+          d.style.setProperty("--tw", (2 + Math.random() * 4).toFixed(2) + "s");
+          d.style.animationDelay = "-" + (Math.random() * 4).toFixed(2) + "s";
+          host.appendChild(d);
         }
-        function beep(freq, dur, type = "sine", vol = 0.16) {
-          if (!actx) return;
-          const o = actx.createOscillator(),
-            g = actx.createGain();
-          o.connect(g);
-          g.connect(actx.destination);
-          o.frequency.value = freq;
-          o.type = type;
-          g.gain.setValueAtTime(vol, actx.currentTime);
-          g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
-          o.start();
-          o.stop(actx.currentTime + dur);
-        }
-        const sfxDrag = () =>
-          beep(300 + Math.random() * 40, 0.03, "sine", 0.05);
-        const sfxSnap = () => beep(620, 0.06, "sine", 0.12);
-        const sfxClick = () => beep(880, 0.04, "sine", 0.1);
-        const sfxCorrect = () => {
-          beep(523, 0.08);
-          setTimeout(() => beep(659, 0.08), 80);
-          setTimeout(() => beep(784, 0.12), 160);
-        };
-        const sfxWrong = () => beep(190, 0.22, "square", 0.1);
-        const sfxLevel = () =>
-          [523, 659, 784, 1047].forEach((f, i) =>
-            setTimeout(() => beep(f, 0.13), i * 85),
-          );
-
-        /* ─── PALETTE — colourblind-safe (shape never identified by colour
-              alone; every shape carries a text label + formula) ─── */
-        const W = 1024,
-          H = 720;
-        const CLR = {
-          bg: 0x0a1628,
-          panel: 0x101b35,
-          panelLt: 0x162648,
-          gold: 0xffcf72,
-          teal: 0x4ecdc4,
-          violet: 0xa88bff,
-          white: 0xeef5ff,
-          muted: 0xa4b8dc,
-          ok: 0x48df8a,
-          danger: 0xff6273,
-          grid: 0x24385f,
-          fillP: 0x2f7fd4, // parallelogram fill (blue)
-          fillR: 0xe08a2e, // rhombus fill (orange) — distinct hue + always labelled
-          stroke: 0x33507e,
-        };
-        const CSS = (n) => "#" + n.toString(16).padStart(6, "0");
-
-        /* ─── MATH / RANDOM HELPERS ─── */
-        const ri = (min, max) =>
-          Math.floor(Math.random() * (max - min + 1)) + min;
-        const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-
-        const PARA_CTX = [
-          "training platform",
-          "garden bed",
-          "solar panel",
-          "stage panel",
-          "roof tile",
-          "wall section",
-        ];
-        const RHOM_CTX = [
-          "logo badge",
-          "diamond tile",
-          "kite panel",
-          "signal marker",
-          "floor tile",
-          "window pane",
-        ];
-
-        // Grid bounds (in cells). Every generated target must fit these.
-        const GRID = { maxB: 11, maxH: 8, minB: 2, minH: 2, maxD: 10, minD: 2 };
-
-        /* ═══════════════════════════════════════════════════════════════
-           ROUND GENERATOR — solvability-verified.
-           tier 1: only SHEAR tasks (build a parallelogram by shearing).
-           tier 2: SHEAR + MISSING-DIMENSION + DIAGONAL tasks.
-           Every round guarantees an integer area that fits the grid.
-           ═══════════════════════════════════════════════════════════════ */
-        function makeRound(tier, index) {
-          let type;
-          if (tier === 1) {
-            type = "shear";
-          } else {
-            // Rotate so each task type appears and missing/diagonal are common.
-            type = ["shear", "missing", "diagonal", "missing", "diagonal"][
-              index % 5
-            ];
-          }
-
-          if (type === "shear") {
-            // Build a parallelogram: start as b×h rectangle, shear top edge.
-            const b = ri(GRID.minB, tier === 1 ? 8 : GRID.maxB);
-            const h = ri(GRID.minH, tier === 1 ? 6 : GRID.maxH);
-            const ctx = pick(PARA_CTX);
-            return {
-              type,
-              shape: "para",
-              b,
-              h,
-              area: b * h, // base × height — invariant under shear
-              ctx,
-              prompt: `Build the ${ctx}: a parallelogram with base ${b} and height ${h}.`,
-            };
-          }
-
-          if (type === "missing") {
-            // Lock a target area; player drags base/height until b×h == target.
-            // Choose b,h so target factors fit the grid.
-            const b = ri(2, GRID.maxB);
-            const h = ri(2, GRID.maxH);
-            const area = b * h;
-            const ctx = pick(PARA_CTX);
-            // Decide which dimension is "missing" (the one the student finds).
-            const findHeight = Math.random() < 0.5;
-            return {
-              type,
-              shape: "para",
-              b,
-              h,
-              area,
-              ctx,
-              findHeight,
-              given: findHeight ? b : h,
-              prompt: findHeight
-                ? `This ${ctx} must have area ${area} square units, and base ${b}. Stretch the HEIGHT until the area is exactly ${area}.`
-                : `This ${ctx} must have area ${area} square units, and height ${h}. Stretch the BASE until the area is exactly ${area}.`,
-            };
-          }
-
-          // diagonal — rhombus via diagonals; ½·d1·d2 must be an integer.
-          // Guarantee integer: make at least one diagonal even.
-          let d1 = ri(GRID.minD, GRID.maxD);
-          let d2 = ri(GRID.minD, GRID.maxD);
-          if ((d1 * d2) % 2 !== 0) {
-            // both odd → bump d2 to even within bounds
-            d2 = d2 < GRID.maxD ? d2 + 1 : d2 - 1;
-          }
-          const ctx = pick(RHOM_CTX);
-          return {
-            type: "diagonal",
-            shape: "rhom",
-            d1,
-            d2,
-            area: (d1 * d2) / 2,
-            ctx,
-            prompt: `Build the ${ctx}: a rhombus with diagonals d1 = ${d1} and d2 = ${d2}.`,
-          };
-        }
-
-        /* ═══════════════════════════════════════════════════════════════
-           TITLE SCENE — Level 1 (Support) vs Level 2 (Challenge)
-           ═══════════════════════════════════════════════════════════════ */
-        class TitleScene extends Phaser.Scene {
-          constructor() {
-            super("TitleScene");
-          }
-          create() {
-            this.cameras.main.setBackgroundColor(CLR.bg);
-            this.cameras.main.fadeIn(350);
-
-            // soft grid backdrop
-            const g = this.add.graphics();
-            g.lineStyle(1, CLR.grid, 0.25);
-            for (let y = 0; y < H; y += 36) g.lineBetween(0, y, W, y);
-            for (let x = 0; x < W; x += 36) g.lineBetween(x, 0, x, H);
-
-            this.add
-              .text(W / 2, 88, "ARCHITECTURE BUILDER", {
-                fontSize: "54px",
-                fontFamily: "Arial Black, sans-serif",
-                color: CSS(CLR.gold),
-                stroke: "#0a1628",
-                strokeThickness: 6,
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 140, "Area of Parallelograms & Rhombuses · 6.G.1", {
-                fontSize: "19px",
-                fontFamily: "Arial, sans-serif",
-                color: CSS(CLR.teal),
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(
-                W / 2,
-                188,
-                "You don't pick an answer — you BUILD the shape. Drag its edges on the grid\n" +
-                  "until it is correct. Watch the area appear as you build.",
-                {
-                  fontSize: "16px",
-                  fontFamily: "Arial, sans-serif",
-                  color: CSS(CLR.muted),
-                  align: "center",
-                  lineSpacing: 6,
-                },
-              )
-              .setOrigin(0.5);
-
-            // mini demo: rectangle → sheared parallelogram, same area
-            this.drawDemo(W / 2, 320);
-
-            const tiers = [
-              {
-                t: 1,
-                label: "Level 1",
-                sub: "Support",
-                desc: "Build parallelograms by shearing · gridlines + formula shown · 5 lives",
-                col: CLR.ok,
-              },
-              {
-                t: 2,
-                label: "Level 2",
-                sub: "Challenge",
-                desc: "Adds missing-dimension & rhombus-diagonal builds · fewer guides · 3 lives",
-                col: CLR.gold,
-              },
-            ];
-            tiers.forEach((d, i) => {
-              const x = W / 2 + (i === 0 ? -210 : 210),
-                y = 500;
-              const card = this.add
-                .rectangle(x, y, 360, 150, CLR.panel)
-                .setStrokeStyle(3, CLR.stroke)
-                .setInteractive({ useHandCursor: true });
-              this.add
-                .text(x, y - 48, d.label, {
-                  fontSize: "30px",
-                  fontFamily: "Arial Black",
-                  color: "#fff",
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y - 16, d.sub, {
-                  fontSize: "16px",
-                  fontFamily: "Arial",
-                  color: CSS(d.col),
-                  fontStyle: "bold",
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y + 28, d.desc, {
-                  fontSize: "13px",
-                  fontFamily: "Arial",
-                  color: CSS(CLR.muted),
-                  align: "center",
-                  wordWrap: { width: 330 },
-                  lineSpacing: 3,
-                })
-                .setOrigin(0.5);
-              card.on("pointerover", () => {
-                card.setStrokeStyle(3, d.col);
-                card.setScale(1.03);
-              });
-              card.on("pointerout", () => {
-                card.setStrokeStyle(3, CLR.stroke);
-                card.setScale(1);
-              });
-              card.on("pointerdown", () => {
-                ensureAudio();
-                sfxClick();
-                this.cameras.main.fadeOut(300, 0, 0, 0);
-                this.time.delayedCall(300, () =>
-                  this.scene.start("GameScene", { tier: d.t }),
-                );
-              });
-            });
-
-            this.add
-              .text(W / 2, 632, "Press 1 for Level 1 · 2 for Level 2", {
-                fontSize: "14px",
-                color: CSS(CLR.muted),
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(
-                W / 2,
-                666,
-                "TOUCH: drag the round handles.   KEYBOARD: Arrow keys move the active handle · Tab switches handle · Enter confirms · H for a hint.",
-                {
-                  fontSize: "13px",
-                  fontFamily: "Arial, sans-serif",
-                  color: CSS(CLR.violet),
-                  align: "center",
-                  wordWrap: { width: 880 },
-                },
-              )
-              .setOrigin(0.5);
-
-            this.input.keyboard.on("keydown", (e) => {
-              if (e.key === "1" || e.key === "2") {
-                ensureAudio();
-                sfxClick();
-                this.scene.start("GameScene", { tier: parseInt(e.key, 10) });
-              }
-            });
-          }
-
-          drawDemo(cx, cy) {
-            const s = 14; // cell size
-            const g = this.add.graphics();
-            // rectangle 4×3
-            const drawCells = (ox, oy, skew) => {
-              g.lineStyle(1, CLR.stroke, 0.7);
-              for (let r = 0; r < 3; r++)
-                for (let c = 0; c < 4; c++) {
-                  const sx = ox + c * s + (2 - r) * skew;
-                  const sy = oy + r * s;
-                  g.fillStyle(CLR.fillP, 0.5);
-                  g.fillRect(sx, sy, s - 1, s - 1);
-                  g.strokeRect(sx, sy, s - 1, s - 1);
-                }
-            };
-            g.clear();
-            drawCells(cx - 150, cy - 20, 0);
-            this.add
-              .text(cx - 99, cy + 28, "rectangle\n4 × 3 = 12", {
-                fontSize: "12px",
-                color: CSS(CLR.muted),
-                align: "center",
-              })
-              .setOrigin(0.5, 0);
-            this.add
-              .text(cx, cy, "→ shear →", {
-                fontSize: "18px",
-                fontFamily: "Arial Black",
-                color: CSS(CLR.gold),
-              })
-              .setOrigin(0.5);
-            drawCells(cx + 70, cy - 20, 9);
-            this.add
-              .text(cx + 140, cy + 28, "parallelogram\nstill 12", {
-                fontSize: "12px",
-                color: CSS(CLR.muted),
-                align: "center",
-              })
-              .setOrigin(0.5, 0);
-          }
-        }
-
-        /* ═══════════════════════════════════════════════════════════════
-           GAME SCENE
-           ═══════════════════════════════════════════════════════════════ */
-        class GameScene extends Phaser.Scene {
-          constructor() {
-            super("GameScene");
-          }
-          init(data) {
-            this.tier = data.tier || 1;
-          }
-
-          create() {
-            this.cameras.main.setBackgroundColor(CLR.bg);
-            this.cameras.main.fadeIn(300);
-
-            // state
-            this.score = 0;
-            this.streak = 0;
-            this.bestStreak = 0;
-            this.built = 0;
-            this.correct = 0;
-            this.attempts = 0;
-            this.lives = this.tier === 1 ? 5 : 3;
-            this.goal = this.tier === 1 ? 8 : 10;
-            this.roundIx = 0;
-
-            // grid geometry (square cells). Origin at the build board.
-            this.cell = 44;
-            this.boardX = 470; // left edge of grid (x of column 0)
-            this.boardYBottom = 560; // baseline (y of row 0 bottom)
-
-            // backdrop grid
-            const bg = this.add.graphics();
-            bg.lineStyle(1, CLR.grid, 0.2);
-            for (let y = 0; y < H; y += 30) bg.lineBetween(0, y, W, y);
-            for (let x = 0; x < W; x += 30) bg.lineBetween(x, 0, x, H);
-
-            // HUD
-            this.add.rectangle(W / 2, 26, W, 52, 0x091526, 0.96);
-            this.hScore = this.add.text(20, 12, "0", {
-              fontSize: "24px",
-              fontFamily: "Arial Black",
-              color: CSS(CLR.gold),
-            });
-            this.add.text(22, 40, "POINTS", {
-              fontSize: "10px",
-              color: CSS(CLR.muted),
-            });
-            this.hLevel = this.add
-              .text(W / 2, 10, "", {
-                fontSize: "15px",
-                fontFamily: "Arial Black",
-                color: "#fff",
-              })
-              .setOrigin(0.5, 0);
-            this.hProgress = this.add
-              .text(W / 2, 32, "", { fontSize: "12px", color: CSS(CLR.muted) })
-              .setOrigin(0.5, 0);
-            this.hLives = this.add
-              .text(W - 20, 12, "", { fontSize: "18px" })
-              .setOrigin(1, 0);
-            this.hStreak = this.add
-              .text(W - 20, 38, "", { fontSize: "12px", color: CSS(CLR.gold) })
-              .setOrigin(1, 0);
-
-            // ── Task ticket (left panel) ──
-            this.add
-              .rectangle(210, 320, 340, 470, CLR.panel)
-              .setStrokeStyle(3, CLR.stroke);
-            this.add
-              .text(210, 110, "BLUEPRINT", {
-                fontSize: "18px",
-                fontFamily: "Arial Black",
-                color: CSS(CLR.gold),
-              })
-              .setOrigin(0.5);
-            this.taskIcon = this.add
-              .text(210, 158, "", { fontSize: "40px" })
-              .setOrigin(0.5);
-            this.taskText = this.add
-              .text(210, 230, "", {
-                fontSize: "16px",
-                fontFamily: "Arial",
-                color: CSS(CLR.white),
-                align: "center",
-                wordWrap: { width: 300 },
-                lineSpacing: 5,
-              })
-              .setOrigin(0.5, 0);
-            this.formulaText = this.add
-              .text(210, 410, "", {
-                fontSize: "16px",
-                fontFamily: "Courier New, monospace",
-                color: CSS(CLR.teal),
-                align: "center",
-                wordWrap: { width: 300 },
-                lineSpacing: 5,
-              })
-              .setOrigin(0.5, 0);
-            this.liveReadout = this.add
-              .text(210, 500, "", {
-                fontSize: "20px",
-                fontFamily: "Arial Black",
-                color: "#fff",
-                align: "center",
-              })
-              .setOrigin(0.5);
-
-            // ── Build board title ──
-            this.add
-              .text(720, 96, "BUILD BOARD — 1 square = 1 square unit", {
-                fontSize: "13px",
-                fontFamily: "Arial",
-                color: CSS(CLR.muted),
-              })
-              .setOrigin(0.5);
-
-            // graphics layers for the shape
-            this.gridGfx = this.add.graphics(); // grid + cells
-            this.shapeGfx = this.add.graphics(); // shape outline + dims
-            this.handleLayer = this.add.container();
-
-            // ── Action buttons ──
-            this.confirmBtn = this.makeBtn(
-              720,
-              636,
-              260,
-              58,
-              "✓ CONFIRM BUILD",
-              CLR.gold,
-              () => this.confirm(),
-              "22px",
-              0x0a1628,
-            );
-            this.resetBtn = this.makeBtn(
-              512,
-              636,
-              150,
-              48,
-              "↶ Reset",
-              0x2a3c63,
-              () => this.resetShape(),
-              "16px",
-            );
-            this.hintBtn = this.makeBtn(
-              912,
-              636,
-              150,
-              48,
-              "💡 Hint",
-              0x2a3c63,
-              () => this.showHint(),
-              "16px",
-            );
-            this.feedback = this.add
-              .text(720, 686, "", {
-                fontSize: "15px",
-                fontFamily: "Arial",
-                fontStyle: "bold",
-                color: "#fff",
-                align: "center",
-                wordWrap: { width: 560 },
-              })
-              .setOrigin(0.5);
-
-            // keyboard
-            this.input.keyboard.on("keydown", (e) => {
-              const k = e.key;
-              if (k === "Tab") {
-                e.preventDefault?.();
-                this.cycleHandle();
-              } else if (k === "ArrowLeft") this.nudge(-1, 0);
-              else if (k === "ArrowRight") this.nudge(1, 0);
-              else if (k === "ArrowUp") this.nudge(0, -1);
-              else if (k === "ArrowDown") this.nudge(0, 1);
-              else if (k === "Enter") this.confirm();
-              else if (k.toLowerCase() === "h") this.showHint();
-            });
-
-            this.loadRound();
-          }
-
-          makeBtn(
-            x,
-            y,
-            w,
-            h,
-            label,
-            color,
-            cb,
-            fs = "18px",
-            txtColor = 0xffffff,
-          ) {
-            const r = this.add
-              .rectangle(x, y, w, h, color)
-              .setStrokeStyle(2, 0x000000, 0.25)
-              .setInteractive({ useHandCursor: true });
-            const t = this.add
-              .text(x, y, label, {
-                fontSize: fs,
-                fontFamily: "Arial Black",
-                color: CSS(txtColor),
-              })
-              .setOrigin(0.5);
-            r.on("pointerover", () => r.setScale(1.04));
-            r.on("pointerout", () => r.setScale(1));
-            r.on("pointerdown", () => {
-              ensureAudio();
-              cb();
-            });
-            r._t = t;
-            return r;
-          }
-
-          /* ── grid → screen coordinate helpers ── */
-          gx(col) {
-            return this.boardX + col * this.cell;
-          }
-          gy(row) {
-            return this.boardYBottom - row * this.cell;
-          }
-
-          loadRound() {
-            this.round = makeRound(this.tier, this.roundIx);
-            const r = this.round;
-            this.attempts = 0;
-            this.solvedThisRound = false;
-            this.feedback.setText("");
-            this.activeHandle = 0;
-            this._needHandles = true; // new task → rebuild the handle set once
-
-            // Working state per task type.
-            if (r.type === "shear") {
-              // student builds a parallelogram with base r.b, height r.h.
-              // working: current base, current height, current shear (in cells).
-              this.cur = { b: 2, h: 2, shear: 0 };
-              this.taskIcon.setText("▰");
-            } else if (r.type === "missing") {
-              // base or height fixed; student stretches the other.
-              this.cur = {
-                b: r.findHeight ? r.b : 2,
-                h: r.findHeight ? 2 : r.h,
-                shear: 1,
-              };
-              this.taskIcon.setText("▱");
-            } else {
-              // diagonal: student drags d1 (horizontal) and d2 (vertical).
-              this.cur = { d1: 2, d2: 2 };
-              this.taskIcon.setText("◆");
-            }
-
-            this.taskText.setText(r.prompt);
-
-            // formula scaffold (always on Level 1; shorter on Level 2)
-            let f = "";
-            if (r.shape === "para") {
-              f =
-                this.tier === 1
-                  ? "Area = base × height\nShearing slides the top — area never changes."
-                  : "Area = base × height";
-            } else {
-              f =
-                this.tier === 1
-                  ? "Area = ½ × d1 × d2\nA rhombus fills half its rectangle."
-                  : "Area = ½ × d1 × d2";
-            }
-            this.formulaText.setText(f);
-
-            this.updateHUD();
-            this.redraw();
-          }
-
-          /* ── build the interactive handles for the current task ── */
-          buildHandles() {
-            this.handleLayer.removeAll(true);
-            this.handles = [];
-            const r = this.round;
-            const mk = (col, row, label, kind) => {
-              const x = this.gx(col),
-                y = this.gy(row);
-              const c = this.add
-                .circle(x, y, 15, CLR.gold)
-                .setStrokeStyle(3, 0x0a1628)
-                .setInteractive({ useHandCursor: true, draggable: true });
-              c._kind = kind;
-              c._label = label;
-              const lab = this.add
-                .text(x, y, label, {
-                  fontSize: "13px",
-                  fontFamily: "Arial Black",
-                  color: "#0a1628",
-                })
-                .setOrigin(0.5);
-              this.handleLayer.add(c);
-              this.handleLayer.add(lab);
-              c._lab = lab;
-              this.input.setDraggable(c);
-              c.on("drag", (p) => this.onDrag(kind, p));
-              this.handles.push(c);
-              return c;
-            };
-
-            if (r.type === "shear") {
-              // handle to drag the TOP edge sideways (shear) and a corner to size.
-              mk(this.cur.b + this.cur.shear, this.cur.h, "↔", "shear");
-              mk(this.cur.b, 0, "B", "base"); // bottom-right: base
-              mk(this.cur.shear, this.cur.h, "H", "height"); // top-left: height
-            } else if (r.type === "missing") {
-              if (r.findHeight) {
-                mk(this.cur.b + 1, this.cur.h, "H", "height");
-              } else {
-                mk(this.cur.b, this.cur.h + 0, "B", "base");
-              }
-            } else {
-              // diagonal endpoints: d1 horizontal (right tip), d2 vertical (top tip)
-              const cx0 = 0; // we render rhombus centred; handles are tips
-              mk(this.cur.d1, 0, "d1", "d1");
-              mk(0, this.cur.d2, "d2", "d2");
-            }
-          }
-
-          onDrag(kind, pointer) {
-            // snap to the grid cell under the finger/cursor (pointer.worldX/Y are
-            // in game space). Works on both axes regardless of grab offset.
-            const col = Math.round((pointer.worldX - this.boardX) / this.cell);
-            const row = Math.round(
-              (this.boardYBottom - pointer.worldY) / this.cell,
-            );
-            this.applyHandle(kind, col, row);
-          }
-
-          // Grid position (col,row) where a handle of the given kind should sit
-          // for the current working shape. Shared by buildHandles + positionHandles.
-          handlePos(kind) {
-            const r = this.round,
-              c = this.cur;
-            if (r.type === "shear") {
-              if (kind === "shear") return { col: c.b + c.shear, row: c.h };
-              if (kind === "base") return { col: c.b, row: 0 };
-              if (kind === "height") return { col: c.shear, row: c.h };
-            } else if (r.type === "missing") {
-              if (kind === "height") return { col: c.b + 1, row: c.h };
-              return { col: c.b, row: c.h };
-            } else {
-              if (kind === "d1") return { col: c.d1, row: 0 };
-              return { col: 0, row: c.d2 };
-            }
-            return { col: 0, row: 0 };
-          }
-
-          // Move existing handles to match the working shape WITHOUT destroying
-          // them — destroying mid-drag was killing the drag (esp. vertically).
-          positionHandles() {
-            if (!this.handles) return;
-            for (const h of this.handles) {
-              const { col, row } = this.handlePos(h._kind);
-              const x = this.gx(col),
-                y = this.gy(row);
-              h.setPosition(x, y);
-              if (h._lab) h._lab.setPosition(x, y);
-            }
-          }
-
-          // Apply a handle to a target grid coordinate (col,row), clamped.
-          applyHandle(kind, col, row) {
-            const r = this.round,
-              c = this.cur;
-            const cl = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-            if (kind === "base") {
-              c.b = cl(
-                col - (r.type === "shear" ? 0 : 0),
-                GRID.minB,
-                GRID.maxB,
-              );
-            } else if (kind === "height") {
-              c.h = cl(row, GRID.minH, GRID.maxH);
-              if (r.type === "shear") c.shear = cl(col, 0, GRID.maxB);
-            } else if (kind === "shear") {
-              c.shear = cl(col - c.b, -c.b + 1, GRID.maxB);
-            } else if (kind === "d1") {
-              c.d1 = cl(col, GRID.minD, GRID.maxD);
-            } else if (kind === "d2") {
-              c.d2 = cl(row, GRID.minD, GRID.maxD);
-            }
-            sfxDrag();
-            this.redraw();
-          }
-
-          /* keyboard: nudge the active handle by one cell */
-          cycleHandle() {
-            if (!this.handles || !this.handles.length) return;
-            this.activeHandle = (this.activeHandle + 1) % this.handles.length;
-            sfxClick();
-            this.redraw();
-          }
-          nudge(dcol, drow) {
-            if (!this.handles || !this.handles.length) return;
-            const h = this.handles[this.activeHandle];
-            const r = this.round,
-              c = this.cur;
-            if (h._kind === "base") c.b += dcol;
-            else if (h._kind === "height") {
-              c.h += -drow; // up arrow = taller
-              if (r.type === "shear") c.shear += dcol;
-            } else if (h._kind === "shear") c.shear += dcol;
-            else if (h._kind === "d1") c.d1 += dcol;
-            else if (h._kind === "d2") c.d2 += -drow;
-            // clamp
-            c.b =
-              c.b !== undefined
-                ? Math.max(GRID.minB, Math.min(GRID.maxB, c.b))
-                : c.b;
-            c.h =
-              c.h !== undefined
-                ? Math.max(GRID.minH, Math.min(GRID.maxH, c.h))
-                : c.h;
-            if (c.shear !== undefined)
-              c.shear = Math.max(-c.b + 1, Math.min(GRID.maxB, c.shear));
-            if (c.d1 !== undefined)
-              c.d1 = Math.max(GRID.minD, Math.min(GRID.maxD, c.d1));
-            if (c.d2 !== undefined)
-              c.d2 = Math.max(GRID.minD, Math.min(GRID.maxD, c.d2));
-            sfxDrag();
-            this.redraw();
-          }
-
-          resetShape() {
-            sfxClick();
-            const r = this.round;
-            if (r.type === "shear") this.cur = { b: 2, h: 2, shear: 0 };
-            else if (r.type === "missing")
-              this.cur = {
-                b: r.findHeight ? r.b : 2,
-                h: r.findHeight ? 2 : r.h,
-                shear: 1,
-              };
-            else this.cur = { d1: 2, d2: 2 };
-            this.feedback.setText("");
-            this.redraw();
-          }
-
-          /* ── current built area for the working shape ── */
-          builtArea() {
-            const r = this.round,
-              c = this.cur;
-            if (r.shape === "para") return c.b * c.h;
-            return (c.d1 * c.d2) / 2;
-          }
-
-          /* ═══ RENDER ═══ */
-          redraw() {
-            this.releaseLabels();
-            const g = this.gridGfx;
-            g.clear();
-            const r = this.round,
-              c = this.cur;
-
-            // build-board grid (Level 1 always; Level 2 lighter)
-            const showGrid = this.tier === 1 || true;
-            const cols = GRID.maxB + 2,
-              rows = GRID.maxH + 1;
-            const gAlpha = this.tier === 1 ? 0.5 : 0.28;
-            g.lineStyle(1, CLR.grid, gAlpha);
-            for (let cc = 0; cc <= cols; cc++)
-              g.lineBetween(
-                this.gx(cc),
-                this.gy(0),
-                this.gx(cc),
-                this.gy(rows),
-              );
-            for (let rr = 0; rr <= rows; rr++)
-              g.lineBetween(
-                this.gx(0),
-                this.gy(rr),
-                this.gx(cols),
-                this.gy(rr),
-              );
-            // baseline emphasis
-            g.lineStyle(3, CLR.stroke, 0.9);
-            g.lineBetween(this.gx(0), this.gy(0), this.gx(cols), this.gy(0));
-
-            const sg = this.shapeGfx;
-            sg.clear();
-
-            if (r.shape === "para") this.drawPara(g, sg);
-            else this.drawRhombus(g, sg);
-
-            // live readout — the area the student is PRODUCING
-            const a = this.builtArea();
-            if (r.shape === "para") {
-              this.liveReadout.setText(
-                `Your build:\n${c.b} × ${c.h} = ${a} sq units`,
-              );
-            } else {
-              this.liveReadout.setText(
-                `Your build:\n½ × ${c.d1} × ${c.d2} = ${a} sq units`,
-              );
-            }
-            // colour the readout by closeness to the implicit goal (felt, not given)
-            this.liveReadout.setColor(this.isSolved() ? CSS(CLR.ok) : "#fff");
-
-            // Build handles once per round; afterwards just reposition them so a
-            // drag in progress is never destroyed (that broke vertical dragging).
-            if (this._needHandles || !this.handles || !this.handles.length) {
-              this.buildHandles();
-              this._needHandles = false;
-            } else {
-              this.positionHandles();
-            }
-            this.highlightActiveHandle();
-          }
-
-          drawPara(g, sg) {
-            const r = this.round,
-              c = this.cur;
-            const sh = c.shear || 0;
-            // animate off-cut illustration: draw individual unit cells, the top
-            // rows slid by `shear` so the cell count is visibly conserved.
-            for (let row = 0; row < c.h; row++) {
-              const slide = (sh / c.h) * row; // proportional slant per row
-              for (let col = 0; col < c.b; col++) {
-                const x = this.gx(col + slide);
-                const yTop = this.gy(row + 1);
-                g.fillStyle(CLR.fillP, 0.45);
-                g.fillRect(x, yTop, this.cell - 1, this.cell - 1);
-                g.lineStyle(1, CLR.white, 0.25);
-                g.strokeRect(x, yTop, this.cell - 1, this.cell - 1);
-              }
-            }
-            // outline parallelogram
-            const p0 = { x: this.gx(0), y: this.gy(0) };
-            const p1 = { x: this.gx(c.b), y: this.gy(0) };
-            const p2 = { x: this.gx(c.b + sh), y: this.gy(c.h) };
-            const p3 = { x: this.gx(sh), y: this.gy(c.h) };
-            sg.lineStyle(3, CLR.fillP, 1);
-            sg.strokePoints([p0, p1, p2, p3, p0], true);
-            // height marker (dashed vertical) + right-angle tick
-            sg.lineStyle(2, CLR.gold, 0.9);
-            const hx = this.gx(Math.max(sh, 0) + 0.05);
-            for (let yy = this.gy(c.h); yy < this.gy(0); yy += 9)
-              sg.lineBetween(hx, yy, hx, Math.min(yy + 5, this.gy(0)));
-            // base / height labels
-            this.dimLabel(
-              sg,
-              "base = " + c.b,
-              this.gx(c.b / 2),
-              this.gy(0) + 24,
-            );
-            this.dimLabel(
-              sg,
-              "height = " + c.h,
-              this.gx(0) - 52,
-              this.gy(c.h / 2),
-            );
-          }
-
-          drawRhombus(g, sg) {
-            const c = this.cur;
-            // bounding rectangle d1 (wide) × d2 (tall), centred on a grid anchor
-            const acx = 5,
-              acy = 4; // anchor cell (centre)
-            const left = acx - c.d1 / 2,
-              right = acx + c.d1 / 2;
-            const bot = acy - c.d2 / 2,
-              top = acy + c.d2 / 2;
-            // bounding rectangle (light) — proves the half relationship
-            g.fillStyle(CLR.fillR, 0.12);
-            g.fillRect(
-              this.gx(left),
-              this.gy(top),
-              (right - left) * this.cell,
-              (top - bot) * this.cell,
-            );
-            g.lineStyle(1, CLR.fillR, 0.6);
-            g.strokeRect(
-              this.gx(left),
-              this.gy(top),
-              (right - left) * this.cell,
-              (top - bot) * this.cell,
-            );
-            // rhombus filling exactly half
-            const tipR = { x: this.gx(right), y: this.gy(acy) };
-            const tipL = { x: this.gx(left), y: this.gy(acy) };
-            const tipT = { x: this.gx(acx), y: this.gy(top) };
-            const tipB = { x: this.gx(acx), y: this.gy(bot) };
-            sg.fillStyle(CLR.fillR, 0.4);
-            sg.fillPoints([tipR, tipT, tipL, tipB], true);
-            sg.lineStyle(3, CLR.fillR, 1);
-            sg.strokePoints([tipR, tipT, tipL, tipB, tipR], true);
-            // diagonals
-            sg.lineStyle(2, CLR.gold, 0.85);
-            sg.lineBetween(tipL.x, tipL.y, tipR.x, tipR.y);
-            sg.lineBetween(tipT.x, tipT.y, tipB.x, tipB.y);
-            this.dimLabel(sg, "d1 = " + c.d1, this.gx(acx), this.gy(acy) - 16);
-            this.dimLabel(sg, "d2 = " + c.d2, this.gx(acx) + 44, this.gy(acy));
-            // store tip cells so handle render matches (right tip & top tip)
-            this._rTips = { right, top, acx, acy };
-          }
-
-          dimLabel(sg, txt, x, y) {
-            if (!this._dimLabels) this._dimLabels = [];
-            // reuse a pool of text objects to avoid leaks
-            let t = this._dimLabels.find((o) => !o._used);
-            if (!t) {
-              t = this.add
-                .text(0, 0, "", {
-                  fontSize: "13px",
-                  fontFamily: "Arial Black",
-                  color: CSS(CLR.white),
-                  backgroundColor: "#0a1628cc",
-                  padding: { x: 4, y: 2 },
-                })
-                .setOrigin(0.5);
-              this._dimLabels.push(t);
-            }
-            t._used = true;
-            t.setText(txt).setPosition(x, y).setVisible(true);
-          }
-
-          // before each redraw we must release labels; do it at redraw start
-          releaseLabels() {
-            if (this._dimLabels)
-              this._dimLabels.forEach((t) => {
-                t._used = false;
-                t.setVisible(false);
-              });
-          }
-
-          highlightActiveHandle() {
-            if (!this.handles) return;
-            this.handles.forEach((h, i) => {
-              h.setFillStyle(i === this.activeHandle ? CLR.ok : CLR.gold);
-            });
-          }
-
-          /* ── correctness ── */
-          isSolved() {
-            const r = this.round,
-              c = this.cur;
-            if (r.type === "shear") return c.b === r.b && c.h === r.h; // built the requested parallelogram
-            if (r.type === "missing") return c.b * c.h === r.area; // hit the locked target area
-            return c.d1 === r.d1 && c.d2 === r.d2; // matched both diagonals
-          }
-
-          confirm() {
-            ensureAudio();
-            const r = this.round,
-              c = this.cur;
-            if (this.isSolved()) {
-              this.onCorrect();
-              return;
-            }
-            // ── diagnostic, NON-giveaway feedback ──
-            sfxWrong();
-            this.attempts++;
-            this.streak = 0;
-            this.cameras.main.shake(140, 0.005);
-            let msg;
-            if (r.type === "shear") {
-              const aNow = c.b * c.h;
-              if (c.b !== r.b && c.h !== r.h)
-                msg = `Set BASE to ${r.b} and HEIGHT to ${r.h}. Right now base×height = ${c.b}×${c.h} = ${aNow}.`;
-              else if (c.b !== r.b)
-                msg = `Height is right. Your base is ${c.b}; the blueprint base is ${r.b}. Area = base × height.`;
-              else
-                msg = `Base is right. Your height is ${c.h}; the blueprint height is ${r.h}. Shearing did NOT change the area — only base × height matters.`;
-            } else if (r.type === "missing") {
-              const aNow = c.b * c.h;
-              if (aNow < r.area)
-                msg = `Area is ${c.b}×${c.h} = ${aNow}, still below ${r.area}. Stretch ${r.findHeight ? "the height" : "the base"} more — base × height must equal ${r.area}.`;
-              else
-                msg = `Area is ${c.b}×${c.h} = ${aNow}, above ${r.area}. Shrink ${r.findHeight ? "the height" : "the base"} — base × height must equal ${r.area}.`;
-            } else {
-              const aNow = (c.d1 * c.d2) / 2;
-              msg = `Your diagonals make ½×${c.d1}×${c.d2} = ${aNow}. The blueprint wants d1 = ${r.d1} and d2 = ${r.d2}. The rhombus is half its rectangle.`;
-            }
-            this.flash(this.feedback, "✗ " + msg, "#ffb4b4");
-
-            if (this.attempts >= (this.tier === 1 ? 3 : 2)) {
-              this.lives--;
-              this.attempts = 0;
-              this.updateHUD();
-              if (this.lives <= 0) {
-                this.time.delayedCall(900, () => this.endGame(false));
-                return;
-              }
-            }
-          }
-
-          onCorrect() {
-            sfxCorrect();
-            sfxSnap();
-            this.correct++;
-            this.built++;
-            this.streak++;
-            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
-            const combo = Math.min(4, 1 + Math.floor(this.streak / 3));
-            const firstTry = this.attempts === 0 ? 60 : 0;
-            const pts = (100 + firstTry + this.streak * 8) * combo;
-            this.score += pts;
-            const r = this.round;
-            const eq =
-              r.shape === "para"
-                ? `${r.b} × ${r.h} = ${r.area}`
-                : `½ × ${r.d1} × ${r.d2} = ${r.area}`;
-            this.flash(
-              this.feedback,
-              `✓ Built! ${eq} sq units  +${pts}${combo > 1 ? " ×" + combo : ""}`,
-              "#bff7cf",
-            );
-            this.celebrate();
-            if (this.correct % 3 === 0) sfxLevel();
-            this.updateHUD();
-
-            const done = this.built >= this.goal;
-            this.time.delayedCall(1150, () => {
-              if (done) this.endGame(true);
-              else {
-                this.roundIx++;
-                this.loadRound();
-              }
-            });
-          }
-
-          celebrate() {
-            const cx = this.gx(3),
-              cy = this.gy(3);
-            for (let i = 0; i < 18; i++) {
-              const p = this.add.circle(
-                cx,
-                cy,
-                3 + Math.random() * 3,
-                [CLR.gold, CLR.ok, CLR.teal, CLR.violet][
-                  Math.floor(Math.random() * 4)
-                ],
-              );
-              this.tweens.add({
-                targets: p,
-                x: cx + (Math.random() - 0.5) * 320,
-                y: cy + (Math.random() - 0.5) * 240,
-                alpha: 0,
-                scale: 0,
-                duration: 600 + Math.random() * 400,
-                onComplete: () => p.destroy(),
-              });
-            }
-          }
-
-          showHint() {
-            sfxClick();
-            const r = this.round;
-            let h;
-            if (r.type === "shear")
-              h = `💡 Set base to ${r.b} and height to ${r.h}. Try sliding the top with the ↔ handle — count the cells: the area stays base × height = ${r.b} × ${r.h}.`;
-            else if (r.type === "missing")
-              h = `💡 You need base × ${r.findHeight ? "height" : "base"}... area must be ${r.area}. With ${r.findHeight ? "base " + r.b : "height " + r.h}, what number times ${r.findHeight ? r.b : r.h} gives ${r.area}?`;
-            else
-              h = `💡 The rhombus fills HALF its rectangle. Drag d1 to ${r.d1} (across) and d2 to ${r.d2} (up & down). Area = ½ × d1 × d2.`;
-            this.flash(this.feedback, h, "#ffe9a8", 3600);
-          }
-
-          flash(obj, msg, color = "#ffffff", hold = 2600) {
-            obj.setText(msg).setColor(color).setAlpha(1);
-            this.tweens.killTweensOf(obj);
-            this.time.delayedCall(hold, () => {
-              if (obj.text === msg)
-                this.tweens.add({ targets: obj, alpha: 0.0, duration: 400 });
-            });
-          }
-
-          updateHUD() {
-            this.hScore.setText(this.score.toLocaleString());
-            this.hLevel.setText(
-              this.tier === 1 ? "Level 1 · Support" : "Level 2 · Challenge",
-            );
-            this.hProgress.setText(`Built ${this.built} / ${this.goal}`);
-            this.hLives.setText("❤️".repeat(Math.max(0, this.lives)));
-            this.hStreak.setText(
-              this.streak >= 3 ? "🔥 streak " + this.streak : "",
-            );
-          }
-
-          endGame(won) {
-            this.cameras.main.fadeOut(420, 0, 0, 0);
-            this.time.delayedCall(420, () =>
-              this.scene.start("ResultScene", {
-                tier: this.tier,
-                score: this.score,
-                correct: this.correct,
-                built: this.built,
-                goal: this.goal,
-                bestStreak: this.bestStreak,
-                won,
-              }),
-            );
-          }
-        }
-
-        /* ═══════════════════════════════════════════════════════════════
-           RESULT SCENE
-           ═══════════════════════════════════════════════════════════════ */
-        class ResultScene extends Phaser.Scene {
-          constructor() {
-            super("ResultScene");
-          }
-          init(d) {
-            Object.assign(this, d);
-          }
-          create() {
-            this.cameras.main.setBackgroundColor(CLR.bg);
-            this.cameras.main.fadeIn(420);
-            const goal = this.goal || 1;
-            const pct = Math.round((this.correct / goal) * 100);
-
-            // EduPulse — standard 6.G.1
-            try {
-              window.EduPulse &&
-                EduPulse.record({
-                  activityTitle: document.title,
-                  score: this.correct,
-                  maxScore: goal,
-                  problemsCorrect: this.correct,
-                  problemsAttempted: this.built,
-                  standard: "6.G.1",
-                });
-            } catch (e) {}
-
-            let rank, emoji;
-            if (pct >= 90) {
-              rank = "MASTER ARCHITECT!";
-              emoji = "👑";
-            } else if (pct >= 75) {
-              rank = "LEAD BUILDER!";
-              emoji = "🏆";
-            } else if (pct >= 50) {
-              rank = "APPRENTICE";
-              emoji = "⭐";
-            } else {
-              rank = "KEEP BUILDING!";
-              emoji = "📐";
-            }
-
-            this.add
-              .text(W / 2, 96, emoji, { fontSize: "72px" })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 180, this.won ? "PROJECT COMPLETE" : "SITE CLOSED", {
-                fontSize: "44px",
-                fontFamily: "Arial Black",
-                color: CSS(CLR.gold),
-                stroke: "#000",
-                strokeThickness: 4,
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 232, rank, {
-                fontSize: "24px",
-                fontFamily: "Arial",
-                fontStyle: "bold",
-                color: "#fff",
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 300, this.score.toLocaleString(), {
-                fontSize: "56px",
-                fontFamily: "Arial Black",
-                color: CSS(CLR.gold),
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 340, "POINTS", {
-                fontSize: "13px",
-                color: CSS(CLR.muted),
-              })
-              .setOrigin(0.5);
-
-            const stats = [
-              { l: "Shapes built", v: `${this.correct}/${goal}` },
-              { l: "Best streak", v: this.bestStreak },
-              { l: "Level", v: this.tier },
-            ];
-            stats.forEach((s, i) => {
-              const x = W / 2 - 230 + i * 230,
-                y = 430;
-              this.add
-                .rectangle(x, y, 200, 96, CLR.panel)
-                .setStrokeStyle(2, CLR.stroke);
-              this.add
-                .text(x, y - 12, String(s.v), {
-                  fontSize: "30px",
-                  fontFamily: "Arial Black",
-                  color: CSS(CLR.gold),
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y + 26, s.l, {
-                  fontSize: "13px",
-                  color: CSS(CLR.muted),
-                })
-                .setOrigin(0.5);
-            });
-
-            const again = this.add
-              .rectangle(W / 2 - 130, 560, 240, 58, CLR.gold)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(W / 2 - 130, 560, "BUILD AGAIN", {
-                fontSize: "22px",
-                fontFamily: "Arial Black",
-                color: "#0a1628",
-              })
-              .setOrigin(0.5);
-            again.on("pointerover", () => again.setScale(1.05));
-            again.on("pointerout", () => again.setScale(1));
-            again.on("pointerdown", () => {
-              ensureAudio();
-              sfxClick();
-              this.scene.start("GameScene", { tier: this.tier });
-            });
-
-            const menu = this.add
-              .rectangle(W / 2 + 130, 560, 240, 58, CLR.panel)
-              .setStrokeStyle(2, CLR.stroke)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(W / 2 + 130, 560, "CHANGE LEVEL", {
-                fontSize: "20px",
-                fontFamily: "Arial Black",
-                color: "#fff",
-              })
-              .setOrigin(0.5);
-            menu.on("pointerover", () => menu.setScale(1.05));
-            menu.on("pointerout", () => menu.setScale(1));
-            menu.on("pointerdown", () => {
-              ensureAudio();
-              sfxClick();
-              this.scene.start("TitleScene");
-            });
-
-            this.add
-              .text(
-                W / 2,
-                640,
-                "Parallelogram: A = base × height     Rhombus: A = ½ × d1 × d2",
-                {
-                  fontSize: "13px",
-                  fontFamily: "Courier New, monospace",
-                  color: CSS(CLR.teal),
-                },
-              )
-              .setOrigin(0.5);
-
-            this.input.keyboard.on("keydown", (e) => {
-              if (e.key === "Enter") {
-                ensureAudio();
-                sfxClick();
-                this.scene.start("GameScene", { tier: this.tier });
-              }
-            });
-          }
-        }
-
-        /* ─── BOOT ─── */
-        new Phaser.Game({
-          type: Phaser.AUTO,
-          parent: "game-container",
-          width: W,
-          height: H,
-          backgroundColor: "#0a1628",
-          scale: {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH,
-          },
-          scene: [TitleScene, GameScene, ResultScene],
-        });
       })();
     </script>
+
+    <script>
+      // ════════════════════════════════════════════════════════════════════
+      //  PARALLELOGRAM BUILDER — produce the area  ·  Grade 6  ·  6.G.A.1
+      //  Math-as-mechanic rebuild (producer mechanic, NOT pick-the-answer).
+      //
+      //  The student is shown a SHEARED parallelogram on a unit grid: a base b,
+      //  a dashed PERPENDICULAR height h, and a clearly-longer slanted side whose
+      //  length is printed as a visible distractor. There are NO answer tiles.
+      //  Instead the student PRODUCES the area with two steppers — a base dial
+      //  and a height dial — then presses Build. Area is computed live as
+      //  dialBase × dialHeight. To win they must read b and the perpendicular
+      //  height h off the figure. Dialing the slanted side for height yields a
+      //  product that is NOT b×h, so it visibly fails, costs a life, and shows
+      //  the misconception nudge. Because the slant is strictly greater than the
+      //  perpendicular height whenever the shape is sheared (and the steppers
+      //  only accept whole units while the slant is non-integer/larger), there
+      //  is no way to win by using the slant. The shear slider is supporting
+      //  visualization only — it never changes the unit-square count or b×h.
+      // ════════════════════════════════════════════════════════════════════
+      const STANDARD = "6.G.A.1";
+      const ACTIVITY_TITLE = "Parallelogram Builder";
+      const LS_KEY = "ntg_parallelogram_builder_highscore";
+      const ROUNDS = 5;
+
+      // Metadata source of truth: window.Games2DData (assets/games2d-data.js).
+      // Inline fallback keeps the page alive if that artifact fails to load.
+      const DATA = (window.Games2DData &&
+        window.Games2DData["parallelogramandrhombusgame"]) || {
+        ccss: "6.G.A.1",
+        title: "Parallelogram Builder",
+        vocab: [
+          {
+            term: "base",
+            defn: "One side of a parallelogram, measured straight across the bottom. You multiply it by the height to get the area.",
+          },
+          {
+            term: "height",
+            defn: "The straight up-and-down distance between the base and the opposite side. It makes a right angle with the base — it is NOT the slanted edge.",
+          },
+          {
+            term: "parallelogram",
+            defn: "A four-sided shape whose opposite sides are parallel. Slide (shear) a rectangle sideways and you get one with the SAME area.",
+          },
+        ],
+        misconceptions: [
+          {
+            tag: "slant-as-height",
+            trigger:
+              "Multiplies the base by the slanted side instead of the perpendicular height.",
+            feedback:
+              "Area uses the perpendicular height, not the slanted side. Count the rows of squares going straight up.",
+          },
+          {
+            tag: "area-changes-when-sheared",
+            trigger:
+              "Thinks shearing the rectangle changes how many unit squares there are.",
+            feedback:
+              "Shearing only slides the squares sideways — none are added or removed, so base × height stays the same.",
+          },
+        ],
+        tiers: {
+          1: {
+            label: "Level 1",
+            sub: "Support",
+            desc: "Smaller base & height · formula and perpendicular-height hint shown · 5 lives",
+          },
+          2: {
+            label: "Level 2",
+            sub: "Challenge",
+            desc: "Bigger base & height · less help · 3 lives",
+          },
+        },
+      };
+
+      // ── Tiny WebAudio SFX ──
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+        },
+        play(t, f, d, v = 0.2) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              o = c.createOscillator(),
+              g = c.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            o.connect(g);
+            g.connect(c.destination);
+            o.start();
+            o.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        tick() {
+          this.play("sine", 360 + Math.random() * 30, 0.04, 0.06);
+        },
+        slide() {
+          this.play("sine", 300 + Math.random() * 40, 0.04, 0.05);
+        },
+        good() {
+          this.play("sine", 660, 0.1, 0.3);
+          this.play("sine", 880, 0.15, 0.25);
+        },
+        bad() {
+          this.play("sawtooth", 200, 0.22, 0.2);
+        },
+        win() {
+          [523, 659, 784, 1046].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.18, 0.25), i * 90),
+          );
+        },
+      };
+
+      // ── Curated base/height pools (clean integers that fit the grid) ──
+      const POOLS = {
+        1: [
+          [4, 3],
+          [5, 2],
+          [6, 3],
+          [3, 4],
+          [5, 3],
+          [4, 4],
+          [6, 2],
+          [7, 3],
+        ],
+        2: [
+          [8, 5],
+          [7, 6],
+          [9, 4],
+          [6, 7],
+          [8, 6],
+          [9, 5],
+          [7, 7],
+          [10, 4],
+        ],
+      };
+
+      const shuffle = (arr) => {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = (Math.random() * (i + 1)) | 0;
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      };
+
+      // ── State ──
+      const S = {
+        level: 1,
+        lives: 5,
+        score: 0,
+        round: 0,
+        built: 0,
+        puzzles: [],
+        cur: null,
+        shear: 2,
+        dialB: 1,
+        dialH: 1,
+        solved: false,
+      };
+
+      const $ = (id) => document.getElementById(id);
+      const srSay = (m) => {
+        const el = $("ff-sr");
+        if (el) {
+          el.textContent = "";
+          setTimeout(() => (el.textContent = m), 30);
+        }
+      };
+
+      function show(screen) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("on"));
+        $("screen-" + screen).classList.add("on");
+      }
+
+      // Slant side length: hypotenuse of the (shear, h) right triangle.
+      // Note: when shear !== 0 this is STRICTLY greater than h, and it is
+      // non-integer for our pools, so it can never equal a whole-unit dial.
+      function slantLength(h, shear) {
+        return Math.round(Math.sqrt(h * h + shear * shear) * 10) / 10;
+      }
+
+      function makePuzzle([b, h]) {
+        return { b, h, area: b * h };
+      }
+
+      // ── Vocab gate ──
+      function renderVocab() {
+        $("vocab-list").innerHTML = (DATA.vocab || [])
+          .map(
+            (v) =>
+              `<div class="vrow"><span class="vterm">${v.term}</span><span class="vdef">${v.defn}</span></div>`,
+          )
+          .join("");
+      }
+
+      // ── Level select ──
+      function renderLevels() {
+        const t = DATA.tiers || {};
+        $("level-list").innerHTML = Object.keys(t)
+          .map((k) => {
+            const tier = t[k];
+            return `<button class="level-pick" data-level="${k}">
+            <span class="tag">${tier.label} · ${tier.sub}</span>
+            <b>${k === "1" ? "Apprentice Architect" : "Master Architect"}</b>
+            <span class="desc">${tier.desc}</span>
+          </button>`;
+          })
+          .join("");
+        $("level-list")
+          .querySelectorAll("[data-level]")
+          .forEach((el) =>
+            el.addEventListener("click", () =>
+              startGame(Number(el.dataset.level)),
+            ),
+          );
+      }
+
+      // ── Game flow ──
+      function startGame(level) {
+        SFX.init();
+        S.level = level;
+        S.lives = level === 1 ? 5 : 3;
+        S.score = 0;
+        S.round = 0;
+        S.built = 0;
+        const pool = shuffle((POOLS[level] || POOLS[1]).slice());
+        S.puzzles = pool.slice(0, ROUNDS).map(makePuzzle);
+        $("hud-total").textContent = ROUNDS;
+        $("hud-round").textContent = "1";
+        show("play");
+        loadRound(0);
+      }
+
+      function loadRound(i) {
+        S.round = i;
+        S.cur = S.puzzles[i];
+        // start sheared so the slant is visibly longer than the height
+        S.shear = S.level === 1 ? 2 : 3;
+        S.dialB = 1;
+        S.dialH = 1;
+        S.solved = false;
+        const p = S.cur;
+        $("hud-round").textContent = i + 1;
+        $("hud-score").textContent = S.score;
+        $("hud-lives").textContent = "●".repeat(S.lives) || "—";
+        $("feedback").textContent = "";
+        $("feedback").className = "feedback";
+        $("shear").value = String(S.shear);
+        $("shear-val").textContent = S.shear;
+        $("hint").textContent =
+          S.level === 1
+            ? "Tip: the height is the dashed up-and-down line. Count the rows of squares — never the slanted edge."
+            : "Read the base across the bottom and the perpendicular (dashed) height, then build.";
+        $("factbox").innerHTML =
+          S.level === 1
+            ? `<code>Area = base × height</code> — read both straight off the grid.`
+            : "";
+        drawBoard();
+        updateDials();
+        srSay(
+          `Round ${i + 1}. Read the base and perpendicular height off the parallelogram, dial them in, then press Build.`,
+        );
+      }
+
+      // ── The visual model: a sheared unit grid (the math-as-mechanic) ──
+      function drawBoard() {
+        const p = S.cur;
+        const svg = $("board");
+        const VW = 560,
+          VH = 340;
+        const maxShear = 4;
+        const cell = Math.min(
+          Math.floor((VW - 130) / (p.b + maxShear)),
+          Math.floor((VH - 90) / p.h),
+          44,
+        );
+        const gw = p.b * cell,
+          gh = p.h * cell;
+        const baseX = (VW - gw - maxShear * cell) / 2 + 10;
+        const baseY = VH - 50;
+        const sh = S.shear * cell;
+        let cells = "";
+        // draw each unit square; rows slide proportionally → cells conserved
+        for (let row = 0; row < p.h; row++) {
+          const slide = (sh / p.h) * row;
+          const slideTop = (sh / p.h) * (row + 1);
+          for (let col = 0; col < p.b; col++) {
+            const x0 = baseX + col * cell + slide;
+            const x1 = baseX + col * cell + slideTop;
+            const yT = baseY - (row + 1) * cell;
+            const yB = baseY - row * cell;
+            cells += `<polygon points="${x0},${yB} ${x0 + cell},${yB} ${x1 + cell},${yT} ${x1},${yT}" fill="var(--cell)" fill-opacity="0.42" stroke="var(--cellline)" stroke-opacity="0.4" stroke-width="1"/>`;
+          }
+        }
+        // outline
+        const o0 = `${baseX},${baseY}`;
+        const o1 = `${baseX + gw},${baseY}`;
+        const o2 = `${baseX + gw + sh},${baseY - gh}`;
+        const o3 = `${baseX + sh},${baseY - gh}`;
+        const outline = `<polygon points="${o0} ${o1} ${o2} ${o3}" fill="none" stroke="var(--cell)" stroke-width="3"/>`;
+        // perpendicular height marker (dashed, vertical) + right-angle tick
+        const hx = baseX + sh + 5;
+        const height = `<line x1="${hx}" y1="${baseY}" x2="${hx}" y2="${baseY - gh}" stroke="var(--gold)" stroke-width="2.8" stroke-dasharray="6 5"/>
+          <rect x="${hx}" y="${baseY - 13}" width="13" height="13" fill="none" stroke="var(--gold)" stroke-width="1.5"/>`;
+        // slanted side highlight (the distractor) in red
+        const slant = `<line x1="${baseX + gw}" y1="${baseY}" x2="${baseX + gw + sh}" y2="${baseY - gh}" stroke="var(--slant)" stroke-width="3.4"/>`;
+        // labels
+        const sl = slantLength(p.h, S.shear);
+        const labels = `
+          <text x="${baseX + gw / 2}" y="${baseY + 32}" fill="var(--txt)" font-size="15" font-weight="700" text-anchor="middle">base = ${p.b}</text>
+          <text x="${hx - 9}" y="${baseY - gh / 2}" fill="var(--gold)" font-size="14" font-weight="700" text-anchor="end">height = ${p.h}</text>
+          <text x="${baseX + gw + sh / 2 + 16}" y="${baseY - gh / 2}" fill="${"#f0a06b"}" font-size="12" text-anchor="start">slant ≈ ${sl}</text>`;
+        svg.innerHTML =
+          `<desc id="board-desc">A parallelogram made of ${p.b} times ${p.h} unit squares, sheared sideways by ${S.shear} units. The dashed gold line is the perpendicular height (${p.h}); the red slanted side is about ${sl}. The square count stays ${p.b * p.h}.</desc>` +
+          cells +
+          outline +
+          slant +
+          height +
+          labels;
+        $("ro-cells").textContent = p.b * p.h;
+        $("ro-slant").textContent = sl;
+      }
+
+      // ── Producer dials (the assessed act: PRODUCE base × height) ──
+      function clamp(v) {
+        return Math.max(1, Math.min(12, v));
+      }
+      function stepBase(d) {
+        if (S.solved) return;
+        S.dialB = clamp(S.dialB + d);
+        SFX.tick();
+        updateDials();
+      }
+      function stepHeight(d) {
+        if (S.solved) return;
+        S.dialH = clamp(S.dialH + d);
+        SFX.tick();
+        updateDials();
+      }
+      function updateDials() {
+        $("base-val").textContent = S.dialB;
+        $("height-val").textContent = S.dialH;
+        $("bp-b").textContent = S.dialB;
+        $("bp-h").textContent = S.dialH;
+        $("bp-area").textContent = S.dialB * S.dialH;
+      }
+
+      // ── Build = compute area from the dials and check against b×h ──
+      function build() {
+        if (S.solved) return;
+        const p = S.cur;
+        const producedArea = S.dialB * S.dialH;
+        if (S.dialB === p.b && S.dialH === p.h) {
+          // correct: produced exactly base × perpendicular height
+          S.solved = true;
+          SFX.good();
+          S.built++;
+          S.score += S.level === 1 ? 20 : 30;
+          $("hud-score").textContent = S.score;
+          flash(
+            `Built it! base × height = ${p.b} × ${p.h} = ${p.area} square units. Shearing never changed the ${p.area} unit squares.`,
+            "good",
+          );
+          if (window.GameFX && GameFX.successBurst)
+            try {
+              GameFX.successBurst();
+            } catch (e) {}
+          SFX.win();
+          if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(true), 1600);
+          else setTimeout(() => loadRound(S.round + 1), 1600);
+        } else {
+          // wrong production → life lost + targeted nudge
+          S.lives--;
+          SFX.bad();
+          $("hud-lives").textContent = "●".repeat(S.lives) || "—";
+          flash(nudgeFor(producedArea), "bad");
+          if (S.lives <= 0) setTimeout(() => endGame(false), 1000);
+        }
+      }
+
+      // Diagnose the wrong build and surface the right misconception nudge.
+      function nudgeFor(producedArea) {
+        const p = S.cur;
+        const slant = slantLength(p.h, S.shear);
+        const slantRound = Math.round(slant);
+        const m = DATA.misconceptions || [];
+        // Used the (rounded) slanted side as the height — the targeted error.
+        if (S.dialB === p.b && S.dialH === slantRound && slantRound !== p.h)
+          return (
+            (m[0] && m[0].feedback) ||
+            "Area uses the perpendicular height, not the slanted side."
+          );
+        // Got the base wrong.
+        if (S.dialB !== p.b && S.dialH === p.h)
+          return `Check the base — count the squares straight across the bottom. The base is ${p.b}.`;
+        // Got the (perpendicular) height wrong but base right.
+        if (S.dialB === p.b && S.dialH !== p.h)
+          return `Check the height — count the rows of squares straight up along the dashed line, not the slanted side.`;
+        // Both off, or wildly off — general count reminder.
+        return (
+          (m[1] && m[1].feedback) ||
+          `There are ${p.area} unit squares. Read the base across the bottom and the perpendicular height straight up, then multiply.`
+        );
+      }
+
+      function flash(msg, cls) {
+        const f = $("feedback");
+        f.textContent = msg;
+        f.className = "feedback " + cls;
+        srSay(msg);
+      }
+
+      function endGame(won) {
+        const pct = ROUNDS ? S.built / ROUNDS : 0;
+        const stars = pct >= 0.95 ? 3 : pct >= 0.7 ? 2 : pct >= 0.4 ? 1 : 0;
+        $("r-stars").textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
+        $("r-score").textContent = S.score;
+        $("r-correct").textContent = S.built;
+        $("r-rounds").textContent = won ? ROUNDS : S.round + 1;
+        let high = 0;
+        try {
+          high = Number(localStorage.getItem(LS_KEY) || 0);
+        } catch (e) {}
+        if (S.score > high) {
+          try {
+            localStorage.setItem(LS_KEY, String(S.score));
+          } catch (e) {}
+          $("r-high").textContent = S.score;
+          $("r-high-row").style.display = "flex";
+        }
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: ACTIVITY_TITLE,
+              score: S.score,
+              stars: stars,
+              problemsCorrect: S.built,
+              problemsAttempted: ROUNDS,
+              percent: Math.round(pct * 100),
+              standard: STANDARD,
+            });
+        } catch (e) {}
+        srSay(
+          (won ? "All parallelograms built. " : "Out of lives. ") +
+            "Score " +
+            S.score +
+            ", " +
+            stars +
+            " stars.",
+        );
+        show("result");
+      }
+
+      // ── Wiring ──
+      $("vocab-go").addEventListener("click", () => {
+        renderLevels();
+        show("level");
+      });
+      $("r-again").addEventListener("click", () => {
+        renderLevels();
+        show("level");
+      });
+      $("base-up").addEventListener("click", () => stepBase(1));
+      $("base-dn").addEventListener("click", () => stepBase(-1));
+      $("height-up").addEventListener("click", () => stepHeight(1));
+      $("height-dn").addEventListener("click", () => stepHeight(-1));
+      $("build-go").addEventListener("click", build);
+      $("shear").addEventListener("input", (e) => {
+        S.shear = Number(e.target.value);
+        $("shear-val").textContent = S.shear;
+        SFX.slide();
+        drawBoard();
+      });
+      // Keyboard: arrows tune dials, Enter builds (when playing).
+      document.addEventListener("keydown", (e) => {
+        if (!$("screen-play").classList.contains("on") || S.solved) return;
+        if (e.key === "ArrowRight") {
+          stepBase(1);
+          e.preventDefault();
+        } else if (e.key === "ArrowLeft") {
+          stepBase(-1);
+          e.preventDefault();
+        } else if (e.key === "ArrowUp") {
+          stepHeight(1);
+          e.preventDefault();
+        } else if (e.key === "ArrowDown") {
+          stepHeight(-1);
+          e.preventDefault();
+        } else if (e.key === "Enter") {
+          build();
+          e.preventDefault();
+        }
+      });
+
+      renderVocab();
+    </script>
+
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
-  </body>
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <script src="/assets/game-access.js" defer></script>
+  <!-- gacc-injected:end -->
+</body>
 </html>

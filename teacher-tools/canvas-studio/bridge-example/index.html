@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Canvas Bridge — reference activity</title>
+
+    <!--
+      REFERENCE ACTIVITY for assets/canvas-bridge.js.
+
+      This is the smallest complete example of giving ANY standalone activity a
+      Canvas completion code. Copy this pattern into a real activity:
+
+        1. Configure the bridge BEFORE loading it.
+        2. Load /assets/canvas-bridge.js (after save-resume-engine.js if you use it).
+        3. At your activity's real "finished" moment, call:
+             NeftCanvasBridge.complete(percent, { studentName, classPeriod });
+           — percent is the score 0–100; identity is optional if save/resume
+           already supplies the student's name (then just call complete(percent)).
+
+      The code the student copies decodes in teacher-tools/canvas-grades/ — the
+      same tool that reads the engine lessons' codes. No SCORM, no admin.
+    -->
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #387f84;
+        --amber: #f2a93b;
+        --ink: #0f172a;
+        --muted: #64748b;
+        --line: #e2e8f0;
+        --bg: #f1f5f9;
+        --ok: #15803d;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.55;
+      }
+      header { background: linear-gradient(135deg, var(--navy), var(--teal)); color: #fff; padding: 26px 20px; }
+      header .wrap { max-width: 760px; margin: 0 auto; }
+      header h1 { margin: 0 0 6px; font-size: 23px; }
+      header p { margin: 0; opacity: 0.92; font-size: 14px; }
+      .badge {
+        display: inline-block; margin-bottom: 10px; font-size: 11px; font-weight: 700;
+        letter-spacing: 0.05em; text-transform: uppercase; background: var(--amber);
+        color: #3a2a06; padding: 3px 10px; border-radius: 999px;
+      }
+      main { max-width: 760px; margin: 0 auto; padding: 22px 20px 70px; }
+      .card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; margin: 0 0 18px; }
+      .idrow { display: flex; gap: 12px; flex-wrap: wrap; }
+      .idrow label { flex: 1; min-width: 180px; font-size: 13px; font-weight: 600; color: var(--navy); }
+      .idrow input {
+        display: block; width: 100%; margin-top: 5px; padding: 10px 12px;
+        border: 1px solid var(--line); border-radius: 9px; font-size: 14px;
+      }
+      .q { margin: 0 0 18px; }
+      .q:last-child { margin-bottom: 0; }
+      .q .stem { font-weight: 600; margin: 0 0 9px; }
+      .q .opts { display: grid; gap: 7px; }
+      .q .opts label {
+        display: flex; align-items: center; gap: 9px; padding: 9px 12px;
+        border: 1px solid var(--line); border-radius: 10px; cursor: pointer; font-size: 14px;
+      }
+      .q .opts label:hover { background: #f8fafc; }
+      .q .opts input { accent-color: var(--teal); width: 16px; height: 16px; }
+      .actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+      button.finish {
+        background: var(--navy); color: #fff; border: 0; border-radius: 11px;
+        padding: 12px 22px; font-weight: 700; font-size: 15px; cursor: pointer;
+      }
+      button.finish:disabled { opacity: 0.5; cursor: not-allowed; }
+      #result { font-size: 14px; color: var(--muted); }
+      #result.done { color: var(--ok); font-weight: 600; }
+      .hint { font-size: 12px; color: var(--muted); margin-top: 10px; }
+      code { background: #f1f5f9; padding: 1px 6px; border-radius: 5px; font-size: 12px; }
+    </style>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+</head>
+  <body>
+    <header>
+      <div class="wrap">
+        <span class="badge">Canvas Bridge · reference</span>
+        <h1>Ratio Quick Check</h1>
+        <p>
+          A tiny example activity. Answer three questions, then <strong>Finish</strong> to get a
+          Canvas completion code — the same flow you can add to any activity with one script tag.
+        </p>
+      </div>
+    </header>
+
+    <main>
+      <div class="card">
+        <div class="idrow">
+          <label>Your name<input id="name" type="text" autocomplete="name" placeholder="First Last" /></label>
+          <label>Class period<input id="period" type="text" placeholder="e.g. Period 3" /></label>
+        </div>
+      </div>
+
+      <div class="card" id="quiz">
+        <div class="q" data-answer="b">
+          <p class="stem">1. A recipe uses 2 cups flour to 3 cups water. What is the ratio of flour to water?</p>
+          <div class="opts">
+            <label><input type="radio" name="q1" value="a" /> 3 : 2</label>
+            <label><input type="radio" name="q1" value="b" /> 2 : 3</label>
+            <label><input type="radio" name="q1" value="c" /> 2 : 5</label>
+          </div>
+        </div>
+        <div class="q" data-answer="c">
+          <p class="stem">2. There are 4 red and 6 blue marbles. What is the ratio of red to total?</p>
+          <div class="opts">
+            <label><input type="radio" name="q2" value="a" /> 4 : 6</label>
+            <label><input type="radio" name="q2" value="b" /> 6 : 10</label>
+            <label><input type="radio" name="q2" value="c" /> 4 : 10</label>
+          </div>
+        </div>
+        <div class="q" data-answer="a">
+          <p class="stem">3. If 2 pencils cost $1, how much do 6 pencils cost (same rate)?</p>
+          <div class="opts">
+            <label><input type="radio" name="q3" value="a" /> $3</label>
+            <label><input type="radio" name="q3" value="b" /> $6</label>
+            <label><input type="radio" name="q3" value="c" /> $12</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="actions">
+          <button class="finish" id="finish">Check &amp; Finish</button>
+          <span id="result">Answer all three, then finish to get your code.</span>
+        </div>
+        <p class="hint">
+          The popup's code pastes into a Canvas text-entry assignment. Decode it in
+          <a href="/teacher-tools/canvas-grades/">Canvas Grades</a>. No name typed? The popup reminds the student.
+        </p>
+      </div>
+    </main>
+
+    <!-- 1) Configure the bridge BEFORE it loads. manual:true = fire only on our call. -->
+    <script>
+      window.NeftCanvasBridgeConfig = {
+        activityId: "ratio-quick-check",
+        activityTitle: "Ratio Quick Check",
+        manual: true,
+      };
+    </script>
+    <!-- 2) Load the bridge (one line — this is all a real activity adds). -->
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- 3) Score the activity and call complete() at the real "finished" moment. -->
+    <script>
+      (function () {
+        var quiz = document.getElementById("quiz");
+        var finishBtn = document.getElementById("finish");
+        var result = document.getElementById("result");
+
+        function scorePercent() {
+          var qs = quiz.querySelectorAll(".q");
+          var correct = 0;
+          qs.forEach(function (q) {
+            var picked = q.querySelector('input[type="radio"]:checked');
+            if (picked && picked.value === q.dataset.answer) correct++;
+          });
+          return { correct: correct, total: qs.length, percent: Math.round((correct / qs.length) * 100) };
+        }
+
+        finishBtn.addEventListener("click", function () {
+          var s = scorePercent();
+          result.textContent = "Score: " + s.correct + "/" + s.total + " (" + s.percent + "%). Copy your code!";
+          result.classList.add("done");
+
+          // The one call that grants the Canvas completion code. Identity is read
+          // from our own fields; if you use save/resume, omit the second argument.
+          if (window.NeftCanvasBridge) {
+            window.NeftCanvasBridge.reset(); // allow re-finishing after changing answers
+            window.NeftCanvasBridge.complete(s.percent, {
+              studentName: document.getElementById("name").value,
+              classPeriod: document.getElementById("period").value,
+              force: true,
+            });
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

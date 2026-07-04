@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <meta
       name="description"
       content="Statistical Quest: Interactive sports analytics dashboard featuring draggable dot plots, dynamic mean balance lines, and a live box and whisker plot."
@@ -725,6 +726,97 @@
           display: none !important;
         }
       }
+
+      /* ===== Responsive adaptation (additive only) ===== */
+      /* Tablet: stack the side-by-side sidebar/workspace, relax the
+         multi-column scoreboard, let header controls wrap. */
+      @media (max-width: 900px) {
+        header {
+          padding: 14px 18px;
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+        .header-controls {
+          flex-wrap: wrap;
+        }
+        .app-grid {
+          grid-template-columns: 1fr;
+          gap: 18px;
+          margin: 18px auto;
+          padding: 0 18px;
+        }
+        .scoreboard {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .card,
+        .work-card {
+          padding: 20px;
+        }
+      }
+
+      /* Phone: single-column everything, full-width controls/buttons,
+         smaller headings/paddings, fluid stage container. */
+      @media (max-width: 640px) {
+        header {
+          padding: 12px 14px;
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .brand {
+          justify-content: center;
+        }
+        .brand h1 {
+          font-size: 1.25rem;
+        }
+        .header-controls {
+          width: 100%;
+          justify-content: center;
+        }
+        .header-controls .btn,
+        .header-controls .dropdown {
+          flex: 1;
+        }
+        .header-controls .btn {
+          width: 100%;
+          justify-content: center;
+        }
+        .app-grid {
+          gap: 14px;
+          margin: 14px auto;
+          padding: 0 12px;
+        }
+        .card,
+        .work-card {
+          padding: 16px;
+          border-radius: var(--radius-md);
+        }
+        .card h2 {
+          font-size: 1.1rem;
+        }
+        .scoreboard {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+        }
+        .score-box strong {
+          font-size: 1.2rem;
+        }
+        /* Keep the interactive dot/box plot usable: container stays fluid,
+           the viewBox-scaled SVG fits width without squashing. */
+        .plot-parallax,
+        .svg-viewport {
+          width: 100%;
+          max-width: 100%;
+        }
+        /* Quest action bar dropdown/select goes full width. */
+        #active-quest-panel .dropdown,
+        .quest-select-btn {
+          width: 100%;
+        }
+        .diagnostics-overlay {
+          width: 94%;
+          padding: 18px;
+        }
+      }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
@@ -732,7 +824,13 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
-  </head>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <link rel="stylesheet" href="/assets/game-access.css">
+  <!-- gacc-injected:end -->
+</head>
   <body>
     <header>
       <div class="brand">
@@ -2075,5 +2173,14 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  </body>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+  <script src="/assets/canvas-bridge.js" defer></script>
+  <!-- canvas-bridge-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <script src="/assets/game-access.js" defer></script>
+  <!-- gacc-injected:end -->
+</body>
 </html>

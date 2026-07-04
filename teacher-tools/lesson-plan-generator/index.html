@@ -9,6 +9,9 @@
       content="Local-first teacher tool: turn typed notes, slides, PDFs, or docs into a polished, printable, source-faithful lesson plan."
     />
     <link rel="stylesheet" href="./styles.css" />
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
   </head>
   <body>
     <div class="app">
@@ -39,13 +42,25 @@
             polished Word document.
           </p>
 
+          <div id="historyRow" class="history-row" hidden>
+            <span class="field-label">Recent Saved Lessons:</span>
+            <div id="historyChips" class="history-chips"></div>
+          </div>
+
           <div class="fields-grid" id="fieldsGrid">
             <label class="field"
               ><span class="field-label">Date</span>
               <input type="date" id="fDate" />
             </label>
             <label class="field"
-              ><span class="field-label">Grade</span>
+              ><span class="field-label"
+                >Grade
+                <span
+                  class="field-hint"
+                  title="The built-in problem/vocabulary library covers Grade 6 math (Ratios, Number System, Expressions & Equations, Geometry, Statistics). Other grades still work if you paste your own source notes — the generator will follow your text — but the auto-generated practice problems are Grade 6-level."
+                  >ⓘ</span
+                ></span
+              >
               <input type="text" id="fGrade" value="6" />
             </label>
             <label class="field"
@@ -198,6 +213,14 @@
         <section class="card" id="outputCard" hidden>
           <div class="output-head">
             <h2 class="card-title">3 · Lesson plan</h2>
+            <div class="tab-container" id="outputTabs">
+              <button class="tab-btn active" id="tabTeacher" type="button">
+                Teacher Plan
+              </button>
+              <button class="tab-btn" id="tabStudent" type="button">
+                Student Handout
+              </button>
+            </div>
             <div class="output-actions">
               <button
                 class="btn primary"
@@ -206,6 +229,14 @@
                 disabled
               >
                 ⬇ Download DOCX
+              </button>
+              <button
+                class="btn ghost"
+                id="reshuffleBtn"
+                type="button"
+                title="Keep this topic, but generate different practice numbers"
+              >
+                🔀 Reshuffle Numbers
               </button>
               <button class="btn" id="printBtn" type="button">
                 Print / PDF
@@ -227,6 +258,13 @@
         pipeline with QA harness
       </footer>
     </div>
+
+    <!-- This tool has its own Teacher/Student export system (DOCX, .doc, .md,
+         Print) — opt out of the generic site-wide "Save your work" bar so it
+         doesn't duplicate/conflict with it. -->
+    <script>
+      window.NT_ACTIVITY = false;
+    </script>
 
     <!-- Self-hosted libraries (no CDN at runtime). -->
     <script src="./vendor/jszip.min.js" defer></script>

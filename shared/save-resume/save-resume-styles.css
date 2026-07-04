@@ -278,7 +278,7 @@
   right: 0;
   bottom: 58px;
   background: var(--nsr-fg);
-  color: #fff;
+  color: var(--nsr-bg);
   padding: 10px 14px;
   border-radius: 10px;
   font-size: 0.92rem;
@@ -304,7 +304,7 @@
     --nsr-fg: #eaf1fb;
     --nsr-muted: #a9b8cf;
     --nsr-border: #2b3a52;
-    --nsr-accent: #3b82f6;
+    --nsr-accent: #2563eb; /* AA on white label text */
   }
   .nsr-field input {
     background: #16243a;
@@ -333,4 +333,10 @@
   #nsr-root {
     display: none !important;
   }
+}
+
+/* Pages with a sticky bottom action bar (e.g. family homework): lift the
+ * Save/Resume launcher above the bar so neither tap target is obscured. */
+body:has(.bottom-status-bar) #nsr-root {
+  bottom: 96px;
 }

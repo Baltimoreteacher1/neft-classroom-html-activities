@@ -1,15 +1,4 @@
-/* Neft Teacher — shared Game FX kit (additive, deploy-safe).
- *
- * Universal enterprise-grade polish for interactive games/activities:
- * keyboard focus rings, reduced-motion safety, success spark bursts, and a
- * HUD "pop". Injected alongside game-fx.js by tools/inject-game-fx.js. Designed
- * to NEVER change gameplay — it only adds visual polish, and every motion is
- * disabled under prefers-reduced-motion.
- *
- * All classes/ids are namespaced `gfx-` to avoid colliding with game styles. */
-
-/* Keyboard-only focus rings on interactive elements (does not affect mouse
- * users thanks to :focus-visible). Scoped to common interactive selectors. */
+/* Neft Teacher — shared Game FX kit (additive, deploy-safe). */
 button:focus-visible,
 a:focus-visible,
 [role="button"]:focus-visible,
@@ -25,7 +14,6 @@ a:focus-visible,
   border-radius: 8px;
 }
 
-/* Success spark particle (created by game-fx.js). */
 .gfx-spark {
   position: fixed;
   z-index: 9999;
@@ -36,25 +24,194 @@ a:focus-visible,
   will-change: transform, opacity;
 }
 
-/* HUD value emphasis pop. */
 .gfx-pop {
   animation: gfxPop 0.34s ease;
 }
 @keyframes gfxPop {
   40% {
-    transform: scale(1.2);
+    transform: scale(1.25);
   }
 }
 
-/* Parallax layers get a smooth return easing. */
+/* Touch Ripple Visual FX */
+.gfx-ripple {
+  position: fixed;
+  z-index: 9999;
+  border: 3px solid #38bdf8;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
+}
+
+/* Combo Streak Multiplier overlay HUD */
+#game-combo-hud {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  border: 2px solid #fff;
+  border-radius: 30px;
+  padding: 8px 24px;
+  color: #fff;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 900;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 20px rgba(239, 68, 68, 0.4);
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition:
+    transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    opacity 0.2s;
+  will-change: transform, opacity;
+}
+#game-combo-hud.show {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+#game-combo-hud.show.pop {
+  animation: comboPop 0.3s ease;
+}
+@keyframes comboPop {
+  50% {
+    transform: translateX(-50%) scale(1.3);
+  }
+}
+
 [data-parallax] [data-parallax-layer],
 .ghero .deco {
   will-change: transform;
 }
 
+/* ---- Game Floating Toolbar ---- */
+#game-pub-toolbar {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 10000;
+  display: flex;
+  gap: 8px;
+  /* Never push buttons off-screen on narrow phones */
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: calc(100vw - 24px);
+}
+.pub-btn {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #fff;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition:
+    background 0.15s,
+    transform 0.12s;
+}
+.pub-btn:hover {
+  background: rgba(30, 41, 59, 0.95);
+  transform: translateY(-1px);
+}
+
+/* ---- High Contrast Styles ---- */
+body.high-contrast {
+  filter: contrast(1.45) !important;
+}
+body.high-contrast button,
+body.high-contrast a,
+body.high-contrast input,
+body.high-contrast select {
+  border: 2px solid #fff !important;
+  outline: 2px solid #000 !important;
+  background: #000 !important;
+  color: #fff !important;
+  font-weight: bold !important;
+}
+
+/* ---- Controls Help Dialog ---- */
+#game-controls-dialog,
+#teacher-cheat-console {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10000;
+  width: 330px;
+  background: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  padding: 16px;
+  color: #f8fafc;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.3),
+    0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  display: none;
+  box-sizing: border-box;
+  text-align: left;
+}
+#game-controls-dialog.show,
+#teacher-cheat-console.show {
+  display: block;
+}
+#game-controls-dialog h4,
+#teacher-cheat-console h4 {
+  margin: 0 0 8px 0;
+  color: #38bdf8;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+#game-controls-dialog .close-btn,
+#teacher-cheat-console .close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+#game-controls-dialog .close-btn:hover,
+#teacher-cheat-console .close-btn:hover {
+  color: #f1f5f9;
+}
+.cheat-btn {
+  width: 100%;
+  margin-top: 8px;
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px;
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.cheat-btn:hover {
+  background: #38bdf8;
+  color: #0f172a;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .gfx-spark,
-  .gfx-pop {
+  .gfx-pop,
+  .gfx-ripple {
     animation: none !important;
     display: none !important;
   }

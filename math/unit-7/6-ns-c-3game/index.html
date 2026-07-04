@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Number Line Jumper — 6.NS.C.3</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
     <script>
@@ -28,10 +29,16 @@
         padding: 0;
         box-sizing: border-box;
       }
+      html,
       body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
         background: #0a0a2e;
         overflow: hidden;
         font-family: "Segoe UI", system-ui, sans-serif;
+        touch-action: none;
       }
       #game-container {
         width: 100vw;
@@ -46,12 +53,15 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <div id="game-container"></div>
     <script>
@@ -142,7 +152,11 @@
           } else if (type === 2) {
             // Which has greater absolute value
             const a = Phaser.Math.Between(-range, -1);
-            const b = Phaser.Math.Between(1, range);
+            let b = Phaser.Math.Between(1, range);
+            // Exclude ties: |a| must never equal |b| or the question is ill-posed
+            while (Math.abs(b) === Math.abs(a)) {
+              b = Phaser.Math.Between(1, range);
+            }
             q = `Which has greater absolute value: ${a} or ${b}?`;
             ans = Math.abs(a) > Math.abs(b) ? a : b;
             opts = shuffle([a, b, 0]);
@@ -1105,7 +1119,7 @@
           let maxVal = Math.max(10, Math.abs(q.ans));
           const matches = q.q.match(/-?\d+/g);
           if (matches) {
-            matches.forEach(m => {
+            matches.forEach((m) => {
               maxVal = Math.max(maxVal, Math.abs(parseInt(m, 10)));
             });
           }
@@ -1118,7 +1132,10 @@
           this.drawQuestionNumberLine(nlY, container, qRange, nlWidth);
 
           // Selector Container (starts at v = 0)
-          const selectorCont = this.add.container(W / 2, nlY).setDepth(605).setScrollFactor(0);
+          const selectorCont = this.add
+            .container(W / 2, nlY)
+            .setDepth(605)
+            .setScrollFactor(0);
           container.push(selectorCont);
 
           const pointer = this.add.graphics();
@@ -1126,14 +1143,16 @@
           pointer.fillTriangle(0, 0, -10, -18, 10, -18);
           selectorCont.add(pointer);
 
-          const valText = this.add.text(0, -36, "0", {
-            fontSize: "20px",
-            fontFamily: "Segoe UI, Arial, sans-serif",
-            fontStyle: "bold",
-            color: "#fbbf24",
-            stroke: "#000000",
-            strokeThickness: 3
-          }).setOrigin(0.5);
+          const valText = this.add
+            .text(0, -36, "0", {
+              fontSize: "20px",
+              fontFamily: "Segoe UI, Arial, sans-serif",
+              fontStyle: "bold",
+              color: "#fbbf24",
+              stroke: "#000000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5);
           selectorCont.add(valText);
 
           // Make selector container draggable
@@ -1149,26 +1168,31 @@
             synth(300, 0.02, "sine", 0.05); // Play subtle tick sound
           };
 
-          selectorCont.on('drag', (pointer, dragX, dragY) => {
+          selectorCont.on("drag", (pointer, dragX, dragY) => {
             const minX = W / 2 - nlWidth / 2;
             const maxX = W / 2 + nlWidth / 2;
             const clampedX = Phaser.Math.Clamp(dragX, minX, maxX);
-            const val = Math.round(((clampedX - (W / 2)) / (nlWidth / 2)) * qRange);
+            const val = Math.round(
+              ((clampedX - W / 2) / (nlWidth / 2)) * qRange,
+            );
             updateSelectorFromValue(val);
           });
 
           // Tap to position selector on number line
-          const clickZone = this.add.rectangle(W / 2, nlY, nlWidth + 40, 60, 0x000000, 0.001)
+          const clickZone = this.add
+            .rectangle(W / 2, nlY, nlWidth + 40, 60, 0x000000, 0.001)
             .setScrollFactor(0)
             .setDepth(601)
             .setInteractive({ useHandCursor: true });
           container.push(clickZone);
 
-          clickZone.on('pointerdown', (pointer) => {
+          clickZone.on("pointerdown", (pointer) => {
             const minX = W / 2 - nlWidth / 2;
             const maxX = W / 2 + nlWidth / 2;
             const clampedX = Phaser.Math.Clamp(pointer.x, minX, maxX);
-            const val = Math.round(((clampedX - (W / 2)) / (nlWidth / 2)) * qRange);
+            const val = Math.round(
+              ((clampedX - W / 2) / (nlWidth / 2)) * qRange,
+            );
             updateSelectorFromValue(val);
           });
 
@@ -1194,10 +1218,18 @@
           const onKeyDown = (event) => {
             if (!this.isQuestionActive) return;
             const currentVal = parseInt(valText.text, 10);
-            if (event.key === "ArrowLeft" || event.key === "a" || event.key === "A") {
+            if (
+              event.key === "ArrowLeft" ||
+              event.key === "a" ||
+              event.key === "A"
+            ) {
               event.preventDefault();
               updateSelectorFromValue(currentVal - 1);
-            } else if (event.key === "ArrowRight" || event.key === "d" || event.key === "D") {
+            } else if (
+              event.key === "ArrowRight" ||
+              event.key === "d" ||
+              event.key === "D"
+            ) {
               event.preventDefault();
               updateSelectorFromValue(currentVal + 1);
             } else if (event.key === "Enter") {
@@ -1237,7 +1269,7 @@
                   color: "#4ade80",
                   fontStyle: "bold",
                   stroke: "#000000",
-                  strokeThickness: 3
+                  strokeThickness: 3,
                 })
                 .setOrigin(0.5)
                 .setScrollFactor(0)
@@ -1255,18 +1287,32 @@
 
               // Draw a secondary pointer showing correct answer
               const correctX = W / 2 + (q.ans / qRange) * (nlWidth / 2);
-              const correctPointer = this.add.graphics().setDepth(604).setScrollFactor(0);
+              const correctPointer = this.add
+                .graphics()
+                .setDepth(604)
+                .setScrollFactor(0);
               correctPointer.fillStyle(0x4ade80, 0.85);
-              correctPointer.fillTriangle(correctX, nlY, correctX - 8, nlY - 16, correctX + 8, nlY - 16);
+              correctPointer.fillTriangle(
+                correctX,
+                nlY,
+                correctX - 8,
+                nlY - 16,
+                correctX + 8,
+                nlY - 16,
+              );
               container.push(correctPointer);
 
-              const correctLbl = this.add.text(correctX, nlY - 32, `Correct: ${q.ans}`, {
-                fontSize: "14px",
-                color: "#4ade80",
-                fontStyle: "bold",
-                stroke: "#000000",
-                strokeThickness: 3
-              }).setOrigin(0.5).setDepth(604).setScrollFactor(0);
+              const correctLbl = this.add
+                .text(correctX, nlY - 32, `Correct: ${q.ans}`, {
+                  fontSize: "14px",
+                  color: "#4ade80",
+                  fontStyle: "bold",
+                  stroke: "#000000",
+                  strokeThickness: 3,
+                })
+                .setOrigin(0.5)
+                .setDepth(604)
+                .setScrollFactor(0);
               container.push(correctLbl);
 
               const fb = this.add
@@ -1275,7 +1321,7 @@
                   color: "#f87171",
                   fontStyle: "bold",
                   stroke: "#000000",
-                  strokeThickness: 3
+                  strokeThickness: 3,
                 })
                 .setOrigin(0.5)
                 .setScrollFactor(0)
@@ -1302,11 +1348,20 @@
           submitBtn.on("pointerout", () => submitBtn.setScale(1.1));
 
           // Controls help guide
-          const guideTxt = this.add.text(W / 2, 310, "Drag pointer or Tap line  |  Use ←/→ and ENTER keys", {
-            fontSize: "12px",
-            color: "#94a3b8",
-            fontStyle: "italic"
-          }).setOrigin(0.5).setScrollFactor(0).setDepth(601);
+          const guideTxt = this.add
+            .text(
+              W / 2,
+              310,
+              "Drag pointer or Tap line  |  Use ←/→ and ENTER keys",
+              {
+                fontSize: "12px",
+                color: "#94a3b8",
+                fontStyle: "italic",
+              },
+            )
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(601);
           container.push(guideTxt);
 
           this.qContainer = { list: container };
@@ -1791,10 +1846,13 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Expression Engine — Factory Assembly Line</title>
     <style>
       * {
@@ -62,6 +63,15 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
   </head>
   <body>
     <!-- ARIA live region: announces answer-submission results (correct /
@@ -584,7 +594,7 @@
           const diffs = [
             { label: "EASY", color: 0x22c55e, sub: "Tier 1 only" },
             { label: "STANDARD", color: 0xf59e0b, sub: "All tiers" },
-            { label: "HARD", color: 0xef4444, sub: "Speed mode" },
+            { label: "LEVEL 3", color: 0xef4444, sub: "Expert" },
           ];
           diffs.forEach((d, i) => {
             const bx = cx - 200 + i * 200,
@@ -929,12 +939,35 @@
             .setOrigin(0.5)
             .setDepth(8);
 
-          // Lever
+          // Lever — the explicit "lock it in" control. Selecting a choice
+          // only highlights it; the student confirms by pulling the lever,
+          // tapping the highlighted choice again, or pressing Enter.
           this.lever = this.add
             .graphics()
             .setPosition(W - 80, 380)
             .setDepth(5);
           this.drawLever(this.lever, false);
+          this.leverHit = this.add
+            .rectangle(W - 80, 415, 100, 130, 0xfbbf24, 0.001)
+            .setDepth(6)
+            .setInteractive({ useHandCursor: true });
+          this.leverLabel = this.add
+            .text(W - 80, 470, "LOCK IT IN", {
+              fontSize: "12px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(6)
+            .setAlpha(0);
+          this.leverHit.on("pointerdown", () => {
+            if (
+              !this.answered &&
+              this.selectedIdx >= 0 &&
+              !this.removedChoices.includes(this.selectedIdx)
+            )
+              this.submitAnswer(this.selectedIdx);
+          });
 
           // Confetti particle emitter
           this.confettiEmitter = this.add
@@ -1228,7 +1261,7 @@
         }
 
         loadQuestion() {
-          if (this.qIndex >= this.totalQ || this.lives <= 0) {
+          if (this.qIndex >= this.totalQ) {
             this.endGame();
             return;
           }
@@ -1241,7 +1274,7 @@
 
           // Phase transition at question 6 and 11
           if (this.qIndex === 5) {
-            this.showPhaseTransition("PHASE 2: PICKING UP SPEED!");
+            this.showPhaseTransition("PHASE 2: NEW CHALLENGES!");
           } else if (this.qIndex === 10) {
             this.showPhaseTransition("PHASE 3: FINAL STRETCH!");
           }
@@ -1359,12 +1392,18 @@
           this.fbText.setText("");
           this.hintText.setText("");
           this.speedIndicator.setAlpha(0);
+          this.leverLabel.setAlpha(0);
           this.drawLever(this.lever, false);
         }
 
         selectAnswer(idx) {
           if (this.answered) return;
           if (this.removedChoices.includes(idx)) return;
+          // Second tap on the already-highlighted choice locks it in.
+          if (this.selectedIdx === idx) {
+            this.submitAnswer(idx);
+            return;
+          }
           // Deselect previous
           this.answerBoxes.forEach((b, i) => {
             if (!this.removedChoices.includes(i)) {
@@ -1377,20 +1416,18 @@
           box.bg.setStrokeStyle(3, 0xfbbf24);
           box.highlight.setAlpha(0.15);
           sfx.click();
-          // Auto-submit after short delay
-          this.time.delayedCall(200, () => {
-            if (this.selectedIdx === idx && !this.answered)
-              this.submitAnswer(idx);
-          });
+          // Highlight only — student confirms via the lever, a second tap
+          // on the highlighted choice, or Enter. No auto-submit.
+          this.leverLabel.setAlpha(1);
         }
 
         submitAnswer(idx) {
           if (this.answered) return;
           this.answered = true;
+          this.leverLabel.setAlpha(0);
           const q = this.questions[this.qIndex];
           const chosen = this.answerBoxes[idx].optText;
           const correct = chosen === q.correct;
-          const answerTime = (Date.now() - this.questionStartTime) / 1000;
 
           // Pull lever animation
           this.drawLever(this.lever, true);
@@ -1400,23 +1437,6 @@
             this.totalCorrect++;
             let pts = q.tier * 10 * (1 + Math.min(this.streak, 5) * 0.1);
             pts = Math.round(pts);
-
-            // Time bonus
-            let timeBonus = 0;
-            if (answerTime < 3) {
-              timeBonus = 15;
-              this.speedIndicator
-                .setText("SPEED BONUS +15")
-                .setColor("#22c55e")
-                .setAlpha(1);
-            } else if (answerTime < 5) {
-              timeBonus = 8;
-              this.speedIndicator
-                .setText("QUICK +8")
-                .setColor("#94a3b8")
-                .setAlpha(1);
-            }
-            pts += timeBonus;
 
             // Double points
             if (this.doublePointsActive) {
@@ -1538,6 +1558,18 @@
             });
           } else {
             this.lives--;
+            if (this.lives <= 0) {
+              // No-fail: refill lives instead of ending the run early.
+              this.lives = 3;
+              this.showFloatingText(
+                W / 2,
+                340,
+                "Refilled — keep going!",
+                "#22c55e",
+                "24px",
+              );
+              eeAnnounce("Lives refilled. Keep going!");
+            }
             this.streak = 0;
             this.combo = 1;
             this.hudStreak.setText("");
@@ -1594,7 +1626,7 @@
           // Auto advance
           this.time.delayedCall(correct ? 1500 : 2500, () => {
             this.qIndex++;
-            if (this.qIndex < this.totalQ && this.lives > 0) {
+            if (this.qIndex < this.totalQ) {
               this.loadQuestion();
               if (this.difficulty === 2)
                 this.conveyorSpeed = Math.min(4, this.conveyorSpeed + 0.1);
@@ -1681,10 +1713,8 @@
             this.streakBg.setFillStyle(0x000000, 0);
           }
           this.hudCombo.setText(this.combo > 1 ? `COMBO x${this.combo}` : "");
-          const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
-          const m = Math.floor(elapsed / 60),
-            s = elapsed % 60;
-          this.hudTimer.setText(`${m}:${s < 10 ? "0" : ""}${s}`);
+          // Calm play: no on-screen clock (elapsed time still logged at results).
+          this.hudTimer.setText("");
         }
 
         update() {
@@ -1938,7 +1968,7 @@
           });
 
           // Difficulty label
-          const diffLabels = ["Easy", "Standard", "Hard"];
+          const diffLabels = ["Easy", "Standard", "Level 3 — Expert"];
           this.add
             .text(cx, statsY + 55, `Mode: ${diffLabels[d.difficulty]}`, {
               fontSize: "14px",
@@ -2113,5 +2143,29 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#ee-live",
+            standard: "6.EE.1-2",
+            accept: "^Part \\d",
+            staticHints: [
+              "Read the expression piece by piece: which operations do you see, and which one must happen first (parentheses, exponents, multiply/divide, add/subtract)?",
+              "Substituting a value for a variable? Replace the variable EVERYWHERE it appears before you compute anything.",
+              "Combine only like terms — terms with the exact same variable part — then work the order of operations one small step at a time.",
+            ],
+          });
+      });
+    </script>
+    <!-- ghl-injected:end -->
   </body>
 </html>

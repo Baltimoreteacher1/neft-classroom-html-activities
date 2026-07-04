@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/assets/math-mobile.css">
   <meta name="description" content="Arcade-grade mathematical conveyor game. Test inputs on the Function Machine and deduce the active algebraic equation.">
   <title>Function Forge 6.EE.9 · Conveyor Arcade</title>
   
@@ -218,12 +219,34 @@
       background: rgba(236, 72, 153, 0.04);
       color: #fecdd3;
     }
-  
+
+    /* RESPONSIVE (tablet/phone) */
+    @media (max-width: 900px) {
+      .arcade-shell { padding: 16px; gap: 16px; }
+      .arcade-cabinet { padding: 18px; border-radius: 20px; }
+      .arcade-screen { grid-template-columns: 1fr; gap: 18px; padding: 18px; }
+      .marquee h1 { font-size: 1.4rem; }
+    }
+
+    @media (max-width: 640px) {
+      .arcade-shell { padding: 12px; }
+      .arcade-cabinet { padding: 14px; border-width: 4px; }
+      .arcade-screen { padding: 14px; }
+      .marquee { flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px 16px; }
+      .marquee h1 { font-size: 1.2rem; }
+      .machine-viewport { min-height: 0; padding: 14px; }
+      .cruncher-input-group { flex-direction: column; }
+      .button-row { flex-wrap: wrap; }
+    }
+
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
 </head>
 <body>
   <main class="arcade-shell">
@@ -437,5 +460,8 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>

@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <title>Unit 9 Projects — Teacher Answer Key | Neft Teacher</title>
     <meta
       name="description"
@@ -262,11 +263,23 @@
           border-top-color: #999;
         }
       }
+          .checklist li:has(input[type="checkbox"]:checked) {
+        color: var(--muted) !important;
+        opacity: 0.65;
+        text-decoration: line-through;
+        transition: all 0.25s ease;
+      }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
-  </head>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+    <!-- answer-key-gate-injected:begin (teacher gate — tools/inject-projects-gold.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/answer-key-gate.css" />
+    <!-- answer-key-gate-injected:end -->
+</head>
   <body>
     <main class="page-shell">
       <!-- Hero -->
@@ -286,35 +299,47 @@
         <div class="note-panel" style="margin: 24px 0">
           <p>
             <strong>For teachers only</strong> — this page shows fully worked
-            solutions using each project's
-            <em>"Use example numbers"</em> values. Students enter their own real
-            numbers (a channel they would run / their family's actual plan + a
-            real competitor), so totals vary, but the reasoning is identical.
-            Use these as your grading reference and model responses.
+            solutions using each project's example values. Students enter their
+            own real numbers (a channel they would run / a phone plan they
+            model), so totals vary, but the reasoning is identical. Use these as
+            your grading reference and model responses.
           </p>
           <p>
             <strong>Standards:</strong> 6.EE.9 — identify independent and
-            dependent variables, write equations y = kx, analyze relationships
+            dependent variables, write an equation for the dependent variable in
+            terms of the independent variable, and analyze the relationship
             using tables and graphs.
           </p>
           <p>
             <strong>Project arc:</strong> Each version follows Self → Peer →
-            World. Self = the student's own real context; Peer = a classmate
-            interview auto-compare; World = built-in real benchmarks + a What-If
-            Lab. A show-your-work grid (find y at x=3, find x at a target,
-            12-period total) is tolerance-checked against the student's own k.
-            Level 1 prefills a friendly k; Level 2 adds non-proportional y = kx
-            + b reasoning.
+            World. <em>Self</em> = the student designs their own context, names
+            the variables, writes the equation, builds a table, and reads a live
+            SVG graph. <em>Peer</em> = a classmate interview with an
+            auto-compare. <em>World</em> = Version A classifies the student's
+            rate into a real creator-growth tier; Version B finds the break-even
+            point against a classmate's plan. Level 1 prefills a friendly
+            starting value; Level 2 explores the non-proportional case (a
+            head-start <em>b</em> in A; a nonzero flat fee in B).
+          </p>
+          <p>
+            <strong>Teacher grading console:</strong> each activity has a hidden
+            console that reads the student's live inputs. It is off by default
+            for students — open a project with <code>?teacher</code> in the URL,
+            then press <strong>Alt&nbsp;+&nbsp;Shift&nbsp;+&nbsp;K</strong> (or
+            triple-click the title).
           </p>
         </div>
 
 <!-- ════════════════════════════════════════════════════════════
              VERSION A — Streaming Channel Growth Lab
-             "Use example numbers" values:
-               topic = skateboarding tricks, k = 12 subs/week
-               find-x = 7, find-y = 300, sw-target = 240
-               peer: my k = 12, classmate k = 8, compare week = 10
-               world: my k = 12
+             Worked with the app's Level-1 example values:
+               topic = student choice (e.g. skateboarding tricks)
+               k = 15 subs/week (CONFIG.defaultGrowthRate; #c-rate)
+               starting subs b = 0 (Level 1) ; example b = 50 (Level 2, #c-start)
+               peer example: my k = 15, classmate k = 10 (compare at week 5,
+                             milestone = 1,000 subscribers)
+             Formulas in app: y = k·x (+ b at Level 2); week-5 subs = k·5 + b;
+                              weeks to 1,000 = (1000 − b) / k; monthly = k·4.33
         ════════════════════════════════════════════════════════════ -->
 <div class="version-label">Version A &mdash; Streaming Channel Growth Lab</div>
 
@@ -325,110 +350,105 @@
     Variables · Equation · Table · Graph &middot; 6.EE.9
   </div>
   <div class="defaults-row">
-    <span class="default-chip">Topic = skateboarding tricks</span>
-    <span class="default-chip">k = 12 subscribers/week</span>
-    <span class="default-chip">Starting subscribers = 0</span>
+    <span class="default-chip">Topic = student's choice</span>
+    <span class="default-chip">k = 15 subscribers/week</span>
+    <span class="default-chip">Level 1 head start b = 0</span>
   </div>
   <div class="answer-block">
-    <div class="big-ans">y = 12x</div>
+    <div class="big-ans">y = 15x</div>
     <div class="step">
-      <strong>Independent variable (x):</strong> weeks — the student controls
-      how many weeks have passed.
+      <strong>Independent variable (x):</strong> time in weeks — the student
+      controls how many weeks have passed.
     </div>
     <div class="step">
-      <strong>Dependent variable (y):</strong> subscribers — the total depends
-      on how many weeks have passed.
+      <strong>Dependent variable (y):</strong> total subscribers — the total
+      depends on how many weeks have passed.
     </div>
     <div class="step" style="margin-top: 6px">
-      k = 12 is the constant of proportionality (a unit rate: 12 subs per week).
-      After x weeks, y = 12 &times; x. Students must justify their chosen k with
-      research ("why this k?").
+      k = 15 is the constant of proportionality (a unit rate: 15 subs per week).
+      After x weeks, y = 15 &times; x. Students pick and justify their own k, so
+      the rate will vary — the equation form y = kx (Level 1) is what matters.
+    </div>
+    <div class="step" style="margin-top: 6px">
+      <strong>Level 2:</strong> students add a head start b, giving
+      y = 15x + b (example b = 50 → <strong>y = 15x + 50</strong>). This is
+      <strong>non-proportional</strong> because the line starts at (0, b) instead
+      of the origin.
     </div>
   </div>
   <div class="answer-block">
-    <div class="big-ans">Data table (y = 12x), weeks 0–5</div>
+    <div class="big-ans">Data table (y = 15x), weeks 0–5</div>
     <table class="ak-table">
       <tr>
         <th>Weeks (x)</th>
         <th>Equation</th>
         <th>Subscribers (y)</th>
+        <th>Ordered pair</th>
       </tr>
       <tr>
         <td>0</td>
-        <td>y = 12 &times; 0</td>
+        <td>15 &times; 0</td>
         <td><strong>0</strong></td>
+        <td>(0, 0)</td>
       </tr>
       <tr>
         <td>1</td>
-        <td>y = 12 &times; 1</td>
-        <td><strong>12</strong></td>
+        <td>15 &times; 1</td>
+        <td><strong>15</strong></td>
+        <td>(1, 15)</td>
       </tr>
       <tr>
         <td>2</td>
-        <td>y = 12 &times; 2</td>
-        <td><strong>24</strong></td>
+        <td>15 &times; 2</td>
+        <td><strong>30</strong></td>
+        <td>(2, 30)</td>
       </tr>
       <tr>
         <td>3</td>
-        <td>y = 12 &times; 3</td>
-        <td><strong>36</strong></td>
+        <td>15 &times; 3</td>
+        <td><strong>45</strong></td>
+        <td>(3, 45)</td>
       </tr>
       <tr>
         <td>4</td>
-        <td>y = 12 &times; 4</td>
-        <td><strong>48</strong></td>
+        <td>15 &times; 4</td>
+        <td><strong>60</strong></td>
+        <td>(4, 60)</td>
       </tr>
       <tr>
         <td>5</td>
-        <td>y = 12 &times; 5</td>
-        <td><strong>60</strong></td>
+        <td>15 &times; 5</td>
+        <td><strong>75</strong></td>
+        <td>(5, 75)</td>
       </tr>
     </table>
     <div class="step" style="margin-top: 8px">
-      Each y increases by 12 (constant rate of change). Each row is an ordered
-      pair (x, y) plottable on the Unit 7 coordinate plane.
+      Each y increases by 15 (constant rate of change). Each row is an ordered
+      pair (x, y) — enter with no spaces, e.g. (2,30). At Level 2 with b = 50 the
+      column becomes 50, 65, 80, 95, 110, 125.
     </div>
   </div>
   <div class="answer-block">
-    <div class="big-ans">Graph readings (k = 12)</div>
+    <div class="big-ans">Read &amp; Analyze the Graph (k = 15)</div>
     <div class="step">
-      <strong>Find y:</strong> y = 12 &times; 7 =
-      <strong>84 subscribers</strong>
-      at week 7.
-    </div>
-    <div class="step">
-      <strong>Find x:</strong> x = 300 &divide; 12 =
-      <strong>25.00 weeks</strong>
-      to reach 300 subscribers.
-    </div>
-    <div class="step" style="margin-top: 6px">
-      The SVG line passes through the origin (0, 0) and rises 12 per week.
-    </div>
-  </div>
-  <div class="answer-block">
-    <div class="big-ans">
-      Show Your Work grid (checked vs. student's own k = 12)
+      The live SVG line passes through the origin (0, 0) and rises 15 per week
+      (at Level 2 it starts at (0, b) — e.g. (0, 50)).
     </div>
     <div class="step">
-      <strong>1. y at x = 3:</strong> 12 &times; 3 =
-      <strong>36</strong> (tolerance 0)
-    </div>
-    <div class="step">
-      <strong>2. x at target y = 240:</strong> 240 &divide; 12 =
-      <strong>20 weeks</strong> (tolerance ±0.05)
-    </div>
-    <div class="step">
-      <strong>3. 12-month total (52 weeks):</strong> 12 &times; 52 =
-      <strong>624 subscribers</strong> (tolerance 0)
+      <strong>Reflection prompts (accept reasoning):</strong> "At week 0…" the
+      channel has 0 subscribers (Level 1) because a proportional line starts at
+      the origin. "The constant rate k represents…" how many subscribers are
+      gained each week (the steepness/slope). "To reach 1,000 subscribers…" it
+      takes 1000 &divide; 15 ≈ <strong>66.7 weeks</strong>.
     </div>
   </div>
   <div class="rubric-note">
     <div class="rn-label">Sample 4 / 3 / 2 Rubric Scoring — Self</div>
     <strong>4 (Expert):</strong> Both variables named correctly; a researched k
-    justified; table, graph readings, and all three work-grid answers
+    justified; equation, all six table rows, and the graph reflections
     correct.<br />
-    <strong>3 (Proficient):</strong> Equation and table correct; at least one
-    graph reading and most work-grid answers correct.<br />
+    <strong>3 (Proficient):</strong> Equation and table correct; reasonable graph
+    reflections.<br />
     <strong>2 (Developing):</strong> One variable correct or some work attempted
     with computation errors.
   </div>
@@ -439,28 +459,34 @@
   <h3><span class="phase-badge teal">Part 2 · Peer</span> Channel Showdown</h3>
   <div class="skill-line">Compare Relationships &middot; 6.EE.9</div>
   <div class="defaults-row">
-    <span class="default-chip">My k = 12</span>
-    <span class="default-chip">Classmate k = 8</span>
-    <span class="default-chip">Compare at week x = 10</span>
+    <span class="default-chip">My k = 15</span>
+    <span class="default-chip">Classmate k = 10</span>
+    <span class="default-chip">App compares at week 5 &amp; 1,000-sub goal</span>
   </div>
   <div class="answer-block">
-    <div class="big-ans">Your channel is ahead!</div>
+    <div class="big-ans">Your channel grows faster</div>
     <div class="step">
-      You (y = 12x): y = 12 &times; 10 = <strong>120 subscribers</strong>
+      You (y = 15x) at week 5: 15 &times; 5 = <strong>75 subscribers</strong>
     </div>
     <div class="step">
-      Classmate (y = 8x): y = 8 &times; 10 = <strong>80 subscribers</strong>
+      Classmate (y = 10x) at week 5: 10 &times; 5 =
+      <strong>50 subscribers</strong>
     </div>
     <div class="step" style="margin-top: 6px">
-      You lead by <strong>40 subscribers</strong> at week 10. Your higher k = 12
-      makes a <strong>steeper</strong> line. The kit cards show k (12 vs 8,
-      difference 4) and subs at week 10 (120 vs 80, difference 40).
+      Your channel grows <strong>faster by 5 subscribers per week</strong>
+      (15 − 10), so your line is <strong>steeper</strong>.
+    </div>
+    <div class="step" style="margin-top: 6px">
+      <strong>To reach 1,000 subscribers:</strong> yours takes 1000 &divide; 15 ≈
+      <strong>66.7 weeks</strong>; the classmate's takes 1000 &divide; 10 =
+      <strong>100.0 weeks</strong>. (App uses (1000 − b) / k, so a Level-2 head
+      start shortens the time.)
     </div>
   </div>
   <div class="rubric-note">
     <div class="rn-label">Sample 4 / 3 / 2 Rubric Scoring — Peer</div>
-    <strong>4 (Expert):</strong> Correct totals; identifies steeper line and
-    explains that a larger k = faster growth.<br />
+    <strong>4 (Expert):</strong> Correct week-5 totals; identifies the steeper
+    line and explains that a larger k = faster growth.<br />
     <strong>3 (Proficient):</strong> Correct totals; correct comparison.<br />
     <strong>2 (Developing):</strong> One channel computed; comparison attempted.
   </div>
@@ -469,50 +495,45 @@
 <!-- Part 3 -->
 <div class="ak-phase">
   <h3>
-    <span class="phase-badge gold">Part 3 · World</span> Creator Benchmarks +
-    What-If Lab
+    <span class="phase-badge gold">Part 3 · World</span> Creator Growth Tier
   </h3>
   <div class="skill-line">Compare to Real Data &middot; 6.EE.9</div>
   <div class="defaults-row">
-    <span class="default-chip">My k = 12</span>
-    <span class="default-chip"
-      >Benchmark sample: 5, 25, 120, 600, 1500, 4000</span
-    >
+    <span class="default-chip">My k = 15 subs/week</span>
+    <span class="default-chip">Tier uses monthly = k × 4.33</span>
   </div>
   <div class="answer-block">
-    <div class="big-ans">My k vs. benchmark average</div>
+    <div class="big-ans">Growth tier for k = 15 → Rising Star ✨</div>
     <div class="step">
-      Benchmark average = (5 + 25 + 120 + 600 + 1500 + 4000) ÷ 6 = 6250 ÷ 6 ≈
-      <strong>1041.67 subs/week</strong>.
+      The app estimates a monthly rate as k &times; 4.33 = 15 &times; 4.33 ≈
+      <strong>65 subscribers/month</strong>.
     </div>
     <div class="step">
-      A starting channel's k = 12 is <strong>far below</strong> the all-tier
-      average (the average is pulled up by large channels) but is realistic for
-      the "growing channel" tier. The meter shows the student's k below the
-      sample average — accept any reasoning that references the benchmark
-      sample.
-    </div>
-    <div class="step" style="margin-top: 6px">
-      <strong>What-If Lab:</strong> with k = 12 at week 10, before = 120
-      subscribers. Adding a 500-subscriber viral week → after = 620. Emphasize
-      that y = 12x + 500 is <strong>no longer proportional</strong>
-      (does not pass through the origin).
+      It then classifies that monthly rate into a tier:
+      <strong>Hobbyist Creator</strong> (&lt; 50/mo),
+      <strong>Rising Star</strong> (50–500/mo),
+      <strong>Professional Creator</strong> (500–2,000/mo),
+      <strong>Viral Sensation</strong> (&gt; 2,000/mo). About 65/mo lands in
+      <strong>Rising Star</strong>. Accept any reflection that compares the
+      student's rate to these tiers.
     </div>
   </div>
   <div class="answer-block">
-    <div class="big-ans">Level 2 — y = kx + 200 (one-time boost)</div>
+    <div class="big-ans">Level 2 — proportional vs. non-proportional</div>
     <div class="step">
-      y = kx + 200 is <strong>NOT proportional</strong> — it crosses the y-axis
-      at 200, not the origin. With the same k, your line and the friend's line
-      are <strong>parallel</strong>, so they are <strong>never equal</strong>:
-      the friend stays exactly 200 ahead forever.
+      y = kx (no head start) is <strong>proportional</strong> and passes through
+      the origin. y = kx + b (b &gt; 0, e.g. y = 15x + 50) is
+      <strong>NOT proportional</strong> — it crosses the y-axis at b, not the
+      origin. Two channels with the <em>same</em> k but different b run
+      <strong>parallel</strong> and are never equal (the head start is kept
+      forever).
     </div>
   </div>
   <div class="rubric-note">
     <div class="rn-label">Sample 4 / 3 / 2 Rubric Scoring — World</div>
-    <strong>4 (Expert):</strong> Compares k to the benchmark sample with
-    reasoning; What-If and Level 2 correctly note loss of proportionality.<br />
-    <strong>3 (Proficient):</strong> Reasonable comparison to benchmark data.<br />
+    <strong>4 (Expert):</strong> Correctly reads the growth tier and explains it;
+    Level 2 correctly identifies loss of proportionality with a head start.<br />
+    <strong>3 (Proficient):</strong> Reasonable comparison to the tiers.<br />
     <strong>2 (Developing):</strong> Comparison attempted.
   </div>
 </div>
@@ -525,13 +546,14 @@
   </h3>
   <div class="sample-response">
     "My channel is about <strong>skateboarding tricks</strong>. My
-    <strong>independent variable</strong> is weeks (x) and my
-    <strong>dependent variable</strong> is subscribers (y). My equation is
-    <strong>y = 12x</strong> — I chose k = 12 because real skating channels that
-    post twice a week gain about 12 subscribers a week. At week 7 I will have 84
-    subscribers, and I will hit 240 subscribers at week 20. My channel grows
-    faster than my classmate's (k = 8) because my k is bigger, so my line is
-    steeper and I lead by 40 subscribers at week 10."
+    <strong>independent variable</strong> is time in weeks (x) and my
+    <strong>dependent variable</strong> is total subscribers (y). My equation is
+    <strong>y = 15x</strong> — I chose k = 15 because channels that post a few
+    times a week gain about 15 subscribers a week. In the first 5 weeks I reach
+    75 subscribers, and it would take about 67 weeks to reach 1,000. My channel
+    grows faster than my classmate's (k = 10) because my k is bigger, so my line
+    is steeper and I gain 5 more subscribers each week. A monthly rate of about
+    65 subscribers puts my channel in the <strong>Rising Star</strong> tier."
   </div>
 </div>
 
@@ -539,12 +561,11 @@
 
 <!-- ════════════════════════════════════════════════════════════
              VERSION B — Phone Plan Showdown
-             "Use example numbers" values:
-               Plan A = our T-Mobile plan, k = $25/month
-               Plan B = Mint Mobile, k = $18/month
-               find-x = 8, find-y = 200, sw-target = 150
-               peer: my k = $25, classmate k = $30, compare month = 12
-               world: my k = $25
+             Shipped model: cost per GB + flat fee  →  C = (rate)·g + (flat fee)
+             Example plan (app's own suggestion): $20 flat fee + $10/GB → C = 10g + 20
+               Students choose their own flat fee and per-GB rate from real prices,
+               so plan values vary; grade the equation form and the method.
+               World step compares the plan's cost for 5 GB to real market tiers.
         ════════════════════════════════════════════════════════════ -->
 <div class="version-label" style="background: #0e8a7d; color: #fff">
   Version B &mdash; Phone Plan Showdown
@@ -559,142 +580,138 @@
     Variables · Equation · Table · Graph &middot; 6.EE.9
   </div>
   <div class="defaults-row">
-    <span class="default-chip">Plan A (T-Mobile) k = $25/month</span>
-    <span class="default-chip">Plan B (Mint) k = $18/month</span>
-    <span class="default-chip">Cost at month 0 = $0</span>
+    <span class="default-chip">Example plan: $20 flat fee + $10 / GB</span>
+    <span class="default-chip">Equation: C = 10g + 20</span>
+    <span class="default-chip">Values vary — students pick real prices</span>
   </div>
   <div class="answer-block">
-    <div class="big-ans">Plan A: y = 25x &nbsp;·&nbsp; Plan B: y = 18x</div>
-    <div class="step">
-      <strong>Independent variable (x):</strong> months — chosen by the family.
+    <div class="big-ans">
+      Cost equation: C = (rate) &middot; g + (flat fee) &nbsp;·&nbsp; example C =
+      10g + 20
     </div>
     <div class="step">
-      <strong>Dependent variable (y):</strong> total cost ($) — depends on
-      months paid.
+      <strong>Independent variable (g):</strong> gigabytes of data used — chosen
+      by the customer.
+    </div>
+    <div class="step">
+      <strong>Dependent variable (C):</strong> total monthly cost ($) — depends
+      on the data used.
     </div>
     <div class="step" style="margin-top: 6px">
-      Each k is a unit rate (dollars per month). Plan A uses the family's real
-      bill; Plan B uses a real competitor price the student looked up.
+      The rate ($/GB) is the <strong>slope</strong>; the flat fee is the
+      <strong>y-intercept</strong> (the cost at 0 GB). Because the flat fee is
+      not $0, the relationship is <strong>y = mx + c</strong> (NOT proportional).
+      Students choose their own flat fee and per-GB rate from real carrier
+      prices, so accept any correct equation in this form.
     </div>
   </div>
   <div class="answer-block">
-    <div class="big-ans">Cost table, months 1–6</div>
+    <div class="big-ans">Cost table, 1–6 GB (example plan C = 10g + 20)</div>
     <table class="ak-table">
       <tr>
-        <th>Month (x)</th>
-        <th>Plan A (y)</th>
-        <th>Plan B (y)</th>
+        <th>Data (g, GB)</th>
+        <th>Cost C = 10g + 20</th>
+      </tr>
+      <tr>
+        <td>0</td>
+        <td><strong>$20.00</strong> (flat fee only)</td>
       </tr>
       <tr>
         <td>1</td>
-        <td>$25.00</td>
-        <td><strong>$18.00</strong></td>
+        <td><strong>$30.00</strong></td>
       </tr>
       <tr>
         <td>2</td>
-        <td>$50.00</td>
-        <td><strong>$36.00</strong></td>
+        <td><strong>$40.00</strong></td>
       </tr>
       <tr>
         <td>3</td>
-        <td>$75.00</td>
-        <td><strong>$54.00</strong></td>
+        <td><strong>$50.00</strong></td>
       </tr>
       <tr>
         <td>4</td>
-        <td>$100.00</td>
-        <td><strong>$72.00</strong></td>
+        <td><strong>$60.00</strong></td>
       </tr>
       <tr>
         <td>5</td>
-        <td>$125.00</td>
-        <td><strong>$90.00</strong></td>
+        <td><strong>$70.00</strong></td>
       </tr>
       <tr>
         <td>6</td>
-        <td>$150.00</td>
-        <td><strong>$108.00</strong></td>
+        <td><strong>$80.00</strong></td>
       </tr>
     </table>
     <div class="step" style="margin-top: 8px">
-      Plan A grows by $25/month, Plan B by $18/month. Each row is an ordered
-      pair (x, y).
+      Cost grows by $10 for each additional GB. Each row is an ordered pair
+      (g, C). The line starts at $20 (the flat fee), <strong>not</strong> the
+      origin.
     </div>
   </div>
   <div class="answer-block">
     <div class="big-ans">
-      Two-line graph readings (find-x = 8, find-y = $200)
+      Graph &amp; equation readings (example plan C = 10g + 20)
     </div>
     <div class="step">
-      <strong>Plan A at month 8:</strong> 25 &times; 8 =
-      <strong>$200.00</strong>
+      <strong>Cost for 4 GB:</strong> 10 &times; 4 + 20 = <strong>$60.00</strong>
     </div>
     <div class="step">
-      <strong>Plan B at month 8:</strong> 18 &times; 8 =
-      <strong>$144.00</strong>
+      <strong>Data used when the bill is $70:</strong> (70 &minus; 20) &divide; 10
+      = <strong>5 GB</strong>
     </div>
     <div class="step">
-      <strong>Months for Plan A to reach $200:</strong> 200 &divide; 25 =
-      <strong>8.00 months</strong>
+      <strong>Cost for 10 GB:</strong> 10 &times; 10 + 20 =
+      <strong>$120.00</strong>
     </div>
     <div class="step" style="margin-top: 6px">
-      Both lines start at the origin; Plan A (k = 25) is steeper than Plan B (k
-      = 18). The graph draws two polylines with a legend.
-    </div>
-  </div>
-  <div class="answer-block">
-    <div class="big-ans">Show Your Work grid (checked vs. Plan A k = $25)</div>
-    <div class="step">
-      <strong>1. Plan A cost at x = 3:</strong> 25 &times; 3 =
-      <strong>$75.00</strong>
-    </div>
-    <div class="step">
-      <strong>2. x at target y = $150:</strong> 150 &divide; 25 =
-      <strong>6 months</strong> (±0.05)
-    </div>
-    <div class="step">
-      <strong>3. Plan A 12-month total:</strong> 25 &times; 12 =
-      <strong>$300.00</strong>
+      The line crosses the C-axis at $20 (the flat fee) and rises $10 per GB.
+      Numbers depend on the student's chosen plan; check the method against their
+      own rate and flat fee.
     </div>
   </div>
   <div class="rubric-note">
     <div class="rn-label">Sample 4 / 3 / 2 Rubric Scoring — Self</div>
-    <strong>4 (Expert):</strong> Both variables named; both equations from real
-    prices; table, two-line graph, and all work-grid answers correct.<br />
-    <strong>3 (Proficient):</strong> Equations and table correct; most work-grid
-    answers correct.<br />
+    <strong>4 (Expert):</strong> Both variables named; a correct C = mg + c
+    equation from real prices; table, line graph, and readings all correct.<br />
+    <strong>3 (Proficient):</strong> Equation and table correct; most readings
+    correct.<br />
     <strong>2 (Developing):</strong> One label correct or partial work.
   </div>
 </div>
 
 <!-- Part 2 -->
 <div class="ak-phase">
-  <h3><span class="phase-badge">Part 2 · Peer</span> Family Plan Showdown</h3>
+  <h3><span class="phase-badge">Part 2 · Peer</span> Plan Showdown</h3>
   <div class="skill-line">Compare Relationships &middot; 6.EE.9</div>
   <div class="defaults-row">
-    <span class="default-chip">My k = $25/month</span>
-    <span class="default-chip">Classmate k = $30/month</span>
-    <span class="default-chip">Compare at month x = 12</span>
+    <span class="default-chip">My plan: C = 10g + 20</span>
+    <span class="default-chip">Partner plan: C = 8g + 25</span>
+    <span class="default-chip">Compare at 5 GB</span>
   </div>
   <div class="answer-block">
-    <div class="big-ans">Your plan is cheaper</div>
+    <div class="big-ans">Which plan wins depends on the data used</div>
     <div class="step">
-      You (y = 25x): 25 &times; 12 = <strong>$300.00</strong>
+      Me (C = 10g + 20) at 5 GB: 10 &times; 5 + 20 = <strong>$70.00</strong>
     </div>
     <div class="step">
-      Classmate (y = 30x): 30 &times; 12 = <strong>$360.00</strong>
+      Partner (C = 8g + 25) at 5 GB: 8 &times; 5 + 25 = <strong>$65.00</strong>
+    </div>
+    <div class="step">
+      <strong>Break-even:</strong> 10g + 20 = 8g + 25 → 2g = 5 →
+      <strong>g = 2.5 GB</strong>. Below 2.5 GB my lower flat fee wins; above
+      2.5 GB the partner's lower per-GB rate wins. At 5 GB the partner is
+      <strong>$5.00</strong> cheaper.
     </div>
     <div class="step" style="margin-top: 6px">
-      Your plan saves <strong>$60.00</strong> at month 12. The classmate's
-      higher k = 30 makes a <strong>steeper</strong> line (they pay more over
-      time).
+      Both lines are of the form y = mx + c. The plan with the smaller rate
+      (slope) is the <strong>flatter</strong> line and wins for heavy data users.
+      Accept any correct comparison of the two students' real plans.
     </div>
   </div>
   <div class="rubric-note">
     <div class="rn-label">Sample 4 / 3 / 2 Rubric Scoring — Peer</div>
-    <strong>4 (Expert):</strong> Correct totals; identifies the steeper line and
-    who pays more.<br />
-    <strong>3 (Proficient):</strong> Correct totals and comparison.<br />
+    <strong>4 (Expert):</strong> Correct costs at the chosen data amount;
+    identifies the flatter line / break-even and who pays more.<br />
+    <strong>3 (Proficient):</strong> Correct costs and comparison.<br />
     <strong>2 (Developing):</strong> One plan computed; comparison attempted.
   </div>
 </div>
@@ -702,47 +719,46 @@
 <!-- Part 3 -->
 <div class="ak-phase">
   <h3>
-    <span class="phase-badge gold">Part 3 · World</span> Real Carrier Prices +
-    What-If Lab
+    <span class="phase-badge gold">Part 3 · World</span> Real Market Prices
   </h3>
   <div class="skill-line">Compare to Real Data &middot; 6.EE.9</div>
   <div class="defaults-row">
-    <span class="default-chip">My Plan A k = $25/month</span>
-    <span class="default-chip">Carrier sample: 15, 25, 30, 40, 50, 51, 65</span>
+    <span class="default-chip">My plan cost at 5 GB (example): $70</span>
+    <span class="default-chip">Basic $15–30 · Mid $35–48 · Unlimited $50–80</span>
   </div>
   <div class="answer-block">
-    <div class="big-ans">My plan vs. carrier average</div>
+    <div class="big-ans">My plan's 5 GB cost vs. real market tiers</div>
     <div class="step">
-      Carrier average = (15 + 25 + 30 + 40 + 50 + 51 + 65) ÷ 7 = 276 ÷ 7 ≈
-      <strong>$39.43/month</strong>.
+      Example plan (C = 10g + 20) at 5 GB: 10 &times; 5 + 20 =
+      <strong>$70.00</strong>.
     </div>
     <div class="step">
-      A $25 plan is <strong>below</strong> the average — a good deal, comparable
-      to Visible. Accept any reasoning that cites the carrier sample.
-    </div>
-    <div class="step" style="margin-top: 6px">
-      <strong>What-If Lab:</strong> Plan A at month 12 = $300. Adding a one-time
-      $35 sign-up fee → $335. y = 25x + 35 is
-      <strong>no longer proportional</strong> (y-intercept is 35, not 0).
+      The app shows three real tiers: <strong>Basic $15–30</strong> (2–5 GB),
+      <strong>Mid-Tier $35–48</strong> (10–15 GB), <strong>Unlimited $50–80</strong>.
+      $70 for only 5 GB is <strong>expensive</strong> — it costs as much as an
+      unlimited plan while giving far less data, so this example plan is a poor
+      deal. Accept any 2-sentence comparison that cites the student's own 5 GB
+      cost against these tiers.
     </div>
   </div>
   <div class="answer-block">
     <div class="big-ans">
-      Level 2 — find when two lines are equal (y = kx + 40)
+      Level 2 — reading the flat fee as the y-intercept
     </div>
     <div class="step">
-      y = kx + 40 is <strong>NOT proportional</strong> (it starts at $40, not
-      the origin). To find when a flat-rate Plan A (e.g., y = 25x) equals a
-      cheaper-but-fee plan (e.g., y = 18x + 40), set them equal: 25x = 18x + 40
-      → 7x = 40 → x ≈ <strong>5.7 months</strong>. Before ~5.7 months the fee
-      plan is pricier; after, it is cheaper.
+      Because C = (rate)·g + (flat fee) has a non-zero flat fee, it is
+      <strong>NOT proportional</strong> (it does not pass through the origin).
+      A plan with a bigger flat fee but a smaller per-GB rate starts higher yet
+      rises more slowly — set two plans equal to find the break-even data amount
+      (e.g., 10g + 20 = 8g + 25 → g = 2.5 GB). Below the break-even the lower
+      flat fee wins; above it the lower rate wins.
     </div>
   </div>
   <div class="rubric-note">
     <div class="rn-label">Sample 4 / 3 / 2 Rubric Scoring — World</div>
-    <strong>4 (Expert):</strong> Compares to the carrier sample; What-If and
-    Level 2 correctly identify loss of proportionality and solve the equal-cost
-    month.<br />
+    <strong>4 (Expert):</strong> Computes the plan's 5 GB cost and compares it to
+    the real tiers; Level 2 explains the flat fee as a non-zero y-intercept /
+    break-even.<br />
     <strong>3 (Proficient):</strong> Reasonable comparison to real prices.<br />
     <strong>2 (Developing):</strong> Comparison attempted.
   </div>
@@ -755,14 +771,16 @@
     Expert Response
   </h3>
   <div class="sample-response">
-    "The <strong>independent variable</strong> is months (x) and the
-    <strong>dependent variable</strong> is total cost (y). Plan A (our T-Mobile
-    plan) is <strong>y = 25x</strong> and Plan B (Mint Mobile, which I looked
-    up) is <strong>y = 18x</strong>. After 6 months Plan A costs $150 and Plan B
-    costs $108, and over 12 months Plan A is $300 versus Plan B's $216. I
-    recommend <strong>Plan B</strong> because its lower monthly rate k = 18
-    makes a flatter line and saves my family $84 a year — as long as there is no
-    big sign-up fee that would break the proportional relationship."
+    "The <strong>independent variable</strong> is the data used (g, in GB) and
+    the <strong>dependent variable</strong> is the total monthly cost (C). My
+    plan is <strong>C = 10g + 20</strong>: a $20 flat fee plus $10 per GB. The
+    flat fee is the y-intercept, so the relationship is
+    <strong>C = mg + c</strong>, not proportional. For my typical 5 GB, my plan
+    costs $70, which is more than the Basic and Mid-Tier market plans, so I would
+    switch to a plan with a lower per-GB rate. When I compared with my partner
+    (C = 8g + 25), the two plans cost the same at 2.5 GB; above that, their
+    lower rate makes them cheaper, so the better plan depends on how much data I
+    actually use."
   </div>
 </div>
 
@@ -787,5 +805,11 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
-  </body>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  <!-- answer-key-gate-injected:begin (teacher gate — tools/inject-projects-gold.mjs) -->
+  <script src="/shared/projects/answer-key-gate.js" defer></script>
+  <!-- answer-key-gate-injected:end -->
+</body>
 </html>

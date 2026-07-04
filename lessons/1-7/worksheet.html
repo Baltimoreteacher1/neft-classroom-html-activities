@@ -43,8 +43,10 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
 .ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
 .ws-bub-sm{width:20px;height:20px;font-size:11px;}
 .ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
-.ws-correct{font-weight:700;color:var(--teal);}
+.ws-correct{font-weight:700;color:var(--teal-ink);}
 .ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
 .ws-match{display:flex;gap:24px;flex-wrap:wrap;}
 .ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
 .ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
@@ -75,9 +77,72 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
   @page{margin:1.5cm;}
   a{color:#000;}
 }
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
 </style>
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+
+
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/1-7/worksheet.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Divide Decimals — Practice Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="Divide Decimals — Practice Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Divide Decimals — Practice Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/1-7/worksheet.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
 </head>
 <body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NS.3</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">Divide Decimals</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Dividend</span><span class="ws-bankword">Divisor</span><span class="ws-bankword">Quotient</span><span class="ws-bankword">Decimal division</span><span class="ws-bankword">Equivalent division</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Problem:</b> 7.2 ÷ 0.45</li><li><b>Multiply divisor by 10:</b> 0.45 × 10 = 4.5</li><li><b>Multiply dividend by 10:</b> 7.2 × 10 = 72</li><li><b>Divide:</b> 72 ÷ 4.5 = 16</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 14.4 ÷ 1.2?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12</li><li class="ws-opt"><span class="ws-bub">B</span>1.2</li><li class="ws-opt"><span class="ws-bub">C</span>120</li><li class="ws-opt"><span class="ws-bub">D</span>0.12</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 3.78 ÷ 0.6?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>6.3</li><li class="ws-opt"><span class="ws-bub">B</span>63</li><li class="ws-opt"><span class="ws-bub">C</span>0.63</li><li class="ws-opt"><span class="ws-bub">D</span>0.063</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 8.4 ÷ 0.7?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12</li><li class="ws-opt"><span class="ws-bub">B</span>1.2</li><li class="ws-opt"><span class="ws-bub">C</span>120</li><li class="ws-opt"><span class="ws-bub">D</span>0.12</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Rewrite each problem by making the divisor a whole number, then solve.</p>
+  <table class="ws-table"><thead><tr><th>Original</th><th>Multiply Both By</th><th>New Problem</th><th>Quotient</th></tr></thead><tbody><tr><td>4.5 ÷ 0.9</td><td></td><td></td><td></td></tr><tr><td>6.4 ÷ 0.8</td><td></td><td></td><td></td></tr></tbody></table></div></li></ol>
+  </section>
 <section class="ws-page">
     <header class="ws-head">
     <div class="ws-head-top">
@@ -89,15 +154,16 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     <section class="ws-bank">
-    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
     <div class="ws-bankwords"><span class="ws-bankword">Dividend</span><span class="ws-bankword">Divisor</span><span class="ws-bankword">Quotient</span><span class="ws-bankword">Decimal division</span><span class="ws-bankword">Equivalent division</span></div>
   </section><section class="ws-example">
-    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
     <ol class="ws-example-steps"><li><b>Problem:</b> 7.2 ÷ 0.45</li><li><b>Multiply divisor by 10:</b> 0.45 × 10 = 4.5</li><li><b>Multiply dividend by 10:</b> 7.2 × 10 = 72</li><li><b>Divide:</b> 72 ÷ 4.5 = 16</li></ol>
   </section>
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 14.4 ÷ 1.2?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12</li><li class="ws-opt"><span class="ws-bub">B</span>1.2</li><li class="ws-opt"><span class="ws-bub">C</span>120</li><li class="ws-opt"><span class="ws-bub">D</span>0.12</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 3.78 ÷ 0.6?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>6.3</li><li class="ws-opt"><span class="ws-bub">B</span>63</li><li class="ws-opt"><span class="ws-bub">C</span>0.63</li><li class="ws-opt"><span class="ws-bub">D</span>0.063</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 8.4 ÷ 0.7?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12</li><li class="ws-opt"><span class="ws-bub">B</span>1.2</li><li class="ws-opt"><span class="ws-bub">C</span>120</li><li class="ws-opt"><span class="ws-bub">D</span>0.12</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Rewrite each problem by making the divisor a whole number, then solve.</p>
   <table class="ws-table"><thead><tr><th>Original</th><th>Multiply Both By</th><th>New Problem</th><th>Quotient</th></tr></thead><tbody><tr><td>4.5 ÷ 0.9</td><td></td><td></td><td></td></tr><tr><td>6.4 ÷ 0.8</td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">What is 15.6 ÷ 1.3?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12</li><li class="ws-opt"><span class="ws-bub">B</span>1.2</li><li class="ws-opt"><span class="ws-bub">C</span>120</li><li class="ws-opt"><span class="ws-bub">D</span>13</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Divide Decimals.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Move the decimal point the same number of places in BOTH the divisor and the dividend; the answer stays the same.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Solve 6.4 ÷ 0.8.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Move the divisor's decimal</span><span class="ws-step-w">0.8 becomes 8 (moved 1 place right).</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Divide without moving the dividend</span><span class="ws-step-w">6.4 ÷ 8 = 0.8</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
   </section>
@@ -112,14 +178,47 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve each decimal division problem.</p>
   <table class="ws-table"><thead><tr><th>Division Problem</th><th>Quotient</th></tr></thead><tbody><tr><td>9.6 ÷ 0.8</td><td></td></tr><tr><td>15.6 ÷ 1.3</td><td></td></tr><tr><td>24.5 ÷ 3.5</td><td></td></tr><tr><td>5.76 ÷ 0.24</td><td></td></tr><tr><td>11.34 ÷ 0.9</td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>7.2 ÷ 0.8</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>4.56 ÷ 0.6</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>16.8 ÷ 2.4</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>3.6 ÷ 0.12</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>10.5 ÷ 1.5</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>0.96 ÷ 0.8</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>7</li><li><span class="ws-bub ws-bub-sm">B</span>30</li><li><span class="ws-bub ws-bub-sm">C</span>1.2</li><li><span class="ws-bub ws-bub-sm">D</span>9</li><li><span class="ws-bub ws-bub-sm">E</span>7.6</li><li><span class="ws-bub ws-bub-sm">F</span>7</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A ribbon is 16.8 feet long. You cut it into pieces that are each 2.4 feet long. How many pieces do you get?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>7 pieces</li><li class="ws-opt"><span class="ws-bub">B</span>8 pieces</li><li class="ws-opt"><span class="ws-bub">C</span>6 pieces</li><li class="ws-opt"><span class="ws-bub">D</span>14.4 pieces</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Sort: should you multiply both numbers by 10 or by 100 to make the divisor a whole number?</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>7.2 ÷ 0.8</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>4.56 ÷ 0.6</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>16.8 ÷ 2.4</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>3.6 ÷ 0.12</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>10.5 ÷ 1.5</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>0.96 ÷ 0.8</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>7</li><li><span class="ws-bub ws-bub-sm">B</span>30</li><li><span class="ws-bub ws-bub-sm">C</span>1.2</li><li><span class="ws-bub ws-bub-sm">D</span>9</li><li><span class="ws-bub ws-bub-sm">E</span>7.6</li><li><span class="ws-bub ws-bub-sm">F</span>7</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A water tank holds 19.2 liters. It is poured into bottles that each hold 1.6 liters. How many bottles can be filled?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12 bottles</li><li class="ws-opt"><span class="ws-bub">B</span>11 bottles</li><li class="ws-opt"><span class="ws-bub">C</span>13 bottles</li><li class="ws-opt"><span class="ws-bub">D</span>1.2 bottles</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Sort: should you multiply both numbers by 10 or by 100 to make the divisor a whole number?</p>
   <p class="ws-prompt">Categories: <b>by-10 · by-100</b></p>
   <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span>6.3 ÷ 0.7 → multiply by 10</li><li><span class="ws-blank ws-blank-sm"></span>8.4 ÷ 2.1 → multiply by 10</li><li><span class="ws-blank ws-blank-sm"></span>15.6 ÷ 1.3 → multiply by 10</li><li><span class="ws-blank ws-blank-sm"></span>7.56 ÷ 0.12 → multiply by 100</li><li><span class="ws-blank ws-blank-sm"></span>5.76 ÷ 0.24 → multiply by 100</li><li><span class="ws-blank ws-blank-sm"></span>9.45 ÷ 0.15 → multiply by 100</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Divide Decimals.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Move the decimal point the same number of places in BOTH the divisor and the dividend; the answer stays the same.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Solve 9.6 ÷ 0.12.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Move both decimal points</span><span class="ws-step-w">0.12 has 2 decimal places, so move both points 2 places: 9.6 ÷ 0.12 becomes 960 ÷ 12.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Divide and place the decimal</span><span class="ws-step-w">960 ÷ 12 = 80, but the student wrote the answer as 8.0.</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NS.3</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">Divide Decimals</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find Derek's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">7.2 ÷ 0.45</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Multiply divisor by 10</span><span class="ws-step-w">0.45 × 10 = 4.5</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Multiply dividend by 10</span><span class="ws-step-w">7.2 × 10 = 72</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Divide</span><span class="ws-step-w">72 ÷ 4.5 = 16</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A gas station sells fuel at $3.45 per gallon. A customer pays $27.60 total. How many gallons did the customer buy? Set up the decimal division, show how to convert it to whole-number division, and solve.</p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Verify each division by showing that quotient × divisor = dividend. Are the two sides balanced?</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NS.3</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Divide Decimals</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 14.4 ÷ 1.2?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12</li><li class="ws-opt"><span class="ws-bub">B</span>1.2</li><li class="ws-opt"><span class="ws-bub">C</span>120</li><li class="ws-opt"><span class="ws-bub">D</span>0.12</li></ol><p class="ws-keynote">Multiply both by 10: 144 ÷ 12 = 12.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Decimals is skipping the key idea: &quot;Move the decimal point the same number of places in BOTH the divisor and the dividend; the answer stays the same.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 3.78 ÷ 0.6?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6.3</li><li class="ws-opt"><span class="ws-bub">B</span>63</li><li class="ws-opt"><span class="ws-bub">C</span>0.63</li><li class="ws-opt"><span class="ws-bub">D</span>0.063</li></ol><p class="ws-keynote">Multiply both by 10: 37.8 ÷ 6 = 6.3.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Decimals is skipping the key idea: &quot;Move the decimal point the same number of places in BOTH the divisor and the dividend; the answer stays the same.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 8.4 ÷ 0.7?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12</li><li class="ws-opt"><span class="ws-bub">B</span>1.2</li><li class="ws-opt"><span class="ws-bub">C</span>120</li><li class="ws-opt"><span class="ws-bub">D</span>0.12</li></ol><p class="ws-keynote">8.4 ÷ 0.7 = 84 ÷ 7 = 12.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Decimals is skipping the key idea: &quot;Move the decimal point the same number of places in BOTH the divisor and the dividend; the answer stays the same.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Rewrite each problem by making the divisor a whole number, then solve.</p>
+  <table class="ws-table"><thead><tr><th>Original</th><th>Multiply Both By</th><th>New Problem</th><th>Quotient</th></tr></thead><tbody><tr><td>4.5 ÷ 0.9</td><td>10</td><td>45 ÷ 9</td><td>5</td></tr><tr><td>6.4 ÷ 0.8</td><td>10</td><td>64 ÷ 8</td><td>8</td></tr></tbody></table></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -132,11 +231,12 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
-    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 14.4 ÷ 1.2?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12</li><li class="ws-opt"><span class="ws-bub">B</span>1.2</li><li class="ws-opt"><span class="ws-bub">C</span>120</li><li class="ws-opt"><span class="ws-bub">D</span>0.12</li></ol><p class="ws-keynote">Multiply both by 10: 144 ÷ 12 = 12.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 3.78 ÷ 0.6?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6.3</li><li class="ws-opt"><span class="ws-bub">B</span>63</li><li class="ws-opt"><span class="ws-bub">C</span>0.63</li><li class="ws-opt"><span class="ws-bub">D</span>0.063</li></ol><p class="ws-keynote">Multiply both by 10: 37.8 ÷ 6 = 6.3.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 8.4 ÷ 0.7?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12</li><li class="ws-opt"><span class="ws-bub">B</span>1.2</li><li class="ws-opt"><span class="ws-bub">C</span>120</li><li class="ws-opt"><span class="ws-bub">D</span>0.12</li></ol><p class="ws-keynote">8.4 ÷ 0.7 = 84 ÷ 7 = 12.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Rewrite each problem by making the divisor a whole number, then solve.</p>
-  <table class="ws-table"><thead><tr><th>Original</th><th>Multiply Both By</th><th>New Problem</th><th>Quotient</th></tr></thead><tbody><tr><td>4.5 ÷ 0.9</td><td>10</td><td>45 ÷ 9</td><td>5</td></tr><tr><td>6.4 ÷ 0.8</td><td>10</td><td>64 ÷ 8</td><td>8</td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">What is 15.6 ÷ 1.3?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12</li><li class="ws-opt"><span class="ws-bub">B</span>1.2</li><li class="ws-opt"><span class="ws-bub">C</span>120</li><li class="ws-opt"><span class="ws-bub">D</span>13</li></ol><p class="ws-keynote">Multiply both by 10: 156 ÷ 13 = 12.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Divide Decimals.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Move the decimal point the same number of places in BOTH the divisor and the dividend; the answer stays the same.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 14.4 ÷ 1.2?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12</li><li class="ws-opt"><span class="ws-bub">B</span>1.2</li><li class="ws-opt"><span class="ws-bub">C</span>120</li><li class="ws-opt"><span class="ws-bub">D</span>0.12</li></ol><p class="ws-keynote">Multiply both by 10: 144 ÷ 12 = 12.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Decimals is skipping the key idea: &quot;Move the decimal point the same number of places in BOTH the divisor and the dividend; the answer stays the same.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 3.78 ÷ 0.6?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6.3</li><li class="ws-opt"><span class="ws-bub">B</span>63</li><li class="ws-opt"><span class="ws-bub">C</span>0.63</li><li class="ws-opt"><span class="ws-bub">D</span>0.063</li></ol><p class="ws-keynote">Multiply both by 10: 37.8 ÷ 6 = 6.3.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Decimals is skipping the key idea: &quot;Move the decimal point the same number of places in BOTH the divisor and the dividend; the answer stays the same.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 8.4 ÷ 0.7?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12</li><li class="ws-opt"><span class="ws-bub">B</span>1.2</li><li class="ws-opt"><span class="ws-bub">C</span>120</li><li class="ws-opt"><span class="ws-bub">D</span>0.12</li></ol><p class="ws-keynote">8.4 ÷ 0.7 = 84 ÷ 7 = 12.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Decimals is skipping the key idea: &quot;Move the decimal point the same number of places in BOTH the divisor and the dividend; the answer stays the same.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Rewrite each problem by making the divisor a whole number, then solve.</p>
+  <table class="ws-table"><thead><tr><th>Original</th><th>Multiply Both By</th><th>New Problem</th><th>Quotient</th></tr></thead><tbody><tr><td>4.5 ÷ 0.9</td><td>10</td><td>45 ÷ 9</td><td>5</td></tr><tr><td>6.4 ÷ 0.8</td><td>10</td><td>64 ÷ 8</td><td>8</td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">What is 15.6 ÷ 1.3?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12</li><li class="ws-opt"><span class="ws-bub">B</span>1.2</li><li class="ws-opt"><span class="ws-bub">C</span>120</li><li class="ws-opt"><span class="ws-bub">D</span>13</li></ol><p class="ws-keynote">Multiply both by 10: 156 ÷ 13 = 12.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Decimals is skipping the key idea: &quot;Move the decimal point the same number of places in BOTH the divisor and the dividend; the answer stays the same.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Solve 6.4 ÷ 0.8.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Move the divisor's decimal</span><span class="ws-step-w">0.8 becomes 8 (moved 1 place right).</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Divide without moving the dividend</span><span class="ws-step-w">6.4 ÷ 8 = 0.8</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: The student moved the decimal point in the divisor (0.8 → 8) but forgot to move it the same 1 place in the dividend. You must move BOTH: 6.4 becomes 64, so 64 ÷ 8 = 8. So 6.4 ÷ 0.8 = 8. Check: 8 × 0.8 = 6.4. ✓</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -149,14 +249,36 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve each decimal division problem.</p>
   <table class="ws-table"><thead><tr><th>Division Problem</th><th>Quotient</th></tr></thead><tbody><tr><td>9.6 ÷ 0.8</td><td>12</td></tr><tr><td>15.6 ÷ 1.3</td><td>12</td></tr><tr><td>24.5 ÷ 3.5</td><td>7</td></tr><tr><td>5.76 ÷ 0.24</td><td>24</td></tr><tr><td>11.34 ÷ 0.9</td><td>12.6</td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span>7.2 ÷ 0.8</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">E</span>4.56 ÷ 0.6</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span>16.8 ÷ 2.4</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span>3.6 ÷ 0.12</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span>10.5 ÷ 1.5</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span>0.96 ÷ 0.8</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>7</li><li><span class="ws-bub ws-bub-sm">B</span>30</li><li><span class="ws-bub ws-bub-sm">C</span>1.2</li><li><span class="ws-bub ws-bub-sm">D</span>9</li><li><span class="ws-bub ws-bub-sm">E</span>7.6</li><li><span class="ws-bub ws-bub-sm">F</span>7</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A ribbon is 16.8 feet long. You cut it into pieces that are each 2.4 feet long. How many pieces do you get?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>7 pieces</li><li class="ws-opt"><span class="ws-bub">B</span>8 pieces</li><li class="ws-opt"><span class="ws-bub">C</span>6 pieces</li><li class="ws-opt"><span class="ws-bub">D</span>14.4 pieces</li></ol><p class="ws-keynote">16.8 ÷ 2.4: multiply both by 10 → 168 ÷ 24 = 7 pieces.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Sort: should you multiply both numbers by 10 or by 100 to make the divisor a whole number?</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span>7.2 ÷ 0.8</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">E</span>4.56 ÷ 0.6</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span>16.8 ÷ 2.4</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span>3.6 ÷ 0.12</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span>10.5 ÷ 1.5</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span>0.96 ÷ 0.8</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>7</li><li><span class="ws-bub ws-bub-sm">B</span>30</li><li><span class="ws-bub ws-bub-sm">C</span>1.2</li><li><span class="ws-bub ws-bub-sm">D</span>9</li><li><span class="ws-bub ws-bub-sm">E</span>7.6</li><li><span class="ws-bub ws-bub-sm">F</span>7</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A water tank holds 19.2 liters. It is poured into bottles that each hold 1.6 liters. How many bottles can be filled?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12 bottles</li><li class="ws-opt"><span class="ws-bub">B</span>11 bottles</li><li class="ws-opt"><span class="ws-bub">C</span>13 bottles</li><li class="ws-opt"><span class="ws-bub">D</span>1.2 bottles</li></ol><p class="ws-keynote">19.2 ÷ 1.6: multiply both by 10 → 192 ÷ 16 = 12 bottles.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Decimals is skipping the key idea: &quot;Move the decimal point the same number of places in BOTH the divisor and the dividend; the answer stays the same.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Sort: should you multiply both numbers by 10 or by 100 to make the divisor a whole number?</p>
   <p class="ws-prompt">Categories: <b>by-10 · by-100</b></p>
   <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">by-10</span>6.3 ÷ 0.7 → multiply by 10</li><li><span class="ws-blank ws-blank-sm">by-10</span>8.4 ÷ 2.1 → multiply by 10</li><li><span class="ws-blank ws-blank-sm">by-10</span>15.6 ÷ 1.3 → multiply by 10</li><li><span class="ws-blank ws-blank-sm">by-100</span>7.56 ÷ 0.12 → multiply by 100</li><li><span class="ws-blank ws-blank-sm">by-100</span>5.76 ÷ 0.24 → multiply by 100</li><li><span class="ws-blank ws-blank-sm">by-100</span>9.45 ÷ 0.15 → multiply by 100</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Divide Decimals.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Move the decimal point the same number of places in BOTH the divisor and the dividend; the answer stays the same.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Solve 9.6 ÷ 0.12.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Move both decimal points</span><span class="ws-step-w">0.12 has 2 decimal places, so move both points 2 places: 9.6 ÷ 0.12 becomes 960 ÷ 12.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Divide and place the decimal</span><span class="ws-step-w">960 ÷ 12 = 80, but the student wrote the answer as 8.0.</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: The setup 960 ÷ 12 is correct, but the student misplaced the decimal in the quotient. 960 ÷ 12 = 80, not 8. So 9.6 ÷ 0.12 = 80. Estimate to confirm: 0.12 is tiny, so many of them fit in 9.6 — the quotient must be large. Check: 80 × 0.12 = 9.6. ✓</p></div></li></ol>
   </section>
-</body>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NS.3</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Divide Decimals</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find Derek's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">7.2 ÷ 0.45</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Multiply divisor by 10</span><span class="ws-step-w">0.45 × 10 = 4.5</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Multiply dividend by 10</span><span class="ws-step-w">7.2 × 10 = 72</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Divide</span><span class="ws-step-w">72 ÷ 4.5 = 16</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: Derek only multiplied by 10, but the divisor 0.45 has two decimal places. He should multiply both numbers by 100: 720 ÷ 45 = 16. He got the right answer by luck this time, but his method is unreliable because the divisor is still a decimal (4.5).</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A gas station sells fuel at $3.45 per gallon. A customer pays $27.60 total. How many gallons did the customer buy? Set up the decimal division, show how to convert it to whole-number division, and solve.</p><p class="ws-keynote">Look for: divide, decimal, quotient, multiply by 100, 8, whole number, equivalent.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Verify each division by showing that quotient × divisor = dividend. Are the two sides balanced?</p></div></li></ol>
+  </section>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  </main>
+  </body>
 </html>

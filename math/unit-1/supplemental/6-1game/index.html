@@ -1,1248 +1,1117 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <title>Fraction Dungeon — Unit 1 RPG</title>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
-    <script>
-      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
-      // (document.write blocks parsing so the mirror is ready before the game script runs).
-      if (typeof Phaser === "undefined") {
-        document.write(
-          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
-        );
-      }
-      // If both CDNs are unreachable, show a clear message instead of a blank page.
-      window.addEventListener("load", function () {
-        if (typeof Phaser === "undefined") {
-          document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
-        }
-      });
-    </script>
+    <meta
+      name="description"
+      content="Fraction Dungeon: a Grade 6 math-as-mechanic game for 6.NS.1 — tile a dungeon corridor exactly with unit-fraction boards to discover how many fit. The board count IS the quotient."
+    />
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
+      :root {
+        --teal: #0e8a7d;
+        --teal-bright: #12a596;
+        --gold: #d4952a;
+        --ink: #06202c;
+        --panel: #0f2b3c;
+        --line: #1f4a5b;
+        --board: #b5531a;
+        --board-lit: #e08a3a;
+        --txt: #dff1f0;
+        --muted: #8fb6bf;
+      }
       body {
-        background: #0b0c10;
+        background: var(--panel);
+        min-height: 100vh;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--txt);
+        overflow-x: hidden;
+      }
+      #ff-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+        background: radial-gradient(
+          130% 90% at 50% 0%,
+          #134a5a 0%,
+          #0f2b3c 55%,
+          #08202c 100%
+        );
+      }
+      .ff-mote {
+        position: absolute;
+        border-radius: 50%;
+        background: #7fd6c8;
+        opacity: 0.4;
+        animation: ffTwinkle var(--tw, 3s) ease-in-out infinite;
+      }
+      @keyframes ffTwinkle {
+        0%,
+        100% {
+          opacity: 0.12;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 0.6;
+          transform: scale(1.2);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .ff-mote {
+          animation: none !important;
+          opacity: 0.35 !important;
+        }
+        * {
+          scroll-behavior: auto !important;
+        }
+      }
+      #ff-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      #wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 18px 16px 48px;
+        min-height: 100vh;
+      }
+      .screen {
+        display: none;
+      }
+      .screen.on {
+        display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      h1 {
+        font-size: clamp(1.6rem, 4vw, 2.3rem);
+        color: #fff;
+        letter-spacing: 0.5px;
+      }
+      .sub {
+        color: var(--muted);
+        margin-top: 4px;
+        font-size: 0.95rem;
+      }
+      .card {
+        background: rgba(13, 41, 56, 0.82);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px;
+        margin: 16px 0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+      }
+      .btn {
+        font:
+          600 1rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 13px 22px;
+        color: var(--ink);
+        background: var(--teal);
+        transition:
+          transform 0.12s,
+          background 0.12s,
+          box-shadow 0.12s;
+      }
+      .btn:hover {
+        background: var(--teal-bright);
+        transform: translateY(-1px);
+      }
+      .btn:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 3px;
+      }
+      .btn.ghost {
+        background: #1a3a48;
+        color: #9fc6cf;
+      }
+      .btn.ghost:hover {
+        background: #244c5c;
+      }
+      .btn.big {
+        padding: 18px 26px;
+        font-size: 1.1rem;
+      }
+      .vocab {
+        display: grid;
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .vrow {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .vterm {
+        color: var(--gold);
+        font-weight: 700;
+        min-width: 150px;
+      }
+      .vdef {
+        color: var(--txt);
+      }
+      .levels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .levels {
+          grid-template-columns: 1fr;
+        }
+      }
+      .level-pick {
+        text-align: left;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+        padding: 18px;
+        background: #0c2532;
+        border: 1px solid var(--line);
+        color: var(--txt);
+        border-radius: 14px;
+        cursor: pointer;
+      }
+      .level-pick:hover {
+        border-color: var(--teal-bright);
+        background: #102f3f;
+      }
+      .level-pick b {
+        color: #fff;
+        font-size: 1.15rem;
+      }
+      .level-pick .tag {
+        color: var(--teal-bright);
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .level-pick .desc {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .hud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .hud .pill {
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-weight: 700;
+      }
+      .hud .pill small {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .lives {
+        color: #e06b6b;
+        letter-spacing: 2px;
+        font-size: 1.1rem;
+      }
+      .target {
+        text-align: center;
+        margin: 6px 0 14px;
+      }
+      .target .nums {
+        font-size: clamp(1.4rem, 5vw, 2.1rem);
+        font-weight: 800;
+        color: #fff;
+      }
+      .target .nums span {
+        color: var(--gold);
+      }
+      .prompt {
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      /* ── Corridor (the visual model) ── */
+      .corridor-wrap {
+        margin: 10px 0 6px;
+      }
+      .corridor-rule {
+        display: flex;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 0.8rem;
+        margin-bottom: 2px;
+        padding: 0 2px;
+      }
+      .corridor {
+        position: relative;
+        height: 78px;
+        border-radius: 12px;
+        border: 2px solid var(--line);
+        background: repeating-linear-gradient(
+          90deg,
+          #0b2330 0,
+          #0b2330 calc(var(--unit, 999%) - 1px),
+          #16384a calc(var(--unit, 999%) - 1px),
+          #16384a var(--unit, 999%)
+        );
         overflow: hidden;
       }
-      #game-container {
-        width: 100vw;
-        height: 100vh;
+      .corridor .door {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 14px;
+        background: linear-gradient(180deg, #6b4a16, #3a2708);
+        border-left: 2px solid var(--gold);
+        transition: transform 0.4s ease;
+      }
+      .corridor.open .door {
+        transform: translateX(16px);
+      }
+      .board {
+        position: absolute;
+        top: 6px;
+        bottom: 6px;
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--board-lit), var(--board));
+        box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.8rem;
+        animation: drop 0.22s ease;
+      }
+      @keyframes drop {
+        from {
+          transform: translateY(-10px);
+          opacity: 0;
+        }
+        to {
+          transform: none;
+          opacity: 1;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .board,
+        .corridor .door {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+      .board.overhang {
+        background: linear-gradient(180deg, #e85d5d, #b53a3a);
+        animation: shake 0.3s ease;
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-4px);
+        }
+        75% {
+          transform: translateX(4px);
+        }
+      }
+      .controls {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 14px 0 4px;
+      }
+      .place-board {
+        font:
+          800 1.05rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 14px 20px;
+        color: #fff;
+        background: linear-gradient(180deg, var(--board-lit), var(--board));
+        box-shadow: 0 4px 0 #7a3410;
+        transition:
+          transform 0.1s,
+          box-shadow 0.1s;
+      }
+      .place-board:hover {
+        transform: translateY(-2px);
+      }
+      .place-board:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .remove-board {
+        background: #1a3a48;
+        color: #9fc6cf;
+        box-shadow: 0 4px 0 #0c2532;
+      }
+      .door-btn {
+        background: linear-gradient(180deg, #ffd98a, var(--gold));
+        color: var(--ink);
+        box-shadow: 0 4px 0 #a86f16;
+      }
+      .readout {
+        display: flex;
+        gap: 18px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 10px 0 2px;
+      }
+      .readout .r {
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 8px 16px;
+      }
+      .readout .r b {
+        color: var(--gold);
+      }
+      .feedback {
+        min-height: 24px;
+        text-align: center;
+        margin: 10px 0;
+        font-weight: 600;
+      }
+      .feedback.bad {
+        color: #f0a06b;
+      }
+      .feedback.good {
+        color: #79d39a;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-align: center;
+        margin-top: 6px;
+      }
+      .result-stars {
+        font-size: 2rem;
+        color: var(--gold);
+        letter-spacing: 6px;
+        text-align: center;
+        margin: 10px 0;
+      }
+      .result-stat {
+        display: flex;
+        justify-content: space-between;
+        max-width: 320px;
+        margin: 6px auto;
+        color: var(--muted);
+      }
+      .result-stat b {
+        color: var(--txt);
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
-  </head>
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+    <!-- Games-2D metadata source of truth (must load before the game script) -->
+    <script src="/assets/games2d-data.js"></script>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <link rel="stylesheet" href="/assets/game-access.css">
+  <!-- gacc-injected:end -->
+</head>
   <body>
-    <div id="game-container"></div>
+    <div id="ff-bg" aria-hidden="true"></div>
+    <div id="ff-sr" role="status" aria-live="polite"></div>
+
+    <main id="wrap">
+      <!-- VOCAB GATE -->
+      <section id="screen-vocab" class="screen on" aria-labelledby="vh">
+        <h1 id="vh">🏰 Fraction Dungeon</h1>
+        <p class="sub">Unit 1 · Dividing with fractions · 6.NS.1</p>
+        <div class="card">
+          <h2 style="color: #fff; font-size: 1.2rem">Words to know first</h2>
+          <div class="vocab" id="vocab-list"></div>
+          <button class="btn big" id="vocab-go">I'm ready →</button>
+        </div>
+      </section>
+
+      <!-- LEVEL SELECT -->
+      <section id="screen-level" class="screen" aria-labelledby="lh">
+        <h1 id="lh">Choose your level</h1>
+        <p class="sub">You can change this any time by playing again.</p>
+        <div class="card">
+          <div class="levels" id="level-list"></div>
+        </div>
+      </section>
+
+      <!-- PLAY -->
+      <section id="screen-play" class="screen" aria-labelledby="ph">
+        <h1 id="ph" style="position: absolute; left: -9999px">
+          Fraction Dungeon play
+        </h1>
+        <div class="hud">
+          <span class="pill"
+            ><small>Room</small> <span id="hud-round">1</span>/<span
+              id="hud-total"
+              >4</span
+            ></span
+          >
+          <span class="pill"
+            ><small>Score</small> <span id="hud-score">0</span></span
+          >
+          <span class="pill"
+            ><small>Lives</small>
+            <span class="lives" id="hud-lives">●●●●●</span></span
+          >
+        </div>
+        <div class="card">
+          <div class="target">
+            <div class="nums">
+              Tile a <span id="t-len">6</span>-ft corridor with
+              <span id="t-board">¾</span>-ft boards
+            </div>
+            <div class="prompt" id="t-prompt">
+              Lay boards end to end until the corridor is filled EXACTLY — no
+              gap, no overhang. Then open the door.
+            </div>
+          </div>
+
+          <div class="corridor-wrap">
+            <div class="corridor-rule">
+              <span>0 ft</span><span id="rule-end">6 ft</span>
+            </div>
+            <div
+              class="corridor"
+              id="corridor"
+              role="img"
+              aria-label="Dungeon corridor to tile"
+            >
+              <div class="door" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <div class="readout">
+            <span class="r">Boards placed: <b id="ro-count">0</b></span>
+            <span class="r"
+              >Filled: <b id="ro-filled">0</b> of <b id="ro-len">6</b> ft</span
+            >
+          </div>
+
+          <div class="controls">
+            <button class="place-board" id="btn-place">
+              Lay a <span id="btn-board">¾</span>-ft board
+            </button>
+            <button class="place-board remove-board" id="btn-remove">
+              Pull last board
+            </button>
+            <button class="place-board door-btn" id="btn-door">
+              Open the door 🚪
+            </button>
+          </div>
+
+          <div
+            class="feedback"
+            id="feedback"
+            role="status"
+            aria-live="assertive"
+          ></div>
+          <p class="hint" id="hint"></p>
+        </div>
+      </section>
+
+      <!-- RESULT -->
+      <section id="screen-result" class="screen" aria-labelledby="rh">
+        <h1 id="rh">Dungeon cleared</h1>
+        <div class="card">
+          <div class="result-stars" id="r-stars">★★★</div>
+          <div class="result-stat"><span>Score</span><b id="r-score">0</b></div>
+          <div class="result-stat">
+            <span>Doors opened</span><b id="r-correct">0</b>
+          </div>
+          <div class="result-stat">
+            <span>Rooms cleared</span><b id="r-rounds">0</b>
+          </div>
+          <div class="result-stat" id="r-high-row" style="display: none">
+            <span>★ New high score!</span><b id="r-high">0</b>
+          </div>
+          <div class="row">
+            <button class="btn big" id="r-again">Play again</button>
+            <a class="btn ghost big" href="/math/games/">All games</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
     <script>
-      (() => {
-        // ════════════════════════════════════════════════════════════════
-        //  FRACTION DUNGEON — "Tile the Corridor" — 6.NS.A.1
-        //  The MATH IS THE MECHANIC: fraction division is felt as MEASUREMENT.
-        //  A corridor is drawn as a measured bar of length L (e.g. 3 units).
-        //  You drag/place identical segment-tiles of length 1/d (e.g. 3/4)
-        //  to physically TILE the hall. The door opens ONLY when the tiles
-        //  EXACTLY cover the length — no gap, no overshoot. So "3 ÷ 3/4 = 4"
-        //  is felt as "four 3/4-tiles fill a 3-length hall." The monster's
-        //  HP decrements by the FRACTION of the corridor you've covered
-        //  (graduated feedback, not binary). No A/B/C/D — you build the answer.
-        //  Variants: scoops filling a cup (mixed numbers) and 15-min time
-        //  blocks filling a named fraction of an hour (unit conversion).
-        // ════════════════════════════════════════════════════════════════
-
-        // ─── SOUND ENGINE ───
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        let actx = null;
-        function ensureAudio() {
-          if (!actx && AudioCtx) actx = new AudioCtx();
-          if (actx && actx.state === "suspended") actx.resume();
+      // ── Decorative drifting motes (reduced-motion safe) ──
+      (function () {
+        var host = document.getElementById("ff-bg");
+        if (!host) return;
+        var reduce =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var n = reduce ? 10 : 26;
+        for (var i = 0; i < n; i++) {
+          var d = document.createElement("div");
+          d.className = "ff-mote";
+          var sz = 2 + Math.random() * 4;
+          d.style.width = d.style.height = sz.toFixed(1) + "px";
+          d.style.left = (Math.random() * 100).toFixed(2) + "%";
+          d.style.top = (Math.random() * 100).toFixed(2) + "%";
+          d.style.setProperty("--tw", (2 + Math.random() * 4).toFixed(2) + "s");
+          d.style.animationDelay = "-" + (Math.random() * 4).toFixed(2) + "s";
+          host.appendChild(d);
         }
-        function beep(freq, dur, type = "sine", vol = 0.16) {
-          if (!actx) return;
-          const o = actx.createOscillator(),
-            g = actx.createGain();
-          o.connect(g);
-          g.connect(actx.destination);
-          o.frequency.value = freq;
-          o.type = type;
-          g.gain.setValueAtTime(vol, actx.currentTime);
-          g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
-          o.start();
-          o.stop(actx.currentTime + dur);
-        }
-        const sfxPlace = () =>
-          beep(360 + Math.random() * 50, 0.06, "triangle", 0.12);
-        const sfxRemove = () => beep(220, 0.07, "sine", 0.1);
-        const sfxOpen = () => {
-          beep(523, 0.09);
-          setTimeout(() => beep(659, 0.09), 80);
-          setTimeout(() => beep(880, 0.18), 170);
-        };
-        const sfxWrong = () => beep(150, 0.22, "square", 0.1);
-        const sfxLevel = () =>
-          [523, 659, 784, 1047].forEach((f, i) =>
-            setTimeout(() => beep(f, 0.14), i * 90),
-          );
-        const sfxClick = () => beep(440, 0.05, "sine", 0.09);
-
-        // ─── LAYOUT / PALETTE ───
-        const W = 1024,
-          H = 768;
-        // Colourblind-safe: every state uses TEXT + ICON + shape, not colour alone.
-        const C = {
-          bg: 0x0b0c10,
-          stone: 0x1c2230,
-          stoneHi: 0x2a3346,
-          gold: 0xf6c343,
-          white: 0xffffff,
-          dim: 0x9aa6c0,
-          green: 0x2ec26b,
-          red: 0xe7556b,
-          floor: 0x141926,
-          stroke: 0x3c4a66,
-          tile: 0x4aa3ff, // a single colour for the player's tiles
-          tileEdge: 0x0d2742,
-        };
-
-        // ─── MATH HELPERS ───
-        const gcd = (a, b) => (b ? gcd(b, a % b) : a);
-        const rnd = (n) => Math.floor(Math.random() * n);
-        const pick = (arr) => arr[rnd(arr.length)];
-
-        // Render a value num/den as a clean string: whole + proper fraction.
-        function fracStr(num, den) {
-          if (den === 1) return String(num);
-          const g = gcd(num, den);
-          num /= g;
-          den /= g;
-          if (den === 1) return String(num);
-          const whole = Math.floor(num / den);
-          const rem = num - whole * den;
-          if (whole === 0) return `${rem}/${den}`;
-          if (rem === 0) return String(whole);
-          return `${whole} ${rem}/${den}`;
-        }
-
-        // ─── ROUND GENERATOR (solvability-verified; see _sim.mjs) ───
-        // Every corridor length is an EXACT integer multiple of the tile, so the
-        // quotient q is always a whole number and tiles tile the hall perfectly.
-        const MAX_TILES = 12; // tiles must fit visibly across the corridor
-
-        function makeRound(tier, index) {
-          let type, tileNum, tileDen, q, corridorN, corridorD;
-
-          if (tier === 1) {
-            // Level 1: UNIT-fraction tiles 1/d, whole-number-ish corridor. q = tiles.
-            tileDen = pick([2, 3, 4]);
-            tileNum = 1;
-            q = 2 + rnd(MAX_TILES - 1); // 2..12 tiles → always fits
-            corridorN = q * tileNum;
-            corridorD = tileDen;
-            type = index % 3 === 2 ? "time" : "tile";
-          } else {
-            // Level 2: non-unit fractions / mixed numbers, fewer guides.
-            const variant = pick([
-              "nonunit",
-              "mixed",
-              "time",
-              "nonunit",
-              "mixed",
-            ]);
-            if (variant === "nonunit") {
-              const d = pick([3, 4, 5, 6, 8]);
-              let n = 2 + rnd(Math.max(1, d - 2));
-              if (n >= d) n = d - 1;
-              const g = gcd(n, d);
-              tileNum = n / g;
-              tileDen = d / g;
-              q = 2 + rnd(MAX_TILES - 1);
-              corridorN = q * tileNum;
-              corridorD = tileDen;
-              type = "tile";
-            } else if (variant === "mixed") {
-              tileDen = pick([2, 3, 4]);
-              tileNum = 1;
-              q = 3 + rnd(MAX_TILES - 2);
-              corridorN = q * tileNum;
-              corridorD = tileDen;
-              type = "tile";
-            } else {
-              tileDen = pick([2, 3, 4]);
-              tileNum = 1;
-              q = 2 + rnd(MAX_TILES - 1);
-              corridorN = q * tileNum;
-              corridorD = tileDen;
-              type = "time";
-            }
-          }
-
-          // Invariant guard: corridor must be an exact multiple of the tile.
-          // (corridorN/corridorD) ÷ (tileNum/tileDen) === q, integer.
-          const num = corridorN * tileDen,
-            den = corridorD * tileNum;
-          if (num % den !== 0 || num / den !== q) {
-            // self-heal to the canonical unit-fraction case (never ships a bad round)
-            tileNum = 1;
-            tileDen = pick([2, 3, 4]);
-            q = 2 + rnd(MAX_TILES - 1);
-            corridorN = q;
-            corridorD = tileDen;
-          }
-
-          const cg = gcd(corridorN, corridorD);
-          return {
-            tier,
-            type,
-            tileNum,
-            tileDen,
-            q, // exact number of tiles that fill the hall
-            corridorN,
-            corridorD,
-            dispN: corridorN / cg,
-            dispD: corridorD / cg,
-          };
-        }
-
-        // ════════════════════════════════════════════════════════════════
-        //  TITLE SCENE — real Level 1 (Support) vs Level 2 (Challenge)
-        // ════════════════════════════════════════════════════════════════
-        class TitleScene extends Phaser.Scene {
-          constructor() {
-            super("TitleScene");
-          }
-          create() {
-            this.cameras.main.setBackgroundColor(C.bg);
-            this.add
-              .text(W / 2, 96, "FRACTION DUNGEON", {
-                fontSize: "62px",
-                fontFamily: "Arial Black, sans-serif",
-                color: "#f6c343",
-                stroke: "#000",
-                strokeThickness: 7,
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(
-                W / 2,
-                150,
-                "6.NS.A.1 — Tile the corridor to open the door",
-                {
-                  fontSize: "20px",
-                  fontFamily: "Arial",
-                  color: "#bcd0ff",
-                },
-              )
-              .setOrigin(0.5);
-            this.add
-              .text(
-                W / 2,
-                204,
-                "Each hall has a measured LENGTH. Lay down equal tiles of size 1/d\n" +
-                  "until they exactly cover it — no gap, no overflow. The number of\n" +
-                  "tiles that fit IS the answer to “length ÷ tile size.”",
-                {
-                  fontSize: "16px",
-                  fontFamily: "Arial",
-                  color: "#9aa6c0",
-                  align: "center",
-                  lineSpacing: 6,
-                },
-              )
-              .setOrigin(0.5);
-
-            this.drawDemo(W / 2, 400);
-
-            const tiers = [
-              {
-                t: 1,
-                label: "Level 1",
-                sub: "Support",
-                desc: "Unit fractions (1/2, 1/3, 1/4) · gridlines shown · 5 keys",
-                col: C.green,
-              },
-              {
-                t: 2,
-                label: "Level 2",
-                sub: "Challenge",
-                desc: "Non-unit & mixed numbers · fewer guides · 3 keys",
-                col: C.gold,
-              },
-            ];
-            tiers.forEach((d, i) => {
-              const x = W / 2 + (i === 0 ? -200 : 200),
-                y = 588;
-              const card = this.add
-                .rectangle(x, y, 322, 132, C.stone)
-                .setStrokeStyle(3, C.stroke)
-                .setInteractive({ useHandCursor: true });
-              this.add
-                .text(x, y - 40, d.label, {
-                  fontSize: "30px",
-                  fontFamily: "Arial Black",
-                  color: "#fff",
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y - 10, d.sub, {
-                  fontSize: "16px",
-                  fontFamily: "Arial",
-                  color: Phaser.Display.Color.IntegerToColor(d.col).rgba,
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y + 30, d.desc, {
-                  fontSize: "12.5px",
-                  fontFamily: "Arial",
-                  color: "#bcd0ff",
-                  align: "center",
-                  wordWrap: { width: 296 },
-                })
-                .setOrigin(0.5);
-              card.on("pointerover", () => {
-                card.setStrokeStyle(3, d.col);
-                card.setScale(1.04);
-              });
-              card.on("pointerout", () => {
-                card.setStrokeStyle(3, C.stroke);
-                card.setScale(1);
-              });
-              card.on("pointerdown", () => {
-                ensureAudio();
-                sfxClick();
-                this.cameras.main.fadeOut(350, 0, 0, 0);
-                this.time.delayedCall(350, () =>
-                  this.scene.start("GameScene", { tier: d.t }),
-                );
-              });
-            });
-
-            this.add
-              .text(
-                W / 2,
-                704,
-                "Touch: tap the tile bin to lay a tile, tap a placed tile to lift it.  " +
-                  "Keyboard: SPACE/→ lay a tile · ←/Backspace lift · Enter opens the door · H = hint",
-                { fontSize: "12px", color: "#6f7ba0", align: "center" },
-              )
-              .setOrigin(0.5);
-            this.cameras.main.fadeIn(400);
-          }
-          drawDemo(cx, cy) {
-            // 3-length hall tiled by four 3/4 tiles → 3 ÷ 3/4 = 4
-            const barW = 360,
-              x0 = cx - barW / 2;
-            this.add
-              .rectangle(cx, cy, barW + 8, 46, C.floor)
-              .setStrokeStyle(2, C.stroke);
-            for (let s = 0; s < 4; s++) {
-              this.add
-                .rectangle(
-                  x0 + 6 + s * (barW / 4),
-                  cy,
-                  barW / 4 - 6,
-                  36,
-                  C.tile,
-                )
-                .setOrigin(0, 0.5)
-                .setStrokeStyle(2, C.tileEdge);
-            }
-            this.add
-              .text(cx, cy - 44, "Hall length 3", {
-                fontSize: "15px",
-                color: "#9aa6c0",
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(cx, cy + 44, "4 tiles of 3/4 fill it  →  3 ÷ 3/4 = 4", {
-                fontSize: "18px",
-                fontFamily: "Arial Black",
-                color: "#f6c343",
-              })
-              .setOrigin(0.5);
-          }
-        }
-
-        // ════════════════════════════════════════════════════════════════
-        //  GAME SCENE
-        // ════════════════════════════════════════════════════════════════
-        class GameScene extends Phaser.Scene {
-          constructor() {
-            super("GameScene");
-          }
-          init(data) {
-            this.tier = data.tier || 1;
-          }
-
-          create() {
-            this.cameras.main.setBackgroundColor(C.bg);
-            this.cameras.main.fadeIn(350);
-
-            // ── state ──
-            this.score = 0;
-            this.streak = 0;
-            this.bestStreak = 0;
-            this.cleared = 0; // corridors cleared
-            this.correct = 0;
-            this.attempts = 0;
-            this.lives = this.tier === 1 ? 5 : 3;
-            this.depth = 1;
-            this.roundIx = 0;
-            this.placed = 0; // tiles currently laid down
-
-            // ── backdrop: dungeon ──
-            this.add.rectangle(W / 2, H / 2, W, H, C.bg);
-            this.add.rectangle(W / 2, 690, W, 156, C.floor);
-
-            // HUD
-            this.add.rectangle(W / 2, 28, W, 56, 0x06070b, 0.96);
-            this.hScore = this.add.text(24, 14, "0", {
-              fontSize: "26px",
-              fontFamily: "Arial Black",
-              color: "#f6c343",
-            });
-            this.add.text(26, 42, "GOLD", {
-              fontSize: "10px",
-              color: "#7e8ab0",
-            });
-            this.hDepth = this.add
-              .text(W / 2, 12, "Depth 1", {
-                fontSize: "16px",
-                fontFamily: "Arial Black",
-                color: "#fff",
-              })
-              .setOrigin(0.5, 0);
-            this.hCleared = this.add
-              .text(W / 2, 36, "Cleared 0", {
-                fontSize: "12px",
-                color: "#9aa6c0",
-              })
-              .setOrigin(0.5, 0);
-            this.hLives = this.add
-              .text(W - 24, 16, "", { fontSize: "20px" })
-              .setOrigin(1, 0);
-            this.hStreak = this.add
-              .text(W - 24, 42, "", { fontSize: "13px", color: "#f6c343" })
-              .setOrigin(1, 0);
-
-            // ── Quest card (left) ──
-            this.add
-              .rectangle(168, 250, 290, 332, C.stone)
-              .setStrokeStyle(3, C.stroke);
-            this.add
-              .text(168, 116, "\u{1F5FA}️ QUEST", {
-                fontSize: "18px",
-                fontFamily: "Arial Black",
-                color: "#f6c343",
-              })
-              .setOrigin(0.5);
-            this.monster = this.add
-              .text(168, 168, "", { fontSize: "52px" })
-              .setOrigin(0.5);
-            this.questLen = this.add
-              .text(168, 226, "", {
-                fontSize: "30px",
-                fontFamily: "Arial Black",
-                color: "#fff",
-              })
-              .setOrigin(0.5);
-            this.questTile = this.add
-              .text(168, 268, "", {
-                fontSize: "18px",
-                fontFamily: "Arial",
-                color: "#bcd0ff",
-              })
-              .setOrigin(0.5);
-            this.questTask = this.add
-              .text(168, 330, "", {
-                fontSize: "14px",
-                fontFamily: "Arial",
-                fontStyle: "bold",
-                color: "#ffe9a8",
-                align: "center",
-                wordWrap: { width: 262 },
-                lineSpacing: 4,
-              })
-              .setOrigin(0.5);
-
-            // ── Corridor (center) ──
-            this.barX = 360; // left edge of corridor bar
-            this.barW = 540; // px width of the full corridor length
-            this.barY = 300;
-            this.barH = 88;
-            this.corridorGfx = this.add.graphics();
-            this.gridGfx = this.add.graphics();
-            this.tileLayer = this.add.container();
-            this.doorGfx = this.add.graphics();
-
-            // coverage read-out under the corridor
-            this.coverNote = this.add
-              .text(630, 408, "", {
-                fontSize: "17px",
-                fontFamily: "Arial",
-                fontStyle: "bold",
-                color: "#9aa6c0",
-                align: "center",
-              })
-              .setOrigin(0.5);
-
-            // monster HP bar (decrements by fraction covered)
-            this.add
-              .text(630, 196, "MONSTER HP", {
-                fontSize: "13px",
-                fontFamily: "Arial Black",
-                color: "#e7a0ad",
-              })
-              .setOrigin(0.5);
-            this.hpGfx = this.add.graphics();
-            this.hpLabel = this.add
-              .text(630, 168, "", {
-                fontSize: "14px",
-                fontFamily: "Arial Black",
-                color: "#fff",
-              })
-              .setOrigin(0.5);
-
-            // ── Tile bin (right) ──
-            this.add
-              .rectangle(630, 540, 300, 150, C.stone)
-              .setStrokeStyle(3, C.stroke);
-            this.add
-              .text(630, 488, "TILE BIN — equal pieces", {
-                fontSize: "14px",
-                fontFamily: "Arial Black",
-                color: "#bcd0ff",
-              })
-              .setOrigin(0.5);
-            this.binTile = this.add
-              .rectangle(630, 540, 150, 44, C.tile)
-              .setStrokeStyle(3, C.tileEdge)
-              .setInteractive({ useHandCursor: true });
-            this.binTileLbl = this.add
-              .text(630, 540, "", {
-                fontSize: "18px",
-                fontFamily: "Arial Black",
-                color: "#06121f",
-              })
-              .setOrigin(0.5);
-            this.binTile.on("pointerover", () => this.binTile.setScale(1.05));
-            this.binTile.on("pointerout", () => this.binTile.setScale(1));
-            this.binTile.on("pointerdown", () => {
-              ensureAudio();
-              this.placeTile();
-            });
-            this.add
-              .text(630, 580, "Tap to LAY one tile into the hall", {
-                fontSize: "12px",
-                color: "#7e8ab0",
-              })
-              .setOrigin(0.5);
-
-            // ── Action buttons ──
-            this.openBtn = this.makeBtn(
-              630,
-              700,
-              240,
-              56,
-              "\u{1F6AA} OPEN DOOR",
-              0xf6c343,
-              () => this.tryOpen(),
-              "22px",
-              0x1a0d35,
-            );
-            this.liftBtn = this.makeBtn(
-              405,
-              700,
-              150,
-              48,
-              "↩ Lift tile",
-              0x35406a,
-              () => this.liftTile(),
-              "15px",
-            );
-            this.hintBtn = this.makeBtn(
-              855,
-              700,
-              140,
-              48,
-              "\u{1F4A1} Hint",
-              0x35406a,
-              () => this.showHint(),
-              "15px",
-            );
-
-            this.feedback = this.add
-              .text(630, 444, "", {
-                fontSize: "16px",
-                fontFamily: "Arial",
-                fontStyle: "bold",
-                color: "#fff",
-                align: "center",
-                wordWrap: { width: 560 },
-              })
-              .setOrigin(0.5);
-
-            // ── keyboard ──
-            this.input.keyboard.on("keydown", (e) => {
-              const k = e.key;
-              if (k === " " || k === "ArrowRight") {
-                e.preventDefault?.();
-                this.placeTile();
-              } else if (k === "ArrowLeft" || k === "Backspace") {
-                e.preventDefault?.();
-                this.liftTile();
-              } else if (k === "Enter") this.tryOpen();
-              else if (k.toLowerCase() === "h") this.showHint();
-            });
-
-            this.loadRound();
-          }
-
-          makeBtn(
-            x,
-            y,
-            w,
-            h,
-            label,
-            color,
-            cb,
-            fs = "18px",
-            txtColor = 0xffffff,
-          ) {
-            const r = this.add
-              .rectangle(x, y, w, h, color)
-              .setStrokeStyle(2, 0x000000, 0.25)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(x, y, label, {
-                fontSize: fs,
-                fontFamily: "Arial Black",
-                color: Phaser.Display.Color.IntegerToColor(txtColor).rgba,
-              })
-              .setOrigin(0.5);
-            r.on("pointerover", () => r.setScale(1.05));
-            r.on("pointerout", () => r.setScale(1));
-            r.on("pointerdown", () => {
-              ensureAudio();
-              cb();
-            });
-            return r;
-          }
-
-          loadRound() {
-            this.round = makeRound(this.tier, this.roundIx);
-            const r = this.round;
-            this.placed = 0;
-            this.attempts = 0;
-            this.feedback.setText("");
-
-            // theme: dungeon (tile) vs clock (time)
-            if (r.type === "time") {
-              this.monster.setText("\u{1F570}️");
-              const hallStr = fracStr(r.dispN, r.dispD);
-              this.questLen.setText(hallStr + " hour");
-              this.questTile.setText("Blocks of 15 min = 1/4 hour");
-              // for a time round we relabel: tile is always 1/4 hour (15 min)
-              r.tileNum = 1;
-              r.tileDen = 4;
-              r.corridorD = 4;
-              r.corridorN = r.q; // q quarter-hours; recompute hall display
-              const cg = gcd(r.corridorN, r.corridorD);
-              r.dispN = r.corridorN / cg;
-              r.dispD = r.corridorD / cg;
-              this.questLen.setText(fracStr(r.dispN, r.dispD) + " hour");
-              this.questTask.setText(
-                "Lay 15-minute blocks end to end until they exactly fill " +
-                  fracStr(r.dispN, r.dispD) +
-                  " of an hour. How many blocks?",
-              );
-              this.binTileLbl.setText("15 min");
-            } else {
-              this.monster.setText(
-                pick([
-                  "\u{1F479}",
-                  "\u{1F47E}",
-                  "\u{1F432}",
-                  "\u{1F9DF}",
-                  "\u{1F47B}",
-                ]),
-              );
-              this.questLen.setText("Hall = " + fracStr(r.dispN, r.dispD));
-              this.questTile.setText(
-                "Tile size = " + fracStr(r.tileNum, r.tileDen),
-              );
-              this.questTask.setText(
-                "Lay " +
-                  fracStr(r.tileNum, r.tileDen) +
-                  " tiles end to end until they EXACTLY cover the " +
-                  fracStr(r.dispN, r.dispD) +
-                  "-length hall. No gap, no overflow.",
-              );
-              this.binTileLbl.setText(fracStr(r.tileNum, r.tileDen));
-            }
-
-            this.updateHUD();
-            this.redraw();
-          }
-
-          // one tile spans (tileNum/tileDen) of a unit; corridor total length = corridorN/corridorD units.
-          // px per unit:
-          unitPx() {
-            return (this.barW * this.round.corridorD) / this.round.corridorN; // barW spans the whole hall
-          }
-          tilePx() {
-            // width of one tile in px = (tileNum/tileDen) units * unitPx
-            const r = this.round;
-            return this.barW / r.q; // exactly barW/q since q tiles fill the bar
-          }
-
-          placeTile() {
-            const r = this.round;
-            if (this.placed >= MAX_TILES + 2) {
-              sfxWrong();
-              this.flash(
-                this.feedback,
-                "The hall can't hold more tiles.",
-                "#ffb4b4",
-              );
-              return;
-            }
-            this.placed++;
-            sfxPlace();
-            this.redraw();
-            this.checkOvershoot();
-          }
-          liftTile() {
-            if (this.placed <= 0) {
-              sfxWrong();
-              return;
-            }
-            this.placed--;
-            sfxRemove();
-            this.feedback.setText("");
-            this.redraw();
-          }
-
-          checkOvershoot() {
-            const r = this.round;
-            if (this.placed > r.q)
-              this.flash(
-                this.feedback,
-                "Those tiles stick out past the end of the hall — lift " +
-                  (this.placed - r.q) +
-                  ".",
-                "#ffd9b4",
-              );
-          }
-
-          redraw() {
-            const r = this.round;
-            const g = this.corridorGfx;
-            g.clear();
-            this.gridGfx.clear();
-            this.doorGfx.clear();
-            this.tileLayer.removeAll(true);
-
-            const x0 = this.barX,
-              y = this.barY,
-              w = this.barW,
-              h = this.barH;
-
-            // corridor floor (measured bar of length L)
-            g.fillStyle(C.floor, 1).fillRoundedRect(
-              x0 - 4,
-              y - h / 2 - 4,
-              w + 8,
-              h + 8,
-              8,
-            );
-            g.lineStyle(3, C.stroke, 1).strokeRoundedRect(
-              x0 - 4,
-              y - h / 2 - 4,
-              w + 8,
-              h + 8,
-              8,
-            );
-
-            // whole-unit measure ticks + labels (always)
-            const units = r.corridorN / r.corridorD; // total length in units (may be fractional)
-            const upx = w / units;
-            for (let u = 0; u <= Math.ceil(units); u++) {
-              const ux = x0 + Math.min(u, units) * upx;
-              this.gridGfx.lineStyle(2, C.stroke, 0.9).beginPath();
-              this.gridGfx.moveTo(ux, y - h / 2 - 4);
-              this.gridGfx.lineTo(ux, y + h / 2 + 10);
-              this.gridGfx.strokePath();
-            }
-            // unit number labels under the bar
-            if (!this._unitLabels) this._unitLabels = [];
-            this._unitLabels.forEach((t) => t.destroy());
-            this._unitLabels = [];
-            for (let u = 0; u <= Math.floor(units); u++) {
-              const ux = x0 + u * upx;
-              this._unitLabels.push(
-                this.add
-                  .text(ux, y + h / 2 + 22, String(u), {
-                    fontSize: "13px",
-                    color: "#7e8ab0",
-                  })
-                  .setOrigin(0.5),
-              );
-            }
-            // end-of-hall marker
-            this._unitLabels.push(
-              this.add
-                .text(x0 + w, y - h / 2 - 20, "END", {
-                  fontSize: "12px",
-                  fontFamily: "Arial Black",
-                  color: "#f6c343",
-                })
-                .setOrigin(0.5),
-            );
-
-            // Level 1 (Support): faint gridlines at every tile boundary as a guide.
-            if (this.tier === 1) {
-              const tpx = w / r.q;
-              for (let s = 1; s < r.q; s++) {
-                const gx = x0 + s * tpx;
-                this.gridGfx.lineStyle(1, C.stroke, 0.5).beginPath();
-                this.gridGfx.moveTo(gx, y - h / 2);
-                this.gridGfx.lineTo(gx, y + h / 2);
-                this.gridGfx.strokePath();
-              }
-            }
-
-            // placed tiles (each exactly w/q wide → they tile perfectly)
-            const tpx = w / r.q;
-            for (let s = 0; s < this.placed; s++) {
-              const tx = x0 + s * tpx;
-              const over = s >= r.q; // this tile pokes past the end
-              const rect = this.add
-                .rectangle(tx + 2, y, tpx - 4, h - 14, over ? C.red : C.tile)
-                .setOrigin(0, 0.5)
-                .setStrokeStyle(2, over ? 0x5a1020 : C.tileEdge)
-                .setInteractive({ useHandCursor: true });
-              rect.on("pointerdown", () => {
-                ensureAudio();
-                this.liftTile();
-              });
-              this.tileLayer.add(rect);
-              // count chip on the tile
-              this.tileLayer.add(
-                this.add
-                  .text(tx + tpx / 2, y, String(s + 1), {
-                    fontSize: "13px",
-                    fontFamily: "Arial Black",
-                    color: "#06121f",
-                  })
-                  .setOrigin(0.5),
-              );
-            }
-
-            // door at the end of the hall
-            const doorOpen = this.placed === r.q;
-            this.doorGfx.fillStyle(doorOpen ? C.green : C.stoneHi, 1);
-            this.doorGfx.fillRoundedRect(
-              x0 + w + 8,
-              y - h / 2 - 4,
-              22,
-              h + 8,
-              5,
-            );
-            this.doorGfx.lineStyle(2, doorOpen ? C.green : C.stroke, 1);
-            this.doorGfx.strokeRoundedRect(
-              x0 + w + 8,
-              y - h / 2 - 4,
-              22,
-              h + 8,
-              5,
-            );
-
-            // coverage read-out (felt fraction) — ICON + words, not colour alone
-            const coveredUnits = this.placed * (r.tileNum / r.tileDen);
-            const coverStr = fracStr(this.placed * r.tileNum, r.tileDen);
-            let state;
-            if (this.placed === 0)
-              state = "Hall is empty — start laying tiles.";
-            else if (this.placed < r.q)
-              state = `△ Covered ${coverStr} of ${fracStr(r.dispN, r.dispD)} — a GAP remains. Add more.`;
-            else if (this.placed === r.q)
-              state = `✔ Exactly covered! ${this.placed} tiles = ${fracStr(r.dispN, r.dispD)}. Door is open.`;
-            else
-              state = `⚠ Overflow — tiles stick out past the END. Lift ${this.placed - r.q}.`;
-            this.coverNote
-              .setText(state)
-              .setColor(
-                this.placed === r.q
-                  ? "#2ec26b"
-                  : this.placed > r.q
-                    ? "#ffb4b4"
-                    : "#9aa6c0",
-              );
-
-            // monster HP = remaining fraction of hall NOT covered (graduated)
-            this.drawHP(Math.min(this.placed, r.q) / r.q);
-          }
-
-          drawHP(coveredFrac) {
-            const hp = Math.max(0, 1 - coveredFrac); // remaining
-            const g = this.hpGfx;
-            g.clear();
-            const bx = 520,
-              by = 210,
-              bw = 220,
-              bh = 18;
-            g.fillStyle(0x06070b, 1).fillRoundedRect(bx, by, bw, bh, 5);
-            g.lineStyle(2, C.stroke, 1).strokeRoundedRect(bx, by, bw, bh, 5);
-            g.fillStyle(hp <= 0 ? C.green : C.red, 0.92);
-            g.fillRoundedRect(
-              bx + 2,
-              by + 2,
-              Math.max(0, (bw - 4) * hp),
-              bh - 4,
-              4,
-            );
-            this.hpLabel.setText(
-              hp <= 0 ? "DEFEATED ✔" : Math.round(hp * 100) + "% HP",
-            );
-          }
-
-          tryOpen() {
-            const r = this.round;
-            if (this.placed === r.q) {
-              this.onCorrect();
-              return;
-            }
-            // diagnostic, non-giveaway feedback that teaches the GROUPING method
-            sfxWrong();
-            this.attempts++;
-            this.streak = 0;
-            this.cameras.main.shake(150, 0.006);
-            let msg;
-            if (this.placed === 0)
-              msg = "The door is sealed. Lay tiles to measure how many fit.";
-            else if (this.placed < r.q)
-              msg =
-                "There's still a GAP at the end. Keep laying " +
-                fracStr(r.tileNum, r.tileDen) +
-                " tiles until they reach the END mark.";
-            else
-              msg =
-                "Your tiles OVERSHOOT the end. Lift tiles until the last one stops exactly at the END.";
-            this.flash(this.feedback, "❌ " + msg, "#ffb4b4");
-
-            if (this.attempts >= (this.tier === 1 ? 3 : 2)) {
-              this.lives--;
-              this.attempts = 0;
-              if (this.lives <= 0) {
-                this.updateHUD();
-                this.time.delayedCall(900, () => this.endGame());
-                return;
-              }
-            }
-            this.updateHUD();
-          }
-
-          onCorrect() {
-            sfxOpen();
-            this.correct++;
-            this.cleared++;
-            this.streak++;
-            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
-            const r = this.round;
-            const combo = Math.min(4, 1 + Math.floor(this.streak / 3));
-            const firstTry = this.attempts === 0 ? 60 : 0;
-            const pts = (100 + firstTry + this.streak * 8) * combo;
-            this.score += pts;
-            this.drawHP(1);
-            this.flash(
-              this.feedback,
-              `✅ ${fracStr(r.dispN, r.dispD)} ÷ ${fracStr(r.tileNum, r.tileDen)} = ${r.q} tiles!  +${pts}${combo > 1 ? " x" + combo : ""}`,
-              "#bff7cf",
-            );
-            this.popOpen();
-
-            if (this.correct % 4 === 0) {
-              this.depth++;
-              sfxLevel();
-            }
-            this.updateHUD();
-
-            const done = this.cleared >= (this.tier === 1 ? 10 : 12);
-            this.time.delayedCall(1150, () => {
-              if (done) this.endGame();
-              else {
-                this.roundIx++;
-                this.loadRound();
-              }
-            });
-          }
-
-          popOpen() {
-            const r = this.round;
-            const hero = this.add
-              .text(this.barX - 30, this.barY, "\u{1F9B8}", {
-                fontSize: "44px",
-              })
-              .setOrigin(0.5);
-            this.tweens.add({
-              targets: hero,
-              x: this.barX + this.barW + 20,
-              duration: 950,
-              ease: "Cubic.easeInOut",
-              onComplete: () => hero.destroy(),
-            });
-            for (let i = 0; i < 18; i++) {
-              const p = this.add.circle(
-                this.barX + this.barW,
-                this.barY,
-                3 + Math.random() * 3,
-                [C.gold, C.green, C.tile][rnd(3)],
-              );
-              this.tweens.add({
-                targets: p,
-                x: this.barX + this.barW + (Math.random() - 0.2) * 200,
-                y: this.barY + (Math.random() - 0.5) * 200,
-                alpha: 0,
-                scale: 0,
-                duration: 600 + Math.random() * 400,
-                onComplete: () => p.destroy(),
-              });
-            }
-          }
-
-          showHint() {
-            sfxClick();
-            const r = this.round;
-            const h =
-              "\u{1F4A1} Ask: how many " +
-              fracStr(r.tileNum, r.tileDen) +
-              "-tiles fit in " +
-              fracStr(r.dispN, r.dispD) +
-              "? Lay one tile, see how far it reaches, then keep adding equal tiles until the last one lands on the END mark. You have " +
-              this.placed +
-              " down so far.";
-            this.flash(this.feedback, h, "#ffe9a8", 3400);
-          }
-
-          flash(obj, msg, color = "#ffffff", hold = 2400) {
-            obj.setText(msg).setColor(color).setAlpha(1);
-            this.tweens.killTweensOf(obj);
-            this.time.delayedCall(hold, () => {
-              if (obj.text === msg)
-                this.tweens.add({ targets: obj, alpha: 0.0, duration: 400 });
-            });
-          }
-
-          updateHUD() {
-            this.hScore.setText(this.score.toLocaleString());
-            this.hDepth.setText("Depth " + this.depth);
-            this.hCleared.setText("Cleared " + this.cleared);
-            this.hLives.setText("\u{1F511}".repeat(Math.max(0, this.lives)));
-            this.hStreak.setText(
-              this.streak >= 3 ? "\u{1F525} streak " + this.streak : "",
-            );
-          }
-
-          endGame() {
-            this.cameras.main.fadeOut(450, 0, 0, 0);
-            this.time.delayedCall(450, () =>
-              this.scene.start("ResultScene", {
-                tier: this.tier,
-                score: this.score,
-                correct: this.correct,
-                cleared: this.cleared,
-                bestStreak: this.bestStreak,
-                depth: this.depth,
-              }),
-            );
-          }
-        }
-
-        // ════════════════════════════════════════════════════════════════
-        //  RESULT SCENE
-        // ════════════════════════════════════════════════════════════════
-        class ResultScene extends Phaser.Scene {
-          constructor() {
-            super("ResultScene");
-          }
-          init(d) {
-            Object.assign(this, d);
-          }
-          create() {
-            this.cameras.main.setBackgroundColor(C.bg);
-            this.cameras.main.fadeIn(450);
-            const goal = this.tier === 1 ? 10 : 12;
-            const pct = goal > 0 ? Math.round((this.correct / goal) * 100) : 0;
-
-            try {
-              window.EduPulse &&
-                EduPulse.record({
-                  activityTitle: document.title,
-                  score: this.correct,
-                  maxScore: goal,
-                  problemsCorrect: this.correct,
-                  problemsAttempted: this.cleared,
-                  standard: "6.NS.A.1",
-                });
-            } catch (e) {}
-
-            let rank, emoji;
-            if (pct >= 90) {
-              rank = "DUNGEON MASTER!";
-              emoji = "\u{1F451}";
-            } else if (pct >= 75) {
-              rank = "CORRIDOR CHAMPION!";
-              emoji = "\u{1F3C6}";
-            } else if (pct >= 50) {
-              rank = "TILE APPRENTICE";
-              emoji = "⭐";
-            } else {
-              rank = "KEEP DELVING!";
-              emoji = "\u{1F4DA}";
-            }
-
-            this.add
-              .text(W / 2, 110, emoji, { fontSize: "76px" })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 196, "DUNGEON CLEARED", {
-                fontSize: "44px",
-                fontFamily: "Arial Black",
-                color: "#f6c343",
-                stroke: "#000",
-                strokeThickness: 4,
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 250, rank, {
-                fontSize: "24px",
-                fontFamily: "Arial",
-                fontStyle: "bold",
-                color: "#fff",
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 312, this.score.toLocaleString(), {
-                fontSize: "58px",
-                fontFamily: "Arial Black",
-                color: "#f6c343",
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 352, "GOLD", { fontSize: "13px", color: "#7e8ab0" })
-              .setOrigin(0.5);
-
-            const stats = [
-              { l: "Halls tiled", v: `${this.correct}/${goal}` },
-              { l: "Best streak", v: this.bestStreak },
-              { l: "Depth reached", v: this.depth },
-            ];
-            stats.forEach((s, i) => {
-              const x = 282 + i * 230,
-                y = 440;
-              this.add
-                .rectangle(x, y, 200, 96, C.stone)
-                .setStrokeStyle(2, C.stroke);
-              this.add
-                .text(x, y - 12, String(s.v), {
-                  fontSize: "30px",
-                  fontFamily: "Arial Black",
-                  color: "#f6c343",
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y + 26, s.l, { fontSize: "13px", color: "#bcd0ff" })
-                .setOrigin(0.5);
-            });
-
-            const again = this.add
-              .rectangle(W / 2 - 130, 580, 240, 58, C.gold)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(W / 2 - 130, 580, "DELVE AGAIN", {
-                fontSize: "22px",
-                fontFamily: "Arial Black",
-                color: "#1a0d35",
-              })
-              .setOrigin(0.5);
-            again.on("pointerdown", () => {
-              ensureAudio();
-              sfxClick();
-              this.scene.start("GameScene", { tier: this.tier });
-            });
-            again.on("pointerover", () => again.setScale(1.05));
-            again.on("pointerout", () => again.setScale(1));
-
-            const menu = this.add
-              .rectangle(W / 2 + 130, 580, 240, 58, C.stone)
-              .setStrokeStyle(2, C.stroke)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(W / 2 + 130, 580, "CHANGE LEVEL", {
-                fontSize: "20px",
-                fontFamily: "Arial Black",
-                color: "#fff",
-              })
-              .setOrigin(0.5);
-            menu.on("pointerdown", () => {
-              ensureAudio();
-              sfxClick();
-              this.scene.start("TitleScene");
-            });
-            menu.on("pointerover", () => menu.setScale(1.05));
-            menu.on("pointerout", () => menu.setScale(1));
-
-            for (let i = 0; i < 28; i++) {
-              const p = this.add
-                .circle(
-                  Math.random() * W,
-                  Math.random() * H,
-                  2 + Math.random() * 3,
-                  [C.gold, C.tile, C.green][rnd(3)],
-                )
-                .setAlpha(0.7);
-              this.tweens.add({
-                targets: p,
-                y: p.y - 200 - Math.random() * 300,
-                alpha: 0,
-                duration: 2000 + Math.random() * 2000,
-                delay: Math.random() * 1000,
-                repeat: -1,
-                ease: "Power1",
-              });
-            }
-          }
-        }
-
-        // ─── BOOT ───
-        new Phaser.Game({
-          type: Phaser.AUTO,
-          parent: "game-container",
-          width: W,
-          height: H,
-          backgroundColor: "#0b0c10",
-          scale: {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH,
-          },
-          scene: [TitleScene, GameScene, ResultScene],
-        });
       })();
     </script>
+
+    <script>
+      // ════════════════════════════════════════════════════════════════════
+      //  FRACTION DUNGEON  ·  Grade 6  ·  6.NS.1 (dividing with fractions)
+      //  Math-as-mechanic rebuild.
+      //
+      //  A corridor of length L must be tiled EXACTLY with boards of length
+      //  n/d. The player lays one board at a time. The door opens only when
+      //  the corridor is filled with no gap and no overhang. The COUNT of
+      //  boards laid IS the quotient  L ÷ (n/d).  Overhang or "open early"
+      //  with a gap costs a life and shows a misconception nudge. There are
+      //  no precomputed answers to click — the quotient is produced by the
+      //  player's tiling action.
+      // ════════════════════════════════════════════════════════════════════
+      const STANDARD = "6.NS.1";
+      const ACTIVITY_TITLE = "Fraction Dungeon — Unit 1";
+      const LS_KEY = "fd_fraction_dungeon_highscore";
+      const ROUNDS = 4;
+
+      // Metadata source of truth: window.Games2DData. Inline fallback keeps
+      // the page alive if the artifact fails to load.
+      const DATA = (window.Games2DData && window.Games2DData["6-1game"]) || {
+        ccss: "6.NS.1",
+        title: "Fraction Dungeon",
+        vocab: [
+          {
+            term: "unit fraction",
+            defn: "A fraction with 1 on top, like 1/4. A ¾-ft board is three of these ¼ pieces joined together.",
+          },
+          {
+            term: "quotient",
+            defn: "The answer to a division problem. Here it is how many boards fit: corridor length ÷ board length.",
+          },
+          {
+            term: "dividing by a fraction",
+            defn: "Asking 'how many of THIS smaller length fit inside that length?' The smaller the board, the MORE boards fit.",
+          },
+        ],
+        misconceptions: [
+          {
+            tag: "overhang",
+            trigger:
+              "Lays one too many boards so the last one sticks past the wall.",
+            feedback:
+              "That board overhangs the wall. Pull it back — you only count boards that fit INSIDE the corridor.",
+          },
+          {
+            tag: "gap-open-early",
+            trigger:
+              "Opens the door while bare floor (a gap) is still showing.",
+            feedback:
+              "There's still bare floor left. Keep laying boards until the corridor is filled exactly — no gap.",
+          },
+        ],
+        tiers: {
+          1: {
+            label: "Level 1",
+            sub: "Support",
+            desc: "Whole-number corridors · the grid shows each board's spot · 5 lives",
+          },
+          2: {
+            label: "Level 2",
+            sub: "Challenge",
+            desc: "Mixed-number corridors · figure out the fit yourself · 3 lives",
+          },
+        },
+      };
+
+      // Curated puzzle pools. Each: [Lnum, Lden, boardNum, boardDen] where the
+      // corridor length is Lnum/Lden ft and each board is boardNum/boardDen ft.
+      // Exact board count = (Lnum * boardDen) / (Lden * boardNum). All chosen
+      // so that is a whole number (exact tiling).
+      const POOLS = {
+        1: [
+          [6, 1, 3, 4], // 6 ÷ 3/4 = 8
+          [4, 1, 1, 2], // 4 ÷ 1/2 = 8
+          [3, 1, 1, 4], // 3 ÷ 1/4 = 12
+          [5, 1, 1, 2], // 5 ÷ 1/2 = 10
+          [2, 1, 1, 3], // 2 ÷ 1/3 = 6
+          [6, 1, 2, 3], // 6 ÷ 2/3 = 9
+          [4, 1, 1, 3], // 4 ÷ 1/3 = 12
+          [3, 1, 3, 4], // 3 ÷ 3/4 = 4
+        ],
+        2: [
+          [9, 2, 3, 4], // 4½ ÷ 3/4 = 6
+          [7, 2, 1, 2], // 3½ ÷ 1/2 = 7
+          [10, 3, 2, 3], // 3⅓ ÷ 2/3 = 5
+          [15, 4, 3, 4], // 3¾ ÷ 3/4 = 5
+          [8, 3, 2, 3], // 2⅔ ÷ 2/3 = 4
+          [9, 4, 3, 4], // 2¼ ÷ 3/4 = 3
+          [7, 3, 1, 3], // 2⅓ ÷ 1/3 = 7
+          [11, 4, 1, 4], // 2¾ ÷ 1/4 = 11
+        ],
+      };
+
+      // ── Tiny WebAudio SFX ──
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
+        },
+        play(t, f, d, v = 0.2) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              o = c.createOscillator(),
+              g = c.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            o.connect(g);
+            g.connect(c.destination);
+            o.start();
+            o.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        good() {
+          this.play("sine", 660, 0.1, 0.3);
+          this.play("sine", 880, 0.15, 0.25);
+        },
+        bad() {
+          this.play("sawtooth", 200, 0.22, 0.2);
+        },
+        win() {
+          [523, 659, 784, 1046].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.18, 0.25), i * 90),
+          );
+        },
+      };
+
+      // ── Fraction helpers (kept exact with integer numerator/denominator) ──
+      const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+      function frac(n, d) {
+        const g = gcd(Math.abs(n), Math.abs(d)) || 1;
+        return { n: n / g, d: d / g };
+      }
+      const GLYPH = {
+        "1/2": "½",
+        "1/3": "⅓",
+        "2/3": "⅔",
+        "1/4": "¼",
+        "3/4": "¾",
+      };
+      // mixed-number label, e.g. 9/2 -> "4½", 3/4 -> "¾", 6/1 -> "6"
+      function fracLabel(n, d) {
+        const f = frac(n, d);
+        if (f.d === 1) return String(f.n);
+        const whole = Math.floor(f.n / f.d);
+        const rem = f.n - whole * f.d;
+        const g = GLYPH[rem + "/" + f.d] || rem + "/" + f.d;
+        return whole ? whole + g : g;
+      }
+
+      // ── State ──
+      const S = {
+        level: 1,
+        lives: 5,
+        score: 0,
+        round: 0,
+        doorsOpened: 0,
+        puzzles: [],
+        cur: null,
+      };
+
+      const $ = (id) => document.getElementById(id);
+      const srSay = (m) => {
+        const el = $("ff-sr");
+        if (el) {
+          el.textContent = "";
+          setTimeout(() => (el.textContent = m), 30);
+        }
+      };
+
+      function show(screen) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("on"));
+        $("screen-" + screen).classList.add("on");
+      }
+
+      // Build a puzzle: corridor length L and board length B (both fractions).
+      // Exact board count = (Ln/Ld) ÷ (Bn/Bd) = (Ln*Bd)/(Ld*Bn).
+      function makePuzzle([ln, ld, bn, bd]) {
+        const exact = (ln * bd) / (ld * bn); // whole number by construction
+        return {
+          ln,
+          ld,
+          bn,
+          bd,
+          lenVal: ln / ld, // float, layout only
+          boardVal: bn / bd, // float, layout only
+          target: Math.round(exact),
+          placed: 0, // number of boards laid
+        };
+      }
+
+      // ── Vocab gate ──
+      function renderVocab() {
+        $("vocab-list").innerHTML = (DATA.vocab || [])
+          .map(
+            (v) =>
+              `<div class="vrow"><span class="vterm">${v.term}</span><span class="vdef">${v.defn}</span></div>`,
+          )
+          .join("");
+      }
+
+      // ── Level select ──
+      function renderLevels() {
+        const t = DATA.tiers || {};
+        $("level-list").innerHTML = Object.keys(t)
+          .map((k) => {
+            const tier = t[k];
+            return `<button class="level-pick" data-level="${k}">
+            <span class="tag">${tier.label} · ${tier.sub}</span>
+            <b>${k === "1" ? "Torch Bearer" : "Dungeon Master"}</b>
+            <span class="desc">${tier.desc}</span>
+          </button>`;
+          })
+          .join("");
+        $("level-list")
+          .querySelectorAll("[data-level]")
+          .forEach((el) =>
+            el.addEventListener("click", () =>
+              startGame(Number(el.dataset.level)),
+            ),
+          );
+      }
+
+      // ── Game flow ──
+      function startGame(level) {
+        SFX.init();
+        S.level = level;
+        S.lives = level === 1 ? 5 : 3;
+        S.score = 0;
+        S.round = 0;
+        S.doorsOpened = 0;
+        // Guard the data: keep only exact-tiling puzzles in a sane range.
+        const pool = (POOLS[level] || POOLS[1]).filter((p) => {
+          const c = (p[0] * p[3]) / (p[1] * p[2]);
+          return Number.isInteger(c) && c >= 2 && c <= 24;
+        });
+        for (let i = pool.length - 1; i > 0; i--) {
+          const j = (Math.random() * (i + 1)) | 0;
+          [pool[i], pool[j]] = [pool[j], pool[i]];
+        }
+        S.puzzles = pool.slice(0, ROUNDS).map(makePuzzle);
+        $("hud-total").textContent = S.puzzles.length;
+        show("play");
+        loadRound(0);
+      }
+
+      function loadRound(i) {
+        S.round = i;
+        S.cur = S.puzzles[i];
+        const p = S.cur;
+        const lenLbl = fracLabel(p.ln, p.ld);
+        const boardLbl = fracLabel(p.bn, p.bd);
+        $("hud-round").textContent = i + 1;
+        $("hud-score").textContent = S.score;
+        $("hud-lives").textContent = "●".repeat(S.lives) || "—";
+        $("t-len").textContent = lenLbl;
+        $("t-board").textContent = boardLbl;
+        $("btn-board").textContent = boardLbl;
+        $("rule-end").textContent = lenLbl + " ft";
+        $("ro-len").textContent = lenLbl;
+        $("ro-count").textContent = "0";
+        $("ro-filled").textContent = "0";
+        $("feedback").textContent = "";
+        $("feedback").className = "feedback";
+        $("corridor").classList.remove("open");
+        $("hint").textContent =
+          S.level === 1
+            ? "Tip: each grid box is one " +
+              boardLbl +
+              "-ft board. How many " +
+              boardLbl +
+              "-ft boards fill " +
+              lenLbl +
+              " ft?"
+            : "Lay boards until the floor is exactly covered, then open the door.";
+        renderCorridor();
+        srSay(
+          `Room ${i + 1}. Tile a ${lenLbl} foot corridor with ${boardLbl} foot boards.`,
+        );
+      }
+
+      // Render corridor grid + currently placed boards.
+      function renderCorridor() {
+        const p = S.cur;
+        const cor = $("corridor");
+        const boardW = (p.boardVal / p.lenVal) * 100; // percent of corridor
+        // Level 1 shows the board-sized helper grid; Level 2 hides it.
+        cor.style.setProperty("--unit", S.level === 1 ? boardW + "%" : "999%");
+        cor.querySelectorAll(".board").forEach((b) => b.remove());
+        for (let k = 0; k < p.placed; k++) {
+          const b = document.createElement("div");
+          b.className = "board";
+          b.style.left = k * boardW + "%";
+          b.style.width = boardW - 0.6 + "%";
+          if ((k + 1) * boardW > 100.5) b.classList.add("overhang");
+          b.textContent = fracLabel(p.bn, p.bd);
+          cor.appendChild(b);
+        }
+        $("ro-count").textContent = p.placed;
+        $("ro-filled").textContent = fracLabel(p.placed * p.bn, p.bd);
+      }
+
+      function placeBoard() {
+        const p = S.cur;
+        if (!p) return;
+        // Allow placing past the target so the player can SEE the overhang,
+        // but cap so it cannot run off screen forever.
+        if (p.placed >= p.target + 2) {
+          flash(
+            "The corridor is overflowing with boards — pull some back.",
+            "bad",
+          );
+          return;
+        }
+        p.placed++;
+        renderCorridor();
+        const filled = p.placed * p.boardVal;
+        if (filled > p.lenVal + 1e-9) {
+          // Visible overhang error; nudge to pull it back (life lost only if
+          // they try to open the door overhanging).
+          SFX.bad();
+          flash(
+            "That board sticks past the wall (overhang). Pull it back.",
+            "bad",
+          );
+        } else {
+          SFX.good();
+          flash("", "good");
+          srSay(p.placed + " boards laid.");
+        }
+      }
+
+      function removeBoard() {
+        const p = S.cur;
+        if (!p) return;
+        if (p.placed <= 0) {
+          flash("No boards to pull back yet.", "bad");
+          return;
+        }
+        p.placed--;
+        renderCorridor();
+        flash("", "good");
+        srSay("Pulled back one board. " + p.placed + " remain.");
+      }
+
+      function openDoor() {
+        const p = S.cur;
+        if (!p) return;
+        const filled = p.placed * p.boardVal;
+        const diff = filled - p.lenVal;
+        const m = DATA.misconceptions || [];
+        if (Math.abs(diff) < 1e-9 && p.placed === p.target) {
+          // EXACT tiling — door opens. The board count IS the quotient.
+          $("corridor").classList.add("open");
+          S.doorsOpened++;
+          S.score += S.level === 1 ? 100 : 150;
+          SFX.win();
+          if (window.GameFX && GameFX.successBurst)
+            try {
+              GameFX.successBurst();
+            } catch (e) {}
+          flash(
+            `${fracLabel(p.ln, p.ld)} ÷ ${fracLabel(p.bn, p.bd)} = ${p.target} boards. Door open! 🚪`,
+            "good",
+          );
+          $("hud-score").textContent = S.score;
+          if (S.round + 1 >= S.puzzles.length)
+            setTimeout(() => endGame(true), 1500);
+          else setTimeout(() => loadRound(S.round + 1), 1500);
+          return;
+        }
+        // Not exact → life lost + misconception nudge.
+        S.lives--;
+        SFX.bad();
+        $("hud-lives").textContent = "●".repeat(S.lives) || "—";
+        if (diff > 1e-9)
+          flash(
+            (m[0] && m[0].feedback) ||
+              "The last board overhangs the wall. Pull it back first.",
+            "bad",
+          );
+        else
+          flash(
+            (m[1] && m[1].feedback) ||
+              "There's still a gap. Keep laying boards until it's exactly filled.",
+            "bad",
+          );
+        if (S.lives <= 0) setTimeout(() => endGame(false), 900);
+      }
+
+      function flash(msg, cls) {
+        const f = $("feedback");
+        f.textContent = msg;
+        f.className = "feedback " + (msg ? cls : "");
+        if (msg) srSay(msg);
+      }
+
+      function endGame(won) {
+        const totalDoors = S.puzzles.length;
+        const pct = totalDoors ? S.doorsOpened / totalDoors : 0;
+        const stars = pct >= 0.95 ? 3 : pct >= 0.7 ? 2 : pct >= 0.4 ? 1 : 0;
+        $("r-stars").textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
+        $("r-score").textContent = S.score;
+        $("r-correct").textContent = S.doorsOpened;
+        $("r-rounds").textContent = won ? totalDoors : S.round;
+        let high = 0;
+        try {
+          high = Number(localStorage.getItem(LS_KEY) || 0);
+        } catch (e) {}
+        if (S.score > high) {
+          try {
+            localStorage.setItem(LS_KEY, String(S.score));
+          } catch (e) {}
+          $("r-high").textContent = S.score;
+          $("r-high-row").style.display = "flex";
+        }
+        // EduPulse (guarded)
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: ACTIVITY_TITLE,
+              score: S.score,
+              stars: stars,
+              problemsCorrect: S.doorsOpened,
+              problemsAttempted: totalDoors,
+              percent: Math.round(pct * 100),
+              standard: STANDARD,
+            });
+        } catch (e) {}
+        srSay(
+          (won ? "All rooms cleared. " : "Out of lives. ") +
+            "Score " +
+            S.score +
+            ", " +
+            stars +
+            " stars.",
+        );
+        show("result");
+      }
+
+      // ── Wiring ──
+      $("vocab-go").addEventListener("click", () => {
+        renderLevels();
+        show("level");
+      });
+      $("r-again").addEventListener("click", () => {
+        renderLevels();
+        show("level");
+      });
+      $("btn-place").addEventListener("click", placeBoard);
+      $("btn-remove").addEventListener("click", removeBoard);
+      $("btn-door").addEventListener("click", openDoor);
+
+      // Keyboard: B = lay a board, R = pull back, Enter/O = open door.
+      document.addEventListener("keydown", (e) => {
+        if (!$("screen-play").classList.contains("on")) return;
+        const k = e.key.toLowerCase();
+        if (k === "b") {
+          e.preventDefault();
+          placeBoard();
+        } else if (k === "r") {
+          e.preventDefault();
+          removeBoard();
+        } else if (k === "o" || e.key === "Enter") {
+          e.preventDefault();
+          openDoor();
+        }
+      });
+
+      // Re-layout (percent-based) on resize so overhang flags stay correct.
+      window.addEventListener("resize", () => {
+        if ($("screen-play").classList.contains("on") && S.cur)
+          renderCorridor();
+      });
+
+      renderVocab();
+    </script>
+
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
-  </body>
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <script src="/assets/game-access.js" defer></script>
+  <!-- gacc-injected:end -->
+</body>
 </html>

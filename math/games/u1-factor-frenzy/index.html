@@ -3,10 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Factor Frenzy — Lessons 1.1–1.3 Game | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
+    <title>Factor Frenzy — Prime Factorization Game | Neft Teacher</title>
     <meta
       name="description"
-      content="Catch-and-sort 2D arcade game for Grade 6 lessons 1.1–1.3: prime vs composite, greatest common factor, and least common multiple (6.NS.4)."
+      content="Factor Frenzy: a calm, self-paced Grade 6 game where you build factor trees to find a number's prime factorization — split each number into factors or mark it prime until every branch is prime (6.NS.4)."
     />
     <style>
       * {
@@ -14,24 +15,23 @@
         padding: 0;
         box-sizing: border-box;
       }
+      :root {
+        --teal: #0e8a7d;
+        --teal-bright: #12a596;
+        --gold: #d4952a;
+        --ink: #06202c;
+        --panel: #0f2b3c;
+        --line: #1f4a5b;
+        --comp: #5fb0e6;
+        --txt: #dff1f0;
+        --muted: #8fb6bf;
+      }
       body {
-        background: #0f2b3c;
-        overflow: hidden;
+        background: var(--panel);
+        min-height: 100vh;
         font-family: "Segoe UI", system-ui, sans-serif;
-      }
-      canvas {
-        display: block;
-        margin: 0 auto;
-        position: relative;
-        z-index: 1;
-      }
-      canvas:focus-visible {
-        outline: 3px solid #d4952a;
-        outline-offset: 4px;
-        border-radius: 8px;
-      }
-      canvas:focus:not(:focus-visible) {
-        outline: none;
+        color: var(--txt);
+        overflow-x: hidden;
       }
       #ff-bg {
         position: fixed;
@@ -69,6 +69,9 @@
           animation: none !important;
           opacity: 0.35 !important;
         }
+        * {
+          scroll-behavior: auto !important;
+        }
       }
       #ff-sr {
         position: absolute;
@@ -81,37 +84,543 @@
         white-space: nowrap;
         border: 0;
       }
-    </style>
-    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
-    <script>
-      // CDN fallback: if the local vendor copy failed, synchronously load Phaser
-      // from a mirror (document.write blocks parsing so the mirror is ready
-      // before the game script runs).
-      if (typeof Phaser === "undefined") {
-        document.write(
-          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
-        );
+      #wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 18px 16px 48px;
+        min-height: 100vh;
       }
-      // If both sources are unreachable, show a clear message instead of a blank page.
-      window.addEventListener("load", function () {
-        if (typeof Phaser === "undefined") {
-          document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#7fd6c8">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+      .screen {
+        display: none;
+      }
+      .screen.on {
+        display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
         }
-      });
-    </script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
-    <!-- nsr-injected:end -->
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      h1 {
+        font-size: clamp(1.6rem, 4vw, 2.3rem);
+        color: #fff;
+        letter-spacing: 0.5px;
+      }
+      .sub {
+        color: var(--muted);
+        margin-top: 4px;
+        font-size: 0.95rem;
+      }
+      .card {
+        background: rgba(13, 41, 56, 0.82);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px;
+        margin: 16px 0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+      }
+      .btn {
+        font:
+          600 1rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 13px 22px;
+        color: var(--ink);
+        background: var(--teal);
+        transition:
+          transform 0.12s,
+          background 0.12s,
+          box-shadow 0.12s;
+      }
+      .btn:hover {
+        background: var(--teal-bright);
+        transform: translateY(-1px);
+      }
+      .btn:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 3px;
+      }
+      .btn.ghost {
+        background: #1a3a48;
+        color: #9fc6cf;
+      }
+      .btn.ghost:hover {
+        background: #244c5c;
+      }
+      .btn.big {
+        padding: 18px 26px;
+        font-size: 1.1rem;
+      }
+      .vocab {
+        display: grid;
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .vrow {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .vterm {
+        color: var(--gold);
+        font-weight: 700;
+        min-width: 150px;
+      }
+      .vdef {
+        color: var(--txt);
+      }
+      .levels {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 680px) {
+        .levels {
+          grid-template-columns: 1fr;
+        }
+      }
+      .level-pick {
+        text-align: left;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+        padding: 18px;
+        background: #0c2532;
+        border: 1px solid var(--line);
+        color: var(--txt);
+        border-radius: 14px;
+        cursor: pointer;
+      }
+      .level-pick:hover {
+        border-color: var(--teal-bright);
+        background: #102f3f;
+      }
+      .level-pick b {
+        color: #fff;
+        font-size: 1.15rem;
+      }
+      .level-pick .tag {
+        color: var(--teal-bright);
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .level-pick .desc {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .hud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .hud .pill {
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-weight: 700;
+      }
+      .hud .pill small {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .target {
+        text-align: center;
+        margin: 6px 0 10px;
+      }
+      .target .nums {
+        font-size: clamp(1.3rem, 4.4vw, 1.9rem);
+        font-weight: 800;
+        color: #fff;
+      }
+      .target .nums span {
+        color: var(--gold);
+      }
+      .prompt {
+        color: var(--muted);
+        margin-top: 4px;
+        font-size: 0.95rem;
+      }
+
+      /* ── Factor tree ── */
+      .tree-wrap {
+        overflow-x: auto;
+        padding: 14px 0 6px;
+      }
+      .tree {
+        display: flex;
+        justify-content: center;
+        min-width: max-content;
+        margin: 0 auto;
+      }
+      .node {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .bubble {
+        font:
+          800 1.2rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        min-width: 54px;
+        height: 54px;
+        padding: 0 14px;
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        color: var(--ink);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          transform 0.1s,
+          box-shadow 0.1s;
+      }
+      .bubble.composite {
+        background: linear-gradient(180deg, #bfe6ff, var(--comp));
+        box-shadow: 0 4px 0 #2c6f9e;
+      }
+      .bubble.composite:hover {
+        transform: translateY(-2px);
+      }
+      .bubble.composite.sel {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow:
+          0 0 0 3px #fff,
+          0 5px 0 #2c6f9e;
+      }
+      .bubble.prime {
+        background: linear-gradient(180deg, #ffd98a, var(--gold));
+        box-shadow: 0 4px 0 #a86f16;
+        cursor: default;
+      }
+      .bubble.internal {
+        background: #16384a;
+        color: #9fc6cf;
+        border: 1px solid var(--line);
+        box-shadow: none;
+        cursor: default;
+      }
+      .bubble:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      /* org-chart connectors (always two children per split) */
+      .children {
+        display: flex;
+        justify-content: center;
+        gap: 26px;
+        padding-top: 28px;
+        position: relative;
+      }
+      .children::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2px;
+        height: 14px;
+        background: var(--line);
+      }
+      .children::after {
+        content: "";
+        position: absolute;
+        top: 14px;
+        left: 25%;
+        right: 25%;
+        height: 2px;
+        background: var(--line);
+      }
+      .children > .node {
+        position: relative;
+      }
+      .children > .node::before {
+        content: "";
+        position: absolute;
+        top: -14px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2px;
+        height: 14px;
+        background: var(--line);
+      }
+
+      /* ── Action palette (split / mark prime) ── */
+      .palette {
+        display: none;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+        margin: 14px 0 6px;
+      }
+      .palette.on {
+        display: flex;
+        animation: fade 0.2s ease;
+      }
+      .pal-q {
+        width: 100%;
+        text-align: center;
+        color: var(--txt);
+        font-weight: 600;
+      }
+      .pal-q b {
+        color: #fff;
+      }
+      .pal-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+      }
+      .pal-or {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .pair-chip {
+        font:
+          700 1rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 11px 16px;
+        color: var(--ink);
+        background: linear-gradient(180deg, #bfe6ff, var(--comp));
+        box-shadow: 0 3px 0 #2c6f9e;
+        transition: transform 0.1s;
+      }
+      .pair-chip:hover {
+        transform: translateY(-1px);
+      }
+      .prime-btn {
+        font:
+          700 1rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 11px 18px;
+        color: var(--ink);
+        background: linear-gradient(180deg, #ffd98a, var(--gold));
+        box-shadow: 0 3px 0 #a86f16;
+        transition: transform 0.1s;
+      }
+      .prime-btn:hover {
+        transform: translateY(-1px);
+      }
+      .pair-chip:focus-visible,
+      .prime-btn:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      .readout {
+        display: flex;
+        justify-content: center;
+        margin: 10px 0 2px;
+      }
+      .readout .r {
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 18px;
+        font-weight: 800;
+        font-size: 1.05rem;
+        color: var(--gold);
+      }
+      .feedback {
+        min-height: 24px;
+        text-align: center;
+        margin: 10px 0;
+        font-weight: 600;
+      }
+      .feedback.bad {
+        color: #f0a06b;
+      }
+      .feedback.good {
+        color: #79d39a;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-align: center;
+        margin-top: 6px;
+      }
+      .result-stars {
+        font-size: 2rem;
+        color: var(--gold);
+        letter-spacing: 6px;
+        text-align: center;
+        margin: 10px 0;
+      }
+      .result-stat {
+        display: flex;
+        justify-content: space-between;
+        max-width: 320px;
+        margin: 6px auto;
+        color: var(--muted);
+      }
+      .result-stat b {
+        color: var(--txt);
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
+      }
+    </style>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
+    <!-- Games-2D metadata source of truth (must load before the game script) -->
+    <script src="/assets/games2d-data.js"></script>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
   </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
     <div id="ff-sr" role="status" aria-live="polite"></div>
+
+    <main id="wrap">
+      <!-- VOCAB GATE -->
+      <section id="screen-vocab" class="screen on" aria-labelledby="vh">
+        <h1 id="vh">⚒️ Factor Frenzy</h1>
+        <p class="sub">Build factor trees · Prime factorization · 6.NS.4</p>
+        <div class="card">
+          <h2 style="color: #fff; font-size: 1.2rem">Words to know first</h2>
+          <div class="vocab" id="vocab-list"></div>
+          <button class="btn big" id="vocab-go">I'm ready →</button>
+        </div>
+      </section>
+
+      <!-- LEVEL SELECT -->
+      <section id="screen-level" class="screen" aria-labelledby="lh">
+        <h1 id="lh">Choose your level</h1>
+        <p class="sub">You can change this any time by playing again.</p>
+        <div class="card">
+          <div class="levels" id="level-list"></div>
+        </div>
+      </section>
+
+      <!-- PLAY -->
+      <section id="screen-play" class="screen" aria-labelledby="ph">
+        <h1 id="ph" style="position: absolute; left: -9999px">
+          Factor Frenzy play
+        </h1>
+        <div class="hud">
+          <span class="pill"
+            ><small>Round</small> <span id="hud-round">1</span>/<span
+              id="hud-total"
+              >4</span
+            ></span
+          >
+          <span class="pill"
+            ><small>Score</small> <span id="hud-score">0</span></span
+          >
+        </div>
+        <div class="card">
+          <div class="target">
+            <div class="nums">
+              Build the prime factorization of <span id="t-n">12</span>
+            </div>
+            <div class="prompt">
+              Tap a number. Split it into factors, or mark it prime — until
+              every branch is a prime.
+            </div>
+          </div>
+
+          <div class="tree-wrap">
+            <div
+              class="tree"
+              id="tree"
+              role="group"
+              aria-label="Factor tree"
+            ></div>
+          </div>
+
+          <div
+            class="palette"
+            id="palette"
+            role="group"
+            aria-label="Choose what to do with the number you tapped"
+          ></div>
+
+          <div class="readout"><span class="r" id="ro-fact">12 = …</span></div>
+
+          <div
+            class="feedback"
+            id="feedback"
+            role="status"
+            aria-live="assertive"
+          ></div>
+          <p class="hint" id="hint"></p>
+        </div>
+      </section>
+
+      <!-- RESULT -->
+      <section id="screen-result" class="screen" aria-labelledby="rh">
+        <h1 id="rh">Forge complete</h1>
+        <div class="card">
+          <div class="result-stars" id="r-stars">★★★</div>
+          <div class="result-stat"><span>Score</span><b id="r-score">0</b></div>
+          <div class="result-stat">
+            <span>Correct steps</span><b id="r-correct">0</b>
+          </div>
+          <div class="result-stat">
+            <span>Numbers factored</span><b id="r-rounds">0</b>
+          </div>
+          <div class="result-stat" id="r-high-row" style="display: none">
+            <span>★ New high score!</span><b id="r-high">0</b>
+          </div>
+          <div class="row">
+            <button class="btn big" id="r-again">Play again</button>
+            <a class="btn ghost big" href="/math/games/">All games</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
     <script>
-      // ── Decorative drifting motes behind the canvas (reduced-motion safe). ──
+      // ── Decorative drifting motes (reduced-motion safe) ──
       (function () {
         var host = document.getElementById("ff-bg");
         if (!host) return;
@@ -132,26 +641,71 @@
         }
       })();
     </script>
+
     <script>
       // ════════════════════════════════════════════════════════════════════
-      // FACTOR FRENZY — Catch & Sort  ·  Grade 6  ·  6.NS.4
-      // Lessons 1.1–1.3: prime vs composite, GCF, LCM.
+      //  FACTOR FRENZY — Factor Tree Builder  ·  Grade 6  ·  6.NS.4
       //
-      // MECHANIC: A "claw basket" you steer left/right along the bottom catches
-      //   a falling answer tile. Bins/lanes at the bottom are labeled; you must
-      //   position the basket under the CORRECT bin as the tile lands.
-      //   • Round 1 (Prime/Composite): a number falls; steer it into the PRIME
-      //     bin or the COMPOSITE bin.
-      //   • Round 2 (GCF): the GCF tile falls; bins are labeled with candidate
-      //     values — catch it in the bin equal to GCF(a,b).
-      //   • Round 3 (LCM): same, bins labeled with candidates — catch in LCM(a,b).
-      //   Rising difficulty: bigger numbers + faster fall as rounds advance.
+      //  Prime factorization, as a real mechanic: the player breaks a number
+      //  into a factor tree. Tap a number, then either SPLIT it into a factor
+      //  pair or MARK it PRIME. The number is factored when every leaf is a
+      //  prime the player has marked. No timer, no lives — wrong moves give a
+      //  gentle nudge and you try again. Stars reward doing it cleanly.
       // ════════════════════════════════════════════════════════════════════
-      const LS_KEY = "ff_factor_frenzy_highscore";
-      const W = 800,
-        H = 600;
-      const ACTIVITY_TITLE = "Factor Frenzy — Lessons 1.1–1.3";
       const STANDARD = "6.NS.4";
+      const ACTIVITY_TITLE = "Factor Frenzy — Prime Factorization";
+      const LS_KEY = "ff_factor_frenzy_highscore";
+      const ROUNDS = 5; // pools hold 5–6 numbers; 5 keeps every level full-length
+
+      // Self-contained content (this game is prime-factorization only, so it
+      // does not use the GCF/LCM framing in window.Games2DData).
+      const VOCAB = [
+        {
+          term: "factor",
+          defn: "A number that divides another number evenly, with nothing left over. 3 is a factor of 12 because 12 ÷ 3 = 4.",
+        },
+        {
+          term: "prime number",
+          defn: "A number greater than 1 whose only factors are 1 and itself, like 2, 3, 5, and 7. A prime cannot be split.",
+        },
+        {
+          term: "composite number",
+          defn: "A number with more than two factors, like 12 (1, 2, 3, 4, 6, 12). A composite can always be split into factors.",
+        },
+        {
+          term: "prime factorization",
+          defn: "Writing a number using only prime numbers multiplied together, like 12 = 2 × 2 × 3.",
+        },
+      ];
+
+      const TIERS = {
+        1: {
+          label: "Level 1",
+          sub: "Support",
+          name: "Apprentice Smith",
+          desc: "Smaller numbers · factor-pair help shown",
+        },
+        2: {
+          label: "Level 2",
+          sub: "On level",
+          name: "Journeyman Smith",
+          desc: "Bigger numbers · find the factors yourself",
+        },
+        3: {
+          label: "Level 3",
+          sub: "Enrichment",
+          name: "Master Smith",
+          desc: "Large numbers · watch for an already-prime",
+        },
+      };
+
+      // Curated number pools (clean, friendly factor structures).
+      const POOLS = {
+        1: [12, 18, 20, 24, 16, 28],
+        2: [36, 48, 60, 72, 54, 40],
+        3: [84, 90, 120, 100, 126],
+      };
+      const L3_PRIMES = [23, 29, 31, 37];
 
       // ── Tiny WebAudio SFX ──
       const SFX = {
@@ -159,8 +713,9 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (window.AudioContext ||
-                window.webkitAudioContext)();
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
             } catch (e) {}
         },
         play(t, f, d, v = 0.2) {
@@ -179,925 +734,452 @@
             o.stop(c.currentTime + d);
           } catch (e) {}
         },
-        correct() {
+        good() {
           this.play("sine", 660, 0.1, 0.3);
           this.play("sine", 880, 0.15, 0.25);
         },
-        wrong() {
-          this.play("sawtooth", 200, 0.25, 0.2);
-          this.play("sawtooth", 150, 0.3, 0.15);
-        },
-        tick() {
-          this.play("square", 600, 0.03, 0.07);
-        },
-        move() {
-          this.play("triangle", 320, 0.04, 0.05);
-        },
-        streak(n) {
-          const seq = [523, 659, 784, 988, 1175].slice(0, Math.min(n, 5));
-          seq.forEach((f, i) =>
-            setTimeout(() => this.play("sine", f, 0.12, 0.2), i * 55),
-          );
-        },
-        levelUp() {
-          [523, 659, 784, 1047].forEach((f, i) =>
-            setTimeout(() => this.play("sine", f, 0.15, 0.22), i * 70),
-          );
+        bad() {
+          this.play("sawtooth", 200, 0.22, 0.2);
         },
         win() {
-          [523, 659, 784, 1047, 1318].forEach((f, i) =>
-            setTimeout(() => this.play("sine", f, 0.22, 0.28), i * 110),
-          );
-        },
-        lose() {
-          [400, 350, 300, 200].forEach((f, i) =>
-            setTimeout(() => this.play("sawtooth", f, 0.28, 0.15), i * 170),
+          [523, 659, 784, 1046].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.18, 0.25), i * 90),
           );
         },
       };
 
       // ── Math helpers ──
-      function randInt(a, b) {
-        return Math.floor(Math.random() * (b - a + 1)) + a;
+      function isPrime(n) {
+        if (n < 2) return false;
+        for (let p = 2; p * p <= n; p++) if (n % p === 0) return false;
+        return true;
+      }
+      function factorPairs(n) {
+        // non-trivial pairs [a, b] with 1 < a <= b and a * b === n
+        const out = [];
+        for (let a = 2; a * a <= n; a++) if (n % a === 0) out.push([a, n / a]);
+        return out;
+      }
+      function primeFactors(n) {
+        const f = {};
+        let m = n;
+        for (let p = 2; p * p <= m; p++)
+          while (m % p === 0) {
+            f[p] = (f[p] || 0) + 1;
+            m /= p;
+          }
+        if (m > 1) f[m] = (f[m] || 0) + 1;
+        return f;
+      }
+      function primeListOf(n) {
+        const f = primeFactors(n);
+        const arr = [];
+        Object.keys(f)
+          .map(Number)
+          .sort((a, b) => a - b)
+          .forEach((p) => {
+            for (let i = 0; i < f[p]; i++) arr.push(p);
+          });
+        return arr;
+      }
+      function sup(n) {
+        const map = { 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷" };
+        return map[n] || "^" + n;
+      }
+      function exponentForm(primes) {
+        const f = {};
+        primes.forEach((p) => (f[p] = (f[p] || 0) + 1));
+        return Object.keys(f)
+          .map(Number)
+          .sort((a, b) => a - b)
+          .map((p) => (f[p] > 1 ? p + sup(f[p]) : "" + p))
+          .join(" × ");
       }
       function shuffle(a) {
-        const r = a.slice();
-        for (let i = r.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [r[i], r[j]] = [r[j], r[i]];
-        }
-        return r;
-      }
-      function gcd(a, b) {
-        a = Math.abs(a);
-        b = Math.abs(b);
-        while (b) {
-          const t = b;
-          b = a % b;
-          a = t;
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = (Math.random() * (i + 1)) | 0;
+          [a[i], a[j]] = [a[j], a[i]];
         }
         return a;
       }
-      function lcm(a, b) {
-        return (a / gcd(a, b)) * b;
-      }
-      function isPrime(n) {
-        if (n < 2) return false;
-        for (let i = 2; i * i <= n; i++) if (n % i === 0) return false;
-        return true;
-      }
 
-      // ── Question generator ──
-      // round: 1 = prime/composite, 2 = GCF, 3 = LCM.
-      // Returns: { round, tag, prompt, why, bins:[label...], correctBin, fallText }
-      //   bins   = array of bin labels (2 for round 1, 3 for rounds 2-3)
-      //   correctBin = index into bins of the right bin
-      //   fallText = the tile that drops (number for R1, the answer for R2/R3)
-      function genQuestion(round) {
-        if (round === 1) {
-          const n = randInt(2, 49);
-          const prime = isPrime(n);
-          return {
-            round: 1,
-            tag: "Prime or Composite?",
-            prompt: "Sort " + n,
-            why: prime
-              ? n + " is PRIME — only factors are 1 and " + n + "."
-              : n + " is COMPOSITE — it has more than two factors.",
-            bins: ["PRIME", "COMPOSITE"],
-            correctBin: prime ? 0 : 1,
-            fallText: String(n),
-          };
-        }
-        if (round === 2) {
-          let a = randInt(6, 24),
-            b = randInt(6, 24);
-          if (a === b) b = a + randInt(1, 4);
-          const g = gcd(a, b);
-          const labels = new Set([g]);
-          let guard = 0;
-          while (labels.size < 3 && guard++ < 60) {
-            const cand = randInt(1, Math.max(a, b));
-            if (cand !== g) labels.add(cand);
+      // ── Tree model ──
+      let nodeUid = 0;
+      function makeNode(value) {
+        return { id: "n" + nodeUid++, value, children: null, prime: false };
+      }
+      function makePuzzle(n) {
+        return { n, root: makeNode(n), targetPrimes: primeListOf(n) };
+      }
+      function findNode(node, id) {
+        if (node.id === id) return node;
+        if (node.children)
+          for (const c of node.children) {
+            const r = findNode(c, id);
+            if (r) return r;
           }
-          const bins = shuffle(Array.from(labels)).map(String);
-          return {
-            round: 2,
-            tag: "Greatest Common Factor",
-            prompt: "GCF of " + a + " and " + b,
-            why: "GCF(" + a + ", " + b + ") = " + g + ".",
-            bins: bins,
-            correctBin: bins.indexOf(String(g)),
-            fallText: "GCF",
-          };
-        }
-        // round 3 — LCM
-        let a = randInt(2, 10),
-          b = randInt(2, 10);
-        if (a === b) b = a + 1;
-        const l = lcm(a, b);
-        const labels = new Set([l]);
-        let guard = 0;
-        while (labels.size < 3 && guard++ < 80) {
-          const cand =
-            Math.random() < 0.5 ? a * randInt(1, 7) : b * randInt(1, 7);
-          if (cand !== l && cand > 0) labels.add(cand);
-        }
-        while (labels.size < 3 && guard++ < 120) {
-          const cand = l + randInt(1, 10);
-          if (cand !== l) labels.add(cand);
-        }
-        const bins = shuffle(Array.from(labels)).map(String);
-        return {
-          round: 3,
-          tag: "Least Common Multiple",
-          prompt: "LCM of " + a + " and " + b,
-          why: "LCM(" + a + ", " + b + ") = " + l + ".",
-          bins: bins,
-          correctBin: bins.indexOf(String(l)),
-          fallText: "LCM",
-        };
+        return null;
+      }
+      function leaves(node, acc) {
+        acc = acc || [];
+        if (!node.children) acc.push(node);
+        else node.children.forEach((c) => leaves(c, acc));
+        return acc;
+      }
+      function isComplete(root) {
+        return leaves(root).every((l) => l.prime && isPrime(l.value));
+      }
+      function lockedPrimes() {
+        return leaves(S.cur.root)
+          .filter((l) => l.prime)
+          .map((l) => l.value)
+          .sort((a, b) => a - b);
       }
 
-      function srSay(msg) {
-        try {
-          const el = document.getElementById("ff-sr");
-          if (el) el.textContent = msg;
-        } catch (e) {}
-      }
-
-      const config = {
-        type: Phaser.AUTO,
-        width: W,
-        height: H,
-        parent: document.body,
-        backgroundColor: "#0f2b3c",
-        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [],
+      // ── State ──
+      const S = {
+        level: 1,
+        score: 0,
+        round: 0,
+        mistakes: 0,
+        correctActions: 0,
+        totalActions: 0,
+        puzzles: [],
+        cur: null,
+        selected: null,
       };
 
-      // ════════ BOOT ════════
-      class BootScene extends Phaser.Scene {
-        constructor() {
-          super("Boot");
+      const $ = (id) => document.getElementById(id);
+      const srSay = (m) => {
+        const el = $("ff-sr");
+        if (el) {
+          el.textContent = "";
+          setTimeout(() => (el.textContent = m), 30);
         }
-        create() {
-          const g = this.make.graphics({ add: false });
-          g.fillStyle(0xffffff);
-          g.fillCircle(4, 4, 4);
-          g.generateTexture("dot", 8, 8);
-          g.clear();
-          g.fillStyle(0xffffff);
-          g.fillRect(0, 0, 7, 4);
-          g.generateTexture("confetti", 7, 4);
-          g.destroy();
-          this.scene.start("Title");
-        }
+      };
+      function show(screen) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("on"));
+        $("screen-" + screen).classList.add("on");
+      }
+      function flash(msg, cls) {
+        const f = $("feedback");
+        f.textContent = msg;
+        f.className = "feedback " + cls;
+        srSay(msg);
       }
 
-      // ════════ TITLE ════════
-      class TitleScene extends Phaser.Scene {
-        constructor() {
-          super("Title");
-        }
-        create() {
-          const cx = W / 2;
-          this.reduce =
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          this.add.rectangle(cx, H / 2, W, H, 0x0f2b3c);
-
-          this.add
-            .text(cx, 120, "FACTOR", {
-              fontSize: "70px",
-              fontFamily: "Impact, sans-serif",
-              color: "#d4952a",
-              stroke: "#08202c",
-              strokeThickness: 6,
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(cx, 188, "FRENZY", {
-              fontSize: "70px",
-              fontFamily: "Impact, sans-serif",
-              color: "#0e8a7d",
-              stroke: "#08202c",
-              strokeThickness: 6,
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(cx, 245, "Catch & Sort  ·  Lessons 1.1–1.3  ·  6.NS.4", {
-              fontSize: "16px",
-              color: "#9fc6cf",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(
-              cx,
-              300,
-              "Steer the basket to catch each falling tile in the\nright bin: PRIME vs COMPOSITE, then GCF, then LCM.",
-              { fontSize: "15px", color: "#7fa8b3", align: "center" },
-            )
-            .setOrigin(0.5);
-          this.add
-            .text(cx, 358, "← → or A/D to move   ·   tap/drag on touch", {
-              fontSize: "14px",
-              color: "#6b97a3",
-            })
-            .setOrigin(0.5);
-
-          const hs = localStorage.getItem(LS_KEY);
-          if (hs)
-            this.add
-              .text(cx, 392, "HIGH SCORE: " + hs, {
-                fontSize: "15px",
-                color: "#d4952a",
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5);
-
-          const btn = this.add
-            .rectangle(cx, 450, 260, 56, 0x0e8a7d)
-            .setInteractive({ useHandCursor: true });
-          const btnT = this.add
-            .text(cx, 450, "START GAME ▶", {
-              fontSize: "22px",
-              fontStyle: "bold",
-              color: "#06202c",
-            })
-            .setOrigin(0.5);
-          if (!this.reduce)
-            this.tweens.add({
-              targets: [btn, btnT],
-              scaleX: 1.05,
-              scaleY: 1.05,
-              duration: 800,
-              yoyo: true,
-              repeat: -1,
-            });
-          const go = () => {
-            SFX.init();
-            SFX.tick();
-            this.cameras.main.fadeOut(300);
-            this.time.delayedCall(300, () => this.scene.start("Game"));
-          };
-          btn.on("pointerover", () => btn.setFillStyle(0x12a596));
-          btn.on("pointerout", () => btn.setFillStyle(0x0e8a7d));
-          btn.on("pointerdown", go);
-          this.input.keyboard.on("keydown-SPACE", go);
-          this.input.keyboard.on("keydown-ENTER", go);
-
-          const hub = this.add
-            .text(cx, 555, "← Back to Games hub", {
-              fontSize: "15px",
-              fontStyle: "bold",
-              color: "#6b97a3",
-            })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true });
-          hub.on("pointerover", () => hub.setColor("#0e8a7d"));
-          hub.on("pointerout", () => hub.setColor("#6b97a3"));
-          hub.on("pointerdown", () => (window.location.href = "/math/games/"));
-
-          this.cameras.main.fadeIn(400);
-        }
+      // ── Vocab gate ──
+      function renderVocab() {
+        $("vocab-list").innerHTML = VOCAB.map(
+          (v) =>
+            `<div class="vrow"><span class="vterm">${v.term}</span><span class="vdef">${v.defn}</span></div>`,
+        ).join("");
       }
 
-      // ════════ GAME ════════
-      class GameScene extends Phaser.Scene {
-        constructor() {
-          super("Game");
-        }
-        init() {
-          this.reduce =
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          this.score = 0;
-          this.lives = 3;
-          this.streak = 0;
-          this.maxStreak = 0;
-          this.correct = 0;
-          this.attempted = 0;
-          this.qIndex = 0;
-          this.TOTAL = 12; // 4 per round × 3 rounds
-          this.level = 1;
-          this.busy = false;
-          this.tile = null;
-        }
-
-        roundFor(i) {
-          return i < 4 ? 1 : i < 8 ? 2 : 3;
-        }
-
-        create() {
-          const cx = W / 2;
-          this.add.rectangle(cx, H / 2, W, H, 0x0f2b3c);
-          // subtle top band
-          this.add.rectangle(cx, 26, W, 52, 0x0a2230);
-
-          // HUD
-          this.scoreText = this.add.text(16, 12, "Score: 0", {
-            fontSize: "20px",
-            color: "#0e8a7d",
-            fontStyle: "bold",
-          });
-          this.livesText = this.add
-            .text(W - 16, 12, "❤❤❤", {
-              fontSize: "20px",
-              color: "#c45a3c",
-            })
-            .setOrigin(1, 0);
-          this.streakText = this.add
-            .text(cx, 12, "Streak: 0", {
-              fontSize: "16px",
-              color: "#d4952a",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5, 0);
-          this.levelText = this.add
-            .text(cx, 34, "", { fontSize: "13px", color: "#7fa8b3" })
-            .setOrigin(0.5, 0);
-
-          // Prompt panel
-          this.tagText = this.add
-            .text(cx, 74, "", {
-              fontSize: "14px",
-              color: "#9fc6cf",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-          this.promptText = this.add
-            .text(cx, 104, "", {
-              fontSize: "30px",
-              color: "#ffffff",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-
-          // Bin geometry
-          this.binY = H - 70;
-          this.binH = 80;
-          this.binTopY = H - 110; // catch line
-          this.binGraphics = this.add.graphics();
-          this.binTexts = [];
-          this.bins = []; // {x, w, label, correct}
-
-          // Basket
-          this.basketW = 96;
-          this.basketX = cx;
-          this.basket = this.add.container(this.basketX, this.binTopY - 24);
-          const bBody = this.add.graphics();
-          bBody.fillStyle(0xd4952a, 1);
-          bBody.fillRoundedRect(
-            -this.basketW / 2,
-            -8,
-            this.basketW,
-            34,
-            { tl: 4, tr: 4, bl: 14, br: 14 },
+      // ── Level select ──
+      function renderLevels() {
+        $("level-list").innerHTML = Object.keys(TIERS)
+          .map((k) => {
+            const t = TIERS[k];
+            return `<button class="level-pick" data-level="${k}">
+            <span class="tag">${t.label} · ${t.sub}</span>
+            <b>${t.name}</b>
+            <span class="desc">${t.desc}</span>
+          </button>`;
+          })
+          .join("");
+        $("level-list")
+          .querySelectorAll("[data-level]")
+          .forEach((el) =>
+            el.addEventListener("click", () =>
+              startGame(Number(el.dataset.level)),
+            ),
           );
-          bBody.lineStyle(3, 0xffffff, 0.9);
-          bBody.strokeRoundedRect(-this.basketW / 2, -8, this.basketW, 34, {
-            tl: 4,
-            tr: 4,
-            bl: 14,
-            br: 14,
-          });
-          this.basket.add(bBody);
-          this.basket.add(
-            this.add
-              .text(0, 9, "▲", { fontSize: "16px", color: "#ffffff" })
-              .setOrigin(0.5),
-          );
-
-          // Particles
-          this.confetti = this.add
-            .particles(0, 0, "confetti", {
-              speed: { min: 80, max: 280 },
-              angle: { min: 0, max: 360 },
-              scale: { start: 1.4, end: 0.2 },
-              rotate: { min: 0, max: 360 },
-              lifespan: 1100,
-              gravityY: 260,
-              emitting: false,
-              quantity: 24,
-              tint: [0x0e8a7d, 0x1a6fb5, 0xd4952a, 0x2d874b, 0xc45a3c],
-            })
-            .setDepth(30);
-          this.redFlash = this.add
-            .rectangle(cx, H / 2, W, H, 0xc45a3c, 0)
-            .setDepth(28);
-
-          this.feedback = this.add
-            .text(cx, 150, "", {
-              fontSize: "16px",
-              color: "#fff",
-              fontStyle: "bold",
-              align: "center",
-              wordWrap: { width: W - 80 },
-            })
-            .setOrigin(0.5)
-            .setAlpha(0)
-            .setDepth(20);
-
-          // Input — keyboard
-          this.cursors = this.input.keyboard.createCursorKeys();
-          this.keyA = this.input.keyboard.addKey("A");
-          this.keyD = this.input.keyboard.addKey("D");
-          // Input — pointer drag/tap to set target X
-          this.pointerTargetX = null;
-          this.input.on("pointermove", (p) => {
-            if (p.isDown) this.pointerTargetX = p.worldX;
-          });
-          this.input.on("pointerdown", (p) => {
-            this.pointerTargetX = p.worldX;
-          });
-          this.input.on("pointerup", () => {
-            this.pointerTargetX = null;
-          });
-
-          this.fallSpeedBase = 70; // px/sec, scales with level
-          this.nextQuestion();
-          this.cameras.main.fadeIn(350);
-        }
-
-        layoutBins(labels, correctBin) {
-          this.binGraphics.clear();
-          this.binTexts.forEach((t) => t.destroy());
-          this.binTexts = [];
-          this.bins = [];
-          const n = labels.length;
-          const margin = 24;
-          const gap = 14;
-          const totalW = W - margin * 2 - gap * (n - 1);
-          const binW = totalW / n;
-          const palette = [0x1a6fb5, 0x0e8a7d, 0x2d874b];
-          for (let i = 0; i < n; i++) {
-            const x = margin + i * (binW + gap) + binW / 2;
-            const col = palette[i % palette.length];
-            this.binGraphics.fillStyle(col, 0.32);
-            this.binGraphics.fillRoundedRect(
-              x - binW / 2,
-              this.binY - this.binH / 2,
-              binW,
-              this.binH,
-              10,
-            );
-            this.binGraphics.lineStyle(3, col, 0.95);
-            this.binGraphics.strokeRoundedRect(
-              x - binW / 2,
-              this.binY - this.binH / 2,
-              binW,
-              this.binH,
-              10,
-            );
-            const t = this.add
-              .text(x, this.binY, String(labels[i]), {
-                fontSize: n === 2 ? "26px" : "30px",
-                color: "#ffffff",
-                fontStyle: "bold",
-                align: "center",
-                wordWrap: { width: binW - 12 },
-              })
-              .setOrigin(0.5);
-            this.binTexts.push(t);
-            this.bins.push({
-              x: x,
-              w: binW,
-              label: labels[i],
-              correct: i === correctBin,
-            });
-          }
-        }
-
-        nextQuestion() {
-          if (this.qIndex >= this.TOTAL || this.lives <= 0) {
-            this.endGame();
-            return;
-          }
-          const round = this.roundFor(this.qIndex);
-          const newLevel = round;
-          if (newLevel !== this.level && this.qIndex > 0) {
-            SFX.levelUp();
-          }
-          this.level = newLevel;
-          this.q = genQuestion(round);
-          this.qIndex++;
-          this.attempted = this.qIndex; // will reconcile on miss/end
-          this.busy = false;
-
-          this.tagText.setText(this.q.tag);
-          this.promptText.setText(
-            this.q.prompt + "   (" + this.qIndex + "/" + this.TOTAL + ")",
-          );
-          this.levelText.setText("Round " + round + " of 3");
-          this.feedback.setAlpha(0);
-          this.layoutBins(this.q.bins, this.q.correctBin);
-
-          srSay(
-            this.q.tag +
-              ". " +
-              this.q.prompt +
-              ". Bins: " +
-              this.q.bins.join(", ") +
-              ". Steer the basket to the correct bin.",
-          );
-
-          // Falling tile
-          const startX = randInt(120, W - 120);
-          if (this.tile) this.tile.destroy();
-          this.tile = this.add.container(startX, 184);
-          const tg = this.add.graphics();
-          tg.fillStyle(0xfdf6e9, 1);
-          tg.fillRoundedRect(-34, -28, 68, 56, 10);
-          tg.lineStyle(3, 0xd4952a, 1);
-          tg.strokeRoundedRect(-34, -28, 68, 56, 10);
-          this.tile.add(tg);
-          this.tile.add(
-            this.add
-              .text(0, 0, this.q.fallText, {
-                fontSize: this.q.fallText.length > 2 ? "20px" : "28px",
-                color: "#0f2b3c",
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5),
-          );
-          this.tileVY =
-            (this.fallSpeedBase + (this.level - 1) * 26) / 1000; // px/ms
-          this.tileLanded = false;
-        }
-
-        update(time, delta) {
-          if (this.busy || !this.tile || this.tileLanded) return;
-          // Move basket
-          const step = 0.42 * delta;
-          let moved = false;
-          if (this.cursors.left.isDown || this.keyA.isDown) {
-            this.basketX -= step;
-            moved = true;
-          }
-          if (this.cursors.right.isDown || this.keyD.isDown) {
-            this.basketX += step;
-            moved = true;
-          }
-          if (this.pointerTargetX != null) {
-            const dx = this.pointerTargetX - this.basketX;
-            this.basketX += Phaser.Math.Clamp(dx, -step, step);
-          }
-          this.basketX = Phaser.Math.Clamp(
-            this.basketX,
-            this.basketW / 2 + 6,
-            W - this.basketW / 2 - 6,
-          );
-          this.basket.x = this.basketX;
-
-          // Fall tile
-          this.tile.y += this.tileVY * delta;
-          // Land when tile bottom reaches the catch line
-          if (this.tile.y + 28 >= this.binTopY) {
-            this.tileLanded = true;
-            this.resolve();
-          }
-        }
-
-        binUnderBasket() {
-          // Which bin's horizontal span contains the basket center?
-          for (let i = 0; i < this.bins.length; i++) {
-            const b = this.bins[i];
-            if (
-              this.basketX >= b.x - b.w / 2 &&
-              this.basketX <= b.x + b.w / 2
-            )
-              return i;
-          }
-          // fallback: nearest
-          let best = 0,
-            bd = Infinity;
-          this.bins.forEach((b, i) => {
-            const d = Math.abs(b.x - this.basketX);
-            if (d < bd) {
-              bd = d;
-              best = i;
-            }
-          });
-          return best;
-        }
-
-        resolve() {
-          this.busy = true;
-          const chosen = this.binUnderBasket();
-          const right = chosen === this.q.correctBin;
-          SFX.init();
-
-          // drop tile into chosen bin visually
-          const targetBin = this.bins[chosen];
-          this.tweens.add({
-            targets: this.tile,
-            x: targetBin.x,
-            y: this.binY,
-            duration: this.reduce ? 1 : 180,
-            ease: "Quad.easeIn",
-          });
-
-          if (right) {
-            this.correct++;
-            this.streak++;
-            this.maxStreak = Math.max(this.maxStreak, this.streak);
-            const bonus = Math.min(this.streak, 5) * 2;
-            const gained = 10 + bonus;
-            this.score += gained;
-            SFX.correct();
-            if (this.streak >= 3) SFX.streak(this.streak);
-            this.confetti.emitParticleAt(targetBin.x, this.binY - 30);
-            this.flash(
-              "✓ +" +
-                gained +
-                (this.streak > 1 ? "   🔥 Streak ×" + this.streak : ""),
-              "#2d874b",
-            );
-            srSay("Correct! " + this.q.why);
-            try {
-              if (window.GameFX && GameFX.celebrate && this.streak >= 3) {
-                GameFX.celebrate(document.querySelector("canvas"));
-              }
-            } catch (e) {}
-          } else {
-            this.streak = 0;
-            this.lives--;
-            SFX.wrong();
-            this.doRedFlash();
-            this.flash(
-              "✗ " + this.q.why + "  (−1 ❤)",
-              "#c45a3c",
-            );
-            // highlight the correct bin
-            const cb = this.bins[this.q.correctBin];
-            const hl = this.add
-              .rectangle(cb.x, this.binY, cb.w, this.binH, 0x2d874b, 0.25)
-              .setDepth(5);
-            this.tweens.add({
-              targets: hl,
-              alpha: 0,
-              duration: 900,
-              onComplete: () => hl.destroy(),
-            });
-            srSay("Not quite. " + this.q.why);
-          }
-          this.updateHUD();
-
-          this.time.delayedCall(right ? 850 : 1500, () => {
-            this.nextQuestion();
-          });
-        }
-
-        flash(msg, color) {
-          this.feedback.setText(msg).setColor(color).setAlpha(1).setScale(0.8);
-          this.tweens.add({
-            targets: this.feedback,
-            scale: 1,
-            duration: this.reduce ? 1 : 220,
-            ease: "Back.easeOut",
-          });
-        }
-
-        doRedFlash() {
-          if (this.reduce) return;
-          this.redFlash.setAlpha(0.35);
-          this.tweens.add({
-            targets: this.redFlash,
-            alpha: 0,
-            duration: 350,
-          });
-        }
-
-        updateHUD() {
-          this.scoreText.setText("Score: " + this.score);
-          this.streakText.setText("Streak: " + this.streak);
-          this.livesText.setText(
-            this.lives > 0 ? "❤".repeat(this.lives) : "—",
-          );
-        }
-
-        endGame() {
-          const attempted = this.qIndex; // questions actually shown
-          this.scene.start("Result", {
-            score: this.score,
-            correct: this.correct,
-            attempted: attempted,
-            maxStreak: this.maxStreak,
-            outOfLives: this.lives <= 0,
-          });
-        }
       }
 
-      // ════════ RESULT ════════
-      class ResultScene extends Phaser.Scene {
-        constructor() {
-          super("Result");
-        }
-        init(data) {
-          this.d = data;
-        }
-        create() {
-          const cx = W / 2;
-          const d = this.d;
-          this.reduce =
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          this.add.rectangle(cx, H / 2, W, H, 0x0f2b3c);
-
-          const pct = d.attempted ? (d.correct / d.attempted) * 100 : 0;
-          const stars = pct >= 90 ? 3 : pct >= 65 ? 2 : pct >= 40 ? 1 : 0;
-          const won = !d.outOfLives;
-
-          if (stars >= 2) SFX.win();
-          else SFX.lose();
-
-          this.add
-            .text(cx, 70, won ? "ROUND COMPLETE!" : "OUT OF LIVES", {
-              fontSize: "38px",
-              fontStyle: "bold",
-              color: won ? "#0e8a7d" : "#c45a3c",
-              stroke: "#08202c",
-              strokeThickness: 4,
-            })
-            .setOrigin(0.5);
-
-          // stars
-          for (let i = 0; i < 3; i++) {
-            const sx = cx - 70 + i * 70;
-            this.add
-              .text(sx, 150, "☆", { fontSize: "54px", color: "#33505a" })
-              .setOrigin(0.5);
-            if (i < stars) {
-              const s = this.add
-                .text(sx, 150, "★", { fontSize: "54px", color: "#d4952a" })
-                .setOrigin(0.5)
-                .setScale(0);
-              this.tweens.add({
-                targets: s,
-                scale: 1,
-                duration: this.reduce ? 1 : 380,
-                delay: 250 + i * 220,
-                ease: "Back.easeOut",
-              });
-            }
-          }
-
-          const prevHigh = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
-          const isNewHigh = d.score > prevHigh;
-          if (isNewHigh && d.score > 0)
-            localStorage.setItem(LS_KEY, String(d.score));
-
-          const stats = [
-            ["Final Score", String(d.score)],
-            ["Correct", d.correct + " / " + d.attempted],
-            ["Accuracy", Math.round(pct) + "%"],
-            ["Best Streak", "×" + d.maxStreak],
-          ];
-          stats.forEach((s, i) => {
-            const y = 230 + i * 42;
-            this.add.rectangle(cx, y, 380, 34, 0x0a2230, 0.85);
-            this.add
-              .text(cx - 165, y, s[0], { fontSize: "15px", color: "#7fa8b3" })
-              .setOrigin(0, 0.5);
-            this.add
-              .text(cx + 165, y, s[1], {
-                fontSize: "17px",
-                color: "#0e8a7d",
-                fontStyle: "bold",
-              })
-              .setOrigin(1, 0.5);
-          });
-
-          if (isNewHigh && d.score > 0)
-            this.add
-              .text(cx, 415, "★ NEW HIGH SCORE! ★", {
-                fontSize: "18px",
-                color: "#d4952a",
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5);
-
-          // EduPulse (guarded)
-          try {
-            window.EduPulse &&
-              EduPulse.record({
-                activityTitle: ACTIVITY_TITLE,
-                score: d.score,
-                stars: stars,
-                problemsCorrect: d.correct,
-                problemsAttempted: d.attempted,
-                percent: Math.round(pct),
-                standard: STANDARD,
-              });
-          } catch (e) {}
-
-          srSay(
-            (won ? "Round complete. " : "Out of lives. ") +
-              "Score " +
-              d.score +
-              ", " +
-              d.correct +
-              " of " +
-              d.attempted +
-              " correct, " +
-              stars +
-              " stars.",
-          );
-
-          const retry = this.add
-            .rectangle(cx - 95, 470, 170, 46, 0x0e8a7d)
-            .setInteractive({ useHandCursor: true });
-          this.add
-            .text(cx - 95, 470, "PLAY AGAIN", {
-              fontSize: "17px",
-              fontStyle: "bold",
-              color: "#06202c",
-            })
-            .setOrigin(0.5);
-          retry.on("pointerover", () => retry.setFillStyle(0x12a596));
-          retry.on("pointerout", () => retry.setFillStyle(0x0e8a7d));
-          retry.on("pointerdown", () => {
-            SFX.tick();
-            this.scene.start("Game");
-          });
-
-          const hub = this.add
-            .rectangle(cx + 95, 470, 170, 46, 0x1a3a48)
-            .setInteractive({ useHandCursor: true });
-          this.add
-            .text(cx + 95, 470, "ALL GAMES", {
-              fontSize: "17px",
-              fontStyle: "bold",
-              color: "#9fc6cf",
-            })
-            .setOrigin(0.5);
-          hub.on("pointerover", () => hub.setFillStyle(0x244c5c));
-          hub.on("pointerout", () => hub.setFillStyle(0x1a3a48));
-          hub.on("pointerdown", () => (window.location.href = "/math/games/"));
-
-          this.input.keyboard.on("keydown-SPACE", () =>
-            this.scene.start("Game"),
-          );
-
-          if (won && stars >= 2 && !this.reduce) {
-            const p = this.add
-              .particles(0, 0, "confetti", {
-                speed: { min: 60, max: 240 },
-                angle: { min: 0, max: 360 },
-                scale: { start: 1.4, end: 0 },
-                rotate: { min: 0, max: 360 },
-                lifespan: 1500,
-                gravityY: 160,
-                quantity: 20,
-                tint: [0x0e8a7d, 0x1a6fb5, 0xd4952a, 0x2d874b],
-              })
-              .setDepth(40);
-            for (let i = 0; i < 5; i++)
-              this.time.delayedCall(i * 280, () =>
-                p.emitParticleAt(randInt(120, W - 120), randInt(40, 140)),
-              );
-          }
-
-          this.cameras.main.fadeIn(400);
-        }
+      // ── Game flow ──
+      function buildRounds(level) {
+        const picks = shuffle((POOLS[level] || POOLS[1]).slice()).slice(
+          0,
+          ROUNDS,
+        );
+        // Level 3 guarantees an "already prime" round so marking the root
+        // prime is sometimes the right first move.
+        if (level === 3 && !picks.some(isPrime))
+          picks[ROUNDS - 1] = shuffle(L3_PRIMES.slice())[0];
+        return shuffle(picks);
       }
 
-      config.scene = [BootScene, TitleScene, GameScene, ResultScene];
-      const game = new Phaser.Game(config);
+      function startGame(level) {
+        SFX.init();
+        S.level = level;
+        S.score = 0;
+        S.round = 0;
+        S.mistakes = 0;
+        S.correctActions = 0;
+        S.totalActions = 0;
+        S.puzzles = buildRounds(level).map(makePuzzle);
+        $("hud-total").textContent = ROUNDS;
+        show("play");
+        loadRound(0);
+      }
 
-      // ── Canvas accessibility wiring ──
-      game.events.once("ready", function () {
-        try {
-          const cv = game.canvas;
-          if (!cv) return;
-          cv.setAttribute("role", "application");
-          cv.setAttribute(
+      function loadRound(i) {
+        S.round = i;
+        S.cur = S.puzzles[i];
+        S.selected = null;
+        $("hud-round").textContent = i + 1;
+        $("hud-score").textContent = S.score;
+        $("t-n").textContent = S.cur.n;
+        $("feedback").textContent = "";
+        $("feedback").className = "feedback";
+        $("hint").textContent =
+          S.level === 1
+            ? "Tap the number. If it can be split, pick a factor pair. If it’s prime, mark it ✓."
+            : "Break each number down to primes. Decide: is it prime, or can it still be split?";
+        renderTree();
+        renderPalette();
+        updateReadout();
+        srSay(`Round ${i + 1}. Build the prime factorization of ${S.cur.n}.`);
+      }
+
+      // ── Tree rendering ──
+      function renderNode(node) {
+        const wrap = document.createElement("div");
+        wrap.className = "node";
+        const b = document.createElement("button");
+        b.className = "bubble";
+        b.textContent = node.value;
+        if (node.children) {
+          b.classList.add("internal");
+          b.disabled = true;
+          b.setAttribute("aria-label", node.value + ", already split");
+        } else if (node.prime) {
+          b.classList.add("prime");
+          b.disabled = true;
+          b.setAttribute("aria-label", node.value + ", prime, locked in");
+        } else {
+          b.classList.add("composite");
+          if (S.selected === node.id) b.classList.add("sel");
+          b.setAttribute(
             "aria-label",
-            "Factor Frenzy catch-and-sort math game. Steer the basket left and " +
-              "right with the arrow keys or A and D to catch each falling tile in " +
-              "the correct bin: prime versus composite, then greatest common " +
-              "factor, then least common multiple. Press Space to start.",
+            node.value + ", tap to split it or mark it prime",
           );
-          cv.setAttribute("aria-roledescription", "math game");
-          if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
-          // Focus the canvas on pointer down so keyboard controls work immediately.
-          cv.addEventListener("pointerdown", function () {
-            try {
-              cv.focus();
-            } catch (e) {}
-          });
+          b.addEventListener("click", () => selectNode(node.id));
+        }
+        wrap.appendChild(b);
+        if (node.children) {
+          const ch = document.createElement("div");
+          ch.className = "children";
+          node.children.forEach((c) => ch.appendChild(renderNode(c)));
+          wrap.appendChild(ch);
+        }
+        return wrap;
+      }
+      function renderTree() {
+        const host = $("tree");
+        host.innerHTML = "";
+        host.appendChild(renderNode(S.cur.root));
+      }
+
+      // ── Action palette ──
+      function selectNode(id) {
+        S.selected = S.selected === id ? null : id;
+        renderTree();
+        renderPalette();
+        if (S.selected) {
+          const node = findNode(S.cur.root, id);
+          srSay(`You tapped ${node.value}. Is it prime, or can it be split?`);
+        }
+      }
+      function renderPalette() {
+        const host = $("palette");
+        if (!S.selected) {
+          host.innerHTML = "";
+          host.classList.remove("on");
+          return;
+        }
+        const node = findNode(S.cur.root, S.selected);
+        if (!node) {
+          host.innerHTML = "";
+          host.classList.remove("on");
+          return;
+        }
+        const pairs = factorPairs(node.value);
+        let html = `<div class="pal-q">You tapped <b>${node.value}</b>. Is it prime, or can it be split?</div><div class="pal-actions">`;
+        html += `<button class="prime-btn" data-act="prime">It’s prime ✓</button>`;
+        if (pairs.length) {
+          html += `<span class="pal-or">or split into…</span>`;
+          pairs.forEach(
+            ([a, b]) =>
+              (html += `<button class="pair-chip" data-act="split" data-a="${a}" data-b="${b}">${a} × ${b}</button>`),
+          );
+        }
+        html += `</div>`;
+        host.innerHTML = html;
+        host.classList.add("on");
+        host.querySelectorAll("[data-act]").forEach((el) =>
+          el.addEventListener("click", () => {
+            if (el.dataset.act === "prime") actPrime(node);
+            else actSplit(node, Number(el.dataset.a), Number(el.dataset.b));
+          }),
+        );
+      }
+
+      function actPrime(node) {
+        S.totalActions++;
+        if (isPrime(node.value)) {
+          node.prime = true;
+          S.selected = null;
+          S.correctActions++;
+          S.score += 10;
+          $("hud-score").textContent = S.score;
+          SFX.good();
+          renderTree();
+          renderPalette();
+          updateReadout();
+          flash(node.value + " is prime — locked in ✓", "good");
+          if (isComplete(S.cur.root)) roundWon();
+        } else {
+          S.mistakes++;
+          SFX.bad();
+          flash(
+            node.value +
+              " can still be split — it has factors other than 1 and itself.",
+            "bad",
+          );
+        }
+      }
+
+      function actSplit(node, a, b) {
+        S.totalActions++;
+        if (a > 1 && b > 1 && a * b === node.value) {
+          node.children = [makeNode(a), makeNode(b)];
+          S.selected = null;
+          S.correctActions++;
+          S.score += 10;
+          $("hud-score").textContent = S.score;
+          SFX.good();
+          renderTree();
+          renderPalette();
+          updateReadout();
+          flash(node.value + " = " + a + " × " + b, "good");
+        } else {
+          S.mistakes++;
+          SFX.bad();
+          flash("Those don’t multiply to " + node.value + ".", "bad");
+        }
+      }
+
+      function updateReadout() {
+        const lp = lockedPrimes();
+        $("ro-fact").textContent =
+          S.cur.n + " = " + (lp.length ? lp.join(" × ") : "…");
+      }
+
+      function roundWon() {
+        S.score += 25; // forge bonus
+        $("hud-score").textContent = S.score;
+        SFX.win();
+        $("ro-fact").textContent =
+          S.cur.n + " = " + exponentForm(lockedPrimes());
+        flash(S.cur.n + " = " + exponentForm(lockedPrimes()) + " ⚒️", "good");
+        // Real celebration burst (GameFX exposes burst(cx,cy) — there is no
+        // successBurst(), so the old call was a silent no-op).
+        if (window.GameFX && GameFX.burst)
+          try {
+            GameFX.burst(window.innerWidth / 2, window.innerHeight / 3);
+          } catch (e) {}
+        if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(), 1500);
+        else setTimeout(() => loadRound(S.round + 1), 1500);
+      }
+
+      function endGame() {
+        const stars = S.mistakes === 0 ? 3 : S.mistakes <= 2 ? 2 : 1;
+        $("r-stars").textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
+        $("r-score").textContent = S.score;
+        $("r-correct").textContent = S.correctActions;
+        $("r-rounds").textContent = ROUNDS;
+        let high = 0;
+        try {
+          high = Number(localStorage.getItem(LS_KEY) || 0);
         } catch (e) {}
+        if (S.score > high) {
+          try {
+            localStorage.setItem(LS_KEY, String(S.score));
+          } catch (e) {}
+          $("r-high").textContent = S.score;
+          $("r-high-row").style.display = "flex";
+        }
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: ACTIVITY_TITLE,
+              score: S.score,
+              stars: stars,
+              problemsCorrect: S.correctActions,
+              problemsAttempted: S.totalActions,
+              percent: S.totalActions
+                ? Math.round((S.correctActions / S.totalActions) * 100)
+                : 100,
+              standard: STANDARD,
+            });
+        } catch (e) {}
+        srSay(
+          "All numbers factored. Score " + S.score + ", " + stars + " stars.",
+        );
+        show("result");
+      }
+
+      // ── Wiring ──
+      $("vocab-go").addEventListener("click", () => {
+        renderLevels();
+        show("level");
       });
+      $("r-again").addEventListener("click", () => {
+        renderLevels();
+        show("level");
+      });
+
+      renderVocab();
     </script>
+
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-    <!-- nsr-injected:end -->
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#ff-sr",
+            standard: "6.NS.4",
+            staticHints: [
+              "What factors do these numbers share? Start by listing the factors of each.",
+              "GCF is the biggest factor they share; LCM is the smallest multiple they share. Which does the task ask for?",
+              "Set it up: compare your lists (or prime factors) and pick the shared value — you name the final one.",
+            ],
+          });
+      });
+    </script>
+    <!-- ghl-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
   </body>
 </html>

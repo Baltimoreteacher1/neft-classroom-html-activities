@@ -1,0 +1,599 @@
+/* ==========================================================================
+   Projects PRO — premium editorial layer for the unit "culminating project"
+   wizard pages (math/unit-N/projects/version-{a,b}/).
+
+   Additive only. Every rule is scoped under `body.pro-projects` so it can
+   never bleed into the `.pk-hub` storefront pages or anywhere else. It reuses
+   the page's own CSS custom properties (--navy, --blue, --teal, --gold,
+   --green, --ink, --muted, --line, --bg, --card) so colors stay on-brand and
+   each unit keeps its accent. Loaded AFTER the page's inline <style>, so equal
+   or higher-specificity rules here win without !important wherever possible.
+
+   Goal: take the existing pages from "clean" to "publisher-grade product" —
+   the polish you'd expect from a McGraw-Hill / Illustrative Math title.
+   Injected by tools/inject-projects-pro.mjs.
+   ========================================================================== */
+
+body.pro-projects {
+  /* Premium tokens layered on top of the page's existing palette. */
+  --pro-display: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  --pro-shadow-sm:
+    0 1px 2px rgba(15, 43, 60, 0.06), 0 2px 8px rgba(15, 43, 60, 0.06);
+  --pro-shadow-md:
+    0 4px 14px rgba(15, 43, 60, 0.1), 0 10px 30px rgba(15, 43, 60, 0.08);
+  --pro-shadow-lg:
+    0 10px 24px rgba(15, 43, 60, 0.12), 0 24px 60px rgba(15, 43, 60, 0.14);
+  --pro-ring: 0 0 0 3px rgba(26, 111, 181, 0.28);
+  --pro-radius: 18px;
+  /* Subtle warm-paper canvas instead of flat grey — reads as "printed". */
+  background:
+    radial-gradient(
+      1200px 480px at 50% -160px,
+      rgba(26, 111, 181, 0.06),
+      transparent 70%
+    ),
+    var(--bg);
+  background-attachment: fixed;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Display typography ---------------------------------------------------- */
+body.pro-projects .hero h1,
+body.pro-projects .card-title,
+body.pro-projects .section-heading h2 {
+  font-family: var(--pro-display);
+  letter-spacing: -0.022em;
+}
+body.pro-projects .hero h1 {
+  font-weight: 800;
+}
+body.pro-projects .card-title {
+  letter-spacing: -0.015em;
+}
+
+/* --- Hero: layered, premium masthead -------------------------------------- */
+body.pro-projects .hero {
+  position: relative;
+  overflow: hidden;
+  padding: 46px 24px 38px;
+  background:
+    radial-gradient(
+      720px 320px at 14% -40%,
+      rgba(255, 255, 255, 0.22),
+      transparent 60%
+    ),
+    radial-gradient(
+      640px 300px at 92% 0%,
+      rgba(14, 138, 125, 0.55),
+      transparent 58%
+    ),
+    linear-gradient(135deg, #0f2b3c 0%, #155fa0 58%, #0e8a7d 100%);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+}
+/* Fine top hairline of brand color — the "product spine". */
+body.pro-projects .hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gold), #ffd27a, var(--teal));
+  opacity: 0.95;
+}
+/* Faint grid texture for editorial depth. */
+body.pro-projects .hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 38px 38px;
+  -webkit-mask-image: radial-gradient(
+    ellipse at 50% -10%,
+    #000 30%,
+    transparent 78%
+  );
+  mask-image: radial-gradient(ellipse at 50% -10%, #000 30%, transparent 78%);
+  pointer-events: none;
+}
+body.pro-projects .hero > * {
+  position: relative;
+  z-index: 1;
+}
+body.pro-projects .hero-emoji {
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.28));
+}
+body.pro-projects .hero-sub {
+  font-size: 16.5px;
+}
+
+/* Tag pills — frosted glass. */
+body.pro-projects .tag {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.34);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+body.pro-projects .tag.gold {
+  box-shadow: 0 4px 12px rgba(201, 130, 15, 0.4);
+}
+
+/* Level selector — premium segmented control. */
+body.pro-projects .level-bar {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+body.pro-projects .level-btn {
+  transition: all 0.22s ease;
+}
+body.pro-projects .level-btn.active {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+/* Research & Reference links — readable chips on the light research panel.
+   These anchors reuse .level-btn (built for the dark header), which renders
+   white-on-white inside the research box. Override to high-contrast blue
+   chips with a clear clickable affordance. Scoped to <a> so the header's
+   <button> level toggles are untouched. */
+body.pro-projects details a.level-btn,
+details a.level-btn,
+body.pro-projects .step-research a.level-btn,
+.step-research a.level-btn {
+  display: inline-block;
+  color: #0f4c81 !important;
+  background: #eaf3fc;
+  border: 1.5px solid #1a6fb5 !important;
+  border-radius: 8px;
+  padding: 8px 13px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  line-height: 1.3;
+  white-space: normal;
+  text-decoration: none;
+  transform: none !important;
+  box-shadow: none;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+body.pro-projects details a.level-btn:hover,
+details a.level-btn:hover,
+body.pro-projects .step-research a.level-btn:hover,
+.step-research a.level-btn:hover {
+  background: #d6e9fb;
+  color: #0b3a63 !important;
+  box-shadow: 0 2px 6px rgba(26, 111, 181, 0.25);
+  text-decoration: underline;
+}
+body.pro-projects details a.level-btn:focus-visible,
+details a.level-btn:focus-visible,
+body.pro-projects .step-research a.level-btn:focus-visible,
+.step-research a.level-btn:focus-visible {
+  outline: 3px solid #1a6fb5;
+  outline-offset: 2px;
+}
+
+/* In-step research callout — students look up the data right where they use it,
+   inside the relevant step-tab (not in a separate header box). */
+body.pro-projects .step-research,
+.step-research {
+  background: #f1f7fd;
+  border: 1px solid #bcdcf5;
+  border-left: 4px solid #1a6fb5;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 14px 0;
+}
+body.pro-projects .step-research .sr-head,
+.step-research .sr-head {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f4c81;
+  margin-bottom: 8px;
+}
+body.pro-projects .step-research .sr-hint,
+.step-research .sr-hint {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a2633;
+  line-height: 1.45;
+  margin: 8px 0 4px;
+}
+
+/* "Your Answer" calc box — crisp, legible callout (was a faint dashed panel). */
+body.pro-projects .student-calc-section {
+  background: #fafbfc !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-left: 4px solid #1a6fb5 !important;
+  border-radius: 10px !important;
+}
+
+/* --- Step trail: connected, premium stepper ------------------------------- */
+body.pro-projects .step-trail-item {
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+body.pro-projects .step-trail-item:hover {
+  transform: translateY(-1px);
+}
+body.pro-projects .s-num {
+  box-shadow: 0 1px 3px rgba(15, 43, 60, 0.18);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+body.pro-projects .step-trail-item.active .s-num {
+  box-shadow:
+    0 0 0 4px rgba(26, 111, 181, 0.18),
+    0 4px 10px rgba(26, 111, 181, 0.35);
+  transform: scale(1.06);
+}
+body.pro-projects .step-trail-item.done .s-num {
+  box-shadow: 0 0 0 3px rgba(30, 125, 64, 0.16);
+}
+
+/* --- Progress bar: premium sheen ------------------------------------------ */
+body.pro-projects .prog-bar {
+  box-shadow: inset 0 1px 2px rgba(15, 43, 60, 0.12);
+}
+body.pro-projects .prog-fill {
+  background: linear-gradient(90deg, var(--blue), var(--teal) 70%, #2fd0bf);
+  position: relative;
+}
+body.pro-projects .prog-fill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.35),
+    transparent 55%
+  );
+  border-radius: inherit;
+}
+
+/* --- Cards: elevated paper with accent spine ------------------------------ */
+body.pro-projects .card {
+  position: relative;
+  border-radius: var(--pro-radius);
+  border-color: rgba(226, 231, 236, 0.9);
+  box-shadow: var(--pro-shadow-md);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.6), transparent 120px),
+    var(--card);
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+body.pro-projects .card:hover {
+  box-shadow: var(--pro-shadow-lg);
+  transform: translateY(-2px);
+}
+/* Brand spine down the left edge of every card. */
+body.pro-projects .card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 18px;
+  bottom: 18px;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(180deg, var(--blue), var(--teal));
+  opacity: 0.85;
+}
+body.pro-projects .card-icon {
+  box-shadow: var(--pro-shadow-sm);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+/* Instruction call-outs — softer, layered. */
+body.pro-projects .instruct {
+  box-shadow: var(--pro-shadow-sm);
+  border-radius: 12px;
+}
+
+/* --- Form controls: premium focus ----------------------------------------- */
+body.pro-projects input[type="number"],
+body.pro-projects input[type="text"],
+body.pro-projects textarea,
+body.pro-projects select {
+  background: #fff;
+  box-shadow: inset 0 1px 2px rgba(15, 43, 60, 0.05);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+body.pro-projects input:focus,
+body.pro-projects textarea:focus,
+body.pro-projects select:focus {
+  box-shadow:
+    var(--pro-ring),
+    inset 0 1px 2px rgba(15, 43, 60, 0.05);
+}
+
+/* --- Buttons: gradient + depth + accessible focus ------------------------- */
+body.pro-projects .calc-btn,
+body.pro-projects .nav-btn:not(.ghost) {
+  background-image: linear-gradient(180deg, #2a86cf, var(--blue));
+  box-shadow: 0 4px 12px rgba(26, 111, 181, 0.32);
+}
+body.pro-projects .calc-btn:hover,
+body.pro-projects .nav-btn:not(.ghost):hover {
+  box-shadow: 0 6px 18px rgba(26, 111, 181, 0.42);
+  transform: translateY(-1px);
+}
+body.pro-projects .calc-btn:active,
+body.pro-projects .nav-btn:active {
+  transform: translateY(0);
+}
+body.pro-projects .calc-btn.gold {
+  background-image: linear-gradient(180deg, #e1972a, var(--gold));
+  box-shadow: 0 4px 12px rgba(201, 130, 15, 0.32);
+}
+body.pro-projects .calc-btn.teal {
+  background-image: linear-gradient(180deg, #16a89a, var(--teal));
+  box-shadow: 0 4px 12px rgba(14, 138, 125, 0.32);
+}
+body.pro-projects .calc-btn.green {
+  background-image: linear-gradient(180deg, #2a9a52, var(--green));
+  box-shadow: 0 4px 12px rgba(30, 125, 64, 0.32);
+}
+body.pro-projects .calc-btn,
+body.pro-projects .nav-btn {
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+/* Keyboard focus rings everywhere interactive (a11y). */
+body.pro-projects a:focus-visible,
+body.pro-projects button:focus-visible,
+body.pro-projects summary:focus-visible,
+body.pro-projects [tabindex]:focus-visible {
+  outline: none;
+  box-shadow: var(--pro-ring);
+  border-radius: 8px;
+}
+
+/* --- Readouts & report: premium dark surfaces ----------------------------- */
+body.pro-projects .readout,
+body.pro-projects .report-box {
+  background:
+    radial-gradient(
+      600px 200px at 0% 0%,
+      rgba(125, 211, 252, 0.1),
+      transparent 60%
+    ),
+    linear-gradient(160deg, #143247, var(--navy));
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  box-shadow: var(--pro-shadow-md);
+}
+
+/* --- Stat boxes: premium metric cards ------------------------------------- */
+body.pro-projects .stat-box {
+  background: linear-gradient(180deg, #fff, var(--bg));
+  box-shadow: var(--pro-shadow-sm);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+body.pro-projects .stat-box:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--pro-shadow-md);
+}
+body.pro-projects .stat-num {
+  background: linear-gradient(135deg, var(--blue), var(--teal));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* --- Vocab cards: lift + accent ------------------------------------------- */
+body.pro-projects .vocab-card {
+  box-shadow: var(--pro-shadow-sm);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+body.pro-projects .vocab-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--pro-shadow-md);
+  border-color: rgba(26, 111, 181, 0.35);
+}
+
+/* --- Data + rubric tables: rounded, premium ------------------------------- */
+body.pro-projects .data-table,
+body.pro-projects .rubric {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--pro-shadow-sm);
+}
+body.pro-projects .data-table th,
+body.pro-projects .rubric th {
+  background: linear-gradient(180deg, #173a52, var(--navy));
+  letter-spacing: 0.01em;
+}
+
+/* --- Level-2 extension block: premium "enrichment" treatment -------------- */
+body.pro-projects .lvl2-block {
+  border-style: solid;
+  border-color: rgba(26, 111, 181, 0.35);
+  background: linear-gradient(180deg, rgba(232, 242, 252, 0.5), transparent);
+  box-shadow: var(--pro-shadow-sm);
+}
+body.pro-projects .lvl2-label {
+  box-shadow: 0 3px 8px rgba(26, 111, 181, 0.3);
+}
+
+/* --- Step-panel entrance (JS-driven reveal, motion-safe) ------------------ */
+body.pro-projects .card.pro-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+}
+body.pro-projects .card.pro-reveal.pro-in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* --- Reading-progress bar (injected by projects-pro.js) ------------------- */
+.pro-readbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  z-index: 9998;
+  background: linear-gradient(
+    90deg,
+    var(--gold, #c9820f),
+    var(--teal, #0e8a7d)
+  );
+  box-shadow: 0 1px 4px rgba(14, 138, 125, 0.4);
+  transition: width 0.12s linear;
+  pointer-events: none;
+}
+
+/* --- Back-to-top affordance ----------------------------------------------- */
+.pro-totop {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 9997;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  background: linear-gradient(180deg, #2a86cf, var(--blue, #1a6fb5));
+  box-shadow: 0 8px 22px rgba(15, 43, 60, 0.3);
+  opacity: 0;
+  transform: translateY(12px) scale(0.9);
+  pointer-events: none;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+.pro-totop.show {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.pro-totop:hover {
+  transform: translateY(-2px);
+}
+
+/* --- Premium product footer ribbon (injected) ----------------------------- */
+.pro-ribbon {
+  margin: 0 auto;
+  max-width: 860px;
+  padding: 18px 16px 48px;
+  text-align: center;
+  color: var(--muted, #5e6e7e);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.pro-ribbon .pro-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 50px;
+  background: #fff;
+  border: 1px solid var(--line, #e2e7ec);
+  box-shadow: 0 2px 10px rgba(15, 43, 60, 0.08);
+}
+.pro-ribbon .pro-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--gold, #c9820f),
+    var(--teal, #0e8a7d)
+  );
+}
+
+/* --- Keyboard-nav hint chip ----------------------------------------------- */
+.pro-kbd-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px auto 0;
+  font-size: 11.5px;
+  color: var(--muted, #5e6e7e);
+  font-weight: 600;
+}
+.pro-kbd-hint kbd {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: var(--card, #fff);
+  border: 1px solid var(--line, #e2e7ec);
+  box-shadow: 0 1px 0 rgba(15, 43, 60, 0.12);
+}
+
+/* --- Print: keep it crisp, drop the chrome -------------------------------- */
+@media print {
+  body.pro-projects {
+    background: #fff !important;
+  }
+  body.pro-projects .card {
+    box-shadow: none !important;
+    transform: none !important;
+    break-inside: avoid;
+  }
+  body.pro-projects .card.pro-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  body.pro-projects .hero::after,
+  body.pro-projects .hero::before {
+    display: none;
+  }
+  .pro-readbar,
+  .pro-totop,
+  .pro-kbd-hint {
+    display: none !important;
+  }
+  .pro-ribbon {
+    color: #555;
+  }
+}
+
+/* --- Respect reduced-motion ----------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  body.pro-projects *,
+  body.pro-projects *::before,
+  body.pro-projects *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+  body.pro-projects .card.pro-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  body.pro-projects .card:hover,
+  body.pro-projects .stat-box:hover,
+  body.pro-projects .vocab-card:hover {
+    transform: none;
+  }
+  .pro-readbar {
+    transition: none;
+  }
+}

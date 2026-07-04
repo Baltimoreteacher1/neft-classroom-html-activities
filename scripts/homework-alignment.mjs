@@ -56,13 +56,31 @@ export function detectVisualTopic(config) {
   if (/inequal/i.test(title) || standard === "6.EE.5" || standard === "6.EE.8")
     return "inequalities";
   if (/equation/i.test(title) || standard === "6.EE.6" || standard === "6.EE.7") return "equations";
-  if (standard.startsWith("6.EE.2") || standard === "6.EE.3" || standard === "6.EE.4")
+  // A graphing lesson (e.g. "Graph Ratio Tables") is about plotting on the plane,
+  // so the coordinate-plane visual fits better than a ratio table — check before ratios.
+  if (/graph/i.test(title) && /ratio|coordinate|plane|plot|ordered pair/i.test(title))
+    return "coordinate-plane";
+  // Properties of operations (commutative/associative/identity/distributive) is a
+  // distinct concept from naming the parts of an expression, even though both can
+  // carry standard 6.EE.3. Detect by title so the big-idea visual matches the lesson.
+  if (/propert/i.test(title) || /distributive/i.test(title)) return "properties";
+  if (
+    standard.startsWith("6.EE.2") ||
+    standard === "6.EE.3" ||
+    standard === "6.EE.4" ||
+    /express|algebraic|variable|coefficient|like term|simplif|equivalent expression/i.test(title)
+  )
     return "expressions";
-  if (standard.startsWith("6.RP")) return "ratios";
+  if (standard.startsWith("6.RP") || /\bratio|unit rate|\brate\b|percent/i.test(title))
+    return "ratios";
   if (unit === 5 || standard === "6.G.1") return "area";
   if (standard === "6.G.2" || /volume/i.test(title)) return "volume";
   if (standard === "6.G.4" || /surface/i.test(title)) return "surface-area";
-  if (standard.startsWith("6.SP")) return "statistics";
+  if (
+    standard.startsWith("6.SP") ||
+    /box plot|dot plot|histogram|display data|data distribution/i.test(title)
+  )
+    return "statistics";
   if (/coordinate|quadrant|reflect|distance on/i.test(title)) return "coordinate-plane";
   if (/integer|absolute|rational number/i.test(title)) return "number-line";
   if (standard.startsWith("6.NS.1") || /fraction|mixed number/i.test(title)) return "fractions";
@@ -230,14 +248,12 @@ export function scoreProblemAlignment(problem, lessonMeta) {
 
 export function isPrintableProblem(it) {
   if (!it || typeof it !== "object") return false;
-  return [
-    "multiple-choice",
-    "fill-table",
-    "matching-game",
-    "drag-sort",
-    "error-analysis",
-    "open-response",
-  ].includes(it.type);
+  // Family homework is straight practice — no "find the error" / error-analysis
+  // problems. Families want to DO the math, easiest → hardest, not critique a
+  // fictional student's mistake.
+  return ["multiple-choice", "fill-table", "matching-game", "drag-sort", "open-response"].includes(
+    it.type,
+  );
 }
 
 export function selectAlignedQuickCheckProblems(practice = {}, config = {}) {
@@ -260,17 +276,102 @@ export function selectAlignedQuickCheckProblems(practice = {}, config = {}) {
     }))
     .sort((a, b) => b.align + b.typeBoost + b.tierBoost - (a.align + a.typeBoost + a.tierBoost));
 
+  const TARGET = 6;
   const positive = ranked.filter((r) => r.align >= 0);
-  const picked = (positive.length ? positive : ranked).slice(0, 2).map((r) => r.p);
+  const picked = (positive.length ? positive : ranked).slice(0, TARGET).map((r) => r.p);
 
-  if (picked.length < 2) {
+  if (picked.length < TARGET) {
     for (const p of pool) {
-      if (picked.length >= 2) break;
+      if (picked.length >= TARGET) break;
       if (!picked.includes(p)) picked.push(p);
     }
   }
 
-  return picked.slice(0, 2);
+  return picked.slice(0, TARGET);
+}
+
+// Extra practice beyond the core Quick Check set, for the "More practice" accordion.
+// Returns the rest of the printable pool (best-aligned first), excluding anything
+// already shown in `exclude`, capped so the page stays manageable.
+export function selectMorePracticeProblems(practice = {}, config = {}, exclude = []) {
+  const MAX_MORE = 8;
+  const lessonMeta = extractLessonKeywords(config);
+  const onLevel = Array.isArray(practice.onLevel) ? practice.onLevel : [];
+  const approaching = Array.isArray(practice.approaching) ? practice.approaching : [];
+  const optional = Array.isArray(practice.optional) ? practice.optional : [];
+  const extending = Array.isArray(practice.extending) ? practice.extending : [];
+
+  const pool = [...approaching, ...onLevel, ...optional, ...extending].filter(isPrintableProblem);
+  const remaining = pool.filter((p) => !exclude.includes(p));
+
+  return remaining
+    .map((p) => ({ p, align: scoreProblemAlignment(p, lessonMeta) }))
+    .sort((a, b) => b.align - a.align)
+    .slice(0, MAX_MORE)
+    .map((r) => r.p);
+}
+
+// Split the core Quick Check set into two clearly-sectioned tiers so families
+// practice the concept on EASY problems first, then move to a slightly harder
+// challenge set. Difficulty comes straight from the lesson's practice tiers:
+//   approaching (easiest, scaffolded) → onLevel → extending (hardest).
+// Within each tier we order by topic alignment so the most on-point problems
+// surface first. Returns { warmup, challenge } with no overlap.
+export function selectTieredQuickCheckProblems(practice = {}, config = {}) {
+  const WARMUP_TARGET = 3;
+  const CHALLENGE_TARGET = 3;
+  const lessonMeta = extractLessonKeywords(config);
+
+  const tier = (key) =>
+    (Array.isArray(practice[key]) ? practice[key] : []).filter(isPrintableProblem);
+  const approaching = tier("approaching");
+  const onLevel = tier("onLevel");
+  const optional = tier("optional");
+  const extending = tier("extending");
+
+  // Best-aligned first within a pool, de-duplicated.
+  const byAlign = (arr) => {
+    const seen = new Set();
+    return arr
+      .filter((p) => (seen.has(p) ? false : (seen.add(p), true)))
+      .map((p) => ({ p, align: scoreProblemAlignment(p, lessonMeta) }))
+      .sort((a, b) => b.align - a.align)
+      .map((r) => r.p);
+  };
+
+  // Easy pool leans on scaffolded "approaching" problems, then on-level basics.
+  const easyPool = byAlign([...approaching, ...onLevel, ...optional]);
+  // Hard pool leans on "extending" stretch problems, then remaining on-level.
+  const hardPool = byAlign([...extending, ...onLevel, ...optional]);
+
+  const warmup = [];
+  for (const p of easyPool) {
+    if (warmup.length >= WARMUP_TARGET) break;
+    warmup.push(p);
+  }
+
+  const challenge = [];
+  for (const p of hardPool) {
+    if (challenge.length >= CHALLENGE_TARGET) break;
+    if (!warmup.includes(p)) challenge.push(p);
+  }
+
+  // Sparse-tier fallbacks: keep both sections populated when one tier is thin,
+  // pulling the hardest leftovers into challenge and easiest leftovers into warmup.
+  if (challenge.length < CHALLENGE_TARGET) {
+    for (const p of [...easyPool].reverse()) {
+      if (challenge.length >= CHALLENGE_TARGET) break;
+      if (!warmup.includes(p) && !challenge.includes(p)) challenge.push(p);
+    }
+  }
+  if (warmup.length < WARMUP_TARGET) {
+    for (const p of easyPool) {
+      if (warmup.length >= WARMUP_TARGET) break;
+      if (!warmup.includes(p) && !challenge.includes(p)) warmup.push(p);
+    }
+  }
+
+  return { warmup, challenge };
 }
 
 export function detectVisualMismatch(config, html) {

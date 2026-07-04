@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Canvas Console · Neft Teacher</title>
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #387f84;
+        --amber: #f2a93b;
+        --ink: #0f172a;
+        --muted: #64748b;
+        --line: #e2e8f0;
+        --bg: #f1f5f9;
+        --card: #fff;
+        --ok: #15803d;
+        --warn: #b45309;
+        --bad: #b91c1c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.55;
+      }
+      header {
+        background: linear-gradient(135deg, var(--navy), var(--teal));
+        color: #fff;
+        padding: 26px 20px;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+      header p {
+        margin: 6px 0 0;
+        opacity: 0.9;
+        font-size: 0.95rem;
+      }
+      main {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 18px 0;
+      }
+      .tab {
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--navy);
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 0.95rem;
+        min-height: 44px;
+      }
+      .tab[aria-selected="true"] {
+        background: var(--navy);
+        color: #fff;
+        border-color: var(--navy);
+      }
+      .panel {
+        display: none;
+      }
+      .panel[data-active] {
+        display: block;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin: 0 0 14px;
+      }
+      .card h3 {
+        margin: 0 0 6px;
+        font-size: 1.1rem;
+        color: var(--navy);
+      }
+      .card p {
+        margin: 0 0 12px;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      a.btn,
+      button.btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: var(--teal);
+        color: #fff;
+        text-decoration: none;
+        border: 0;
+        border-radius: 10px;
+        padding: 11px 18px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        min-height: 44px;
+      }
+      a.btn.ghost,
+      button.btn.ghost {
+        background: #fff;
+        color: var(--navy);
+        border: 1px solid var(--line);
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      input[type="text"] {
+        flex: 1 1 200px;
+        min-height: 44px;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        font-size: 1rem;
+      }
+      .pill {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+      .pill.ok {
+        background: #dcfce7;
+        color: var(--ok);
+      }
+      .pill.warn {
+        background: #fef3c7;
+        color: var(--warn);
+      }
+      .pill.bad {
+        background: #fee2e2;
+        color: var(--bad);
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+      ul.links {
+        list-style: none;
+        padding: 0;
+        margin: 8px 0 0;
+      }
+      ul.links li {
+        margin: 6px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Canvas Console</h1>
+      <p>
+        One place to package lessons, collect grades, and check the integration.
+        All tools below stay available on their own too.
+      </p>
+    </header>
+    <main>
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" data-tab="package">
+          📦 Package
+        </button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="grades">
+          ✅ Grades
+        </button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="setup">
+          ⚙️ Setup &amp; Status
+        </button>
+      </div>
+
+      <!-- PACKAGE -->
+      <section class="panel" data-tab="package" data-active>
+        <div class="card">
+          <h3>SCORM auto-grade — one lesson</h3>
+          <p>
+            Downloads a ready-to-upload SCORM <code>.zip</code>. Upload it as a
+            Canvas assignment; the finished lesson posts its score to the
+            gradebook automatically. Students are auto-identified from the
+            Canvas roster (no name screen).
+          </p>
+          <div class="row">
+            <input
+              id="scorm-id"
+              type="text"
+              placeholder="Lesson id or path — e.g. 3-1 or /ratio-color-mixer/"
+            />
+          </div>
+          <div class="row" style="margin-top: 10px">
+            <button class="btn" id="scorm-grade">⬇ Auto-grade package</button>
+            <button class="btn ghost" id="scorm-codes">
+              ⬇ Completion-code version
+            </button>
+          </div>
+          <p class="muted" style="margin-top: 10px">
+            Auto-grade needs your Canvas SCORM uploader enabled (it is). The
+            code version works on any Canvas and feeds the Google-Sheets
+            gradebook.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Whole library / per-unit packages</h3>
+          <p>
+            Build an import-ready Common Cartridge of the whole library or one
+            unit — Modules of live links or completion-code assignments — in one
+            click, no terminal.
+          </p>
+          <div class="row">
+            <a class="btn" href="/teacher-tools/canvas-studio/"
+              >Open Canvas Studio →</a
+            >
+            <a class="btn ghost" href="/teacher-tools/canvas-scorm/"
+              >All SCORM downloads →</a
+            >
+            <a class="btn ghost" href="/teacher-tools/canvas-command-center/"
+              >Unit packs →</a
+            >
+          </div>
+          <p class="muted" style="margin-top: 10px">
+            The SCORM downloads page covers every assignable surface — lessons
+            (incl. flagship), interactive homework, unit games, practice
+            arcades, and pre/post tests — rebuilt automatically on each deploy.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Auto-graded quizzes (QTI)</h3>
+          <p>
+            Native Canvas quizzes built from lesson questions — they grade
+            themselves, zero setup on the Canvas side.
+          </p>
+          <a class="btn ghost" href="/teacher-tools/canvas-studio/"
+            >Build in Studio →</a
+          >
+        </div>
+      </section>
+
+      <!-- GRADES -->
+      <section class="panel" data-tab="grades">
+        <div class="card">
+          <h3>Decode completion codes → scores</h3>
+          <p>
+            Paste the <code>NTG1.…</code> codes students submit in Canvas and
+            turn them into a scored roster.
+          </p>
+          <a class="btn" href="/teacher-tools/canvas-grades/"
+            >Open Canvas Grades →</a
+          >
+        </div>
+        <div class="card">
+          <h3>Live results dashboard</h3>
+          <p>
+            See per-standard results and progress as students finish activities.
+          </p>
+          <a class="btn ghost" href="/teacher-tools/canvas-dashboard/"
+            >Open Dashboard →</a
+          >
+        </div>
+      </section>
+
+      <!-- SETUP & STATUS -->
+      <section class="panel" data-tab="setup">
+        <div class="card">
+          <h3>Integration status</h3>
+          <p>
+            Live check of the LTI 1.3 tool (the enterprise auto-grade path —
+            dormant until BCPS IT registers a Developer Key).
+          </p>
+          <div id="lti-status"><span class="pill warn">checking…</span></div>
+          <p class="muted" id="lti-detail" style="margin-top: 10px"></p>
+        </div>
+        <div class="card">
+          <h3>Guided setup</h3>
+          <p>Step-by-step for connecting a Canvas course the first time.</p>
+          <div class="row">
+            <a class="btn" href="/teacher-tools/canvas-setup/"
+              >Setup Wizard →</a
+            >
+          </div>
+        </div>
+        <div class="card">
+          <h3>All Canvas tools</h3>
+          <ul class="links">
+            <li>
+              <a href="/teacher-tools/canvas-studio/"
+                >Canvas Studio — package builder</a
+              >
+            </li>
+            <li>
+              <a href="/teacher-tools/canvas-scorm/"
+                >Canvas SCORM — batch packages</a
+              >
+            </li>
+            <li>
+              <a href="/teacher-tools/canvas-grades/"
+                >Canvas Grades — code decoder</a
+              >
+            </li>
+            <li>
+              <a href="/teacher-tools/canvas-dashboard/"
+                >Canvas Dashboard — live results</a
+              >
+            </li>
+            <li>
+              <a href="/teacher-tools/canvas-setup/">Canvas Setup — wizard</a>
+            </li>
+            <li>
+              <a href="/teacher-tools/canvas-command-center/"
+                >Canvas Command Center — unit packs &amp; status</a
+              >
+            </li>
+            <li>
+              <a href="/teacher-tools/scorm-builder/"
+                >SCORM Builder — single-activity packages</a
+              >
+            </li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        // Tabs
+        var tabs = document.querySelectorAll(".tab");
+        var panels = document.querySelectorAll(".panel");
+        tabs.forEach(function (t) {
+          t.addEventListener("click", function () {
+            tabs.forEach(function (x) {
+              x.setAttribute("aria-selected", x === t ? "true" : "false");
+            });
+            var name = t.getAttribute("data-tab");
+            panels.forEach(function (p) {
+              if (p.getAttribute("data-tab") === name)
+                p.setAttribute("data-active", "");
+              else p.removeAttribute("data-active");
+            });
+          });
+        });
+
+        // SCORM one-click download via the existing /api/scorm endpoint.
+        function download(mode) {
+          var id = (document.getElementById("scorm-id").value || "").trim();
+          if (!id) {
+            document.getElementById("scorm-id").focus();
+            return;
+          }
+          var q =
+            "?activity=" +
+            encodeURIComponent(id) +
+            (mode === "codes" ? "&mode=codes" : "");
+          window.location.href = "/api/scorm" + q;
+        }
+        document
+          .getElementById("scorm-grade")
+          .addEventListener("click", function () {
+            download("canvas");
+          });
+        document
+          .getElementById("scorm-codes")
+          .addEventListener("click", function () {
+            download("codes");
+          });
+
+        // Live LTI status.
+        var statusEl = document.getElementById("lti-status");
+        var detailEl = document.getElementById("lti-detail");
+        fetch("https://neft-lti.neftjd.workers.dev/health", { mode: "cors" })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (h) {
+            if (h.status === "active") {
+              statusEl.innerHTML = '<span class="pill ok">LTI active</span>';
+              detailEl.textContent =
+                "Lessons launched from Canvas auto-identify students and post grades automatically.";
+            } else {
+              statusEl.innerHTML = '<span class="pill warn">LTI dormant</span>';
+              detailEl.textContent =
+                "The tool is deployed and ready. It turns on the moment BCPS IT returns a Client ID + Deployment ID. Until then, SCORM is your working auto-grade path.";
+            }
+          })
+          .catch(function () {
+            statusEl.innerHTML =
+              '<span class="pill bad">LTI not deployed</span>';
+            detailEl.textContent =
+              "The LTI Worker isn't deployed yet. SCORM packages (Package tab) auto-grade today with no setup. Deploy steps: lti-worker/README.md.";
+          });
+      })();
+    </script>
+  </body>
+</html>

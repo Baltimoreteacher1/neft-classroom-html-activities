@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <title>Bar Graph + World Comparison Lab · Neft Teacher</title>
     <style>
       :root {
@@ -890,10 +891,29 @@
           border: 0;
         }
       }
+
+      /* --- responsive tablet/phone refinements (additive) --- */
+      @media (max-width: 640px) {
+        .app { padding: 12px; }
+        header.hero { padding: 18px; border-radius: 20px; }
+        .top-actions button { flex: 1 1 auto; }
+        .tabs { padding: 10px; gap: 8px; }
+        .tab-btn { flex: 1 1 auto; min-width: 0; }
+        .card { padding: 16px; }
+        h2 { font-size: 1.6rem; }
+        .build-row { grid-template-columns: 1fr 1fr; }
+        .calc-input-grid { grid-template-columns: 1fr; }
+        .stack-area { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+        .chart-wrap { overflow-x: auto; }
+        .data-table { display: block; overflow-x: auto; white-space: nowrap; }
+      }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
 </head>
   <body>
     <div class="app">
@@ -2894,9 +2914,6 @@ ${data.rows.map((r) => `<tr><td>${escapeHtml(r.category)}</td><td>${escapeHtml(r
 </tbody>
 </table>
 <p><em>World values are classroom practice sample values, not official research data.</em></p>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>`;
         downloadBlob(
@@ -3037,5 +3054,11 @@ ${data.rows.map((r) => `<tr><td>${escapeHtml(r.category)}</td><td>${escapeHtml(r
 
       init();
     </script>
-  </body>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+</body>
 </html>

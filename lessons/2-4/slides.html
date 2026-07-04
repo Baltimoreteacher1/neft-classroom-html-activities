@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
     :root {
       --ref-navy: #1C2E42;
       --ref-teal: #387F84;
@@ -1112,10 +1113,32 @@
     .cfu-card { text-align:center; }
     .cfu-poll { display:flex; gap:8px; justify-content:center; margin:12px 0; }
     .cfu-btn { flex:none; min-width:100px; }
-    .diff-paths-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+    .diff-paths-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; }
     .diff-path { border:2px solid var(--path-color, var(--teal)); border-radius:8px; padding:10px; }
     .diff-path-label { font-size:11px; font-weight:800; color:var(--navy); margin-bottom:6px; }
     .diff-path-stem { font-size:10px; line-height:1.4; margin:0; }
+    /* Read-aloud (TTS) button — additive, accessible, never shown in print */
+    .read-aloud-btn { display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-left:6px; padding:0; width:1.7em; height:1.7em; min-width:1.7em; border:1.5px solid var(--teal); border-radius:50%; background:var(--white,#fff); color:var(--navy); font-size:0.78em; line-height:1; cursor:pointer; transition:transform .12s ease, background .12s ease; }
+    .read-aloud-btn:hover { background:var(--teal-light); transform:scale(1.08); }
+    .read-aloud-btn:active { transform:scale(0.96); }
+    .read-aloud-btn:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    @media print { .read-aloud-btn { display:none !important; } }
+    /* Bilingual Spanish stem line under English — gated by .bilingual-on (default on) */
+    .stem-es { display:block; margin-top:2px; font-size:0.82em; font-style:italic; color:var(--navy); opacity:0.72; }
+    body:not(.bilingual-on) .stem-es,
+    body:not(.bilingual-on) .objective-text-es,
+    body:not(.bilingual-on) .vocab-term-es,
+    body:not(.bilingual-on) .vocab-definition-es { display:none; }
+    .tt-stems-extend { margin-top:8px; padding-top:8px; border-top:1px dashed var(--gray,#ccc); }
+    .tt-stem-extend { opacity:0.92; }
+    /* Header accessibility / language controls */
+    .a11y-controls { display:flex; align-items:center; gap:8px; }
+    .a11y-btn { font-size:12px; font-weight:700; color:var(--navy); background:var(--white,#fff); border:1.5px solid var(--teal); border-radius:16px; padding:5px 12px; cursor:pointer; }
+    .a11y-btn[aria-pressed="false"] { opacity:0.55; }
+    .a11y-btn:focus-visible, .a11y-rate select:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    .a11y-rate { display:inline-flex; align-items:center; gap:4px; font-size:12px; color:var(--navy); }
+    .a11y-rate select { font-size:12px; border:1.5px solid var(--teal); border-radius:14px; padding:4px 8px; background:var(--white,#fff); color:var(--navy); cursor:pointer; }
+    @media print { .a11y-controls { display:none !important; } }
     .workspace-table { width:100%; border-collapse:collapse; font-size:11px; }
     .workspace-table th, .workspace-table td { border:1px solid #dadce0; padding:6px 8px; text-align:center; }
     .workspace-table th { background:var(--teal-light); font-weight:800; }
@@ -2012,12 +2035,20 @@
       .presenter-hud { font-size: 10px; padding: 6px 10px; }
     }
     
+.slide-main-title,.title-heading,.g-doc-title,.section-divider-title,
+.post-it-title,.g-title-block h1,.g-title-block h2,h1,h2{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
   </style>
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
 </head>
-<body>
+<body class="bilingual-on">
 
   <!-- Google Slides Chrome Bar -->
   <header class="g-chrome">
@@ -2036,6 +2067,16 @@
       </div>
     </div>
     <div class="g-right">
+      <div class="a11y-controls" role="group" aria-label="Accessibility and language controls">
+        <button class="a11y-btn" id="bilingual-toggle" aria-pressed="true" onclick="toggleBilingual(this)" title="Show or hide Spanish support">🌐 Español</button>
+        <label class="a11y-rate" title="Read-aloud speed">🔊
+          <select id="tts-rate-select" aria-label="Read-aloud speed" onchange="setSlideTtsRate(this.value)">
+            <option value="0.7">Slow</option>
+            <option value="0.85" selected>Normal</option>
+            <option value="1">Fast</option>
+          </select>
+        </label>
+      </div>
       
       <button class="btn-present" onclick="enterFullscreen()">
         ▶ Present
@@ -2385,13 +2426,13 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <h2 class="card-title">🎯 Content Objective <span class="bilingual-tag">/ Objetivo de contenido</span></h2>
-    <p class="objective-text">I can divide mixed numbers by first changing them to improper fractions.</p>
+    <p class="objective-text">I can divide mixed numbers by first changing them to improper fractions.<button type="button" class="read-aloud-btn" aria-label="Read the content objective aloud" title="Read the content objective aloud" data-speak="I can divide mixed numbers by first changing them to improper fractions." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
   </div>
       <aside class="ref-side-panel">
         <div class="ref-side-header">Today&#039;s Objectives</div>
         <div class="ref-side-body">
     <h2 class="card-title">🗣️ Language Objective <span class="bilingual-tag">/ Objetivo de lenguaje</span></h2>
-    <p class="objective-text">I can explain my steps using the words mixed number, improper fraction, convert, reciprocal, and simplify.</p>
+    <p class="objective-text">I can explain my steps using the words mixed number, improper fraction, convert, reciprocal, and simplify.<button type="button" class="read-aloud-btn" aria-label="Read the language objective aloud" title="Read the language objective aloud" data-speak="I can explain my steps using the words mixed number, improper fraction, convert, reciprocal, and simplify." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     
     <p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Read objectives aloud. Ask: What will you be able to do by the end of class?</p>
     <p class="ref-teacher-note ref-note-ask"><span>❓</span> Which vocabulary words do you already know? Which are new?</p>
@@ -2548,7 +2589,7 @@
     <div class="ref-curious-layout">
       <div class="ref-visual-prompt">
         <span class="ref-prompt-badge">Visual Prompt</span>
-        <p class="ref-instruction">Detective Agency Case File</p><p class="card-desc">Agent Chen is mapping a suspect&#039;s route. The total distance is 3 1/2 miles, and each segment between landmarks is 1/4 mile. She needs to know how many segments are on the route to place surveillance cameras at every landmark.</p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><line x1="40" y1="120" x2="400" y2="120" stroke="#17324D" stroke-width="2"/><line x1="40" y1="120" x2="48" y2="114" stroke="#17324D" stroke-width="2"/><line x1="40" y1="120" x2="48" y2="126" stroke="#17324D" stroke-width="2"/><line x1="400" y1="120" x2="392" y2="114" stroke="#17324D" stroke-width="2"/><line x1="400" y1="120" x2="392" y2="126" stroke="#17324D" stroke-width="2"/><line x1="100" y1="112" x2="100" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="100" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">-2</text><line x1="160" y1="112" x2="160" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="160" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">-1</text><line x1="220" y1="112" x2="220" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="220" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">0</text><line x1="280" y1="112" x2="280" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="280" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">1</text><line x1="340" y1="112" x2="340" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="340" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">2</text><circle cx="280" cy="120" r="5" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/></svg>
+        <p class="ref-instruction">Detective Agency Case File</p><p class="card-desc">Agent Chen is mapping a suspect&#039;s route. The total distance is 3 1/2 miles, and each segment between landmarks is 1/4 mile. She needs to know how many segments are on the route to place surveillance cameras at every landmark.<button type="button" class="read-aloud-btn" aria-label="Read the prompt aloud" title="Read the prompt aloud" data-speak="Agent Chen is mapping a suspect&#039;s route. The total distance is 3 1/2 miles, and each segment between landmarks is 1/4 mile. She needs to know how many segments are on the route to place surveillance cameras at every landmark." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><line x1="40" y1="120" x2="400" y2="120" stroke="#17324D" stroke-width="2"/><line x1="40" y1="120" x2="48" y2="114" stroke="#17324D" stroke-width="2"/><line x1="40" y1="120" x2="48" y2="126" stroke="#17324D" stroke-width="2"/><line x1="400" y1="120" x2="392" y2="114" stroke="#17324D" stroke-width="2"/><line x1="400" y1="120" x2="392" y2="126" stroke="#17324D" stroke-width="2"/><line x1="100" y1="112" x2="100" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="100" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">-2</text><line x1="160" y1="112" x2="160" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="160" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">-1</text><line x1="220" y1="112" x2="220" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="220" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">0</text><line x1="280" y1="112" x2="280" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="280" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">1</text><line x1="340" y1="112" x2="340" y2="128" stroke="#17324D" stroke-width="1.5"/><text x="340" y="142" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">2</text><circle cx="280" cy="120" r="5" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/></svg>
       </div>
       <div class="ref-nw-stack">
         <div class="ref-nw-panel ref-nw-notice">
@@ -2857,31 +2898,31 @@
       </thead>
       <tbody>
     <tr>
-      <td class="ref-vocab-term">Mixed Number<br/><em>Número mixto</em></td>
+      <td class="ref-vocab-term">Mixed Number<button type="button" class="read-aloud-btn" aria-label="Read Mixed Number and its meaning aloud" title="Read Mixed Number and its meaning aloud" data-speak="Mixed Number. A whole number plus a fraction, like 2 1/3." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Número mixto</em><button type="button" class="read-aloud-btn" aria-label="Leer Número mixto en español" title="Leer Número mixto en español" data-speak="Número mixto. Un número entero más una fracción, como 2 1/3." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A whole number plus a fraction, like 2 1/3.<br/><em>Un número entero más una fracción, como 2 1/3.</em></td>
       <td></td>
       <td class="ref-vocab-visual">2 1/3 means 2 wholes and 1/3 more — picture 2 full circles and 1/3 of another</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Improper Fraction<br/><em>Fracción impropia</em></td>
+      <td class="ref-vocab-term">Improper Fraction<button type="button" class="read-aloud-btn" aria-label="Read Improper Fraction and its meaning aloud" title="Read Improper Fraction and its meaning aloud" data-speak="Improper Fraction. A fraction where the top is bigger than or equal to the bottom, like 7/4." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Fracción impropia</em><button type="button" class="read-aloud-btn" aria-label="Leer Fracción impropia en español" title="Leer Fracción impropia en español" data-speak="Fracción impropia. Una fracción donde el número de arriba es mayor o igual al de abajo, como 7/4." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A fraction where the top is bigger than or equal to the bottom, like 7/4.<br/><em>Una fracción donde el número de arriba es mayor o igual al de abajo, como 7/4.</em></td>
       <td></td>
       <td class="ref-vocab-visual">7/3 is improper because 7 > 3. It equals 2 1/3 as a mixed number.</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Convert<br/><em>Convertir</em></td>
+      <td class="ref-vocab-term">Convert<button type="button" class="read-aloud-btn" aria-label="Read Convert and its meaning aloud" title="Read Convert and its meaning aloud" data-speak="Convert. To change a number to a new form but keep the same value." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Convertir</em><button type="button" class="read-aloud-btn" aria-label="Leer Convertir en español" title="Leer Convertir en español" data-speak="Convertir. Cambiar un número a otra forma sin cambiar su valor." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>To change a number to a new form but keep the same value.<br/><em>Cambiar un número a otra forma sin cambiar su valor.</em></td>
       <td></td>
       <td class="ref-vocab-visual">2 1/3 → multiply 2 × 3 = 6, add 1 → 7/3. Same value, different form.</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Simplify<br/><em>Simplificar</em></td>
+      <td class="ref-vocab-term">Simplify<button type="button" class="read-aloud-btn" aria-label="Read Simplify and its meaning aloud" title="Read Simplify and its meaning aloud" data-speak="Simplify. To make a fraction smaller using the same parts, like 2/4 = 1/2." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Simplificar</em><button type="button" class="read-aloud-btn" aria-label="Leer Simplificar en español" title="Leer Simplificar en español" data-speak="Simplificar. Hacer una fracción más pequeña con las mismas partes, como 2/4 = 1/2." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>To make a fraction smaller using the same parts, like 2/4 = 1/2.<br/><em>Hacer una fracción más pequeña con las mismas partes, como 2/4 = 1/2.</em></td>
       <td></td>
       <td class="ref-vocab-visual">8/6: GCF is 2 → 8÷2 / 6÷2 = 4/3 = 1 1/3</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Reciprocal<br/><em>Recíproco</em></td>
+      <td class="ref-vocab-term">Reciprocal<button type="button" class="read-aloud-btn" aria-label="Read Reciprocal and its meaning aloud" title="Read Reciprocal and its meaning aloud" data-speak="Reciprocal. A fraction turned upside down. You use it in keep-change-flip." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Recíproco</em><button type="button" class="read-aloud-btn" aria-label="Leer Recíproco en español" title="Leer Recíproco en español" data-speak="Recíproco. Una fracción volteada de arriba abajo. Se usa en deja-cambia-voltea." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A fraction turned upside down. You use it in keep-change-flip.<br/><em>Una fracción volteada de arriba abajo. Se usa en deja-cambia-voltea.</em></td>
       <td></td>
       <td class="ref-vocab-visual">The reciprocal of 3/4 is 4/3. To divide by 3/4, multiply by 4/3.</td>
@@ -3017,10 +3058,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">Agent Chen maps a 3 1/2-mile route divided into 1/4-mile segments. Why can&#039;t she just divide 3 1/2 by 1/4 while it is still a mixed number?</p>
+        <p class="card-desc tt-question">Agent Chen maps a 3 1/2-mile route divided into 1/4-mile segments. Why can&#039;t she just divide 3 1/2 by 1/4 while it is still a mixed number?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="Agent Chen maps a 3 1/2-mile route divided into 1/4-mile segments. Why can&#039;t she just divide 3 1/2 by 1/4 while it is still a mixed number?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ I cannot divide yet because 3 1/2 is a ___ and I need an ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ First I must convert 3 1/2 into ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('I cannot divide yet because 3 1/2 is a ___ and I need an ___.')">✍️ I cannot divide yet because 3 1/2 is a ___ and I need an ___.<span class="stem-es">No puedo dividir todavía porque 3 1/2 es un ___ y necesito una ___.</span></div><div class="tt-stem" onclick="insertAtCursor('First I must convert 3 1/2 into ___.')">✍️ First I must convert 3 1/2 into ___.<span class="stem-es">Primero debo convertir 3 1/2 en ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ I estimate about ___ segments because ___.</div><div class="tt-stem tt-stem-extend">➕ Each mile holds ___ quarter-mile segments, so ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">mixed number</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">improper fraction</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">convert</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-launch">
@@ -3214,10 +3256,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">Walk your partner through how you changed the mixed numbers before dividing.</p>
+        <p class="card-desc tt-question">Walk your partner through how you changed the mixed numbers before dividing.<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="Walk your partner through how you changed the mixed numbers before dividing." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ First I converted ___ into the improper fraction ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ Then I flipped the divisor and got the quotient ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('First I converted ___ into the improper fraction ___.')">✍️ First I converted ___ into the improper fraction ___.<span class="stem-es">Primero convertí ___ en la fracción impropia ___.</span></div><div class="tt-stem" onclick="insertAtCursor('Then I flipped the divisor and got the quotient ___.')">✍️ Then I flipped the divisor and got the quotient ___.<span class="stem-es">Luego volteé el divisor y obtuve el cociente ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ The student forgot to ___.</div><div class="tt-stem tt-stem-extend">➕ The correct improper fraction is ___ because ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">mixed number</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">improper fraction</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">reciprocal</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">simplify</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-explore">
@@ -3266,19 +3309,19 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">2 min</span>
   </div>
-        <p class="card-desc mc-stem">A recipe makes 2 1/4 batches of cookies. Each batch uses 3/4 cup of butter. How many cups of butter are needed in total?</p>
+        <p class="card-desc mc-stem">A baker has 2 1/4 cups of butter. Each batch of cookies needs 3/4 cup of butter. How many batches can the baker make?</p>
         <div class="mc-choices"><button class="assess-btn mc-btn mc-animate" id="btn-mc1-0" onclick="checkMCQuestionByPrefix('mc1', 0, 0)">
         <span class="mc-letter">A</span>
-        <span class="mc-choice-text">3 cups</span>
+        <span class="mc-choice-text">3 batches</span>
       </button><button class="assess-btn mc-btn mc-animate" id="btn-mc1-1" onclick="checkMCQuestionByPrefix('mc1', 1, 0)">
         <span class="mc-letter">B</span>
-        <span class="mc-choice-text">1 1/2 cups</span>
+        <span class="mc-choice-text">1 1/2 batches</span>
       </button><button class="assess-btn mc-btn mc-animate" id="btn-mc1-2" onclick="checkMCQuestionByPrefix('mc1', 2, 0)">
         <span class="mc-letter">C</span>
-        <span class="mc-choice-text">2 cups</span>
+        <span class="mc-choice-text">2 batches</span>
       </button><button class="assess-btn mc-btn mc-animate" id="btn-mc1-3" onclick="checkMCQuestionByPrefix('mc1', 3, 0)">
         <span class="mc-letter">D</span>
-        <span class="mc-choice-text">6 cups</span>
+        <span class="mc-choice-text">6 batches</span>
       </button></div>
         <div id="mc1-feedback" class="mc-feedback"></div>
       </div>
@@ -3286,7 +3329,7 @@
         <h2 class="card-title">✍️ Show Your Work</h2>
         <p class="card-desc-sm">Explain why your answer is correct using today's vocabulary.</p>
         <textarea id="mc1-work" class="slide-input-placeholder" rows="6" placeholder="Type your reasoning here..."></textarea>
-        <div class="teacher-reveal-box"><strong>Teacher reveal:</strong> This is multiplication: 2 1/4 × 3/4 = 9/4 × 3/4 = 27/16. Wait — re-read: we need 2 1/4 batches at 3/4 cup each, but the question for division practice should be: if you have 2 1/4 cups and each batch needs 3/4 cup, how many batches? 2 1/4 ÷ 3/4 = 9/4 × 4/3 = 36/12 = 3.</div>
+        <div class="teacher-reveal-box"><strong>Teacher reveal:</strong> Convert 2 1/4 = 9/4. Then 2 1/4 ÷ 3/4 = 9/4 × 4/3 = 36/12 = 3 batches.</div>
       </div>
     </div></div>
     </div><footer class="ref-slide-footer" data-slide-num="25">
@@ -3417,7 +3460,7 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <span class="ref-error-badge">⚠ Find the Mixed Number Error</span>
-    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.</p>
+    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.<button type="button" class="read-aloud-btn" aria-label="Read the directions aloud" title="Read the directions aloud" data-speak="A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     <div class="ref-student-work-box">
       <div class="ref-work-label">Student&apos;s work — read every step:</div>
       <div class="ea-steps">
@@ -3724,11 +3767,11 @@
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🔍 DETECTIVE AGENCY</span></div>
     <h3 class="slide-main-title">Differentiation Paths</h3>
     <div class="slide-card">
-      <span class="slide-badge badge-teal">🎯 THREE PATHS</span>
+      <span class="slide-badge badge-teal">🎯 CHOOSE YOUR LEVEL</span>
       <div class="teacher-cue teacher-cue-say">
     <span class="teacher-cue-icon">👩‍🏫</span>
     <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">All students work on math — choose the path that matches readiness.</span>
+    <span class="teacher-cue-text">Everyone works on the same math goal — pick the level of support that fits today.</span>
   </div>
       <div class="teacher-cue teacher-cue-time">
     <span class="teacher-cue-icon">⏱️</span>
@@ -3736,17 +3779,21 @@
     <span class="teacher-cue-text">8–10 min independent or partner</span>
   </div>
       <div class="diff-paths-grid">
+        <div class="diff-path" style="--path-color:var(--coral, #e07a5f)">
+      <div class="diff-path-label">🧩 Level 0 · Most support</div>
+      <p class="diff-path-stem">Step-by-step with a worked model and sentence frames.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Step-by-step with a worked model and sentence frames." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
+    </div>
         <div class="diff-path" style="--path-color:var(--amber)">
-      <div class="diff-path-label">🌱 Approaching</div>
-      <p class="diff-path-stem">What is 1 1/2 ÷ 3/4?</p>
+      <div class="diff-path-label">🌱 Level 1 · Support</div>
+      <p class="diff-path-stem">What is 1 1/2 ÷ 3/4?<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="What is 1 1/2 ÷ 3/4?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--teal)">
-      <div class="diff-path-label">🎯 On-Level</div>
-      <p class="diff-path-stem">Core practice aligned to the standard.</p>
+      <div class="diff-path-label">🎯 Level 2 · Core</div>
+      <p class="diff-path-stem">Core practice aligned to the standard.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Core practice aligned to the standard." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--navy)">
-      <div class="diff-path-label">🚀 Challenge</div>
-      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.</p>
+      <div class="diff-path-label">🚀 Level 2+ · Enrichment</div>
+      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Extension with error analysis or multi-step reasoning." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
       </div>
     </div></div>
@@ -3906,10 +3953,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">When would dividing mixed numbers come up in a real project, like building or cooking?</p>
+        <p class="card-desc tt-question">When would dividing mixed numbers come up in a real project, like building or cooking?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="When would dividing mixed numbers come up in a real project, like building or cooking?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ I would divide mixed numbers when ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ For example, cutting ___ feet into ___-foot pieces gives ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('I would divide mixed numbers when ___.')">✍️ I would divide mixed numbers when ___.<span class="stem-es">Dividiría números mixtos cuando ___.</span></div><div class="tt-stem" onclick="insertAtCursor('For example, cutting ___ feet into ___-foot pieces gives ___.')">✍️ For example, cutting ___ feet into ___-foot pieces gives ___.<span class="stem-es">Por ejemplo, cortar ___ pies en piezas de ___ pie da ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ My steps are: first ___, then ___, then ___.</div><div class="tt-stem tt-stem-extend">➕ This always works because ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">mixed number</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">improper fraction</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">convert</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-connect">
@@ -4229,7 +4277,7 @@
     <h3 class="slide-main-title">Answer Key (Teacher Appendix)</h3>
     <div class="slide-card">
       <p class="answer-key-note">Hide this slide during presentation or move to the end of your copy.</p>
-      <p class="answer-key-item">✓ Practice 1: 3 cups — This is multiplication: 2 1/4 × 3/4 = 9/4 × 3/4 = 27/16. Wait — re-read: we need 2 1/4 batches at 3/4 cup each, but the question for division practice should be: if you have 2 1/4 cups and each batch needs 3/4 cup, how many batches? 2 1/4 ÷ 3/4 = 9/4 × 4/3 = 36/12 = 3.</p><p class="answer-key-item">✓ Practice 2: 2 — 1 1/2 = 3/2. Then 3/2 ÷ 3/4 = 3/2 × 4/3 = 12/6 = 2.</p><p class="answer-key-item">✓ Practice 3: 17/5 — 3 × 5 = 15, then 15 + 2 = 17. So 3 2/5 = 17/5.</p><p class="answer-key-item">✓ Practice 4: 3 — 2 1/4 = 9/4. Then 9/4 ÷ 3/4 = 9/4 × 4/3 = 36/12 = 3.</p><p class="answer-key-item">✓ Exit ticket: 4 — 2 2/3 = 8/3. Then 8/3 ÷ 2/3 = 8/3 × 3/2 = 24/6 = 4.</p>
+      <p class="answer-key-item">✓ Practice 1: 3 batches — Convert 2 1/4 = 9/4. Then 2 1/4 ÷ 3/4 = 9/4 × 4/3 = 36/12 = 3 batches.</p><p class="answer-key-item">✓ Practice 2: 2 — 1 1/2 = 3/2. Then 3/2 ÷ 3/4 = 3/2 × 4/3 = 12/6 = 2.</p><p class="answer-key-item">✓ Practice 3: 17/5 — 3 × 5 = 15, then 15 + 2 = 17. So 3 2/5 = 17/5.</p><p class="answer-key-item">✓ Practice 4: 3 — 2 1/4 = 9/4. Then 9/4 ÷ 3/4 = 9/4 × 4/3 = 36/12 = 3.</p><p class="answer-key-item">✓ Exit ticket: 4 — 2 2/3 = 8/3. Then 8/3 ÷ 2/3 = 8/3 × 3/2 = 24/6 = 4.</p>
     </div></div>
     </div><footer class="ref-slide-footer" data-slide-num="47">
       <span>Reveal Math Grade 6 · Unit 2 · 2-4</span>
@@ -4433,6 +4481,66 @@
         }
       }, 1000);
     }
+
+    // -----------------------------------------------------------------
+    // READ-ALOUD (Text-to-Speech) — accessibility + Level 1 language support
+    // Reads slide text via the browser Web Speech API. Rate is saved so a
+    // teacher/student preference persists across slides and lessons.
+    // -----------------------------------------------------------------
+    const SLIDE_TTS_RATE_KEY = 'neft-slide-tts-rate';
+    function getSlideTtsRate() {
+      const saved = parseFloat(localStorage.getItem(SLIDE_TTS_RATE_KEY));
+      return (saved && saved >= 0.5 && saved <= 1.5) ? saved : 0.85;
+    }
+    function setSlideTtsRate(rate) {
+      const r = parseFloat(rate);
+      if (r && r >= 0.5 && r <= 1.5) localStorage.setItem(SLIDE_TTS_RATE_KEY, String(r));
+    }
+    function speakText(text, lang) {
+      if (!('speechSynthesis' in window) || !text) return;
+      try {
+        // A second tap on a speaking button stops it (toggle behavior).
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          return;
+        }
+        const utter = new SpeechSynthesisUtterance(String(text).replace(/[✍️🎯🗣️👂✓✗⚠➡️•]/g, ' ').trim());
+        utter.rate = getSlideTtsRate();
+        utter.lang = lang || 'en-US';
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+      } catch (e) { /* speech not available */ }
+    }
+    // Read-aloud buttons carry their text in data-speak (and optional data-lang).
+    function speakFromButton(btn) {
+      if (!btn) return;
+      speakText(btn.getAttribute('data-speak') || '', btn.getAttribute('data-lang') || 'en-US');
+    }
+    window.speakText = speakText;
+    window.speakFromButton = speakFromButton;
+    window.setSlideTtsRate = setSlideTtsRate;
+    window.getSlideTtsRate = getSlideTtsRate;
+
+    // Bilingual (Spanish support) toggle — persists per browser.
+    const SLIDE_BILINGUAL_KEY = 'neft-slide-bilingual';
+    function applyBilingual(on) {
+      document.body.classList.toggle('bilingual-on', on);
+      const btn = document.getElementById('bilingual-toggle');
+      if (btn) btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    function toggleBilingual(btn) {
+      const on = !document.body.classList.contains('bilingual-on');
+      localStorage.setItem(SLIDE_BILINGUAL_KEY, on ? '1' : '0');
+      applyBilingual(on);
+    }
+    window.toggleBilingual = toggleBilingual;
+    // Restore saved accessibility preferences on load.
+    (function initA11yPrefs() {
+      const savedBi = localStorage.getItem(SLIDE_BILINGUAL_KEY);
+      if (savedBi !== null) applyBilingual(savedBi === '1');
+      const rateSel = document.getElementById('tts-rate-select');
+      if (rateSel) rateSel.value = String(getSlideTtsRate());
+    })();
 
     // CFU thumb responses
     const cfuResponses = {};
@@ -5794,8 +5902,8 @@
     
   </script>
 
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
-</body>
+  </body>
 </html>

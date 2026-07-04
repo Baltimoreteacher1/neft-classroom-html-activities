@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <meta
       name="description"
       content="Cartesian Odyssey: An immersive space coordinate sandbox for plotting vertices, measuring absolute value distances across quadrants, and calculating polygon areas."
@@ -966,6 +967,107 @@
           transition: opacity 0.1s ease;
         }
       }
+
+      /* ===== Responsive: tablets & phones (additive only) ===== */
+      @media (max-width: 900px) {
+        header {
+          padding: 14px 18px;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        .logo-wrap h1 {
+          font-size: 1.35rem;
+        }
+        .header-btns {
+          flex-wrap: wrap;
+        }
+        .main-container {
+          grid-template-columns: 1fr;
+          gap: 18px;
+          margin: 18px auto;
+          padding: 0 18px;
+        }
+        .card,
+        .work-card {
+          padding: 20px;
+        }
+        .point-selector-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .diagnostics-overlay {
+          width: min(320px, calc(100vw - 32px));
+        }
+      }
+
+      @media (max-width: 640px) {
+        header {
+          padding: 12px 14px;
+        }
+        .logo-wrap span {
+          font-size: 1.4rem;
+        }
+        .logo-wrap h1 {
+          font-size: 1.15rem;
+        }
+        .header-btns {
+          width: 100%;
+          justify-content: stretch;
+          gap: 8px;
+        }
+        .header-btns .btn {
+          flex: 1;
+          justify-content: center;
+          padding: 8px 10px;
+          font-size: 0.8rem;
+        }
+        .main-container {
+          gap: 14px;
+          margin: 14px auto;
+          padding: 0 12px;
+        }
+        .card,
+        .work-card {
+          padding: 16px;
+          border-radius: var(--radius-md);
+        }
+        .card h2 {
+          font-size: 1.1rem;
+        }
+        .point-selector-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 8px;
+        }
+        /* Keep the interactive star-map fitting the viewport (viewBox-scaled SVG) */
+        .svg-viewport {
+          width: 100%;
+          max-width: 100%;
+          height: auto;
+        }
+        .work-card-title {
+          font-size: 1rem;
+        }
+        .stepper-row {
+          flex-wrap: wrap;
+        }
+        .stepper button {
+          width: 44px;
+          height: 44px;
+        }
+        .toast {
+          width: calc(100vw - 32px);
+          max-width: 360px;
+          padding: 12px 18px;
+          font-size: 0.95rem;
+        }
+        .diagnostics-overlay {
+          left: 16px;
+          right: 16px;
+          width: auto;
+        }
+        .modal {
+          padding: 20px;
+        }
+      }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
@@ -973,7 +1075,13 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
-  </head>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <link rel="stylesheet" href="/assets/game-access.css">
+  <!-- gacc-injected:end -->
+</head>
   <body>
     <header>
       <div class="logo-wrap">
@@ -2356,5 +2464,14 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  </body>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+  <script src="/assets/canvas-bridge.js" defer></script>
+  <!-- canvas-bridge-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <script src="/assets/game-access.js" defer></script>
+  <!-- gacc-injected:end -->
+</body>
 </html>

@@ -66,6 +66,8 @@ CANDIDATES=(
 	validate:reveal-math
 	validate:homework
 	validate:practice
+	validate:save-resume
+	validate:injection
 	audit
 	audit:curriculum
 	audit:homework
@@ -73,9 +75,13 @@ CANDIDATES=(
 	audit:routes
 	audit:content
 	audit:format
-	format
-	prettier
 )
+# NOTE: `format` (= `biome format --write`) and `prettier` are intentionally
+# NOT run here — this loop must be READ-ONLY. `biome format --write` mutates
+# the working tree, which left dirty files after every run. `lint` (biome lint,
+# read-only) is already in the list above for a style signal; run
+# `npm run format` by hand to rewrite files. See .prettierignore (Biome is the
+# repo formatter, not Prettier).
 
 PASS=()
 SKIP=()

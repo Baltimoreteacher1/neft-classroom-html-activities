@@ -1,0 +1,1170 @@
+// ════════════════════════════════════════════════════════════════════════
+//  GAMES-2D CANONICAL DATA — single source of truth
+// ════════════════════════════════════════════════════════════════════════
+//  This file is the ONE editable place for the standards / vocab /
+//  misconceptions / tier labels that the hand-built 2D + Phaser math games
+//  display. Each entry is keyed by a stable game id (the game's folder name).
+//
+//  The games are standalone static HTML pages (served as-is by Cloudflare
+//  Pages), so they cannot `import` a Node module at runtime. Instead, run
+//
+//      npm run generate-games2d-data
+//
+//  to emit the browser artifact `assets/games2d-data.js`, which exposes the
+//  SAME object as `window.Games2DData`. Each wired game reads its block from
+//  `window.Games2DData["<id>"]` (with a small inline fallback so the page is
+//  never blank if the script fails to load). Edit metadata HERE, regenerate,
+//  and every wired game updates — instead of hunting through 39 HTML files.
+//
+//  Shape per game id:
+//    {
+//      ccss: "6.RP.A.1",                 // canonical standard code (analytics + UI)
+//      title: "Ratio Kitchen",           // display name
+//      vocab: [ { term, defn, img } ],   // term + student-facing (ESOL-level) definition + optional image
+//      misconceptions: [ { tag, trigger, feedback } ],  // canonical nudge copy
+//      tiers: {                          // never label "ESOL" — Level 1 / Level 2 (and Level 0 where present)
+//        0?: { label, sub, desc },
+//        1:  { label, sub, desc },
+//        2:  { label, sub, desc },
+//      },
+//    }
+// ════════════════════════════════════════════════════════════════════════
+
+export const GAMES_2D = {
+  // ── Ratio Kitchen (math/unit-3/6-rp-1game) — REAL_GAME ────────────────
+  "6-rp-1game": {
+    ccss: "6.RP.A.1",
+    title: "Ratio Kitchen",
+    vocab: [
+      {
+        term: "ratio",
+        defn: "A way to compare two amounts, like 2 scoops of berry to 3 scoops of mango (2:3).",
+        img: "",
+      },
+      {
+        term: "equivalent ratios",
+        defn: "Ratios that show the same comparison, like 2:3 and 4:6 — bigger batch, same taste.",
+        img: "",
+      },
+      {
+        term: "scale (a ratio)",
+        defn: "To make a bigger or smaller batch by multiplying both parts by the same number.",
+        img: "",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "added-instead-of-scaled",
+        trigger: "Student adds the same number to each part instead of multiplying.",
+        feedback:
+          "Equivalent ratios MULTIPLY both parts by the same number — adding changes the taste.",
+      },
+      {
+        tag: "scaled-one-part",
+        trigger: "Student scales only one ingredient.",
+        feedback: "Scale BOTH tubes by the same factor so the ratio stays the same.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Small ratios · always shows the rule",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Scaling & missing values · less help",
+      },
+    },
+  },
+
+  // ── Ratio Rush (math/games/u3-ratio-rush) — smoothie-bar pour ─────────
+  "u3-ratio-rush": {
+    ccss: "6.RP.A.1",
+    title: "Ratio Rush",
+    vocab: [
+      {
+        term: "ratio",
+        defn: "A way to compare two amounts, like 2 scoops of berry to 3 scoops of mango. We write it as 2:3.",
+        img: "",
+      },
+      {
+        term: "equivalent ratios",
+        defn: "Two ratios that compare the same way, like 3:4 and 6:8 — a bigger batch with the SAME flavor. Multiply both parts by the same number.",
+        img: "",
+      },
+      {
+        term: "part",
+        defn: "One of the two amounts in a ratio. In 3:4 the parts are 3 and 4 — here, the scoops in each tube of the smoothie.",
+        img: "",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "added-instead-of-scaled",
+        trigger: "Adds the same number of scoops to each tube instead of multiplying both parts.",
+        feedback:
+          "Equivalent ratios MULTIPLY both parts by the same number. Adding the same amount to each tube changes the flavor.",
+      },
+      {
+        tag: "scaled-one-part",
+        trigger: "Pours more into one tube but leaves the other, so the ratio drifts.",
+        feedback: "Fill BOTH tubes by the same factor so the smoothie keeps the same ratio.",
+      },
+      {
+        tag: "matched-numbers-not-ratio",
+        trigger:
+          "Pours the exact target numbers when a simpler equivalent batch would also fill the order.",
+        feedback:
+          "An order for 6:8 is also filled by 3:4 — any equivalent ratio works. Match the FLAVOR, not just the numbers.",
+      },
+    ],
+    tiers: {
+      0: {
+        label: "Level 0",
+        sub: "Most support",
+        desc: "Tiny ratios · the matching guide stays on screen",
+      },
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Simplest-form orders · color preview helps you check",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Scaled-up orders · serve a smaller equivalent batch",
+      },
+    },
+  },
+
+  // ── Factor Frenzy (math/games/u1-factor-frenzy) — arcade ──────────────
+  "u1-factor-frenzy": {
+    ccss: "6.NS.4",
+    title: "Factor Frenzy",
+    vocab: [
+      {
+        term: "prime number",
+        defn: "A number greater than 1 whose only factors are 1 and itself (like 7).",
+        img: "",
+      },
+      {
+        term: "composite number",
+        defn: "A number with more than two factors (like 12 = 1, 2, 3, 4, 6, 12).",
+        img: "",
+      },
+      {
+        term: "GCF (greatest common factor)",
+        defn: "The largest number that divides evenly into two numbers.",
+        img: "",
+      },
+      {
+        term: "LCM (least common multiple)",
+        defn: "The smallest number that two numbers both divide into evenly.",
+        img: "",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "one-is-prime",
+        trigger: "Student labels 1 as prime.",
+        feedback: "1 is neither prime nor composite — a prime needs exactly two factors.",
+      },
+      {
+        tag: "gcf-lcm-swap",
+        trigger: "Student gives the LCM when the GCF is asked (or vice-versa).",
+        feedback: "GCF is the biggest shared FACTOR; LCM is the smallest shared MULTIPLE.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller numbers · sort at your own pace",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · GCF & LCM rounds",
+      },
+    },
+  },
+
+  // ── Variable Blaster (math/unit-9/6-ee-c-9game) — REAL_GAME ───────────
+  "6-ee-c-9game": {
+    ccss: "6.EE.C.9",
+    title: "Variable Blaster",
+    vocab: [
+      {
+        term: "independent variable",
+        defn: "The input you choose; it does not depend on the other variable (often x).",
+        img: "",
+      },
+      {
+        term: "dependent variable",
+        defn: "The output that changes because of the independent variable (often y).",
+        img: "",
+      },
+      {
+        term: "equation",
+        defn: "A rule with an equals sign that links the two variables, like y = 2x + 1.",
+        img: "",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "swapped-variables",
+        trigger: "Student treats the output as the input.",
+        feedback:
+          "The dependent variable DEPENDS on the independent one — find the input first, then apply the rule.",
+      },
+      {
+        tag: "order-of-operations",
+        trigger: "Student adds before multiplying in the rule.",
+        feedback: "In y = 2x + 1, multiply 2 × x first, then add 1.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "One-step rules · the table is shown",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Two-step rules · find the rule yourself",
+      },
+    },
+  },
+
+  // ── Equation Forge (math/unit-8/game-equations-quest) — balance ───────
+  "game-equations-quest": {
+    ccss: "6.EE.B.7",
+    title: "Equation Forge",
+    vocab: [
+      {
+        term: "equation",
+        defn: "A math sentence saying two things are equal, like 2x + 3 = 11.",
+        img: "",
+      },
+      {
+        term: "balance / equal",
+        defn: "Both sides weigh the same. Whatever you do to one side, do to the other.",
+        img: "",
+      },
+      {
+        term: "isolate the variable",
+        defn: "Get x alone on one side so you can read its value.",
+        img: "",
+      },
+      {
+        term: "inverse operation",
+        defn: "The opposite move that undoes another: subtract undoes add; divide undoes multiply.",
+        img: "",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "one-side-only",
+        trigger: "Changes one side without doing the same to the other.",
+        feedback: "Keep it balanced — do the SAME thing to BOTH sides every time.",
+      },
+      {
+        tag: "subtract-before-divide",
+        trigger: "Divides while a constant is still added on the variable side.",
+        feedback: "Undo adding/subtracting FIRST, then divide to split the groups.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "One-step equations · the rule is shown",
+      },
+      2: { label: "Level 2", sub: "Challenge", desc: "Two-step equations · less help" },
+    },
+  },
+
+  // ── Unit Rate Factory (math/unit-4/6-rp-a-2game) — conveyor sort ──────
+  "6-rp-a-2game": {
+    ccss: "6.RP.A.2",
+    title: "Unit Rate Factory",
+    vocab: [
+      {
+        term: "rate",
+        defn: "A comparison of two amounts with different units, like $6 for 3 pounds.",
+        img: "",
+      },
+      {
+        term: "unit rate",
+        defn: "The price (or amount) for ONE: divide to get it. $6 for 3 = $2 each.",
+        img: "",
+      },
+      {
+        term: "per",
+        defn: "The word that signals a unit rate: miles per hour, dollars per item.",
+        img: "",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "did-not-divide",
+        trigger: "Uses the total price instead of the unit rate.",
+        feedback: "Unit rate means PER ONE — divide the price by the quantity.",
+      },
+      {
+        tag: "divided-backward",
+        trigger: "Divides quantity by price instead of price by quantity.",
+        feedback: "For price per item, divide DOLLARS ÷ ITEMS, not items ÷ dollars.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Whole-number unit rates · the division is shown",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · figure the rate yourself",
+      },
+    },
+  },
+
+  // ── Fraction Dungeon (6-1game) — 6.NS.1 ──
+  "6-1game": {
+    ccss: "6.NS.1",
+    title: "Fraction Dungeon",
+    vocab: [
+      {
+        term: "unit fraction",
+        defn: "A fraction with 1 on top, like 1/4. A ¾-ft board is three of these ¼ pieces joined together.",
+      },
+      {
+        term: "quotient",
+        defn: "The answer to a division problem. Here it is how many boards fit: corridor length ÷ board length.",
+      },
+      {
+        term: "dividing by a fraction",
+        defn: "Asking 'how many of THIS smaller length fit inside that length?' The smaller the board, the MORE boards fit.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "overhang",
+        trigger: "Lays one too many boards so the last one sticks past the wall.",
+        feedback:
+          "That board overhangs the wall. Pull it back — you only count boards that fit INSIDE the corridor.",
+      },
+      {
+        tag: "gap-open-early",
+        trigger: "Opens the door while bare floor (a gap) is still showing.",
+        feedback:
+          "There's still bare floor left. Keep laying boards until the corridor is filled exactly — no gap.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Whole-number corridors · the grid shows each board's spot",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Mixed-number corridors · figure out the fit yourself",
+      },
+    },
+  },
+
+  // ── Parallelogram Builder (parallelogramandrhombusgame) — 6.G.A.1 ──
+  parallelogramandrhombusgame: {
+    ccss: "6.G.A.1",
+    title: "Parallelogram Builder",
+    vocab: [
+      {
+        term: "base",
+        defn: "One side of a parallelogram, measured straight across the bottom. You multiply it by the height to get the area.",
+      },
+      {
+        term: "height",
+        defn: "The straight up-and-down distance between the base and the opposite side — it makes a right angle with the base, not the slanted edge.",
+      },
+      {
+        term: "parallelogram",
+        defn: "A four-sided shape whose opposite sides are parallel. Slide (shear) a rectangle sideways and you get one with the SAME area.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "slant-as-height",
+        trigger: "Multiplies the base by the slanted side instead of the perpendicular height.",
+        feedback:
+          "Area uses the perpendicular height, not the slanted side. Count the rows of squares going straight up.",
+      },
+      {
+        tag: "area-changes-when-sheared",
+        trigger: "Thinks shearing the rectangle changes how many unit squares there are.",
+        feedback:
+          "Shearing only slides the squares sideways — none are added or removed, so base × height stays the same.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller base & height · formula and square-count scaffold shown",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger base & height · less help, trickier distractors",
+      },
+    },
+  },
+
+  // ── Function Tower (6-ee-9gamereview) — 6.EE.C.9 ──
+  "6-ee-9gamereview": {
+    ccss: "6.EE.C.9",
+    title: "Function Tower",
+    vocab: [
+      {
+        term: "independent variable",
+        defn: "The input you choose — here it's x. You pick x, and y depends on it.",
+      },
+      {
+        term: "dependent variable",
+        defn: "The output that depends on the input — here it's y. Find y from the rule.",
+      },
+      {
+        term: "rule (equation)",
+        defn: "How to get y from x, like y = 2·x + 1: multiply x by 2, then add 1.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "forgot-constant",
+        trigger: "Multiplies m·x but forgets to add b.",
+        feedback: "Don't stop at m·x — the rule also says + b. Add the constant too.",
+      },
+      {
+        tag: "added-before-multiplying",
+        trigger: "Adds b to x first, then multiplies (order of operations).",
+        feedback: "Multiply m·x FIRST, then add b. Times before plus.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller numbers · the substitution is shown",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · compute y on your own",
+      },
+    },
+  },
+
+  // ── Smart Shopper (6-rp-a-3game) — 6.RP.A.3 ──
+  "6-rp-a-3game": {
+    ccss: "6.RP.A.3",
+    title: "Smart Shopper",
+    vocab: [
+      {
+        term: "unit price",
+        defn: "The cost of ONE item. Divide the total price by how many you get: $12 for 4 = $3 each.",
+      },
+      {
+        term: "better buy",
+        defn: "The deal with the LOWER unit price — you pay less for each item.",
+      },
+      {
+        term: "percent off",
+        defn: "A discount. 25% off means you subtract 25% of the price. 25% of $40 = $10, so you pay $30.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "compared-totals",
+        trigger: "Compares total prices instead of the price per item.",
+        feedback:
+          "A bigger total can still be the better buy. Find the price for ONE item first: price ÷ quantity.",
+      },
+      {
+        tag: "added-instead-of-subtract",
+        trigger: "Adds the percent or forgets to subtract the discount.",
+        feedback:
+          "Percent OFF is a discount: find the percent of the price, then SUBTRACT it from the price.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Whole-dollar unit prices · the division is shown",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Prices with cents · percent-off discounts",
+      },
+    },
+  },
+
+  // ── Mars Rover (6-ee-c-9martiangame) — 6.EE.C.9 ──
+  "6-ee-c-9martiangame": {
+    ccss: "6.EE.C.9",
+    title: "Mars Rover",
+    vocab: [
+      {
+        term: "independent variable",
+        defn: "The input you are given — here it's x, the value you plug into the rule.",
+      },
+      {
+        term: "dependent variable",
+        defn: "The output you compute — here it's y, the drive distance the rule produces from x.",
+      },
+      {
+        term: "evaluate an expression",
+        defn: "Put the value of x into the rule and do the math to find y. Multiply first, then add.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "ignored-constant",
+        trigger: "Drives m·x but forgets to add the constant b.",
+        feedback: "Don't forget the + part of the rule. After multiplying, ADD the constant.",
+      },
+      {
+        tag: "order-of-operations",
+        trigger: "Adds before multiplying, e.g. (x + b) then ·m.",
+        feedback: "Multiply m by x FIRST, then add b. Multiplication comes before addition.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller numbers · step-by-step rule shown",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · work it out yourself",
+      },
+    },
+  },
+
+  // ── Variable Velocity (6-ee-c-9variablevelocitygame) — 6.EE.C.9 ──
+  "6-ee-c-9variablevelocitygame": {
+    ccss: "6.EE.C.9",
+    title: "Variable Velocity",
+    vocab: [
+      {
+        term: "independent variable",
+        defn: "The input you are given (here, x). You plug it into the rule — it does not depend on anything else.",
+      },
+      {
+        term: "dependent variable",
+        defn: "The output (here, y). Its value depends on the rule and the x you put in.",
+      },
+      {
+        term: "evaluate",
+        defn: "To find the value of an expression by substituting a number for the variable, then doing the math (multiply before you add).",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "skips-multiplication",
+        trigger: "Student adds m + x + b instead of multiplying m·x first.",
+        feedback: "Multiply m·x BEFORE you add b. Order of operations: times before plus.",
+      },
+      {
+        tag: "drops-constant",
+        trigger: "Student computes m·x but forgets to add the constant b.",
+        feedback: "After m·x, don't forget the + b. The constant shifts every lane up.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller numbers · steps shown",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · work it out yourself",
+      },
+    },
+  },
+
+  // ── Expression Arena (variablecomparisongame) — 6.EE.B.5 ──
+  variablecomparisongame: {
+    ccss: "6.EE.B.5",
+    title: "Expression Arena",
+    vocab: [
+      {
+        term: "expression",
+        defn: "A math phrase with numbers, a variable, and operations, like 3x + 2. It has no equals sign.",
+      },
+      {
+        term: "evaluate",
+        defn: "To find the value of an expression by putting a number in for the variable and doing the math.",
+      },
+      {
+        term: "substitute",
+        defn: "To swap the variable for its number — replace every x with the value you are given.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "skip-multiply",
+        trigger: "Adds the coefficient and x instead of multiplying (reads 3x as 3 + x).",
+        feedback: "3x means 3 TIMES x. Multiply the coefficient by x first, then add or subtract.",
+      },
+      {
+        tag: "compare-coefficients",
+        trigger:
+          "Compares the two expressions by their coefficients instead of their evaluated values.",
+        feedback:
+          "You can't tell which is bigger from the numbers in front. Plug in x and compare the RESULTS.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller numbers · the substitution is shown",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · evaluate it yourself",
+      },
+    },
+  },
+
+  // ── Variable Voyage (game-variable-voyage) — 6.EE.A.2 ──
+  "game-variable-voyage": {
+    ccss: "6.EE.A.2",
+    title: "Variable Voyage",
+    vocab: [
+      {
+        term: "variable",
+        defn: "A letter like n that stands for a number you don't know yet, until you are told its value.",
+      },
+      {
+        term: "substitute",
+        defn: "To swap the variable for its number — replace every n with the value you are given.",
+      },
+      {
+        term: "order of operations",
+        defn: "The rule for which step comes first: multiply and divide BEFORE you add or subtract.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "add-before-multiply",
+        trigger: "Fires the + or − node before the × node in an expression like 2 × n + 5.",
+        feedback: "Multiply before you add. In 2 × n + 5, do 2 × n first, THEN add 5.",
+      },
+      {
+        tag: "partial-substitution",
+        trigger: "Tries to fire an operation while a variable slot is still empty.",
+        feedback: "Substitute first: every n slot needs the value before any operation can run.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller numbers · worked-out scaffold shown",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · two variable slots",
+      },
+    },
+  },
+
+  // ── Equation Leap (cloudflare-pages-game-for-6-ee-9) — 6.EE.B.7 ──
+  "cloudflare-pages-game-for-6-ee-9": {
+    ccss: "6.EE.B.7",
+    title: "Equation Leap",
+    vocab: [
+      {
+        term: "equation",
+        defn: "A math sentence saying two amounts are equal, like x + 3 = 8. Your job is to find the value of x that makes it true.",
+      },
+      {
+        term: "solve",
+        defn: "To find the value of the variable. You undo what is done to x by doing the OPPOSITE operation to both sides.",
+      },
+      {
+        term: "inverse operation",
+        defn: "The opposite move: subtraction undoes addition, and division undoes multiplication. Use it to get x by itself.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "wrong-operation",
+        trigger: "Adds (or multiplies) instead of using the inverse to undo it.",
+        feedback:
+          "Undo with the OPPOSITE. If it says +3, subtract 3 from both sides; if it says 2x, divide both sides by 2.",
+      },
+      {
+        tag: "one-side-only",
+        trigger: "Changes only one side of the equation, breaking the balance.",
+        feedback: "Whatever you do to one side, do to BOTH sides so the equation stays balanced.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller numbers · solving steps shown",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · solve it on your own",
+      },
+    },
+  },
+
+  // ── Stat Lab (6-sp-a-1game-2) — 6.SP.A.1 ──
+  "6-sp-a-1game-2": {
+    ccss: "6.SP.A.1",
+    title: "Stat Lab",
+    vocab: [
+      {
+        term: "statistical question",
+        defn: "A question you answer by collecting data that VARIES — different people or things give different answers (like 'How tall are the students in our class?').",
+      },
+      {
+        term: "variability",
+        defn: "How spread out the answers are. Lots of different answers = lots of variability. One repeated answer = none.",
+      },
+      {
+        term: "non-statistical question",
+        defn: "A question with one fixed answer — everyone reports the same thing (like 'How tall is our classroom door?'). No variability.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "topic-not-variability",
+        trigger:
+          "Calls a question statistical because it sounds 'sciency' or has numbers, even when every answer is the same.",
+        feedback:
+          "A question is statistical only if the answers VARY. If every poller lands in the same bar, it has one answer — not statistical.",
+      },
+      {
+        tag: "single-thing",
+        trigger: "Treats a question about ONE person or ONE object as statistical.",
+        feedback:
+          "One thing has one answer. To make it statistical, ask about a whole GROUP so the answers can spread out.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Clear-cut questions · 8 pollers · guided edits",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Subtler questions · 16 pollers · freer edits",
+      },
+    },
+  },
+
+  // ── Stat Manager (mean-median-mode-game) — 6.SP.B.5 ──
+  "mean-median-mode-game": {
+    ccss: "6.SP.B.5",
+    title: "Stat Manager",
+    vocab: [
+      {
+        term: "mean",
+        defn: "The average. Add up all the values, then divide by how many values there are.",
+      },
+      {
+        term: "median",
+        defn: "The middle value once the numbers are lined up smallest to largest. With an even count, it's the average of the two middle ones.",
+      },
+      {
+        term: "data set",
+        defn: "The whole group of numbers you collected, like the points a player scored in each game.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "mean-wrong-direction",
+        trigger: "Raises a bar to lower the mean (or lowers one to raise it).",
+        feedback:
+          "To raise the mean, make values BIGGER. To lower it, make them smaller. Watch the live number move.",
+      },
+      {
+        tag: "median-not-sorted",
+        trigger: "Treats the middle bar on screen as the median without sorting.",
+        feedback:
+          "The median is the middle value AFTER sorting smallest to largest — not just the middle bar on screen.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller numbers · steps of 1 · target hint shown",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · less help · add and remove values",
+      },
+    },
+  },
+
+  // ── Deep Dive Fractions (6-ns-a-1game) — 6.NS.A.1 ──
+  "6-ns-a-1game": {
+    ccss: "6.NS.A.1",
+    title: "Deep Dive Fractions",
+    vocab: [
+      {
+        term: "dividend",
+        defn: "The whole amount you are measuring out — the big distance you need to dive (the a/b in a/b ÷ c/d).",
+      },
+      {
+        term: "divisor",
+        defn: "The size of each equal group or jump — the small fraction you measure with (the c/d in a/b ÷ c/d).",
+      },
+      {
+        term: "quotient",
+        defn: "The answer to a division: how many equal jumps of the divisor fit exactly into the dividend.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "divide-shrinks",
+        trigger: "Expects the answer to be smaller, so stops with too few jumps.",
+        feedback:
+          "Dividing by a fraction less than 1 gives MORE, not fewer — keep adding jumps until you reach the goal.",
+      },
+      {
+        tag: "overshoot",
+        trigger: "Adds jumps past the goal line and thinks it still counts.",
+        feedback:
+          "You went past the goal. The quotient is the number of jumps that land EXACTLY on the goal, not over it.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Same-denominator fractions · jump labels shown · 5 air",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Unlike denominators & bigger answers · less help · 3 air",
+      },
+    },
+  },
+
+  // ── Asteroid Miner (6-ns-b-2game) — 6.NS.B.2 ──
+  "6-ns-b-2game": {
+    ccss: "6.NS.B.2",
+    title: "Asteroid Miner",
+    vocab: [
+      {
+        term: "dividend",
+        defn: "The total amount you are splitting up. Here it's the ore inside the asteroid that you need to mine out.",
+      },
+      {
+        term: "divisor",
+        defn: "The size of each equal group. Here it's how many miners are in one crew — you load the ore one crew at a time.",
+      },
+      {
+        term: "partial quotient",
+        defn: "A chunk of the answer. Each blast loads several crews at once; add up all your blasts to get the full quotient.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "over-subtract",
+        trigger: "Tries to load more crews than there is ore for, pushing the ore below zero.",
+        feedback:
+          "You can't take out more ore than is left. Try fewer crews so the ore stays at zero or above.",
+      },
+      {
+        tag: "ignore-place-value",
+        trigger:
+          "Loads only one crew at a time when a big multiple (like 10 or 40 crews) would fit, dragging the run out.",
+        feedback:
+          "Think bigger! Estimate how many whole crews fit at once — using tens saves blasts and hull.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "2-digit ore ÷ 1-digit crew · multiplication strip shown",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "3–4-digit ore ÷ 2-digit crew · estimate it yourself",
+      },
+    },
+  },
+
+  // ── Decimal Kitchen (6-ns-b-3game) — 6.NS.B.3 ──
+  "6-ns-b-3game": {
+    ccss: "6.NS.B.3",
+    title: "Decimal Kitchen",
+    vocab: [
+      {
+        term: "decimal",
+        defn: "A number with a point that shows parts smaller than one, like 1.75 — that is 1 whole and 75 hundredths.",
+      },
+      {
+        term: "tenths place",
+        defn: "The first digit after the decimal point. In 1.75 the 7 means 7 tenths (0.7).",
+      },
+      {
+        term: "line up the decimal points",
+        defn: "When you add or subtract decimals, stack the points so tenths match tenths and hundredths match hundredths.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "place-value-misalign",
+        trigger: "Stops on the wrong mark by treating 0.5 and 0.05 as the same size.",
+        feedback:
+          "Watch the place value: 0.5 is five tenths but 0.05 is five hundredths — much smaller. Count the marks carefully.",
+      },
+      {
+        tag: "ignore-overpour",
+        trigger: "Pours past the target line and serves an overflowing cup.",
+        feedback:
+          "You poured PAST the mark — the cup spills over the line. Pour back down so the level sits exactly on the dashed target.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Tenths ruler · add & subtract · big pour buttons",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Hundredths ruler · all four operations · exact match",
+      },
+    },
+  },
+
+  // ── Temperature Quest (6-ns-c-5game) — 6.NS.C.5 ──
+  "6-ns-c-5game": {
+    ccss: "6.NS.C.5",
+    title: "Temperature Quest",
+    vocab: [
+      {
+        term: "integer",
+        defn: "A whole number that can be positive, negative, or zero — like -4, 0, or 7. No fractions or decimals.",
+      },
+      {
+        term: "negative number",
+        defn: "A number less than zero. It sits to the LEFT of 0 on the number line, like -5 degrees (below zero) or 200 feet below sea level.",
+      },
+      {
+        term: "opposite",
+        defn: "The number the same distance from 0 but on the other side. The opposite of +7 is -7; the opposite of 0 is 0.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "dropped-sign",
+        trigger: "Places the value on the positive side when the situation says below/under.",
+        feedback:
+          "Below zero, below sea level, and debt are all NEGATIVE — move LEFT of 0 on the scale.",
+      },
+      {
+        tag: "opposite-is-reciprocal",
+        trigger: "Thinks the opposite of a number changes its size, not just its sign.",
+        feedback: "The opposite only flips the sign: opposite of -10 is 10, same distance from 0.",
+      },
+    ],
+    tiers: {
+      0: {
+        label: "Level 0",
+        sub: "Most support",
+        desc: "Explorer · small numbers · the rule stays on screen",
+      },
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Challenge · bigger numbers · less help",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Expert · place each integer with no scaffold",
+      },
+    },
+  },
+
+  // ── Coordinate Treasure Hunt (6-ns-c-6game) — 6.NS.C.6 ──
+  "6-ns-c-6game": {
+    ccss: "6.NS.C.6",
+    title: "Coordinate Treasure Hunt",
+    vocab: [
+      {
+        term: "coordinate plane",
+        defn: "A flat grid made by a left-right line (x-axis) and an up-down line (y-axis) that cross at the center (0, 0).",
+      },
+      {
+        term: "ordered pair (x, y)",
+        defn: "Two numbers that name one point. The first number (x) is left/right; the second number (y) is up/down.",
+      },
+      {
+        term: "quadrant",
+        defn: "One of the 4 corners of the plane, numbered I, II, III, IV from top-right going counter-clockwise.",
+      },
+      {
+        term: "reflection / opposite",
+        defn: "Flipping a point to the other side of an axis. Flipping the sign of x mirrors left-right; flipping y mirrors up-down.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "swapped-x-y",
+        trigger: "Moves up/down for the first number instead of left/right.",
+        feedback: "Read (x, y) in order: the FIRST number is left/right, the SECOND is up/down.",
+      },
+      {
+        tag: "reflection-wrong-axis",
+        trigger: "Flips the wrong coordinate when reflecting across an axis.",
+        feedback: "Across the x-axis, keep x and flip y. Across the y-axis, keep y and flip x.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Quadrants & worded points · the rule is shown after a miss",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Reflections & opposites · figure out the spot yourself",
+      },
+    },
+  },
+
+  // ── City Builder (6-ns-c-8game) — 6.NS.C.8 ──
+  "6-ns-c-8game": {
+    ccss: "6.NS.C.8",
+    title: "City Builder",
+    vocab: [
+      {
+        term: "coordinate plane",
+        defn: "A grid of streets built from an x-axis (left-right) and a y-axis (up-down) crossing at the center (0, 0).",
+      },
+      {
+        term: "ordered pair (x, y)",
+        defn: "The address of a spot on the grid: go x steps left/right, then y steps up/down.",
+      },
+      {
+        term: "absolute value",
+        defn: "How far a number is from 0, ignoring its sign. |−3| = 3. Use it to count blocks between two points.",
+      },
+      {
+        term: "distance on a grid",
+        defn: "When two points share an x or a y, the distance is |a − b| — subtract the coordinates that differ and drop the sign.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "subtract-kept-sign",
+        trigger: "Keeps a negative result when measuring distance.",
+        feedback: "Distance is never negative — take the absolute value: |a − b|.",
+      },
+      {
+        tag: "added-instead-of-subtracted",
+        trigger:
+          "Adds the two coordinates instead of subtracting to find a straight-line distance.",
+        feedback:
+          "On the same row or column, SUBTRACT the coordinates that differ, then drop the sign.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller grid · plot prompts name the steps",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger grid · measure distances yourself",
+      },
+    },
+  },
+
+  // ── Detective: Statistical Questions (6-sp-a-1game) — 6.SP.A.1 ──
+  "6-sp-a-1game": {
+    ccss: "6.SP.A.1",
+    title: "Question Detective",
+    vocab: [
+      {
+        term: "statistical question",
+        defn: "A question you answer by collecting data that VARIES — different people or things give different answers (like 'How tall are the students in our class?').",
+      },
+      {
+        term: "variability",
+        defn: "How spread out the answers are. Lots of different answers = lots of variability. One repeated answer = none.",
+      },
+      {
+        term: "non-statistical question",
+        defn: "A question with one fixed answer — everyone reports the same thing (like 'What time does school start?'). No variability.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "topic-not-variability",
+        trigger:
+          "Calls a question statistical because it sounds 'sciency' or has numbers, even when every answer is the same.",
+        feedback:
+          "A question is statistical only if the answers VARY. If every poller lands on one spot, it has one answer — not statistical.",
+      },
+      {
+        tag: "single-thing",
+        trigger: "Treats a question about ONE person or ONE object as statistical.",
+        feedback:
+          "One thing has one answer. To make it statistical, ask about a whole GROUP so the answers can spread out.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Clear-cut questions · fewer pollers · guided hints",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Subtler questions · more pollers · less help",
+      },
+    },
+  },
+};
+
+export default GAMES_2D;

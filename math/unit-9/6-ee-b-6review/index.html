@@ -4,6 +4,7 @@
   <link rel="stylesheet" href="/assets/shared.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/assets/math-mobile.css">
 <title>Variable Quest · 6.EE.B.6</title>
 <style>
 :root{
@@ -375,10 +376,49 @@ body{
 .nl-arrow:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
 #nl-val{font-size:1.8rem;font-weight:900;color:var(--blue);min-width:52px;text-align:center}
 #nl-fb{text-align:center;font-weight:800;font-size:.9rem;min-height:26px;margin-top:10px}
+
+/* ── RESPONSIVE (tablet/phone) ── */
+@media (max-width: 900px){
+  #hdr{padding:12px 16px 0}
+  #main{padding:16px}
+  #logo-text{font-size:1.3rem}
+  .sec-head{padding:16px 18px}
+  .sec-title{font-size:1.3rem}
+  .match-cols,.vocab-grid{grid-template-columns:1fr 1fr;gap:14px}
+  .choices,.wp-choices{grid-template-columns:repeat(2,1fr)}
+  .tf-piles{grid-template-columns:1fr 1fr}
+  .eval-expr{font-size:2.1rem}
+}
+@media (max-width: 640px){
+  #hdr{padding:10px 12px 0}
+  #hdr-top{flex-direction:column;align-items:flex-start}
+  #main{padding:12px}
+  #logo-text{font-size:1.15rem}
+  #score-hud{gap:6px}
+  .hud-pill{padding:5px 12px;font-size:.75rem}
+  .sec-head{flex-direction:column;align-items:stretch;padding:14px}
+  .sec-title{font-size:1.15rem}
+  .btn-row{width:100%}
+  .btn-row .btn{flex:1}
+  .match-cols,.vocab-grid,.tf-piles{grid-template-columns:1fr;gap:12px}
+  .choices,.wp-choices{grid-template-columns:1fr;max-width:100%}
+  .cat-columns{grid-template-columns:1fr}
+  .eval-wrap{padding:16px}
+  .eval-expr{font-size:1.8rem}
+  .nl-outer{padding:16px}
+  .nl-q{font-size:1.6rem}
+  #nl-track{margin:0 8px 10px}
+  .tf-card{padding:18px;font-size:.95rem}
+  .tf-btns{gap:10px}
+  .tf-btn{padding:12px 28px}
+}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
 </head>
 <body>
 <!-- ══ VOCAB INTRO SLIDESHOW ══ -->
@@ -1213,5 +1253,8 @@ initCat();initMatch();initEval();initNL();initTF();initWP();
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>

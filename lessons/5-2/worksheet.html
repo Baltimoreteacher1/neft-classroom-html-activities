@@ -43,8 +43,10 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
 .ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
 .ws-bub-sm{width:20px;height:20px;font-size:11px;}
 .ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
-.ws-correct{font-weight:700;color:var(--teal);}
+.ws-correct{font-weight:700;color:var(--teal-ink);}
 .ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
 .ws-match{display:flex;gap:24px;flex-wrap:wrap;}
 .ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
 .ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
@@ -75,9 +77,71 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
   @page{margin:1.5cm;}
   a{color:#000;}
 }
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
 </style>
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+
+
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/5-2/worksheet.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Area of Trapezoids — Practice Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="Area of Trapezoids — Practice Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Area of Trapezoids — Practice Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/5-2/worksheet.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
 </head>
 <body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.G.1</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">Area of Trapezoids</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Trapezoid</span><span class="ws-bankword">Base 1 (b1)</span><span class="ws-bankword">Base 2 (b2)</span><span class="ws-bankword">Height</span><span class="ws-bankword">Area</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Identify the bases and height:</b> b₁ = 10 m, b₂ = 6 m, h = 7 m</li><li><b>Write the formula:</b> A = ½ × (b₁ + b₂) × h</li><li><b>Substitute values:</b> A = ½ × (10 + 6) × 7</li><li><b>Calculate:</b> A = (10 + 6) × 7 = 112 sq m</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is the area of a trapezoid with bases 6 cm and 10 cm, and height 4 cm?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>32 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>64 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>24 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>40 sq cm</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A trapezoid has an area of 45 sq ft, bases of 7 ft and 11 ft. What is the height?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>5 ft</li><li class="ws-opt"><span class="ws-bub">B</span>9 ft</li><li class="ws-opt"><span class="ws-bub">C</span>3 ft</li><li class="ws-opt"><span class="ws-bub">D</span>10 ft</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is the first step when finding the area of a trapezoid?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Add the two bases together</li><li class="ws-opt"><span class="ws-bub">B</span>Multiply the two bases</li><li class="ws-opt"><span class="ws-bub">C</span>Subtract the shorter base from the longer base</li><li class="ws-opt"><span class="ws-bub">D</span>Divide the height by 2</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A trapezoid has bases of 5 in and 9 in, and a height of 6 in. What is its area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>42 sq in</li><li class="ws-opt"><span class="ws-bub">B</span>84 sq in</li><li class="ws-opt"><span class="ws-bub">C</span>27 sq in</li><li class="ws-opt"><span class="ws-bub">D</span>30 sq in</li></ol></div></li></ol>
+  </section>
 <section class="ws-page">
     <header class="ws-head">
     <div class="ws-head-top">
@@ -89,12 +153,13 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     <section class="ws-bank">
-    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
     <div class="ws-bankwords"><span class="ws-bankword">Trapezoid</span><span class="ws-bankword">Base 1 (b1)</span><span class="ws-bankword">Base 2 (b2)</span><span class="ws-bankword">Height</span><span class="ws-bankword">Area</span></div>
   </section><section class="ws-example">
-    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
     <ol class="ws-example-steps"><li><b>Identify the bases and height:</b> b₁ = 10 m, b₂ = 6 m, h = 7 m</li><li><b>Write the formula:</b> A = ½ × (b₁ + b₂) × h</li><li><b>Substitute values:</b> A = ½ × (10 + 6) × 7</li><li><b>Calculate:</b> A = (10 + 6) × 7 = 112 sq m</li></ol>
   </section>
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is the area of a trapezoid with bases 6 cm and 10 cm, and height 4 cm?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>32 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>64 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>24 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>40 sq cm</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A trapezoid has an area of 45 sq ft, bases of 7 ft and 11 ft. What is the height?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>5 ft</li><li class="ws-opt"><span class="ws-bub">B</span>9 ft</li><li class="ws-opt"><span class="ws-bub">C</span>3 ft</li><li class="ws-opt"><span class="ws-bub">D</span>10 ft</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is the first step when finding the area of a trapezoid?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Add the two bases together</li><li class="ws-opt"><span class="ws-bub">B</span>Multiply the two bases</li><li class="ws-opt"><span class="ws-bub">C</span>Subtract the shorter base from the longer base</li><li class="ws-opt"><span class="ws-bub">D</span>Divide the height by 2</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A trapezoid has bases of 5 in and 9 in, and a height of 6 in. What is its area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>42 sq in</li><li class="ws-opt"><span class="ws-bub">B</span>84 sq in</li><li class="ws-opt"><span class="ws-bub">C</span>27 sq in</li><li class="ws-opt"><span class="ws-bub">D</span>30 sq in</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
   <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Shape A</td><td></td><td></td><td></td><td></td></tr><tr><td>Shape B</td><td></td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
   <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Area of Trapezoids.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Area of a trapezoid = ½ × (base 1 + base 2) × height. We add the two bases first, then take half.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
@@ -112,14 +177,46 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
   <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Window A</td><td></td><td></td><td></td><td></td></tr><tr><td>Window B</td><td></td><td></td><td></td><td></td></tr><tr><td>Window C</td><td></td><td></td><td></td><td></td></tr><tr><td>Window D</td><td></td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Trapezoid b₁=10, b₂=6, h=4</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Trapezoid b₁=8, b₂=4, h=5</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Trapezoid b₁=12, b₂=8, h=3</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Triangle b=14, h=6</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Parallelogram b=9, h=5</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Rectangle 7×3</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>45 sq units</li><li><span class="ws-bub ws-bub-sm">B</span>42 sq units</li><li><span class="ws-bub ws-bub-sm">C</span>21 sq units</li><li><span class="ws-bub ws-bub-sm">D</span>32 sq units</li><li><span class="ws-bub ws-bub-sm">E</span>30 sq units</li><li><span class="ws-bub ws-bub-sm">F</span>30 sq units</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Calculate the area of each trapezoid, then sort by whether the area is greater than 40 sq units or not.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Trapezoid b₁=10, b₂=6, h=4</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Trapezoid b₁=8, b₂=4, h=5</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Trapezoid b₁=12, b₂=8, h=4</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Triangle b=14, h=6</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Parallelogram b=9, h=5</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Rectangle 7×3</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>45 sq units</li><li><span class="ws-bub ws-bub-sm">B</span>42 sq units</li><li><span class="ws-bub ws-bub-sm">C</span>21 sq units</li><li><span class="ws-bub ws-bub-sm">D</span>32 sq units</li><li><span class="ws-bub ws-bub-sm">E</span>30 sq units</li><li><span class="ws-bub ws-bub-sm">F</span>40 sq units</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Calculate the area of each trapezoid, then sort by whether the area is greater than 40 sq units or not.</p>
   <p class="ws-prompt">Categories: <b>notgreater · greater</b></p>
   <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span>b₁=10, b₂=6, h=4 → A=32</li><li><span class="ws-blank ws-blank-sm"></span>b₁=12, b₂=8, h=5 → A=50</li><li><span class="ws-blank ws-blank-sm"></span>b₁=6, b₂=4, h=7 → A=35</li><li><span class="ws-blank ws-blank-sm"></span>b₁=9, b₂=7, h=6 → A=48</li><li><span class="ws-blank ws-blank-sm"></span>b₁=5, b₂=3, h=8 → A=32</li><li><span class="ws-blank ws-blank-sm"></span>b₁=14, b₂=6, h=5 → A=50</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Find the missing height: b₁=6, b₂=10, A=48</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
   <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Area of Trapezoids.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Area of a trapezoid = ½ × (base 1 + base 2) × height. We add the two bases first, then take half.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.G.1</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">Area of Trapezoids</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find the Area Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Identify the bases and height</span><span class="ws-step-w">b₁ = 10 m, b₂ = 6 m, h = 7 m</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Write the formula</span><span class="ws-step-w">A = ½ × (b₁ + b₂) × h</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Substitute values</span><span class="ws-step-w">A = ½ × (10 + 6) × 7</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Calculate</span><span class="ws-step-w">A = (10 + 6) × 7 = 112 sq m</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A trapezoid and a parallelogram both have a height of 8 ft. The trapezoid has bases of 5 ft and 11 ft. The parallelogram has a base of 8 ft. Which shape has the greater area? Explain your reasoning using the formulas.</p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Plot the trapezoid and calculate its area.</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.G.1</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Area of Trapezoids</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is the area of a trapezoid with bases 6 cm and 10 cm, and height 4 cm?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>32 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>64 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>24 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>40 sq cm</li></ol><p class="ws-keynote">A = ½ × (b₁ + b₂) × h = ½ × (6 + 10) × 4 = ½ × 16 × 4 = 32 sq cm.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Trapezoids is skipping the key idea: &quot;Area of a trapezoid = ½ × (base 1 + base 2) × height. We add the two bases first, then take half.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A trapezoid has an area of 45 sq ft, bases of 7 ft and 11 ft. What is the height?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5 ft</li><li class="ws-opt"><span class="ws-bub">B</span>9 ft</li><li class="ws-opt"><span class="ws-bub">C</span>3 ft</li><li class="ws-opt"><span class="ws-bub">D</span>10 ft</li></ol><p class="ws-keynote">A = ½ × (b₁ + b₂) × h → 45 = ½ × 18 × h → 45 = 9h → h = 5 ft.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Trapezoids is skipping the key idea: &quot;Area of a trapezoid = ½ × (base 1 + base 2) × height. We add the two bases first, then take half.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is the first step when finding the area of a trapezoid?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Add the two bases together</li><li class="ws-opt"><span class="ws-bub">B</span>Multiply the two bases</li><li class="ws-opt"><span class="ws-bub">C</span>Subtract the shorter base from the longer base</li><li class="ws-opt"><span class="ws-bub">D</span>Divide the height by 2</li></ol><p class="ws-keynote">The formula is A = ½ × (b₁ + b₂) × h. The first step is to add the two parallel bases.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Trapezoids is skipping the key idea: &quot;Area of a trapezoid = ½ × (base 1 + base 2) × height. We add the two bases first, then take half.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A trapezoid has bases of 5 in and 9 in, and a height of 6 in. What is its area?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>42 sq in</li><li class="ws-opt"><span class="ws-bub">B</span>84 sq in</li><li class="ws-opt"><span class="ws-bub">C</span>27 sq in</li><li class="ws-opt"><span class="ws-bub">D</span>30 sq in</li></ol><p class="ws-keynote">A = ½ × (5 + 9) × 6 = ½ × 14 × 6 = ½ × 84 = 42 sq in.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Trapezoids is skipping the key idea: &quot;Area of a trapezoid = ½ × (base 1 + base 2) × height. We add the two bases first, then take half.&quot; — always check your work against this rule before you submit.</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -132,11 +229,12 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
-    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is the area of a trapezoid with bases 6 cm and 10 cm, and height 4 cm?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>32 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>64 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>24 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>40 sq cm</li></ol><p class="ws-keynote">A = ½ × (b₁ + b₂) × h = ½ × (6 + 10) × 4 = ½ × 16 × 4 = 32 sq cm.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A trapezoid has an area of 45 sq ft, bases of 7 ft and 11 ft. What is the height?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5 ft</li><li class="ws-opt"><span class="ws-bub">B</span>9 ft</li><li class="ws-opt"><span class="ws-bub">C</span>3 ft</li><li class="ws-opt"><span class="ws-bub">D</span>10 ft</li></ol><p class="ws-keynote">A = ½ × (b₁ + b₂) × h → 45 = ½ × 18 × h → 45 = 9h → h = 5 ft.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is the first step when finding the area of a trapezoid?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Add the two bases together</li><li class="ws-opt"><span class="ws-bub">B</span>Multiply the two bases</li><li class="ws-opt"><span class="ws-bub">C</span>Subtract the shorter base from the longer base</li><li class="ws-opt"><span class="ws-bub">D</span>Divide the height by 2</li></ol><p class="ws-keynote">The formula is A = ½ × (b₁ + b₂) × h. The first step is to add the two parallel bases.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A trapezoid has bases of 5 in and 9 in, and a height of 6 in. What is its area?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>42 sq in</li><li class="ws-opt"><span class="ws-bub">B</span>84 sq in</li><li class="ws-opt"><span class="ws-bub">C</span>27 sq in</li><li class="ws-opt"><span class="ws-bub">D</span>30 sq in</li></ol><p class="ws-keynote">A = ½ × (5 + 9) × 6 = ½ × 14 × 6 = ½ × 84 = 42 sq in.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is the area of a trapezoid with bases 6 cm and 10 cm, and height 4 cm?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>32 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>64 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>24 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>40 sq cm</li></ol><p class="ws-keynote">A = ½ × (b₁ + b₂) × h = ½ × (6 + 10) × 4 = ½ × 16 × 4 = 32 sq cm.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Trapezoids is skipping the key idea: &quot;Area of a trapezoid = ½ × (base 1 + base 2) × height. We add the two bases first, then take half.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A trapezoid has an area of 45 sq ft, bases of 7 ft and 11 ft. What is the height?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5 ft</li><li class="ws-opt"><span class="ws-bub">B</span>9 ft</li><li class="ws-opt"><span class="ws-bub">C</span>3 ft</li><li class="ws-opt"><span class="ws-bub">D</span>10 ft</li></ol><p class="ws-keynote">A = ½ × (b₁ + b₂) × h → 45 = ½ × 18 × h → 45 = 9h → h = 5 ft.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Trapezoids is skipping the key idea: &quot;Area of a trapezoid = ½ × (base 1 + base 2) × height. We add the two bases first, then take half.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is the first step when finding the area of a trapezoid?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Add the two bases together</li><li class="ws-opt"><span class="ws-bub">B</span>Multiply the two bases</li><li class="ws-opt"><span class="ws-bub">C</span>Subtract the shorter base from the longer base</li><li class="ws-opt"><span class="ws-bub">D</span>Divide the height by 2</li></ol><p class="ws-keynote">The formula is A = ½ × (b₁ + b₂) × h. The first step is to add the two parallel bases.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Trapezoids is skipping the key idea: &quot;Area of a trapezoid = ½ × (base 1 + base 2) × height. We add the two bases first, then take half.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A trapezoid has bases of 5 in and 9 in, and a height of 6 in. What is its area?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>42 sq in</li><li class="ws-opt"><span class="ws-bub">B</span>84 sq in</li><li class="ws-opt"><span class="ws-bub">C</span>27 sq in</li><li class="ws-opt"><span class="ws-bub">D</span>30 sq in</li></ol><p class="ws-keynote">A = ½ × (5 + 9) × 6 = ½ × 14 × 6 = ½ × 84 = 42 sq in.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Trapezoids is skipping the key idea: &quot;Area of a trapezoid = ½ × (base 1 + base 2) × height. We add the two bases first, then take half.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
   <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Shape A</td><td>4 ft</td><td>6 ft</td><td>3 ft</td><td></td></tr><tr><td>Shape B</td><td>8 ft</td><td>12 ft</td><td>5 ft</td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
   <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Area of Trapezoids.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Area of a trapezoid = ½ × (base 1 + base 2) × height. We add the two bases first, then take half.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: Follow the key idea: Area of a trapezoid = ½ × (base 1 + base 2) × height. We add the two bases first, then take half.</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -149,14 +247,36 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
   <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Window A</td><td>8 ft</td><td>4 ft</td><td>5 ft</td><td></td></tr><tr><td>Window B</td><td>12 ft</td><td>6 ft</td><td>4 ft</td><td></td></tr><tr><td>Window C</td><td>10 ft</td><td></td><td>8 ft</td><td>72 sq ft</td></tr><tr><td>Window D</td><td></td><td>5 ft</td><td>6 ft</td><td>48 sq ft</td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span>Trapezoid b₁=10, b₂=6, h=4</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">E</span>Trapezoid b₁=8, b₂=4, h=5</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">E</span>Trapezoid b₁=12, b₂=8, h=3</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span>Triangle b=14, h=6</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span>Parallelogram b=9, h=5</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span>Rectangle 7×3</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>45 sq units</li><li><span class="ws-bub ws-bub-sm">B</span>42 sq units</li><li><span class="ws-bub ws-bub-sm">C</span>21 sq units</li><li><span class="ws-bub ws-bub-sm">D</span>32 sq units</li><li><span class="ws-bub ws-bub-sm">E</span>30 sq units</li><li><span class="ws-bub ws-bub-sm">F</span>30 sq units</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Calculate the area of each trapezoid, then sort by whether the area is greater than 40 sq units or not.</p>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span>Trapezoid b₁=10, b₂=6, h=4</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">E</span>Trapezoid b₁=8, b₂=4, h=5</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">F</span>Trapezoid b₁=12, b₂=8, h=4</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span>Triangle b=14, h=6</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span>Parallelogram b=9, h=5</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span>Rectangle 7×3</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>45 sq units</li><li><span class="ws-bub ws-bub-sm">B</span>42 sq units</li><li><span class="ws-bub ws-bub-sm">C</span>21 sq units</li><li><span class="ws-bub ws-bub-sm">D</span>32 sq units</li><li><span class="ws-bub ws-bub-sm">E</span>30 sq units</li><li><span class="ws-bub ws-bub-sm">F</span>40 sq units</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Calculate the area of each trapezoid, then sort by whether the area is greater than 40 sq units or not.</p>
   <p class="ws-prompt">Categories: <b>notgreater · greater</b></p>
   <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">notgreater</span>b₁=10, b₂=6, h=4 → A=32</li><li><span class="ws-blank ws-blank-sm">greater</span>b₁=12, b₂=8, h=5 → A=50</li><li><span class="ws-blank ws-blank-sm">notgreater</span>b₁=6, b₂=4, h=7 → A=35</li><li><span class="ws-blank ws-blank-sm">greater</span>b₁=9, b₂=7, h=6 → A=48</li><li><span class="ws-blank ws-blank-sm">notgreater</span>b₁=5, b₂=3, h=8 → A=32</li><li><span class="ws-blank ws-blank-sm">greater</span>b₁=14, b₂=6, h=5 → A=50</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Find the missing height: b₁=6, b₂=10, A=48</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
   <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Area of Trapezoids.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Area of a trapezoid = ½ × (base 1 + base 2) × height. We add the two bases first, then take half.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: Follow the key idea: Area of a trapezoid = ½ × (base 1 + base 2) × height. We add the two bases first, then take half.</p></div></li></ol>
   </section>
-</body>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.G.1</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Area of Trapezoids</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find the Area Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Identify the bases and height</span><span class="ws-step-w">b₁ = 10 m, b₂ = 6 m, h = 7 m</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Write the formula</span><span class="ws-step-w">A = ½ × (b₁ + b₂) × h</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Substitute values</span><span class="ws-step-w">A = ½ × (10 + 6) × 7</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Calculate</span><span class="ws-step-w">A = (10 + 6) × 7 = 112 sq m</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 4. Correct work: The student forgot to multiply by ½. A = ½ × 16 × 7 = ½ × 112 = 56 sq m.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A trapezoid and a parallelogram both have a height of 8 ft. The trapezoid has bases of 5 ft and 11 ft. The parallelogram has a base of 8 ft. Which shape has the greater area? Explain your reasoning using the formulas.</p><p class="ws-keynote">Look for: trapezoid, parallelogram, formula, compare, area, height, base.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Plot the trapezoid and calculate its area.</p></div></li></ol>
+  </section>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  </main>
+  </body>
 </html>

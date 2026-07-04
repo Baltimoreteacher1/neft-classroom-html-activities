@@ -21,7 +21,29 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/math/intervention/assets/intervention.css" />
-  </head>
+    <link rel="manifest" href="/math/intervention/manifest.webmanifest" />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <link rel="apple-touch-icon" href="/assets/favicon.svg" />
+    <script>
+      // Register the offline service worker so stations keep working without
+      // wifi once visited (classroom-friendly). Scoped to /math/intervention/.
+      if ("serviceWorker" in navigator) {
+        addEventListener("load", function () {
+          navigator.serviceWorker
+            .register("/math/intervention/sw.js", {
+              scope: "/math/intervention/",
+            })
+            .catch(function () {});
+        });
+      }
+    </script>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="topbar">
@@ -52,6 +74,14 @@
                 <span class="g-pill">📚 4 lessons</span>
                 <span class="g-pill">⏱ 30 min</span>
               </div>
+              <div class="g-launch">
+                <h4>Core question</h4>
+                <p>How can I model, solve, and explain integers &amp; the Number Line so another student understands my thinking?</p>
+                <h4>Concept spine</h4>
+                <p>Understand the situation, represent it, choose the strategy, then prove the answer.</p>
+                <h4>Evidence of mastery</h4>
+                <p>Score 80% or higher, correct one missed item in Smart Review, and write a complete explanation using at least one vocabulary word.</p>
+              </div>
             </div>
             <div class="g-side">
               <h4 class="g-sub">Key vocabulary</h4>
@@ -64,12 +94,34 @@
               </ul>
             </div>
           </div>
+          <div class="mission-strip" aria-label="Topic mission">
+            <article>
+              <span>Mission</span>
+              <h3>Rebuild integers &amp; the Number Line</h3>
+              <p>Move from model to strategy to independent proof using negatives, absolute value, opposites, and add / subtract.</p>
+            </article>
+            <article>
+              <span>Success looks like</span>
+              <h3>Show, solve, explain</h3>
+              <p>Students can represent the idea, solve accurately, and justify why the answer makes sense.</p>
+            </article>
+            <article>
+              <span>Teacher evidence</span>
+              <h3>6.NS.C.5–7</h3>
+              <p>Look for accurate use of negatives, absolute value, opposites, and add / subtract and a clear explanation.</p>
+            </article>
+          </div>
           <div class="tabs" role="tablist">
+            <button class="tab" role="tab" data-tab="concept">🧭 Concept Lab</button>
+            <button class="tab" role="tab" data-tab="lessons">🧱 Mini-Lessons</button>
+            <button class="tab" role="tab" data-tab="path">🗺️ Lesson Path</button>
             <button class="tab" role="tab" data-tab="learn">📖 Learn</button>
             <button class="tab" role="tab" data-tab="diagnostic">🩺 Diagnostic</button>
             <button class="tab" role="tab" data-tab="practice">✏️ Practice</button>
             <button class="tab" role="tab" data-tab="fluency">⚡ Fluency</button>
             <button class="tab" role="tab" data-tab="game">🎮 Game</button>
+            <button class="tab" role="tab" data-tab="clinic">🛠️ Error Clinic</button>
+            <button class="tab" role="tab" data-tab="task">🏗️ Performance Task</button>
             <button class="tab" role="tab" data-tab="vocab">🗂️ Vocabulary</button>
             <button class="tab" role="tab" data-tab="worksheet">🖨️ Printables</button>
             <button class="tab" role="tab" data-tab="quizzes">📋 Pre/Post Quiz</button>
@@ -80,6 +132,215 @@
 
       <section class="block">
         <div class="wrap">
+          <div class="panel" id="panel-concept">
+            <h3>Larger concept</h3>
+            <p>Before students chase speed, they build the whole idea. Use this as the opening map for a small group, tutoring block, or independent recovery path.</p>
+            <div class="publisher-note">
+              <span>Concept spine</span>
+              <p>The big idea: Integers &amp; the Number Line is about choosing a representation, keeping quantities organized, and defending the strategy.</p>
+            </div>
+            <div class="concept-map">
+              <article class="concept-step">
+                <span>Understand</span>
+                <h4>Name the quantities</h4>
+                <p>Students identify what is known, what is unknown, and which vocabulary from integers &amp; the Number Line matters.</p>
+              </article>
+              <article class="concept-step">
+                <span>Represent</span>
+                <h4>Build the model</h4>
+                <p>Represent integers &amp; the Number Line with a visual model, a table, and an equation.</p>
+              </article>
+              <article class="concept-step">
+                <span>Strategize</span>
+                <h4>Choose the tool</h4>
+                <p>Students connect the model to negatives, absolute value, opposites, and add / subtract and explain why that tool fits.</p>
+              </article>
+              <article class="concept-step">
+                <span>Prove</span>
+                <h4>Justify and revise</h4>
+                <p>Students use the discourse frame, check for the likely misconception, and revise the written explanation.</p>
+              </article></div>
+            <div class="publisher-note publisher-note-soft">
+              <span>Teacher frame</span>
+              <p>Open with the larger concept before students touch the practice set: What does the situation mean, what model fits it, and how will we know the answer is reasonable?</p>
+            </div>
+            <h3 style="margin-top:22px">Essential question</h3>
+            <p>How do mathematicians use negatives, absolute value, opposites, and add / subtract to make sense of real problems and defend an answer?</p>
+            <div class="move-grid">
+              <article class="move-card">
+                <span>Launch</span>
+                <h4>Make the gap visible</h4>
+                <p>Students preview negatives, absolute value, opposites, and add / subtract with one low-floor problem, one model, and one vocabulary check.</p>
+              </article>
+              <article class="move-card">
+                <span>Model</span>
+                <h4>Connect concrete to symbolic</h4>
+                <p>Represent integers &amp; the Number Line with a visual model, a table, and an equation.</p>
+              </article>
+              <article class="move-card">
+                <span>Explain</span>
+                <h4>Require math talk</h4>
+                <p>Students complete the frame: "My strategy works because ___."</p>
+              </article>
+              <article class="move-card">
+                <span>Transfer</span>
+                <h4>Apply in context</h4>
+                <p>Ask students to create a new problem that uses the same structure.</p>
+              </article></div>
+            <div class="anchor-board">
+              <div>
+                <span class="anchor-label">Model it</span>
+                <p>Represent integers &amp; the Number Line with a visual model, a table, and an equation.</p>
+              </div>
+              <div>
+                <span class="anchor-label">Say it</span>
+                <p>My strategy works because ___.</p>
+              </div>
+              <div>
+                <span class="anchor-label">Extend it</span>
+                <p>Ask students to create a new problem that uses the same structure.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" id="panel-lessons">
+            <h3>Mini-lessons inside the larger topic</h3>
+            <p>Teach the big idea first, then open one mini-lesson at a time. Each mini-lesson has a narrow objective, one teacher move, one model, practice, an error to catch, and evidence to collect.</p>
+            <div class="mini-lesson-list">
+              <article class="mini-lesson">
+                <div class="mini-num">Lesson 1</div>
+                <div class="mini-body">
+                  <span>Open the concept</span>
+                  <h4>Negatives</h4>
+                  <p class="mini-objective">I can explain what negatives means before I calculate.</p>
+                  <dl>
+                    <dt>Teacher move</dt><dd>Launch with a low-floor context and ask students to show negatives with a model before naming a rule.</dd>
+                    <dt>Model or example</dt><dd>Compare -4 and -9 using &lt; or &gt;. Work it aloud, then cover the steps and ask students to rebuild the reasoning.</dd>
+                    <dt>Student practice</dt><dd>Which number means "7 below zero"? | On a number line, which way are negative numbers from zero? | What is the opposite of 9?</dd>
+                    <dt>Error to catch</dt><dd>Students may answer procedurally without explaining why the method works for integers &amp; the Number Line.</dd>
+                    <dt>Evidence</dt><dd>Annotated model and one accurate independent item.</dd>
+                  </dl>
+                </div>
+              </article>
+              <article class="mini-lesson">
+                <div class="mini-num">Lesson 2</div>
+                <div class="mini-body">
+                  <span>Build the next piece</span>
+                  <h4>Absolute value</h4>
+                  <p class="mini-objective">I can use absolute value as one part of solving integers &amp; the Number Line problems.</p>
+                  <dl>
+                    <dt>Teacher move</dt><dd>Use the previous mini-lesson as the anchor, then add absolute value with one worked example and one parallel try-it item.</dd>
+                    <dt>Model or example</dt><dd>Find -7 + 4. Work it aloud, then cover the steps and ask students to rebuild the reasoning.</dd>
+                    <dt>Student practice</dt><dd>What is the opposite of -25? | What is |-13| (the absolute value of -13)? | Which symbol makes this true: -6 ___ -2 ?</dd>
+                    <dt>Error to catch</dt><dd>Students may treat absolute value as a shortcut instead of connecting it back to the model.</dd>
+                    <dt>Evidence</dt><dd>Annotated model and one accurate independent item.</dd>
+                  </dl>
+                </div>
+              </article>
+              <article class="mini-lesson">
+                <div class="mini-num">Lesson 3</div>
+                <div class="mini-body">
+                  <span>Build the next piece</span>
+                  <h4>Opposites</h4>
+                  <p class="mini-objective">I can use opposites as one part of solving integers &amp; the Number Line problems.</p>
+                  <dl>
+                    <dt>Teacher move</dt><dd>Use the previous mini-lesson as the anchor, then add opposites with one worked example and one parallel try-it item.</dd>
+                    <dt>Model or example</dt><dd>A diver is at -120 feet. He goes down 35 more feet, then rises 50 feet. Where is he now? Work it aloud, then cover the steps and ask students to rebuild the reasoning.</dd>
+                    <dt>Student practice</dt><dd>Order from least to greatest: -7, -3, 0, 2 | Which number is the greatest: -5, -1, -9, -3 ? | What is -8 + 3?</dd>
+                    <dt>Error to catch</dt><dd>Students may treat opposites as a shortcut instead of connecting it back to the model.</dd>
+                    <dt>Evidence</dt><dd>Annotated model and one accurate independent item.</dd>
+                  </dl>
+                </div>
+              </article>
+              <article class="mini-lesson">
+                <div class="mini-num">Lesson 4</div>
+                <div class="mini-body">
+                  <span>Connect and transfer</span>
+                  <h4>Add / subtract</h4>
+                  <p class="mini-objective">I can use add / subtract as one part of solving integers &amp; the Number Line problems.</p>
+                  <dl>
+                    <dt>Teacher move</dt><dd>Use the previous mini-lesson as the anchor, then add add / subtract with one worked example and one parallel try-it item.</dd>
+                    <dt>Model or example</dt><dd>Compare -4 and -9 using &lt; or &gt;. Work it aloud, then cover the steps and ask students to rebuild the reasoning.</dd>
+                    <dt>Student practice</dt><dd>What is -9 + (-6)? | What is 12 - (-5)? | What is -6 - (-10)?</dd>
+                    <dt>Error to catch</dt><dd>Students may treat add / subtract as a shortcut instead of connecting it back to the model.</dd>
+                    <dt>Evidence</dt><dd>Exit ticket plus revised explanation.</dd>
+                  </dl>
+                </div>
+              </article></div>
+            <div class="lesson-bridge">
+              <h4>How the pieces connect</h4>
+              <p>Students should not experience these as separate activities. Each mini-lesson adds one piece to the same concept spine: understand, represent, strategize, and prove.</p>
+            </div>
+          </div>
+
+          <div class="panel" id="panel-path">
+            <h3>Five-session lesson path</h3>
+            <p>This is the teacher-ready pacing model for intervention blocks, tutoring, pull-out groups, or independent catch-up work.</p>
+            <div class="lesson-path">
+              <article class="lesson-card">
+                <span>Session 1</span>
+                <h4>Diagnose and name the gap</h4>
+                <dl>
+                  <dt>Teacher move</dt><dd>Assign the pre-quiz, sort students into groups, and launch one low-floor model.</dd>
+                  <dt>Student work</dt><dd>Take the pre-quiz, complete the diagnostic, and write one goal for the topic.</dd>
+                  <dt>Evidence</dt><dd>Pre-quiz score, diagnostic score, student goal.</dd>
+                </dl>
+              </article>
+              <article class="lesson-card">
+                <span>Session 2</span>
+                <h4>Build the concept</h4>
+                <dl>
+                  <dt>Teacher move</dt><dd>Represent integers &amp; the Number Line with a visual model, a table, and an equation.</dd>
+                  <dt>Student work</dt><dd>Annotate the worked examples and complete the concept lab discussion frame.</dd>
+                  <dt>Evidence</dt><dd>Annotated example, vocabulary sentence, model check.</dd>
+                </dl>
+              </article>
+              <article class="lesson-card">
+                <span>Session 3</span>
+                <h4>Practice with feedback</h4>
+                <dl>
+                  <dt>Teacher move</dt><dd>Conference with students using Smart Review misses and the Error Clinic protocol.</dd>
+                  <dt>Student work</dt><dd>Complete Practice, Smart Review, and the fluency drill until one score improves.</dd>
+                  <dt>Evidence</dt><dd>Practice percent, cleared Smart Review item, fluency count.</dd>
+                </dl>
+              </article>
+              <article class="lesson-card">
+                <span>Session 4</span>
+                <h4>Apply and transfer</h4>
+                <dl>
+                  <dt>Teacher move</dt><dd>Assign Worksheet B and the performance task; listen for the discourse frame.</dd>
+                  <dt>Student work</dt><dd>Solve a contextual problem, explain the strategy, and revise the explanation.</dd>
+                  <dt>Evidence</dt><dd>Performance task, revised explanation, exit ticket.</dd>
+                </dl>
+              </article>
+              <article class="lesson-card">
+                <span>Session 5</span>
+                <h4>Reassess and reflect</h4>
+                <dl>
+                  <dt>Teacher move</dt><dd>Assign the post-quiz, compare growth, and select the next intervention move.</dd>
+                  <dt>Student work</dt><dd>Take the post-quiz and complete a reflection on what changed.</dd>
+                  <dt>Evidence</dt><dd>Post-quiz score, reflection, next-step recommendation.</dd>
+                </dl>
+              </article></div>
+            <h3 style="margin-top:24px">Placement pathways</h3>
+            <p>Use the pre-quiz and diagnostic score to select the right route without lowering the grade-level expectation.</p>
+            <div class="pathway-grid">
+              <article class="pathway-card">
+                <span>Pre-quiz or diagnostic below 50%</span>
+                <h4>Intensive reteach</h4>
+                <p>Teacher-led model, manipulatives, read-aloud question support, Worksheet A odd items, then one Smart Review item.</p>
+              </article>
+              <article class="pathway-card">
+                <span>50% to 79% or inconsistent explanations</span>
+                <h4>Guided practice</h4>
+                <p>Concept Lab, worked examples, Practice, Error Clinic, Worksheet A/B mix, and an exit ticket conference.</p>
+              </article>
+              <article class="pathway-card">
+                <span>80%+ with clear explanation</span>
+                <h4>Extension and transfer</h4>
+                <p>Worksheet B challenge, performance task, student-created example, and peer teaching using the discourse frame.</p>
+              </article></div>
+          </div>
           <div class="panel" id="panel-learn">
             <h3>Worked examples</h3>
             <p>Study these three examples — easy to challenge — then head to Practice.</p>
@@ -124,18 +385,89 @@
 
           <div class="panel" id="panel-game">
             <h3>Answer Drop</h3>
-            <p>Tap the falling tile that matches the problem. Five lives — how high can you climb?</p>
+            <p>Tap a falling tile — or press number keys <strong>1–4</strong> — to match the problem. Five lives — how high can you climb?</p>
             <div class="game-stage" id="game-stage">
-              <div class="game-hud"></div>
-              <canvas></canvas>
+              <div class="game-hud" aria-hidden="true"></div>
+              <canvas role="img" aria-label="Answer Drop game. Tap the falling tile that matches the problem shown at the bottom, or press number keys 1 to 4 to pick the tile in that column."></canvas>
               <div class="game-overlay">
                 <div>
                   <h3>Answer Drop</h3>
-                  <p>Click the tile that solves the problem before it hits the bottom.</p>
+                  <p>Click the tile that solves the problem — or use number keys 1–4 — before it hits the bottom.</p>
                   <button class="btn btn-primary" id="game-stage-start" type="button">▶ Play</button>
                 </div>
               </div>
             </div>
+          </div>
+
+          <div class="panel" id="panel-clinic">
+            <h3>Error clinic</h3>
+            <p>Use this as a quick conference script after a missed diagnostic, a worksheet error, or a low post-quiz score.</p>
+            <div class="clinic-grid">
+              <article class="clinic-card">
+                <span>Likely misconception</span>
+                <p>Students may answer procedurally without explaining why the method works for integers &amp; the Number Line.</p>
+              </article>
+              <article class="clinic-card">
+                <span>Teacher move</span>
+                <p>Look for accurate use of negatives, absolute value, opposites, and add / subtract and a clear explanation.</p>
+              </article>
+              <article class="clinic-card">
+                <span>Student self-check</span>
+                <p>Can I show the problem with a model, name the operation or relationship, and explain why my answer is reasonable?</p>
+              </article>
+            </div>
+            <div class="conference-script">
+              <h4>Two-minute conference</h4>
+              <ol>
+                <li>Ask the student to point to the exact step where the answer changed.</li>
+                <li>Have the student restate the problem using one vocabulary word from this topic.</li>
+                <li>Rebuild one simpler example together, then ask the student to solve a parallel problem alone.</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="panel" id="panel-task">
+            <h3>Performance task</h3>
+            <p>Students apply integers &amp; the Number Line in a short constructed-response task. This gives publishers, teachers, and families evidence beyond multiple choice.</p>
+            <div class="task-card">
+              <span>Scenario</span>
+              <h4>Integers &amp; the Number Line in the real world</h4>
+              <p>Create a realistic situation where someone must use negatives, absolute value, opposites, and add / subtract. Solve it two ways: first with a model or diagram, then with numbers or symbols. Finish by explaining why the answer is reasonable.</p>
+            </div>
+            <div class="task-columns">
+              <div>
+                <h4>Student deliverables</h4>
+                <ul>
+                  <li>A labeled model, diagram, table, or number line.</li>
+                  <li>A complete solution with units or labels.</li>
+                  <li>A written explanation using at least one vocabulary word.</li>
+                  <li>A revised answer after checking for the common misconception.</li>
+                </ul>
+              </div>
+              <div>
+                <h4>Notebook prompts</h4>
+                <ol><li>Before I solve, the quantities I notice are ___ and ___.</li><li>A model that helps me understand integers &amp; the Number Line is ___ because ___.</li><li>One mistake a student might make is ___; I would fix it by ___.</li><li>My post-quiz goal is ___, and the evidence I will use is ___.</li></ol>
+              </div>
+            </div>
+            <table class="rubric">
+              <tbody>
+              <tr>
+                <th>4 · Publishes math thinking</th>
+                <td>Accurate answer, efficient strategy, clear model, complete explanation, and correct vocabulary.</td>
+              </tr>
+              <tr>
+                <th>3 · Meets standard</th>
+                <td>Accurate answer and a mostly clear strategy with enough explanation to follow the thinking.</td>
+              </tr>
+              <tr>
+                <th>2 · Developing</th>
+                <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+              </tr>
+              <tr>
+                <th>1 · Needs reteach</th>
+                <td>Misconception is still present; student needs a concrete model and a smaller parallel problem.</td>
+              </tr></tbody>
+            </table>
           </div>
 
           <div class="panel" id="panel-fluency">
@@ -243,6 +575,69 @@
               <div class="answer-key"><h3>Answer Key (teacher)</h3><ol><li>-8</li><li>20</li><li>14</li><li>&gt;</li></ol></div>
             </div>
 
+            <div class="worksheet">
+              <div class="ws-header">
+                <h2>🌡️ Integers &amp; the Number Line <span class="ws-variant">Student Notebook Page</span></h2>
+                <div class="ws-name">Name: ____________________  Date: __________</div>
+              </div>
+              <div class="print-notebook">
+                <h3>Essential question</h3>
+                <p>How do mathematicians use negatives, absolute value, opposites, and add / subtract to make sense of real problems and defend an answer?</p>
+                <h3>Success criteria</h3>
+                <ul><li>I can represent the math with a model, table, number line, diagram, or equation.</li><li>I can use negatives, absolute value, opposites, and add / subtract accurately and explain why the strategy fits the problem.</li><li>I can find and correct an error by naming the misconception.</li><li>I can prove growth with a post-quiz score, an exit ticket, and a written explanation.</li></ul>
+                <h3>Reflection prompts</h3>
+                <ol><li>Before I solve, the quantities I notice are ___ and ___.</li><li>A model that helps me understand integers &amp; the Number Line is ___ because ___.</li><li>One mistake a student might make is ___; I would fix it by ___.</li><li>My post-quiz goal is ___, and the evidence I will use is ___.</li></ol>
+                <h3>Mini-lesson map</h3>
+                <table class="rubric mini-print-map"><tbody>
+                <tr>
+                  <th>Mini-Lesson 1: Negatives</th>
+                  <td>I can explain what negatives means before I calculate.</td>
+                  <td>Annotated model and one accurate independent item.</td>
+                </tr>
+                <tr>
+                  <th>Mini-Lesson 2: Absolute value</th>
+                  <td>I can use absolute value as one part of solving integers &amp; the Number Line problems.</td>
+                  <td>Annotated model and one accurate independent item.</td>
+                </tr>
+                <tr>
+                  <th>Mini-Lesson 3: Opposites</th>
+                  <td>I can use opposites as one part of solving integers &amp; the Number Line problems.</td>
+                  <td>Annotated model and one accurate independent item.</td>
+                </tr>
+                <tr>
+                  <th>Mini-Lesson 4: Add / subtract</th>
+                  <td>I can use add / subtract as one part of solving integers &amp; the Number Line problems.</td>
+                  <td>Exit ticket plus revised explanation.</td>
+                </tr></tbody></table>
+              </div>
+            </div>
+
+            <div class="worksheet">
+              <div class="ws-header">
+                <h2>🌡️ Integers &amp; the Number Line <span class="ws-variant">Performance Task</span></h2>
+                <div class="ws-name">Name: ____________________  Date: __________</div>
+              </div>
+              <p><strong>Task:</strong> Create and solve a realistic situation that uses negatives, absolute value, opposites, and add / subtract. Show a model, solve with numbers, and explain why the answer is reasonable.</p>
+              <div class="blank-lines"></div>
+              <table class="rubric print-rubric"><tbody>
+              <tr>
+                <th>4 · Publishes math thinking</th>
+                <td>Accurate answer, efficient strategy, clear model, complete explanation, and correct vocabulary.</td>
+              </tr>
+              <tr>
+                <th>3 · Meets standard</th>
+                <td>Accurate answer and a mostly clear strategy with enough explanation to follow the thinking.</td>
+              </tr>
+              <tr>
+                <th>2 · Developing</th>
+                <td>Partially correct work; model or explanation shows a gap that can be repaired with feedback.</td>
+              </tr>
+              <tr>
+                <th>1 · Needs reteach</th>
+                <td>Misconception is still present; student needs a concrete model and a smaller parallel problem.</td>
+              </tr></tbody></table>
+            </div>
+
             <div class="family-letter">
               <div class="ws-header">
                 <h2>👪 Family Letter <span class="ws-variant">Integers &amp; the Number Line</span></h2>
@@ -273,11 +668,19 @@
           <div class="panel" id="panel-supports">
             <h3>Track your learning</h3>
             <p>Check each box when you can do it on your own.</p>
-            <ul class="ican-list"><li><label><input type="checkbox" /> <span>I can use, compare, order, and add and subtract integers, and find absolute value and opposites, to solve real-world problems.</span></label></li><li><label><input type="checkbox" /> <span>I can use negatives.</span></label></li><li><label><input type="checkbox" /> <span>I can use absolute value.</span></label></li><li><label><input type="checkbox" /> <span>I can use opposites.</span></label></li><li><label><input type="checkbox" /> <span>I can use add / subtract.</span></label></li></ul>
+            <ul class="ican-list"><li><label><input type="checkbox" /> <span>I can use, compare, order, and add and subtract integers, and find absolute value and opposites, to solve real-world problems.</span></label></li><li><label><input type="checkbox" /> <span>I can choose a strategy for negatives, absolute value, opposites, and add / subtract.</span></label></li><li><label><input type="checkbox" /> <span>I can explain each step using topic vocabulary.</span></label></li><li><label><input type="checkbox" /> <span>I can check whether my answer is reasonable.</span></label></li></ul>
             <h3 style="margin-top:22px">Differentiation</h3>
             <div class="levels">
               <div class="level"><h4>Level 1 — Support</h4><p>Level 1 (support): use the Materials manipulatives, study the worked examples, and work one step at a time.</p></div>
               <div class="level"><h4>Level 2 — Stretch</h4><p>Level 2 (stretch): finish the ★ challenge on Worksheet B and explain your reasoning in words.</p></div>
+            </div>
+            <h3 style="margin-top:22px">Success criteria</h3>
+            <ul class="criteria-list"><li>I can represent the math with a model, table, number line, diagram, or equation.</li><li>I can use negatives, absolute value, opposites, and add / subtract accurately and explain why the strategy fits the problem.</li><li>I can find and correct an error by naming the misconception.</li><li>I can prove growth with a post-quiz score, an exit ticket, and a written explanation.</li></ul>
+            <h3 style="margin-top:22px">Language supports</h3>
+            <div class="support-note">
+              <p>Preteach the key vocabulary, then ask students to use it in a complete sentence.</p>
+              <p><strong>Talk frame:</strong> My strategy works because ___.</p>
+              <p><strong>Talk-Write-Revise:</strong> say the strategy with a partner, write one complete explanation, then revise it with a vocabulary word.</p>
             </div>
           </div>
         </div>
@@ -293,6 +696,9 @@
         </p>
       </div>
     </footer>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
   </body>
 </html>
     <script>window.TOPIC = {"slug":"integers-number-line","title":"Integers & the Number Line","bank":[{"prompt":"Which number means \"7 below zero\"?","answer":"-7","options":["-7","7","0","-0.7"],"explain":"Below zero means negative, so 7 below zero is -7."},{"prompt":"On a number line, which way are negative numbers from zero?","answer":"To the left","options":["To the left","To the right","Above zero","They are not on the line"],"explain":"Negative numbers sit to the left of zero on a number line."},{"prompt":"What is the opposite of 9?","answer":"-9","options":["-9","9","0","1/9"],"explain":"The opposite of a number has the same distance from 0 but the other sign."},{"prompt":"What is the opposite of -25?","answer":"25","options":["25","-25","0","-50"],"explain":"The opposite of -25 is the positive number 25."},{"prompt":"What is |-13| (the absolute value of -13)?","answer":"13","options":["13","-13","0","26"],"explain":"Absolute value is the distance from 0, which is always positive: 13."},{"prompt":"Which symbol makes this true: -6 ___ -2 ?","answer":"<","options":["<",">","=","≥"],"explain":"-6 is farther left than -2, so -6 is less than -2."},{"prompt":"Order from least to greatest: -7, -3, 0, 2","answer":"-7, -3, 0, 2","options":["-7, -3, 0, 2","0, 2, -3, -7","-3, -7, 0, 2","2, 0, -3, -7"],"explain":"On a number line they go -7, -3, 0, 2 from left to right."},{"prompt":"Which number is the greatest: -5, -1, -9, -3 ?","answer":"-1","options":["-1","-9","-5","-3"],"explain":"-1 is closest to zero, so it is the greatest of these negatives."},{"prompt":"What is -8 + 3?","answer":"-5","options":["-5","5","-11","11"],"explain":"Start at -8 and move 3 right to land on -5."},{"prompt":"What is -9 + (-6)?","answer":"-15","options":["-15","-3","15","3"],"explain":"Two negatives add to a bigger negative: -15."},{"prompt":"What is 12 - (-5)?","answer":"17","options":["17","7","-17","-7"],"explain":"Subtracting a negative is the same as adding: 12 + 5 = 17."},{"prompt":"What is -6 - (-10)?","answer":"4","options":["4","-16","-4","16"],"explain":"-6 - (-10) becomes -6 + 10 = 4."},{"prompt":"What is -7 - 4?","answer":"-11","options":["-11","-3","11","3"],"explain":"Going more negative: -7 - 4 = -11."},{"prompt":"Which value of x makes |x| = 6 true (besides 6)?","answer":"-6","options":["-6","0","6","-36"],"explain":"Both 6 and -6 are 6 units from zero, so x can be -6."},{"prompt":"What is -15 + 15?","answer":"0","options":["0","30","-30","15"],"explain":"A number plus its opposite always equals 0."},{"prompt":"The temperature is -5°F. It drops 8 degrees. What is the new temperature?","answer":"-13°F","options":["-13°F","3°F","-3°F","13°F"],"explain":"Dropping means subtract: -5 - 8 = -13°F."},{"prompt":"A diver is at -150 feet. She rises 40 feet. What is her new depth?","answer":"-110 feet","options":["-110 feet","-190 feet","110 feet","-40 feet"],"explain":"Rising adds: -150 + 40 = -110 feet."},{"prompt":"Mia's bank account is -$45 (overdrawn). She deposits $60. What is her balance?","answer":"$15","options":["$15","-$15","-$105","$105"],"explain":"-45 + 60 = 15, so she now has $15."},{"prompt":"A submarine is 8 m below sea level, shown as -8. A bird is 13 m above where the submarine is. What is the bird's elevation?","answer":"5 m","options":["5 m","-5 m","21 m","-21 m"],"explain":"-8 + 13 = 5, so the bird is 5 m above sea level."},{"prompt":"Which list is ordered from coldest to warmest: -3°, -12°, -7° ?","answer":"-12°, -7°, -3°","options":["-12°, -7°, -3°","-3°, -7°, -12°","-12°, -3°, -7°","-7°, -12°, -3°"],"explain":"Coldest is the smallest number: -12°, then -7°, then -3°."},{"prompt":"In a game, Ravi loses 3 points then loses 6 more. His score change is -3 + (-6). What is it?","answer":"-9","options":["-9","-3","9","3"],"explain":"Losing both: -3 + (-6) = -9 points."},{"prompt":"A football team gains 5 yards, then loses 12 yards. What is the total yardage?","answer":"-7 yards","options":["-7 yards","7 yards","17 yards","-17 yards"],"explain":"5 + (-12) = -7, a net loss of 7 yards."},{"prompt":"Death Valley is at -86 m and a nearby hill is at 14 m. How much higher is the hill than Death Valley?","answer":"100 m","options":["100 m","72 m","-72 m","-100 m"],"explain":"Distance is 14 - (-86) = 14 + 86 = 100 m."},{"prompt":"At dawn it was -4°C. By noon the temperature was 9°C. By how many degrees did it rise?","answer":"13 degrees","options":["13 degrees","5 degrees","-13 degrees","-5 degrees"],"explain":"9 - (-4) = 9 + 4 = 13 degrees of warming."}]};</script>

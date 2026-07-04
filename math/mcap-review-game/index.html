@@ -1,8 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>MCAP Interactive Review Arena</title>
     <link rel="stylesheet" href="/assets/shared.css" />
     <style>
@@ -52,7 +53,7 @@
         border: 1px solid var(--line);
         border-radius: 12px;
         padding: 24px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         min-height: 480px;
         display: flex;
         flex-direction: column;
@@ -91,69 +92,147 @@
         width: 100%;
         accent-color: var(--teal);
       }
+      /* --- responsive tablet/phone refinements (additive) --- */
+      .viewport-svg-element {
+        max-width: 100%;
+        height: auto;
+      }
+      @media (max-width: 640px) {
+        .arena-viewport {
+          padding: 14px;
+          min-height: 0;
+        }
+        .controls-row {
+          flex-direction: column;
+          align-items: stretch;
+          padding: 12px;
+        }
+        .slider-container {
+          min-width: 0;
+        }
+        .domain-menu {
+          flex-direction: row;
+          flex-wrap: wrap;
+        }
+        .domain-btn {
+          flex: 1 1 140px;
+        }
+      }
     </style>
-  </head>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <link rel="stylesheet" href="/assets/game-access.css">
+  <!-- gacc-injected:end -->
+</head>
   <body>
     <div class="page-shell">
       <header class="breadcrumb">
-        <a href="/">Dashboard</a> &raquo; <a href="/mcap-review/">MCAP Hub</a> &raquo; Review Arena
+        <a href="/">Dashboard</a> &raquo;
+        <a href="/mcap-review/">MCAP Hub</a> &raquo; Review Arena
       </header>
 
       <section class="hero compact-hero">
         <p class="eyebrow">Interactive Test Prep</p>
         <h1>MCAP Review Arena</h1>
         <p class="hero-copy">
-          Master the Grade 6 mathematical standards. Complete the target challenges across all 5 key testing domains.
+          Master the Grade 6 mathematical standards. Complete the target
+          challenges across all 5 key testing domains.
         </p>
       </section>
 
       <div class="arena-layout">
         <!-- Sidebar Navigation Domains -->
         <div class="domain-menu">
-          <button class="domain-btn active" onclick="Controller.switchDomain('ns')" id="btn-ns">
-            <span style="font-size: 1.25rem;">📈</span>
+          <button
+            class="domain-btn active"
+            onclick="Controller.switchDomain('ns')"
+            id="btn-ns"
+          >
+            <span style="font-size: 1.25rem">📈</span>
             <div>
-              <div style="font-size: 0.95rem;">Number System</div>
-              <small style="font-weight: 400; color: #64748b;">Coordinate Laser Aim</small>
+              <div style="font-size: 0.95rem">Number System</div>
+              <small style="font-weight: 400; color: #64748b"
+                >Coordinate Laser Aim</small
+              >
             </div>
           </button>
-          <button class="domain-btn" onclick="Controller.switchDomain('rp')" id="btn-rp">
-            <span style="font-size: 1.25rem;">🧪</span>
+          <button
+            class="domain-btn"
+            onclick="Controller.switchDomain('rp')"
+            id="btn-rp"
+          >
+            <span style="font-size: 1.25rem">🧪</span>
             <div>
-              <div style="font-size: 0.95rem;">Ratios &amp; Proportions</div>
-              <small style="font-weight: 400; color: #64748b;">Ratio Beaker Scale</small>
+              <div style="font-size: 0.95rem">Ratios &amp; Proportions</div>
+              <small style="font-weight: 400; color: #64748b"
+                >Ratio Beaker Scale</small
+              >
             </div>
           </button>
-          <button class="domain-btn" onclick="Controller.switchDomain('ee')" id="btn-ee">
-            <span style="font-size: 1.25rem;">⚖️</span>
+          <button
+            class="domain-btn"
+            onclick="Controller.switchDomain('ee')"
+            id="btn-ee"
+          >
+            <span style="font-size: 1.25rem">⚖️</span>
             <div>
-              <div style="font-size: 0.95rem;">Expressions &amp; Equations</div>
-              <small style="font-weight: 400; color: #64748b;">Algebra Tile Balance</small>
+              <div style="font-size: 0.95rem">Expressions &amp; Equations</div>
+              <small style="font-weight: 400; color: #64748b"
+                >Algebra Tile Balance</small
+              >
             </div>
           </button>
-          <button class="domain-btn" onclick="Controller.switchDomain('g')" id="btn-g">
-            <span style="font-size: 1.25rem;">📦</span>
+          <button
+            class="domain-btn"
+            onclick="Controller.switchDomain('g')"
+            id="btn-g"
+          >
+            <span style="font-size: 1.25rem">📦</span>
             <div>
-              <div style="font-size: 0.95rem;">Geometry</div>
-              <small style="font-weight: 400; color: #64748b;">3D Prism Net Folder</small>
+              <div style="font-size: 0.95rem">Geometry</div>
+              <small style="font-weight: 400; color: #64748b"
+                >3D Prism Net Folder</small
+              >
             </div>
           </button>
-          <button class="domain-btn" onclick="Controller.switchDomain('sp')" id="btn-sp">
-            <span style="font-size: 1.25rem;">📊</span>
+          <button
+            class="domain-btn"
+            onclick="Controller.switchDomain('sp')"
+            id="btn-sp"
+          >
+            <span style="font-size: 1.25rem">📊</span>
             <div>
-              <div style="font-size: 0.95rem;">Statistics &amp; Probability</div>
-              <small style="font-weight: 400; color: #64748b;">Dot Plot Mean Balance</small>
+              <div style="font-size: 0.95rem">Statistics &amp; Probability</div>
+              <small style="font-weight: 400; color: #64748b"
+                >Dot Plot Mean Balance</small
+              >
             </div>
           </button>
         </div>
 
         <!-- Interactive Screen Viewport -->
         <div class="arena-viewport">
-          <h2 style="font-size: 1.25rem; margin-bottom: 4px; color: var(--navy);" id="viewport-title">Domain</h2>
-          <p class="card-copy" id="viewport-desc" style="font-size: 0.9rem;">Description of the challenge</p>
+          <h2
+            style="font-size: 1.25rem; margin-bottom: 4px; color: var(--navy)"
+            id="viewport-title"
+          >
+            Domain
+          </h2>
+          <p class="card-copy" id="viewport-desc" style="font-size: 0.9rem">
+            Description of the challenge
+          </p>
 
           <!-- SVG Visual Math Engine -->
-          <svg id="viewport-canvas" class="viewport-svg-element" width="560" height="340" viewBox="0 0 560 340" style="background:white;"></svg>
+          <svg
+            id="viewport-canvas"
+            class="viewport-svg-element"
+            width="560"
+            height="340"
+            viewBox="0 0 560 340"
+            style="background: white"
+          ></svg>
 
           <!-- Interactive sliders & buttons -->
           <div class="controls-row" id="viewport-controls">
@@ -169,7 +248,7 @@
     </div>
 
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
 
     <script>
@@ -178,33 +257,33 @@
         ns: {
           title: "Number System: Target Aim",
           desc: "Plot coordinates on the plane. Adjust X and Y to target the glowing coordinates zone.",
-          target: { x: 3, y: -2 }
+          target: { x: 3, y: -2 },
         },
         rp: {
           title: "Ratios & Proportions: Beaker Scale",
           desc: "Match the target ratio: 3 parts Blue to 5 parts Yellow. Adjust slider to match recipe ratio.",
-          target: 0.6 // 3 / 5
+          target: 0.6, // 3 / 5
         },
         ee: {
           title: "Expressions & Equations: Algebra Tile Balance",
           desc: "Solve the equation: x + 3 = 8. Adjust slider weights until the balance beam aligns perfectly.",
-          target: 5
+          target: 5,
         },
         g: {
           title: "Geometry: Net Folding",
           desc: "Verify 3D prism volumes. Fold the 2D net into a 3D figure using the fold ratio slider.",
-          target: 100 // Fold percent
+          target: 100, // Fold percent
         },
         sp: {
           title: "Statistics: Mean Balance",
           desc: "Add data dots to shift the Mean. Adjust the mean slider until it aligns exactly with Median (value = 5).",
-          target: 5
+          target: 5,
         },
         validateConfig() {
           if (!this.ns || !this.rp || !this.ee || !this.g || !this.sp) {
             throw new Error("CONFIG: Domains are missing configured values.");
           }
-        }
+        },
       };
 
       // 2. Repository Layer (State Management)
@@ -217,13 +296,13 @@
           eeInput: 2,
           gInput: 0,
           spInput: 3,
-          logHistory: []
+          logHistory: [],
         },
         log(msg) {
           const timestamp = new Date().toISOString();
           this.state.logHistory.push(`[${timestamp}] ${msg}`);
           console.log(`[MCAP Arena] ${msg}`);
-        }
+        },
       };
 
       // 3. Service Layer (Audio & Logic Math Projections)
@@ -231,7 +310,9 @@
         audioCtx: null,
         initAudio() {
           if (!this.audioCtx) {
-            this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            this.audioCtx = new (
+              window.AudioContext || window.webkitAudioContext
+            )();
           }
         },
         playSynth(freq, type, duration) {
@@ -242,7 +323,10 @@
             osc.type = type;
             osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
             gain.gain.setValueAtTime(0.15, this.audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration);
+            gain.gain.exponentialRampToValueAtTime(
+              0.01,
+              this.audioCtx.currentTime + duration,
+            );
             osc.connect(gain);
             gain.connect(this.audioCtx.destination);
             osc.start();
@@ -251,8 +335,8 @@
         },
         playTargetMatch() {
           this.playSynth(587.33, "sine", 0.15); // D5
-          setTimeout(() => this.playSynth(880.00, "sine", 0.25), 120); // A5
-        }
+          setTimeout(() => this.playSynth(880.0, "sine", 0.25), 120); // A5
+        },
       };
 
       // 4. Controller Layer (Events & View Coordination)
@@ -268,7 +352,9 @@
           Repository.log(`Switch to domain: ${domainKey}`);
 
           // Update navigation menu class states
-          document.querySelectorAll(".domain-btn").forEach(btn => btn.classList.remove("active"));
+          document
+            .querySelectorAll(".domain-btn")
+            .forEach((btn) => btn.classList.remove("active"));
           const activeBtn = document.getElementById(`btn-${domainKey}`);
           if (activeBtn) activeBtn.classList.add("active");
 
@@ -284,7 +370,8 @@
           if (Repository.state.activeDomain === "ns") {
             Repository.state.nsInput[key] = parseFloat(val);
           } else {
-            Repository.state[`${Repository.state.activeDomain}Input`] = parseFloat(val);
+            Repository.state[`${Repository.state.activeDomain}Input`] =
+              parseFloat(val);
           }
           this.drawDomainCanvas();
           this.checkSuccessCondition();
@@ -311,15 +398,17 @@
           let matched = false;
 
           if (dom === "ns") {
-            matched = (Repository.state.nsInput.x === conf.target.x && Repository.state.nsInput.y === conf.target.y);
+            matched =
+              Repository.state.nsInput.x === conf.target.x &&
+              Repository.state.nsInput.y === conf.target.y;
           } else if (dom === "rp") {
             matched = Math.abs(Repository.state.rpInput - conf.target) < 0.05;
           } else if (dom === "ee") {
-            matched = (Repository.state.eeInput === conf.target);
+            matched = Repository.state.eeInput === conf.target;
           } else if (dom === "g") {
-            matched = (Repository.state.gInput === conf.target);
+            matched = Repository.state.gInput === conf.target;
           } else if (dom === "sp") {
-            matched = (Repository.state.spInput === conf.target);
+            matched = Repository.state.spInput === conf.target;
           }
 
           if (matched) {
@@ -332,12 +421,15 @@
         selfTest() {
           Repository.log("Running selfTest diagnostics...");
           CONFIG.validateConfig();
-          if (!Repository.state.nsInput || typeof Repository.state.rpInput !== "number") {
+          if (
+            !Repository.state.nsInput ||
+            typeof Repository.state.rpInput !== "number"
+          ) {
             throw new Error("selfTest: Repository inputs are uninitialized.");
           }
           Repository.log("selfTest: Diagnostics complete. No issues found.");
           return true;
-        }
+        },
       };
 
       // 5. UI Layer (SVG Projections & Draw Operations)
@@ -396,8 +488,8 @@
             <line x1="0" y1="170" x2="560" y2="170" stroke="#cbd5e1" stroke-width="2"/>
             
             <!-- Target coordinates zone (3, -2) -->
-            <circle cx="${280 + 3 * 40}" cy="${170 - (-2) * 30}" r="16" fill="rgba(34, 197, 94, 0.15)" stroke="#22c55e" stroke-dasharray="4"/>
-            <text x="${280 + 3 * 40 + 20}" y="${170 - (-2) * 30 + 5}" font-size="12" fill="#166534" font-weight="700">TARGET (3, -2)</text>
+            <circle cx="${280 + 3 * 40}" cy="${170 - -2 * 30}" r="16" fill="rgba(34, 197, 94, 0.15)" stroke="#22c55e" stroke-dasharray="4"/>
+            <text x="${280 + 3 * 40 + 20}" y="${170 - -2 * 30 + 5}" font-size="12" fill="#166534" font-weight="700">TARGET (3, -2)</text>
 
             <!-- Plot Pointer coordinates -->
             <circle id="plot-point" cx="${280 + val.x * 40}" cy="${170 - val.y * 30}" r="8" fill="var(--teal)" stroke="#115e59" stroke-width="2"/>
@@ -445,7 +537,7 @@
                 <!-- Right side weights (8) -->
                 <g transform="translate(140, -20)">
                   <rect x="-30" y="-30" width="60" height="30" fill="#fef08a" stroke="#ca8a04" stroke-width="2" rx="4"/>
-                  <text x="0" y="-10" font-size="16" fill="#854d0e" font-weight="700" text-anchor="middle">${val === 5 ? '8' : val + 3}</text>
+                  <text x="0" y="-10" font-size="16" fill="#854d0e" font-weight="700" text-anchor="middle">${val === 5 ? "8" : val + 3}</text>
                 </g>
               </g>
             </g>
@@ -475,15 +567,15 @@
         drawStatistics(val) {
           const svg = document.getElementById("viewport-canvas");
           const dotsX = [140, 180, 220, 260, 300, 340, 380, 420];
-          
+
           svg.innerHTML = `
             <!-- Dot plot base line -->
             <line x1="80" y1="220" x2="480" y2="220" stroke="#64748b" stroke-width="3"/>
             
-            <!-- Static Data dots -->
-            <circle cx="180" cy="200" r="10" fill="#3b82f6"/>
-            <circle cx="260" cy="200" r="10" fill="#3b82f6"/>
-            <circle cx="340" cy="200" r="10" fill="#3b82f6"/>
+            <!-- Static Data dots (values 3, 5, 7 -> mean = median = 5) -->
+            <circle cx="200" cy="200" r="10" fill="#3b82f6"/>
+            <circle cx="280" cy="200" r="10" fill="#3b82f6"/>
+            <circle cx="360" cy="200" r="10" fill="#3b82f6"/>
 
             <!-- Interactive Mean shift dot -->
             <circle cx="${80 + val * 40}" cy="170" r="10" fill="#f43f5e" stroke="#be123c" stroke-width="2"/>
@@ -501,7 +593,7 @@
           setTimeout(() => {
             canvas.style.outline = "none";
           }, 800);
-        }
+        },
       };
 
       // Start application
@@ -513,5 +605,11 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
-  </body>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+  <script src="/assets/game-access.js" defer></script>
+  <!-- gacc-injected:end -->
+</body>
 </html>

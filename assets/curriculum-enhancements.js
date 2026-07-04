@@ -6,7 +6,14 @@
 (function () {
   "use strict";
 
-  var STORAGE_MODE = "curriculumTeacherMode";
+  // Single source of truth shared with the lesson engine (engine/core/
+  // teacher-mode.js) so one toggle flips both the hub and every lesson.
+  var STORAGE_MODE = "nt-teacher-mode";
+  var STORAGE_MODE_LEGACY = "curriculumTeacherMode";
+  // Classroom deterrent password for entering Teacher Mode (not real security —
+  // a client-side gate that stops casual student access).
+  // ⚠️ KEEP IN SYNC with TEACHER_PIN in engine/core/teacher-mode.js.
+  var TEACHER_PIN = "TeacherNeft";
   var STORAGE_PROGRESS = "curriculumProgress";
   var FILTER_ALL = "all";
 
@@ -108,9 +115,18 @@
   function loadTeacherMode() {
     try {
       var params = new URLSearchParams(location.search);
+      // Force-student wins; there is no URL backdoor INTO teacher (needs PIN).
       if (params.get("student") === "1") return false;
-      if (params.get("teacher") === "1") return true;
       var saved = localStorage.getItem(STORAGE_MODE);
+      // One-time migration from the old hub-only key onto the shared key.
+      if (saved === null) {
+        var legacy = localStorage.getItem(STORAGE_MODE_LEGACY);
+        if (legacy !== null) {
+          saved = legacy === "1" || legacy === "true" ? "1" : "0";
+          localStorage.setItem(STORAGE_MODE, saved);
+          localStorage.removeItem(STORAGE_MODE_LEGACY);
+        }
+      }
       if (saved === "0" || saved === "false") return false;
       if (saved === "1" || saved === "true") return true;
     } catch (e) {}
@@ -124,6 +140,15 @@
     try {
       localStorage.setItem(STORAGE_MODE, on ? "1" : "0");
     } catch (e) {}
+  }
+
+  // Password gate for switching INTO Teacher Mode. Returns true on success.
+  function requestTeacher() {
+    var entered = window.prompt("Teacher password:");
+    if (entered === null) return false; // cancelled
+    if (entered.trim() === TEACHER_PIN) return true;
+    window.alert("Incorrect password.");
+    return false;
   }
 
   function isTeacherResource(act) {
@@ -379,7 +404,13 @@
     modeBtn.setAttribute("aria-pressed", "false");
     modeBtn.textContent = "🎒 Student Mode";
     modeBtn.addEventListener("click", function () {
-      teacherMode = !teacherMode;
+      // Switching INTO teacher requires the password; back to student is free.
+      if (!teacherMode) {
+        if (!requestTeacher()) return;
+        teacherMode = true;
+      } else {
+        teacherMode = false;
+      }
       saveTeacherMode(teacherMode);
       applyTeacherMode();
       updateProgressSummary();
@@ -404,6 +435,7 @@
       '<button type="button" class="hub-hint-link" id="hub-hint-teacher">Switch to Teacher Mode</button> ' +
       "to restore them.";
     hint.querySelector("#hub-hint-teacher").addEventListener("click", function () {
+      if (!requestTeacher()) return;
       teacherMode = true;
       saveTeacherMode(true);
       applyTeacherMode();
@@ -1381,13 +1413,25 @@
     },
   ];
 
-  // Anchor the page at the top when a filter is applied (matches the
-  // "open at the top" behaviour of the rest of the hub).
+  // Bring the freshly filtered results into view when a standard is picked.
+  // The interactive hub renders far down a single-column page, so a plain
+  // window-top scroll left the results ~3000px below the fold — to the user it
+  // looked like clicking a standard chip hid every unit. Scroll the results
+  // container itself into view. Native scrollIntoView (not pageYOffset math)
+  // because the standards toolbar is position:sticky, so its measured rect
+  // reports the stuck position and manual math lands in the blank gap above.
   function scrollHubTop() {
     var smooth = !(
       window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
     );
-    window.scrollTo({ top: 0, behavior: smooth ? "smooth" : "auto" });
+    var behavior = smooth ? "smooth" : "auto";
+    var target =
+      document.querySelector(".search-results-panel") || document.getElementById("interactive-hub");
+    if (target && typeof target.scrollIntoView === "function") {
+      target.scrollIntoView({ behavior: behavior, block: "start" });
+    } else {
+      window.scrollTo({ top: 0, behavior: smooth ? "smooth" : "auto" });
+    }
   }
 
   // Format a raw standard token (e.g. "6.rp.3a") for display ("6.RP.3a").
@@ -1463,7 +1507,7 @@
       chip.dataset.token = d.token;
       chip.setAttribute("aria-pressed", d.token === "" ? "true" : "false");
       chip.title = d.label;
-      chip.setAttribute("aria-label", d.token ? d.label : "All standards");
+      chip.setAttribute("aria-label", d.token ? d.code + ": " + d.label : "All standards");
       chip.innerHTML =
         '<span class="hsc-code">' +
         d.code +

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Neft City Living School — a series of polished 6th-grade math simulation games. Enter a living city, solve a data crisis, and prove your learning."
+    />
+    <title>Neft City · Living School</title>
+    <link rel="icon" href="/assets/favicon.svg" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #0f1f3d; --navy-2: #14294f; --teal: #18b9a8; --teal-deep: #0e8c80;
+        --gold-1: #f3b14b; --gold-2: #e89322; --ink: #14243f; --muted: #5b6b85;
+        --line: #d9e3f0; --card: #fff;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; color: var(--ink);
+        font-family: "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+        background:
+          radial-gradient(1200px 700px at 80% -10%, #cfe8ff, transparent 60%),
+          radial-gradient(900px 600px at -10% 10%, #dff3ef, transparent 55%),
+          linear-gradient(180deg, #eaf4ff, #f4f9ff 40%, #eef4fb);
+        background-attachment: fixed; min-height: 100vh;
+      }
+      .wrap { max-width: 1040px; margin: 0 auto; padding: clamp(20px, 4vw, 48px) clamp(16px, 3vw, 24px) 70px; }
+      .hero {
+        background: linear-gradient(135deg, var(--navy), #16315f 70%, var(--teal-deep));
+        color: #fff; border-radius: 24px; padding: clamp(26px, 5vw, 48px);
+        box-shadow: 0 26px 60px rgba(15,31,61,.28); position: relative; overflow: hidden;
+      }
+      .hero::after {
+        content: ""; position: absolute; inset: 0;
+        background: repeating-linear-gradient(45deg, rgba(255,255,255,.04) 0 14px, transparent 14px 28px);
+        pointer-events: none;
+      }
+      .eyebrow { text-transform: uppercase; letter-spacing: 2px; font-size: 13px; font-weight: 800; color: var(--gold-1); margin: 0 0 8px; }
+      .hero h1 { margin: 0 0 12px; font-size: clamp(32px, 6vw, 52px); letter-spacing: -1px; }
+      .hero p { margin: 0; font-size: clamp(16px, 2.4vw, 20px); max-width: 60ch; opacity: .95; }
+      .section-title { margin: 36px 0 6px; font-size: 22px; color: var(--navy); }
+      .section-sub { margin: 0 0 18px; color: var(--muted); }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+      .chapter {
+        display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: inherit;
+        background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+        padding: 20px; box-shadow: 0 14px 34px rgba(15,31,61,.10);
+        transition: transform .18s ease, box-shadow .2s, border-color .2s;
+      }
+      .chapter:hover { transform: translateY(-5px); box-shadow: 0 22px 46px rgba(15,31,61,.18); border-color: var(--teal); }
+      .chapter .top { display: flex; align-items: center; gap: 12px; }
+      .chapter .emoji {
+        width: 52px; height: 52px; flex-shrink: 0; display: grid; place-items: center;
+        font-size: 28px; border-radius: 14px; background: linear-gradient(135deg, var(--teal), var(--gold-1)); color: var(--navy);
+      }
+      .chapter .num { font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--teal-deep); }
+      .chapter h3 { margin: 2px 0 0; font-size: 20px; color: var(--navy); line-height: 1.15; }
+      .chapter .std { display: inline-block; align-self: flex-start; margin-top: 2px; font-size: 12px; font-weight: 700; color: var(--gold-2); background: #fff6e3; border-radius: 999px; padding: 3px 10px; }
+      .chapter p { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
+      .chapter .go { margin-top: auto; padding-top: 10px; font-weight: 800; color: var(--teal-deep); }
+      .backlink { display: inline-block; margin-top: 28px; color: var(--teal-deep); font-weight: 700; text-decoration: none; }
+      .backlink:hover { text-decoration: underline; }
+      .note { margin-top: 26px; background: #f0f7ff; border: 1px dashed var(--teal); border-radius: 14px; padding: 14px 18px; color: var(--navy-2); font-size: 15px; }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+</head>
+  <body>
+    <div class="wrap">
+      <header class="hero">
+        <p class="eyebrow">Mr. Neft · Living School</p>
+        <h1>Neft City</h1>
+        <p>
+          Step into a living city. Take on a role, solve a real data crisis with
+          math, make a decision the city can trust, and earn your Proof-of-Learning
+          Passport. Each chapter is a complete game — bilingual (English / Español),
+          with built-in vocabulary help and a teacher view.
+        </p>
+      </header>
+
+      <h2 class="section-title">Choose your mission</h2>
+      <p class="section-sub">Five chapters · 6th-grade math · play in any order</p>
+
+      <div class="grid">
+        <a class="chapter" href="./neft-city-data-crisis/">
+          <div class="top"><span class="emoji" aria-hidden="true">🏙️</span><div><div class="num">Chapter 1</div><h3>Data Crisis</h3></div></div>
+          <span class="std">6.SP · mean, median, mode, range</span>
+          <p>Long lines at the arena! Sort wait-time data, build a histogram, and recommend a fix.</p>
+          <span class="go">Enter the city →</span>
+        </a>
+
+        <a class="chapter" href="./neft-city-water-watch/">
+          <div class="top"><span class="emoji" aria-hidden="true">💧</span><div><div class="num">Chapter 2</div><h3>Water Watch</h3></div></div>
+          <span class="std">6.SP · mean vs. median + outliers</span>
+          <p>A water shortage hits Neft City. One mansion skews the data — find the typical use.</p>
+          <span class="go">Enter the city →</span>
+        </a>
+
+        <a class="chapter" href="./neft-city-food-trucks/">
+          <div class="top"><span class="emoji" aria-hidden="true">🌮</span><div><div class="num">Chapter 3</div><h3>Food Truck Face-Off</h3></div></div>
+          <span class="std">6.RP · ratios, rates, unit rate</span>
+          <p>Two trucks, two deals. Use unit rates and a double number line to find the best value.</p>
+          <span class="go">Enter the city →</span>
+        </a>
+
+        <a class="chapter" href="./neft-city-flood-grid/">
+          <div class="top"><span class="emoji" aria-hidden="true">🌊</span><div><div class="num">Chapter 4</div><h3>Flood Grid</h3></div></div>
+          <span class="std">6.NS · integers + coordinate plane</span>
+          <p>Storms are flooding the city. Order elevations, plot sensors, and place the pump.</p>
+          <span class="go">Enter the city →</span>
+        </a>
+
+        <a class="chapter" href="./neft-city-two-neighborhoods/">
+          <div class="top"><span class="emoji" aria-hidden="true">📦</span><div><div class="num">Chapter 5</div><h3>Tale of Two Neighborhoods</h3></div></div>
+          <span class="std">6.SP · quartiles, IQR, box plots</span>
+          <p>Which neighborhood needs help? Compare the spread of two data sets with box plots.</p>
+          <span class="go">Enter the city →</span>
+        </a>
+      </div>
+
+      <div class="note">
+        🧑‍🏫 <strong>Teachers:</strong> every chapter runs fully offline (no logins, no accounts),
+        saves progress on the device, and includes a Teacher View (press <strong>Shift + T</strong>)
+        with skill scores, detected misconceptions, and a suggested next move. Use the
+        🌐 button to switch any chapter between English and Español.
+      </div>
+
+      <a class="backlink" href="/">← Back to the Neft Teacher hub</a>
+    </div>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+</body>
+</html>

@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/assets/math-mobile.css">
   <meta name="description" content="Neon Box Plot Detective: An interactive cyberpunk statistics visualizer. Analyze evidence distributions, compile five-number summaries, and solve cases with box-and-whisker plots.">
   <title>Neon Box Plot Detective | Neft Studio</title>
 
@@ -764,10 +765,31 @@
     }
   
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+    /* --- responsive tablet/phone refinements (additive) --- */
+    @media (max-width: 900px) {
+      .twr-lanes { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .hero { padding: 20px; margin: 16px 12px; }
+      .hero h1 { font-size: 1.6rem; }
+      .hero-stats { flex-wrap: wrap; }
+      .studio-shell { padding: 0 12px 40px; }
+      .glass-panel { padding: 18px; }
+      .panel-meta { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .model-viewport { min-height: 280px; }
+      .model-viewport svg { height: 280px; }
+      .dock-cards { grid-template-columns: 1fr; }
+      .hud-checklist { grid-template-columns: 1fr; }
+      .glossary-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .diag-overlay { width: auto; left: 12px; right: 12px; }
+    }
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
 </head>
 <body>
   <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -1976,5 +1998,8 @@
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>
