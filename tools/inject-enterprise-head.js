@@ -70,11 +70,7 @@ const report = {
 };
 
 const escapeAttr = (s) =>
-  s
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 const stripBlock = (html, begin, end) => {
   const b = html.indexOf(begin);
@@ -82,8 +78,7 @@ const stripBlock = (html, begin, end) => {
   const e = html.indexOf(end, b);
   if (e === -1) return html; // unbalanced — leave for validate:injection to flag
   return (
-    html.slice(0, b).replace(/[ \t]*$/, "") +
-    html.slice(e + end.length).replace(/^\s*\n/, "\n")
+    html.slice(0, b).replace(/[ \t]*$/, "") + html.slice(e + end.length).replace(/^\s*\n/, "\n")
   );
 };
 
@@ -101,13 +96,9 @@ function hasOwnDescription(html) {
 function buildHeadBlock(file, dirName, html) {
   const page = basename(file);
   const canonical =
-    page === "index.html"
-      ? `${SITE}/lessons/${dirName}/`
-      : `${SITE}/lessons/${dirName}/${page}`;
+    page === "index.html" ? `${SITE}/lessons/${dirName}/` : `${SITE}/lessons/${dirName}/${page}`;
   const title = extractTitle(html) || `Lesson ${dirName} — Neft Teacher`;
-  const descMatch = html.match(
-    /<meta\s+name="description"\s+content="([^"]*)"/i,
-  );
+  const descMatch = html.match(/<meta\s+name="description"\s+content="([^"]*)"/i);
   const description =
     (descMatch && descMatch[1]) ||
     `Neft Teacher Grade 6 Reveal Math resource — ${title.replace(/\s*—\s*Neft Teacher\s*$/i, "")}.`;
@@ -120,9 +111,7 @@ function buildHeadBlock(file, dirName, html) {
     `<link rel="canonical" href="${canonical}">`,
   ];
   if (!hasOwnDescription(html)) {
-    lines.push(
-      `<meta name="description" content="${escapeAttr(description)}">`,
-    );
+    lines.push(`<meta name="description" content="${escapeAttr(description)}">`);
   }
   lines.push(
     `<meta property="og:type" content="${page === "index.html" ? "website" : "article"}">`,
@@ -204,5 +193,4 @@ for (const entry of readdirSync(LESSONS)) {
 console.log(
   `[inject-enterprise-head] ${DRY ? "(dry-run) " : ""}scanned=${report.scanned} head=${report.headInjected} shell=${report.shellInjected} reverted=${report.reverted} skipped=${report.skipped}`,
 );
-if (report.skipped > 0)
-  console.log("  skipped = pages with no </head> tag (not real documents)");
+if (report.skipped > 0) console.log("  skipped = pages with no </head> tag (not real documents)");

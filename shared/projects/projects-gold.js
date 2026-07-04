@@ -47,10 +47,7 @@
   }
 
   function reducedMotion() {
-    return (
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    );
+    return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
   function init() {
@@ -102,8 +99,7 @@
             var node = nodes[n];
             if (node.nodeType !== 1) continue;
             if (node.classList && node.classList.contains("readout")) tag(node);
-            if (node.querySelectorAll)
-              node.querySelectorAll(".readout").forEach(tag);
+            if (node.querySelectorAll) node.querySelectorAll(".readout").forEach(tag);
           }
         }
       });
@@ -123,10 +119,7 @@
     if (!buttons.length) return;
 
     function sync(btn) {
-      btn.setAttribute(
-        "aria-pressed",
-        btn.classList.contains("active") ? "true" : "false",
-      );
+      btn.setAttribute("aria-pressed", btn.classList.contains("active") ? "true" : "false");
     }
     buttons.forEach(sync);
 
@@ -159,8 +152,7 @@
       try {
         var panel = document.querySelector(".step-panel.active");
         if (panel) {
-          if (!panel.hasAttribute("tabindex"))
-            panel.setAttribute("tabindex", "-1");
+          if (!panel.hasAttribute("tabindex")) panel.setAttribute("tabindex", "-1");
           panel.focus({ preventScroll: true });
         }
       } catch (e) {}
@@ -170,29 +162,21 @@
 
   /* --- 5. Horizontal scroll wrapper for wide tables ------------------------ */
   function wrapWideTables() {
-    document
-      .querySelectorAll("table.rubric, table.data-table")
-      .forEach(function (table) {
-        if (!table.parentNode) return;
-        if (
-          table.parentNode.classList &&
-          table.parentNode.classList.contains("gold-scroll")
-        )
-          return;
-        var wrap = document.createElement("div");
-        wrap.className = "gold-scroll";
-        table.parentNode.insertBefore(wrap, table);
-        wrap.appendChild(table);
-      });
+    document.querySelectorAll("table.rubric, table.data-table").forEach(function (table) {
+      if (!table.parentNode) return;
+      if (table.parentNode.classList && table.parentNode.classList.contains("gold-scroll")) return;
+      var wrap = document.createElement("div");
+      wrap.className = "gold-scroll";
+      table.parentNode.insertBefore(wrap, table);
+      wrap.appendChild(table);
+    });
   }
 
   /* --- 6. Clamp unbounded number inputs ------------------------------------ */
   function clampNumberInputs() {
-    document
-      .querySelectorAll('input[type="number"]:not([max])')
-      .forEach(function (el) {
-        el.max = "1000000";
-      });
+    document.querySelectorAll('input[type="number"]:not([max])').forEach(function (el) {
+      el.max = "1000000";
+    });
   }
 
   /* --- 7. Gate the teacher answer console ---------------------------------- */
@@ -205,9 +189,7 @@
         ok = isTeacherMode() || sessionStorage.getItem(SESSION_KEY) === "1";
       } catch (e) {}
       if (!ok) {
-        var pin = window.prompt(
-          "Teacher PIN required to open the answer console:",
-        );
+        var pin = window.prompt("Teacher PIN required to open the answer console:");
         if (pin === null) return; // cancelled
         if (pin.trim() !== TEACHER_PIN) {
           window.alert("Incorrect PIN. The answer console stays locked.");

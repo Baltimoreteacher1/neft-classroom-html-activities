@@ -30,17 +30,14 @@ const catalog = JSON.parse(
 // A catalog path is either a directory (inject its index.html) or a direct
 // .html file (pre/post tests). Query-string variants (practice-arcade?unit=N)
 // share one file, so dedupe on the resolved file, not the raw entry.
-const toFile = (p) =>
-  /\.html?$/i.test(p) ? p : `${p.replace(/\/+$/, "")}/index.html`;
+const toFile = (p) => (/\.html?$/i.test(p) ? p : `${p.replace(/\/+$/, "")}/index.html`);
 const files = new Set(catalog.activities.map((a) => toFile(a.path)));
 // injectOnly: pages that need the bridge but ship no package of their own
 // (e.g. the -level-0/1/2 variants of pre/post tests a student may be moved to).
 for (const p of catalog.injectOnly || []) files.add(toFile(p));
 // Interactive homework pages are derived from the curriculum manifest — every
 // lesson's homework.html is assignable in Canvas, so each gets the bridge.
-const manifest = JSON.parse(
-  readFileSync(resolve(ROOT, "data/curriculum-manifest.json"), "utf8"),
-);
+const manifest = JSON.parse(readFileSync(resolve(ROOT, "data/curriculum-manifest.json"), "utf8"));
 const manifestLessons = Array.isArray(manifest.lessons)
   ? manifest.lessons
   : Object.values(manifest.lessons);
@@ -60,10 +57,7 @@ const report = {
 
 function revert(html) {
   const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return html.replace(
-    new RegExp(`\\s*${esc(BEGIN)}[\\s\\S]*?${esc(END)}`, "g"),
-    "",
-  );
+  return html.replace(new RegExp(`\\s*${esc(BEGIN)}[\\s\\S]*?${esc(END)}`, "g"), "");
 }
 
 for (const p of paths) {
@@ -95,17 +89,12 @@ for (const p of paths) {
   // (e.g. a print-report popup); injecting a <script> there would embed a
   // literal </script> inside an inline script and prematurely terminate it.
   const lastBody = html.toLowerCase().lastIndexOf("</body>");
-  html =
-    html.slice(0, lastBody) +
-    `  ${BEGIN}\n  ${TAG}\n  ${END}\n` +
-    html.slice(lastBody);
+  html = html.slice(0, lastBody) + `  ${BEGIN}\n  ${TAG}\n  ${END}\n` + html.slice(lastBody);
   if (!DRY) writeFileSync(file, html);
   report.injected++;
 }
 
-console.log(
-  `Canvas-bridge injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`,
-);
+console.log(`Canvas-bridge injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`);
 console.log("  activities :", paths.length);
 console.log("  scanned    :", report.scanned);
 if (REVERT) console.log("  reverted   :", report.reverted);
@@ -113,5 +102,4 @@ else {
   console.log("  injected   :", report.injected);
   console.log("  already    :", report.already);
 }
-if (report.missing.length)
-  console.log("  missing    :", report.missing.join(", "));
+if (report.missing.length) console.log("  missing    :", report.missing.join(", "));

@@ -31,7 +31,11 @@ const lessons = (
 
 const toFile = (p) => (/\.html?$/i.test(p) ? p : `${p.replace(/\/+$/, "")}/index.html`);
 const toSlug = (a) =>
-  a.id || a.path.replace(/\/+$/, "").replace(/\.html?$/i, "").replace(/\//g, "-");
+  a.id ||
+  a.path
+    .replace(/\/+$/, "")
+    .replace(/\.html?$/i, "")
+    .replace(/\//g, "-");
 
 const hasBridge = (rel) => {
   const f = join(ROOT, rel);
@@ -41,8 +45,7 @@ const hasBridge = (rel) => {
 // --- 1+2+3: catalog entries ---
 const slugs = new Map(); // slug -> first source, to name both sides of a collision
 const claim = (slug, source) => {
-  if (slugs.has(slug))
-    problems.push(`slug collision: "${slug}" (${slugs.get(slug)} vs ${source})`);
+  if (slugs.has(slug)) problems.push(`slug collision: "${slug}" (${slugs.get(slug)} vs ${source})`);
   else slugs.set(slug, source);
 };
 
@@ -52,7 +55,8 @@ for (const a of catalog.activities) {
     problems.push(`catalog path missing on disk: ${a.path}`);
     continue;
   }
-  if (a.query && !a.id) problems.push(`catalog entry with query needs explicit id: ${a.path}${a.query}`);
+  if (a.query && !a.id)
+    problems.push(`catalog entry with query needs explicit id: ${a.path}${a.query}`);
   if (!hasBridge(file)) problems.push(`catalog page lacks canvas-bridge: ${file}`);
   claim(toSlug(a), `activity ${a.path}${a.query || ""}`);
 }

@@ -47,9 +47,7 @@ const patterns = [
   "math/statistics/projects/version-*/index.html",
 ];
 
-const files = [
-  ...new Set(patterns.flatMap((p) => globSync(p, { cwd: ROOT }))),
-].sort();
+const files = [...new Set(patterns.flatMap((p) => globSync(p, { cwd: ROOT })))].sort();
 
 let pagesTouched = 0;
 let includesAdded = 0;

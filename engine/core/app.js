@@ -11,11 +11,7 @@ import {
   linkifyObjectiveTerms,
   wireObjectiveTermPopups,
 } from "./lesson-renderer.js";
-import {
-  buildLessonCoverExtras,
-  mountCoverArt,
-  applyPhaseAccent,
-} from "./premium.js";
+import { buildLessonCoverExtras, mountCoverArt, applyPhaseAccent } from "./premium.js";
 import {
   mountTeacherPanel,
   buildWelcomeTeacherNotes,
@@ -79,8 +75,7 @@ export function createApp(config) {
   window.AudioSynth = {
     ctx: null,
     init() {
-      if (!this.ctx)
-        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
     },
     playTone(freq, type, duration, vol = 0.1) {
       if (!this.ctx) return;
@@ -89,10 +84,7 @@ export function createApp(config) {
       osc.type = type;
       osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
       gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(
-        0.01,
-        this.ctx.currentTime + duration,
-      );
+      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
       osc.connect(gain);
       gain.connect(this.ctx.destination);
       osc.start();
@@ -136,9 +128,7 @@ export function createApp(config) {
       y: Math.random() * canvas.height - canvas.height,
       vx: (Math.random() - 0.5) * 10,
       vy: Math.random() * 5 + 5,
-      color: ["#F2A93B", "#387F84", "#C85A3A", "#4A7C6F"][
-        Math.floor(Math.random() * 4)
-      ],
+      color: ["#F2A93B", "#387F84", "#C85A3A", "#4A7C6F"][Math.floor(Math.random() * 4)],
       size: Math.random() * 8 + 4,
       rot: Math.random() * Math.PI * 2,
       rotSpeed: (Math.random() - 0.5) * 0.2,
@@ -167,9 +157,7 @@ export function createApp(config) {
 
   document.addEventListener("click", (e) => {
     if (
-      e.target.closest(
-        'button, a, select, input[type="radio"], input[type="checkbox"], .phase-btn',
-      )
+      e.target.closest('button, a, select, input[type="radio"], input[type="checkbox"], .phase-btn')
     ) {
       if (window.AudioSynth) window.AudioSynth.click();
     }
@@ -398,9 +386,7 @@ function showIdentityScreen(root, config) {
     coverExtras.innerHTML = buildLessonCoverExtras(config, savedMatch);
     const artSlot = coverExtras.querySelector(".lesson-cover-art");
     if (artSlot) mountCoverArt(artSlot, config);
-    const stdBtn = coverExtras.querySelector(
-      '[data-action="standards-explainer"]',
-    );
+    const stdBtn = coverExtras.querySelector('[data-action="standards-explainer"]');
     if (stdBtn) {
       // Show the standard explainer by default (no click required); the button
       // remains a toggle so it can be collapsed.
@@ -455,9 +441,7 @@ function showIdentityScreen(root, config) {
       const btn = document.createElement("button");
       btn.className = "identity-saved-btn";
       btn.dataset.studentId = s.id;
-      const when = s.lastSaved
-        ? new Date(s.lastSaved).toLocaleDateString()
-        : "";
+      const when = s.lastSaved ? new Date(s.lastSaved).toLocaleDateString() : "";
       btn.innerHTML = `<strong>${escHtml(s.name)}</strong> ${s.period ? `· P${escHtml(s.period)}` : ""} · ${s.phasesCompleted}/${PHASE_TIME_ESTIMATES.length} phases ${when ? `· ${when}` : ""}`;
       btn.addEventListener("click", () => {
         nameInput.value = s.name;
@@ -535,8 +519,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
     // Insert into sidebar before student-info or progress
     const sidebarProgress =
-      sidebar.querySelector(".sidebar-progress") ||
-      sidebar.querySelector(".student-info");
+      sidebar.querySelector(".sidebar-progress") || sidebar.querySelector(".student-info");
     if (sidebarProgress) {
       sidebarProgress.parentNode.insertBefore(a11yBar, sidebarProgress);
     } else {
@@ -566,9 +549,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
       const texts = [];
       document
-        .querySelectorAll(
-          ".section-title, .section-desc, p, li, h1, h2, h3, .problem-prompt",
-        )
+        .querySelectorAll(".section-title, .section-desc, p, li, h1, h2, h3, .problem-prompt")
         .forEach((el) => {
           if (
             el.offsetParent !== null &&
@@ -649,9 +630,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       btn.addEventListener("click", () => {
         color = btn.dataset.color;
         width = color.startsWith("rgba") ? 12 : 3; // Highlighter width is larger
-        drawHud
-          .querySelectorAll(".color-btn")
-          .forEach((b) => (b.style.border = "none"));
+        drawHud.querySelectorAll(".color-btn").forEach((b) => (b.style.border = "none"));
         btn.style.border = "2px solid #fff";
       });
     });
@@ -742,17 +721,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       const el = document.createElement("div");
       el.className = "phase active phase-enter";
       el.setAttribute("role", "region");
-      el.setAttribute(
-        "aria-label",
-        phaseConfigs[index]?.name || `Phase ${index + 1}`,
-      );
+      el.setAttribute("aria-label", phaseConfigs[index]?.name || `Phase ${index + 1}`);
       phaseContainer.append(el);
       renderFn(el, state, this);
-      el.addEventListener(
-        "animationend",
-        () => el.classList.remove("phase-enter"),
-        { once: true },
-      );
+      el.addEventListener("animationend", () => el.classList.remove("phase-enter"), { once: true });
     },
 
     navigateTo(index) {
@@ -884,16 +856,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       el.setAttribute("role", "region");
       el.setAttribute("aria-label", "Objectives");
 
-      const objectiveCard = ({
-        accent,
-        color,
-        icon,
-        label,
-        text,
-        key,
-        prompt,
-        starter,
-      }) =>
+      const objectiveCard = ({ accent, color, icon, label, text, key, prompt, starter }) =>
         `<div class="card ${accent} obj-card" style="margin-bottom:var(--sp-4, 18px); padding:var(--sp-5, 22px);">
           <div style="font-size:1.15rem; font-weight:800; color:var(${color}); margin-bottom:var(--sp-2, 8px);">${icon} ${label}</div>
           <p style="margin:0 0 var(--sp-4, 18px); font-size:1.45rem; line-height:1.6; font-weight:600; color:var(--navy, #264653);">${linkifyObjectiveTerms(text, config.vocabulary || [])}</p>
@@ -937,8 +900,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           key: "language",
           prompt:
             "Turn and talk: Which math words will you use today, and what do you think they mean?",
-          starter:
-            "One math word I will use is ______. I think it means ______.",
+          starter: "One math word I will use is ______. I think it means ______.",
         })}
       `;
       phaseContainer.append(el);
@@ -975,9 +937,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     openActivity() {
       const act = config.practice && config.practice.optionalActivity;
       const items =
-        config.practice && Array.isArray(config.practice.optional)
-          ? config.practice.optional
-          : [];
+        config.practice && Array.isArray(config.practice.optional) ? config.practice.optional : [];
       if (!act || !items.length) return;
 
       this.setExtraActive("activity");
@@ -1013,9 +973,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // links out to a standalone activity/game; shows a friendly empty state when
     // a lesson has no projects yet. Never touches phase state, XP, or stars.
     openProjects() {
-      const projects = Array.isArray(config.projects)
-        ? [...config.projects]
-        : [];
+      const projects = Array.isArray(config.projects) ? [...config.projects] : [];
       // Auto-append this unit's culminating project (mapped by verified subject)
       // after any lesson-specific projects, unless it is already listed.
       const unitHref = UNIT_CULMINATING_PROJECT[config.unit];
@@ -1024,8 +982,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         !projects.some(
           (p) =>
             p.href === unitHref ||
-            (Array.isArray(p.links) &&
-              p.links.some((l) => l.href === unitHref)),
+            (Array.isArray(p.links) && p.links.some((l) => l.href === unitHref)),
         )
       ) {
         projects.push({
@@ -1161,15 +1118,11 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     },
   };
 
-  document.addEventListener("rma:navigate", (e) =>
-    app.navigateTo(e.detail.phase),
-  );
+  document.addEventListener("rma:navigate", (e) => app.navigateTo(e.detail.phase));
 
   // Vocab/Notes sub-tabs live inside the data-bound phase nav (rebuilt on every
   // state change), so they signal via an event instead of a one-time binding.
-  document.addEventListener("rma:openextra", (e) =>
-    app.openExtra(e.detail.kind),
-  );
+  document.addEventListener("rma:openextra", (e) => app.openExtra(e.detail.kind));
 
   // Pre-lesson tabs (Get Ready / Objectives) open inline without disturbing the
   // graded phase flow.
@@ -1269,8 +1222,7 @@ function preLessonNavHtml(config) {
   // Vocab + Notes are no longer here — they render as sub-tabs directly under the
   // Launch phase button (see updateSidebar) so they sit with the lesson flow.
   const tabs = [];
-  if (config.readiness)
-    tabs.push({ extra: "readiness", icon: "📚", label: "Get Ready" });
+  if (config.readiness) tabs.push({ extra: "readiness", icon: "📚", label: "Get Ready" });
   tabs.push({ extra: "objectives", icon: "🎯", label: "Objectives" });
   const items = tabs.map(
     (t) =>
@@ -1360,14 +1312,10 @@ function updateLessonHero(hero, state, phaseConfigs) {
   const current = phaseConfigs[s.currentPhase] || phaseConfigs[0];
 
   const phaseBadge = hero.querySelector('[data-bind="hero-phase"]');
-  if (phaseBadge)
-    phaseBadge.textContent = `Phase ${(s.currentPhase ?? 0) + 1} of ${total}`;
+  if (phaseBadge) phaseBadge.textContent = `Phase ${(s.currentPhase ?? 0) + 1} of ${total}`;
 
   const stars = hero.querySelector('[data-bind="hero-stars"]');
-  if (stars)
-    stars.textContent = String(
-      s.phases.reduce((sum, p) => sum + (p.stars || 0), 0),
-    );
+  if (stars) stars.textContent = String(s.phases.reduce((sum, p) => sum + (p.stars || 0), 0));
 
   const coins = hero.querySelector('[data-bind="hero-coins"]');
   if (coins) coins.textContent = String(s.coins || 0);
@@ -1382,8 +1330,7 @@ function updateLessonHero(hero, state, phaseConfigs) {
   }
 
   const phaseName = hero.querySelector('[data-bind="hero-phase-name"]');
-  if (phaseName)
-    phaseName.textContent = current?.name || `Phase ${s.currentPhase + 1}`;
+  if (phaseName) phaseName.textContent = current?.name || `Phase ${s.currentPhase + 1}`;
 
   const phaseCount = hero.querySelector('[data-bind="hero-phase-count"]');
   if (phaseCount) phaseCount.textContent = `${completed} of ${total} complete`;
@@ -1406,8 +1353,7 @@ function updateSidebar(sidebar, state, phaseConfigs) {
   const phaseCount = sidebar.querySelector('[data-bind="phase-count"]');
   if (phaseCount) phaseCount.textContent = `${completed} / ${total}`;
   const phaseBar = sidebar.querySelector('[data-bind="phase-bar"]');
-  if (phaseBar)
-    phaseBar.style.width = `${total ? Math.round((completed / total) * 100) : 0}%`;
+  if (phaseBar) phaseBar.style.width = `${total ? Math.round((completed / total) * 100) : 0}%`;
 
   const nav = sidebar.querySelector('[data-bind="phases"]');
   if (!nav) return;
@@ -1442,8 +1388,7 @@ function updateSidebar(sidebar, state, phaseConfigs) {
 
       const stars = Array.from(
         { length: 3 },
-        (_, si) =>
-          `<span class="star ${si < phase.stars ? "earned" : ""}">★</span>`,
+        (_, si) => `<span class="star ${si < phase.stars ? "earned" : ""}">★</span>`,
       ).join("");
 
       const btn = `
@@ -1461,9 +1406,7 @@ function updateSidebar(sidebar, state, phaseConfigs) {
   nav.querySelectorAll("[data-phase]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const idx = parseInt(btn.dataset.phase, 10);
-      document.dispatchEvent(
-        new CustomEvent("rma:navigate", { detail: { phase: idx } }),
-      );
+      document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: idx } }));
     });
   });
 
@@ -1483,9 +1426,7 @@ function updateSidebar(sidebar, state, phaseConfigs) {
   if (viewing) {
     nav
       .querySelectorAll(".extra-btn[data-extra]")
-      .forEach((b) =>
-        b.classList.toggle("active", b.dataset.extra === viewing),
-      );
+      .forEach((b) => b.classList.toggle("active", b.dataset.extra === viewing));
   }
 }
 

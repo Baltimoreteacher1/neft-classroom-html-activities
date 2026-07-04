@@ -22,7 +22,7 @@ const skillList = (t) =>
     ? `${t.skills.slice(0, -1).join(", ")}, and ${t.skills.at(-1)}`
     : t.skills.length === 2
       ? `${t.skills[0]} and ${t.skills[1]}`
-    : t.skills[0] || t.title;
+      : t.skills[0] || t.title;
 
 const DOMAIN_GUIDES = {
   "Number & Operations": {
@@ -173,7 +173,8 @@ function publisherBlueprint(t) {
       {
         phase: "Session 3",
         title: "Practice with feedback",
-        teacher: "Conference with students using Smart Review misses and the Error Clinic protocol.",
+        teacher:
+          "Conference with students using Smart Review misses and the Error Clinic protocol.",
         student: "Complete Practice, Smart Review, and the fluency drill until one score improves.",
         evidence: "Practice percent, cleared Smart Review item, fluency count.",
       },
@@ -196,35 +197,42 @@ function publisherBlueprint(t) {
       {
         name: "Intensive reteach",
         trigger: "Pre-quiz or diagnostic below 50%",
-        moves: "Teacher-led model, manipulatives, read-aloud question support, Worksheet A odd items, then one Smart Review item.",
+        moves:
+          "Teacher-led model, manipulatives, read-aloud question support, Worksheet A odd items, then one Smart Review item.",
       },
       {
         name: "Guided practice",
         trigger: "50% to 79% or inconsistent explanations",
-        moves: "Concept Lab, worked examples, Practice, Error Clinic, Worksheet A/B mix, and an exit ticket conference.",
+        moves:
+          "Concept Lab, worked examples, Practice, Error Clinic, Worksheet A/B mix, and an exit ticket conference.",
       },
       {
         name: "Extension and transfer",
         trigger: "80%+ with clear explanation",
-        moves: "Worksheet B challenge, performance task, student-created example, and peer teaching using the discourse frame.",
+        moves:
+          "Worksheet B challenge, performance task, student-created example, and peer teaching using the discourse frame.",
       },
     ],
     rubric: [
       {
         level: "4 · Publishes math thinking",
-        criteria: "Accurate answer, efficient strategy, clear model, complete explanation, and correct vocabulary.",
+        criteria:
+          "Accurate answer, efficient strategy, clear model, complete explanation, and correct vocabulary.",
       },
       {
         level: "3 · Meets standard",
-        criteria: "Accurate answer and a mostly clear strategy with enough explanation to follow the thinking.",
+        criteria:
+          "Accurate answer and a mostly clear strategy with enough explanation to follow the thinking.",
       },
       {
         level: "2 · Developing",
-        criteria: "Partially correct work; model or explanation shows a gap that can be repaired with feedback.",
+        criteria:
+          "Partially correct work; model or explanation shows a gap that can be repaired with feedback.",
       },
       {
         level: "1 · Needs reteach",
-        criteria: "Misconception is still present; student needs a concrete model and a smaller parallel problem.",
+        criteria:
+          "Misconception is still present; student needs a concrete model and a smaller parallel problem.",
       },
     ],
     notebook: [
@@ -280,7 +288,12 @@ function miniLessonBlueprint(t) {
       number: idx + 1,
       title: skill,
       objective,
-      concept: idx === 0 ? "Open the concept" : idx === skills.length - 1 ? "Connect and transfer" : "Build the next piece",
+      concept:
+        idx === 0
+          ? "Open the concept"
+          : idx === skills.length - 1
+            ? "Connect and transfer"
+            : "Build the next piece",
       teacherMove:
         idx === 0
           ? `Launch with a low-floor context and ask students to show ${lowerFirst(skill)} with a model before naming a rule.`
@@ -292,8 +305,14 @@ function miniLessonBlueprint(t) {
         practice.length > 0
           ? practice.map((q) => q.prompt).join(" | ")
           : `Create one original ${lowerFirst(t.title)} problem and solve it with a model and explanation.`,
-      misconception: idx === 0 ? g.misconception : `Students may treat ${lowerFirst(skill)} as a shortcut instead of connecting it back to the model.`,
-      evidence: idx === skills.length - 1 ? "Exit ticket plus revised explanation." : "Annotated model and one accurate independent item.",
+      misconception:
+        idx === 0
+          ? g.misconception
+          : `Students may treat ${lowerFirst(skill)} as a shortcut instead of connecting it back to the model.`,
+      evidence:
+        idx === skills.length - 1
+          ? "Exit ticket plus revised explanation."
+          : "Annotated model and one accurate independent item.",
     };
   });
 }
@@ -433,10 +452,22 @@ function hub() {
   }).join("");
 
   const productRows = [
-    ["Student Edition", "Clear objectives, concept labs, worked examples, practice, games, vocabulary, notebook prompts, and performance tasks."],
-    ["Teacher Edition", "Placement guidance, lesson arcs, teacher look-fors, misconception clinics, small-group pathways, and printable routines."],
-    ["Assessment System", "Pre/post quizzes, diagnostics, exit tickets, rubrics, Smart Review, progress reports, and mastery certificates."],
-    ["Multilingual Supports", "Vocabulary rehearsal, read-aloud support, discourse frames, Talk-Write-Revise routines, and family letters."],
+    [
+      "Student Edition",
+      "Clear objectives, concept labs, worked examples, practice, games, vocabulary, notebook prompts, and performance tasks.",
+    ],
+    [
+      "Teacher Edition",
+      "Placement guidance, lesson arcs, teacher look-fors, misconception clinics, small-group pathways, and printable routines.",
+    ],
+    [
+      "Assessment System",
+      "Pre/post quizzes, diagnostics, exit tickets, rubrics, Smart Review, progress reports, and mastery certificates.",
+    ],
+    [
+      "Multilingual Supports",
+      "Vocabulary rehearsal, read-aloud support, discourse frames, Talk-Write-Revise routines, and family letters.",
+    ],
   ]
     .map(
       ([name, desc]) => `
@@ -790,9 +821,7 @@ function topicPage(t) {
     )
     .join("");
 
-  const notebookHtml = blueprint.notebook
-    .map((p) => `<li>${esc(p)}</li>`)
-    .join("");
+  const notebookHtml = blueprint.notebook.map((p) => `<li>${esc(p)}</li>`).join("");
 
   // Vocabulary flashcards (flip)
   const flashHtml = t.vocab

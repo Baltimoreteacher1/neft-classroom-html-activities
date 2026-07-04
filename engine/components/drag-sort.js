@@ -74,11 +74,7 @@ export function renderDragSort(container, config) {
   // (where `correct` is an index into `categories`) or `[{text, category}]`, with
   // `categories` as plain strings. Left unhandled, `items` is undefined and the
   // core crashes on `items.map`. Map it to the core's {text, category} shape.
-  if (
-    !Array.isArray(items) &&
-    Array.isArray(config.cards) &&
-    Array.isArray(categories)
-  ) {
+  if (!Array.isArray(items) && Array.isArray(config.cards) && Array.isArray(categories)) {
     const cats = categories.map(toCat);
     const resolved = config.cards.map((c) => ({
       text: c.text != null ? String(c.text) : String(c.label ?? ""),
@@ -101,11 +97,7 @@ export function renderDragSort(container, config) {
   // throws ("Cannot read properties of undefined") and the activity renders
   // blank. `correctOrder` is the authored answer key — use it (not `items`,
   // which may already be pre-shuffled) as the steps renderDragOrder checks against.
-  if (
-    Array.isArray(items) &&
-    Array.isArray(config.correctOrder) &&
-    !Array.isArray(categories)
-  ) {
+  if (Array.isArray(items) && Array.isArray(config.correctOrder) && !Array.isArray(categories)) {
     return renderDragOrder(container, {
       steps: config.correctOrder,
       label: config.label,
@@ -264,8 +256,7 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
   const bank = document.createElement("div");
   bank.className = "drag-zone";
   bank.dataset.zone = "bank";
-  bank.style.cssText =
-    "margin-bottom:var(--sp-5); min-height:60px; background:var(--cream);";
+  bank.style.cssText = "margin-bottom:var(--sp-5); min-height:60px; background:var(--cream);";
   wireZoneKeyboard(bank, "Return the picked-up item to the item bank");
 
   // Tag each item with a stable unique id so grading and drag/drop don't key off
@@ -313,9 +304,7 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
   // Parallax: lift the hovered category column while a desktop drag is in
   // flight. Purely visual and CSS-gated by prefers-reduced-motion. The
   // `ds-dragging` flag on the grid scopes the effect to active drags only.
-  wrapper.addEventListener("dragstart", () =>
-    catGrid.classList.add("ds-dragging"),
-  );
+  wrapper.addEventListener("dragstart", () => catGrid.classList.add("ds-dragging"));
   wrapper.addEventListener("dragend", () => {
     catGrid.classList.remove("ds-dragging");
     catGrid
@@ -358,8 +347,7 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
       el.classList.add("incorrect");
     });
 
-    const allCorrect =
-      correct === total && bank.querySelectorAll(".drag-item").length === 0;
+    const allCorrect = correct === total && bank.querySelectorAll(".drag-item").length === 0;
     const fb = document.createElement("div");
     const fbType = allCorrect ? "success" : "hint";
     const fbMsg = allCorrect
@@ -444,10 +432,7 @@ function createDragItem(item) {
   el.tabIndex = 0;
   el.setAttribute("role", "button");
   el.setAttribute("aria-pressed", "false");
-  el.setAttribute(
-    "aria-label",
-    `${item.text} — press Enter to pick up, then choose a category`,
-  );
+  el.setAttribute("aria-label", `${item.text} — press Enter to pick up, then choose a category`);
   el.addEventListener("click", (e) => {
     e.stopPropagation(); // don't bubble to the zone's place handler
     dsSelect(el);
@@ -500,9 +485,7 @@ function createDragItem(item) {
       e.preventDefault();
       moveTouchClone(e);
       const target = getDropZoneUnderTouch(e);
-      document
-        .querySelectorAll(".drag-zone")
-        .forEach((z) => z.classList.remove("over"));
+      document.querySelectorAll(".drag-zone").forEach((z) => z.classList.remove("over"));
       if (target) target.classList.add("over");
     },
     { passive: false },
@@ -513,9 +496,7 @@ function createDragItem(item) {
       touchClone.remove();
       touchClone = null;
     }
-    document
-      .querySelectorAll(".drag-zone")
-      .forEach((z) => z.classList.remove("over"));
+    document.querySelectorAll(".drag-zone").forEach((z) => z.classList.remove("over"));
     const target = getDropZoneUnderTouch(e) || originZone;
     if (target && target !== el.parentElement) {
       target.append(el);
@@ -584,21 +565,15 @@ function setupDragDrop(zones, _ctx) {
       e.preventDefault();
       zone.classList.remove("over");
       const text = e.dataTransfer.getData("text/plain");
-      const dragEl = document.querySelector(
-        `.drag-item[data-item-id="${CSS.escape(text)}"]`,
-      );
+      const dragEl = document.querySelector(`.drag-item[data-item-id="${CSS.escape(text)}"]`);
       if (dragEl) {
         dragEl.classList.remove("correct", "incorrect");
         zone.append(dragEl);
         springBounce(dragEl);
         zone.classList.add("drop-snap");
-        zone.addEventListener(
-          "animationend",
-          () => zone.classList.remove("drop-snap"),
-          {
-            once: true,
-          },
-        );
+        zone.addEventListener("animationend", () => zone.classList.remove("drop-snap"), {
+          once: true,
+        });
       }
     });
   });

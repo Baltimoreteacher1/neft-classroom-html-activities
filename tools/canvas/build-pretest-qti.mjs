@@ -57,7 +57,8 @@ function balancedArray(src, from) {
         i++;
       }
     } else {
-      if (c === "\\") i++; // skip escaped char inside a string
+      if (c === "\\")
+        i++; // skip escaped char inside a string
       else if (c === mode) mode = null;
     }
   }

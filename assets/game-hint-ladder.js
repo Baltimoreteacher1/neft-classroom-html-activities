@@ -99,8 +99,7 @@
     if (!p || !p.itemText) return Promise.resolve(null);
     // state.rung is already incremented to the 1-based rung being requested;
     // RUNG_FRAMING is 0-indexed, so subtract 1 to escalate 0 -> 1 -> 2.
-    var framing =
-      RUNG_FRAMING[Math.min(state.rung - 1, RUNG_FRAMING.length - 1)];
+    var framing = RUNG_FRAMING[Math.min(state.rung - 1, RUNG_FRAMING.length - 1)];
     var body = {
       mode: "hint",
       standard: clamp(p.standard, 40),

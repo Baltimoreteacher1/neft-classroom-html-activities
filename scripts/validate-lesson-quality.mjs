@@ -82,8 +82,10 @@ for (const id of readdirSync(lessonsDir)) {
     if (!v.termEs || !v.definitionEs) {
       fail(id, `vocabulary[${i}] ("${v.term}") missing termEs/definitionEs`);
     }
-    if (v.termVi !== undefined && !v.termVi) fail(id, `vocabulary[${i}] ("${v.term}") has empty termVi`);
-    if (v.termAr !== undefined && !v.termAr) fail(id, `vocabulary[${i}] ("${v.term}") has empty termAr`);
+    if (v.termVi !== undefined && !v.termVi)
+      fail(id, `vocabulary[${i}] ("${v.term}") has empty termVi`);
+    if (v.termAr !== undefined && !v.termAr)
+      fail(id, `vocabulary[${i}] ("${v.term}") has empty termAr`);
     if (!v.visual) warn(id, `vocabulary[${i}] ("${v.term}") missing visual`);
   }
 
@@ -96,7 +98,10 @@ for (const id of readdirSync(lessonsDir)) {
       exitTicket.correctIndex < 0 ||
       exitTicket.correctIndex >= n
     ) {
-      fail(id, `reflect.exitTicket.correctIndex (${exitTicket.correctIndex}) out of range for ${n} choices`);
+      fail(
+        id,
+        `reflect.exitTicket.correctIndex (${exitTicket.correctIndex}) out of range for ${n} choices`,
+      );
     }
     if (!exitTicket.explanation || exitTicket.explanation.trim().length < 10) {
       warn(id, "reflect.exitTicket.explanation missing or too short");
@@ -133,7 +138,10 @@ for (const id of readdirSync(lessonsDir)) {
   if (d.graphicNovel && d.graphicNovel.href && unit) {
     const m = /unit(\d+)/i.exec(d.graphicNovel.href);
     if (m && m[1] !== unit) {
-      warn(id, `graphicNovel.href points at unit${m[1]} but lesson is unit ${unit} (verify intentional cross-unit link)`);
+      warn(
+        id,
+        `graphicNovel.href points at unit${m[1]} but lesson is unit ${unit} (verify intentional cross-unit link)`,
+      );
     }
   }
 

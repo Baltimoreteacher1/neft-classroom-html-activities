@@ -32,9 +32,7 @@
   function appIsEmpty() {
     var app = document.getElementById("app");
     if (!app) return false;
-    return (
-      app.childElementCount === 0 && app.textContent.replace(/\s+/g, "") === ""
-    );
+    return app.childElementCount === 0 && app.textContent.replace(/\s+/g, "") === "";
   }
 
   function showFallback() {

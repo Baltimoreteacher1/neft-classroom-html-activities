@@ -31,10 +31,7 @@
     return isEs() ? es : en;
   }
   function esc(s) {
-    return String(s)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
   // Unit label from the path, e.g. /math/unit-3/... -> "Grade 6 Unit 3".
@@ -58,9 +55,7 @@
         return x.length > 1;
       });
     // Fall back to the whole panel text if there are no lang spans.
-    var text = parts.length
-      ? parts.join(". ")
-      : (panel.textContent || "").trim();
+    var text = parts.length ? parts.join(". ") : (panel.textContent || "").trim();
     return text.slice(0, MAX_CTX);
   }
 
@@ -95,12 +90,9 @@
   function setBusy(on) {
     busy = on;
     if (els.send) els.send.disabled = on;
-    Array.prototype.forEach.call(
-      els.panel.querySelectorAll(".ntc-chip"),
-      function (c) {
-        c.disabled = on;
-      },
-    );
+    Array.prototype.forEach.call(els.panel.querySelectorAll(".ntc-chip"), function (c) {
+      c.disabled = on;
+    });
   }
 
   // Backend confirmed unable to serve (invalid key / not configured / upstream
@@ -117,12 +109,9 @@
     if (els.launch) els.launch.style.display = "none";
     if (els.send) els.send.disabled = true;
     if (els.input) els.input.disabled = true;
-    Array.prototype.forEach.call(
-      els.panel.querySelectorAll(".ntc-chip"),
-      function (c) {
-        c.disabled = true;
-      },
-    );
+    Array.prototype.forEach.call(els.panel.querySelectorAll(".ntc-chip"), function (c) {
+      c.disabled = true;
+    });
   }
 
   // Unified request path. displayText = the student's chat bubble; userText =
@@ -131,10 +120,7 @@
     if (busy || dead) return;
     var itemText = activeStepText();
     if (!itemText) {
-      addMsg(
-        "sys",
-        t("Open a project step first.", "Abre un paso del proyecto primero."),
-      );
+      addMsg("sys", t("Open a project step first.", "Abre un paso del proyecto primero."));
       return;
     }
     // Language directive appended to context so replies match the UI language.
@@ -146,10 +132,7 @@
     addMsg("me", displayText);
     var typing = document.createElement("div");
     typing.className = "ntc-typing";
-    typing.textContent = t(
-      "Coach is thinking…",
-      "El entrenador está pensando…",
-    );
+    typing.textContent = t("Coach is thinking…", "El entrenador está pensando…");
     els.log.appendChild(typing);
     scrollLog();
     setBusy(true);
@@ -214,8 +197,7 @@
   }
 
   function togglePanel(open) {
-    var show =
-      open === undefined ? !els.panel.classList.contains("open") : open;
+    var show = open === undefined ? !els.panel.classList.contains("open") : open;
     els.panel.classList.toggle("open", show);
     els.launch.style.display = show ? "none" : "";
     if (show && !els.log.childElementCount) {
@@ -236,9 +218,7 @@
     launch.type = "button";
     launch.className = "ntc-launch no-print";
     launch.innerHTML =
-      "🤖 <span>" +
-      esc(t("Stuck? Ask the coach", "¿Atascado? Pregunta")) +
-      "</span>";
+      "🤖 <span>" + esc(t("Stuck? Ask the coach", "¿Atascado? Pregunta")) + "</span>";
 
     var panel = document.createElement("div");
     panel.className = "ntc-panel no-print";
@@ -300,16 +280,13 @@
         sendFreeText();
       }
     });
-    Array.prototype.forEach.call(
-      panel.querySelectorAll(".ntc-chip"),
-      function (chip) {
-        chip.addEventListener("click", function () {
-          var mode = chip.getAttribute("data-mode");
-          var label = chip.textContent.trim();
-          send(mode, label, label);
-        });
-      },
-    );
+    Array.prototype.forEach.call(panel.querySelectorAll(".ntc-chip"), function (chip) {
+      chip.addEventListener("click", function () {
+        var mode = chip.getAttribute("data-mode");
+        var label = chip.textContent.trim();
+        send(mode, label, label);
+      });
+    });
   }
 
   // Health-gate: only mount when a live backend is reported.

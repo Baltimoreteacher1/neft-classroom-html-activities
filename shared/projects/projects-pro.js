@@ -69,8 +69,7 @@
         var active = document.querySelector(".step-panel.active");
         if (active) {
           var cards = active.querySelectorAll(".card");
-          for (var i = 0; i < cards.length; i++)
-            cards[i].classList.add("pro-in");
+          for (var i = 0; i < cards.length; i++) cards[i].classList.add("pro-in");
         }
       }
     });

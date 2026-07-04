@@ -51,8 +51,7 @@
       try {
         var target = document.querySelector("h1, main, .page-shell, .wrap");
         if (target) {
-          if (!target.hasAttribute("tabindex"))
-            target.setAttribute("tabindex", "-1");
+          if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
           target.focus({ preventScroll: true });
         }
       } catch (e) {}

@@ -35,8 +35,7 @@
   var CAP_WORK = 1800;
 
   var reduce = !!(
-    window.matchMedia &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
   function muted() {
     return !!window.NT_MUTED;
@@ -54,8 +53,7 @@
   }
   function warn(msg, e) {
     try {
-      if (window.console && console.warn)
-        console.warn("[futures-tutor] " + msg, e || "");
+      if (window.console && console.warn) console.warn("[futures-tutor] " + msg, e || "");
     } catch (x) {}
   }
 
@@ -63,8 +61,7 @@
   function currentStandard() {
     try {
       return (
-        (typeof window.NT_LESSON_STANDARD === "string" &&
-          window.NT_LESSON_STANDARD) ||
+        (typeof window.NT_LESSON_STANDARD === "string" && window.NT_LESSON_STANDARD) ||
         ""
       ).slice(0, 40);
     } catch (e) {
@@ -124,16 +121,14 @@
       teach: "🤖 Teach Robo",
       explain: "💡 Explain the idea",
       workLabel: "Type or say your work / your explanation:",
-      workPlaceholder:
-        "e.g. First I flipped the second fraction, then I multiplied…",
+      workPlaceholder: "e.g. First I flipped the second fraction, then I multiplied…",
       send: "Send",
       mic: "Speak",
       stop: "Stop",
       close: "Close",
       ttsOn: "🔊 Voice replies on",
       ttsOff: "🔇 Voice replies off",
-      resting:
-        "Your Study Buddy is resting right now. Keep working — you've got this! 💪",
+      resting: "Your Study Buddy is resting right now. Keep working — you've got this! 💪",
       thinking: "thinking…",
       hello: {
         diagnose:
@@ -152,27 +147,23 @@
       teach: "🤖 Enseña a Robo",
       explain: "💡 Explica la idea",
       workLabel: "Escribe o di tu trabajo / tu explicación:",
-      workPlaceholder:
-        "ej. Primero volteé la segunda fracción, luego multipliqué…",
+      workPlaceholder: "ej. Primero volteé la segunda fracción, luego multipliqué…",
       send: "Enviar",
       mic: "Hablar",
       stop: "Detener",
       close: "Cerrar",
       ttsOn: "🔊 Voz activada",
       ttsOff: "🔇 Voz desactivada",
-      resting:
-        "Tu compañero está descansando. ¡Sigue trabajando, tú puedes! 💪",
+      resting: "Tu compañero está descansando. ¡Sigue trabajando, tú puedes! 💪",
       thinking: "pensando…",
       hello: {
         diagnose:
           "Escribe tu trabajo y toca Enviar. Encontraré dónde se equivocó tu pensamiento, no solo la respuesta.",
         teach:
           "¡Tú eres el maestro! Explícale un paso a Robo. Robo te hará preguntas para aprender de ti.",
-        explain:
-          "Dime qué idea explicar, o toca Enviar para escuchar la idea de este problema.",
+        explain: "Dime qué idea explicar, o toca Enviar para escuchar la idea de este problema.",
       },
-      error:
-        "No pude comunicarme con el tutor. Intenta de nuevo en un momento.",
+      error: "No pude comunicarme con el tutor. Intenta de nuevo en un momento.",
     },
   };
   function t() {
@@ -222,8 +213,7 @@
         try {
           var said = ev.results[0][0].transcript || "";
           if (nodes.work) {
-            nodes.work.value =
-              (nodes.work.value ? nodes.work.value + " " : "") + said;
+            nodes.work.value = (nodes.work.value ? nodes.work.value + " " : "") + said;
           }
         } catch (e) {}
       };
@@ -253,17 +243,12 @@
   // ---- networking ---------------------------------------------------------
   function addTurn(role, text) {
     state.history.push({ role: role, text: text });
-    if (state.history.length > MAX_HISTORY)
-      state.history = state.history.slice(-MAX_HISTORY);
+    if (state.history.length > MAX_HISTORY) state.history = state.history.slice(-MAX_HISTORY);
   }
   function renderTurn(role, text, pending) {
     var row = el("div", "nt-fx-turn nt-fx-" + role);
     var who = el("span", "nt-fx-who", role === "assistant" ? "🤖" : "🧑");
-    var body = el(
-      "div",
-      "nt-fx-bubble" + (pending ? " nt-fx-pending" : ""),
-      text,
-    );
+    var body = el("div", "nt-fx-bubble" + (pending ? " nt-fx-pending" : ""), text);
     row.appendChild(who);
     row.appendChild(body);
     if (nodes.log) {

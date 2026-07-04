@@ -32,14 +32,10 @@
 
   /* ---------- language detection for TTS ---------- */
   function pickLang(text) {
-    var htmlLang = (
-      doc.documentElement.getAttribute("lang") || ""
-    ).toLowerCase();
+    var htmlLang = (doc.documentElement.getAttribute("lang") || "").toLowerCase();
     if (htmlLang.indexOf("es") === 0) return "es-ES";
     // Heuristic: Spanish-specific characters / stopwords in the read text.
-    if (
-      /[¿¡ñ]|(\b(el|la|los|las|una|resuelve|calcula|fracci[oó]n)\b)/i.test(text)
-    ) {
+    if (/[¿¡ñ]|(\b(el|la|los|las|una|resuelve|calcula|fracci[oó]n)\b)/i.test(text)) {
       return "es-ES";
     }
     return "en-US";
@@ -56,15 +52,11 @@
     // Clone, strip our own controls + script/style, collapse whitespace.
     var clone = root.cloneNode(true);
     clone
-      .querySelectorAll(
-        ".nt-ga-controls, .nt-ga-toast, script, style, noscript, svg",
-      )
+      .querySelectorAll(".nt-ga-controls, .nt-ga-toast, script, style, noscript, svg")
       .forEach(function (n) {
         n.remove();
       });
-    var txt = (clone.innerText || clone.textContent || "")
-      .replace(/\s+/g, " ")
-      .trim();
+    var txt = (clone.innerText || clone.textContent || "").replace(/\s+/g, " ").trim();
     return txt.slice(0, 600); // keep it a sensible utterance length
   }
 

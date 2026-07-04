@@ -21,17 +21,13 @@
   if (window.GameFX && window.GameFX.comboInjected) return;
 
   var reduce = !!(
-    window.matchMedia &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
 
   var COLORS = ["#1aa179", "#f0a400", "#3b7dd8", "#e0542f", "#9b5de5"];
-  var SUCCESS_CLASS =
-    /(^|\s)(right|correct|is-correct|is-right|ok|success|won|gfx-correct)(\s|$)/i;
-  var WRONG_CLASS =
-    /(^|\s)(wrong|incorrect|is-incorrect|is-wrong|fail|error|gfx-wrong)(\s|$)/i;
-  var INTERACTIVE =
-    /(^|\s)(opt|option|choice|answer|tile|card|btn|cell|key)(\s|$)/i;
+  var SUCCESS_CLASS = /(^|\s)(right|correct|is-correct|is-right|ok|success|won|gfx-correct)(\s|$)/i;
+  var WRONG_CLASS = /(^|\s)(wrong|incorrect|is-incorrect|is-wrong|fail|error|gfx-wrong)(\s|$)/i;
+  var INTERACTIVE = /(^|\s)(opt|option|choice|answer|tile|card|btn|cell|key)(\s|$)/i;
 
   var DICT = {
     es: {
@@ -176,8 +172,7 @@
     init: function () {
       if (this.ctx) return;
       try {
-        var AudioContextClass =
-          window.AudioContext || window.webkitAudioContext;
+        var AudioContextClass = window.AudioContext || window.webkitAudioContext;
         this.ctx = new AudioContextClass();
       } catch (e) {}
     },
@@ -291,9 +286,7 @@
 
     if (window.speechSynthesis && window.speechSynthesis.speaking) {
       window.speechSynthesis.cancel();
-      btn.textContent = document.body.classList.contains("es")
-        ? "🔊 Leer"
-        : "🔊 Read";
+      btn.textContent = document.body.classList.contains("es") ? "🔊 Leer" : "🔊 Read";
       return;
     }
 
@@ -371,17 +364,12 @@
           activeScene.lives = 99;
           activeScene.level = (activeScene.level || 1) + 1;
 
-          if (typeof activeScene.winLevel === "function")
-            activeScene.winLevel();
-          else if (typeof activeScene.nextLevel === "function")
-            activeScene.nextLevel();
-          else if (typeof activeScene.endGame === "function")
-            activeScene.endGame(true);
+          if (typeof activeScene.winLevel === "function") activeScene.winLevel();
+          else if (typeof activeScene.nextLevel === "function") activeScene.nextLevel();
+          else if (typeof activeScene.endGame === "function") activeScene.endGame(true);
           else {
             var keys = Object.keys(pg.scene.keys);
-            var endScene = keys.find((k) =>
-              /result|win|end|score|victory/i.test(k),
-            );
+            var endScene = keys.find((k) => /result|win|end|score|victory/i.test(k));
             if (endScene) activeScene.scene.start(endScene);
           }
           alert("Auto-win triggered on Phaser Game scene!");
@@ -423,17 +411,14 @@
         var activeScene = pg.scene.getScenes(true)[0];
         if (activeScene) {
           activeScene.lives = 99;
-          if (activeScene.livesLabel)
-            activeScene.livesLabel.setText("Lives: 99");
+          if (activeScene.livesLabel) activeScene.livesLabel.setText("Lives: 99");
           alert("Lives set to 99 inside Phaser Scene!");
         }
       } catch (e) {}
     }
     if (typeof window.S !== "undefined") {
       window.S.lives = 99;
-      var hudLives =
-        document.getElementById("hud-lives") ||
-        document.getElementById("r-lives");
+      var hudLives = document.getElementById("hud-lives") || document.getElementById("r-lives");
       if (hudLives) hudLives.textContent = "❤️❤️❤️ (99)";
       alert("Lives set to 99 in state S!");
     }
@@ -467,10 +452,7 @@
           [
             { transform: "translate(0, 0) scale(1)", opacity: 1 },
             {
-              transform:
-                "translate(" +
-                (Math.random() * 100 - 50) +
-                "px, 250px) scale(0)",
+              transform: "translate(" + (Math.random() * 100 - 50) + "px, 250px) scale(0)",
               opacity: 0,
             },
           ],
@@ -508,8 +490,7 @@
           var api = scorm.api;
           if (scorm.version === "1.2") {
             api.LMSSetValue("cmi.core.score.raw", String(score));
-            if (maxScore)
-              api.LMSSetValue("cmi.core.score.max", String(maxScore));
+            if (maxScore) api.LMSSetValue("cmi.core.score.max", String(maxScore));
             api.LMSSetValue("cmi.core.lesson_status", "completed");
             api.LMSCommit("");
           } else {
@@ -548,9 +529,7 @@
             window.parent.postMessage(
               {
                 type: "lti.frameResize",
-                height:
-                  document.body.scrollHeight ||
-                  document.documentElement.scrollHeight,
+                height: document.body.scrollHeight || document.documentElement.scrollHeight,
               },
               "*",
             );
@@ -583,8 +562,7 @@
   window.toggleGameSound = function () {
     AudioSynth.muted = !AudioSynth.muted;
     var btn = document.getElementById("btn-game-sound");
-    if (btn)
-      btn.textContent = AudioSynth.muted ? "🔇 Sound: OFF" : "🔊 Sound: ON";
+    if (btn) btn.textContent = AudioSynth.muted ? "🔇 Sound: OFF" : "🔊 Sound: ON";
     if (!AudioSynth.muted) AudioSynth.startMusic();
     else AudioSynth.stopMusic();
   };
@@ -728,14 +706,9 @@
     // 7. Auto-confetti and LMS score reporting listener
     var observer = new MutationObserver(function (mutations) {
       mutations.forEach(function (mutation) {
-        if (
-          mutation.type === "attributes" &&
-          mutation.attributeName === "class"
-        ) {
+        if (mutation.type === "attributes" && mutation.attributeName === "class") {
           var target = mutation.target;
-          var isWin =
-            target.classList.contains("won") ||
-            target.classList.contains("success");
+          var isWin = target.classList.contains("won") || target.classList.contains("success");
           var isWrong =
             target.classList.contains("wrong") ||
             target.classList.contains("incorrect") ||
@@ -756,8 +729,7 @@
                 try {
                   var activeScene = pg.scene.getScenes(true)[0];
                   if (activeScene) {
-                    finalScore =
-                      activeScene.score || activeScene.finalScore || 0;
+                    finalScore = activeScene.score || activeScene.finalScore || 0;
                     finalStars = activeScene.stars || 3;
                   }
                 } catch (e) {}
@@ -785,8 +757,7 @@
         var obs = new MutationObserver(function (muts) {
           for (var i = 0; i < muts.length; i++) {
             var t = muts[i].target;
-            if (!t || t.nodeType !== 1 || typeof t.className !== "string")
-              continue;
+            if (!t || t.nodeType !== 1 || typeof t.className !== "string") continue;
 
             var isCorrect = SUCCESS_CLASS.test(t.className);
             var isIncorrect = WRONG_CLASS.test(t.className);
@@ -825,16 +796,14 @@
     try {
       var heroes = document.querySelectorAll("[data-parallax], .ghero");
       Array.prototype.forEach.call(heroes, function (h) {
-        var layer =
-          h.querySelector("[data-parallax-layer]") || h.querySelector(".deco");
+        var layer = h.querySelector("[data-parallax-layer]") || h.querySelector(".deco");
         if (!layer) return;
         h.addEventListener("pointermove", function (e) {
           var r = h.getBoundingClientRect();
           if (!r.width) return;
           var dx = (e.clientX - r.left) / r.width - 0.5;
           var dy = (e.clientY - r.top) / r.height - 0.5;
-          layer.style.transform =
-            "translate(" + dx * 16 + "px," + dy * 16 + "px)";
+          layer.style.transform = "translate(" + dx * 16 + "px," + dy * 16 + "px)";
         });
         h.addEventListener("pointerleave", function () {
           layer.style.transform = "";

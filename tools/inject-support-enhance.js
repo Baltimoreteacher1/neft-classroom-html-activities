@@ -25,10 +25,8 @@ const LESSONS_DIR = join(ROOT, "lessons");
 const SUBS = ["family", "student-help", "teacher-notes"];
 
 const MARK = "support-enhance-injected";
-const LINK_TAG =
-  '<link rel="stylesheet" href="/shared/support/support-enhance.css">';
-const SCRIPT_TAG =
-  '<script src="/shared/support/support-enhance.js" defer></script>';
+const LINK_TAG = '<link rel="stylesheet" href="/shared/support/support-enhance.css">';
+const SCRIPT_TAG = '<script src="/shared/support/support-enhance.js" defer></script>';
 const BEGIN = `<!-- ${MARK}:begin (support-page enhancement — tools/inject-support-enhance.js) -->`;
 const END = `<!-- ${MARK}:end -->`;
 
@@ -94,23 +92,15 @@ function processFile(file) {
     return;
   }
 
-  html = html.replace(
-    /<\/head>/i,
-    `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n</head>`,
-  );
-  html = html.replace(
-    /<\/body>/i,
-    `  ${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n</body>`,
-  );
+  html = html.replace(/<\/head>/i, `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n</head>`);
+  html = html.replace(/<\/body>/i, `  ${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n</body>`);
   if (!DRY) writeFileSync(file, html);
   report.injected++;
 }
 
 supportPages().forEach(processFile);
 
-console.log(
-  `Support-enhance injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`,
-);
+console.log(`Support-enhance injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`);
 console.log("  support pages scanned:", report.scanned);
 if (REVERT) {
   console.log("  reverted             :", report.reverted);

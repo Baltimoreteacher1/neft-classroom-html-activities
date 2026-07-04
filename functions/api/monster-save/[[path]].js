@@ -79,8 +79,7 @@ export async function onRequest(context) {
       {
         ok: false,
         error: "backend-not-configured",
-        message:
-          "D1 binding 'DB' is not set. Falling back to localStorage only.",
+        message: "D1 binding 'DB' is not set. Falling back to localStorage only.",
       },
       503,
     );
@@ -127,9 +126,7 @@ export async function onRequest(context) {
         // at this alphabet/length, but check anyway — it's one cheap SELECT).
         for (let attempt = 0; attempt < 5; attempt++) {
           const candidate = randomCode();
-          const existing = await env.DB.prepare(
-            "SELECT 1 FROM monster_saves WHERE save_code = ?",
-          )
+          const existing = await env.DB.prepare("SELECT 1 FROM monster_saves WHERE save_code = ?")
             .bind(candidate)
             .first();
           if (!existing) {
@@ -156,9 +153,6 @@ export async function onRequest(context) {
 
     return json({ ok: false, error: "not-found", route: seg }, 404);
   } catch (err) {
-    return json(
-      { ok: false, error: "server-error", message: String(err) },
-      500,
-    );
+    return json({ ok: false, error: "server-error", message: String(err) }, 500);
   }
 }

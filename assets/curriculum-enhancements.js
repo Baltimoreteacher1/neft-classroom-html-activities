@@ -1426,8 +1426,7 @@
     );
     var behavior = smooth ? "smooth" : "auto";
     var target =
-      document.querySelector(".search-results-panel") ||
-      document.getElementById("interactive-hub");
+      document.querySelector(".search-results-panel") || document.getElementById("interactive-hub");
     if (target && typeof target.scrollIntoView === "function") {
       target.scrollIntoView({ behavior: behavior, block: "start" });
     } else {

@@ -86,14 +86,7 @@ let changed = 0;
 console.log(`Projects GOLD injection${DRY ? " (dry-run)" : ""}:`);
 for (const u of UNITS) {
   for (const v of ["version-a", "version-b"]) {
-    if (
-      inject(
-        `math/${u}/projects/${v}/index.html`,
-        GOLD_HEAD,
-        GOLD_BODY,
-        "projects-gold.css",
-      )
-    )
+    if (inject(`math/${u}/projects/${v}/index.html`, GOLD_HEAD, GOLD_BODY, "projects-gold.css"))
       changed++;
   }
 }
@@ -102,12 +95,7 @@ console.log(`Answer-key gate injection${DRY ? " (dry-run)" : ""}:`);
 for (const u of UNITS) {
   if (u === "statistics") continue; // statistics has no answer-key
   if (
-    inject(
-      `math/${u}/projects/answer-key/index.html`,
-      GATE_HEAD,
-      GATE_BODY,
-      "answer-key-gate.css",
-    )
+    inject(`math/${u}/projects/answer-key/index.html`, GATE_HEAD, GATE_BODY, "answer-key-gate.css")
   )
     changed++;
 }

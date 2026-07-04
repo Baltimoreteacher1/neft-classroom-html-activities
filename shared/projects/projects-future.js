@@ -188,24 +188,18 @@
   }
 
   function esc(s) {
-    return String(s)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
   // ---- Feature 2: portfolio summary export ----------------------------------
   function collectWork() {
     var out = [];
-    var fields = document.querySelectorAll(
-      "input[type=text], input[type=number], textarea",
-    );
+    var fields = document.querySelectorAll("input[type=text], input[type=number], textarea");
     Array.prototype.forEach.call(fields, function (el) {
       if (el.closest(".ntf-reflect")) return; // reflections handled separately
       var val = (el.value || "").trim();
       if (!val) return;
-      var label =
-        labelFor(el) || el.getAttribute("placeholder") || el.id || "Response";
+      var label = labelFor(el) || el.getAttribute("placeholder") || el.id || "Response";
       out.push({ label: label.trim(), value: val });
     });
     return out;
@@ -255,26 +249,19 @@
     if (work.length) {
       html += "<h2>My Work</h2><ul>";
       work.forEach(function (w) {
-        html +=
-          "<li><strong>" +
-          esc(w.label) +
-          ":</strong> " +
-          esc(w.value) +
-          "</li>";
+        html += "<li><strong>" + esc(w.label) + ":</strong> " + esc(w.value) + "</li>";
       });
       html += "</ul>";
     }
     if (refl.length) {
       html += "<h2>My Reasoning (Explain it back)</h2><ul>";
       refl.forEach(function (r) {
-        html +=
-          "<li><strong>Step " + r.step + ":</strong> " + esc(r.text) + "</li>";
+        html += "<li><strong>Step " + r.step + ":</strong> " + esc(r.text) + "</li>";
       });
       html += "</ul>";
     }
     if (!work.length && !refl.length) {
-      html +=
-        "<p>Fill in your project steps and reflections, then export again.</p>";
+      html += "<p>Fill in your project steps and reflections, then export again.</p>";
     }
     html += "</body></html>";
 
@@ -338,12 +325,10 @@
       '<div class="ntf-teacher__head">📊 Learning snapshot' +
       '<button class="ntf-teacher__close" aria-label="Close">×</button></div>' +
       '<div class="ntf-teacher__body"></div>';
-    teacherEl
-      .querySelector(".ntf-teacher__close")
-      .addEventListener("click", function () {
-        teacherEl.remove();
-        teacherEl = null;
-      });
+    teacherEl.querySelector(".ntf-teacher__close").addEventListener("click", function () {
+      teacherEl.remove();
+      teacherEl = null;
+    });
     document.body.appendChild(teacherEl);
     refreshTeacher();
   }

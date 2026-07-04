@@ -3766,7 +3766,10 @@ function localizeBilingualLabels(html) {
   ];
   let out = html;
   for (const re of rules) {
-    out = out.replace(re, (_m, open, inner, close) => `${open}${wrapBilingualLabel(inner)}${close}`);
+    out = out.replace(
+      re,
+      (_m, open, inner, close) => `${open}${wrapBilingualLabel(inner)}${close}`,
+    );
   }
   return out;
 }
