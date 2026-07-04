@@ -5,10 +5,22 @@
 // the deploy-overwrite / curriculum-clobber incident class that returns 200 with
 // foreign or stripped content. Read-only network GETs — safe in dry-run.
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 import { readJson } from "../lib/util.mjs";
 import { runRouteMonitor } from "../../scripts/route-monitor.mjs";
 
 export const name = "Live Route Monitor";
+
+/** Commit production SHOULD be serving: config override, env, or repo HEAD. */
+function expectedCommit(ctx) {
+  if (ctx.config?.routeMonitor?.expectedCommit) return ctx.config.routeMonitor.expectedCommit;
+  if (process.env.CF_EXPECTED_COMMIT) return process.env.CF_EXPECTED_COMMIT;
+  try {
+    return execFileSync("git", ["rev-parse", "HEAD"], { cwd: ctx.root, encoding: "utf8" }).trim();
+  } catch {
+    return undefined;
+  }
+}
 
 export async function run(ctx) {
   const cfg = ctx.config.routeMonitor || {};
@@ -27,7 +39,7 @@ export async function run(ctx) {
 
   let report;
   try {
-    report = await runRouteMonitor({ manifest, base: cfg.base });
+    report = await runRouteMonitor({ manifest, base: cfg.base, expectedCommit: expectedCommit(ctx) });
   } catch (err) {
     return {
       name,

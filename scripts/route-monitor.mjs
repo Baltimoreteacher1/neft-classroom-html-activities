@@ -20,6 +20,7 @@
 //            2 = could not run (no manifest / bad args).
 import { readFile } from "node:fs/promises";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { execFileSync } from "node:child_process";
 import path from "node:path";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -63,6 +64,60 @@ function missingMarkers(body, markers) {
 }
 function presentMarkers(body, markers) {
   return (markers || []).filter((m) => body.includes(m));
+}
+
+/** Short 7-char SHA for display. */
+function short(c) {
+  return c ? String(c).slice(0, 7) : "?";
+}
+/** Human age string from hours. */
+function ageStr(hours) {
+  if (!isFinite(hours)) return "unknown age";
+  return hours < 48 ? `${hours.toFixed(1)}h` : `${(hours / 24).toFixed(1)}d`;
+}
+
+/**
+ * Classify the live deploy build-stamp into a freshness verdict. This catches
+ * the incident class marker-checks CANNOT: the RIGHT app serving a STALE build
+ * (production frozen while main moves on). The stamp
+ * (/access-practice-lab/config.json, written by tools/stamp-build.mjs) carries
+ * the deployed commit SHA + build time.
+ *   - live commit == expected (main HEAD)     -> ok (fresh)
+ *   - mismatch but built within graceHours     -> warn (build likely in flight)
+ *   - mismatch and older than graceHours       -> fail (production not tracking main)
+ *   - no expected commit: age-only guard vs staleHours
+ */
+function classifyFreshness({ stampRes, expectedCommit, graceHours, staleHours, now }) {
+  if (!stampRes.ok) return { level: "warn", note: `build stamp unreadable — ${stampRes.error}` };
+  const s = stampRes.stamp || {};
+  const live = String(s.commit || "");
+  const built = Date.parse(s.builtAt || "");
+  const ageH = isFinite(built) ? (now - built) / 3.6e6 : Infinity;
+  const age = ageStr(ageH);
+
+  if (expectedCommit && live && live !== "local") {
+    const match =
+      live === expectedCommit ||
+      live.startsWith(expectedCommit) ||
+      expectedCommit.startsWith(live);
+    if (match) return { level: "ok", note: `fresh — live ${short(live)} == main, built ${age} ago` };
+    if (ageH <= graceHours)
+      return {
+        level: "warn",
+        note: `deploy lag — live ${short(live)} != main ${short(expectedCommit)}, built ${age} ago (build may be in progress)`,
+      };
+    return {
+      level: "fail",
+      note: `STALE deploy — live ${short(live)} != main ${short(expectedCommit)}, last build ${age} ago (>${graceHours}h). Production is not tracking main.`,
+    };
+  }
+  // No expected commit to compare against — fall back to a pure age guard.
+  if (ageH > staleHours)
+    return {
+      level: "fail",
+      note: `STALE — last production build ${age} ago (>${staleHours}h), live ${short(live)}`,
+    };
+  return { level: "ok", note: `built ${age} ago, live ${short(live)}` };
 }
 
 /** Evaluate a single route's probe result into { level, note }. */
@@ -117,10 +172,18 @@ function classify(route, forbidMarkers, r) {
  * @param {object} opts
  * @param {object} opts.manifest parsed route-manifest.json
  * @param {string} [opts.base] override manifest.base
+ * @param {string} [opts.expectedCommit] commit main HEAD should be serving (freshness check)
+ * @param {number} [opts.now] epoch ms (tests); defaults to Date.now()
  * @param {function} [opts.fetchImpl] injectable fetch (tests); defaults to global fetch
  * @returns {Promise<{base,when,counts,results}>}
  */
-export async function runRouteMonitor({ manifest, base, fetchImpl = fetch } = {}) {
+export async function runRouteMonitor({
+  manifest,
+  base,
+  expectedCommit,
+  now = Date.now(),
+  fetchImpl = fetch,
+} = {}) {
   if (!manifest || !Array.isArray(manifest.routes)) {
     throw new Error("route-monitor: manifest with a routes[] array is required");
   }
@@ -145,6 +208,40 @@ export async function runRouteMonitor({ manifest, base, fetchImpl = fetch } = {}
     });
   }
 
+  // Deploy-freshness check: is the RIGHT app also the LATEST build? Uses the
+  // public build stamp (commit + builtAt). Configured via manifest.deployStamp.
+  const ds = manifest.deployStamp;
+  if (ds && ds.path) {
+    const url = root + ds.path;
+    const r = await probe(url, timeoutMs, fetchImpl);
+    let stampRes;
+    if (!r.ok) stampRes = { ok: false, error: r.error };
+    else if (r.status !== 200) stampRes = { ok: false, error: `status ${r.status}` };
+    else {
+      try {
+        stampRes = { ok: true, stamp: JSON.parse(r.body) };
+      } catch {
+        stampRes = { ok: false, error: "stamp not JSON" };
+      }
+    }
+    const { level, note } = classifyFreshness({
+      stampRes,
+      expectedCommit,
+      graceHours: ds.graceHours || 6,
+      staleHours: ds.staleHours || 72,
+      now,
+    });
+    results.push({
+      path: ds.path,
+      label: "Deploy freshness (build stamp)",
+      expect: "freshness",
+      url,
+      status: r.status,
+      level,
+      note,
+    });
+  }
+
   const counts = results.reduce((a, x) => ((a[x.level] = (a[x.level] || 0) + 1), a), {
     ok: 0,
     warn: 0,
@@ -154,6 +251,17 @@ export async function runRouteMonitor({ manifest, base, fetchImpl = fetch } = {}
 }
 
 // ---- CLI ---------------------------------------------------------------
+/** Resolve the commit production SHOULD be serving: --expected, env, or git HEAD. */
+export function resolveExpectedCommit(explicit) {
+  if (explicit) return explicit;
+  if (process.env.CF_EXPECTED_COMMIT) return process.env.CF_EXPECTED_COMMIT;
+  try {
+    return execFileSync("git", ["rev-parse", "HEAD"], { cwd: HERE, encoding: "utf8" }).trim();
+  } catch {
+    return "";
+  }
+}
+
 async function main(argv) {
   const args = argv.slice(2);
   const asJson = args.includes("--json");
@@ -161,6 +269,8 @@ async function main(argv) {
   const base = baseIdx >= 0 ? args[baseIdx + 1] : undefined;
   const manIdx = args.indexOf("--manifest");
   const manifestPath = manIdx >= 0 ? args[manIdx + 1] : DEFAULT_MANIFEST;
+  const expIdx = args.indexOf("--expected");
+  const expectedCommit = resolveExpectedCommit(expIdx >= 0 ? args[expIdx + 1] : undefined);
 
   let manifest;
   try {
@@ -172,7 +282,7 @@ async function main(argv) {
 
   let report;
   try {
-    report = await runRouteMonitor({ manifest, base });
+    report = await runRouteMonitor({ manifest, base, expectedCommit });
   } catch (e) {
     console.error(`route-monitor: ${e.message}`);
     return 2;
