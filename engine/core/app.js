@@ -12,7 +12,13 @@ import {
   wireObjectiveTermPopups,
 } from "./lesson-renderer.js";
 import { buildLessonCoverExtras, mountCoverArt, applyPhaseAccent } from "./premium.js";
-import { mountTeacherPanel, buildWelcomeTeacherNotes, isTeacherMode } from "./teacher-mode.js";
+import {
+  mountTeacherPanel,
+  buildWelcomeTeacherNotes,
+  isTeacherMode,
+  initTeacherAccess,
+  mountIdentityTeacherButton,
+} from "./teacher-mode.js";
 import { t, stackHtml, phaseName } from "./i18n.js";
 import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
 import "@engine/styles/design-system.css";
