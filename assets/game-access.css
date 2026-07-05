@@ -63,10 +63,14 @@
 }
 
 /* ---- Strong, consistent keyboard focus everywhere ---- */
+/* Exclude the game <canvas>: each game defines its own tuned canvas focus
+   style (gold, keyboard-only, no ring on mouse click). Without :not(canvas)
+   this generic [tabindex] rule (specificity 0,2,0) overrode canvas:focus-visible
+   (0,1,1) and drew a harsh blue box around the whole play area on click. */
 .nt-ga-btn:focus-visible,
 a:focus-visible,
 button:focus-visible,
-[tabindex]:focus-visible,
+[tabindex]:not(canvas):focus-visible,
 input:focus-visible,
 select:focus-visible {
   outline: 3px solid #2563eb;
