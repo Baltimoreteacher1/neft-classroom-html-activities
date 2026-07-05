@@ -68,6 +68,7 @@ CANDIDATES=(
 	validate:practice
 	validate:save-resume
 	validate:injection
+	validate:lesson-boot
 	audit
 	audit:curriculum
 	audit:homework

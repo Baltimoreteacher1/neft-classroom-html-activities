@@ -9,11 +9,13 @@ import * as buildQa from "./modules/02-build-qa.mjs";
 import * as divergence from "./modules/03-divergence-watch.mjs";
 import * as backlog from "./modules/04-backlog-advancer.mjs";
 import * as routeMonitor from "./modules/05-route-monitor.mjs";
+import * as lessonRender from "./modules/06-lesson-render.mjs";
 
 const MODULES = [
   { key: "regression-sentinel", mod: regression },
   { key: "build-qa", mod: buildQa },
   { key: "route-monitor", mod: routeMonitor },
+  { key: "lesson-render", mod: lessonRender },
   { key: "divergence-watch", mod: divergence },
   { key: "backlog-advancer", mod: backlog },
 ];
