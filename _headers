@@ -23,10 +23,20 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
   Cache-Control: public, max-age=0, must-revalidate
 
-# Vite build output is content-hashed (filename changes whenever content changes),
-# so these are safe to cache for a long time / immutable.
+# /assets/ holds BOTH Vite content-hashed bundles (e.g. lesson-renderer-<hash>.js,
+# safe to cache forever) AND stable-named shared scripts that are hand-edited and
+# injected site-wide (math-workbench-launcher.js, futures-tutor.js/.css,
+# nt-page-enhance.js, edupulse-*.js, lesson-shell-guard.js, game-fx.*, etc.).
+# `immutable` was WRONG for the stable-named ones: their filename never changes,
+# so browsers/edge pinned the OLD copy for up to a year and deploys never reached
+# students (the 2026-07-05 compact-launcher fix was stuck behind exactly this).
+# Use the same always-revalidate policy as the site default: the browser keeps the
+# file cached and sends a conditional request, getting a cheap 304 when unchanged
+# (no re-download of the big hashed bundles) but the CURRENT file the moment it
+# changes. Hashed bundles also get a fresh URL on change, so they never re-fetch
+# needlessly.
 /assets/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=0, must-revalidate
 
 # ACCESS Practice Lab HTML shell: NEVER cache the entry pages, so a deploy is
 # seen immediately (the versioned ?v= app.js/data underneath still cache fine).
