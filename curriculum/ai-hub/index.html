@@ -6702,6 +6702,63 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
         }
       }
 
+      // Parse a student/expected answer into a comparable number. Handles
+      // integers, decimals (".5" == "0.5"), simple fractions ("5/6"), and strips
+      // currency, %, commas, and spaces. Returns null if it is not numeric.
+      function parseMathValue(raw) {
+        if (raw == null) return null;
+        const t = String(raw)
+          .toLowerCase()
+          .trim()
+          .replace(/[\$£€%,\s]/g, "");
+        if (!t) return null;
+        if (/^[+-]?\d*\.?\d+\/[+-]?\d*\.?\d+$/.test(t)) {
+          const [n, d] = t.split("/").map(parseFloat);
+          if (!d || !isFinite(n) || !isFinite(d)) return null;
+          return n / d;
+        }
+        if (/^[+-]?\d*\.?\d+$/.test(t)) {
+          const v = parseFloat(t);
+          return isFinite(v) ? v : null;
+        }
+        return null;
+      }
+
+      // Robust answer check: numeric/fraction equivalence when possible (so
+      // "7.4" == "7.40", "5/6" == "10/12", ".5" == "0.5", "50" is accepted),
+      // otherwise a normalized whole-word compare. Numbers are pulled from the
+      // whole message so a sentence still matches, without the old substring bug
+      // where "500" wrongly matched an expected "50".
+      function mathAnswerMatches(userText, expectedList) {
+        if (!Array.isArray(expectedList) || !expectedList.length) return false;
+        const norm = (x) => String(x).toLowerCase().replace(/[\s$,]/g, "");
+        const un = norm(userText);
+        const userNums = (
+          String(userText)
+            .toLowerCase()
+            .replace(/[\$£€%,]/g, "")
+            .match(/[+-]?\d*\.?\d+(?:\/[+-]?\d*\.?\d+)?/g) || []
+        )
+          .map(parseMathValue)
+          .filter((n) => n !== null);
+        const near = (a, b) =>
+          Math.abs(a - b) < 1e-9 ||
+          (Math.abs(b) > 1e-9 && Math.abs(a - b) / Math.abs(b) < 1e-6);
+        for (const exp of expectedList) {
+          const e = parseMathValue(exp);
+          if (e !== null) {
+            if (userNums.some((n) => near(n, e))) return true;
+            continue;
+          }
+          const en = norm(exp);
+          if (!en) continue;
+          if (un === en) return true;
+          const esc = en.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          if (new RegExp(`(^|[^a-z0-9])${esc}([^a-z0-9]|$)`).test(un)) return true;
+        }
+        return false;
+      }
+
       function sendChatAnswer() {
         const inputEl = document.getElementById("chat-input");
         if (!inputEl) return;
@@ -6739,12 +6796,30 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             return;
           }
 
-          let isCorrect = false;
-          if (isLastStep) {
-            isCorrect = text.length > 2; // accept reflection answers
+          // Validate the answer against THIS step. Every step carries a real
+          // expected answer, so check it numerically (accepting "50", "7.40",
+          // ".5", equivalent fractions, etc.); only a truly open reflection step
+          // with no expected list accepts any real sentence.
+          let isCorrect;
+          if (dialogue.expected && dialogue.expected.length) {
+            isCorrect = mathAnswerMatches(text, dialogue.expected);
           } else {
-            const cleanUserText = text.toLowerCase().replace(/[\$\s+]/g, "").replace(",", ".");
-            isCorrect = dialogue.expected.some(exp => cleanUserText.includes(exp.toLowerCase()));
+            isCorrect = text.length > 2;
+          }
+
+          // If the student jumps straight to the correct FINAL answer, celebrate
+          // it instead of nagging them through every intermediate step.
+          if (!isCorrect && !isLastStep) {
+            const finalStep = sessionDialogues[sessionDialogues.length - 1];
+            if (
+              finalStep &&
+              finalStep.expected &&
+              finalStep.expected.length &&
+              mathAnswerMatches(text, finalStep.expected)
+            ) {
+              STATE.currentDialogueIndex = sessionDialogues.length - 1;
+              isCorrect = true;
+            }
           }
 
           if (isCorrect) {
