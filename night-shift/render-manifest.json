@@ -1,0 +1,38 @@
+{
+  "$schema-note": "Client-rendered (SPA) surfaces beyond /lessons/ that can render blank if their JS boot throws while HTTP still returns 200. tools/smoke-lesson-boot.mjs probes each: FAIL if an uncaught page error fires OR the measured content falls below `min`. `selector` measures that element's innerHTML length; omit it to measure document.body innerText length. Keep `min` well below the healthy value (shown in note) so normal variation never flaps, but above a blank shell.",
+  "routes": [
+    {
+      "path": "/curriculum/",
+      "label": "Curriculum Hub",
+      "selector": "#interactive-hub",
+      "min": 3000,
+      "note": "healthy ~104k"
+    },
+    {
+      "path": "/curriculum/ai-hub/",
+      "label": "AI Hub",
+      "min": 500,
+      "note": "healthy ~1150 body text"
+    },
+    {
+      "path": "/curriculum/monster-math-academy/",
+      "label": "Monster Math Academy",
+      "selector": "#app",
+      "min": 1000,
+      "note": "healthy ~8k"
+    },
+    {
+      "path": "/math/brain-demo/",
+      "label": "Math Brain",
+      "min": 700,
+      "note": "healthy ~1800 body text"
+    },
+    {
+      "path": "/access-practice-lab/",
+      "label": "ACCESS Practice Lab",
+      "min": 1500,
+      "note": "healthy ~7k body text"
+    },
+    { "path": "/math/games/", "label": "Games Hub", "min": 2000, "note": "healthy ~7k body text" }
+  ]
+}

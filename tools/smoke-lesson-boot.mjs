@@ -1,37 +1,41 @@
 #!/usr/bin/env node
-// smoke-lesson-boot.mjs — headless render smoke test for Reveal Math lessons.
+// smoke-lesson-boot.mjs — headless render smoke test for client-rendered pages.
 //
-// WHY: lessons render client-side into <div id="app"></div> via the Vite
-// lesson-renderer. build/validate/lint all pass on the FILES, but none of them
-// ever executes a lesson in a browser — so a runtime boot failure (e.g. the
-// 2026-07-05 incident: app.js called initTeacherAccess/mountIdentityTeacherButton
-// without importing them → ReferenceError → every lesson blank, HTTP still 200)
-// sails straight to production. This tool is the missing check: it loads a
-// sample of real lessons in headless Chromium and asserts each one actually
-// renders content with no uncaught error.
+// WHY: lessons (and several hubs/SPAs) render client-side into a mount element.
+// build/validate/lint all pass on the FILES, but none of them ever executes a
+// page in a browser — so a runtime boot failure (e.g. the 2026-07-05 incident:
+// app.js called initTeacherAccess/mountIdentityTeacherButton without importing
+// them → ReferenceError → every lesson blank, HTTP still 200) sails straight to
+// production. This tool is the missing check: it loads real pages in headless
+// Chromium and asserts each actually renders content with no uncaught error.
+//
+// Coverage:
+//   • Lessons — one sample per unit (or --lessons / --all), asserted on #app.
+//   • Other SPA surfaces (curriculum hub, AI hub, Monster Math, Math Brain,
+//     ACCESS Lab, Games hub) — from night-shift/render-manifest.json, asserted
+//     on each route's mount selector (or body text) + min content.
 //
 // Two modes, one tool:
 //   • LOCAL (default) — serves the built dist/ via `vite preview` and probes it.
-//       Used by `npm run validate:lesson-boot` → the pre-push QA gate (blocks
-//       a blank-lesson regression before it can deploy).
+//       Used by `npm run validate:lesson-boot` → the pre-push QA gate.
 //   • LIVE  (--base <url>) — probes production directly (no server spawned).
-//       Used by `npm run monitor:lesson-render` + the night-shift render module
-//       (catches anything that slips through, within minutes of deploy).
+//       Used by `npm run monitor:lesson-render` + the night-shift render module.
 //
-// A lesson FAILS if it emits an uncaught page error OR #app stays (near) empty.
-// Console.error noise (optional assets, third-party) is reported but does NOT
-// fail the run — only uncaught exceptions and empty renders do, to keep the
-// gate robust rather than flaky.
+// A page FAILS if it emits an uncaught page error OR its measured content stays
+// below the route's threshold. Console.error noise (optional assets, third
+// party) is reported but does NOT fail the run — only uncaught exceptions and
+// empty renders do, to keep the gate robust rather than flaky.
 //
-// Exit codes: 0 = all sampled lessons rendered; 1 = one or more failed;
-//             2 = could not run (no dist, no browser, server never came up).
+// Exit codes: 0 = all rendered; 1 = one or more failed; 2 = could not run
+// (no dist, no browser, server never came up).
 //
 // Usage:
 //   node tools/smoke-lesson-boot.mjs                     # local dist, auto sample
 //   node tools/smoke-lesson-boot.mjs --base https://eduwonderlab.com
-//   node tools/smoke-lesson-boot.mjs --lessons 1-1,5-3,10-2
-//   node tools/smoke-lesson-boot.mjs --all               # every lesson, not a sample
-import { readdir, access } from "node:fs/promises";
+//   node tools/smoke-lesson-boot.mjs --lessons 1-1,5-3   # only these lessons
+//   node tools/smoke-lesson-boot.mjs --all               # every lesson
+//   node tools/smoke-lesson-boot.mjs --no-routes         # skip the SPA manifest
+import { readdir, readFile, access } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -39,17 +43,19 @@ import path from "node:path";
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, "..");
 const LESSONS_DIR = path.join(ROOT, "lessons");
+const MANIFEST = path.join(ROOT, "night-shift", "render-manifest.json");
 const PORT = 41847; // fixed, strict — fail loudly if occupied rather than race
-const MIN_APP_HTML = 800; // a rendered lesson is ~10k chars; a blank shell is 0
+const LESSON_MIN = 800; // a rendered lesson is ~10k chars; a blank shell is 0
 const NAV_TIMEOUT = 25000;
-const RENDER_TIMEOUT = 12000; // how long to wait for #app to fill
+const RENDER_TIMEOUT = 12000; // how long to wait for the mount to fill
 
 function parseArgs(argv) {
-  const a = { base: null, lessons: null, all: false };
+  const a = { base: null, lessons: null, all: false, routes: true };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === "--base") a.base = argv[++i];
     else if (argv[i] === "--lessons") a.lessons = argv[++i];
     else if (argv[i] === "--all") a.all = true;
+    else if (argv[i] === "--no-routes") a.routes = false;
   }
   return a;
 }
@@ -91,6 +97,17 @@ async function pathExists(p) {
   }
 }
 
+/** Load the SPA render manifest; returns [] if absent/unreadable. */
+async function loadRouteManifest() {
+  try {
+    const raw = await readFile(MANIFEST, "utf8");
+    const json = JSON.parse(raw);
+    return Array.isArray(json.routes) ? json.routes : [];
+  } catch {
+    return [];
+  }
+}
+
 /** Spawn `vite preview` on dist/ and resolve once it serves, or throw. */
 async function startPreviewServer() {
   if (!(await pathExists(path.join(ROOT, "dist", "index.html")))) {
@@ -105,8 +122,6 @@ async function startPreviewServer() {
   );
   const base = `http://127.0.0.1:${PORT}`;
   const deadline = Date.now() + 20000;
-  // Poll until the server answers (avoids racing on stdout banner parsing).
-  // eslint-disable-next-line no-constant-condition
   while (Date.now() < deadline) {
     try {
       const res = await fetch(base + "/", { redirect: "manual" });
@@ -120,8 +135,12 @@ async function startPreviewServer() {
   throw new Error("vite preview did not come up within 20s");
 }
 
-/** Load one lesson and judge whether it rendered. Never throws. */
-async function probeLesson(page, base, id) {
+/**
+ * Load one page and judge whether it rendered. Never throws.
+ * route = { url, label, selector?, min, measure: "html" | "text" }
+ *   measure "html" → selector.innerHTML length; "text" → body.innerText length.
+ */
+async function probeRoute(page, base, route) {
   const pageErrors = [];
   const consoleErrors = [];
   const onPageError = (e) => pageErrors.push(e.message);
@@ -130,26 +149,34 @@ async function probeLesson(page, base, id) {
   };
   page.on("pageerror", onPageError);
   page.on("console", onConsole);
-  const url = `${base}/lessons/${id}/?cb=${id}`;
+  const url = `${base}${route.url}?cb=${encodeURIComponent(route.label)}`;
   let navError = null;
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: NAV_TIMEOUT });
-    // Wait for the renderer to populate #app (or give up).
     await page
       .waitForFunction(
-        (min) => {
-          const el = document.getElementById("app");
-          return el && el.innerHTML.length > min;
+        ({ selector, min }) => {
+          const el = selector ? document.querySelector(selector) : document.body;
+          if (!el) return false;
+          const len = selector ? el.innerHTML.length : el.innerText.trim().length;
+          return len > min;
         },
-        MIN_APP_HTML,
+        { selector: route.measure === "html" ? route.selector : null, min: route.min },
         { timeout: RENDER_TIMEOUT },
       )
       .catch(() => {}); // fall through to measurement below
   } catch (e) {
     navError = e.message;
   }
-  const appLen = await page
-    .$eval("#app", (el) => el.innerHTML.length)
+  const len = await page
+    .evaluate(
+      ({ selector, measure }) => {
+        const el = selector ? document.querySelector(selector) : document.body;
+        if (!el) return -1;
+        return measure === "html" ? el.innerHTML.length : el.innerText.trim().length;
+      },
+      { selector: route.measure === "html" ? route.selector : null, measure: route.measure },
+    )
     .catch(() => -1);
   page.off("pageerror", onPageError);
   page.off("console", onConsole);
@@ -157,23 +184,38 @@ async function probeLesson(page, base, id) {
   const reasons = [];
   if (navError) reasons.push(`navigation failed: ${navError}`);
   if (pageErrors.length) reasons.push(`uncaught: ${pageErrors[0]}`);
-  if (appLen < MIN_APP_HTML) reasons.push(`#app nearly empty (${appLen} chars)`);
-  return { id, appLen, pageErrors, consoleErrors, ok: reasons.length === 0, reasons };
+  if (len < route.min) reasons.push(`content below min (${len} < ${route.min})`);
+  return { ...route, len, pageErrors, consoleErrors, ok: reasons.length === 0, reasons };
 }
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const live = Boolean(args.base);
 
-  // Resolve the lesson sample.
-  let ids;
-  if (args.lessons) ids = args.lessons.split(",").map((s) => s.trim()).filter(Boolean);
+  // Build the route list: lessons (mount #app) + optional SPA manifest.
+  const routes = [];
+  let lessonIds;
+  if (args.lessons) lessonIds = args.lessons.split(",").map((s) => s.trim()).filter(Boolean);
   else {
     const all = await listLessonIds();
-    ids = args.all ? all : sampleByUnit(all);
+    lessonIds = args.all ? all : sampleByUnit(all);
   }
-  if (!ids.length) {
-    console.error("No lessons found to probe.");
+  for (const id of lessonIds) {
+    routes.push({ url: `/lessons/${id}/`, label: id, selector: "#app", min: LESSON_MIN, measure: "html" });
+  }
+  if (args.routes && !args.lessons) {
+    for (const r of await loadRouteManifest()) {
+      routes.push({
+        url: r.path,
+        label: r.label || r.path,
+        selector: r.selector || null,
+        min: r.min ?? 200,
+        measure: r.selector ? "html" : "text",
+      });
+    }
+  }
+  if (!routes.length) {
+    console.error("No routes to probe.");
     process.exit(2);
   }
 
@@ -182,7 +224,7 @@ async function main() {
   try {
     ({ chromium } = await import("playwright"));
   } catch {
-    console.error("⚠️  playwright not installed — lesson-boot smoke SKIPPED.");
+    console.error("⚠️  playwright not installed — render smoke SKIPPED.");
     console.error("   Install with: npm i -D playwright && npx playwright install chromium");
     process.exit(0);
   }
@@ -206,25 +248,23 @@ async function main() {
   try {
     browser = await chromium.launch();
   } catch (e) {
-    console.error(`⚠️  Could not launch Chromium — lesson-boot smoke SKIPPED (${e.message}).`);
+    console.error(`⚠️  Could not launch Chromium — render smoke SKIPPED (${e.message}).`);
     console.error("   Install with: npx playwright install chromium");
     if (server) server.child.kill("SIGKILL");
     process.exit(0);
   }
 
-  console.log(`Lesson-boot smoke — ${live ? "LIVE" : "local dist"} @ ${base}`);
-  console.log(`Probing ${ids.length} lesson(s): ${ids.join(", ")}\n`);
+  console.log(`Render smoke — ${live ? "LIVE" : "local dist"} @ ${base}`);
+  console.log(`Probing ${routes.length} page(s).\n`);
 
   const results = [];
   const page = await browser.newPage();
-  for (const id of ids) {
-    const r = await probeLesson(page, base, id);
+  for (const route of routes) {
+    const r = await probeRoute(page, base, route);
     results.push(r);
     const tag = r.ok ? "PASS" : "FAIL";
-    const extra = r.ok
-      ? `#app ${r.appLen}`
-      : r.reasons.join("; ");
-    console.log(`  ${tag}  ${id.padEnd(8)} ${extra}`);
+    const extra = r.ok ? `${r.measure === "html" ? "#app/mount" : "text"} ${r.len}` : r.reasons.join("; ");
+    console.log(`  ${tag}  ${String(r.label).padEnd(22)} ${extra}`);
     if (r.ok && r.consoleErrors.length) {
       console.log(`        (note: ${r.consoleErrors.length} console.error — non-fatal)`);
     }
@@ -233,18 +273,16 @@ async function main() {
   if (server) server.child.kill("SIGKILL");
 
   const failed = results.filter((r) => !r.ok);
-  console.log(
-    `\n${results.length - failed.length}/${results.length} lessons rendered; ${failed.length} failed.`,
-  );
+  console.log(`\n${results.length - failed.length}/${results.length} pages rendered; ${failed.length} failed.`);
   if (failed.length) {
-    console.log("FAIL — a lesson did not render. This is the blank-lesson class of bug.");
+    console.log("FAIL — a page did not render. This is the blank-page class of bug.");
     process.exit(1);
   }
-  console.log("PASS — all sampled lessons render.");
+  console.log("PASS — all probed pages render.");
   process.exit(0);
 }
 
 main().catch((e) => {
-  console.error("lesson-boot smoke crashed:", e);
+  console.error("render smoke crashed:", e);
   process.exit(2);
 });
