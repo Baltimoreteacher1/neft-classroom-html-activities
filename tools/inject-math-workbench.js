@@ -50,6 +50,9 @@ const SKIP_TOPLEVEL = new Set([
   "personal",
   "futures",
   "access-teacher",
+  // focus-school (Noam planner) offers the Workbench only inside its Academic
+  // Help view, so it opts out of the global floating launcher.
+  "focus-school",
 ]);
 
 const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;

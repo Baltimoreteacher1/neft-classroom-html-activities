@@ -6,7 +6,7 @@
  *
  * Strategy (graceful degradation):
  *   1. If env.GEMINI_API_KEY is set -> call the Google Gemini API
- *      (model env.GEMINI_MODEL || "gemini-2.0-flash").
+ *      (model env.GEMINI_MODEL || "gemini-pro-latest").
  *   2. Else if env.AI (Workers AI binding) is available -> Workers AI fallback.
  *   3. Else -> HTTP 503 { offline:true }; the client shows a friendly notice.
  *
@@ -25,7 +25,7 @@ const JSON_HEADERS = {
   "Cache-Control": "no-store",
 };
 
-const DEFAULT_MODEL = "gemini-flash-latest"; // alias -> current stable Flash (avoids deprecation 404s)
+const DEFAULT_MODEL = "gemini-pro-latest"; // full-tier Gemini Pro (alias -> current stable Pro; avoids deprecation 404s)
 const WORKERS_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct";
 
 const CAP = { turns: 12, text: 1500, output: 1500, image: 8_000_000 };
@@ -59,9 +59,7 @@ function clampStr(v, n) {
 }
 function clientIp(request) {
   return (
-    request.headers.get("CF-Connecting-IP") ||
-    request.headers.get("X-Forwarded-For") ||
-    "anon"
+    request.headers.get("CF-Connecting-IP") || request.headers.get("X-Forwarded-For") || "anon"
   );
 }
 function rateLimited(ip) {
@@ -90,18 +88,13 @@ export async function onRequestOptions() {
 }
 
 export async function onRequestGet({ env }) {
-  const backend = env.GEMINI_API_KEY
-    ? "gemini"
-    : env.AI
-      ? "workers-ai"
-      : "none";
+  const backend = env.GEMINI_API_KEY ? "gemini" : env.AI ? "workers-ai" : "none";
   return json({ ok: true, backend, live: backend !== "none" });
 }
 
 export async function onRequestPost({ request, env }) {
   const ip = clientIp(request);
-  if (rateLimited(ip))
-    return json({ error: "Too many requests — slow down a moment." }, 429);
+  if (rateLimited(ip)) return json({ error: "Too many requests — slow down a moment." }, 429);
 
   let body;
   try {
@@ -177,8 +170,7 @@ export async function onRequestPost({ request, env }) {
           .trim();
         if (reply) return json({ reply, backend: "gemini" });
         return json({
-          reply:
-            "Let's try that a different way — can you tell me a bit more? 🙂",
+          reply: "Let's try that a different way — can you tell me a bit more? 🙂",
           backend: "gemini",
         });
       }
@@ -189,8 +181,7 @@ export async function onRequestPost({ request, env }) {
           ? "I'm getting a lot of questions right now — give me a minute, then ask again. ⏳"
           : "I couldn't think of an answer just now. Try asking again in a moment. 🙂";
     } catch {
-      geminiError =
-        "I couldn't reach my brain just now — try asking again in a moment. 🙂";
+      geminiError = "I couldn't reach my brain just now — try asking again in a moment. 🙂";
     }
   }
 
