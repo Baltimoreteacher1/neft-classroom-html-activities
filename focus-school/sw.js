@@ -1,7 +1,7 @@
 /* Focus School — service worker.
  * Offline-first app shell: precache core files, serve them cache-first,
  * fall back to the cached app for navigations when offline. */
-const VERSION = "focus-school-v37";
+const VERSION = "focus-school-v38";
 const CORE = [
   "./",
   "index.html",
@@ -21,14 +21,12 @@ const CORE = [
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   event.waitUntil(
-    self.clients
-      .matchAll({ type: "window", includeUncontrolled: true })
-      .then((list) => {
-        for (const c of list) {
-          if ("focus" in c) return c.focus();
-        }
-        if (self.clients.openWindow) return self.clients.openWindow("./");
-      }),
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+      for (const c of list) {
+        if ("focus" in c) return c.focus();
+      }
+      if (self.clients.openWindow) return self.clients.openWindow("./");
+    }),
   );
 });
 
@@ -40,9 +38,7 @@ self.addEventListener("install", (event) => {
         // Tolerate any single missing asset so install never fails outright.
         // Use cache:"reload" so precaching bypasses the HTTP cache — otherwise a
         // long zone Browser Cache TTL could make a new SW store a stale app.js.
-        Promise.allSettled(
-          CORE.map((url) => cache.add(new Request(url, { cache: "reload" }))),
-        ),
+        Promise.allSettled(CORE.map((url) => cache.add(new Request(url, { cache: "reload" })))),
       )
       .then(() => self.skipWaiting()),
   );
@@ -52,11 +48,7 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) =>
-        Promise.all(
-          keys.filter((k) => k !== VERSION).map((k) => caches.delete(k)),
-        ),
-      )
+      .then((keys) => Promise.all(keys.filter((k) => k !== VERSION).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });
@@ -75,9 +67,7 @@ self.addEventListener("fetch", (event) => {
   // Navigations: try network, fall back to cached app shell so the app opens offline.
   if (req.mode === "navigate") {
     event.respondWith(
-      fetch(req).catch(() =>
-        caches.match("index.html").then((r) => r || caches.match("./")),
-      ),
+      fetch(req).catch(() => caches.match("index.html").then((r) => r || caches.match("./"))),
     );
     return;
   }

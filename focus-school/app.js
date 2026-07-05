@@ -15,8 +15,7 @@
     if (!document.querySelector('link[href*="katex"]')) {
       var link = document.createElement("link");
       link.rel = "stylesheet";
-      link.href =
-        "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css";
+      link.href = "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css";
       link.crossOrigin = "anonymous";
       document.head.appendChild(link);
     }
@@ -25,8 +24,7 @@
     script.crossOrigin = "anonymous";
     script.onload = function () {
       var ext = document.createElement("script");
-      ext.src =
-        "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js";
+      ext.src = "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js";
       ext.crossOrigin = "anonymous";
       ext.onload = callback;
       document.head.appendChild(ext);
@@ -63,10 +61,7 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
   const uid = (p) =>
-    p +
-    "_" +
-    Math.random().toString(36).slice(2, 9) +
-    Date.now().toString(36).slice(-3);
+    p + "_" + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3);
   const esc = (v) =>
     String(v ?? "").replace(
       /[&<>"']/g,
@@ -86,8 +81,7 @@
   // timer visualizer) so vestibular-sensitive users get a calm, still UI.
   const reducedMotion = () =>
     (typeof state !== "undefined" && state.settings.motion === "off") ||
-    (typeof matchMedia !== "undefined" &&
-      matchMedia("(prefers-reduced-motion: reduce)").matches);
+    (typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches);
 
   function hexToHsl(hex) {
     const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
@@ -156,10 +150,7 @@
   function healthItems() {
     state.health = state.health || { log: {} };
     if (!state.health.seeded) {
-      if (
-        !Array.isArray(state.health.items) ||
-        state.health.items.length === 0
-      ) {
+      if (!Array.isArray(state.health.items) || state.health.items.length === 0) {
         state.health.items = HEALTH_ITEMS.map((it) => it.slice());
       }
       state.health.seeded = true;
@@ -188,22 +179,14 @@
         typeof hint === "string" ? hint.trim().slice(0, 80) : "",
       ]);
     }
-    const knownIds = new Set(
-      HEALTH_ITEMS.map((i) => i[0]).concat(items.map((i) => i[0])),
-    );
+    const knownIds = new Set(HEALTH_ITEMS.map((i) => i[0]).concat(items.map((i) => i[0])));
     const log = {};
-    const src =
-      h && typeof h === "object" && h.log && typeof h.log === "object"
-        ? h.log
-        : {};
+    const src = h && typeof h === "object" && h.log && typeof h.log === "object" ? h.log : {};
     for (const [date, day] of Object.entries(src)) {
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !day || typeof day !== "object")
-        continue;
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !day || typeof day !== "object") continue;
       const clean = {};
       for (const id of knownIds) if (day[id]) clean[id] = 1;
-      const paid = Array.isArray(day.__paid)
-        ? day.__paid.filter((x) => knownIds.has(x))
-        : [];
+      const paid = Array.isArray(day.__paid) ? day.__paid.filter((x) => knownIds.has(x)) : [];
       if (paid.length) clean.__paid = [...new Set(paid)];
       if (Object.keys(clean).length) log[date] = clean;
     }
@@ -222,8 +205,7 @@
     if (!iso) return "No due date";
     const n = daysUntil(iso);
     const t = time ? " · " + time : "";
-    if (n < 0)
-      return Math.abs(n) + (Math.abs(n) === 1 ? " day late" : " days late");
+    if (n < 0) return Math.abs(n) + (Math.abs(n) === 1 ? " day late" : " days late");
     if (n === 0) return "Due today" + t;
     if (n === 1) return "Due tomorrow" + t;
     if (n < 7) return "Due in " + n + " days";
@@ -252,12 +234,7 @@
   const STATE_KEY = "state";
   // Older localStorage builds, newest first — used once to migrate prior data
   // (the previous /noam-school/ app saved under noam-school-v9, etc.).
-  const LEGACY_KEYS = [
-    "noam-school-v10",
-    "noam-school-v9",
-    "noam-school-v8",
-    "noam-school-v7",
-  ];
+  const LEGACY_KEYS = ["noam-school-v10", "noam-school-v9", "noam-school-v8", "noam-school-v7"];
 
   const idb = {
     db: null,
@@ -278,10 +255,7 @@
     get(key) {
       return new Promise((resolve) => {
         if (!this.db) return resolve(null);
-        const r = this.db
-          .transaction(STORE, "readonly")
-          .objectStore(STORE)
-          .get(key);
+        const r = this.db.transaction(STORE, "readonly").objectStore(STORE).get(key);
         r.onsuccess = () => resolve(r.result ?? null);
         r.onerror = () => resolve(null);
       });
@@ -383,12 +357,7 @@
         id: uid("r"),
         name: "Morning Launch",
         emoji: "🌅",
-        items: [
-          "Check today's plan",
-          "Pack my bag",
-          "Water + charger",
-          "Pick my first task",
-        ],
+        items: ["Check today's plan", "Pack my bag", "Water + charger", "Pick my first task"],
       },
       {
         id: uid("r"),
@@ -542,16 +511,12 @@
     const base = seed();
     if (!x || typeof x !== "object") return base;
     const s = { ...base.settings, ...(x.settings || {}) };
-    s.welcomeDismissed = !!(
-      x.settings?.welcomeDismissed ?? base.settings.welcomeDismissed
-    );
+    s.welcomeDismissed = !!(x.settings?.welcomeDismissed ?? base.settings.welcomeDismissed);
     s.sync = { ...base.settings.sync, ...(x.settings?.sync || {}) };
     s.themeGradient = String(x.settings?.themeGradient || "");
     s.customThemeColor1 = String(x.settings?.customThemeColor1 || "#0d324d");
     s.customThemeColor2 = String(x.settings?.customThemeColor2 || "#7f5a83");
-    let order = Array.isArray(s.homeOrder)
-      ? s.homeOrder
-      : base.settings.homeOrder;
+    let order = Array.isArray(s.homeOrder) ? s.homeOrder : base.settings.homeOrder;
     order = [
       ...order.filter((k) => CARDS.some((c) => c[0] === k)),
       ...CARDS.map((c) => c[0]).filter((k) => !order.includes(k)),
@@ -570,9 +535,7 @@
     s.fontScale = clamp(Number(s.fontScale) || 1, 0.9, 1.5);
     s.defaultFocusMin = clamp(Number(s.defaultFocusMin) || 15, 5, 60);
     s.accent = ACCENTS.some((a) => a[0] === s.accent) ? s.accent : "teal";
-    s.morningBriefingTime = TIME_RE.test(s.morningBriefingTime)
-      ? s.morningBriefingTime
-      : "07:15";
+    s.morningBriefingTime = TIME_RE.test(s.morningBriefingTime) ? s.morningBriefingTime : "07:15";
     s.leaveByTime = TIME_RE.test(s.leaveByTime) ? s.leaveByTime : "";
     s.googleClientId = String(s.googleClientId || "").slice(0, 200);
     // Selected Google calendar IDs — keep only non-empty strings, capped.
@@ -584,12 +547,8 @@
       ...x,
       settings: s,
       classes:
-        Array.isArray(x.classes) && x.classes.length
-          ? x.classes.map(normalizeClass)
-          : base.classes,
-      assignments: Array.isArray(x.assignments)
-        ? x.assignments.map(normalizeTask)
-        : [],
+        Array.isArray(x.classes) && x.classes.length ? x.classes.map(normalizeClass) : base.classes,
+      assignments: Array.isArray(x.assignments) ? x.assignments.map(normalizeTask) : [],
       // Reminders merged into the to-do list — migrate once, then keep empty.
       reminders: [],
       todos: [
@@ -605,16 +564,13 @@
       wins: Array.isArray(x.wins) ? x.wins : [],
       points: Number(x.points) || 0,
       daily: { ...base.daily, ...(x.daily || {}) },
-      captureLog:
-        x.captureLog && typeof x.captureLog === "object" ? x.captureLog : {},
+      captureLog: x.captureLog && typeof x.captureLog === "object" ? x.captureLog : {},
       gcal:
         x.gcal && Array.isArray(x.gcal.events)
           ? {
               events: x.gcal.events,
               fetchedAt: x.gcal.fetchedAt || "",
-              calendars: Array.isArray(x.gcal.calendars)
-                ? x.gcal.calendars
-                : [],
+              calendars: Array.isArray(x.gcal.calendars) ? x.gcal.calendars : [],
             }
           : { events: [], fetchedAt: "", calendars: [] },
       gmail:
@@ -622,14 +578,10 @@
           ? { messages: x.gmail.messages, fetchedAt: x.gmail.fetchedAt || "" }
           : { messages: [], fetchedAt: "" },
       checkins: x.checkins && typeof x.checkins === "object" ? x.checkins : {},
-      reflections:
-        x.reflections && typeof x.reflections === "object" ? x.reflections : {},
-      deletedIds:
-        x.deletedIds && typeof x.deletedIds === "object" ? x.deletedIds : {},
+      reflections: x.reflections && typeof x.reflections === "object" ? x.reflections : {},
+      deletedIds: x.deletedIds && typeof x.deletedIds === "object" ? x.deletedIds : {},
       readingProgress:
-        x.readingProgress && typeof x.readingProgress === "object"
-          ? x.readingProgress
-          : {},
+        x.readingProgress && typeof x.readingProgress === "object" ? x.readingProgress : {},
       bookTransition:
         x.bookTransition && typeof x.bookTransition === "object"
           ? x.bookTransition
@@ -641,10 +593,7 @@
               waterReservoir: Number(x.garden.waterReservoir) || 0,
               wateredCount: Number(x.garden.wateredCount) || 0,
               plantStage: Number(x.garden.plantStage) || 0,
-              plantType:
-                typeof x.garden.plantType === "string"
-                  ? x.garden.plantType
-                  : "cactus",
+              plantType: typeof x.garden.plantType === "string" ? x.garden.plantType : "cactus",
             }
           : {
               xp: 0,
@@ -686,8 +635,7 @@
             weekKey: String(p.weekKey),
             amount: Math.max(0, num(p.amount, 0)),
             paidAt: String(p.paidAt || ""),
-            breakdown:
-              p.breakdown && typeof p.breakdown === "object" ? p.breakdown : {},
+            breakdown: p.breakdown && typeof p.breakdown === "object" ? p.breakdown : {},
           }))
           .slice(0, 520) // ~10 years of weeks
       : [];
@@ -705,10 +653,7 @@
       },
       dailyCap: Math.max(0, num(r.dailyCap, base.dailyCap)),
       weeklyCap: Math.max(0, num(r.weeklyCap, base.weeklyCap)),
-      bonusPerfectWeek: Math.max(
-        0,
-        num(r.bonusPerfectWeek, base.bonusPerfectWeek),
-      ),
+      bonusPerfectWeek: Math.max(0, num(r.bonusPerfectWeek, base.bonusPerfectWeek)),
       pin: /^\d{0,8}$/.test(String(r.pin || "")) ? String(r.pin || "") : "",
       ledger,
       payouts,
@@ -742,9 +687,7 @@
     for (const [date, day] of Object.entries(remote)) {
       const target = (merged[date] = merged[date] || {});
       for (const [routineId, itemIds] of Object.entries(day)) {
-        target[routineId] = [
-          ...new Set([...(target[routineId] || []), ...itemIds]),
-        ];
+        target[routineId] = [...new Set([...(target[routineId] || []), ...itemIds])];
       }
     }
     return merged;
@@ -761,9 +704,7 @@
       room: String(c.room || "").slice(0, 40),
       period: String(c.period || "").slice(0, 30),
       meetTime: String(c.meetTime || "").slice(0, 40),
-      meetDays: Array.isArray(c.meetDays)
-        ? c.meetDays.filter((d) => DAYS.includes(d))
-        : [],
+      meetDays: Array.isArray(c.meetDays) ? c.meetDays.filter((d) => DAYS.includes(d)) : [],
       color: safeColor(c.color),
       updatedAt: c.updatedAt || Date.now(),
     };
@@ -771,15 +712,7 @@
 
   const REPEATS = ["none", "daily", "weekdays", "weekends", "weekly"];
   // To-dos support the same cadences plus monthly/yearly.
-  const TODO_REPEATS = [
-    "none",
-    "daily",
-    "weekdays",
-    "weekends",
-    "weekly",
-    "monthly",
-    "yearly",
-  ];
+  const TODO_REPEATS = ["none", "daily", "weekdays", "weekends", "weekly", "monthly", "yearly"];
   function normalizeReminder(r) {
     r = r || {};
     return {
@@ -1013,8 +946,7 @@
   }
   const isRecurring = (r) => r.repeat && r.repeat !== "none";
   // "Done for display": one-time uses .done; recurring = done-for-today only.
-  const reminderDoneToday = (r) =>
-    isRecurring(r) ? r.lastDone === todayKey() : !!r.done;
+  const reminderDoneToday = (r) => (isRecurring(r) ? r.lastDone === todayKey() : !!r.done);
   // The date a reminder effectively shows on (recurring = next occurrence).
   const reminderShownDate = (r) => (isRecurring(r) ? nextRecurDate(r) : r.date);
   const REPEAT_LABEL = {
@@ -1039,12 +971,10 @@
       d = parseLocal(iso);
     if (t.repeat === "weekly") return d.getDay() === a.getDay();
     if (t.repeat === "monthly") return d.getDate() === a.getDate();
-    if (t.repeat === "yearly")
-      return d.getDate() === a.getDate() && d.getMonth() === a.getMonth();
+    if (t.repeat === "yearly") return d.getDate() === a.getDate() && d.getMonth() === a.getMonth();
     return false;
   }
-  const todoDoneToday = (t) =>
-    isTodoRecurring(t) ? t.lastDone === todayKey() : !!t.done;
+  const todoDoneToday = (t) => (isTodoRecurring(t) ? t.lastDone === todayKey() : !!t.done);
 
   // Reminders sorted: open first, then by date/time (undated last), newest-created last.
   const reminderSortKey = (r) => {
@@ -1104,17 +1034,11 @@
         time: a.dueTime || "",
         classId: a.classId,
       }))
-      .sort(
-        (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time),
-      )
+      .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))
       .slice(0, limit);
   }
   const stepPct = (a) =>
-    a.steps.length
-      ? Math.round(
-          (a.steps.filter((s) => s.done).length / a.steps.length) * 100,
-        )
-      : 0;
+    a.steps.length ? Math.round((a.steps.filter((s) => s.done).length / a.steps.length) * 100) : 0;
 
   function urgency(a) {
     const n = daysUntil(a.due);
@@ -1128,8 +1052,7 @@
     if (a.status === "doing") score += 40; // finish what you started
     return score;
   }
-  const sortByUrgency = (list) =>
-    [...list].sort((a, b) => urgency(b) - urgency(a));
+  const sortByUrgency = (list) => [...list].sort((a, b) => urgency(b) - urgency(a));
   const rightNowTask = () => sortByUrgency(openTasks())[0] || null;
 
   function streak() {
@@ -1290,8 +1213,7 @@
       dayName: "Tue",
       book: "Blood on the River",
       read: "Chapter 29 + wrap-up",
-      prompt:
-        "Final response: How has Samuel changed from Chapter 1 to the end?",
+      prompt: "Final response: How has Samuel changed from Chapter 1 to the end?",
     },
     // The Crossover
     {
@@ -1364,8 +1286,7 @@
       dayName: "Mon",
       book: "The Crossover",
       read: "Overtime + final reflection pp. 223-237",
-      prompt:
-        "Final response: What does Josh learn about love, loss, and family?",
+      prompt: "Final response: What does Josh learn about love, loss, and family?",
     },
   ];
 
@@ -1403,8 +1324,7 @@
     render();
     $("#main").focus({ preventScroll: true });
     const reduce =
-      state.settings.motion === "off" ||
-      matchMedia("(prefers-reduced-motion: reduce)").matches;
+      state.settings.motion === "off" || matchMedia("(prefers-reduced-motion: reduce)").matches;
     window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
   }
 
@@ -1435,15 +1355,7 @@
     };
     window.addEventListener("resize", resizeHandler);
 
-    const colors = [
-      "#14b8a6",
-      "#3b82f6",
-      "#f59e0b",
-      "#ef4444",
-      "#10b981",
-      "#8b5cf6",
-      "#ec4899",
-    ];
+    const colors = ["#14b8a6", "#3b82f6", "#f59e0b", "#ef4444", "#10b981", "#8b5cf6", "#ec4899"];
     const particles = [];
 
     for (let i = 0; i < 80; i++) {
@@ -1905,10 +1817,7 @@
 
         const gainNode = audioCtx.createGain();
         gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(
-          0.08 / frequencies.length,
-          now + 2.0,
-        );
+        gainNode.gain.linearRampToValueAtTime(0.08 / frequencies.length, now + 2.0);
 
         osc.connect(gainNode);
         gainNode.connect(synthFilter);
@@ -1938,9 +1847,7 @@
     const path = document.getElementById("fVisualizer");
     if (!path) return;
 
-    const isFocusOpen = document
-      .getElementById("focusOverlay")
-      ?.classList.contains("open");
+    const isFocusOpen = document.getElementById("focusOverlay")?.classList.contains("open");
     if (!isFocusOpen) {
       if (visualizerAnimFrame) {
         cancelAnimationFrame(visualizerAnimFrame);
@@ -1981,9 +1888,7 @@
 
       if (dataArray) {
         // Map angle to frequency index (symmetrical)
-        const dataIdx = Math.floor(
-          Math.abs(Math.sin(angle)) * (dataArray.length - 1) * 0.6,
-        );
+        const dataIdx = Math.floor(Math.abs(Math.sin(angle)) * (dataArray.length - 1) * 0.6);
         offset = (dataArray[dataIdx] / 255) * 15; // max 15px pulse
       } else {
         // Gentle breathing animation if no sound is active
@@ -2010,10 +1915,7 @@
       osc.type = "sine";
       osc.frequency.value = 800;
       gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(
-        0.001,
-        audioCtx.currentTime + 0.05,
-      );
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       osc.start();
@@ -2024,9 +1926,7 @@
   }
 
   function updateAmbientSoundUI(soundType) {
-    const buttons = document.querySelectorAll(
-      "#fAmbientControls button[data-act='focus-sound']",
-    );
+    const buttons = document.querySelectorAll("#fAmbientControls button[data-act='focus-sound']");
     buttons.forEach((btn) => {
       const isPressed = btn.dataset.arg === soundType;
       btn.setAttribute("aria-pressed", isPressed ? "true" : "false");
@@ -2073,10 +1973,7 @@
         osc.frequency.setValueAtTime(freq, now + index * 0.08);
         gainNode.gain.setValueAtTime(0, now + index * 0.08);
         gainNode.gain.linearRampToValueAtTime(0.08, now + index * 0.08 + 0.02);
-        gainNode.gain.exponentialRampToValueAtTime(
-          0.001,
-          now + index * 0.08 + 0.35,
-        );
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + index * 0.08 + 0.35);
         osc.connect(gainNode);
         gainNode.connect(audioCtx.destination);
         osc.start(now + index * 0.08);
@@ -2112,8 +2009,7 @@
       const newWaterEarned = Math.floor(state.garden.xp / 10);
       if (newWaterEarned > oldWaterEarned) {
         state.garden.waterReservoir =
-          (state.garden.waterReservoir || 0) +
-          (newWaterEarned - oldWaterEarned);
+          (state.garden.waterReservoir || 0) + (newWaterEarned - oldWaterEarned);
       }
       updateGardenPlantStage();
     }
@@ -2149,8 +2045,7 @@
   }
 
   // ---- Real-money allowance ledger ---------------------------------------
-  const money = (n) =>
-    `${state.rewards?.currency || "$"}${(Number(n) || 0).toFixed(2)}`;
+  const money = (n) => `${state.rewards?.currency || "$"}${(Number(n) || 0).toFixed(2)}`;
 
   // Sum of money earned (not cashed out) so far today — used for the daily cap.
   function rewardsEarnedToday() {
@@ -2158,10 +2053,7 @@
     if (!r) return 0;
     const today = todayKey();
     return r.ledger.reduce(
-      (s, e) =>
-        e.type === "earn" && String(e.ts).slice(0, 10) === today
-          ? s + e.amount
-          : s,
+      (s, e) => (e.type === "earn" && String(e.ts).slice(0, 10) === today ? s + e.amount : s),
       0,
     );
   }
@@ -2196,9 +2088,10 @@
   // ---- Weekly payday (auto-computed allowance cycle) ----------------------
   const round2 = (n) => Math.round((Number(n) || 0) * 100) / 100;
   const ymd = (d) =>
-    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-      d.getDate(),
-    ).padStart(2, "0")}`;
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(
+      2,
+      "0",
+    )}`;
 
   // The Monday (week start) for a given ISO date, as a YYYY-MM-DD key.
   function mondayOf(iso) {
@@ -2246,10 +2139,7 @@
       const dow = parseLocal(d).getDay();
       return dow >= 1 && dow <= 5;
     }).length;
-    const bonus =
-      Number(r.bonusPerfectWeek) > 0 && weekdays >= 5
-        ? round2(r.bonusPerfectWeek)
-        : 0;
+    const bonus = Number(r.bonusPerfectWeek) > 0 && weekdays >= 5 ? round2(r.bonusPerfectWeek) : 0;
     let total = round2(raw + bonus);
     const cap = Number(r.weeklyCap) || 0;
     const capped = cap > 0 && total > cap;
@@ -2267,8 +2157,7 @@
     };
   }
 
-  const isWeekPaid = (weekKey) =>
-    (state.rewards.payouts || []).some((p) => p.weekKey === weekKey);
+  const isWeekPaid = (weekKey) => (state.rewards.payouts || []).some((p) => p.weekKey === weekKey);
 
   // Every distinct week that has any earnings, newest first.
   function earnedWeekKeys() {
@@ -2286,8 +2175,7 @@
       .map(computeWeek)
       .filter((w) => w.total > 0);
   }
-  const readyTotal = () =>
-    round2(readyWeeks().reduce((s, w) => s + w.total, 0));
+  const readyTotal = () => round2(readyWeeks().reduce((s, w) => s + w.total, 0));
 
   const GRADIENTS = [
     ["", "Default Navy"],
@@ -2449,22 +2337,13 @@
       ([k, r]) => DATE_RE.test(k) && r && Number(r.focus) > 0,
     );
     if (entries.length < 3) return "";
-    const names = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
+    const names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const dow = Array.from({ length: 7 }, () => []);
     entries.forEach(([k, r]) => {
       const d = parseLocal(k);
       if (d) dow[d.getDay()].push(Number(r.focus));
     });
-    const mean = (arr) =>
-      arr.length ? arr.reduce((s, v) => s + v, 0) / arr.length : 0;
+    const mean = (arr) => (arr.length ? arr.reduce((s, v) => s + v, 0) / arr.length : 0);
     let bestDay = null,
       bestAvg = 0;
     dow.forEach((arr, i) => {
@@ -2473,9 +2352,7 @@
         bestDay = names[i];
       }
     });
-    const sorted = entries
-      .sort(([a], [b]) => (a < b ? -1 : 1))
-      .map(([, r]) => Number(r.focus));
+    const sorted = entries.sort(([a], [b]) => (a < b ? -1 : 1)).map(([, r]) => Number(r.focus));
     const last3 = sorted.slice(-3);
     const prev3 = sorted.slice(-6, -3);
     const recent = mean(last3),
@@ -2517,8 +2394,7 @@
     const pointsMood = [];
     sortedDates.forEach((k, idx) => {
       const ref = state.reflections[k];
-      const x =
-        padding + (idx * (chartWidth - 2 * padding)) / (sortedDates.length - 1);
+      const x = padding + (idx * (chartWidth - 2 * padding)) / (sortedDates.length - 1);
       const yFocus = 100 - (ref.focus - 1) * 20;
       const yMood = 100 - (ref.mood - 1) * 20;
       pointsFocus.push(`${x},${yFocus}`);
@@ -2576,8 +2452,7 @@
         name: "First Steps",
         desc: "Complete 1 assignment",
         emoji: "🏃‍♂️",
-        unlocked:
-          state.assignments.filter((a) => a.status === "done").length >= 1,
+        unlocked: state.assignments.filter((a) => a.status === "done").length >= 1,
       },
       {
         id: "deep_work",
@@ -2717,15 +2592,12 @@
       let totalUsed = 0;
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        totalUsed +=
-          (key.length + (localStorage.getItem(key) || "").length) * 2;
+        totalUsed += (key.length + (localStorage.getItem(key) || "").length) * 2;
       }
       const totalUsedKB = (totalUsed / 1024).toFixed(1);
 
       if (lsVal === "hello") {
-        logger.info(
-          `LocalStorage: OK (Speed: ${lsTime.toFixed(1)}ms, Used: ${totalUsedKB} KB)`,
-        );
+        logger.info(`LocalStorage: OK (Speed: ${lsTime.toFixed(1)}ms, Used: ${totalUsedKB} KB)`);
         const el = document.getElementById("diagLsStatus");
         if (el) {
           el.textContent = `OK (${totalUsedKB}KB)`;
@@ -2793,9 +2665,7 @@
         const regs = await navigator.serviceWorker.getRegistrations();
         if (regs.length > 0) {
           const swList = regs
-            .map((r) =>
-              r.active ? `active (${r.active.state})` : "waiting/installing",
-            )
+            .map((r) => (r.active ? `active (${r.active.state})` : "waiting/installing"))
             .join(", ");
           logger.info(`Service Worker: Found registered SWs: ${swList}`);
           const el = document.getElementById("diagSwStatus");
@@ -2942,19 +2812,12 @@
       },
     ];
     navs.concat(controls).forEach((item) => {
-      if (
-        !query ||
-        item.title.toLowerCase().includes(query) ||
-        item.arg?.includes(query)
-      ) {
+      if (!query || item.title.toLowerCase().includes(query) || item.arg?.includes(query)) {
         items.push(item);
       }
     });
     state.assignments.forEach((a) => {
-      if (
-        a.status !== "done" &&
-        (!query || a.title.toLowerCase().includes(query))
-      ) {
+      if (a.status !== "done" && (!query || a.title.toLowerCase().includes(query))) {
         items.push({
           title: `Focus: ${a.title}`,
           act: "focus-start-task",
@@ -2964,10 +2827,7 @@
       }
     });
     window._cmdItems = items;
-    window._cmdSelectedIndex = Math.min(
-      window._cmdSelectedIndex,
-      items.length - 1,
-    );
+    window._cmdSelectedIndex = Math.min(window._cmdSelectedIndex, items.length - 1);
     if (window._cmdSelectedIndex < 0) window._cmdSelectedIndex = 0;
     resultsContainer.innerHTML = items
       .map((item, idx) => {
@@ -2996,8 +2856,7 @@
       }
     } else if (item.act === "theme-cycle") {
       const themes = ["light", "dark", "contrast"];
-      const nextIdx =
-        (themes.indexOf(state.settings.theme) + 1) % themes.length;
+      const nextIdx = (themes.indexOf(state.settings.theme) + 1) % themes.length;
       state.settings.theme = themes[nextIdx];
       save();
       applyAppearance();
@@ -3040,11 +2899,7 @@
     const meta = $('meta[name="theme-color"]');
     if (meta)
       meta.content =
-        s.theme === "dark"
-          ? "#06101a"
-          : s.theme === "contrast"
-            ? "#000000"
-            : "#1e293b";
+        s.theme === "dark" ? "#06101a" : s.theme === "contrast" ? "#000000" : "#1e293b";
     $("#brandName").textContent = s.studentName
       ? s.studentName.split(" ")[0] + " School"
       : "Focus School";
@@ -3056,34 +2911,20 @@
     const textEl = $("#connText");
     const online = navigator.onLine;
 
-    chip.classList.remove(
-      "online",
-      "offline",
-      "syncing",
-      "synced",
-      "offline-sync",
-      "local",
-    );
+    chip.classList.remove("online", "offline", "syncing", "synced", "offline-sync", "local");
 
     if (!online) {
       chip.classList.add("offline");
-      chip.title =
-        "Offline — changes will save locally and sync when you're back online";
+      chip.title = "Offline — changes will save locally and sync when you're back online";
       if (textEl) textEl.textContent = "Offline — saved locally";
       return;
     }
 
-    if (
-      state &&
-      state.settings &&
-      state.settings.sync &&
-      state.settings.sync.enabled
-    ) {
+    if (state && state.settings && state.settings.sync && state.settings.sync.enabled) {
       if (cloud.status === "syncing") {
         chip.classList.add("syncing");
         chip.title = "Syncing with Cloudflare KV...";
-        if (textEl)
-          textEl.innerHTML = `Syncing... <span class="sync-spinner">🔄</span>`;
+        if (textEl) textEl.innerHTML = `Syncing... <span class="sync-spinner">🔄</span>`;
       } else if (cloud.status === "synced") {
         chip.classList.add("synced");
         chip.title = "All changes synced to the cloud";
@@ -3118,8 +2959,7 @@
     root.querySelectorAll("label:not([for])").forEach((label) => {
       if (label.querySelector("input, select, textarea")) return; // already wraps
       const scope =
-        label.closest(".field, .toggle-row, .reflection-text-row") ||
-        label.parentElement;
+        label.closest(".field, .toggle-row, .reflection-text-row") || label.parentElement;
       if (!scope) return;
       const controls = scope.querySelectorAll("input, select, textarea");
       if (controls.length !== 1) return; // skip groups / button-only rows
@@ -3152,9 +2992,7 @@
     // screens, visually collides with those same buttons. Hide the floats
     // for just this one-time state.
     const showingWelcome =
-      view === "home" &&
-      state.assignments.length === 0 &&
-      !state.settings.welcomeDismissed;
+      view === "home" && state.assignments.length === 0 && !state.settings.welcomeDismissed;
     $("#fab")?.classList.toggle("onboarding-hide", showingWelcome);
     $("#syncFab")?.classList.toggle("onboarding-hide", showingWelcome);
     if (view === "ai") {
@@ -3205,8 +3043,7 @@
   function greeting() {
     const h = new Date().getHours();
     const name = (state.settings.studentName || "").split(" ")[0] || "there";
-    const part =
-      h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+    const part = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
     return `${part}, ${name}`;
   }
 
@@ -3303,24 +3140,14 @@
         : '<span class="pill amber">Medium</span>';
   }
   function statusLabel(s) {
-    return s === "done"
-      ? "Done"
-      : s === "doing"
-        ? "In progress"
-        : "Not started";
+    return s === "done" ? "Done" : s === "doing" ? "In progress" : "Not started";
   }
 
   function taskItem(a, { showClass = true } = {}) {
     const c = cls(a.classId);
     const n = daysUntil(a.due);
     const cssState =
-      a.status === "done"
-        ? "done"
-        : n !== null && n < 0
-          ? "overdue"
-          : n === 0
-            ? "today-due"
-            : "";
+      a.status === "done" ? "done" : n !== null && n < 0 ? "overdue" : n === 0 ? "today-due" : "";
     const pct = stepPct(a);
     const isOpen = expanded.has(a.id);
     const stepsHtml = a.steps.length
@@ -3361,8 +3188,7 @@
       </div>
     </details>`;
   }
-  const dueIcon = (n) =>
-    n === null ? "🗓" : n < 0 ? "🔴" : n === 0 ? "🟠" : n <= 2 ? "🟡" : "🟢";
+  const dueIcon = (n) => (n === null ? "🗓" : n < 0 ? "🔴" : n === 0 ? "🟠" : n <= 2 ? "🟡" : "🟢");
 
   function card(key, title, sub, body) {
     const handle =
@@ -3414,9 +3240,7 @@
       );
       running += est;
       if (i < picks.length - 1) {
-        rows.push(
-          `<li class="plan-break" aria-hidden="true">☕ 5-min brain break</li>`,
-        );
+        rows.push(`<li class="plan-break" aria-hidden="true">☕ 5-min brain break</li>`);
         running += 5;
       }
     });
@@ -3454,11 +3278,7 @@
 
   // Days in the visible month that have an open assignment due.
   function dueDaySet() {
-    return new Set(
-      state.assignments
-        .filter((a) => a.status !== "done" && a.due)
-        .map((a) => a.due),
-    );
+    return new Set(state.assignments.filter((a) => a.status !== "done" && a.due).map((a) => a.due));
   }
 
   function calendarCard({ full = false } = {}) {
@@ -3485,8 +3305,7 @@
       const hasDue = due.has(ds);
       const isSel = ds === calSelected;
       const cnt = hasDue
-        ? state.assignments.filter((a) => a.status !== "done" && a.due === ds)
-            .length
+        ? state.assignments.filter((a) => a.status !== "done" && a.due === ds).length
         : 0;
       cells += `<button type="button" class="cal-day${isToday ? " is-today" : ""}${isSel ? " is-sel" : ""}${hasDue ? " has-due" : ""}" data-act="cal-pick" data-arg="${ds}" aria-pressed="${isSel}" aria-label="${esc(niceDate(ds))}${hasDue ? `, ${cnt} due` : ""}">${d}${hasDue ? '<span class="cal-dot" aria-hidden="true"></span>' : ""}</button>`;
     }
@@ -3502,9 +3321,7 @@
 
     // Selected-day detail (defaults to today's due items when nothing picked).
     const sel = calSelected || todayKey();
-    const dayItems = state.assignments.filter(
-      (a) => a.status !== "done" && a.due === sel,
-    );
+    const dayItems = state.assignments.filter((a) => a.status !== "done" && a.due === sel);
     const dayGcal = gcalEventsForDay(sel);
     const detail = `
       <div class="cal-detail">
@@ -3530,12 +3347,7 @@
       (full
         ? ""
         : `<button class="btn sm" data-act="nav" data-arg="calendar" style="margin-top:10px">Open full calendar →</button>`);
-    return card(
-      "calendar",
-      "📆 Calendar",
-      "Tap a day to see what's due.",
-      body,
-    );
+    return card("calendar", "📆 Calendar", "Tap a day to see what's due.", body);
   }
 
   const TODO_REPEAT_OPTS = [
@@ -3552,8 +3364,7 @@
     const openCount = list.filter((t) => !todoDoneToday(t)).length;
     const repOpts = (cur) =>
       TODO_REPEAT_OPTS.map(
-        ([v, l]) =>
-          `<option value="${v}" ${cur === v ? "selected" : ""}>${l}</option>`,
+        ([v, l]) => `<option value="${v}" ${cur === v ? "selected" : ""}>${l}</option>`,
       ).join("");
     const rows = list.length
       ? `<ul class="steps">${list
@@ -3593,8 +3404,7 @@
           .map((a) => {
             const c = cls(a.classId);
             const n = daysUntil(a.due);
-            const stateCls =
-              n !== null && n < 0 ? "overdue" : n === 0 ? "today-due" : "";
+            const stateCls = n !== null && n < 0 ? "overdue" : n === 0 ? "today-due" : "";
             return `<div class="item ${stateCls}"><div class="head"><div><h4>${esc(a.title)}</h4><p class="meta">${dueIcon(n)} ${esc(dueLabel(a.due, a.dueTime))} · ${c.emoji || "📚"} ${esc(c.name)}</p></div><div class="row"><button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button><button class="btn sm" data-act="open-task" data-id="${a.id}" aria-label="Edit ${esc(a.title)}">✏️</button></div></div></div>`;
           })
           .join("")
@@ -3634,15 +3444,9 @@
         : emptyState("🌤", "Nothing on the calendar today. Nice.");
     const parts = [];
     if (due.length) parts.push(`${due.length} due`);
-    if (rem.length)
-      parts.push(`${rem.length} reminder${rem.length === 1 ? "" : "s"}`);
+    if (rem.length) parts.push(`${rem.length} reminder${rem.length === 1 ? "" : "s"}`);
     if (gev.length) parts.push(`${gev.length} Google`);
-    return card(
-      "glance",
-      "Today at a glance",
-      parts.length ? parts.join(" · ") : "",
-      body,
-    );
+    return card("glance", "Today at a glance", parts.length ? parts.join(" · ") : "", body);
   }
 
   // Quick morning check-in (mood + one priority), surfaced at the top of home.
@@ -3688,9 +3492,7 @@
     if (filters.query && filters.query.trim()) {
       const q = filters.query.toLowerCase().trim();
       open = open.filter(
-        (a) =>
-          a.title.toLowerCase().includes(q) ||
-          (a.notes && a.notes.toLowerCase().includes(q)),
+        (a) => a.title.toLowerCase().includes(q) || (a.notes && a.notes.toLowerCase().includes(q)),
       );
     }
 
@@ -3709,8 +3511,7 @@
         if (!a.due) return 1;
         if (!b.due) return -1;
         return (
-          a.due.localeCompare(b.due) ||
-          (a.dueTime || "99:99").localeCompare(b.dueTime || "99:99")
+          a.due.localeCompare(b.due) || (a.dueTime || "99:99").localeCompare(b.dueTime || "99:99")
         );
       });
     } else if (filters.sortBy === "title") {
@@ -3718,28 +3519,20 @@
     } else if (filters.sortBy === "priority") {
       const weight = { high: 3, med: 2, low: 1 };
       open.sort(
-        (a, b) =>
-          (weight[b.priority] || 0) - (weight[a.priority] || 0) ||
-          urgency(b) - urgency(a),
+        (a, b) => (weight[b.priority] || 0) - (weight[a.priority] || 0) || urgency(b) - urgency(a),
       );
     }
 
     let listContent = "";
     if (open.length === 0) {
-      listContent = emptyState(
-        "🔍",
-        "No matching tasks found. Adjust your filters!",
-      );
+      listContent = emptyState("🔍", "No matching tasks found. Adjust your filters!");
     } else if (filters.sortBy === "title" || filters.sortBy === "priority") {
       listContent = open.map((a) => taskItem(a)).join("");
     } else {
       const buckets = [
         ["🔴 Overdue", open.filter((a) => daysUntil(a.due) < 0)],
         ["🟠 Today", open.filter((a) => daysUntil(a.due) === 0)],
-        [
-          "🟡 This week",
-          open.filter((a) => daysUntil(a.due) > 0 && daysUntil(a.due) <= 7),
-        ],
+        ["🟡 This week", open.filter((a) => daysUntil(a.due) > 0 && daysUntil(a.due) <= 7)],
         ["🟢 Later", open.filter((a) => daysUntil(a.due) > 7)],
         ["🗓 No date", open.filter((a) => a.due === "")],
       ];
@@ -3790,10 +3583,8 @@
   function routineDaysLabel(r) {
     if (!r.days || !r.days.length || r.days.length === 7) return "Every day";
     const wd = ["Mon", "Tue", "Wed", "Thu", "Fri"];
-    if (r.days.length === 5 && wd.every((d) => r.days.includes(d)))
-      return "Weekdays";
-    if (r.days.length === 2 && r.days.includes("Sat") && r.days.includes("Sun"))
-      return "Weekends";
+    if (r.days.length === 5 && wd.every((d) => r.days.includes(d))) return "Weekdays";
+    if (r.days.length === 2 && r.days.includes("Sat") && r.days.includes("Sun")) return "Weekends";
     return r.days.join(", ");
   }
   function routineOccursOn(r, when = new Date()) {
@@ -3806,11 +3597,7 @@
   }
   const fmtClock = (s) => {
     s = Math.max(0, Math.round(s));
-    return (
-      String(Math.floor(s / 60)).padStart(2, "0") +
-      ":" +
-      String(s % 60).padStart(2, "0")
-    );
+    return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
   };
 
   // ---- Homework Plan inline timers (work a little, then take a break) ----
@@ -4011,20 +3798,9 @@
     ],
     [
       "Explain it",
-      [
-        "Explain this in a simpler way",
-        "Give me an example",
-        "What does this word mean?",
-      ],
+      ["Explain this in a simpler way", "Give me an example", "What does this word mean?"],
     ],
-    [
-      "Check my work",
-      [
-        "Check my thinking",
-        "Did I do this right?",
-        "How can I make this better?",
-      ],
-    ],
+    ["Check my work", ["Check my thinking", "Did I do this right?", "How can I make this better?"]],
     ["Feelings", ["I feel overwhelmed", "Help me focus"]],
   ];
 
@@ -4053,9 +3829,7 @@
             : emptyState("📭", "Nothing due in the next week."),
         ),
       };
-      const order = state.settings.homeOrder.filter(
-        (k) => !state.settings.hiddenCards.includes(k),
-      );
+      const order = state.settings.homeOrder.filter((k) => !state.settings.hiddenCards.includes(k));
 
       let welcomeBanner = "";
       if (state.assignments.length === 0 && !state.settings.welcomeDismissed) {
@@ -4112,10 +3886,7 @@
                   return `<div class="item"><div class="head"><div><h4>${esc(x.title)}</h4><p class="meta">${dueIcon(daysUntil(x.date))} ${esc(dueLabel(x.date, x.time))}${c ? " · " + esc(c.name) : ""}</p></div><div class="row"><span class="pill red">Due</span></div></div></div>`;
                 })
                 .join("")
-            : emptyState(
-                "📭",
-                "Nothing upcoming. Add an assignment with a due date.",
-              )
+            : emptyState("📭", "Nothing upcoming. Add an assignment with a due date.")
         }
       `;
     },
@@ -4125,12 +3896,8 @@
       const overdue = sortByUrgency(open.filter((a) => daysUntil(a.due) < 0));
       const today = sortByUrgency(open.filter((a) => daysUntil(a.due) === 0));
       const noDate = open.filter((a) => a.due === "");
-      const totalMin = [...overdue, ...today].reduce(
-        (s, a) => s + (a.estimateMin || 0),
-        0,
-      );
-      const goalToday =
-        state.daily.goalDate === todayKey() ? state.daily.goal : "";
+      const totalMin = [...overdue, ...today].reduce((s, a) => s + (a.estimateMin || 0), 0);
+      const goalToday = state.daily.goalDate === todayKey() ? state.daily.goal : "";
       return `
         ${card(
           "goal",
@@ -4228,9 +3995,7 @@
         ${state.routines
           .map((r) => {
             const done = log[r.id] || [];
-            const pct = r.items.length
-              ? Math.round((done.length / r.items.length) * 100)
-              : 0;
+            const pct = r.items.length ? Math.round((done.length / r.items.length) * 100) : 0;
             const noTimeNotice = r.slot
               ? ""
               : `<p style="color:var(--amber);font-size:.82rem;margin:4px 0 0">⚠️ No automatic time set — won't appear on the Now screen. Edit this routine to set a time of day.</p>`;
@@ -4257,13 +4022,9 @@
     },
 
     reading() {
-      const completedDays = Object.values(state.readingProgress || {}).filter(
-        (x) => x.done,
-      ).length;
+      const completedDays = Object.values(state.readingProgress || {}).filter((x) => x.done).length;
       const totalDays = READING_DAYS.length;
-      const percent = totalDays
-        ? Math.round((completedDays / totalDays) * 100)
-        : 0;
+      const percent = totalDays ? Math.round((completedDays / totalDays) * 100) : 0;
       const transition = state.bookTransition || {
         finishedB: "",
         responseB: false,
@@ -4296,9 +4057,7 @@
         </div>
       `;
 
-      const botrDays = READING_DAYS.filter(
-        (d) => d.book === "Blood on the River",
-      );
+      const botrDays = READING_DAYS.filter((d) => d.book === "Blood on the River");
       const tcDays = READING_DAYS.filter((d) => d.book === "The Crossover");
 
       const renderDayRow = (d) => {
@@ -4561,15 +4320,9 @@
         const dn = reminderDoneToday(r);
         // Recurring reminders always show their NEXT occurrence.
         const shownDate = reminderShownDate(r);
-        const when = shownDate
-          ? dueLabel(shownDate, r.time)
-          : r.time
-            ? "At " + r.time
-            : "";
+        const when = shownDate ? dueLabel(shownDate, r.time) : r.time ? "At " + r.time : "";
         const n = shownDate ? daysUntil(shownDate) : null;
-        const rep = isRecurring(r)
-          ? ` · 🔁 ${esc(REPEAT_LABEL[r.repeat])}`
-          : "";
+        const rep = isRecurring(r) ? ` · 🔁 ${esc(REPEAT_LABEL[r.repeat])}` : "";
         return `<div class="item ${!dn && n !== null && n < 0 ? "overdue" : ""}"><div class="row" style="align-items:flex-start;gap:10px;flex-wrap:wrap"><label class="row" style="align-items:flex-start;gap:10px;flex:1;min-width:0;cursor:pointer"><input class="check" type="checkbox" data-check="reminder" data-id="${r.id}" ${dn ? "checked" : ""} aria-label="Mark done: ${esc(r.text)}"><span style="min-width:0"><span class="steptext ${dn ? "done" : ""}" style="font-weight:800;display:block">${esc(r.text)}</span>${when || rep ? `<span class="meta" style="display:block;margin-top:2px">${shownDate ? dueIcon(n) + " " : r.time ? "⏰ " : ""}${esc(when)}${rep}</span>` : ""}</span></label><span class="row" style="gap:6px">${dn ? "" : `<button class="btn sm" data-act="snooze-reminder" data-id="${r.id}" data-arg="10" title="Snooze 10 minutes">😴 10m</button><button class="btn sm" data-act="snooze-reminder" data-id="${r.id}" data-arg="tonight" title="Snooze until tonight">🌙</button>`}<button class="btn sm" data-act="edit-reminder" data-id="${r.id}">Edit</button><button class="btn danger sm" data-act="del-reminder" data-id="${r.id}" aria-label="Delete reminder: ${esc(r.text)}">✕</button></span></div></div>`;
       };
       return (
@@ -4589,10 +4342,7 @@
         return (
           '<div class="view-head"><h2 class="view-title">📋 Homework Plan</h2><button class="btn primary" data-act="quick-add">＋ Add assignment</button></div>' +
           intro +
-          emptyState(
-            "🎉",
-            "No assignments yet. Add one and a study plan builds itself here.",
-          ) +
+          emptyState("🎉", "No assignments yet. Add one and a study plan builds itself here.") +
           '<div class="hw-row break"><div class="hw-main"><span class="hw-emoji">🌿</span><div><b>Brain break</b><div class="meta">Stretch, water, breathe.</div></div></div>' +
           hwTimerCell("break-warmup", [3, 5, 10]) +
           "</div>"
@@ -4664,12 +4414,8 @@
     },
 
     health() {
-      const day =
-        (state.health && state.health.log && state.health.log[todayKey()]) ||
-        {};
-      const rate =
-        (state.rewards && state.rewards.rates && state.rewards.rates.health) ||
-        0.1;
+      const day = (state.health && state.health.log && state.health.log[todayKey()]) || {};
+      const rate = (state.rewards && state.rewards.rates && state.rewards.rates.health) || 0.1;
       const eff = healthItems();
       const doneCount = eff.filter((it) => day[it[0]]).length;
       const items = eff
@@ -4746,11 +4492,7 @@
               '">' +
               (m.role === "user" ? "" : '<span class="ai-ic">🤖</span>') +
               '<span class="ai-bubble">' +
-              (m.image
-                ? '<img class="ai-img" src="' +
-                  m.image +
-                  '" alt="attached picture">'
-                : "") +
+              (m.image ? '<img class="ai-img" src="' + m.image + '" alt="attached picture">' : "") +
               (m.role === "user" ? esc(m.text) : formatAiReply(m.text)) +
               "</span></div>",
           ).join("")
@@ -4779,9 +4521,7 @@
       ).join("");
       return (
         '<div class="view-head"><h2 class="view-title">🤖 Academic Help</h2>' +
-        (AI_CHAT.length
-          ? '<button class="btn sm" data-act="ai-clear">Clear</button>'
-          : "") +
+        (AI_CHAT.length ? '<button class="btn sm" data-act="ai-clear">Clear</button>' : "") +
         "</div>" +
         '<p class="view-intro">A friendly helper for homework. Tap a button, type a question, or add a picture of your work.</p>' +
         '<a class="btn navy block" href="/curriculum/math-workbench/" target="_blank" rel="noopener">📐 Open Math Workbench</a>' +
@@ -5066,9 +4806,7 @@ Due May 31"></textarea>
                   .map((d) => {
                     const isMe =
                       d.id ===
-                      (deviceId ||
-                        localStorage.getItem("focus-school:device-id") ||
-                        "unknown");
+                      (deviceId || localStorage.getItem("focus-school:device-id") || "unknown");
                     const activeStr = isMe
                       ? "<span class='pill green' style='font-size:0.65rem; padding: 1px 4px; font-weight: bold;'>This device</span>"
                       : `active ${timeAgo(d.lastActive)}`;
@@ -5201,8 +4939,7 @@ Due May 31"></textarea>
       const trend = (cur, prev, unit = "") => {
         if (!prev && !cur) return "";
         const diff = cur - prev;
-        if (diff === 0)
-          return `<em class="ins-trend flat">— same as last week</em>`;
+        if (diff === 0) return `<em class="ins-trend flat">— same as last week</em>`;
         const up = diff > 0;
         return `<em class="ins-trend ${up ? "up" : "down"}">${up ? "▲" : "▼"} ${Math.abs(diff)}${unit} vs last week</em>`;
       };
@@ -5219,28 +4956,20 @@ Due May 31"></textarea>
         }
         return best;
       };
-      const allFocus = Object.values(state.activity).reduce(
-        (s, a) => s + (a.focusMin || 0),
-        0,
-      );
+      const allFocus = Object.values(state.activity).reduce((s, a) => s + (a.focusMin || 0), 0);
       // On-time completion rate across all finished assignments.
       const done = state.assignments.filter((a) => a.status === "done");
       const onTime = done.filter(
         (a) => !a.due || (a.completedAt && a.completedAt.slice(0, 10) <= a.due),
       ).length;
-      const onTimePct = done.length
-        ? Math.round((onTime / done.length) * 100)
-        : null;
+      const onTimePct = done.length ? Math.round((onTime / done.length) * 100) : null;
       // Time-estimation accuracy across finished work that had a guess + logged
       // focus time. Turns the tracked estimateMin/actualMin into a coached line.
-      const withEst = done.filter(
-        (a) => Number(a.estimateMin) > 0 && Number(a.actualMin) > 0,
-      );
+      const withEst = done.filter((a) => Number(a.estimateMin) > 0 && Number(a.actualMin) > 0);
       let estLine = "";
       if (withEst.length >= 3) {
         const avgRatio =
-          withEst.reduce((s, a) => s + a.actualMin / a.estimateMin, 0) /
-          withEst.length;
+          withEst.reduce((s, a) => s + a.actualMin / a.estimateMin, 0) / withEst.length;
         estLine =
           avgRatio > 1.25
             ? `<p class="sub" style="margin-top:8px">⏱️ Your work usually takes <b>longer</b> than you guess — padding your time estimates a little makes plans more realistic.</p>`
@@ -5255,15 +4984,9 @@ Due May 31"></textarea>
         if (d) byDow[d.getDay()] += a.focusMin || 0;
       }
       const bestDow = byDow.some((m) => m > 0)
-        ? [
-            "Sunday",
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-          ][byDow.indexOf(Math.max(...byDow))]
+        ? ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][
+            byDow.indexOf(Math.max(...byDow))
+          ]
         : "—";
       const stat = (big, small, trendHtml = "") =>
         `<div class="statbox"><b>${big}</b><small>${small}</small>${trendHtml}</div>`;
@@ -5329,19 +5052,11 @@ Due May 31"></textarea>
         health: "💪 Biking & lifting",
       };
       const stub = (w) =>
-        `<div class="pay-stub">${[
-          "task",
-          "routine",
-          "focus",
-          "reminder",
-          "health",
-        ]
+        `<div class="pay-stub">${["task", "routine", "focus", "reminder", "health"]
           .filter((k) => w.by[k] > 0)
           .map(
             (k) =>
-              `<div class="pay-line"><span>${KIND_LABEL[k]}</span><b>${money(
-                w.by[k],
-              )}</b></div>`,
+              `<div class="pay-line"><span>${KIND_LABEL[k]}</span><b>${money(w.by[k])}</b></div>`,
           )
           .join("")}
           ${
@@ -5358,9 +5073,7 @@ Due May 31"></textarea>
                 )}</b></div>`
               : ""
           }
-          <div class="pay-line pay-total"><span>Total</span><b>${money(
-            w.total,
-          )}</b></div></div>`;
+          <div class="pay-line pay-total"><span>Total</span><b>${money(w.total)}</b></div></div>`;
 
       // This week so far — accruing, not payable until the week ends.
       const wk = computeWeek(thisWeekKey());
@@ -5394,9 +5107,7 @@ Due May 31"></textarea>
             ${stub(w)}
             <button class="btn primary block" data-act="reward-payout" data-arg="${
               w.weekKey
-            }" style="margin-top:10px">💵 Pay out ${money(
-              w.total,
-            )} (parent)</button>
+            }" style="margin-top:10px">💵 Pay out ${money(w.total)} (parent)</button>
           </div>`,
             )
             .join("")
@@ -5475,12 +5186,7 @@ Due May 31"></textarea>
             r.paidOut,
           )}</div><div class="rw-sub">handed over all-time</div></div>`,
         ) +
-        card(
-          "rw-history",
-          "Payout history",
-          "",
-          `<div class="rw-list">${historyHtml}</div>`,
-        )
+        card("rw-history", "Payout history", "", `<div class="rw-list">${historyHtml}</div>`)
       );
     },
   };
@@ -5512,9 +5218,7 @@ Due May 31"></textarea>
       );
     }
     const done = (state.routineLog[todayKey()] || {})[r.id] || [];
-    const pct = r.items.length
-      ? Math.round((done.length / r.items.length) * 100)
-      : 0;
+    const pct = r.items.length ? Math.round((done.length / r.items.length) * 100) : 0;
     return card(
       "routine",
       `${r.emoji || "🔁"} ${r.name}`,
@@ -5533,8 +5237,7 @@ Due May 31"></textarea>
        </div>`,
     );
   }
-  const minutesSinceMidnight = (d = new Date()) =>
-    d.getHours() * 60 + d.getMinutes();
+  const minutesSinceMidnight = (d = new Date()) => d.getHours() * 60 + d.getMinutes();
   const inTimeWindow = (mins, start, end) => mins >= start && mins <= end;
   const ROUTINE_WINDOWS = [
     {
@@ -5667,11 +5370,8 @@ Due May 31"></textarea>
     if (mins < 60) return `in ${mins} min`;
     const hrs = Math.floor(mins / 60);
     const rem = mins % 60;
-    const dayLabel =
-      startsAt.toDateString() === now.toDateString() ? "today" : "tomorrow";
-    return rem
-      ? `${dayLabel} in ${hrs} hr ${rem} min`
-      : `${dayLabel} in ${hrs} hr`;
+    const dayLabel = startsAt.toDateString() === now.toDateString() ? "today" : "tomorrow";
+    return rem ? `${dayLabel} in ${hrs} hr ${rem} min` : `${dayLabel} in ${hrs} hr`;
   }
 
   function updateGardenPlantStage() {
@@ -5690,11 +5390,7 @@ Due May 31"></textarea>
     let plantContent = "";
 
     const isGolden = stage === 4;
-    const mainColor = isGolden
-      ? "#F1C40F"
-      : type === "bonsai"
-        ? "#8B5A2B"
-        : "#2ECC71";
+    const mainColor = isGolden ? "#F1C40F" : type === "bonsai" ? "#8B5A2B" : "#2ECC71";
     const leafColor = isGolden ? "#F39C12" : "#27AE60";
     const accentColor = isGolden ? "#F1C40F" : "#E74C3C";
 
@@ -5916,13 +5612,7 @@ Due May 31"></textarea>
       plantStage: 0,
       plantType: "cactus",
     };
-    const STAGE_NAMES = [
-      "Sprout 🌱",
-      "Seedling 🌿",
-      "Leafy 🍃",
-      "Blooming 🌸",
-      "Golden ✨",
-    ];
+    const STAGE_NAMES = ["Sprout 🌱", "Seedling 🌿", "Leafy 🍃", "Blooming 🌸", "Golden ✨"];
     const stageName = STAGE_NAMES[g.plantStage] || "Sprout 🌱";
 
     const STAGE_REQUIREMENTS = [3, 8, 15, 25];
@@ -5934,11 +5624,7 @@ Due May 31"></textarea>
     if (g.plantStage < 4) {
       const neededForNext = currentReq - prevReq;
       const progressInStage = g.wateredCount - prevReq;
-      progressPct = clamp(
-        Math.round((progressInStage / neededForNext) * 100),
-        0,
-        100,
-      );
+      progressPct = clamp(Math.round((progressInStage / neededForNext) * 100), 0, 100);
       waterText = `${g.wateredCount} / ${currentReq} waterings for next stage`;
     }
 
@@ -6023,9 +5709,7 @@ Due May 31"></textarea>
           }</p>`;
     return `<section class="card pay-home" data-card="payday" data-act="view-rewards" role="button" tabindex="0" aria-label="Open Payday">
       <div class="head">
-        <div><h3>💰 Allowance</h3><p class="sub">${weekLabel(
-          thisWeekKey(),
-        )}</p></div>
+        <div><h3>💰 Allowance</h3><p class="sub">${weekLabel(thisWeekKey())}</p></div>
         <div class="pay-home-right">
           <span class="pay-home-amt">${money(r.enabled ? wk.total : 0)}</span>
           <button class="btn sm ghost pay-home-gear" data-act="reward-settings" aria-label="Edit allowance settings" title="Allowance settings">⚙️</button>
@@ -6159,9 +5843,7 @@ Due May 31"></textarea>
     associateLabels($("#modalBody"));
     $("#modalBack").classList.add("open");
     $("#modalBack").setAttribute("aria-hidden", "false");
-    const first = $(
-      "#modalBody input, #modalBody textarea, #modalBody select, #modalBody button",
-    );
+    const first = $("#modalBody input, #modalBody textarea, #modalBody select, #modalBody button");
     if (first) first.focus();
   }
   function closeModal() {
@@ -6205,10 +5887,7 @@ Due May 31"></textarea>
       <p class="sub">Write it down before you forget. You can add details later.</p>
       <div class="field"><label>What is it?</label><input id="qaTitle" placeholder="Math worksheet p. 42" autocomplete="off"></div>
       <div class="field"><label>Which class?</label><select id="qaClass">${state.classes
-        .map(
-          (c) =>
-            `<option value="${c.id}">${c.emoji || "📚"} ${esc(c.name)}</option>`,
-        )
+        .map((c) => `<option value="${c.id}">${c.emoji || "📚"} ${esc(c.name)}</option>`)
         .join("")}</select></div>
       <div class="field"><label>When is it due?</label>
         <div class="seg" id="qaDueSeg">${pick(isoForOffset(0), "Today")}${pick(isoForOffset(1), "Tomorrow")}${pick("custom", "Pick a date")}${pick("", "Not sure")}</div>
@@ -6330,6 +6009,26 @@ Due May 31"></textarea>
     const mins = Number(m[1]) * 60 + Number(m[2]);
     return mins >= 0 && mins < 1440 ? mins : undefined;
   };
+  // Append one or more steps to the open routine form. Splitting on newlines
+  // lets a kid paste a whole list at once instead of adding steps one-by-one.
+  function addRoutineSteps(rawText, id) {
+    const ul = $("#rSteps");
+    if (!ul) return 0;
+    const lines = String(rawText || "")
+      .split(/\r?\n/)
+      .map((s) => s.replace(/^\s*(?:[-*•]|\d+[.)])\s*/, "").trim())
+      .filter(Boolean);
+    lines.forEach((text) => {
+      const li = document.createElement("li");
+      const iid = uid("i");
+      li.dataset.iid = iid;
+      li.innerHTML = `<span class="steptext"></span><button class="btn danger sm" data-act="del-ritem" data-id="${id || ""}" data-sid="${iid}" aria-label="Delete step">✕</button>`;
+      li.querySelector(".steptext").textContent = text; // textContent avoids injection
+      ul.appendChild(li);
+    });
+    return lines.length;
+  }
+
   function routineForm(r) {
     r = r || { items: [] };
     return `
@@ -6377,7 +6076,8 @@ Due May 31"></textarea>
             `<li data-iid="${esc(it.id)}"><span class="steptext">${esc(it.text)}</span><button class="btn danger sm" data-act="del-ritem" data-id="${r.id || ""}" data-sid="${it.id}" aria-label="Delete step: ${esc(it.text)}">✕</button></li>`,
         )
         .join("")}</ul>
-      <div class="row"><input id="newRItem" placeholder="Add a step..." style="flex:1"><button class="btn" data-act="add-ritem" data-id="${r.id || ""}">＋</button></div>
+      <div class="row"><input id="newRItem" data-id="${r.id || ""}" placeholder="Add a step, then press Enter…" style="flex:1"><button class="btn" data-act="add-ritem" data-id="${r.id || ""}">＋ Add</button></div>
+      <small class="muted" style="display:block;margin:4px 0 8px">Tip: press Enter after each step to keep going, or paste a whole list at once — one step per line.</small>
       <button class="btn primary block" data-act="save-routine" data-id="${esc(r.id || "")}" style="margin-top:12px">Save routine</button>
       ${r.id ? `<button class="btn danger block" data-act="delete-routine" data-id="${r.id}" style="margin-top:8px">Delete routine</button>` : ""}`;
   }
@@ -6577,10 +6277,7 @@ Due May 31"></textarea>
     beginPhase(phase) {
       this.phase = phase;
       this.phaseAwarded = false;
-      const mins =
-        phase === "focus"
-          ? state.settings.defaultFocusMin
-          : state.settings.breakMin;
+      const mins = phase === "focus" ? state.settings.defaultFocusMin : state.settings.breakMin;
       this.total = mins * 60;
       this.remaining = this.total;
       this.tick(true);
@@ -6656,8 +6353,7 @@ Due May 31"></textarea>
       if (!a) return;
       const c = cls(a.classId);
       $("#fTitle").textContent = a.title;
-      $("#fClass").textContent =
-        c.name + (a.due ? " · " + dueLabel(a.due, a.dueTime) : "");
+      $("#fClass").textContent = c.name + (a.due ? " · " + dueLabel(a.due, a.dueTime) : "");
       $("#fDone").dataset.id = a.id;
       $("#fSteps").innerHTML = a.steps.length
         ? `<ul class="steps">${a.steps.map((s) => `<li><input class="check" type="checkbox" data-check="step" data-id="${a.id}" data-sid="${s.id}" ${s.done ? "checked" : ""} aria-label="${esc(s.text)}"><span class="steptext ${s.done ? "done" : ""}">${esc(s.text)}</span></li>`).join("")}</ul>`
@@ -6712,8 +6408,7 @@ Due May 31"></textarea>
     timer: null,
     start(routineId) {
       const r = state.routines.find((x) => x.id === routineId);
-      if (!r || !r.items.length)
-        return toast("Add steps to this routine first.");
+      if (!r || !r.items.length) return toast("Add steps to this routine first.");
       this.routineId = routineId;
       // Resume at the first not-yet-checked step so it picks up where they left off.
       const done = (state.routineLog[todayKey()] || {})[routineId] || [];
@@ -6739,8 +6434,7 @@ Due May 31"></textarea>
       if (!r) return;
       const it = r.items[this.idx];
       if (!it) return;
-      const day = (state.routineLog[todayKey()] =
-        state.routineLog[todayKey()] || {});
+      const day = (state.routineLog[todayKey()] = state.routineLog[todayKey()] || {});
       const arr = (day[r.id] = day[r.id] || []);
       if (!arr.includes(it.id)) arr.push(it.id);
       // Award +5 once when fully complete, mirroring the checkbox flow.
@@ -6793,8 +6487,7 @@ Due May 31"></textarea>
         $("#gCount").textContent = `${total} / ${total}`;
         $("#gBody").innerHTML =
           `<div class="gdone"><div class="gdone-emoji" aria-hidden="true">🎉</div><div class="gbig">All done!</div><p>You finished <b>${esc(r.name)}</b>. Nice — that's one less thing to think about.</p></div>`;
-        $("#gActions").innerHTML =
-          `<button class="btn go big" data-act="guide-stop">Done</button>`;
+        $("#gActions").innerHTML = `<button class="btn go big" data-act="guide-stop">Done</button>`;
         return;
       }
       const it = r.items[this.idx];
@@ -6858,8 +6551,7 @@ Due May 31"></textarea>
     const today = open.filter((a) => daysUntil(a.due) === 0).length;
     if (overdue)
       return `${overdue} thing${overdue === 1 ? "" : "s"} to catch up on, ${today} due today.`;
-    if (today)
-      return `${today} thing${today === 1 ? "" : "s"} due today. You've got this.`;
+    if (today) return `${today} thing${today === 1 ? "" : "s"} due today. You've got this.`;
     return "Nothing due today — you're caught up! 🎉";
   }
   // One quiet briefing per app-open per day, surfaced as a toast.
@@ -6868,17 +6560,10 @@ Due May 31"></textarea>
     if (briefedToday) return;
     briefedToday = true;
     const t = rightNowTask();
-    setTimeout(
-      () => toast(t ? `${briefingText()} First: ${t.title}` : briefingText()),
-      900,
-    );
+    setTimeout(() => toast(t ? `${briefingText()} First: ${t.title}` : briefingText()), 900);
   }
   function checkReminders() {
-    if (
-      !state.settings.notifications ||
-      !notifSupport() ||
-      Notification.permission !== "granted"
-    )
+    if (!state.settings.notifications || !notifSupport() || Notification.permission !== "granted")
       return;
     const now = new Date();
     // Morning briefing notification — fires once per day within ~30 min of the
@@ -6964,11 +6649,7 @@ Due May 31"></textarea>
 
   // Show a reminder notification at most once per day (guarded by lastShown).
   function fireReminder(r) {
-    if (
-      !state.settings.notifications ||
-      !notifSupport() ||
-      Notification.permission !== "granted"
-    )
+    if (!state.settings.notifications || !notifSupport() || Notification.permission !== "granted")
       return;
     if (r.lastShown === todayKey()) return;
     r.lastShown = todayKey();
@@ -6981,11 +6662,7 @@ Due May 31"></textarea>
   }
 
   function fireTodoReminder(td) {
-    if (
-      !state.settings.notifications ||
-      !notifSupport() ||
-      Notification.permission !== "granted"
-    )
+    if (!state.settings.notifications || !notifSupport() || Notification.permission !== "granted")
       return;
     if (td.lastShown === todayKey()) return;
     td.lastShown = todayKey();
@@ -7004,15 +6681,10 @@ Due May 31"></textarea>
   function scheduleReminders() {
     reminderTimers.forEach((id) => clearTimeout(id));
     reminderTimers = [];
-    if (
-      !state.settings.notifications ||
-      !notifSupport() ||
-      Notification.permission !== "granted"
-    )
+    if (!state.settings.notifications || !notifSupport() || Notification.permission !== "granted")
       return;
     const now = new Date();
-    const cur =
-      now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    const cur = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
     // Schedule reminders
     dueRemindersForToday().forEach((r) => {
@@ -7105,11 +6777,7 @@ Due May 31"></textarea>
       const loc = localMap.get(id);
       const rem = remoteMap.get(id);
       const chosen =
-        loc && rem
-          ? (loc.updatedAt || 0) >= (rem.updatedAt || 0)
-            ? loc
-            : rem
-          : loc || rem;
+        loc && rem ? ((loc.updatedAt || 0) >= (rem.updatedAt || 0) ? loc : rem) : loc || rem;
       if (!isDeleted(id, chosen.updatedAt)) {
         mergedAssignments.push(chosen);
       }
@@ -7118,23 +6786,14 @@ Due May 31"></textarea>
 
     // 3. Merge classes
     const localClassesMap = new Map(local.classes.map((c) => [c.id, c]));
-    const remoteClassesMap = new Map(
-      (remote.classes || []).map((c) => [c.id, c]),
-    );
-    const allClassIds = new Set([
-      ...localClassesMap.keys(),
-      ...remoteClassesMap.keys(),
-    ]);
+    const remoteClassesMap = new Map((remote.classes || []).map((c) => [c.id, c]));
+    const allClassIds = new Set([...localClassesMap.keys(), ...remoteClassesMap.keys()]);
     const mergedClasses = [];
     for (const id of allClassIds) {
       const loc = localClassesMap.get(id);
       const rem = remoteClassesMap.get(id);
       const chosen =
-        loc && rem
-          ? (loc.updatedAt || 0) >= (rem.updatedAt || 0)
-            ? loc
-            : rem
-          : loc || rem;
+        loc && rem ? ((loc.updatedAt || 0) >= (rem.updatedAt || 0) ? loc : rem) : loc || rem;
       if (!isDeleted(id, chosen.updatedAt)) {
         mergedClasses.push(chosen);
       }
@@ -7143,23 +6802,14 @@ Due May 31"></textarea>
 
     // 4. Merge routines
     const localRoutinesMap = new Map(local.routines.map((r) => [r.id, r]));
-    const remoteRoutinesMap = new Map(
-      (remote.routines || []).map((r) => [r.id, r]),
-    );
-    const allRoutineIds = new Set([
-      ...localRoutinesMap.keys(),
-      ...remoteRoutinesMap.keys(),
-    ]);
+    const remoteRoutinesMap = new Map((remote.routines || []).map((r) => [r.id, r]));
+    const allRoutineIds = new Set([...localRoutinesMap.keys(), ...remoteRoutinesMap.keys()]);
     const mergedRoutines = [];
     for (const id of allRoutineIds) {
       const loc = localRoutinesMap.get(id);
       const rem = remoteRoutinesMap.get(id);
       const chosen =
-        loc && rem
-          ? (loc.updatedAt || 0) >= (rem.updatedAt || 0)
-            ? loc
-            : rem
-          : loc || rem;
+        loc && rem ? ((loc.updatedAt || 0) >= (rem.updatedAt || 0) ? loc : rem) : loc || rem;
       if (!isDeleted(id, chosen.updatedAt)) {
         mergedRoutines.push(chosen);
       }
@@ -7167,26 +6817,15 @@ Due May 31"></textarea>
     merged.routines = mergedRoutines;
 
     // 5. Merge reminders
-    const localRemindersMap = new Map(
-      (local.reminders || []).map((r) => [r.id, r]),
-    );
-    const remoteRemindersMap = new Map(
-      (remote.reminders || []).map((r) => [r.id, r]),
-    );
-    const allReminderIds = new Set([
-      ...localRemindersMap.keys(),
-      ...remoteRemindersMap.keys(),
-    ]);
+    const localRemindersMap = new Map((local.reminders || []).map((r) => [r.id, r]));
+    const remoteRemindersMap = new Map((remote.reminders || []).map((r) => [r.id, r]));
+    const allReminderIds = new Set([...localRemindersMap.keys(), ...remoteRemindersMap.keys()]);
     const mergedReminders = [];
     for (const id of allReminderIds) {
       const loc = localRemindersMap.get(id);
       const rem = remoteRemindersMap.get(id);
       const chosen =
-        loc && rem
-          ? (loc.updatedAt || 0) >= (rem.updatedAt || 0)
-            ? loc
-            : rem
-          : loc || rem;
+        loc && rem ? ((loc.updatedAt || 0) >= (rem.updatedAt || 0) ? loc : rem) : loc || rem;
       if (!isDeleted(id, chosen.updatedAt || chosen.createdAt)) {
         mergedReminders.push(chosen);
       }
@@ -7196,20 +6835,13 @@ Due May 31"></textarea>
     // 6. Merge todos
     const localTodosMap = new Map((local.todos || []).map((t) => [t.id, t]));
     const remoteTodosMap = new Map((remote.todos || []).map((t) => [t.id, t]));
-    const allTodoIds = new Set([
-      ...localTodosMap.keys(),
-      ...remoteTodosMap.keys(),
-    ]);
+    const allTodoIds = new Set([...localTodosMap.keys(), ...remoteTodosMap.keys()]);
     const mergedTodos = [];
     for (const id of allTodoIds) {
       const loc = localTodosMap.get(id);
       const rem = remoteTodosMap.get(id);
       const chosen =
-        loc && rem
-          ? (loc.updatedAt || 0) >= (rem.updatedAt || 0)
-            ? loc
-            : rem
-          : loc || rem;
+        loc && rem ? ((loc.updatedAt || 0) >= (rem.updatedAt || 0) ? loc : rem) : loc || rem;
       if (!isDeleted(id, chosen.updatedAt || chosen.createdAt)) {
         mergedTodos.push(chosen);
       }
@@ -7246,10 +6878,7 @@ Due May 31"></textarea>
     merged.reflections = { ...local.reflections };
     for (const [date, remRef] of Object.entries(remote.reflections || {})) {
       const locRef = merged.reflections[date];
-      if (
-        !locRef ||
-        new Date(remRef.timestamp || 0) > new Date(locRef.timestamp || 0)
-      ) {
+      if (!locRef || new Date(remRef.timestamp || 0) > new Date(locRef.timestamp || 0)) {
         merged.reflections[date] = remRef;
       }
     }
@@ -7272,10 +6901,8 @@ Due May 31"></textarea>
     const rha = remote.settings?.homeOrderAt || 0;
     const layout = rha > lha ? remote.settings : local.settings;
     if (layout) {
-      if (Array.isArray(layout.homeOrder))
-        merged.settings.homeOrder = layout.homeOrder;
-      if (Array.isArray(layout.hiddenCards))
-        merged.settings.hiddenCards = layout.hiddenCards;
+      if (Array.isArray(layout.homeOrder)) merged.settings.homeOrder = layout.homeOrder;
+      if (Array.isArray(layout.hiddenCards)) merged.settings.hiddenCards = layout.hiddenCards;
       merged.settings.homeOrderAt = Math.max(lha, rha);
     }
 
@@ -7298,27 +6925,18 @@ Due May 31"></textarea>
       const rr = remote.rewards || {};
       const byId = new Map((lr.ledger || []).map((e) => [e.id, e]));
       for (const e of rr.ledger || []) if (!byId.has(e.id)) byId.set(e.id, e);
-      const ledger = [...byId.values()].sort((a, b) =>
-        String(b.ts).localeCompare(String(a.ts)),
-      );
+      const ledger = [...byId.values()].sort((a, b) => String(b.ts).localeCompare(String(a.ts)));
       const sumType = (t) =>
-        ledger.reduce(
-          (s, e) => (e.type === t ? s + (Number(e.amount) || 0) : s),
-          0,
-        );
+        ledger.reduce((s, e) => (e.type === t ? s + (Number(e.amount) || 0) : s), 0);
       const r2 = Math.round((sumType("earn") - sumType("cashout")) * 100) / 100;
       // Union weekly payouts by id too — a payout settled on either device must
       // count once. paidOut is derived: legacy cashouts + recorded payouts.
       const payById = new Map((lr.payouts || []).map((p) => [p.id, p]));
-      for (const p of rr.payouts || [])
-        if (!payById.has(p.id)) payById.set(p.id, p);
+      for (const p of rr.payouts || []) if (!payById.has(p.id)) payById.set(p.id, p);
       const payouts = [...payById.values()].sort((a, b) =>
         String(b.paidAt).localeCompare(String(a.paidAt)),
       );
-      const paidFromPayouts = payouts.reduce(
-        (s, p) => s + (Number(p.amount) || 0),
-        0,
-      );
+      const paidFromPayouts = payouts.reduce((s, p) => s + (Number(p.amount) || 0), 0);
       const cfg = (remote.updatedAt || 0) > (local.updatedAt || 0) ? rr : lr;
       const numc = (v, d) => (Number.isFinite(Number(v)) ? Number(v) : d);
       merged.rewards = {
@@ -7339,9 +6957,7 @@ Due May 31"></textarea>
     // 14. Merge readingProgress and bookTransition
     {
       const mergedReading = { ...(local.readingProgress || {}) };
-      for (const [dayId, remProg] of Object.entries(
-        remote.readingProgress || {},
-      )) {
+      for (const [dayId, remProg] of Object.entries(remote.readingProgress || {})) {
         const locProg = mergedReading[dayId];
         if (!locProg) {
           mergedReading[dayId] = remProg;
@@ -7373,9 +6989,7 @@ Due May 31"></textarea>
           ? rt.finishedB || lt.finishedB || ""
           : lt.finishedB || rt.finishedB || "",
         responseB: lt.responseB || rt.responseB || false,
-        startC: remoteIsNewer
-          ? rt.startC || lt.startC || ""
-          : lt.startC || rt.startC || "",
+        startC: remoteIsNewer ? rt.startC || lt.startC || "" : lt.startC || rt.startC || "",
         rememberText:
           (rt.rememberText || "").length > (lt.rememberText || "").length
             ? rt.rememberText || ""
@@ -7390,12 +7004,8 @@ Due May 31"></textarea>
   function showConflictResolver(localState, cloudState) {
     const localAssigns = localState.assignments || [];
     const cloudAssigns = cloudState.assignments || [];
-    const addedLocally = localAssigns.filter(
-      (a) => !cloudAssigns.some((x) => x.id === a.id),
-    );
-    const addedInCloud = cloudAssigns.filter(
-      (a) => !localAssigns.some((x) => x.id === a.id),
-    );
+    const addedLocally = localAssigns.filter((a) => !cloudAssigns.some((x) => x.id === a.id));
+    const addedInCloud = cloudAssigns.filter((a) => !localAssigns.some((x) => x.id === a.id));
 
     let diffHtml = "";
     if (addedLocally.length || addedInCloud.length) {
@@ -7475,12 +7085,8 @@ Due May 31"></textarea>
         }
       }
     }
-    stats.avgMood = stats.moodCount
-      ? (stats.moodSum / stats.moodCount).toFixed(1)
-      : "N/A";
-    stats.avgFocus = stats.focusCount
-      ? (stats.focusSum / stats.focusCount).toFixed(1)
-      : "N/A";
+    stats.avgMood = stats.moodCount ? (stats.moodSum / stats.moodCount).toFixed(1) : "N/A";
+    stats.avgFocus = stats.focusCount ? (stats.focusSum / stats.focusCount).toFixed(1) : "N/A";
     return stats;
   }
 
@@ -7538,13 +7144,8 @@ Due May 31"></textarea>
           (d) => now - (d.lastActive || 0) < 30 * 24 * 60 * 60 * 1000,
         );
 
-        const myDeviceId =
-          deviceId ||
-          localStorage.getItem("focus-school:device-id") ||
-          "unknown";
-        const existingIdx = state.syncDevices.findIndex(
-          (d) => d.id === myDeviceId,
-        );
+        const myDeviceId = deviceId || localStorage.getItem("focus-school:device-id") || "unknown";
+        const existingIdx = state.syncDevices.findIndex((d) => d.id === myDeviceId);
         if (existingIdx >= 0) {
           state.syncDevices[existingIdx].lastActive = now;
           state.syncDevices[existingIdx].name = myName;
@@ -7556,14 +7157,11 @@ Due May 31"></textarea>
           });
         }
 
-        const res = await fetch(
-          `${this.base}?code=${encodeURIComponent(code)}`,
-          {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ updatedAt: state.updatedAt, state }),
-          },
-        );
+        const res = await fetch(`${this.base}?code=${encodeURIComponent(code)}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ updatedAt: state.updatedAt, state }),
+        });
         if (res && res.ok) {
           state.settings.sync.lastAt = new Date().toISOString();
           mirror();
@@ -7584,9 +7182,7 @@ Due May 31"></textarea>
       if (!code || !this.available()) return false;
       this._setStatus("syncing");
       try {
-        const res = await fetch(
-          `${this.base}?code=${encodeURIComponent(code)}`,
-        );
+        const res = await fetch(`${this.base}?code=${encodeURIComponent(code)}`);
         if (!res.ok) {
           this._setStatus("offline");
           return false;
@@ -7757,11 +7353,7 @@ Due May 31"></textarea>
     connected: !!sessionStorage.getItem("focus-school:gcal-token"),
     _gisLoaded: false,
     clientId() {
-      return (
-        state.settings.googleClientId.trim() ||
-        window._defaultGoogleClientId ||
-        ""
-      );
+      return state.settings.googleClientId.trim() || window._defaultGoogleClientId || "";
     },
     // The calendar IDs to include. Defaults to ["primary"] when none chosen yet.
     selectedIds() {
@@ -7770,8 +7362,7 @@ Due May 31"></textarea>
     },
     // Dynamically load the GIS script once (only external dependency allowed).
     loadGis() {
-      if (this._gisLoaded && window.google?.accounts?.oauth2)
-        return Promise.resolve(true);
+      if (this._gisLoaded && window.google?.accounts?.oauth2) return Promise.resolve(true);
       return new Promise((resolve) => {
         if (window.google?.accounts?.oauth2) {
           this._gisLoaded = true;
@@ -7816,10 +7407,7 @@ Due May 31"></textarea>
         callback: async (resp) => {
           if (resp && resp.access_token) {
             this.token = resp.access_token;
-            sessionStorage.setItem(
-              "focus-school:gcal-token",
-              resp.access_token,
-            );
+            sessionStorage.setItem("focus-school:gcal-token", resp.access_token);
             this.connected = true;
             // Always refresh the calendar list so the picker stays current and
             // events can be labeled with calendar names/colors.
@@ -7830,8 +7418,7 @@ Due May 31"></textarea>
             toast("Google sign-in was cancelled.");
           }
         },
-        error_callback: () =>
-          toast("Google sign-in failed. Check your Client ID."),
+        error_callback: () => toast("Google sign-in failed. Check your Client ID."),
       });
       // Empty prompt = use existing consent when possible; shows picker otherwise.
       this.tokenClient.requestAccessToken({ prompt: "" });
@@ -7910,8 +7497,7 @@ Due May 31"></textarea>
           .filter(Boolean)
           .flatMap(({ calId, d }) => {
             const cal = meta[calId] || {};
-            const calName =
-              cal.name || (calId === "primary" ? "Primary" : calId);
+            const calName = cal.name || (calId === "primary" ? "Primary" : calId);
             const calColor = cal.color || "#4285f4";
             return (d.items || []).map((e) => ({
               id: e.id,
@@ -8017,9 +7603,7 @@ Due May 31"></textarea>
   function gcalPanel() {
     const hasId = !!state.settings.googleClientId.trim();
     const count = (state.gcal?.events || []).length;
-    const fetched = state.gcal?.fetchedAt
-      ? new Date(state.gcal.fetchedAt).toLocaleString()
-      : "";
+    const fetched = state.gcal?.fetchedAt ? new Date(state.gcal.fetchedAt).toLocaleString() : "";
     if (!hasId) {
       return card(
         "gcal",
@@ -8037,10 +7621,8 @@ Due May 31"></textarea>
     const cals = state.gcal?.calendars || [];
     const selIds = state.settings.gcalCalendars || [];
     const nameFor = (id) =>
-      cals.find((c) => c.id === id)?.name ||
-      (id === "primary" ? "Primary" : id);
-    const colorFor = (id) =>
-      safeColor(cals.find((c) => c.id === id)?.color || "#4285f4");
+      cals.find((c) => c.id === id)?.name || (id === "primary" ? "Primary" : id);
+    const colorFor = (id) => safeColor(cals.find((c) => c.id === id)?.color || "#4285f4");
     const selChips = (selIds.length ? selIds : ["primary"])
       .map(
         (id) =>
@@ -8072,11 +7654,7 @@ Due May 31"></textarea>
     tokenClient: null,
     connected: !!sessionStorage.getItem("focus-school:gmail-token"),
     clientId() {
-      return (
-        state.settings.googleClientId.trim() ||
-        window._defaultGoogleClientId ||
-        ""
-      );
+      return state.settings.googleClientId.trim() || window._defaultGoogleClientId || "";
     },
     async connect() {
       const cid = this.clientId();
@@ -8098,18 +7676,14 @@ Due May 31"></textarea>
         callback: (resp) => {
           if (resp && resp.access_token) {
             this.token = resp.access_token;
-            sessionStorage.setItem(
-              "focus-school:gmail-token",
-              resp.access_token,
-            );
+            sessionStorage.setItem("focus-school:gmail-token", resp.access_token);
             this.connected = true;
             this.fetchMessages();
           } else {
             toast("Google sign-in was cancelled.");
           }
         },
-        error_callback: () =>
-          toast("Google sign-in failed. Check your Client ID."),
+        error_callback: () => toast("Google sign-in failed. Check your Client ID."),
       });
       this.tokenClient.requestAccessToken({ prompt: "" });
     },
@@ -8152,9 +7726,8 @@ Due May 31"></textarea>
           ),
         );
         const header = (msg, name) =>
-          (msg.payload?.headers || []).find(
-            (h) => (h.name || "").toLowerCase() === name,
-          )?.value || "";
+          (msg.payload?.headers || []).find((h) => (h.name || "").toLowerCase() === name)?.value ||
+          "";
         const messages = details
           .filter(Boolean)
           .map((m) => {
@@ -8164,17 +7737,14 @@ Due May 31"></textarea>
               (rawFrom.match(/^\s*"?([^"<]*?)"?\s*</)?.[1] || "").trim() ||
               rawFrom ||
               "(unknown sender)";
-            const dateMs =
-              Number(m.internalDate) || Date.parse(header(m, "date")) || 0;
+            const dateMs = Number(m.internalDate) || Date.parse(header(m, "date")) || 0;
             return {
               id: m.id,
               from,
               subject: header(m, "subject") || "(no subject)",
               date: dateMs ? new Date(dateMs).toISOString() : "",
               snippet: decodeHtmlEntities(m.snippet || ""),
-              unread: Array.isArray(m.labelIds)
-                ? m.labelIds.includes("UNREAD")
-                : false,
+              unread: Array.isArray(m.labelIds) ? m.labelIds.includes("UNREAD") : false,
             };
           })
           .sort((a, b) => (a.date < b.date ? 1 : -1)); // newest first
@@ -8233,9 +7803,7 @@ Due May 31"></textarea>
   function gmailPanel() {
     const hasId = !!state.settings.googleClientId.trim();
     const count = (state.gmail?.messages || []).length;
-    const fetched = state.gmail?.fetchedAt
-      ? new Date(state.gmail.fetchedAt).toLocaleString()
-      : "";
+    const fetched = state.gmail?.fetchedAt ? new Date(state.gmail.fetchedAt).toLocaleString() : "";
     if (!hasId) {
       return card(
         "gmail",
@@ -8301,9 +7869,7 @@ Due May 31"></textarea>
       .trim();
     if (t.includes("tomorrow")) return isoForOffset(1);
     if (t.includes("today")) return isoForOffset(0);
-    const m = t.match(
-      /(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+(\d{1,2})/i,
-    );
+    const m = t.match(/(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+(\d{1,2})/i);
     if (m) {
       const y = new Date().getFullYear();
       const d = new Date(`${m[1]} ${m[2]}, ${y} 12:00:00`);
@@ -8325,9 +7891,7 @@ Due May 31"></textarea>
       const l = lines[i],
         low = l.toLowerCase();
       const hit = state.classes.find(
-        (c) =>
-          low === c.name.toLowerCase() ||
-          (c.name && low.includes(c.name.toLowerCase())),
+        (c) => low === c.name.toLowerCase() || (c.name && low.includes(c.name.toLowerCase())),
       );
       if (hit && l.length < 55) {
         cur = hit.id;
@@ -8337,10 +7901,7 @@ Due May 31"></textarea>
         out[out.length - 1].due = parseDue(l);
         continue;
       }
-      if (
-        /^(assigned|missing|done|to-?do|turned in|graded|no due date)$/i.test(l)
-      )
-        continue;
+      if (/^(assigned|missing|done|to-?do|turned in|graded|no due date)$/i.test(l)) continue;
       out.push(
         normalizeTask({
           title: l.replace(/^[-•*]\s*/, ""),
@@ -8352,9 +7913,7 @@ Due May 31"></textarea>
         }),
       );
     }
-    return out
-      .filter((a) => a.title.length > 2 && !/^due\b/i.test(a.title))
-      .slice(0, 40);
+    return out.filter((a) => a.title.length > 2 && !/^due\b/i.test(a.title)).slice(0, 40);
   }
   let parsedCache = [];
 
@@ -8472,9 +8031,7 @@ Due May 31"></textarea>
         .filter((k) => w.by[k] > 0)
         .map(
           (k) =>
-            `<div class="pay-line"><span>${KIND_LABEL[k]}</span><b>${money(
-              w.by[k],
-            )}</b></div>`,
+            `<div class="pay-line"><span>${KIND_LABEL[k]}</span><b>${money(w.by[k])}</b></div>`,
         )
         .join("");
       openModal(
@@ -8488,9 +8045,7 @@ Due May 31"></textarea>
                 w.bonus,
               )}</b></div>`
             : ""
-        }<div class="pay-line pay-total"><span>Total</span><b>${money(
-          w.total,
-        )}</b></div></div>
+        }<div class="pay-line pay-total"><span>Total</span><b>${money(w.total)}</b></div></div>
         ${
           r.pin
             ? `<div class="field" style="margin-top:10px"><label>Parent PIN</label><input id="rwPin" type="password" inputmode="numeric" placeholder="••••" autocomplete="off"></div>`
@@ -8590,14 +8145,12 @@ Due May 31"></textarea>
     "spin-break": () => {
       currentBrainBreak = getRandomBrainBreak("all");
       const container = $("#brainBreakContainer");
-      if (container)
-        container.innerHTML = renderBrainBreakCardHTML(currentBrainBreak);
+      if (container) container.innerHTML = renderBrainBreakCardHTML(currentBrainBreak);
     },
     "choose-break": (_, arg) => {
       currentBrainBreak = getRandomBrainBreak(arg);
       const container = $("#brainBreakContainer");
-      if (container)
-        container.innerHTML = renderBrainBreakCardHTML(currentBrainBreak);
+      if (container) container.innerHTML = renderBrainBreakCardHTML(currentBrainBreak);
     },
 
     "quick-add": () => {
@@ -8723,10 +8276,7 @@ Due May 31"></textarea>
     },
 
     breakdown: (id) =>
-      openModal(
-        "Break it into steps",
-        breakdownForm(state.assignments.find((a) => a.id === id)),
-      ),
+      openModal("Break it into steps", breakdownForm(state.assignments.find((a) => a.id === id))),
     "apply-template": (id, arg) => {
       const a = state.assignments.find((x) => x.id === id);
       if (!a) return;
@@ -8809,9 +8359,7 @@ Due May 31"></textarea>
         const dayOffset = Math.floor((i * spreadDays) / a.steps.length);
         const text = `${a.title}: ${s.text}`.slice(0, 200);
         if (existing.has(text)) return;
-        state.todos.push(
-          normalizeTodo({ text, date: isoForOffset(dayOffset) }),
-        );
+        state.todos.push(normalizeTodo({ text, date: isoForOffset(dayOffset) }));
         existing.add(text);
         added++;
       });
@@ -8862,18 +8410,11 @@ Due May 31"></textarea>
 
     "add-class": () => openModal("Add a class", classForm()),
     "edit-class": (id) =>
-      openModal(
-        "Edit class",
-        classForm(state.classes.find((c) => c.id === id)),
-      ),
+      openModal("Edit class", classForm(state.classes.find((c) => c.id === id))),
     "toggle-class-day": (_, arg, ev) => {
       // Toggle aria-pressed in place; the day set is read back on save.
       const b = ev.target.closest("[data-act='toggle-class-day']");
-      if (b)
-        b.setAttribute(
-          "aria-pressed",
-          b.getAttribute("aria-pressed") !== "true",
-        );
+      if (b) b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true");
     },
     "save-class": (id) => {
       const meetDays = $$("#cDays [data-act='toggle-class-day']")
@@ -8921,10 +8462,7 @@ Due May 31"></textarea>
 
     "add-reminder": () => openModal("Add a reminder", reminderForm()),
     "edit-reminder": (id) =>
-      openModal(
-        "Edit reminder",
-        reminderForm(state.reminders.find((r) => r.id === id)),
-      ),
+      openModal("Edit reminder", reminderForm(state.reminders.find((r) => r.id === id))),
     "save-reminder": (id) => {
       const text = $("#rmText").value.trim();
       if (!text) return toast("Type the reminder first.");
@@ -9007,9 +8545,7 @@ Due May 31"></textarea>
       else r.done = false;
       save();
       render();
-      toast(
-        arg === "tonight" ? "Snoozed till tonight 🌙" : "Snoozed 10 min ⏰",
-      );
+      toast(arg === "tonight" ? "Snoozed till tonight 🌙" : "Snoozed 10 min ⏰");
     },
 
     // ---- Daily check-in ----
@@ -9055,10 +8591,7 @@ Due May 31"></textarea>
 
     "add-routine": () => openModal("New routine", routineForm()),
     "edit-routine": (id) =>
-      openModal(
-        "Edit routine",
-        routineForm(state.routines.find((r) => r.id === id)),
-      ),
+      openModal("Edit routine", routineForm(state.routines.find((r) => r.id === id))),
     "save-routine": (id) => {
       const existing = id ? state.routines.find((r) => r.id === id) : null;
       // Read the stable per-item id off each <li data-iid> so reordering or
@@ -9087,15 +8620,7 @@ Due May 31"></textarea>
       render();
     },
     "add-ritem": (id) => {
-      const v = $("#newRItem").value.trim();
-      if (!v) return;
-      const ul = $("#rSteps");
-      const li = document.createElement("li");
-      const iid = uid("i");
-      li.dataset.iid = iid;
-      li.innerHTML = `<span class="steptext"></span><button class="btn danger sm" data-act="del-ritem" data-id="${id || ""}" data-sid="${iid}" aria-label="Delete step">✕</button>`;
-      li.querySelector(".steptext").textContent = v; // textContent avoids injection
-      ul.appendChild(li);
+      addRoutineSteps($("#newRItem").value, id);
       $("#newRItem").value = "";
       $("#newRItem").focus();
     },
@@ -9252,9 +8777,7 @@ Due May 31"></textarea>
               role: m.role,
               text: m.text,
             })),
-            image: sentImg
-              ? { mime: sentImg.mime, data: sentImg.base64 }
-              : null,
+            image: sentImg ? { mime: sentImg.mime, data: sentImg.base64 } : null,
             name: state.settings.studentName || "",
           }),
         });
@@ -9336,10 +8859,8 @@ Due May 31"></textarea>
       toast("Times saved 🕗");
     },
     toggle: (_, arg) => {
-      if (arg === "readable")
-        state.settings.readable = !state.settings.readable;
-      if (arg === "motion")
-        state.settings.motion = state.settings.motion === "off" ? "on" : "off";
+      if (arg === "readable") state.settings.readable = !state.settings.readable;
+      if (arg === "motion") state.settings.motion = state.settings.motion === "off" ? "on" : "off";
       save();
       render();
     },
@@ -9376,9 +8897,7 @@ Due May 31"></textarea>
     },
     "toggle-card": (id) => {
       const h = state.settings.hiddenCards;
-      state.settings.hiddenCards = h.includes(id)
-        ? h.filter((k) => k !== id)
-        : [...h, id];
+      state.settings.hiddenCards = h.includes(id) ? h.filter((k) => k !== id) : [...h, id];
       touchLayout();
       save();
       render();
@@ -9386,11 +8905,7 @@ Due May 31"></textarea>
 
     "compose-email": () => {
       const c = cls($("#eClass").value);
-      window.open(
-        gmailCompose(c.email, $("#eSub").value, $("#eBody").value),
-        "_blank",
-        "noopener",
-      );
+      window.open(gmailCompose(c.email, $("#eSub").value, $("#eBody").value), "_blank", "noopener");
     },
 
     // Ask the teacher for help on a specific assignment — prefills the teacher's
@@ -9567,9 +9082,7 @@ ${name}`;
       await cloud.push();
       render();
       toast(
-        pulled
-          ? "Successfully linked custom code and merged data! ☁️"
-          : "Linked custom code! ☁️",
+        pulled ? "Successfully linked custom code and merged data! ☁️" : "Linked custom code! ☁️",
       );
     },
     "generate-pair-code": async () => {
@@ -9674,9 +9187,7 @@ ${name}`;
     // Persist the checked calendar IDs, then refresh events with the new set.
     "gcal-apply-picker": () => {
       const ids = [
-        ...document.querySelectorAll(
-          '#modalBody input[data-check="gcal-cal"]:checked',
-        ),
+        ...document.querySelectorAll('#modalBody input[data-check="gcal-cal"]:checked'),
       ].map((b) => b.dataset.id);
       // Empty selection falls back to the primary calendar.
       state.settings.gcalCalendars = ids;
@@ -9724,10 +9235,7 @@ ${name}`;
       const m = (state.gmail?.messages || []).find((x) => x.id === id);
       if (!m) return;
       const r = normalizeTodo({
-        text: ("Reply / handle: " + (m.subject || "(no subject)")).slice(
-          0,
-          200,
-        ),
+        text: ("Reply / handle: " + (m.subject || "(no subject)")).slice(0, 200),
         date: todayKey(),
       });
       state.todos.push(r);
@@ -9765,8 +9273,7 @@ ${name}`;
     "save-reflection": () => {
       const focusVal = window._pendingReflectionFocus || 0;
       const moodVal = window._pendingReflectionMood || 0;
-      const textVal =
-        document.getElementById("reflectionTextInput")?.value || "";
+      const textVal = document.getElementById("reflectionTextInput")?.value || "";
       if (focusVal === 0 || moodVal === 0) {
         toast("Please select a score for focus and mood!");
         return;
@@ -9789,9 +9296,7 @@ ${name}`;
       const lvl = Math.floor(pts / 100) + 1;
       const req = getGradientLevelRequired(arg);
       if (lvl < req) {
-        toast(
-          `🔒 Unlocks once you're a ${focusTitleForLevel(req)} — keep earning XP!`,
-        );
+        toast(`🔒 Unlocks once you're a ${focusTitleForLevel(req)} — keep earning XP!`);
         return;
       }
       state.settings.themeGradient = arg;
@@ -9808,15 +9313,9 @@ ${name}`;
       render();
     },
     "resolve-conflict-merge": () => {
-      if (
-        window._pendingLocalConflictState &&
-        window._pendingCloudConflictState
-      ) {
+      if (window._pendingLocalConflictState && window._pendingCloudConflictState) {
         state = normalize(
-          mergeStates(
-            window._pendingLocalConflictState,
-            window._pendingCloudConflictState,
-          ),
+          mergeStates(window._pendingLocalConflictState, window._pendingCloudConflictState),
         );
         save({ touch: true, immediate: true });
         closeModal();
@@ -9887,8 +9386,7 @@ ${name}`;
       const handle = ev.target.closest(".card-drag-handle");
       const arrangingCard = ev.target.closest(".home-grid.arranging .card");
       const cardEl = handle ? handle.closest(".card") : arrangingCard;
-      if (!cardEl || !cardEl.closest(".home-grid") || !cardEl.dataset.card)
-        return;
+      if (!cardEl || !cardEl.closest(".home-grid") || !cardEl.dataset.card) return;
 
       ev.preventDefault();
       cardEl.setPointerCapture(ev.pointerId);
@@ -9933,10 +9431,7 @@ ${name}`;
         cardEl.style.transform = `translate(${dx}px, ${dy}px) scale(1.02)`;
 
         cardEl.style.pointerEvents = "none";
-        const targetEl = document.elementFromPoint(
-          moveEv.clientX,
-          moveEv.clientY,
-        );
+        const targetEl = document.elementFromPoint(moveEv.clientX, moveEv.clientY);
         cardEl.style.pointerEvents = "";
         const overCard = targetEl ? targetEl.closest(".card") : null;
 
@@ -10005,8 +9500,7 @@ ${name}`;
     // Arrow Up / Arrow Down to move it. Mirrors the pointer drag for students
     // on a Chromebook keyboard or anyone using assistive tech.
     document.addEventListener("keydown", (ev) => {
-      const handle =
-        ev.target.closest && ev.target.closest(".card-drag-handle");
+      const handle = ev.target.closest && ev.target.closest(".card-drag-handle");
       if (!handle) return;
       if (ev.key !== "ArrowUp" && ev.key !== "ArrowDown") return;
       const cardEl = handle.closest(".card");
@@ -10015,27 +9509,19 @@ ${name}`;
       ev.preventDefault();
 
       const order = state.settings.homeOrder;
-      const visible = order.filter(
-        (k) => !state.settings.hiddenCards.includes(k),
-      );
+      const visible = order.filter((k) => !state.settings.hiddenCards.includes(k));
       const vi = visible.indexOf(cardId);
       const ni = ev.key === "ArrowUp" ? vi - 1 : vi + 1;
       if (vi < 0 || ni < 0 || ni >= visible.length) return;
       const neighbor = visible[ni];
 
       order.splice(order.indexOf(cardId), 1);
-      order.splice(
-        order.indexOf(neighbor) + (ev.key === "ArrowDown" ? 1 : 0),
-        0,
-        cardId,
-      );
+      order.splice(order.indexOf(neighbor) + (ev.key === "ArrowDown" ? 1 : 0), 0, cardId);
       touchLayout();
       save();
       render();
       requestAnimationFrame(() => {
-        document
-          .querySelector(`.card[data-card="${cardId}"] .card-drag-handle`)
-          ?.focus();
+        document.querySelector(`.card[data-card="${cardId}"] .card-drag-handle`)?.focus();
       });
       toast("Layout updated");
     });
@@ -10080,8 +9566,7 @@ ${name}`;
           if (focus.taskId === id) focus.renderSteps();
         }
       } else if (kind === "routine") {
-        const day = (state.routineLog[todayKey()] =
-          state.routineLog[todayKey()] || {});
+        const day = (state.routineLog[todayKey()] = state.routineLog[todayKey()] || {});
         const arr = (day[id] = day[id] || []);
         const r = state.routines.find((x) => x.id === id);
         if (box.checked) {
@@ -10090,12 +9575,7 @@ ${name}`;
         // Award +5 the first time a routine is fully completed today, and only
         // once (tracked in day.__awarded) so it can't be farmed by re-checking.
         const awarded = (day.__awarded = day.__awarded || []);
-        if (
-          r &&
-          r.items.length &&
-          day[id].length === r.items.length &&
-          !awarded.includes(id)
-        ) {
+        if (r && r.items.length && day[id].length === r.items.length && !awarded.includes(id)) {
           awarded.push(id);
           addPoints(5);
           bumpActivity("routines");
@@ -10139,8 +9619,7 @@ ${name}`;
         // Daily movement check-ins (biking/lifting). Optional; reset each day.
         // Paid at most once per item per day (tracked in day.__paid) so they
         // can't be farmed by un/re-checking; money already earned is kept.
-        const day = (state.health.log[todayKey()] =
-          state.health.log[todayKey()] || {});
+        const day = (state.health.log[todayKey()] = state.health.log[todayKey()] || {});
         const paid = (day.__paid = day.__paid || []);
         const item = healthItems().find((h) => h[0] === id);
         if (box.checked) {
@@ -10187,6 +9666,22 @@ ${name}`;
         ev.preventDefault();
         ACTIONS["ai-send"]();
       }
+      if (ev.key === "Enter" && ev.target.id === "newRItem") {
+        ev.preventDefault();
+        ACTIONS["add-ritem"](ev.target.dataset.id || "");
+      }
+    });
+
+    // Paste a multi-line list into the step box → add every line as its own step
+    document.addEventListener("paste", (ev) => {
+      if (ev.target.id !== "newRItem") return;
+      const text = (ev.clipboardData || window.clipboardData)?.getData("text") || "";
+      if (!/\r?\n/.test(text.trim())) return; // single line: let default paste happen
+      ev.preventDefault();
+      const n = addRoutineSteps(text, ev.target.dataset.id || "");
+      ev.target.value = "";
+      ev.target.focus();
+      if (n) toast(`Added ${n} step${n === 1 ? "" : "s"} ✨`);
     });
 
     // file import and garden change
@@ -10234,9 +9729,7 @@ ${name}`;
         const id = ev.target.dataset.id;
         const td = state.todos.find((t) => t.id === id);
         if (td) {
-          td.repeat = TODO_REPEATS.includes(ev.target.value)
-            ? ev.target.value
-            : "none";
+          td.repeat = TODO_REPEATS.includes(ev.target.value) ? ev.target.value : "none";
           td.lastDone = "";
           save();
           render();
@@ -10304,13 +9797,11 @@ ${name}`;
       if (!b) return;
       const val = Number(ev.target.value);
       state.settings[b] = val;
-      if (b === "fontScale")
-        document.documentElement.style.setProperty("--font-scale", val);
+      if (b === "fontScale") document.documentElement.style.setProperty("--font-scale", val);
       // update the label number live
       const lbl = ev.target.previousElementSibling;
       if (lbl && lbl.tagName === "LABEL") {
-        if (b === "fontScale")
-          lbl.textContent = `Text size — ${Math.round(val * 100)}%`;
+        if (b === "fontScale") lbl.textContent = `Text size — ${Math.round(val * 100)}%`;
         if (b === "defaultFocusMin") lbl.textContent = `Focus minutes — ${val}`;
         if (b === "breakMin") lbl.textContent = `Break minutes — ${val}`;
       }
@@ -10417,14 +9908,12 @@ ${name}`;
         closeCommandBar();
       } else if (ev.key === "ArrowDown") {
         ev.preventDefault();
-        window._cmdSelectedIndex =
-          (window._cmdSelectedIndex + 1) % window._cmdItems.length;
+        window._cmdSelectedIndex = (window._cmdSelectedIndex + 1) % window._cmdItems.length;
         renderCommandBarResults(document.getElementById("cmdInput")?.value);
       } else if (ev.key === "ArrowUp") {
         ev.preventDefault();
         window._cmdSelectedIndex =
-          (window._cmdSelectedIndex - 1 + window._cmdItems.length) %
-          window._cmdItems.length;
+          (window._cmdSelectedIndex - 1 + window._cmdItems.length) % window._cmdItems.length;
         renderCommandBarResults(document.getElementById("cmdInput")?.value);
       } else if (ev.key === "Enter") {
         ev.preventDefault();
@@ -10569,10 +10058,7 @@ ${name}`;
     // app was closed within the idb debounce window — prefer whichever is newer.
     try {
       const mirrored = JSON.parse(localStorage.getItem(MIRROR_KEY) || "null");
-      if (
-        mirrored &&
-        (!stored || (mirrored.updatedAt || 0) > (stored.updatedAt || 0))
-      ) {
+      if (mirrored && (!stored || (mirrored.updatedAt || 0) > (stored.updatedAt || 0))) {
         stored = mirrored;
       }
     } catch {}
@@ -10609,10 +10095,7 @@ ${name}`;
       mirror();
       idb.set(STATE_KEY, state);
     };
-    addEventListener(
-      "visibilitychange",
-      () => document.visibilityState === "hidden" && flush(),
-    );
+    addEventListener("visibilitychange", () => document.visibilityState === "hidden" && flush());
     addEventListener("pagehide", flush);
 
     // honor ?view= and ?action=
@@ -10709,10 +10192,7 @@ ${name}`;
             const nw = reg.installing;
             if (!nw) return;
             nw.addEventListener("statechange", () => {
-              if (
-                nw.state === "installed" &&
-                navigator.serviceWorker.controller
-              ) {
+              if (nw.state === "installed" && navigator.serviceWorker.controller) {
                 toast("Updating to the latest version…");
               }
             });
@@ -10735,7 +10215,6 @@ ${name}`;
     });
   }
 
-  if (document.readyState === "loading")
-    document.addEventListener("DOMContentLoaded", init);
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 })();
