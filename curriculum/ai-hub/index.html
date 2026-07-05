@@ -6787,7 +6787,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
 
         showTypingIndicator();
 
-        setTimeout(() => {
+        setTimeout(async () => {
           hideTypingIndicator();
 
           if (chatbotResponse) {
@@ -6862,28 +6862,43 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
               }, 2000);
             }
           } else {
-            let responseText = "";
-            const userVal = parseFloat(text.replace(/[^0-9.]/g, ""));
-            const expectedVal = parseFloat(dialogue.expected[0]);
-            
-            if (STATE.promptSelections.help.includes("Just Hints")) {
-              responseText = `Not quite. 💡 <strong>Hint:</strong> ${dialogue.hint} Think about it and try again!`;
-            } else {
-              if (!isNaN(userVal) && !isNaN(expectedVal)) {
-                if (userVal === expectedVal * 10 || userVal === expectedVal * 100) {
-                  responseText = "It looks like you did the math right, but did you place the decimal point correctly? Check place value!";
-                } else if (userVal === expectedVal / 10 || userVal === expectedVal / 100) {
-                  responseText = "Double check your decimal positions. Did you move it too far?";
-                }
-              }
-              
-              if (!responseText) {
-                responseText = `Not quite! Let's think: ${dialogue.hint} Try again!`;
-              }
+            // Try the REAL AI tutor first (Claude Haiku via /api/tutor). It
+            // reads the student's own words and replies like a warm Grade 6
+            // Socratic tutor, adapting to a wrong answer or confusion. Falls back
+            // to the built-in scripted hint only if the AI is offline.
+            let aiReply = null;
+            try {
+              aiReply = await fetchTutorHint(text, dialogue);
+            } catch (_) {
+              aiReply = null;
             }
 
-            const adaptedMsg = adaptTutorMessage(responseText, STATE.promptSelections.role, STATE.promptSelections.help);
-            appendTutorMessage("bot", adaptedMsg);
+            if (aiReply) {
+              appendTutorMessage("bot", aiReply);
+            } else {
+              let responseText = "";
+              const userVal = parseFloat(text.replace(/[^0-9.]/g, ""));
+              const expectedVal = parseFloat(dialogue.expected[0]);
+
+              if (STATE.promptSelections.help.includes("Just Hints")) {
+                responseText = `Not quite. 💡 <strong>Hint:</strong> ${dialogue.hint} Think about it and try again!`;
+              } else {
+                if (!isNaN(userVal) && !isNaN(expectedVal)) {
+                  if (userVal === expectedVal * 10 || userVal === expectedVal * 100) {
+                    responseText = "It looks like you did the math right, but did you place the decimal point correctly? Check place value!";
+                  } else if (userVal === expectedVal / 10 || userVal === expectedVal / 100) {
+                    responseText = "Double check your decimal positions. Did you move it too far?";
+                  }
+                }
+
+                if (!responseText) {
+                  responseText = `Not quite! Let's think: ${dialogue.hint} Try again!`;
+                }
+              }
+
+              const adaptedMsg = adaptTutorMessage(responseText, STATE.promptSelections.role, STATE.promptSelections.help);
+              appendTutorMessage("bot", adaptedMsg);
+            }
           }
         }, 1000);
       }
@@ -6903,11 +6918,18 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             dialogue && dialogue.q ? `\nCurrent step: ${dialogue.q}` : "";
           const itemText = `${ex.mathProblem}${stepQ}`;
 
-          const history = (activeStudentChatLog || [])
+          // Rebuild recent conversation from the chat-log DOM (no PII: only the
+          // math turns), so the tutor can build on what the student just tried.
+          const rows = document.querySelectorAll("#chat-log .chat-row");
+          const history = Array.from(rows)
             .slice(-6)
-            .map((m) => ({
-              role: m.sender === "bot" ? "assistant" : "user",
-              text: (m.text || "").replace(/<[^>]*>/g, "").slice(0, 600),
+            .map((r) => ({
+              role: r.classList.contains("bot") ? "assistant" : "user",
+              text: (
+                (r.querySelector(".chat-bubble") || {}).textContent || ""
+              )
+                .trim()
+                .slice(0, 600),
             }))
             .filter((m) => m.text);
 
@@ -6930,7 +6952,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
           return adaptTutorMessage(
             json.reply,
             STATE.promptSelections.role,
-            STATE.promptSelections.level,
+            STATE.promptSelections.help,
           );
         } catch (_) {
           return null;
