@@ -6066,13 +6066,13 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
 
           // Pre-select the current lesson so "Start" works in one tap (students no
           // longer configure role / help / level -- sensible defaults are used).
-          const _lessons = getUnitLessons(selectedUnit);
+          const _lessons = getUnitLessons(STATE.selectedUnit);
           const _firstLesson =
-            _lessons.find((l) => l.exampleIndex === selectedExample) ||
+            _lessons.find((l) => l.exampleIndex === STATE.selectedExample) ||
             _lessons[0];
           if (_firstLesson) {
-            selectedExample = _firstLesson.exampleIndex;
-            promptSelections.topic = `${_firstLesson.title} (${_firstLesson.problem})`;
+            STATE.selectedExample = _firstLesson.exampleIndex;
+            STATE.promptSelections.topic = `${_firstLesson.title} (${_firstLesson.problem})`;
           }
 
           container.innerHTML = `
@@ -6894,9 +6894,9 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
       // student PII -- only the math problem, the student's message, recent turns.
       async function fetchTutorHint(userText, dialogue) {
         try {
-          const data = UNIT_DATA[selectedUnit];
+          const data = UNIT_DATA[STATE.selectedUnit];
           const ex =
-            data && data.examples ? data.examples[selectedExample] : null;
+            data && data.examples ? data.examples[STATE.selectedExample] : null;
           if (!ex) return null;
 
           const stepQ =
@@ -6929,8 +6929,8 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
 
           return adaptTutorMessage(
             json.reply,
-            promptSelections.role,
-            promptSelections.level,
+            STATE.promptSelections.role,
+            STATE.promptSelections.level,
           );
         } catch (_) {
           return null;
@@ -7583,10 +7583,10 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
               btn.innerHTML = "📋 Copy Teacher Prompt";
             }, 2000);
           } else {
-            btn.innerHTML = PARENT_LANG[parentLang].copiedBtn;
+            btn.innerHTML = PARENT_LANG[STATE.parentLang].copiedBtn;
             setTimeout(() => {
               btn.className = "copy-btn";
-              btn.innerHTML = PARENT_LANG[parentLang].copyBtn;
+              btn.innerHTML = PARENT_LANG[STATE.parentLang].copyBtn;
             }, 2000);
           }
         });
