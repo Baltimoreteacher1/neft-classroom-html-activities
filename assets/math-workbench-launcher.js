@@ -31,19 +31,25 @@
     var style = document.createElement("style");
     style.id = "mwb-launcher-style";
     style.textContent =
+      // Compact by default: a 48px icon circle that stays clear of the lesson
+      // content, expanding to reveal its label on hover/focus so it no longer
+      // blocks navigation as a wide pill.
       "#mwb-launcher{position:fixed;left:max(12px,env(safe-area-inset-left));" +
       "bottom:max(12px,env(safe-area-inset-bottom));z-index:2147483000;" +
-      "display:inline-flex;align-items:center;gap:8px;text-decoration:none;" +
-      "padding:10px 14px;border-radius:999px;font:700 14px/1 system-ui,-apple-system,Segoe UI,sans-serif;" +
+      "display:inline-flex;align-items:center;justify-content:center;gap:0;text-decoration:none;" +
+      "width:48px;height:48px;padding:0;overflow:hidden;white-space:nowrap;" +
+      "border-radius:999px;font:700 14px/1 system-ui,-apple-system,Segoe UI,sans-serif;" +
       "color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);" +
       "box-shadow:0 4px 16px rgba(0,0,0,.28);border:2px solid rgba(255,255,255,.85);" +
-      "cursor:pointer;transition:transform .12s ease,box-shadow .12s ease;}" +
-      "#mwb-launcher:hover{transform:translateY(-2px);box-shadow:0 7px 22px rgba(0,0,0,.34);}" +
+      "cursor:pointer;box-sizing:border-box;" +
+      "transition:width .18s ease,gap .18s ease,padding .18s ease,transform .12s ease,box-shadow .12s ease;}" +
+      "#mwb-launcher:hover,#mwb-launcher:focus-visible{width:auto;gap:8px;padding:0 16px;" +
+      "transform:translateY(-2px);box-shadow:0 7px 22px rgba(0,0,0,.34);}" +
       "#mwb-launcher:focus-visible{outline:3px solid #ffd54a;outline-offset:3px;}" +
       "#mwb-launcher .mwb-star{font-size:16px;line-height:1;}" +
-      "#mwb-launcher .mwb-label{white-space:nowrap;}" +
-      "@media (max-width:520px){#mwb-launcher .mwb-label{display:none;}" +
-      "#mwb-launcher{padding:12px;}}" +
+      "#mwb-launcher .mwb-label{max-width:0;opacity:0;overflow:hidden;white-space:nowrap;" +
+      "transition:max-width .18s ease,opacity .18s ease;}" +
+      "#mwb-launcher:hover .mwb-label,#mwb-launcher:focus-visible .mwb-label{max-width:180px;opacity:1;}" +
       "@media (prefers-reduced-motion:reduce){#mwb-launcher{transition:none;}" +
       "#mwb-launcher:hover{transform:none;}}" +
       "@media print{#mwb-launcher,#mwb-launcher-style{display:none!important;}}";
