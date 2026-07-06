@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Gemini AI Learning Hub co-developed with Google Education, Pearson, and HMH. Classroom-ready math prompt challenges and visual SVG models."
+      content="AI Learning Hub for Grade 6 math: a guided prompt builder, step-by-step tutor practice, and family AI-literacy modules. Aligned to Common Core standards."
     />
-    <title>Gemini AI Learning Hub — Enterprise Edition</title>
+    <title>AI Learning Hub — Grade 6 Math</title>
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -2196,6 +2196,191 @@
         padding: 8px;
         max-height: 250px;
       }
+
+      /* ==================================================================
+         Accessibility, responsiveness & print layer
+         ================================================================== */
+
+      /* Visible keyboard focus for every interactive control */
+      button:focus-visible,
+      a:focus-visible,
+      select:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible,
+      [role="button"]:focus-visible,
+      .role-card:focus-visible,
+      .unit-card:focus-visible {
+        outline: 3px solid #8ab4f8;
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+
+      /* Comfortable touch targets for tablet/phone use */
+      .builder-chip,
+      .helper-btn,
+      .example-tab,
+      .role-btn,
+      .submit-prompt-btn,
+      .chat-send-btn,
+      .copy-btn,
+      .back-btn,
+      .ai101-card-btn,
+      .ai101-chip,
+      .ai101-small-action,
+      .ai101-primary-action {
+        min-height: 44px;
+      }
+      .calc-btn {
+        min-height: 40px;
+      }
+      #select-esol-level {
+        min-height: 40px;
+      }
+
+      /* Closed tools drawer must be invisible to keyboard & screen readers */
+      .tools-drawer {
+        visibility: hidden;
+        transition:
+          right 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+          visibility 0.3s;
+      }
+      .tools-drawer.open {
+        visibility: visible;
+      }
+
+      /* Step-synced Math Visualizer */
+      .svg-canvas svg {
+        width: 100%;
+        max-width: 420px;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+      }
+      .viz-caption {
+        margin: 12px auto 0;
+        max-width: 420px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1.5px dashed rgba(138, 180, 248, 0.4);
+        background: rgba(66, 133, 244, 0.08);
+        font-size: 0.9rem;
+        line-height: 1.45;
+        color: #cbd5e1;
+      }
+      .viz-caption strong {
+        color: #8ab4f8;
+      }
+      .viz-cue {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(138, 180, 248, 0.12);
+        border: 1px solid rgba(138, 180, 248, 0.35);
+        color: #8ab4f8;
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+
+      /* Student prompt builder: 3 columns on desktop, stacking below */
+      .builder-grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      @media (max-width: 1180px) {
+        .builder-grid-3 {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 860px) {
+        .builder-grid,
+        .builder-grid-3 {
+          grid-template-columns: 1fr;
+        }
+        .workspace-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Responsive: header stacks instead of clipping */
+      @media (max-width: 640px) {
+        .header-container {
+          flex-wrap: wrap;
+          gap: 8px;
+          justify-content: center;
+        }
+        .header-logo h1 {
+          font-size: 1.1rem;
+        }
+        .esol-selector-wrapper {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+        .esol-selector-wrapper label {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+          clip: rect(0 0 0 0);
+          white-space: nowrap;
+        }
+        #select-esol-level {
+          max-width: 62vw;
+        }
+      }
+
+      /* Responsive: tools drawer becomes a full-width sheet */
+      @media (max-width: 520px) {
+        .tools-drawer {
+          right: -110vw;
+          width: auto;
+          left: 12px;
+          top: 70px;
+          bottom: 12px;
+        }
+        .tools-drawer.open {
+          right: 12px;
+        }
+      }
+
+      /* Calm mode: respect users who turn off motion */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+
+      /* Print: light page, hide app chrome, keep prompts readable */
+      @media print {
+        body {
+          background: #ffffff !important;
+          color: #111827 !important;
+        }
+        .ai-header,
+        .tools-toggle-btn,
+        .tools-drawer,
+        .diagnostics-overlay,
+        #diag-panel,
+        .stepper,
+        .chat-input-bar,
+        .chat-helpers {
+          display: none !important;
+        }
+        .hub-wrap,
+        .parent-box,
+        .prompt-display-block,
+        .ai101-slide,
+        .ai101-activity {
+          background: #ffffff !important;
+          color: #111827 !important;
+          border-color: #d1d5db !important;
+          box-shadow: none !important;
+        }
+      }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
@@ -2206,7 +2391,7 @@
     <header class="ai-header">
       <div class="header-container">
         <div class="header-left">
-          <a href="/curriculum/" class="header-logo" ondblclick="event.preventDefault(); Controller.triggerSelfTest()">
+          <a href="/curriculum/" class="header-logo" aria-label="Back to Curriculum Hub">
             <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12,2 C12,7.5 16.5,12 22,12 C16.5,12 12,16.5 12,22 C12,16.5 7.5,12 2,12 C7.5,12 12,7.5 12,2 Z" fill="url(#gemini-header-grad)" />
               <defs>
@@ -2223,13 +2408,13 @@
                 </linearGradient>
               </defs>
             </svg>
-            <h1>Gemini AI Learning Hub</h1>
+            <h1>AI Learning Hub</h1>
           </a>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
           <div class="esol-selector-wrapper" style="display: flex; align-items: center; gap: 4px;">
-            <label for="select-esol-level" style="font-size: 0.8rem; color: var(--text-secondary); font-weight: bold; margin-right: 4px;">Support:</label>
-            <select id="select-esol-level" onchange="Controller.changeEsolLevel(this.value)" class="back-btn" style="background: rgba(255,255,255,0.02); color: var(--text-primary); cursor: pointer; outline: none; border: 1px solid rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px;">
+            <label for="select-esol-level" style="font-size: 0.875rem; color: var(--text-secondary); font-weight: bold; margin-right: 4px;">Language help:</label>
+            <select id="select-esol-level" onchange="Controller.changeEsolLevel(this.value)" class="back-btn" style="background: rgba(255,255,255,0.02); color: var(--text-primary); cursor: pointer; border: 1px solid rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px;">
               <option value="1" style="background: #0d1117;">Level 1: Newcomer (Bilingual)</option>
               <option value="2" style="background: #0d1117;">Level 2: Developing (Word Bank)</option>
               <option value="3" style="background: #0d1117;">Level 3: Expanding (Sentence Starters)</option>
@@ -2242,7 +2427,7 @@
     </header>
 
     
-    <!-- Math Tools Drawer (Google Education Overhaul) -->
+    <!-- Math Tools Drawer (scratchpad + calculator) -->
     <button
       class="tools-toggle-btn"
       id="tools-toggle"
@@ -2255,7 +2440,7 @@
     <div class="tools-drawer" id="tools-drawer" aria-hidden="true">
       <div class="drawer-header">
         <h4>Math Workspace Tools</h4>
-        <button class="close-drawer-btn" onclick="toggleToolsDrawer()">
+        <button class="close-drawer-btn" onclick="toggleToolsDrawer()" aria-label="Close math tools">
           ✕
         </button>
       </div>
@@ -2288,6 +2473,7 @@
                 padding: 0;
               "
               onclick="setScratchColor('#ef4444')"
+              aria-label="Draw in red"
             ></button>
             <button
               class="calc-btn"
@@ -2299,6 +2485,7 @@
                 padding: 0;
               "
               onclick="setScratchColor('#4285f4')"
+              aria-label="Draw in blue"
             ></button>
             <button
               class="calc-btn"
@@ -2310,6 +2497,7 @@
                 padding: 0;
               "
               onclick="setScratchColor('#10b981')"
+              aria-label="Draw in green"
             ></button>
             <button
               class="calc-btn"
@@ -2321,6 +2509,7 @@
                 padding: 0;
               "
               onclick="setScratchColor('#ffffff')"
+              aria-label="Draw in white"
             ></button>
           </div>
         </div>
@@ -2375,7 +2564,7 @@
             margin: 0 0 8px;
           "
         >
-          Smarter Studying with <span>Gemini</span>
+          Learn Math <span>with AI</span> — the Smart Way
         </h2>
         <p
           class="tagline"
@@ -2386,8 +2575,9 @@
             color: var(--text-secondary);
           "
         >
-          Co-developed with Google Education, Pearson, and HMH. A complete
-          step-by-step guided prompt builder and math solver.
+          Build a smart AI prompt, then solve math step by step with a
+          practice tutor. Made for Mr. Neft's Grade 6 math classes — works
+          with Gemini, ChatGPT, or any AI tool.
         </p>
       </section>
 
@@ -2411,13 +2601,13 @@
               >
               <span class="ai101-es"
                 >Un estudio sencillo paso a paso para familias. Mira una parte
-                corta, haz una practica, di el marco de oracion y usa la rutina
+                corta, haz una práctica, di el marco de oración y usa la rutina
                 durante la tarea. No se necesita cuenta de IA para aprender la
                 rutina.</span
               >
             </p>
             <div class="ai101-language-note">
-              English + Espanol on every step
+              English + Español on every step
             </div>
             <div class="ai101-toolbar">
               <button
@@ -2445,7 +2635,7 @@
               <li>
                 Know what to say when a student asks AI for help.
                 <span class="ai101-es"
-                  >Saber que decir cuando un estudiante pide ayuda a la
+                  >Saber qué decir cuando un estudiante pide ayuda a la
                   IA.</span
                 >
               </li>
@@ -2453,7 +2643,7 @@
                 Build prompts that give hints, examples, and practice, not final
                 answers.
                 <span class="ai101-es"
-                  >Crear prompts que dan pistas, ejemplos y practica, no
+                  >Crear prompts que dan pistas, ejemplos y práctica, no
                   respuestas finales.</span
                 >
               </li>
@@ -2461,7 +2651,7 @@
                 Check privacy, sources, and student understanding before turning
                 work in.
                 <span class="ai101-es"
-                  >Revisar privacidad, fuentes y comprension antes de entregar
+                  >Revisar privacidad, fuentes y comprensión antes de entregar
                   trabajo.</span
                 >
               </li>
@@ -2471,26 +2661,26 @@
 
         <div class="ai101-path" aria-label="AI 101 workshop path">
           <div class="ai101-path-step">
-            <strong>1. Learn / Aprende</strong>
+            <strong><span aria-hidden="true">📖</span> 1. Learn / Aprende</strong>
             Read the short idea in English and Spanish.
           </div>
           <div class="ai101-path-step">
-            <strong>2. Try / Practica</strong>
+            <strong><span aria-hidden="true">✏️</span> 2. Try / Practica</strong>
             Click or type one small practice answer.
           </div>
           <div class="ai101-path-step">
-            <strong>3. Say / Di</strong>
+            <strong><span aria-hidden="true">🗣️</span> 3. Say / Di</strong>
             Say the family sentence frame out loud.
           </div>
           <div class="ai101-path-step">
-            <strong>4. Use tonight / Usa hoy</strong>
+            <strong><span aria-hidden="true">🏠</span> 4. Use tonight / Usa hoy</strong>
             Try the routine with real homework.
           </div>
         </div>
 
         <div class="ai101-share-panel" aria-labelledby="ai101-share-title">
           <h4 id="ai101-share-title">
-            Send a direct link / Envia un enlace directo
+            Send a direct link / Envía un enlace directo
           </h4>
           <p class="ai101-bilingual">
             <span
@@ -2499,21 +2689,33 @@
             >
             <span class="ai101-es"
               >Usa estos enlaces cuando quieras que estudiantes o familias abran
-              una pagina especifica de AI 101.</span
+              una página específica de AI 101.</span
             >
           </p>
           <div class="ai101-link-grid">
             <a class="ai101-direct-link" href="#ai101">AI 101 Overview</a>
-            <a class="ai101-direct-link" href="#ai101-basics"
+            <a
+              class="ai101-direct-link"
+              href="#ai101-module-1"
+              onclick="ai101ShowModule(1)"
               >Module 1: What AI Is</a
             >
-            <a class="ai101-direct-link" href="#ai101-tutor"
+            <a
+              class="ai101-direct-link"
+              href="#ai101-module-2"
+              onclick="ai101ShowModule(2)"
               >Module 2: Tutor Rule</a
             >
-            <a class="ai101-direct-link" href="#ai101-safety"
+            <a
+              class="ai101-direct-link"
+              href="#ai101-module-3"
+              onclick="ai101ShowModule(3)"
               >Module 3: Privacy</a
             >
-            <a class="ai101-direct-link" href="#ai101-plan"
+            <a
+              class="ai101-direct-link"
+              href="#ai101-module-4"
+              onclick="ai101ShowModule(4)"
               >Module 4: Family Plan</a
             >
           </div>
@@ -2529,7 +2731,7 @@
             aria-controls="ai101-module-1"
             onclick="ai101ShowModule(1)"
           >
-            <span>Module 1 / Modulo 1</span>What AI Is / Que es la IA
+            <span>Module 1 / Módulo 1</span>What AI Is / Qué es la IA
           </button>
           <button
             class="ai101-tab"
@@ -2540,7 +2742,7 @@
             aria-controls="ai101-module-2"
             onclick="ai101ShowModule(2)"
           >
-            <span>Module 2 / Modulo 2</span>The Tutor Rule / Regla del tutor
+            <span>Module 2 / Módulo 2</span>The Tutor Rule / Regla del tutor
           </button>
           <button
             class="ai101-tab"
@@ -2551,7 +2753,7 @@
             aria-controls="ai101-module-3"
             onclick="ai101ShowModule(3)"
           >
-            <span>Module 3 / Modulo 3</span>Privacy + Accuracy / Privacidad
+            <span>Module 3 / Módulo 3</span>Privacy + Accuracy / Privacidad
           </button>
           <button
             class="ai101-tab"
@@ -2562,7 +2764,7 @@
             aria-controls="ai101-module-4"
             onclick="ai101ShowModule(4)"
           >
-            <span>Module 4 / Modulo 4</span>Family AI Plan / Plan familiar
+            <span>Module 4 / Módulo 4</span>Family AI Plan / Plan familiar
           </button>
         </div>
 
@@ -2598,8 +2800,8 @@
                   help the student use AI to learn, not to skip thinking.</span
                 >
                 <span class="ai101-es"
-                  >La IA puede ayudar con palabras, ideas, ejemplos, traduccion
-                  y practica. Tambien puede cometer errores. La tarea de la
+                  >La IA puede ayudar con palabras, ideas, ejemplos, traducción
+                  y práctica. También puede cometer errores. La tarea de la
                   familia es sencilla: ayudar al estudiante a usar IA para
                   aprender, no para evitar pensar.</span
                 >
@@ -2614,7 +2816,7 @@
                   >
                   "What are you trying to learn?"
                   <span class="ai101-es"
-                    >"Que estas tratando de aprender?"</span
+                    >"¿Qué estás tratando de aprender?"</span
                   >
                 </div>
                 <div class="ai101-step-card">
@@ -2624,7 +2826,7 @@
                   >
                   Hint, example, vocabulary, translation, or practice.
                   <span class="ai101-es"
-                    >Pista, ejemplo, vocabulario, traduccion o practica.</span
+                    >Pista, ejemplo, vocabulario, traducción o práctica.</span
                   >
                 </div>
                 <div class="ai101-step-card">
@@ -2633,7 +2835,7 @@
                     explica</strong
                   >
                   "Tell me what you understand now."
-                  <span class="ai101-es">"Dime que entiendes ahora."</span>
+                  <span class="ai101-es">"Dime qué entiendes ahora."</span>
                 </div>
               </div>
               <div class="ai101-visual-routine" aria-label="AI helper routine">
@@ -2659,6 +2861,7 @@
                   href="https://www.youtube.com/watch?v=x7iRWjV8Tuc"
                   target="_blank"
                   rel="noopener"
+                  title="Opens in a new tab"
                   >Common Sense Education + Day of AI</a
                 >
               </p>
@@ -2668,7 +2871,7 @@
                 need to explain the answer."
                 <span class="ai101-es"
                   >Di con tu estudiante: "La IA puede ayudarnos a practicar.
-                  Todavia necesitas explicar la respuesta."</span
+                  Todavía necesitas explicar la respuesta."</span
                 >
               </div>
               <div class="ai101-traffic-grid" aria-label="AI use traffic light">
@@ -2680,7 +2883,7 @@
                   Ask for hints, practice, vocabulary, translation, or a similar
                   example.
                   <span class="ai101-es"
-                    >Pide pistas, practica, vocabulario, traduccion o un ejemplo
+                    >Pide pistas, práctica, vocabulario, traducción o un ejemplo
                     parecido.</span
                   >
                 </div>
@@ -2704,7 +2907,7 @@
                   Do not paste private information or submit AI writing as
                   student work.
                   <span class="ai101-es"
-                    >No pegues informacion privada ni entregues texto de IA como
+                    >No pegues información privada ni entregues texto de IA como
                     trabajo del estudiante.</span
                   >
                 </div>
@@ -2712,7 +2915,7 @@
             </div>
             <div class="ai101-activity">
               <h4>
-                Practice: Sort the AI job / Practica: Clasifica el uso de IA
+                Practice: Sort the AI job / Práctica: Clasifica el uso de IA
               </h4>
               <p class="ai101-bilingual">
                 <span
@@ -2720,7 +2923,7 @@
                   replacing the student's work?</span
                 >
                 <span class="ai101-es"
-                  >Haz clic en cada tarjeta. Decide: La IA ayuda al estudiante a
+                  >Haz clic en cada tarjeta. Decide: ¿La IA ayuda al estudiante a
                   aprender, o reemplaza su trabajo?</span
                 >
               </p>
@@ -2731,13 +2934,13 @@
                   onclick="
                     ai101SelectSort(
                       this,
-                      'Good use: AI can make a first study guide, then your student should revise it with class notes. / Buen uso: La IA puede crear una primera guia de estudio, y luego el estudiante la revisa con sus apuntes.',
+                      'Good use: AI can make a first study guide, then your student should revise it with class notes. / Buen uso: La IA puede crear una primera guía de estudio, y luego el estudiante la revisa con sus apuntes.',
                     )
                   "
                 >
                   Make a study guide from notes
                   <span class="ai101-es"
-                    >Hacer una guia de estudio con apuntes</span
+                    >Hacer una guía de estudio con apuntes</span
                   >
                 </button>
                 <button
@@ -2746,13 +2949,13 @@
                   onclick="
                     ai101SelectSort(
                       this,
-                      'Pause: AI should not invent sources. Open the article, book, or class material and verify the claim together. / Pausa: La IA no debe inventar fuentes. Abran el articulo, libro o material de clase y verifiquen juntos.',
+                      'Pause: AI should not invent sources. Open the article, book, or class material and verify the claim together. / Pausa: La IA no debe inventar fuentes. Abran el artículo, libro o material de clase y verifiquen juntos.',
                     )
                   "
                 >
                   Find a quote from a book nobody opened
                   <span class="ai101-es"
-                    >Encontrar una cita de un libro que nadie abrio</span
+                    >Encontrar una cita de un libro que nadie abrió</span
                   >
                 </button>
                 <button
@@ -2761,7 +2964,7 @@
                   onclick="
                     ai101SelectSort(
                       this,
-                      'Ask an adult: Personal, medical, legal, or school-account information should stay private. / Pregunta a un adulto: La informacion personal, medica, legal o de cuentas escolares debe mantenerse privada.',
+                      'Ask an adult: Personal, medical, legal, or school-account information should stay private. / Pregunta a un adulto: La información personal, médica, legal o de cuentas escolares debe mantenerse privada.',
                     )
                   "
                 >
@@ -2784,7 +2987,7 @@
                   <strong>Family phrase:</strong> "Use AI to get unstuck, then
                   show me what you understand."
                   <span class="ai101-es"
-                    >"Usa la IA para destrabarte, luego muestrame lo que
+                    >"Usa la IA para destrabarte, luego muéstrame lo que
                     entiendes."</span
                   >
                 </li>
@@ -2792,7 +2995,7 @@
                   <strong>Student phrase:</strong> "Explain it another way, but
                   do not give me the final answer yet."
                   <span class="ai101-es"
-                    >"Explicalo de otra manera, pero todavia no me des la
+                    >"Explícalo de otra manera, pero todavía no me des la
                     respuesta final."</span
                   >
                 </li>
@@ -2806,7 +3009,7 @@
                   >
                 </div>
                 <div class="ai101-example-card">
-                  <strong>Not okay / No esta bien</strong>
+                  <strong>Not okay / No está bien</strong>
                   "Do my homework and make it sound like me."
                   <span class="ai101-es"
                     >"Haz mi tarea y que suene como yo."</span
@@ -2832,7 +3035,7 @@
                     onclick="
                       ai101Detective(
                         this,
-                        'Good catch. The moon reflects sunlight; it does not make its own light. Ask AI for a source and check class notes. / Buena observacion. La luna refleja luz del sol; no produce su propia luz. Pide una fuente y revisa los apuntes.',
+                        'Good catch. The moon reflects sunlight; it does not make its own light. Ask AI for a source and check class notes. / Buena observación. La luna refleja luz del sol; no produce su propia luz. Pide una fuente y revisa los apuntes.',
                       )
                     "
                   >
@@ -2844,7 +3047,7 @@
                     onclick="
                       ai101Detective(
                         this,
-                        'Risky. A confident answer can still be wrong. Students should verify before trusting it. / Riesgoso. Una respuesta segura aun puede estar equivocada. Hay que verificar.',
+                        'Risky. A confident answer can still be wrong. Students should verify before trusting it. / Riesgoso. Una respuesta segura aún puede estar equivocada. Hay que verificar.',
                       )
                     "
                   >
@@ -2856,7 +3059,7 @@
                     onclick="
                       ai101Detective(
                         this,
-                        'Helpful, but incomplete. Rewording does not fix a false fact. Verify first, then rewrite. / Util, pero incompleto. Cambiar palabras no corrige un dato falso. Verifica primero.',
+                        'Helpful, but incomplete. Rewording does not fix a false fact. Verify first, then rewrite. / Útil, pero incompleto. Cambiar palabras no corrige un dato falso. Verifica primero.',
                       )
                     "
                   >
@@ -2908,10 +3111,10 @@
                   words, and give one step at a time.</span
                 >
                 <span class="ai101-es"
-                  >La regla familiar mas segura es: la IA puede guiar, pero el
+                  >La regla familiar más segura es: la IA puede guiar, pero el
                   estudiante debe pensar, intentar y explicar. Las familias no
-                  necesitan ingles perfecto ni mucha tecnologia. Pueden pedir a
-                  la IA que vaya despacio, use palabras sencillas y de un paso a
+                  necesitan inglés perfecto ni mucha tecnología. Pueden pedir a
+                  la IA que vaya despacio, use palabras sencillas y dé un paso a
                   la vez.</span
                 >
               </p>
@@ -2922,7 +3125,7 @@
                   >
                   "Show me the directions. What part is hard?"
                   <span class="ai101-es"
-                    >"Muestrame las instrucciones. Que parte es dificil?"</span
+                    >"Muéstrame las instrucciones. ¿Qué parte es difícil?"</span
                   >
                 </div>
                 <div class="ai101-step-card">
@@ -2941,7 +3144,7 @@
                   Student completes the real problem or paragraph in their own
                   words.
                   <span class="ai101-es"
-                    >El estudiante completa el problema o parrafo real con sus
+                    >El estudiante completa el problema o párrafo real con sus
                     propias palabras.</span
                   >
                 </div>
@@ -2952,6 +3155,7 @@
                   href="https://www.youtube.com/watch?v=zxEozkuGcH0"
                   target="_blank"
                   rel="noopener"
+                  title="Opens in a new tab"
                   >Responsible AI teaching overview</a
                 >
               </p>
@@ -2965,7 +3169,7 @@
                 >
                 <span class="ai101-es"
                   >Elige el prompt que mejor protege el aprendizaje. Usa la
-                  retroalimentacion para mejorar la proxima pregunta de
+                  retroalimentación para mejorar la próxima pregunta de
                   tarea.</span
                 >
               </p>
@@ -2982,7 +3186,7 @@
                 >
                   Write my whole essay about renewable energy.
                   <span class="ai101-es"
-                    >Escribe todo mi ensayo sobre energia renovable.</span
+                    >Escribe todo mi ensayo sobre energía renovable.</span
                   >
                 </button>
                 <button
@@ -2991,15 +3195,15 @@
                   onclick="
                     ai101ChoosePrompt(
                       this,
-                      'Strong choice. This asks AI to coach the student, ask questions, and preserve the student voice. / Buena opcion. Le pide a la IA guiar, hacer preguntas y mantener la voz del estudiante.',
+                      'Strong choice. This asks AI to coach the student, ask questions, and preserve the student voice. / Buena opción. Le pide a la IA guiar, hacer preguntas y mantener la voz del estudiante.',
                     )
                   "
                 >
                   Act like a tutor. Ask me 3 questions about my renewable energy
                   claim, then suggest one place I need stronger evidence.
                   <span class="ai101-es"
-                    >Actua como tutor. Hazme 3 preguntas sobre mi idea de
-                    energia renovable y sugiere un lugar donde necesito mejor
+                    >Actúa como tutor. Hazme 3 preguntas sobre mi idea de
+                    energía renovable y sugiere un lugar donde necesito mejor
                     evidencia.</span
                   >
                 </button>
@@ -3009,13 +3213,13 @@
                   onclick="
                     ai101ChoosePrompt(
                       this,
-                      'Almost there. Add the class goal, your current work, and a request for feedback instead of an answer. / Casi. Agrega la meta de clase, tu trabajo actual y pide retroalimentacion en vez de una respuesta final.',
+                      'Almost there. Add the class goal, your current work, and a request for feedback instead of an answer. / Casi. Agrega la meta de clase, tu trabajo actual y pide retroalimentación en vez de una respuesta final.',
                     )
                   "
                 >
                   Give me ideas for renewable energy.
                   <span class="ai101-es"
-                    >Dame ideas sobre energia renovable.</span
+                    >Dame ideas sobre energía renovable.</span
                   >
                 </button>
               </div>
@@ -3025,7 +3229,7 @@
                 aria-live="polite"
               >
                 Pick a prompt to get coaching feedback. / Elige un prompt para
-                recibir retroalimentacion.
+                recibir retroalimentación.
               </div>
               <div class="ai101-frame">
                 <strong>Copy this family sentence frame:</strong><br />
@@ -3035,11 +3239,11 @@
                   do not write the final answer.</code
                 >
                 <br /><br />
-                <strong>Copia este marco en espanol:</strong><br />
+                <strong>Copia este marco en español:</strong><br />
                 <code
-                  >Actua como tutor para grado __. Mi estudiante esta trabajando
+                  >Actúa como tutor para grado __. Mi estudiante está trabajando
                   en __. Primero haz preguntas. Da pistas, ejemplos y
-                  retroalimentacion, pero no escribas la respuesta final.</code
+                  retroalimentación, pero no escribas la respuesta final.</code
                 >
               </div>
 
@@ -3068,7 +3272,7 @@
                   </div>
                   <div class="ai101-field">
                     <label for="ai101-stuck"
-                      >What is hard? / Que es dificil?</label
+                      >What is hard? / ¿Qué es difícil?</label
                     >
                     <input
                       class="ai101-input"
@@ -3119,7 +3323,7 @@
                 </div>
               </div>
               <div class="ai101-lab">
-                <h5>Homework Rescue Rehearsal / Ensayo para tarea dificil</h5>
+                <h5>Homework Rescue Rehearsal / Ensayo para tarea difícil</h5>
                 <p>Use these tiny scripts when homework gets stressful.</p>
                 <div class="ai101-example-pair">
                   <div class="ai101-example-card">
@@ -3127,7 +3331,7 @@
                     Parent says: "Ask AI for one easier example. Then you try
                     the real one."
                     <span class="ai101-es"
-                      >"Pide a la IA un ejemplo mas facil. Luego intentas el
+                      >"Pide a la IA un ejemplo más fácil. Luego intentas el
                       real."</span
                     >
                   </div>
@@ -3144,7 +3348,7 @@
               </div>
               <div class="ai101-lab">
                 <h5>
-                  Real Assignment Practice Lab / Practica con tareas reales
+                  Real Assignment Practice Lab / Práctica con tareas reales
                 </h5>
                 <p>
                   Pick a real topic, choose what your student needs, then copy
@@ -3157,7 +3361,7 @@
                   aria-label="Real assignment examples"
                 >
                   <div class="ai101-assignment-card">
-                    <strong>Math / Matematicas</strong>
+                    <strong>Math / Matemáticas</strong>
                     Fractions, ratios, equations, word problems.
                   </div>
                   <div class="ai101-assignment-card">
@@ -3270,7 +3474,7 @@
                 </div>
                 <div class="ai101-gemini-box">
                   <strong
-                    >How to use with Gemini / Como usar con Gemini:</strong
+                    >How to use with Gemini / Cómo usar con Gemini:</strong
                   >
                   <ol>
                     <li>Click <strong>Build Practice Prompt</strong>.</li>
@@ -3278,8 +3482,8 @@
                     <li>Open Gemini and paste. Keep private details out.</li>
                   </ol>
                   <span class="ai101-es"
-                    >Crea el prompt, copialo, abre Gemini y pegalo. No incluyas
-                    informacion privada.</span
+                    >Crea el prompt, cópialo, abre Gemini y pégalo. No incluyas
+                    información privada.</span
                   >
                 </div>
               </div>
@@ -3303,8 +3507,8 @@
                   source? Can the student explain it?</span
                 >
                 <span class="ai101-es"
-                  >Antes de pegar informacion en IA o usar una respuesta de IA,
-                  hagan tres revisiones: Es privado? Hay una fuente? El
+                  >Antes de pegar información en IA o usar una respuesta de IA,
+                  hagan tres revisiones: ¿Es privado? ¿Hay una fuente? ¿El
                   estudiante puede explicarlo?</span
                 >
               </p>
@@ -3314,8 +3518,8 @@
                   addresses, passwords, school IDs, photos, medical details, and
                   IEP information.
                   <span class="ai101-es"
-                    >Quita nombres completos, direcciones, contrasenas, numeros
-                    escolares, fotos, informacion medica e informacion de
+                    >Quita nombres completos, direcciones, contraseñas, números
+                    escolares, fotos, información médica e información de
                     IEP.</span
                   >
                 </li>
@@ -3331,7 +3535,7 @@
                   <strong>Sense / Sentido:</strong> Ask, "Can my student explain
                   this in their own words?"
                   <span class="ai101-es"
-                    >Pregunta: "Puede mi estudiante explicarlo con sus propias
+                    >Pregunta: "¿Puede mi estudiante explicarlo con sus propias
                     palabras?"</span
                   >
                 </li>
@@ -3357,7 +3561,7 @@
                   >
                   "What source supports this? What should I check?"
                   <span class="ai101-es"
-                    >"Que fuente apoya esto? Que debo revisar?"</span
+                    >"¿Qué fuente apoya esto? ¿Qué debo revisar?"</span
                   >
                 </div>
                 <div class="ai101-step-card">
@@ -3367,14 +3571,14 @@
                   >
                   "Explain it to me in your own words before you turn it in."
                   <span class="ai101-es"
-                    >"Explicamelo con tus propias palabras antes de
+                    >"Explícamelo con tus propias palabras antes de
                     entregarlo."</span
                   >
                 </div>
               </div>
             </div>
             <div class="ai101-activity">
-              <h4>Practice: What would you do? / Que harian?</h4>
+              <h4>Practice: What would you do? / ¿Qué harían?</h4>
               <p class="ai101-bilingual">
                 <span
                   >Select a scenario to reveal a safer family move. These are
@@ -3382,7 +3586,7 @@
                   home.</span
                 >
                 <span class="ai101-es"
-                  >Selecciona una situacion para ver una accion familiar mas
+                  >Selecciona una situación para ver una acción familiar más
                   segura. Son pasos sencillos para repetir en casa.</span
                 >
               </p>
@@ -3393,7 +3597,7 @@
                   onclick="
                     ai101CheckScenario(
                       this,
-                      'Good move: remove personal details first, then ask AI for a general explanation or practice questions. / Buena accion: quita los datos personales primero, luego pide una explicacion general o preguntas de practica.',
+                      'Good move: remove personal details first, then ask AI for a general explanation or practice questions. / Buena acción: quita los datos personales primero, luego pide una explicación general o preguntas de práctica.',
                     )
                   "
                 >
@@ -3409,13 +3613,13 @@
                   onclick="
                     ai101CheckScenario(
                       this,
-                      'Good move: ask AI for steps or a similar example, then have the student solve the original problem. / Buena accion: pide pasos o un ejemplo parecido, y luego el estudiante resuelve el problema original.',
+                      'Good move: ask AI for steps or a similar example, then have the student solve the original problem. / Buena acción: pide pasos o un ejemplo parecido, y luego el estudiante resuelve el problema original.',
                     )
                   "
                 >
                   A math problem is confusing and the student wants help.
                   <span class="ai101-es"
-                    >Un problema de matematicas es confuso y el estudiante
+                    >Un problema de matemáticas es confuso y el estudiante
                     quiere ayuda.</span
                   >
                 </button>
@@ -3425,7 +3629,7 @@
                   onclick="
                     ai101CheckScenario(
                       this,
-                      'Good move: use AI to make a checklist, but verify every fact from class sources before submitting. / Buena accion: usa la IA para hacer una lista de verificacion, pero confirma cada dato con fuentes de clase antes de entregar.',
+                      'Good move: use AI to make a checklist, but verify every fact from class sources before submitting. / Buena acción: usa la IA para hacer una lista de verificación, pero confirma cada dato con fuentes de clase antes de entregar.',
                     )
                   "
                 >
@@ -3440,14 +3644,14 @@
                   onclick="
                     ai101CheckScenario(
                       this,
-                      'Good move: ask the student to explain the idea aloud. If they cannot, use AI for reteaching, not final writing. / Buena accion: pide al estudiante explicar la idea en voz alta. Si no puede, usa la IA para volver a ensenar, no para escribir el final.',
+                      'Good move: ask the student to explain the idea aloud. If they cannot, use AI for reteaching, not final writing. / Buena acción: pide al estudiante explicar la idea en voz alta. Si no puede, usa la IA para volver a enseñar, no para escribir el final.',
                     )
                   "
                 >
                   A paragraph sounds polished, but the student cannot explain
                   it.
                   <span class="ai101-es"
-                    >Un parrafo suena muy pulido, pero el estudiante no puede
+                    >Un párrafo suena muy pulido, pero el estudiante no puede
                     explicarlo.</span
                   >
                 </button>
@@ -3458,7 +3662,7 @@
                 aria-live="polite"
               >
                 Choose a scenario to practice the 3-check routine. / Elige una
-                situacion para practicar la rutina de 3 revisiones.
+                situación para practicar la rutina de 3 revisiones.
               </div>
 
               <div class="ai101-lab">
@@ -3470,7 +3674,7 @@
                 </p>
                 <div class="ai101-field">
                   <label for="ai101-redact-input"
-                    >Sample message / Mensaje de practica</label
+                    >Sample message / Mensaje de práctica</label
                   >
                   <textarea class="ai101-textarea" id="ai101-redact-input">
 My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers2026! I have an IEP for reading and need help writing an email to my teacher about missing homework.</textarea>
@@ -3517,7 +3721,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                     onclick="
                       ai101FactCheck(
                         this,
-                        'Best move. Check a trusted history source, textbook, or teacher-approved site before using the claim. / Mejor accion: verifica con una fuente confiable antes de usarlo.',
+                        'Best move. Check a trusted history source, textbook, or teacher-approved site before using the claim. / Mejor acción: verifica con una fuente confiable antes de usarlo.',
                       )
                     "
                   >
@@ -3557,26 +3761,26 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                 </div>
               </div>
               <div class="ai101-lab">
-                <h5>Teach-Back Check / Verificacion de explicacion</h5>
+                <h5>Teach-Back Check / Verificación de explicación</h5>
                 <p>Use this before any AI-supported work is submitted.</p>
                 <div class="ai101-guided-steps">
                   <div class="ai101-step-card">
                     <strong>Ask / Pregunta</strong>
                     "What did AI help with?"
-                    <span class="ai101-es">"Con que ayudo la IA?"</span>
+                    <span class="ai101-es">"¿Con qué ayudó la IA?"</span>
                   </div>
                   <div class="ai101-step-card">
                     <strong>Ask / Pregunta</strong>
                     "What part did you write, solve, or decide?"
                     <span class="ai101-es"
-                      >"Que parte escribiste, resolviste o decidiste tu?"</span
+                      >"¿Qué parte escribiste, resolviste o decidiste tú?"</span
                     >
                   </div>
                   <div class="ai101-step-card">
                     <strong>Ask / Pregunta</strong>
                     "Show me one class note, example, or source that matches."
                     <span class="ai101-es"
-                      >"Muestrame un apunte, ejemplo o fuente que
+                      >"Muéstrame un apunte, ejemplo o fuente que
                       coincide."</span
                     >
                   </div>
@@ -3602,7 +3806,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                   then build a 15-minute routine.</span
                 >
                 <span class="ai101-es"
-                  >Un plan familiar debe ser corto, repetible y facil de usar
+                  >Un plan familiar debe ser corto, repetible y fácil de usar
                   durante la tarea. Elige los compromisos que funcionan en tu
                   hogar y crea una rutina de 15 minutos.</span
                 >
@@ -3615,16 +3819,16 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                   >
                   Student explains the assignment and what is hard.
                   <span class="ai101-es"
-                    >El estudiante explica la tarea y que es dificil.</span
+                    >El estudiante explica la tarea y qué es difícil.</span
                   >
                 </div>
                 <div class="ai101-step-card">
                   <strong
-                    >Minute 3-8: AI coaches / Minuto 3-8: La IA guia</strong
+                    >Minute 3-8: AI coaches / Minuto 3-8: La IA guía</strong
                   >
                   Ask for hints, examples, vocabulary, or practice only.
                   <span class="ai101-es"
-                    >Pide solo pistas, ejemplos, vocabulario o practica.</span
+                    >Pide solo pistas, ejemplos, vocabulario o práctica.</span
                   >
                 </div>
                 <div class="ai101-step-card">
@@ -3648,8 +3852,8 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                 >
                   We use AI for hints, examples, feedback, and practice.
                   <span class="ai101-es"
-                    >Usamos IA para pistas, ejemplos, retroalimentacion y
-                    practica.</span
+                    >Usamos IA para pistas, ejemplos, retroalimentación y
+                    práctica.</span
                   >
                 </button>
                 <button
@@ -3670,7 +3874,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                 >
                   We keep personal information out of AI tools.
                   <span class="ai101-es"
-                    >No ponemos informacion personal en herramientas de
+                    >No ponemos información personal en herramientas de
                     IA.</span
                   >
                 </button>
@@ -3731,7 +3935,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                   projects.</span
                 >
                 <span class="ai101-es"
-                  >Usa esto como referencia rapida antes de tareas, estudio o
+                  >Usa esto como referencia rápida antes de tareas, estudio o
                   proyectos.</span
                 >
               </p>
@@ -3746,20 +3950,20 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                 Students should still answer in their own words and check
                 meaning with a person when the topic matters.
                 <span class="ai101-es"
-                  >Apoyo para estudiantes multilingues: La IA puede traducir
+                  >Apoyo para estudiantes multilingües: La IA puede traducir
                   instrucciones, definir vocabulario y modelar marcos de
-                  oraciones. Los estudiantes todavia deben responder con sus
+                  oraciones. Los estudiantes todavía deben responder con sus
                   propias palabras y verificar el significado con una persona
                   cuando el tema importa.</span
                 >
               </div>
               <div class="ai101-example-pair">
                 <div class="ai101-example-card">
-                  <strong>Helpful translation / Traduccion util</strong>
+                  <strong>Helpful translation / Traducción útil</strong>
                   "Translate the directions into Spanish, then list the three
                   actions my student must do."
                   <span class="ai101-es"
-                    >"Traduce las instrucciones al espanol y enumera las tres
+                    >"Traduce las instrucciones al español y enumera las tres
                     acciones que mi estudiante debe hacer."</span
                   >
                 </div>
@@ -3768,7 +3972,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                   "Give sentence frames, but let my student write the final
                   answer."
                   <span class="ai101-es"
-                    >"Da marcos de oracion, pero deja que mi estudiante escriba
+                    >"Da marcos de oración, pero deja que mi estudiante escriba
                     la respuesta final."</span
                   >
                 </div>
@@ -3824,7 +4028,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                 </div>
               </div>
               <div class="ai101-lab">
-                <h5>Parent Quick Scripts / Frases rapidas para familias</h5>
+                <h5>Parent Quick Scripts / Frases rápidas para familias</h5>
                 <p>
                   Use these when you are busy, tired, or not sure what to say.
                 </p>
@@ -3833,7 +4037,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                     <strong>Start:</strong> "Show me the assignment. What do you
                     understand?"
                     <span class="ai101-es"
-                      >"Muestrame la tarea. Que entiendes?"</span
+                      >"Muéstrame la tarea. ¿Qué entiendes?"</span
                     >
                   </li>
                   <li>
@@ -3847,15 +4051,15 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                     <strong>Check:</strong> "Explain it in your words before you
                     submit."
                     <span class="ai101-es"
-                      >"Explicalo con tus palabras antes de entregar."</span
+                      >"Explícalo con tus palabras antes de entregar."</span
                     >
                   </li>
                   <li>
                     <strong>Privacy:</strong> "Remove names, passwords,
                     addresses, and school IDs first."
                     <span class="ai101-es"
-                      >"Primero quita nombres, contrasenas, direcciones y
-                      numeros escolares."</span
+                      >"Primero quita nombres, contraseñas, direcciones y
+                      números escolares."</span
                     >
                   </li>
                 </ul>
@@ -3878,7 +4082,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                 efectivo, seguro y responsable de IA.</span
               >
             </p>
-            <a href="https://ai.google/literacy/" target="_blank" rel="noopener"
+            <a href="https://ai.google/literacy/" target="_blank" rel="noopener" title="Opens in a new tab"
               >Open resource</a
             >
           </div>
@@ -3888,7 +4092,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
               Plain-language guidance for talking with kids about generative AI
               at home.
               <span class="ai101-es"
-                >Guia clara para hablar con los ninos sobre IA generativa en
+                >Guía clara para hablar con los niños sobre IA generativa en
                 casa.</span
               >
             </p>
@@ -3896,6 +4100,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
               href="https://www.commonsensemedia.org/articles/parents-ultimate-guide-to-generative-ai"
               target="_blank"
               rel="noopener"
+              title="Opens in a new tab"
               >Open guide</a
             >
           </div>
@@ -3905,14 +4110,15 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
               Helpful guardrails for students, including privacy, bias, and
               checking AI output.
               <span class="ai101-es"
-                >Apoyos utiles para estudiantes sobre privacidad, sesgo y
-                verificacion de respuestas de IA.</span
+                >Apoyos útiles para estudiantes sobre privacidad, sesgo y
+                verificación de respuestas de IA.</span
               >
             </p>
             <a
               href="https://www.understood.org/en/articles/ai-responsible-use-students"
               target="_blank"
               rel="noopener"
+              title="Opens in a new tab"
               >Open article</a
             >
           </div>
@@ -3930,32 +4136,32 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
       <!-- STEP 1: Choose Role -->
       <div class="step-panel active" id="panel-1">
         <h3 class="step-title">Who is learning today?</h3>
-        <p class="step-subtitle">Select your path to open student practice, family tutoring prompts, or the AI 101 learning studio.</p>
-        
+        <p class="step-subtitle">New here? Tap <strong>"I am a Student"</strong> to practice math with an AI tutor. Families and teachers have their own doors too.</p>
+
         <div class="role-grid">
-          <div class="role-card" onclick="selectRole('student')">
+          <div class="role-card" role="button" tabindex="0" onclick="selectRole('student')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectRole('student')}">
             <span class="role-icon" aria-hidden="true">🎓</span>
             <h4>I am a Student</h4>
-            <p>Assemble tutor prompts and solve step-by-step math problems using interactive visual models.</p>
-            <button class="role-btn">Start Student Guide</button>
+            <p>Build a smart prompt, then solve math problems step by step with pictures that help you think.</p>
+            <button class="role-btn" tabindex="-1">Start Student Guide</button>
           </div>
-          <div class="role-card" onclick="selectRole('parent')">
+          <div class="role-card" role="button" tabindex="0" onclick="selectRole('parent')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectRole('parent')}">
             <span class="role-icon" aria-hidden="true">👨‍👩‍👧</span>
             <h4>I am a Parent / Family</h4>
-            <p>Get pre-made parent prompts to generate practice questions or analogies for home tutoring.</p>
-            <button class="role-btn">Start Family Guide</button>
+            <p>Copy ready-made prompts (English + Español) to help your child practice math at home.</p>
+            <button class="role-btn" tabindex="-1">Start Family Guide</button>
           </div>
-          <div class="role-card" onclick="selectRole('teacher')">
+          <div class="role-card" role="button" tabindex="0" onclick="selectRole('teacher')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectRole('teacher')}">
             <span class="role-icon" aria-hidden="true">🍎</span>
             <h4>I am a Teacher</h4>
-            <p>Access math standard alignments, ESOL lesson supports, classroom resources, and quick launch prompts.</p>
-            <button class="role-btn">Open Teacher Dashboard</button>
+            <p>Standards alignment, ESOL scaffolds, a 45-minute workshop plan, and one-tap student launches.</p>
+            <button class="role-btn" tabindex="-1">Open Teacher Dashboard</button>
           </div>
-          <div class="role-card" onclick="selectRole('ai101')">
+          <div class="role-card" role="button" tabindex="0" onclick="selectRole('ai101')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectRole('ai101')}">
             <span class="role-icon" aria-hidden="true">AI</span>
-            <h4>AI 101</h4>
-            <p>Open bilingual mini-modules about safe, effective AI use for students and families.</p>
-            <button class="role-btn">Open AI 101 Studio</button>
+            <h4>Learn About AI (Families)</h4>
+            <p>Short bilingual lessons on using AI safely: hints not answers, privacy, and fact-checking.</p>
+            <button class="role-btn" tabindex="-1">Open AI 101 Studio</button>
           </div>
         </div>
       </div>
@@ -3969,7 +4175,10 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
         <div id="student-progress-dashboard" style="margin-bottom: 24px;"></div>
 
         <div class="unit-grid" id="unit-grid-container">
-          <!-- Dynamic Unit Cards generated by JS -->
+          <p style="color: var(--text-secondary); font-size: 0.95rem">
+            Loading your math units… If nothing appears in a few seconds,
+            refresh the page or tell your teacher.
+          </p>
         </div>
 
         <div class="step-actions">
@@ -3990,7 +4199,10 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             </div>
 
             <div id="ws-content">
-              <!-- Dynamic workspace page injected here (student, parent, or teacher) -->
+              <p style="color: var(--text-secondary); font-size: 0.95rem">
+                Loading your workspace… If nothing appears in a few seconds, go
+                back and choose your unit again.
+              </p>
             </div>
           </div>
 
@@ -4616,7 +4828,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
           },
         },
         6: {
-          name: "Unit 6: Expressions & Exponents",
+          name: "Unit 6: Volume & Surface Area",
           topic: "Volume & Surface Area",
           ccss: "CCSS.MATH.CONTENT.6.G.A.2 & 6.G.A.4",
           pearson: "Topic 7, Lesson 7-3 & 7-5",
@@ -5091,7 +5303,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
           },
         },
         10: {
-          name: "Unit 10: Volume & Surface Area",
+          name: "Unit 10: Financial Literacy",
           topic: "Financial Literacy Review",
           ccss: "CCSS.MATH.CONTENT.6.NS.B.3",
           pearson: "Topic 6 & 7 Review Chapters",
@@ -5290,7 +5502,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
         ],
       };
 
-      // Bilingual support definitions co-developed with Google Education
+      // Bilingual math glossary for Level 1 (Newcomer) support
       const BILINGUAL_GLOSSARY = {
         multiply: "multiply (multiplicar)",
         multiplied: "multiplied (multiplicado)",
@@ -5349,7 +5561,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
       const PARENT_LANG = {
         en: {
           intro:
-            "Use these co-developed copy-paste prompts in <strong>Gemini</strong> to support your child's home learning.",
+            "Copy and paste these ready-made prompts into <strong>Gemini, ChatGPT, or any AI tool</strong> to support your child's home learning.",
           box1Title: "Create Similar Practice Problems",
           box1Desc:
             "Ask Gemini to write real-world problems with separate solutions for you to check.",
@@ -5433,7 +5645,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
         },
         es: {
           intro:
-            "Use estas indicaciones de chat desarrolladas en colaboración en <strong>Gemini</strong> para apoyar el aprendizaje de su hijo en casa.",
+            "Copie y pegue estas indicaciones listas para usar en <strong>Gemini, ChatGPT u otra herramienta de IA</strong> para apoyar el aprendizaje de su hijo en casa.",
           box1Title: "Crear Problemas de Práctica Similares",
           box1Desc:
             "Pídale a Gemini que escriba problemas del mundo real con soluciones separadas para que usted los revise.",
@@ -5588,7 +5800,6 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
         },
         saveMuteStatus(isMuted) {
           try {
-            console.log("saveMuteStatus: setting to " + isMuted);
             localStorage.setItem("ai-hub-audio-muted", isMuted ? "true" : "false");
           } catch (e) {
             console.error("saveMuteStatus error:", e);
@@ -5597,7 +5808,6 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
         loadMuteStatus() {
           try {
             const saved = localStorage.getItem("ai-hub-audio-muted");
-            console.log("loadMuteStatus: retrieved " + saved);
             return saved === "true";
           } catch (e) {
             console.error("loadMuteStatus error:", e);
@@ -5622,7 +5832,6 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
         },
         saveEsolLevel(level) {
           try {
-            console.log("saveEsolLevel: setting to " + level);
             localStorage.setItem("ai-hub-esol-level", String(level));
           } catch (e) {
             console.error("saveEsolLevel error:", e);
@@ -5631,7 +5840,6 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
         loadEsolLevel() {
           try {
             const saved = localStorage.getItem("ai-hub-esol-level");
-            console.log("loadEsolLevel: retrieved " + saved);
             return parseInt(saved || "1", 10);
           } catch (e) {
             console.error("loadEsolLevel error:", e);
@@ -5729,10 +5937,13 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             if (dot) {
               if (i === stepNum) {
                 dot.className = "step-dot active";
+                dot.setAttribute("aria-current", "step");
               } else if (i < stepNum) {
                 dot.className = "step-dot completed";
+                dot.removeAttribute("aria-current");
               } else {
                 dot.className = "step-dot";
+                dot.removeAttribute("aria-current");
               }
             }
           }
@@ -5745,8 +5956,17 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             UI.renderUnitGrid();
             UI.renderProgressDashboard();
           } else if (stepNum === 3) {
-            STATE.selectedExample = 0;
-            
+            // Keep a valid selectedExample (Continue button restores a specific
+            // challenge; unit cards explicitly pass 0 via transitionState).
+            const unitExamples = UNIT_DATA[STATE.selectedUnit]?.examples || [];
+            if (
+              !Number.isInteger(STATE.selectedExample) ||
+              STATE.selectedExample < 0 ||
+              STATE.selectedExample >= unitExamples.length
+            ) {
+              STATE.selectedExample = 0;
+            }
+
             // Record last visited progress
             STATE.studentProgress.lastVisited = {
               unitId: STATE.selectedUnit,
@@ -5763,6 +5983,9 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
           const nextMuted = !STATE.audioMuted;
           STATE.audioMuted = nextMuted;
           Repository.saveMuteStatus(nextMuted);
+          if (nextMuted && window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+          }
           UI.renderMuteButton();
         },
         changeEsolLevel(level) {
@@ -5984,16 +6207,26 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
           completedUnitList.sort((a, b) => a - b);
           STATE.studentProgress.completedUnits = completedUnitList;
 
-          const lastVisited = STATE.studentProgress.lastVisited;
-          const hasLastVisited = lastVisited && lastVisited.unitId;
+          // Sanitize lastVisited before interpolating: localStorage is
+          // user-writable, so coerce to numbers and bounds-check instead of
+          // trusting it inside an inline onclick string.
+          const lastVisited = STATE.studentProgress.lastVisited || {};
+          const lastUnitId = Number(lastVisited.unitId);
+          const lastExampleIndex = Number(lastVisited.exampleIndex) || 0;
+          const lastUnit = UNIT_DATA[lastUnitId];
+          const hasLastVisited =
+            Number.isInteger(lastUnitId) &&
+            lastUnit &&
+            Number.isInteger(lastExampleIndex) &&
+            lastExampleIndex >= 0 &&
+            lastExampleIndex < lastUnit.examples.length;
 
           let continueBtnHtml = "";
           if (hasLastVisited) {
-            const lastUnit = UNIT_DATA[lastVisited.unitId];
-            const exName = lastUnit ? lastUnit.examples[lastVisited.exampleIndex].skill : "";
+            const exName = lastUnit.examples[lastExampleIndex].skill || "";
             continueBtnHtml = `
-              <button class="role-btn" style="background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);" onclick="Controller.transitionState({ selectedUnit: ${lastVisited.unitId}, selectedExample: ${lastVisited.exampleIndex} }); Controller.goToStep(3);">
-                🚀 Continue: Unit ${lastVisited.unitId} (${exName.substring(0, 24)}...)
+              <button class="role-btn" style="background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);" onclick="Controller.transitionState({ selectedUnit: ${lastUnitId}, selectedExample: ${lastExampleIndex} }); Controller.goToStep(3);">
+                🚀 Continue: Unit ${lastUnitId} (${escapeForAttr(exName.substring(0, 24))}…)
               </button>
             `;
           }
@@ -6090,16 +6323,25 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             }
             const isUnitComplete = STATE.completedChallenges[STATE.selectedUnit].every(val => val === true);
 
-            STATE.promptSelections = { role: "", topic: "", help: "", level: "" };
+            // The current unit's topic chip renders pre-selected, so it must
+            // also count as selected -- otherwise students see a highlighted
+            // chip yet the Start button stays disabled (2 clicks, not 3).
+            const presetTopic = ALL_TOPICS.find((t) => t.unit === STATE.selectedUnit);
+            STATE.promptSelections = {
+              role: "",
+              topic: presetTopic ? presetTopic.label : "",
+              help: "",
+              level: "",
+            };
             STATE.currentDialogueIndex = 0;
 
             container.innerHTML = `
               ${isUnitComplete ? `
                 <div class="certificate-banner" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(66, 133, 244, 0.15) 100%); border: 2px solid rgba(16, 185, 129, 0.4); border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 24px; box-shadow: 0 8px 32px rgba(16, 185, 129, 0.1);">
                   <span style="font-size: 2.5rem; display: block; margin-bottom: 8px;">🏆</span>
-                  <h4 style="margin: 0 0 8px; font-family: var(--font-heading); font-weight: 900; color: #10b981; font-size: 1.3rem;">Gemini AI Math Explorer Badge Earned!</h4>
+                  <h4 style="margin: 0 0 8px; font-family: var(--font-heading); font-weight: 900; color: #10b981; font-size: 1.3rem;">AI Math Explorer Badge Earned!</h4>
                   <p style="margin: 0 auto; max-width: 600px; font-size: 0.9rem; color: #cbd5e1; line-height: 1.5;">
-                    Fantastic achievement! You have successfully engineered prompts and worked through all 5 step-by-step math challenges in <strong>${data.name}</strong>. You have unlocked the elite Google Education & Gemini AI Math Explorer certification!
+                    Fantastic achievement! You built smart tutor prompts and worked through all 5 step-by-step math challenges in <strong>${data.name}</strong>. Pick another unit to keep your streak going!
                   </p>
                 </div>
               ` : ''}
@@ -6119,14 +6361,15 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                   </div>
 
                   <div class="progress-tracker-panel" style="background: rgba(255,255,255,0.01); border: 1px dashed var(--bg-panel-border); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-                    <span style="font-size: 0.78rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px;">Unit Progress Tracker</span>
+                    <span style="font-size: 0.875rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px;">Your 5 Challenges — tap a letter to switch</span>
                     <div style="display: flex; gap: 8px;">
                       ${data.examples.map((ex, idx) => {
                         let isDone = STATE.completedChallenges[STATE.selectedUnit][idx];
+                        let isActive = idx === STATE.selectedExample;
                         return `
-                          <div class="progress-star" style="width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid ${isDone ? '#10b981' : 'var(--bg-panel-border)'}; background: ${isDone ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.02)'}; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; color: ${isDone ? '#10b981' : 'var(--text-secondary)'}; cursor: default;" title="${ex.mathProblem}">
+                          <button type="button" class="progress-star" style="width: 34px; height: 34px; border-radius: 50%; border: ${isActive ? '2px solid #8ab4f8' : '1.5px solid ' + (isDone ? '#10b981' : 'var(--bg-panel-border)')}; background: ${isDone ? 'rgba(16,185,129,0.15)' : isActive ? 'rgba(66,133,244,0.15)' : 'rgba(255,255,255,0.02)'}; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 700; color: ${isDone ? '#10b981' : isActive ? '#8ab4f8' : 'var(--text-secondary)'}; cursor: pointer;" title="Challenge ${String.fromCharCode(65 + idx)}: ${escapeForAttr(ex.mathProblem)}" aria-label="Open challenge ${String.fromCharCode(65 + idx)}${isDone ? ' (completed)' : ''}" aria-current="${isActive ? 'true' : 'false'}" onclick="changeExample(${idx})">
                             ${isDone ? '★' : String.fromCharCode(65 + idx)}
-                          </div>
+                          </button>
                         `;
                       }).join('')}
                     </div>
@@ -6152,13 +6395,13 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                   <div class="builder-section" id="prompt-builder-area">
                     <h4 class="visual-options-title">Configure your AI Math Buddy:</h4>
                     
-                    <div class="builder-grid" style="grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                    <div class="builder-grid builder-grid-3" style="gap: 12px;">
                       <div class="builder-col">
                         <span class="col-label">🤖 1. Choose Tutor Role</span>
                         ${BUILDER_ROLES.map((r) => `<button type="button" class="builder-chip" data-value="${escapeForAttr(r.label)}" aria-label="Choose role: ${escapeForAttr(r.label)}" onclick="selectBuilderChip('role', this)">${r.label}<small>${r.desc}</small></button>`).join('')}
                       </div>
                       <div class="builder-col" style="max-height: 250px; overflow-y: auto;">
-                        <span class="col-label">📚 2. Choose Topic</span>
+                        <span class="col-label">📚 2. Your Topic (already picked ✓)</span>
                         ${ALL_TOPICS.map((topic) => {
                           const isSelected = STATE.selectedUnit === topic.unit;
                           return `<button type="button" class="builder-chip ${isSelected ? 'selected' : ''}" data-value="${escapeForAttr(topic.label)}" data-unit="${topic.unit}" aria-label="Choose ${escapeForAttr(topic.label)}" onclick="selectTopicChip(this, ${topic.unit})">${topic.label}</button>`;
@@ -6172,12 +6415,12 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
 
                     <div class="prompt-preview">
                       <span class="preview-label">Prompt Preview</span>
-                      <p class="preview-text" id="prompt-preview-text">Please click one option from each column above...</p>
+                      <p class="preview-text" id="prompt-preview-text">Your topic is already picked ✓ — now choose a Tutor Role (1) and a Help Amount (3).</p>
                     </div>
 
                     <div style="display: flex; gap: 10px; margin-top: 12px;">
                       <button class="submit-prompt-btn" id="submit-prompt" disabled onclick="submitPrompt()" style="flex: 2; margin: 0;">
-                        🚀 Send Prompt to Gemini
+                        🚀 Start My Tutor Chat
                       </button>
                       <button class="submit-prompt-btn" id="copy-prompt-student" disabled onclick="copyPromptStudent()" style="flex: 1; margin: 0; background: rgba(255,255,255,0.05); border: 1px solid var(--bg-panel-border); color: var(--text-primary);">
                         📋 Copy Prompt
@@ -6219,9 +6462,10 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                       <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12,2 C12,7.5 16.5,12 22,12 C16.5,12 12,16.5 12,22 C12,16.5 7.5,12 2,12 C7.5,12 12,7.5 12,2 Z" fill="#8ab4f8" />
                       </svg>
-                      Google AI Math Visualizer
+                      Math Visualizer
                     </h4>
                     <div class="svg-canvas" id="svg-canvas-container"></div>
+                    <div class="viz-caption" id="viz-caption" aria-live="polite"></div>
                   </div>
                 </div>
               </div> `;
@@ -6356,7 +6600,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0;">
                     <div>
                       <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); display: block; margin-bottom: 4px;">Target Student Tier</label>
-                      <select id="teacher-tier-select" onchange="updateTeacherPrompt()" style="width: 100%; background: rgba(7, 9, 19, 0.8); border: 1px solid var(--bg-panel-border); color: #fff; padding: 8px; border-radius: 6px; font-family: var(--font-body); font-size: 0.85rem; outline: none;">
+                      <select id="teacher-tier-select" onchange="updateTeacherPrompt()" style="width: 100%; background: rgba(7, 9, 19, 0.8); border: 1px solid var(--bg-panel-border); color: #fff; padding: 8px; border-radius: 6px; font-family: var(--font-body); font-size: 0.85rem;">
                         <option value="On-Level Support">Tier 1: On-Level Core practice</option>
                         <option value="Differentiated Intervention">Tier 2: Direct Intervention (Scaffolding & visual aids)</option>
                         <option value="Advanced Challenge & Extension">Tier 3: Enrichment & Depth of Knowledge (DOK 3)</option>
@@ -6365,7 +6609,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                     
                     <div>
                       <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); display: block; margin-bottom: 4px;">Worksheet Structure</label>
-                      <select id="teacher-style-select" onchange="updateTeacherPrompt()" style="width: 100%; background: rgba(7, 9, 19, 0.8); border: 1px solid var(--bg-panel-border); color: #fff; padding: 8px; border-radius: 6px; font-family: var(--font-body); font-size: 0.85rem; outline: none;">
+                      <select id="teacher-style-select" onchange="updateTeacherPrompt()" style="width: 100%; background: rgba(7, 9, 19, 0.8); border: 1px solid var(--bg-panel-border); color: #fff; padding: 8px; border-radius: 6px; font-family: var(--font-body); font-size: 0.85rem;">
                         <option value="Real-world Word Problems with Decomposing Visual Models">Real-world Word Problems with Visual Models</option>
                         <option value="Conceptual Inquiry Tasks & Math Journal Prompts">Conceptual Inquiry Tasks & Math Journal Prompts</option>
                         <option value="Differentiated Error Analysis challenges (Spot the Mistake)">Error Analysis challenges (Spot the Mistake)</option>
@@ -6397,6 +6641,12 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
 
       function changeExample(index) {
         STATE.selectedExample = index;
+        STATE.studentProgress.lastVisited = {
+          unitId: STATE.selectedUnit,
+          exampleIndex: index,
+          timestamp: Date.now(),
+        };
+        Repository.saveStudentProgress();
         UI.renderWorkspace();
       }
 
@@ -6428,8 +6678,8 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
         };
 
         if (STATE.promptSelections.role && STATE.promptSelections.topic && STATE.promptSelections.help) {
-          const widaName = document.querySelector("#select-esol-level option:checked")?.textContent || "Level 3: Expanding";
-          previewText.innerHTML = `Act as a <strong>${STATE.promptSelections.role}</strong>. I need help with <strong>${STATE.promptSelections.topic}</strong>. Please help me by <strong>${STATE.promptSelections.help}</strong>, adjusted for my <strong>${widaName}</strong> needs.`;
+          const widaName = document.querySelector("#select-esol-level option:checked")?.textContent || "Level 1: Newcomer (Bilingual)";
+          previewText.innerHTML = `Act as a <strong>${STATE.promptSelections.role}</strong>. I need help with <strong>${STATE.promptSelections.topic}</strong>. Help me with <strong>${STATE.promptSelections.help}</strong> — do not give me the final answer. Adjust your language for my level: <strong>${widaName}</strong>.`;
           previewText.style.color = "var(--text-primary)";
           submitBtn.removeAttribute("disabled");
           copyBtn.removeAttribute("disabled");
@@ -6437,9 +6687,9 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
           const parts = [];
           if (STATE.promptSelections.role) parts.push("Act as a " + STATE.promptSelections.role + ".");
           if (STATE.promptSelections.topic) parts.push("I need help with " + STATE.promptSelections.topic + ".");
-          if (STATE.promptSelections.help) parts.push("Please help me by " + STATE.promptSelections.help);
-          
-          previewText.textContent = parts.length > 0 ? parts.join(' ') + '...' : "Please click one option from each column above...";
+          if (STATE.promptSelections.help) parts.push("Help me with " + STATE.promptSelections.help);
+
+          previewText.textContent = parts.length > 0 ? parts.join(' ') + '...' : "Pick one option from each column. Your prompt builds here.";
           previewText.style.color = "var(--text-secondary)";
         }
       }
@@ -6490,15 +6740,44 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
         selectChip(category, element.dataset.value || "", element, exampleIdx);
       }
 
+      // Copy helper with a fallback for browsers/contexts where the async
+      // Clipboard API is unavailable or denied. Resolves true on success.
+      function safeCopyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text).then(
+            () => true,
+            () => legacyCopyText(text),
+          );
+        }
+        return Promise.resolve(legacyCopyText(text));
+      }
+
+      function legacyCopyText(text) {
+        try {
+          const area = document.createElement("textarea");
+          area.value = text;
+          area.setAttribute("readonly", "");
+          area.style.position = "fixed";
+          area.style.opacity = "0";
+          document.body.appendChild(area);
+          area.select();
+          const ok = document.execCommand("copy");
+          area.remove();
+          return ok;
+        } catch (_) {
+          return false;
+        }
+      }
+
       function copyPromptStudent() {
         const previewText = document.getElementById("prompt-preview-text").textContent;
         const btn = document.getElementById("copy-prompt-student");
-        
-        navigator.clipboard.writeText(previewText).then(() => {
-          btn.textContent = "✅ Copied!";
+
+        safeCopyText(previewText).then((ok) => {
+          btn.textContent = ok ? "✅ Copied!" : "⚠️ Copy failed — select the text and press Ctrl+C";
           setTimeout(() => {
             btn.textContent = "📋 Copy Prompt";
-          }, 2000);
+          }, 2500);
         });
       }
 
@@ -6552,6 +6831,36 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
         });
       }
 
+      // Typing indicator: shows animated dots in the chat log while the tutor
+      // "thinks" (was previously referenced but never defined, which crashed
+      // the whole tutor chat with a ReferenceError on first use).
+      function showTypingIndicator() {
+        const chatLog = document.getElementById("chat-log");
+        if (!chatLog) return;
+        hideTypingIndicator();
+        const indicator = document.createElement("div");
+        indicator.className = "typing-indicator";
+        indicator.id = "typing-indicator";
+        indicator.style.display = "flex";
+        indicator.setAttribute("aria-label", "Tutor is typing");
+        indicator.innerHTML =
+          '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+        chatLog.appendChild(indicator);
+        chatLog.scrollTop = chatLog.scrollHeight;
+      }
+
+      function hideTypingIndicator() {
+        const indicator = document.getElementById("typing-indicator");
+        if (indicator) indicator.remove();
+      }
+
+      // Parent workspace language toggle (was referenced by the EN/Español
+      // buttons but never defined, so the toggle threw a ReferenceError).
+      function setParentLang(lang) {
+        STATE.parentLang = lang === "es" ? "es" : "en";
+        UI.renderWorkspace();
+      }
+
       function startTutorChat() {
         const chatConsole = document.getElementById("chat-console");
         const chatLog = document.getElementById("chat-log");
@@ -6563,8 +6872,8 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
 
         sessionDialogues = buildSessionDialogues(STATE.selectedUnit, STATE.selectedExample);
 
-        const widaName = document.querySelector("#select-esol-level option:checked")?.textContent || "Level 3: Expanding";
-        appendTutorMessage("user", `Act as a ${STATE.promptSelections.role}. I need help with ${STATE.promptSelections.topic}. Please help me by ${STATE.promptSelections.help}, adapted for my language level: ${widaName}.`);
+        const widaName = document.querySelector("#select-esol-level option:checked")?.textContent || "Level 1: Newcomer (Bilingual)";
+        appendTutorMessage("user", `Act as a ${STATE.promptSelections.role}. I need help with ${STATE.promptSelections.topic}. Help me with ${STATE.promptSelections.help} — do not give me the final answer. Adjust your language for my level: ${widaName}.`);
 
         showTypingIndicator();
         setTimeout(() => {
@@ -6587,7 +6896,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             introExplanation = `<div style="background: rgba(139, 92, 246, 0.1); border: 1.5px dashed rgba(139, 92, 246, 0.3); padding: 12px; border-radius: 8px; margin-bottom: 12px; color: var(--text-primary); font-size: 0.85rem; line-height: 1.45;">🎓 <strong>Tutor Concept Lesson:</strong><br>${explanationCatalog[STATE.selectedUnit] || ''}</div>`;
           }
           
-          const rawQ = sessionDialogues[0].q;
+          const rawQ = `<strong>Step 1 of ${sessionDialogues.length}:</strong> ${sessionDialogues[0].q}<br><span class="viz-cue">👀 Tip: the Math Visualizer picture shows this problem as a model.</span>`;
           const adaptedQ = adaptTutorMessage(rawQ, STATE.promptSelections.role, STATE.promptSelections.help, true);
           appendTutorMessage("bot", introExplanation + adaptedQ);
         }, 1200);
@@ -6607,7 +6916,12 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
 
         const bubble = document.createElement("div");
         bubble.className = "chat-bubble";
-        bubble.innerHTML = text;
+        if (sender === "user") {
+          // Student-typed text must never be parsed as HTML (XSS via chat input).
+          bubble.textContent = text;
+        } else {
+          bubble.innerHTML = text;
+        }
 
         row.appendChild(avatar);
         row.appendChild(bubble);
@@ -6762,7 +7076,8 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             drawVisualModel(STATE.currentDialogueIndex);
 
             if (STATE.currentDialogueIndex < sessionDialogues.length) {
-              const rawQ = sessionDialogues[STATE.currentDialogueIndex].q;
+              const stepNum = STATE.currentDialogueIndex + 1;
+              const rawQ = `✅ Nice work! <strong>Step ${stepNum} of ${sessionDialogues.length}:</strong> ${sessionDialogues[STATE.currentDialogueIndex].q}<br><span class="viz-cue">👀 The picture just updated — check the Math Visualizer.</span>`;
               const adaptedQ = adaptTutorMessage(rawQ, STATE.promptSelections.role, STATE.promptSelections.help);
               appendTutorMessage("bot", adaptedQ);
             } else {
@@ -6779,7 +7094,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                 canvasSvg.classList.add("success-glow");
               }
 
-              appendTutorMessage("bot", "Fantastic! You solved the math problem successfully. That is how we use AI to learn! 🎉");
+              appendTutorMessage("bot", "Fantastic! You solved the math problem step by step — look at the finished picture in the Math Visualizer. 🎉 That is how we use AI to learn! Ready for more? Tap the next letter (A–E) at the top to start your next challenge.");
               const inputBar = document.querySelector(".chat-input-bar");
               if (inputBar) inputBar.style.display = "none";
               const helpers = document.querySelector(".chat-helpers");
@@ -7530,7 +7845,14 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
         const txt = document.getElementById("prompt-txt-" + idx).textContent;
         const btn = document.getElementById("copy-btn-" + idx);
 
-        navigator.clipboard.writeText(txt).then(() => {
+        safeCopyText(txt).then((ok) => {
+          if (!ok) {
+            btn.innerHTML = "⚠️ Copy failed — select the text above and press Ctrl+C";
+            setTimeout(() => {
+              btn.innerHTML = idx === "teacher" ? "📋 Copy Teacher Prompt" : PARENT_LANG[STATE.parentLang].copyBtn;
+            }, 2500);
+            return;
+          }
           btn.className = "copy-btn copied";
           if (idx === "teacher") {
             btn.innerHTML = "✅ Teacher Prompt Copied!";
@@ -7554,7 +7876,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
         const style = document.getElementById("teacher-style-select").value;
         const data = UNIT_DATA[STATE.selectedUnit];
         
-        const promptText = `Act as an expert Grade 6 Math Coach collaborating with Google for Education, Pearson, and HMH. 
+        const promptText = `Act as an expert Grade 6 Math Coach.
 Generate a custom classroom worksheet for ${data.name} focusing on "${data.topic}".
 Target Student Level: ${tier}
 Worksheet Style: ${style}
@@ -7589,23 +7911,23 @@ Instructions:
               let finalHighlight =
                 step >= 2 ? "rgba(16, 185, 129, 0.2)" : "none";
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <rect x="30" y="40" width="160" height="120" fill="${colorCell}" stroke="#4285f4" stroke-width="2" />
                   <line x1="140" y1="40" x2="140" y2="160" stroke="#fff" stroke-dasharray="3" />
                   <text x="85" y="30" fill="#fff" font-size="10" text-anchor="middle">10</text>
                   <text x="165" y="30" fill="#fff" font-size="10" text-anchor="middle">2.5</text>
                   <text x="115" y="15" fill="#8ab4f8" font-size="11" font-weight="bold" text-anchor="middle">Length: 12.5</text>
-                  <text x="15" y="105" fill="#fff" font-size="11" text-anchor="middle" font-weight="bold">Height: 4</text>
+                  <text x="12" y="105" fill="#fff" font-size="11" text-anchor="middle" font-weight="bold" transform="rotate(-90 12 105)">Height: 4</text>
                   <rect x="30" y="40" width="160" height="120" fill="${finalHighlight}" />
-                  ${step >= 2 ? `<text x="110" y="105" fill="#10b981" font-size="16" font-weight="bold" text-anchor="middle">Area = 50.0</text>` : `<text x="110" y="105" fill="var(--text-secondary)" font-size="11" text-anchor="middle">125 × 4 = 500</text>`}
+                  ${step >= 2 ? `<text x="110" y="105" fill="#10b981" font-size="16" font-weight="bold" text-anchor="middle">Area = 50.0</text>` : `<text x="110" y="98" fill="#cbd5e1" font-size="10" text-anchor="middle">Think: 125 × 4 = 500,</text><text x="110" y="112" fill="#cbd5e1" font-size="10" text-anchor="middle">then put the decimal back</text>`}
                 </svg>
               `;
             } else if (ex === 1) {
               // 14.8 ÷ 2
               let splitOpacity = step >= 1 ? "1" : "0.2";
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <text x="110" y="30" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">Total: 14.8</text>
                   <rect x="20" y="50" width="180" height="40" fill="rgba(66, 133, 244, 0.15)" stroke="#4285f4" stroke-width="2" />
@@ -7618,7 +7940,7 @@ Instructions:
                     <text x="157" y="125" fill="#fff" font-size="11" text-anchor="middle">${step >= 2 ? "7.4" : "74"}</text>
                   </g>
                   
-                  ${step >= 2 ? `<text x="110" y="180" fill="#10b981" font-size="13" font-weight="bold" text-anchor="middle">Each Share = 7.4</text>` : `<text x="110" y="180" fill="var(--text-secondary)" font-size="10" text-anchor="middle">Divide 148 by 2</text>`}
+                  ${step >= 2 ? `<text x="110" y="180" fill="#10b981" font-size="13" font-weight="bold" text-anchor="middle">Each Share = 7.4</text>` : `<text x="110" y="180" fill="#cbd5e1" font-size="10" text-anchor="middle">Think: 148 ÷ 2 = 74, then place the decimal</text>`}
                 </svg>
               `;
             } else if (ex === 2) {
@@ -7627,7 +7949,7 @@ Instructions:
               let finalHighlight =
                 step >= 2 ? "rgba(16, 185, 129, 0.2)" : "none";
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <rect x="40" y="40" width="140" height="120" fill="${fillGrid}" stroke="#c58af9" stroke-width="2" />
                   <line x1="130" y1="40" x2="130" y2="160" stroke="#fff" stroke-dasharray="2" />
@@ -7637,7 +7959,7 @@ Instructions:
                   <text x="15" y="85" fill="#fff" font-size="9" text-anchor="middle">1.0</text>
                   <text x="15" y="145" fill="#fff" font-size="9" text-anchor="middle">0.2</text>
                   <rect x="40" y="40" width="140" height="120" fill="${finalHighlight}" />
-                  ${step >= 2 ? `<text x="110" y="195" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">Area = 4.2</text>` : `<text x="110" y="195" fill="var(--text-secondary)" font-size="10" text-anchor="middle">Partial products: 35 × 12</text>`}
+                  ${step >= 2 ? `<text x="110" y="195" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">Area = 4.2</text>` : `<text x="110" y="195" fill="#cbd5e1" font-size="10" text-anchor="middle">Think: 35 × 12 = 420, then place the decimal</text>`}
                 </svg>
               `;
             } else if (ex === 3) {
@@ -7646,7 +7968,7 @@ Instructions:
                 step >= 1 ? "rgba(16, 185, 129, 0.2)" : "none";
               let textHighlight = step >= 1 ? "#10b981" : "#fff";
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <ellipse cx="90" cy="110" rx="60" ry="60" fill="rgba(66, 133, 244, 0.15)" stroke="#4285f4" stroke-width="2" />
                   <ellipse cx="130" cy="110" rx="60" ry="60" fill="rgba(197, 138, 249, 0.15)" stroke="#c58af9" stroke-width="2" />
@@ -7668,7 +7990,7 @@ Instructions:
               // LCM Multiple Search (6 and 8)
               let showLCM = step >= 1;
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <text x="110" y="30" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">Multiples Search</text>
                   <text x="30" y="70" fill="#8ab4f8" font-size="10" font-weight="bold">6:</text>
@@ -7723,7 +8045,7 @@ Instructions:
                   ? `Flip: Multiply by ${reciprocal}`
                   : `Divide by ${fracB}`;
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <rect x="25" y="40" width="170" height="30" fill="rgba(66, 133, 244, 0.2)" stroke="#4285f4" stroke-width="2" />
                   <text x="110" y="30" fill="#fff" font-size="11" text-anchor="middle">Keep: ${fracA}</text>
@@ -7744,7 +8066,7 @@ Instructions:
               let showImproper = step >= 1;
               let showFinal = step >= 2;
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <text x="110" y="25" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">Represent 1 1/2</text>
                   <rect x="20" y="40" width="80" height="40" fill="rgba(66, 133, 244, 0.2)" stroke="#4285f4" stroke-width="2" />
@@ -7771,7 +8093,7 @@ Instructions:
               let showReciprocal = step >= 1;
               let showFinal = step >= 2;
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <text x="110" y="25" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">4 Wholes divided by 2/3</text>
                   <g stroke="#4285f4" stroke-width="1.5" fill="rgba(66, 133, 244, 0.1)">
@@ -7854,7 +8176,7 @@ Instructions:
               if (step === 1) markerX = 110;
               if (step >= 2) markerX = 170;
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <line x1="20" y1="60" x2="200" y2="60" stroke="#4285f4" stroke-width="2" />
                   <line x1="20" y1="50" x2="20" y2="70" stroke="#4285f4" />
@@ -7887,7 +8209,7 @@ Instructions:
               let unitPrice2 = step >= 2 ? "$1.80 / can" : "Find unit price";
               let showFinal = step >= 3;
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <text x="110" y="25" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">Cost Comparison</text>
                   <rect x="20" y="45" width="180" height="40" fill="rgba(66, 133, 244, 0.1)" stroke="#4285f4" stroke-width="1.5" />
@@ -7960,7 +8282,7 @@ Instructions:
             }
 
             svgContent = `
-              <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+              <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                 <rect width="100%" height="100%" fill="#060813" />
                 <rect x="20" y="80" width="180" height="30" fill="rgba(255,255,255,0.02)" stroke="var(--bg-panel-border)" stroke-width="2" />
                 <rect x="20" y="80" width="${activeFillWidth}" height="30" fill="rgba(66, 133, 244, 0.3)" stroke="#4285f4" stroke-width="2" />
@@ -7986,7 +8308,7 @@ Instructions:
                   : "rgba(255,255,255,0.02)";
               let areaLine = step >= 1 ? "#fff" : "rgba(255,255,255,0.1)";
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <rect x="40" y="40" width="80" height="100" fill="${areaAFill}" stroke="#4285f4" stroke-width="2" />
                   <rect x="120" y="80" width="60" height="60" fill="${areaBFill}" stroke="#c58af9" stroke-width="2" />
@@ -8004,7 +8326,7 @@ Instructions:
                   ? "rgba(16, 185, 129, 0.3)"
                   : "rgba(66, 133, 244, 0.15)";
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <rect x="30" y="50" width="160" height="100" fill="${rectFill}" stroke="#c58af9" stroke-width="1.5" stroke-dasharray="3" />
                   <polygon points="30,150 190,150 110,50" fill="${triFill}" stroke="#4285f4" stroke-width="2.5" />
@@ -8022,7 +8344,7 @@ Instructions:
                   ? "rgba(16, 185, 129, 0.3)"
                   : "rgba(66, 133, 244, 0.2)";
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <polygon points="30,140 70,140 70,60" fill="${shapeFill}" stroke="#4285f4" style="transform: translate(${triOffset}px, 0px); transition: transform 0.5s;" />
                   <polygon points="70,60 170,60 170,140 70,140" fill="${shapeFill}" stroke="#4285f4" />
@@ -8038,7 +8360,7 @@ Instructions:
               let showMult = step >= 2;
               let showFinal = step >= 3;
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <polygon points="50,60 170,60 210,140 10,140" fill="rgba(66, 133, 244, 0.15)" stroke="#4285f4" stroke-width="2" />
                   <line x1="50" y1="60" x2="50" y2="140" stroke="#fff" stroke-dasharray="2" />
@@ -8067,11 +8389,11 @@ Instructions:
               // Decimal rectangle area (5.5m × 4m)
               let showFinal = step >= 1;
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <rect x="30" y="50" width="160" height="110" fill="rgba(66, 133, 244, 0.2)" stroke="#4285f4" stroke-width="2" />
                   <text x="110" y="40" fill="#fff" font-size="11" text-anchor="middle">Length = 5.5m</text>
-                  <text x="15" y="110" fill="#fff" font-size="11" text-anchor="middle" font-weight="bold">W: 4m</text>
+                  <text x="12" y="110" fill="#fff" font-size="11" text-anchor="middle" font-weight="bold" transform="rotate(-90 12 110)">W: 4m</text>
                   ${
                     showFinal
                       ? `
@@ -8090,7 +8412,7 @@ Instructions:
               let faceColor2 = step >= 2 ? "#c58af9" : "rgba(255,255,255,0.05)";
               let faceColor3 = step >= 3 ? "#10b981" : "rgba(255,255,255,0.05)";
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <rect x="30" y="90" width="40" height="40" fill="${faceColor1}" stroke="#fff" />
                   <rect x="70" y="90" width="50" height="40" fill="${faceColor2}" stroke="#fff" />
@@ -8105,7 +8427,7 @@ Instructions:
             } else if (ex === 1) { // Volume 4x3x2
               let fillBox = step >= 1 ? "rgba(16, 185, 129, 0.3)" : "none";
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <polygon points="40,130 140,130 180,90 80,90" fill="${fillBox}" stroke="#4285f4" stroke-width="2" />
                   <polygon points="40,70 140,70 180,30 80,30" fill="${fillBox}" stroke="#4285f4" stroke-width="2" />
@@ -8122,7 +8444,7 @@ Instructions:
             } else if (ex === 2) { // Cube side 3
               let faceColor = step >= 2 ? "#10b981" : (step >= 1 ? "#4285f4" : "rgba(255,255,255,0.05)");
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <rect x="30" y="90" width="40" height="40" fill="${faceColor}" stroke="#fff" />
                   <rect x="70" y="90" width="40" height="40" fill="${faceColor}" stroke="#fff" />
@@ -8138,7 +8460,7 @@ Instructions:
               let showBase = step >= 1;
               let showFinal = step >= 2;
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <polygon points="40,120 130,120 170,80 80,80" fill="rgba(66, 133, 244, 0.15)" stroke="#4285f4" stroke-width="2" />
                   <line x1="40" y1="120" x2="40" y2="60" stroke="#4285f4" />
@@ -8160,7 +8482,7 @@ Instructions:
               let showRect = step >= 2;
               let showFinal = step >= 3;
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <rect x="60" y="70" width="100" height="40" fill="${showRect ? 'rgba(197,138,249,0.2)' : 'rgba(255,255,255,0.02)'}" stroke="#fff" />
                   <rect x="60" y="30" width="100" height="40" fill="${showRect ? 'rgba(197,138,249,0.2)' : 'rgba(255,255,255,0.02)'}" stroke="#fff" />
@@ -8203,7 +8525,7 @@ Instructions:
             }
 
             svgContent = `
-              <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+              <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                 <rect width="100%" height="100%" fill="#060813" />
                 <line x1="30" y1="120" x2="190" y2="120" stroke="#fff" stroke-width="4" />
                 <polygon points="110,120 95,160 125,160" fill="rgba(255,255,255,0.2)" stroke="#fff" />
@@ -8234,7 +8556,7 @@ Instructions:
 
             if (ex === 0 || ex === 1 || ex === 2) {
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <line x1="20" y1="130" x2="200" y2="130" stroke="#fff" stroke-width="2" />
                   ${sortedVals
@@ -8261,7 +8583,7 @@ Instructions:
               // Mode dot plot (2, 5, 2, 8, 2, 9)
               let showMode = step >= 1;
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <line x1="20" y1="140" x2="200" y2="140" stroke="#fff" stroke-width="2" />
                   <circle cx="50" cy="125" r="5" fill="${showMode ? "#10b981" : "#4285f4"}" />
@@ -8288,7 +8610,7 @@ Instructions:
               let showDist = step >= 1;
               let showFinal = step >= 2;
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <line x1="20" y1="120" x2="200" y2="120" stroke="#fff" stroke-width="2" />
                   <circle cx="50" cy="120" r="5" fill="#4285f4" />
@@ -8358,7 +8680,7 @@ Instructions:
               let mapX = (x) => 110 + x * 16;
               let mapY = (y) => 110 - y * 16;
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <line x1="110" y1="10" x2="110" y2="210" stroke="rgba(255,255,255,0.15)" />
                   <line x1="10" y1="110" x2="210" y2="110" stroke="rgba(255,255,255,0.15)" />
@@ -8392,7 +8714,7 @@ Instructions:
               let showWidth = step >= 2;
               let showFinal = step >= 3;
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <line x1="110" y1="10" x2="110" y2="210" stroke="rgba(255,255,255,0.1)" />
                   <line x1="10" y1="110" x2="210" y2="110" stroke="rgba(255,255,255,0.1)" />
@@ -8418,7 +8740,7 @@ Instructions:
               let mapY = (y) => 110 - y * 16;
               let showReflect = step >= 1;
               svgContent = `
-                <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+                <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                   <rect width="100%" height="100%" fill="#060813" />
                   <line x1="110" y1="10" x2="110" y2="210" stroke="rgba(255,255,255,0.15)" />
                   <line x1="10" y1="110" x2="210" y2="110" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" />
@@ -8453,7 +8775,7 @@ Instructions:
             }
 
             svgContent = `
-              <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
+              <svg viewBox="0 0 220 220" role="img" aria-label="Math model picture">
                 <rect width="100%" height="100%" fill="#060813" />
                 <rect x="15" y="15" width="190" height="185" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.1)" stroke-width="2" />
                 <text x="110" y="40" fill="#8ab4f8" font-size="11" font-weight="bold" text-anchor="middle">CHECKOUT LEDGER</text>
@@ -8468,6 +8790,27 @@ Instructions:
         }
 
         canvas.innerHTML = svgContent;
+        updateVizCaption(step);
+      }
+
+      // Step-synced caption under the Math Visualizer: tells students what the
+      // picture is showing right now, so the visual is a deliberate part of
+      // each guided step instead of silent decoration.
+      function updateVizCaption(step) {
+        const captionEl = document.getElementById("viz-caption");
+        if (!captionEl) return;
+        const total = sessionDialogues.length || 4;
+        let msg;
+        if (step <= 0) {
+          msg =
+            "<strong>👀 Look first:</strong> this picture shows your problem as a math model. Use it to plan your first answer.";
+        } else if (step < total) {
+          msg = `<strong>👀 Picture update (step ${Math.min(step, total)} of ${total}):</strong> the highlighted part shows what you just figured out. Use it for the next question.`;
+        } else {
+          msg =
+            "<strong>🎉 Finished picture:</strong> the model now shows the whole answer. Can you explain it using the picture?";
+        }
+        captionEl.innerHTML = msg;
       }
 
       // ============================================================================
@@ -8479,10 +8822,13 @@ Instructions:
             const isActive = index + 1 === moduleNumber;
             tab.classList.toggle("active", isActive);
             tab.setAttribute("aria-selected", String(isActive));
+            // Roving tabindex so arrow keys own the tab strip
+            tab.setAttribute("tabindex", isActive ? "0" : "-1");
           });
 
           document.querySelectorAll(".ai101-module").forEach((module, index) => {
             module.classList.toggle("active", index + 1 === moduleNumber);
+            module.setAttribute("tabindex", "0");
           });
         },
         ai101ApplyTheme(theme) {
@@ -8504,6 +8850,21 @@ Instructions:
           button.classList.add("selected");
           this.ai101SetOutput("ai101-detective-output", feedback);
         },
+        ai101ChoosePrompt(button, feedback) {
+          this.ai101ClearSelected("#ai101-module-2 .ai101-prompt-bank .ai101-chip");
+          button.classList.add("selected");
+          this.ai101SetOutput("ai101-prompt-feedback", feedback);
+        },
+        ai101SelectSort(button, feedback) {
+          this.ai101ClearSelected("#ai101-module-1 .ai101-sort-grid .ai101-card-btn");
+          button.classList.add("selected");
+          this.ai101SetOutput("ai101-sort-feedback", feedback);
+        },
+        ai101CheckScenario(button, feedback) {
+          this.ai101ClearSelected("#ai101-module-3 .ai101-choice-grid .ai101-card-btn");
+          button.classList.add("selected");
+          this.ai101SetOutput("ai101-scenario-feedback", feedback);
+        },
         ai101ClearSelected(groupSelector) {
           document.querySelectorAll(groupSelector).forEach((button) => {
             button.classList.remove("selected");
@@ -8514,7 +8875,7 @@ Instructions:
           const subject = document.getElementById("ai101-subject").value.trim() || "today's assignment";
           const stuck = document.getElementById("ai101-stuck").value.trim() || "getting started";
           const support = document.getElementById("ai101-support").value;
-          const prompt = `Copy this into AI:\nAct like a patient tutor for ${grade}. My student is working on ${subject}. The hard part is: ${stuck}. Please ${support}. Ask one question at a time. Give hints and one similar example, but do not write the final answer. After my student tries, give feedback and ask: "Can you explain this in your own words?"\n\nParent check / Revision familiar:\n1. Did AI give hints instead of the final answer?\n2. Did my student try the work?\n3. Can my student explain the idea?`;
+          const prompt = `Copy this into AI:\nAct like a patient tutor for ${grade}. My student is working on ${subject}. The hard part is: ${stuck}. Please ${support}. Ask one question at a time. Give hints and one similar example, but do not write the final answer. After my student tries, give feedback and ask: "Can you explain this in your own words?"\n\nParent check / Revisión familiar:\n1. Did AI give hints instead of the final answer?\n2. Did my student try the work?\n3. Can my student explain the idea?`;
           this.ai101SetOutput("ai101-built-prompt", prompt);
           const progress = document.getElementById("ai101-prompt-progress");
           if (progress) progress.style.width = "100%";
@@ -8529,7 +8890,7 @@ Instructions:
           const topic = document.getElementById("ai101-custom-topic")?.value.trim() || "today's assignment";
           const need = document.getElementById("ai101-student-need")?.value || "get hints without the final answer";
           const language = document.getElementById("ai101-home-language")?.value || "English only";
-          const assignmentPrompt = `Copy this into Gemini, ChatGPT, or another AI tool:\n\nAct like a patient homework coach for a middle school student. The assignment topic is: ${topic}.\n\nThe student needs to: ${need}.\nHome language support: ${language}.\n\nRules:\n1. Do not give the final answer.\n2. Start by restating the directions in simple words.\n3. Ask one question to find out what the student already understands.\n4. Give one hint and one similar example.\n5. Give the student a short practice task.\n6. After the student tries, ask them to explain the idea in their own words.\n7. If facts are involved, name what source the family should check.\n\nParent script:\n- \"Show me the assignment.\"\n- \"Ask for a hint, not the answer.\"\n- \"Explain it to me before you submit.\"\n\nPrivacy reminder: Do not paste student names, addresses, passwords, school IDs, screenshots, grades, IEP/504 details, or medical information.\n\nRecordatorio: No pegues nombres, direcciones, contrasenas, numeros escolares, capturas, calificaciones, informacion IEP/504 o informacion medica.`;
+          const assignmentPrompt = `Copy this into Gemini, ChatGPT, or another AI tool:\n\nAct like a patient homework coach for a middle school student. The assignment topic is: ${topic}.\n\nThe student needs to: ${need}.\nHome language support: ${language}.\n\nRules:\n1. Do not give the final answer.\n2. Start by restating the directions in simple words.\n3. Ask one question to find out what the student already understands.\n4. Give one hint and one similar example.\n5. Give the student a short practice task.\n6. After the student tries, ask them to explain the idea in their own words.\n7. If facts are involved, name what source the family should check.\n\nParent script:\n- \"Show me the assignment.\"\n- \"Ask for a hint, not the answer.\"\n- \"Explain it to me before you submit.\"\n\nPrivacy reminder: Do not paste student names, addresses, passwords, school IDs, screenshots, grades, IEP/504 details, or medical information.\n\nRecordatorio: No pegues nombres, direcciones, contraseñas, números escolares, capturas, calificaciones, información IEP/504 o información médica.`;
           this.ai101SetOutput("ai101-assignment-output", assignmentPrompt);
         },
         ai101RedactPrivacy() {
@@ -8558,7 +8919,7 @@ Instructions:
         ai101BuildRoutine() {
           const subject = document.getElementById("ai101-routine-subject").value.trim() || "homework";
           const goal = document.getElementById("ai101-routine-goal").value;
-          const routine = `15-Minute Family AI Routine\nUse for: ${subject}\nGoal: ${goal}\n\n1. Student explains the assignment. Parent asks: "What do you understand?" (2 minutes)\n2. Student points to the hard part. Parent asks: "What have you already tried?" (2 minutes)\n3. Ask AI only for ${goal}. Say: "Give hints and one similar example. Do not give the final answer." (5 minutes)\n4. Student does the real work without copying AI text. (4 minutes)\n5. Student teaches back: "Here is what I understand now." (2 minutes)\n\nRutina familiar en espanol:\n1. El estudiante explica la tarea.\n2. El estudiante muestra la parte dificil.\n3. La IA da pistas, ejemplos o practica, no la respuesta final.\n4. El estudiante hace el trabajo real.\n5. El estudiante explica lo que entiende.`;
+          const routine = `15-Minute Family AI Routine\nUse for: ${subject}\nGoal: ${goal}\n\n1. Student explains the assignment. Parent asks: "What do you understand?" (2 minutes)\n2. Student points to the hard part. Parent asks: "What have you already tried?" (2 minutes)\n3. Ask AI only for ${goal}. Say: "Give hints and one similar example. Do not give the final answer." (5 minutes)\n4. Student does the real work without copying AI text. (4 minutes)\n5. Student teaches back: "Here is what I understand now." (2 minutes)\n\nRutina familiar en español:\n1. El estudiante explica la tarea.\n2. El estudiante muestra la parte difícil.\n3. La IA da pistas, ejemplos o práctica, no la respuesta final.\n4. El estudiante hace el trabajo real.\n5. El estudiante explica lo que entiende.`;
           this.ai101SetOutput("ai101-routine-output", routine);
         },
         ai101GetPlanItems() {
@@ -8577,12 +8938,25 @@ Instructions:
             <strong>Our AI agreement / Nuestro acuerdo de IA:</strong>
             <ul>${list}</ul>
             <p>Before turning in work, our student will be able to explain the final answer in their own words.</p>
-            <p class="ai101-es">Antes de entregar trabajo, nuestro estudiante podra explicar la respuesta final con sus propias palabras.</p>
+            <p class="ai101-es">Antes de entregar trabajo, nuestro estudiante podrá explicar la respuesta final con sus propias palabras.</p>
           `;
         },
         ai101TogglePlan(button) {
           button.classList.toggle("selected");
           this.ai101RenderPlan();
+        },
+        ai101CopyOutput(outputId) {
+          const output = document.getElementById(outputId);
+          if (!output) return;
+          safeCopyText(output.textContent.trim()).then((ok) => {
+            const note = document.createElement("p");
+            note.style.marginTop = "8px";
+            note.innerHTML = ok
+              ? "<strong>Copied / Copiado.</strong> Paste it into Gemini, ChatGPT, or another AI tool."
+              : "<strong>Copy failed.</strong> Select the text and press Ctrl+C.";
+            output.appendChild(note);
+            setTimeout(() => note.remove(), 4000);
+          });
         },
         ai101CopyPlan() {
           const items = this.ai101GetPlanItems();
@@ -8590,13 +8964,22 @@ Instructions:
             "Our Family AI Agreement / Nuestro Acuerdo Familiar de IA",
             ...items.map((item) => `- ${item}`),
             "- Before turning in work, our student will be able to explain the final answer in their own words.",
-            "- Antes de entregar trabajo, nuestro estudiante podra explicar la respuesta final con sus propias palabras."
+            "- Antes de entregar trabajo, nuestro estudiante podrá explicar la respuesta final con sus propias palabras."
           ].join("\n");
 
-          navigator.clipboard.writeText(planText).then(() => {
+          safeCopyText(planText).then((ok) => {
             const output = document.getElementById("ai101-plan-output");
+            if (!ok) {
+              if (output) {
+                output.insertAdjacentHTML(
+                  "beforeend",
+                  "<p><strong>Copy failed.</strong> Select the checklist text and press Ctrl+C. <span class=\"ai101-es\">Selecciona el texto y presiona Ctrl+C.</span></p>",
+                );
+              }
+              return;
+            }
             if (output) {
-              output.insertAdjacentHTML("beforeend", "<p><strong>Copied / Copiado.</strong> You can paste this into a note, email, or family document. <span class=\"ai101-es\">Puedes pegarlo en una nota, correo electronico o documento familiar.</span></p>");
+              output.insertAdjacentHTML("beforeend", "<p><strong>Copied / Copiado.</strong> You can paste this into a note, email, or family document. <span class=\"ai101-es\">Puedes pegarlo en una nota, correo electrónico o documento familiar.</span></p>");
             }
           });
         },
@@ -8613,7 +8996,11 @@ Instructions:
             "#ai101-basics": 1,
             "#ai101-tutor": 2,
             "#ai101-safety": 3,
-            "#ai101-plan": 4
+            "#ai101-plan": 4,
+            "#ai101-module-1": 1,
+            "#ai101-module-2": 2,
+            "#ai101-module-3": 3,
+            "#ai101-module-4": 4
           };
 
           if (ai101Routes[hash]) {
@@ -8718,6 +9105,9 @@ Instructions:
       window.ai101ShowModule = (n) => Controller.ai101ShowModule(n);
       window.ai101ToggleTheme = () => Controller.ai101ToggleTheme();
       window.ai101Detective = (btn, fb) => Controller.ai101Detective(btn, fb);
+      window.ai101ChoosePrompt = (btn, fb) => Controller.ai101ChoosePrompt(btn, fb);
+      window.ai101SelectSort = (btn, fb) => Controller.ai101SelectSort(btn, fb);
+      window.ai101CheckScenario = (btn, fb) => Controller.ai101CheckScenario(btn, fb);
       window.ai101BuildPrompt = () => Controller.ai101BuildPrompt();
       window.ai101FillAssignmentTopic = () => Controller.ai101FillAssignmentTopic();
       window.ai101BuildAssignmentPrompt = () => Controller.ai101BuildAssignmentPrompt();
@@ -8728,6 +9118,7 @@ Instructions:
       window.ai101BuildRoutine = () => Controller.ai101BuildRoutine();
       window.ai101TogglePlan = (btn) => Controller.ai101TogglePlan(btn);
       window.ai101CopyPlan = () => Controller.ai101CopyPlan();
+      window.ai101CopyOutput = (id) => Controller.ai101CopyOutput(id);
       window.ai101PrintPlan = () => Controller.ai101PrintPlan();
 
       // App initial load event listeners hook
@@ -8742,11 +9133,9 @@ Instructions:
           if (savedProgress) {
             STATE.studentProgress = savedProgress;
           }
-          if (savedProgress && savedProgress.completedChallenges) {
-            Object.keys(savedProgress.completedChallenges).forEach(k => {
-              STATE.completedChallenges[k] = savedProgress.completedChallenges[k];
-            });
-          }
+          // Completed challenges live under their own key, not inside
+          // studentProgress -- load them here so progress survives a reload.
+          Repository.loadProgress();
         } catch (e) {
           console.error("Initialization check failed: " + e.message);
         }
@@ -8760,6 +9149,37 @@ Instructions:
         UI.renderMuteButton();
 
         window.addEventListener("hashchange", () => Controller.handleDeepLink());
+
+        // Arrow-key navigation for the AI 101 tab strip (WAI-ARIA tabs pattern)
+        const tablist = document.querySelector(".ai101-tabs[role='tablist']");
+        if (tablist) {
+          tablist.addEventListener("keydown", (e) => {
+            const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
+            if (!keys.includes(e.key)) return;
+            const tabs = Array.from(tablist.querySelectorAll(".ai101-tab"));
+            const current = tabs.indexOf(document.activeElement);
+            if (current === -1) return;
+            e.preventDefault();
+            let next = current;
+            if (e.key === "ArrowLeft") next = (current - 1 + tabs.length) % tabs.length;
+            if (e.key === "ArrowRight") next = (current + 1) % tabs.length;
+            if (e.key === "Home") next = 0;
+            if (e.key === "End") next = tabs.length - 1;
+            Controller.ai101ShowModule(next + 1);
+            tabs[next].focus();
+          });
+          // Initialize roving tabindex to match the default active tab
+          Controller.ai101ShowModule(1);
+        }
+
+        // Diagnostics console is teacher/dev-only: open with ?selftest=1
+        // (it was previously wired to a double-click on the student-facing logo).
+        try {
+          const params = new URLSearchParams(window.location.search);
+          if (params.get("selftest") === "1") {
+            Controller.triggerSelfTest();
+          }
+        } catch (_) {}
       }
 
       if (document.readyState === "loading") {
