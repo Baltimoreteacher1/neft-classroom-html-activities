@@ -55,8 +55,7 @@
     const length = clean(fields.length) || "45–60 minutes";
     const date = clean(fields.date) || clean(map.date) || "";
     const topic = clean(fields.topic) || clean(map.title) || content.topicLabel;
-    const title =
-      clean(map.title) || clean(fields.topic) || `${content.topicLabel} Lesson`;
+    const title = clean(map.title) || clean(fields.topic) || `${content.topicLabel} Lesson`;
 
     // Standards: form field wins, else parsed codes, else domain label.
     let standards = [];
@@ -66,9 +65,7 @@
         .map((s) => s.trim())
         .filter(Boolean)
         .map((s) => {
-          const m = s.match(
-            /(\d+\.[A-Z]{1,3}(?:\.[A-Z])?\.\d+[a-z]?)\s*[-–—:]?\s*(.*)/i,
-          );
+          const m = s.match(/(\d+\.[A-Z]{1,3}(?:\.[A-Z])?\.\d+[a-z]?)\s*[-–—:]?\s*(.*)/i);
           return m ? { code: m[1], desc: m[2] || "" } : { code: "", desc: s };
         });
     } else if (map.standards && map.standards.length) {
@@ -139,10 +136,18 @@
       ],
     };
 
+    // ---------- Profile-driven supports (window.LPGProfile strategies) ----------
+    // fields.profile = { summary, strategies, includeIds } when a class
+    // support profile is locked in; null otherwise. Strategy text is
+    // teacher-facing only — the student handout never receives it.
+    const prof = fields.profile || null;
+    const strat = (prof && prof.strategies) || {};
+
     // ---------- Section 4: Do Now ----------
     const doNow = {
       directions:
-        "Silent, 3–5 min. Try every question; star the one you're unsure about.",
+        "Silent, 3–5 min. Try every question; star the one you're unsure about." +
+        (strat.doNowNote ? " " + strat.doNowNote : ""),
       items: content.doNow,
       teacherMove:
         "Circulate; note 1–2 approaches to surface in the mini-lesson. Thumbs check before moving on.",
@@ -199,32 +204,55 @@
             ? "Show your thinking in words."
             : "",
       })),
-      showThinking:
-        "For at least two problems, write a sentence explaining HOW you solved it.",
+      showThinking: "For at least two problems, write a sentence explaining HOW you solved it.",
       extension: `Challenge: create your own ${content.topicLabel} problem, solve it, and write the answer key.`,
+      coreSet: strat.independentCore || "",
     };
 
     // ---------- Section 9: Writing / TWR ----------
-    const writing = content.twr;
+    const writing = Object.assign({}, content.twr, {
+      supports: (strat.writingSupports || []).slice(),
+    });
 
     // ---------- Section 10: Differentiation ----------
+    // Base lines cover a typical mixed class; when a class support profile
+    // is locked in, its concrete strategy lines take priority and the
+    // generic fallbacks are dropped so nothing reads as boilerplate.
     const widaLevel = clean(fields.wida);
     const spedNeeds = clean(fields.sped);
-    const differentiation = {
-      esol: [
-        "Pre-teach vocabulary with the picture/Spanish supports in the Vocabulary section.",
-        "Provide the sentence frames for every spoken and written response.",
+    const hasEsolStrat = !!(strat.esol && strat.esol.length);
+    const hasSpedStrat = !!(strat.sped && strat.sped.length);
+    const baseEsol = [
+      "Pre-teach the vocabulary table (word + Spanish + frame) in a 3-minute small group before the Do Now.",
+      "Every spoken and written response gets a sentence frame from Section 9 — using it is the expectation.",
+    ];
+    if (!hasEsolStrat) {
+      baseEsol.push(
         widaLevel
-          ? `Match support to WIDA ${widaLevel}: more visuals/native-language bridge at lower levels.`
-          : "Pair lower-language students with a supportive partner for talk rehearsal.",
-      ],
-      sped: [
-        "Chunk the practice set; reduce the number of required problems.",
-        "Provide a worked example to reference and a step checklist.",
-        spedNeeds
-          ? `Per IEP/504 needs noted: ${spedNeeds}.`
-          : "Extended time and read-aloud of directions as needed.",
-      ],
+          ? `Match support to WIDA ${widaLevel}: more visuals and native-language bridging at lower levels; precise-vocabulary push at higher levels.`
+          : "Pair developing-English students with a supportive partner and rehearse the answer aloud before any whole-class share.",
+      );
+    }
+    const baseSped = [
+      "Keep the worked example posted and visible during independent practice — it is a reference, not a reward.",
+    ];
+    if (!hasSpedStrat) {
+      baseSped.push(
+        "Hand out independent practice in chunks: problems 1–3 first, then 4–6 after a check-in.",
+        "Read directions aloud twice; students highlight the numbers and underline the question before solving.",
+      );
+    }
+    if (spedNeeds) {
+      baseSped.push(`Teacher-noted needs for this class: ${spedNeeds}.`);
+    }
+    const differentiation = {
+      esol: baseEsol.concat(hasEsolStrat ? strat.esol : []),
+      sped: baseSped.concat(hasSpedStrat ? strat.sped : []),
+      grouping: (strat.grouping || []).slice(),
+      pacing: strat.pacingNote || "",
+      profileNote: prof
+        ? `Built from the locked class support profile (${prof.summary.total} student${prof.summary.total === 1 ? "" : "s"}). Supports are written as whole-class moves and teacher-facing notes — no student names, labels, or plan types appear in any student-facing material.`
+        : "",
       newcomer: [
         "Use the bilingual vocabulary, visuals, and a model to follow.",
         "Allow drawing/labeling and gestures to show understanding before writing.",
@@ -248,15 +276,13 @@
     const cfu = {
       doNow: "Thumbs check + scan starred questions to gauge readiness.",
       mini: "Cold-call the next step during the think-aloud; quick choral response on the key idea.",
-      guided:
-        "Mini-whiteboards on one problem; look for the strategy, not just the answer.",
-      independent:
-        "Confer with 4–5 students; flag who needs the reteach group.",
+      guided: "Mini-whiteboards on one problem; look for the strategy, not just the answer.",
+      independent: "Confer with 4–5 students; flag who needs the reteach group.",
       decisionPoints: [
         "If <70% solid after guided practice → re-model before releasing.",
         "If a common error appears → pause and address with a non-example.",
         "If most are solid → extend with the challenge problem.",
-      ],
+      ].concat(strat.cfuPoints || []),
     };
 
     // ---------- Section 12: Exit Ticket ----------
@@ -268,6 +294,7 @@
       },
       tomorrow:
         "0–1 correct → reteach in small group tomorrow. 2 correct → targeted guided practice. All correct → move on / extend.",
+      accommodations: (strat.exitAccommodations || []).slice(),
     };
 
     // ---------- Section 13: Teacher Notes / Next-Day ----------
@@ -276,8 +303,7 @@
       lookFor:
         "Whether errors are procedural (steps) or conceptual (meaning) — that decides the reteach.",
       reteachWho: "Students who missed the exit-ticket procedural items.",
-      adjust:
-        "Open tomorrow with a Do Now mirroring the most-missed exit-ticket item.",
+      adjust: "Open tomorrow with a Do Now mirroring the most-missed exit-ticket item.",
       smallGroups:
         "Form a 4–6 student reteach group from the not-yet pile; enrichment task for the met pile.",
       extra: clean(fields.notes),
@@ -317,6 +343,7 @@
         domainLabel: content.topicLabel,
         inferred,
         generic: !!content.generic,
+        profileApplied: !!prof,
       },
     };
   }

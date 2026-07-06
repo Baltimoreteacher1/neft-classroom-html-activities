@@ -54,12 +54,7 @@ body {
     Arial,
     sans-serif;
   background:
-    radial-gradient(
-      circle at top left,
-      rgba(15, 118, 110, 0.13),
-      transparent 34rem
-    ),
-    var(--bg);
+    radial-gradient(circle at top left, rgba(15, 118, 110, 0.13), transparent 34rem), var(--bg);
   color: var(--text);
   line-height: 1.45;
 }
@@ -441,6 +436,17 @@ textarea {
 @keyframes pulse {
   50% {
     opacity: 0.35;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .pipeline li.running .pip {
+    animation: none;
+  }
+  * {
+    transition-duration: 0.01ms !important;
   }
 }
 
@@ -833,8 +839,10 @@ textarea {
   .topbar,
   .foot,
   #inputCard,
+  #profileCard,
   #statusCard,
   .output-head,
+  .export-status,
   .btn {
     display: none !important;
   }
@@ -863,4 +871,160 @@ textarea {
     break-inside: avoid;
     page-break-inside: avoid;
   }
+}
+
+/* ---- Validation states ---- */
+.field-invalid {
+  border-color: var(--red) !important;
+  background: var(--bad-bg) !important;
+}
+
+/* ---- QA notices (advisory, non-blocking) ---- */
+.qa-notice {
+  border-radius: 10px;
+  padding: 9px 12px;
+  margin: 8px 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+.qa-notice-warn {
+  background: var(--warn-bg);
+  color: var(--gold);
+  border: 1px solid #fcd34d;
+}
+.qa-notice-ok {
+  background: var(--ok-bg);
+  color: var(--green);
+  border: 1px solid #a7f3d0;
+}
+
+/* ---- Export status line ---- */
+.export-status {
+  min-height: 1.2em;
+  margin: 0 0 10px;
+  font-weight: 700;
+}
+.export-status.ok {
+  color: var(--green);
+}
+.export-status.bad {
+  color: var(--red);
+}
+
+/* ---- Class support profile ---- */
+.optional-tag {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 9px;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+.profile-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 12px 0 4px;
+  align-items: center;
+}
+.profile-locked {
+  background: var(--ok-bg);
+  border: 1px solid #a7f3d0;
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+.profile-locked-line {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+}
+.profile-locked-line .lock-icon {
+  margin-right: 4px;
+}
+.profile-chips {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 4px;
+  padding: 0;
+}
+.profile-chip {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.profile-chip.plan {
+  border-color: var(--teal);
+  color: var(--teal-2);
+}
+.profile-preview {
+  margin-top: 10px;
+}
+.table-scroll {
+  overflow-x: auto;
+}
+.profile-table td,
+.profile-table th {
+  white-space: normal;
+}
+.private-flag {
+  color: var(--gold);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.check-row {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  margin: 14px 0 8px;
+  font-size: 0.88rem;
+}
+.check-row input {
+  margin-top: 2px;
+  width: 17px;
+  height: 17px;
+  accent-color: var(--teal);
+}
+.btn.danger {
+  color: var(--red);
+  border-color: #fecaca;
+}
+.btn.danger:hover {
+  background: var(--bad-bg);
+}
+
+/* ---- History chips (buttons, keyboard-accessible) ---- */
+.history-chip-wrap {
+  display: inline-flex;
+  align-items: stretch;
+}
+.history-chip-wrap .history-chip {
+  border-radius: 8px 0 0 8px;
+  border-right: 0;
+}
+.history-chip-wrap .delete-hist-btn {
+  border: 1px solid var(--line);
+  border-radius: 0 8px 8px 0;
+  background: var(--paper);
+  padding: 0 8px;
+}
+
+/* ---- Profile note in the rendered plan ---- */
+.lesson-output .lp-profile-note {
+  background: #f0fdfa;
+  border: 1px dashed #99f6e4;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 9.5pt;
+  font-style: italic;
+  color: #115e59;
 }

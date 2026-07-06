@@ -56,9 +56,7 @@
   function detectDomain(map, fields) {
     fields = fields || {};
     const codes =
-      (map.standards || []).map((s) => s.code).join(" ") +
-      " " +
-      (fields.standards || "");
+      (map.standards || []).map((s) => s.code).join(" ") + " " + (fields.standards || "");
     const m = codes.match(/6\.(RP|NS|EE|G|SP)/i);
     if (m) return m[1].toUpperCase();
     const hay = [
@@ -79,26 +77,14 @@
 
   /* ---------- shared vocabulary bank (term, def, spanish, frame) ---------- */
   const VOCAB_BANK = {
-    ratio: [
-      "a comparison of two amounts",
-      "razón",
-      "The ratio of ___ to ___ is ___.",
-    ],
-    rate: [
-      "a ratio comparing two different units",
-      "tasa",
-      "The rate is ___ per ___.",
-    ],
+    ratio: ["a comparison of two amounts", "razón", "The ratio of ___ to ___ is ___."],
+    rate: ["a ratio comparing two different units", "tasa", "The rate is ___ per ___."],
     "unit rate": [
       "a rate for exactly one unit",
       "tasa unitaria",
       "The unit rate is ___ per 1 ___.",
     ],
-    percent: [
-      "a part out of 100",
-      "por ciento",
-      "___ percent means ___ out of 100.",
-    ],
+    percent: ["a part out of 100", "por ciento", "___ percent means ___ out of 100."],
     quotient: [
       "the answer to a division problem",
       "cociente",
@@ -144,32 +130,20 @@
       "desigualdad",
       "___ is ___ than ___.",
     ],
-    area: [
-      "the amount of space inside a flat shape",
-      "área",
-      "The area is ___ square units.",
-    ],
+    area: ["the amount of space inside a flat shape", "área", "The area is ___ square units."],
     "composite figure": [
       "a shape made of two or more simple shapes",
       "figura compuesta",
       "I split the figure into ___ and ___.",
     ],
-    volume: [
-      "the amount of space inside a solid",
-      "volumen",
-      "The volume is ___ cubic units.",
-    ],
+    volume: ["the amount of space inside a solid", "volumen", "The volume is ___ cubic units."],
     "surface area": [
       "the total area of all faces of a solid",
       "área de superficie",
       "The surface area is the sum of ___.",
     ],
     mean: ["the average; total shared equally", "media", "The mean is ___."],
-    median: [
-      "the middle value of ordered data",
-      "mediana",
-      "The median is ___.",
-    ],
+    median: ["the middle value of ordered data", "mediana", "The median is ___."],
     range: [
       "the difference between the highest and lowest values",
       "rango",
@@ -187,9 +161,7 @@
       const hit = VOCAB_BANK[key];
       return {
         term: t,
-        def: hit
-          ? hit[0]
-          : "student-friendly meaning of this term in this lesson",
+        def: hit ? hit[0] : "student-friendly meaning of this term in this lesson",
         spanish: hit ? hit[1] : "",
         frame: hit ? hit[2] : `I can use "${t}" when I ___.`,
       };
@@ -316,8 +288,7 @@
       misconceptions: [
         {
           error: "Flipping the unit rate (dividing the wrong way).",
-          correction:
-            "Keep the unit you want on top; divide by the per-unit quantity.",
+          correction: "Keep the unit you want on top; divide by the per-unit quantity.",
         },
         {
           error: "Treating a ratio like a total instead of parts.",
@@ -470,7 +441,7 @@
       doNow: [
         {
           level: "Access",
-          q: `Write ${base} × ${base} × ${base.toString()}${exp > 2 ? " × " + base : ""} using an exponent.`,
+          q: `Write ${Array(exp).fill(base).join(" × ")} using an exponent.`,
           a: `${base}^${exp}`,
         },
         { level: "Grade-level", q: `Evaluate ${base}^${exp}.`, a: `${power}` },
@@ -559,13 +530,11 @@
       misconceptions: [
         {
           error: `Reading ${base}^${exp} as ${base} × ${exp} (multiplying instead of repeated multiplication).`,
-          correction:
-            "The exponent counts how many times to MULTIPLY the base by itself.",
+          correction: "The exponent counts how many times to MULTIPLY the base by itself.",
         },
         {
           error: "Only changing one side of an equation.",
-          correction:
-            "Do the same inverse operation to BOTH sides to stay balanced.",
+          correction: "Do the same inverse operation to BOTH sides to stay balanced.",
         },
       ],
     };
@@ -692,24 +661,19 @@
         },
         {
           error: "Mixing up square and cubic units.",
-          correction:
-            "Area = square units (flat); volume = cubic units (space).",
+          correction: "Area = square units (flat); volume = cubic units (space).",
         },
       ],
     };
   }
 
   function gen_SP(r) {
-    const data = Array.from({ length: 5 }, () => ri(r, 2, 18)).sort(
-      (a, b) => a - b,
-    );
+    const data = Array.from({ length: 5 }, () => ri(r, 2, 18)).sort((a, b) => a - b);
     const sum = data.reduce((a, b) => a + b, 0);
     const mean = round2(sum / data.length);
     const median = data[2];
     const range = data[4] - data[0];
-    const mad = round2(
-      data.reduce((a, b) => a + Math.abs(b - mean), 0) / data.length,
-    );
+    const mad = round2(data.reduce((a, b) => a + Math.abs(b - mean), 0) / data.length);
     const set = data.join(", ");
     return {
       topicLabel: "Statistics & Probability",
@@ -832,10 +796,7 @@
       generic: true,
       doNow: [
         item("Access", `Warm-up: recall one fact you need for ${topic}.`),
-        item(
-          "Grade-level",
-          `Solve one ${topic} problem like the ones in your source.`,
-        ),
+        item("Grade-level", `Solve one ${topic} problem like the ones in your source.`),
         item("Stretch", `Explain, in words, the main idea behind ${topic}.`),
       ],
       worked: {
@@ -851,8 +812,7 @@
           "Connect each step to the objective so students hear the reasoning.",
         ],
         commonMistake: `The most likely error for ${topic} (e.g., skipping a step or mislabeling).`,
-        correction:
-          "Clarify with a quick non-example, then re-model the correct step.",
+        correction: "Clarify with a quick non-example, then re-model the correct step.",
       },
       guided: [1, 2, 3, 4].map((i) => ({
         q: `Guided problem ${i}: a ${topic} problem, gradually harder.`,
@@ -861,8 +821,7 @@
       })),
       collabTask: `Partners solve one ${topic} problem, then justify their answer to each other using the sentence frame "${frame}".`,
       independent: [1, 2, 3, 4, 5].map((i) => ({
-        type:
-          i === 5 ? "Error analysis" : i % 2 ? "Procedural" : "Word problem",
+        type: i === 5 ? "Error analysis" : i % 2 ? "Procedural" : "Word problem",
         q: `Independent problem ${i} on ${topic}.`,
         a: "From source / worked example.",
       })),
@@ -877,10 +836,7 @@
           a: "(self-report)",
         },
       ],
-      vocabTerms:
-        map.vocabulary && map.vocabulary.length
-          ? map.vocabulary.slice(0, 5)
-          : [topic],
+      vocabTerms: map.vocabulary && map.vocabulary.length ? map.vocabulary.slice(0, 5) : [topic],
       misconceptions: [
         {
           error: `A common error students make with ${topic}.`,

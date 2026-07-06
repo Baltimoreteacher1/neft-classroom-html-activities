@@ -19,9 +19,7 @@
 
   function ensureLib() {
     if (typeof window.docx === "undefined") {
-      throw new Error(
-        "Word export library (docx) failed to load. Reload the page and try again.",
-      );
+      throw new Error("Word export library (docx) failed to load. Reload the page and try again.");
     }
     return window.docx;
   }
@@ -60,9 +58,7 @@
 
     const H1 = (s) =>
       new Paragraph({
-        children: [
-          new TextRun({ text: txt(s), bold: true, size: 36, color: TEAL }),
-        ],
+        children: [new TextRun({ text: txt(s), bold: true, size: 36, color: TEAL })],
         spacing: { after: 80 },
       });
     const sub = (s) =>
@@ -72,9 +68,7 @@
       });
     const H2 = (s) =>
       new Paragraph({
-        children: [
-          new TextRun({ text: txt(s), bold: true, size: 26, color: TEAL }),
-        ],
+        children: [new TextRun({ text: txt(s), bold: true, size: 26, color: TEAL })],
         spacing: { before: 220, after: 90 },
         border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: TEAL } },
       });
@@ -126,14 +120,8 @@
       new TableCell({
         borders: cellBorders,
         margins: cellMargins,
-        shading: opts.head
-          ? { fill: TEAL }
-          : opts.shading
-            ? { fill: opts.shading }
-            : undefined,
-        width: opts.width
-          ? { size: opts.width, type: WidthType.PERCENTAGE }
-          : undefined,
+        shading: opts.head ? { fill: TEAL } : opts.shading ? { fill: opts.shading } : undefined,
+        width: opts.width ? { size: opts.width, type: WidthType.PERCENTAGE } : undefined,
         children: (Array.isArray(content) ? content : [content]).map((c) =>
           typeof c === "string"
             ? new Paragraph({
@@ -156,9 +144,7 @@
         rows: [
           new TableRow({
             tableHeader: true,
-            children: headers.map((h, i) =>
-              cell(h, { head: true, width: widths && widths[i] }),
-            ),
+            children: headers.map((h, i) => cell(h, { head: true, width: widths && widths[i] })),
           }),
           ...rows.map(
             (r, rowIndex) =>
@@ -260,13 +246,7 @@
     out.push(k.H1(h.title));
     out.push(
       k.sub(
-        [
-          h.date && "Date: " + h.date,
-          h.grade,
-          h.course,
-          h.unit && "Unit: " + h.unit,
-          h.length,
-        ]
+        [h.date && "Date: " + h.date, h.grade, h.course, h.unit && "Unit: " + h.unit, h.length]
           .filter(Boolean)
           .join("   |   "),
       ),
@@ -277,9 +257,7 @@
       .map((s) => s.code || s.desc)
       .filter(Boolean)
       .join(", ");
-    const flowStr = (h.pacing || [])
-      .map(([name, t]) => `${name} ${t}`)
-      .join("  →  ");
+    const flowStr = (h.pacing || []).map(([name, t]) => `${name} ${t}`).join("  →  ");
     const glanceRow = (label, val) =>
       new k.Paragraph({
         children: [
@@ -314,9 +292,7 @@
         [
           [
             "Standard(s)",
-            h.standards
-              .map((s) => (s.code ? s.code + " — " : "") + (s.desc || ""))
-              .join("; "),
+            h.standards.map((s) => (s.code ? s.code + " — " : "") + (s.desc || "")).join("; "),
           ],
           ["Student-Friendly Objective", h.objective],
           ['"I Can" Statement', h.iCan],
@@ -370,12 +346,7 @@
     out.push(k.H2("3 · Vocabulary / Language Support"));
     out.push(
       k.table(
-        [
-          "Term",
-          "Student-friendly definition",
-          "Spanish",
-          "ESOL sentence frame",
-        ],
+        ["Term", "Student-friendly definition", "Spanish", "ESOL sentence frame"],
         plan.vocab.map((v) => [v.term, v.def, v.spanish || "—", v.frame]),
         [20, 38, 14, 28],
       ),
@@ -391,9 +362,7 @@
         [16, 52, 32],
       ),
     );
-    out.push(
-      k.runs([{ t: "Teacher move: ", b: true }, { t: plan.doNow.teacherMove }]),
-    );
+    out.push(k.runs([{ t: "Teacher move: ", b: true }, { t: plan.doNow.teacherMove }]));
 
     // 5 · Mini-Lesson
     out.push(k.H2("5 · Mini-Lesson / Direct Instruction" + at(t.mini)));
@@ -402,38 +371,19 @@
     out.push(k.H3("Student notes"));
     out.push(...k.bullets(plan.mini.studentNotes));
     out.push(k.H3("Worked example"));
-    out.push(
-      k.runs([{ t: "Problem: ", b: true }, { t: plan.mini.worked.problem }]),
-    );
-    out.push(
-      ...k.bullets(plan.mini.worked.steps.map((x, i) => `Step ${i + 1}: ${x}`)),
-    );
+    out.push(k.runs([{ t: "Problem: ", b: true }, { t: plan.mini.worked.problem }]));
+    out.push(...k.bullets(plan.mini.worked.steps.map((x, i) => `Step ${i + 1}: ${x}`)));
     out.push(k.H3("Think-aloud"));
     out.push(...k.bullets(plan.mini.worked.thinkAloud.map((t) => `"${t}"`)));
-    out.push(
-      k.runs([
-        { t: "Common mistake: ", b: true },
-        { t: plan.mini.worked.commonMistake },
-      ]),
-    );
-    out.push(
-      k.runs([
-        { t: "Correction: ", b: true },
-        { t: plan.mini.worked.correction },
-      ]),
-    );
+    out.push(k.runs([{ t: "Common mistake: ", b: true }, { t: plan.mini.worked.commonMistake }]));
+    out.push(k.runs([{ t: "Correction: ", b: true }, { t: plan.mini.worked.correction }]));
 
     // 6 · Guided
     out.push(k.H2("6 · Guided Practice" + at(t.guided)));
     out.push(
       k.table(
         ["#", "Problem", "Answer", "Teacher prompt"],
-        plan.guided.items.map((it, i) => [
-          String(i + 1),
-          it.q,
-          it.a,
-          it.prompt,
-        ]),
+        plan.guided.items.map((it, i) => [String(i + 1), it.q, it.a, it.prompt]),
         [6, 40, 24, 30],
       ),
     );
@@ -443,99 +393,69 @@
 
     // 7 · Collaborative
     const c = plan.collaborative;
-    out.push(
-      k.H2("7 · Collaborative / Partner Activity" + at(t.collaborative)),
-    );
-    out.push(
-      k.runs([
-        { t: "Student directions: ", b: true },
-        { t: c.studentDirections },
-      ]),
-    );
-    out.push(
-      k.runs([
-        { t: "Teacher directions: ", b: true },
-        { t: c.teacherDirections },
-      ]),
-    );
-    out.push(
-      k.runs([{ t: "Accountability: ", b: true }, { t: c.accountability }]),
-    );
+    out.push(k.H2("7 · Collaborative / Partner Activity" + at(t.collaborative)));
+    out.push(k.runs([{ t: "Student directions: ", b: true }, { t: c.studentDirections }]));
+    out.push(k.runs([{ t: "Teacher directions: ", b: true }, { t: c.teacherDirections }]));
+    out.push(k.runs([{ t: "Accountability: ", b: true }, { t: c.accountability }]));
     out.push(k.H3("Discussion prompts"));
     out.push(...k.bullets(c.discussionPrompts));
-    out.push(
-      k.runs([{ t: "Written response (TWR): ", b: true }, { t: c.twrWritten }]),
-    );
+    out.push(k.runs([{ t: "Written response (TWR): ", b: true }, { t: c.twrWritten }]));
 
     // 8 · Independent
     out.push(k.H2("8 · Independent Practice" + at(t.independent)));
     out.push(
       k.table(
         ["#", "Type", "Problem", "Answer key"],
-        plan.independent.items.map((it, i) => [
-          String(i + 1),
-          it.type,
-          it.q,
-          it.a,
-        ]),
+        plan.independent.items.map((it, i) => [String(i + 1), it.type, it.q, it.a]),
         [6, 18, 44, 32],
       ),
     );
     out.push(
-      k.runs([
-        { t: "Show your thinking: ", b: true },
-        { t: plan.independent.showThinking },
-      ]),
+      k.runs([{ t: "Show your thinking: ", b: true }, { t: plan.independent.showThinking }]),
     );
-    out.push(
-      k.runs([
-        { t: "Extension: ", b: true },
-        { t: plan.independent.extension },
-      ]),
-    );
+    out.push(k.runs([{ t: "Extension: ", b: true }, { t: plan.independent.extension }]));
+    if (plan.independent.coreSet) {
+      out.push(k.runs([{ t: "Core set: ", b: true }, { t: plan.independent.coreSet }]));
+    }
 
     // 9 · Writing / TWR
     const w = plan.writing;
     out.push(k.H2("9 · Writing / TWR Connection" + at(t.writing)));
     out.push(k.runs([{ t: "Kernel sentence: ", b: true }, { t: w.kernel }]));
-    out.push(
-      k.table(
-        ["Because", "But", "So"],
-        [[w.because, w.but, w.so]],
-        [34, 33, 33],
-      ),
-    );
-    out.push(
-      k.runs([{ t: "Explain your thinking: ", b: true }, { t: w.explain }]),
-    );
+    out.push(k.table(["Because", "But", "So"], [[w.because, w.but, w.so]], [34, 33, 33]));
+    out.push(k.runs([{ t: "Explain your thinking: ", b: true }, { t: w.explain }]));
     out.push(k.H3("Sentence frames"));
     out.push(...k.bullets(w.frames));
-    out.push(
-      k.runs([{ t: "Word bank: ", b: true }, { t: w.wordBank.join(", ") }]),
-    );
-    out.push(
-      k.runs([{ t: "Expected response: ", b: true }, { t: w.expected }]),
-    );
+    out.push(k.runs([{ t: "Word bank: ", b: true }, { t: w.wordBank.join(", ") }]));
+    out.push(k.runs([{ t: "Expected response: ", b: true }, { t: w.expected }]));
+    if (w.supports && w.supports.length) {
+      out.push(k.H3("Language & writing supports for this class"));
+      out.push(...k.bullets(w.supports));
+    }
 
     // 10 · Differentiation
     const dz = plan.differentiation;
     out.push(k.H2("10 · Differentiation"));
+    if (dz.profileNote) out.push(k.P(dz.profileNote, { italics: true }));
     out.push(k.H3("ESOL / WIDA supports"));
     out.push(...k.bullets(dz.esol));
     out.push(k.H3("SPED supports"));
     out.push(...k.bullets(dz.sped));
+    if (dz.grouping && dz.grouping.length) {
+      out.push(k.H3("Grouping for this class"));
+      out.push(...k.bullets(dz.grouping));
+    }
     out.push(k.H3("Newcomer supports"));
     out.push(...k.bullets(dz.newcomer));
     out.push(k.H3("On-grade supports"));
     out.push(...k.bullets(dz.onGrade));
     out.push(k.H3("Extension / enrichment"));
     out.push(...k.bullets(dz.extension));
-    out.push(
-      k.runs([{ t: "Small-group reteach: ", b: true }, { t: dz.reteach }]),
-    );
-    out.push(
-      k.runs([{ t: "Early finishers: ", b: true }, { t: dz.earlyFinishers }]),
-    );
+    out.push(k.runs([{ t: "Small-group reteach: ", b: true }, { t: dz.reteach }]));
+    out.push(k.runs([{ t: "Early finishers: ", b: true }, { t: dz.earlyFinishers }]));
+    if (dz.pacing) {
+      out.push(k.runs([{ t: "Pacing: ", b: true }, { t: dz.pacing }]));
+    }
 
     // 11 · Checks for Understanding
     const cf = plan.cfu;
@@ -564,18 +484,12 @@
         [6, 60, 34],
       ),
     );
-    out.push(
-      k.runs([
-        { t: "Confidence / reflection: ", b: true },
-        { t: plan.exit.confidence.q },
-      ]),
-    );
-    out.push(
-      k.runs([
-        { t: "Tomorrow, based on results: ", b: true },
-        { t: plan.exit.tomorrow },
-      ]),
-    );
+    out.push(k.runs([{ t: "Confidence / reflection: ", b: true }, { t: plan.exit.confidence.q }]));
+    if (plan.exit.accommodations && plan.exit.accommodations.length) {
+      out.push(k.H3("Assessment accommodations"));
+      out.push(...k.bullets(plan.exit.accommodations));
+    }
+    out.push(k.runs([{ t: "Tomorrow, based on results: ", b: true }, { t: plan.exit.tomorrow }]));
 
     // 13 · Teacher Notes / Next-Day
     const tn = plan.teacherNotes;
@@ -602,20 +516,13 @@
     out.push(
       k.runs([
         {
-          t:
-            "Name: _______________________     Date: " +
-            (h.date || "____________"),
+          t: "Name: _______________________     Date: " + (h.date || "____________"),
           b: false,
         },
       ]),
     );
     out.push(k.P(h.iCan, { bold: true }));
-    out.push(
-      k.runs([
-        { t: "Essential Question: ", b: true },
-        { t: h.essentialQuestion },
-      ]),
-    );
+    out.push(k.runs([{ t: "Essential Question: ", b: true }, { t: h.essentialQuestion }]));
 
     const space = (lines) =>
       new k.Paragraph({
@@ -632,12 +539,7 @@
 
     out.push(k.H2("Notes"));
     plan.mini.studentNotes.forEach((n) => out.push(k.P("• " + n)));
-    out.push(
-      k.runs([
-        { t: "Worked example: ", b: true },
-        { t: plan.mini.worked.problem },
-      ]),
-    );
+    out.push(k.runs([{ t: "Worked example: ", b: true }, { t: plan.mini.worked.problem }]));
     out.push(space(2));
 
     out.push(k.H2("Guided Practice"));
@@ -654,12 +556,7 @@
 
     out.push(k.H2("Partner Activity"));
     out.push(k.P(plan.collaborative.studentDirections));
-    out.push(
-      k.runs([
-        { t: "Write together: ", b: true },
-        { t: plan.collaborative.twrWritten },
-      ]),
-    );
+    out.push(k.runs([{ t: "Write together: ", b: true }, { t: plan.collaborative.twrWritten }]));
     out.push(space(2));
 
     out.push(k.H2("Independent Practice"));
@@ -668,10 +565,7 @@
       out.push(space(1));
     });
     out.push(
-      k.runs([
-        { t: "Show your thinking: ", b: true },
-        { t: plan.independent.showThinking },
-      ]),
+      k.runs([{ t: "Show your thinking: ", b: true }, { t: plan.independent.showThinking }]),
     );
     out.push(space(2));
 
@@ -684,9 +578,7 @@
     out.push(space(1));
     out.push(k.P("So: " + plan.writing.so));
     out.push(space(1));
-    out.push(
-      k.P("Word bank: " + plan.writing.wordBank.join(", "), { italics: true }),
-    );
+    out.push(k.P("Word bank: " + plan.writing.wordBank.join(", "), { italics: true }));
     out.push(space(2));
 
     out.push(k.H2("Exit Ticket"));
