@@ -1885,12 +1885,12 @@ function renderSkillPractice(host, config, state) {
     wrap.className = "sp-problem";
     wrap.innerHTML = `
       <p class="sp-stem"><span class="sp-num" aria-hidden="true">${i + 1}</span><span class="sp-stem-text" data-annotate="word-problem"><span class="sr-only">Problem ${i + 1} of ${total}. </span>${esc(it.stem)}</span></p>
-      <textarea class="sp-work text-input" rows="3" placeholder="Show your steps here…"></textarea>
+      <textarea class="sp-work text-input" rows="3" placeholder="Show your steps here…" aria-label="Problem ${i + 1}: show your steps"></textarea>
       <div class="sp-row">
-        <label class="sp-answer-label">My answer: <input class="sp-answer" type="text" /></label>
+        <label class="sp-answer-label">My answer: <input class="sp-answer" type="text" aria-label="Problem ${i + 1}: my answer" /></label>
         <button type="button" class="btn btn-secondary sp-check">Check answer</button>
       </div>
-      <div class="sp-reveal" hidden></div>`;
+      <div class="sp-reveal" hidden aria-live="polite"></div>`;
 
     const workEl = wrap.querySelector(".sp-work");
     const ansEl = wrap.querySelector(".sp-answer");
@@ -1899,24 +1899,40 @@ function renderSkillPractice(host, config, state) {
     ansEl.value = state.getResponse(2, `sp-ans-${i}`) || "";
     workEl.addEventListener("input", () => state.saveResponse(2, `sp-work-${i}`, workEl.value));
     ansEl.addEventListener("input", () => state.saveResponse(2, `sp-ans-${i}`, ansEl.value));
+    // Attempt-gated, two-stage checking: an empty check asks for a real try;
+    // a first miss coaches (no answer named) so "check again" stays meaningful;
+    // only a second miss reveals the answer. No zero-effort giveaways.
+    let spMisses = 0;
     wrap.querySelector(".sp-check").addEventListener("click", () => {
       reveal.hidden = false;
       const why = it.explanation
         ? `<br><span style="color:var(--muted,#5f6f80);">${esc(it.explanation)}</span>`
         : "";
+      if (!ansEl.value.trim() && !workEl.value.trim()) {
+        reveal.style.background = "rgba(230,168,0,0.10)";
+        reveal.style.borderColor = "var(--amber-ink,#8a5a00)";
+        reveal.innerHTML = `<strong>✏️</strong> ${stackHtml(t("spTryFirst", "en"), t("spTryFirst", "es"))}`;
+        (ansEl.value.trim() ? workEl : ansEl).focus();
+        return;
+      }
       const r = gradeSkillAnswer(ansEl.value, answer);
       if (r.graded && r.correct) {
         reveal.style.background = "rgba(46,158,91,0.10)";
         reveal.style.borderColor = "#2e9e5b";
         reveal.innerHTML = `<strong>✅ Correct!</strong> ${esc(answer)}${why}`;
+      } else if (r.graded && spMisses === 0) {
+        spMisses = 1;
+        reveal.style.background = "rgba(217,83,79,0.08)";
+        reveal.style.borderColor = "#d9534f";
+        reveal.innerHTML = `<strong>🔍</strong> ${stackHtml(t("spFirstMiss", "en"), t("spFirstMiss", "es"))}`;
       } else if (r.graded) {
         reveal.style.background = "rgba(217,83,79,0.08)";
         reveal.style.borderColor = "#d9534f";
-        reveal.innerHTML = `<strong>❌ Not quite.</strong> The answer is <strong>${esc(answer)}</strong>. Check your work and try again.${why}`;
+        reveal.innerHTML = `<strong>❌ Not quite.</strong> The answer is <strong>${esc(answer)}</strong>.${why}`;
       } else {
         reveal.style.background = "rgba(42,157,143,0.08)";
         reveal.style.borderColor = "var(--teal,#2a9d8f)";
-        reveal.innerHTML = `<strong>✅ Answer:</strong> ${esc(answer)}${why}`;
+        reveal.innerHTML = `<strong>✅ Answer:</strong> ${esc(answer)}${why} <br><span style="color:var(--muted,#5f6f80);">Compare each of your steps with this answer. Where do they match? Where do they differ?</span>`;
       }
     });
     card.append(wrap);
@@ -2354,22 +2370,157 @@ function renderReflectPhase(el, state, ctx, config) {
   // Inline Reveal Math slides for the closing/reflect section.
   renderRevealSlides(el, config, "closure");
 
-  // Exit ticket
-  phaseHeader(el, "🎯", "section-icon-navy", "Exit Ticket", "Show what you know!");
-  renderMultipleChoice(el, {
+  // Exit ticket — 3 quick questions: an auto-graded skill check, an
+  // explain-your-thinking response, and a mistake-analysis response. Q2/Q3
+  // reuse curated lesson content (the authored MC explanation and the
+  // common-mistake text) as attempt-gated self-check model answers, so every
+  // lesson gets a full ticket without inventing new math.
+  phaseHeader(el, "🎯", "section-icon-navy", "Exit Ticket", t("exitTicketIntro"));
+
+  const etCard = (labelKey) => {
+    const card = document.createElement("div");
+    card.className = "card exit-ticket-card";
+    card.innerHTML = `<div class="badge badge-navy mb-4">${stackHtml(t(labelKey, "en"), t(labelKey, "es"))}</div>`;
+    el.append(card);
+    return card;
+  };
+
+  // Open-response ticket item: sentence-frame chips + saved textarea +
+  // attempt-gated model-answer reveal (no zero-effort giveaways).
+  const buildOpenET = ({ labelKey, promptKey, frames, responseKey, model }) => {
+    const card = etCard(labelKey);
+    const prompt = document.createElement("p");
+    prompt.className = "problem-stem";
+    prompt.innerHTML = stackHtml(t(promptKey, "en"), t(promptKey, "es"));
+    card.append(prompt);
+
+    const ta = document.createElement("textarea");
+    ta.className = "text-input";
+    ta.rows = 3;
+    ta.placeholder = frames[0];
+    ta.setAttribute("aria-label", t(promptKey));
+    ta.value = state.getResponse(4, responseKey) || "";
+    ta.addEventListener("input", () => state.saveResponse(4, responseKey, ta.value));
+
+    const chips = document.createElement("div");
+    chips.className = "nw-chips";
+    chips.setAttribute("role", "group");
+    chips.setAttribute("aria-label", "Sentence starters — tap one to add it to your answer");
+    frames.forEach((frame) => {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "nw-chip";
+      chip.textContent = frame;
+      chip.title = "Tap to add this sentence starter";
+      chip.addEventListener("click", () => {
+        const needsSpace = ta.value && !/\s$/.test(ta.value);
+        ta.value = `${ta.value}${needsSpace ? " " : ""}${frame} `;
+        ta.focus();
+        ta.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+      chips.append(chip);
+    });
+    card.append(chips, ta);
+
+    if (model) {
+      const row = document.createElement("div");
+      row.className = "problem-check-row";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "btn btn-secondary";
+      btn.textContent = t("etCompareModel");
+      const out = document.createElement("div");
+      out.className = "problem-check-result";
+      out.setAttribute("aria-live", "polite");
+      btn.addEventListener("click", () => {
+        if (ta.value.trim().replace(/_/g, "").length < 12) {
+          out.className = "problem-check-result visible is-incorrect";
+          out.innerHTML = `<span class="feedback-icon">✏️</span><span>${stackHtml(t("etWriteFirst", "en"), t("etWriteFirst", "es"))}</span>`;
+          ta.focus();
+          return;
+        }
+        out.className = "problem-check-result visible is-correct";
+        out.innerHTML = `<span class="feedback-icon">📖</span><span><strong>${t("etModelAnswer")}:</strong> ${esc(model)}</span>`;
+        btn.style.display = "none";
+      });
+      row.append(btn);
+      card.append(row, out);
+    }
+    return ta;
+  };
+
+  let q2TA = null;
+  let q3TA = null;
+
+  // Q1 — authored skill-check MC. XP is awarded on the answer exactly as
+  // before, but the full-screen phase-complete takeover now waits for an
+  // explicit "Finish lesson" tap so Questions 2–3 stay reachable.
+  const q1Card = etCard("etQ1Label");
+  const finishRow = document.createElement("div");
+  finishRow.className = "problem-check-row";
+  finishRow.style.cssText = "justify-content:center; margin-top:var(--sp-4);";
+  const finishNote = document.createElement("div");
+  finishNote.className = "problem-check-result";
+  let finishWarned = false;
+
+  renderMultipleChoice(q1Card, {
     ...cfg.exitTicket,
     onAnswer(isCorrect) {
-      setTimeout(async () => {
-        const xp = ctx.engagement.awardXP(4, {
-          correct: isCorrect ? 1 : 0,
-          total: 1,
-        });
+      const xp = ctx.engagement.awardXP(4, {
+        correct: isCorrect ? 1 : 0,
+        total: 1,
+      });
+      const finishBtn = document.createElement("button");
+      finishBtn.type = "button";
+      finishBtn.className = "btn btn-primary";
+      finishBtn.textContent = "🏁 Finish lesson / Terminar la lección";
+      finishBtn.addEventListener("click", async () => {
+        // One gentle nudge toward the written questions; never a hard block.
+        if (!finishWarned && (!q2TA?.value.trim() || !q3TA?.value.trim())) {
+          finishWarned = true;
+          finishNote.className = "problem-check-result visible is-incorrect";
+          finishNote.innerHTML = `<span class="feedback-icon">📝</span><span>${stackHtml(t("etFinishReminder", "en"), t("etFinishReminder", "es"))}</span>`;
+          return;
+        }
+        finishNote.className = "problem-check-result";
+        finishNote.innerHTML = "";
         const stars = state.get().phases[4]?.stars ?? 0;
         await ctx.engagement.showPhaseComplete(el, "Reflect", xp, stars);
         showFinalSummary(el, state, config);
-      }, 1000);
+      });
+      finishRow.append(finishBtn);
+      finishBtn.scrollIntoView({ behavior: "smooth", block: "nearest" });
     },
   });
+
+  // Q2 — reasoning: justify the Q1 answer with a sentence frame.
+  q2TA = buildOpenET({
+    labelKey: "etQ2Label",
+    promptKey: "etQ2Prompt",
+    frames: [
+      "I know ___ because ___.",
+      "My answer makes sense because ___.",
+      "Sé que ___ porque ___.",
+    ],
+    responseKey: "exit_explain",
+    model: cfg.exitTicket?.explanation || "",
+  });
+
+  // Q3 — mistake analysis, self-checked against the lesson's common-mistake text.
+  q3TA = buildOpenET({
+    labelKey: "etQ3Label",
+    promptKey: "etQ3Prompt",
+    frames: [
+      "The mistake is ___ because ___.",
+      "To catch it, I would check ___.",
+      "El error es ___ porque ___.",
+    ],
+    responseKey: "exit_mistake",
+    model: deriveCommonMistake(config),
+  });
+
+  // The Finish button appears inside finishRow once Q1 is answered.
+  el.append(finishNote, finishRow);
 }
 
 // End-of-lesson objective self-review ("Did I get it?"). Reuses the same

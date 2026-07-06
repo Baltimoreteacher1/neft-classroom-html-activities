@@ -82,6 +82,22 @@ export function deriveHintLadder(prob) {
   }
 
   const scaffold = prob.scaffold || prob.hint || "";
+
+  // Pull the problem's own labels into the generic hints so the ladder talks
+  // about THIS problem, not problems in general. Names categories/headers only
+  // — never the placement or answer.
+  const catNames = Array.isArray(prob.categories)
+    ? prob.categories
+        .map((c) => (typeof c === "string" ? c : c?.label || c?.name || ""))
+        .filter(Boolean)
+        .slice(0, 4)
+    : [];
+  // fill-table configs use either `headers` or `columns` for the header row.
+  const headerSource = Array.isArray(prob.headers) ? prob.headers : prob.columns;
+  const headerNames = Array.isArray(headerSource)
+    ? headerSource.filter((h) => typeof h === "string").slice(0, 4)
+    : [];
+
   const typeHints = {
     "multiple-choice": [
       "Read the question twice. What is it really asking?",
@@ -89,12 +105,19 @@ export function deriveHintLadder(prob) {
       scaffold || "Pick the choice that matches the math rule you learned today.",
     ],
     "drag-sort": [
-      "Read every category label before you drag.",
+      catNames.length
+        ? `Read each category out loud first: ${catNames.join(" · ")}. Ask: what makes them different?`
+        : "Read every category label before you drag.",
       "Sort the easiest cards first — use them as clues for the rest.",
-      scaffold || "One card belongs in each category. Match the math vocabulary.",
+      scaffold ||
+        (catNames.length
+          ? `For each card, test it against every category (${catNames.join(", ")}) before you drop it.`
+          : "One card belongs in each category. Match the math vocabulary."),
     ],
     "fill-table": [
-      "Fill cells you already know. Look for a pattern between rows.",
+      headerNames.length
+        ? `Look at the column headings — ${headerNames.join(" · ")}. How does each row connect them?`
+        : "Fill cells you already know. Look for a pattern between rows.",
       "Check if each row grows by the same amount or follows a ratio.",
       scaffold || "Use the pattern to find missing values one cell at a time.",
     ],

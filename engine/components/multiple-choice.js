@@ -177,7 +177,7 @@ function fireChoiceConfetti(wrapper) {
 
 export function renderMultipleChoice(
   container,
-  { stem, choices, correctIndex, explanation, onAnswer, hideStem },
+  { stem, choices, correctIndex, explanation, onAnswer, hideStem, choiceFeedback, hint, scaffold },
 ) {
   injectMultipleChoiceStyles();
 
@@ -318,7 +318,12 @@ export function renderMultipleChoice(
         labels[correctIndex].classList.add("is-correct");
         fbMsg = `The answer is ${LETTERS[correctIndex]}. ${explanation || ""}`.trim();
       } else {
-        fbMsg = "Not quite — take another look and try again.";
+        // Coach the retry instead of a bare "wrong": prefer authored
+        // per-choice feedback (why THIS distractor tempts), then the problem's
+        // own hint/scaffold — never text that names the correct letter.
+        const coach =
+          (Array.isArray(choiceFeedback) && choiceFeedback[selected]) || hint || scaffold || "";
+        fbMsg = coach ? `Not quite. ${coach}` : "Not quite — take another look and try again.";
         tryAgainBtn.style.display = "inline-flex";
       }
     }

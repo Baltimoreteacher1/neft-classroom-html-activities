@@ -125,6 +125,45 @@ const STRINGS = {
   almost: { en: "Almost", es: "Casi" },
   needHelp: { en: "Need help", es: "Necesito ayuda" },
   didIGetIt: { en: "Did I get it?", es: "¿Lo logré?" },
+  exitTicketIntro: {
+    en: "3 quick questions — show what you know.",
+    es: "3 preguntas rápidas — demuestra lo que sabes.",
+  },
+  etQ1Label: { en: "Question 1 · Skill check", es: "Pregunta 1 · Chequeo de destreza" },
+  etQ2Label: {
+    en: "Question 2 · Explain your thinking",
+    es: "Pregunta 2 · Explica tu razonamiento",
+  },
+  etQ3Label: { en: "Question 3 · Spot the mistake", es: "Pregunta 3 · Encuentra el error" },
+  etQ2Prompt: {
+    en: "Look back at Question 1. How do you know your answer is right? Write 1–2 sentences.",
+    es: "Mira la Pregunta 1. ¿Cómo sabes que tu respuesta es correcta? Escribe 1–2 oraciones.",
+  },
+  etQ3Prompt: {
+    en: "What is one mistake someone could make on today's skill — and how would you catch it?",
+    es: "¿Qué error podría cometer alguien con la destreza de hoy — y cómo lo descubrirías?",
+  },
+  etCompareModel: {
+    en: "Compare with a model answer",
+    es: "Compara con una respuesta modelo",
+  },
+  etModelAnswer: { en: "Model answer", es: "Respuesta modelo" },
+  etWriteFirst: {
+    en: "Write your own idea first — then compare.",
+    es: "Escribe tu propia idea primero — luego compara.",
+  },
+  etFinishReminder: {
+    en: "Before you finish: also answer Questions 2 and 3 above.",
+    es: "Antes de terminar: responde también las Preguntas 2 y 3 arriba.",
+  },
+  spTryFirst: {
+    en: "Give it a try first — show a step or type an answer, then check.",
+    es: "Inténtalo primero — escribe un paso o una respuesta, y luego revisa.",
+  },
+  spFirstMiss: {
+    en: "Not quite yet. Re-read the problem, check your steps against the Worked Example above, then check again to see the answer.",
+    es: "Todavía no. Vuelve a leer el problema, compara tus pasos con el Ejemplo Resuelto de arriba, y revisa otra vez para ver la respuesta.",
+  },
   contentObjective: { en: "Content Objective", es: "Objetivo de contenido" },
   languageObjective: { en: "Language Objective", es: "Objetivo de lenguaje" },
   teacherView: { en: "Teacher View", es: "Vista del maestro" },
