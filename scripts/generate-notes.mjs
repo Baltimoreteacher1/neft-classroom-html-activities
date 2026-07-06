@@ -2006,7 +2006,6 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-    <span class="nt-save no-print" id="nt-save-status" title="Your typing is saved on this device automatically.">💾 Saves automatically</span>
     <button class="nt-clear no-print" type="button" id="nt-clear-btn">Clear my work</button>
     <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
     <div class="dl-wrap">
@@ -2303,7 +2302,6 @@ ${readAloudScript()}
 <div class="topbar no-print">
   <span class="brand">Neft Teacher · Learn It</span>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-    <span class="nt-save no-print" id="nt-save-status" title="Your typing is saved on this device automatically.">💾 Saves automatically</span>
     <button class="nt-clear no-print" type="button" id="nt-clear-btn">Clear my work</button>
     <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
   </div>
@@ -2486,7 +2484,6 @@ ${vocabExplorerScripts()}
 <div class="topbar no-print">
   <span class="brand">Neft Teacher · Vocab Explorer</span>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-    <span class="nt-save no-print" id="nt-save-status" title="Your typing is saved on this device automatically.">💾 Saves automatically</span>
     <button class="nt-clear no-print" type="button" id="nt-clear-btn">Clear my work</button>
     <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
   </div>
