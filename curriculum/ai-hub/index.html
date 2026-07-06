@@ -743,10 +743,10 @@
       }
 
       .chat-bubble {
-        padding: 10px 14px;
+        padding: 12px 16px;
         border-radius: 14px;
-        font-size: 0.92rem;
-        line-height: 1.4;
+        font-size: 1.08rem;
+        line-height: 1.55;
       }
 
       .chat-row.user .chat-bubble {
@@ -814,8 +814,8 @@
         border: 1px solid var(--bg-panel-border);
         color: var(--text-primary);
         font-family: var(--font-body);
-        font-size: 0.95rem;
-        padding: 10px 14px;
+        font-size: 1.08rem;
+        padding: 12px 16px;
         border-radius: 10px;
         outline: none;
         transition: border-color 0.2s;
@@ -4144,32 +4144,26 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
       <!-- STEP 1: Choose Role -->
       <div class="step-panel active" id="panel-1">
         <h3 class="step-title">Who is learning today?</h3>
-        <p class="step-subtitle">New here? Tap <strong>"I am a Student"</strong> to practice math with an AI tutor. Families and teachers have their own doors too.</p>
+        <p class="step-subtitle">Students: tap <strong>"I am a Student"</strong> to start. Teachers and families have their own doors below.</p>
 
         <div class="role-grid">
           <div class="role-card" role="button" tabindex="0" onclick="selectRole('student')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectRole('student')}">
             <span class="role-icon" aria-hidden="true">🎓</span>
             <h4>I am a Student</h4>
-            <p>Build a smart prompt, then solve math problems step by step with pictures that help you think.</p>
-            <button class="role-btn" tabindex="-1">Start Student Guide</button>
-          </div>
-          <div class="role-card" role="button" tabindex="0" onclick="selectRole('parent')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectRole('parent')}">
-            <span class="role-icon" aria-hidden="true">👨‍👩‍👧</span>
-            <h4>I am a Parent / Family</h4>
-            <p>Copy ready-made prompts (English + Español) to help your child practice math at home.</p>
-            <button class="role-btn" tabindex="-1">Start Family Guide</button>
+            <p>Practice math with an AI tutor. Pictures help you think.</p>
+            <button class="role-btn" tabindex="-1">Start</button>
           </div>
           <div class="role-card" role="button" tabindex="0" onclick="selectRole('teacher')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectRole('teacher')}">
             <span class="role-icon" aria-hidden="true">🍎</span>
             <h4>I am a Teacher</h4>
-            <p>Standards alignment, ESOL scaffolds, a 45-minute workshop plan, and one-tap student launches.</p>
-            <button class="role-btn" tabindex="-1">Open Teacher Dashboard</button>
+            <p>Plans, standards, ESOL scaffolds, and one-tap student launches.</p>
+            <button class="role-btn" tabindex="-1">Open Dashboard</button>
           </div>
           <div class="role-card" role="button" tabindex="0" onclick="selectRole('ai101')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectRole('ai101')}">
             <span class="role-icon" aria-hidden="true">AI</span>
             <h4>Learn About AI (Families)</h4>
-            <p>Short bilingual lessons on using AI safely: hints not answers, privacy, and fact-checking.</p>
-            <button class="role-btn" tabindex="-1">Open AI 101 Studio</button>
+            <p>Short lessons about safe AI use. English + Español.</p>
+            <button class="role-btn" tabindex="-1">Open</button>
           </div>
         </div>
       </div>
@@ -4177,7 +4171,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
       <!-- STEP 2: Choose Unit -->
       <div class="step-panel" id="panel-2">
         <h3 class="step-title">Select Your Math Unit</h3>
-        <p class="step-subtitle">Choose the current unit you are studying in class to see relevant math helper prompts.</p>
+        <p class="step-subtitle">Pick the unit your class is working on now. Not sure? Ask your teacher.</p>
         
         <!-- Student Progress Dashboard -->
         <div id="student-progress-dashboard" style="margin-bottom: 24px;"></div>
@@ -5542,14 +5536,14 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
       let sessionDialogues = [];
 
       const BUILDER_ROLES = [
-        { label: "Friendly Peer Buddy 🤖", desc: "Casually supportive peer tutor" },
-        { label: "Math Coach 👩‍🏫", desc: "Structured, teaching-focused guide" }
+        { label: "Friendly Peer Buddy 🤖", desc: "A friendly classmate who cheers you on" },
+        { label: "Math Coach 👩‍🏫", desc: "A coach who teaches step by step" }
       ];
 
       const HELP_LEVELS = [
-        { label: "Just Hints 💡", desc: "Gives clues, doesn't tell the answers" },
-        { label: "Step-by-Step 🚶‍♂️", desc: "Solve the problem one simple question at a time" },
-        { label: "Explain First 🧠", desc: "Reteaches the concept before starting" }
+        { label: "Just Hints 💡", desc: "Clues only — you do the thinking" },
+        { label: "Step-by-Step 🚶‍♂️", desc: "One small question at a time" },
+        { label: "Explain First 🧠", desc: "Teaches the idea first, then you try" }
       ];
 
       const ALL_TOPICS = [
@@ -6331,13 +6325,16 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             }
             const isUnitComplete = STATE.completedChallenges[STATE.selectedUnit].every(val => val === true);
 
-            // The current unit's topic chip renders pre-selected, so it must
-            // also count as selected -- otherwise students see a highlighted
-            // chip yet the Start button stays disabled (2 clicks, not 3).
-            const presetTopic = ALL_TOPICS.find((t) => t.unit === STATE.selectedUnit);
+            // The current lesson's chip renders pre-selected, so it must also
+            // count as selected -- otherwise students see a highlighted chip
+            // yet the Start button stays disabled (2 clicks, not 3).
+            const presetLessons = getUnitLessons(STATE.selectedUnit);
+            const presetLesson =
+              presetLessons.find((l) => l.exampleIndex === STATE.selectedExample) ||
+              presetLessons[0];
             STATE.promptSelections = {
               role: "",
-              topic: presetTopic ? presetTopic.label : "",
+              topic: presetLesson ? `${presetLesson.title} (${presetLesson.problem})` : "",
               help: "",
               level: "",
             };
@@ -6369,7 +6366,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                   </div>
 
                   <div class="progress-tracker-panel" style="background: rgba(255,255,255,0.01); border: 1px dashed var(--bg-panel-border); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-                    <span style="font-size: 0.875rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px;">Your 5 Challenges — tap a letter to switch</span>
+                    <span style="font-size: 0.875rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px;">Your 5 lessons — tap a letter to switch</span>
                     <div style="display: flex; gap: 8px;">
                       ${data.examples.map((ex, idx) => {
                         let isDone = STATE.completedChallenges[STATE.selectedUnit][idx];
@@ -6401,29 +6398,29 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                   </div>
                   
                   <div class="builder-section" id="prompt-builder-area">
-                    <h4 class="visual-options-title">Configure your AI Math Buddy:</h4>
+                    <h4 class="visual-options-title">Build your AI Math Buddy — 3 quick picks:</h4>
                     
                     <div class="builder-grid builder-grid-3" style="gap: 12px;">
                       <div class="builder-col">
-                        <span class="col-label">🤖 1. Choose Tutor Role</span>
+                        <span class="col-label">🤖 1. Pick your tutor</span>
                         ${BUILDER_ROLES.map((r) => `<button type="button" class="builder-chip" data-value="${escapeForAttr(r.label)}" aria-label="Choose role: ${escapeForAttr(r.label)}" onclick="selectBuilderChip('role', this)">${r.label}<small>${r.desc}</small></button>`).join('')}
                       </div>
-                      <div class="builder-col" style="max-height: 250px; overflow-y: auto;">
-                        <span class="col-label">📚 2. Your Topic (already picked ✓)</span>
-                        ${ALL_TOPICS.map((topic) => {
-                          const isSelected = STATE.selectedUnit === topic.unit;
-                          return `<button type="button" class="builder-chip ${isSelected ? 'selected' : ''}" data-value="${escapeForAttr(topic.label)}" data-unit="${topic.unit}" aria-label="Choose ${escapeForAttr(topic.label)}" onclick="selectTopicChip(this, ${topic.unit})">${topic.label}</button>`;
+                      <div class="builder-col">
+                        <span class="col-label">📚 2. Pick your lesson</span>
+                        ${getUnitLessons(STATE.selectedUnit).map((l) => {
+                          const isSelected = l.exampleIndex === STATE.selectedExample;
+                          return `<button type="button" class="builder-chip ${isSelected ? 'selected' : ''}" data-value="${escapeForAttr(`${l.title} (${l.problem})`)}" data-example-index="${l.exampleIndex}" aria-label="Lesson: ${escapeForAttr(l.title)}" onclick="selectBuilderChip('topic', this)">${l.title}<small>${l.problem}</small></button>`;
                         }).join('')}
                       </div>
                       <div class="builder-col">
-                        <span class="col-label">💡 3. Choose Help Amount</span>
+                        <span class="col-label">💡 3. Pick your help</span>
                         ${HELP_LEVELS.map((h) => `<button type="button" class="builder-chip" data-value="${escapeForAttr(h.label)}" aria-label="Choose help: ${escapeForAttr(h.label)}" onclick="selectBuilderChip('help', this)">${h.label}<small>${h.desc}</small></button>`).join('')}
                       </div>
                     </div>
 
                     <div class="prompt-preview">
                       <span class="preview-label">Prompt Preview</span>
-                      <p class="preview-text" id="prompt-preview-text">Your topic is already picked ✓ — now choose a Tutor Role (1) and a Help Amount (3).</p>
+                      <p class="preview-text" id="prompt-preview-text">Your lesson is picked ✓ — now tap a tutor (1) and a help style (3).</p>
                     </div>
 
                     <div style="display: flex; gap: 10px; margin-top: 12px;">
@@ -6449,13 +6446,14 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                         <span class="step-dot" title="Reflection">4</span>
                       </div>
                     </div>
-                    <div class="chat-box" id="chat-log" style="max-height: 280px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px;"></div>
+                    <div class="chat-box" id="chat-log" style="max-height: 380px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px;"></div>
                     <div class="chat-input-bar">
                       <input type="text" id="chat-input" class="chat-text-input" placeholder="Type your math answer here..." onkeydown="handleChatKeyDown(event)" />
                       <button class="chat-send-btn" onclick="sendChatAnswer()">Send</button>
                     </div>
                     <div class="chat-helpers">
                       <button class="helper-btn" onclick="revealHint()">❓ Need a Hint?</button>
+                      <button class="helper-btn" onclick="revealWritingHelp()">✍️ Writing Help</button>
                       <button class="helper-btn" onclick="Controller.handleImStuck()">🆘 I'm Stuck</button>
                       <button class="helper-btn" onclick="Controller.handleShowAnotherWay()">🔄 Show Another Way</button>
                       <button class="helper-btn" onclick="resetWorkspace()">🔄 Reset Challenge</button>
@@ -6697,7 +6695,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
           if (STATE.promptSelections.topic) parts.push("I need help with " + STATE.promptSelections.topic + ".");
           if (STATE.promptSelections.help) parts.push("Help me with " + STATE.promptSelections.help);
 
-          previewText.textContent = parts.length > 0 ? parts.join(' ') + '...' : "Pick one option from each column. Your prompt builds here.";
+          previewText.textContent = parts.length > 0 ? parts.join(' ') + '...' : "Tap one choice in each column. Your prompt builds here.";
           previewText.style.color = "var(--text-secondary)";
         }
       }
@@ -6796,9 +6794,9 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
         feedbackAlert.style.display = "block";
         feedbackAlert.className = "result-alert success";
         feedbackAlert.innerHTML = `
-          <div class="alert-title">🟢 Smart Tutor Prompt Activated!</div>
-          <p style="margin: 0; font-size: 0.9rem;">
-            Outstanding! Your prompt sets the AI to be a helpful tutor who guides you through calculations. Starting Tutor Simulator below...
+          <div class="alert-title">🟢 Your tutor is ready!</div>
+          <p style="margin: 0; font-size: 1rem;">
+            Answer the first question below. 👇
           </p>
         `;
         builderArea.style.display = "none";
@@ -6904,7 +6902,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             introExplanation = `<div style="background: rgba(139, 92, 246, 0.1); border: 1.5px dashed rgba(139, 92, 246, 0.3); padding: 12px; border-radius: 8px; margin-bottom: 12px; color: var(--text-primary); font-size: 0.85rem; line-height: 1.45;">🎓 <strong>Tutor Concept Lesson:</strong><br>${explanationCatalog[STATE.selectedUnit] || ''}</div>`;
           }
           
-          const rawQ = `<strong>Step 1 of ${sessionDialogues.length}:</strong> ${sessionDialogues[0].q}<br><span class="viz-cue">👀 Tip: the Math Visualizer picture shows this problem as a model.</span>`;
+          const rawQ = `<strong>Step 1 of ${sessionDialogues.length}:</strong> ${sessionDialogues[0].q}<br><span class="viz-cue">👀 The picture shows your problem →</span>`;
           const adaptedQ = adaptTutorMessage(rawQ, STATE.promptSelections.role, STATE.promptSelections.help, true);
           appendTutorMessage("bot", introExplanation + adaptedQ);
         }, 1200);
@@ -7085,7 +7083,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
 
             if (STATE.currentDialogueIndex < sessionDialogues.length) {
               const stepNum = STATE.currentDialogueIndex + 1;
-              const rawQ = `✅ Nice work! <strong>Step ${stepNum} of ${sessionDialogues.length}:</strong> ${sessionDialogues[STATE.currentDialogueIndex].q}<br><span class="viz-cue">👀 The picture just updated — check the Math Visualizer.</span>`;
+              const rawQ = `✅ Nice work! <strong>Step ${stepNum} of ${sessionDialogues.length}:</strong> ${sessionDialogues[STATE.currentDialogueIndex].q}<br><span class="viz-cue">👀 Look at the picture →</span>`;
               const adaptedQ = adaptTutorMessage(rawQ, STATE.promptSelections.role, STATE.promptSelections.help);
               appendTutorMessage("bot", adaptedQ);
             } else {
@@ -7102,7 +7100,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                 canvasSvg.classList.add("success-glow");
               }
 
-              appendTutorMessage("bot", "Fantastic! You solved the math problem step by step — look at the finished picture in the Math Visualizer. 🎉 That is how we use AI to learn! Ready for more? Tap the next letter (A–E) at the top to start your next challenge.");
+              appendTutorMessage("bot", "🎉 You solved it! Look at the finished picture. Tap the next letter (A–E) up top for a new challenge.");
               const inputBar = document.querySelector(".chat-input-bar");
               if (inputBar) inputBar.style.display = "none";
               const helpers = document.querySelector(".chat-helpers");
@@ -7216,6 +7214,22 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
         }
       }
 
+      // On-demand writing support (sentence frame + word bank). These used to
+      // be auto-appended to every tutor message, which buried the math; now
+      // students tap for them only when they want help writing an answer.
+      function revealWritingHelp() {
+        const hintBox = document.getElementById("hint-box");
+        const dialogue = sessionDialogues[STATE.currentDialogueIndex];
+        if (!hintBox || !dialogue) return;
+        const level = STATE.esolLevel || 1;
+        let help = `✍️ <strong>Sentence frame / Marco de oración:</strong><br>${getSentenceFrame(dialogue.q, Math.min(level, 3))}`;
+        if (level <= 2) {
+          help += `<br><strong>Word bank:</strong> ${getWordBank(STATE.selectedUnit)}`;
+        }
+        hintBox.innerHTML = help;
+        hintBox.style.display = "block";
+      }
+
       function revealHint() {
         const hintBox = document.getElementById("hint-box");
         if (hintBox) {
@@ -7288,25 +7302,13 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             const regex = new RegExp("\\b" + term + "\\b", "gi");
             adapted = adapted.replace(regex, BILINGUAL_GLOSSARY[term]);
           });
-          adapted += `<br><span style="display:block; margin-top:8px; font-size:0.85rem; color:#a78bfa; border-left:2px solid #a78bfa; padding-left:8px; font-style:italic;">Bilingual Hint / Ayuda: You can write the numbers directly. Puedes escribir los números directamente.</span>`;
-        }
-
-        if (STATE.esolLevel === 1) {
-          adapted += `<br><div class="wida-support newcomer" style="margin-top: 10px; padding: 10px; border-left: 3px solid #10b981; background: rgba(16,185,129,0.05); border-radius: 6px; font-size: 0.85rem; color: #cbd5e1;">✍️ <strong>Sentence Frame / Marco de oración:</strong><br>${getSentenceFrame(text, 1)}</div>`;
-        } else if (STATE.esolLevel === 2) {
-          adapted += `<br><div class="wida-support developing" style="margin-top: 10px; padding: 10px; border-left: 3px solid #3b82f6; background: rgba(59,130,246,0.05); border-radius: 6px; font-size: 0.85rem; color: #cbd5e1;">📝 <strong>Sentence Frame & Word Bank:</strong><br>${getSentenceFrame(text, 2)}<br><span style="color: #94a3b8; display:block; margin-top:6px;"><strong>Word Bank:</strong> ${getWordBank(STATE.selectedUnit)}</span></div>`;
-        } else if (STATE.esolLevel === 3) {
-          adapted += `<br><div class="wida-support expanding" style="margin-top: 10px; padding: 10px; border-left: 3px solid #8b5cf6; background: rgba(139,92,246,0.05); border-radius: 6px; font-size: 0.85rem; color: #cbd5e1;">🧠 <strong>Sentence Starter:</strong><br>${getSentenceFrame(text, 3)}</div>`;
-        } else if (STATE.esolLevel === 4) {
-          if (STATE.currentDialogueIndex === sessionDialogues.length - 1) {
-            adapted += `<br><div class="wida-support challenge" style="margin-top: 10px; padding: 10px; border-left: 3px solid #f59e0b; background: rgba(245,158,11,0.05); border-radius: 6px; font-size: 0.85rem; color: #cbd5e1;">🎓 <strong>Academic Challenge (Because / But / So):</strong><br>Explain your thinking using: "The calculation is correct because... BUT we must... SO the concept..."</div>`;
-          }
+          adapted += `<br><span style="display:block; margin-top:8px; font-size:1rem; color:#c4b5fd; border-left:2px solid #a78bfa; padding-left:8px; font-style:italic;">Bilingual Hint / Ayuda: You can write the numbers directly. Puedes escribir los números directamente.</span>`;
         }
 
         if (isFirstTurn) {
-          const prefix = isBuddy 
-            ? "Hey friend! 🎒 Let's learn together. 🌟 " 
-            : "Hello! Let's examine this math step: 👩‍🏫 ";
+          const prefix = isBuddy
+            ? "Hey friend! 🎒 "
+            : "Hi! 👩‍🏫 ";
           return prefix + adapted;
         }
 
@@ -9015,9 +9017,6 @@ Instructions:
             UI.showHubTab("ai101");
             this.ai101ShowModule(ai101Routes[hash]);
             document.getElementById("ai101")?.scrollIntoView({ behavior: "smooth", block: "start" });
-          } else if (hash === "#parents" || hash === "#parent") {
-            UI.showHubTab("gemini");
-            this.selectRole("parent");
           } else if (hash === "#teachers" || hash === "#teacher") {
             UI.showHubTab("gemini");
             this.selectRole("teacher");
