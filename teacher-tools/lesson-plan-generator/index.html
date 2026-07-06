@@ -17,13 +17,11 @@
     <div class="app">
       <header class="topbar">
         <div class="brand">
-          <span class="badge info"
-            >Local-first · no upload · works offline</span
-          >
+          <span class="badge info">Local-first · no upload · works offline</span>
           <h1>Neft Teacher Lesson Plan Generator</h1>
           <p>
-            Give it your source — typed notes, slides, a PDF, or a doc — and get
-            a complete, teach-tomorrow lesson plan built from that source.
+            Give it your source — typed notes, slides, a PDF, or a doc — and get a complete,
+            teach-tomorrow lesson plan built from that source.
           </p>
         </div>
         <button class="btn ghost" id="themeBtn" type="button">Theme</button>
@@ -34,12 +32,11 @@
         <section class="card" id="inputCard">
           <h2 class="card-title">1 · Give the generator your source</h2>
           <p class="muted">
-            Fill in the lesson details below and/or give the generator a source
-            (typed notes, slides, PDF, or doc). It builds a complete,
-            Ready-style Grade 6 lesson — Do Now, mini-lesson, guided +
-            independent practice, TWR writing, ESOL/SPED supports, exit ticket,
-            answer keys, and a printable student version — then exports a
-            polished Word document.
+            Fill in the lesson details below and/or give the generator a source (typed notes,
+            slides, PDF, or doc). It builds a complete, Ready-style Grade 6 lesson — Do Now,
+            mini-lesson, guided + independent practice, TWR writing, ESOL/SPED supports, exit
+            ticket, answer keys, and a printable student version — then exports a polished Word
+            document.
           </p>
 
           <div id="historyRow" class="history-row" hidden>
@@ -73,19 +70,11 @@
             </label>
             <label class="field big-2"
               ><span class="field-label">Lesson Focus (what to teach)</span>
-              <input
-                type="text"
-                id="fFocus"
-                placeholder="e.g. Find unit rate from a ratio"
-              />
+              <input type="text" id="fFocus" placeholder="e.g. Find unit rate from a ratio" />
             </label>
             <label class="field"
               ><span class="field-label">Standard(s)</span>
-              <input
-                type="text"
-                id="fStandards"
-                placeholder="e.g. 6.RP.A.2 — unit rate"
-              />
+              <input type="text" id="fStandards" placeholder="e.g. 6.RP.A.2 — unit rate" />
             </label>
             <label class="field"
               ><span class="field-label">Lesson Length</span>
@@ -121,17 +110,13 @@
             </label>
             <label class="field big-2"
               ><span class="field-label">Optional Notes</span>
-              <input
-                type="text"
-                id="fNotes"
-                placeholder="anything else to weave into the plan"
-              />
+              <input type="text" id="fNotes" placeholder="anything else to weave into the plan" />
             </label>
           </div>
 
           <p class="muted small">
-            Optional but recommended: paste your slide text / notes below so the
-            lesson follows your exact objective, vocabulary, and activity flow.
+            Optional but recommended: paste your slide text / notes below so the lesson follows your
+            exact objective, vocabulary, and activity flow.
           </p>
 
           <div class="input-grid">
@@ -143,8 +128,8 @@
                 placeholder="Paste slide text, a linked-activity description, or write your lesson notes here. Helpful things to include when you have them:&#10;&#10;Title: Area of Composite Polygons&#10;Grade/Course: Grade 6 Mathematics&#10;Date: &#10;Standard: 6.G.A.1 — find area by composing / decomposing&#10;Objective: Students will find the area of composite polygons by decomposing into rectangles and triangles.&#10;Vocabulary: composite figure, decompose, area&#10;Do Now: number talk splitting an L-shape&#10;Mini-lesson: model decomposing an L-shape; think-aloud on choosing cuts&#10;Guided: partners solve 2 shapes on grid paper&#10;Independent: practice set problems 1-6; challenge for early finishers&#10;Exit ticket: one composite shape, explain the cut"
               ></textarea>
               <span class="helper small"
-                >Plain text is fine — the more real detail you give, the more
-                complete the plan.</span
+                >Plain text is fine — the more real detail you give, the more complete the
+                plan.</span
               >
             </label>
 
@@ -166,13 +151,8 @@
                 <p class="muted small">…or drag &amp; drop here</p>
                 <p class="muted small">.pptx · .pdf · .docx · .txt</p>
               </div>
-              <input
-                type="file"
-                id="fileInput"
-                accept=".pptx,.pdf,.docx,.txt"
-                hidden
-              />
-              <p class="file-status small" id="fileStatus"></p>
+              <input type="file" id="fileInput" accept=".pptx,.pdf,.docx,.txt" hidden />
+              <p class="file-status small" id="fileStatus" role="status" aria-live="polite"></p>
               <p class="muted small">
                 Files are read inside your browser. Nothing is sent anywhere.
               </p>
@@ -183,53 +163,130 @@
             <button class="btn primary big" id="generateBtn" type="button">
               ✦ Generate Lesson Plan
             </button>
-            <button class="btn ghost" id="sampleBtn" type="button">
-              Load example
-            </button>
+            <button class="btn ghost" id="sampleBtn" type="button">Load example</button>
             <button class="btn ghost" id="clearBtn" type="button">Clear</button>
           </div>
         </section>
 
+        <!-- ============ CLASS SUPPORT PROFILE ============ -->
+        <section class="card" id="profileCard">
+          <h2 class="card-title">
+            2 · Class support profile
+            <span class="optional-tag">optional · SPED / ESOL</span>
+          </h2>
+          <p class="muted">
+            Paste or upload your class support list once and lock it in — every plan you generate
+            will build its differentiation, grouping, pacing, and assessment supports around it.
+            Replace or clear it whenever your class changes.
+          </p>
+
+          <div id="profileLockedView" class="profile-locked" hidden>
+            <p class="profile-locked-line">
+              <span class="lock-icon" aria-hidden="true">🔒</span>
+              <strong>Profile locked:</strong>
+              <span id="profileLockedLabel"></span>
+            </p>
+            <p class="field-label">Active supports in every generated plan:</p>
+            <ul class="profile-chips" id="profileChips" aria-label="Active supports"></ul>
+            <div class="profile-actions">
+              <button class="btn ghost" id="profileReplaceBtn" type="button">Replace / edit</button>
+              <button class="btn ghost danger" id="profileClearBtn" type="button">
+                Clear profile
+              </button>
+            </div>
+          </div>
+
+          <div id="profileEditView">
+            <label class="field">
+              <span class="field-label">Paste your class support list</span>
+              <textarea
+                id="profileText"
+                rows="7"
+                placeholder="One student per line — use initials or anonymous IDs, not full names:&#10;&#10;A1 — IEP, extended time, read aloud, multiplication chart&#10;B2 — 504, movement breaks, quiet redirect&#10;C3 — ESOL WIDA 2, sentence frames, partner talk before writing&#10;&#10;…or paste a CSV/spreadsheet with headers (id, plan, wida, reading, processing, attention, behavior, math, writing, assessment, private, notes)"
+              ></textarea>
+            </label>
+            <div class="profile-actions">
+              <button class="btn primary" id="profilePreviewBtn" type="button">
+                Preview supports
+              </button>
+              <button class="btn ghost" id="profileUploadBtn" type="button">
+                Upload .csv / .txt
+              </button>
+              <button class="btn ghost" id="profileSampleBtn" type="button">Load sample</button>
+              <button class="btn ghost" id="profileTemplateBtn" type="button">
+                ⬇ Blank template
+              </button>
+            </div>
+            <input type="file" id="profileFileInput" accept=".csv,.txt,.tsv" hidden />
+            <div id="profilePreview" class="profile-preview" aria-live="polite"></div>
+          </div>
+
+          <label class="check-row">
+            <input type="checkbox" id="profileIncludeIds" />
+            <span
+              >Show student IDs next to supports in the <strong>teacher</strong> plan (never in the
+              student handout)</span
+            >
+          </label>
+          <p class="muted small">
+            Privacy: the profile is saved only in this browser — nothing is uploaded anywhere. Full
+            names are converted to initials automatically, and anything marked “private:” never
+            appears in any generated plan or export. <strong>Clear profile</strong> removes it
+            completely from this device.
+          </p>
+        </section>
+
         <!-- ============ PIPELINE STATUS ============ -->
         <section class="card status-card" id="statusCard" hidden>
-          <h2 class="card-title">2 · Pipeline</h2>
+          <h2 class="card-title">3 · Pipeline</h2>
           <ol class="pipeline" id="pipeline">
             <li data-stage="preflight"><span class="pip"></span>Preflight</li>
-            <li data-stage="extract">
-              <span class="pip"></span>Source extract
-            </li>
+            <li data-stage="extract"><span class="pip"></span>Source extract</li>
             <li data-stage="map"><span class="pip"></span>Content map</li>
-            <li data-stage="build">
-              <span class="pip"></span>Lesson plan build
-            </li>
+            <li data-stage="build"><span class="pip"></span>Lesson plan build</li>
             <li data-stage="qa"><span class="pip"></span>QA harness</li>
             <li data-stage="repair"><span class="pip"></span>Repair</li>
             <li data-stage="finalqa"><span class="pip"></span>Final QA</li>
           </ol>
-          <div id="qaPanel" class="qa-panel"></div>
+          <div id="qaPanel" class="qa-panel" aria-live="polite"></div>
         </section>
 
         <!-- ============ OUTPUT ============ -->
         <section class="card" id="outputCard" hidden>
           <div class="output-head">
-            <h2 class="card-title">3 · Lesson plan</h2>
-            <div class="tab-container" id="outputTabs">
-              <button class="tab-btn active" id="tabTeacher" type="button">
+            <h2 class="card-title" id="outputTitle" tabindex="-1">4 · Lesson plan</h2>
+            <div
+              class="tab-container"
+              id="outputTabs"
+              role="tablist"
+              aria-label="Lesson plan views"
+            >
+              <button
+                class="tab-btn active"
+                id="tabTeacher"
+                type="button"
+                role="tab"
+                aria-selected="true"
+                aria-controls="lessonOutput"
+              >
                 Teacher Plan
               </button>
-              <button class="tab-btn" id="tabStudent" type="button">
+              <button
+                class="tab-btn"
+                id="tabStudent"
+                type="button"
+                role="tab"
+                aria-selected="false"
+                aria-controls="lessonOutput"
+              >
                 Student Handout
               </button>
             </div>
             <div class="output-actions">
-              <button
-                class="btn primary"
-                id="downloadDocxBtn"
-                type="button"
-                disabled
-              >
+              <button class="btn primary" id="downloadDocxBtn" type="button" disabled>
                 ⬇ Download DOCX
               </button>
+              <button class="btn" id="copyBtn" type="button">📋 Copy</button>
               <button
                 class="btn ghost"
                 id="reshuffleBtn"
@@ -238,24 +295,23 @@
               >
                 🔀 Reshuffle Numbers
               </button>
-              <button class="btn" id="printBtn" type="button">
-                Print / PDF
-              </button>
-              <button class="btn ghost" id="downloadDocBtn" type="button">
-                Word (.doc)
-              </button>
-              <button class="btn ghost" id="downloadMdBtn" type="button">
-                .md
-              </button>
+              <button class="btn" id="printBtn" type="button">Print / PDF</button>
+              <button class="btn ghost" id="downloadDocBtn" type="button">Word (.doc)</button>
+              <button class="btn ghost" id="downloadMdBtn" type="button">.md</button>
             </div>
           </div>
-          <div id="lessonOutput" class="lesson-output"></div>
+          <p class="export-status small" id="exportStatus" role="status" aria-live="polite"></p>
+          <div
+            id="lessonOutput"
+            class="lesson-output"
+            role="tabpanel"
+            aria-labelledby="tabTeacher"
+          ></div>
         </section>
       </main>
 
       <footer class="foot">
-        Neft Teacher · Local-first lesson plan generator · Source-faithful
-        pipeline with QA harness
+        Neft Teacher · Local-first lesson plan generator · Source-faithful pipeline with QA harness
       </footer>
     </div>
 
@@ -271,6 +327,7 @@
     <script src="./vendor/docx.umd.js" defer></script>
     <script src="./content-library.js" defer></script>
     <script src="./lesson-model.js" defer></script>
+    <script src="./support-profile.js" defer></script>
     <script src="./docx-export.js" defer></script>
     <script src="./app.js" defer></script>
     <script src="/assets/nt-page-enhance.js" defer></script>

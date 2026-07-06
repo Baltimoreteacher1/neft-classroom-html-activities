@@ -42,6 +42,24 @@
     downloadDocxBtn: $("downloadDocxBtn"),
     downloadDocBtn: $("downloadDocBtn"),
     downloadMdBtn: $("downloadMdBtn"),
+    copyBtn: $("copyBtn"),
+    exportStatus: $("exportStatus"),
+    outputTitle: $("outputTitle"),
+    // class support profile
+    profileText: $("profileText"),
+    profilePreviewBtn: $("profilePreviewBtn"),
+    profileUploadBtn: $("profileUploadBtn"),
+    profileFileInput: $("profileFileInput"),
+    profileSampleBtn: $("profileSampleBtn"),
+    profileTemplateBtn: $("profileTemplateBtn"),
+    profilePreview: $("profilePreview"),
+    profileEditView: $("profileEditView"),
+    profileLockedView: $("profileLockedView"),
+    profileLockedLabel: $("profileLockedLabel"),
+    profileChips: $("profileChips"),
+    profileReplaceBtn: $("profileReplaceBtn"),
+    profileClearBtn: $("profileClearBtn"),
+    profileIncludeIds: $("profileIncludeIds"),
     // fields
     fDate: $("fDate"),
     fGrade: $("fGrade"),
@@ -65,25 +83,14 @@
     const saved = localStorage.getItem("nt_lpg_theme");
     if (saved) document.documentElement.setAttribute("data-theme", saved);
     els.themeBtn.addEventListener("click", () => {
-      const now =
-        document.documentElement.getAttribute("data-theme") === "dark"
-          ? "light"
-          : "dark";
+      const now = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
       document.documentElement.setAttribute("data-theme", now);
       localStorage.setItem("nt_lpg_theme", now);
     });
   }
 
   /* ===================== PIPELINE UI ===================== */
-  const STAGES = [
-    "preflight",
-    "extract",
-    "map",
-    "build",
-    "qa",
-    "repair",
-    "finalqa",
-  ];
+  const STAGES = ["preflight", "extract", "map", "build", "qa", "repair", "finalqa"];
   function resetPipeline() {
     els.statusCard.hidden = false;
     els.qaPanel.innerHTML = "";
@@ -119,9 +126,7 @@
     for (let i = 0; i < slideFiles.length; i++) {
       const name = slideFiles[i];
       const xml = await zip.files[name].async("string");
-      const runs = [...xml.matchAll(/<a:t>([\s\S]*?)<\/a:t>/g)].map((m) =>
-        decodeXml(m[1]),
-      );
+      const runs = [...xml.matchAll(/<a:t>([\s\S]*?)<\/a:t>/g)].map((m) => decodeXml(m[1]));
       const n = (name.match(/slide(\d+)/) || [])[1];
       const text = runs.join(" ").replace(/\s+/g, " ").trim();
       results.push({ n, text });
@@ -130,9 +135,7 @@
         await yieldCpu();
       }
     }
-    const parts = results
-      .filter((r) => r.text)
-      .map((r) => `--- Slide ${r.n} ---\n${r.text}`);
+    const parts = results.filter((r) => r.text).map((r) => `--- Slide ${r.n} ---\n${r.text}`);
     return parts.join("\n\n");
   }
 
@@ -142,9 +145,7 @@
     if (!docFile) throw new Error("No word/document.xml in the .docx.");
     const xml = await docFile.async("string");
     const paras = xml.split(/<\/w:p>/).map((p) => {
-      const runs = [...p.matchAll(/<w:t[^>]*>([\s\S]*?)<\/w:t>/g)].map((m) =>
-        decodeXml(m[1]),
-      );
+      const runs = [...p.matchAll(/<w:t[^>]*>([\s\S]*?)<\/w:t>/g)].map((m) => decodeXml(m[1]));
       return runs.join("").trim();
     });
     const text = paras.filter(Boolean).join("\n");
@@ -155,8 +156,7 @@
   async function extractPdf(arrayBuffer) {
     let pdfjs;
     try {
-      pdfjs =
-        await import("/teacher-tools/lesson-plan-generator/vendor/pdf.min.mjs");
+      pdfjs = await import("/teacher-tools/lesson-plan-generator/vendor/pdf.min.mjs");
     } catch (e) {
       throw new Error(
         "PDF reader (pdf.js) could not load. Copy the PDF text and paste it into the box instead.",
@@ -168,8 +168,7 @@
     } catch (_) {
       /* ignore */
     }
-    const doc = await pdfjs.getDocument({ data: new Uint8Array(arrayBuffer) })
-      .promise;
+    const doc = await pdfjs.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
 
     const results = [];
     for (let p = 1; p <= doc.numPages; p++) {
@@ -186,9 +185,7 @@
         await yieldCpu();
       }
     }
-    const out = results
-      .filter((r) => r.txt)
-      .map((r) => `--- Page ${r.p} ---\n${r.txt}`);
+    const out = results.filter((r) => r.txt).map((r) => `--- Page ${r.p} ---\n${r.txt}`);
     const text = out.join("\n\n");
     if (!text)
       throw new Error(
@@ -265,9 +262,7 @@
     } catch (e) {
       uploadedExtract = null;
       els.fileStatus.className = "file-status bad";
-      els.fileStatus.innerHTML = `<strong>Could not read this file:</strong> ${esc(
-        e.message,
-      )}`;
+      els.fileStatus.innerHTML = `<strong>Could not read this file:</strong> ${esc(e.message)}`;
     } finally {
       setFileReading(false);
     }
@@ -321,8 +316,7 @@
       }
       return null;
     };
-    const lbl = (alts) =>
-      new RegExp(`(?:^|\\b)(?:${alts})\\s*[:\\-=]\\s*(.+)`, "i");
+    const lbl = (alts) => new RegExp(`(?:^|\\b)(?:${alts})\\s*[:\\-=]\\s*(.+)`, "i");
     const splitList = (val) =>
       val
         .split(/[,;]|•|\||\band\b/i)
@@ -351,12 +345,8 @@
     map.date = grab(lbl("date"));
     map.objective =
       grab(lbl("objective|content objective|learning target|target|goal")) ||
-      grab(
-        /\b((?:swbat|students will(?:\s+be able to)?|we will|i can)\b\s*[:\-]?\s*.+)/i,
-      );
-    map.languageObjective = grab(
-      lbl("language objective|lang objective|esol objective"),
-    );
+      grab(/\b((?:swbat|students will(?:\s+be able to)?|we will|i can)\b\s*[:\-]?\s*.+)/i);
+    map.languageObjective = grab(lbl("language objective|lang objective|esol objective"));
 
     const codeRe =
       /\b(?:CCSS\.?(?:MATH|ELA-?LITERACY)?\.?)?\d+\.[A-Z]{1,3}(?:\.[A-Z])?\.\d+[a-z]?\b/g;
@@ -374,18 +364,15 @@
           .trim();
       map.standards.push({ code: c, desc });
     });
-    if (!map.standards.length && stdLine)
-      map.standards.push({ code: "", desc: stdLine });
+    if (!map.standards.length && stdLine) map.standards.push({ code: "", desc: stdLine });
 
     map.materials = grabList("materials");
     if (!map.materials.length) map.materials = grabList("resources");
     map.vocabulary = grabList("vocabulary|vocab|key terms?");
 
-    map.phases.mini =
-      grab(lbl("mini[\\- ]?lesson|modeling|direct instruction|i do")) || null;
+    map.phases.mini = grab(lbl("mini[\\- ]?lesson|modeling|direct instruction|i do")) || null;
 
-    if (!map.title)
-      map.title = grab(/\b(?:lesson on|topic|unit|teaching)\s*[:\-]?\s*(.+)/i);
+    if (!map.title) map.title = grab(/\b(?:lesson on|topic|unit|teaching)\s*[:\-]?\s*(.+)/i);
     if (!map.title) {
       const firstSeg = segments.find((s) => !/^---/.test(s) && s.length <= 120);
       if (firstSeg) {
@@ -403,6 +390,19 @@
   }
 
   /* ===================== FIELDS ===================== */
+  const REQUIRED_ANY = () => [els.fUnit, els.fFocus, els.fStandards];
+  function markInvalid(el, on) {
+    if (!el) return;
+    el.classList.toggle("field-invalid", !!on);
+    if (on) el.setAttribute("aria-invalid", "true");
+    else el.removeAttribute("aria-invalid");
+  }
+  function clearInvalidMarks() {
+    REQUIRED_ANY()
+      .concat([els.sourceText])
+      .forEach((el) => markInvalid(el, false));
+  }
+
   function gatherFields() {
     const v = (el) => (el && el.value ? el.value.trim() : "");
     const unit = v(els.fUnit);
@@ -490,11 +490,19 @@
       plan.exit.items.length >= 2 && !!plan.exit.tomorrow,
       "Questions + answer key + reflection + tomorrow's move.",
     );
-    add(
-      "Printable student version",
-      true,
-      "Answer-free student version included in the DOCX.",
-    );
+    add("Printable student version", true, "Answer-free student version included in the DOCX.");
+    if (plan.meta.profileApplied) {
+      add(
+        "Profile-driven differentiation",
+        plan.differentiation.sped.length + plan.differentiation.esol.length >= 4 &&
+          !!(
+            (plan.exit.accommodations && plan.exit.accommodations.length) ||
+            plan.independent.coreSet ||
+            (plan.differentiation.grouping && plan.differentiation.grouping.length)
+          ),
+        "The locked class profile changed supports, grouping, pacing, and/or assessment.",
+      );
+    }
     return checks;
   }
 
@@ -511,11 +519,7 @@
       '<table class="lp-table"><thead><tr>' +
       headers.map((h) => `<th>${esc(h)}</th>`).join("") +
       "</tr></thead><tbody>" +
-      rows
-        .map(
-          (r) => "<tr>" + r.map((c) => `<td>${esc(c)}</td>`).join("") + "</tr>",
-        )
-        .join("") +
+      rows.map((r) => "<tr>" + r.map((c) => `<td>${esc(c)}</td>`).join("") + "</tr>").join("") +
       "</tbody></table>"
     );
   }
@@ -526,11 +530,9 @@
       .map((x) => `<li>${esc(x)}</li>`)
       .join("") +
     "</ul>";
-  const kv = (label, val) =>
-    `<p class="lp-kv"><strong>${esc(label)}:</strong> ${esc(val)}</p>`;
+  const kv = (label, val) => `<p class="lp-kv"><strong>${esc(label)}:</strong> ${esc(val)}</p>`;
   // Scannable callout for "what the teacher actually does / decides" lines.
-  const note = (label, val) =>
-    `<p class="lp-note"><strong>${esc(label)}:</strong> ${esc(val)}</p>`;
+  const note = (label, val) => `<p class="lp-note"><strong>${esc(label)}:</strong> ${esc(val)}</p>`;
   const noteList = (label, arr) =>
     `<div class="lp-note"><strong>${esc(label)}:</strong>` + ul(arr) + `</div>`;
 
@@ -539,9 +541,7 @@
     // Optional 4th arg = a time chip shown on the section heading.
     const sec = (n, title, inner, time) =>
       `<section class="lp-block"><h2 class="lp-sec">${n} · ${esc(title)}` +
-      (time
-        ? `<span class="lp-time"><span aria-hidden="true">⏱</span> ${esc(time)}</span>`
-        : "") +
+      (time ? `<span class="lp-time"><span aria-hidden="true">⏱</span> ${esc(time)}</span>` : "") +
       `</h2>${inner}</section>`;
     const rows = [];
 
@@ -564,10 +564,7 @@
       .filter(Boolean)
       .join(", ");
     const flow = (h.pacing || [])
-      .map(
-        ([name, t]) =>
-          `<span class="flow-step">${esc(name)} <em>${esc(t)}</em></span>`,
-      )
+      .map(([name, t]) => `<span class="flow-step">${esc(name)} <em>${esc(t)}</em></span>`)
       .join('<span class="flow-arrow" aria-hidden="true">→</span>');
     rows.push(
       `<section class="lp-glance">` +
@@ -592,9 +589,7 @@
           [
             [
               "Standard(s)",
-              h.standards
-                .map((s) => (s.code ? s.code + " — " : "") + (s.desc || ""))
-                .join("; "),
+              h.standards.map((s) => (s.code ? s.code + " — " : "") + (s.desc || "")).join("; "),
             ],
             ["Student-Friendly Objective", h.objective],
             ['"I Can" Statement', h.iCan],
@@ -629,12 +624,7 @@
         3,
         "Vocabulary / Language Support",
         tableHtml(
-          [
-            "Term",
-            "Student-friendly definition",
-            "Spanish",
-            "ESOL sentence frame",
-          ],
+          ["Term", "Student-friendly definition", "Spanish", "ESOL sentence frame"],
           plan.vocab.map((v) => [v.term, v.def, v.spanish || "—", v.frame]),
         ),
       ),
@@ -717,7 +707,8 @@
           plan.independent.items.map((it, i) => [i + 1, it.type, it.q, it.a]),
         ) +
           kv("Show your thinking", plan.independent.showThinking) +
-          kv("Extension", plan.independent.extension),
+          kv("Extension", plan.independent.extension) +
+          (plan.independent.coreSet ? note("Core set", plan.independent.coreSet) : ""),
         plan.timing && plan.timing.independent,
       ),
     );
@@ -734,7 +725,10 @@
           "<p><strong>Sentence frames:</strong></p>" +
           ul(w.frames) +
           kv("Word bank", w.wordBank.join(", ")) +
-          kv("Expected response", w.expected),
+          kv("Expected response", w.expected) +
+          (w.supports && w.supports.length
+            ? noteList("Language & writing supports for this class", w.supports)
+            : ""),
         plan.timing && plan.timing.writing,
       ),
     );
@@ -745,10 +739,14 @@
       sec(
         10,
         "Differentiation",
-        "<h3 class='lp-sub-h'>ESOL / WIDA</h3>" +
+        (d.profileNote ? `<p class="lp-profile-note">${esc(d.profileNote)}</p>` : "") +
+          "<h3 class='lp-sub-h'>ESOL / WIDA</h3>" +
           ul(d.esol) +
           "<h3 class='lp-sub-h'>SPED</h3>" +
           ul(d.sped) +
+          (d.grouping && d.grouping.length
+            ? "<h3 class='lp-sub-h'>Grouping for this class</h3>" + ul(d.grouping)
+            : "") +
           "<h3 class='lp-sub-h'>Newcomer</h3>" +
           ul(d.newcomer) +
           "<h3 class='lp-sub-h'>On-grade</h3>" +
@@ -756,7 +754,8 @@
           "<h3 class='lp-sub-h'>Extension / enrichment</h3>" +
           ul(d.extension) +
           kv("Small-group reteach", d.reteach) +
-          kv("Early finishers", d.earlyFinishers),
+          kv("Early finishers", d.earlyFinishers) +
+          (d.pacing ? note("Pacing", d.pacing) : ""),
       ),
     );
 
@@ -788,6 +787,9 @@
           plan.exit.items.map((it, i) => [i + 1, it.q, it.a]),
         ) +
           kv("Confidence / reflection", plan.exit.confidence.q) +
+          (plan.exit.accommodations && plan.exit.accommodations.length
+            ? noteList("Assessment accommodations", plan.exit.accommodations)
+            : "") +
           note("Tomorrow, based on results", plan.exit.tomorrow),
         plan.timing && plan.timing.exit,
       ),
@@ -824,7 +826,7 @@
   }
 
   /* ===================== QA PANEL ===================== */
-  function renderQA(checks, blocked) {
+  function renderQA(checks, blocked, notices) {
     if (blocked) {
       els.qaPanel.innerHTML =
         `<div class="blocked-note"><h3>Need a little more to build the lesson</h3>` +
@@ -846,14 +848,20 @@
       .map(
         (c) =>
           `<tr><td>${esc(c.name)}</td><td>${
-            c.pass
-              ? '<span class="qa-pass">PASS</span>'
-              : '<span class="qa-fail">CHECK</span>'
+            c.pass ? '<span class="qa-pass">PASS</span>' : '<span class="qa-fail">CHECK</span>'
           }</td><td>${esc(c.detail)}</td></tr>`,
+      )
+      .join("");
+    const noticeHtml = (notices || [])
+      .map(
+        (n) =>
+          `<p class="qa-notice ${n.kind === "ok" ? "qa-notice-ok" : "qa-notice-warn"}">` +
+          `<span aria-hidden="true">${n.kind === "ok" ? "✓" : "⚠"}</span> ${esc(n.text)}</p>`,
       )
       .join("");
     els.qaPanel.innerHTML =
       summary +
+      noticeHtml +
       '<table class="qa-table"><thead><tr><th>Check</th><th>Result</th><th>Detail</th></tr></thead><tbody>' +
       rows +
       "</tbody></table>";
@@ -865,6 +873,8 @@
     els.outputCard.hidden = true;
     els.downloadDocxBtn.disabled = true;
     lastPlan = null;
+    clearInvalidMarks();
+    setExportStatus("");
 
     setStage("preflight", "running");
     await tick();
@@ -874,18 +884,25 @@
     const hasTopic = fields.topic || fields.standards;
     if (!typed && !hasUpload && !hasTopic) {
       setStage("preflight", "fail");
+      REQUIRED_ANY()
+        .concat([els.sourceText])
+        .forEach((el) => markInvalid(el, true));
       renderQA(null, {
         message:
-          "Tell the generator what to teach: a Unit/Topic or Lesson Focus, a standard, or pasted source notes.",
+          "Tell the generator what to teach: a Unit/Topic or Lesson Focus, a standard, or pasted source notes. The highlighted fields are where that goes.",
         fixes: [
           "Fill in Unit/Topic or Lesson Focus (e.g. “unit rate”), and/or",
           "Enter a standard (e.g. 6.RP.A.2), and/or",
           "Paste your slide text / notes, or upload a .pptx/.pdf/.docx/.txt.",
         ],
       });
+      if (els.fUnit) els.fUnit.focus();
       return;
     }
     setStage("preflight", "done");
+
+    // Class support profile — locked profile drives real differentiation.
+    fields.profile = activeProfileForGeneration(fields);
 
     setStage("extract", "running");
     await tick();
@@ -916,16 +933,58 @@
     setStage("qa", "done");
     setStage("repair", "done");
     setStage("finalqa", checks.some((c) => !c.pass) ? "fail" : "done");
-    renderQA(checks, null);
+    renderQA(checks, null, buildNotices(plan, fields));
 
     lastPlan = plan;
     renderCurrentTab();
     els.downloadDocxBtn.disabled = false;
     els.outputCard.hidden = false;
-    els.outputCard.scrollIntoView({ behavior: "smooth", block: "start" });
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    els.outputCard.scrollIntoView({
+      behavior: reduceMotion ? "auto" : "smooth",
+      block: "start",
+    });
+    if (els.outputTitle) els.outputTitle.focus({ preventScroll: true });
 
     // Save to history
     saveToHistory(fields, rawSource);
+  }
+
+  /* Advisory notices — the plan still generates, but the teacher should know. */
+  function buildNotices(plan, fields) {
+    const notices = [];
+    if (fields.profile) {
+      notices.push({
+        kind: "ok",
+        text: `Class support profile applied (${fields.profile.summary.total} student${fields.profile.summary.total === 1 ? "" : "s"}) — see Section 10, the Do Now directions, the core set, and the exit-ticket accommodations.`,
+      });
+    } else if (els.profileText && els.profileText.value.trim() && !window.LPGProfile.load()) {
+      notices.push({
+        kind: "warn",
+        text: "You typed a class support profile in Section 2 but did not lock it in — this plan was generated WITHOUT it. Click “Preview supports”, then “Lock in profile”.",
+      });
+    }
+    if (plan.meta.generic) {
+      notices.push({
+        kind: "warn",
+        text: "No Grade-6 math domain was detected, so the practice problems are scaffolds to fill from your source. Add a standard (e.g. 6.RP.A.2) or a math topic for a fully worked problem set.",
+      });
+    }
+    const st = plan.header.standards;
+    if (st.length === 1 && !st[0].code && /^Add the Grade/.test(st[0].desc)) {
+      notices.push({
+        kind: "warn",
+        text: "No standard was given — Section 1 contains a placeholder to fill in before you share this plan.",
+      });
+    }
+    const gradeDigits = String(fields.grade || "").match(/\d+/);
+    if (gradeDigits && gradeDigits[0] !== "6") {
+      notices.push({
+        kind: "warn",
+        text: `The built-in problem library is Grade 6 — double-check that the practice numbers fit Grade ${gradeDigits[0]}.`,
+      });
+    }
+    return notices;
   }
 
   /* ===================== EXPORTS ===================== */
@@ -940,7 +999,8 @@
   }
 
   function buildDocHtml(plan) {
-    const body = els.lessonOutput.innerHTML;
+    // Always export the full teacher plan, regardless of which tab is open.
+    const body = renderPlanHtml(plan);
     return `<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office"
 xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
 <head><meta charset="utf-8"><title>${esc(plan.header.title)}</title>
@@ -980,9 +1040,7 @@ xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-
       `*${[h.date && "Date: " + h.date, h.grade, h.course, h.unit && "Unit: " + h.unit, h.length].filter(Boolean).join(" · ")}*`,
       "",
     );
-    const flowStr = (h.pacing || [])
-      .map(([name, t]) => `${name} ${t}`)
-      .join(" → ");
+    const flowStr = (h.pacing || []).map(([name, t]) => `${name} ${t}`).join(" → ");
     if (flowStr) L.push(`**At a glance:** ${flowStr}`, "");
     L.push("## Lesson Header");
     L.push(
@@ -995,27 +1053,26 @@ xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-
     L.push(`- Materials: ${h.materials.join(", ")}`);
     L.push(`- Length: ${h.length}`, "");
     L.push("## Do Now");
-    plan.doNow.items.forEach((it) =>
-      L.push(`- (${it.level}) ${it.q}  →  ${it.a}`),
-    );
+    plan.doNow.items.forEach((it) => L.push(`- (${it.level}) ${it.q}  →  ${it.a}`));
     L.push("", "## Mini-Lesson — Worked Example");
     L.push(`Problem: ${plan.mini.worked.problem}`);
     plan.mini.worked.steps.forEach((s, i) => L.push(`${i + 1}. ${s}`));
     L.push("", "## Guided Practice");
-    plan.guided.items.forEach((it, i) =>
-      L.push(`${i + 1}. ${it.q}  →  ${it.a}`),
-    );
+    plan.guided.items.forEach((it, i) => L.push(`${i + 1}. ${it.q}  →  ${it.a}`));
     L.push("", "## Independent Practice");
-    plan.independent.items.forEach((it, i) =>
-      L.push(`${i + 1}. (${it.type}) ${it.q}  →  ${it.a}`),
-    );
+    plan.independent.items.forEach((it, i) => L.push(`${i + 1}. (${it.type}) ${it.q}  →  ${it.a}`));
+    if (plan.independent.coreSet) L.push(`- ${plan.independent.coreSet}`);
     L.push("", "## Writing / TWR");
     L.push(`Kernel: ${plan.writing.kernel}`);
-    L.push(
-      `Because: ${plan.writing.because} / But: ${plan.writing.but} / So: ${plan.writing.so}`,
-    );
+    L.push(`Because: ${plan.writing.because} / But: ${plan.writing.but} / So: ${plan.writing.so}`);
+    L.push("", "## Differentiation");
+    plan.differentiation.esol.forEach((x) => L.push(`- (ESOL) ${x}`));
+    plan.differentiation.sped.forEach((x) => L.push(`- (SPED) ${x}`));
+    (plan.differentiation.grouping || []).forEach((x) => L.push(`- (Grouping) ${x}`));
+    if (plan.differentiation.pacing) L.push(`- (Pacing) ${plan.differentiation.pacing}`);
     L.push("", "## Exit Ticket");
     plan.exit.items.forEach((it, i) => L.push(`${i + 1}. ${it.q}  →  ${it.a}`));
+    (plan.exit.accommodations || []).forEach((x) => L.push(`- (Accommodation) ${x}`));
     L.push(`- Tomorrow: ${plan.exit.tomorrow}`);
     return L.map((x) => strip(String(x))).join("\n");
   }
@@ -1060,17 +1117,25 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
 
     els.clearBtn.addEventListener("click", () => {
       els.sourceText.value = "";
-      [els.fUnit, els.fFocus, els.fStandards, els.fSped, els.fNotes].forEach(
-        (e) => (e.value = ""),
-      );
+      [els.fUnit, els.fFocus, els.fStandards, els.fSped, els.fNotes].forEach((e) => (e.value = ""));
+      // Restore defaults instead of leaving stale values behind.
+      els.fGrade.value = "6";
+      els.fCourse.value = "Mathematics";
+      els.fLength.value = "45–60 minutes";
+      els.fSkill.value = "";
+      els.fWida.value = "";
+      setDefaultDate();
       uploadedExtract = null;
       reshuffleNonce = 0;
+      lastPlan = null;
       els.fileInput.value = "";
       els.fileStatus.className = "file-status";
       els.fileStatus.textContent = "";
       els.statusCard.hidden = true;
       els.outputCard.hidden = true;
       els.downloadDocxBtn.disabled = true;
+      clearInvalidMarks();
+      setExportStatus("");
     });
 
     els.reshuffleBtn.addEventListener("click", () => {
@@ -1105,8 +1170,7 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       }),
     );
     els.dropzone.addEventListener("drop", (e) => {
-      const f =
-        e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
       if (f) handleFile(f);
     });
 
@@ -1119,8 +1183,13 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       els.downloadDocxBtn.textContent = "Building…";
       try {
         await window.LPGDocx.export(lastPlan, readyName(lastPlan, "docx"));
+        setExportStatus("Word document downloaded — check your Downloads folder.", "ok");
       } catch (e) {
-        alert(e.message || "Could not build the Word document.");
+        setExportStatus(
+          (e && e.message) ||
+            "Could not build the Word document. Reload the page and try again, or use Print / PDF.",
+          "bad",
+        );
       } finally {
         els.downloadDocxBtn.textContent = old;
         els.downloadDocxBtn.disabled = false;
@@ -1129,41 +1198,106 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
 
     els.downloadDocBtn.addEventListener("click", () => {
       if (!lastPlan) return;
-      download(
-        readyName(lastPlan, "doc"),
-        buildDocHtml(lastPlan),
-        "application/msword",
-      );
+      download(readyName(lastPlan, "doc"), buildDocHtml(lastPlan), "application/msword");
     });
     els.downloadMdBtn.addEventListener("click", () => {
       if (!lastPlan) return;
-      download(
-        readyName(lastPlan, "md"),
-        planToMarkdown(lastPlan),
-        "text/markdown",
-      );
+      download(readyName(lastPlan, "md"), planToMarkdown(lastPlan), "text/markdown");
     });
+
+    if (els.copyBtn) els.copyBtn.addEventListener("click", copyPlan);
 
     // Wire output tabs
     const tabTeacher = $("tabTeacher");
     const tabStudent = $("tabStudent");
+    const selectTab = (which) => {
+      currentTab = which;
+      const isTeacher = which === "teacher";
+      tabTeacher.classList.toggle("active", isTeacher);
+      tabStudent.classList.toggle("active", !isTeacher);
+      tabTeacher.setAttribute("aria-selected", String(isTeacher));
+      tabStudent.setAttribute("aria-selected", String(!isTeacher));
+      els.lessonOutput.setAttribute("aria-labelledby", isTeacher ? "tabTeacher" : "tabStudent");
+      renderCurrentTab();
+    };
     if (tabTeacher && tabStudent) {
-      tabTeacher.addEventListener("click", () => {
-        currentTab = "teacher";
-        tabTeacher.classList.add("active");
-        tabStudent.classList.remove("active");
-        renderCurrentTab();
-      });
-      tabStudent.addEventListener("click", () => {
-        currentTab = "student";
-        tabStudent.classList.add("active");
-        tabTeacher.classList.remove("active");
-        renderCurrentTab();
-      });
+      tabTeacher.addEventListener("click", () => selectTab("teacher"));
+      tabStudent.addEventListener("click", () => selectTab("student"));
+      // Left/right arrows move between the two tabs (WAI-ARIA tabs pattern).
+      [tabTeacher, tabStudent].forEach((tab) =>
+        tab.addEventListener("keydown", (e) => {
+          if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+          e.preventDefault();
+          const next = tab === tabTeacher ? tabStudent : tabTeacher;
+          next.focus();
+          selectTab(next === tabTeacher ? "teacher" : "student");
+        }),
+      );
     }
+
+    wireProfile();
 
     // Render history on load
     renderHistoryRow();
+  }
+
+  /* ===================== EXPORT STATUS + COPY ===================== */
+  let exportStatusTimer = null;
+  function setExportStatus(msg, kind) {
+    if (!els.exportStatus) return;
+    clearTimeout(exportStatusTimer);
+    els.exportStatus.textContent = msg || "";
+    els.exportStatus.className = "export-status small" + (kind ? " " + kind : "");
+    if (msg) {
+      exportStatusTimer = setTimeout(() => {
+        els.exportStatus.textContent = "";
+        els.exportStatus.className = "export-status small";
+      }, 8000);
+    }
+  }
+
+  async function copyPlan() {
+    if (!lastPlan) return;
+    const label = currentTab === "teacher" ? "teacher plan" : "student handout";
+    const html = els.lessonOutput.innerHTML;
+    const text = currentTab === "teacher" ? planToMarkdown(lastPlan) : els.lessonOutput.innerText;
+    try {
+      if (navigator.clipboard && window.ClipboardItem) {
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            "text/html": new Blob([html], { type: "text/html" }),
+            "text/plain": new Blob([text], { type: "text/plain" }),
+          }),
+        ]);
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        throw new Error("Clipboard unavailable");
+      }
+      setExportStatus(`Copied the ${label} — paste into a doc, email, or Canvas page.`, "ok");
+    } catch (_) {
+      // Legacy fallback for older browsers / non-secure contexts.
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try {
+        ok = document.execCommand("copy");
+      } catch (_e) {
+        ok = false;
+      }
+      ta.remove();
+      setExportStatus(
+        ok
+          ? `Copied the ${label}.`
+          : "Copy failed in this browser — use Word (.doc) or Print / PDF instead.",
+        ok ? "ok" : "bad",
+      );
+    }
   }
 
   /* ===================== STUDENT HANDOUT PREVIEW ===================== */
@@ -1177,15 +1311,11 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       `<div class="student-meta">Name: _______________________ &nbsp;&nbsp;&nbsp;&nbsp; Date: ${esc(h.date || "____________")}</div>`,
     );
     out.push(`<p><strong>Objective:</strong> ${esc(h.iCan)}</p>`);
-    out.push(
-      `<p><strong>Essential Question:</strong> ${esc(h.essentialQuestion)}</p>`,
-    );
+    out.push(`<p><strong>Essential Question:</strong> ${esc(h.essentialQuestion)}</p>`);
 
     // Do Now
     out.push(`<h2>Do Now</h2>`);
-    out.push(
-      `<p class="student-instructions">${esc(plan.doNow.directions)}</p>`,
-    );
+    out.push(`<p class="student-instructions">${esc(plan.doNow.directions)}</p>`);
     plan.doNow.items.forEach((it, i) => {
       out.push(`<p>${i + 1}. (${esc(it.level)}) ${esc(it.q)}</p>`);
       out.push(`<div class="student-response-lines"></div>`);
@@ -1196,9 +1326,7 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
     out.push(`<ul class="student-bullet-list">`);
     plan.mini.studentNotes.forEach((n) => out.push(`<li>${esc(n)}</li>`));
     out.push(`</ul>`);
-    out.push(
-      `<p><strong>Worked Example:</strong> ${esc(plan.mini.worked.problem)}</p>`,
-    );
+    out.push(`<p><strong>Worked Example:</strong> ${esc(plan.mini.worked.problem)}</p>`);
     out.push(`<div class="student-response-box"></div>`);
 
     // Guided Practice
@@ -1216,9 +1344,7 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
     // Partner Activity
     out.push(`<h2>Partner Activity</h2>`);
     out.push(`<p>${esc(plan.collaborative.studentDirections)}</p>`);
-    out.push(
-      `<p><strong>Write together:</strong> ${esc(plan.collaborative.twrWritten)}</p>`,
-    );
+    out.push(`<p><strong>Write together:</strong> ${esc(plan.collaborative.twrWritten)}</p>`);
     out.push(`<div class="student-response-box"></div>`);
 
     // Independent Practice
@@ -1227,19 +1353,13 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       out.push(`<p>${i + 1}. (${esc(it.type)}) ${esc(it.q)}</p>`);
       out.push(`<div class="student-response-lines"></div>`);
     });
-    out.push(
-      `<p><strong>Show your thinking:</strong> ${esc(plan.independent.showThinking)}</p>`,
-    );
+    out.push(`<p><strong>Show your thinking:</strong> ${esc(plan.independent.showThinking)}</p>`);
     out.push(`<div class="student-response-box"></div>`);
 
     // Writing
     out.push(`<h2>Writing (TWR)</h2>`);
-    out.push(
-      `<p><strong>Kernel sentence:</strong> ${esc(plan.writing.kernel)}</p>`,
-    );
-    out.push(
-      `<p>Complete the sentence using <em>because</em>, <em>but</em>, and <em>so</em>:</p>`,
-    );
+    out.push(`<p><strong>Kernel sentence:</strong> ${esc(plan.writing.kernel)}</p>`);
+    out.push(`<p>Complete the sentence using <em>because</em>, <em>but</em>, and <em>so</em>:</p>`);
     out.push(
       `<p>• Because: __________________________________________________________________</p>`,
     );
@@ -1310,12 +1430,17 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       };
     }
 
+    // Never persist the derived profile object into history — the class
+    // support profile has its own storage, lifecycle, and Clear control.
+    const storedFields = Object.assign({}, fields);
+    delete storedFields.profile;
+
     const entry = {
       id: Date.now().toString(),
       title,
       date,
       standard,
-      fields,
+      fields: storedFields,
       source: rawSource,
       uploadedExtract: strippedUpload,
     };
@@ -1341,12 +1466,12 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
     if (!entry) return;
 
     els.fDate.value = entry.fields.date || "";
-    els.fGrade.value = entry.fields.grade || "";
-    els.fCourse.value = entry.fields.course || "";
+    els.fGrade.value = entry.fields.grade || "6";
+    els.fCourse.value = entry.fields.course || "Mathematics";
     els.fUnit.value = entry.fields.unit || "";
     els.fFocus.value = entry.fields.focus || "";
     els.fStandards.value = entry.fields.standards || "";
-    els.fLength.value = entry.fields.length || "";
+    els.fLength.value = entry.fields.length || "45–60 minutes";
     els.fSkill.value = entry.fields.skill || "";
     els.fWida.value = entry.fields.wida || "";
     els.fSped.value = entry.fields.sped || "";
@@ -1386,24 +1511,258 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
     row.hidden = false;
     chips.innerHTML = list
       .map((item) => {
-        const displayTitle =
-          item.title.length > 25 ? item.title.slice(0, 25) + "…" : item.title;
+        const displayTitle = item.title.length > 25 ? item.title.slice(0, 25) + "…" : item.title;
         const desc = item.standard
           ? `${displayTitle} (${item.standard.split(" ")[0]})`
           : displayTitle;
-        return `<div class="history-chip" onclick="window.__LPG_LOAD_HIST__('${item.id}')" title="Click to load: ${esc(item.title)}">
-        <span>🕒 ${esc(desc)}</span>
-        <button type="button" class="delete-hist-btn" onclick="window.__LPG_DEL_HIST__('${item.id}', event)" title="Delete saved lesson">×</button>
-      </div>`;
+        return `<span class="history-chip-wrap">
+        <button type="button" class="history-chip" data-id="${esc(item.id)}" title="Load: ${esc(item.title)}">🕒 ${esc(desc)}</button>
+        <button type="button" class="delete-hist-btn" data-id="${esc(item.id)}" aria-label="Delete saved lesson ${esc(item.title)}">×</button>
+      </span>`;
       })
       .join("");
   }
 
-  window.__LPG_LOAD_HIST__ = loadHistory;
-  window.__LPG_DEL_HIST__ = deleteHistory;
+  // One delegated listener — chips re-render often, real buttons stay
+  // keyboard-accessible, and no inline handlers / globals are needed.
+  (function wireHistoryDelegation() {
+    const chips = $("historyChips");
+    if (!chips) return;
+    chips.addEventListener("click", (e) => {
+      const del = e.target.closest(".delete-hist-btn");
+      if (del) {
+        deleteHistory(del.dataset.id, e);
+        return;
+      }
+      const chip = e.target.closest(".history-chip");
+      if (chip) loadHistory(chip.dataset.id);
+    });
+  })();
+
+  /* ===================== CLASS SUPPORT PROFILE UI ===================== */
+  let profileDraft = null; // parsed but not yet locked
+
+  function activeProfileForGeneration(fields) {
+    const P = window.LPGProfile;
+    if (!P) return null;
+    const stored = P.load();
+    if (!stored || !stored.students || !stored.students.length) return null;
+    const prof = {
+      label: stored.label,
+      summary: stored.summary,
+      includeIds: !!stored.includeIds,
+    };
+    prof.strategies = P.strategies(prof, fields);
+    return prof;
+  }
+
+  function profileLabelFor(students) {
+    const sections = [...new Set(students.map((s) => s.section).filter(Boolean))];
+    const base = sections.length ? sections.join(", ") : "Class profile";
+    return `${base} · ${students.length} student${students.length === 1 ? "" : "s"}`;
+  }
+
+  function renderProfileViews() {
+    if (!els.profileLockedView || !window.LPGProfile) return;
+    const stored = window.LPGProfile.load();
+    const locked = !!(stored && stored.students && stored.students.length);
+    els.profileLockedView.hidden = !locked;
+    els.profileEditView.hidden = locked;
+    if (!locked) return;
+    const when = stored.lockedAt
+      ? " — locked " + new Date(stored.lockedAt).toLocaleDateString()
+      : "";
+    els.profileLockedLabel.textContent = stored.label + when;
+    const planChips = Object.entries(stored.summary.plans || {}).map(
+      ([p, n]) => `<li class="profile-chip plan">${esc(p)}: ${n}</li>`,
+    );
+    const needChips = (stored.summary.needLabels || []).map(
+      (l) => `<li class="profile-chip">${esc(l)}</li>`,
+    );
+    els.profileChips.innerHTML =
+      planChips.concat(needChips).join("") ||
+      `<li class="profile-chip">No specific supports recognized — plans use the base differentiation</li>`;
+    els.profileIncludeIds.checked = !!stored.includeIds;
+  }
+
+  function renderProfilePreview(parsed) {
+    profileDraft = parsed;
+    const box = els.profilePreview;
+    if (!box) return;
+    if (!parsed) {
+      box.innerHTML = "";
+      return;
+    }
+    const P = window.LPGProfile;
+    const noticeP = (kind, text) =>
+      `<p class="qa-notice ${kind === "ok" ? "qa-notice-ok" : "qa-notice-warn"}"><span aria-hidden="true">${kind === "ok" ? "✓" : "⚠"}</span> ${esc(text)}</p>`;
+    const errs = parsed.errors.map((x) => noticeP("warn", x)).join("");
+    const warns = parsed.warnings.map((x) => noticeP("warn", x)).join("");
+    if (!parsed.students.length) {
+      box.innerHTML =
+        errs +
+        warns +
+        noticeP(
+          "warn",
+          "No students could be read. Check the format hint in the box above, or click “Load sample” to see a working example.",
+        );
+      return;
+    }
+    const rows = parsed.students
+      .map((st) => {
+        const needs = P.NEED_KEYS.filter((k) => st.needs[k])
+          .map((k) => P.NEEDS[k].label)
+          .join(", ");
+        return (
+          `<tr><td>${esc(st.id)}</td><td>${esc(st.plan || "—")}</td>` +
+          `<td>${st.wida != null ? "WIDA " + st.wida : "—"}</td>` +
+          `<td>${esc(needs || "—")}</td>` +
+          `<td>${st.privateNotes ? '<span class="private-flag">✓ kept private</span>' : "—"}</td></tr>`
+        );
+      })
+      .join("");
+    const lockedAlready = !!P.load();
+    box.innerHTML =
+      errs +
+      warns +
+      noticeP(
+        "ok",
+        `${parsed.students.length} student${parsed.students.length === 1 ? "" : "s"} read. Review the supports below, then lock the profile in.`,
+      ) +
+      `<div class="table-scroll"><table class="qa-table profile-table"><thead><tr><th>ID</th><th>Plan</th><th>Language</th><th>Supports recognized</th><th>Private notes</th></tr></thead><tbody>${rows}</tbody></table></div>` +
+      `<div class="profile-actions">` +
+      `<button class="btn primary" id="profileLockBtn" type="button">${lockedAlready ? "🔒 Replace locked profile" : "🔒 Lock in profile"}</button>` +
+      `<button class="btn ghost" id="profileDiscardBtn" type="button">Discard</button></div>`;
+    const lockBtn = $("profileLockBtn");
+    if (lockBtn) lockBtn.addEventListener("click", lockProfile);
+    const discardBtn = $("profileDiscardBtn");
+    if (discardBtn)
+      discardBtn.addEventListener("click", () => {
+        profileDraft = null;
+        box.innerHTML = "";
+        els.profileText.value = "";
+        // If a profile is still locked (e.g. the teacher was replacing it),
+        // return to the locked view so Replace/Clear stay reachable.
+        renderProfileViews();
+      });
+  }
+
+  function lockProfile() {
+    if (!profileDraft || !profileDraft.students.length) return;
+    const students = profileDraft.students;
+    const profile = {
+      label: profileLabelFor(students),
+      lockedAt: new Date().toISOString(),
+      students,
+      summary: window.LPGProfile.summarize(students),
+      includeIds: !!(els.profileIncludeIds && els.profileIncludeIds.checked),
+    };
+    const saved = window.LPGProfile.save(profile);
+    profileDraft = null;
+    els.profilePreview.innerHTML = saved
+      ? ""
+      : `<p class="qa-notice qa-notice-warn"><span aria-hidden="true">⚠</span> This browser blocked saving (private mode or full storage) — the profile will still apply until you close this tab.</p>`;
+    els.profileText.value = "";
+    renderProfileViews();
+    setExportStatus(
+      "Class support profile locked in — it now shapes every plan you generate.",
+      "ok",
+    );
+  }
+
+  // Rebuild an editable, already-anonymized text version of the stored
+  // profile (never the original paste, which may have contained names).
+  function editableTextFrom(students) {
+    return students
+      .map((st) => {
+        const bits = [st.plan, st.wida != null ? `WIDA ${st.wida}` : "", st.notes].filter(Boolean);
+        const priv = st.privateNotes ? ` private: ${st.privateNotes}` : "";
+        return `${st.id} — ${bits.join(", ") || "no supports noted"}${priv}`;
+      })
+      .join("\n");
+  }
+
+  function wireProfile() {
+    if (!els.profileText || !window.LPGProfile) return;
+    els.profilePreviewBtn.addEventListener("click", () => {
+      renderProfilePreview(window.LPGProfile.parse(els.profileText.value));
+    });
+    els.profileSampleBtn.addEventListener("click", () => {
+      els.profileText.value = window.LPGProfile.SAMPLE;
+      renderProfilePreview(window.LPGProfile.parse(els.profileText.value));
+    });
+    els.profileTemplateBtn.addEventListener("click", () => {
+      download("class-support-profile-template.csv", window.LPGProfile.TEMPLATE, "text/csv");
+    });
+    els.profileUploadBtn.addEventListener("click", () => els.profileFileInput.click());
+    els.profileFileInput.addEventListener("change", async (e) => {
+      const f = e.target.files && e.target.files[0];
+      if (!f) return;
+      e.target.value = "";
+      if (f.size > 2 * 1024 * 1024) {
+        renderProfilePreview({
+          students: [],
+          warnings: [],
+          errors: [
+            "That file is larger than 2 MB — export a plain .csv from your roster tool, or paste the text instead.",
+          ],
+        });
+        return;
+      }
+      try {
+        const text = await f.text();
+        els.profileText.value = text;
+        renderProfilePreview(window.LPGProfile.parse(text));
+      } catch (err) {
+        renderProfilePreview({
+          students: [],
+          warnings: [],
+          errors: ["Could not read that file: " + (err.message || err)],
+        });
+      }
+    });
+    els.profileReplaceBtn.addEventListener("click", () => {
+      const stored = window.LPGProfile.load();
+      if (stored && stored.students) {
+        els.profileText.value = editableTextFrom(stored.students);
+      }
+      els.profileLockedView.hidden = true;
+      els.profileEditView.hidden = false;
+      renderProfilePreview(window.LPGProfile.parse(els.profileText.value));
+    });
+    els.profileClearBtn.addEventListener("click", () => {
+      const sure = window.confirm(
+        "Clear the locked class support profile from this browser? Generated plans will go back to base differentiation.",
+      );
+      if (!sure) return;
+      window.LPGProfile.clear();
+      profileDraft = null;
+      els.profileText.value = "";
+      els.profilePreview.innerHTML = "";
+      renderProfileViews();
+      setExportStatus("Class support profile cleared from this device.", "ok");
+    });
+    els.profileIncludeIds.addEventListener("change", () => {
+      const stored = window.LPGProfile.load();
+      if (stored) {
+        stored.includeIds = els.profileIncludeIds.checked;
+        window.LPGProfile.save(stored);
+      }
+    });
+    renderProfileViews();
+  }
+
+  /* ===================== INIT ===================== */
+  function setDefaultDate() {
+    if (!els.fDate) return;
+    const now = new Date();
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    els.fDate.value = local.toISOString().slice(0, 10);
+  }
 
   window.__LPG__ = { buildContentMap, gatherFields, runQA, renderPlanHtml };
 
   initTheme();
+  setDefaultDate();
   wire();
 })();
