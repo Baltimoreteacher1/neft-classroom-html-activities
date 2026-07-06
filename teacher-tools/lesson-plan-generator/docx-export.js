@@ -261,6 +261,18 @@
     };
   }
 
+  /* Per-phase "initials — modification" callout. Teacher body only — the
+     student body never calls this. */
+  function supportsBlock(arr, k, out) {
+    if (!arr || !arr.length) return;
+    out.push(
+      k.callout(
+        arr.map((s) => "• " + s),
+        "Student supports (teacher-facing)",
+      ),
+    );
+  }
+
   /* ---------- TEACHER-FACING body ---------- */
   function teacherBody(plan, k) {
     const h = plan.header;
@@ -387,6 +399,7 @@
       ),
     );
     out.push(k.runs([{ t: "Teacher move: ", b: true }, { t: plan.doNow.teacherMove }]));
+    supportsBlock(plan.doNow.studentSupports, k, out);
 
     // 5 · Mini-Lesson
     out.push(k.H2("5 · Mini-Lesson / Direct Instruction" + at(t.mini)));
@@ -401,6 +414,7 @@
     out.push(...k.bullets(plan.mini.worked.thinkAloud.map((t) => `"${t}"`)));
     out.push(k.runs([{ t: "Common mistake: ", b: true }, { t: plan.mini.worked.commonMistake }]));
     out.push(k.runs([{ t: "Correction: ", b: true }, { t: plan.mini.worked.correction }]));
+    supportsBlock(plan.mini.studentSupports, k, out);
 
     // 6 · Guided
     out.push(k.H2("6 · Guided Practice" + at(t.guided)));
@@ -414,6 +428,7 @@
     out.push(k.P(plan.guided.turnAndTalk, { italics: true }));
     out.push(k.H3("Sentence starters"));
     out.push(...k.bullets(plan.guided.sentenceStarters));
+    supportsBlock(plan.guided.studentSupports, k, out);
 
     // 7 · Collaborative
     const c = plan.collaborative;
@@ -424,6 +439,7 @@
     out.push(k.H3("Discussion prompts"));
     out.push(...k.bullets(c.discussionPrompts));
     out.push(k.runs([{ t: "Written response (TWR): ", b: true }, { t: c.twrWritten }]));
+    supportsBlock(c.studentSupports, k, out);
 
     // 8 · Independent
     out.push(k.H2("8 · Independent Practice" + at(t.independent)));
@@ -441,6 +457,7 @@
     if (plan.independent.coreSet) {
       out.push(k.runs([{ t: "Core set: ", b: true }, { t: plan.independent.coreSet }]));
     }
+    supportsBlock(plan.independent.studentSupports, k, out);
 
     // 9 · Writing / TWR
     const w = plan.writing;
@@ -461,6 +478,16 @@
     const dz = plan.differentiation;
     out.push(k.H2("10 · Differentiation"));
     if (dz.profileNote) out.push(k.P(dz.profileNote, { italics: true }));
+    if (dz.perStudent && dz.perStudent.length) {
+      out.push(k.H3("Per-student modifications (teacher-facing)"));
+      out.push(
+        k.table(
+          ["Student", "Plan", "Today's modifications"],
+          dz.perStudent.map((s) => [s.id, s.plan, s.mods]),
+          [14, 12, 74],
+        ),
+      );
+    }
     out.push(k.H3("ESOL / WIDA supports"));
     out.push(...k.bullets(dz.esol));
     out.push(k.H3("SPED supports"));

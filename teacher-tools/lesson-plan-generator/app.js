@@ -556,6 +556,10 @@
   const note = (label, val) => `<p class="lp-note"><strong>${esc(label)}:</strong> ${esc(val)}</p>`;
   const noteList = (label, arr) =>
     `<div class="lp-note"><strong>${esc(label)}:</strong>` + ul(arr) + `</div>`;
+  // Per-phase "initials — modification" callout (teacher plan only; the
+  // student handout renderer never calls this).
+  const supportsList = (arr) =>
+    arr && arr.length ? noteList("Student supports (teacher-facing)", arr) : "";
 
   function renderPlanHtml(plan) {
     const h = plan.header;
@@ -661,7 +665,8 @@
             ["Level", "Question", "Answer key"],
             plan.doNow.items.map((it) => [it.level, it.q, it.a]),
           ) +
-          note("Teacher move", plan.doNow.teacherMove),
+          note("Teacher move", plan.doNow.teacherMove) +
+          supportsList(plan.doNow.studentSupports),
         plan.timing && plan.timing.doNow,
       ),
     );
@@ -681,7 +686,8 @@
           "<p><strong>Think-aloud:</strong></p>" +
           ul(m.worked.thinkAloud.map((t) => `“${t}”`)) +
           kv("Common mistake", m.worked.commonMistake) +
-          kv("Correction", m.worked.correction),
+          kv("Correction", m.worked.correction) +
+          supportsList(m.studentSupports),
         plan.timing && plan.timing.mini,
       ),
     );
@@ -697,7 +703,8 @@
         ) +
           note("Turn & Talk", plan.guided.turnAndTalk) +
           "<p><strong>Sentence starters:</strong></p>" +
-          ul(plan.guided.sentenceStarters),
+          ul(plan.guided.sentenceStarters) +
+          supportsList(plan.guided.studentSupports),
         plan.timing && plan.timing.guided,
       ),
     );
@@ -713,7 +720,8 @@
           kv("Accountability", c.accountability) +
           "<p><strong>Discussion prompts:</strong></p>" +
           ul(c.discussionPrompts) +
-          kv("Written response (TWR)", c.twrWritten),
+          kv("Written response (TWR)", c.twrWritten) +
+          supportsList(c.studentSupports),
         plan.timing && plan.timing.collaborative,
       ),
     );
@@ -729,7 +737,8 @@
         ) +
           kv("Show your thinking", plan.independent.showThinking) +
           kv("Extension", plan.independent.extension) +
-          (plan.independent.coreSet ? note("Core set", plan.independent.coreSet) : ""),
+          (plan.independent.coreSet ? note("Core set", plan.independent.coreSet) : "") +
+          supportsList(plan.independent.studentSupports),
         plan.timing && plan.timing.independent,
       ),
     );
@@ -761,6 +770,13 @@
         10,
         "Differentiation",
         (d.profileNote ? `<p class="lp-profile-note">${esc(d.profileNote)}</p>` : "") +
+          (d.perStudent && d.perStudent.length
+            ? "<h3 class='lp-sub-h'>Per-student modifications (teacher-facing)</h3>" +
+              tableHtml(
+                ["Student", "Plan", "Today's modifications"],
+                d.perStudent.map((s) => [s.id, s.plan, s.mods]),
+              )
+            : "") +
           "<h3 class='lp-sub-h'>ESOL / WIDA</h3>" +
           ul(d.esol) +
           "<h3 class='lp-sub-h'>SPED</h3>" +
@@ -923,6 +939,21 @@
     setStage("preflight", "done");
 
     // Class support profile — locked profile drives real differentiation.
+    // If the teacher pasted a support list but never clicked Lock, auto-lock
+    // it now so the supports integrate instead of being silently dropped.
+    lastAutoLockFailed = false;
+    if (!window.LPGProfile.load() && els.profileText && els.profileText.value.trim()) {
+      const parsed = window.LPGProfile.parse(els.profileText.value);
+      if (parsed.students.length) {
+        saveLockedProfile(
+          parsed.students,
+          parsed.warnings.concat(parsed.errors),
+          `Class support profile auto-locked (${parsed.students.length} student${parsed.students.length === 1 ? "" : "s"}) and applied to this plan.`,
+        );
+      } else {
+        lastAutoLockFailed = true;
+      }
+    }
     fields.profile = activeProfileForGeneration(fields);
 
     setStage("extract", "running");
@@ -972,17 +1003,18 @@
   }
 
   /* Advisory notices — the plan still generates, but the teacher should know. */
+  let lastAutoLockFailed = false;
   function buildNotices(plan, fields) {
     const notices = [];
     if (fields.profile) {
       notices.push({
         kind: "ok",
-        text: `Class support profile applied (${fields.profile.summary.total} student${fields.profile.summary.total === 1 ? "" : "s"}) — see Section 10, the Do Now directions, the core set, and the exit-ticket accommodations.`,
+        text: `Class support profile applied (${fields.profile.summary.total} student${fields.profile.summary.total === 1 ? "" : "s"}) — student supports appear inside each section${fields.profile.includeIds ? " with initials" : ""}, plus the per-student table in Section 10.`,
       });
-    } else if (els.profileText && els.profileText.value.trim() && !window.LPGProfile.load()) {
+    } else if (lastAutoLockFailed) {
       notices.push({
         kind: "warn",
-        text: "You typed a class support profile in Section 2 but did not lock it in — this plan was generated WITHOUT it. Click “Preview supports”, then “Lock in profile”.",
+        text: "The support list in Section 2 could not be read, so this plan was generated WITHOUT it. Check the format (one student per line, e.g. “A1 — IEP, extended time”) or click “Preview supports” to see what went wrong.",
       });
     }
     if (plan.meta.generic) {
@@ -1087,6 +1119,9 @@ xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-
     L.push(`Kernel: ${plan.writing.kernel}`);
     L.push(`Because: ${plan.writing.because} / But: ${plan.writing.but} / So: ${plan.writing.so}`);
     L.push("", "## Differentiation");
+    (plan.differentiation.perStudent || []).forEach((s) =>
+      L.push(`- (Student) ${s.id} [${s.plan}]: ${s.mods}`),
+    );
     plan.differentiation.esol.forEach((x) => L.push(`- (ESOL) ${x}`));
     plan.differentiation.sped.forEach((x) => L.push(`- (SPED) ${x}`));
     (plan.differentiation.grouping || []).forEach((x) => L.push(`- (Grouping) ${x}`));
@@ -1571,7 +1606,12 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
     const prof = {
       label: stored.label,
       summary: stored.summary,
-      includeIds: !!stored.includeIds,
+      students: stored.students,
+      // The live checkbox is the source of truth so toggling + regenerating
+      // always matches what the teacher sees on screen.
+      includeIds: els.profileIncludeIds
+        ? els.profileIncludeIds.checked
+        : stored.includeIds !== false,
     };
     prof.strategies = P.strategies(prof, fields);
     return prof;
@@ -1603,7 +1643,24 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
     els.profileChips.innerHTML =
       planChips.concat(needChips).join("") ||
       `<li class="profile-chip">No specific supports recognized — plans use the base differentiation</li>`;
-    els.profileIncludeIds.checked = !!stored.includeIds;
+    // Default ON (initials belong in the teacher plan) unless the teacher
+    // explicitly turned it off for this locked profile.
+    els.profileIncludeIds.checked = stored.includeIds !== false;
+    // Surface parse-time warnings (e.g. names converted to initials) so
+    // they stay visible after an auto-lock, not just in the preview.
+    const lockNotes = (stored.warnings || [])
+      .map(
+        (w) =>
+          `<p class="qa-notice qa-notice-warn"><span aria-hidden="true">⚠</span> ${esc(w)}</p>`,
+      )
+      .join("");
+    let notesBox = $("profileLockedNotes");
+    if (!notesBox) {
+      notesBox = document.createElement("div");
+      notesBox.id = "profileLockedNotes";
+      els.profileLockedView.appendChild(notesBox);
+    }
+    notesBox.innerHTML = lockNotes;
   }
 
   function renderProfilePreview(parsed) {
@@ -1668,15 +1725,17 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       });
   }
 
-  function lockProfile() {
-    if (!profileDraft || !profileDraft.students.length) return;
-    const students = profileDraft.students;
+  // Shared lock path for the manual Lock button, file uploads, and the
+  // auto-lock on Generate. Returns the saved profile (or null).
+  function saveLockedProfile(students, warnings, statusMsg) {
+    if (!students || !students.length) return null;
     const profile = {
       label: profileLabelFor(students),
       lockedAt: new Date().toISOString(),
       students,
       summary: window.LPGProfile.summarize(students),
       includeIds: !!(els.profileIncludeIds && els.profileIncludeIds.checked),
+      warnings: (warnings || []).slice(0, 8),
     };
     const saved = window.LPGProfile.save(profile);
     profileDraft = null;
@@ -1686,9 +1745,15 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
     els.profileText.value = "";
     renderProfileViews();
     setExportStatus(
-      "Class support profile locked in — it now shapes every plan you generate.",
+      statusMsg || "Class support profile locked in — it now shapes every plan you generate.",
       "ok",
     );
+    return profile;
+  }
+
+  function lockProfile() {
+    if (!profileDraft) return;
+    saveLockedProfile(profileDraft.students, profileDraft.warnings);
   }
 
   // Rebuild an editable, already-anonymized text version of the stored
@@ -1733,7 +1798,19 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       try {
         const text = await f.text();
         els.profileText.value = text;
-        renderProfilePreview(window.LPGProfile.parse(text));
+        const parsed = window.LPGProfile.parse(text);
+        // Uploading a file is a clear signal of intent: auto-lock it so the
+        // supports integrate into the very next generated plan — no extra
+        // clicks. Replace/Clear stay available in the locked view.
+        if (parsed.students.length) {
+          saveLockedProfile(
+            parsed.students,
+            parsed.warnings.concat(parsed.errors),
+            `Support profile from "${f.name}" locked in (${parsed.students.length} student${parsed.students.length === 1 ? "" : "s"}) — it now shapes every plan you generate.`,
+          );
+        } else {
+          renderProfilePreview(parsed);
+        }
       } catch (err) {
         renderProfilePreview({
           students: [],

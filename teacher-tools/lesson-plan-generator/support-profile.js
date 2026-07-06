@@ -449,7 +449,107 @@
       );
     }
 
+    // Per-student, per-phase modification lines (teacher-facing only).
+    // Rendered inside each lesson section so the teacher sees WHO gets
+    // WHAT at the moment it matters — initials only appear when the
+    // "show student IDs" box is checked, and never in the student handout.
+    const students = profile.students || [];
+    if (profile.includeIds && students.length) {
+      out.phase = buildPhaseLines(students);
+      out.perStudent = students.map(studentModsRow);
+    } else {
+      out.phase = {};
+      out.perStudent = [];
+    }
+
     return out;
+  }
+
+  /* Which concrete modification each need triggers in each lesson phase. */
+  const PHASE_MODS = {
+    reading: {
+      doNow: "read the Do Now questions aloud quietly at the desk",
+      guided:
+        "read each problem aloud before they solve; they highlight the numbers and underline the question",
+      independent: "read directions and word problems aloud twice",
+      exit: "exit-ticket questions read aloud on request",
+    },
+    processing: {
+      doNow: "no visible timer — they keep working while others share; collect theirs last",
+      guided: 'pre-cue one problem ahead ("#3 is yours") and give 8–10 seconds of wait time',
+      independent: "extended time — unfinished problems come back as tomorrow's Do Now, not a zero",
+      exit: "extended time on the exit ticket; no countdown displayed",
+    },
+    attention: {
+      mini: "seat along your circulation path; printed step checklist (the worked-example steps) on the desk",
+      independent: "hand out problems 1–3 first, then 4–6 after a check-in at #3",
+      collaborative: "give a concrete partner role (recorder or checker) before the task starts",
+    },
+    behavior: {
+      doNow: "first positive narration inside the first five minutes",
+      mini: "agreed non-verbal reset cue; 2-minute break pass honored without discussion",
+      collaborative: "pre-picked supportive partner, not random pairing",
+    },
+    math: {
+      guided:
+        "multiplication chart and calculator for the computation steps — the target is the setup",
+      independent:
+        "manipulatives / grid paper from the open table; calculator for computation-heavy items",
+    },
+    writing: {
+      writing:
+        "sentence-frame desk strip; 60 seconds of oral rehearsal with a partner before writing; scribe or speech-to-text per plan",
+      collaborative: "may dictate the shared written answer while the partner records",
+    },
+    assessment: {
+      exit: "2-question core exit ticket (starred items) counts as complete; small-group or separate location per plan",
+    },
+    language: {
+      mini: "pre-taught vocabulary with visuals; point to the vocabulary table during the think-aloud",
+      guided: "a sentence frame for every spoken response",
+      collaborative: "supportive or same-language partner; both practice the explanation aloud",
+      writing: "word bank + frames stay posted; oral rehearsal before writing",
+    },
+  };
+
+  /* Short per-need summary for the Section 10 per-student table. */
+  const SUMMARY_MODS = {
+    reading: "read-aloud (directions, problems, exit ticket)",
+    processing: "extended time; no visible timer",
+    attention: "chunked tasks + step checklist; check-in at #3",
+    behavior: "reset cue + break pass; positive narration first",
+    math: "multiplication chart / calculator for computation",
+    writing: "sentence frames + oral rehearsal; scribe or speech-to-text OK",
+    assessment: "core exit ticket; small-group testing per plan",
+    language: "sentence frames, visuals, partner rehearsal",
+  };
+
+  function buildPhaseLines(students) {
+    const phases = {};
+    for (const key of NEED_KEYS) {
+      const mods = PHASE_MODS[key];
+      if (!mods) continue;
+      const ids = students.filter((s) => s.needs[key]).map((s) => s.id);
+      if (!ids.length) continue;
+      for (const phase of Object.keys(mods)) {
+        (phases[phase] = phases[phase] || []).push(`${ids.join(", ")} — ${mods[phase]}.`);
+      }
+    }
+    return phases;
+  }
+
+  function studentModsRow(st) {
+    const mods = NEED_KEYS.filter((k) => st.needs[k]).map((k) => SUMMARY_MODS[k]);
+    if (st.wida != null) mods.unshift(`WIDA ${st.wida} language supports`);
+    return {
+      id: st.id,
+      plan: st.plan || "—",
+      mods: mods.length
+        ? mods.join("; ")
+        : st.notes
+          ? st.notes.slice(0, 90)
+          : "monitor; no specific supports recognized",
+    };
   }
 
   /* ---------------- storage (this browser only) ----------------

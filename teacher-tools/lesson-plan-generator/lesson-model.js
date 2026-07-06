@@ -142,6 +142,9 @@
     // teacher-facing only — the student handout never receives it.
     const prof = fields.profile || null;
     const strat = (prof && prof.strategies) || {};
+    // Per-phase "who gets what" lines (student initials + modification),
+    // present only when the teacher shows IDs. Teacher-facing only.
+    const phase = strat.phase || {};
 
     // ---------- Section 4: Do Now ----------
     const doNow = {
@@ -151,6 +154,7 @@
       items: content.doNow,
       teacherMove:
         "Circulate; note 1–2 approaches to surface in the mini-lesson. Thumbs check before moving on.",
+      studentSupports: (phase.doNow || []).slice(),
     };
 
     // ---------- Section 5: Mini-Lesson ----------
@@ -166,6 +170,7 @@
       ],
       worked: content.worked,
       gradualRelease: "I do (model) → We do (guided) → You do (independent).",
+      studentSupports: (phase.mini || []).slice(),
     };
 
     // ---------- Section 6: Guided Practice ----------
@@ -178,6 +183,7 @@
         "I knew to ___ because ___.",
         "My answer is ___, and it makes sense because ___.",
       ],
+      studentSupports: (phase.guided || []).slice(),
     };
 
     // ---------- Section 7: Collaborative / Partner ----------
@@ -193,6 +199,7 @@
         "How do you know your answer is reasonable?",
       ],
       twrWritten: content.twr.because,
+      studentSupports: (phase.collaborative || []).slice(),
     };
 
     // ---------- Section 8: Independent Practice ----------
@@ -207,11 +214,12 @@
       showThinking: "For at least two problems, write a sentence explaining HOW you solved it.",
       extension: `Challenge: create your own ${content.topicLabel} problem, solve it, and write the answer key.`,
       coreSet: strat.independentCore || "",
+      studentSupports: (phase.independent || []).slice(),
     };
 
     // ---------- Section 9: Writing / TWR ----------
     const writing = Object.assign({}, content.twr, {
-      supports: (strat.writingSupports || []).slice(),
+      supports: (strat.writingSupports || []).concat(phase.writing || []),
     });
 
     // ---------- Section 10: Differentiation ----------
@@ -249,6 +257,7 @@
       esol: baseEsol.concat(hasEsolStrat ? strat.esol : []),
       sped: baseSped.concat(hasSpedStrat ? strat.sped : []),
       grouping: (strat.grouping || []).slice(),
+      perStudent: (strat.perStudent || []).slice(),
       pacing: strat.pacingNote || "",
       profileNote: prof
         ? `Built from the locked class support profile (${prof.summary.total} student${prof.summary.total === 1 ? "" : "s"}). Supports are written as whole-class moves and teacher-facing notes — no student names, labels, or plan types appear in any student-facing material.`
@@ -294,7 +303,7 @@
       },
       tomorrow:
         "0–1 correct → reteach in small group tomorrow. 2 correct → targeted guided practice. All correct → move on / extend.",
-      accommodations: (strat.exitAccommodations || []).slice(),
+      accommodations: (strat.exitAccommodations || []).concat(phase.exit || []),
     };
 
     // ---------- Section 13: Teacher Notes / Next-Day ----------
