@@ -17,11 +17,35 @@
 (function () {
   "use strict";
 
+  // The docx UMD build is 1.1 MB, so it is NOT loaded with the page — it is
+  // injected on the first export click and cached for the session.
+  let libPromise = null;
   function ensureLib() {
-    if (typeof window.docx === "undefined") {
-      throw new Error("Word export library (docx) failed to load. Reload the page and try again.");
+    if (typeof window.docx !== "undefined") return Promise.resolve(window.docx);
+    if (!libPromise) {
+      libPromise = new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = "/teacher-tools/lesson-plan-generator/vendor/docx.umd.js";
+        s.onload = () => resolve(window.docx);
+        s.onerror = () => {
+          libPromise = null;
+          reject(
+            new Error(
+              "The Word export library could not load. Check your connection and try again, or use Print / PDF.",
+            ),
+          );
+        };
+        document.head.appendChild(s);
+      });
     }
-    return window.docx;
+    return libPromise.then((d) => {
+      if (typeof d === "undefined") {
+        throw new Error(
+          "Word export library (docx) failed to load. Reload the page and try again.",
+        );
+      }
+      return d;
+    });
   }
 
   const TEAL = "0F766E";
@@ -593,7 +617,10 @@
   }
 
   function buildDoc(plan, d) {
-    d = d || ensureLib();
+    d = d || window.docx;
+    if (!d) {
+      throw new Error("Word library not loaded yet — await LPGDocx.ensure() first.");
+    }
     const k = api(d);
     const children = teacherBody(plan, k).concat(studentBody(plan, k));
     return new d.Document({
@@ -612,7 +639,7 @@
   }
 
   async function exportDocx(plan, filename) {
-    const d = ensureLib();
+    const d = await ensureLib();
     const doc = buildDoc(plan, d);
     const blob = await d.Packer.toBlob(doc);
     const url = URL.createObjectURL(blob);
@@ -625,5 +652,5 @@
     setTimeout(() => URL.revokeObjectURL(url), 1500);
   }
 
-  window.LPGDocx = { export: exportDocx, buildDoc };
+  window.LPGDocx = { export: exportDocx, buildDoc, ensure: ensureLib };
 })();

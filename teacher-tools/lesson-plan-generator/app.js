@@ -106,12 +106,32 @@
   const tick = () => new Promise((r) => setTimeout(r, 12));
 
   /* ===================== SOURCE EXTRACTION ===================== */
-  async function extractPptx(arrayBuffer) {
-    if (typeof JSZip === "undefined") {
-      throw new Error(
-        "Slide reader library (jszip) failed to load. Copy the slide text and paste it into the text box instead.",
-      );
+  // jszip is only needed for .pptx/.docx uploads, so it is lazy-loaded on
+  // first use instead of with the page.
+  let jszipPromise = null;
+  function ensureJSZip() {
+    if (typeof window.JSZip !== "undefined") return Promise.resolve(window.JSZip);
+    if (!jszipPromise) {
+      jszipPromise = new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = "/teacher-tools/lesson-plan-generator/vendor/jszip.min.js";
+        s.onload = () => resolve(window.JSZip);
+        s.onerror = () => {
+          jszipPromise = null;
+          reject(
+            new Error(
+              "The file reader library (jszip) could not load. Copy the text and paste it into the text box instead.",
+            ),
+          );
+        };
+        document.head.appendChild(s);
+      });
     }
+    return jszipPromise;
+  }
+
+  async function extractPptx(arrayBuffer) {
+    const JSZip = await ensureJSZip();
     const zip = await JSZip.loadAsync(arrayBuffer);
     const slideFiles = Object.keys(zip.files)
       .filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n))
@@ -140,6 +160,7 @@
   }
 
   async function extractDocx(arrayBuffer) {
+    const JSZip = await ensureJSZip();
     const zip = await JSZip.loadAsync(arrayBuffer);
     const docFile = zip.files["word/document.xml"];
     if (!docFile) throw new Error("No word/document.xml in the .docx.");
