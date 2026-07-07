@@ -7117,6 +7117,12 @@ Due May 31"></textarea>
     },
     base: "/api/state",
     _busy: false,
+    // A push was requested while another was still in flight. We coalesce it into
+    // a single follow-up push (see the finally block below) so a fast series of
+    // saves — e.g. ticking several routine steps in a row — can never leave the
+    // last ones only on this device. Without this, every push after the first was
+    // silently dropped and those checks never reached the cloud.
+    _pending: false,
     // status: "idle" | "syncing" | "synced" | "offline" — drives the UI chip.
     status: "idle",
     _interval: null,
@@ -7130,7 +7136,15 @@ Due May 31"></textarea>
     },
     async push() {
       const code = state.settings.sync.code;
-      if (!code || !this.available() || this._busy) return;
+      if (!code || !this.available()) return;
+      // Don't fire overlapping PUTs. If one is already running, mark that we have
+      // newer local data to send and let the in-flight push re-run once it lands,
+      // capturing the latest `state`. This is what makes a burst of routine-step
+      // checks reliably reach the cloud instead of only the first one.
+      if (this._busy) {
+        this._pending = true;
+        return;
+      }
       this._busy = true;
       this._setStatus("syncing");
       try {
@@ -7175,6 +7189,13 @@ Due May 31"></textarea>
         this._setStatus("offline");
       } finally {
         this._busy = false;
+        // A save landed while we were mid-flight — push the newest state now so
+        // nothing checked during the request is left behind. _pending is cleared
+        // first so this settles once the user stops making changes.
+        if (this._pending) {
+          this._pending = false;
+          this.push();
+        }
       }
     },
     async pull({ forceMerge = false } = {}) {
@@ -7218,6 +7239,14 @@ Due May 31"></textarea>
               await save({ touch: false, immediate: true });
               suppressPush = prev;
               shouldPushMerged = !prev;
+            } else if (localUpdated > remoteUpdated && !suppressPush) {
+              // Content already matches, but our copy is newer than the server's
+              // — an earlier push was dropped (busy/offline/blip), so the cloud
+              // (and any peer) is missing changes we already hold. Re-send them.
+              // Without this, checked routine steps that failed to push once would
+              // sit local-only forever, since the merge sees "no change" and the
+              // 10s auto-pull would otherwise never retry the upload.
+              shouldPushMerged = true;
             }
             state.settings.sync.lastAt = new Date().toISOString();
             mirror();
@@ -7226,7 +7255,13 @@ Due May 31"></textarea>
             return changed;
           }
         }
-        // Local is same/newer — nothing to apply, but we're in sync.
+        // Local is same/newer — nothing to apply, but we're in sync. If local is
+        // strictly newer than the server, push it up so the cloud isn't left
+        // behind (e.g. this device made changes while it was the only one open).
+        const remoteUpdated = (data && data.updatedAt) || 0;
+        if ((state.updatedAt || 0) > remoteUpdated && !suppressPush) {
+          this.push();
+        }
         state.settings.sync.lastAt = new Date().toISOString();
         mirror();
         this._setStatus("synced");
@@ -10204,6 +10239,7 @@ ${name}`;
 
   if (window.__FOCUS_SCHOOL_TEST__) {
     Object.assign(window.__FOCUS_SCHOOL_TEST__, {
+      cloud,
       mergeRoutineLogs,
       mergeStates,
       nextRoutineWindow,
@@ -10211,6 +10247,10 @@ ${name}`;
       pickRoutineForNow,
       routineForHome,
       seed,
+      setState: (s) => {
+        state = s;
+      },
+      getState: () => state,
       state,
     });
   }
