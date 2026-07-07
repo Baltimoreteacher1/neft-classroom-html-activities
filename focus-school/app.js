@@ -192,6 +192,12 @@
       if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !day || typeof day !== "object") continue;
       const clean = {};
       for (const id of knownIds) if (day[id]) clean[id] = 1;
+      // Keep per-item toggle stamps — the sync merge needs them so an uncheck
+      // beats a stale check from another device (see mergeStates health rule).
+      const ts = day.__ts && typeof day.__ts === "object" ? day.__ts : {};
+      const cleanTs = {};
+      for (const id of knownIds) if (Number(ts[id])) cleanTs[id] = Number(ts[id]);
+      if (Object.keys(cleanTs).length) clean.__ts = cleanTs;
       const paid = Array.isArray(day.__paid) ? day.__paid.filter((x) => knownIds.has(x)) : [];
       if (paid.length) clean.__paid = [...new Set(paid)];
       if (Object.keys(clean).length) log[date] = clean;
@@ -269,10 +275,17 @@
     set(key, val) {
       return new Promise((resolve) => {
         if (!this.db) return resolve(false);
-        const tx = this.db.transaction(STORE, "readwrite");
-        tx.objectStore(STORE).put(val, key);
-        tx.oncomplete = () => resolve(true);
-        tx.onerror = () => resolve(false);
+        // transaction()/put() can throw synchronously (closed db, clone error)
+        // — resolve false instead of leaking an unhandled rejection; the
+        // synchronous localStorage mirror still holds the data.
+        try {
+          const tx = this.db.transaction(STORE, "readwrite");
+          tx.objectStore(STORE).put(val, key);
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = () => resolve(false);
+        } catch {
+          resolve(false);
+        }
       });
     },
   };
@@ -723,24 +736,16 @@
       const day = {};
       const mergedTs = {};
       const routineIds = new Set(
-        [
-          ...Object.keys(a),
-          ...Object.keys(b),
-          ...Object.keys(aTs),
-          ...Object.keys(bTs),
-        ].filter((k) => k !== "__ts" && k !== "__awarded"),
+        [...Object.keys(a), ...Object.keys(b), ...Object.keys(aTs), ...Object.keys(bTs)].filter(
+          (k) => k !== "__ts" && k !== "__awarded",
+        ),
       );
       for (const rid of routineIds) {
         const aArr = Array.isArray(a[rid]) ? a[rid] : [];
         const bArr = Array.isArray(b[rid]) ? b[rid] : [];
         const aStepTs = aTs[rid] || {};
         const bStepTs = bTs[rid] || {};
-        const steps = new Set([
-          ...aArr,
-          ...bArr,
-          ...Object.keys(aStepTs),
-          ...Object.keys(bStepTs),
-        ]);
+        const steps = new Set([...aArr, ...bArr, ...Object.keys(aStepTs), ...Object.keys(bStepTs)]);
         const chosen = [];
         const ridTs = {};
         for (const step of steps) {
@@ -772,6 +777,31 @@
     const ts = (day.__ts = day.__ts || {});
     const r = (ts[routineId] = ts[routineId] || {});
     r[stepId] = Date.now();
+  }
+  // Assignment-step counterpart of the routine per-step rule: the winning
+  // assignment supplies the step list (title/notes/adds/removes follow the
+  // whole-object winner), but each step's checked state follows its own most
+  // recent toggle from either device, and earned credit is never forgotten
+  // (so a re-check can't double-award points). Without this, two devices
+  // checking different steps of the same assignment in one sync window lose
+  // one side's check.
+  function mergeAssignmentSteps(winner, loser) {
+    const loseById = new Map((loser.steps || []).map((s) => [s && s.id, s]));
+    return (winner.steps || []).map((s) => {
+      const o = loseById.get(s.id);
+      if (!o) return s;
+      const st = { ...s };
+      const wt = Number(s.__ts) || 0;
+      const lt = Number(o.__ts) || 0;
+      if (lt > wt) {
+        st.done = !!o.done;
+        st.__ts = lt;
+      } else if (lt === wt && o.done && !s.done) {
+        st.done = true; // tie → union, matching the routine rule
+      }
+      st.credited = !!(s.credited || o.credited);
+      return st;
+    });
   }
   function normalizeClass(c) {
     c = c || {};
@@ -842,6 +872,9 @@
             text: st.text || "",
             done: !!st.done,
             credited: !!st.credited,
+            // Per-step toggle stamp — lets the sync merge keep the most recent
+            // check/uncheck per step across devices (same rule as routines).
+            ...(Number(st.__ts) ? { __ts: Number(st.__ts) } : {}),
           }))
         : [],
       notes: a.notes || "",
@@ -946,7 +979,14 @@
     if (touch) state.updatedAt = Date.now();
     mirror(); // always write the sync mirror right away
     const write = () => {
-      idb.set(STATE_KEY, state);
+      idb.set(STATE_KEY, state).then((ok) => {
+        // Warn once per session if durable local storage is failing — the
+        // localStorage mirror still has the data, but silence would hide it.
+        if (!ok && idb.db && !save._idbWarned) {
+          save._idbWarned = true;
+          toast("Heads up: saving to this device's storage failed — keep sync on. ⚠️");
+        }
+      });
       if (state.settings.sync.enabled && !suppressPush) {
         cloud.markActive(); // a local edit → keep the pull loop in its fast cadence
         cloud.syncOut(); // durable KV PUT + instant live WebSocket fan-out
@@ -2131,13 +2171,22 @@
   // ---- Real-money allowance ledger ---------------------------------------
   const money = (n) => `${state.rewards?.currency || "$"}${(Number(n) || 0).toFixed(2)}`;
 
+  // Local calendar day for a ledger timestamp. Ledger `ts` is an ISO UTC
+  // string, so slicing its date part shifts evening earnings into "tomorrow"
+  // (UTC) — which let evening work bypass the daily cap and pushed
+  // Sunday-night earnings into the wrong payweek. Always bucket by LOCAL day.
+  const ledgerDayKey = (ts) => {
+    const d = new Date(ts);
+    return Number.isNaN(d.getTime()) ? String(ts).slice(0, 10) : ymd(d);
+  };
+
   // Sum of money earned (not cashed out) so far today — used for the daily cap.
   function rewardsEarnedToday() {
     const r = state.rewards;
     if (!r) return 0;
     const today = todayKey();
     return r.ledger.reduce(
-      (s, e) => (e.type === "earn" && String(e.ts).slice(0, 10) === today ? s + e.amount : s),
+      (s, e) => (e.type === "earn" && ledgerDayKey(e.ts) === today ? s + e.amount : s),
       0,
     );
   }
@@ -2213,7 +2262,7 @@
     let raw = 0;
     for (const e of r.ledger) {
       if (e.type !== "earn") continue;
-      const d = String(e.ts).slice(0, 10);
+      const d = ledgerDayKey(e.ts);
       if (d < weekKey || d > end) continue;
       by[e.kind] = round2((by[e.kind] || 0) + e.amount);
       raw = round2(raw + e.amount);
@@ -2247,7 +2296,7 @@
   function earnedWeekKeys() {
     const set = new Set();
     for (const e of state.rewards.ledger)
-      if (e.type === "earn" && e.ts) set.add(mondayOf(e.ts.slice(0, 10)));
+      if (e.type === "earn" && e.ts) set.add(mondayOf(ledgerDayKey(e.ts)));
     return [...set].sort().reverse();
   }
 
@@ -2514,7 +2563,7 @@
         </svg>
         <div class="row" style="justify-content:center;gap:12px;font-size:0.75rem;font-weight:700;margin-top:8px">
           <span style="color:var(--teal)">● Focus Rating</span>
-          <span style="color:var(--amber)">● Mood Rating</span>
+          <span style="color:var(--amber-text)">● Mood Rating</span>
         </div>
       </div>
     `;
@@ -4082,7 +4131,7 @@
             const pct = r.items.length ? Math.round((done.length / r.items.length) * 100) : 0;
             const noTimeNotice = r.slot
               ? ""
-              : `<p style="color:var(--amber);font-size:.82rem;margin:4px 0 0">⚠️ No automatic time set — won't appear on the Now screen. Edit this routine to set a time of day.</p>`;
+              : `<p style="color:var(--amber-text);font-size:.82rem;margin:4px 0 0">⚠️ No automatic time set — won't appear on the Now screen. Edit this routine to set a time of day.</p>`;
             return card(
               "routine-" + r.id,
               `${r.emoji || "🔁"} ${r.name}`,
@@ -5161,7 +5210,7 @@ Due May 31"></textarea>
           d.setDate(d.getDate() + i);
           const key = ymd(d);
           const has = state.rewards.ledger.some(
-            (e) => e.type === "earn" && e.ts.slice(0, 10) === key,
+            (e) => e.type === "earn" && ledgerDayKey(e.ts) === key,
           );
           const today = key === todayKey();
           return `<span class="pay-day ${has ? "on" : ""} ${
@@ -6827,13 +6876,53 @@ Due May 31"></textarea>
     reader.readAsText(file);
   }
 
+  // Guard: applying a remote sync must never rebuild the DOM while the user is
+  // mid-edit — a full render destroys the focused field and any half-typed
+  // text. The merged state still lands (and persists) immediately; only the
+  // re-render waits for the edit to finish (focus leaving a text field, or the
+  // modal closing).
+  let remoteRenderDeferred = false;
+  function isUserEditing() {
+    const el = document.activeElement;
+    const typing =
+      el &&
+      (el.tagName === "TEXTAREA" ||
+        el.isContentEditable ||
+        (el.tagName === "INPUT" &&
+          !["checkbox", "radio", "range", "button", "submit"].includes(el.type)));
+    const modalOpen = document.getElementById("modalBack")?.classList.contains("open");
+    return !!(typing || modalOpen);
+  }
+  function renderRemote() {
+    if (isUserEditing()) {
+      remoteRenderDeferred = true;
+      return;
+    }
+    remoteRenderDeferred = false;
+    render();
+  }
+  document.addEventListener("focusout", () => {
+    if (!remoteRenderDeferred) return;
+    // Let focus settle first — tabbing between fields keeps the deferral.
+    setTimeout(() => {
+      if (remoteRenderDeferred && !isUserEditing()) renderRemote();
+    }, 150);
+  });
+
   function mergeStates(local, remote) {
     const merged = { ...local };
 
-    // 1. Merge tombstones (deletedIds)
-    const mergedDeletedIds = { ...(local.deletedIds || {}) };
-    for (const [id, time] of Object.entries(remote.deletedIds || {})) {
-      mergedDeletedIds[id] = Math.max(mergedDeletedIds[id] || 0, time);
+    // 1. Merge tombstones (deletedIds), pruning ancient ones so the synced
+    // payload doesn't grow without bound across a school year. 180 days is far
+    // longer than any device realistically stays offline, so a tombstone that
+    // old has already done its job on every device that will ever see it.
+    const tombCutoff = Date.now() - 180 * 86400000;
+    const mergedDeletedIds = {};
+    for (const src of [local.deletedIds || {}, remote.deletedIds || {}]) {
+      for (const [id, time] of Object.entries(src)) {
+        if ((time || 0) < tombCutoff) continue;
+        mergedDeletedIds[id] = Math.max(mergedDeletedIds[id] || 0, time || 0);
+      }
     }
     merged.deletedIds = mergedDeletedIds;
 
@@ -6855,8 +6944,11 @@ Due May 31"></textarea>
     for (const id of allIds) {
       const loc = localMap.get(id);
       const rem = remoteMap.get(id);
-      const chosen =
+      let chosen =
         loc && rem ? ((loc.updatedAt || 0) >= (rem.updatedAt || 0) ? loc : rem) : loc || rem;
+      if (loc && rem) {
+        chosen = { ...chosen, steps: mergeAssignmentSteps(chosen, chosen === loc ? rem : loc) };
+      }
       if (!isDeleted(id, chosen.updatedAt)) {
         mergedAssignments.push(chosen);
       }
@@ -7041,6 +7133,11 @@ Due May 31"></textarea>
         if (!locProg) {
           mergedReading[dayId] = remProg;
         } else {
+          // Prefer the entry edited most recently (per-entry stamp) — a newer
+          // shorter correction must beat older longer text. Entries written
+          // before the stamp existed fall back to the old done/length rule.
+          const lu = Number(locProg.updatedAt) || 0;
+          const ru = Number(remProg.updatedAt) || 0;
           const locLen =
             (locProg.gist || "").length +
             (locProg.evidence || "").length +
@@ -7049,7 +7146,9 @@ Due May 31"></textarea>
             (remProg.gist || "").length +
             (remProg.evidence || "").length +
             (remProg.response || "").length;
-          if (remProg.done && !locProg.done) {
+          if (lu || ru) {
+            if (ru > lu) mergedReading[dayId] = remProg;
+          } else if (remProg.done && !locProg.done) {
             mergedReading[dayId] = remProg;
           } else if (!remProg.done && locProg.done) {
             // keep local
@@ -7105,7 +7204,25 @@ Due May 31"></textarea>
             ...(Array.isArray(remDay.__paid) ? remDay.__paid : []),
           ]),
         ];
-        healthLog[date] = { ...remDay, ...locDay, ...(paid.length ? { __paid: paid } : {}) };
+        // Per-item last-toggle-wins (stamped in the health change handler) so
+        // an uncheck on one device isn't resurrected by the other device's
+        // stale copy; unstamped legacy items keep the old union behavior.
+        const lts = locDay.__ts || {};
+        const rts = remDay.__ts || {};
+        const day = {};
+        const mts = {};
+        for (const k of new Set([...Object.keys(locDay), ...Object.keys(remDay)])) {
+          if (k === "__paid" || k === "__ts") continue;
+          const a = Number(lts[k]) || 0;
+          const b = Number(rts[k]) || 0;
+          const on = a > b ? !!locDay[k] : b > a ? !!remDay[k] : !!(locDay[k] || remDay[k]);
+          if (on) day[k] = 1;
+          const t = Math.max(a, b);
+          if (t) mts[k] = t;
+        }
+        if (Object.keys(mts).length) day.__ts = mts;
+        if (paid.length) day.__paid = paid;
+        healthLog[date] = day;
       }
       // Remote is a raw KV blob and may predate the health feature — only let
       // it drive the base object when it actually carries an items list.
@@ -7128,7 +7245,10 @@ Due May 31"></textarea>
       // newer blob's text.
       const ld = local.daily || {};
       const rd = remote.daily || {};
-      if ((rd.goalDate || "") > (ld.goalDate || "") || ((rd.goalDate || "") === (ld.goalDate || "") && remoteIsNewer && rd.goal)) {
+      if (
+        (rd.goalDate || "") > (ld.goalDate || "") ||
+        ((rd.goalDate || "") === (ld.goalDate || "") && remoteIsNewer && rd.goal)
+      ) {
         merged.daily = { ...ld, ...rd };
       }
     }
@@ -7149,7 +7269,7 @@ Due May 31"></textarea>
         <div class="conflict-diffs" style="margin-top: 12px; font-size: 0.82rem; text-align: left; max-height: 120px; overflow-y: auto; border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: rgba(0,0,0,0.1);">
           <b style="color: var(--muted); display: block; margin-bottom: 4px;">Difference Summary:</b>
           ${addedLocally.map((a) => `<div style="color: var(--teal); font-weight: 700; margin-bottom: 2px;">💻 Local: "${esc(a.title)}"</div>`).join("")}
-          ${addedInCloud.map((a) => `<div style="color: var(--amber); font-weight: 700; margin-bottom: 2px;">☁️ Cloud: "${esc(a.title)}"</div>`).join("")}
+          ${addedInCloud.map((a) => `<div style="color:var(--amber-text); font-weight: 700; margin-bottom: 2px;">☁️ Cloud: "${esc(a.title)}"</div>`).join("")}
         </div>
       `;
     }
@@ -7166,8 +7286,8 @@ Due May 31"></textarea>
               <b>Classes:</b> ${localState.classes.length}
             </div>
           </div>
-          <div class="card" style="border-color: var(--amber); background: color-mix(in srgb, var(--amber) 5%, transparent); padding: 10px; text-align: left;">
-            <h4 style="color: var(--amber); margin: 0 0 6px; font-size: 0.88rem;">☁️ Cloud Backup</h4>
+          <div class="card" style="border-color:var(--amber); background: color-mix(in srgb, var(--amber) 5%, transparent); padding: 10px; text-align: left;">
+            <h4 style="color:var(--amber-text); margin: 0 0 6px; font-size: 0.88rem;">☁️ Cloud Backup</h4>
             <div style="font-size: 0.76rem; line-height: 1.45; color: var(--ink);">
               <b>Last Edited:</b><br>${new Date(cloudState.updatedAt || 0).toLocaleString()}<br>
               <b>Tasks:</b> ${cloudState.assignments.length}<br>
@@ -7368,7 +7488,7 @@ Due May 31"></textarea>
       mirror();
       this._setStatus("synced");
       if (shouldPush) this.syncOut();
-      if (changed && doRender) render();
+      if (changed && doRender) renderRemote();
       return changed;
     },
     // Propagate the current local state to the cloud on BOTH transports: the
@@ -7427,7 +7547,7 @@ Due May 31"></textarea>
       this._lastPull = Date.now();
       this.markActive();
       const changed = await this.pull({ forceMerge: true });
-      if (changed) render();
+      if (changed) renderRemote();
     },
     // Recent local activity (a save or user interaction) → poll fast so an
     // inbound change from another device appears within ~2–3s. Idle → back off
@@ -9107,6 +9227,7 @@ Due May 31"></textarea>
       };
       const done = !state.readingProgress[id].done;
       state.readingProgress[id].done = done;
+      state.readingProgress[id].updatedAt = Date.now(); // newer edit wins the sync merge
       if (done) {
         // Points only the first time a day is finished — un-checking and
         // re-checking must not farm XP/garden water.
@@ -9930,7 +10051,8 @@ ${name}`;
     // they stay keyboard-operable.
     document.addEventListener("keydown", (ev) => {
       if (ev.key !== "Enter" && ev.key !== " ") return;
-      const el = ev.target instanceof Element ? ev.target.closest('[role="button"][data-act]') : null;
+      const el =
+        ev.target instanceof Element ? ev.target.closest('[role="button"][data-act]') : null;
       if (!el || el.tagName === "BUTTON" || el.tagName === "A") return;
       const act = el.dataset.act;
       if (!ACTIONS[act]) return;
@@ -9949,6 +10071,7 @@ ${name}`;
         const st = a?.steps.find((s) => s.id === sid);
         if (st) {
           st.done = box.checked;
+          st.__ts = Date.now(); // per-step stamp: concurrent toggles on two devices both survive
           a.updatedAt = Date.now(); // bump so the step toggle wins the sync merge
           // Award +1 the first time a step is ever completed; never again
           // (prevents farming points by toggling a checkbox repeatedly).
@@ -10029,6 +10152,7 @@ ${name}`;
         const day = (state.health.log[todayKey()] = state.health.log[todayKey()] || {});
         const paid = (day.__paid = day.__paid || []);
         const item = healthItems().find((h) => h[0] === id);
+        (day.__ts = day.__ts || {})[id] = Date.now(); // per-item stamp for the sync merge
         if (box.checked) {
           day[id] = 1;
           if (!paid.includes(id)) {
@@ -10163,6 +10287,7 @@ ${name}`;
           response: "",
         };
         state.readingProgress[id][field] = ev.target.value;
+        state.readingProgress[id].updatedAt = Date.now(); // newer edit wins the sync merge
         save();
         return;
       }
@@ -10237,11 +10362,11 @@ ${name}`;
     // Note: clicking the backdrop intentionally does NOT close the modal, to
     // avoid losing a half-typed assignment/routine. Use ✕ or Escape instead.
 
-    // connection status
-    window.addEventListener("online", () => {
-      updateHeaderStatus();
-      if (state.settings.sync.enabled) cloud.pull().then((p) => p && render());
-    });
+    // connection status. Convergence on reconnect is handled by the
+    // sync-lifecycle "online" handler (push + forced-merge pull) — a bare
+    // pull() here raced it and could push local over not-yet-merged remote
+    // edits, so this handler only refreshes the header chip.
+    window.addEventListener("online", updateHeaderStatus);
     window.addEventListener("offline", updateHeaderStatus);
     updateHeaderStatus();
 
@@ -10452,7 +10577,7 @@ ${name}`;
             state = normalize(mergeStates(state, incoming));
             await save({ touch: false, immediate: true });
             suppressPush = prev;
-            render();
+            renderRemote();
           }
         } catch {}
       }
@@ -10610,7 +10735,16 @@ ${name}`;
         navigator.serviceWorker.addEventListener("controllerchange", () => {
           if (reloadingForUpdate) return;
           reloadingForUpdate = true;
-          window.location.reload();
+          // Swap to the fresh bundle without yanking the app out from under an
+          // active session: reload instantly only when the tab is hidden;
+          // otherwise apply the update the next time the app is switched away.
+          if (document.visibilityState === "hidden") {
+            window.location.reload();
+            return;
+          }
+          addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "hidden") window.location.reload();
+          });
         });
       }
       navigator.serviceWorker
@@ -10637,6 +10771,8 @@ ${name}`;
     Object.assign(window.__FOCUS_SCHOOL_TEST__, {
       cloud,
       live,
+      ledgerDayKey,
+      mergeAssignmentSteps,
       mergeRoutineLogs,
       mergeStates,
       nextRoutineWindow,

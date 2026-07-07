@@ -17,11 +17,13 @@
  *     never just the final answer for graded work.
  * ========================================================================== */
 
+// Same-origin only: the app always calls /api/ai from its own origin, which
+// never needs a CORS grant. The old `Access-Control-Allow-Origin: *` made this
+// a free relay any third-party page could script against the paid Gemini key
+// (the in-memory rate map is per-isolate, so it was no real throttle). No CORS
+// headers = browsers block every cross-origin caller.
 const JSON_HEADERS = {
   "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
   "Cache-Control": "no-store",
 };
 
@@ -116,7 +118,9 @@ export async function onRequestPost({ request, env }) {
   const image =
     body && body.image && typeof body.image.data === "string" && body.image.data
       ? {
-          mime: clampStr(body.image.mime, 40) || "image/jpeg",
+          mime: /^image\/(png|jpe?g|webp|gif|heic|heif)$/i.test(clampStr(body.image.mime, 40))
+            ? clampStr(body.image.mime, 40)
+            : "image/jpeg",
           data: body.image.data.slice(0, CAP.image),
         }
       : null;

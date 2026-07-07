@@ -11,3 +11,13 @@ compatibility_date = "2026-05-25"
 [[kv_namespaces]]
 binding = "NOAM_SCHOOL_KV"
 id = "59075911253f400f807345430425946c"
+
+# Real-time sync Durable Object, defined by the separately-deployed
+# `focus-school-sync` Worker (see focus-school/sync-worker/). Declared here so
+# every `wrangler pages deploy` keeps the binding — without this block a deploy
+# drops the dashboard-added binding and /api/live 503s, silently degrading
+# every device to 10s KV polling.
+[[durable_objects.bindings]]
+name = "SYNC_ROOM"
+class_name = "SyncRoom"
+script_name = "focus-school-sync"

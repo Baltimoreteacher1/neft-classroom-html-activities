@@ -1,7 +1,7 @@
 /* Focus School — service worker.
  * Offline-first app shell: precache core files, serve them cache-first,
  * fall back to the cached app for navigations when offline. */
-const VERSION = "focus-school-v42";
+const VERSION = "focus-school-v43";
 const CORE = [
   "./",
   "index.html",
@@ -13,7 +13,6 @@ const CORE = [
   "icons/icon-512.png",
   "icons/icon-maskable-512.png",
   "icons/apple-touch-icon.png",
-  "assets/math-workbench-launcher.js",
   "assets/mobile-access.css",
 ];
 
@@ -85,10 +84,16 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Navigations: try network, fall back to cached app shell so the app opens offline.
+  // Navigations: try network, fall back to cached app shell so the app opens
+  // offline. Race the network against a short timeout so a connected-but-dead
+  // network (captive portal, stalled school wifi) can't hang app launch — the
+  // fetch only *rejects* when it fails outright, never when it merely stalls.
   if (req.mode === "navigate") {
+    const shell = () => caches.match("index.html").then((r) => r || caches.match("./"));
     event.respondWith(
-      fetch(req).catch(() => caches.match("index.html").then((r) => r || caches.match("./"))),
+      Promise.race([fetch(req), new Promise((resolve) => setTimeout(() => resolve(null), 3500))])
+        .then((res) => res || shell().then((s) => s || fetch(req)))
+        .catch(() => shell()),
     );
     return;
   }
