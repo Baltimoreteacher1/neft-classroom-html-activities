@@ -62,14 +62,16 @@ const mk = (over) => ({ ...seed(), assignments: [], classes: [], wins: [], ...ov
 }
 
 {
-  // Garden: monotonic counters never regress; both devices' progress is kept.
-  const local = mk({ garden: { xp: 10, wateredCount: 3, waterReservoir: 1, plantStage: 1, plantType: "cactus" }, updatedAt: 1000 });
-  const remote = mk({ garden: { xp: 25, wateredCount: 2, waterReservoir: 0, plantStage: 2, plantType: "fern" }, updatedAt: 2000 });
+  // Garden: the blob with the most xp (furthest progress) wins wholesale, so
+  // waterReservoir/plantStage/plantType travel together and spent water is never
+  // resurrected.
+  const local = mk({ garden: { xp: 10, wateredCount: 3, waterReservoir: 5, plantStage: 1, plantType: "cactus" }, updatedAt: 2000 });
+  const remote = mk({ garden: { xp: 25, wateredCount: 6, waterReservoir: 0, plantStage: 2, plantType: "fern" }, updatedAt: 1000 });
   const merged = mergeStates(local, remote);
-  assert.equal(merged.garden.xp, 25, "xp takes the higher value");
-  assert.equal(merged.garden.wateredCount, 3, "wateredCount never goes backward");
-  assert.equal(merged.garden.plantType, "fern", "plant look follows the newer device");
-  ok("garden progress syncs without regressing");
+  assert.equal(merged.garden.xp, 25, "the higher-xp garden wins");
+  assert.equal(merged.garden.waterReservoir, 0, "spent water is not resurrected");
+  assert.equal(merged.garden.plantType, "fern", "plant look travels with the winning blob");
+  ok("garden progress syncs to the furthest-along device");
 }
 
 {

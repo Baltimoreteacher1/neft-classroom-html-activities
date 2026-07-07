@@ -29,9 +29,13 @@ h6,
   --navy-deep: #0f172a;
   --teal: #0d9488;
   --teal-bright: #14b8a6;
+  /* Alias used by charts, garden progress, plan-number badges, etc. Defined as
+     var(--teal) so per-theme and accent-picker overrides of --teal propagate. */
+  --accent: var(--teal);
   --amber: #f59e0b;
   --red: #ef4444;
   --green: #16a34a;
+  --blue: #3b82f6;
   --bg: #eef2f7;
   --bg-2: #f8fafc;
   --paper: #ffffff;
@@ -42,6 +46,9 @@ h6,
   --muted: #55637a;
   --shadow-sm: 0 6px 18px rgba(15, 23, 42, 0.06);
   --shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
+  --card-shadow: var(--shadow-sm);
+  /* Readable text color on top of --teal/--accent fills (dark themes flip it). */
+  --on-teal: #ffffff;
   --radius: 18px;
   --radius-lg: 26px;
   --focus-ring: 0 0 0 3px #fff, 0 0 0 6px var(--teal-bright);
@@ -69,6 +76,9 @@ html[data-theme="dark"] {
   --muted: #9fb2c2;
   --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.35);
   --shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  /* Dark theme lightens --teal, so text sitting on a teal fill must go dark. */
+  --on-teal: #06101a;
+  --blue: #60a5fa;
   --focus-ring: 0 0 0 3px var(--navy-deep), 0 0 0 6px var(--teal-bright);
   color-scheme: dark;
 }
@@ -86,6 +96,7 @@ html[data-theme="contrast"] {
   --line: #000;
   --ink: #000;
   --muted: #222;
+  --blue: #1d4ed8;
   --shadow-sm: none;
   --shadow: none;
   --focus-ring: 0 0 0 3px #fff, 0 0 0 6px #000;
@@ -169,6 +180,13 @@ a {
   .bg-blob-2 {
     animation: none !important;
   }
+  /* Infinite decorative loops use hardcoded durations, so --motion: 0.001s
+     doesn't touch them — stop them explicitly. */
+  .hero::before,
+  .chip.syncing .dot,
+  .badge-card.unlocked .badge-icon {
+    animation: none !important;
+  }
 }
 html[data-motion="off"] * {
   animation: none !important;
@@ -218,7 +236,7 @@ html[data-motion="off"] * {
   border-radius: 14px;
   flex: none;
   background: linear-gradient(135deg, var(--teal-bright), var(--navy));
-  color: #fff;
+  color: var(--on-teal);
   display: grid;
   place-items: center;
   font-weight: 900;
@@ -256,6 +274,17 @@ html[data-motion="off"] * {
   background: var(--paper);
   color: var(--muted);
   transition: all var(--motion);
+}
+/* On touch devices, bring the small header chips and 1-5 rating circles up to
+   the 44px comfortable-tap floor (shared mobile-access.css covers .btn/select). */
+@media (pointer: coarse) {
+  button.chip {
+    min-height: 44px;
+  }
+  .rating-btn {
+    width: 44px;
+    height: 44px;
+  }
 }
 .chip .dot {
   width: 8px;
@@ -506,7 +535,9 @@ html[data-theme="contrast"] .hero {
 }
 .hero .now-actions .btn.go {
   background: #fff;
-  color: var(--navy);
+  /* --navy-deep stays dark in every theme; --navy goes pale blue in dark mode,
+     which washed this white CTA out. */
+  color: var(--navy-deep);
   border-color: #fff;
   font-size: 1.1rem;
 }
@@ -932,7 +963,9 @@ html[data-theme="dark"] .note {
 .tabbar-wrap {
   position: fixed;
   left: 50%;
-  bottom: 16px;
+  /* Keep the primary nav above the home indicator on notched phones
+     (viewport-fit=cover means fixed elements must handle the safe area). */
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
   width: min(calc(100% - 24px), 960px);
   z-index: 50;
@@ -1192,7 +1225,7 @@ html[data-theme="dark"] .note {
 .toast {
   position: fixed;
   left: 50%;
-  bottom: 84px;
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
   transform: translate(-50%, 80px);
   z-index: 180;
   background: var(--navy);
@@ -1449,6 +1482,11 @@ html[data-theme="dark"] .toast {
 html[data-theme="dark"] .cal-day {
   background: rgba(255, 255, 255, 0.04);
 }
+/* Higher specificity than the plain-cell dark override above, so today keeps
+   its teal fill (and the dark --on-teal text stays readable on it). */
+html[data-theme="dark"] .cal-day.is-today {
+  background: var(--teal);
+}
 .cal-day:hover {
   border-color: var(--teal);
 }
@@ -1458,7 +1496,7 @@ html[data-theme="dark"] .cal-day {
 }
 .cal-day.is-today {
   background: var(--teal);
-  color: #fff;
+  color: var(--on-teal);
 }
 .cal-day.is-sel {
   border-color: var(--navy);
@@ -1814,84 +1852,9 @@ html[data-theme="dark"] .capture-banner {
   }
 }
 
-/* Ambient glow blobs */
-.ambient-glow {
-  position: fixed;
-  width: min(50vw, 450px);
-  height: min(50vw, 450px);
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.12;
-  z-index: -1;
-  pointer-events: none;
-  transition:
-    background var(--motion),
-    transform var(--motion);
-}
-.bg-blob-1 {
-  top: -100px;
-  left: -50px;
-  background: var(--teal);
-}
-.bg-blob-2 {
-  bottom: -100px;
-  right: -50px;
-  background: var(--navy);
-}
-html[data-theme="dark"] .ambient-glow {
-  opacity: 0.16;
-}
-html[data-theme="dark"] .bg-blob-1 {
-  background: var(--teal-bright);
-}
-html[data-theme="dark"] .bg-blob-2 {
-  background: var(--navy);
-}
-
-/* Ambient sound panel in focus overlay */
-.fambient-controls {
-  margin: 16px auto;
-  padding: 12px 18px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px);
-  max-width: 480px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-}
-.fambient-label {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.8);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-.fambient-buttons {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.fambient-buttons .btn {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  transition: all var(--motion);
-}
-.fambient-buttons .btn:hover {
-  background: rgba(255, 255, 255, 0.16);
-  transform: translateY(-1px);
-}
-.fambient-buttons .btn[aria-pressed="true"] {
-  background: #ffd790;
-  border-color: #ffd790;
-  color: var(--navy-deep);
-  box-shadow: 0 0 12px rgba(255, 215, 144, 0.4);
-}
+/* Ambient glow blobs + focus-overlay ambient sound panel are defined once,
+   further down (the animated versions) — an identical duplicate block that
+   used to live here was removed. */
 
 /* ---- Command Bar Modal ---- */
 .command-bar-back {
@@ -1976,17 +1939,22 @@ html[data-theme="dark"] .bg-blob-2 {
 .cmd-item.selected,
 .cmd-item:hover {
   background: var(--teal);
-  color: #fff;
+  color: var(--on-teal);
 }
 .cmd-item.selected .cmd-title,
 .cmd-item:hover .cmd-title,
 .cmd-item.selected .cmd-badge,
 .cmd-item:hover .cmd-badge {
-  color: #fff;
+  color: var(--on-teal);
 }
 .cmd-item.selected .cmd-badge,
 .cmd-item:hover .cmd-badge {
-  background: rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--on-teal) 20%, transparent);
+}
+/* Contrast theme turns --line black and --muted near-black — keep the badge
+   label readable on its black chip. */
+html[data-theme="contrast"] .cmd-item .cmd-badge {
+  color: #fff;
 }
 
 /* ---- XP & Level Dashboard ---- */
