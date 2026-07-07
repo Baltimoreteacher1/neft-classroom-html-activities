@@ -4,32 +4,47 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Escape Room Architect — Unit 8 Culminating Project</title>
-    <meta name="description" content="Unit 8 Equations culminating project. Design an escape room using algebraic equations. Simple step-by-step, tab-based guide." />
+    <meta
+      name="description"
+      content="Unit 8 Equations culminating project. Design an escape room using algebraic equations. Simple step-by-step, tab-based guide."
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
-        --navy: #1a0533;       /* Dark purple */
-        --blue: #6d3fa0;       /* Indigo/purple primary accent */
-        --blue-lt: #f0eafa;    /* Light purple background */
-        --teal: #0e8a7d;       /* Teal */
-        --teal-lt: #e4f5f3;    /* Teal light */
-        --gold: #d4952a;       /* Gold */
-        --gold-lt: #fdf3e0;    /* Gold light */
-        --green: #2d874b;      /* Green */
-        --green-lt: #e6f4eb;   /* Green light */
-        --coral: #c45a3c;      /* Coral */
-        --ink: #1a2633;        /* Dark ink */
-        --muted: #5e6e7e;      /* Muted text */
-        --line: #e2e7ec;       /* Line color */
-        --bg: #f7f5fa;         /* Light background tint */
+        --navy: #1a0533; /* Dark purple */
+        --blue: #6d3fa0; /* Indigo/purple primary accent */
+        --blue-lt: #f0eafa; /* Light purple background */
+        --teal: #0e8a7d; /* Teal */
+        --teal-lt: #e4f5f3; /* Teal light */
+        --gold: #d4952a; /* Gold */
+        --gold-lt: #fdf3e0; /* Gold light */
+        --green: #2d874b; /* Green */
+        --green-lt: #e6f4eb; /* Green light */
+        --coral: #c45a3c; /* Coral */
+        --ink: #1a2633; /* Dark ink */
+        --muted: #5e6e7e; /* Muted text */
+        --line: #e2e7ec; /* Line color */
+        --bg: #f7f5fa; /* Light background tint */
         --card: #ffffff;
         --radius: 16px;
-        --shadow: 0 2px 16px rgba(26,5,51,.10);
+        --shadow: 0 2px 16px rgba(26, 5, 51, 0.1);
       }
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.6;
+      }
 
       /* ---- Hero ---- */
       .hero {
@@ -38,292 +53,795 @@
         padding: 36px 24px 28px;
         text-align: center;
       }
-      .hero-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
-      .hero h1 { font-size: clamp(24px,5vw,38px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
-      .hero-sub { color: rgba(255,255,255,.85); font-size: 16px; max-width: 580px; margin: 0 auto 16px; }
-      .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
-      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 50px; padding: 4px 13px; font-size: 13px; font-weight: 700; letter-spacing: .04em; }
-      .tag.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
+      .hero-emoji {
+        font-size: 52px;
+        line-height: 1;
+        margin-bottom: 10px;
+      }
+      .hero h1 {
+        font-size: clamp(24px, 5vw, 38px);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
+      }
+      .hero-sub {
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 16px;
+        max-width: 580px;
+        margin: 0 auto 16px;
+      }
+      .hero-tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      .tag {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 50px;
+        padding: 4px 13px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+      .tag.gold {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #fff;
+      }
 
       /* ---- Level selector & settings ---- */
       .level-bar {
-        display: flex; gap: 10px; justify-content: center;
-        background: rgba(255,255,255,.10); border-radius: 50px;
-        padding: 6px 10px; max-width: 400px; margin: 0 auto;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50px;
+        padding: 6px 10px;
+        max-width: 400px;
+        margin: 0 auto;
       }
       .level-btn {
-        flex: 1; background: transparent; color: rgba(255,255,255,.75);
-        border: 2px solid rgba(255,255,255,.30); border-radius: 50px;
-        padding: 7px 16px; font-size: 13px; font-weight: 700;
-        cursor: pointer; font-family: inherit; transition: all .2s;
+        flex: 1;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.75);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50px;
+        padding: 7px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s;
       }
-      .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; font-weight: 800; box-shadow: 0 6px 16px rgba(0,0,0,.30); transform: translateY(-1px) scale(1.03); }
+      .level-btn.active {
+        background: #fff;
+        color: var(--navy);
+        border-color: #fff;
+        font-weight: 800;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        transform: translateY(-1px) scale(1.03);
+      }
 
       /* ---- Tab wizard ---- */
-      .wizard { max-width: 860px; margin: 0 auto; padding: 0 16px 60px; }
+      .wizard {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 16px 60px;
+      }
 
       .step-trail {
-        display: flex; align-items: center; gap: 0;
-        padding: 22px 0 0; overflow-x: auto;
+        display: flex;
+        align-items: center;
+        gap: 0;
+        padding: 22px 0 0;
+        overflow-x: auto;
       }
       .step-trail-item {
-        display: flex; align-items: center; gap: 6px;
-        cursor: pointer; white-space: nowrap; padding: 8px 12px;
-        border-radius: 10px; transition: background .15s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        white-space: nowrap;
+        padding: 8px 12px;
+        border-radius: 10px;
+        transition: background 0.15s;
       }
-      .step-trail-item:hover { background: var(--blue-lt); }
+      .step-trail-item:hover {
+        background: var(--blue-lt);
+      }
       .step-trail-item.active .s-num {
-        background: var(--blue); color: #fff;
+        background: var(--blue);
+        color: #fff;
       }
       .step-trail-item.done .s-num {
-        background: var(--green); color: #fff;
+        background: var(--green);
+        color: #fff;
       }
       .s-num {
-        width: 30px; height: 30px; border-radius: 50%;
-        background: var(--line); color: var(--muted);
-        font-weight: 800; font-size: 13px;
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0; transition: all .2s;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--line);
+        color: var(--muted);
+        font-weight: 800;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.2s;
       }
-      .s-label { font-size: 13px; font-weight: 600; color: var(--muted); }
-      .step-trail-item.active .s-label { color: var(--blue); }
-      .step-trail-item.done .s-label { color: var(--green); }
-      .step-arrow { color: var(--line); font-size: 16px; padding: 0 2px; }
+      .s-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .step-trail-item.active .s-label {
+        color: var(--blue);
+      }
+      .step-trail-item.done .s-label {
+        color: var(--green);
+      }
+      .step-arrow {
+        color: var(--line);
+        font-size: 16px;
+        padding: 0 2px;
+      }
 
       /* ---- Progress bar ---- */
-      .prog-wrap { margin: 14px 0 4px; }
-      .prog-bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
-      .prog-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--teal)); border-radius: 99px; transition: width .4s ease; }
-      .prog-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+      .prog-wrap {
+        margin: 14px 0 4px;
+      }
+      .prog-bar {
+        height: 6px;
+        background: var(--line);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .prog-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue), var(--teal));
+        border-radius: 99px;
+        transition: width 0.4s ease;
+      }
+      .prog-label {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
 
       /* ---- Step panel ---- */
-      .step-panel { display: none; animation: fadein .25s ease; }
-      .step-panel.active { display: block; }
-      @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+      .step-panel {
+        display: none;
+        animation: fadein 0.25s ease;
+      }
+      .step-panel.active {
+        display: block;
+      }
+      @keyframes fadein {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
 
       /* ---- Card ---- */
       .card {
-        background: var(--card); border: 1px solid var(--line);
-        border-radius: var(--radius); padding: 28px 26px;
-        box-shadow: var(--shadow); margin-top: 16px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 28px 26px;
+        box-shadow: var(--shadow);
+        margin-top: 16px;
       }
-      .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
       .card-icon {
-        width: 50px; height: 50px; border-radius: 14px;
-        background: var(--blue-lt); display: flex;
-        align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: var(--blue-lt);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
       }
-      .card-icon.gold { background: var(--gold-lt); }
-      .card-icon.teal { background: var(--teal-lt); }
-      .card-icon.green { background: var(--green-lt); }
-      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin: 0 0 3px; }
-      .card-sub { font-size: 14px; color: var(--muted); font-weight: 500; }
+      .card-icon.gold {
+        background: var(--gold-lt);
+      }
+      .card-icon.teal {
+        background: var(--teal-lt);
+      }
+      .card-icon.green {
+        background: var(--green-lt);
+      }
+      .card-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--navy);
+        margin: 0 0 3px;
+      }
+      .card-sub {
+        font-size: 14px;
+        color: var(--muted);
+        font-weight: 500;
+      }
 
       /* ---- Instruction box ---- */
       .instruct {
-        background: var(--blue-lt); border-left: 4px solid var(--blue);
-        border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
-        font-size: 15px; line-height: 1.6;
+        background: var(--blue-lt);
+        border-left: 4px solid var(--blue);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+        font-size: 15px;
+        line-height: 1.6;
       }
-      .instruct.gold { background: var(--gold-lt); border-color: var(--gold); }
-      .instruct.teal { background: var(--teal-lt); border-color: var(--teal); }
-      .instruct.green { background: var(--green-lt); border-color: var(--green); }
+      .instruct.gold {
+        background: var(--gold-lt);
+        border-color: var(--gold);
+      }
+      .instruct.teal {
+        background: var(--teal-lt);
+        border-color: var(--teal);
+      }
+      .instruct.green {
+        background: var(--green-lt);
+        border-color: var(--green);
+      }
 
       /* ---- SVG visual ---- */
-      .visual-svg { display: block; width: 100%; max-width: 520px; margin: 0 auto 20px; border-radius: 12px; }
+      .visual-svg {
+        display: block;
+        width: 100%;
+        max-width: 520px;
+        margin: 0 auto 20px;
+        border-radius: 12px;
+      }
 
       /* ---- Form inputs ---- */
-      label.lbl { display: block; font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
-      input[type="number"], input[type="text"], textarea, select {
-        width: 100%; padding: 10px 14px; border: 1.5px solid var(--line);
-        border-radius: 10px; font-size: 15px; font-family: inherit;
-        background: var(--bg); color: var(--ink); transition: border-color .2s;
+      label.lbl {
+        display: block;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 5px;
+        margin-top: 14px;
       }
-      input:focus, textarea:focus, select:focus { outline: 2px solid var(--blue); outline-offset: 2px; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(109,63,160,.20); }
-      textarea { min-height: 90px; resize: vertical; }
-      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+      input[type="number"],
+      input[type="text"],
+      textarea,
+      select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1.5px solid var(--line);
+        border-radius: 10px;
+        font-size: 15px;
+        font-family: inherit;
+        background: var(--bg);
+        color: var(--ink);
+        transition: border-color 0.2s;
+      }
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: 2px solid var(--blue);
+        outline-offset: 2px;
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(109, 63, 160, 0.2);
+      }
+      textarea {
+        min-height: 90px;
+        resize: vertical;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
 
       /* ---- Calc button & readout ---- */
       .calc-btn {
-        background: var(--blue); color: #fff; border: none;
-        border-radius: 10px; padding: 11px 20px; font-size: 14px;
-        font-weight: 700; cursor: pointer; font-family: inherit;
-        margin-top: 12px; transition: background .2s;
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 12px;
+        transition: background 0.2s;
       }
-      .calc-btn:hover { background: #563082; }
-      .calc-btn.gold { background: var(--gold); }
-      .calc-btn.gold:hover { background: #a36a0c; }
-      .calc-btn.teal { background: var(--teal); }
-      .calc-btn.teal:hover { background: #0a6b62; }
-      .calc-btn.green { background: var(--green); }
-      .calc-btn.green:hover { background: #185f31; }
+      .calc-btn:hover {
+        background: #563082;
+      }
+      .calc-btn.gold {
+        background: var(--gold);
+      }
+      .calc-btn.gold:hover {
+        background: #a36a0c;
+      }
+      .calc-btn.teal {
+        background: var(--teal);
+      }
+      .calc-btn.teal:hover {
+        background: #0a6b62;
+      }
+      .calc-btn.green {
+        background: var(--green);
+      }
+      .calc-btn.green:hover {
+        background: #185f31;
+      }
       .readout {
-        background: var(--navy); color: #e8f4ff;
-        border-radius: 10px; padding: 14px 18px; margin-top: 12px;
-        font-size: 15px; line-height: 1.6; display: none;
+        background: var(--navy);
+        color: #e8f4ff;
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-top: 12px;
+        font-size: 15px;
+        line-height: 1.6;
+        display: none;
       }
-      .readout.show { display: block; }
-      .readout strong { color: #f3e8ff; }
+      .readout.show {
+        display: block;
+      }
+      .readout strong {
+        color: #f3e8ff;
+      }
 
       /* ---- Hint ---- */
-      details.hint { margin-top: 14px; }
-      details.hint summary {
-        cursor: pointer; font-size: 13px; font-weight: 600;
-        color: var(--blue); list-style: none; display: inline-flex;
-        align-items: center; gap: 5px;
+      details.hint {
+        margin-top: 14px;
       }
-      details.hint summary::before { content: "💡"; }
-      details.hint p { font-size: 14px; color: var(--muted); margin-top: 8px; padding: 10px 12px; background: var(--blue-lt); border-radius: 8px; }
+      details.hint summary {
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--blue);
+        list-style: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      details.hint summary::before {
+        content: "💡";
+      }
+      details.hint p {
+        font-size: 14px;
+        color: var(--muted);
+        margin-top: 8px;
+        padding: 10px 12px;
+        background: var(--blue-lt);
+        border-radius: 8px;
+      }
 
       /* ---- Level 2 extension ---- */
       .lvl2-block {
-        border: 2px dashed var(--blue); border-radius: 12px;
-        padding: 14px 16px; margin-top: 18px;
+        border: 2px dashed var(--blue);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-top: 18px;
       }
       .lvl2-label {
-        display: inline-block; background: var(--blue); color: #fff;
-        font-size: 11px; font-weight: 800; letter-spacing: .05em;
-        border-radius: 50px; padding: 3px 10px; margin-bottom: 8px;
+        display: inline-block;
+        background: var(--blue);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        border-radius: 50px;
+        padding: 3px 10px;
+        margin-bottom: 8px;
       }
 
       /* ---- Real-world data table ---- */
-      .data-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
-      .data-table th { background: var(--navy); color: #fff; padding: 8px 12px; text-align: left; }
-      .data-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); }
-      .data-table tr:last-child td { border-bottom: none; }
-      .data-table tr:nth-child(even) td { background: var(--bg); }
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 14px;
+        font-size: 14px;
+      }
+      .data-table th {
+        background: var(--navy);
+        color: #fff;
+        padding: 8px 12px;
+        text-align: left;
+      }
+      .data-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      .data-table tr:last-child td {
+        border-bottom: none;
+      }
+      .data-table tr:nth-child(even) td {
+        background: var(--bg);
+      }
 
       /* ---- Comparison stats ---- */
-      .stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
-      .stat-box {
-        flex: 1; min-width: 120px; background: var(--bg);
-        border: 1px solid var(--line); border-radius: 12px;
-        padding: 14px; text-align: center;
+      .stat-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 14px;
       }
-      .stat-num { font-size: 24px; font-weight: 800; color: var(--blue); }
-      .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 3px; }
+      .stat-box {
+        flex: 1;
+        min-width: 120px;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+        text-align: center;
+      }
+      .stat-num {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--blue);
+      }
+      .stat-lbl {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 3px;
+      }
 
       /* ---- Checklist ---- */
-      .checklist { list-style: none; margin-top: 12px; }
-      .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
-      .checklist li:last-child { border-bottom: none; }
-      .checklist input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green); flex-shrink: 0; }
+      .checklist {
+        list-style: none;
+        margin-top: 12px;
+      }
+      .checklist li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 15px;
+      }
+      .checklist li:last-child {
+        border-bottom: none;
+      }
+      .checklist input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--green);
+        flex-shrink: 0;
+      }
 
       /* ---- Rubric ---- */
-      .rubric { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 14px; }
-      .rubric th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; }
-      .rubric td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
-      .rubric tr:last-child td { border-bottom: none; }
-      .score-4 { color: var(--green); font-weight: 700; }
-      .score-3 { color: var(--blue); font-weight: 700; }
-      .score-2 { color: #a5670a; font-weight: 700; }
+      .rubric {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        margin-top: 14px;
+      }
+      .rubric th {
+        background: var(--navy);
+        color: #fff;
+        padding: 10px 12px;
+        text-align: left;
+      }
+      .rubric td {
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      .rubric tr:last-child td {
+        border-bottom: none;
+      }
+      .score-4 {
+        color: var(--green);
+        font-weight: 700;
+      }
+      .score-3 {
+        color: var(--blue);
+        font-weight: 700;
+      }
+      .score-2 {
+        color: #a5670a;
+        font-weight: 700;
+      }
 
       /* ---- Nav buttons ---- */
-      .nav-row { display: flex; gap: 10px; margin-top: 24px; justify-content: space-between; }
-      .nav-btn {
-        background: var(--blue); color: #fff; border: none;
-        border-radius: 10px; padding: 12px 24px; font-size: 15px;
-        font-weight: 700; cursor: pointer; font-family: inherit;
-        display: flex; align-items: center; gap: 8px; transition: background .2s;
+      .nav-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 24px;
+        justify-content: space-between;
       }
-      .nav-btn:hover { background: #563082; }
-      .nav-btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
-      .nav-btn.ghost:hover { background: var(--blue-lt); }
-      .nav-btn.green { background: var(--green); }
-      .nav-btn.green:hover { background: #185f31; }
-      .nav-btn:disabled { opacity: .45; cursor: not-allowed; }
+      .nav-btn {
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.2s;
+      }
+      .nav-btn:hover {
+        background: #563082;
+      }
+      .nav-btn.ghost {
+        background: transparent;
+        color: var(--blue);
+        border: 2px solid var(--blue);
+      }
+      .nav-btn.ghost:hover {
+        background: var(--blue-lt);
+      }
+      .nav-btn.green {
+        background: var(--green);
+      }
+      .nav-btn.green:hover {
+        background: #185f31;
+      }
+      .nav-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
 
       /* ---- Report / pitch textarea ---- */
-      #pitch { min-height: 130px; }
+      #pitch {
+        min-height: 130px;
+      }
       .report-box {
-        background: var(--navy); color: #e8f4ff; border-radius: 12px;
-        padding: 20px; margin-top: 14px; font-size: 14px; line-height: 1.7;
-        white-space: pre-wrap; display: none;
+        background: var(--navy);
+        color: #e8f4ff;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 14px;
+        font-size: 14px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        display: none;
       }
-      .report-box.show { display: block; }
-      .export-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .report-box.show {
+        display: block;
+      }
+      .export-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
       .export-btn {
-        background: transparent; border: 1.5px solid var(--line);
-        border-radius: 8px; padding: 7px 14px; font-size: 13px;
-        font-weight: 600; cursor: pointer; font-family: inherit;
-        color: var(--muted); transition: all .15s;
+        background: transparent;
+        border: 1.5px solid var(--line);
+        border-radius: 8px;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        color: var(--muted);
+        transition: all 0.15s;
       }
-      .export-btn:hover { border-color: var(--blue); color: var(--blue); }
+      .export-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
 
       /* ---- Level-gated content ---- */
-      .lvl1-only { display: none; }
-      .lvl2-only { display: none; }
-      body.level-1 .lvl1-only { display: block; }
-      body.level-2 .lvl2-only { display: block; }
-      body.level-2 .lvl2-block { border-color: var(--blue); }
+      .lvl1-only {
+        display: none;
+      }
+      .lvl2-only {
+        display: none;
+      }
+      body.level-1 .lvl1-only {
+        display: block;
+      }
+      body.level-2 .lvl2-only {
+        display: block;
+      }
+      body.level-2 .lvl2-block {
+        border-color: var(--blue);
+      }
 
       /* ---- Vocab cards ---- */
-      .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
-      .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
-      .vocab-icon { font-size: 26px; margin-bottom: 6px; }
-      .vocab-term { font-size: 14px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
-      .vocab-def { font-size: 14px; color: var(--muted); line-height: 1.5; }
-      .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .vocab-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .vocab-icon {
+        font-size: 26px;
+        margin-bottom: 6px;
+      }
+      .vocab-term {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .vocab-def {
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .vocab-ex {
+        font-size: 12px;
+        color: var(--blue);
+        font-weight: 600;
+        margin-top: 5px;
+      }
 
       /* ---- Print ---- */
       @media print {
-        .no-print { display: none !important; }
-        .hero { background: var(--navy) !important; }
-        body { background: #fff; }
-        .card { box-shadow: none; border-color: #ccc; }
+        .no-print {
+          display: none !important;
+        }
+        .hero {
+          background: var(--navy) !important;
+        }
+        body {
+          background: #fff;
+        }
+        .card {
+          box-shadow: none;
+          border-color: #ccc;
+        }
       }
 
       /* ---- Bilingual rules ---- */
-      body.es .en-text { display: none !important; }
-      body.es .es-text { display: inline !important; }
-      span.es-text, tspan.es-text { display: none; }
-          .checklist li:has(input[type="checkbox"]:checked) {
+      body.es .en-text {
+        display: none !important;
+      }
+      body.es .es-text {
+        display: inline !important;
+      }
+      span.es-text,
+      tspan.es-text {
+        display: none;
+      }
+      .checklist li:has(input[type="checkbox"]:checked) {
         color: var(--muted) !important;
         opacity: 0.65;
         text-decoration: line-through;
         transition: all 0.25s ease;
       }
-    
+
       /* ---- Teacher Diagnostics Console ---- */
       #teacher-console {
-        position: fixed; bottom: 20px; right: 20px; z-index: 10000;
-        width: 330px; max-height: 480px; overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px;
-        padding: 16px; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif;
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3), 0 8px 10px -6px rgba(0,0,0,0.3);
-        display: none; box-sizing: border-box; text-align: left;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 10000;
+        width: 330px;
+        max-height: 480px;
+        overflow-y: auto;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        padding: 16px;
+        color: #f8fafc;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        box-shadow:
+          0 10px 25px -5px rgba(0, 0, 0, 0.3),
+          0 8px 10px -6px rgba(0, 0, 0, 0.3);
+        display: none;
+        box-sizing: border-box;
+        text-align: left;
       }
-      #teacher-console.show { display: block; }
-      #teacher-console h4 { margin: 0 0 8px 0; color: #38bdf8; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
-      #teacher-console .close-btn { background: transparent; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1; }
-      #teacher-console .close-btn:hover { color: #f1f5f9; }
-      #teacher-console table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-      #teacher-console td { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08); color: #e2e8f0; }
-      #teacher-console .lbl { font-weight: 600; color: #94a3b8; }
-      #teacher-console .val { font-weight: 700; text-align: right; color: #38bdf8; word-break: break-all; }
-      #teacher-console .prefill-btn { width: 100%; margin-top: 12px; background: #0284c7; border: none; border-radius: 6px; padding: 8px; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s; }
-      #teacher-console .prefill-btn:hover { background: #0369a1; }
-
+      #teacher-console.show {
+        display: block;
+      }
+      #teacher-console h4 {
+        margin: 0 0 8px 0;
+        color: #38bdf8;
+        font-size: 14px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      #teacher-console .close-btn {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 0 4px;
+        line-height: 1;
+      }
+      #teacher-console .close-btn:hover {
+        color: #f1f5f9;
+      }
+      #teacher-console table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 12px;
+      }
+      #teacher-console td {
+        padding: 6px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        color: #e2e8f0;
+      }
+      #teacher-console .lbl {
+        font-weight: 600;
+        color: #94a3b8;
+      }
+      #teacher-console .val {
+        font-weight: 700;
+        text-align: right;
+        color: #38bdf8;
+        word-break: break-all;
+      }
+      #teacher-console .prefill-btn {
+        width: 100%;
+        margin-top: 12px;
+        background: #0284c7;
+        border: none;
+        border-radius: 6px;
+        padding: 8px;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      #teacher-console .prefill-btn:hover {
+        background: #0369a1;
+      }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="/shared/projects/projects-pro.css" />
     <!-- projects-pro-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
     <!-- projects-gold-injected:begin (gold hardening layer — tools/inject-projects-gold.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-gold.css" />
     <!-- projects-gold-injected:end -->
-</head>
+  </head>
   <body class="level-1 pro-projects" id="body">
-
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
       <div class="hero-emoji">🏛️</div>
@@ -332,8 +850,12 @@
         <span class="es-text">Arquitecto de sala de escape</span>
       </h1>
       <p class="hero-sub">
-        <span class="en-text">Design an escape room using algebra, secret codes, and equations.</span>
-        <span class="es-text">Diseña una sala de escape usando álgebra, códigos secretos y ecuaciones.</span>
+        <span class="en-text"
+          >Design an escape room using algebra, secret codes, and equations.</span
+        >
+        <span class="es-text"
+          >Diseña una sala de escape usando álgebra, códigos secretos y ecuaciones.</span
+        >
       </p>
       <div class="hero-tags">
         <span class="tag gold">
@@ -358,7 +880,7 @@
           <span class="es-text">🔵 Nivel 2 — Desafío</span>
         </button>
       </div>
-      <div class="level-bar" style="margin-top: 10px; max-width: 400px;">
+      <div class="level-bar" style="margin-top: 10px; max-width: 400px">
         <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
         <button class="level-btn" id="btn-read" onclick="readAloud()">🔊 Read Aloud</button>
       </div>
@@ -366,13 +888,12 @@
 
     <!-- ====== WIZARD ====== -->
     <div class="wizard">
-
       <!-- Step trail -->
       <nav class="step-trail no-print" id="stepTrail" aria-label="Project steps"></nav>
 
       <!-- Progress bar -->
       <div class="prog-wrap no-print">
-        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width: 0%"></div></div>
         <div class="prog-label" id="progLabel">Step 1 of 6</div>
       </div>
 
@@ -390,13 +911,14 @@
               </h2>
               <div class="card-sub">
                 <span class="en-text">Learn these 5 math words before you begin</span>
-                <span class="es-text">Aprende estas 5 palabras de matemáticas antes de comenzar</span>
+                <span class="es-text"
+                  >Aprende estas 5 palabras de matemáticas antes de comenzar</span
+                >
               </div>
             </div>
           </div>
 
           <!-- SVG Visual: balance scale representing equation -->
-          
 
           <div class="vocab-grid">
             <div class="vocab-card">
@@ -406,8 +928,12 @@
                 <span class="es-text">Ecuación</span>
               </div>
               <div class="vocab-def">
-                <span class="en-text">A mathematical sentence stating that two sides are equal (=).</span>
-                <span class="es-text">Una oración matemática que establece que dos lados son iguales (=).</span>
+                <span class="en-text"
+                  >A mathematical sentence stating that two sides are equal (=).</span
+                >
+                <span class="es-text"
+                  >Una oración matemática que establece que dos lados son iguales (=).</span
+                >
               </div>
               <div class="vocab-ex">x + 3 = 8</div>
             </div>
@@ -419,7 +945,9 @@
               </div>
               <div class="vocab-def">
                 <span class="en-text">A letter or symbol that stands for an unknown number.</span>
-                <span class="es-text">Una letra o símbolo que representa un número desconocido.</span>
+                <span class="es-text"
+                  >Una letra o símbolo que representa un número desconocido.</span
+                >
               </div>
               <div class="vocab-ex">
                 <span class="en-text">x is the variable</span>
@@ -449,7 +977,9 @@
               </div>
               <div class="vocab-def">
                 <span class="en-text">The value of the variable that makes the equation true.</span>
-                <span class="es-text">El valor de la variable que hace que la ecuación sea verdadera.</span>
+                <span class="es-text"
+                  >El valor de la variable que hace que la ecuación sea verdadera.</span
+                >
               </div>
               <div class="vocab-ex">
                 <span class="en-text">In x + 3 = 8, solution is x = 5</span>
@@ -464,7 +994,9 @@
               </div>
               <div class="vocab-def">
                 <span class="en-text">Replacing a variable with a value to check if it works.</span>
-                <span class="es-text">Reemplazar una variable con un valor para comprobar si funciona.</span>
+                <span class="es-text"
+                  >Reemplazar una variable con un valor para comprobar si funciona.</span
+                >
               </div>
               <div class="vocab-ex">
                 <span class="en-text">Plug in 5: 5 + 3 = 8 ✓</span>
@@ -473,9 +1005,15 @@
             </div>
           </div>
 
-          <div class="instruct" style="margin-top:20px">
-            ✅ <span class="en-text">Read each word card. When you're ready, click <strong>Next Step</strong>.</span>
-            <span class="es-text">Lee cada tarjeta de vocabulario. Cuando estés listo, haz clic en <strong>Siguiente paso</strong>.</span>
+          <div class="instruct" style="margin-top: 20px">
+            ✅
+            <span class="en-text"
+              >Read each word card. When you're ready, click <strong>Next Step</strong>.</span
+            >
+            <span class="es-text"
+              >Lee cada tarjeta de vocabulario. Cuando estés listo, haz clic en
+              <strong>Siguiente paso</strong>.</span
+            >
           </div>
         </div>
 
@@ -504,8 +1042,12 @@
                 <span class="es-text">Paso 1 — Configurar el código</span>
               </h2>
               <div class="card-sub">
-                <span class="en-text">Pick a secret code and write an addition/subtraction equation for it</span>
-                <span class="es-text">Elige un código secreto y escribe una ecuación de suma o resta para él</span>
+                <span class="en-text"
+                  >Pick a secret code and write an addition/subtraction equation for it</span
+                >
+                <span class="es-text"
+                  >Elige un código secreto y escribe una ecuación de suma o resta para él</span
+                >
               </div>
             </div>
           </div>
@@ -515,68 +1057,225 @@
               <span class="en-text">Your job:</span>
               <span class="es-text">Tu tarea:</span>
             </strong>
-            <span class="en-text">Your escape room needs a secret code to unlock the first door. Pick your code, then write an equation that equals that code. Players will solve your equation to find the secret code!</span>
-            <span class="es-text">Tu sala de escape necesita un código secreto para abrir la primera puerta. Elige tu código y luego escribe una ecuación que equivalga a ese código. ¡Los jugadores resolverán tu ecuación para encontrar el código secreto!</span>
+            <span class="en-text"
+              >Your escape room needs a secret code to unlock the first door. Pick your code, then
+              write an equation that equals that code. Players will solve your equation to find the
+              secret code!</span
+            >
+            <span class="es-text"
+              >Tu sala de escape necesita un código secreto para abrir la primera puerta. Elige tu
+              código y luego escribe una ecuación que equivalga a ese código. ¡Los jugadores
+              resolverán tu ecuación para encontrar el código secreto!</span
+            >
           </div>
 
           <div class="step-research no-print">
-            <div class="sr-head"><span class="en-text">📊 Research you need for this step</span><span class="es-text">📊 Investigación que necesitas para este paso</span></div>
-            🔐 <a href="https://en.wikipedia.org/wiki/Escape_room" target="_blank" rel="noopener noreferrer" class="level-btn"><span class="en-text">Wikipedia — Escape Room ↗</span><span class="es-text">Wikipedia — Sala de escape ↗</span></a>
-            <small class="sr-hint"><span class="en-text">Find: How escape room puzzles are built</span><span class="es-text">Buscar: Cómo se construyen los acertijos de una sala de escape</span></small>
-            <input type="text" id="rfind-1" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
-            🔢 <a href="https://en.wikipedia.org/wiki/Puzzle" target="_blank" rel="noopener noreferrer" class="level-btn"><span class="en-text">Wikipedia — Puzzles ↗</span><span class="es-text">Wikipedia — Acertijos ↗</span></a>
-            <small class="sr-hint"><span class="en-text">Find: A lock-code puzzle idea to turn into an equation</span><span class="es-text">Buscar: Una idea de acertijo de código para convertir en ecuación</span></small>
-            <input type="text" id="rfind-4" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
+            <div class="sr-head">
+              <span class="en-text">📊 Research you need for this step</span
+              ><span class="es-text">📊 Investigación que necesitas para este paso</span>
+            </div>
+            🔐
+            <a
+              href="https://en.wikipedia.org/wiki/Escape_room"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="level-btn"
+              ><span class="en-text">Wikipedia — Escape Room ↗</span
+              ><span class="es-text">Wikipedia — Sala de escape ↗</span></a
+            >
+            <small class="sr-hint"
+              ><span class="en-text">Find: How escape room puzzles are built</span
+              ><span class="es-text"
+                >Buscar: Cómo se construyen los acertijos de una sala de escape</span
+              ></small
+            >
+            <input
+              type="text"
+              id="rfind-1"
+              data-research-find
+              placeholder="✍️ What I found here…"
+              style="
+                width: 100%;
+                box-sizing: border-box;
+                margin-top: 6px;
+                padding: 9px 11px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                font-family: inherit;
+                font-size: 15px;
+                background: #fff;
+              "
+            />
+            🔢
+            <a
+              href="https://en.wikipedia.org/wiki/Puzzle"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="level-btn"
+              ><span class="en-text">Wikipedia — Puzzles ↗</span
+              ><span class="es-text">Wikipedia — Acertijos ↗</span></a
+            >
+            <small class="sr-hint"
+              ><span class="en-text">Find: A lock-code puzzle idea to turn into an equation</span
+              ><span class="es-text"
+                >Buscar: Una idea de acertijo de código para convertir en ecuación</span
+              ></small
+            >
+            <input
+              type="text"
+              id="rfind-4"
+              data-research-find
+              placeholder="✍️ What I found here…"
+              style="
+                width: 100%;
+                box-sizing: border-box;
+                margin-top: 6px;
+                padding: 9px 11px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                font-family: inherit;
+                font-size: 15px;
+                background: #fff;
+              "
+            />
           </div>
 
           <!-- SVG: Lock Visual -->
-          <svg id="code-svg" class="visual-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
+          <svg
+            id="code-svg"
+            class="visual-svg"
+            viewBox="0 0 520 140"
+            xmlns="http://www.w3.org/2000/svg"
+            style="background: white; border: 1px solid #cbd5e1; border-radius: 12px"
+          >
             <!-- Background Lock Graphics -->
-            <rect x="180" y="20" width="160" height="100" rx="10" fill="#f0eafa" stroke="#6d3fa0" stroke-width="2" />
-            <path d="M 210,35 L 210,20 A 40,40 0 0 1 290,20 L 290,35" fill="none" stroke="#6d3fa0" stroke-width="4" stroke-linecap="round" />
+            <rect
+              x="180"
+              y="20"
+              width="160"
+              height="100"
+              rx="10"
+              fill="#f0eafa"
+              stroke="#6d3fa0"
+              stroke-width="2"
+            />
+            <path
+              d="M 210,35 L 210,20 A 40,40 0 0 1 290,20 L 290,35"
+              fill="none"
+              stroke="#6d3fa0"
+              stroke-width="4"
+              stroke-linecap="round"
+            />
             <!-- Lock Center Circle / Keyhole -->
             <circle cx="260" cy="70" r="28" fill="#1a0533" />
             <!-- Text inside lock: the secret code -->
-            <text x="260" y="78" id="svg-secret-val" text-anchor="middle" font-size="24" font-weight="bold" fill="#f0eafa">?</text>
-            
+            <text
+              x="260"
+              y="78"
+              id="svg-secret-val"
+              text-anchor="middle"
+              font-size="24"
+              font-weight="bold"
+              fill="#f0eafa"
+            >
+              ?
+            </text>
+
             <!-- Equation Label on Left -->
-            <rect x="20" y="45" width="140" height="50" rx="8" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="1.5" />
-            <text x="90" y="68" text-anchor="middle" font-size="11" font-weight="bold" fill="#1a0533">
+            <rect
+              x="20"
+              y="45"
+              width="140"
+              height="50"
+              rx="8"
+              fill="#e4f5f3"
+              stroke="#0e8a7d"
+              stroke-width="1.5"
+            />
+            <text
+              x="90"
+              y="68"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="bold"
+              fill="#1a0533"
+            >
               <tspan class="en-text">YOUR SECRET CODE</tspan>
               <tspan class="es-text">TU CÓDIGO SECRETO</tspan>
             </text>
-            <text x="90" y="85" id="svg-secret-lbl" text-anchor="middle" font-size="12" fill="#0e8a7d">x = ?</text>
-            
+            <text
+              x="90"
+              y="85"
+              id="svg-secret-lbl"
+              text-anchor="middle"
+              font-size="12"
+              fill="#0e8a7d"
+            >
+              x = ?
+            </text>
+
             <!-- Equation on Right -->
-            <rect x="360" y="45" width="140" height="50" rx="8" fill="#fdf3e0" stroke="#d4952a" stroke-width="1.5" />
-            <text x="430" y="68" text-anchor="middle" font-size="11" font-weight="bold" fill="#1a0533">
+            <rect
+              x="360"
+              y="45"
+              width="140"
+              height="50"
+              rx="8"
+              fill="#fdf3e0"
+              stroke="#d4952a"
+              stroke-width="1.5"
+            />
+            <text
+              x="430"
+              y="68"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="bold"
+              fill="#1a0533"
+            >
               <tspan class="en-text">CLUE EQUATION</tspan>
               <tspan class="es-text">ECUACIÓN DE PISTA</tspan>
             </text>
-            <text x="430" y="85" id="svg-eq-lbl" text-anchor="middle" font-size="12" fill="#d4952a">x [op] c = R</text>
+            <text x="430" y="85" id="svg-eq-lbl" text-anchor="middle" font-size="12" fill="#d4952a">
+              x [op] c = R
+            </text>
           </svg>
 
           <!-- Level 1 hint -->
           <div class="instruct lvl1-only">
-            🟢 <strong>
+            🟢
+            <strong>
               <span class="en-text">Level 1 tip:</span>
               <span class="es-text">Consejo de Nivel 1:</span>
             </strong>
-            <span class="en-text">Pick a secret code between 1 and 20 (e.g. 12) and a constant between 1 and 10.</span>
-            <span class="es-text">Elige un código secreto entre 1 y 20 (ej. 12) y una constante entre 1 y 10.</span>
+            <span class="en-text"
+              >Pick a secret code between 1 and 20 (e.g. 12) and a constant between 1 and 10.</span
+            >
+            <span class="es-text"
+              >Elige un código secreto entre 1 y 20 (ej. 12) y una constante entre 1 y 10.</span
+            >
           </div>
           <!-- Level 2 hint -->
           <div class="instruct lvl2-block lvl2-only">
             <span class="lvl2-label">
               <span class="en-text">LEVEL 2 CHALLENGE</span>
-              <span class="es-text">DESAFÍO DE NIVEL 2</span>
-            </span><br>
-            <span class="en-text">Try using a secret number greater than 20, or include decimals (e.g., secret code = 25.5, equation constant = 4.5).</span>
-            <span class="es-text">Intenta usar un número secreto mayor a 20 o incluye decimales (ej. código secreto = 25.5, constante de ecuación = 4.5).</span>
+              <span class="es-text">DESAFÍO DE NIVEL 2</span> </span
+            ><br />
+            <span class="en-text"
+              >Try using a secret number greater than 20, or include decimals (e.g., secret code =
+              25.5, equation constant = 4.5).</span
+            >
+            <span class="es-text"
+              >Intenta usar un número secreto mayor a 20 o incluye decimales (ej. código secreto =
+              25.5, constante de ecuación = 4.5).</span
+            >
           </div>
 
           <!-- Project Setup fields -->
-          <div class="grid2" style="margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--line);">
+          <div
+            class="grid2"
+            style="margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--line)"
+          >
             <div>
               <label class="lbl" for="roomName">
                 🏛️ <span class="en-text">Name your escape room</span>
@@ -638,8 +1337,16 @@
               <span class="es-text">¿Necesitas una pista?</span>
             </summary>
             <p>
-              <span class="en-text">To write an addition equation, start with your secret code (e.g., 12). Add a number to it (e.g., 12 + 5 = 17). Your equation is x + 5 = 17. When players subtract 5 from 17, they get 12!</span>
-              <span class="es-text">Para escribir una ecuación de suma, comienza con tu código secreto (ej. 12). Súmale un número (ej. 12 + 5 = 17). Tu ecuación es x + 5 = 17. ¡Cuando los jugadores resten 5 de 17, obtendrán 12!</span>
+              <span class="en-text"
+                >To write an addition equation, start with your secret code (e.g., 12). Add a number
+                to it (e.g., 12 + 5 = 17). Your equation is x + 5 = 17. When players subtract 5 from
+                17, they get 12!</span
+              >
+              <span class="es-text"
+                >Para escribir una ecuación de suma, comienza con tu código secreto (ej. 12). Súmale
+                un número (ej. 12 + 5 = 17). Tu ecuación es x + 5 = 17. ¡Cuando los jugadores resten
+                5 de 17, obtendrán 12!</span
+              >
             </p>
           </details>
         </div>
@@ -669,8 +1376,12 @@
                 <span class="es-text">Paso 2 — Resolver una ecuación de pista</span>
               </h2>
               <div class="card-sub">
-                <span class="en-text">Choose a lock and solve its multiplication or division equation</span>
-                <span class="es-text">Elige una cerradura y resuelve su ecuación de multiplicación o división</span>
+                <span class="en-text"
+                  >Choose a lock and solve its multiplication or division equation</span
+                >
+                <span class="es-text"
+                  >Elige una cerradura y resuelve su ecuación de multiplicación o división</span
+                >
               </div>
             </div>
           </div>
@@ -680,29 +1391,94 @@
               <span class="en-text">Your job:</span>
               <span class="es-text">Tu tarea:</span>
             </strong>
-            <span class="en-text">Choose one of the pre-designed locks in your escape room. Solve its multiplication or division equation step-by-step using inverse operations to find the code.</span>
-            <span class="es-text">Elige una de las cerraduras prediseñadas en tu sala de escape. Resuelve su ecuación de multiplicación o división paso a paso usando operaciones inversas para encontrar el código.</span>
+            <span class="en-text"
+              >Choose one of the pre-designed locks in your escape room. Solve its multiplication or
+              division equation step-by-step using inverse operations to find the code.</span
+            >
+            <span class="es-text"
+              >Elige una de las cerraduras prediseñadas en tu sala de escape. Resuelve su ecuación
+              de multiplicación o división paso a paso usando operaciones inversas para encontrar el
+              código.</span
+            >
           </div>
 
           <!-- SVG: Combination Lock -->
-          <svg class="visual-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
+          <svg
+            class="visual-svg"
+            viewBox="0 0 520 140"
+            xmlns="http://www.w3.org/2000/svg"
+            style="background: white; border: 1px solid #cbd5e1; border-radius: 12px"
+          >
             <!-- Lock Body -->
-            <rect x="200" y="30" width="120" height="90" rx="15" fill="#f0eafa" stroke="#6d3fa0" stroke-width="2.5" />
-            <path d="M 220,30 L 220,15 A 30,30 0 0 1 280,15 L 280,30" fill="none" stroke="#6d3fa0" stroke-width="4.5" stroke-linecap="round" />
-            
+            <rect
+              x="200"
+              y="30"
+              width="120"
+              height="90"
+              rx="15"
+              fill="#f0eafa"
+              stroke="#6d3fa0"
+              stroke-width="2.5"
+            />
+            <path
+              d="M 220,30 L 220,15 A 30,30 0 0 1 280,15 L 280,30"
+              fill="none"
+              stroke="#6d3fa0"
+              stroke-width="4.5"
+              stroke-linecap="round"
+            />
+
             <!-- Lock Dial -->
             <circle cx="260" cy="80" r="24" fill="#1a0533" />
-            <circle cx="260" cy="80" r="18" fill="none" stroke="#f0eafa" stroke-dasharray="4,4" stroke-width="2" />
+            <circle
+              cx="260"
+              cy="80"
+              r="18"
+              fill="none"
+              stroke="#f0eafa"
+              stroke-dasharray="4,4"
+              stroke-width="2"
+            />
             <polygon points="260,60 256,68 264,68" fill="#c45a3c" />
-            
+
             <!-- Decorative side brackets -->
-            <line x1="80" y1="75" x2="160" y2="75" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4,4" />
-            <line x1="360" y1="75" x2="440" y2="75" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4,4" />
-            <text x="120" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#6d3fa0">
+            <line
+              x1="80"
+              y1="75"
+              x2="160"
+              y2="75"
+              stroke="#cbd5e1"
+              stroke-width="2"
+              stroke-dasharray="4,4"
+            />
+            <line
+              x1="360"
+              y1="75"
+              x2="440"
+              y2="75"
+              stroke="#cbd5e1"
+              stroke-width="2"
+              stroke-dasharray="4,4"
+            />
+            <text
+              x="120"
+              y="65"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="bold"
+              fill="#6d3fa0"
+            >
               <tspan class="en-text">CLUE LOCK</tspan>
               <tspan class="es-text">CERRADURA DE PISTA</tspan>
             </text>
-            <text x="400" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#6d3fa0">
+            <text
+              x="400"
+              y="65"
+              text-anchor="middle"
+              font-size="12"
+              font-weight="bold"
+              fill="#6d3fa0"
+            >
               <tspan class="en-text">COMBINATION</tspan>
               <tspan class="es-text">COMBINACIÓN</tspan>
             </text>
@@ -717,20 +1493,29 @@
           </svg>
 
           <div class="lvl1-only instruct teal">
-            🟢 <strong>
+            🟢
+            <strong>
               <span class="en-text">Level 1 tip:</span>
               <span class="es-text">Consejo de Nivel 1:</span>
             </strong>
-            <span class="en-text">Select a simple whole number equation like 3x = 36 or x / 4 = 8.</span>
-            <span class="es-text">Selecciona una ecuación simple con números enteros como 3x = 36 o x / 4 = 8.</span>
+            <span class="en-text"
+              >Select a simple whole number equation like 3x = 36 or x / 4 = 8.</span
+            >
+            <span class="es-text"
+              >Selecciona una ecuación simple con números enteros como 3x = 36 o x / 4 = 8.</span
+            >
           </div>
           <div class="lvl2-block lvl2-only">
             <span class="lvl2-label">
               <span class="en-text">LEVEL 2 CHALLENGE</span>
-              <span class="es-text">DESAFÍO DE NIVEL 2</span>
-            </span><br>
-            <span class="en-text">Select a decimal lock equation like 12x = 180 or x / 2.5 = 12.</span>
-            <span class="es-text">Selecciona una ecuación de cerradura decimal como 12x = 180 o x / 2.5 = 12.</span>
+              <span class="es-text">DESAFÍO DE NIVEL 2</span> </span
+            ><br />
+            <span class="en-text"
+              >Select a decimal lock equation like 12x = 180 or x / 2.5 = 12.</span
+            >
+            <span class="es-text"
+              >Selecciona una ecuación de cerradura decimal como 12x = 180 o x / 2.5 = 12.</span
+            >
           </div>
 
           <label class="lbl" for="clue-select">
@@ -800,8 +1585,16 @@
               <span class="es-text">¿Necesitas una pista?</span>
             </summary>
             <p>
-              <span class="en-text">If the variable is multiplied by a number (like 3x = 36), the inverse operation is division. Divide both sides of the equation by that number (36 ÷ 3) to get the solution x = 12.</span>
-              <span class="es-text">Si la variable está multiplicada por un número (como 3x = 36), la operación inversa es la división. Divide ambos lados de la ecuación por ese número (36 ÷ 3) para obtener la solución x = 12.</span>
+              <span class="en-text"
+                >If the variable is multiplied by a number (like 3x = 36), the inverse operation is
+                division. Divide both sides of the equation by that number (36 ÷ 3) to get the
+                solution x = 12.</span
+              >
+              <span class="es-text"
+                >Si la variable está multiplicada por un número (como 3x = 36), la operación inversa
+                es la división. Divide ambos lados de la ecuación por ese número (36 ÷ 3) para
+                obtener la solución x = 12.</span
+              >
             </p>
           </details>
         </div>
@@ -831,8 +1624,13 @@
                 <span class="es-text">Paso 3 — Verificar y comparar</span>
               </h2>
               <div class="card-sub">
-                <span class="en-text">Substitute to verify your solution, then compare to real escape room stats</span>
-                <span class="es-text">Sustituye para verificar tu solución, luego compara con estadísticas reales de salas de escape</span>
+                <span class="en-text"
+                  >Substitute to verify your solution, then compare to real escape room stats</span
+                >
+                <span class="es-text"
+                  >Sustituye para verificar tu solución, luego compara con estadísticas reales de
+                  salas de escape</span
+                >
               </div>
             </div>
           </div>
@@ -842,30 +1640,115 @@
               <span class="en-text">Your job:</span>
               <span class="es-text">Tu tarea:</span>
             </strong>
-            <span class="en-text">Always check your answer! Substitute your solved value back into the original equation. Then, check out real-world escape room stats to see how your puzzle compares.</span>
-            <span class="es-text">¡Siempre verifica tu respuesta! Sustituye el valor resuelto en la ecuación original. Luego, revisa las estadísticas de salas de escape del mundo real para ver cómo se compara tu acertijo.</span>
+            <span class="en-text"
+              >Always check your answer! Substitute your solved value back into the original
+              equation. Then, check out real-world escape room stats to see how your puzzle
+              compares.</span
+            >
+            <span class="es-text"
+              >¡Siempre verifica tu respuesta! Sustituye el valor resuelto en la ecuación original.
+              Luego, revisa las estadísticas de salas de escape del mundo real para ver cómo se
+              compara tu acertijo.</span
+            >
           </div>
 
           <div class="step-research no-print">
-            <div class="sr-head"><span class="en-text">📊 Research you need for this step</span><span class="es-text">📊 Investigación que necesitas para este paso</span></div>
-            🧩 <a href="https://theescapegame.com/" target="_blank" rel="noopener noreferrer" class="level-btn"><span class="en-text">The Escape Game (real company) ↗</span><span class="es-text">The Escape Game (empresa real) ↗</span></a>
-            <small class="sr-hint"><span class="en-text">Find: Number of puzzles, time limit, and price per player</span><span class="es-text">Buscar: Número de acertijos, límite de tiempo y precio por jugador</span></small>
-            <input type="text" id="rfind-2" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
-            ⏱️ <a href="https://roomescapeartist.com/" target="_blank" rel="noopener noreferrer" class="level-btn"><span class="en-text">Room Escape Artist ↗</span><span class="es-text">Room Escape Artist ↗</span></a>
-            <small class="sr-hint"><span class="en-text">Find: Average completion time or success rate</span><span class="es-text">Buscar: Tiempo promedio para completar o tasa de éxito</span></small>
-            <input type="text" id="rfind-3" data-research-find placeholder="✍️ What I found here…" style="width: 100%; box-sizing: border-box; margin-top: 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 15px; background: #fff;" />
+            <div class="sr-head">
+              <span class="en-text">📊 Research you need for this step</span
+              ><span class="es-text">📊 Investigación que necesitas para este paso</span>
+            </div>
+            🧩
+            <a
+              href="https://theescapegame.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="level-btn"
+              ><span class="en-text">The Escape Game (real company) ↗</span
+              ><span class="es-text">The Escape Game (empresa real) ↗</span></a
+            >
+            <small class="sr-hint"
+              ><span class="en-text">Find: Number of puzzles, time limit, and price per player</span
+              ><span class="es-text"
+                >Buscar: Número de acertijos, límite de tiempo y precio por jugador</span
+              ></small
+            >
+            <input
+              type="text"
+              id="rfind-2"
+              data-research-find
+              placeholder="✍️ What I found here…"
+              style="
+                width: 100%;
+                box-sizing: border-box;
+                margin-top: 6px;
+                padding: 9px 11px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                font-family: inherit;
+                font-size: 15px;
+                background: #fff;
+              "
+            />
+            ⏱️
+            <a
+              href="https://roomescapeartist.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="level-btn"
+              ><span class="en-text">Room Escape Artist ↗</span
+              ><span class="es-text">Room Escape Artist ↗</span></a
+            >
+            <small class="sr-hint"
+              ><span class="en-text">Find: Average completion time or success rate</span
+              ><span class="es-text"
+                >Buscar: Tiempo promedio para completar o tasa de éxito</span
+              ></small
+            >
+            <input
+              type="text"
+              id="rfind-3"
+              data-research-find
+              placeholder="✍️ What I found here…"
+              style="
+                width: 100%;
+                box-sizing: border-box;
+                margin-top: 6px;
+                padding: 9px 11px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                font-family: inherit;
+                font-size: 15px;
+                background: #fff;
+              "
+            />
           </div>
 
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin-bottom:6px;">
+          <h3 style="font-size: 16px; font-weight: 800; color: var(--navy); margin-bottom: 6px">
             🔍 <span class="en-text">Part 1: Check by Substitution</span>
             <span class="es-text">Parte 1: Verificar por sustitución</span>
           </h3>
-          <p style="font-size:14px;color:var(--muted);margin-bottom:12px;">
-            <span class="en-text">Plug your solution back in for x. The math statement must balance:</span>
-            <span class="es-text">Sustituye tu solución de vuelta por x. La afirmación matemática debe equilibrarse:</span>
+          <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px">
+            <span class="en-text"
+              >Plug your solution back in for x. The math statement must balance:</span
+            >
+            <span class="es-text"
+              >Sustituye tu solución de vuelta por x. La afirmación matemática debe
+              equilibrarse:</span
+            >
           </p>
 
-          <div id="check-template-container" style="background: var(--bg); padding: 14px; border-radius: 10px; margin-top: 10px; font-size: 16px; font-weight: bold; text-align: center;">
+          <div
+            id="check-template-container"
+            style="
+              background: var(--bg);
+              padding: 14px;
+              border-radius: 10px;
+              margin-top: 10px;
+              font-size: 16px;
+              font-weight: bold;
+              text-align: center;
+            "
+          >
             <span style="color: var(--muted)">Choose a lock in Step 2 first!</span>
           </div>
 
@@ -876,14 +1759,19 @@
           <div class="readout" id="check-out"></div>
 
           <!-- Real-world comparison stats -->
-          <div style="margin-top:24px; padding-top:16px; border-top:1px solid var(--line);">
-            <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin-bottom:6px;">
+          <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--line)">
+            <h3 style="font-size: 16px; font-weight: 800; color: var(--navy); margin-bottom: 6px">
               🌎 <span class="en-text">Part 2: Real-World Escape Room Stats</span>
               <span class="es-text">Parte 2: Estadísticas de salas de escape del mundo real</span>
             </h3>
-            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">
-              <span class="en-text">Compare your clue's difficulty to these average escape room design metrics:</span>
-              <span class="es-text">Compara la dificultad de tu pista con estas métricas promedio de diseño de salas de escape:</span>
+            <p style="font-size: 14px; color: var(--muted); margin-bottom: 6px">
+              <span class="en-text"
+                >Compare your clue's difficulty to these average escape room design metrics:</span
+              >
+              <span class="es-text"
+                >Compara la dificultad de tu pista con estas métricas promedio de diseño de salas de
+                escape:</span
+              >
             </p>
             <table class="data-table">
               <thead>
@@ -926,7 +1814,9 @@
                   <td>45 – 60 minutes</td>
                   <td>
                     <span class="en-text">Players spend 5–10 min per lock puzzle.</span>
-                    <span class="es-text">Los jugadores pasan de 5 a 10 minutos por acertijo de cerradura.</span>
+                    <span class="es-text"
+                      >Los jugadores pasan de 5 a 10 minutos por acertijo de cerradura.</span
+                    >
                   </td>
                 </tr>
                 <tr>
@@ -944,10 +1834,12 @@
                 </tr>
               </tbody>
             </table>
-            
+
             <label class="lbl" for="diff-rating">
               <span class="en-text">How would you rate the difficulty of your clue equation?</span>
-              <span class="es-text">¿Cómo calificarías la dificultad de la ecuación de tu pista?</span>
+              <span class="es-text"
+                >¿Cómo calificarías la dificultad de la ecuación de tu pista?</span
+              >
             </label>
             <select id="diff-rating">
               <option value="">Choose difficulty...</option>
@@ -955,12 +1847,21 @@
               <option value="Medium">🟡 Medium (Solve rate 40% - 60%)</option>
               <option value="Hard">🔴 Hard (Solve rate 30% or less)</option>
             </select>
-            
+
             <label class="lbl" for="stat-reflect">
-              <span class="en-text">Compare your clue equation to these stats. Why is a 30-40% solve rate common, and how does your puzzle fit in?</span>
-              <span class="es-text">Compara la ecuación de tu pista con estas estadísticas. ¿Por qué es común una tasa de resolución del 30-40% y cómo encaja tu acertijo?</span>
+              <span class="en-text"
+                >Compare your clue equation to these stats. Why is a 30-40% solve rate common, and
+                how does your puzzle fit in?</span
+              >
+              <span class="es-text"
+                >Compara la ecuación de tu pista con estas estadísticas. ¿Por qué es común una tasa
+                de resolución del 30-40% y cómo encaja tu acertijo?</span
+              >
             </label>
-            <textarea id="stat-reflect" placeholder="My clue equation has a difficulty rating of... compared to the average stats, this means..."></textarea>
+            <textarea
+              id="stat-reflect"
+              placeholder="My clue equation has a difficulty rating of... compared to the average stats, this means..."
+            ></textarea>
           </div>
 
           <details class="hint">
@@ -969,8 +1870,16 @@
               <span class="es-text">¿Necesitas una pista?</span>
             </summary>
             <p>
-              <span class="en-text">Substitution means swapping the variable x with the number you calculated. If your equation is 3x = 36 and you got x = 12, write 3 • 12 = 36. Since 36 equals 36, the solution is correct!</span>
-              <span class="es-text">Sustitución significa cambiar la variable x por el número que calculaste. Si tu ecuación es 3x = 36 y obtuviste x = 12, escribe 3 • 12 = 36. ¡Como 36 es igual a 36, la solución es correcta!</span>
+              <span class="en-text"
+                >Substitution means swapping the variable x with the number you calculated. If your
+                equation is 3x = 36 and you got x = 12, write 3 • 12 = 36. Since 36 equals 36, the
+                solution is correct!</span
+              >
+              <span class="es-text"
+                >Sustitución significa cambiar la variable x por el número que calculaste. Si tu
+                ecuación es 3x = 36 y obtuviste x = 12, escribe 3 • 12 = 36. ¡Como 36 es igual a 36,
+                la solución es correcta!</span
+              >
             </p>
           </details>
         </div>
@@ -1001,7 +1910,9 @@
               </h2>
               <div class="card-sub">
                 <span class="en-text">Swap one clue equation with a partner and solve theirs</span>
-                <span class="es-text">Intercambia una ecuación de pista con un compañero y resuelve la suya</span>
+                <span class="es-text"
+                  >Intercambia una ecuación de pista con un compañero y resuelve la suya</span
+                >
               </div>
             </div>
           </div>
@@ -1011,34 +1922,66 @@
               <span class="en-text">Your job:</span>
               <span class="es-text">Tu tarea:</span>
             </strong>
-            <span class="en-text">Swap one clue equation with a partner. Enter their name and equation below, then solve it step-by-step using inverse operations.</span>
-            <span class="es-text">Intercambia una ecuación de pista con un compañero. Ingresa su nombre y ecuación a continuación, luego resuélvela paso a paso usando operaciones inversas.</span>
+            <span class="en-text"
+              >Swap one clue equation with a partner. Enter their name and equation below, then
+              solve it step-by-step using inverse operations.</span
+            >
+            <span class="es-text"
+              >Intercambia una ecuación de pista con un compañero. Ingresa su nombre y ecuación a
+              continuación, luego resuélvela paso a paso usando operaciones inversas.</span
+            >
           </div>
 
           <!-- SVG: Swap Clues Visual -->
-          <svg class="visual-svg" viewBox="0 0 520 100" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
+          <svg
+            class="visual-svg"
+            viewBox="0 0 520 100"
+            xmlns="http://www.w3.org/2000/svg"
+            style="background: white; border: 1px solid #cbd5e1; border-radius: 12px"
+          >
             <!-- Key graphic passing -->
             <g transform="translate(160, 20)">
               <!-- Left Person -->
               <circle cx="20" cy="20" r="10" fill="#6d3fa0" />
               <line x1="20" y1="30" x2="20" y2="60" stroke="#6d3fa0" stroke-width="3" />
               <line x1="20" y1="40" x2="0" y2="50" stroke="#6d3fa0" stroke-width="2" />
-              <line x1="20" y1="40" x2="40" y2="40" stroke="#6d3fa0" stroke-width="2" /> <!-- Holding key -->
-              <text x="20" y="80" text-anchor="middle" font-size="11" font-weight="bold" fill="#1a0533">
+              <line x1="20" y1="40" x2="40" y2="40" stroke="#6d3fa0" stroke-width="2" />
+              <!-- Holding key -->
+              <text
+                x="20"
+                y="80"
+                text-anchor="middle"
+                font-size="11"
+                font-weight="bold"
+                fill="#1a0533"
+              >
                 <tspan class="en-text">You</tspan>
                 <tspan class="es-text">Tú</tspan>
               </text>
-              
+
               <!-- Key -->
-              <path d="M 50,40 L 90,40 M 80,40 L 80,48 M 87,40 L 87,48" stroke="#d4952a" stroke-width="3" stroke-linecap="round" />
+              <path
+                d="M 50,40 L 90,40 M 80,40 L 80,48 M 87,40 L 87,48"
+                stroke="#d4952a"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
               <circle cx="46" cy="40" r="6" fill="none" stroke="#d4952a" stroke-width="3" />
-              
+
               <!-- Right Person -->
               <circle cx="180" cy="20" r="10" fill="#0e8a7d" />
               <line x1="180" y1="30" x2="180" y2="60" stroke="#0e8a7d" stroke-width="3" />
-              <line x1="180" y1="40" x2="160" y2="40" stroke="#0e8a7d" stroke-width="2" /> <!-- Reaching for key -->
+              <line x1="180" y1="40" x2="160" y2="40" stroke="#0e8a7d" stroke-width="2" />
+              <!-- Reaching for key -->
               <line x1="180" y1="40" x2="200" y2="50" stroke="#0e8a7d" stroke-width="2" />
-              <text x="180" y="80" text-anchor="middle" font-size="11" font-weight="bold" fill="#1a0533">
+              <text
+                x="180"
+                y="80"
+                text-anchor="middle"
+                font-size="11"
+                font-weight="bold"
+                fill="#1a0533"
+              >
                 <tspan class="en-text">Partner</tspan>
                 <tspan class="es-text">Compañero</tspan>
               </text>
@@ -1102,7 +2045,15 @@
             </div>
           </div>
 
-          <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-top:18px;margin-bottom:6px;">
+          <h3
+            style="
+              font-size: 15px;
+              font-weight: 800;
+              color: var(--navy);
+              margin-top: 18px;
+              margin-bottom: 6px;
+            "
+          >
             🔎 <span class="en-text">Substitution Check:</span>
             <span class="es-text">Comprobación de sustitución:</span>
           </h3>
@@ -1135,8 +2086,16 @@
               <span class="es-text">¿Necesitas una pista?</span>
             </summary>
             <p>
-              <span class="en-text">Make sure to ask your partner what equation they wrote. If they wrote x - 6 = 14, their operation is subtraction, so you will use addition (+ 6) on both sides to solve it! Substitution will be 20 - 6 = 14.</span>
-              <span class="es-text">Asegúrate de preguntarle a tu compañero qué ecuación escribió. Si escribió x - 6 = 14, su operación es la resta, ¡así que usarás la suma (+ 6) en ambos lados para resolverla! La sustitución será 20 - 6 = 14.</span>
+              <span class="en-text"
+                >Make sure to ask your partner what equation they wrote. If they wrote x - 6 = 14,
+                their operation is subtraction, so you will use addition (+ 6) on both sides to
+                solve it! Substitution will be 20 - 6 = 14.</span
+              >
+              <span class="es-text"
+                >Asegúrate de preguntarle a tu compañero qué ecuación escribió. Si escribió x - 6 =
+                14, su operación es la resta, ¡así que usarás la suma (+ 6) en ambos lados para
+                resolverla! La sustitución será 20 - 6 = 14.</span
+              >
             </p>
           </details>
         </div>
@@ -1166,8 +2125,12 @@
                 <span class="es-text">Paso 5 — Finalizar y entregar</span>
               </h2>
               <div class="card-sub">
-                <span class="en-text">Write your blueprint pitch, check off the list, and print your report</span>
-                <span class="es-text">Escribe la presentación de tu plano, marca la lista y imprime tu reporte</span>
+                <span class="en-text"
+                  >Write your blueprint pitch, check off the list, and print your report</span
+                >
+                <span class="es-text"
+                  >Escribe la presentación de tu plano, marca la lista y imprime tu reporte</span
+                >
               </div>
             </div>
           </div>
@@ -1177,19 +2140,31 @@
               <span class="en-text">Your job:</span>
               <span class="es-text">Tu tarea:</span>
             </strong>
-            <span class="en-text">Write a 3–5 sentence pitch for your escape room blueprint. Explain your theme, how players will solve equations, and what secret codes they'll find.</span>
-            <span class="es-text">Escribe una presentación de 3 a 5 oraciones para el plano de tu sala de escape. Explica tu tema, cómo los jugadores resolverán ecuaciones y qué códigos secretos encontrarán.</span>
+            <span class="en-text"
+              >Write a 3–5 sentence pitch for your escape room blueprint. Explain your theme, how
+              players will solve equations, and what secret codes they'll find.</span
+            >
+            <span class="es-text"
+              >Escribe una presentación de 3 a 5 oraciones para el plano de tu sala de escape.
+              Explica tu tema, cómo los jugadores resolverán ecuaciones y qué códigos secretos
+              encontrarán.</span
+            >
           </div>
 
           <!-- Blueprint pitch text -->
           <label class="lbl" for="pitch">
             ✍️ <span class="en-text">Escape Room Blueprint Pitch (use your actual numbers!)</span>
-            <span class="es-text">Presentación del plano de la sala de escape (¡usa tus números reales!)</span>
+            <span class="es-text"
+              >Presentación del plano de la sala de escape (¡usa tus números reales!)</span
+            >
           </label>
-          <textarea id="pitch" placeholder="Welcome to my escape room blueprint! The theme is... Players must solve equations to crack codes. My first lock uses the equation... to find the code..."></textarea>
+          <textarea
+            id="pitch"
+            placeholder="Welcome to my escape room blueprint! The theme is... Players must solve equations to crack codes. My first lock uses the equation... to find the code..."
+          ></textarea>
 
           <!-- Checklist -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+          <h3 style="font-size: 16px; font-weight: 800; color: var(--navy); margin: 22px 0 6px">
             ✅ <span class="en-text">Checklist — Check off everything you completed</span>
             <span class="es-text">Lista de verificación — Marca todo lo que hayas completado</span>
           </h3>
@@ -1206,8 +2181,12 @@
             </li>
             <li>
               <input type="checkbox" id="ck3" />
-              <span class="en-text">I solved a multiplication/division clue equation step-by-step.</span>
-              <span class="es-text">Resolví una ecuación de pista de multiplicación/división paso a paso.</span>
+              <span class="en-text"
+                >I solved a multiplication/division clue equation step-by-step.</span
+              >
+              <span class="es-text"
+                >Resolví una ecuación de pista de multiplicación/división paso a paso.</span
+              >
             </li>
             <li>
               <input type="checkbox" id="ck4" />
@@ -1216,18 +2195,25 @@
             </li>
             <li>
               <input type="checkbox" id="ck5" />
-              <span class="en-text">I compared my puzzle difficulty to real escape room stats.</span>
-              <span class="es-text">Comparé la dificultad de mi acertijo con estadísticas reales de salas de escape.</span>
+              <span class="en-text"
+                >I compared my puzzle difficulty to real escape room stats.</span
+              >
+              <span class="es-text"
+                >Comparé la dificultad de mi acertijo con estadísticas reales de salas de
+                escape.</span
+              >
             </li>
             <li>
               <input type="checkbox" id="ck6" />
               <span class="en-text">I swapped equations with a partner and solved theirs.</span>
-              <span class="es-text">Intercambié ecuaciones con un compañero y resolví la suya.</span>
+              <span class="es-text"
+                >Intercambié ecuaciones con un compañero y resolví la suya.</span
+              >
             </li>
           </ul>
 
           <!-- Rubric -->
-          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+          <h3 style="font-size: 16px; font-weight: 800; color: var(--navy); margin: 22px 0 6px">
             📊 <span class="en-text">How You Are Scored</span>
             <span class="es-text">Cómo se te califica</span>
           </h3>
@@ -1261,8 +2247,14 @@
                   </strong>
                 </td>
                 <td>
-                  <span class="en-text">Addition/subtraction equation is correct, matches theme, and equals secret code.</span>
-                  <span class="es-text">La ecuación de suma/resta es correcta, coincide con el tema y es igual al código secreto.</span>
+                  <span class="en-text"
+                    >Addition/subtraction equation is correct, matches theme, and equals secret
+                    code.</span
+                  >
+                  <span class="es-text"
+                    >La ecuación de suma/resta es correcta, coincide con el tema y es igual al
+                    código secreto.</span
+                  >
                 </td>
                 <td>
                   <span class="en-text">Equation is correct and equals secret code.</span>
@@ -1281,8 +2273,14 @@
                   </strong>
                 </td>
                 <td>
-                  <span class="en-text">Multiplication/division equation solved step-by-step with correct inverse operation.</span>
-                  <span class="es-text">Ecuación de multiplicación/división resuelta paso a paso con la operación inversa correcta.</span>
+                  <span class="en-text"
+                    >Multiplication/division equation solved step-by-step with correct inverse
+                    operation.</span
+                  >
+                  <span class="es-text"
+                    >Ecuación de multiplicación/división resuelta paso a paso con la operación
+                    inversa correcta.</span
+                  >
                 </td>
                 <td>
                   <span class="en-text">Equation is solved correctly.</span>
@@ -1301,8 +2299,14 @@
                   </strong>
                 </td>
                 <td>
-                  <span class="en-text">Substitution setup is accurate and shows perfect algebraic balance on both sides.</span>
-                  <span class="es-text">La configuración de la sustitución es precisa y muestra un equilibrio algebraico perfecto en ambos lados.</span>
+                  <span class="en-text"
+                    >Substitution setup is accurate and shows perfect algebraic balance on both
+                    sides.</span
+                  >
+                  <span class="es-text"
+                    >La configuración de la sustitución es precisa y muestra un equilibrio
+                    algebraico perfecto en ambos lados.</span
+                  >
                 </td>
                 <td>
                   <span class="en-text">Shows correct substitution check.</span>
@@ -1321,12 +2325,19 @@
                   </strong>
                 </td>
                 <td>
-                  <span class="en-text">Uses real project numbers, explains room theme, and writes 3-5 sentences.</span>
-                  <span class="es-text">Usa números reales del proyecto, explica el tema de la sala y escribe de 3 a 5 oraciones.</span>
+                  <span class="en-text"
+                    >Uses real project numbers, explains room theme, and writes 3-5 sentences.</span
+                  >
+                  <span class="es-text"
+                    >Usa números reales del proyecto, explica el tema de la sala y escribe de 3 a 5
+                    oraciones.</span
+                  >
                 </td>
                 <td>
                   <span class="en-text">Writes pitch with most elements.</span>
-                  <span class="es-text">Escribe la presentación con la mayoría de los elementos.</span>
+                  <span class="es-text"
+                    >Escribe la presentación con la mayoría de los elementos.</span
+                  >
                 </td>
                 <td>
                   <span class="en-text">Pitch is incomplete or missing.</span>
@@ -1337,7 +2348,10 @@
           </table>
 
           <!-- Report + export buttons -->
-          <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
+          <div
+            class="nav-row no-print"
+            style="margin-top: 22px; flex-wrap: wrap; justify-content: flex-start; gap: 8px"
+          >
             <button class="calc-btn green" onclick="buildReport()">
               📝 <span class="en-text">Generate Summary</span>
               <span class="es-text">Generar resumen</span>
@@ -1369,13 +2383,17 @@
           </button>
         </div>
       </div>
-
-    </div><!-- end wizard -->
+    </div>
+    <!-- end wizard -->
 
     <!-- ====== SCRIPTS ====== -->
     <script src="/assets/app.js" defer></script>
     <script>
       const PRESETS = {};
+      // No-giveaway coaching ladder: tracks wrong attempts per check (keyed by
+      // a stable id for that grading function's output). 1st wrong = conceptual
+      // nudge, 2nd = structural hint, 3rd+ = reveal worked path. Reset on correct.
+      const _tries = {};
       function handleLevelPreset(n) {
         try {
           if (n === 1) {
@@ -1383,126 +2401,137 @@
               const el = document.getElementById(id);
               if (el && !el.value) {
                 el.value = val;
-                el.dispatchEvent(new Event('input', { bubbles: true }));
-                el.dispatchEvent(new Event('change', { bubbles: true }));
+                el.dispatchEvent(new Event("input", { bubbles: true }));
+                el.dispatchEvent(new Event("change", { bubbles: true }));
               }
             }
           } else if (n === 2) {
             for (const [id, val] of Object.entries(PRESETS)) {
               const el = document.getElementById(id);
               if (el && String(el.value) === String(val)) {
-                el.value = '';
-                el.dispatchEvent(new Event('input', { bubbles: true }));
-                el.dispatchEvent(new Event('change', { bubbles: true }));
+                el.value = "";
+                el.dispatchEvent(new Event("input", { bubbles: true }));
+                el.dispatchEvent(new Event("change", { bubbles: true }));
               }
             }
           }
-        } catch(e) {}
+        } catch (e) {}
       }
 
       function playConfetti() {
         try {
-          const container = document.createElement('div');
-          container.style.position = 'fixed';
-          container.style.top = '0';
-          container.style.left = '0';
-          container.style.width = '100vw';
-          container.style.height = '100vh';
-          container.style.pointerEvents = 'none';
-          container.style.zIndex = '9999';
+          const container = document.createElement("div");
+          container.style.position = "fixed";
+          container.style.top = "0";
+          container.style.left = "0";
+          container.style.width = "100vw";
+          container.style.height = "100vh";
+          container.style.pointerEvents = "none";
+          container.style.zIndex = "9999";
           document.body.appendChild(container);
-          
-          const colors = ['#f43f5e', '#3b82f6', '#10b981', '#eab308', '#a855f7', '#f97316'];
+
+          const colors = ["#f43f5e", "#3b82f6", "#10b981", "#eab308", "#a855f7", "#f97316"];
           for (let i = 0; i < 80; i++) {
-            const el = document.createElement('div');
-            el.style.position = 'absolute';
-            el.style.width = Math.random() * 8 + 6 + 'px';
-            el.style.height = Math.random() * 8 + 6 + 'px';
+            const el = document.createElement("div");
+            el.style.position = "absolute";
+            el.style.width = Math.random() * 8 + 6 + "px";
+            el.style.height = Math.random() * 8 + 6 + "px";
             el.style.background = colors[Math.floor(Math.random() * colors.length)];
-            el.style.borderRadius = Math.random() > 0.5 ? '50%' : '0%';
-            
-            el.style.bottom = '-10px';
-            el.style.left = Math.random() * 100 + 'vw';
-            
+            el.style.borderRadius = Math.random() > 0.5 ? "50%" : "0%";
+
+            el.style.bottom = "-10px";
+            el.style.left = Math.random() * 100 + "vw";
+
             container.appendChild(el);
-            
+
             const duration = Math.random() * 2 + 1.5;
             const horizontalShift = (Math.random() - 0.5) * 200;
             const rotation = Math.random() * 720;
-            
-            el.animate([
-              { transform: 'translate(0, 0) rotate(0deg)', opacity: '1' },
-              { transform: `translate(${horizontalShift}px, -110vh) rotate(${rotation}deg)`, opacity: '0' }
-            ], {
-              duration: duration * 1000,
-              easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)',
-              fill: 'forwards'
-            });
+
+            el.animate(
+              [
+                { transform: "translate(0, 0) rotate(0deg)", opacity: "1" },
+                {
+                  transform: `translate(${horizontalShift}px, -110vh) rotate(${rotation}deg)`,
+                  opacity: "0",
+                },
+              ],
+              {
+                duration: duration * 1000,
+                easing: "cubic-bezier(0.1, 0.8, 0.3, 1)",
+                fill: "forwards",
+              },
+            );
           }
-          
+
           setTimeout(() => container.remove(), 4000);
         } catch (e) {}
       }
 
       // ---- State ----
       const STEPS = [
-        { id: 1, labelEn: 'Key Words', labelEs: 'Palabras clave', icon: '📖' },
-        { id: 2, labelEn: 'Set the Code', labelEs: 'Configurar el código', icon: '🔒' },
-        { id: 3, labelEn: 'Solve Clue', labelEs: 'Resolver pista', icon: '🔑' },
-        { id: 4, labelEn: 'Check & Compare', labelEs: 'Verificar y comparar', icon: '⚖️' },
-        { id: 5, labelEn: 'Partner Clues', labelEs: 'Pistas del compañero', icon: '👥' },
-        { id: 6, labelEn: 'Finish', labelEs: 'Finalizar', icon: '🏆' },
+        { id: 1, labelEn: "Key Words", labelEs: "Palabras clave", icon: "📖" },
+        { id: 2, labelEn: "Set the Code", labelEs: "Configurar el código", icon: "🔒" },
+        { id: 3, labelEn: "Solve Clue", labelEs: "Resolver pista", icon: "🔑" },
+        { id: 4, labelEn: "Check & Compare", labelEs: "Verificar y comparar", icon: "⚖️" },
+        { id: 5, labelEn: "Partner Clues", labelEs: "Pistas del compañero", icon: "👥" },
+        { id: 6, labelEn: "Finish", labelEs: "Finalizar", icon: "🏆" },
       ];
       let currentStep = 1;
       const visited = new Set([1]);
 
       // ---- Level toggle ----
       function setLevel(n) {
-        document.getElementById('body').className = document.getElementById('body').className.replace(/level-\d/, 'level-' + n);
-        document.getElementById('btn-lv1').classList.toggle('active', n === 1);
-        document.getElementById('btn-lv2').classList.toggle('active', n === 2);
-      
-        handleLevelPreset(n);}
+        document.getElementById("body").className = document
+          .getElementById("body")
+          .className.replace(/level-\d/, "level-" + n);
+        document.getElementById("btn-lv1").classList.toggle("active", n === 1);
+        document.getElementById("btn-lv2").classList.toggle("active", n === 2);
+
+        handleLevelPreset(n);
+      }
 
       // ---- Build step trail ----
       function buildTrail() {
-        const trail = document.getElementById('stepTrail');
+        const trail = document.getElementById("stepTrail");
         if (!trail) return;
-        const isEs = document.body.classList.contains('es');
+        const isEs = document.body.classList.contains("es");
         trail.innerHTML = STEPS.map((s, i) => {
           const label = isEs ? s.labelEs : s.labelEn;
           const isLast = i === STEPS.length - 1;
-          return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" role="button" tabindex="0" onclick="goStep(${s.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(${s.id});}">
-            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
+          return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" role="button" tabindex="0" onclick="goStep(${s.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(${s.id});}">
+            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? "✓" : s.id}</span>
             <span class="s-label">${label}</span>
-          </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
-        }).join('');
+          </span>${!isLast ? '<span class="step-arrow">›</span>' : ""}`;
+        }).join("");
       }
 
       // ---- Navigation ----
       function goStep(n) {
         if (n < 1 || n > STEPS.length) return;
-        document.getElementById('step-' + currentStep).classList.remove('active');
+        document.getElementById("step-" + currentStep).classList.remove("active");
         currentStep = n;
         visited.add(n);
-        document.getElementById('step-' + n).classList.add('active');
+        document.getElementById("step-" + n).classList.add("active");
         buildTrail();
         updateProgress();
         // If transitioning to Step 4 (Check & Compare), sync the template
         if (n === 4) {
           updateCheckTemplate();
         }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
       function updateProgress() {
         const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
-        const fill = document.getElementById('progFill');
-        const lbl = document.getElementById('progLabel');
-        const isEs = document.body.classList.contains('es');
-        if (fill) fill.style.width = pct + '%';
+        const fill = document.getElementById("progFill");
+        const lbl = document.getElementById("progLabel");
+        const isEs = document.body.classList.contains("es");
+        if (fill) fill.style.width = pct + "%";
         if (lbl) {
-          lbl.textContent = isEs ? `Paso ${currentStep} de ${STEPS.length}` : `Step ${currentStep} of ${STEPS.length}`;
+          lbl.textContent = isEs
+            ? `Paso ${currentStep} de ${STEPS.length}`
+            : `Step ${currentStep} of ${STEPS.length}`;
         }
       }
 
@@ -1511,36 +2540,36 @@
         const el = document.getElementById(id);
         if (el) {
           el.innerHTML = html;
-          el.classList.add('show');
+          el.classList.add("show");
         }
       }
 
       // ==================== STEP 2 (SET THE CODE) ====================
       function updateEq() {
-        const s = parseFloat(document.getElementById('s-code').value);
-        const op = document.getElementById('s-op').value;
-        const c = parseFloat(document.getElementById('s-const').value);
-        
-        const svgSecretVal = document.getElementById('svg-secret-val');
-        const svgSecretLbl = document.getElementById('svg-secret-lbl');
-        const svgEqLbl = document.getElementById('svg-eq-lbl');
-        
+        const s = parseFloat(document.getElementById("s-code").value);
+        const op = document.getElementById("s-op").value;
+        const c = parseFloat(document.getElementById("s-const").value);
+
+        const svgSecretVal = document.getElementById("svg-secret-val");
+        const svgSecretLbl = document.getElementById("svg-secret-lbl");
+        const svgEqLbl = document.getElementById("svg-eq-lbl");
+
         if (isNaN(s)) {
-          if (svgSecretVal) svgSecretVal.textContent = '?';
-          if (svgSecretLbl) svgSecretLbl.textContent = 'x = ?';
-          if (svgEqLbl) svgEqLbl.textContent = 'x [op] c = R';
+          if (svgSecretVal) svgSecretVal.textContent = "?";
+          if (svgSecretLbl) svgSecretLbl.textContent = "x = ?";
+          if (svgEqLbl) svgEqLbl.textContent = "x [op] c = R";
           return;
         }
-        
+
         if (svgSecretVal) svgSecretVal.textContent = s;
         if (svgSecretLbl) svgSecretLbl.textContent = `x = ${s}`;
-        
+
         if (isNaN(c)) {
-          if (svgEqLbl) svgEqLbl.textContent = op === 'addition' ? 'x + ? = ?' : 'x - ? = ?';
+          if (svgEqLbl) svgEqLbl.textContent = op === "addition" ? "x + ? = ?" : "x - ? = ?";
           return;
         }
-        
-        if (op === 'subtraction') {
+
+        if (op === "subtraction") {
           if (s < c) {
             if (svgEqLbl) svgEqLbl.textContent = `Warning: x < constant`;
             return;
@@ -1554,174 +2583,245 @@
       }
 
       function verifySetCode() {
-        const s = parseFloat(document.getElementById('s-code').value);
-        const op = document.getElementById('s-op').value;
-        const c = parseFloat(document.getElementById('s-const').value);
-        const isEs = document.body.classList.contains('es');
-        
+        const s = parseFloat(document.getElementById("s-code").value);
+        const op = document.getElementById("s-op").value;
+        const c = parseFloat(document.getElementById("s-const").value);
+        const isEs = document.body.classList.contains("es");
+
         if (isNaN(s) || isNaN(c)) {
-          showReadout('setCode-out', isEs ? 
-            `⚠️ Por favor ingresa tanto tu código secreto como el número constante.` :
-            `⚠️ Please enter both your secret code and constant number.`
+          showReadout(
+            "setCode-out",
+            isEs
+              ? `⚠️ Por favor ingresa tanto tu código secreto como el número constante.`
+              : `⚠️ Please enter both your secret code and constant number.`,
           );
           return;
         }
-        
-        if (op === 'subtraction' && s < c) {
-          showReadout('setCode-out', isEs ?
-            `⚠️ Para la resta, el código secreto (${s}) debe ser mayor que la constante (${c}) para que los jugadores no tengan que resolver con números negativos.` :
-            `⚠️ For subtraction, the secret code (${s}) must be greater than the constant (${c}) so players don't have to solve with negative numbers.`
+
+        if (op === "subtraction" && s < c) {
+          showReadout(
+            "setCode-out",
+            isEs
+              ? `⚠️ Para la resta, el código secreto (${s}) debe ser mayor que la constante (${c}) para que los jugadores no tengan que resolver con números negativos.`
+              : `⚠️ For subtraction, the secret code (${s}) must be greater than the constant (${c}) so players don't have to solve with negative numbers.`,
           );
           return;
         }
-        
-        const res = op === 'addition' ? (s + c) : (s - c);
-        const symbol = op === 'addition' ? '+' : '-';
+
+        const res = op === "addition" ? s + c : s - c;
+        const symbol = op === "addition" ? "+" : "-";
         const eqStr = `x ${symbol} ${c} = ${res}`;
-        
-        showReadout('setCode-out', isEs ? `
+
+        showReadout(
+          "setCode-out",
+          isEs
+            ? `
           <strong>Ecuación de pista de la Cerradura A establecida: ${eqStr}</strong><br>
           ✅ Comprobemos mediante sustitución:<br>
           Si sustituimos <strong>x = ${s}</strong> en tu ecuación:<br>
           <code>${s} ${symbol} ${c} = ${res}</code><br>
           Como <code>${res} = ${res}</code>, ¡la ecuación está perfectamente equilibrada! Tu pista está lista para los jugadores.
-        ` : `
+        `
+            : `
           <strong>Lock A Clue Equation Set: ${eqStr}</strong><br>
           ✅ Let's check it by substitution:<br>
           If we substitute <strong>x = ${s}</strong> into your equation:<br>
           <code>${s} ${symbol} ${c} = ${res}</code><br>
           Since <code>${res} = ${res}</code>, the equation is perfectly balanced! Your clue is ready for players.
-        `);
+        `,
+        );
       }
 
       // ==================== STEP 3 (SOLVE A CLUE EQUATION) ====================
       function loadClue() {
-        const sel = document.getElementById('clue-select').value;
-        const disp = document.getElementById('clue-eq-disp');
-        const isEs = document.body.classList.contains('es');
-        
+        const sel = document.getElementById("clue-select").value;
+        const disp = document.getElementById("clue-eq-disp");
+        const isEs = document.body.classList.contains("es");
+
         // Reset fields
-        document.getElementById('c-op').value = '';
-        document.getElementById('c-inv-op').value = '';
-        document.getElementById('c-inv-val').value = '';
-        document.getElementById('c-sol').value = '';
-        const out = document.getElementById('clueSolve-out');
-        if (out) out.classList.remove('show');
-        
+        document.getElementById("c-op").value = "";
+        document.getElementById("c-inv-op").value = "";
+        document.getElementById("c-inv-val").value = "";
+        document.getElementById("c-sol").value = "";
+        const out = document.getElementById("clueSolve-out");
+        if (out) out.classList.remove("show");
+
         if (sel) {
           disp.textContent = sel;
         } else {
-          disp.textContent = isEs ? 'Elige una ecuación de pista de cerradura arriba para comenzar' : 'Choose a lock clue above to begin';
+          disp.textContent = isEs
+            ? "Elige una ecuación de pista de cerradura arriba para comenzar"
+            : "Choose a lock clue above to begin";
         }
       }
 
       function verifyClueSolve() {
-        const sel = document.getElementById('clue-select').value;
-        const op = document.getElementById('c-op').value;
-        const invOp = document.getElementById('c-inv-op').value;
-        const invVal = parseFloat(document.getElementById('c-inv-val').value);
-        const sol = parseFloat(document.getElementById('c-sol').value);
-        const isEs = document.body.classList.contains('es');
-        
+        const sel = document.getElementById("clue-select").value;
+        const op = document.getElementById("c-op").value;
+        const invOp = document.getElementById("c-inv-op").value;
+        const invVal = parseFloat(document.getElementById("c-inv-val").value);
+        const sol = parseFloat(document.getElementById("c-sol").value);
+        const isEs = document.body.classList.contains("es");
+
         if (!sel) {
-          showReadout('clueSolve-out', isEs ? 
-            `⚠️ Por favor selecciona primero una ecuación de pista de cerradura del menú desplegable.` :
-            `⚠️ Please select a lock clue from the dropdown first.`
+          showReadout(
+            "clueSolve-out",
+            isEs
+              ? `⚠️ Por favor selecciona primero una ecuación de pista de cerradura del menú desplegable.`
+              : `⚠️ Please select a lock clue from the dropdown first.`,
           );
           return;
         }
-        
+
         if (!op || !invOp || isNaN(invVal) || isNaN(sol)) {
-          showReadout('clueSolve-out', isEs ?
-            `⚠️ Por favor completa todos los campos paso a paso para verificar tu solución.` :
-            `⚠️ Please complete all step-by-step fields to verify your solution.`
+          showReadout(
+            "clueSolve-out",
+            isEs
+              ? `⚠️ Por favor completa todos los campos paso a paso para verificar tu solución.`
+              : `⚠️ Please complete all step-by-step fields to verify your solution.`,
           );
           return;
         }
-        
+
         let correct = false;
-        let explanationEn = '';
-        let explanationEs = '';
-        
-        if (sel === '3x = 36') {
-          if (op === 'Multiplication' && invOp === 'Division' && invVal === 3 && sol === 12) {
+        let explanationEn = "";
+        let explanationEs = "";
+
+        if (sel === "3x = 36") {
+          if (op === "Multiplication" && invOp === "Division" && invVal === 3 && sol === 12) {
             correct = true;
             explanationEn = `Since x is multiplied by 3, dividing both sides by 3 isolates x: 36 ÷ 3 = 12.`;
             explanationEs = `Como x está multiplicado por 3, dividir ambos lados por 3 aísla x: 36 ÷ 3 = 12.`;
           }
-        } else if (sel === 'x / 4 = 8') {
-          if (op === 'Division' && invOp === 'Multiplication' && invVal === 4 && sol === 32) {
+        } else if (sel === "x / 4 = 8") {
+          if (op === "Division" && invOp === "Multiplication" && invVal === 4 && sol === 32) {
             correct = true;
             explanationEn = `Since x is divided by 4, multiplying both sides by 4 isolates x: 8 × 4 = 32.`;
             explanationEs = `Como x está dividido por 4, multiplicar ambos lados por 4 aísla x: 8 × 4 = 32.`;
           }
-        } else if (sel === '12x = 180') {
-          if (op === 'Multiplication' && invOp === 'Division' && invVal === 12 && sol === 15) {
+        } else if (sel === "12x = 180") {
+          if (op === "Multiplication" && invOp === "Division" && invVal === 12 && sol === 15) {
             correct = true;
             explanationEn = `Since x is multiplied by 12, dividing both sides by 12 isolates x: 180 ÷ 12 = 15.`;
             explanationEs = `Como x está multiplicado por 12, dividir ambos lados por 12 aísla x: 180 ÷ 12 = 15.`;
           }
-        } else if (sel === 'x / 2.5 = 12') {
-          if (op === 'Division' && invOp === 'Multiplication' && invVal === 2.5 && sol === 30) {
+        } else if (sel === "x / 2.5 = 12") {
+          if (op === "Division" && invOp === "Multiplication" && invVal === 2.5 && sol === 30) {
             correct = true;
             explanationEn = `Since x is divided by 2.5, multiplying both sides by 2.5 isolates x: 12 × 2.5 = 30.`;
             explanationEs = `Como x está dividido por 2.5, multiplicar ambos lados por 2.5 aísla x: 12 × 2.5 = 30.`;
           }
         }
-        
+
         if (correct) {
-          showReadout('clueSolve-out', isEs ? `
+          _tries.clueSolve = 0;
+          showReadout(
+            "clueSolve-out",
+            isEs
+              ? `
             <strong>¡Correcto! x = ${sol}</strong><br>
             ✅ ${explanationEs}<br>
             Tus operaciones inversas paso a paso son precisas. ¡Has abierto la cerradura!
-          ` : `
+          `
+              : `
             <strong>Correct! x = ${sol}</strong><br>
             ✅ ${explanationEn}<br>
             Your step-by-step inverse operations are accurate. You have cracked the lock!
-          `);
+          `,
+          );
         } else {
-          showReadout('clueSolve-out', isEs ? `
+          _tries.clueSolve = (_tries.clueSolve || 0) + 1;
+          const tries = _tries.clueSolve;
+          if (tries === 1) {
+            showReadout(
+              "clueSolve-out",
+              isEs
+                ? `
             <strong>❌ No es del todo correcto todavía.</strong><br>
-            Vuelve a revisar tu trabajo:<br>
-            1. Identifica la operation en la ecuación original (¿está x multiplicada o dividida?).<br>
-            2. Elige la operación opuesta (inversa) para deshacerla.<br>
-            3. Aplica ese número a ambos lados, luego vuelve a calcular la solución final.
-          ` : `
+            Antes de volver a intentarlo, mira la ecuación original: ¿qué le está pasando a x — se está multiplicando o dividiendo por un número? Para aislar x necesitas deshacer esa operación con su operación OPUESTA.
+          `
+                : `
             <strong>❌ Not quite correct yet.</strong><br>
-            Double check your work:<br>
-            1. Identify the operation in the original equation (is x multiplied or divided?).<br>
-            2. Choose the opposite operation (inverse) to undo it.<br>
-            3. Apply that number to both sides, then re-calculate the final solution.
-          `);
+            Before you try again, look at the original equation: what is happening to x — is it being multiplied or divided by a number? To isolate x you need to undo that with the OPPOSITE operation.
+          `,
+            );
+          } else if (tries === 2) {
+            showReadout(
+              "clueSolve-out",
+              isEs
+                ? `
+            <strong>❌ Todavía no.</strong><br>
+            Organiza tu trabajo en pasos: (1) nombra la operación de la ecuación original y su inversa, (2) aplica esa inversa con el mismo número a AMBOS lados de la ecuación, (3) simplifica cada lado para obtener el valor final de x.
+          `
+                : `
+            <strong>❌ Still not quite.</strong><br>
+            Organize your work in steps: (1) name the operation in the original equation and its inverse, (2) apply that inverse with the same number to BOTH sides of the equation, (3) simplify each side to get the final value of x.
+          `,
+            );
+          } else {
+            const CLUE_KEY = {
+              "3x = 36": { op: "Multiplication", inv: "Division", num: 3, sol: 12 },
+              "x / 4 = 8": { op: "Division", inv: "Multiplication", num: 4, sol: 32 },
+              "12x = 180": { op: "Multiplication", inv: "Division", num: 12, sol: 15 },
+              "x / 2.5 = 12": { op: "Division", inv: "Multiplication", num: 2.5, sol: 30 },
+            };
+            const k = CLUE_KEY[sel];
+            const opWordEn = k && k.op === "Multiplication" ? "multiplied" : "divided";
+            const opWordEs = k && k.op === "Multiplication" ? "multiplicada" : "dividida";
+            const invWordEn = k && k.inv === "Division" ? "divide" : "multiply";
+            const invWordEs = k && k.inv === "Division" ? "dividir" : "multiplicar";
+            showReadout(
+              "clueSolve-out",
+              isEs
+                ? k
+                  ? `
+            <strong>Aquí está el camino resuelto:</strong><br>
+            En <code>${sel}</code>, x está ${opWordEs} por ${k.num}. Aplica la operación inversa (${invWordEs} por ${k.num}) a ambos lados: <strong>x = ${k.sol}</strong>.
+          `
+                  : `
+            <strong>❌ No es del todo correcto todavía.</strong><br>
+            Vuelve a revisar tu trabajo paso a paso.
+          `
+                : k
+                  ? `
+            <strong>Here's the worked path:</strong><br>
+            In <code>${sel}</code>, x is ${opWordEn} by ${k.num}. Apply the inverse operation (${invWordEn} by ${k.num}) to both sides: <strong>x = ${k.sol}</strong>.
+          `
+                  : `
+            <strong>❌ Not quite correct yet.</strong><br>
+            Double check your work step by step.
+          `,
+            );
+          }
         }
       }
 
       // ==================== STEP 4 (CHECK & COMPARE) ====================
       function updateCheckTemplate() {
-        const sel = document.getElementById('clue-select').value;
-        const container = document.getElementById('check-template-container');
-        const isEs = document.body.classList.contains('es');
+        const sel = document.getElementById("clue-select").value;
+        const container = document.getElementById("check-template-container");
+        const isEs = document.body.classList.contains("es");
         if (!sel) {
-          container.innerHTML = `<span style="color: var(--muted)">${isEs ? '¡Elige y resuelve una pista de cerradura en el Paso 2 primero!' : 'Choose and solve a lock clue in Step 2 first!'}</span>`;
+          container.innerHTML = `<span style="color: var(--muted)">${isEs ? "¡Elige y resuelve una pista de cerradura en el Paso 2 primero!" : "Choose and solve a lock clue in Step 2 first!"}</span>`;
           return;
         }
-        
-        if (sel === '3x = 36') {
+
+        if (sel === "3x = 36") {
           container.innerHTML = `
             3 × <input type="number" id="check-sol-val" style="width: 80px; display: inline-block; padding: 4px; text-align: center;" /> 
             = <input type="number" id="check-res-val" style="width: 80px; display: inline-block; padding: 4px; text-align: center;" />
           `;
-        } else if (sel === 'x / 4 = 8') {
+        } else if (sel === "x / 4 = 8") {
           container.innerHTML = `
             <input type="number" id="check-sol-val" style="width: 80px; display: inline-block; padding: 4px; text-align: center;" /> 
             ÷ 4 = <input type="number" id="check-res-val" style="width: 80px; display: inline-block; padding: 4px; text-align: center;" />
           `;
-        } else if (sel === '12x = 180') {
+        } else if (sel === "12x = 180") {
           container.innerHTML = `
             12 × <input type="number" id="check-sol-val" style="width: 80px; display: inline-block; padding: 4px; text-align: center;" /> 
             = <input type="number" id="check-res-val" style="width: 80px; display: inline-block; padding: 4px; text-align: center;" />
           `;
-        } else if (sel === 'x / 2.5 = 12') {
+        } else if (sel === "x / 2.5 = 12") {
           container.innerHTML = `
             <input type="number" id="check-sol-val" style="width: 80px; display: inline-block; padding: 4px; text-align: center;" /> 
             ÷ 2.5 = <input type="number" id="check-res-val" style="width: 80px; display: inline-block; padding: 4px; text-align: center;" />
@@ -1730,94 +2830,155 @@
       }
 
       function verifyCheck() {
-        const sel = document.getElementById('clue-select').value;
-        const solVal = parseFloat(document.getElementById('check-sol-val')?.value);
-        const resVal = parseFloat(document.getElementById('check-res-val')?.value);
-        const isEs = document.body.classList.contains('es');
-        
+        const sel = document.getElementById("clue-select").value;
+        const solVal = parseFloat(document.getElementById("check-sol-val")?.value);
+        const resVal = parseFloat(document.getElementById("check-res-val")?.value);
+        const isEs = document.body.classList.contains("es");
+
         if (!sel) {
-          showReadout('check-out', isEs ?
-            `⚠️ Por favor selecciona y resuelve una pista de cerradura en el paso anterior primero.` :
-            `⚠️ Please select and solve a lock clue in the previous step first.`
+          showReadout(
+            "check-out",
+            isEs
+              ? `⚠️ Por favor selecciona y resuelve una pista de cerradura en el paso anterior primero.`
+              : `⚠️ Please select and solve a lock clue in the previous step first.`,
           );
           return;
         }
-        
+
         if (isNaN(solVal) || isNaN(resVal)) {
-          showReadout('check-out', isEs ?
-            `⚠️ Por favor llena ambos valores de la ecuación de verificación.` :
-            `⚠️ Please fill in both values of the check equation.`
+          showReadout(
+            "check-out",
+            isEs
+              ? `⚠️ Por favor llena ambos valores de la ecuación de verificación.`
+              : `⚠️ Please fill in both values of the check equation.`,
           );
           return;
         }
-        
+
         let correct = false;
-        
-        if (sel === '3x = 36') {
+
+        if (sel === "3x = 36") {
           if (solVal === 12 && resVal === 36) correct = true;
-        } else if (sel === 'x / 4 = 8') {
+        } else if (sel === "x / 4 = 8") {
           if (solVal === 32 && resVal === 8) correct = true;
-        } else if (sel === '12x = 180') {
+        } else if (sel === "12x = 180") {
           if (solVal === 15 && resVal === 180) correct = true;
-        } else if (sel === 'x / 2.5 = 12') {
+        } else if (sel === "x / 2.5 = 12") {
           if (solVal === 30 && resVal === 12) correct = true;
         }
-        
+
         if (correct) {
-          showReadout('check-out', isEs ? `
+          _tries.check = 0;
+          showReadout(
+            "check-out",
+            isEs
+              ? `
             <strong>¡Verificación Aprobada! 🎉</strong><br>
             ¡Tu sustitución es correcta! Sustituir <strong>x = ${solVal}</strong> equilibra la ecuación perfectamente.<br>
             Está matemáticamente verificado.
-          ` : `
+          `
+              : `
             <strong>Check Passed! 🎉</strong><br>
             Your substitution is correct! Substituting <strong>x = ${solVal}</strong> balances the equation perfectly.<br>
             It is mathematically verified.
-          `);
+          `,
+          );
         } else {
-          const egStr = sel === '3x = 36' ? '3 × 12 = 36' : sel === 'x / 4 = 8' ? '32 ÷ 4 = 8' : sel === '12x = 180' ? '12 × 15 = 180' : '30 ÷ 2.5 = 12';
-          showReadout('check-out', isEs ? `
+          _tries.check = (_tries.check || 0) + 1;
+          const tries = _tries.check;
+          if (tries === 1) {
+            showReadout(
+              "check-out",
+              isEs
+                ? `
             <strong>❌ Verificación Fallida.</strong><br>
-            Revisa tus números. Si tu solución es correcta, sustituirla de vuelta debería hacer que la afirmación matemática sea verdadera.<br>
-            Por ejemplo: ${egStr}.
-          ` : `
+            Antes de volver a intentarlo: asegúrate de usar exactamente la misma solución que encontraste en el Paso 2, y vuelve a calcular con cuidado qué obtienes al sustituirla.
+          `
+                : `
             <strong>❌ Check Failed.</strong><br>
-            Check your numbers. If your solution is correct, substituting it back should make the math statement true.<br>
-            For example: ${egStr}.
-          `);
+            Before you try again: make sure you're using the exact same solution you found in Step 2, and carefully recompute what you get when you substitute it in.
+          `,
+            );
+          } else if (tries === 2) {
+            showReadout(
+              "check-out",
+              isEs
+                ? `
+            <strong>❌ Todavía no.</strong><br>
+            Escribe la sustitución paso a paso: reemplaza x con tu número de solución en la ecuación original, realiza la operación (multiplicación o división), y compara ese resultado con el otro lado de la ecuación.
+          `
+                : `
+            <strong>❌ Still not quite.</strong><br>
+            Write out the substitution step by step: replace x with your solution number in the original equation, carry out the operation (multiplication or division), and compare that result to the other side of the equation.
+          `,
+            );
+          } else {
+            const egStr =
+              sel === "3x = 36"
+                ? "3 × 12 = 36"
+                : sel === "x / 4 = 8"
+                  ? "32 ÷ 4 = 8"
+                  : sel === "12x = 180"
+                    ? "12 × 15 = 180"
+                    : "30 ÷ 2.5 = 12";
+            showReadout(
+              "check-out",
+              isEs
+                ? `
+            <strong>Aquí está la verificación resuelta:</strong><br>
+            Por ejemplo: ${egStr}. Sustituye la solución correcta de la ecuación de pista en ambos campos para que la verificación se equilibre.
+          `
+                : `
+            <strong>Here's the worked check:</strong><br>
+            For example: ${egStr}. Substitute the correct solution from the clue equation into both fields so the check balances.
+          `,
+            );
+          }
         }
       }
 
       // ==================== STEP 5 (PARTNER CLUES) ====================
       function verifyPartnerClue() {
-        const name = document.getElementById('p-name').value;
-        const eqStr = document.getElementById('p-eq').value.trim().toLowerCase();
-        const op = document.getElementById('p-op').value;
-        const invOp = document.getElementById('p-inv-op').value;
-        const opNum = parseFloat(document.getElementById('p-op-num').value);
-        const sol = parseFloat(document.getElementById('p-sol').value);
-        const lhs = parseFloat(document.getElementById('p-check-lhs').value);
-        const rhs = parseFloat(document.getElementById('p-check-rhs').value);
-        const isEs = document.body.classList.contains('es');
-        
-        if (!name || !eqStr || !op || !invOp || isNaN(opNum) || isNaN(sol) || isNaN(lhs) || isNaN(rhs)) {
-          showReadout('partner-out', isEs ?
-            `⚠️ Por favor completa todos los campos para verificar la pista de tu compañero.` :
-            `⚠️ Please complete all fields to verify your partner's clue.`
+        const name = document.getElementById("p-name").value;
+        const eqStr = document.getElementById("p-eq").value.trim().toLowerCase();
+        const op = document.getElementById("p-op").value;
+        const invOp = document.getElementById("p-inv-op").value;
+        const opNum = parseFloat(document.getElementById("p-op-num").value);
+        const sol = parseFloat(document.getElementById("p-sol").value);
+        const lhs = parseFloat(document.getElementById("p-check-lhs").value);
+        const rhs = parseFloat(document.getElementById("p-check-rhs").value);
+        const isEs = document.body.classList.contains("es");
+
+        if (
+          !name ||
+          !eqStr ||
+          !op ||
+          !invOp ||
+          isNaN(opNum) ||
+          isNaN(sol) ||
+          isNaN(lhs) ||
+          isNaN(rhs)
+        ) {
+          showReadout(
+            "partner-out",
+            isEs
+              ? `⚠️ Por favor completa todos los campos para verificar la pista de tu compañero.`
+              : `⚠️ Please complete all fields to verify your partner's clue.`,
           );
           return;
         }
-        
-        let expectedOp = '';
-        let expectedInv = '';
+
+        let expectedOp = "";
+        let expectedInv = "";
         let expectedOpNum = 0;
         let expectedSol = 0;
         let parsed = false;
-        
+
         // Match multiplication: e.g. "5x = 45", "5 * x = 45", "x * 5 = 45"
         let match = eqStr.match(/^(\d+(?:\.\d+)?)\s*\*?\s*([a-z])\s*=\s*(\d+(?:\.\d+)?)$/);
         if (match) {
-          expectedOp = 'Multiplication';
-          expectedInv = 'Division';
+          expectedOp = "Multiplication";
+          expectedInv = "Division";
           expectedOpNum = parseFloat(match[1]);
           expectedSol = parseFloat(match[3]) / expectedOpNum;
           parsed = true;
@@ -1825,8 +2986,8 @@
           // Match division: e.g. "x / 3 = 10", "x/3 = 10"
           match = eqStr.match(/^([a-z])\s*\/\s*(\d+(?:\.\d+)?)\s*=\s*(\d+(?:\.\d+)?)$/);
           if (match) {
-            expectedOp = 'Division';
-            expectedInv = 'Multiplication';
+            expectedOp = "Division";
+            expectedInv = "Multiplication";
             expectedOpNum = parseFloat(match[2]);
             expectedSol = parseFloat(match[3]) * expectedOpNum;
             parsed = true;
@@ -1834,8 +2995,8 @@
             // Match addition: e.g. "x + 6 = 20"
             match = eqStr.match(/^([a-z])\s*\+\s*(\d+(?:\.\d+)?)\s*=\s*(\d+(?:\.\d+)?)$/);
             if (match) {
-              expectedOp = 'Addition';
-              expectedInv = 'Subtraction';
+              expectedOp = "Addition";
+              expectedInv = "Subtraction";
               expectedOpNum = parseFloat(match[2]);
               expectedSol = parseFloat(match[3]) - expectedOpNum;
               parsed = true;
@@ -1843,8 +3004,8 @@
               // Match subtraction: e.g. "x - 4 = 12"
               match = eqStr.match(/^([a-z])\s*-\s*(\d+(?:\.\d+)?)\s*=\s*(\d+(?:\.\d+)?)$/);
               if (match) {
-                expectedOp = 'Subtraction';
-                expectedInv = 'Addition';
+                expectedOp = "Subtraction";
+                expectedInv = "Addition";
                 expectedOpNum = parseFloat(match[2]);
                 expectedSol = parseFloat(match[3]) + expectedOpNum;
                 parsed = true;
@@ -1852,59 +3013,147 @@
             }
           }
         }
-        
+
         if (parsed) {
           const opMatch = op === expectedOp;
           const invMatch = invOp === expectedInv;
           const numMatch = Math.abs(opNum - expectedOpNum) < 0.001;
           const solMatch = Math.abs(sol - expectedSol) < 0.001;
           const checkMatch = lhs === rhs;
-          
+
           if (opMatch && invMatch && numMatch && solMatch && checkMatch) {
-            showReadout('partner-out', isEs ? `
+            _tries.partner = 0;
+            showReadout(
+              "partner-out",
+              isEs
+                ? `
               <strong>¡Ecuación Verificada! 🎉</strong><br>
               ✅ Compañero: <strong>${name}</strong><br>
               ✅ Ecuación: <strong>${eqStr}</strong><br>
               ✅ Solución: <strong>x = ${sol}</strong> es correcta.<br>
               ✅ Sustitución: <strong>${lhs} = ${rhs}</strong> ¡está equilibrada!<br>
               Gran trabajo trabajando con tu compañero para resolver la pista de su sala de escape.
-            ` : `
+            `
+                : `
               <strong>Equation Verified! 🎉</strong><br>
               ✅ Partner: <strong>${name}</strong><br>
               ✅ Equation: <strong>${eqStr}</strong><br>
               ✅ Solution: <strong>x = ${sol}</strong> is correct.<br>
               ✅ Substitution: <strong>${lhs} = ${rhs}</strong> is balanced!<br>
               Great job working with your peer to solve their escape room clue.
-            `);
+            `,
+            );
           } else {
-            let errorMsg = isEs ? `<strong>❌ Comentarios de verificación:</strong><br>` : `<strong>❌ Verification feedback:</strong><br>`;
-            if (!opMatch) errorMsg += isEs ? `- La operación en la ecuación no es ${op}.<br>` : `- The operation in the equation is not ${op}.<br>`;
-            if (!invMatch) errorMsg += isEs ? `- La operación inversa no es ${invOp}.<br>` : `- The inverse operation is not ${invOp}.<br>`;
-            if (!numMatch) errorMsg += isEs ? `- El número utilizado en la operación inversa debería ser ${expectedOpNum}.<br>` : `- The number used in the inverse operation should be ${expectedOpNum}.<br>`;
-            if (!solMatch) errorMsg += isEs ? `- La solución x = ${sol} es incorrecta. Esperada: ${expectedSol}.<br>` : `- The solution x = ${sol} is incorrect. Expected: ${expectedSol}.<br>`;
-            if (!checkMatch) errorMsg += isEs ? `- Los lados de la sustitución no coinciden (LHS ${lhs} vs RHS ${rhs}).<br>` : `- The substitution sides do not match (LHS ${lhs} vs RHS ${rhs}).<br>`;
-            showReadout('partner-out', errorMsg);
+            _tries.partner = (_tries.partner || 0) + 1;
+            const tries = _tries.partner;
+            if (tries === 1) {
+              showReadout(
+                "partner-out",
+                isEs
+                  ? `<strong>❌ Todavía no.</strong><br>Antes de volver a intentarlo, vuelve a mirar la ecuación de tu compañero con cuidado: identifica qué operación se le hace a la variable, qué operación inversa la deshace, qué número usarías, y cómo se comprueba sustituyendo la solución.`
+                  : `<strong>❌ Not quite yet.</strong><br>Before you try again, look closely at your partner's equation: identify what operation is being done to the variable, what inverse operation undoes it, what number you'd use, and how you'd check it by substitution.`,
+              );
+            } else if (tries === 2) {
+              let hintMsg = isEs
+                ? `<strong>❌ Todavía no. Pistas específicas:</strong><br>`
+                : `<strong>❌ Still not quite. Specific hints:</strong><br>`;
+              if (!opMatch)
+                hintMsg += isEs
+                  ? `- Vuelve a revisar qué operación (suma, resta, multiplicación o división) conecta la variable con el número en la ecuación original.<br>`
+                  : `- Re-check which operation (addition, subtraction, multiplication, or division) connects the variable and number in the original equation.<br>`;
+              if (!invMatch)
+                hintMsg += isEs
+                  ? `- La operación inversa que elegiste no deshace correctamente esa operación — piensa en el par opuesto (suma↔resta, multiplicación↔división).<br>`
+                  : `- The inverse operation you chose doesn't correctly undo that operation — think about the opposite pair (addition↔subtraction, multiplication↔division).<br>`;
+              if (!numMatch)
+                hintMsg += isEs
+                  ? `- Vuelve a revisar qué número de la ecuación original debe usarse en la operación inversa.<br>`
+                  : `- Re-check which number from the original equation should be used in the inverse operation.<br>`;
+              if (!solMatch)
+                hintMsg += isEs
+                  ? `- Vuelve a aplicar la operación inversa a ambos lados y recalcula la solución final.<br>`
+                  : `- Re-apply the inverse operation to both sides and recalculate the final solution.<br>`;
+              if (!checkMatch)
+                hintMsg += isEs
+                  ? `- Sustituye tu solución de nuevo en la ecuación original y vuelve a calcular ambos lados con cuidado.<br>`
+                  : `- Substitute your solution back into the original equation and recompute both sides carefully.<br>`;
+              showReadout("partner-out", hintMsg);
+            } else {
+              let errorMsg = isEs
+                ? `<strong>❌ Comentarios de verificación:</strong><br>`
+                : `<strong>❌ Verification feedback:</strong><br>`;
+              if (!opMatch)
+                errorMsg += isEs
+                  ? `- La operación en la ecuación no es ${op}.<br>`
+                  : `- The operation in the equation is not ${op}.<br>`;
+              if (!invMatch)
+                errorMsg += isEs
+                  ? `- La operación inversa no es ${invOp}.<br>`
+                  : `- The inverse operation is not ${invOp}.<br>`;
+              if (!numMatch)
+                errorMsg += isEs
+                  ? `- El número utilizado en la operación inversa debería ser ${expectedOpNum}.<br>`
+                  : `- The number used in the inverse operation should be ${expectedOpNum}.<br>`;
+              if (!solMatch)
+                errorMsg += isEs
+                  ? `- La solución x = ${sol} es incorrecta. Esperada: ${expectedSol}.<br>`
+                  : `- The solution x = ${sol} is incorrect. Expected: ${expectedSol}.<br>`;
+              if (!checkMatch)
+                errorMsg += isEs
+                  ? `- Los lados de la sustitución no coinciden (LHS ${lhs} vs RHS ${rhs}).<br>`
+                  : `- The substitution sides do not match (LHS ${lhs} vs RHS ${rhs}).<br>`;
+              showReadout("partner-out", errorMsg);
+            }
           }
         } else {
           // Fallback if parsing fails
           if (lhs === rhs) {
-            showReadout('partner-out', isEs ? `
+            _tries.partner = 0;
+            showReadout(
+              "partner-out",
+              isEs
+                ? `
               <strong>¡Ecuación Completada! 👍</strong><br>
               No pudimos analizar automáticamente el formato de la ecuación, pero tu verificación de sustitución muestra que <strong>${lhs} = ${rhs}</strong> está equilibrada.<br>
               ¡Verifica dos veces con <strong>${name}</strong> que tu solución de <strong>x = ${sol}</strong> sea correcta!
-            ` : `
+            `
+                : `
               <strong>Equation Completed! 👍</strong><br>
               We couldn't automatically parse the equation format, but your substitution check shows <strong>${lhs} = ${rhs}</strong> is balanced.<br>
               Double check with <strong>${name}</strong> that your solution of <strong>x = ${sol}</strong> is correct!
-            `);
+            `,
+            );
           } else {
-            showReadout('partner-out', isEs ? `
-              <strong>❌ La verificación falló.</strong><br>
-              No pudimos analizar la ecuación, y tu verificación de sustitución no se equilibra (LHS ${lhs} no es igual a RHS ${rhs}).
-            ` : `
-              <strong>❌ Verification failed.</strong><br>
-              We couldn't parse the equation, and your substitution check does not balance (LHS ${lhs} is not equal to RHS ${rhs}).
-            `);
+            _tries.partner = (_tries.partner || 0) + 1;
+            const tries = _tries.partner;
+            if (tries === 1) {
+              showReadout(
+                "partner-out",
+                isEs
+                  ? `<strong>❌ La verificación falló.</strong><br>No pudimos analizar automáticamente la ecuación de tu compañero. Antes de volver a intentarlo, revisa que la escribiste en una forma simple con una sola variable y un solo número (por ejemplo: 5x = 45, x / 3 = 10, x + 6 = 20, x − 4 = 12).`
+                  : `<strong>❌ Verification failed.</strong><br>We couldn't automatically parse your partner's equation. Before you try again, check that you wrote it in a simple form with one variable and one number (for example: 5x = 45, x / 3 = 10, x + 6 = 20, x − 4 = 12).`,
+              );
+            } else if (tries === 2) {
+              showReadout(
+                "partner-out",
+                isEs
+                  ? `<strong>❌ Todavía no.</strong><br>Vuelve a escribir la ecuación exactamente en ese formato, luego sustituye tu solución en los campos de comprobación de arriba (LHS y RHS) y calcula cada lado con cuidado antes de comparar.`
+                  : `<strong>❌ Still not quite.</strong><br>Rewrite the equation to exactly match that format, then substitute your solution into the check fields above (LHS and RHS) and carefully compute each side before comparing.`,
+              );
+            } else {
+              showReadout(
+                "partner-out",
+                isEs
+                  ? `
+              <strong>Aquí está el camino resuelto:</strong><br>
+              No pudimos analizar la ecuación, pero tu verificación de sustitución muestra LHS ${lhs} y RHS ${rhs}, que no son iguales. Vuelve a calcular cada lado sustituyendo tu solución en la ecuación original de tu compañero: el lado izquierdo (sustituyendo la variable) y el lado derecho (el número) deben dar el mismo valor.
+            `
+                  : `
+              <strong>Here's the worked path:</strong><br>
+              We couldn't parse the equation, but your substitution check shows LHS ${lhs} and RHS ${rhs}, which are not equal. Recompute each side by substituting your solution into your partner's original equation: the left side (with the variable substituted) and the right side (the number) must come out to the same value.
+            `,
+              );
+            }
           }
         }
       }
@@ -1912,132 +3161,142 @@
       // ==================== STEP 6 (REPORT GENERATOR) ====================
       function buildReport() {
         playConfetti();
-        const isEs = document.body.classList.contains('es');
-        const roomName = document.getElementById('roomName')?.value || (isEs ? 'Sala sin nombre' : 'Unnamed Room');
-        const roomTheme = document.getElementById('roomTheme')?.value || (isEs ? 'Sin tema' : 'No Theme');
-        const sCode = document.getElementById('s-code')?.value || '—';
-        const sOp = document.getElementById('s-op')?.value || '—';
-        const sConst = document.getElementById('s-const')?.value || '—';
-        
+        const isEs = document.body.classList.contains("es");
+        const roomName =
+          document.getElementById("roomName")?.value || (isEs ? "Sala sin nombre" : "Unnamed Room");
+        const roomTheme =
+          document.getElementById("roomTheme")?.value || (isEs ? "Sin tema" : "No Theme");
+        const sCode = document.getElementById("s-code")?.value || "—";
+        const sOp = document.getElementById("s-op")?.value || "—";
+        const sConst = document.getElementById("s-const")?.value || "—";
+
         // Find set code result
-        let myEq = '—';
-        if (sCode !== '—' && sConst !== '—') {
+        let myEq = "—";
+        if (sCode !== "—" && sConst !== "—") {
           const sVal = parseFloat(sCode);
           const cVal = parseFloat(sConst);
-          if (sOp === 'addition') {
+          if (sOp === "addition") {
             myEq = `x + ${cVal} = ${sVal + cVal}`;
           } else {
             myEq = `x - ${cVal} = ${sVal - cVal}`;
           }
         }
 
-        const clueSel = document.getElementById('clue-select')?.value || '—';
-        const clueSol = document.getElementById('c-sol')?.value || '—';
-        const clueOp = document.getElementById('c-op')?.value || '—';
-        const clueInv = document.getElementById('c-inv-op')?.value || '—';
-        const clueInvVal = document.getElementById('c-inv-val')?.value || '—';
+        const clueSel = document.getElementById("clue-select")?.value || "—";
+        const clueSol = document.getElementById("c-sol")?.value || "—";
+        const clueOp = document.getElementById("c-op")?.value || "—";
+        const clueInv = document.getElementById("c-inv-op")?.value || "—";
+        const clueInvVal = document.getElementById("c-inv-val")?.value || "—";
 
-        const diffRating = document.getElementById('diff-rating')?.value || '—';
-        const statReflect = document.getElementById('stat-reflect')?.value || '—';
+        const diffRating = document.getElementById("diff-rating")?.value || "—";
+        const statReflect = document.getElementById("stat-reflect")?.value || "—";
 
-        const pName = document.getElementById('p-name')?.value || '—';
-        const pEq = document.getElementById('p-eq')?.value || '—';
-        const pSol = document.getElementById('p-sol')?.value || '—';
+        const pName = document.getElementById("p-name")?.value || "—";
+        const pEq = document.getElementById("p-eq")?.value || "—";
+        const pSol = document.getElementById("p-sol")?.value || "—";
 
-        const pitch = document.getElementById('pitch')?.value || (isEs ? '(sin presentación escrita)' : '(no pitch written)');
+        const pitch =
+          document.getElementById("pitch")?.value ||
+          (isEs ? "(sin presentación escrita)" : "(no pitch written)");
 
-        const lines = isEs ? [
-          '═══ ARQUITECTO DE ESCAPE ROOM — PROYECTO UNIDAD 8 (Versión A) ═══',
-          '',
-          '🏛️ DETALLES DE LA SALA DE ESCAPE',
-          `   Nombre de la sala: ${roomName}`,
-          `   Tema: ${roomTheme}`,
-          '',
-          '🔒 PASO 1 — ECUACIÓN DEL CÓDIGO SECRETO (6.EE.6)',
-          `   Código secreto: ${sCode}`,
-          `   Ecuación: ${myEq}`,
-          '',
-          '🔑 PASO 2 — RESOLVER UNA ECUACIÓN DE PISTA (6.EE.7)',
-          `   Ecuación de pista: ${clueSel}`,
-          `   Operación: ${clueOp} | Inversa: ${clueInv} por ${clueInvVal}`,
-          `   Solución: x = ${clueSol}`,
-          '',
-          '⚖️ PASO 3 — VERIFICAR Y COMPARAR (6.EE.5)',
-          `   Calificación de dificultad: ${diffRating}`,
-          `   Reflexión: ${statReflect}`,
-          '',
-          '👥 PASO 4 — INTERCAMBIO DE PISTAS CON COMPAÑERO',
-          `   Nombre del compañero: ${pName}`,
-          `   Ecuación del compañero: ${pEq}`,
-          `   Solución del compañero: x = ${pSol}`,
-          '',
-          '✍️ PRESENTACIÓN DE MI PLANO DE SALA DE ESCAPE:',
-          pitch,
-          '',
-          '═══════════════════════════════',
-          `Generado: ${new Date().toLocaleDateString()}`,
-        ] : [
-          '═══ ESCAPE ROOM ARCHITECT — UNIT 8 PROJECT (Version A) ═══',
-          '',
-          '🏛️ ESCAPE ROOM DETAILS',
-          `   Room Name: ${roomName}`,
-          `   Theme: ${roomTheme}`,
-          '',
-          '🔒 STEP 1 — SECRET CODE EQUATION (6.EE.6)',
-          `   Secret Code: ${sCode}`,
-          `   Equation: ${myEq}`,
-          '',
-          '🔑 STEP 2 — SOLVE A CLUE EQUATION (6.EE.7)',
-          `   Clue Equation: ${clueSel}`,
-          `   Operation: ${clueOp} | Inverse: ${clueInv} by ${clueInvVal}`,
-          `   Solution: x = ${clueSol}`,
-          '',
-          '⚖️ STEP 3 — CHECK & COMPARE (6.EE.5)',
-          `   Difficulty Rating: ${diffRating}`,
-          `   Reflection: ${statReflect}`,
-          '',
-          '👥 STEP 4 — PARTNER CLUE SWAP',
-          `   Partner Name: ${pName}`,
-          `   Partner's Equation: ${pEq}`,
-          `   Partner's Solution: x = ${pSol}`,
-          '',
-          '✍️ MY ESCAPE ROOM BLUEPRINT PITCH:',
-          pitch,
-          '',
-          '═══════════════════════════════',
-          `Generated: ${new Date().toLocaleDateString()}`,
-        ];
-        const box = document.getElementById('reportBox');
+        const lines = isEs
+          ? [
+              "═══ ARQUITECTO DE ESCAPE ROOM — PROYECTO UNIDAD 8 (Versión A) ═══",
+              "",
+              "🏛️ DETALLES DE LA SALA DE ESCAPE",
+              `   Nombre de la sala: ${roomName}`,
+              `   Tema: ${roomTheme}`,
+              "",
+              "🔒 PASO 1 — ECUACIÓN DEL CÓDIGO SECRETO (6.EE.6)",
+              `   Código secreto: ${sCode}`,
+              `   Ecuación: ${myEq}`,
+              "",
+              "🔑 PASO 2 — RESOLVER UNA ECUACIÓN DE PISTA (6.EE.7)",
+              `   Ecuación de pista: ${clueSel}`,
+              `   Operación: ${clueOp} | Inversa: ${clueInv} por ${clueInvVal}`,
+              `   Solución: x = ${clueSol}`,
+              "",
+              "⚖️ PASO 3 — VERIFICAR Y COMPARAR (6.EE.5)",
+              `   Calificación de dificultad: ${diffRating}`,
+              `   Reflexión: ${statReflect}`,
+              "",
+              "👥 PASO 4 — INTERCAMBIO DE PISTAS CON COMPAÑERO",
+              `   Nombre del compañero: ${pName}`,
+              `   Ecuación del compañero: ${pEq}`,
+              `   Solución del compañero: x = ${pSol}`,
+              "",
+              "✍️ PRESENTACIÓN DE MI PLANO DE SALA DE ESCAPE:",
+              pitch,
+              "",
+              "═══════════════════════════════",
+              `Generado: ${new Date().toLocaleDateString()}`,
+            ]
+          : [
+              "═══ ESCAPE ROOM ARCHITECT — UNIT 8 PROJECT (Version A) ═══",
+              "",
+              "🏛️ ESCAPE ROOM DETAILS",
+              `   Room Name: ${roomName}`,
+              `   Theme: ${roomTheme}`,
+              "",
+              "🔒 STEP 1 — SECRET CODE EQUATION (6.EE.6)",
+              `   Secret Code: ${sCode}`,
+              `   Equation: ${myEq}`,
+              "",
+              "🔑 STEP 2 — SOLVE A CLUE EQUATION (6.EE.7)",
+              `   Clue Equation: ${clueSel}`,
+              `   Operation: ${clueOp} | Inverse: ${clueInv} by ${clueInvVal}`,
+              `   Solution: x = ${clueSol}`,
+              "",
+              "⚖️ STEP 3 — CHECK & COMPARE (6.EE.5)",
+              `   Difficulty Rating: ${diffRating}`,
+              `   Reflection: ${statReflect}`,
+              "",
+              "👥 STEP 4 — PARTNER CLUE SWAP",
+              `   Partner Name: ${pName}`,
+              `   Partner's Equation: ${pEq}`,
+              `   Partner's Solution: x = ${pSol}`,
+              "",
+              "✍️ MY ESCAPE ROOM BLUEPRINT PITCH:",
+              pitch,
+              "",
+              "═══════════════════════════════",
+              `Generated: ${new Date().toLocaleDateString()}`,
+            ];
+        const box = document.getElementById("reportBox");
         if (box) {
-          box.textContent = lines.join('\n');
-          box.classList.add('show');
+          box.textContent = lines.join("\n");
+          box.classList.add("show");
         }
       }
 
       function copyReport() {
-        const txt = document.getElementById('reportBox')?.textContent;
+        const txt = document.getElementById("reportBox")?.textContent;
         if (txt) {
-          navigator.clipboard?.writeText(txt).then(() => alert('Copied to clipboard!'));
+          navigator.clipboard?.writeText(txt).then(() => alert("Copied to clipboard!"));
         }
       }
 
       function downloadTxt() {
-        const txt = document.getElementById('reportBox')?.textContent;
+        const txt = document.getElementById("reportBox")?.textContent;
         if (txt) {
-          const a = document.createElement('a');
-          a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
-          a.download = 'escape-room-blueprint.txt';
+          const a = document.createElement("a");
+          a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);
+          a.download = "escape-room-blueprint.txt";
           a.click();
         }
       }
 
       // ==================== BILINGUAL & TTS FUNCTIONALITY ====================
       function toggleLanguage() {
-        document.body.classList.toggle('es');
-        const isEs = document.body.classList.contains('es');
-        document.getElementById('btn-lang').textContent = isEs ? '🌐 Language: ES' : '🌐 Language: EN';
-        document.getElementById('btn-read').textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
-        
+        document.body.classList.toggle("es");
+        const isEs = document.body.classList.contains("es");
+        document.getElementById("btn-lang").textContent = isEs
+          ? "🌐 Language: ES"
+          : "🌐 Language: EN";
+        document.getElementById("btn-read").textContent = isEs
+          ? "🔊 Leer en voz alta"
+          : "🔊 Read Aloud";
+
         buildTrail();
         updateProgress();
         translateSelectOptions();
@@ -2046,30 +3305,30 @@
       }
 
       function translatePlaceholders() {
-        const isEs = document.body.classList.contains('es');
-        
+        const isEs = document.body.classList.contains("es");
+
         const placeholders = {
-          'roomName': { en: "", es: "" },
-          's-code': { en: "", es: "" },
-          's-const': { en: "", es: "" },
-          'c-inv-val': { en: "", es: "" },
-          'c-sol': { en: "", es: "" },
-          'p-name': { en: "", es: "" },
-          'p-eq': { en: "", es: "" },
-          'p-op-num': { en: "", es: "" },
-          'p-sol': { en: "", es: "" },
-          'p-check-lhs': { en: "", es: "" },
-          'p-check-rhs': { en: "", es: "" },
-          'pitch': { 
+          roomName: { en: "", es: "" },
+          "s-code": { en: "", es: "" },
+          "s-const": { en: "", es: "" },
+          "c-inv-val": { en: "", es: "" },
+          "c-sol": { en: "", es: "" },
+          "p-name": { en: "", es: "" },
+          "p-eq": { en: "", es: "" },
+          "p-op-num": { en: "", es: "" },
+          "p-sol": { en: "", es: "" },
+          "p-check-lhs": { en: "", es: "" },
+          "p-check-rhs": { en: "", es: "" },
+          pitch: {
             en: "Welcome to my escape room blueprint! The theme is... Players must solve equations to crack codes. My first lock uses the equation... to find the code...",
-            es: "¡Bienvenido al plano de mi sala de escape! El tema es... Los jugadores deben resolver ecuaciones para descifrar códigos. Mi primera cerradura usa la ecuación... para encontrar el código..."
+            es: "¡Bienvenido al plano de mi sala de escape! El tema es... Los jugadores deben resolver ecuaciones para descifrar códigos. Mi primera cerradura usa la ecuación... para encontrar el código...",
           },
-          'stat-reflect': {
+          "stat-reflect": {
             en: "My clue equation has a difficulty rating of... compared to the average stats, this means...",
-            es: "Mi ecuación de pista tiene una calificación de dificultad de... comparado con las estadísticas promedio, esto significa..."
-          }
+            es: "Mi ecuación de pista tiene una calificación de dificultad de... comparado con las estadísticas promedio, esto significa...",
+          },
         };
-        
+
         for (const [id, vals] of Object.entries(placeholders)) {
           const el = document.getElementById(id);
           if (el) {
@@ -2079,10 +3338,10 @@
       }
 
       function translateSelectOptions() {
-        const isEs = document.body.classList.contains('es');
-        
+        const isEs = document.body.classList.contains("es");
+
         // roomTheme select options
-        const roomTheme = document.getElementById('roomTheme');
+        const roomTheme = document.getElementById("roomTheme");
         if (roomTheme) {
           roomTheme.options[0].text = isEs ? "Elige un tema..." : "Choose a theme...";
           roomTheme.options[1].text = isEs ? "Egipto Antiguo" : "Ancient Egypt";
@@ -2090,34 +3349,48 @@
           roomTheme.options[3].text = isEs ? "Estación Espacial" : "Space Station";
           roomTheme.options[4].text = isEs ? "Laboratorio de Espías Secreto" : "Secret Spy Lab";
         }
-        
+
         // s-op select options
-        const sOp = document.getElementById('s-op');
+        const sOp = document.getElementById("s-op");
         if (sOp) {
-          sOp.options[0].text = isEs ? "Suma (x + constante = resultado)" : "Addition (x + constant = result)";
-          sOp.options[1].text = isEs ? "Resta (x - constante = resultado)" : "Subtraction (x - constant = result)";
+          sOp.options[0].text = isEs
+            ? "Suma (x + constante = resultado)"
+            : "Addition (x + constant = result)";
+          sOp.options[1].text = isEs
+            ? "Resta (x - constante = resultado)"
+            : "Subtraction (x - constant = result)";
         }
-        
+
         // clue-select select options
-        const clueSelect = document.getElementById('clue-select');
+        const clueSelect = document.getElementById("clue-select");
         if (clueSelect) {
-          clueSelect.options[0].text = isEs ? "Selecciona una ecuación..." : "Select an equation...";
-          clueSelect.options[1].text = isEs ? "La cerradura de cifrado (3x = 36)" : "The Cipher Lock (3x = 36)";
-          clueSelect.options[2].text = isEs ? "La cerradura de cuadrícula láser (x / 4 = 8)" : "The Laser Grid Lock (x / 4 = 8)";
-          clueSelect.options[3].text = isEs ? "La cerradura de la cámara (12x = 180)" : "The Chamber Lock (12x = 180)";
-          clueSelect.options[4].text = isEs ? "La cerradura de trampilla (x / 2.5 = 12)" : "The Trapdoor Lock (x / 2.5 = 12)";
+          clueSelect.options[0].text = isEs
+            ? "Selecciona una ecuación..."
+            : "Select an equation...";
+          clueSelect.options[1].text = isEs
+            ? "La cerradura de cifrado (3x = 36)"
+            : "The Cipher Lock (3x = 36)";
+          clueSelect.options[2].text = isEs
+            ? "La cerradura de cuadrícula láser (x / 4 = 8)"
+            : "The Laser Grid Lock (x / 4 = 8)";
+          clueSelect.options[3].text = isEs
+            ? "La cerradura de la cámara (12x = 180)"
+            : "The Chamber Lock (12x = 180)";
+          clueSelect.options[4].text = isEs
+            ? "La cerradura de trampilla (x / 2.5 = 12)"
+            : "The Trapdoor Lock (x / 2.5 = 12)";
         }
-        
+
         // c-op select options
-        const cOp = document.getElementById('c-op');
+        const cOp = document.getElementById("c-op");
         if (cOp) {
           cOp.options[0].text = isEs ? "Elige operación..." : "Choose operation...";
           cOp.options[1].text = isEs ? "Multiplicación (•)" : "Multiplication (•)";
           cOp.options[2].text = isEs ? "División (÷)" : "Division (÷)";
         }
-        
+
         // c-inv-op select options
-        const cInvOp = document.getElementById('c-inv-op');
+        const cInvOp = document.getElementById("c-inv-op");
         if (cInvOp) {
           cInvOp.options[0].text = isEs ? "Elige inversa..." : "Choose inverse...";
           cInvOp.options[1].text = isEs ? "Suma (+)" : "Addition (+)";
@@ -2125,9 +3398,9 @@
           cInvOp.options[3].text = isEs ? "Multiplicación (•)" : "Multiplication (•)";
           cInvOp.options[4].text = isEs ? "División (÷)" : "Division (÷)";
         }
-        
+
         // p-op select options
-        const pOp = document.getElementById('p-op');
+        const pOp = document.getElementById("p-op");
         if (pOp) {
           pOp.options[0].text = isEs ? "Elige operación..." : "Choose operation...";
           pOp.options[1].text = isEs ? "Suma (+)" : "Addition (+)";
@@ -2135,9 +3408,9 @@
           pOp.options[3].text = isEs ? "Multiplicación (•)" : "Multiplication (•)";
           pOp.options[4].text = isEs ? "División (÷)" : "Division (÷)";
         }
-        
+
         // p-inv-op select options
-        const pInvOp = document.getElementById('p-inv-op');
+        const pInvOp = document.getElementById("p-inv-op");
         if (pInvOp) {
           pInvOp.options[0].text = isEs ? "Elige inversa..." : "Choose inverse...";
           pInvOp.options[1].text = isEs ? "Suma (+)" : "Addition (+)";
@@ -2145,48 +3418,54 @@
           pInvOp.options[3].text = isEs ? "Multiplicación (•)" : "Multiplication (•)";
           pInvOp.options[4].text = isEs ? "División (÷)" : "Division (÷)";
         }
-        
+
         // diff-rating select options
-        const diffRating = document.getElementById('diff-rating');
+        const diffRating = document.getElementById("diff-rating");
         if (diffRating) {
           diffRating.options[0].text = isEs ? "Elige dificultad..." : "Choose difficulty...";
-          diffRating.options[1].text = isEs ? "🟢 Fácil (Tasa de resolución 60%+)" : "🟢 Easy (Solve rate 60%+)";
-          diffRating.options[2].text = isEs ? "🟡 Medio (Tasa de resolución 40% - 60%)" : "🟡 Medium (Solve rate 40% - 60%)";
-          diffRating.options[3].text = isEs ? "🔴 Difícil (Tasa de resolución 30% o menos)" : "🔴 Hard (Solve rate 30% or less)";
+          diffRating.options[1].text = isEs
+            ? "🟢 Fácil (Tasa de resolución 60%+)"
+            : "🟢 Easy (Solve rate 60%+)";
+          diffRating.options[2].text = isEs
+            ? "🟡 Medio (Tasa de resolución 40% - 60%)"
+            : "🟡 Medium (Solve rate 40% - 60%)";
+          diffRating.options[3].text = isEs
+            ? "🔴 Difícil (Tasa de resolución 30% o menos)"
+            : "🔴 Hard (Solve rate 30% or less)";
         }
       }
 
       let currentUtterance = null;
       function readAloud() {
-        if ('speechSynthesis' in window) {
+        if ("speechSynthesis" in window) {
           // If already speaking, cancel it
           if (window.speechSynthesis.speaking) {
             window.speechSynthesis.cancel();
-            const isEs = document.body.classList.contains('es');
-            const readBtn = document.getElementById('btn-read');
+            const isEs = document.body.classList.contains("es");
+            const readBtn = document.getElementById("btn-read");
             if (readBtn) {
-              readBtn.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+              readBtn.textContent = isEs ? "🔊 Leer en voz alta" : "🔊 Read Aloud";
             }
             return;
           }
-          
-          const isEs = document.body.classList.contains('es');
-          const langCode = isEs ? 'es-ES' : 'en-US';
-          
+
+          const isEs = document.body.classList.contains("es");
+          const langCode = isEs ? "es-ES" : "en-US";
+
           // Select the active step panel
-          const activePanel = document.querySelector('.step-panel.active');
+          const activePanel = document.querySelector(".step-panel.active");
           if (!activePanel) return;
-          
+
           let textParts = [];
-          
+
           // Prepend the step name:
-          const stepTrailItem = document.querySelector('.step-trail-item.active');
+          const stepTrailItem = document.querySelector(".step-trail-item.active");
           if (stepTrailItem) {
-            const num = stepTrailItem.querySelector('.s-num')?.textContent || '';
-            const label = stepTrailItem.querySelector('.s-label')?.textContent || '';
-            textParts.push(`${isEs ? 'Paso' : 'Step'} ${num}: ${label}.`);
+            const num = stepTrailItem.querySelector(".s-num")?.textContent || "";
+            const label = stepTrailItem.querySelector(".s-label")?.textContent || "";
+            textParts.push(`${isEs ? "Paso" : "Step"} ${num}: ${label}.`);
           }
-          
+
           // Traverse active panel nodes
           function traverse(node) {
             // Text nodes: collect their text directly (getComputedStyle only works on Elements)
@@ -2199,14 +3478,23 @@
             }
             if (node.nodeType !== Node.ELEMENT_NODE) return;
 
-            const ignoreTags = ['SCRIPT', 'STYLE', 'SELECT', 'INPUT', 'TEXTAREA', 'BUTTON', 'SVG', 'NOSCRIPT'];
+            const ignoreTags = [
+              "SCRIPT",
+              "STYLE",
+              "SELECT",
+              "INPUT",
+              "TEXTAREA",
+              "BUTTON",
+              "SVG",
+              "NOSCRIPT",
+            ];
             if (ignoreTags.includes(node.tagName)) return;
 
             // If display is none or hidden, ignore
             const style = window.getComputedStyle(node);
-            if (style.display === 'none' || style.visibility === 'hidden') return;
+            if (style.display === "none" || style.visibility === "hidden") return;
 
-            if (node.classList && node.classList.contains(isEs ? 'en-text' : 'es-text')) {
+            if (node.classList && node.classList.contains(isEs ? "en-text" : "es-text")) {
               // Skip the text from the other language
               return;
             }
@@ -2215,52 +3503,51 @@
               traverse(child);
             }
           }
-          
+
           traverse(activePanel);
-          
-          const fullText = textParts.join(' ')
-            .replace(/\s+/g, ' ')
-            .trim();
-          
+
+          const fullText = textParts.join(" ").replace(/\s+/g, " ").trim();
+
           if (!fullText) return;
-          
+
           currentUtterance = new SpeechSynthesisUtterance(fullText);
           currentUtterance.lang = langCode;
-          
+
           // Assign voice if available
           const voices = window.speechSynthesis.getVoices();
-          const voice = voices.find(v => v.lang.startsWith(langCode));
+          const voice = voices.find((v) => v.lang.startsWith(langCode));
           if (voice) {
             currentUtterance.voice = voice;
           }
-          
-          const readBtn = document.getElementById('btn-read');
+
+          const readBtn = document.getElementById("btn-read");
           if (readBtn) {
-            readBtn.textContent = isEs ? '⏹️ Detener' : '⏹️ Stop';
+            readBtn.textContent = isEs ? "⏹️ Detener" : "⏹️ Stop";
           }
-          
+
           currentUtterance.onend = () => {
             if (readBtn) {
-              readBtn.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+              readBtn.textContent = isEs ? "🔊 Leer en voz alta" : "🔊 Read Aloud";
             }
           };
           currentUtterance.onerror = () => {
             if (readBtn) {
-              readBtn.textContent = isEs ? '🔊 Leer en voz alta' : '🔊 Read Aloud';
+              readBtn.textContent = isEs ? "🔊 Leer en voz alta" : "🔊 Read Aloud";
             }
           };
-          
+
           window.speechSynthesis.speak(currentUtterance);
         } else {
-          alert('Web Speech API is not supported in this browser.');
+          alert("Web Speech API is not supported in this browser.");
         }
       }
 
       function alertDone() {
-        const isEs = document.body.classList.contains('es');
-        alert(isEs ? 
-          '¡Felicitaciones! 🏆 Has diseñado una sala de escape. Muestra esta página a tu profesor.' : 
-          'Congratulations! 🏆 You have designed an escape room. Show this page to your teacher.'
+        const isEs = document.body.classList.contains("es");
+        alert(
+          isEs
+            ? "¡Felicitaciones! 🏆 Has diseñado una sala de escape. Muestra esta página a tu profesor."
+            : "Congratulations! 🏆 You have designed an escape room. Show this page to your teacher.",
         );
       }
 
@@ -2269,13 +3556,13 @@
       updateProgress();
 
       function toggleGradingConsole() {
-        const el = document.getElementById('teacher-console');
+        const el = document.getElementById("teacher-console");
         if (el) {
-          el.classList.toggle('show');
-          if (el.classList.contains('show')) updateGradingAnswers();
+          el.classList.toggle("show");
+          if (el.classList.contains("show")) updateGradingAnswers();
         }
       }
-      
+
       function prefillGradingConsole() {
         // Populate the real Version A inputs with a worked example so the
         // console shows live values (secret code x=12, x+5=17; Chamber Lock).
@@ -2283,110 +3570,121 @@
           const el = document.getElementById(id);
           if (el) {
             el.value = val;
-            el.dispatchEvent(new Event('input', { bubbles: true }));
-            el.dispatchEvent(new Event('change', { bubbles: true }));
+            el.dispatchEvent(new Event("input", { bubbles: true }));
+            el.dispatchEvent(new Event("change", { bubbles: true }));
           }
         };
-        set('s-code', 12);
-        set('s-op', 'addition');
-        set('s-const', 5);
+        set("s-code", 12);
+        set("s-op", "addition");
+        set("s-const", 5);
         // Select a lock, then fill the solve fields (loadClue clears them).
-        const clue = document.getElementById('clue-select');
-        if (clue) { clue.value = '3x = 36'; if (typeof loadClue === 'function') loadClue(); }
-        set('c-op', 'Multiplication');
-        set('c-inv-op', 'Division');
-        set('c-inv-val', 3);
-        set('c-sol', 12);
-        if (typeof updateEq === 'function') updateEq();
+        const clue = document.getElementById("clue-select");
+        if (clue) {
+          clue.value = "3x = 36";
+          if (typeof loadClue === "function") loadClue();
+        }
+        set("c-op", "Multiplication");
+        set("c-inv-op", "Division");
+        set("c-inv-val", 3);
+        set("c-sol", 12);
+        if (typeof updateEq === "function") updateEq();
         updateGradingAnswers();
       }
 
-      const CLUE_ANSWERS = {"3x = 36": 12, "x / 4 = 8": 32, "12x = 180": 15, "x / 2.5 = 12": 30};
+      const CLUE_ANSWERS = { "3x = 36": 12, "x / 4 = 8": 32, "12x = 180": 15, "x / 2.5 = 12": 30 };
       function updateGradingAnswers() {
         try {
-          const resolver = function() {
-            const sCode = document.getElementById('s-code')?.value || '';
-            const sOp = document.getElementById('s-op')?.value || 'addition';
-            const sConst = document.getElementById('s-const')?.value || '';
-            const clue = document.getElementById('clue-select')?.value || '';
-            const cSol = document.getElementById('c-sol')?.value || '';
-            const s = parseFloat(sCode), c = parseFloat(sConst);
-            let codeEq = '—';
+          const resolver = function () {
+            const sCode = document.getElementById("s-code")?.value || "";
+            const sOp = document.getElementById("s-op")?.value || "addition";
+            const sConst = document.getElementById("s-const")?.value || "";
+            const clue = document.getElementById("clue-select")?.value || "";
+            const cSol = document.getElementById("c-sol")?.value || "";
+            const s = parseFloat(sCode),
+              c = parseFloat(sConst);
+            let codeEq = "—";
             if (!isNaN(s) && !isNaN(c)) {
-              codeEq = sOp === 'subtraction' ? `x − ${c} = ${s - c}` : `x + ${c} = ${s + c}`;
+              codeEq = sOp === "subtraction" ? `x − ${c} = ${s - c}` : `x + ${c} = ${s + c}`;
             }
             return {
-              'Secret code (x)': sCode || '—',
-              'Code equation': codeEq,
-              'Selected lock': clue || '—',
-              'Lock answer (key)': (clue in CLUE_ANSWERS) ? 'x = ' + CLUE_ANSWERS[clue] : '—',
-              "Student's lock solution": cSol || '—'
+              "Secret code (x)": sCode || "—",
+              "Code equation": codeEq,
+              "Selected lock": clue || "—",
+              "Lock answer (key)": clue in CLUE_ANSWERS ? "x = " + CLUE_ANSWERS[clue] : "—",
+              "Student's lock solution": cSol || "—",
             };
           };
           const ans = resolver();
-          const body = document.getElementById('teacher-answers-body');
+          const body = document.getElementById("teacher-answers-body");
           if (body && ans) {
-            body.innerHTML = Object.entries(ans).map(([k, v]) => `
+            body.innerHTML = Object.entries(ans)
+              .map(
+                ([k, v]) => `
               <tr>
                 <td class="lbl">${k}</td>
                 <td class="val">${v}</td>
               </tr>
-            `).join('');
+            `,
+              )
+              .join("");
           }
-        } catch(e) {
+        } catch (e) {
           console.error("Grading resolver error", e);
         }
       }
-      
+
       // Wire up key listener (Ctrl+Alt+G — avoids Ctrl+Shift+T which reopens
       // a closed browser tab) and triple click on h1
-      document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'g') {
+      document.addEventListener("keydown", function (e) {
+        if (e.ctrlKey && e.altKey && e.key.toLowerCase() === "g") {
           e.preventDefault();
           toggleGradingConsole();
         }
       });
-      
-      
-      window.exportStudentBackup = function() {
+
+      window.exportStudentBackup = function () {
         try {
           const state = window.NeftSaveResume ? window.NeftSaveResume.getState() : null;
           const inputs = {};
-          document.querySelectorAll('input, textarea, select').forEach(el => {
+          document.querySelectorAll("input, textarea, select").forEach((el) => {
             if (el.id) inputs[el.id] = el.value;
           });
           const metadata = {
             schemaVersion: 1,
-            studentName: document.getElementById('student-name')?.value || 'Student',
-            section: document.getElementById('class-period')?.value || 'Class',
-            activityId: window.NeftSaveResumeConfig?.activityId || 'project',
+            studentName: document.getElementById("student-name")?.value || "Student",
+            section: document.getElementById("class-period")?.value || "Class",
+            activityId: window.NeftSaveResumeConfig?.activityId || "project",
             activityTitle: document.title,
             timestamp: new Date().toISOString(),
             inputs: inputs,
-            state: state
+            state: state,
           };
-          
-          const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(metadata, null, 2));
-          const dlAnchor = document.createElement('a');
+
+          const dataStr =
+            "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(metadata, null, 2));
+          const dlAnchor = document.createElement("a");
           dlAnchor.setAttribute("href", dataStr);
-          dlAnchor.setAttribute("download", `${metadata.studentName.replace(/\s+/g, '_')}_${metadata.activityId}_backup.json`);
+          dlAnchor.setAttribute(
+            "download",
+            `${metadata.studentName.replace(/\s+/g, "_")}_${metadata.activityId}_backup.json`,
+          );
           document.body.appendChild(dlAnchor);
           dlAnchor.click();
           dlAnchor.remove();
-        } catch(e) {
+        } catch (e) {
           alert("Export failed: " + e.message);
         }
       };
-      
-      window.triggerImportStudentBackup = function() {
-        document.getElementById('student-backup-file-input').click();
+
+      window.triggerImportStudentBackup = function () {
+        document.getElementById("student-backup-file-input").click();
       };
-      
-      window.importStudentBackup = function(event) {
+
+      window.importStudentBackup = function (event) {
         const file = event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
           try {
             const data = JSON.parse(e.target.result);
             if (data && data.inputs) {
@@ -2394,78 +3692,99 @@
                 const el = document.getElementById(id);
                 if (el) {
                   el.value = val;
-                  el.dispatchEvent(new Event('input', { bubbles: true }));
-                  el.dispatchEvent(new Event('change', { bubbles: true }));
+                  el.dispatchEvent(new Event("input", { bubbles: true }));
+                  el.dispatchEvent(new Event("change", { bubbles: true }));
                 }
               }
               alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === 'function') updateGradingAnswers();
+              if (typeof updateGradingAnswers === "function") updateGradingAnswers();
             } else {
               alert("Invalid backup file structure.");
             }
-          } catch(err) {
+          } catch (err) {
             alert("Error parsing backup file: " + err.message);
           }
         };
         reader.readAsText(file);
       };
 
-      document.addEventListener('DOMContentLoaded', function() {
-        const titleEl = document.querySelector('.hero h1');
+      document.addEventListener("DOMContentLoaded", function () {
+        const titleEl = document.querySelector(".hero h1");
         if (titleEl) {
           let clicks = 0;
-          titleEl.addEventListener('click', function() {
+          titleEl.addEventListener("click", function () {
             clicks++;
             if (clicks >= 3) {
               toggleGradingConsole();
               clicks = 0;
             }
-            setTimeout(() => { clicks = 0; }, 1000);
+            setTimeout(() => {
+              clicks = 0;
+            }, 1000);
           });
         }
         // Re-calculate answers when input event fires
-        document.addEventListener('input', function(e) {
+        document.addEventListener("input", function (e) {
           const inputs = ["s-code", "s-op", "s-const", "clue-select", "c-sol"];
           if (inputs.includes(e.target.id)) {
             updateGradingAnswers();
           }
         });
       });
-
     </script>
-  
+
     <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
     <div id="teacher-console" class="no-print">
       <h4>
         <span>🔑 Teacher Grading Console</span>
         <button class="close-btn" onclick="toggleGradingConsole()">×</button>
       </h4>
-      <p style="font-size:11px;color:#94a3b8;margin:0 0 10px;">Calculated dynamically based on student inputs:</p>
+      <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px">
+        Calculated dynamically based on student inputs:
+      </p>
       <table>
         <tbody id="teacher-answers-body"></tbody>
       </table>
       <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
-      <div style="display:flex;gap:6px;margin-top:6px;">
-        <button class="prefill-btn" style="margin-top:0;background:#059669;" onclick="exportStudentBackup()">📥 Export JSON</button>
-        <button class="prefill-btn" style="margin-top:0;background:#7c3aed;" onclick="triggerImportStudentBackup()">📤 Import JSON</button>
+      <div style="display: flex; gap: 6px; margin-top: 6px">
+        <button
+          class="prefill-btn"
+          style="margin-top: 0; background: #059669"
+          onclick="exportStudentBackup()"
+        >
+          📥 Export JSON
+        </button>
+        <button
+          class="prefill-btn"
+          style="margin-top: 0; background: #7c3aed"
+          onclick="triggerImportStudentBackup()"
+        >
+          📤 Import JSON
+        </button>
       </div>
-      <input type="file" id="student-backup-file-input" style="display:none;" onchange="importStudentBackup(event)" accept=".json" />
+      <input
+        type="file"
+        id="student-backup-file-input"
+        style="display: none"
+        onchange="importStudentBackup(event)"
+        accept=".json"
+      />
     </div>
 
-  <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
-  <script src="/shared/projects/projects-pro.js" defer></script>
-  <!-- projects-pro-injected:end -->
+    <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
+    <script src="/shared/projects/projects-pro.js" defer></script>
+    <!-- projects-pro-injected:end -->
     <!-- projects-aux-injected:begin (future + coach layers — see shared/projects/) -->
-      <link rel="stylesheet" href="/shared/projects/projects-future.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-future.css" />
     <script src="/shared/projects/projects-future.js" defer></script>
-      <link rel="stylesheet" href="/shared/projects/projects-coach.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-coach.css" />
     <script src="/shared/projects/projects-coach.js" defer></script>
     <!-- projects-aux-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
     <!-- projects-gold-injected:begin (gold hardening layer — tools/inject-projects-gold.mjs) -->
-  <script src="/shared/projects/projects-gold.js" defer></script>
-  <!-- projects-gold-injected:end -->
-</body>
+    <script src="/shared/projects/projects-gold.js" defer></script>
+    <!-- projects-gold-injected:end -->
+  </body>
 </html>

@@ -1266,6 +1266,16 @@
         alert(msg);
       }
 
+      // ---- No-giveaway hint ladder (per-input attempt tracking) ----
+      const _tries = {};
+      function ladderStep(key) {
+        _tries[key] = (_tries[key] || 0) + 1;
+        return _tries[key];
+      }
+      function ladderReset(key) {
+        _tries[key] = 0;
+      }
+
       // ---- Math helpers ----
       function gcd(a, b) {
         return b === 0 ? a : gcd(b, a % b);
@@ -1320,10 +1330,22 @@
           if (userVal === targetA) {
             evalAFeedback.textContent = isEs ? "¡Correcto!" : "Correct!";
             evalAFeedback.className = "feedback correct";
+            ladderReset('eval-a');
           } else {
-            evalAFeedback.textContent = isEs
-              ? `Inténtalo de nuevo. Evaluado como: ${ptRate}×50 + ${bnRate}×10${constant ? ' + ' + constant : ''}`
-              : `Try again. Evaluated as: ${ptRate}×50 + ${bnRate}×10${constant ? ' + ' + constant : ''}`;
+            const tA = ladderStep('eval-a');
+            if (tA === 1) {
+              evalAFeedback.textContent = isEs
+                ? "Sustituye primero los valores de p y b en tu fórmula antes de sumar."
+                : "Substitute the values of p and b into your formula before you add anything up.";
+            } else if (tA === 2) {
+              evalAFeedback.textContent = isEs
+                ? "Multiplica cada tasa por su valor (tasa×p y tasa×b) y luego suma esos dos productos."
+                : "Multiply each rate by its value (rate×p and rate×b), then add those two products together.";
+            } else {
+              evalAFeedback.textContent = isEs
+                ? `Evaluado como: ${ptRate}×50 + ${bnRate}×10${constant ? ' + ' + constant : ''} = ${targetA}`
+                : `Evaluated as: ${ptRate}×50 + ${bnRate}×10${constant ? ' + ' + constant : ''} = ${targetA}`;
+            }
             evalAFeedback.className = "feedback incorrect";
           }
         } else {
@@ -1338,10 +1360,22 @@
           if (userVal === targetB) {
             evalBFeedback.textContent = isEs ? "¡Correcto!" : "Correct!";
             evalBFeedback.className = "feedback correct";
+            ladderReset('eval-b');
           } else {
-            evalBFeedback.textContent = isEs
-              ? `Inténtalo de nuevo. Evaluado como: ${ptRate}×100 + ${bnRate}×20${constant ? ' + ' + constant : ''}`
-              : `Try again. Evaluated as: ${ptRate}×100 + ${bnRate}×20${constant ? ' + ' + constant : ''}`;
+            const tB = ladderStep('eval-b');
+            if (tB === 1) {
+              evalBFeedback.textContent = isEs
+                ? "Sustituye primero los valores de p y b en tu fórmula antes de sumar."
+                : "Substitute the values of p and b into your formula before you add anything up.";
+            } else if (tB === 2) {
+              evalBFeedback.textContent = isEs
+                ? "Multiplica cada tasa por su valor (tasa×p y tasa×b) y luego suma esos dos productos."
+                : "Multiply each rate by its value (rate×p and rate×b), then add those two products together.";
+            } else {
+              evalBFeedback.textContent = isEs
+                ? `Evaluado como: ${ptRate}×100 + ${bnRate}×20${constant ? ' + ' + constant : ''} = ${targetB}`
+                : `Evaluated as: ${ptRate}×100 + ${bnRate}×20${constant ? ' + ' + constant : ''} = ${targetB}`;
+            }
             evalBFeedback.className = "feedback incorrect";
           }
         } else {
@@ -1399,15 +1433,28 @@
         for (let i = 2; i <= 5; i++) {
           const valEl = document.getElementById('eval-m-l' + i);
           const feedbackEl = document.getElementById('eval-m-l' + i + '-feedback');
+          const tKey = 'eval-m-l' + i;
           if (valEl.value !== '') {
             const userVal = parseInt(valEl.value);
             if (userVal === targets['l' + i]) {
               feedbackEl.textContent = isEs ? "¡Correcto!" : "Correct!";
               feedbackEl.className = "feedback correct";
+              ladderReset(tKey);
             } else {
-              feedbackEl.textContent = isEs
-                ? `Inténtalo de nuevo. Calcula ${expBase} elevado a la potencia de ${i}.`
-                : `Try again. Compute ${expBase} raised to power of ${i}.`;
+              const tM = ladderStep(tKey);
+              if (tM === 1) {
+                feedbackEl.textContent = isEs
+                  ? "Recuerda lo que significa un exponente: multiplicación repetida de la base por sí misma."
+                  : "Remember what an exponent means: repeated multiplication of the base by itself.";
+              } else if (tM === 2) {
+                feedbackEl.textContent = isEs
+                  ? `Escribe ${expBase} multiplicado por sí mismo ${i} veces y multiplica en orden, de izquierda a derecha.`
+                  : `Write out ${expBase} multiplied by itself ${i} times and multiply left to right.`;
+              } else {
+                feedbackEl.textContent = isEs
+                  ? `Calcula ${expBase} elevado a la potencia de ${i} = ${targets['l' + i]}.`
+                  : `Compute ${expBase} raised to power of ${i} = ${targets['l' + i]}.`;
+              }
               feedbackEl.className = "feedback incorrect";
             }
           } else {
@@ -1463,36 +1510,75 @@
         const rightFb = document.getElementById(`eq${num}-right-feedback`);
         const ansFb = document.getElementById(`eq${num}-ans-feedback`);
 
+        const leftKey = `eq${num}-left`;
         if (leftEl.value !== '') {
           if (parseInt(leftEl.value) === targetLeft) {
             leftFb.textContent = isEs ? "¡Correcto!" : "Correct!";
             leftFb.className = "feedback correct";
+            ladderReset(leftKey);
           } else {
-            leftFb.textContent = isEs ? "Valor incorrecto." : "Incorrect value.";
+            const tL = ladderStep(leftKey);
+            if (tL === 1) {
+              leftFb.textContent = isEs
+                ? "Sustituye p = 3 y b = 2 en esta expresión antes de calcular."
+                : "Substitute p = 3 and b = 2 into this expression before you calculate.";
+            } else if (tL === 2) {
+              leftFb.textContent = isEs
+                ? "Distribuye o combina términos semejantes primero, luego multiplica antes de sumar."
+                : "Distribute or combine like terms first, then multiply before you add.";
+            } else {
+              leftFb.textContent = isEs ? `Valor incorrecto. Valor correcto: ${targetLeft}` : `Incorrect value. Correct value: ${targetLeft}`;
+            }
             leftFb.className = "feedback incorrect";
           }
         } else {
           leftFb.textContent = ""; leftFb.className = "feedback";
         }
 
+        const rightKey = `eq${num}-right`;
         if (rightEl.value !== '') {
           if (parseInt(rightEl.value) === targetRight) {
             rightFb.textContent = isEs ? "¡Correcto!" : "Correct!";
             rightFb.className = "feedback correct";
+            ladderReset(rightKey);
           } else {
-            rightFb.textContent = isEs ? "Valor incorrecto." : "Incorrect value.";
+            const tR = ladderStep(rightKey);
+            if (tR === 1) {
+              rightFb.textContent = isEs
+                ? "Sustituye p = 3 y b = 2 en esta expresión antes de calcular."
+                : "Substitute p = 3 and b = 2 into this expression before you calculate.";
+            } else if (tR === 2) {
+              rightFb.textContent = isEs
+                ? "Distribuye o combina términos semejantes primero, luego multiplica antes de sumar."
+                : "Distribute or combine like terms first, then multiply before you add.";
+            } else {
+              rightFb.textContent = isEs ? `Valor incorrecto. Valor correcto: ${targetRight}` : `Incorrect value. Correct value: ${targetRight}`;
+            }
             rightFb.className = "feedback incorrect";
           }
         } else {
           rightFb.textContent = ""; rightFb.className = "feedback";
         }
 
+        const ansKey = `eq${num}-ans`;
         if (ansEl.value !== '') {
           if (ansEl.value === targetAns) {
             ansFb.textContent = isEs ? "¡Verificación de equivalencia correcta!" : "Correct equivalence check!";
             ansFb.className = "feedback correct";
+            ladderReset(ansKey);
           } else {
-            ansFb.textContent = isEs ? "Elección incorrecta." : "Incorrect choice.";
+            const tE = ladderStep(ansKey);
+            if (tE === 1) {
+              ansFb.textContent = isEs
+                ? "Compara los dos valores que evaluaste para este desafío."
+                : "Compare the two values you evaluated for this challenge.";
+            } else if (tE === 2) {
+              ansFb.textContent = isEs
+                ? "Si ambos lados dan el mismo número, las expresiones son equivalentes (Yes); si no, no lo son (No)."
+                : "If both sides evaluate to the same number, the expressions are equivalent (Yes); if not, they are not (No).";
+            } else {
+              ansFb.textContent = isEs ? `Elección incorrecta. Respuesta correcta: ${targetAns}` : `Incorrect choice. Correct answer: ${targetAns}`;
+            }
             ansFb.className = "feedback incorrect";
           }
         } else {
@@ -1527,10 +1613,22 @@
               ? `¡Factorización correcta! ${ptRate}p + ${bnRate}b = ${gcfVal}(${correctIn1}p + ${correctIn2}b)`
               : `Correct Factoring! ${ptRate}p + ${bnRate}b = ${gcfVal}(${correctIn1}p + ${correctIn2}b)`;
             fbEl.className = "feedback correct";
+            ladderReset('factoring');
           } else {
-            fbEl.textContent = isEs
-              ? `Factorización incorrecta. Comprueba el MCD de ${ptRate} y ${bnRate}.`
-              : `Incorrect factoring. Check the GCF of ${ptRate} and ${bnRate}.`;
+            const tF = ladderStep('factoring');
+            if (tF === 1) {
+              fbEl.textContent = isEs
+                ? "Encuentra primero qué número divide exactamente ambas tasas."
+                : "Find a number that divides evenly into both rates first.";
+            } else if (tF === 2) {
+              fbEl.textContent = isEs
+                ? `Enumera los factores de ${ptRate} y de ${bnRate}, y busca el mayor factor que comparten: ese es el número de afuera.`
+                : `List the factors of ${ptRate} and of ${bnRate}, and find the biggest one they share — that's the outside number.`;
+            } else {
+              fbEl.textContent = isEs
+                ? `Factorización incorrecta. ${ptRate}p + ${bnRate}b = ${gcfVal}(${correctIn1}p + ${correctIn2}b)`
+                : `Incorrect factoring. ${ptRate}p + ${bnRate}b = ${gcfVal}(${correctIn1}p + ${correctIn2}b)`;
+            }
             fbEl.className = "feedback incorrect";
           }
         } else {

@@ -3030,6 +3030,11 @@
     <!-- ====== SCRIPTS ====== -->
     <script src="/assets/app.js" defer></script>
     <script>
+      // No-giveaway coaching ladder: per-check attempt counter (keyed by the
+      // check's readout id). 1st wrong = conceptual nudge, 2nd = structural
+      // hint, 3rd+ = reveal the worked value the page already computed.
+      const _tries = {};
+
       // Students choose their own real numbers in this project, so there are
       // no fixed level presets to inject. Kept as a no-op for setLevel().
       function handleLevelPreset(n) {}
@@ -3440,6 +3445,7 @@
         `;
 
         if (okA && okB && okBetter) {
+          _tries["deal-out"] = 0;
           const diff = Math.abs(rateA - rateB);
           const better =
             trueBetter === "A" ? nameA : trueBetter === "B" ? nameB : null;
@@ -3488,9 +3494,20 @@
               ? "La mejor compra es la que tiene la tasa unitaria más baja."
               : "The Better Buy is the one with the lower unit rate.",
           );
+        _tries["deal-out"] = (_tries["deal-out"] || 0) + 1;
+        const dealCoachMsg =
+          _tries["deal-out"] === 1
+            ? lang === "es"
+              ? "Recuerda: la tasa unitaria = precio total ÷ tamaño. Divide el precio de cada paquete entre su propio tamaño antes de comparar."
+              : "Remember: unit rate = total price ÷ size. Divide each package's own price by its own size before comparing."
+            : _tries["deal-out"] === 2
+              ? lang === "es"
+                ? "Pista estructural: divide el precio del Artículo A entre el tamaño del Artículo A, y el precio del Artículo B entre el tamaño del Artículo B por separado. Luego la Mejor compra es el cociente que sea más pequeño."
+                : "Structural hint: divide Item A's price by Item A's size, and Item B's price by Item B's size separately. Then the Better Buy is whichever quotient is smaller."
+              : errs.join("<br>");
         showReadout(
           "deal-out",
-          `<span style="color:var(--coral)">❌ ${errs.join("<br>")}</span>`,
+          `<span style="color:var(--coral)">❌ ${dealCoachMsg}</span>`,
         );
       }
 
