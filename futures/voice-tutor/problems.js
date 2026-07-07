@@ -20,7 +20,7 @@
 window.TUTOR_PROBLEMS = [
   {
     id: "ratio",
-    tag: "Ratios & Proportional Reasoning (6.RP)",
+    tag: "Ratios & Proportional Reasoning (6.AT)",
     title: "Trail Mix Ratio",
     text:
       "A trail mix recipe uses 3 cups of peanuts for every 2 cups of raisins. " +
@@ -108,7 +108,7 @@ window.TUTOR_PROBLEMS = [
 
   {
     id: "expression",
-    tag: "Expressions & Equations (6.EE)",
+    tag: "Expressions & Equations (6.AT)",
     title: "Concert Tickets",
     text:
       "Each concert ticket costs $9. There is also a one-time $5 service fee for the whole order. " +
@@ -173,7 +173,7 @@ window.TUTOR_PROBLEMS = [
 
   {
     id: "unitrate",
-    tag: "Unit Rates (6.RP.A.2/3)",
+    tag: "Unit Rates (6.AT.A.2/3)",
     title: "Best Buy on Juice",
     text:
       "A 32-ounce bottle of juice costs $4.80. A 48-ounce bottle costs $6.72. " +
@@ -277,7 +277,7 @@ window.TUTOR_PROBLEMS = [
 
   {
     id: "area",
-    tag: "Area of Composite Figures (6.G.A.1)",
+    tag: "Area of Composite Figures (6.GR.A.1)",
     title: "L-Shaped Garden",
     text:
       "A garden is shaped like an L. It can be split into two rectangles. " +
@@ -362,7 +362,7 @@ window.TUTOR_PROBLEMS = [
 
   {
     id: "volume",
-    tag: "Volume with Fractions (6.G.A.2)",
+    tag: "Volume with Fractions (6.GR.A.2)",
     title: "Fish Tank Volume",
     text:
       "A rectangular fish tank is 5 meters long, 3 meters wide, and 2 and a half meters tall. " +

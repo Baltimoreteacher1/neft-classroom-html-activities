@@ -6,21 +6,21 @@ const TOPIC_HINTS = [
   [
     /\b(mean|median|mode|range|outlier|data set|variability|distribution)\b/i,
     "statistics-and-data",
-    "6.SP.3",
+    "6.DS.4",
   ],
-  [/\b(ratio|rate|unit rate|tape diagram)\b/i, "ratios-and-rates", "6.RP.3"],
-  [/\b(percent|discount|tax|tip)\b/i, "percents", "6.RP.3c"],
-  [/\b(area|parallelogram|trapezoid|triangle|composite figure)\b/i, "area", "6.G.1"],
-  [/\b(volume|surface area|net|prism|pyramid)\b/i, "volume-surface-area", "6.G.2"],
-  [/\b(expression|exponent|distributive|coefficient|term)\b/i, "expressions", "6.EE.2"],
-  [/\b(equation|inequality|solve for)\b/i, "equations-inequalities", "6.EE.7"],
+  [/\b(ratio|rate|unit rate|tape diagram)\b/i, "ratios-and-rates", "6.AT.3"],
+  [/\b(percent|discount|tax|tip)\b/i, "percents", "6.AT.4"],
+  [/\b(area|parallelogram|trapezoid|triangle|composite figure)\b/i, "area", "6.GR.1"],
+  [/\b(volume|surface area|net|prism|pyramid)\b/i, "volume-surface-area", "6.GR.2"],
+  [/\b(expression|exponent|distributive|coefficient|term)\b/i, "expressions", "6.AT.6"],
+  [/\b(equation|inequality|solve for)\b/i, "equations-inequalities", "6.AT.8"],
   [
     /\b(integer|absolute value|coordinate plane|quadrant|ordered pair)\b/i,
     "integers-coordinate-plane",
-    "6.NS.6",
+    "6.NOS.6",
   ],
-  [/\b(divide fraction|fraction division)\b/i, "fraction-division", "6.NS.1"],
-  [/\b(gcf|lcm|prime factor|decimal)\b/i, "number-sense", "6.NS.4"],
+  [/\b(divide fraction|fraction division)\b/i, "fraction-division", "6.NOS.1"],
+  [/\b(gcf|lcm|prime factor|decimal)\b/i, "number-sense", "6.NOS.4"],
 ];
 
 const UNIT_BY_STANDARD_FAMILY = { NS: null, RP: 3, EE: 6, G: 5, SP: 8 };

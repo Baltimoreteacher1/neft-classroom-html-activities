@@ -15,7 +15,7 @@
       unitTheme: "Sports statistics, recipes, and shopping deals",
       lessonNumber: "4-1",
       lessonTitle: "Rates and Unit Rates",
-      standard: "6.RP.A.2",
+      standard: "6.AT.A.2",
       mainSkill: "compare ratios",
       lessonSummary:
         "Students explore how rates appear in real life and learn to compare ratios using unit rates and equivalent ratios.",
@@ -34,7 +34,7 @@
       unitTheme: "Balance puzzles and number mysteries",
       lessonNumber: "7-2",
       lessonTitle: "Solve One-Step Equations",
-      standard: "6.EE.B.7",
+      standard: "6.AT.C.8",
       mainSkill: "solve one-step equations",
       lessonSummary:
         "Students use inverse operations to solve equations with addition, subtraction, multiplication, and division.",
@@ -53,7 +53,7 @@
       unitTheme: "Survey results and sports scores",
       lessonNumber: "8-1",
       lessonTitle: "Mean, Median, and Mode",
-      standard: "6.SP.B.5",
+      standard: "6.DS.B.6",
       mainSkill: "find mean median and mode",
       lessonSummary:
         "Students collect and analyze data sets to find measures of center.",
@@ -1351,16 +1351,16 @@ ${vocabHtml}${resourceHtml}${supportsHtml}</article>`;
       .join("\n");
   }
   const STD_GUESS = {
-    geometry: "6.G.A.1",
-    statistics: "6.SP.A.1",
-    ratio: "6.RP.A.1",
-    ratios: "6.RP.A.1",
-    rate: "6.RP.A.2",
-    percent: "6.RP.A.3",
-    expressions: "6.EE.A.2",
-    equations: "6.EE.B.7",
-    number: "6.NS.A.1",
-    fractions: "6.NS.A.1",
+    geometry: "6.GR.A.1",
+    statistics: "6.DS.A.1",
+    ratio: "6.AT.A.1",
+    ratios: "6.AT.A.1",
+    rate: "6.AT.A.2",
+    percent: "6.AT.A.3",
+    expressions: "6.AT.B.6",
+    equations: "6.AT.C.8",
+    number: "6.NOS.A.1",
+    fractions: "6.NOS.A.1",
   };
   function titleCase(s) {
     return String(s || "").replace(/\b\w/g, (c) => c.toUpperCase());

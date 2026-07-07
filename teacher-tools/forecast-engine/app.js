@@ -39,8 +39,8 @@
     "rowType,classId,className,grade,studentId,studentName,tags,standard,description,score,maxScore,date,assessment",
     "class,C1,Period 1 Math,Grade 6,,,,,,,,,",
     "student,C1,,,S001,Student Alpha,ML,,,,,,",
-    "standard,,,,,,,6.G.A.1,Find area of polygons,,,,",
-    "evidence,,,,S001,,,6.G.A.1,,8,10,2026-05-18,Exit Ticket",
+    "standard,,,,,,,6.GR.A.1,Find area of polygons,,,,",
+    "evidence,,,,S001,,,6.GR.A.1,,8,10,2026-05-18,Exit Ticket",
   ].join("\n");
 
   const $ = (selector) => document.querySelector(selector);
@@ -103,16 +103,16 @@
         ["S004", "Student Delta", "Newcomer"],
       ].map(([id, name, tags]) => ({ id, name, tags })),
       standards: [
-        ["6.G.A.1", "Find area of polygons"],
-        ["6.G.A.2", "Find volume of rectangular prisms"],
-        ["6.G.A.4", "Use nets and surface area"],
-        ["6.SP.A.1", "Recognize statistical questions"],
+        ["6.GR.A.1", "Find area of polygons"],
+        ["6.GR.A.2", "Find volume of rectangular prisms"],
+        ["6.GR.A.4", "Use nets and surface area"],
+        ["6.DS.A.1", "Recognize statistical questions"],
       ].map(([code, desc]) => ({ code, desc })),
       evidence: [
-        makeEvidence("S001", "6.G.A.1", 8, 10, "2026-05-18", "Exit Ticket"),
-        makeEvidence("S002", "6.G.A.1", 6, 10, "2026-05-18", "Exit Ticket"),
-        makeEvidence("S003", "6.G.A.1", 7, 10, "2026-05-18", "Exit Ticket"),
-        makeEvidence("S004", "6.G.A.2", 5, 10, "2026-05-19", "Quiz"),
+        makeEvidence("S001", "6.GR.A.1", 8, 10, "2026-05-18", "Exit Ticket"),
+        makeEvidence("S002", "6.GR.A.1", 6, 10, "2026-05-18", "Exit Ticket"),
+        makeEvidence("S003", "6.GR.A.1", 7, 10, "2026-05-18", "Exit Ticket"),
+        makeEvidence("S004", "6.GR.A.2", 5, 10, "2026-05-19", "Quiz"),
       ],
       log: [],
       updatedAt: new Date().toISOString(),
@@ -983,7 +983,7 @@
     const tests = [],
       ok = (name, pass) => tests.push({ name, pass });
     ok("Bound handles NaN", bound(NaN) === 0);
-    ok("Empty forecast is safe", forecast("missing", "6.G.A.1").n === 0);
+    ok("Empty forecast is safe", forecast("missing", "6.GR.A.1").n === 0);
     const before = State.current.students.length;
     importRows(
       parseDelimitedRows(

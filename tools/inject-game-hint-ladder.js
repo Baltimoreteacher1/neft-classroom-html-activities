@@ -35,7 +35,7 @@ const SCRIPT = '<script src="/assets/game-hint-ladder.js" defer></script>';
 const GAMES = {
   "math/games/u1-decimal-dash": {
     sr: "#dd-sr",
-    standard: "6.NS.3",
+    standard: "6.NOS.3",
     hints: [
       "Look at the place values. Which two whole numbers does this decimal sit between?",
       "Line up the decimal points, then compare digit by digit from the left (tenths, then hundredths).",
@@ -44,7 +44,7 @@ const GAMES = {
   },
   "math/games/u1-factor-frenzy": {
     sr: "#ff-sr",
-    standard: "6.NS.4",
+    standard: "6.NOS.4",
     hints: [
       "What factors do these numbers share? Start by listing the factors of each.",
       "GCF is the biggest factor they share; LCM is the smallest multiple they share. Which does the task ask for?",
@@ -53,7 +53,7 @@ const GAMES = {
   },
   "math/games/u2-fraction-frenzy": {
     sr: "#fr-sr",
-    standard: "6.NS.1",
+    standard: "6.NOS.1",
     hints: [
       "Dividing by a fraction asks: how many of that fraction fit inside the other number?",
       "Use keep–change–flip: keep the first fraction, change ÷ to ×, flip the second.",
@@ -62,7 +62,7 @@ const GAMES = {
   },
   "math/games/u4-percent-power": {
     sr: "#pp-sr",
-    standard: "6.RP.3c",
+    standard: "6.AT.4",
     hints: [
       "Percent means 'per 100'. What is the whole (the 100%) in this problem?",
       "Set up part/whole = percent/100, and see which piece is missing.",
@@ -71,7 +71,7 @@ const GAMES = {
   },
   "math/games/u5-area-attack": {
     sr: "#aa-sr",
-    standard: "6.G.1",
+    standard: "6.GR.1",
     hints: [
       "Can you break this shape into rectangles or triangles you already know how to measure?",
       "Recall the area rules: rectangle = base × height; triangle = ½ × base × height.",
@@ -80,7 +80,7 @@ const GAMES = {
   },
   "math/games/u6-expression-express": {
     sr: "#ee-sr",
-    standard: "6.EE.1",
+    standard: "6.AT.5",
     hints: [
       "What is the expression asking you to do first? Look for exponents and grouping.",
       "Follow order of operations (PEMDAS); remember an exponent is repeated multiplication.",
@@ -89,7 +89,7 @@ const GAMES = {
   },
   "math/games/u7-equation-quest": {
     sr: "#eq-sr",
-    standard: "6.EE.7",
+    standard: "6.AT.8",
     hints: [
       "What is being done to the variable — is it added to, or multiplied?",
       "Do the inverse operation to BOTH sides to get the variable alone.",
@@ -98,7 +98,7 @@ const GAMES = {
   },
   "math/games/u8-data-dash": {
     sr: "#dd-sr",
-    standard: "6.SP.5",
+    standard: "6.DS.6",
     hints: [
       "Is the question about the center of the data (mean/median) or the spread (range)?",
       "Recall the measure: mean = add then divide; median = middle of the ordered list; range = max − min.",
@@ -107,7 +107,7 @@ const GAMES = {
   },
   "math/games/u9-coordinate-quest": {
     sr: "#cq-sr",
-    standard: "6.NS.6",
+    standard: "6.NOS.6",
     hints: [
       "Which number is the x (across) and which is the y (up/down)? Check the signs too.",
       "Move along the x-axis first, then up or down for y; negatives go left/down.",
@@ -116,7 +116,7 @@ const GAMES = {
   },
   "math/games/u10-volume-blast": {
     sr: "#vb-sr",
-    standard: "6.G.2",
+    standard: "6.GR.2",
     hints: [
       "What three measurements build a volume? Picture filling the solid with unit cubes.",
       "Volume = length × width × height (for fractional edges, multiply the fractions).",

@@ -3201,10 +3201,10 @@ function loadSample() {
     "Priya",
   ];
   const standards = [
-    "6.EE.C.9 Variables",
-    "6.G.A.1 Area",
-    "6.G.A.2 Volume",
-    "6.SP.A.1 Statistical Questions",
+    "6.AT.D.11 Variables",
+    "6.GR.A.1 Area",
+    "6.GR.A.2 Volume",
+    "6.DS.A.1 Statistical Questions",
   ];
   const assessments = [
     "Unit 1 Check",

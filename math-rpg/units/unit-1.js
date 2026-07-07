@@ -1,11 +1,11 @@
-/* Number Realm — Unit 1: Number Sense (6.NS) */
+/* Number Realm — Unit 1: Number Sense (6.NOS) */
 (function () {
   window.MRPG_UNITS = window.MRPG_UNITS || {};
   window.MRPG_UNITS[1] = {
     id: 1,
     title: "Unit 1",
     realm: "The Foundry of Factors",
-    standard: "6.NS",
+    standard: "6.NOS",
     accent: "#475569",
     hero: "🧭",
     tagline: "Deep beneath the mountains, numbers are forged from their factors.",
@@ -16,8 +16,8 @@
         id: "u1c1",
         title: "The Factor Golems",
         enemy: { name: "Factor Golem", emoji: "🪨" },
-        standard: "6.NS.B.4",
-        topicLabel: "GCF & LCM · 6.NS.B.4",
+        standard: "6.NOS.B.4",
+        topicLabel: "GCF & LCM · 6.NOS.B.4",
         topics: ["gcf", "lcm"],
         scene:
           "Two stone golems block the tunnel, each stamped with a number. Split them apart by finding what they share — and what they multiply into.",
@@ -27,8 +27,8 @@
         id: "u1c2",
         title: "The Prime Vein",
         enemy: { name: "Prime Wraith", emoji: "👻" },
-        standard: "6.NS.B.4",
-        topicLabel: "Prime factorization · 6.NS.B.4",
+        standard: "6.NOS.B.4",
+        topicLabel: "Prime factorization · 6.NOS.B.4",
         topics: ["prime-factorization", "gcf"],
         scene:
           "A shimmering wraith made of composite numbers hovers over a vein of pure primes. Break it down to its prime parts to banish it.",
@@ -38,8 +38,8 @@
         id: "u1c3",
         title: "The Leaking Pipes",
         enemy: { name: "Decimal Slime", emoji: "🫧" },
-        standard: "6.NS.B.3",
-        topicLabel: "Decimal operations · 6.NS.B.3",
+        standard: "6.NOS.B.3",
+        topicLabel: "Decimal operations · 6.NOS.B.3",
         topics: ["decimal-ops", "divide-multidigit"],
         scene:
           "Slime oozes from cracked pipes, dripping decimals everywhere. Line up the decimal points and seal the leaks.",

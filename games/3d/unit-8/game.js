@@ -2,7 +2,7 @@ import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.j
 import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 // ─── Data Lab: Build the Plot, Read the Measures ─────────────────────────────
-// CCSS 6.SP.A & 6.SP.B — statistical variability + summarizing distributions
+// CCSS 6.DS.A & 6.DS.B — statistical variability + summarizing distributions
 // (mean, median, mode, range, outliers; Level 2 adds MAD / mean absolute
 // deviation as a multi-step enrichment measure of spread).
 //
@@ -63,7 +63,7 @@ function mode(d) {
 function range(d) {
   return d.length ? Math.max(...d) - Math.min(...d) : 0;
 }
-// Mean Absolute Deviation (6.SP.B.5c enrichment): average distance from mean.
+// Mean Absolute Deviation (6.DS.B.5c enrichment): average distance from mean.
 function mad(d) {
   if (!d.length) return 0;
   const m = mean(d);
@@ -1096,7 +1096,7 @@ export default {
             "Stack blocks to build each data set, then pick the right measure — mean, median, mode, range, or MAD.",
           objectiveEs:
             "Apila bloques para armar cada conjunto de datos y elige la medida correcta: media, mediana, moda, rango o la DAM (desviación absoluta media).",
-          standard: "6.SP.A–B · Statistics: Center & Spread",
+          standard: "6.DS.A–B · Statistics: Center & Spread",
           controls: [
             {
               key: "← / →",

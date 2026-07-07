@@ -3,7 +3,7 @@
    edges, composite prisms, optional "Architect's Bonus" rounds (non-gating,
    still scored), English-only (source has no Spanish), 10-term codex.
    All math/answers/distractors/glossary carried verbatim from
-   graphic-novels/unit10/graphic-novel-2.html (6.G.2).
+   graphic-novels/unit10/graphic-novel-2.html (6.GR.2).
    New: panels, speech, CORAL-voices-the-misconception, vocab pop-ups. */
 window.GN_STORY = {
   meta: {
@@ -11,7 +11,7 @@ window.GN_STORY = {
     version: 2,
     level: "Enrichment",
     title: "Aquarium Architect 🐠🌊",
-    standard: "6.G.2",
+    standard: "6.GR.2",
     readingStandard: "RL.6.1",
     assessment: "Graphic Novel U10 #2: Aquarium Architect",
     artBase: "../_art/unit10/",

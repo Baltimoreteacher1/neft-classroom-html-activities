@@ -7,7 +7,7 @@
    Students set a WHOLE amount (as a fraction) and a SERVING/PIECE size (as a
    fraction). The whole is drawn as a bar segmented into pieces of the serving
    size; full pieces light up. Shows "whole ÷ serving = N" and any remainder.
-   Models 6.NS.1 (dividing fractions). No dependencies; injects scoped styles
+   Models 6.NOS.1 (dividing fractions). No dependencies; injects scoped styles
    once. Keep numbers friendly — denominators are clamped to ≤ 12.
    ========================================================================== */
 (function () {

@@ -9,8 +9,8 @@
  *     generated, total, taggedCount,
  *     entries: [ {url,title,type,standard,level,misconceptions,confidence} ],
  *     byUrl: { url: entry },
- *     byStandard: { "6.RP.A.2": [url, ...] },
- *     coverage: { "6.RP.A.2": {Activity:n, Game:n, ...} }
+ *     byStandard: { "6.AT.A.2": [url, ...] },
+ *     coverage: { "6.AT.A.2": {Activity:n, Game:n, ...} }
  *   }
  */
 import { readFileSync, writeFileSync, existsSync } from "node:fs";

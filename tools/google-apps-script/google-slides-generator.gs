@@ -995,7 +995,7 @@ function selfTest() {
     title: "Self-Test Prime Numbers",
     unit: 1,
     lesson: 1,
-    standard: "6.NS.4",
+    standard: "6.NOS.4",
     contentObjective: "I can identify prime and composite numbers under self-test conditions.",
     languageObjective: "I can explain prime factors in a mock environment.",
     turnAndTalk: [

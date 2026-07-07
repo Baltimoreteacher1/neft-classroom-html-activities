@@ -14,13 +14,15 @@ const DATA = JSON.parse(
   readFileSync(join(__dir, "..", "..", "data", "ccss-standards.json"), "utf8"),
 );
 
-/** Folder-slug → domain code, matching the curriculum's domain folder names. */
+/** Folder-slug → domain code, matching the curriculum's domain folder names.
+ * Folder slugs keep their historical CCSS names (they are load-bearing URLs);
+ * they map onto the revised 2025 MCCRS domain codes. */
 const SLUG_TO_DOMAIN = {
-  "ratios-proportional-relationships": "RP",
-  "the-number-system": "NS",
-  "expressions-equations": "EE",
-  geometry: "G",
-  statistics: "SP",
+  "ratios-proportional-relationships": "AT",
+  "the-number-system": "NOS",
+  "expressions-equations": "AT",
+  geometry: "GR",
+  statistics: "DS",
 };
 
 /** Map a domain code OR folder-slug to its canonical domain code. */
@@ -41,7 +43,7 @@ export function domains() {
   return { ...DATA.domains };
 }
 
-/** Canonical entry for a standard code (e.g. "6.RP.3a"), or null. */
+/** Canonical entry for a standard code (e.g. "6.AT.3a"), or null. */
 export function getStandard(code) {
   return DATA.standards[code] || null;
 }

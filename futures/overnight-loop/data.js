@@ -4,11 +4,11 @@
 
 // Grade 6 strands (Reveal Math / CCSS).
 const STRANDS = {
-  RP: { code: "6.RP", name: "Ratios & Proportions", color: "#1fa6a2" },
-  NS: { code: "6.NS", name: "The Number System", color: "#12355b" },
-  EE: { code: "6.EE", name: "Expressions & Equations", color: "#f2c15b" },
-  G: { code: "6.G", name: "Geometry", color: "#0f7c4a" },
-  SP: { code: "6.SP", name: "Statistics & Probability", color: "#9b5de5" },
+  RP: { code: "6.AT", name: "Ratios & Proportions", color: "#1fa6a2" },
+  NS: { code: "6.NOS", name: "The Number System", color: "#12355b" },
+  EE: { code: "6.AT", name: "Expressions & Equations", color: "#f2c15b" },
+  G: { code: "6.GR", name: "Geometry", color: "#0f7c4a" },
+  SP: { code: "6.DS", name: "Statistics & Probability", color: "#9b5de5" },
 };
 
 /* Misconception taxonomy. Each tag carries a concrete remediation bundle:

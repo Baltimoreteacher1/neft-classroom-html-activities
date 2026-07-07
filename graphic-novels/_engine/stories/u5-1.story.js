@@ -3,7 +3,7 @@
    Stages), Final Build (The Grand Pavilion), Glossary, Mission Complete +
    Master-Rank challenge. All math, answers, distractors, Spanish, sentence
    frames, hints, and glossary are carried verbatim from
-   graphic-novels/unit5/graphic-novel-1.html (6.G.1).
+   graphic-novels/unit5/graphic-novel-1.html (6.GR.1).
    New: panels, speech, BOLT-voices-the-misconception (slant-as-height / forgets
    ÷2), vocab/hint/coach pop-ups. */
 window.GN_STORY = {
@@ -12,7 +12,7 @@ window.GN_STORY = {
     version: 1,
     level: "Support",
     title: "Theme Park Engineer: Area Architect &#127906;",
-    standard: "6.G.1",
+    standard: "6.GR.1",
     readingStandard: "RL.6.1",
     assessment: "Graphic Novel U5 #1: Theme Park Engineer: Area Architect",
     artBase: "../_art/unit5/",

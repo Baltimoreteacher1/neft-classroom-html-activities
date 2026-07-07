@@ -52,6 +52,8 @@ test.describe("Monster Math Academy smoke", () => {
   test("wrong answer shows hint and correct answer advances", async ({
     page,
   }) => {
+    // Walks the full teach → repair → solve flow (~30s+ on slow containers).
+    test.slow();
     await page.getByRole("button", { name: /Create Your Monster|Crea/i }).click();
     await page.getByRole("button", { name: /Bring It To Life|Dale Vida/i }).click();
     // Anchored on the colon: "Unit 1" is also a substring of "Unit 10", which
@@ -387,6 +389,9 @@ test.describe("Monster Math Academy smoke", () => {
   test("no serious or critical axe violations on the title screen", async ({
     page,
   }) => {
+    // Axe's recursive scan takes ~10s+ on the MMA screens even standalone;
+    // triple the budget so slow CI containers don't time out mid-analyze.
+    test.slow();
     await page.waitForLoadState("networkidle");
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
@@ -403,6 +408,7 @@ test.describe("Monster Math Academy smoke", () => {
   test("no serious or critical axe violations on the adventure map", async ({
     page,
   }) => {
+    test.slow();
     await createMonster(page);
     await expect(
       page.getByRole("heading", { name: /Adventure|Aventura/i }),

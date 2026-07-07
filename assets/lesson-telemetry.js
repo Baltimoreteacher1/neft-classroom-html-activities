@@ -28,7 +28,7 @@
  * Page overrides (optional, set before this script runs):
  *   window.NT_TELEMETRY_CONFIG = {
  *     lessonSlug: "math-unit-1-1-1-math-is-mine",  // else derived from path
- *     standard:   "6.NS.A.1",                       // else from .standard-badge
+ *     standard:   "6.NOS.A.1",                       // else from .standard-badge
  *     activityTitle: "Lesson 1-1: Math is Mine",    // else document.title
  *     endpoint:   "/api/progress",                  // base path
  *     enabled:    true                              // hard off-switch

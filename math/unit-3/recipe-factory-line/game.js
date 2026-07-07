@@ -2,7 +2,7 @@ import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.j
 import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 // ============================================================================
-// Unit 1 — SMOOTHIE RECIPE LAB · Ratios & Unit Rates (6.RP.A.1–3)
+// Unit 1 — SMOOTHIE RECIPE LAB · Ratios & Unit Rates (6.AT.A.1–3)
 //
 // A relaxed Juice Bar & Math Visualizer.
 // The student is presented with customer order tickets:
@@ -240,7 +240,7 @@ function makeLevel(level) {
 
 export default {
   id: "unit-1-smoothie-stand",
-  standard: "6.RP.A.1-3",
+  standard: "6.AT.A.1-3",
   learningTargets: [
     "Describe a part-to-part ratio of two quantities.",
     "Build an equivalent ratio by scaling both parts by the same number.",
@@ -1196,7 +1196,7 @@ export default {
             "Create smoothies matching customer orders! Drop strawberries 🍓 and bananas 🍌 to balance equivalent ratios inside the tape diagram, or dial double number lines to solve unit rates.",
           objectiveEs:
             "¡Crea licuados que coincidan con las órdenes de los clientes! Agrega fresas 🍓 y plátanos 🍌 para equilibrar las razones equivalentes en el modelo de barras o resuelve la tasa unitaria.",
-          standard: "6.RP.A.1–3 · Ratios & Unit Rates",
+          standard: "6.AT.A.1–3 · Ratios & Unit Rates",
           controls: [
             {
               key: "🍓 Button / ←",

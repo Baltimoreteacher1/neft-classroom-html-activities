@@ -18,7 +18,7 @@
 //
 //  Shape per game id:
 //    {
-//      ccss: "6.RP.A.1",                 // canonical standard code (analytics + UI)
+//      ccss: "6.AT.A.1",                 // canonical standard code (analytics + UI)
 //      title: "Ratio Kitchen",           // display name
 //      vocab: [ { term, defn, img } ],   // term + student-facing (ESOL-level) definition + optional image
 //      misconceptions: [ { tag, trigger, feedback } ],  // canonical nudge copy
@@ -33,7 +33,7 @@
 export const GAMES_2D = {
   // ── Ratio Kitchen (math/unit-3/6-rp-1game) — REAL_GAME ────────────────
   "6-rp-1game": {
-    ccss: "6.RP.A.1",
+    ccss: "6.AT.A.1",
     title: "Ratio Kitchen",
     vocab: [
       {
@@ -81,7 +81,7 @@ export const GAMES_2D = {
 
   // ── Ratio Rush (math/games/u3-ratio-rush) — smoothie-bar pour ─────────
   "u3-ratio-rush": {
-    ccss: "6.RP.A.1",
+    ccss: "6.AT.A.1",
     title: "Ratio Rush",
     vocab: [
       {
@@ -141,7 +141,7 @@ export const GAMES_2D = {
 
   // ── Factor Frenzy (math/games/u1-factor-frenzy) — arcade ──────────────
   "u1-factor-frenzy": {
-    ccss: "6.NS.4",
+    ccss: "6.NOS.4",
     title: "Factor Frenzy",
     vocab: [
       {
@@ -193,7 +193,7 @@ export const GAMES_2D = {
 
   // ── Variable Blaster (math/unit-9/6-ee-c-9game) — REAL_GAME ───────────
   "6-ee-c-9game": {
-    ccss: "6.EE.C.9",
+    ccss: "6.AT.D.11",
     title: "Variable Blaster",
     vocab: [
       {
@@ -241,7 +241,7 @@ export const GAMES_2D = {
 
   // ── Equation Forge (math/unit-8/game-equations-quest) — balance ───────
   "game-equations-quest": {
-    ccss: "6.EE.B.7",
+    ccss: "6.AT.C.8",
     title: "Equation Forge",
     vocab: [
       {
@@ -289,7 +289,7 @@ export const GAMES_2D = {
 
   // ── Unit Rate Factory (math/unit-4/6-rp-a-2game) — conveyor sort ──────
   "6-rp-a-2game": {
-    ccss: "6.RP.A.2",
+    ccss: "6.AT.A.2",
     title: "Unit Rate Factory",
     vocab: [
       {
@@ -334,9 +334,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── Fraction Dungeon (6-1game) — 6.NS.1 ──
+  // ── Fraction Dungeon (6-1game) — 6.NOS.1 ──
   "6-1game": {
-    ccss: "6.NS.1",
+    ccss: "6.NOS.1",
     title: "Fraction Dungeon",
     vocab: [
       {
@@ -380,9 +380,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── Parallelogram Builder (parallelogramandrhombusgame) — 6.G.A.1 ──
+  // ── Parallelogram Builder (parallelogramandrhombusgame) — 6.GR.A.1 ──
   parallelogramandrhombusgame: {
-    ccss: "6.G.A.1",
+    ccss: "6.GR.A.1",
     title: "Parallelogram Builder",
     vocab: [
       {
@@ -426,9 +426,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── Function Tower (6-ee-9gamereview) — 6.EE.C.9 ──
+  // ── Function Tower (6-ee-9gamereview) — 6.AT.D.11 ──
   "6-ee-9gamereview": {
-    ccss: "6.EE.C.9",
+    ccss: "6.AT.D.11",
     title: "Function Tower",
     vocab: [
       {
@@ -470,9 +470,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── Smart Shopper (6-rp-a-3game) — 6.RP.A.3 ──
+  // ── Smart Shopper (6-rp-a-3game) — 6.AT.A.3 ──
   "6-rp-a-3game": {
-    ccss: "6.RP.A.3",
+    ccss: "6.AT.A.3",
     title: "Smart Shopper",
     vocab: [
       {
@@ -516,9 +516,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── Mars Rover (6-ee-c-9martiangame) — 6.EE.C.9 ──
+  // ── Mars Rover (6-ee-c-9martiangame) — 6.AT.D.11 ──
   "6-ee-c-9martiangame": {
-    ccss: "6.EE.C.9",
+    ccss: "6.AT.D.11",
     title: "Mars Rover",
     vocab: [
       {
@@ -560,9 +560,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── Variable Velocity (6-ee-c-9variablevelocitygame) — 6.EE.C.9 ──
+  // ── Variable Velocity (6-ee-c-9variablevelocitygame) — 6.AT.D.11 ──
   "6-ee-c-9variablevelocitygame": {
-    ccss: "6.EE.C.9",
+    ccss: "6.AT.D.11",
     title: "Variable Velocity",
     vocab: [
       {
@@ -604,9 +604,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── Expression Arena (variablecomparisongame) — 6.EE.B.5 ──
+  // ── Expression Arena (variablecomparisongame) — 6.AT.C.8 ──
   variablecomparisongame: {
-    ccss: "6.EE.B.5",
+    ccss: "6.AT.C.8",
     title: "Expression Arena",
     vocab: [
       {
@@ -650,9 +650,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── Variable Voyage (game-variable-voyage) — 6.EE.A.2 ──
+  // ── Variable Voyage (game-variable-voyage) — 6.AT.B.6 ──
   "game-variable-voyage": {
-    ccss: "6.EE.A.2",
+    ccss: "6.AT.B.6",
     title: "Variable Voyage",
     vocab: [
       {
@@ -694,9 +694,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── Equation Leap (cloudflare-pages-game-for-6-ee-9) — 6.EE.B.7 ──
+  // ── Equation Leap (cloudflare-pages-game-for-6-ee-9) — 6.AT.C.8 ──
   "cloudflare-pages-game-for-6-ee-9": {
-    ccss: "6.EE.B.7",
+    ccss: "6.AT.C.8",
     title: "Equation Leap",
     vocab: [
       {
@@ -739,9 +739,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── Stat Lab (6-sp-a-1game-2) — 6.SP.A.1 ──
+  // ── Stat Lab (6-sp-a-1game-2) — 6.DS.A.1 ──
   "6-sp-a-1game-2": {
-    ccss: "6.SP.A.1",
+    ccss: "6.DS.A.1",
     title: "Stat Lab",
     vocab: [
       {
@@ -786,9 +786,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── Stat Manager (mean-median-mode-game) — 6.SP.B.5 ──
+  // ── Stat Manager (mean-median-mode-game) — 6.DS.B.6 ──
   "mean-median-mode-game": {
-    ccss: "6.SP.B.5",
+    ccss: "6.DS.B.6",
     title: "Stat Manager",
     vocab: [
       {
@@ -832,9 +832,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── Deep Dive Fractions (6-ns-a-1game) — 6.NS.A.1 ──
+  // ── Deep Dive Fractions (6-ns-a-1game) — 6.NOS.A.1 ──
   "6-ns-a-1game": {
-    ccss: "6.NS.A.1",
+    ccss: "6.NOS.A.1",
     title: "Deep Dive Fractions",
     vocab: [
       {
@@ -878,9 +878,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── Asteroid Miner (6-ns-b-2game) — 6.NS.B.2 ──
+  // ── Asteroid Miner (6-ns-b-2game) — 6.NOS.B.2 ──
   "6-ns-b-2game": {
-    ccss: "6.NS.B.2",
+    ccss: "6.NOS.B.2",
     title: "Asteroid Miner",
     vocab: [
       {
@@ -925,9 +925,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── Decimal Kitchen (6-ns-b-3game) — 6.NS.B.3 ──
+  // ── Decimal Kitchen (6-ns-b-3game) — 6.NOS.B.3 ──
   "6-ns-b-3game": {
-    ccss: "6.NS.B.3",
+    ccss: "6.NOS.B.3",
     title: "Decimal Kitchen",
     vocab: [
       {
@@ -971,9 +971,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── Temperature Quest (6-ns-c-5game) — 6.NS.C.5 ──
+  // ── Temperature Quest (6-ns-c-5game) — 6.NOS.C.5 ──
   "6-ns-c-5game": {
-    ccss: "6.NS.C.5",
+    ccss: "6.NOS.C.5",
     title: "Temperature Quest",
     vocab: [
       {
@@ -1021,9 +1021,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── Coordinate Treasure Hunt (6-ns-c-6game) — 6.NS.C.6 ──
+  // ── Coordinate Treasure Hunt (6-ns-c-6game) — 6.NOS.C.6 ──
   "6-ns-c-6game": {
-    ccss: "6.NS.C.6",
+    ccss: "6.NOS.C.6",
     title: "Coordinate Treasure Hunt",
     vocab: [
       {
@@ -1069,9 +1069,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── City Builder (6-ns-c-8game) — 6.NS.C.8 ──
+  // ── City Builder (6-ns-c-8game) — 6.NOS.C.9 ──
   "6-ns-c-8game": {
-    ccss: "6.NS.C.8",
+    ccss: "6.NOS.C.9",
     title: "City Builder",
     vocab: [
       {
@@ -1119,9 +1119,9 @@ export const GAMES_2D = {
     },
   },
 
-  // ── Detective: Statistical Questions (6-sp-a-1game) — 6.SP.A.1 ──
+  // ── Detective: Statistical Questions (6-sp-a-1game) — 6.DS.A.1 ──
   "6-sp-a-1game": {
-    ccss: "6.SP.A.1",
+    ccss: "6.DS.A.1",
     title: "Question Detective",
     vocab: [
       {

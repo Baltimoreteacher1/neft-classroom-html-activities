@@ -8,7 +8,7 @@ window.GN_STORY = {
     "version": 1,
     "level": "Support",
     "title": "Decimal Docking Bay",
-    "standard": "6.NS.3",
+    "standard": "6.NOS.3",
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel u1-l5l6 #1: Decimal Docking Bay",
     "artBase": "../_art/lessons/u1-l5l6/",

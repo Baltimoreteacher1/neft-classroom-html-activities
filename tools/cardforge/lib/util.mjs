@@ -61,7 +61,7 @@ export const AI_SLOP_PHRASES = [
   "synergy",
 ];
 
-// CCSS Grade 6 code pattern, e.g. 6.SP.3, 6.RP.3a, 6.NS.6b
+// CCSS Grade 6 code pattern, e.g. 6.DS.4, 6.AT.3a, 6.NOS.7
 export const CCSS_RE = /\b6\.(RP|NS|EE|G|SP)\.\d+[a-d]?\b/g;
 
 // Scan prose for AI-slop phrases; returns array of {phrase, count}.

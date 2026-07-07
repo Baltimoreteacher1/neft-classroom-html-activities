@@ -1,11 +1,11 @@
-/* Number Realm — Unit 5: Area (6.G.A.1) */
+/* Number Realm — Unit 5: Area (6.GR.A.1) */
 (function () {
   window.MRPG_UNITS = window.MRPG_UNITS || {};
   window.MRPG_UNITS[5] = {
     id: 5,
     title: "Unit 5",
     realm: "The Tiled Territories",
-    standard: "6.G.A.1",
+    standard: "6.GR.A.1",
     accent: "#15803d",
     hero: "🛡️",
     tagline: "Endless fields that must be measured before they can be claimed.",
@@ -16,8 +16,8 @@
         id: "u5c1",
         title: "The Slanted Fields",
         enemy: { name: "Parallelo-Beast", emoji: "🟩" },
-        standard: "6.G.A.1",
-        topicLabel: "Area of parallelograms · 6.G.A.1",
+        standard: "6.GR.A.1",
+        topicLabel: "Area of parallelograms · 6.GR.A.1",
         topics: ["area-parallelogram"],
         scene:
           "A beast shaped like a leaning field charges. Base times height will fence it in.",
@@ -27,8 +27,8 @@
         id: "u5c2",
         title: "The Three-Cornered Grove",
         enemy: { name: "Triangle Treant", emoji: "🌲" },
-        standard: "6.G.A.1",
-        topicLabel: "Area of triangles · 6.G.A.1",
+        standard: "6.GR.A.1",
+        topicLabel: "Area of triangles · 6.GR.A.1",
         topics: ["area-triangle"],
         scene:
           "A treant with three-sided leaves blocks the grove. Remember: half of base times height.",
@@ -38,8 +38,8 @@
         id: "u5c3",
         title: "The Trapezoid Marsh",
         enemy: { name: "Marsh Wyrm", emoji: "🐊" },
-        standard: "6.G.A.1",
-        topicLabel: "Trapezoids & composite figures · 6.G.A.1",
+        standard: "6.GR.A.1",
+        topicLabel: "Trapezoids & composite figures · 6.GR.A.1",
         topics: ["area-trapezoid", "area-composite"],
         scene:
           "A wyrm lurks in a marsh of odd shapes. Split them apart or average the bases to drain it.",

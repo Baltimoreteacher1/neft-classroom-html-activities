@@ -2,7 +2,7 @@
    Comic-engine port. Full novel — Act 1 (Paris Ratios), Act 2 (Tokyo Tables),
    Final (Last Gateway), Glossary, Trip Complete + Master-Rank challenge.
    All math, answers, distractors, Spanish, hints, sentence frames, and glossary
-   carried verbatim from graphic-novels/unit3/graphic-novel-1.html (6.RP.3a).
+   carried verbatim from graphic-novels/unit3/graphic-novel-1.html (6.AT.3a).
    Protagonist = The Traveler (you, "Maya"); companion = COMPASS, a travel drone
    that compares raw totals instead of the ratio/rate. */
 window.GN_STORY = {
@@ -11,7 +11,7 @@ window.GN_STORY = {
     version: 1,
     level: "Support",
     title: "Global Travel Planner",
-    standard: "6.RP.3a",
+    standard: "6.AT.3a",
     readingStandard: "RL.6.1",
     assessment: "Graphic Novel U3 #1: Global Travel Planner",
     artBase: "../_art/unit3/",

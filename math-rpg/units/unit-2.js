@@ -1,11 +1,11 @@
-/* Number Realm — Unit 2: Fraction Division (6.NS.A) */
+/* Number Realm — Unit 2: Fraction Division (6.NOS.A) */
 (function () {
   window.MRPG_UNITS = window.MRPG_UNITS || {};
   window.MRPG_UNITS[2] = {
     id: 2,
     title: "Unit 2",
     realm: "The Fractured Isles",
-    standard: "6.NS.A.1",
+    standard: "6.NOS.A.1",
     accent: "#0891b2",
     hero: "⛵",
     tagline: "A shattered archipelago where whole islands split into fractions.",
@@ -16,8 +16,8 @@
         id: "u2c1",
         title: "How Many Fit?",
         enemy: { name: "Reef Serpent", emoji: "🐍" },
-        standard: "6.NS.A.1",
-        topicLabel: "Whole ÷ fraction · 6.NS.A.1",
+        standard: "6.NOS.A.1",
+        topicLabel: "Whole ÷ fraction · 6.NOS.A.1",
         topics: ["whole-by-fraction"],
         scene:
           "A serpent coils around the first reef. Ask how many fraction-pieces fit inside a whole to slip past it.",
@@ -27,8 +27,8 @@
         id: "u2c2",
         title: "Keep, Change, Flip",
         enemy: { name: "Tide Kraken", emoji: "🦑" },
-        standard: "6.NS.A.1",
-        topicLabel: "Divide fractions · 6.NS.A.1",
+        standard: "6.NOS.A.1",
+        topicLabel: "Divide fractions · 6.NOS.A.1",
         topics: ["fraction-division", "whole-by-fraction"],
         scene:
           "The kraken guards the deep channel. Remember the spell: keep the first, change the sign, flip the second.",
@@ -38,8 +38,8 @@
         id: "u2c3",
         title: "The Mixed Maelstrom",
         enemy: { name: "Storm Djinn", emoji: "🌀" },
-        standard: "6.NS.A.1",
-        topicLabel: "Divide mixed numbers · 6.NS.A.1",
+        standard: "6.NOS.A.1",
+        topicLabel: "Divide mixed numbers · 6.NOS.A.1",
         topics: ["mixed-number-division", "fraction-division"],
         scene:
           "A whirling djinn hurls mixed numbers. Turn each into an improper fraction before you strike.",

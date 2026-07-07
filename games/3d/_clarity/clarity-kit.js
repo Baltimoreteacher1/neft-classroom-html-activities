@@ -26,7 +26,7 @@
 //     objectiveEn,  // REQUIRED string. One sentence, plain language.
 //                   //   Rendered after a bold "Your goal:" — do NOT include that prefix.
 //     objectiveEs,  // OPTIONAL string. Short Spanish version of the goal.
-//     standard,     // OPTIONAL string. Math skill / standard, e.g. "6.RP.A.1–3 · Ratios".
+//     standard,     // OPTIONAL string. Math skill / standard, e.g. "6.AT.A.1–3 · Ratios".
 //     controls,     // REQUIRED array of { key, actionEn, actionEs? }.
 //                   //   key: human label, e.g. "← / →", "Space", "Tap", "Mouse".
 //     howToWinEn,   // OPTIONAL string. How you score / win (plain language).

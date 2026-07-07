@@ -17,8 +17,8 @@
   var DEVELOPING = 0.5;
   var MISCONCEPTION_BELOW = 0.7; // a low score on an activity flags its misconceptions
 
-  /* Build a normalizer from the taxonomy: maps shorthand ids (6.RP.3, 6.SP.5d)
-     to canonical ids (6.RP.A.3, 6.SP.B.5.D). */
+  /* Build a normalizer from the taxonomy: maps shorthand ids (6.AT.3, 6.DS.6d)
+     to canonical ids (6.AT.A.3, 6.DS.B.6.d). */
   function buildNormalizer(taxonomy) {
     var canon = {}; // loose key -> canonical id
     var valid = {};
@@ -28,7 +28,7 @@
       canon[s.id.toUpperCase()] = s.id;
     });
     function looseKey(id) {
-      // 6.RP.A.3.C -> 6RP3C ; 6.NS.B.2 -> 6NS2
+      // 6.AT.A.4 -> 6RP3C ; 6.NOS.B.2 -> 6NS2
       return String(id)
         .toUpperCase()
         .replace(/\.([A-Z])(?=\.|$)/g, function (m, letter, off, str) {

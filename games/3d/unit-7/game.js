@@ -3,7 +3,7 @@ import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
 import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 // ============================================================================
-// Unit 7 — SUBMARINE: DEEP DIVE  (CCSS 6.NS.C.5–7)
+// Unit 7 — SUBMARINE: DEEP DIVE  (CCSS 6.NOS.C.5–7)
 // SELF-PACED UNDERWATER number-line explorer. NO TIMER, NO RUSH. The submarine
 // hovers in place and the player drives it UP/DOWN freely along a VERTICAL
 // number line (0 = sea level at the middle, positives above, negatives below).
@@ -59,7 +59,7 @@ const MARKER_Z = SUB_Z - 1.2; // where the round's hovering markers sit
 const DESPAWN_Z = 11; // scenery wrap point
 const GRAB_REACH = UNIT * 0.62; // vertical tolerance to grab a marker at your depth
 
-// ---- Round bank (6.NS.C.5–7) — reused verbatim from the prior build --------
+// ---- Round bank (6.NOS.C.5–7) — reused verbatim from the prior build --------
 // Every target is an exact integer (computeTarget verifies the math). Level 1 =
 // scaffolded (smaller range, hints). Level 2 = enrichment (wider range,
 // multi-step compare/order).
@@ -1109,7 +1109,7 @@ export default {
             "No clock, no rush — take all the time you need. Read the task at the top and work out the right depth. The markers just hover in place: move the sub UP or DOWN with the arrows until you are level with the GREEN token, then press Enter / ✓ to grab it. The red mines are wrong numbers — leave them alone.",
           objectiveEs:
             "Sin reloj, sin prisa: tómate el tiempo que necesites. Lee la tarea de arriba y calcula la profundidad correcta. Las fichas se quedan quietas: mueve el submarino ARRIBA o ABAJO hasta quedar al nivel de la ficha VERDE y pulsa Enter / ✓ para atraparla. Las minas rojas son números incorrectos: déjalas en paz.",
-          standard: "6.NS.C.5–7 · Integers, Opposites & Absolute Value",
+          standard: "6.NOS.C.5–7 · Integers, Opposites & Absolute Value",
           controls: [
             {
               key: "↑ / W",

@@ -10,7 +10,7 @@
  *   NTResults.finish({
  *     student: "Amina Hassan",          // required (student-entered name)
  *     assessment: "Unit 2 Review",       // required (activity title)
- *     standard: "6.NS.1",                // optional (unit standard code)
+ *     standard: "6.NOS.1",                // optional (unit standard code)
  *     level: "",                          // "1" | "2" | "" (activity level, NOT student label)
  *     sections: [                         // optional per-section breakdown
  *       { name: "Vocabulary", correct: 4, total: 5 },

@@ -2,7 +2,7 @@
    Phase-2 reference build: full novel — Act 1 (Locked Bay), Act 2 (Twin Engines),
    Final (Master Door), Glossary, Mission Complete + Master-Rank challenge.
    All math, answers, distractors, Spanish, sentence frames, and glossary are
-   carried verbatim from graphic-novels/unit1/graphic-novel-1.html (6.NS.4).
+   carried verbatim from graphic-novels/unit1/graphic-novel-1.html (6.NOS.4).
    New: panels, speech, AXIS-voices-the-misconception, vocab/hint/coach pop-ups. */
 window.GN_STORY = {
   meta: {
@@ -10,7 +10,7 @@ window.GN_STORY = {
     version: 1,
     level: "Support",
     title: "Prime Station: The Factor Code",
-    standard: "6.NS.4",
+    standard: "6.NOS.4",
     readingStandard: "RL.6.1",
     assessment: "Graphic Novel U1 #1: Prime Station: The Factor Code",
     artBase: "../_art/unit1/",

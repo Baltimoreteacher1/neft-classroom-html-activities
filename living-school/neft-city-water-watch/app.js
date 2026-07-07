@@ -3,7 +3,7 @@
    Vanilla JS. No dependencies, no backend, no external APIs.
    All "AI-style" feedback is generated locally from student work.
 
-   Theme: mean vs. median + OUTLIERS (6.SP statistics).
+   Theme: mean vs. median + OUTLIERS (6.DS statistics).
    15 households report weekly water use (gallons). One mansion is a
    huge outlier (120) that pulls the MEAN up to 43 while the MEDIAN
    stays at 38 — the median better represents the typical household.

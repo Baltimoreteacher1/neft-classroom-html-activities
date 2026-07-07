@@ -56,7 +56,7 @@ function ok(name) {
 /* ── grade.js computeGrade: accuracy basis vs completion fallback ── */
 {
   const fakeState = (s) => ({ get: () => s });
-  const config = { id: "1-1", title: "Intro", standard: "6.RP.A.1" };
+  const config = { id: "1-1", title: "Intro", standard: "6.AT.A.1" };
 
   const acc = computeGrade(
     fakeState({

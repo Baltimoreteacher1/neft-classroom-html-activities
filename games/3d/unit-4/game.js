@@ -4,7 +4,7 @@ import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 /* =============================================================================
  * Unit 4 — Factory Line: Package the Order
- * Standard: 6.NS.B.2-4 (GCF, LCM, distributive property, decimal operations).
+ * Standard: 6.NOS.B.2-4 (GCF, LCM, distributive property, decimal operations).
  * Theme preserved: a glowing automated packing plant. The operator sets the
  * answer dial; correct orders ship down the line with a particle burst.
  * Premium rebuild: RoundedBox/PBR crates, emissive+bloom accents, shadowed
@@ -22,7 +22,7 @@ const PALETTE = {
   bad: 0xef6a4a,
 };
 
-// ---- Pure math (kept exact; mirrors standard 6.NS.B.2-4) --------------------
+// ---- Pure math (kept exact; mirrors standard 6.NOS.B.2-4) --------------------
 function gcf(a, b) {
   a = Math.abs(a);
   b = Math.abs(b);
@@ -1129,7 +1129,7 @@ export default {
             "Build each order's answer: drag crates into the loading bay until the count is right (GCF, LCM, factor), or slide the dial for decimals — then ship it.",
           objectiveEs:
             "Construye la respuesta: arrastra cajas a la bahía hasta tener el número correcto, o desliza el dial para decimales, y envía.",
-          standard: "6.NS.B.2–4 · GCF, LCM, Distributive & Decimal Operations",
+          standard: "6.NOS.B.2–4 · GCF, LCM, Distributive & Decimal Operations",
           controls: [
             {
               key: "Drag a crate",

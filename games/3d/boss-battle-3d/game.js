@@ -922,7 +922,7 @@ export default {
             "Answer Grade 6 math questions correctly to attack the boss. Drain its health to clear each phase, then beat all phases to win.",
           objectiveEs:
             "Responde preguntas de matemáticas para atacar al jefe. Vacía su salud para vencer cada fase y gana al superar todas.",
-          standard: `${plan.phaseUnits.length} phases · all Grade 6 units (6.RP, 6.NS, 6.EE, 6.G, 6.SP)`,
+          standard: `${plan.phaseUnits.length} phases · all Grade 6 units (6.AT, 6.NOS, 6.AT, 6.GR, 6.DS)`,
           controls: [
             {
               key: "Tap / Click a choice",

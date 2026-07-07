@@ -8,7 +8,7 @@
 
   var LESSON_ID = "stats-mmmr-demo";
   var ACTIVITY_ID = "thinking-trails-evidence-demo";
-  var STANDARD = "6.SP.B.5";
+  var STANDARD = "6.DS.B.6";
 
   // Each problem: data shown, the correct answer, the skill, a plain-language
   // hint, and "traps" — known wrong answers mapped to a misconception tag.

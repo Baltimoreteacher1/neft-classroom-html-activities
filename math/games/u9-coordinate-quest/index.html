@@ -9,7 +9,7 @@
     </title>
     <meta
       name="description"
-      content="A calm plot-it coordinate-plane game for Grade 6 (6.NS.6, 6.NS.8, 6.G.3): read an ordered pair and place the point on the exact grid cell. Level 1 stays in Quadrant I; Level 2 adds all four quadrants plus reflect-across-an-axis, distance-between-points, and finish-the-rectangle missions. No timer, no fail — misses teach by lighting up the correct spot."
+      content="A calm plot-it coordinate-plane game for Grade 6 (6.NOS.6, 6.NOS.9, 6.GR.3): read an ordered pair and place the point on the exact grid cell. Level 1 stays in Quadrant I; Level 2 adds all four quadrants plus reflect-across-an-axis, distance-between-points, and finish-the-rectangle missions. No timer, no fail — misses teach by lighting up the correct spot."
     />
     <style>
       * {
@@ -179,7 +179,7 @@
 
     <script>
       // ════════════════════════════════════════════════════════════════════
-      //  COORDINATE QUEST — STAR PLOTTER   ·   6.NS.6 / 6.NS.8 / 6.G.3
+      //  COORDINATE QUEST — STAR PLOTTER   ·   6.NOS.6 / 6.NOS.9 / 6.GR.3
       //  Math-as-mechanic, calm, no timer/reflex. The action IS the math: read
       //  an ordered pair, then MOVE a marker (click a cell, or arrow keys) and
       //  PLACE the star on the EXACT grid intersection. Lock In checks the exact
@@ -191,11 +191,11 @@
       //                            labels + gridlines + a per-problem hint and
       //                            marker guide-lines.
       //   • Level 2 (enrichment) — all four quadrants with negatives, plus:
-      //                            · reflect across an axis (6.NS.6)
-      //                            · DISTANCE missions (6.NS.8): plot the 2nd
+      //                            · reflect across an axis (6.NOS.6)
+      //                            · DISTANCE missions (6.NOS.9): plot the 2nd
       //                              point, then answer |a − b| by counting the
       //                              highlighted unit steps (choice buttons).
-      //                            · RECTANGLE missions (6.G.3): plot the 4th
+      //                            · RECTANGLE missions (6.GR.3): plot the 4th
       //                              vertex, then give one side length.
       // ════════════════════════════════════════════════════════════════════
       const W = 820,
@@ -364,7 +364,7 @@
               " is how far UP.",
           };
         }
-        // ── Level 2: plot · reflect · distance (6.NS.8) · rectangle (6.G.3) ──
+        // ── Level 2: plot · reflect · distance (6.NOS.9) · rectangle (6.GR.3) ──
         const r = Math.random();
         if (r < 0.28) return makePlotProblem();
         if (r < 0.52) return makeReflectProblem();
@@ -483,7 +483,7 @@
         return shuffle(set);
       }
 
-      // 6.NS.8 — two points share an x or a y coordinate. Part 1: plot the
+      // 6.NOS.9 — two points share an x or a y coordinate. Part 1: plot the
       // second point. Part 2: give the distance between them (|a − b|; across
       // zero, add the two distances to the axis, e.g. (−3, 2)→(4, 2) is 7).
       function makeDistanceProblem() {
@@ -559,7 +559,7 @@
         };
       }
 
-      // 6.G.3 — three vertices of a rectangle are shown. Part 1: plot the 4th
+      // 6.GR.3 — three vertices of a rectangle are shown. Part 1: plot the 4th
       // vertex. Part 2: give the length of the side along the new vertex
       // (whole-number coordinates inside the Level-2 grid).
       function makePolygonProblem() {
@@ -724,7 +724,7 @@
           .text(
             cx,
             292,
-            "Click a cell or use ← → ↑ ↓ · 6.NS.6 · 6.NS.8 · 6.G.3 · Unit 9",
+            "Click a cell or use ← → ↑ ↓ · 6.NOS.6 · 6.NOS.9 · 6.GR.3 · Unit 9",
             {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "14px",
@@ -1408,8 +1408,8 @@
         const KIND_LABEL = {
           plot: "Plot a point",
           reflect: "Reflect",
-          distance: "Distance mission (6.NS.8)",
-          polygon: "Rectangle mission (6.G.3)",
+          distance: "Distance mission (6.NOS.9)",
+          polygon: "Rectangle mission (6.GR.3)",
         };
         this.bannerLabel.setText(KIND_LABEL[p.kind] || "Plot a point");
         this.bannerText.setText(p.prompt);
@@ -1568,8 +1568,8 @@
         if (p.segment) this.drawCountedSegment(p.segment);
         this.bannerLabel.setText(
           p.kind === "distance"
-            ? "Distance mission (6.NS.8) · Part 2"
-            : "Rectangle mission (6.G.3) · Part 2",
+            ? "Distance mission (6.NOS.9) · Part 2"
+            : "Rectangle mission (6.GR.3) · Part 2",
         );
         this.bannerText.setText(p.answer.question);
         this.hintText.setText(
@@ -1859,7 +1859,7 @@
               activityTitle: document.title,
               score: d.score,
               stars: stars,
-              standard: "6.NS.6 / 6.NS.8 / 6.G.3",
+              standard: "6.NOS.6 / 6.NOS.9 / 6.GR.3",
               problemsAttempted: d.solved,
             });
         } catch (e) {}
@@ -1965,7 +1965,7 @@
         if (window.NeftHintLadder)
           window.NeftHintLadder.watch({
             sourceSelector: "#cq-sr",
-            standard: "6.NS.6 / 6.NS.8 / 6.G.3",
+            standard: "6.NOS.6 / 6.NOS.9 / 6.GR.3",
             staticHints: [
               "Which number is the x (across) and which is the y (up/down)? Check the signs too.",
               "Move along the x-axis first, then up or down for y; negatives go left/down.",

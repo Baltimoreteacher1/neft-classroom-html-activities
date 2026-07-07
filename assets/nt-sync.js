@@ -21,7 +21,7 @@
  *   window.NT_SYNC = {
  *     endpoint: "https://neft-results-dev.<acct>.workers.dev",
  *     teacher_id: "neft", class_code: "P3-MATH", write_key: "WRITEKEY",
- *     activity_slug: "unit2-review", standard: "6.NS.1"
+ *     activity_slug: "unit2-review", standard: "6.NOS.1"
  *   };
  * Then on completion the wrapped NTResults.finish(...) auto-queues, or call
  *   NTSync.record({ score, total, misconception_tags: [...] })

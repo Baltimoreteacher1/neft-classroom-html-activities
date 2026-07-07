@@ -4,7 +4,7 @@
    still scored), English-only (source has no Spanish), 10-term codex.
    All math (coordinates, integers, reflections, absolute values), answers,
    distractors, and glossary carried verbatim from
-   graphic-novels/unit9/graphic-novel-2.html (6.NS.7).
+   graphic-novels/unit9/graphic-novel-2.html (6.NOS.8).
    New: panels, speech, MARLOW-voices-the-misconception, vocab pop-ups. The
    reader is "The Navigator"; MARLOW is a talkative first mate who orders
    negatives by the size of their digits (says −7 > −3). */
@@ -14,7 +14,7 @@ window.GN_STORY = {
     version: 2,
     level: "Enrichment",
     title: "Treasure Map Navigator",
-    standard: "6.NS.7",
+    standard: "6.NOS.8",
     readingStandard: "RL.6.1",
     assessment: "Graphic Novel U9 #2: Treasure Map Navigator",
     artBase: "../_art/unit9/",

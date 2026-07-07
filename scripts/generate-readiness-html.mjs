@@ -7,7 +7,7 @@
 // {
 //   "lessonId": "1-2",
 //   "title": "Greatest Common Factor",
-//   "standard": "6.NS.4",
+//   "standard": "6.NOS.4",
 //   "emoji": "🚀",
 //   "unitName": "Unit 1 · Lesson 2",
 //   "why": "Plain-text sentence (may contain <strong>/<em>).",

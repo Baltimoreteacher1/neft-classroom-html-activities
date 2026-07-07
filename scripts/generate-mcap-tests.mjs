@@ -743,7 +743,7 @@ ${srHead}  </head>
         <ul>
           <li>Your answers save automatically on this device. Use <em>Reset</em> to start fresh.</li>
           <li>Need a nudge? Each question has an optional <strong>Level 1 hint</strong>. Explanations stay hidden until you submit &mdash; no peeking!</li>
-          <li>Domains are tagged (6.RP, 6.NS, 6.EE, 6.G, 6.SP) so you can see your strengths.</li>
+          <li>Domains are tagged (6.AT, 6.NOS, 6.AT, 6.GR, 6.DS) so you can see your strengths.</li>
         </ul>
         <div class="tier-bar" role="group" aria-label="Differentiation level">
           <span class="tier-label">Level:</span>

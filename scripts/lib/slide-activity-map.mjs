@@ -27,25 +27,25 @@ export function getActivityPlan(unit, standard, lessonId) {
   let secondary = "error-analysis";
   let explore = "choice-board";
 
-  if (std.includes("6.RP.") || u === 3) {
+  if (std.includes("6.AT.") || u === 3) {
     primary =
       lessonId.endsWith("-1") || lessonId.endsWith("-2") ? "ratio-table" : "drag-sort-ratios";
     secondary = "error-analysis";
     explore = "choice-board";
-  } else if (std.includes("6.EE.") || u === 6) {
+  } else if (std.includes("6.AT.") || u === 6) {
     primary =
-      std.includes("6.EE.1") || std.includes("6.EE.2") ? "power-match" : "expression-simplify";
+      std.includes("6.AT.5") || std.includes("6.AT.6") ? "power-match" : "expression-simplify";
     secondary = "error-analysis";
     explore = "think-write";
-  } else if (std.includes("6.G.") || u === 5 || u === 10) {
+  } else if (std.includes("6.GR.") || u === 5 || u === 10) {
     primary = u === 10 ? "net-fold" : "area-grid";
     secondary = "drag-sort-ratios";
     explore = "choice-board";
-  } else if (std.includes("6.SP.") || u === 8) {
+  } else if (std.includes("6.DS.") || u === 8) {
     primary = "stat-sort";
     secondary = "error-analysis";
     explore = "think-write";
-  } else if (std.includes("6.NS.6") || std.includes("6.NS.8") || u === 9) {
+  } else if (std.includes("6.NOS.6") || std.includes("6.NOS.9") || u === 9) {
     primary = "treasure-hunt";
     secondary = "vocab-match";
     explore = "choice-board";

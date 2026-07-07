@@ -3,7 +3,7 @@
    Drop a container on the page:
      <div class="pki-manip" data-manip="balance" data-theme="lock"></div>
      <div class="pki-manip" data-manip="balance" data-theme="fundraiser"></div>
-   An SVG balance scale for one-variable equations (6.EE.B.7). Students use
+   An SVG balance scale for one-variable equations (6.AT.C.8). Students use
    − / + steppers to set p and q and pick the equation form
    (x + p = q, x − p = q, p·x = q, x ÷ p = q). The scale tips while x is
    unknown; "Solve it" applies the INVERSE operation to BOTH sides step by

@@ -12,7 +12,7 @@
 //   • CLASSIFY paragraphs back into header fields + an items[] array
 //
 // Each DOCX header carries BOTH the Reveal lesson label (e.g. "Lesson 6-5") and
-// the CCSS code (e.g. "6.EE.A.2"). The Reveal label differs from the classroom
+// the CCSS code (e.g. "6.AT.B.6"). The Reveal label differs from the classroom
 // folder id (number crossing); we keep the classroom id as the JSON key and the
 // Reveal label as `revealLabel`. The CCSS code is the standard of record and is
 // preserved verbatim.

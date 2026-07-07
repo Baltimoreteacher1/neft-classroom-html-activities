@@ -5,9 +5,9 @@ import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 /**
  * Unit 9 — Coordinate Quest.
- * Standards: 6.NS.C.6 (rational numbers / ordered pairs on the coordinate
- * plane, all four quadrants), 6.NS.C.8 (reflections + distance on the plane),
- * 6.G.A.3 (distance between points sharing a row/column).
+ * Standards: 6.NOS.C.6 (rational numbers / ordered pairs on the coordinate
+ * plane, all four quadrants), 6.NOS.C.9 (reflections + distance on the plane),
+ * 6.GR.A.3 (distance between points sharing a row/column).
  *
  * Theme: a glowing star-map observatory. Students pilot a holographic beacon
  * across the coordinate plane to plot ordered pairs, mirror points across an
@@ -1013,7 +1013,7 @@ export default {
             "Pilot the beacon across the coordinate plane to plot ordered pairs, reflect points over an axis, and measure distances.",
           objectiveEs:
             "Mueve la baliza por el plano de coordenadas para ubicar pares ordenados, reflejar puntos y medir distancias.",
-          standard: "6.NS.C.6 · 6.NS.C.8 · 6.G.A.3 — Coordinate Plane",
+          standard: "6.NOS.C.6 · 6.NOS.C.9 · 6.GR.A.3 — Coordinate Plane",
           controls: [
             {
               key: "← / → (or A / D)",

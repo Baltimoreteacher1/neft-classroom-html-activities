@@ -379,9 +379,9 @@ function generateMathVisualSvg(lessonId, data) {
 
 function generateInteractiveWidgetHtml(lessonId, standard) {
   const std = (standard || "").toUpperCase();
-  const isRatio = std.includes("6.RP.1") || std.includes("6.RP.2") || std.includes("6.RP.3");
-  const isCoord = std.includes("6.NS.6") || std.includes("6.NS.8");
-  const isBalance = std.includes("6.EE.5") || std.includes("6.EE.7");
+  const isRatio = std.includes("6.AT.1") || std.includes("6.AT.2") || std.includes("6.AT.3");
+  const isCoord = std.includes("6.NOS.6") || std.includes("6.NOS.9");
+  const isBalance = std.includes("6.AT.8") || std.includes("6.AT.8");
 
   if (isRatio) {
     return `
@@ -3563,9 +3563,9 @@ ${deck.thumbnailsHtml}
     
     function updateActiveWidget() {
       const std = "${standard}".toUpperCase();
-      const isRatio = std.includes('6.RP.1') || std.includes('6.RP.2') || std.includes('6.RP.3');
-      const isCoord = std.includes('6.NS.6') || std.includes('6.NS.8');
-      const isBalance = std.includes('6.EE.5') || std.includes('6.EE.7');
+      const isRatio = std.includes('6.AT.1') || std.includes('6.AT.2') || std.includes('6.AT.3');
+      const isCoord = std.includes('6.NOS.6') || std.includes('6.NOS.9');
+      const isBalance = std.includes('6.AT.8') || std.includes('6.AT.8');
       
       if (isRatio) {
         updateRatioWidget();

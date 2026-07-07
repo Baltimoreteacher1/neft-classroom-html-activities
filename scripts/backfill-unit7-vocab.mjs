@@ -11,7 +11,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 // term, termEs, definition, definitionEs, visual, cloze
 const ADD = {
-  // 7-1 — 6.EE.6 Write Equations
+  // 7-1 — 6.AT.8 Write Equations
   "7-1": [
     {
       term: "Constant",
@@ -30,7 +30,7 @@ const ADD = {
       cloze: "The value you are trying to find in an equation is the ___.",
     },
   ],
-  // 7-2 — 6.EE.7 One-step add/subtract equations
+  // 7-2 — 6.AT.8 One-step add/subtract equations
   "7-2": [
     {
       term: "One-step equation",
@@ -51,7 +51,7 @@ const ADD = {
       cloze: "Doing the same thing to both sides to keep them equal keeps the equation in ___.",
     },
   ],
-  // 7-3 — 6.EE.7 Multiplication/division equations
+  // 7-3 — 6.AT.8 Multiplication/division equations
   "7-3": [
     {
       term: "Coefficient",
@@ -70,7 +70,7 @@ const ADD = {
       cloze: "The value of the variable that makes an equation true is the ___.",
     },
   ],
-  // 7-4 — 6.EE.8 Write Inequalities
+  // 7-4 — 6.AT.9 Write Inequalities
   "7-4": [
     {
       term: "Variable",
@@ -90,7 +90,7 @@ const ADD = {
         'The phrase that means less than or equal to is "no more than," written with the ___ symbol.',
     },
   ],
-  // 7-5 — 6.EE.8 Graph Inequalities
+  // 7-5 — 6.AT.9 Graph Inequalities
   "7-5": [
     {
       term: "Inequality",
@@ -110,7 +110,7 @@ const ADD = {
       cloze: "The number where the solution set begins on the number line is the ___.",
     },
   ],
-  // 7-6 — 6.EE.5 Solve and Graph Inequalities
+  // 7-6 — 6.AT.8 Solve and Graph Inequalities
   "7-6": [
     {
       term: "Solution set",
@@ -129,7 +129,7 @@ const ADD = {
       cloze: "An operation that undoes another to isolate the variable is an ___.",
     },
   ],
-  // 7-7 — 6.EE.7 Equations and Inequalities Problem Solving
+  // 7-7 — 6.AT.8 Equations and Inequalities Problem Solving
   "7-7": [
     {
       term: "Variable",
@@ -148,7 +148,7 @@ const ADD = {
       cloze: "A limit that tells which values are allowed in a problem is a ___.",
     },
   ],
-  // 6-7 — 6.EE.3 Simplify Algebraic Expressions
+  // 6-7 — 6.AT.7 Simplify Algebraic Expressions
   "6-7": [
     {
       term: "Term",

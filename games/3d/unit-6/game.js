@@ -3,7 +3,7 @@ import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
 import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 // ============================================================================
-// Unit 6 — "Expression Engine"  (CCSS 6.EE.A.1–4)
+// Unit 6 — "Expression Engine"  (CCSS 6.AT.B.5–4)
 // Write, evaluate, and identify equivalent expressions. The player feeds
 // number / variable / operation blocks into a glowing machine to build an
 // expression that hits a target value (or is equivalent for every x).
@@ -1139,7 +1139,7 @@ export default {
             "Feed number, variable, and operation blocks into the machine to build an expression that hits the target value (or is equal for any x), then press Enter to check.",
           objectiveEs:
             "Mete bloques de números, variables y operaciones en la máquina para formar una expresión que llegue al valor objetivo, luego presiona Enter.",
-          standard: "6.EE.A.1–4 · Expressions, Exponents & Equivalence",
+          standard: "6.AT.B.5–4 · Expressions, Exponents & Equivalence",
           controls: [
             {
               key: "← / →",

@@ -4,7 +4,7 @@ import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.j
 import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 /* ============================================================================
- * Unit 10 — VOLUME VAULT  (CCSS 6.G.A.2)
+ * Unit 10 — VOLUME VAULT  (CCSS 6.GR.A.2)
  * SELF-PACED PACK-THE-PRISM BUILDER. A factory chute holds a unit cube. The
  * player slides the drop column left/right and presses to DROP a cube; each
  * cube SNAPS down and auto-stacks layer by layer. Pack the rectangular prism
@@ -1016,7 +1016,7 @@ export default {
             "Slide the chute left/right and press to drop a unit cube — at your own pace, with no timer. Pack the prism with exactly length × width × height cubes; that count is the volume. Then pick its volume from the answer panels.",
           objectiveEs:
             "Mueve el surtidor a la izquierda o derecha y presiona para soltar un cubo — a tu propio ritmo, sin tiempo límite. Llena la caja con exactamente largo × ancho × alto cubos; ese total es el volumen. Luego elige el volumen en los paneles.",
-          standard: "6.G.A.2 · Volume of Rectangular Prisms",
+          standard: "6.GR.A.2 · Volume of Rectangular Prisms",
           controls: [
             {
               key: "← / →  (A / D)",

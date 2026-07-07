@@ -2,7 +2,7 @@
    Phase-2 build: full novel — Act 1 (Speaker Power), Act 2 (Stage & Lights),
    Final Show (The Headliner), Glossary, Show Complete + Master-Rank challenge.
    All math, answers, distractors, Spanish, sentence frames, and glossary are
-   carried verbatim from graphic-novels/unit6/graphic-novel-1.html (6.EE.2c).
+   carried verbatim from graphic-novels/unit6/graphic-novel-1.html (6.AT.6c).
    New: panels, speech, ECHO-voices-the-misconception, vocab/hint/coach pop-ups. */
 window.GN_STORY = {
   meta: {
@@ -10,7 +10,7 @@ window.GN_STORY = {
     version: 1,
     level: "Support",
     title: "Festival Producer: Power Up the Show 🎤",
-    standard: "6.EE.2c",
+    standard: "6.AT.6c",
     readingStandard: "RL.6.1",
     assessment: "Graphic Novel U6 #1: Festival Producer: Power Up the Show",
     artBase: "../_art/unit6/",

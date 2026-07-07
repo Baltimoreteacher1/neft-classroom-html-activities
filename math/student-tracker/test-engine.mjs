@@ -89,20 +89,20 @@ check("recency weights recent higher", rw > 65, rw);
 
 // --- summarize end-to-end via localStorage feed ---
 store["rma_gradebook"] = JSON.stringify([
-  { studentName: "Ana", studentPeriod: "P1", standard: "6.NS.1", lessonTitle: "L1", pct: 45, date: "2026-05-02" },
-  { studentName: "Ana", studentPeriod: "P1", standard: "6.NS.1", lessonTitle: "L2", pct: 40, date: "2026-05-20" },
-  { studentName: "Bo", studentPeriod: "P1", standard: "6.RP.3", lessonTitle: "L1", pct: 95, date: "2026-05-20" },
+  { studentName: "Ana", studentPeriod: "P1", standard: "6.NOS.1", lessonTitle: "L1", pct: 45, date: "2026-05-02" },
+  { studentName: "Ana", studentPeriod: "P1", standard: "6.NOS.1", lessonTitle: "L2", pct: 40, date: "2026-05-20" },
+  { studentName: "Bo", studentPeriod: "P1", standard: "6.AT.3", lessonTitle: "L1", pct: 95, date: "2026-05-20" },
 ]);
 store["nt_results_log"] = JSON.stringify([
-  { "Student Name": "Cy", Class: "P2", Assessment: "U2", Score: 8, Percent: 80, Standard: "6.NS.1", Skill: "Overall", "Question/Item": "10 items", Date: "2026-05-21" },
-  { "Student Name": "Cy", Class: "P2", Assessment: "U2", Score: 4, Percent: 80, Standard: "6.NS.1", Skill: "Vocabulary", "Question/Item": "5 items", Date: "2026-05-21" },
+  { "Student Name": "Cy", Class: "P2", Assessment: "U2", Score: 8, Percent: 80, Standard: "6.NOS.1", Skill: "Overall", "Question/Item": "10 items", Date: "2026-05-21" },
+  { "Student Name": "Cy", Class: "P2", Assessment: "U2", Score: 4, Percent: 80, Standard: "6.NOS.1", Skill: "Vocabulary", "Question/Item": "5 items", Date: "2026-05-21" },
 ]);
 // Re-read feeds by re-running summarize through the exposed state path:
 // simulate ingestion by calling summarize on normalized-equivalent records.
 const built = T._summarize([
-  { student: "Ana", period: "P1", standard: "6.NS.1", label: "L1", pct: 45, date: dnum("2026-05-02") },
-  { student: "Ana", period: "P1", standard: "6.NS.1", label: "L2", pct: 40, date: dnum("2026-05-20") },
-  { student: "Bo", period: "P1", standard: "6.RP.3", label: "L1", pct: 95, date: dnum("2026-05-20") },
+  { student: "Ana", period: "P1", standard: "6.NOS.1", label: "L1", pct: 45, date: dnum("2026-05-02") },
+  { student: "Ana", period: "P1", standard: "6.NOS.1", label: "L2", pct: 40, date: dnum("2026-05-20") },
+  { student: "Bo", period: "P1", standard: "6.AT.3", label: "L1", pct: 95, date: dnum("2026-05-20") },
 ]);
 const ana = built.find((s) => s.name === "Ana");
 const bo = built.find((s) => s.name === "Bo");
@@ -118,7 +118,7 @@ check("Approaching+declining => At Risk", lvl([D(0, 68), D(1, 63), D(2, 60)]) ==
 check("Likely+declining => Watch", lvl([D(0, 84), D(1, 78), D(2, 72)]) === "Watch", lvl([D(0, 84), D(1, 78), D(2, 72)]));
 check("Strong+flat => On Track", lvl([D(0, 90), D(1, 90), D(2, 90)]) === "On Track", lvl([D(0, 90), D(1, 90), D(2, 90)]));
 check("Reteach+improving => Watch", lvl([D(0, 30), D(1, 45), D(2, 58)]) === "Watch", lvl([D(0, 30), D(1, 45), D(2, 58)]));
-check("Ana per-standard present", ana.standards[0].standard === "6.NS.1", ana.standards[0]);
+check("Ana per-standard present", ana.standards[0].standard === "6.NOS.1", ana.standards[0]);
 check("risk within 0..100", ana.risk >= 0 && ana.risk <= 100 && bo.risk >= 0 && bo.risk <= 100, ana.risk);
 
 console.log(`\nENGINE AUDIT: ${pass} passed, ${fail} failed`);

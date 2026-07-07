@@ -2,7 +2,7 @@
 // Single source of truth for the 6 interactive, auto-graded MCAP Grade 6 math
 // practice tests at mcap-review/practice-test-1..6/index.html.
 //
-// Each test holds 40 questions tagged by domain (6.RP, 6.NS, 6.EE, 6.G, 6.SP)
+// Each test holds 40 questions tagged by domain (6.AT, 6.NOS, 6.AT, 6.GR, 6.DS)
 // so the domain breakdown stays standard-traceable. Question shape:
 //   { id, domain, type ("mc"|"fr"), text, note?, options[], answer, accept?[],
 //     hint?, stretch?, explain, rationales?[] }
@@ -15,11 +15,11 @@
 // Level 1 (support) / Level 2 (enrichment) labels, never "ESOL".
 
 export const DOMAIN_NAMES = {
-  "6.RP": "Ratios & Proportional Relationships",
-  "6.NS": "The Number System",
-  "6.EE": "Expressions & Equations",
-  "6.G": "Geometry",
-  "6.SP": "Statistics & Probability"
+  "6.AT": "Ratios & Proportional Relationships",
+  "6.NOS": "The Number System",
+  "6.AT": "Expressions & Equations",
+  "6.GR": "Geometry",
+  "6.DS": "Statistics & Probability"
 };
 
 export const PRACTICE_TESTS = [
@@ -29,7 +29,7 @@ export const PRACTICE_TESTS = [
     "questions": [
       {
         "id": 1,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "What is 35% of 2/5?",
         "options": [
@@ -50,7 +50,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 2,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A homeowner installs flooring in a rectangular room 15 ft by 12 ft. Flooring costs $4.50 per square foot, plus a $75 installation fee. What is the total cost?",
         "options": [
@@ -65,7 +65,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 3,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A bar graph shows Jacob's monthly earnings: April $240, May $450, June $600, July $680, August $500. Which statement is correct?",
         "note": "April $240, May $450, June $600, July $680, August $500.",
@@ -81,7 +81,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 4,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Solve for x: 5x − 3 = 2x + 12",
         "options": [
@@ -96,7 +96,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 5,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "fr",
         "text": "Emma scored 85, 92, and 78 on her first three tests. What must she score on her fourth test to have an average of 87?",
         "answer": "93",
@@ -108,7 +108,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 6,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "The ages of players on a basketball team are: 16, 17, 15, 18, 16, 19, 17, 16. What is the range of ages?",
         "options": [
@@ -123,7 +123,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 7,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "Two angles lie on a straight line. One is 112°, the other is y°. What is the value of y? (Figure not drawn to scale.)",
         "options": [
@@ -138,7 +138,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 8,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A tally chart shows favorite sports: Basketball 17, Soccer 23, Baseball 15, Swimming 11. How many more students prefer Soccer than Swimming?",
         "options": [
@@ -153,7 +153,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 9,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Calculate: 5/6 − 2/9",
         "options": [
@@ -168,7 +168,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 10,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A table shows lunch choices: Pizza 45, Sandwich 30, Salad 15, Pasta 10. What percentage of students chose pizza?",
         "options": [
@@ -183,7 +183,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 11,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "fr",
         "text": "The ratio of blue marbles to red marbles in a jar is 4:7. If there are 28 blue marbles, how many red marbles are in the jar?",
         "answer": "49",
@@ -196,7 +196,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 12,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Calculate: −18 + 25 − (−7)",
         "options": [
@@ -211,7 +211,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 13,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Find the mode of the data set: 12, 15, 12, 18, 20, 15, 12, 16",
         "options": [
@@ -226,7 +226,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 14,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Calculate: 8.4 ÷ 0.7",
         "options": [
@@ -241,7 +241,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 15,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "An equilateral triangle has a side length of 13 meters. All three sides are equal. What is the perimeter?",
         "options": [
@@ -256,7 +256,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 16,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A triangle has a base of 14 ft and a height of 10 ft. What is its area?",
         "options": [
@@ -271,7 +271,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 17,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "An irregular polygon has sides of length 6 cm, 3 cm, 3 cm, 3 cm, 4 cm, and 5 cm. What is the perimeter?",
         "options": [
@@ -286,7 +286,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 18,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Calculate: 3 + 2³ × 4 − 10",
         "options": [
@@ -301,7 +301,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 19,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Convert 5 3/8 to an improper fraction.",
         "options": [
@@ -316,7 +316,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 20,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "Find the area of the shaded region. A large square has side 10 cm; a white square of side 6 cm sits inside it.",
         "options": [
@@ -331,7 +331,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 21,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Simplify: 8x − 3x + 12 − 5",
         "options": [
@@ -346,7 +346,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 22,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A rectangle is divided into 3 rows and 5 columns of equal squares; 8 of the squares are shaded. What fraction of the rectangle is shaded?",
         "options": [
@@ -361,7 +361,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 23,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "On a coordinate grid, point H is 4 units left of the origin and 2 units up. What is the ordered pair for point H?",
         "options": [
@@ -376,7 +376,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 24,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Find the least common multiple (LCM) of 12 and 18.",
         "options": [
@@ -391,7 +391,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 25,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "If 5 pencils cost $3, how much do 15 pencils cost?",
         "options": [
@@ -406,7 +406,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 26,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A model shows 3/4 ÷ 1/8. How many 1/8 pieces fit in 3/4? What is 3/4 ÷ 1/8?",
         "options": [
@@ -421,7 +421,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 27,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Calculate: |−14| + |−8|",
         "options": [
@@ -436,7 +436,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 28,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A composite figure is a rectangle (12 cm by 8 cm) with a triangle on top (base 12 cm, height 6 cm). What is the total area?",
         "options": [
@@ -451,7 +451,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 29,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "Point A is at (2, 3) and point B is at (6, 3). What is the distance between them?",
         "options": [
@@ -466,7 +466,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 30,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A bag has 5 red, 8 blue, and 7 green marbles. What is the probability of selecting a blue marble?",
         "options": [
@@ -481,7 +481,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 31,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "fr",
         "text": "A recipe uses flour, sugar, and butter in the ratio 3:2:1. If you use 18 cups of flour, how many cups of ingredients do you need in total?",
         "answer": "36",
@@ -494,7 +494,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 32,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A line graph shows a cyclist's distance over time, passing through (2 hours, 30 miles). What is the cyclist's speed?",
         "options": [
@@ -509,7 +509,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 33,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A pool fills at 450 gallons per hour. How many days will it take to fill a 32,400-gallon pool?",
         "options": [
@@ -524,7 +524,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 34,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Find all factor pairs of 36 for a factor rainbow: 1×36, 2×?, 3×?, ?×?. Which set of missing factors is correct?",
         "options": [
@@ -539,7 +539,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 35,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "fr",
         "text": "A bookstore sold 240 books; fiction is 60% of total sales. How many fiction books were sold?",
         "answer": "144",
@@ -552,7 +552,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 36,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Books read per month: Jan 15, Feb 12, Mar 18, Apr 21, May 14, Jun 16. What is the average number of books read per month?",
         "options": [
@@ -567,7 +567,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 37,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Calculate: 2 3/5 × 4",
         "options": [
@@ -582,7 +582,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 38,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A dot pattern grows by adding one column of four dots each figure: 3, 7, 11, 15, … How many dots will be in Figure 5?",
         "options": [
@@ -597,7 +597,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 39,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A rectangular park is 30 m long and 19 m wide. What is the perimeter of the park?",
         "options": [
@@ -612,7 +612,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 40,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "Two angles form a right angle. One is 38°, the other is x°. What is the value of x?",
         "options": [
@@ -633,7 +633,7 @@ export const PRACTICE_TESTS = [
     "questions": [
       {
         "id": 1,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Two fraction bars show 2/3 and 1/6. What is the sum of these fractions in simplest form?",
         "options": [
@@ -648,7 +648,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 2,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A map scale is 1 inch = 15 miles. The map distance from Camp A to Camp B is 2 5/6 inches. Hiking at 5 miles per hour, how long will the hike take?",
         "options": [
@@ -663,7 +663,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 3,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Minutes spent on homework: 25, 30, 35, 40, 45, 50, 55. What is the mean?",
         "options": [
@@ -678,7 +678,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 4,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "Triangle ABC has vertices A(2,1), B(7,1), and C(2,5). What is the area of triangle ABC?",
         "options": [
@@ -693,7 +693,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 5,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A watermelon weighs 4.5 pounds. What is its weight in ounces?",
         "options": [
@@ -708,7 +708,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 6,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Fraction strips show A: 2/4, B: 3/6, C: 3/5, D: 4/8. Which two fractions are equivalent?",
         "options": [
@@ -723,7 +723,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 7,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A bar represents 100 students. The shaded part (6.5 of 10 sections) shows students who play sports. What percent play sports?",
         "options": [
@@ -738,7 +738,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 8,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "In an addition table, the cell at row 9 and column 18 is marked '?'. What number belongs there?",
         "options": [
@@ -753,7 +753,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 9,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "The ratio of red to blue to green marbles is 3:5:7. If there are 45 marbles in total, how many blue marbles are there?",
         "options": [
@@ -768,7 +768,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 10,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A graph shows two workers' pay. Worker A earns $60 in 4 hours; Worker B earns $60 in 6 hours. Which statement is true?",
         "options": [
@@ -783,7 +783,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 11,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A line plot shows the number of pets students have. There are 7 X's above the number 2. How many students have exactly 2 pets?",
         "options": [
@@ -798,7 +798,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 12,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Test scores: Anna 85, Ben 92, Carl 78, Diana 88, Emma 82. What is the median test score?",
         "options": [
@@ -813,7 +813,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 13,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A diagram shows 6 white marbles and 4 gray marbles. What is the ratio of white marbles to gray marbles?",
         "options": [
@@ -828,7 +828,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 14,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "If (2x − 3)/5 = 7, what is the value of x?",
         "options": [
@@ -843,7 +843,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 15,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A pictograph where each apple = 5 apples shows Maria with 4 apple symbols. How many apples did Maria pick?",
         "options": [
@@ -858,7 +858,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 16,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Point P is located 4 units right and 3 units up from the origin. What are the coordinates of Point P?",
         "options": [
@@ -873,7 +873,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 17,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "Three angles are shown. Angle B is a right angle. Which angle is the largest?",
         "options": [
@@ -888,7 +888,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 18,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A diagram shows 3 quarters and 2 dimes. What is the total value?",
         "options": [
@@ -903,7 +903,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 19,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "Letters are shown: A, B, F, M. Which letter(s) have a line of symmetry?",
         "options": [
@@ -918,7 +918,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 20,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A car travels 180 miles using 6 gallons. At this rate, how many gallons are needed to travel 450 miles?",
         "options": [
@@ -933,7 +933,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 21,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Renting a car costs $40 per day plus $0.25 per mile. If the total for one day was $75, how many miles were driven?",
         "options": [
@@ -948,7 +948,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 22,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A pattern repeats: square, circle, triangle, square, circle, triangle, … What shape comes next after the pattern shown?",
         "options": [
@@ -963,7 +963,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 23,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A recipe for 12 muffins requires 2 1/4 cups of flour. How much flour is needed for 20 muffins?",
         "options": [
@@ -978,7 +978,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 24,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A movie starts at 2:15 PM and ends at 4:30 PM. How long is the movie?",
         "options": [
@@ -993,7 +993,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 25,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "fr",
         "text": "A pool fills at 12 gallons per minute and already contains 240 gallons. Write an equation for total water W after t minutes, then find how many minutes until the pool contains 600 gallons.",
         "answer": "30",
@@ -1006,7 +1006,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 26,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "fr",
         "text": "A graph shows a plant growing 1 cm per week, starting at 2 cm in week 0. Predict the height after 6 weeks.",
         "answer": "8",
@@ -1020,7 +1020,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 27,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Algebra tiles show 2 large squares (x²), 5 rectangles (x), and 3 small squares (1). What expression do the tiles show?",
         "options": [
@@ -1035,7 +1035,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 28,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Marcus has 7 quarters, 5 dimes, and 8 nickels. What is the total value of his coins?",
         "options": [
@@ -1050,7 +1050,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 29,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A clock shows a movie started at 2:15 PM and ended at 4:30 PM. How long was the movie?",
         "options": [
@@ -1065,7 +1065,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 30,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "On a grid, point P is at x = 4, y = 3. What are the coordinates of point P?",
         "options": [
@@ -1080,7 +1080,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 31,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A clock's minute hand points to 10 and the hour hand is just before 3. What time is shown?",
         "options": [
@@ -1095,7 +1095,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 32,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A bar graph (each unit = 5 books) shows Jake's bar reaching 5 on the scale. How many books did Jake read?",
         "options": [
@@ -1110,7 +1110,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 33,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A stem-and-leaf plot: stem 8 has leaves 0, 2, 4, 5, 8, 8, 9. How many students scored in the 80s?",
         "options": [
@@ -1125,7 +1125,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 34,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "fr",
         "text": "Rachel spent 2/5 of her money on lunch and 1/4 on a book. What fraction of her money did she spend in total?",
         "answer": "13/20",
@@ -1137,7 +1137,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 35,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Two circles show 1/4 and 1/2. What is the sum of these fractions?",
         "options": [
@@ -1152,7 +1152,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 36,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "On a number line from 0 to 5, four points A, B, C, D are marked. Point C lies between 3 and 4 at 3.7. Which point represents 3.7?",
         "options": [
@@ -1167,7 +1167,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 37,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Test scores: Alex 85, Beth 92, Carl 78, Dana 88. What is the difference between the highest and lowest scores?",
         "options": [
@@ -1182,7 +1182,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 38,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "On a map, 2 inches represents 15 miles. If two cities are 5.5 inches apart, what is the actual distance?",
         "options": [
@@ -1197,7 +1197,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 39,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "fr",
         "text": "A delivery truck's path on a grid (each square = 1 mile) goes: right 5, up 3, left 3, up 1, right 4. What is the total distance traveled?",
         "answer": "16",
@@ -1210,7 +1210,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 40,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Which point is in Quadrant III? A(4, 3), B(−2, 5), C(−3, −4), D(6, −1).",
         "options": [
@@ -1231,7 +1231,7 @@ export const PRACTICE_TESTS = [
     "questions": [
       {
         "id": 1,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A baker used 3/8 of a bag of flour in the morning and 1/4 in the afternoon. What fraction of the bag remains unused?",
         "options": [
@@ -1246,7 +1246,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 2,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A farmer buys seed bags for $18 each and sells the crop from each for $32. Using 90 bags, what was the total profit?",
         "options": [
@@ -1261,7 +1261,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 3,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A graph shows Mia's walking distance over time. At 5 hours, the distance reads 3.5 km. How many kilometers did Mia walk in the first 5 hours?",
         "options": [
@@ -1276,7 +1276,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 4,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A bar model shows 96 pencils divided equally into 4 boxes. How many pencils are in each box?",
         "options": [
@@ -1291,7 +1291,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 5,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A right-triangle flower bed has legs of 9 m and 5 m. What is its area?",
         "options": [
@@ -1306,7 +1306,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 6,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A stem-and-leaf plot lists reading minutes: 25, 28, 31, 34, 36, 39, 42, 45, 47, 48, 49, 50, 53, 56. What is the median?",
         "options": [
@@ -1321,7 +1321,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 7,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A balance scale shows three identical boxes plus 5 pounds balancing with 23 pounds. What is the weight of one box?",
         "options": [
@@ -1336,7 +1336,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 8,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "On a number line marked 0, 2, 4, 6, 8, point Q sits halfway between 4 and 6. What number does Q represent?",
         "options": [
@@ -1351,7 +1351,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 9,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "In an election, 3/5 of students voted for Candidate A and 1/4 for Candidate B. What fraction voted for either A or B?",
         "options": [
@@ -1366,7 +1366,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 10,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "In a triangle, two angles are 45° and 60°. Find the measure of angle x.",
         "options": [
@@ -1381,7 +1381,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 11,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Books sold over five days: Mon 25, Tue 30, Wed 35, Thu 20, Fri 40. What is the mean number of books sold per day?",
         "options": [
@@ -1396,7 +1396,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 12,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "What is the value of 5³ − 4 × 6 + 8?",
         "options": [
@@ -1411,7 +1411,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 13,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A store offers 25% off all items. If a jacket originally costs $80, what is the sale price?",
         "options": [
@@ -1426,7 +1426,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 14,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Points P, Q, R, S are on a coordinate plane. Point S is at (1, −1). Which point is located in Quadrant IV?",
         "options": [
@@ -1441,7 +1441,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 15,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "fr",
         "text": "A recipe calls for 2 1/3 cups of flour. If you make half the recipe, how many cups of flour do you need?",
         "answer": "7/6",
@@ -1457,7 +1457,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 16,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Which expression is equivalent to 3(2x − 4) + 5x?",
         "options": [
@@ -1472,7 +1472,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 17,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A movie starts at 1:45 PM and lasts 2 hours and 30 minutes. What time does it end?",
         "options": [
@@ -1487,7 +1487,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 18,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A table shows ticket costs: 2 tickets $18, 4 tickets $36, 6 tickets $54. Based on the pattern, what is the cost for 8 tickets?",
         "options": [
@@ -1502,7 +1502,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 19,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "What is the greatest common factor (GCF) of 36 and 60?",
         "options": [
@@ -1517,7 +1517,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 20,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A number cube labeled 1–6 is rolled once. What is the probability of rolling an even number?",
         "options": [
@@ -1532,7 +1532,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 21,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Solve for x: x/5 + 7 = 15",
         "options": [
@@ -1547,7 +1547,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 22,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "fr",
         "text": "A rectangular prism has length 10 cm, width 6 cm, and height 4 cm. What is the volume?",
         "answer": "240",
@@ -1562,7 +1562,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 23,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Convert 3.75 to a mixed number in simplest form.",
         "options": [
@@ -1577,7 +1577,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 24,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "An array has 7 columns and 5 rows. How many total squares are in the array?",
         "options": [
@@ -1592,7 +1592,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 25,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A train departs at 10:45 AM and the journey takes 3 hours 25 minutes. What time does it arrive?",
         "options": [
@@ -1607,7 +1607,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 26,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A dot plot shows quiz scores: score 8 has 5 dots, score 9 has 3 dots, score 10 has 1 dot. How many students scored 8 or higher?",
         "options": [
@@ -1622,7 +1622,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 27,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "fr",
         "text": "A square has a side length of 9 inches. What is the area of the square?",
         "answer": "81",
@@ -1637,7 +1637,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 28,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Which number is equivalent to 2⁵?",
         "options": [
@@ -1652,7 +1652,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 29,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A store sells apples for $1.20 per pound. If you buy 3.5 pounds, how much will you pay?",
         "options": [
@@ -1667,7 +1667,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 30,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A line plot of pets owned shows six marks above the number 2. How many students have exactly 2 pets?",
         "options": [
@@ -1682,7 +1682,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 31,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A number line has an open circle at 3 with the ray pointing right. Which inequality is shown?",
         "options": [
@@ -1697,7 +1697,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 32,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "fr",
         "text": "Two angles are complementary. One angle measures 22°. What is the measure of the other angle?",
         "answer": "68",
@@ -1711,7 +1711,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 33,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A bakery sells muffins for $2.25 and cookies for $1.50. One morning it sold 6 muffins and 10 cookies. How much did the bakery earn in total?",
         "options": [
@@ -1726,7 +1726,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 34,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "At a camp, 40% of campers are boys. The ratio of boys who play soccer to basketball is 2:3. If 90 boys play basketball, how many campers are there in total?",
         "options": [
@@ -1741,7 +1741,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 35,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "An analog clock shows the hour hand between 8 and 9 and the minute hand on 7 (35 minutes). Which digital time matches? (A 7:35, B 8:30, C 8:35, D 9:35)",
         "options": [
@@ -1756,7 +1756,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 36,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "fr",
         "text": "Emily already saved $15 and saves an equal amount each week. After 5 weeks she will have $65. How much does she save each week?",
         "answer": "10",
@@ -1770,7 +1770,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 37,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A school has $1,200 for sports equipment: Soccer Balls 30% ($360), Basketballs 25% (?), Volleyballs 20% ($240), Other 25% ($300). How much was spent on soccer balls and basketballs combined?",
         "options": [
@@ -1785,7 +1785,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 38,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "Point R is at (2, 5) and point S is at (2, −3). What is the distance between R and S?",
         "options": [
@@ -1800,7 +1800,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 39,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "fr",
         "text": "After-school club enrollment: Art 24, Music 36, Drama 18, Sports 42. What percent of students are enrolled in the Music club?",
         "answer": "30",
@@ -1814,7 +1814,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 40,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A trapezoid has parallel sides of 8 cm and 12 cm and a height of 5 cm. What is its area?",
         "options": [
@@ -1835,7 +1835,7 @@ export const PRACTICE_TESTS = [
     "questions": [
       {
         "id": 1,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "What is the value of |−9|?",
         "options": [
@@ -1850,7 +1850,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 2,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A box has 4 red, 6 yellow, and 5 blue cards. If one card is drawn, what is the probability it is yellow?",
         "options": [
@@ -1865,7 +1865,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 3,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Popcorn prices: Small 8 oz $4.00, Medium 12 oz $5.40, Large 16 oz $6.40. Which size gives the most popcorn per dollar?",
         "options": [
@@ -1880,7 +1880,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 4,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A school had 450 students last year and 540 this year. What is the percent increase?",
         "options": [
@@ -1895,7 +1895,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 5,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A coach has 60 water bottles and 84 towels and wants identical kits with none left over. What is the greatest number of kits she can make?",
         "options": [
@@ -1910,7 +1910,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 6,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "An angle measures 76°. A ray bisects it (cuts it in half). What is the measure of each smaller angle?",
         "options": [
@@ -1925,7 +1925,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 7,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A baker uses 3/4 cup of sugar per batch, divides by 2/3, then multiplies that amount by 5/6. How much sugar is needed?",
         "options": [
@@ -1940,7 +1940,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 8,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "fr",
         "text": "A triangle has vertices A(2,3), B(6,3), and C(4,7). What is the area of the triangle?",
         "answer": "8",
@@ -1954,7 +1954,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 9,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A rectangular prism is 8 cm long, 5 cm wide, and 3 cm high. What is its volume?",
         "options": [
@@ -1969,7 +1969,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 10,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Books read by five students: Alex 6, Blake 9, Casey 4, Dana 7, Emma 7. How many books did all five read in total?",
         "options": [
@@ -1984,7 +1984,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 11,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "The expression 6x − 3(2x + 4) is equivalent to which of the following?",
         "options": [
@@ -1999,7 +1999,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 12,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Books sold over four months: Jan 200, Feb 180, Mar 220, Apr 250. What is the average number of books sold per month?",
         "options": [
@@ -2014,7 +2014,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 13,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Monthly rainfall (inches): Jan 3.2, Feb 2.8, Mar 4.5, Apr 3.6, May 2.9, Jun 3.0. What is the mean monthly rainfall?",
         "options": [
@@ -2029,7 +2029,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 14,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A recipe needs 2/3 cup of flour per batch. For 4 1/2 batches, how many cups of flour are needed?",
         "options": [
@@ -2044,7 +2044,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 15,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A garden is 18 ft long and 12 ft wide. If the width is increased by 25%, what is the new area?",
         "options": [
@@ -2059,7 +2059,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 16,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Points P(1,2), Q(4,5), R(6,1), S(7,4) are on a plane. Which point is located at (6, 1)?",
         "options": [
@@ -2074,7 +2074,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 17,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A bike shop offers 15% off all bikes. If a bike originally costs $240, what is the sale price?",
         "options": [
@@ -2089,7 +2089,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 18,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "fr",
         "text": "A machine produces 450 widgets in 6 hours. At this rate, how many widgets will it produce in 10 hours?",
         "answer": "750",
@@ -2102,7 +2102,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 19,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Which inequality represents all values of x greater than −3 but less than or equal to 5?",
         "options": [
@@ -2117,7 +2117,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 20,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A cube has an edge length of 5 cm. What is its surface area?",
         "options": [
@@ -2132,7 +2132,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 21,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A pool holds 12,000 gallons and drains at 150 gallons per hour. How long will it take to drain completely?",
         "options": [
@@ -2147,7 +2147,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 22,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Sports played: Basketball 12, Soccer 18, Tennis 6, Volleyball 9. Which sport represents the mode of the data?",
         "options": [
@@ -2162,7 +2162,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 23,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A T-shaped figure: top rectangle 24 in by 6 in, vertical rectangle 8 in by 18 in, with an 8 by 6 overlap counted twice. What is the total area?",
         "options": [
@@ -2177,7 +2177,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 24,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "If n = 7, what is the value of 4n − 9 + 2n?",
         "options": [
@@ -2192,7 +2192,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 25,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Jordan runs 3/8 of a mile Monday and 5/12 of a mile Tuesday. How many total miles did Jordan run?",
         "options": [
@@ -2207,7 +2207,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 26,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A honeycomb has 7 regular hexagons, each with area 65 cm². What is the total area of all 7 hexagons?",
         "options": [
@@ -2222,7 +2222,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 27,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "fr",
         "text": "A number is divided by 8, then 12 is added. If the final answer is 20, what was the original number?",
         "answer": "64",
@@ -2234,7 +2234,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 28,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Distances on 1 gallon: Car A 28.5, Car B 32.0, Car C 30.5, Car D 29.0, Car E 31.5 miles. What is the median distance?",
         "options": [
@@ -2249,7 +2249,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 29,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "If x = 4 and y = 2, what is the value of x² + 3y² − 4xy?",
         "options": [
@@ -2264,7 +2264,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 30,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A pinwheel is made of 4 identical right triangles, each with legs 9 cm and 12 cm. What is the total area of the pinwheel?",
         "options": [
@@ -2279,7 +2279,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 31,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A double bar graph shows January sales: Store A 120 books, Store B 100 books. How many more books did Store A sell than Store B?",
         "options": [
@@ -2294,7 +2294,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 32,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A group must weigh at least 180 pounds. Three friends weigh 150 pounds together. What is the minimum weight x a fourth friend must have?",
         "options": [
@@ -2309,7 +2309,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 33,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A painter uses 3 1/2 gallons to cover a whole wall. To paint only 3/5 of the wall, how many gallons are needed?",
         "options": [
@@ -2324,7 +2324,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 34,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "Triangle XYZ has vertices X(2,1), Y(7,1), Z(2,5). What is the area of triangle XYZ?",
         "options": [
@@ -2339,7 +2339,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 35,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A model race car is built to a scale of 1:32. If the model is 6 inches long, what is the actual car's length in feet?",
         "options": [
@@ -2354,7 +2354,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 36,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "On a 40-question test, Emma answered 30 correctly. What percentage did she get wrong?",
         "options": [
@@ -2369,7 +2369,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 37,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A U-shaped metal piece: outer rectangle 20 m by 14 m with an inner cut-out of 14 m by 8 m. What is the area of the U-shaped piece?",
         "options": [
@@ -2384,7 +2384,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 38,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Points scored in six games: 78, 85, 72, 90, 81, 84. What is the median number of points?",
         "options": [
@@ -2399,7 +2399,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 39,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A store sold 240 items on Monday, which was 60% of the items sold on Sunday. How many items were sold on Sunday?",
         "options": [
@@ -2414,7 +2414,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 40,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A net shows a box 6 in long, 4 in wide, 3 in tall. What is the total surface area of the box?",
         "options": [
@@ -2435,7 +2435,7 @@ export const PRACTICE_TESTS = [
     "questions": [
       {
         "id": 1,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A pizza is divided into equal slices. The shaded (eaten) part is 25% of the pizza. What percentage is NOT eaten?",
         "options": [
@@ -2450,7 +2450,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 2,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A survey of 200 students: Math 35%, Science 28%, English 22%, History 15%. How many more students chose Math than History?",
         "options": [
@@ -2465,7 +2465,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 3,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "fr",
         "text": "Simplify the expression: 4x + 8 − 2x + 3",
         "answer": "2x+11",
@@ -2478,7 +2478,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 4,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A bar graph shows how 150 students travel to school; the Walk bar reaches 2 on a scale where each unit = 10 students. How many students walk?",
         "options": [
@@ -2493,7 +2493,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 5,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Calculate: 3 1/2 − 1 3/4 + 2 1/8",
         "options": [
@@ -2508,7 +2508,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 6,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "fr",
         "text": "Solve for y: y/3 + 7 = 15",
         "answer": "24",
@@ -2522,7 +2522,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 7,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A laptop costs $800, marked down 20%, then an extra 10% off the sale price. What is the final price?",
         "options": [
@@ -2537,7 +2537,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 8,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Test scores: 78, 82, 95, 88, 91, 79, 85, 92. What is the range of these scores?",
         "options": [
@@ -2552,7 +2552,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 9,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A 24 cm by 16 cm rectangle is cut into squares with side 4 cm. How many squares can be made?",
         "options": [
@@ -2567,7 +2567,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 10,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A shaded figure splits into a rectangle (11 by 8) and a right triangle (base 6, height 4). What is the area of the figure?",
         "options": [
@@ -2582,7 +2582,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 11,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "The ratio of apples to oranges is 5:3. If there are 240 pieces of fruit total, how many more apples are there than oranges?",
         "options": [
@@ -2597,7 +2597,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 12,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A number is multiplied by 4, then 15 is added. The final answer is 47. What is the original number?",
         "options": [
@@ -2612,7 +2612,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 13,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "fr",
         "text": "Calculate: 2⁴ + 3³ − 5²",
         "answer": "18",
@@ -2624,7 +2624,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 14,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "What is the surface area of a rectangular prism with length 8 m, width 4 m, and height 5 m?",
         "options": [
@@ -2639,7 +2639,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 15,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Maria has 2 1/3 yards of fabric and uses 3/4 of it to make a dress. How many yards does she have left?",
         "options": [
@@ -2654,7 +2654,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 16,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "In a 6-hour (360-minute) session: Emma spends 2/3 reading, Carlos spends 1/4 on practice. How many more minutes did Emma read than Carlos practiced?",
         "options": [
@@ -2669,7 +2669,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 17,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Jason has $45. Each book costs $8 and he also wants a $5 bookmark. What is the maximum number of books he can buy?",
         "options": [
@@ -2684,7 +2684,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 18,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Heights (inches): 72, 75, 68, 71, 74, 69, 73. What is the median height?",
         "options": [
@@ -2699,7 +2699,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 19,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Sports clubs: Soccer 45, Basketball 30, Baseball 55, Tennis 25, Swimming 40. How many more participated in Baseball than in Tennis and Basketball combined?",
         "options": [
@@ -2714,7 +2714,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 20,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "fr",
         "text": "A bar model shows 2/3 and 1/6. Use the model to find the sum 2/3 + 1/6.",
         "answer": "5/6",
@@ -2726,7 +2726,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 21,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "In a survey of 250 students, 60% like pizza, and 40% of those also like hamburgers. How many students like both?",
         "options": [
@@ -2741,7 +2741,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 22,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "On a protractor, ray BA aligns with 180° and ray BC aligns with 125°. What is the measure of angle ABC?",
         "options": [
@@ -2756,7 +2756,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 23,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A line plot has data at 0, 10, 25, and 35 minutes. Which statement is correct about the gaps?",
         "options": [
@@ -2771,7 +2771,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 24,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A book's price is increased by 25%, then decreased by 20%. If the original price was $16, what is the final price?",
         "options": [
@@ -2786,7 +2786,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 25,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Temperatures (°F): Houston 78, Dallas 82, Austin 75, El Paso 88, San Antonio 77. What is the mean temperature?",
         "options": [
@@ -2801,7 +2801,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 26,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Solve for x: 2x/3 − 4 = 8",
         "options": [
@@ -2816,7 +2816,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 27,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A figure pattern has 3, 5, 7 squares for Figures 1, 2, 3. If the pattern continues, how many squares will Figure 6 have?",
         "options": [
@@ -2831,7 +2831,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 28,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A spinner has 8 equal sections: 3 red, 3 blue, 2 green. What is the probability of spinning red or green?",
         "options": [
@@ -2846,7 +2846,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 29,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "fr",
         "text": "A recipe calls for 750 milliliters of milk. If milk costs $3.20 per liter, how much will the milk cost?",
         "answer": "2.40",
@@ -2860,7 +2860,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 30,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A composite shape is a trapezoid (bases 20 cm and 12 cm, height 6 cm) plus a triangle (base 12 cm, height 10 cm). What is the total area?",
         "options": [
@@ -2875,7 +2875,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 31,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Which number line represents the solution to x − 4 ≤ 1? (Closed circle at 5, shaded left.)",
         "options": [
@@ -2890,7 +2890,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 32,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Which expression is equivalent to 4(x + 3) − 2x?",
         "options": [
@@ -2905,7 +2905,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 33,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Which of the following is equivalent to 7/8?",
         "options": [
@@ -2920,7 +2920,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 34,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "In a parking lot the ratio of cars to motorcycles is 7:2. If there are 14 motorcycles, how many vehicles are there in total?",
         "options": [
@@ -2935,7 +2935,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 35,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A parallelogram has a base of 15 cm and a height of 8 cm. What is its area?",
         "options": [
@@ -2950,7 +2950,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 36,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "An L-shaped garden splits into a 12 m by 6 m rectangle and a 6 m by 8 m rectangle. What is the total area of the flower bed?",
         "options": [
@@ -2965,7 +2965,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 37,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A cafeteria serves 480 students. 3/8 buy pizza, and 1/4 of the remaining students buy salad. How many buy salad?",
         "options": [
@@ -2980,7 +2980,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 38,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Weights of five cats (pounds): 8, 10, 12, 14, 16. What is the mean weight?",
         "options": [
@@ -2995,7 +2995,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 39,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Books read: Grade 4 85, Grade 5 92, Grade 6 115, Grade 7 108. How many more books did Grade 6 read than Grade 5?",
         "options": [
@@ -3010,7 +3010,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 40,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "On a coordinate plane, point A is at (2, 3) and point B is at (8, 3). What is the distance from A to B?",
         "options": [
@@ -3031,7 +3031,7 @@ export const PRACTICE_TESTS = [
     "questions": [
       {
         "id": 1,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Calculate: 2 1/2 + 1 3/4 × 2",
         "options": [
@@ -3046,7 +3046,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 2,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A triangle has angles of 65° and 70°. What is the measure of the missing angle x?",
         "options": [
@@ -3061,7 +3061,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 3,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "An L-shaped floor splits into a 14 m by 10 m rectangle and an 8 m by 4 m rectangle. Each tile covers 1 m². How many tiles are needed?",
         "options": [
@@ -3076,7 +3076,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 4,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Solve for n: n/12 = 15/20",
         "options": [
@@ -3091,7 +3091,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 5,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "fr",
         "text": "A baker uses 3/4 cup of sugar per batch. With 12 cups of sugar, how many complete batches can be made?",
         "answer": "16",
@@ -3104,7 +3104,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 6,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Pets owned and frequency: 0 pets 8, 1 pet 12, 2 pets 6, 3 pets 4. What is the total number of students?",
         "options": [
@@ -3119,7 +3119,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 7,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "An equilateral triangle has a perimeter of 36 cm. What is the length of each side?",
         "options": [
@@ -3134,7 +3134,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 8,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A recipe calls for 2.5 liters of water. How many milliliters is this?",
         "options": [
@@ -3149,7 +3149,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 9,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Test scores for five students: 82, 76, 90, 88, 94. What is the mean score?",
         "options": [
@@ -3164,7 +3164,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 10,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Maria scored 45 out of 60 points on her science test. What percentage did she score?",
         "options": [
@@ -3179,7 +3179,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 11,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A graph shows a pool filling: at 0 minutes 0 gallons, at 8 minutes 500 gallons. How many gallons are added each minute?",
         "options": [
@@ -3194,7 +3194,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 12,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Solve for x: x − 17 = 35",
         "options": [
@@ -3209,7 +3209,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 13,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Find the range of: 15, 23, 8, 19, 31, 12.",
         "options": [
@@ -3224,7 +3224,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 14,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A bar graph shows Tom with 5 books and Lisa with 7 books. How many more books did Lisa read than Tom?",
         "options": [
@@ -3239,7 +3239,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 15,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Calculate: 2/3 + 5/6",
         "options": [
@@ -3254,7 +3254,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 16,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "Find the median of: 24, 18, 32, 26, 20, 28, 22.",
         "options": [
@@ -3269,7 +3269,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 17,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A rectangle's shaded region is 5/12 of the whole. What is the sum of the shaded fraction and 1/4?",
         "options": [
@@ -3284,7 +3284,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 18,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Solve for y: 4y + 9 = 37",
         "options": [
@@ -3299,7 +3299,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 19,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "The ratio of boys to girls in a class is 3:5. If there are 15 boys, how many girls are in the class?",
         "options": [
@@ -3314,7 +3314,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 20,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A triangle has a base of 12 cm and a height of 6 cm. What is its area?",
         "options": [
@@ -3329,7 +3329,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 21,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A regular octagon has a side length of 6 inches. All eight sides are equal. What is the perimeter?",
         "options": [
@@ -3344,7 +3344,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 22,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Calculate: 3.6 × 2.5",
         "options": [
@@ -3359,7 +3359,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 23,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "fr",
         "text": "A rectangular playground is 50 m long and 30 m wide. What is the perimeter in meters?",
         "answer": "160",
@@ -3373,7 +3373,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 24,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Calculate: 7/8 − 1/4",
         "options": [
@@ -3388,7 +3388,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 25,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Convert 45% to a decimal.",
         "options": [
@@ -3403,7 +3403,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 26,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Calculate: −8 − (−12)",
         "options": [
@@ -3418,7 +3418,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 27,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A line graph shows the temperature through a day. At 12:00 (noon) the line reads 72°F. What was the temperature at noon?",
         "options": [
@@ -3433,7 +3433,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 28,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Find the greatest common factor (GCF) of 36 and 48.",
         "options": [
@@ -3448,7 +3448,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 29,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "fr",
         "text": "A shirt originally costs $40 and is on sale for 25% off. What is the sale price?",
         "answer": "30",
@@ -3462,7 +3462,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 30,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Calculate: 5³",
         "options": [
@@ -3477,7 +3477,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 31,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "mc",
         "text": "A machine fills 36 bottles in 4 minutes. At this rate, how many bottles can it fill in 90 minutes?",
         "options": [
@@ -3492,7 +3492,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 32,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "In which quadrant is the point (−6, 4) located?",
         "options": [
@@ -3507,7 +3507,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 33,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Three clocks ring every 6, 8, and 12 minutes. If all ring at 3:00 PM, when will they all ring together again?",
         "options": [
@@ -3522,7 +3522,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 34,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A scatter plot of hours studied vs. test scores shows points rising as study hours increase. What relationship does it show?",
         "options": [
@@ -3537,7 +3537,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 35,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "Calculate: 4 1/3 ÷ 1 1/6",
         "options": [
@@ -3552,7 +3552,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 36,
-        "domain": "6.RP",
+        "domain": "6.AT",
         "type": "fr",
         "text": "In a school the ratio of teachers to students is 1:25. If there are 1,200 students, how many teachers are there?",
         "answer": "48",
@@ -3565,7 +3565,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 37,
-        "domain": "6.G",
+        "domain": "6.GR",
         "type": "mc",
         "text": "A box is 8 in long, 5 in wide, and 3 in tall. What is the total surface area?",
         "options": [
@@ -3580,7 +3580,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 38,
-        "domain": "6.EE",
+        "domain": "6.AT",
         "type": "mc",
         "text": "Solve for x: 3x + 8 > 20",
         "options": [
@@ -3595,7 +3595,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 39,
-        "domain": "6.NS",
+        "domain": "6.NOS",
         "type": "mc",
         "text": "A Venn diagram shows number sets. Which number belongs in the Whole Numbers set?",
         "options": [
@@ -3610,7 +3610,7 @@ export const PRACTICE_TESTS = [
       },
       {
         "id": 40,
-        "domain": "6.SP",
+        "domain": "6.DS",
         "type": "mc",
         "text": "A pie chart shows how a student spends 24 hours; the Sleeping sector spans 120° of 360°. How many hours are spent sleeping?",
         "options": [

@@ -929,7 +929,7 @@
           "Tell the generator what to teach: a Unit/Topic or Lesson Focus, a standard, or pasted source notes. The highlighted fields are where that goes.",
         fixes: [
           "Fill in Unit/Topic or Lesson Focus (e.g. “unit rate”), and/or",
-          "Enter a standard (e.g. 6.RP.A.2), and/or",
+          "Enter a standard (e.g. 6.AT.A.2), and/or",
           "Paste your slide text / notes, or upload a .pptx/.pdf/.docx/.txt.",
         ],
       });
@@ -1020,7 +1020,7 @@
     if (plan.meta.generic) {
       notices.push({
         kind: "warn",
-        text: "No Grade-6 math domain was detected, so the practice problems are scaffolds to fill from your source. Add a standard (e.g. 6.RP.A.2) or a math topic for a fully worked problem set.",
+        text: "No Grade-6 math domain was detected, so the practice problems are scaffolds to fill from your source. Add a standard (e.g. 6.AT.A.2) or a math topic for a fully worked problem set.",
       });
     }
     const st = plan.header.standards;
@@ -1148,7 +1148,7 @@ xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-
   /* ===================== SAMPLE ===================== */
   const SAMPLE = `Title: Unit Rate from a Ratio
 Grade/Course: Grade 6 Mathematics
-Standard: 6.RP.A.2 — Understand the concept of a unit rate a/b associated with a ratio a:b.
+Standard: 6.AT.A.2 — Understand the concept of a unit rate a/b associated with a ratio a:b.
 Objective: Students will find the unit rate from a ratio and use it to compare and solve problems.
 Language Objective: Students will explain how they found a unit rate using the words ratio, rate, and per.
 Vocabulary: ratio, rate, unit rate, per
@@ -1163,7 +1163,7 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       els.sourceText.value = SAMPLE;
       els.fUnit.value = "Ratios & Rates";
       els.fFocus.value = "Find unit rate from a ratio";
-      els.fStandards.value = "6.RP.A.2 — unit rate";
+      els.fStandards.value = "6.AT.A.2 — unit rate";
       els.fWida.value = "Level 2 (Emerging)";
       uploadedExtract = null;
       reshuffleNonce = 0;

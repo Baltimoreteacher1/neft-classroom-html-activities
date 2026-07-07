@@ -65,10 +65,10 @@ const XWALK = (() => {
 })();
 
 // Old domain -> new domain (2025), for cluster-level / malformed legacy codes
-// that have no exact crosswalk entry (e.g. "6.G.A", "6.SP.A").
+// that have no exact crosswalk entry (e.g. "6.GR.A", "6.DS.A").
 const DOMAIN_XWALK = { RP: "AT", EE: "AT", NS: "NOS", G: "GR", SP: "DS" };
 
-// Pull a Common Core-style standard code out of a title, e.g. "6.RP.A.1",
+// Pull a Common Core-style standard code out of a title, e.g. "6.AT.A.1",
 // then translate it to the current 2025 code: exact crosswalk first, else a
 // domain-level rewrite so at least the domain matches the revised standards.
 function standardFrom(title) {

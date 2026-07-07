@@ -7,7 +7,7 @@
     <title>Grade 6 MCAP Practice Test</title>
     <meta
       name="description"
-      content="Self-grading Grade 6 MCAP-style math practice test covering 6.NS, 6.RP, 6.EE, 6.G, and 6.SP standards."
+      content="Self-grading Grade 6 MCAP-style math practice test covering 6.NOS, 6.AT, 6.AT, 6.GR, and 6.DS standards."
     />
     <link rel="stylesheet" href="/assets/shared.css" />
     <style>
@@ -795,11 +795,11 @@
         response, two-part, and matching.
       </p>
       <div class="tags">
-        <span class="tag">6.NS</span>
-        <span class="tag">6.RP</span>
-        <span class="tag">6.EE</span>
-        <span class="tag">6.G</span>
-        <span class="tag">6.SP</span>
+        <span class="tag">6.NOS</span>
+        <span class="tag">6.AT</span>
+        <span class="tag">6.AT</span>
+        <span class="tag">6.GR</span>
+        <span class="tag">6.DS</span>
         <span class="tag">Self-Scoring</span>
       </div>
     </header>
@@ -825,7 +825,7 @@
             </div>
             <div class="ov-item">
               <strong>5 Reporting Categories</strong>
-              <span>6.NS · 6.RP · 6.EE · 6.G · 6.SP</span>
+              <span>6.NOS · 6.AT · 6.AT · 6.GR · 6.DS</span>
             </div>
             <div class="ov-item">
               <strong>5 Item Types</strong>
@@ -973,13 +973,13 @@
       function buildBank() {
         const bank = [];
 
-        /* ── 1  6.RP.1  Selected Response — ratio language ── */
+        /* ── 1  6.AT.1  Selected Response — ratio language ── */
         (function () {
           const p = rnd(3, 7),
             t = rnd(8, 15) + rnd(1, 5);
           bank.push({
             id: "rp1",
-            standard: "6.RP.1",
+            standard: "6.AT.1",
             strand: "RP",
             type: "mc",
             stem: `A recipe uses <strong>${p} cups</strong> of flour. The recipe uses <strong>${t} cups</strong> of ingredients in all. Which statement correctly describes a ratio in this situation?`,
@@ -994,7 +994,7 @@
           });
         })();
 
-        /* ── 2  6.RP.3a  Multiple Choice — equivalent ratios ── */
+        /* ── 2  6.AT.3a  Multiple Choice — equivalent ratios ── */
         (function () {
           let a = rnd(2, 5),
             b = rnd(3, 6);
@@ -1002,7 +1002,7 @@
           const k = rnd(2, 5);
           bank.push({
             id: "rp3a",
-            standard: "6.RP.3a",
+            standard: "6.AT.3a",
             strand: "RP",
             type: "mc",
             stem: `Which ratio is equivalent to <strong>${a} : ${b}</strong>?`,
@@ -1017,14 +1017,14 @@
           });
         })();
 
-        /* ── 3  6.RP.3c  Numeric Entry — unit rate ── */
+        /* ── 3  6.AT.4  Numeric Entry — unit rate ── */
         (function () {
           const miles = pick([120, 150, 180, 240, 270, 300, 360]);
           const hours = pick([3, 4, 5, 6]);
           const rate = miles / hours;
           bank.push({
             id: "rp3c",
-            standard: "6.RP.3c",
+            standard: "6.AT.4",
             strand: "RP",
             type: "numeric",
             stem: `A car travels <strong>${miles} miles</strong> in <strong>${hours} hours</strong> at a constant speed. What is the unit rate in miles per hour?`,
@@ -1035,10 +1035,10 @@
           });
         })();
 
-        /* ── 4  6.NS.1  Multiple Select — dividing by a fraction ── */
+        /* ── 4  6.NOS.1  Multiple Select — dividing by a fraction ── */
         bank.push({
           id: "ns1",
-          standard: "6.NS.1",
+          standard: "6.NOS.1",
           strand: "NS",
           type: "multiselect",
           stem: `Which expressions are equal to <strong>2 ÷ 1/3</strong>?`,
@@ -1047,14 +1047,14 @@
           explanation: `Dividing by a fraction is the same as multiplying by its reciprocal: 2 ÷ 1/3 = 2 × 3 = 6. So 2 × 3, 3 × 2 (commutative property), and 6 are all equal to it.`,
         });
 
-        /* ── 5  6.NS.3  Numeric Entry — decimal operations ── */
+        /* ── 5  6.NOS.3  Numeric Entry — decimal operations ── */
         (function () {
           const a = (rnd(10, 49) / 10).toFixed(1) * 1;
           const b = (rnd(5, 29) / 10).toFixed(1) * 1;
           const ans = Math.round(a * b * 100) / 100;
           bank.push({
             id: "ns3",
-            standard: "6.NS.3",
+            standard: "6.NOS.3",
             strand: "NS",
             type: "numeric",
             stem: `What is the value of <strong>${a.toFixed(1)} × ${b.toFixed(1)}</strong>?`,
@@ -1065,7 +1065,7 @@
           });
         })();
 
-        /* ── 6  6.NS.4  Multiple Choice — GCF ── */
+        /* ── 6  6.NOS.4  Multiple Choice — GCF ── */
         (function () {
           const factors = [
             [12, 18, 6],
@@ -1077,7 +1077,7 @@
           const [a, b, g] = pick(factors);
           bank.push({
             id: "ns4",
-            standard: "6.NS.4",
+            standard: "6.NOS.4",
             strand: "NS",
             type: "mc",
             stem: `What is the greatest common factor (GCF) of <strong>${a}</strong> and <strong>${b}</strong>?`,
@@ -1092,7 +1092,7 @@
           });
         })();
 
-        /* ── 7  6.EE.1  Two-Part — exponents ── */
+        /* ── 7  6.AT.5  Two-Part — exponents ── */
         (function () {
           const base = rnd(2, 5);
           let exp = rnd(2, 4);
@@ -1100,7 +1100,7 @@
           const val = Math.pow(base, exp);
           bank.push({
             id: "ee1",
-            standard: "6.EE.1",
+            standard: "6.AT.5",
             strand: "EE",
             type: "twopart",
             stem: `This question has two parts. Consider the expression <strong>${base}<sup>${exp}</sup></strong>.`,
@@ -1128,7 +1128,7 @@
           });
         })();
 
-        /* ── 8  6.EE.2  Selected Response — evaluate expression ── */
+        /* ── 8  6.AT.6  Selected Response — evaluate expression ── */
         (function () {
           const a = rnd(2, 5),
             b = rnd(1, 4),
@@ -1149,7 +1149,7 @@
           });
           bank.push({
             id: "ee2",
-            standard: "6.EE.2",
+            standard: "6.AT.6",
             strand: "EE",
             type: "mc",
             stem: `What is the value of <strong>${a}<em>x</em> + ${b}</strong> when <em>x</em> = <strong>${x}</strong>?`,
@@ -1159,10 +1159,10 @@
           });
         })();
 
-        /* ── 9  6.EE.3  Matching — equivalent expressions ── */
+        /* ── 9  6.AT.7  Matching — equivalent expressions ── */
         bank.push({
           id: "ee3",
-          standard: "6.EE.3",
+          standard: "6.AT.7",
           strand: "EE",
           type: "matching",
           stem: `Match each expression to its equivalent form. Each form is used exactly once.`,
@@ -1176,10 +1176,10 @@
           explanation: `Combine like terms and use the distributive property: 3x + 5x = 8x; 4(2 + y) = 8 + 4y; 2a + a + 3b = 3a + 3b; 6 · x · x = 6x².`,
         });
 
-        /* ── 10  6.EE.4  Multiple Select — equivalent expressions ── */
+        /* ── 10  6.AT.7  Multiple Select — equivalent expressions ── */
         bank.push({
           id: "ee4",
-          standard: "6.EE.4",
+          standard: "6.AT.7",
           strand: "EE",
           type: "multiselect",
           stem: `Which expressions are equivalent to <strong>12<em>n</em> + 8</strong>?`,
@@ -1194,14 +1194,14 @@
           explanation: `4(3n + 2) = 12n + 8; 2(6n + 4) = 12n + 8; 12n + 8 matches itself; 8 + 12n = 12n + 8 (commutative property). 2(5n + 4) = 10n + 8 is not equivalent.`,
         });
 
-        /* ── 11  6.EE.7  Numeric Response — solve one-step equation ── */
+        /* ── 11  6.AT.8  Numeric Response — solve one-step equation ── */
         (function () {
           const sol = rnd(4, 15);
           const c = rnd(2, 6);
           const b = sol + c;
           bank.push({
             id: "ee7",
-            standard: "6.EE.7",
+            standard: "6.AT.8",
             strand: "EE",
             type: "numeric",
             stem: `What is the value of <em>x</em> in the equation <strong><em>x</em> + ${c} = ${b}</strong>?`,
@@ -1212,14 +1212,14 @@
           });
         })();
 
-        /* ── 12  6.G.1  Selected Response — area of triangle ── */
+        /* ── 12  6.GR.1  Selected Response — area of triangle ── */
         (function () {
           const b = rnd(6, 14),
             h = rnd(5, 12);
           const area = (b * h) / 2;
           bank.push({
             id: "g1",
-            standard: "6.G.1",
+            standard: "6.GR.1",
             strand: "G",
             type: "mc",
             stem: `A triangle has a base of <strong>${b} cm</strong> and a height of <strong>${h} cm</strong>. What is the area of this triangle?`,
@@ -1236,7 +1236,7 @@
           });
         })();
 
-        /* ── 13  6.G.2  Numeric Response — volume of rectangular prism ── */
+        /* ── 13  6.GR.2  Numeric Response — volume of rectangular prism ── */
         (function () {
           const l = rnd(3, 9),
             w = rnd(2, 7),
@@ -1244,7 +1244,7 @@
           const vol = l * w * h;
           bank.push({
             id: "g2",
-            standard: "6.G.2",
+            standard: "6.GR.2",
             strand: "G",
             type: "numeric",
             stem: `A rectangular prism has a length of <strong>${l} ft</strong>, a width of <strong>${w} ft</strong>, and a height of <strong>${h} ft</strong>. What is the volume of the prism, in cubic feet?`,
@@ -1255,10 +1255,10 @@
           });
         })();
 
-        /* ── 14  6.SP.1  Multiple Select — statistical questions ── */
+        /* ── 14  6.DS.1  Multiple Select — statistical questions ── */
         bank.push({
           id: "sp1",
-          standard: "6.SP.1",
+          standard: "6.DS.1",
           strand: "SP",
           type: "multiselect",
           stem: `A <strong>statistical question</strong> is one that anticipates a variety of answers. Which questions are statistical questions?`,
@@ -1273,7 +1273,7 @@
           explanation: `A statistical question anticipates variability in the data. Hours of sleep and July temperatures both vary from person to person or day to day, so they are statistical. The other questions each have a single fixed answer.`,
         });
 
-        /* ── 15  6.SP.4  Selected Response — median ── */
+        /* ── 15  6.DS.5  Selected Response — median ── */
         (function () {
           const raw = [
             rnd(60, 75),
@@ -1300,7 +1300,7 @@
           });
           bank.push({
             id: "sp4",
-            standard: "6.SP.4",
+            standard: "6.DS.5",
             strand: "SP",
             type: "mc",
             stem: `The list shows the quiz scores of seven students: <strong>${sorted.join(", ")}</strong>. What is the median of these scores?`,

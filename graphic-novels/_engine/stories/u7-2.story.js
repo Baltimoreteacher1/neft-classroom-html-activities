@@ -3,7 +3,7 @@
    solving + verification, optional "Captain's Challenge" bonus rounds
    (non-gating, still scored), English-only (source has no Spanish), 10-term
    codex. All math/answers/distractors/glossary carried verbatim from
-   graphic-novels/unit7/graphic-novel-2.html (6.EE.7).
+   graphic-novels/unit7/graphic-novel-2.html (6.AT.8).
    New: panels, speech, GUMSHOE-voices-the-misconception (operates on ONE side
    only), vocab pop-ups. */
 window.GN_STORY = {
@@ -12,7 +12,7 @@ window.GN_STORY = {
     version: 2,
     level: "Enrichment",
     title: "Detective Case Files: The Equation Mysteries",
-    standard: "6.EE.7",
+    standard: "6.AT.8",
     readingStandard: "RL.6.1",
     assessment:
       "Graphic Novel U7 #2: Detective Case Files: The Equation Mysteries",

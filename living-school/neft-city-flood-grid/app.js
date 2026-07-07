@@ -3,7 +3,7 @@
    Vanilla JS. No dependencies, no backend, no external APIs.
    All "AI-style" feedback is generated locally from student work.
 
-   Standards: 6.NS — integers & ordering; 6.NS — coordinate plane,
+   Standards: 6.NOS — integers & ordering; 6.NOS — coordinate plane,
    reflections across an axis, and distance via absolute value.
 
    Architecture (mirrors Chapter 1 exactly):

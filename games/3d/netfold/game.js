@@ -1,4 +1,4 @@
-// NetFold Arena — "Match the net, fold the solid" (CCSS 6.G.A.4)
+// NetFold Arena — "Match the net, fold the solid" (CCSS 6.GR.A.4)
 // Each round shows a translucent gold TARGET solid (rotating hologram) plus
 // several flat NETS on the deck. Exactly one net folds into the target. The
 // student highlights a net (←/→ or tap) and presses Space to FOLD it. A correct
@@ -996,7 +996,7 @@ export default {
             "Look at the gold target solid. Pick the flat net that folds into it, then fold it to check. Match every solid to win.",
           objectiveEs:
             "Mira el sólido dorado. Elige la red plana que se pliega para formarlo y pliégala para comprobar. Empareja todos los sólidos para ganar.",
-          standard: "6.G.A.4 · Nets & Surface Area",
+          standard: "6.GR.A.4 · Nets & Surface Area",
           controls: [
             {
               key: "← / →",

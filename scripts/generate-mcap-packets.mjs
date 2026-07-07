@@ -151,7 +151,7 @@ function spacer(after = 80) {
   return new Paragraph({ spacing: { after }, children: [run("")] });
 }
 
-// "Item N | Selected Response · 6.RP.A.1" label row above each MCAP item card.
+// "Item N | Selected Response · 6.AT.A.1" label row above each MCAP item card.
 function itemLabel(n, type, code, color) {
   return new Paragraph({
     spacing: { before: 30, after: 30 },

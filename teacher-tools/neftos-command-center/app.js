@@ -557,11 +557,11 @@
 
   window.loadSampleRoster = function() {
     var sample = [
-      { name: "Sofia R.", wida: "Level 1: Entering", struggling: "MGSE6.NS.4, MGSE6.NS.2" },
-      { name: "Mateo L.", wida: "Level 2: Emerging", struggling: "MGSE6.NS.4, MGSE6.EE.1" },
-      { name: "An C.", wida: "Level 1: Entering", struggling: "MGSE6.NS.4, MGSE6.EE.2" },
-      { name: "Yusuf M.", wida: "Level 3: Developing", struggling: "MGSE6.NS.4, MGSE6.NS.3" },
-      { name: "Li Wei T.", wida: "Level 2: Emerging", struggling: "MGSE6.NS.4, MGSE6.NS.1" }
+      { name: "Sofia R.", wida: "Level 1: Entering", struggling: "MGSE6.NOS.4, MGSE6.NOS.2" },
+      { name: "Mateo L.", wida: "Level 2: Emerging", struggling: "MGSE6.NOS.4, MGSE6.AT.5" },
+      { name: "An C.", wida: "Level 1: Entering", struggling: "MGSE6.NOS.4, MGSE6.AT.6" },
+      { name: "Yusuf M.", wida: "Level 3: Developing", struggling: "MGSE6.NOS.4, MGSE6.NOS.3" },
+      { name: "Li Wei T.", wida: "Level 2: Emerging", struggling: "MGSE6.NOS.4, MGSE6.NOS.1" }
     ];
     localStorage.setItem('neftos.roster.v1', JSON.stringify(sample));
     displayRosterSummary(sample);
@@ -686,7 +686,7 @@
   }
 
   window.generateLessonPrompt = function() {
-    var standard = document.getElementById('lpStandard').value.trim() || 'MGSE6.NS.4';
+    var standard = document.getElementById('lpStandard').value.trim() || 'MGSE6.NOS.4';
     var topic = document.getElementById('lpTopic').value.trim() || 'Greatest Common Factor (GCF) visual models';
     
     var roster = [];
@@ -906,7 +906,7 @@
           <span style="font-weight: 800; font-size: 0.85rem; color: var(--neft-teal-dark); border-bottom: 1px solid var(--neft-line); padding-bottom: 4px; display: block;">📅 ${day}</span>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
             <label style="font-size: 0.78rem; font-weight: normal; margin:0; display: block;">Standard
-              <input type="text" class="planner-input" data-day="${dayKey}" data-field="std" value="${escapeHtml(std)}" placeholder="MGSE6.NS.4" style="min-height:30px; padding:4px 8px; font-size:0.8rem; margin-top:2px; box-sizing: border-box; width: 100%; border: 1px solid var(--neft-line); border-radius: 6px; background: white; color: var(--neft-navy);" />
+              <input type="text" class="planner-input" data-day="${dayKey}" data-field="std" value="${escapeHtml(std)}" placeholder="MGSE6.NOS.4" style="min-height:30px; padding:4px 8px; font-size:0.8rem; margin-top:2px; box-sizing: border-box; width: 100%; border: 1px solid var(--neft-line); border-radius: 6px; background: white; color: var(--neft-navy);" />
             </label>
             <label style="font-size: 0.78rem; font-weight: normal; margin:0; display: block;">Objective
               <input type="text" class="planner-input" data-day="${dayKey}" data-field="obj" value="${escapeHtml(obj)}" placeholder="Find GCF of whole numbers" style="min-height:30px; padding:4px 8px; font-size:0.8rem; margin-top:2px; box-sizing: border-box; width: 100%; border: 1px solid var(--neft-line); border-radius: 6px; background: white; color: var(--neft-navy);" />

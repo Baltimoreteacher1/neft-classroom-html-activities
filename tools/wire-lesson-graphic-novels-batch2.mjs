@@ -7,8 +7,8 @@
  * U10 capstone. Idempotent: skips lessons already wired.
  *
  * Deliberately NOT wired (no Axiom story exists for the standard — go to Cowork
- * as a Unit-1 "number system" batch): 1-1,1-2,1-3 (6.NS.4 factors/GCF/LCM),
- * 1-4 (6.NS.2 multi-digit division), 1-6,1-7 (6.NS.3 decimal ×/÷).
+ * as a Unit-1 "number system" batch): 1-1,1-2,1-3 (6.NOS.4 factors/GCF/LCM),
+ * 1-4 (6.NOS.2 multi-digit division), 1-6,1-7 (6.NOS.3 decimal ×/÷).
  */
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -33,12 +33,12 @@ const EP = {
 
 // classroom lesson -> focused episode (by standard/topic)
 const MAP = {
-  // 6.NS.1 dividing fractions  -> Split the Glitch
+  // 6.NOS.1 dividing fractions  -> Split the Glitch
   "2-1": "u6e1",
   "2-2": "u6e1",
   "2-4": "u6e1",
   "2-5": "u6e1",
-  // 6.RP ratios / rates / conversions
+  // 6.AT ratios / rates / conversions
   "3-2": "u3e1",
   "3-3": "u3e1",
   "3-5": "u3e2",
@@ -46,25 +46,25 @@ const MAP = {
   "3-7": "u3e3",
   "4-1": "u3e2",
   "4-7": "u3e3",
-  // 6.RP.3c percents -> Find the Whole
+  // 6.AT.4 percents -> Find the Whole
   "4-3": "u4e2",
   "4-5": "u4e2",
-  // 6.G.1 area -> Floor Plans
+  // 6.GR.1 area -> Floor Plans
   "5-2": "u5e1",
   "5-3": "u5e1",
   "5-4": "u5e1",
   "5-5": "u5e1",
-  // 6.EE expressions -> The Twin Doors
+  // 6.AT expressions -> The Twin Doors
   "6-2": "u6e3",
   "6-3": "u6e3",
   "6-4": "u6e3",
   "6-5": "u6e3",
   "6-7": "u6e3",
-  // 6.SP statistics
+  // 6.DS statistics
   "8-4": "u2e4",
   "8-6": "u2e1",
   "8-7": "u2e3",
-  // 6.G volume / surface area
+  // 6.GR volume / surface area
   "10-2": "u5e2",
   "10-4": "u5e3",
   "10-5": "u5e3",

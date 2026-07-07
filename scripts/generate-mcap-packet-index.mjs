@@ -44,7 +44,7 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 function readSkill(htmlPath) {
   const html = readFileSync(htmlPath, "utf8");
   const m = html.match(/<title>([^<]*)<\/title>/i);
-  // e.g. "Area of Triangles &amp; Quadrilaterals · MCAP 6.G.A.1 · Neft Teacher"
+  // e.g. "Area of Triangles &amp; Quadrilaterals · MCAP 6.GR.A.1 · Neft Teacher"
   const raw = (m ? m[1] : "").replace(/&amp;/g, "&");
   const parts = raw.split("·").map((s) => s.trim());
   const title = parts[0] || raw;

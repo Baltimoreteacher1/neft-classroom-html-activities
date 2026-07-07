@@ -16,7 +16,7 @@ window.GN_STORY = {
     version: 2,
     level: "Enrichment",
     title: "Decimal Docking Bay: Deep Space",
-    standard: "6.NS.3",
+    standard: "6.NOS.3",
     readingStandard: "RL.6.1",
     assessment: "Graphic Novel U1 #2: Decimal Docking Bay: Deep Space",
     artBase: "../../_art/unit1/",

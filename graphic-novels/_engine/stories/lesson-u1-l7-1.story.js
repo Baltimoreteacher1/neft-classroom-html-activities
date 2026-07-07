@@ -8,7 +8,7 @@ window.GN_STORY = {
     "version": 1,
     "level": "Support",
     "title": "Decimal Division Drive",
-    "standard": "6.NS.3",
+    "standard": "6.NOS.3",
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel u1-l7 #1: Decimal Division Drive",
     "artBase": "../_art/lessons/u1-l7/",

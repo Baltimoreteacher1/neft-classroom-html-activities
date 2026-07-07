@@ -1,4 +1,4 @@
-// Unit 5 — "Area Architect" (CCSS 6.G.A.1)
+// Unit 5 — "Area Architect" (CCSS 6.GR.A.1)
 // Build structures whose footprint matches a target area by placing rectangular
 // and right-triangular pieces on a grid. Premium rebuild against engine3d.
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
@@ -1071,7 +1071,7 @@ export default {
             "Fill the glowing gold shape exactly by placing blocks so the area you build equals the target square units.",
           objectiveEs:
             "Llena la figura dorada colocando bloques para que el área sea igual a las unidades cuadradas indicadas.",
-          standard: "6.G.A.1 · Area of Polygons & Composite Figures",
+          standard: "6.GR.A.1 · Area of Polygons & Composite Figures",
           controls: [
             {
               key: "← ↑ → ↓",

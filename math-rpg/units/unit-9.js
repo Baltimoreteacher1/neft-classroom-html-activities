@@ -1,11 +1,11 @@
-/* Number Realm — Unit 9: Rational Numbers & the Coordinate Plane (6.NS.C) */
+/* Number Realm — Unit 9: Rational Numbers & the Coordinate Plane (6.NOS.C) */
 (function () {
   window.MRPG_UNITS = window.MRPG_UNITS || {};
   window.MRPG_UNITS[9] = {
     id: 9,
     title: "Unit 9",
     realm: "The Coordinate Cosmos",
-    standard: "6.NS.C",
+    standard: "6.NOS.C",
     accent: "#4338ca",
     hero: "🚀",
     tagline: "A starfield mapped by integers and coordinate pairs.",
@@ -16,8 +16,8 @@
         id: "u9c1",
         title: "The Negative Nebula",
         enemy: { name: "Void Drifter", emoji: "🛸" },
-        standard: "6.NS.C.7",
-        topicLabel: "Order integers & absolute value · 6.NS.C.7",
+        standard: "6.NOS.C.8",
+        topicLabel: "Order integers & absolute value · 6.NOS.C.8",
         topics: ["integer-order", "absolute-value"],
         scene:
           "Drifters float on both sides of zero. Order the integers and measure distances from zero to steer through.",
@@ -27,8 +27,8 @@
         id: "u9c2",
         title: "The Four Quadrants",
         enemy: { name: "Quadrant Guardian", emoji: "🧭" },
-        standard: "6.NS.C.6",
-        topicLabel: "Plot points & quadrants · 6.NS.C.6",
+        standard: "6.NOS.C.6",
+        topicLabel: "Plot points & quadrants · 6.NOS.C.6",
         topics: ["quadrant"],
         scene:
           "A guardian patrols the four quadrants. Name where each point lands from the signs of its coordinates.",
@@ -38,8 +38,8 @@
         id: "u9c3",
         title: "The Distance Rift",
         enemy: { name: "Rift Serpent", emoji: "🐉" },
-        standard: "6.NS.C.8",
-        topicLabel: "Distance on the plane · 6.NS.C.8",
+        standard: "6.NOS.C.9",
+        topicLabel: "Distance on the plane · 6.NOS.C.9",
         topics: ["coordinate-distance", "absolute-value"],
         scene:
           "A serpent stretches across a rift between two points. Find the distance to leap across.",
@@ -49,8 +49,8 @@
         id: "u9c4",
         title: "The Mirror Lake",
         enemy: { name: "Reflection Wisp", emoji: "🪞" },
-        standard: "6.NS.C.6",
-        topicLabel: "Opposites & reflections · 6.NS.C.6",
+        standard: "6.NOS.C.6",
+        topicLabel: "Opposites & reflections · 6.NOS.C.6",
         topics: ["opposite-integer", "reflect-coordinate"],
         scene: "A still lake reflects every point across its surface. Find each opposite and reflection to cross.",
         victory: "The lake stills, every reflection perfectly placed.",

@@ -19,7 +19,7 @@
  * A game opts in by loading this script + game-hint-ladder.css and calling:
  *   NeftHintLadder.setProblem({
  *     itemText: "A recipe uses 2 cups flour to 3 cups sugar. ...",
- *     standard: "6.RP.3",
+ *     standard: "6.AT.3",
  *     staticHints: ["...rung1...", "...rung2...", "...rung3..."], // 1-3 strings
  *   });
  * Call setProblem() again whenever a new problem appears; the ladder resets.

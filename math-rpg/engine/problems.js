@@ -9,7 +9,7 @@
  *     choices:  ["A","B","C","D"],   // exactly 4, all distinct
  *     answer:   2,                    // index into choices of the correct one
  *     explain:  "one short teaching sentence (method, not just the number)",
- *     standard: "6.NS.B.4",           // CCSS token (best effort)
+ *     standard: "6.NOS.B.4",           // CCSS token (best effort)
  *     topic:    "Greatest Common Factor"
  *   }
  *
@@ -143,7 +143,7 @@
         prompt: "What is the GCF (greatest common factor) of " + a + " and " + b + "?",
         explain:
           "List the factors of each number and take the largest one they share.",
-        standard: "6.NS.B.4",
+        standard: "6.NOS.B.4",
         topic: "Greatest Common Factor",
       }
     );
@@ -161,7 +161,7 @@
         prompt: "What is the LCM (least common multiple) of " + a + " and " + b + "?",
         explain:
           "List multiples of each number; the first one they share is the LCM.",
-        standard: "6.NS.B.4",
+        standard: "6.NOS.B.4",
         topic: "Least Common Multiple",
       }
     );
@@ -179,7 +179,7 @@
     return build(correct, wrongs, {
       prompt: "Write the prime factorization of " + n + ".",
       explain: "Break the number into a product of primes (2, 3, 5, 7 …).",
-      standard: "6.NS.B.4",
+      standard: "6.NOS.B.4",
       topic: "Prime Factorization",
       fmt: String,
     });
@@ -213,7 +213,7 @@
           op === "×"
             ? "Multiply as whole numbers, then place the decimal by counting total decimal places."
             : "Line up the decimal points, then add or subtract.",
-        standard: "6.NS.B.3",
+        standard: "6.NOS.B.3",
         topic: "Decimal Operations",
         fmt: num,
       }
@@ -227,7 +227,7 @@
     return build(q, [q + 1, q - 1, Math.round(a / (b + 1))], {
       prompt: "Divide: " + a + " ÷ " + b,
       explain: "Use long division: how many groups of " + b + " fit into " + a + "?",
-      standard: "6.NS.B.2",
+      standard: "6.NOS.B.2",
       topic: "Divide Multi-Digit Numbers",
     });
   }
@@ -263,7 +263,7 @@
           "Divide the fractions: " + n1 + "/" + d1 + " ÷ " + n2 + "/" + d2,
         explain:
           "Keep the first fraction, change ÷ to ×, and flip the second (multiply by the reciprocal).",
-        standard: "6.NS.A.1",
+        standard: "6.NOS.A.1",
         topic: "Divide Fractions",
         fmt: String,
       }
@@ -278,7 +278,7 @@
       prompt: "Divide: " + w + " ÷ 1/" + d,
       explain:
         "Dividing by 1/" + d + " asks how many " + d + "ths are in " + w + " wholes.",
-      standard: "6.NS.A.1",
+      standard: "6.NOS.A.1",
       topic: "Divide Whole Numbers by Fractions",
     });
   }
@@ -306,7 +306,7 @@
           "  (write " + whole + " and one-" + d + "th as a mixed number)",
         explain:
           "Change the mixed number to an improper fraction, then multiply by the reciprocal.",
-        standard: "6.NS.A.1",
+        standard: "6.NOS.A.1",
         topic: "Divide Mixed Numbers",
         fmt: String,
       }
@@ -330,7 +330,7 @@
           " blue marbles. Write the ratio of red to blue in simplest form.",
         explain:
           "Divide both parts of the ratio by their greatest common factor.",
-        standard: "6.RP.A.1",
+        standard: "6.AT.A.1",
         topic: "Understand Ratios",
         fmt: String,
       }
@@ -347,7 +347,7 @@
       prompt:
         "The ratio " + a + ":" + b + " is equivalent to " + known + ":? — find the missing value.",
       explain: "Find the multiplier: " + known + " ÷ " + a + " = " + k + ", then multiply " + b + " by it.",
-      standard: "6.RP.A.3",
+      standard: "6.AT.A.3",
       topic: "Equivalent Ratios",
     });
   }
@@ -361,7 +361,7 @@
         "A car travels " + total + " miles in " + units +
         " hours. What is the unit rate in miles per hour?",
       explain: "Divide the total by the number of units: " + total + " ÷ " + units + ".",
-      standard: "6.RP.A.2",
+      standard: "6.AT.A.2",
       topic: "Rates and Unit Rates",
     });
   }
@@ -394,7 +394,7 @@
       ]),
       answer: -1, // fixed below
       explain: "Find each unit price ($ ÷ items); the lower one is the better buy.",
-      standard: "6.RP.A.3",
+      standard: "6.AT.A.3",
       topic: "Compare Ratios",
       __fixAnswer: better,
     };
@@ -413,7 +413,7 @@
       {
         prompt: "What is " + p + "% of " + whole + "?",
         explain: "Change the percent to a decimal (" + p + "% = " + p / 100 + ") and multiply.",
-        standard: "6.RP.A.3",
+        standard: "6.AT.A.3",
         topic: "Find the Percent of a Number",
         fmt: num,
       }
@@ -438,7 +438,7 @@
       {
         prompt: "Write the fraction " + row[0] + " as a percent.",
         explain: "A fraction is a percent out of 100: " + row[0] + " = " + row[2] + " = " + row[1] + ".",
-        standard: "6.RP.A.3",
+        standard: "6.AT.A.3",
         topic: "Relate Fractions, Decimals, and Percents",
         fmt: String,
       }
@@ -458,7 +458,7 @@
     return build(real, [amt + conv[2], Math.round(amt / conv[2]) || 1, real + conv[2]], {
       prompt: "Convert " + amt + " " + conv[0] + " to " + conv[1] + ".",
       explain: "1 " + conv[0].replace(/s$/, "") + " = " + conv[2] + " " + conv[1] + ", so multiply by " + conv[2] + ".",
-      standard: "6.RP.A.3",
+      standard: "6.AT.A.3",
       topic: "Convert Measurement Units",
     });
   }
@@ -473,7 +473,7 @@
     var p = build(real, [round((b * h) / 2, 1), b + h, 2 * (b + h)], {
       prompt: "A parallelogram has base " + b + " and height " + h + ". Find its area.",
       explain: "Area of a parallelogram = base × height.",
-      standard: "6.G.A.1",
+      standard: "6.GR.A.1",
       topic: "Area of Parallelograms",
     });
     p.diagram = { kind: "figure", shape: "parallelogram", base: b, height: h };
@@ -487,7 +487,7 @@
     var p = build(real, [b * h, b + h, round((b * h) / 4, 1)], {
       prompt: "A triangle has base " + b + " and height " + h + ". Find its area.",
       explain: "Area of a triangle = ½ × base × height.",
-      standard: "6.G.A.1",
+      standard: "6.GR.A.1",
       topic: "Area of Triangles",
       fmt: num,
     });
@@ -506,7 +506,7 @@
         "A trapezoid has parallel sides " + b1 + " and " + b2 +
         " with height " + h + ". Find its area.",
       explain: "Area of a trapezoid = ½ × (base₁ + base₂) × height.",
-      standard: "6.G.A.1",
+      standard: "6.GR.A.1",
       topic: "Area of Trapezoids",
       fmt: num,
     });
@@ -525,7 +525,7 @@
         "An L-shape is a " + w + "×" + h + " rectangle with a " + s + "×" + s +
         " square added on. Find the total area.",
       explain: "Split the figure into simple shapes, find each area, then add them.",
-      standard: "6.G.A.1",
+      standard: "6.GR.A.1",
       topic: "Area of Composite Figures",
     });
     p.diagram = { kind: "figure", shape: "lshape", w: w, h: h, s: s };
@@ -542,7 +542,7 @@
     return build(real, [base * exp, base + exp, Math.pow(base, exp) + base], {
       prompt: "Evaluate the power: " + base + "^" + exp,
       explain: base + "^" + exp + " means " + base + " multiplied by itself " + exp + " times.",
-      standard: "6.EE.A.1",
+      standard: "6.AT.B.5",
       topic: "Powers and Exponents",
     });
   }
@@ -555,7 +555,7 @@
     return build(real, [a * (x + b), a + x + b, a * x - b], {
       prompt: "Evaluate " + a + "x + " + b + " when x = " + x + ".",
       explain: "Substitute " + x + " for x, then multiply before you add (order of operations).",
-      standard: "6.EE.A.2",
+      standard: "6.AT.B.6",
       topic: "Evaluate Expressions",
     });
   }
@@ -572,7 +572,7 @@
     return build(row[1], row[2], {
       prompt: 'Write an algebraic expression for: "' + row[0] + '."',
       explain: "Translate each word into a symbol; 'more than' adds, 'product' multiplies.",
-      standard: "6.EE.A.2",
+      standard: "6.AT.B.6",
       topic: "Write Algebraic Expressions",
       fmt: String,
     });
@@ -586,7 +586,7 @@
     return build(real, [a + "x + " + c, a * b + "x + " + c, a + "x + " + (a + c)], {
       prompt: "Use the distributive property to expand " + a + "(x + " + c + ").",
       explain: "Multiply the outside number by each term inside: " + a + "·x and " + a + "·" + c + ".",
-      standard: "6.EE.A.3",
+      standard: "6.AT.B.7",
       topic: "The Distributive Property",
       fmt: String,
     });
@@ -600,7 +600,7 @@
     return build(real, [a + b + c + "x", a + "x + " + (b + c), a * b + "x + " + c], {
       prompt: "Simplify by combining like terms: " + a + "x + " + b + "x + " + c,
       explain: "Add the coefficients of the x-terms; the constant stays separate.",
-      standard: "6.EE.A.4",
+      standard: "6.AT.B.7",
       topic: "Simplify Algebraic Expressions",
       fmt: String,
     });
@@ -627,7 +627,7 @@
     return build(real, [x + a, x - 1, x + 1], {
       prompt: prompt,
       explain: "Do the inverse operation to both sides to get x by itself.",
-      standard: "6.EE.B.7",
+      standard: "6.AT.C.8",
       topic: "Solve One-Step Equations",
     });
   }
@@ -647,7 +647,7 @@
     return build(row[1], row[2], {
       prompt: row[0],
       explain: "Let x be the unknown start; the words describe adding " + part + " to reach " + total + ".",
-      standard: "6.EE.B.7",
+      standard: "6.AT.C.8",
       topic: "Write Equations",
       fmt: String,
     });
@@ -660,7 +660,7 @@
       prompt:
         "Which inequality means 'a number x is greater than " + x + "'?",
       explain: "'Greater than' uses the > symbol, open on the larger side.",
-      standard: "6.EE.B.8",
+      standard: "6.AT.C.9",
       topic: "Write Inequalities",
       fmt: String,
     });
@@ -681,7 +681,7 @@
     var p = build(real, [sum, round(sum / (data.length + 1), 2), Math.max.apply(null, data)], {
       prompt: "Find the mean (average) of the data set below.",
       explain: "Add all the values, then divide by how many there are.",
-      standard: "6.SP.B.5",
+      standard: "6.DS.B.6",
       topic: "Mean",
       fmt: num,
     });
@@ -695,7 +695,7 @@
     var p = build(real, [data[2], Math.round((sorted[0] + sorted[4]) / 2), sorted[4]], {
       prompt: "Find the median of the data set below: " + data.join(", "),
       explain: "Put the numbers in order, then take the middle value.",
-      standard: "6.SP.B.5",
+      standard: "6.DS.B.6",
       topic: "Median",
     });
     p.diagram = { kind: "dotplot", values: data };
@@ -709,7 +709,7 @@
     var p = build(real, [mx + mn, mx, mn], {
       prompt: "Find the range of the data set below: " + data.join(", "),
       explain: "Range = greatest value − least value.",
-      standard: "6.SP.B.5",
+      standard: "6.DS.B.6",
       topic: "Range",
     });
     p.diagram = { kind: "dotplot", values: data };
@@ -727,7 +727,7 @@
         "The data set below has a mean of " + m +
         ". Find the mean absolute deviation (MAD).",
       explain: "Find each value's distance from the mean, then average those distances.",
-      standard: "6.SP.B.5",
+      standard: "6.DS.B.6",
       topic: "Mean Absolute Deviation",
       fmt: num,
     });
@@ -754,7 +754,7 @@
       {
         prompt: "Which number is the least (smallest)?  " + uniq.join(",  "),
         explain: "On a number line, the number farthest to the left is least.",
-        standard: "6.NS.C.7",
+        standard: "6.NOS.C.8",
         topic: "Order Integers",
         fmt: String,
       }
@@ -771,7 +771,7 @@
     var p = build(real, [v, 0, real + 1], {
       prompt: "What is | " + v + " |  (the absolute value of " + v + ")?",
       explain: "Absolute value is the distance from 0, always zero or positive.",
-      standard: "6.NS.C.7",
+      standard: "6.NOS.C.8",
       topic: "Absolute Value",
     });
     p.diagram = {
@@ -794,7 +794,7 @@
         prompt: "In which quadrant is the plotted point (" + x + ", " + y + ")?",
         explain:
           "Signs decide the quadrant: (+,+)=I, (−,+)=II, (−,−)=III, (+,−)=IV.",
-        standard: "6.NS.C.6",
+        standard: "6.NOS.C.6",
         topic: "Coordinate Plane",
         fmt: String,
       }
@@ -813,7 +813,7 @@
         "Find the distance between (" + x + ", " + y1 + ") and (" + x + ", " + y2 + ").",
       explain:
         "The x-values match, so the points share a vertical line — subtract the y-values (use absolute value).",
-      standard: "6.NS.C.8",
+      standard: "6.NOS.C.9",
       topic: "Distance on the Coordinate Plane",
     });
     p.diagram = {
@@ -836,7 +836,7 @@
         "A rectangular prism is " + l + " by " + w + " by " + h +
         ". Find its volume.",
       explain: "Volume of a prism = length × width × height.",
-      standard: "6.G.A.2",
+      standard: "6.GR.A.2",
       topic: "Volume of Prisms",
     });
     p.diagram = { kind: "prism", l: l, w: w, h: h };
@@ -853,7 +853,7 @@
         "A box measures " + l + " × " + w + " × " + h +
         " units. Find its volume.",
       explain: "Volume = length × width × height, even when an edge is a fraction/decimal.",
-      standard: "6.G.A.2",
+      standard: "6.GR.A.2",
       topic: "Volume with Fractional Edges",
       fmt: num,
     });
@@ -870,7 +870,7 @@
         "Find the surface area of a rectangular prism that is " +
         l + " × " + w + " × " + h + ".",
       explain: "Surface area = 2(lw + lh + wh) — add the areas of all six faces.",
-      standard: "6.G.A.4",
+      standard: "6.GR.A.4",
       topic: "Surface Area",
     });
     p.diagram = { kind: "prism", l: l, w: w, h: h };
@@ -883,7 +883,7 @@
       prompt:
         "A cube has edge length " + s + ". Using its net, find the total surface area.",
       explain: "A cube's net has 6 equal square faces, so surface area = 6 × s².",
-      standard: "6.G.A.4",
+      standard: "6.GR.A.4",
       topic: "Surface Area from Nets",
     });
     p.diagram = { kind: "cubenet", s: s };
@@ -899,7 +899,7 @@
     return build(outV, [inV + b, b * k + a, inV], {
       prompt: "A ratio table keeps the ratio " + a + " : " + b + ". If the first column shows " + inV + ", what is the second column?",
       explain: "Find the multiplier (" + inV + " ÷ " + a + " = " + k + "), then multiply " + b + " by it.",
-      standard: "6.RP.A.3",
+      standard: "6.AT.A.3",
       topic: "Ratio Tables",
     });
   }
@@ -916,7 +916,7 @@
     return build(scen[1], [round(scen[1] * 2, 2), whole - scen[1], round(whole / p, 2)], {
       prompt: scen[0],
       explain: p + "% = " + p / 100 + "; multiply by " + whole + ".",
-      standard: "6.RP.A.3",
+      standard: "6.AT.A.3",
       topic: "Percent Problems",
       fmt: num,
     });
@@ -928,7 +928,7 @@
     return build(real, [(a + b) * c * c, a + b * c * 2, a * b + c * c], {
       prompt: "Evaluate using order of operations:  " + a + " + " + b + " × " + c + "²",
       explain: "Exponent first (" + c + "² = " + c * c + "), then multiply by " + b + ", then add " + a + ".",
-      standard: "6.EE.A.2",
+      standard: "6.AT.B.6",
       topic: "Order of Operations",
     });
   }
@@ -939,7 +939,7 @@
     return build(correct, [bound, bound - 1, bound - 2], {
       prompt: "Which value is a solution to  x > " + bound + " ?",
       explain: "A solution must be a number greater than " + bound + ".",
-      standard: "6.EE.B.8",
+      standard: "6.AT.C.9",
       topic: "Inequality Solutions",
     });
   }
@@ -950,7 +950,7 @@
     return build(real, [m + x, m * (x + 1), real + m], {
       prompt: "In the equation y = " + m + "x, what is y when x = " + x + "?",
       explain: "Substitute x = " + x + ": y = " + m + " × " + x + ". (x is independent, y depends on it.)",
-      standard: "6.EE.C.9",
+      standard: "6.AT.D.11",
       topic: "Dependent & Independent Variables",
     });
   }
@@ -961,7 +961,7 @@
     var p = build(real, [v, 0, Math.abs(v) + 1], {
       prompt: "What is the opposite of " + v + "?",
       explain: "The opposite of a number is the same distance from 0, on the other side.",
-      standard: "6.NS.C.6",
+      standard: "6.NOS.C.6",
       topic: "Opposites",
     });
     p.diagram = { kind: "numberline", min: -13, max: 13, marks: [{ v: v, label: String(v) }, { v: real, label: String(real) }] };
@@ -977,7 +977,7 @@
     var p = build(fmtPt(rx, ry), [fmtPt(-x, -y), fmtPt(x, y), fmtPt(ry, rx)], {
       prompt: "Reflect the point (" + x + ", " + y + ") across the " + axis + "-axis. What are the new coordinates?",
       explain: "Reflecting across the " + axis + "-axis flips the sign of the " + (axis === "x" ? "y" : "x") + "-coordinate.",
-      standard: "6.NS.C.6",
+      standard: "6.NOS.C.6",
       topic: "Reflecting Points",
       fmt: String,
     });
@@ -1002,7 +1002,7 @@
     return build(stat, nonstat, {
       prompt: "Which of these is a statistical question (one that expects a variety of answers)?",
       explain: "A statistical question anticipates many different answers, not one fixed fact.",
-      standard: "6.SP.A.1",
+      standard: "6.DS.A.1",
       topic: "Statistical Questions",
       fmt: String,
     });
@@ -1016,7 +1016,7 @@
     var p = build(count, [count + 1, Math.max(0, count - 1), n], {
       prompt: "In the dot plot below, how many data points have the value " + target + "?",
       explain: "Count the dots stacked above " + target + ".",
-      standard: "6.SP.B.4",
+      standard: "6.DS.B.5",
       topic: "Read a Dot Plot",
     });
     p.diagram = { kind: "dotplot", values: data };

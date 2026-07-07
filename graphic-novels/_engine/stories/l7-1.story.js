@@ -3,7 +3,7 @@
    Glossary, Mission Complete + Master-Rank challenge.
    All math, answers, distractors, Spanish, sentence frames, hints, and glossary
    are carried verbatim from
-   graphic-novels/lessons/u1-l7/graphic-novel-1.html (6.NS.3).
+   graphic-novels/lessons/u1-l7/graphic-novel-1.html (6.NOS.3).
    New: panels, speech, AXIS-voices-the-misconception (existing distractors only),
    vocab/hint/coach pop-ups. Note: this source has 2 acts (Act 1 + Final). */
 window.GN_STORY = {
@@ -12,7 +12,7 @@ window.GN_STORY = {
     version: 1,
     level: "Support",
     title: "Decimal Division Drive",
-    standard: "6.NS.3",
+    standard: "6.NOS.3",
     readingStandard: "RL.6.1",
     assessment: "Graphic Novel U1 #1: Decimal Division Drive",
     artBase: "../../_art/unit1/",

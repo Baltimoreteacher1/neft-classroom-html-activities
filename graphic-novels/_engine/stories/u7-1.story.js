@@ -3,7 +3,7 @@
    Act 2 (The Locked Boxes), Final (The Vault Mystery), Glossary, Case Solved +
    Master-Rank challenge. All math, answers, distractors, Spanish, sentence
    frames, hints, and glossary are carried verbatim from
-   graphic-novels/unit7/graphic-novel-1.html (6.EE.7).
+   graphic-novels/unit7/graphic-novel-1.html (6.AT.8).
    New: panels, speech, GUMSHOE-voices-the-misconception (operates on ONE side
    only), vocab/hint/coach pop-ups. */
 window.GN_STORY = {
@@ -12,7 +12,7 @@ window.GN_STORY = {
     version: 1,
     level: "Support",
     title: "Detective Case Files: The Equation Mysteries",
-    standard: "6.EE.7",
+    standard: "6.AT.8",
     readingStandard: "RL.6.1",
     assessment:
       "Graphic Novel U7 #1: Detective Case Files: The Equation Mysteries",

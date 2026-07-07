@@ -31,7 +31,7 @@ export const DOMAINS = [
     color: "1FA6A2",
     skills: [
       {
-        code: "6.RP.A.1",
+        code: "6.AT.A.1",
         title: "Understand Ratio Concepts & Language",
         icon: "⚖️",
         summary: "Learn what a ratio is and how to describe a relationship between two amounts using ratio language.",
@@ -93,7 +93,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.RP.A.2",
+        code: "6.AT.A.2",
         title: "Understand Unit Rate",
         icon: "🏷️",
         summary: "Learn that a unit rate tells how much of one thing goes with exactly 1 of another thing.",
@@ -138,7 +138,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.RP.A.3a",
+        code: "6.AT.A.3a",
         title: "Ratio Tables & Equivalent Ratios",
         icon: "📊",
         summary: "Make tables of equivalent ratios and use them to compare and find missing values.",
@@ -183,7 +183,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.RP.A.3b",
+        code: "6.AT.A.3b",
         title: "Solve Unit-Rate Problems",
         icon: "🚗",
         summary: "Use unit rates to solve real problems about speed, price, and steady amounts.",
@@ -228,7 +228,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.RP.A.3c",
+        code: "6.AT.A.3c",
         title: "Percent of a Quantity & Finding the Whole",
         icon: "💯",
         summary: "Find a percent of a number, and find the whole when you know a part and its percent.",
@@ -273,7 +273,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.RP.A.3d",
+        code: "6.AT.A.3d",
         title: "Convert Measurement Units with Ratios",
         icon: "📏",
         summary: "Change from one unit to another using ratio reasoning and conversion facts.",
@@ -327,7 +327,7 @@ export const DOMAINS = [
     color: "6B4FA0",
     skills: [
       {
-        code: "6.NS.A.1",
+        code: "6.NOS.A.1",
         title: "Divide Fractions by Fractions",
         icon: "➗",
         summary: "Divide a fraction by a fraction to find how many groups fit, using models and the keep-change-flip rule.",
@@ -373,7 +373,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.NS.B.2",
+        code: "6.NOS.B.2",
         title: "Divide Multi-Digit Numbers",
         icon: "🧮",
         summary: "Use the standard long-division algorithm to divide multi-digit whole numbers accurately.",
@@ -419,7 +419,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.NS.B.3",
+        code: "6.NOS.B.3",
         title: "Operations with Multi-Digit Decimals",
         icon: "💲",
         summary: "Add, subtract, multiply, and divide decimals using place value and careful point placement.",
@@ -465,7 +465,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.NS.B.4",
+        code: "6.NOS.B.4",
         title: "GCF, LCM, and the Distributive Property",
         icon: "🔢",
         summary: "Find the greatest common factor and least common multiple, then use the GCF to rewrite a sum.",
@@ -511,7 +511,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.NS.C.5",
+        code: "6.NOS.C.5",
         title: "Positive and Negative Numbers in Context",
         icon: "🌡️",
         summary: "Use positive and negative numbers to describe opposite real-world situations like above/below zero.",
@@ -557,7 +557,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.NS.C.6",
+        code: "6.NOS.C.6",
         title: "Number Lines, Opposites & the Coordinate Plane",
         icon: "📍",
         summary: "Plot rational numbers and ordered pairs, and use signs to find opposites and quadrants.",
@@ -603,7 +603,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.NS.C.7",
+        code: "6.NOS.C.8",
         title: "Order Rational Numbers & Absolute Value",
         icon: "↔️",
         summary: "Compare and order rational numbers and use absolute value to describe distance from zero.",
@@ -649,7 +649,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.NS.C.8",
+        code: "6.NOS.C.9",
         title: "Distance on the Coordinate Plane",
         icon: "🗺️",
         summary: "Find the distance between two points that share an x-coordinate or a y-coordinate using absolute value.",
@@ -704,7 +704,7 @@ export const DOMAINS = [
     color: "12355B",
     skills: [
       {
-        code: "6.EE.A.1",
+        code: "6.AT.B.5",
         title: "Write & Evaluate Exponents",
         icon: "🔢",
         summary: "Write repeated multiplication as a power and evaluate powers using whole-number exponents.",
@@ -751,7 +751,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.EE.A.2",
+        code: "6.AT.B.6",
         title: "Write & Read Algebraic Expressions",
         icon: "✏️",
         summary: "Translate words into algebraic expressions and identify their parts, such as terms and coefficients.",
@@ -798,7 +798,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.EE.A.3",
+        code: "6.AT.B.7",
         title: "Generate Equivalent Expressions",
         icon: "🔁",
         summary: "Use the distributive property and combine like terms to write equivalent expressions.",
@@ -844,7 +844,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.EE.A.4",
+        code: "6.AT.B.7",
         title: "Identify Equivalent Expressions",
         icon: "🟰",
         summary: "Decide whether two expressions are equivalent by simplifying or substituting values.",
@@ -890,7 +890,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.EE.B.5",
+        code: "6.AT.C.8",
         title: "Solutions by Substitution",
         icon: "🔍",
         summary: "Understand that solving an equation or inequality means finding values that make it true, tested by substitution.",
@@ -936,7 +936,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.EE.B.6-7",
+        code: "6.AT.C.8-7",
         title: "Variables & One-Step Equations",
         icon: "⚖️",
         summary: "Use variables to represent numbers and solve one-step equations of the form x + p = q and px = q.",
@@ -982,7 +982,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.EE.B.8",
+        code: "6.AT.C.9",
         title: "Write & Graph Inequalities",
         icon: "📏",
         summary: "Write inequalities of the form x > c or x < c for real-world constraints and graph them on a number line.",
@@ -1029,7 +1029,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.EE.C.9",
+        code: "6.AT.D.11",
         title: "Dependent & Independent Variables",
         icon: "📊",
         summary: "Represent relationships between two quantities using equations, tables, and graphs, identifying dependent and independent variables.",
@@ -1084,7 +1084,7 @@ export const DOMAINS = [
     color: "B97A12",
     skills: [
       {
-        code: "6.G.A.1",
+        code: "6.GR.A.1",
         title: "Area of Triangles & Quadrilaterals",
         icon: "📐",
         summary: "Find the area of triangles, special quadrilaterals, and composite shapes by using formulas and breaking shapes into pieces.",
@@ -1131,7 +1131,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.G.A.2",
+        code: "6.GR.A.2",
         title: "Volume with Fractional Edge Lengths",
         icon: "🧊",
         summary: "Find the volume of right rectangular prisms, including ones with fraction or mixed-number edge lengths, using V = l·w·h and V = B·h.",
@@ -1177,7 +1177,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.G.A.3",
+        code: "6.GR.A.3",
         title: "Polygons in the Coordinate Plane",
         icon: "📍",
         summary: "Plot polygon vertices on the coordinate plane and find side lengths when points share an x- or y-value.",
@@ -1223,7 +1223,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.G.A.4",
+        code: "6.GR.A.4",
         title: "Surface Area Using Nets",
         icon: "📦",
         summary: "Use nets to find the surface area of prisms and pyramids by finding the area of every face and adding them.",
@@ -1278,7 +1278,7 @@ export const DOMAINS = [
     color: "C0392B",
     skills: [
       {
-        code: "6.SP.A.1",
+        code: "6.DS.A.1",
         title: "Recognize Statistical Questions",
         icon: "📊",
         summary: "A statistical question is one you expect to get different answers (variability) when you collect data.",
@@ -1324,7 +1324,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.SP.A.2",
+        code: "6.DS.A.3",
         title: "Describe a Distribution",
         icon: "📈",
         summary: "Describe a set of data by its center, its spread, and its overall shape.",
@@ -1371,7 +1371,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.SP.A.3",
+        code: "6.DS.A.4",
         title: "Center vs. Variability",
         icon: "⚖️",
         summary: "Measures of center (mean, median) tell what is typical; measures of variability (range, IQR, MAD) tell how spread out the data is.",
@@ -1418,7 +1418,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.SP.B.4",
+        code: "6.DS.B.5",
         title: "Display Data: Dot Plots, Histograms & Box Plots",
         icon: "📉",
         summary: "Numerical data can be shown with dot plots, histograms, and box plots, each useful for seeing center, spread, and shape.",
@@ -1465,7 +1465,7 @@ export const DOMAINS = [
         ]
       },
       {
-        code: "6.SP.B.5",
+        code: "6.DS.B.6",
         title: "Summarize a Data Set in Context",
         icon: "📝",
         summary: "A full summary reports the count, what was measured and its units, measures of center and spread, and what they mean in context.",

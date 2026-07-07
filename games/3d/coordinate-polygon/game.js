@@ -5,7 +5,7 @@ import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 /**
  * Coordinate Polygon — Blueprint Builder.
- * Standard: 6.G.A.3 — Draw polygons in the coordinate plane given the
+ * Standard: 6.GR.A.3 — Draw polygons in the coordinate plane given the
  * coordinates of the vertices; use coordinates to find the length of a side
  * joining points with the same first coordinate or the same second coordinate
  * (apply absolute value to find distances across quadrants).
@@ -37,7 +37,7 @@ const COLORS = {
 // A "shape" task lists vertices in draw order plus the two sides the student
 // will measure (a horizontal side and a vertical side). All vertices share a
 // row or column with a neighbor so every side is axis-aligned — exactly the
-// 6.G.A.3 case where lengths come from subtracting one coordinate.
+// 6.GR.A.3 case where lengths come from subtracting one coordinate.
 //
 // Level 1 = Quadrant I only, friendly rectangles/right shapes, hint ring shown.
 // Level 2 = all four quadrants, so horizontal/vertical lengths require absolute
@@ -1084,7 +1084,7 @@ export default {
           objectiveEs:
             "Mueve la baliza para ubicar cada vértice en su par ordenado, dibujar el polígono y medir sus lados y perímetro.",
           standard:
-            "6.G.A.3 — Polygons in the coordinate plane: draw from vertices, find side lengths",
+            "6.GR.A.3 — Polygons in the coordinate plane: draw from vertices, find side lengths",
           controls: [
             {
               key: "← / → (or A / D)",

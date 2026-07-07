@@ -1,6 +1,6 @@
 /* ============================================================
    NEFT CITY: FOOD TRUCK FACE-OFF — Living School simulation
-   Chapter 3 · 6th grade · 6.RP (ratios, rates, unit rate)
+   Chapter 3 · 6th grade · 6.AT (ratios, rates, unit rate)
    Vanilla JS. No dependencies, no backend, no external APIs.
    All "AI-style" feedback is generated locally from student work.
 

@@ -284,7 +284,7 @@
     // punctuation and OR-combines, so the shared "6" token matches every
     // lesson — instead match the standard prefix directly against each
     // lesson's indexed text (the same source the standard dropdowns derive
-    // from), so "6.rp.3" also captures "6.rp.3a/b/c" but nothing outside 6.RP.
+    // from), so "6.rp.3" also captures "6.rp.3a/b/c" but nothing outside 6.AT.
     if (/^6\.(rp|ns|ee|g|sp)(\.[0-9]+[a-z]?)?$/.test(q.toLowerCase())) {
       var token = q.toLowerCase();
       return unitsData
@@ -1388,26 +1388,26 @@
     { token: "", code: "All", short: "", label: "All standards" },
     {
       token: "6.rp",
-      code: "6.RP",
+      code: "6.AT",
       short: "Ratios",
       label: "Ratios & Proportional Relationships",
     },
     {
       token: "6.ns",
-      code: "6.NS",
+      code: "6.NOS",
       short: "Number System",
       label: "The Number System",
     },
     {
       token: "6.ee",
-      code: "6.EE",
+      code: "6.AT",
       short: "Expressions",
       label: "Expressions & Equations",
     },
-    { token: "6.g", code: "6.G", short: "Geometry", label: "Geometry" },
+    { token: "6.g", code: "6.GR", short: "Geometry", label: "Geometry" },
     {
       token: "6.sp",
-      code: "6.SP",
+      code: "6.DS",
       short: "Statistics",
       label: "Statistics & Probability",
     },
@@ -1434,7 +1434,7 @@
     }
   }
 
-  // Format a raw standard token (e.g. "6.rp.3a") for display ("6.RP.3a").
+  // Format a raw standard token (e.g. "6.rp.3a") for display ("6.AT.3a").
   // Only the domain letters are upper-cased; the CCSS sub-letter stays lower.
   function displayStd(code) {
     return code.replace(/^(6\.)(rp|ns|ee|g|sp)(\..*)$/i, function (_, p1, p2, p3) {
@@ -1571,7 +1571,7 @@
     wrap.querySelectorAll(".hub-standard-chip").forEach(function (chip) {
       var tok = chip.dataset.token;
       // A domain chip lights up for its own token AND for any specific
-      // standard inside it (e.g. "6.rp.3" lights the 6.RP chip).
+      // standard inside it (e.g. "6.rp.3" lights the 6.AT chip).
       var on = tok !== "" && (val === tok || val.indexOf(tok + ".") === 0);
       if (on) matched = true;
       chip.setAttribute("aria-pressed", on ? "true" : "false");

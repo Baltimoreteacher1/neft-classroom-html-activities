@@ -52,40 +52,40 @@ export function detectVisualTopic(config) {
   const title = String(config.title || "").toLowerCase();
   const unit = Number(config.unit) || 0;
 
-  if (standard === "6.EE.1" || /exponent|power/i.test(title)) return "exponents";
-  if (/inequal/i.test(title) || standard === "6.EE.5" || standard === "6.EE.8")
+  if (standard === "6.AT.5" || /exponent|power/i.test(title)) return "exponents";
+  if (/inequal/i.test(title) || standard === "6.AT.8" || standard === "6.AT.9")
     return "inequalities";
-  if (/equation/i.test(title) || standard === "6.EE.6" || standard === "6.EE.7") return "equations";
+  if (/equation/i.test(title) || standard === "6.AT.8" || standard === "6.AT.8") return "equations";
   // A graphing lesson (e.g. "Graph Ratio Tables") is about plotting on the plane,
   // so the coordinate-plane visual fits better than a ratio table — check before ratios.
   if (/graph/i.test(title) && /ratio|coordinate|plane|plot|ordered pair/i.test(title))
     return "coordinate-plane";
   // Properties of operations (commutative/associative/identity/distributive) is a
   // distinct concept from naming the parts of an expression, even though both can
-  // carry standard 6.EE.3. Detect by title so the big-idea visual matches the lesson.
+  // carry standard 6.AT.7. Detect by title so the big-idea visual matches the lesson.
   if (/propert/i.test(title) || /distributive/i.test(title)) return "properties";
   if (
-    standard.startsWith("6.EE.2") ||
-    standard === "6.EE.3" ||
-    standard === "6.EE.4" ||
+    standard.startsWith("6.AT.6") ||
+    standard === "6.AT.7" ||
+    standard === "6.AT.7" ||
     /express|algebraic|variable|coefficient|like term|simplif|equivalent expression/i.test(title)
   )
     return "expressions";
-  if (standard.startsWith("6.RP") || /\bratio|unit rate|\brate\b|percent/i.test(title))
+  if (standard.startsWith("6.AT") || /\bratio|unit rate|\brate\b|percent/i.test(title))
     return "ratios";
-  if (unit === 5 || standard === "6.G.1") return "area";
-  if (standard === "6.G.2" || /volume/i.test(title)) return "volume";
-  if (standard === "6.G.4" || /surface/i.test(title)) return "surface-area";
+  if (unit === 5 || standard === "6.GR.1") return "area";
+  if (standard === "6.GR.2" || /volume/i.test(title)) return "volume";
+  if (standard === "6.GR.4" || /surface/i.test(title)) return "surface-area";
   if (
-    standard.startsWith("6.SP") ||
+    standard.startsWith("6.DS") ||
     /box plot|dot plot|histogram|display data|data distribution/i.test(title)
   )
     return "statistics";
   if (/coordinate|quadrant|reflect|distance on/i.test(title)) return "coordinate-plane";
   if (/integer|absolute|rational number/i.test(title)) return "number-line";
-  if (standard.startsWith("6.NS.1") || /fraction|mixed number/i.test(title)) return "fractions";
-  if (standard === "6.NS.2" || standard === "6.NS.3" || /decimal/i.test(title)) return "decimals";
-  if (standard === "6.NS.4" || /prime|factor|lcm|gcf|multiple/i.test(title)) return "factors";
+  if (standard.startsWith("6.NOS.1") || /fraction|mixed number/i.test(title)) return "fractions";
+  if (standard === "6.NOS.2" || standard === "6.NOS.3" || /decimal/i.test(title)) return "decimals";
+  if (standard === "6.NOS.4" || /prime|factor|lcm|gcf|multiple/i.test(title)) return "factors";
   if (/divide multi/i.test(title)) return "decimals";
   return "fallback";
 }

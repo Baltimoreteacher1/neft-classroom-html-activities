@@ -4,7 +4,7 @@ window.GN_STORY = {
     version: 1,
     level: "Support",
     title: "x",
-    standard: "6.NS.4",
+    standard: "6.NOS.4",
     readingStandard: "RL.6.1",
     assessment: "x",
     artBase: "../_art/unit1/",

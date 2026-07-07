@@ -8,7 +8,7 @@ window.GN_STORY = {
     "version": 2,
     "level": "Enrichment",
     "title": "Decimal Division Drive: Deep Space",
-    "standard": "6.NS.3",
+    "standard": "6.NOS.3",
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel u1-l7 #2: Decimal Division Drive: Deep Space",
     "artBase": "../_art/lessons/u1-l7/",

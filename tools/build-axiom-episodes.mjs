@@ -66,7 +66,7 @@ const SPECS = [
     epcovers: "numerical patterns &middot; two-rule sequences &middot; V = l&times;w&times;h",
   },
 
-  /* ---- UNIT 7 · Below Zero (6.NS.C.5–8, 6.G.A.3) ---- */
+  /* ---- UNIT 7 · Below Zero (6.NOS.C.5–8, 6.GR.A.3) ---- */
   {
     slug: "u7e1",
     unit: 7,
@@ -80,7 +80,7 @@ const SPECS = [
     lessons: "Lessons 7-1 &amp; 7-2",
     topic: "INTEGERS &middot; ORDERING",
     eplabel: "E1 · Lights Out",
-    epcovers: "integers &amp; opposites &middot; ordering rationals &middot; 6.NS.C.5–7",
+    epcovers: "integers &amp; opposites &middot; ordering rationals &middot; 6.NOS.C.5–7",
   },
   {
     slug: "u7e2",
@@ -95,7 +95,7 @@ const SPECS = [
     lessons: "Lesson 7-3",
     topic: "ABSOLUTE VALUE",
     eplabel: "E2 · Signal in the Snow",
-    epcovers: "absolute value as distance &middot; 6.NS.C.7",
+    epcovers: "absolute value as distance &middot; 6.NOS.C.8",
   },
   {
     slug: "u7e3",
@@ -110,10 +110,10 @@ const SPECS = [
     lessons: "Lessons 7-4, 7-5 &amp; 7-6",
     topic: "COORDINATE PLANE",
     eplabel: "E3 · The Grid Map",
-    epcovers: "four quadrants &middot; distance &middot; polygons &middot; 6.NS.C.6/8 · 6.G.A.3",
+    epcovers: "four quadrants &middot; distance &middot; polygons &middot; 6.NOS.C.6/8 · 6.GR.A.3",
   },
 
-  /* ---- UNIT 8 · The Balance Vault (6.EE.B.5–8) ---- */
+  /* ---- UNIT 8 · The Balance Vault (6.AT.C.8–8) ---- */
   {
     slug: "u8e1",
     unit: 8,
@@ -127,7 +127,7 @@ const SPECS = [
     lessons: "Lessons 8-1 &amp; 8-2",
     topic: "SOLUTIONS &middot; ONE-STEP + / −",
     eplabel: "E1 · The Antechamber",
-    epcovers: "solutions by substitution &middot; one-step + and − &middot; 6.EE.B.5/7",
+    epcovers: "solutions by substitution &middot; one-step + and − &middot; 6.AT.C.8/7",
   },
   {
     slug: "u8e2",
@@ -142,7 +142,7 @@ const SPECS = [
     lessons: "Lesson 8-3",
     topic: "ONE-STEP × / ÷",
     eplabel: "E2 · The Gear Locks",
-    epcovers: "one-step × and ÷ equations &middot; 6.EE.B.6/7",
+    epcovers: "one-step × and ÷ equations &middot; 6.AT.C.8/7",
   },
   {
     slug: "u8e3",
@@ -157,10 +157,10 @@ const SPECS = [
     lessons: "Lessons 8-4, 8-5 &amp; 8-6",
     topic: "INEQUALITIES",
     eplabel: "E3 · The Fog Gallery",
-    epcovers: "write &amp; graph inequalities &middot; solution sets &middot; 6.EE.B.8",
+    epcovers: "write &amp; graph inequalities &middot; solution sets &middot; 6.AT.C.9",
   },
 
-  /* ---- UNIT 9 · Cause & Effect (6.EE.C.9) ---- */
+  /* ---- UNIT 9 · Cause & Effect (6.AT.D.11) ---- */
   {
     slug: "u9e1",
     unit: 9,
@@ -174,7 +174,7 @@ const SPECS = [
     lessons: "Lessons 9-1 &amp; 9-2",
     topic: "VARIABLES &middot; GRAPHS",
     eplabel: "E1 · Lines That Talk",
-    epcovers: "independent &amp; dependent variables &middot; reading graphs &middot; 6.EE.C.9",
+    epcovers: "independent &amp; dependent variables &middot; reading graphs &middot; 6.AT.D.11",
   },
   {
     slug: "u9e2",
@@ -189,7 +189,7 @@ const SPECS = [
     lessons: "Lessons 9-3, 9-4 &amp; 9-5",
     topic: "TABLES → EQUATIONS",
     eplabel: "E2 · The Rule in the Table",
-    epcovers: "tables to equations &middot; coordinate pairs &middot; apply &middot; 6.EE.C.9",
+    epcovers: "tables to equations &middot; coordinate pairs &middot; apply &middot; 6.AT.D.11",
   },
 
   /* ---- UNIT 10 · Boundless (capstone remix) ---- */

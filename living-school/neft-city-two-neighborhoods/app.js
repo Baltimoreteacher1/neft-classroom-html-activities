@@ -1,6 +1,6 @@
 /* ============================================================
    NEFT CITY: TALE OF TWO NEIGHBORHOODS — Living School simulation
-   Chapter 5 · 6.SP measures of variability (range, quartiles, IQR)
+   Chapter 5 · 6.DS measures of variability (range, quartiles, IQR)
    Vanilla JS. No dependencies, no backend, no external APIs.
    All "AI-style" feedback is generated locally from student work.
 

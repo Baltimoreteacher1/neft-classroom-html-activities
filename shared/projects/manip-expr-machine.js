@@ -10,7 +10,7 @@
    Students tap − / + to change the coefficient a, the variable x, and the
    constant b. The widget SHOWS a groups of x tiles plus b single tiles and
    the worked evaluation "a·x + b = (a×x) + b = RESULT". Updates live.
-   No dependencies. Injects its own scoped styles once. (6.EE.A)
+   No dependencies. Injects its own scoped styles once. (6.AT.B)
    ========================================================================== */
 (function () {
   "use strict";

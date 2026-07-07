@@ -2,7 +2,7 @@
    Full novel on the comic engine — Act 1 (The Best Buy), Act 2 (The Big Sale),
    Grand Opening (The Best Deal of All), Glossary, Mission Complete + Master-Rank.
    All math, answers, distractors, Spanish, sentence frames, hints, and glossary
-   carried verbatim from graphic-novels/unit4/graphic-novel-1.html (6.RP.2).
+   carried verbatim from graphic-novels/unit4/graphic-novel-1.html (6.AT.2).
    New: panels, speech, PENNY-voices-the-misconception, vocab/hint/coach pop-ups. */
 window.GN_STORY = {
   meta: {
@@ -10,7 +10,7 @@ window.GN_STORY = {
     version: 1,
     level: "Support",
     title: "Shopping Mall Mogul &#128717;&#65039;",
-    standard: "6.RP.2",
+    standard: "6.AT.2",
     readingStandard: "RL.6.1",
     assessment: "Graphic Novel U4 #1: Shopping Mall Mogul",
     artBase: "../_art/unit4/",

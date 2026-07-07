@@ -3,7 +3,7 @@
    missing-dimension problems, optional "Captain's Challenge" bonus rounds
    (non-gating, still scored), English-only (source has no Spanish), 10-term
    codex. All math/answers/distractors/hints/glossary carried verbatim from
-   graphic-novels/unit5/graphic-novel-2.html (6.G.1).
+   graphic-novels/unit5/graphic-novel-2.html (6.GR.1).
    New: panels, speech, BOLT-voices-the-misconception (slant-as-height / forgets
    ÷2), vocab pop-ups. */
 window.GN_STORY = {
@@ -12,7 +12,7 @@ window.GN_STORY = {
     version: 2,
     level: "Enrichment",
     title: "Theme Park Engineer: Area Architect &#127906;",
-    standard: "6.G.1",
+    standard: "6.GR.1",
     readingStandard: "RL.6.1",
     assessment: "Graphic Novel U5 #2: Theme Park Engineer: Area Architect",
     artBase: "../_art/unit5/",

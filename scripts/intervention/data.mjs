@@ -12,7 +12,7 @@ export const TOPICS = [
     title: "Whole-Number Operations & Fluency",
     icon: "🔢",
     accent: "#205fa6",
-    standard: "Builds 6.NS.B.2–3",
+    standard: "Builds 6.NOS.B.2–3",
     domain: "Number & Operations",
     blurb:
       "Rebuild fast, accurate multi-digit multiplication and long division — the engine behind every Grade 6 unit.",
@@ -496,7 +496,7 @@ export const TOPICS = [
     title: "Factors, Multiples & Primes",
     icon: "🧱",
     accent: "#0891b2",
-    standard: "Builds 6.NS.B.4",
+    standard: "Builds 6.NOS.B.4",
     domain: "Number & Operations",
     blurb:
       "Find factors, multiples, GCF and LCM — the toolkit for simplifying fractions and solving ratio problems.",
@@ -971,7 +971,7 @@ export const TOPICS = [
     title: "Fraction Sense",
     icon: "🍕",
     accent: "#c2410c",
-    standard: "Builds 6.NS.A.1",
+    standard: "Builds 6.NOS.A.1",
     domain: "Fractions & Decimals",
     blurb:
       "Compare and compute with fractions with real understanding — the make-or-break skill for ratios and rates.",
@@ -1440,7 +1440,7 @@ export const TOPICS = [
     title: "Decimals & Place Value",
     icon: "💯",
     accent: "#2c7d6b",
-    standard: "Builds 6.NS.B.3",
+    standard: "Builds 6.NOS.B.3",
     domain: "Fractions & Decimals",
     blurb:
       "Read, compare, round, and compute with decimals — the foundation for money, measurement, and percents.",
@@ -1909,7 +1909,7 @@ export const TOPICS = [
     title: "Ratios & Rates",
     icon: "⚖️",
     accent: "#7c3aed",
-    standard: "Builds 6.RP.A.1–2",
+    standard: "Builds 6.AT.A.1–2",
     domain: "Ratios & Percents",
     blurb:
       "Make sense of ratios and unit rates with tables and bar models — the heart of Grade 6 math.",
@@ -2424,7 +2424,7 @@ export const TOPICS = [
     title: "Percents & Proportions",
     icon: "📊",
     accent: "#9333ea",
-    standard: "Builds 6.RP.A.3c",
+    standard: "Builds 6.AT.A.3c",
     domain: "Ratios & Percents",
     blurb:
       "Convert fractions, decimals, and percents and solve real percent problems — discounts, tax, and tips.",
@@ -2887,7 +2887,7 @@ export const TOPICS = [
     title: "Integers & the Number Line",
     icon: "🌡️",
     accent: "#0e7490",
-    standard: "Builds 6.NS.C.5–7",
+    standard: "Builds 6.NOS.C.5–7",
     domain: "Integers & Coordinate Plane",
     blurb:
       "Order negatives, find absolute value, and add and subtract integers — essential for algebra and data.",
@@ -3356,7 +3356,7 @@ export const TOPICS = [
     title: "The Coordinate Plane",
     icon: "🧭",
     accent: "#0d9488",
-    standard: "Builds 6.NS.C.6,8",
+    standard: "Builds 6.NOS.C.6,8",
     domain: "Integers & Coordinate Plane",
     blurb:
       "Plot and read points in all four quadrants and measure distance — the bridge to graphing and geometry.",
@@ -3836,7 +3836,7 @@ export const TOPICS = [
     title: "Expressions & Properties",
     icon: "🧮",
     accent: "#be123c",
-    standard: "Builds 6.EE.A.1–4",
+    standard: "Builds 6.AT.B.5–4",
     domain: "Expressions & Equations",
     blurb:
       "Read, write, and evaluate expressions with exponents and properties — the gateway to algebra.",
@@ -4305,7 +4305,7 @@ export const TOPICS = [
     title: "One-Step Equations & Inequalities",
     icon: "➗",
     accent: "#db2777",
-    standard: "Builds 6.EE.B.5–8",
+    standard: "Builds 6.AT.C.8–8",
     domain: "Expressions & Equations",
     blurb:
       "Solve one-step equations and graph simple inequalities — turning word problems into algebra.",
@@ -4820,7 +4820,7 @@ export const TOPICS = [
     title: "Area, Surface Area & Volume",
     icon: "📐",
     accent: "#ca8a04",
-    standard: "Builds 6.G.A.1–4",
+    standard: "Builds 6.GR.A.1–4",
     domain: "Geometry & Data",
     blurb:
       "Find area, surface area, and volume of real shapes — triangles, prisms, and composite figures.",
@@ -5300,7 +5300,7 @@ export const TOPICS = [
     title: "Statistics & Data",
     icon: "📈",
     accent: "#65a30d",
-    standard: "Builds 6.SP.A–B",
+    standard: "Builds 6.DS.A–B",
     domain: "Geometry & Data",
     blurb:
       "Ask statistical questions and summarize data with center, spread, and graphs — making sense of numbers.",

@@ -4,7 +4,7 @@ import * as R from "./room-state.js";
 
 const room = R.makeRoom({
   code: "MATH42",
-  standard: "6.RP.A.2",
+  standard: "6.AT.A.2",
   title: "Unit Rate Race",
   questions: [
     { prompt: "12 apples for $6, unit price?", choices: ["$0.50", "$2", "$3"], answerIndex: 0, skill: "unit-rate", limitMs: 20000 },
@@ -57,7 +57,7 @@ assert.ok(lb[0].score >= lb[1].score, "leaderboard sorted desc");
 const results = R.toResults(room, "2026-06-19T12:00:00Z");
 assert.equal(results.length, 2);
 const avaRes = results.find((r) => r.studentAlias === "Ava");
-assert.equal(avaRes.standard, "6.RP.A.2");
+assert.equal(avaRes.standard, "6.AT.A.2");
 assert.equal(avaRes.scorePercent, 50, "Ava: 1/2 correct => 50%");
 assert.equal(avaRes.schema, "nt_result_v1");
 assert.equal(avaRes.activityId, "live:MATH42");

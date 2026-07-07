@@ -2,7 +2,7 @@
    Full novel on the comic engine. Enrichment tier: harder numbers, optional
    "Producer's Challenge" bonus rounds (non-gating, still scored), English-only
    (source has no Spanish), 10-term codex. All math/answers/distractors/glossary
-   carried verbatim from graphic-novels/unit6/graphic-novel-2.html (6.EE.2c).
+   carried verbatim from graphic-novels/unit6/graphic-novel-2.html (6.AT.6c).
    New: panels, speech, ECHO-voices-the-misconception, vocab pop-ups. */
 window.GN_STORY = {
   meta: {
@@ -10,7 +10,7 @@ window.GN_STORY = {
     version: 2,
     level: "Enrichment",
     title: "Festival Producer: Power Up the Show 🎤",
-    standard: "6.EE.2c",
+    standard: "6.AT.6c",
     readingStandard: "RL.6.1",
     assessment: "Graphic Novel U6 #2: Festival Producer: Power Up the Show",
     artBase: "../_art/unit6/",

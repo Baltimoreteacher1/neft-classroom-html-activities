@@ -4,7 +4,7 @@
    Enrichment tier: harder numbers, optional "Globetrotter Challenge" bonus rounds
    (non-gating, still scored), English-only (source has no Spanish), 10-term codex.
    All math/answers/distractors/glossary carried verbatim from
-   graphic-novels/unit3/graphic-novel-2.html (6.RP.3a). Protagonist = The Traveler
+   graphic-novels/unit3/graphic-novel-2.html (6.AT.3a). Protagonist = The Traveler
    (you, "Maya"); companion = COMPASS, a travel drone that compares raw totals
    instead of the ratio/rate. */
 window.GN_STORY = {
@@ -13,7 +13,7 @@ window.GN_STORY = {
     version: 2,
     level: "Enrichment",
     title: "Global Travel Planner",
-    standard: "6.RP.3a",
+    standard: "6.AT.3a",
     readingStandard: "RL.6.1",
     assessment: "Graphic Novel U3 #2: Global Travel Planner",
     artBase: "../_art/unit3/",

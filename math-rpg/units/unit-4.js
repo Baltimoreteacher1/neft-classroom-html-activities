@@ -1,11 +1,11 @@
-/* Number Realm — Unit 4: Rates, Percents, and Unit Rates (6.RP) */
+/* Number Realm — Unit 4: Rates, Percents, and Unit Rates (6.AT) */
 (function () {
   window.MRPG_UNITS = window.MRPG_UNITS || {};
   window.MRPG_UNITS[4] = {
     id: 4,
     title: "Unit 4",
     realm: "Percent Peaks",
-    standard: "6.RP.A.3",
+    standard: "6.AT.A.3",
     accent: "#b45309",
     hero: "🧗",
     tagline: "A mountain range measured entirely in percents and rates.",
@@ -16,8 +16,8 @@
         id: "u4c1",
         title: "The Conversion Crevasse",
         enemy: { name: "Frost Sprite", emoji: "❄️" },
-        standard: "6.RP.A.3",
-        topicLabel: "Fractions, decimals, percents · 6.RP.A.3",
+        standard: "6.AT.A.3",
+        topicLabel: "Fractions, decimals, percents · 6.AT.A.3",
         topics: ["fdp-conversion"],
         scene:
           "A sprite freezes the bridge unless you name each amount three ways. Convert to cross.",
@@ -27,8 +27,8 @@
         id: "u4c2",
         title: "The Percent Ledge",
         enemy: { name: "Cliff Gargoyle", emoji: "🗿" },
-        standard: "6.RP.A.3",
-        topicLabel: "Percent of a number · 6.RP.A.3",
+        standard: "6.AT.A.3",
+        topicLabel: "Percent of a number · 6.AT.A.3",
         topics: ["percent-of-number", "fdp-conversion"],
         scene:
           "A gargoyle demands a toll: find the percent of each number carved in the ledge.",
@@ -38,8 +38,8 @@
         id: "u4c3",
         title: "The Measure Pass",
         enemy: { name: "Unit Yeti", emoji: "🦣" },
-        standard: "6.RP.A.3",
-        topicLabel: "Rates & unit conversion · 6.RP.A.3",
+        standard: "6.AT.A.3",
+        topicLabel: "Rates & unit conversion · 6.AT.A.3",
         topics: ["unit-rate", "measurement-convert"],
         scene:
           "A yeti guards the pass, roaring in mismatched units. Convert measurements and rates to calm it.",
@@ -49,8 +49,8 @@
         id: "u4c4",
         title: "The Discount Market",
         enemy: { name: "Bargain Gremlin", emoji: "🏷️" },
-        standard: "6.RP.A.3",
-        topicLabel: "Percent word problems · 6.RP.A.3",
+        standard: "6.AT.A.3",
+        topicLabel: "Percent word problems · 6.AT.A.3",
         topics: ["percent-word", "percent-of-number"],
         scene: "A gremlin runs a market of tricky discounts and sales. Solve each percent situation to shop safely.",
         victory: "The gremlin grumbles and hands over an honest receipt.",

@@ -3,7 +3,7 @@
  * Regenerate: npm run generate-games2d-data */
 window.Games2DData = {
   "6-rp-1game": {
-    ccss: "6.RP.A.1",
+    ccss: "6.AT.A.1",
     title: "Ratio Kitchen",
     vocab: [
       {
@@ -49,7 +49,7 @@ window.Games2DData = {
     },
   },
   "u3-ratio-rush": {
-    ccss: "6.RP.A.1",
+    ccss: "6.AT.A.1",
     title: "Ratio Rush",
     vocab: [
       {
@@ -107,7 +107,7 @@ window.Games2DData = {
     },
   },
   "u1-factor-frenzy": {
-    ccss: "6.NS.4",
+    ccss: "6.NOS.4",
     title: "Factor Frenzy",
     vocab: [
       {
@@ -157,7 +157,7 @@ window.Games2DData = {
     },
   },
   "6-ee-c-9game": {
-    ccss: "6.EE.C.9",
+    ccss: "6.AT.D.11",
     title: "Variable Blaster",
     vocab: [
       {
@@ -203,7 +203,7 @@ window.Games2DData = {
     },
   },
   "game-equations-quest": {
-    ccss: "6.EE.B.7",
+    ccss: "6.AT.C.8",
     title: "Equation Forge",
     vocab: [
       {
@@ -253,7 +253,7 @@ window.Games2DData = {
     },
   },
   "6-rp-a-2game": {
-    ccss: "6.RP.A.2",
+    ccss: "6.AT.A.2",
     title: "Unit Rate Factory",
     vocab: [
       {
@@ -298,7 +298,7 @@ window.Games2DData = {
     },
   },
   "6-1game": {
-    ccss: "6.NS.1",
+    ccss: "6.NOS.1",
     title: "Fraction Dungeon",
     vocab: [
       {
@@ -342,7 +342,7 @@ window.Games2DData = {
     },
   },
   parallelogramandrhombusgame: {
-    ccss: "6.G.A.1",
+    ccss: "6.GR.A.1",
     title: "Parallelogram Builder",
     vocab: [
       {
@@ -386,7 +386,7 @@ window.Games2DData = {
     },
   },
   "6-ee-9gamereview": {
-    ccss: "6.EE.C.9",
+    ccss: "6.AT.D.11",
     title: "Function Tower",
     vocab: [
       {
@@ -428,7 +428,7 @@ window.Games2DData = {
     },
   },
   "6-rp-a-3game": {
-    ccss: "6.RP.A.3",
+    ccss: "6.AT.A.3",
     title: "Smart Shopper",
     vocab: [
       {
@@ -472,7 +472,7 @@ window.Games2DData = {
     },
   },
   "6-ee-c-9martiangame": {
-    ccss: "6.EE.C.9",
+    ccss: "6.AT.D.11",
     title: "Mars Rover",
     vocab: [
       {
@@ -514,7 +514,7 @@ window.Games2DData = {
     },
   },
   "6-ee-c-9variablevelocitygame": {
-    ccss: "6.EE.C.9",
+    ccss: "6.AT.D.11",
     title: "Variable Velocity",
     vocab: [
       {
@@ -556,7 +556,7 @@ window.Games2DData = {
     },
   },
   variablecomparisongame: {
-    ccss: "6.EE.B.5",
+    ccss: "6.AT.C.8",
     title: "Expression Arena",
     vocab: [
       {
@@ -600,7 +600,7 @@ window.Games2DData = {
     },
   },
   "game-variable-voyage": {
-    ccss: "6.EE.A.2",
+    ccss: "6.AT.B.6",
     title: "Variable Voyage",
     vocab: [
       {
@@ -642,7 +642,7 @@ window.Games2DData = {
     },
   },
   "cloudflare-pages-game-for-6-ee-9": {
-    ccss: "6.EE.B.7",
+    ccss: "6.AT.C.8",
     title: "Equation Leap",
     vocab: [
       {
@@ -685,7 +685,7 @@ window.Games2DData = {
     },
   },
   "6-sp-a-1game-2": {
-    ccss: "6.SP.A.1",
+    ccss: "6.DS.A.1",
     title: "Stat Lab",
     vocab: [
       {
@@ -730,7 +730,7 @@ window.Games2DData = {
     },
   },
   "mean-median-mode-game": {
-    ccss: "6.SP.B.5",
+    ccss: "6.DS.B.6",
     title: "Stat Manager",
     vocab: [
       {
@@ -774,7 +774,7 @@ window.Games2DData = {
     },
   },
   "6-ns-a-1game": {
-    ccss: "6.NS.A.1",
+    ccss: "6.NOS.A.1",
     title: "Deep Dive Fractions",
     vocab: [
       {
@@ -818,7 +818,7 @@ window.Games2DData = {
     },
   },
   "6-ns-b-2game": {
-    ccss: "6.NS.B.2",
+    ccss: "6.NOS.B.2",
     title: "Asteroid Miner",
     vocab: [
       {
@@ -863,7 +863,7 @@ window.Games2DData = {
     },
   },
   "6-ns-b-3game": {
-    ccss: "6.NS.B.3",
+    ccss: "6.NOS.B.3",
     title: "Decimal Kitchen",
     vocab: [
       {
@@ -907,7 +907,7 @@ window.Games2DData = {
     },
   },
   "6-ns-c-5game": {
-    ccss: "6.NS.C.5",
+    ccss: "6.NOS.C.5",
     title: "Temperature Quest",
     vocab: [
       {
@@ -955,7 +955,7 @@ window.Games2DData = {
     },
   },
   "6-ns-c-6game": {
-    ccss: "6.NS.C.6",
+    ccss: "6.NOS.C.6",
     title: "Coordinate Treasure Hunt",
     vocab: [
       {
@@ -1001,7 +1001,7 @@ window.Games2DData = {
     },
   },
   "6-ns-c-8game": {
-    ccss: "6.NS.C.8",
+    ccss: "6.NOS.C.9",
     title: "City Builder",
     vocab: [
       {
@@ -1049,7 +1049,7 @@ window.Games2DData = {
     },
   },
   "6-sp-a-1game": {
-    ccss: "6.SP.A.1",
+    ccss: "6.DS.A.1",
     title: "Question Detective",
     vocab: [
       {

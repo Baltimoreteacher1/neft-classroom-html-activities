@@ -4,7 +4,7 @@ import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 /* ---------------------------------------------------------------------------
  * Unit 2 — Fraction Kitchen (Bakery)
- * Standard: 6.NS.A.1 — interpret and compute quotients of fractions; reason
+ * Standard: 6.NOS.A.1 — interpret and compute quotients of fractions; reason
  * about fractions as parts of a whole and as division of quantities.
  * Theme: a warm bakery where the player fills fraction orders by building
  * pies/cakes from equal slices, combining unlike-denominator slices, and
@@ -1188,7 +1188,7 @@ export default {
           objectiveEs:
             "Lee cada orden, arma o sirve la fracción exacta en el plato y pulsa Servir.",
           standard:
-            "6.NS.A.1 · Fractions: build, combine & divide by a unit fraction",
+            "6.NOS.A.1 · Fractions: build, combine & divide by a unit fraction",
           controls: [
             {
               key: "No buttons",

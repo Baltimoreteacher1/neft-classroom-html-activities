@@ -94,11 +94,11 @@
     if (/integer|negative|absolute value|coordinate|quadrant/.test(t)) return "integers";
     if (/area|polygon|triangle|parallelogram/.test(t)) return "geometry";
     if (/volume|surface area|net|prism/.test(t)) return "volume";
-    if (std.indexOf("6.NS") === 0) return "decimals";
-    if (std.indexOf("6.RP") === 0) return "ratios";
-    if (std.indexOf("6.EE") === 0) return "equations";
-    if (std.indexOf("6.G") === 0) return "geometry";
-    if (std.indexOf("6.SP") === 0) return "statistics";
+    if (std.indexOf("6.NOS") === 0) return "decimals";
+    if (std.indexOf("6.AT") === 0) return "ratios";
+    if (std.indexOf("6.AT") === 0) return "equations";
+    if (std.indexOf("6.GR") === 0) return "geometry";
+    if (std.indexOf("6.DS") === 0) return "statistics";
     return "general";
   }
 

@@ -5,9 +5,9 @@
  * new Axiom City episodes, mapping each episode to the classroom lessons that
  * share its standard. Because the classroom unit order crosses the Axiom/Reveal
  * order, mapping is BY STANDARD, not by unit number:
- *   - classroom Unit 7 (equations & inequalities 6.EE) <- Axiom U8 (Balance Vault)
- *   - classroom Unit 9 (integers & coord plane 6.NS)  <- Axiom U7 (Below Zero)
- *   - classroom 1-5 (add/sub decimals 6.NS.3)          <- Axiom U1 (Pattern Engine)
+ *   - classroom Unit 7 (equations & inequalities 6.AT) <- Axiom U8 (Balance Vault)
+ *   - classroom Unit 9 (integers & coord plane 6.NOS)  <- Axiom U7 (Below Zero)
+ *   - classroom 1-5 (add/sub decimals 6.NOS.3)          <- Axiom U1 (Pattern Engine)
  * Idempotent: skips any lesson that already has a graphicNovel block.
  * Inserts as the last top-level key to keep the JSON diff minimal.
  */

@@ -3,7 +3,7 @@ import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
 import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 // ============================================================================
-// Unit 3 — RATIO RALLY: HIGHWAY TUNER  (CCSS 6.RP.A.2–3)
+// Unit 3 — RATIO RALLY: HIGHWAY TUNER  (CCSS 6.AT.A.2–3)
 // Self-paced highway driving game. The car waits at the start of each segment
 // while you THINK — there is no timer and no forced motion. You tune a dial
 // (↑/↓) to the correct rate, then press Space to confirm. Only a correct
@@ -951,7 +951,7 @@ export default {
             "Your car waits at the start of each segment — there is no timer, so take all the time you need. Work out the rate, use ↑/↓ to set the dial to that number, then press Space. Only a correct answer drives the car forward. On fuel stops, steer to the cheapest pump ($ ÷ liters) and press Space.",
           objectiveEs:
             "Tu auto espera al inicio de cada tramo — no hay reloj, tómate todo el tiempo que necesites. Calcula la razón, usa ↑/↓ para poner ese número en el medidor y presiona Espacio. Solo una respuesta correcta hace avanzar el auto. En la gasolinera, ve a la bomba más barata ($ ÷ litros) y presiona Espacio.",
-          standard: "6.RP.A.2–3 · Rates, Unit Rates & Percent",
+          standard: "6.AT.A.2–3 · Rates, Unit Rates & Percent",
           controls: [
             {
               key: "↑ / ↓",

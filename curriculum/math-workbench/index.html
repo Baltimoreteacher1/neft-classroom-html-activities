@@ -4760,7 +4760,7 @@
           g += lab(ox + 5, oy - v * u + 4, v);
         }
         g += lab(ox + 5, oy + 13, "0");
-        // Quadrant labels (6.NS.6) when all four quadrants are visible.
+        // Quadrant labels (6.NOS.6) when all four quadrants are visible.
         if (min < 0 && max > 0) {
           const qlab = (x, y, t) =>
             '<text x="' +
@@ -4871,7 +4871,7 @@
               const sy = (170 / r.height) * (ev.clientY - r.top);
               let deg = (Math.atan2(vy - sy, sx - vx) * 180) / Math.PI;
               if (deg < 0) deg += 360;
-              // Grade 6 (6.G / 4.MD) measures 0–180°; clamp so the readout
+              // Grade 6 (6.GR / 4.MD) measures 0–180°; clamp so the readout
               // matches a standard protractor instead of drifting into reflex.
               if (deg > 180) deg = deg > 270 ? 0 : 180;
               o.deg = Math.max(1, Math.min(180, Math.round(deg)));
@@ -5111,7 +5111,7 @@
       }
 
       /* =====================================================================
-         Grade-6 data, ratio & integer tools (6.RP / 6.NS / 6.SP / 6.EE)
+         Grade-6 data, ratio & integer tools (6.AT / 6.NOS / 6.DS / 6.AT)
          Each returns a DOM element; state lives on the object `o`.
          ===================================================================== */
       function wireToolInput(inp, commit) {
@@ -5134,7 +5134,7 @@
         return i;
       }
 
-      /* --- Double number line (6.RP.3) --- */
+      /* --- Double number line (6.AT.3) --- */
       function buildDblNumLine(o) {
         const STEP = 64,
           PAD = 6;
@@ -5237,7 +5237,7 @@
         return wrap;
       }
 
-      /* --- Integer two-color counters (6.NS.5–7) --- */
+      /* --- Integer two-color counters (6.NOS.5–7) --- */
       function buildChips(o) {
         if (!Array.isArray(o.chips)) o.chips = [];
         const wrap = document.createElement("div");
@@ -5313,7 +5313,7 @@
         });
         // Remove every matched +1/−1 pair at once. The leftover is |sum| chips
         // of the dominant sign, so the Sum is unchanged — the core "zero pairs
-        // make zero" idea (6.NS). No-op (with a nudge) if nothing can cancel.
+        // make zero" idea (6.NOS). No-op (with a nudge) if nothing can cancel.
         cancel.addEventListener("click", (e) => {
           e.stopPropagation();
           const pos = o.chips.filter((v) => v > 0).length;
@@ -5346,7 +5346,7 @@
         return wrap;
       }
 
-      /* --- Dot plot (6.SP.4) --- */
+      /* --- Dot plot (6.DS.5) --- */
       function buildDotPlot(o) {
         const U = 30,
           PAD = 22,
@@ -5487,7 +5487,7 @@
         return wrap;
       }
 
-      /* --- Box-and-whisker plot (6.SP.4) --- */
+      /* --- Box-and-whisker plot (6.DS.5) --- */
       function buildBoxPlot(o) {
         const d = { lo: 2, q1: 5, med: 8, q3: 12, hi: 16 };
         ["lo", "q1", "med", "q3", "hi"].forEach((k) => {
@@ -5641,7 +5641,7 @@
         return wrap;
       }
 
-      /* --- Histogram (6.SP.4) --- */
+      /* --- Histogram (6.DS.5) --- */
       function buildHistogram(o) {
         if (!Array.isArray(o.bins) || !o.bins.length)
           o.bins = [
@@ -5790,7 +5790,7 @@
         return wrap;
       }
 
-      /* --- Ratio table (6.RP.3a) --- */
+      /* --- Ratio table (6.AT.3a) --- */
       function buildRatioTable(o) {
         if (typeof o.cols !== "number") o.cols = 4;
         if (!Array.isArray(o.top)) o.top = [];
@@ -5859,7 +5859,7 @@
         return wrap;
       }
 
-      /* --- Tape / strip diagram (6.RP, 6.EE) --- */
+      /* --- Tape / strip diagram (6.AT, 6.AT) --- */
       function buildTape(o) {
         if (typeof o.parts !== "number") o.parts = 4;
         if (!Array.isArray(o.labels)) o.labels = [];
@@ -5912,7 +5912,7 @@
         return wrap;
       }
 
-      /* --- Inequality number line (6.EE.8) --- */
+      /* --- Inequality number line (6.AT.9) --- */
       function buildIneqLine(o) {
         if (typeof o.min !== "number") o.min = -5;
         if (typeof o.max !== "number") o.max = 5;

@@ -59,7 +59,7 @@
   const QUESTION_DATABASE = {
     ns: [
       {
-        title: "Fractions Division (6.NS.A.1)",
+        title: "Fractions Division (6.NOS.A.1)",
         text: "A container holds <b>4&frac12; cups</b> of sugar. If each cake recipe requires <b>&frac34; cup</b> of sugar, how many complete recipes can be baked?",
         options: ["A) 4 recipes", "B) 6 recipes", "C) 5 recipes", "D) 8 recipes"],
         correctIndex: 1,
@@ -67,7 +67,7 @@
         model: "text",
       },
       {
-        title: "Decimal Division (6.NS.B.3)",
+        title: "Decimal Division (6.NOS.B.3)",
         text: "Evaluate the quotient: <b>14.25 &divide; 1.5</b>",
         options: ["A) 8.5", "B) 9.5", "C) 10.5", "D) 11.25"],
         correctIndex: 1,
@@ -75,7 +75,7 @@
         model: "text",
       },
       {
-        title: "GCF & Distributive Property (6.NS.B.4)",
+        title: "GCF & Distributive Property (6.NOS.B.4)",
         text: "Rewrite <b>36 + 24</b> using the greatest common factor and the distributive property.",
         options: ["A) 6(6 + 4)", "B) 12(3 + 2)", "C) 4(9 + 6)", "D) 12(3 + 4)"],
         correctIndex: 1,
@@ -83,7 +83,7 @@
         model: "text",
       },
       {
-        title: "Multi-Digit Operations (6.NS.B.2)",
+        title: "Multi-Digit Operations (6.NOS.B.2)",
         text: "A school orders <b>1,248</b> pencils packed <b>24</b> to a box. How many full boxes are there?",
         options: ["A) 42 boxes", "B) 52 boxes", "C) 48 boxes", "D) 62 boxes"],
         correctIndex: 1,
@@ -91,7 +91,7 @@
         model: "text",
       },
       {
-        title: "Decimal Multiplication (6.NS.B.3)",
+        title: "Decimal Multiplication (6.NOS.B.3)",
         text: "A ribbon costs <b>$2.35</b> per yard. What is the cost of <b>6.5 yards</b>?",
         options: ["A) $14.28", "B) $15.28", "C) $15.275", "D) $15.30"],
         correctIndex: 1,
@@ -101,7 +101,7 @@
     ],
     rp: [
       {
-        title: "Equivalent Ratios (6.RP.A.3)",
+        title: "Equivalent Ratios (6.AT.A.3)",
         text: "A recipe keeps flour to water at a constant ratio of <b>3 : 5</b>. If the baker uses <b>25 cups of water</b>, how many cups of flour are required?",
         options: ["A) 15 cups", "B) 12 cups", "C) 20 cups", "D) 10 cups"],
         correctIndex: 0,
@@ -109,7 +109,7 @@
         model: "ratio-tape",
       },
       {
-        title: "Unit Rate Application (6.RP.A.2)",
+        title: "Unit Rate Application (6.AT.A.2)",
         text: "A car travels <b>240 miles</b> in <b>4 hours</b>. At this constant speed, how far will it travel in <b>7 hours</b>?",
         options: ["A) 400 miles", "B) 420 miles", "C) 380 miles", "D) 450 miles"],
         correctIndex: 1,
@@ -117,7 +117,7 @@
         model: "text",
       },
       {
-        title: "Better Buy (6.RP.A.2)",
+        title: "Better Buy (6.AT.A.2)",
         text: "Which is the better buy: <b>12 oz for $3.00</b> or <b>20 oz for $4.40</b>?",
         options: [
           "A) 12 oz ($0.25/oz)",
@@ -130,7 +130,7 @@
         model: "text",
       },
       {
-        title: "Percent of a Number (6.RP.A.3c)",
+        title: "Percent of a Number (6.AT.A.3c)",
         text: "A jacket originally costs <b>$80</b> and is on sale for <b>25% off</b>. What is the sale price?",
         options: ["A) $55", "B) $60", "C) $20", "D) $75"],
         correctIndex: 1,
@@ -138,7 +138,7 @@
         model: "text",
       },
       {
-        title: "Ratio Tables (6.RP.A.3a)",
+        title: "Ratio Tables (6.AT.A.3a)",
         text: "If <b>4 tickets cost $18</b>, how much do <b>10 tickets</b> cost at the same rate?",
         options: ["A) $40", "B) $45", "C) $42", "D) $50"],
         correctIndex: 1,
@@ -148,7 +148,7 @@
     ],
     ee: [
       {
-        title: "Solving Equations (6.EE.B.7)",
+        title: "Solving Equations (6.AT.C.8)",
         text: "Solve for x: <b>3x − 5 = 16</b>",
         options: ["A) x = 5", "B) x = 6", "C) x = 7", "D) x = 9"],
         correctIndex: 2,
@@ -156,7 +156,7 @@
         model: "text",
       },
       {
-        title: "Independent & Dependent Variables (6.EE.C.9)",
+        title: "Independent & Dependent Variables (6.AT.D.11)",
         text: "A rental company charges a flat fee of <b>$20 plus $5 per hour</b> (h). Which equation gives the total cost (C)?",
         options: ["A) C = 20h + 5", "B) C = 5h + 20", "C) C = 25h", "D) C = 20 − 5h"],
         correctIndex: 1,
@@ -164,7 +164,7 @@
         model: "text",
       },
       {
-        title: "Evaluating Expressions (6.EE.A.2c)",
+        title: "Evaluating Expressions (6.AT.B.2c)",
         text: "Evaluate <b>2x&sup2; + 3</b> when <b>x = 4</b>.",
         options: ["A) 35", "B) 19", "C) 67", "D) 32"],
         correctIndex: 0,
@@ -172,7 +172,7 @@
         model: "text",
       },
       {
-        title: "Combining Like Terms (6.EE.A.3)",
+        title: "Combining Like Terms (6.AT.B.7)",
         text: "Simplify the expression: <b>5x + 3 + 2x − 1</b>",
         options: ["A) 7x + 2", "B) 10x", "C) 7x + 4", "D) 8x + 2"],
         correctIndex: 0,
@@ -180,7 +180,7 @@
         model: "text",
       },
       {
-        title: "One-Step Inequalities (6.EE.B.8)",
+        title: "One-Step Inequalities (6.AT.C.9)",
         text: "Which value of x makes the inequality <b>x + 4 &gt; 9</b> true?",
         options: ["A) x = 3", "B) x = 5", "C) x = 6", "D) x = 4"],
         correctIndex: 2,
@@ -190,7 +190,7 @@
     ],
     g: [
       {
-        title: "Triangle Area (6.G.A.1)",
+        title: "Triangle Area (6.GR.A.1)",
         text: "A triangular sail has a base of <b>18 units</b> and a height of <b>8 units</b>. What is its area?",
         options: ["A) 144 sq units", "B) 72 sq units", "C) 36 sq units", "D) 90 sq units"],
         correctIndex: 1,
@@ -198,7 +198,7 @@
         model: "text",
       },
       {
-        title: "Polygons on the Coordinate Grid (6.G.A.3)",
+        title: "Polygons on the Coordinate Grid (6.GR.A.3)",
         text: "A rectangular sandbox has vertices at <b>(2, 2)</b>, <b>(8, 2)</b>, <b>(8, 6)</b>, and <b>(2, 6)</b>. What is its area?",
         options: ["A) 24 sq units", "B) 18 sq units", "C) 20 sq units", "D) 12 sq units"],
         correctIndex: 0,
@@ -206,7 +206,7 @@
         model: "coordinate-grid",
       },
       {
-        title: "Volume of a Prism (6.G.A.2)",
+        title: "Volume of a Prism (6.GR.A.2)",
         text: "A box measures <b>5 cm &times; 4 cm &times; 3 cm</b>. What is its volume?",
         options: ["A) 12 cm&sup3;", "B) 60 cm&sup3;", "C) 47 cm&sup3;", "D) 120 cm&sup3;"],
         correctIndex: 1,
@@ -214,7 +214,7 @@
         model: "text",
       },
       {
-        title: "Surface Area (6.G.A.4)",
+        title: "Surface Area (6.GR.A.4)",
         text: "What is the surface area of a cube with edge length <b>3 cm</b>?",
         options: ["A) 27 cm&sup2;", "B) 54 cm&sup2;", "C) 36 cm&sup2;", "D) 18 cm&sup2;"],
         correctIndex: 1,
@@ -222,7 +222,7 @@
         model: "text",
       },
       {
-        title: "Parallelogram Area (6.G.A.1)",
+        title: "Parallelogram Area (6.GR.A.1)",
         text: "A parallelogram has a base of <b>12 m</b> and a height of <b>7 m</b>. What is its area?",
         options: ["A) 19 m&sup2;", "B) 84 m&sup2;", "C) 42 m&sup2;", "D) 38 m&sup2;"],
         correctIndex: 1,
@@ -232,7 +232,7 @@
     ],
     sp: [
       {
-        title: "Median (6.SP.B.5c)",
+        title: "Median (6.DS.B.5c)",
         text: "A student scored <b>85, 90, 85, 70, and 95</b> on five quizzes. What is the <b>median</b>?",
         options: ["A) 85", "B) 90", "C) 80", "D) 88"],
         correctIndex: 0,
@@ -240,7 +240,7 @@
         model: "text",
       },
       {
-        title: "Range (6.SP.B.4)",
+        title: "Range (6.DS.B.5)",
         text: "A data set has values <b>2, 3, 5, 8, 12</b>. What is the range?",
         options: ["A) 8", "B) 9", "C) 10", "D) 7"],
         correctIndex: 2,
@@ -248,7 +248,7 @@
         model: "text",
       },
       {
-        title: "Mean (6.SP.B.5c)",
+        title: "Mean (6.DS.B.5c)",
         text: "Find the <b>mean</b> of <b>4, 8, 6, 10, and 2</b>.",
         options: ["A) 5", "B) 6", "C) 7", "D) 8"],
         correctIndex: 1,
@@ -256,7 +256,7 @@
         model: "text",
       },
       {
-        title: "Statistical Questions (6.SP.A.1)",
+        title: "Statistical Questions (6.DS.A.1)",
         text: "Which of these is a <b>statistical question</b>?",
         options: [
           "A) How tall is the teacher?",
@@ -269,7 +269,7 @@
         model: "text",
       },
       {
-        title: "Mean Absolute Deviation (6.SP.B.5c)",
+        title: "Mean Absolute Deviation (6.DS.B.5c)",
         text: "The data set <b>3, 5, 7</b> has a mean of 5. What is its <b>mean absolute deviation</b>?",
         options: ["A) 1", "B) 4/3", "C) 2", "D) 5/3"],
         correctIndex: 1,

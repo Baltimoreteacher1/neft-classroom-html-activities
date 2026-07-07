@@ -3,7 +3,7 @@
    Glossary, Mission Complete + Master-Rank challenge.
    All math, answers, distractors, Spanish, sentence frames, hints, and glossary
    are carried verbatim from
-   graphic-novels/lessons/u1-l7/graphic-novel-2.html (6.NS.3).
+   graphic-novels/lessons/u1-l7/graphic-novel-2.html (6.NOS.3).
    Note: unlike the U1 anchor #2, THIS Enrichment source HAS Spanish — it is
    preserved (fidelity). New: panels, speech, AXIS-voices-the-misconception
    (existing distractors only), vocab/hint/coach pop-ups. Source has 2 acts. */
@@ -13,7 +13,7 @@ window.GN_STORY = {
     version: 2,
     level: "Enrichment",
     title: "Decimal Division Drive: Deep Space",
-    standard: "6.NS.3",
+    standard: "6.NOS.3",
     readingStandard: "RL.6.1",
     assessment: "Graphic Novel U1 #2: Decimal Division Drive: Deep Space",
     artBase: "../../_art/unit1/",
