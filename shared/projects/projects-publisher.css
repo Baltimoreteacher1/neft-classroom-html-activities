@@ -1,0 +1,276 @@
+/* ==========================================================================
+   Projects PUBLISHER — styles for the publisher-grade pedagogy layer.
+   Scoped under body.pro-projects (wizard version pages only). Reuses each
+   unit's accent custom properties with safe fallbacks. Companion to
+   projects-publisher.js; injected by tools/inject-projects-publisher.mjs.
+   ========================================================================== */
+
+/* --- Sentence starter chips ---------------------------------------------- */
+body.pro-projects .pub-starters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 14px;
+}
+
+body.pro-projects .pub-starters-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--blue, #1a6fb5);
+  margin-right: 2px;
+}
+
+body.pro-projects .pub-chip {
+  font: inherit;
+  font-size: 0.82rem;
+  line-height: 1.2;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1.5px solid color-mix(in srgb, var(--blue, #1a6fb5) 45%, transparent);
+  background: color-mix(in srgb, var(--blue, #1a6fb5) 8%, #fff);
+  color: var(--navy, #12395c);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+body.pro-projects .pub-chip:hover {
+  background: color-mix(in srgb, var(--blue, #1a6fb5) 16%, #fff);
+  transform: translateY(-1px);
+}
+
+body.pro-projects .pub-chip:focus-visible {
+  outline: 3px solid var(--gold, #e8a723);
+  outline-offset: 2px;
+}
+
+/* --- Exemplar panel -------------------------------------------------------- */
+body.pro-projects .pub-exemplar {
+  margin: 18px 0;
+  border: 1.5px solid color-mix(in srgb, var(--gold, #e8a723) 55%, transparent);
+  border-radius: 14px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--gold, #e8a723) 10%, #fff), #fff 60%);
+  overflow: hidden;
+}
+
+body.pro-projects .pub-exemplar-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  font-weight: 800;
+  font-size: 1.02rem;
+  color: var(--navy, #12395c);
+  cursor: pointer;
+  list-style: none;
+}
+
+body.pro-projects .pub-exemplar-summary::-webkit-details-marker {
+  display: none;
+}
+
+body.pro-projects .pub-exemplar-summary::after {
+  content: "▾";
+  margin-left: auto;
+  transition: transform 0.2s ease;
+}
+
+body.pro-projects .pub-exemplar[open] .pub-exemplar-summary::after {
+  transform: rotate(180deg);
+}
+
+body.pro-projects .pub-exemplar-summary:focus-visible {
+  outline: 3px solid var(--gold, #e8a723);
+  outline-offset: -3px;
+}
+
+body.pro-projects .pub-exemplar-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--gold, #e8a723);
+  color: #fff;
+  font-size: 0.9rem;
+  flex: none;
+}
+
+body.pro-projects .pub-exemplar-body {
+  padding: 4px 18px 16px;
+}
+
+body.pro-projects .pub-exemplar-intro {
+  margin: 0 0 12px;
+  color: var(--navy, #12395c);
+}
+
+body.pro-projects .pub-trait {
+  border-left: 4px solid var(--teal, #0e8a7d);
+  background: #fff;
+  border-radius: 0 10px 10px 0;
+  padding: 10px 14px;
+  margin: 0 0 10px;
+  box-shadow: 0 1px 4px rgb(18 57 92 / 0.08);
+}
+
+body.pro-projects .pub-trait-name {
+  font-weight: 800;
+  font-size: 0.92rem;
+  color: var(--teal, #0e8a7d);
+  margin-bottom: 4px;
+}
+
+body.pro-projects .pub-trait-sample {
+  margin: 4px 0 6px;
+  padding: 0;
+  border: 0;
+  font-style: italic;
+  color: #33475c;
+  line-height: 1.5;
+}
+
+body.pro-projects .pub-trait-why {
+  font-size: 0.85rem;
+  color: #4a5c6e;
+}
+
+body.pro-projects .pub-exemplar-note {
+  margin: 10px 0 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--navy, #12395c) 75%, #fff);
+}
+
+/* --- Rate My Work self-assessment ----------------------------------------- */
+body.pro-projects .pub-selfassess {
+  margin: 18px 0;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1.5px solid color-mix(in srgb, var(--teal, #0e8a7d) 45%, transparent);
+  background: color-mix(in srgb, var(--teal, #0e8a7d) 6%, #fff);
+}
+
+body.pro-projects .pub-selfassess-title {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  color: var(--navy, #12395c);
+}
+
+body.pro-projects .pub-selfassess-hint {
+  margin: 0 0 14px;
+  font-size: 0.88rem;
+  color: #3d5166;
+}
+
+body.pro-projects .pub-sa-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 8px 0;
+  border-top: 1px dashed color-mix(in srgb, var(--teal, #0e8a7d) 30%, transparent);
+}
+
+body.pro-projects .pub-sa-name {
+  flex: 1 1 180px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--navy, #12395c);
+}
+
+body.pro-projects .pub-sa-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+body.pro-projects .pub-sa-btn {
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1.5px solid color-mix(in srgb, var(--teal, #0e8a7d) 45%, transparent);
+  background: #fff;
+  color: var(--navy, #12395c);
+  cursor: pointer;
+  min-height: 32px;
+}
+
+body.pro-projects .pub-sa-btn.active {
+  background: var(--teal, #0e8a7d);
+  border-color: var(--teal, #0e8a7d);
+  color: #fff;
+}
+
+body.pro-projects .pub-sa-btn:focus-visible {
+  outline: 3px solid var(--gold, #e8a723);
+  outline-offset: 2px;
+}
+
+body.pro-projects .pub-selfassess-summary {
+  margin: 10px 0 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--teal, #0e8a7d);
+  min-height: 1.2em;
+}
+
+body.pro-projects .pub-sa-goal-label {
+  display: block;
+  margin: 12px 0 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--navy, #12395c);
+}
+
+body.pro-projects .pub-sa-goal {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 0.92rem;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid color-mix(in srgb, var(--navy, #12395c) 30%, transparent);
+  background: #fff;
+  resize: vertical;
+}
+
+/* --- Motion / print -------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  body.pro-projects .pub-chip,
+  body.pro-projects .pub-exemplar-summary::after {
+    transition: none;
+  }
+}
+
+@media print {
+  body.pro-projects .pub-starters {
+    display: none;
+  }
+
+  body.pro-projects .pub-exemplar {
+    display: none;
+  }
+
+  body.pro-projects .pub-selfassess {
+    border: 1px solid #000;
+    background: #fff;
+  }
+
+  body.pro-projects .pub-sa-btn {
+    display: none;
+  }
+
+  body.pro-projects .pub-sa-btn.active {
+    display: inline-block;
+    background: #fff;
+    color: #000;
+    border-color: #000;
+  }
+}
