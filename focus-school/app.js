@@ -158,6 +158,12 @@
     if (!Array.isArray(state.health.items)) state.health.items = [];
     return state.health.items;
   }
+  // Emoji fields are interpolated into innerHTML without esc() in many card
+  // templates, so strip markup-significant characters at the data layer.
+  function cleanEmoji(v, fallback, max = 8) {
+    const s = typeof v === "string" ? v.replace(/[<>&"']/g, "").trim() : "";
+    return (s || fallback).slice(0, max);
+  }
   // Validate a synced/imported health payload so it can't poison state. Keeps
   // every well-formed movement item (built-in or custom) and only log entries
   // that reference a known item id, and preserves the first-run `seeded` flag.
@@ -174,7 +180,7 @@
       seenIds.add(id);
       items.push([
         id,
-        typeof emoji === "string" && emoji ? emoji.slice(0, 4) : "💪",
+        cleanEmoji(emoji, "💪", 4),
         label.trim().slice(0, 60),
         typeof hint === "string" ? hint.trim().slice(0, 80) : "",
       ]);
@@ -667,37 +673,112 @@
   const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
   const TIME_RE = /^\d{2}:\d{2}$/;
   const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  // A day entry is `{ <routineId>: [checkedStepIds], __awarded: [routineIds],
+  // __ts: { <routineId>: { <stepId>: lastToggleMs } } }`. The __ts map is what
+  // lets check AND uncheck sync both ways: on merge each step's state is decided
+  // by whichever device toggled it most recently (last-write-wins per step), so
+  // an uncheck on one device propagates instead of being resurrected by the
+  // other's older check. Legacy data with no __ts falls back to union (a tie at
+  // timestamp 0 keeps a step checked if either side had it), so nothing is lost.
   function normalizeRoutineLog(log) {
     if (!log || typeof log !== "object") return {};
     const out = {};
     for (const [date, day] of Object.entries(log)) {
       if (!DATE_RE.test(date) || !day || typeof day !== "object") continue;
       const cleanDay = {};
-      for (const [routineId, itemIds] of Object.entries(day)) {
-        if (!Array.isArray(itemIds)) continue;
-        cleanDay[routineId] = [...new Set(itemIds.filter(Boolean).map(String))];
+      for (const [key, val] of Object.entries(day)) {
+        if (key === "__ts") {
+          if (!val || typeof val !== "object" || Array.isArray(val)) continue;
+          const ts = {};
+          for (const [rid, steps] of Object.entries(val)) {
+            if (!steps || typeof steps !== "object" || Array.isArray(steps)) continue;
+            const clean = {};
+            for (const [sid, t] of Object.entries(steps)) {
+              const n = Number(t);
+              if (Number.isFinite(n) && n > 0) clean[String(sid)] = n;
+            }
+            if (Object.keys(clean).length) ts[String(rid)] = clean;
+          }
+          if (Object.keys(ts).length) cleanDay.__ts = ts;
+          continue;
+        }
+        // Everything else (each routine's checked-step array, plus __awarded).
+        if (!Array.isArray(val)) continue;
+        cleanDay[key] = [...new Set(val.filter(Boolean).map(String))];
       }
       out[date] = cleanDay;
     }
     return out;
   }
   function mergeRoutineLogs(localLog, remoteLog) {
-    const merged = normalizeRoutineLog(localLog);
+    const local = normalizeRoutineLog(localLog);
     const remote = normalizeRoutineLog(remoteLog);
-    for (const [date, day] of Object.entries(remote)) {
-      const target = (merged[date] = merged[date] || {});
-      for (const [routineId, itemIds] of Object.entries(day)) {
-        target[routineId] = [...new Set([...(target[routineId] || []), ...itemIds])];
+    const out = {};
+    const dates = new Set([...Object.keys(local), ...Object.keys(remote)]);
+    for (const date of dates) {
+      const a = local[date] || {};
+      const b = remote[date] || {};
+      const aTs = a.__ts || {};
+      const bTs = b.__ts || {};
+      const day = {};
+      const mergedTs = {};
+      const routineIds = new Set(
+        [
+          ...Object.keys(a),
+          ...Object.keys(b),
+          ...Object.keys(aTs),
+          ...Object.keys(bTs),
+        ].filter((k) => k !== "__ts" && k !== "__awarded"),
+      );
+      for (const rid of routineIds) {
+        const aArr = Array.isArray(a[rid]) ? a[rid] : [];
+        const bArr = Array.isArray(b[rid]) ? b[rid] : [];
+        const aStepTs = aTs[rid] || {};
+        const bStepTs = bTs[rid] || {};
+        const steps = new Set([
+          ...aArr,
+          ...bArr,
+          ...Object.keys(aStepTs),
+          ...Object.keys(bStepTs),
+        ]);
+        const chosen = [];
+        const ridTs = {};
+        for (const step of steps) {
+          const at = aStepTs[step] || 0;
+          const bt = bStepTs[step] || 0;
+          let on;
+          if (at > bt) on = aArr.includes(step);
+          else if (bt > at) on = bArr.includes(step);
+          else on = aArr.includes(step) || bArr.includes(step); // tie → union
+          if (on) chosen.push(step);
+          const t = Math.max(at, bt);
+          if (t) ridTs[step] = t;
+        }
+        if (chosen.length) day[rid] = chosen;
+        if (Object.keys(ridTs).length) mergedTs[rid] = ridTs;
       }
+      if (Object.keys(mergedTs).length) day.__ts = mergedTs;
+      const aAw = Array.isArray(a.__awarded) ? a.__awarded : [];
+      const bAw = Array.isArray(b.__awarded) ? b.__awarded : [];
+      const awarded = [...new Set([...aAw, ...bAw])];
+      if (awarded.length) day.__awarded = awarded;
+      out[date] = day;
     }
-    return merged;
+    return out;
+  }
+  // Record that a routine step was just toggled, so the merge can prefer the most
+  // recent check/uncheck across devices. Call on every check, uncheck, and reset.
+  function stampRoutineStep(day, routineId, stepId) {
+    const ts = (day.__ts = day.__ts || {});
+    const r = (ts[routineId] = ts[routineId] || {});
+    r[stepId] = Date.now();
   }
   function normalizeClass(c) {
     c = c || {};
     return {
       id: c.id || uid("c"),
       name: String(c.name || "Class").slice(0, 60),
-      emoji: String(c.emoji || "📚").slice(0, 8),
+      emoji: cleanEmoji(c.emoji, "📚"),
       subject: String(c.subject || "").slice(0, 60),
       teacher: String(c.teacher || "").slice(0, 80),
       email: String(c.email || "").slice(0, 120),
@@ -826,7 +907,7 @@
     return {
       id: r.id || uid("r"),
       name,
-      emoji: String(r.emoji || "🔁").slice(0, 8),
+      emoji: cleanEmoji(r.emoji, "🔁"),
       slot:
         r.slot === undefined
           ? inferRoutineSlot(name)
@@ -866,7 +947,10 @@
     mirror(); // always write the sync mirror right away
     const write = () => {
       idb.set(STATE_KEY, state);
-      if (state.settings.sync.enabled && !suppressPush) cloud.push();
+      if (state.settings.sync.enabled && !suppressPush) {
+        cloud.markActive(); // a local edit → keep the pull loop in its fast cadence
+        cloud.syncOut(); // durable KV PUT + instant live WebSocket fan-out
+      }
       // Re-arm the local notification scheduler whenever data changes (added,
       // edited, or completed reminders all shift what's due today). Defined later;
       // guarded so early saves during init don't throw.
@@ -2018,7 +2102,7 @@
 
     // Direct DOM updates for XP tracking elements to avoid full redrawing
     const xpRemainder = state.points % 100;
-    const circ = 2 * Math.PI * 40; // radius is 40
+    const circ = 2 * Math.PI * 36; // must match the r=36 ring in xpLevelCardHTML
     const offset = circ * (1 - xpRemainder / 100);
 
     document.querySelectorAll(".xp-level-ring circle.prog").forEach((ring) => {
@@ -4038,18 +4122,18 @@
           <p class="meta">June 29 - August 3, 2026</p>
         </div>
         
-        <div class="card status-card" style="margin-bottom: 16px; background: linear-gradient(135deg, var(--teal) 0%, var(--teal-bright) 100%); color: white; border: none;">
+        <div class="card status-card" style="margin-bottom: 16px; background: linear-gradient(135deg, var(--teal) 0%, var(--teal-bright) 100%); color: var(--on-teal); border: none;">
           <div class="head">
             <div>
-              <h3 style="color: white; margin: 0;">Overall Progress</h3>
-              <p style="color: rgba(255,255,255,0.85); font-size: 0.88rem; margin: 4px 0 0 0;">Keep up the great reading habit!</p>
+              <h3 style="color: var(--on-teal); margin: 0;">Overall Progress</h3>
+              <p style="color: var(--on-teal); opacity: 0.85; font-size: 0.88rem; margin: 4px 0 0 0;">Keep up the great reading habit!</p>
             </div>
             <div style="font-size: 1.5rem; font-weight: 800;">${completedDays} / ${totalDays} Days</div>
           </div>
-          <div class="progress-bar-container" style="background: rgba(255,255,255,0.25); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 12px;">
-            <div class="progress-bar-fill" style="background: white; width: ${percent}%; height: 100%; transition: width 0.3s ease;"></div>
+          <div class="progress-bar-container" style="background: color-mix(in srgb, var(--on-teal) 25%, transparent); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 12px;">
+            <div class="progress-bar-fill" style="background: var(--on-teal); width: ${percent}%; height: 100%; transition: width 0.3s ease;"></div>
           </div>
-          <div style="text-align: right; font-size: 0.75rem; margin-top: 4px; color: rgba(255,255,255,0.9); font-weight: 600;">${percent}% Completed</div>
+          <div style="text-align: right; font-size: 0.75rem; margin-top: 4px; color: var(--on-teal); opacity: 0.9; font-weight: 600;">${percent}% Completed</div>
         </div>
         
         <div class="note" style="margin-bottom: 16px;">
@@ -4210,12 +4294,6 @@
             ic: "🏫",
             title: "My classes",
             sub: "Subjects, times, colors",
-          },
-          {
-            act: "view-reminders",
-            ic: "🔔",
-            title: "Reminders",
-            sub: "Things to remember",
           },
           {
             act: "view-mail",
@@ -4639,9 +4717,9 @@ Due May 31"></textarea>
                 const req = getGradientLevelRequired(g[0]);
                 const isLocked = lvl < req;
                 return `
-                  <div class="theme-gradient-swatch ${isLocked ? "locked" : ""}" data-act="set-gradient-theme" data-arg="${esc(g[0])}" aria-pressed="${state.settings.themeGradient === g[0]}" style="background: ${g[0] || "linear-gradient(180deg, var(--bg-2), var(--bg))"}">
+                  <button type="button" class="theme-gradient-swatch ${isLocked ? "locked" : ""}" data-act="set-gradient-theme" data-arg="${esc(g[0])}" aria-pressed="${state.settings.themeGradient === g[0]}" style="background: ${g[0] || "linear-gradient(180deg, var(--bg-2), var(--bg))"}">
                     <b>${isLocked ? "🔒 " : ""}${esc(g[1])}${isLocked ? ` — unlocks as a ${focusTitleForLevel(req)}` : ""}</b>
-                  </div>
+                  </button>
                 `;
               }).join("")}
             </div>
@@ -4729,7 +4807,7 @@ Due May 31"></textarea>
                 <li>Go to <b>Google Cloud Console</b> → APIs &amp; Services.</li>
                 <li><b>Enable</b> the <b>Google Calendar API</b> and the <b>Gmail API</b>.</li>
                 <li>Create an <b>OAuth client ID</b> of type <b>Web application</b>.</li>
-                <li>Under <b>Authorized JavaScript origins</b> add: <code>https://focus.eduwonderlab.com</code></li>
+                <li>Under <b>Authorized JavaScript origins</b> add: <code>${esc(location.origin)}</code></li>
                 <li>On the <b>OAuth consent screen</b>, add scope <code>gmail.readonly</code>.</li>
                 <li>Copy the Client ID (ends in <code>.apps.googleusercontent.com</code>) and paste it above.</li>
               </ol>
@@ -6331,7 +6409,7 @@ Due May 31"></textarea>
           `<p>You focused for <b>${earned} minutes</b> and earned <b>+${earned} XP</b>!</p>
           <div id="brainBreakContainer">${renderBrainBreakCardHTML(currentBrainBreak)}</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 16px;justify-content:center;">
-            <button class="btn sm" data-act="spin-break" style="background:var(--accent);color:white">🔄 Spin Break Wheel</button>
+            <button class="btn sm" data-act="spin-break" style="background:var(--accent);color:var(--on-teal)">🔄 Spin Break Wheel</button>
             <button class="btn sm" data-act="choose-break" data-arg="stretch">🧘 Stretch</button>
             <button class="btn sm" data-act="choose-break" data-arg="active">🏃 Active</button>
             <button class="btn sm" data-act="choose-break" data-arg="relax">👀 Relax</button>
@@ -6437,6 +6515,7 @@ Due May 31"></textarea>
       const day = (state.routineLog[todayKey()] = state.routineLog[todayKey()] || {});
       const arr = (day[r.id] = day[r.id] || []);
       if (!arr.includes(it.id)) arr.push(it.id);
+      stampRoutineStep(day, r.id, it.id); // sync this check across devices
       // Award +5 once when fully complete, mirroring the checkbox flow.
       const awarded = (day.__awarded = day.__awarded || []);
       if (arr.length === r.items.length && !awarded.includes(r.id)) {
@@ -6997,6 +7076,63 @@ Due May 31"></textarea>
       };
     }
 
+    // 15. Merge the fields the sections above don't cover — otherwise the other
+    // device's garden growth, health log, check-ins, daily goal, and capture
+    // prompts are silently discarded on every merge (and then pushed back to
+    // the cloud, permanently overwriting them).
+    {
+      const remoteIsNewer = (remote.updatedAt || 0) > (local.updatedAt || 0);
+
+      // Garden: xp only ever increases, so the state with more xp is the one
+      // that has seen the most progress (waterReservoir/plantStage travel with
+      // it so spent water is never resurrected). Ties keep the newer blob.
+      const lg = local.garden || {};
+      const rg = remote.garden || {};
+      if ((rg.xp || 0) > (lg.xp || 0) || ((rg.xp || 0) === (lg.xp || 0) && remoteIsNewer)) {
+        merged.garden = { ...lg, ...rg };
+      }
+
+      // Health: union the per-day movement log (checks and __paid payouts from
+      // both devices count); the custom items list follows the newer blob.
+      const lh = local.health || {};
+      const rh = remote.health || {};
+      const healthLog = { ...(lh.log || {}) };
+      for (const [date, remDay] of Object.entries(rh.log || {})) {
+        const locDay = healthLog[date] || {};
+        const paid = [
+          ...new Set([
+            ...(Array.isArray(locDay.__paid) ? locDay.__paid : []),
+            ...(Array.isArray(remDay.__paid) ? remDay.__paid : []),
+          ]),
+        ];
+        healthLog[date] = { ...remDay, ...locDay, ...(paid.length ? { __paid: paid } : {}) };
+      }
+      // Remote is a raw KV blob and may predate the health feature — only let
+      // it drive the base object when it actually carries an items list.
+      merged.health = {
+        ...(remoteIsNewer && Array.isArray(rh.items) ? rh : lh),
+        log: healthLog,
+      };
+
+      // Check-ins (one { mood, priority } per day): union, newer blob wins on
+      // same-day conflicts.
+      merged.checkins = remoteIsNewer
+        ? { ...(local.checkins || {}), ...(remote.checkins || {}) }
+        : { ...(remote.checkins || {}), ...(local.checkins || {}) };
+
+      // Capture-prompt log ({ dateKey: true }): a day answered anywhere is
+      // answered everywhere.
+      merged.captureLog = { ...(remote.captureLog || {}), ...(local.captureLog || {}) };
+
+      // Daily goal: whichever blob carries the later goalDate; ties keep the
+      // newer blob's text.
+      const ld = local.daily || {};
+      const rd = remote.daily || {};
+      if ((rd.goalDate || "") > (ld.goalDate || "") || ((rd.goalDate || "") === (ld.goalDate || "") && remoteIsNewer && rd.goal)) {
+        merged.daily = { ...ld, ...rd };
+      }
+    }
+
     merged.updatedAt = Date.now();
     return merged;
   }
@@ -7117,6 +7253,12 @@ Due May 31"></textarea>
     },
     base: "/api/state",
     _busy: false,
+    // A push was requested while another was still in flight. We coalesce it into
+    // a single follow-up push (see the finally block below) so a fast series of
+    // saves — e.g. ticking several routine steps in a row — can never leave the
+    // last ones only on this device. Without this, every push after the first was
+    // silently dropped and those checks never reached the cloud.
+    _pending: false,
     // status: "idle" | "syncing" | "synced" | "offline" — drives the UI chip.
     status: "idle",
     _interval: null,
@@ -7130,7 +7272,15 @@ Due May 31"></textarea>
     },
     async push() {
       const code = state.settings.sync.code;
-      if (!code || !this.available() || this._busy) return;
+      if (!code || !this.available()) return;
+      // Don't fire overlapping PUTs. If one is already running, mark that we have
+      // newer local data to send and let the in-flight push re-run once it lands,
+      // capturing the latest `state`. This is what makes a burst of routine-step
+      // checks reliably reach the cloud instead of only the first one.
+      if (this._busy) {
+        this._pending = true;
+        return;
+      }
       this._busy = true;
       this._setStatus("syncing");
       try {
@@ -7175,7 +7325,58 @@ Due May 31"></textarea>
         this._setStatus("offline");
       } finally {
         this._busy = false;
+        // A save landed while we were mid-flight — push the newest state now so
+        // nothing checked during the request is left behind. _pending is cleared
+        // first so this settles once the user stops making changes.
+        if (this._pending) {
+          this._pending = false;
+          this.push();
+        }
       }
+    },
+    // Merge a remote state — from a KV pull OR the live WebSocket — into local
+    // using the conflict-safe item-level merge, persist it, and reconcile the
+    // cloud. Returns whether local CONTENT actually changed. Shared so the KV
+    // and real-time transports behave identically.
+    async _applyRemote(remoteState, remoteUpdated, { doRender = false } = {}) {
+      if (!remoteState) return false;
+      const localUpdated = state.updatedAt || 0;
+      const merged = mergeStates(state, remoteState);
+      const mergedNorm = normalize(merged);
+      // CONTENT-only comparison (ignoring the volatile top-level updatedAt) so a
+      // no-op merge is a true no-op and two open devices converge instead of
+      // re-stamping newer updatedAts at each other forever.
+      const changed =
+        JSON.stringify({ ...mergedNorm, updatedAt: 0 }) !==
+        JSON.stringify({ ...state, updatedAt: 0 });
+      let shouldPush = false;
+      if (changed) {
+        const prev = suppressPush;
+        suppressPush = true;
+        state = mergedNorm;
+        await save({ touch: false, immediate: true });
+        suppressPush = prev;
+        shouldPush = !prev;
+      } else if ((remoteUpdated || 0) < localUpdated && !suppressPush) {
+        // Content matches but our copy is newer than the server's — an earlier
+        // push was dropped/offline, so the cloud (and peers) are missing changes
+        // we already hold. Re-send them; without this a check that failed to push
+        // once would sit local-only forever.
+        shouldPush = true;
+      }
+      state.settings.sync.lastAt = new Date().toISOString();
+      mirror();
+      this._setStatus("synced");
+      if (shouldPush) this.syncOut();
+      if (changed && doRender) render();
+      return changed;
+    },
+    // Propagate the current local state to the cloud on BOTH transports: the
+    // durable KV PUT and (if connected) the real-time WebSocket. Callers use
+    // this instead of push() directly so every change fans out live.
+    syncOut() {
+      this.push();
+      if (typeof live !== "undefined") live.broadcastLocal();
     },
     async pull({ forceMerge = false } = {}) {
       const code = state.settings.sync.code;
@@ -7192,41 +7393,19 @@ Due May 31"></textarea>
           const remoteUpdated = data.updatedAt || 0;
           const localUpdated = state.updatedAt || 0;
           if (remoteUpdated > localUpdated || forceMerge) {
-            const merged = mergeStates(state, data.state);
-            const mergedNorm = normalize(merged);
-            // Compare CONTENT, ignoring the volatile top-level `updatedAt`
-            // (mergeStates always stamps it fresh). Without this, the stringify
-            // comparison was always unequal, so the 10s auto-pull replaced
-            // state + re-rendered + pushed to KV every single tick — wiping any
-            // half-typed input and churning the store. Now a no-op pull is a
-            // true no-op. Both sides are normalized so key ordering can't lie.
-            //
-            // This is CONTENT-only on purpose: a `remoteUpdated > localUpdated`
-            // term would never converge with two devices both open, because
-            // each merge re-stamps a newer updatedAt and pushes it, so the peer
-            // always sees "remote is newer" and re-merges/re-renders forever
-            // (phantom churn that wipes input on Noam's phone + laptop). Once
-            // the content matches, changed=false and both devices settle.
-            const changed =
-              JSON.stringify({ ...mergedNorm, updatedAt: 0 }) !==
-              JSON.stringify({ ...state, updatedAt: 0 });
-            let shouldPushMerged = false;
-            if (changed) {
-              const prev = suppressPush;
-              suppressPush = true;
-              state = mergedNorm;
-              await save({ touch: false, immediate: true });
-              suppressPush = prev;
-              shouldPushMerged = !prev;
-            }
-            state.settings.sync.lastAt = new Date().toISOString();
-            mirror();
-            this._setStatus("synced");
-            if (shouldPushMerged) await this.push();
-            return changed;
+            // Delegate to the shared merge path (same logic the live WebSocket
+            // uses). CONTENT-only change detection keeps two open devices from
+            // re-stamping newer updatedAts at each other forever.
+            return await this._applyRemote(data.state, remoteUpdated, { doRender: false });
           }
         }
-        // Local is same/newer — nothing to apply, but we're in sync.
+        // Local is same/newer — nothing to apply, but we're in sync. If local is
+        // strictly newer than the server, push it up so the cloud isn't left
+        // behind (e.g. this device made changes while it was the only one open).
+        const remoteUpdated = (data && data.updatedAt) || 0;
+        if ((state.updatedAt || 0) > remoteUpdated && !suppressPush) {
+          this.syncOut();
+        }
         state.settings.sync.lastAt = new Date().toISOString();
         mirror();
         this._setStatus("synced");
@@ -7242,20 +7421,187 @@ Due May 31"></textarea>
         this._setStatus("offline");
         return;
       }
+      // Stamp so the adaptive loop doesn't immediately re-fire right after an
+      // event-driven pull (focus/visibility/online), and keep the loop hot for a
+      // minute since the user is clearly active right now.
+      this._lastPull = Date.now();
+      this.markActive();
       const changed = await this.pull({ forceMerge: true });
       if (changed) render();
     },
-    // Start/refresh the periodic pull loop while the tab is open.
+    // Recent local activity (a save or user interaction) → poll fast so an
+    // inbound change from another device appears within ~2–3s. Idle → back off
+    // to stay light on the KV endpoint. A hidden tab doesn't poll at all — the
+    // visibility/focus/online handlers pull the instant the user comes back.
+    _activeUntil: 0,
+    _lastPull: 0,
+    markActive() {
+      this._activeUntil = Date.now() + 60000;
+    },
+    _cadence() {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") {
+        return Infinity;
+      }
+      // When the real-time WebSocket is healthy it delivers changes instantly, so
+      // KV polling drops to a slow self-healing safety net instead of the fast
+      // active cadence.
+      if (typeof live !== "undefined" && live.connected) return 20000;
+      return Date.now() < this._activeUntil ? 2500 : 12000;
+    },
+    // Start/refresh the adaptive pull loop while the tab is open. The base tick
+    // is short, but each tick only actually fetches once its adaptive cadence has
+    // elapsed — so active use feels near-live without hammering KV while idle.
+    // Also (re)opens the real-time WebSocket, which supersedes polling when up.
     startAuto() {
       this.stopAuto();
       if (!state.settings.sync.enabled) return;
-      // ~10s cadence: fresh enough to feel live, light on the KV endpoint.
-      this._interval = setInterval(() => this.autoPull(), 10000);
+      this.markActive(); // start hot so the first minute after open is snappy
+      this._interval = setInterval(() => {
+        const now = Date.now();
+        const cadence = this._cadence();
+        if (!isFinite(cadence)) return; // hidden tab — skip until visible/focus
+        if (now - this._lastPull < cadence) return;
+        this._lastPull = now;
+        this.autoPull();
+      }, 1000);
+      if (typeof live !== "undefined") live.connect();
     },
     stopAuto() {
       if (this._interval) {
         clearInterval(this._interval);
         this._interval = null;
+      }
+    },
+  };
+
+  // ---------------------------------------------------------------------------
+  // Real-time sync transport — WebSocket → SyncRoom Durable Object (/api/live).
+  // ---------------------------------------------------------------------------
+  // A pure accelerator layered over the KV sync. When /api/live and its Durable
+  // Object binding are provisioned, every change fans out to all of a user's
+  // devices in well under a second. If it isn't provisioned (503) or the socket
+  // drops, the client silently keeps using the near-live KV polling — real-time
+  // is additive and can never regress the baseline. Incoming states go through
+  // the exact same conflict-safe merge (`cloud._applyRemote`) as a KV pull.
+  const live = {
+    ws: null,
+    connected: false,
+    _code: null, // the sync code the current socket is bound to
+    _retry: 0,
+    _reconnectTimer: null,
+    _manualClose: false,
+    available() {
+      return (
+        typeof WebSocket !== "undefined" &&
+        typeof location !== "undefined" &&
+        String(location.protocol || "").startsWith("http")
+      );
+    },
+    url() {
+      const code = state.settings.sync.code;
+      const scheme = location.protocol === "https:" ? "wss" : "ws";
+      return `${scheme}://${location.host}/api/live?code=${encodeURIComponent(code)}`;
+    },
+    connect() {
+      if (!state.settings.sync.enabled || !state.settings.sync.code) return;
+      if (!this.available()) return;
+      const code = state.settings.sync.code;
+      // If a socket exists for a DIFFERENT code (the user just linked/changed the
+      // sync code), tear it down so we reconnect to the new room instead of
+      // silently talking to the old one until a reload. Detach FIRST so the old
+      // socket's close handler (which may fire synchronously) sees this.ws !==
+      // itself and no-ops instead of scheduling a stray reconnect.
+      if (this.ws && this._code && this._code !== code) {
+        const old = this.ws;
+        this.ws = null;
+        try {
+          old.close();
+        } catch {
+          /* already closing */
+        }
+      }
+      // Already connecting (0) or open (1) for the SAME code? Don't stack sockets.
+      if (this.ws && (this.ws.readyState === 0 || this.ws.readyState === 1)) return;
+      this._manualClose = false;
+      this._code = code;
+      let sock;
+      try {
+        sock = new WebSocket(this.url());
+      } catch {
+        this._scheduleReconnect();
+        return;
+      }
+      this.ws = sock;
+      // Each listener checks `this.ws === sock` so a stale socket (e.g. a prior
+      // one still in CLOSING when we reconnect) can't clobber the live socket's
+      // state or fire a spurious reconnect that orphans it.
+      sock.addEventListener("open", () => {
+        if (this.ws !== sock) return;
+        this._retry = 0;
+        this.connected = true;
+        cloud._setStatus("synced");
+        // Announce our latest state so the server + peers converge immediately.
+        this.broadcastLocal();
+      });
+      sock.addEventListener("message", (ev) => {
+        if (this.ws === sock) this._onMessage(ev);
+      });
+      sock.addEventListener("close", () => {
+        if (this.ws !== sock) return;
+        this.connected = false;
+        this.ws = null;
+        if (!this._manualClose) this._scheduleReconnect();
+      });
+      sock.addEventListener("error", () => {
+        try {
+          sock.close();
+        } catch {
+          /* already closing */
+        }
+      });
+    },
+    _onMessage(ev) {
+      let msg;
+      try {
+        msg = JSON.parse(ev.data);
+      } catch {
+        return; // ignore non-JSON frames
+      }
+      if (!msg || !msg.state) return;
+      // Same trusted, conflict-safe merge a KV pull uses — rendered live.
+      cloud._applyRemote(msg.state, msg.updatedAt || 0, { doRender: true }).catch(() => {});
+    },
+    send(obj) {
+      if (!this.ws || this.ws.readyState !== 1) return false;
+      try {
+        this.ws.send(JSON.stringify(obj));
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    // Push the current local state over the live channel (no-op if not open).
+    broadcastLocal() {
+      return this.send({ type: "push", updatedAt: state.updatedAt, state });
+    },
+    _scheduleReconnect() {
+      if (this._manualClose || !state.settings.sync.enabled) return;
+      clearTimeout(this._reconnectTimer);
+      // Capped exponential backoff: 1,2,4,8,16,30,30…s.
+      const delay = Math.min(30000, 1000 * Math.pow(2, this._retry++));
+      this._reconnectTimer = setTimeout(() => this.connect(), delay);
+    },
+    close() {
+      this._manualClose = true;
+      clearTimeout(this._reconnectTimer);
+      this.connected = false;
+      if (this.ws) {
+        try {
+          this.ws.close();
+        } catch {
+          /* already closing */
+        }
+        this.ws = null;
       }
     },
   };
@@ -7874,8 +8220,10 @@ Due May 31"></textarea>
       const y = new Date().getFullYear();
       const d = new Date(`${m[1]} ${m[2]}, ${y} 12:00:00`);
       if (!isNaN(d)) {
-        if (daysUntil(d.toISOString().slice(0, 10)) < -30) d.setFullYear(y + 1); // assume next year if long past
-        return d.toISOString().slice(0, 10);
+        // ymd() formats in LOCAL time — toISOString() could shift the day for
+        // UTC+13/+14 users since local noon there is the previous UTC day.
+        if (daysUntil(ymd(d)) < -30) d.setFullYear(y + 1); // assume next year if long past
+        return ymd(d);
       }
     }
     return "";
@@ -8003,7 +8351,10 @@ Due May 31"></textarea>
     },
     nav: (_, arg) => setView(arg),
     "view-classes": () => setView("classes"),
-    "view-reminders": () => setView("reminders"),
+    // Reminders were folded into the to-do list (see normalize()); the old
+    // standalone view would always render empty after a reload, so any stale
+    // link lands on the Tasks view (which hosts the to-do list) instead.
+    "view-reminders": () => setView("tasks"),
     "view-mail": () => setView("mail"),
     "view-email": () => setView("email"),
     "view-import": () => setView("import"),
@@ -8165,7 +8516,7 @@ Due May 31"></textarea>
     "save-health-item": (id) => {
       const label = ($("#hLabel").value || "").trim();
       if (!label) return toast("Type what the movement is first.");
-      const emoji = ($("#hEmoji").value || "").trim().slice(0, 4) || "💪";
+      const emoji = cleanEmoji($("#hEmoji").value, "💪", 4);
       const hint = ($("#hHint").value || "").trim().slice(0, 80);
       const list = healthItems();
       if (id) {
@@ -8606,7 +8957,7 @@ Due May 31"></textarea>
         .filter((d) => DAYS.includes(d));
       const r = existing || { id: uid("r"), items: [], days: [] };
       r.name = $("#rName").value.trim() || "Routine";
-      r.emoji = $("#rEmoji").value.trim() || "🔁";
+      r.emoji = cleanEmoji($("#rEmoji").value, "🔁");
       const slotVal = $("#rSlot").value;
       r.slot = ROUTINE_SLOTS.includes(slotVal) ? slotVal : "";
       r.startMin = hhmmToMins($("#rStartTime").value);
@@ -8635,7 +8986,19 @@ Due May 31"></textarea>
       render();
     },
     "reset-routine": (id) => {
-      if (state.routineLog[todayKey()]) delete state.routineLog[todayKey()][id];
+      const day = (state.routineLog[todayKey()] = state.routineLog[todayKey()] || {});
+      const r = state.routines.find((x) => x.id === id);
+      // Every step that could be checked on ANY device: this routine's items,
+      // whatever is checked locally, and anything already timestamped.
+      const stepIds = new Set([
+        ...(r ? r.items.map((it) => it.id) : []),
+        ...(Array.isArray(day[id]) ? day[id] : []),
+        ...Object.keys((day.__ts && day.__ts[id]) || {}),
+      ]);
+      delete day[id];
+      // Stamp each step as unchecked-now so the reset wins the merge everywhere
+      // (a peer's older check can't bring the step back).
+      for (const sid of stepIds) stampRoutineStep(day, id, sid);
       save();
       render();
     },
@@ -8745,10 +9108,17 @@ Due May 31"></textarea>
       const done = !state.readingProgress[id].done;
       state.readingProgress[id].done = done;
       if (done) {
-        addPoints(5);
-        bumpActivity("tasks");
-        triggerConfetti();
-        toast("+5 Points! 📚");
+        // Points only the first time a day is finished — un-checking and
+        // re-checking must not farm XP/garden water.
+        if (!state.readingProgress[id].awarded) {
+          state.readingProgress[id].awarded = true;
+          addPoints(5);
+          bumpActivity("tasks");
+          triggerConfetti();
+          toast("+5 Points! 📚");
+        } else {
+          toast("Reading day checked ✓");
+        }
       }
       save();
       render();
@@ -8834,6 +9204,7 @@ Due May 31"></textarea>
       if (v) {
         state.wins.push({ text: v, date: new Date().toLocaleString() });
         addPoints(2);
+        render();
         toast("Win added 🏆");
       }
     },
@@ -9149,6 +9520,7 @@ ${name}`;
       // From the ON view this only turns sync OFF (enable is its own action).
       state.settings.sync.enabled = false;
       cloud.stopAuto();
+      live.close();
       save();
       toast("Cloud sync off");
       render();
@@ -9257,7 +9629,7 @@ ${name}`;
         `<div style="display:flex;flex-direction:column;gap:12px;font-weight:700">
           <p class="sub">Use these shortcuts to navigate faster on desktop:</p>
           <div class="row"><span class="pill">Cmd+K</span><span>or</span><span class="pill">/</span><span>Open search &amp; command bar</span></div>
-          <div class="row"><span class="pill">1</span><span>to</span><span class="pill">6</span><span>Switch tabs (Now, Today, Tasks...)</span></div>
+          <div class="row"><span class="pill">1</span><span>to</span><span class="pill">9</span><span>+</span><span class="pill">0</span><span>Switch tabs (Now, Homework, Reading...)</span></div>
           <div class="row"><span class="pill">f</span><span>Start/stop focus session for today's task</span></div>
           <div class="row"><span class="pill">Esc</span><span>Close any open modal or overlay</span></div>
           <div class="row"><span class="pill">?</span><span>Show this shortcuts guide</span></div>
@@ -9278,18 +9650,26 @@ ${name}`;
         toast("Please select a score for focus and mood!");
         return;
       }
+      // Points only for the first check-out of the day (edits don't re-award).
+      const firstToday = !state.reflections[todayKey()];
       state.reflections[todayKey()] = {
         focus: focusVal,
         mood: moodVal,
         text: textVal,
         timestamp: new Date().toISOString(),
       };
-      addPoints(5);
+      if (firstToday) addPoints(5);
+      else save();
       window._pendingReflectionFocus = 0;
       window._pendingReflectionMood = 0;
       window._pendingReflectionText = "";
-      triggerConfetti();
-      toast("Check-out saved! +5 points 📓");
+      render(); // flip the card to its saved summary
+      if (firstToday) {
+        triggerConfetti();
+        toast("Check-out saved! +5 points 📓");
+      } else {
+        toast("Check-out saved 📓");
+      }
     },
     "set-gradient-theme": (_, arg) => {
       const pts = state.points || 0;
@@ -9350,6 +9730,10 @@ ${name}`;
     },
     "set-focus-preset": (_, arg) => {
       const mins = Number(arg);
+      // Remember the choice so the NEXT focus block uses it too, not just the
+      // current one (normalize clamps defaultFocusMin to 5-60, so 45 is safe).
+      state.settings.defaultFocusMin = mins;
+      save();
       if (focus.phase === "focus") {
         focus.total = mins * 60;
         focus.remaining = focus.total;
@@ -9362,7 +9746,11 @@ ${name}`;
         const isPressed = btn.dataset.arg === arg;
         btn.setAttribute("aria-pressed", isPressed ? "true" : "false");
       });
-      toast(`Timer set to ${mins} minutes! ⏱️`);
+      toast(
+        focus.phase === "focus"
+          ? `Timer set to ${mins} minutes! ⏱️`
+          : `Next focus block will be ${mins} minutes. ⏱️`,
+      );
     },
     "open-command-bar": () => openCommandBar(),
     "close-command-bar": () => closeCommandBar(),
@@ -9537,6 +9925,19 @@ ${name}`;
       ACTIONS[act](btn.dataset.id, btn.dataset.arg, ev, btn.dataset.sid);
     });
 
+    // Non-native [role="button"] elements (e.g. the Payday home card) don't
+    // fire click on Enter/Space like a real <button> does — dispatch here so
+    // they stay keyboard-operable.
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key !== "Enter" && ev.key !== " ") return;
+      const el = ev.target instanceof Element ? ev.target.closest('[role="button"][data-act]') : null;
+      if (!el || el.tagName === "BUTTON" || el.tagName === "A") return;
+      const act = el.dataset.act;
+      if (!ACTIONS[act]) return;
+      ev.preventDefault();
+      ACTIONS[act](el.dataset.id, el.dataset.arg, ev, el.dataset.sid);
+    });
+
     document.addEventListener("change", (ev) => {
       const box = ev.target.closest("[data-check]");
       if (!box) return;
@@ -9548,6 +9949,7 @@ ${name}`;
         const st = a?.steps.find((s) => s.id === sid);
         if (st) {
           st.done = box.checked;
+          a.updatedAt = Date.now(); // bump so the step toggle wins the sync merge
           // Award +1 the first time a step is ever completed; never again
           // (prevents farming points by toggling a checkbox repeatedly).
           if (box.checked && !st.credited) {
@@ -9572,6 +9974,9 @@ ${name}`;
         if (box.checked) {
           if (!arr.includes(sid)) arr.push(sid);
         } else day[id] = arr.filter((x) => x !== sid);
+        // Stamp the toggle time so this check/uncheck wins the merge on every
+        // device (an uncheck here propagates instead of being resurrected).
+        stampRoutineStep(day, id, sid);
         // Award +5 the first time a routine is fully completed today, and only
         // once (tracked in day.__awarded) so it can't be farmed by re-checking.
         const awarded = (day.__awarded = day.__awarded || []);
@@ -9591,6 +9996,7 @@ ${name}`;
         const td = state.todos.find((t) => t.id === id);
         if (td) {
           td.done = box.checked;
+          td.updatedAt = Date.now(); // bump so the toggle wins the sync merge
           if (box.checked) {
             addPoints(1);
             bumpActivity("tasks");
@@ -9611,6 +10017,7 @@ ${name}`;
           } else {
             r.done = box.checked;
           }
+          r.updatedAt = Date.now(); // bump so the toggle wins the sync merge
           save();
           // Re-render so the reminder moves between Open/Done groups cleanly.
           render();
@@ -10105,8 +10512,12 @@ ${name}`;
 
     // Deep link: ?sync=<code> links this device automatically (e.g. from a QR
     // or a shared link), so the second device doesn't have to type anything.
+    // Accept any plausible code, not just long generated ones — custom codes
+    // may be short ("noam"), and "Copy link" builds links from them too. Keep a
+    // small floor so a stray "?sync=" or one-char junk value can't hijack sync.
     const linkCode = (params.get("sync") || "").trim();
-    if (linkCode && linkCode.length >= 12) {
+    const linkCodeOk = linkCode.length >= 3 && /^[a-z0-9-]+$/i.test(linkCode);
+    if (linkCodeOk) {
       state.settings.sync.code = linkCode;
       state.settings.sync.enabled = true;
       view = "sync";
@@ -10126,7 +10537,7 @@ ${name}`;
     }
     suppressPush = false;
     // Save any code adopted from a deep link now that pushing is allowed.
-    if (linkCode && linkCode.length >= 12) {
+    if (linkCodeOk) {
       save();
       await cloud.push();
     }
@@ -10136,7 +10547,8 @@ ${name}`;
     }
 
     // ---- Auto-pull triggers: keep this device live without any user action ----
-    // 1) Periodic pull while the tab is open (~50s).
+    // 1) Adaptive pull while the tab is open — ~2.5s while actively in use, ~12s
+    //    when idle, paused when the tab is hidden.
     cloud.startAuto();
     // 2) On window focus and 3) when the tab becomes visible again — grabs the
     //    latest the moment the user returns to the app (covers throttled timers).
@@ -10144,6 +10556,25 @@ ${name}`;
     addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") cloud.autoPull();
     });
+    // 4) When the network returns — flush local changes up and pull immediately,
+    //    so a device that was offline converges the moment it reconnects.
+    window.addEventListener("online", () => {
+      if (!state.settings.sync.enabled) return;
+      cloud.push();
+      cloud.autoPull();
+    });
+    // 5) While the user is actively interacting, keep sync in its fast cadence so
+    //    a change made on another device shows up here within ~2–3s. Throttled so
+    //    it costs nothing on a stream of pointer/key events.
+    let _lastActiveBump = 0;
+    const bumpActive = () => {
+      const now = Date.now();
+      if (now - _lastActiveBump < 5000) return;
+      _lastActiveBump = now;
+      cloud.markActive();
+    };
+    window.addEventListener("pointerdown", bumpActive, { passive: true });
+    window.addEventListener("keydown", bumpActive, { passive: true });
 
     // calm one-line briefing on open, plus the reminders loop
     dailyBriefing();
@@ -10204,6 +10635,8 @@ ${name}`;
 
   if (window.__FOCUS_SCHOOL_TEST__) {
     Object.assign(window.__FOCUS_SCHOOL_TEST__, {
+      cloud,
+      live,
       mergeRoutineLogs,
       mergeStates,
       nextRoutineWindow,
@@ -10211,6 +10644,10 @@ ${name}`;
       pickRoutineForNow,
       routineForHome,
       seed,
+      setState: (s) => {
+        state = s;
+      },
+      getState: () => state,
       state,
     });
   }

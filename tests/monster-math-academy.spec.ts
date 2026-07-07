@@ -132,6 +132,121 @@ test.describe("Monster Math Academy smoke", () => {
     await expect(page.getByText(/MMA-/i).first()).toBeVisible();
   });
 
+  test("student can resume from save code on #/resume", async ({ page }) => {
+    const mockState = {
+      monster: {
+        name: "ResumeTest",
+        body: "blob",
+        palette: "toxic",
+        eyes: "wide",
+        trait: "cocky",
+        createdAt: 9001,
+      },
+      minds: {},
+      readingLevel: "support",
+      history: [],
+      saveCode: "MMA-RESUME",
+      equippedCosmetic: null,
+      rewards: {
+        coins: 5,
+        totalSolved: 0,
+        totalWrong: 0,
+        streakCount: 0,
+        streakLastDay: null,
+        careCount: 0,
+      },
+      purchasedCosmetics: [],
+      progression: { xp: 0, bossWins: [], quickPlayRuns: 0, badges: [] },
+      writtenResponses: [],
+      missedSkills: [],
+      completionCode: null,
+      equippedAura: null,
+      purchasedAuras: [],
+    };
+
+    await page.goto(`${MMA}#/resume`);
+    await expect(
+      page.getByRole("heading", { name: /Welcome Back|Bienvenido de Nuevo/i }),
+    ).toBeVisible();
+
+    await page.evaluate((state) => {
+      const originalFetch = window.fetch.bind(window);
+      window.fetch = async (input, init) => {
+        const href =
+          typeof input === "string"
+            ? input
+            : input && typeof input === "object" && "url" in input
+              ? String(input.url)
+              : String(input);
+        if (href.includes("/api/monster-save/load")) {
+          return new Response(JSON.stringify({ ok: true, state }), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+        return originalFetch(input, init);
+      };
+    }, mockState);
+
+    await page.locator("#mma-resume-code").fill("MMA-RESUME");
+    await page
+      .getByRole("button", { name: /Continue My Adventure|Continuar Mi Aventura/i })
+      .click();
+
+    await expect(
+      page.getByText(/Welcome back, ResumeTest|Bienvenido de nuevo, ResumeTest/i),
+    ).toBeVisible({ timeout: 8_000 });
+
+    await page.getByRole("button", { name: /Go to Adventure Map|Ir al Mapa/i }).click();
+    await expect(page.getByRole("heading", { name: /Adventure|Aventura/i })).toBeVisible({
+      timeout: 10_000,
+    });
+  });
+
+  test("title screen links to resume page", async ({ page }) => {
+    await expect(
+      page.getByRole("button", { name: /Already playing|Ya juegas/i }),
+    ).toBeVisible();
+    await page.getByRole("button", { name: /Already playing|Ya juegas/i }).click();
+    await expect(page).toHaveURL(/#\/resume/);
+    await expect(
+      page.getByRole("heading", { name: /Welcome Back|Bienvenido de Nuevo/i }),
+    ).toBeVisible();
+  });
+
+  test("invalid save code shows error without corrupting local state", async ({ page }) => {
+    await page.getByRole("button", { name: /Create Your Monster|Crea/i }).click();
+    await page.getByRole("button", { name: /Bring It To Life|Dale Vida/i }).click();
+    await expect(page.getByRole("heading", { name: /Adventure|Aventura/i })).toBeVisible({
+      timeout: 10_000,
+    });
+
+    await page.route(
+      (url) => url.pathname.includes("/monster-save/load"),
+      async (route) => {
+        await route.fulfill({
+          status: 404,
+          contentType: "application/json",
+          body: JSON.stringify({ ok: false, error: "not-found" }),
+        });
+      },
+    );
+
+    await page.goto(`${MMA}#/resume`);
+    await page.locator("#mma-resume-code").fill("MMA-BADBAD");
+    await page
+      .getByRole("button", { name: /Continue My Adventure|Continuar Mi Aventura/i })
+      .click();
+    await expect(page.getByText(/wasn't found|No se encontró/i).first()).toBeVisible({
+      timeout: 8_000,
+    });
+
+    await page.goto(`${MMA}#/map`);
+    await expect(page.getByRole("heading", { name: /Adventure|Aventura/i })).toBeVisible({
+      timeout: 10_000,
+    });
+  });
+
   test("save progress page is reachable from header", async ({ page }) => {
     await page.getByRole("button", { name: /Create Your Monster|Crea/i }).click();
     await page.getByRole("button", { name: /Bring It To Life|Dale Vida/i }).click();
