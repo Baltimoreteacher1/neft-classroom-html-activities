@@ -68,8 +68,7 @@ const IGNORE_CONSOLE = [
 // Buttons we do NOT auto-click: exports/saves (fire alerts/downloads/clipboard)
 // and print. Everything else (calculators, checks, compare, what-if) is fair
 // game and should never throw.
-const SKIP_BUTTON =
-  /save|load|download|\.txt|\.csv|copy|print|share|reset|clear/i;
+const SKIP_BUTTON = /save|load|download|\.txt|\.csv|copy|print|share|reset|clear/i;
 
 for (const route of ROUTES) {
   test(`project ok: ${route.url}`, async ({ page, baseURL }) => {
@@ -79,10 +78,7 @@ for (const route of ROUTES) {
 
     page.on("pageerror", (err) =>
       pageErrors.push(
-        err.message +
-          (err.stack
-            ? "\n" + err.stack.split("\n").slice(0, 4).join("\n")
-            : ""),
+        err.message + (err.stack ? "\n" + err.stack.split("\n").slice(0, 4).join("\n") : ""),
       ),
     );
     page.on("response", (res) => {
@@ -104,45 +100,60 @@ for (const route of ROUTES) {
     await page.goto(route.url, { waitUntil: "load", timeout: 30_000 });
 
     // Page must not be blank.
-    const bodyLen = await page.evaluate(
-      () => (document.body?.innerText || "").trim().length,
-    );
+    const bodyLen = await page.evaluate(() => (document.body?.innerText || "").trim().length);
     expect(bodyLen, `page appears blank on ${route.url}`).toBeGreaterThan(60);
 
     if (route.kind === "version") {
-      // Student version pages load the PRO + GOLD layers (deferred); wait for
-      // both to initialize (they stamp data attributes on <body>).
+      // Student version pages load the PRO + GOLD + PUBLISHER layers
+      // (deferred); wait for all to initialize (they stamp data attributes
+      // on <body>).
       await page.waitForFunction(
         () =>
           document.body?.dataset.proInit === "1" &&
-          document.body?.dataset.goldInit === "1",
+          document.body?.dataset.goldInit === "1" &&
+          document.body?.dataset.pubInit === "1",
         { timeout: 10_000 },
       );
 
+      // PUBLISHER layer invariants: sentence-starter chips render on the
+      // written-response boxes (unit-specific frames come from ./publisher.json
+      // after an async fetch) and the Rate My Work self-assessment builds off
+      // the rubric.
+      await page.waitForFunction(
+        () =>
+          document.querySelectorAll(".pub-chip").length > 0 &&
+          document.querySelectorAll(".pub-selfassess .pub-sa-btn").length > 0,
+        { timeout: 10_000 },
+      );
+      const pub = await page.evaluate(() => ({
+        starters: document.querySelectorAll(".pub-starters").length,
+        textareas: document.querySelectorAll(".step-panel textarea:not(.pub-sa-goal)").length,
+        exemplarTraits: document.querySelectorAll(".pub-exemplar .pub-trait").length,
+        saRows: document.querySelectorAll(".pub-sa-row").length,
+      }));
+      expect(
+        pub.starters,
+        `starter chips missing on written-response boxes on ${route.url}`,
+      ).toBeGreaterThanOrEqual(pub.textareas);
+      expect(
+        pub.exemplarTraits,
+        `exemplar panel missing/empty on ${route.url} (publisher.json not served?)`,
+      ).toBeGreaterThan(0);
+      expect(pub.saRows, `Rate My Work rows missing on ${route.url}`).toBeGreaterThan(0);
+
       // The wizard must render its step trail, panels, and Level 1/2 toggles.
       const panels = await page.locator(".step-panel").count();
-      expect(
-        panels,
-        `wizard panels did not render on ${route.url}`,
-      ).toBeGreaterThan(0);
+      expect(panels, `wizard panels did not render on ${route.url}`).toBeGreaterThan(0);
       const trail = await page.locator(".step-trail").count();
-      expect(
-        trail,
-        `step trail did not render on ${route.url}`,
-      ).toBeGreaterThan(0);
+      expect(trail, `step trail did not render on ${route.url}`).toBeGreaterThan(0);
       const levelBtns = await page.locator("button.level-btn").count();
-      expect(
-        levelBtns,
-        `Level 1/2 toggles missing on ${route.url}`,
-      ).toBeGreaterThan(0);
+      expect(levelBtns, `Level 1/2 toggles missing on ${route.url}`).toBeGreaterThan(0);
 
       // GOLD layer invariants: announced readouts, stateful toggles, clamped
       // number inputs (no unbounded factor-loop inputs).
       const gold = await page.evaluate(() => {
         const readouts = Array.from(document.querySelectorAll(".readout"));
-        const unannounced = readouts.filter(
-          (r) => r.getAttribute("aria-live") !== "polite",
-        ).length;
+        const unannounced = readouts.filter((r) => r.getAttribute("aria-live") !== "polite").length;
         const lv1 = document.getElementById("btn-lv1");
         const unclamped = Array.from(
           document.querySelectorAll<HTMLInputElement>('input[type="number"]'),
@@ -154,30 +165,17 @@ for (const route of ROUTES) {
           unclamped,
         };
       });
-      expect(
-        gold.readouts,
-        `no .readout regions found on ${route.url}`,
-      ).toBeGreaterThan(0);
-      expect(
-        gold.unannounced,
-        `readout(s) missing aria-live on ${route.url}`,
-      ).toBe(0);
-      expect(
-        gold.lv1Pressed,
-        `#btn-lv1 missing aria-pressed on ${route.url}`,
-      ).toBe(true);
-      expect(gold.unclamped, `unclamped number input(s) on ${route.url}`).toBe(
-        0,
-      );
+      expect(gold.readouts, `no .readout regions found on ${route.url}`).toBeGreaterThan(0);
+      expect(gold.unannounced, `readout(s) missing aria-live on ${route.url}`).toBe(0);
+      expect(gold.lv1Pressed, `#btn-lv1 missing aria-pressed on ${route.url}`).toBe(true);
+      expect(gold.unclamped, `unclamped number input(s) on ${route.url}`).toBe(0);
 
       // Toggle EN/ES and each Level tier — these must not throw.
       await page.evaluate(() => {
         const w = window as unknown as { toggleLanguage?: () => void };
         w.toggleLanguage?.();
         w.toggleLanguage?.();
-        document
-          .querySelectorAll<HTMLElement>("#btn-lv1, #btn-lv2")
-          .forEach((b) => b.click());
+        document.querySelectorAll<HTMLElement>("#btn-lv1, #btn-lv2").forEach((b) => b.click());
       });
     }
 
@@ -185,30 +183,21 @@ for (const route of ROUTES) {
       // Answer keys are teacher-gated (fail-closed): solutions stay hidden
       // until the teacher PIN unlocks them, and the gate card must show.
       const gateVisible = await page.locator(".akg-card").isVisible();
-      expect(gateVisible, `answer-key gate card missing on ${route.url}`).toBe(
-        true,
-      );
+      expect(gateVisible, `answer-key gate card missing on ${route.url}`).toBe(true);
       const solutionsHidden = await page.evaluate(() => {
         // Structure-agnostic: keys use <main class="page-shell"> or <div class="wrap">.
         const el = Array.from(document.body.children).find(
-          (c) =>
-            !c.classList.contains("akg-card") &&
-            !["SCRIPT", "LINK"].includes(c.tagName),
+          (c) => !c.classList.contains("akg-card") && !["SCRIPT", "LINK"].includes(c.tagName),
         );
         return el ? getComputedStyle(el).visibility === "hidden" : false;
       });
-      expect(
-        solutionsHidden,
-        `solutions visible without PIN on ${route.url}`,
-      ).toBe(true);
+      expect(solutionsHidden, `solutions visible without PIN on ${route.url}`).toBe(true);
 
       // Wrong PIN stays locked.
       await page.fill("#akg-pin", "wrong-pin");
       await page.click("#akg-go");
       expect(
-        await page.evaluate(() =>
-          document.documentElement.classList.contains("akg-unlocked"),
-        ),
+        await page.evaluate(() => document.documentElement.classList.contains("akg-unlocked")),
         `wrong PIN unlocked the answer key on ${route.url}`,
       ).toBe(false);
 
@@ -216,9 +205,7 @@ for (const route of ROUTES) {
       // assets/curriculum-enhancements.js — keep in sync.)
       await page.fill("#akg-pin", "TeacherNeft");
       await page.click("#akg-go");
-      await page.waitForFunction(() =>
-        document.documentElement.classList.contains("akg-unlocked"),
-      );
+      await page.waitForFunction(() => document.documentElement.classList.contains("akg-unlocked"));
     }
 
     // Exercise interactivity: fire input/change on every field and click every
@@ -244,12 +231,9 @@ for (const route of ROUTES) {
           errs.push(`field ${el.id || el.name}: ${(e as Error).message}`);
         }
       });
-      const buttons = Array.from(
-        document.querySelectorAll<HTMLButtonElement>("button"),
-      );
+      const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>("button"));
       buttons.forEach((b) => {
-        const label =
-          (b.textContent || "") + " " + (b.getAttribute("onclick") || "");
+        const label = (b.textContent || "") + " " + (b.getAttribute("onclick") || "");
         if (skip.test(label)) return;
         if (b.closest(".pk-tablist") || b.classList.contains("pk-tab")) return; // tabs handled elsewhere
         try {
@@ -265,9 +249,7 @@ for (const route of ROUTES) {
 
     expect(handlerErrors, `handler error(s) on ${route.url}`).toEqual([]);
     expect(pageErrors, `uncaught error(s) on ${route.url}`).toEqual([]);
-    expect(badResponses, `broken same-origin asset(s) on ${route.url}`).toEqual(
-      [],
-    );
+    expect(badResponses, `broken same-origin asset(s) on ${route.url}`).toEqual([]);
     expect(consoleErrors, `console error(s) on ${route.url}`).toEqual([]);
   });
 }

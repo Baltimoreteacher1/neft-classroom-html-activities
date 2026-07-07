@@ -62,6 +62,57 @@ function inject(rel) {
   return true;
 }
 
+/* Storefront hubs get a student-facing "Pick Your Path" strip (same copy on
+   every hub — both versions are always parallel and share a rubric, work
+   always saves, and every response box now has sentence starters). */
+const HUB_STRIP = [
+  "      <!-- pub-hub-injected:begin (publisher storefront strip — tools/inject-projects-publisher.mjs) -->",
+  '      <section aria-labelledby="pickpath-heading">',
+  '        <div class="section-heading">',
+  '          <p class="eyebrow">Students Start Here</p>',
+  '          <h2 id="pickpath-heading">Pick Your Path</h2>',
+  "        </div>",
+  '        <div class="note-panel">',
+  "          <p>",
+  "            <strong>Same math, same rubric.</strong> Both versions practice the",
+  "            exact same skills and are graded the same way — choose the story",
+  "            that sounds more fun to you.",
+  "          </p>",
+  "          <p>",
+  "            <strong>Take your time.</strong> Plan for two to three class",
+  "            periods. Your work saves automatically, so you can stop and come",
+  "            back.",
+  "          </p>",
+  "          <p>",
+  "            <strong>Stuck on writing?</strong> Every response box has a",
+  "            &ldquo;Need a starter?&rdquo; helper, and the last step includes a",
+  "            Rate My Work check before you turn it in.",
+  "          </p>",
+  "        </div>",
+  "      </section>",
+  "      <!-- pub-hub-injected:end -->",
+].join("\n");
+const HUB_ANCHOR = '<section aria-labelledby="teacher-heading">';
+
+function injectHub(rel) {
+  const file = path.join(ROOT, rel);
+  if (!fs.existsSync(file)) {
+    console.warn(`  ! missing: ${rel}`);
+    return false;
+  }
+  const before = fs.readFileSync(file, "utf8");
+  if (before.includes("pub-hub-injected:begin")) return false; // already injected
+  const idx = before.lastIndexOf(HUB_ANCHOR);
+  if (idx === -1) {
+    console.error(`  ✗ no teacher-heading section in ${rel} — skipped`);
+    return false;
+  }
+  const after = `${before.slice(0, idx)}${HUB_STRIP}\n\n      ${before.slice(idx)}`;
+  if (!DRY) fs.writeFileSync(file, after);
+  console.log(`  + ${rel}`);
+  return true;
+}
+
 const UNITS = [...Array.from({ length: 10 }, (_, i) => `unit-${i + 1}`), "statistics"];
 
 let changed = 0;
@@ -70,5 +121,9 @@ for (const u of UNITS) {
   for (const v of ["version-a", "version-b"]) {
     if (inject(`math/${u}/projects/${v}/index.html`)) changed++;
   }
+}
+console.log(`Storefront strip injection${DRY ? " (dry-run)" : ""}:`);
+for (const u of UNITS) {
+  if (injectHub(`math/${u}/projects/index.html`)) changed++;
 }
 console.log(`${changed} file(s) updated${DRY ? " (would be)" : ""}.`);

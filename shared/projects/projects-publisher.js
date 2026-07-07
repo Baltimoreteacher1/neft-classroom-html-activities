@@ -233,7 +233,7 @@
       el(
         "p",
         "pub-selfassess-hint",
-        "Before you finish, be your own first grader. Rate each row of the rubric honestly — then pick one thing to level up.",
+        "You get to grade your work first. Rate each row of the rubric honestly — then pick one thing to level up.",
       ),
     );
 
