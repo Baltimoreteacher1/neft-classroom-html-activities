@@ -48,6 +48,9 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
+  // Save-code sync is network-only — never cache or intercept API responses.
+  if (url.pathname.startsWith("/api/")) return;
+
   // Network-first for navigations; fall back to the cached app shell offline,
   // and to a friendly static offline page if even that isn't cached yet
   // (a corrupted/never-populated cache shouldn't dead-end into a browser
