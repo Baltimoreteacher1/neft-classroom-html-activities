@@ -1373,13 +1373,17 @@ function updateSidebar(sidebar, state, phaseConfigs) {
   const nav = sidebar.querySelector('[data-bind="phases"]');
   if (!nav) return;
 
-  // Vocab + Notes ride directly under the Launch (phase 1) button as indented
-  // sub-tabs — reference material that lives with the lesson flow, not in the
-  // "Before the lesson" group above. Rendered inside the data-bound phase nav
-  // so they sit immediately beneath Launch; click is delegated via rma:openextra.
+  // Vocab → Notes → Learn It ride directly under the Launch (phase 1) button as
+  // indented sub-tabs — reference material that lives with the lesson flow, not
+  // in the "Before the lesson" group above. Order is deliberate: get curious
+  // (Launch), pick up the words (Vocab), read along (Notes), then Learn It
+  // teaches the concept step by step and leads into the lesson. Rendered inside
+  // the data-bound phase nav so they sit immediately beneath Launch; click is
+  // delegated via rma:openextra.
   const launchSubTabs = [
     { extra: "vocab", icon: "🔑", label: "Vocab" },
     { extra: "notes", icon: "📝", label: "Notes" },
+    { extra: "learn", icon: "📖", label: "Learn It" },
   ]
     .map(
       (t) =>
