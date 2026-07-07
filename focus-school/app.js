@@ -673,30 +673,105 @@
   const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
   const TIME_RE = /^\d{2}:\d{2}$/;
   const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  // A day entry is `{ <routineId>: [checkedStepIds], __awarded: [routineIds],
+  // __ts: { <routineId>: { <stepId>: lastToggleMs } } }`. The __ts map is what
+  // lets check AND uncheck sync both ways: on merge each step's state is decided
+  // by whichever device toggled it most recently (last-write-wins per step), so
+  // an uncheck on one device propagates instead of being resurrected by the
+  // other's older check. Legacy data with no __ts falls back to union (a tie at
+  // timestamp 0 keeps a step checked if either side had it), so nothing is lost.
   function normalizeRoutineLog(log) {
     if (!log || typeof log !== "object") return {};
     const out = {};
     for (const [date, day] of Object.entries(log)) {
       if (!DATE_RE.test(date) || !day || typeof day !== "object") continue;
       const cleanDay = {};
-      for (const [routineId, itemIds] of Object.entries(day)) {
-        if (!Array.isArray(itemIds)) continue;
-        cleanDay[routineId] = [...new Set(itemIds.filter(Boolean).map(String))];
+      for (const [key, val] of Object.entries(day)) {
+        if (key === "__ts") {
+          if (!val || typeof val !== "object" || Array.isArray(val)) continue;
+          const ts = {};
+          for (const [rid, steps] of Object.entries(val)) {
+            if (!steps || typeof steps !== "object" || Array.isArray(steps)) continue;
+            const clean = {};
+            for (const [sid, t] of Object.entries(steps)) {
+              const n = Number(t);
+              if (Number.isFinite(n) && n > 0) clean[String(sid)] = n;
+            }
+            if (Object.keys(clean).length) ts[String(rid)] = clean;
+          }
+          if (Object.keys(ts).length) cleanDay.__ts = ts;
+          continue;
+        }
+        // Everything else (each routine's checked-step array, plus __awarded).
+        if (!Array.isArray(val)) continue;
+        cleanDay[key] = [...new Set(val.filter(Boolean).map(String))];
       }
       out[date] = cleanDay;
     }
     return out;
   }
   function mergeRoutineLogs(localLog, remoteLog) {
-    const merged = normalizeRoutineLog(localLog);
+    const local = normalizeRoutineLog(localLog);
     const remote = normalizeRoutineLog(remoteLog);
-    for (const [date, day] of Object.entries(remote)) {
-      const target = (merged[date] = merged[date] || {});
-      for (const [routineId, itemIds] of Object.entries(day)) {
-        target[routineId] = [...new Set([...(target[routineId] || []), ...itemIds])];
+    const out = {};
+    const dates = new Set([...Object.keys(local), ...Object.keys(remote)]);
+    for (const date of dates) {
+      const a = local[date] || {};
+      const b = remote[date] || {};
+      const aTs = a.__ts || {};
+      const bTs = b.__ts || {};
+      const day = {};
+      const mergedTs = {};
+      const routineIds = new Set(
+        [
+          ...Object.keys(a),
+          ...Object.keys(b),
+          ...Object.keys(aTs),
+          ...Object.keys(bTs),
+        ].filter((k) => k !== "__ts" && k !== "__awarded"),
+      );
+      for (const rid of routineIds) {
+        const aArr = Array.isArray(a[rid]) ? a[rid] : [];
+        const bArr = Array.isArray(b[rid]) ? b[rid] : [];
+        const aStepTs = aTs[rid] || {};
+        const bStepTs = bTs[rid] || {};
+        const steps = new Set([
+          ...aArr,
+          ...bArr,
+          ...Object.keys(aStepTs),
+          ...Object.keys(bStepTs),
+        ]);
+        const chosen = [];
+        const ridTs = {};
+        for (const step of steps) {
+          const at = aStepTs[step] || 0;
+          const bt = bStepTs[step] || 0;
+          let on;
+          if (at > bt) on = aArr.includes(step);
+          else if (bt > at) on = bArr.includes(step);
+          else on = aArr.includes(step) || bArr.includes(step); // tie → union
+          if (on) chosen.push(step);
+          const t = Math.max(at, bt);
+          if (t) ridTs[step] = t;
+        }
+        if (chosen.length) day[rid] = chosen;
+        if (Object.keys(ridTs).length) mergedTs[rid] = ridTs;
       }
+      if (Object.keys(mergedTs).length) day.__ts = mergedTs;
+      const aAw = Array.isArray(a.__awarded) ? a.__awarded : [];
+      const bAw = Array.isArray(b.__awarded) ? b.__awarded : [];
+      const awarded = [...new Set([...aAw, ...bAw])];
+      if (awarded.length) day.__awarded = awarded;
+      out[date] = day;
     }
-    return merged;
+    return out;
+  }
+  // Record that a routine step was just toggled, so the merge can prefer the most
+  // recent check/uncheck across devices. Call on every check, uncheck, and reset.
+  function stampRoutineStep(day, routineId, stepId) {
+    const ts = (day.__ts = day.__ts || {});
+    const r = (ts[routineId] = ts[routineId] || {});
+    r[stepId] = Date.now();
   }
   function normalizeClass(c) {
     c = c || {};
@@ -6440,6 +6515,7 @@ Due May 31"></textarea>
       const day = (state.routineLog[todayKey()] = state.routineLog[todayKey()] || {});
       const arr = (day[r.id] = day[r.id] || []);
       if (!arr.includes(it.id)) arr.push(it.id);
+      stampRoutineStep(day, r.id, it.id); // sync this check across devices
       // Award +5 once when fully complete, mirroring the checkbox flow.
       const awarded = (day.__awarded = day.__awarded || []);
       if (arr.length === r.items.length && !awarded.includes(r.id)) {
@@ -8910,7 +8986,19 @@ Due May 31"></textarea>
       render();
     },
     "reset-routine": (id) => {
-      if (state.routineLog[todayKey()]) delete state.routineLog[todayKey()][id];
+      const day = (state.routineLog[todayKey()] = state.routineLog[todayKey()] || {});
+      const r = state.routines.find((x) => x.id === id);
+      // Every step that could be checked on ANY device: this routine's items,
+      // whatever is checked locally, and anything already timestamped.
+      const stepIds = new Set([
+        ...(r ? r.items.map((it) => it.id) : []),
+        ...(Array.isArray(day[id]) ? day[id] : []),
+        ...Object.keys((day.__ts && day.__ts[id]) || {}),
+      ]);
+      delete day[id];
+      // Stamp each step as unchecked-now so the reset wins the merge everywhere
+      // (a peer's older check can't bring the step back).
+      for (const sid of stepIds) stampRoutineStep(day, id, sid);
       save();
       render();
     },
@@ -9861,6 +9949,7 @@ ${name}`;
         const st = a?.steps.find((s) => s.id === sid);
         if (st) {
           st.done = box.checked;
+          a.updatedAt = Date.now(); // bump so the step toggle wins the sync merge
           // Award +1 the first time a step is ever completed; never again
           // (prevents farming points by toggling a checkbox repeatedly).
           if (box.checked && !st.credited) {
@@ -9885,6 +9974,9 @@ ${name}`;
         if (box.checked) {
           if (!arr.includes(sid)) arr.push(sid);
         } else day[id] = arr.filter((x) => x !== sid);
+        // Stamp the toggle time so this check/uncheck wins the merge on every
+        // device (an uncheck here propagates instead of being resurrected).
+        stampRoutineStep(day, id, sid);
         // Award +5 the first time a routine is fully completed today, and only
         // once (tracked in day.__awarded) so it can't be farmed by re-checking.
         const awarded = (day.__awarded = day.__awarded || []);
@@ -9904,6 +9996,7 @@ ${name}`;
         const td = state.todos.find((t) => t.id === id);
         if (td) {
           td.done = box.checked;
+          td.updatedAt = Date.now(); // bump so the toggle wins the sync merge
           if (box.checked) {
             addPoints(1);
             bumpActivity("tasks");
@@ -9924,6 +10017,7 @@ ${name}`;
           } else {
             r.done = box.checked;
           }
+          r.updatedAt = Date.now(); // bump so the toggle wins the sync merge
           save();
           // Re-render so the reminder moves between Open/Done groups cleanly.
           render();
