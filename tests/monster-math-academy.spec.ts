@@ -65,6 +65,16 @@ test.describe("Monster Math Academy smoke", () => {
     });
   });
 
+  test("save progress page is reachable from header", async ({ page }) => {
+    await page.getByRole("button", { name: /Create Your Monster|Crea/i }).click();
+    await page.getByRole("button", { name: /Bring It To Life|Dale Vida/i }).click();
+    await page.getByRole("button", { name: /Save Progress|Guardar Progreso/i }).click();
+    await expect(
+      page.getByRole("heading", { name: /Save Progress|Guardar Progreso/i }),
+    ).toBeVisible({ timeout: 8_000 });
+    await expect(page.getByLabel(/load code|continuar|code/i).first()).toBeVisible();
+  });
+
   test("teacher guide loads without PIN", async ({ page }) => {
     await page.goto(`${MMA}#/guide`);
     await expect(
