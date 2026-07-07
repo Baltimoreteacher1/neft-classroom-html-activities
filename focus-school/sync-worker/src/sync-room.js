@@ -92,22 +92,37 @@ export class SyncRoom extends DurableObject {
     if (payload.length > MAX_PAYLOAD) return;
 
     // Last-write-wins persist, matching the /api/state PUT semantics exactly.
-    let store = true;
+    let existing = null;
     try {
-      const existing = await this.env.NOAM_SCHOOL_KV.get(key);
-      if (existing) {
-        const prev = JSON.parse(existing);
-        if ((prev.updatedAt || 0) > updatedAt) store = false;
-      }
+      existing = await this.env.NOAM_SCHOOL_KV.get(key);
     } catch {
       /* treat a read error as "no existing" — the write below is still safe */
     }
-    if (store) {
+    if (existing) {
+      let prevUpdatedAt = 0;
       try {
-        await this.env.NOAM_SCHOOL_KV.put(key, payload, { expirationTtl: YEAR });
+        prevUpdatedAt = JSON.parse(existing).updatedAt || 0;
       } catch {
-        /* KV write failed — still broadcast so peers converge in memory */
+        /* corrupt stored value — fall through and overwrite it below */
       }
+      if (prevUpdatedAt > updatedAt) {
+        // The pusher is behind the cloud copy. Broadcasting its stale state would
+        // hand every peer an older snapshot to merge-and-discard — pure churn.
+        // Instead correct only the laggard by echoing the newer copy back, then
+        // stop: peers are already at or ahead of `existing`, so they need nothing.
+        try {
+          ws.send(existing);
+        } catch {
+          /* dead socket — hibernation/close handling will reap it */
+        }
+        return;
+      }
+    }
+
+    try {
+      await this.env.NOAM_SCHOOL_KV.put(key, payload, { expirationTtl: YEAR });
+    } catch {
+      /* KV write failed — still broadcast so peers converge in memory */
     }
 
     // Fan out to every OTHER device on the same code. getWebSockets(code) filters
