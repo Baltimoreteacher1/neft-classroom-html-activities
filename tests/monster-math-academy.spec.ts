@@ -268,6 +268,65 @@ test.describe("Monster Math Academy smoke", () => {
     ).toHaveAttribute("href", /math-workbench/);
   });
 
+  test("title screen shows Start Mission, Choose Level, and Settings", async ({
+    page,
+  }) => {
+    await page.getByRole("button", { name: /Create Your Monster|Crea/i }).click();
+    await page.getByRole("button", { name: /Bring It To Life|Dale Vida/i }).click();
+    await expect(
+      page.getByRole("button", { name: /Start Mission|Iniciar Mision/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /Choose Level|Elegir Nivel/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /Settings|Ajustes/i }),
+    ).toBeVisible();
+  });
+
+  test("HUD reward pill visible after monster created", async ({ page }) => {
+    await createMonster(page);
+    await expect(page.locator("#mma-reward-pill")).toBeVisible();
+    await expect(page.locator("#mma-reward-pill")).toContainText(/Level|Nivel/i);
+  });
+
+  test("profile route loads player dashboard", async ({ page }) => {
+    await createMonster(page);
+    await page.goto(`${MMA}#/profile`);
+    await expect(
+      page.getByRole("button", { name: /Continue adventure|Continuar aventura/i }),
+    ).toBeVisible({ timeout: 8_000 });
+  });
+
+  test("onboarding tour can be dismissed", async ({ page }) => {
+    await createMonster(page);
+    const skip = page.getByRole("button", { name: /Skip|Saltar/i });
+    const shown = await skip
+      .waitFor({ state: "visible", timeout: 4_000 })
+      .then(() => true)
+      .catch(() => false);
+    if (shown) {
+      await skip.click();
+      await expect(skip).not.toBeVisible();
+    }
+  });
+
+  test("whats-new route loads changelog", async ({ page }) => {
+    await page.goto(`${MMA}#/whats-new`);
+    await expect(page.getByText(/What's New|Novedades/i).first()).toBeVisible({
+      timeout: 8_000,
+    });
+    await expect(page.getByText(/v2\.0|Premium Game Pass|Pase de Juego/i).first()).toBeVisible();
+  });
+
+  test("build route loads progress artifact", async ({ page }) => {
+    await createMonster(page);
+    await page.goto(`${MMA}#/build`);
+    await expect(
+      page.getByText(/Build Project|Proyecto de Construccion/i).first(),
+    ).toBeVisible({ timeout: 8_000 });
+  });
+
   test("teacher guide loads without PIN and shows time table", async ({ page }) => {
     await page.goto(`${MMA}#/guide`);
     await expect(
