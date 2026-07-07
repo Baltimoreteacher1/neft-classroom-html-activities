@@ -123,7 +123,7 @@ function readAloudScript() {
   (function(){
     var btn=null, speaking=false, hi=null;
     function collect(){
-      var sel='.li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q';
+      var sel='.li-hook-text, .li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q';
       return Array.prototype.slice.call(document.querySelectorAll(sel)).filter(function(el){
         return el.offsetParent!==null && el.textContent.trim();
       });
@@ -787,9 +787,15 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
 
   const vocab = Array.isArray(cfg.vocabulary) ? cfg.vocabulary : [];
 
-  // "Picture it" — concrete graphics so English learners can SEE the math: the
-  // authored launch visual (chips / number line) plus the lesson's vocabulary
-  // pictures (which are concept diagrams — factor trees, models, etc.).
+  // Each rung of the gradual-release ladder is captured as a stage object so the
+  // "learning journey" map at the top and the numbered stage cards below are
+  // built from ONE source of truth — they can never drift apart, and a lesson
+  // that is missing a rung simply drops that pill and renumbers cleanly.
+  const stages = [];
+
+  // ① "Picture it" — concrete graphics so English learners can SEE the math:
+  // the authored launch visual (chips / number line) plus the lesson's
+  // vocabulary pictures (concept diagrams — factor trees, models, etc.).
   const authored = learnVisual(cfg);
   const vocabPics = vocab
     .filter((v) => v && v.term)
@@ -799,31 +805,42 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       return `<figure class="li-graphic"><img src="${esc(src)}" alt="${esc(vocabImageAlt(v.term, v.definition))}" loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption>${esc(v.term)}</figcaption></figure>`;
     })
     .join("");
-  const visualBlock =
-    authored || vocabPics
-      ? `<section class="li-block li-seeit">
-          <p class="li-eyebrow">👁️ Picture it</p>
-          <p class="li-lead">These pictures show what the math looks like.</p>
-          ${authored ? `<div class="li-figure">${authored}</div>` : ""}
-          ${vocabPics ? `<div class="li-graphics">${vocabPics}</div>` : ""}
-        </section>`
-      : "";
+  if (authored || vocabPics) {
+    stages.push({
+      id: "see",
+      accent: "see",
+      icon: "👁️",
+      label: "Picture it",
+      sub: "See what the math looks like",
+      body: `${authored ? `<div class="li-figure">${authored}</div>` : ""}
+          ${vocabPics ? `<div class="li-graphics">${vocabPics}</div>` : ""}`,
+    });
+  }
 
-  // Worked example (I do) — read-only model, clean numbered steps. Key math
+  // ② Worked example (I do) — read-only model, clean numbered steps. Key math
   // words become tap-to-define pop-ups (English-learner friendly).
-  const example = iLines.length
-    ? `<section class="li-block">
-        <p class="li-eyebrow">Worked example</p>
-        <p class="li-lead">Read each step. Tap a <span class="li-pop-demo">blue word</span> to see what it means.</p>
-        <ol class="li-steps">${iLines.map((l) => `<li>${popoverize(l, vocab)}</li>`).join("")}</ol>
-      </section>`
-    : "";
+  if (iLines.length) {
+    stages.push({
+      id: "watch",
+      accent: "watch",
+      icon: "👀",
+      label: "Watch me solve it",
+      sub: "I do — read every step",
+      body: `<p class="li-lead">Read each step. Tap a <span class="li-pop-demo">blue word</span> to see what it means.</p>
+        <ol class="li-steps">${iLines.map((l) => `<li>${popoverize(l, vocab)}</li>`).join("")}</ol>`,
+    });
+  }
 
-  // Guided practice (We do) — student fills in each step, then the answer.
-  const guided = weLines.length
-    ? `<section class="li-block li-block-practice">
-        <p class="li-eyebrow">Try it with me</p>
-        <p class="li-lead">Work through the same steps on this one. Fill in each blank as we go.</p>
+  // ③ Guided practice (We do) — student fills in each step, then the answer.
+  if (weLines.length) {
+    stages.push({
+      id: "together",
+      accent: "together",
+      icon: "🤝",
+      label: "Try it with me",
+      sub: "We do — fill in each step",
+      practice: true,
+      body: `<p class="li-lead">Work through the same steps on this one. Fill in each blank as we go.</p>
         <ol class="li-steps li-steps-fill">${weLines
           .map(
             (l) =>
@@ -831,13 +848,14 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
           )
           .join("")}</ol>
         <div class="li-work"><span class="li-work-label">Show your work</span></div>
-        <p class="li-answer"><span class="li-answer-label">Answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type the answer" /></p>
-      </section>`
-    : "";
+        <p class="li-answer"><span class="li-answer-label">Answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type the answer" /></p>`,
+    });
+  }
 
-  // On your own (You do) — a REAL problem to solve independently, drawn from the
-  // lesson's own practice items, so the gradual-release ladder has a final rung
-  // (not just a "next you will…" preview). Work box + answer + a no-JS reveal.
+  // ④ On your own (You do) — a REAL problem to solve independently, drawn from
+  // the lesson's own practice items, so the gradual-release ladder has a final
+  // rung (not just a "next you will…" preview). Work box + answer + a no-JS
+  // reveal that is earned, not given (scaffold, not giveaway).
   const p = cfg.practice || {};
   const ownProblem = []
     .concat(p.onLevel || [], p.approaching || [], p.extending || [])
@@ -851,40 +869,78 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
   const ownGuidance = youLines.length
     ? `<ul class="li-list">${youLines.map((l) => `<li>${popoverize(l, vocab)}</li>`).join("")}</ul>`
     : "";
-  let onOwn = "";
   if (ownProblem) {
     const ownAns =
       Array.isArray(ownProblem.choices) && typeof ownProblem.correctIndex === "number"
         ? ownProblem.choices[ownProblem.correctIndex]
         : ownProblem.sampleAnswer || ownProblem.answer || "";
-    onOwn = `<section class="li-block">
-        <p class="li-eyebrow">On your own</p>
-        ${ownGuidance}
+    stages.push({
+      id: "own",
+      accent: "own",
+      icon: "🚀",
+      label: "On your own",
+      sub: "You do — solve it solo",
+      body: `${ownGuidance}
         <p class="li-problem-q"><strong>Solve:</strong> ${popoverize(ownProblem.stem, vocab)}</p>
         <div class="li-work"><span class="li-work-label">Show your work</span></div>
         <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
-        ${ownAns ? `<details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Answer:</strong> ${esc(ownAns)}${ownProblem.explanation ? `<br><span class="li-check-why">${esc(ownProblem.explanation)}</span>` : ""}</div></details>` : ""}
-      </section>`;
+        ${ownAns ? `<details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Answer:</strong> ${esc(ownAns)}${ownProblem.explanation ? `<br><span class="li-check-why">${esc(ownProblem.explanation)}</span>` : ""}</div></details>` : ""}`,
+    });
   } else if (youLines.length) {
-    onOwn = `<section class="li-block">
-        <p class="li-eyebrow">On your own</p>
-        ${ownGuidance}
-        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
-      </section>`;
+    stages.push({
+      id: "own",
+      accent: "own",
+      icon: "🚀",
+      label: "On your own",
+      sub: "You do — solve it solo",
+      body: `${ownGuidance}
+        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>`,
+    });
   }
 
-  if (!example && !guided && !onOwn && !introP) return "";
+  if (!stages.length && !introP) return "";
+
+  // Learning-journey map — a visual "you are here" roadmap of the gradual
+  // release, each pill an anchor to its stage. Purely presentational; the
+  // pill count always equals the number of stage cards that follow.
+  const journey = stages.length
+    ? `<nav class="li-journey no-print" aria-label="Your learning path">
+        ${stages
+          .map(
+            (s, i) =>
+              `<a class="li-jstep li-jstep-${s.accent}" href="#li-${s.id}"><span class="li-jnum">${i + 1}</span><span class="li-jico" aria-hidden="true">${s.icon}</span><span class="li-jlabel">${esc(s.label)}</span></a>`,
+          )
+          .join('<span class="li-jarrow" aria-hidden="true">→</span>')}
+      </nav>`
+    : "";
+
+  const stageCards = stages
+    .map(
+      (s) =>
+        `<section class="li-block li-stage li-stage-${s.accent}${s.practice ? " li-block-practice" : ""}" id="li-${s.id}">
+        <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">${s.icon}</span><span class="li-stage-label">${esc(s.label)}</span><span class="li-stage-sub">${esc(s.sub)}</span></p>
+        ${s.body}
+      </section>`,
+    )
+    .join("");
+
+  // Confidence self-check — a saved checkbox (auto-persisted by the page's
+  // save/resume script) that turns the "you're ready" line into a small act of
+  // metacognition, plus a warm send-off into the lesson.
+  const ready = `<section class="li-ready-card" id="li-ready">
+      <p class="li-ready-head">🎉 Ready to launch?</p>
+      <label class="li-ready-check"><input type="checkbox" /> <span>I can solve one of these on my own.</span></label>
+      <p class="li-ready-note">When you can finish <strong>Try it with me</strong> without help, head to the lesson activities and show what you know!</p>
+    </section>`;
 
   return `<article class="li" aria-label="Learn It — how the math works">
     <p class="li-kicker">Learn It</p>
     <h2 class="li-title">${heading}</h2>
     ${introP ? `<p class="li-intro">${esc(intro.intro)}</p>` : ""}
     ${keyIdeaClean}
-    ${visualBlock}
-    ${example}
-    ${guided}
-    ${onOwn}
-    <p class="li-ready">When you can finish <strong>Try it with me</strong> on your own, you're ready for the lesson.</p>
+    ${journey}
+    ${stageCards}
+    ${ready}
   </article>`;
 }
 
@@ -2253,6 +2309,18 @@ function buildLearnPage(id, cfg, isFlagship) {
   const flagBadge = isFlagship ? `<span class="flagship-badge">Flagship</span>` : "";
 
   const learnBlock = conceptLearnBlock(cfg, { expanded: true });
+  // Themed real-world hook — reuse the Launch narrative so the Learn It page
+  // opens with WHY this math matters, in the lesson's own story world.
+  const narrative = (cfg.launch && cfg.launch.narrative) || cfg.narrative || "";
+  const hookCard = narrative
+    ? `<div class="li-hook">
+    <span class="li-hook-emoji" aria-hidden="true">${esc(cfg.themeEmoji || "🧠")}</span>
+    <div>
+      <p class="li-hook-label">Why we're learning this</p>
+      <p class="li-hook-text">${esc(narrative)}</p>
+    </div>
+  </div>`
+    : "";
   const objectivesIntro = [
     cfg.contentObjective
       ? `<p class="learnit-intro"><strong>Content Objective:</strong> ${esc(cfg.contentObjective)}</p>`
@@ -2290,6 +2358,63 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
     padding:11px 20px;font-weight:800;font-size:15px;cursor:pointer;}
   .li-workbench-btn:hover{filter:brightness(1.08);}
   .li-reading{background:#fff3cd;box-shadow:0 0 0 3px #fff3cd, 0 0 0 5px var(--amber);border-radius:6px;}
+  /* Real-world hook — a themed "why we're learning this" story card that ties
+     the Learn It page to the lesson's Launch narrative. */
+  .li-hook{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(135deg,var(--navy),#1b4a7a);
+    color:#fff;border-radius:14px;padding:16px 20px;margin:0 0 18px;box-shadow:0 6px 18px rgba(18,53,91,.14);}
+  .li-hook-emoji{font-size:34px;line-height:1;flex:0 0 auto;}
+  .li-hook-label{margin:0 0 4px;font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);}
+  .li-hook-text{margin:0;font-size:15.5px;line-height:1.55;}
+  /* Learning-journey map — a "you are here" roadmap of the gradual release. */
+  .li-journey{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px;margin:0 0 22px;}
+  .li-jstep{display:flex;align-items:center;gap:8px;text-decoration:none;background:#fff;border:1.5px solid var(--line);
+    border-radius:999px;padding:7px 14px 7px 8px;color:var(--navy);font-weight:700;font-size:13.5px;transition:transform .12s,border-color .12s,box-shadow .12s;}
+  .li-jstep:hover{transform:translateY(-1px);border-color:var(--teal);box-shadow:0 4px 12px rgba(18,53,91,.10);}
+  .li-jnum{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;
+    background:var(--navy);color:#fff;font-size:13px;font-weight:800;flex:0 0 auto;}
+  .li-jstep-see .li-jnum{background:var(--teal);}
+  .li-jstep-watch .li-jnum{background:var(--teal-ink);}
+  .li-jstep-together .li-jnum{background:#c98a10;}
+  .li-jstep-own .li-jnum{background:var(--navy);}
+  .li-jico{font-size:15px;}
+  .li-jarrow{align-self:center;color:var(--muted);font-weight:800;font-size:15px;}
+  @media (max-width:560px){.li-jlabel{display:none;}.li-jarrow{display:none;}.li-jstep{padding:7px;}}
+  /* Numbered gradual-release stage cards — each rung gets a colored left rail,
+     an auto-numbered badge, an icon and a plain-language subtitle. */
+  .li{counter-reset:li-stage;}
+  .li-stage{position:relative;border:1px solid var(--line);border-left-width:5px;border-radius:14px;
+    padding:18px 20px 18px 22px;margin:0 0 18px;counter-increment:li-stage;background:#fff;}
+  .li-stage>.li-eyebrow{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;border-bottom:0;padding:2px 0 4px 46px;position:relative;
+    color:var(--navy);font-size:16px;letter-spacing:.01em;text-transform:none;min-height:34px;}
+  .li-stage>.li-eyebrow::before{content:counter(li-stage);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;
+    background:var(--navy);color:#fff;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+  .li-stage-ico{font-size:19px;flex:0 0 auto;}
+  .li-stage-label{font-weight:800;white-space:nowrap;}
+  .li-stage-sub{flex-basis:100%;padding-left:0;margin:1px 0 0;font-size:12.5px;font-weight:600;color:var(--muted);text-transform:none;letter-spacing:0;}
+  .li-stage-see{border-left-color:var(--teal);}
+  .li-stage-see>.li-eyebrow::before{background:var(--teal);}
+  .li-stage-watch{border-left-color:var(--teal-ink);}
+  .li-stage-watch>.li-eyebrow::before{background:var(--teal-ink);}
+  .li-stage-together{border-left-color:var(--amber);background:#fffdf7;}
+  .li-stage-together>.li-eyebrow::before{background:#c98a10;}
+  .li-stage-own{border-left-color:var(--navy);}
+  .li-stage-own>.li-eyebrow::before{background:var(--navy);}
+  /* Confidence check + send-off */
+  .li-ready-card{background:var(--teal-light);border:1.5px solid var(--teal);border-radius:14px;padding:18px 20px;margin:6px 0 0;}
+  .li-ready-head{margin:0 0 10px;font-size:18px;font-weight:800;color:var(--navy);}
+  .li-ready-check{display:flex;align-items:center;gap:10px;font-size:15.5px;font-weight:700;color:var(--navy);cursor:pointer;margin:0 0 8px;}
+  .li-ready-check input{width:20px;height:20px;accent-color:var(--teal-ink);flex:0 0 auto;cursor:pointer;}
+  .li-ready-note{margin:0;font-size:14.5px;line-height:1.55;color:var(--ink);}
+  @media print{
+    .li-hook{background:#fff;color:#000;border:1px solid #000;box-shadow:none;}
+    .li-hook-label{color:#000;}
+    .li-journey{display:none;}
+    .li-stage{border-color:#000;border-left-color:#000;background:#fff;page-break-inside:avoid;}
+    .li-stage-together{background:#fff;}
+    .li-stage>.li-eyebrow::before,.li-jnum{background:#000;}
+    .li-ready-card{background:#fff;border-color:#000;}
+    .li-ready-head,.li-ready-check{color:#000;}
+  }
 </style>
 <script>
   if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
@@ -2316,6 +2441,7 @@ ${readAloudScript()}
     <span class="lin-icon" aria-hidden="true">🧭</span>
     <p>Read this first. It explains what we are learning and shows you exactly how to solve it — step by step. Then head to the lesson activities and practice.</p>
   </div>
+  ${hookCard}
   <div class="learn-actions no-print">
     <button type="button" id="li-listen" class="li-listen-btn">🔊 Listen to this page</button>
     <a class="li-workbench-btn" href="/curriculum/math-workbench/" target="_blank" rel="noopener" title="Open the Math Workbench scratch space in a new tab">✱ Math Workbench</a>

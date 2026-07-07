@@ -749,6 +749,63 @@ header.packet h1::after{
     padding:11px 20px;font-weight:800;font-size:15px;cursor:pointer;}
   .li-workbench-btn:hover{filter:brightness(1.08);}
   .li-reading{background:#fff3cd;box-shadow:0 0 0 3px #fff3cd, 0 0 0 5px var(--amber);border-radius:6px;}
+  /* Real-world hook — a themed "why we're learning this" story card that ties
+     the Learn It page to the lesson's Launch narrative. */
+  .li-hook{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(135deg,var(--navy),#1b4a7a);
+    color:#fff;border-radius:14px;padding:16px 20px;margin:0 0 18px;box-shadow:0 6px 18px rgba(18,53,91,.14);}
+  .li-hook-emoji{font-size:34px;line-height:1;flex:0 0 auto;}
+  .li-hook-label{margin:0 0 4px;font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);}
+  .li-hook-text{margin:0;font-size:15.5px;line-height:1.55;}
+  /* Learning-journey map — a "you are here" roadmap of the gradual release. */
+  .li-journey{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px;margin:0 0 22px;}
+  .li-jstep{display:flex;align-items:center;gap:8px;text-decoration:none;background:#fff;border:1.5px solid var(--line);
+    border-radius:999px;padding:7px 14px 7px 8px;color:var(--navy);font-weight:700;font-size:13.5px;transition:transform .12s,border-color .12s,box-shadow .12s;}
+  .li-jstep:hover{transform:translateY(-1px);border-color:var(--teal);box-shadow:0 4px 12px rgba(18,53,91,.10);}
+  .li-jnum{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;
+    background:var(--navy);color:#fff;font-size:13px;font-weight:800;flex:0 0 auto;}
+  .li-jstep-see .li-jnum{background:var(--teal);}
+  .li-jstep-watch .li-jnum{background:var(--teal-ink);}
+  .li-jstep-together .li-jnum{background:#c98a10;}
+  .li-jstep-own .li-jnum{background:var(--navy);}
+  .li-jico{font-size:15px;}
+  .li-jarrow{align-self:center;color:var(--muted);font-weight:800;font-size:15px;}
+  @media (max-width:560px){.li-jlabel{display:none;}.li-jarrow{display:none;}.li-jstep{padding:7px;}}
+  /* Numbered gradual-release stage cards — each rung gets a colored left rail,
+     an auto-numbered badge, an icon and a plain-language subtitle. */
+  .li{counter-reset:li-stage;}
+  .li-stage{position:relative;border:1px solid var(--line);border-left-width:5px;border-radius:14px;
+    padding:18px 20px 18px 22px;margin:0 0 18px;counter-increment:li-stage;background:#fff;}
+  .li-stage>.li-eyebrow{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;border-bottom:0;padding:2px 0 4px 46px;position:relative;
+    color:var(--navy);font-size:16px;letter-spacing:.01em;text-transform:none;min-height:34px;}
+  .li-stage>.li-eyebrow::before{content:counter(li-stage);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;
+    background:var(--navy);color:#fff;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+  .li-stage-ico{font-size:19px;flex:0 0 auto;}
+  .li-stage-label{font-weight:800;white-space:nowrap;}
+  .li-stage-sub{flex-basis:100%;padding-left:0;margin:1px 0 0;font-size:12.5px;font-weight:600;color:var(--muted);text-transform:none;letter-spacing:0;}
+  .li-stage-see{border-left-color:var(--teal);}
+  .li-stage-see>.li-eyebrow::before{background:var(--teal);}
+  .li-stage-watch{border-left-color:var(--teal-ink);}
+  .li-stage-watch>.li-eyebrow::before{background:var(--teal-ink);}
+  .li-stage-together{border-left-color:var(--amber);background:#fffdf7;}
+  .li-stage-together>.li-eyebrow::before{background:#c98a10;}
+  .li-stage-own{border-left-color:var(--navy);}
+  .li-stage-own>.li-eyebrow::before{background:var(--navy);}
+  /* Confidence check + send-off */
+  .li-ready-card{background:var(--teal-light);border:1.5px solid var(--teal);border-radius:14px;padding:18px 20px;margin:6px 0 0;}
+  .li-ready-head{margin:0 0 10px;font-size:18px;font-weight:800;color:var(--navy);}
+  .li-ready-check{display:flex;align-items:center;gap:10px;font-size:15.5px;font-weight:700;color:var(--navy);cursor:pointer;margin:0 0 8px;}
+  .li-ready-check input{width:20px;height:20px;accent-color:var(--teal-ink);flex:0 0 auto;cursor:pointer;}
+  .li-ready-note{margin:0;font-size:14.5px;line-height:1.55;color:var(--ink);}
+  @media print{
+    .li-hook{background:#fff;color:#000;border:1px solid #000;box-shadow:none;}
+    .li-hook-label{color:#000;}
+    .li-journey{display:none;}
+    .li-stage{border-color:#000;border-left-color:#000;background:#fff;page-break-inside:avoid;}
+    .li-stage-together{background:#fff;}
+    .li-stage>.li-eyebrow::before,.li-jnum{background:#000;}
+    .li-ready-card{background:#fff;border-color:#000;}
+    .li-ready-head,.li-ready-check{color:#000;}
+  }
 </style>
 <script>
   if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
@@ -876,7 +933,7 @@ header.packet h1::after{
   (function(){
     var btn=null, speaking=false, hi=null;
     function collect(){
-      var sel='.li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q';
+      var sel='.li-hook-text, .li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q';
       return Array.prototype.slice.call(document.querySelectorAll(sel)).filter(function(el){
         return el.offsetParent!==null && el.textContent.trim();
       });
@@ -910,8 +967,6 @@ header.packet h1::after{
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
-
-
   <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/assets/favicon.svg">
@@ -944,6 +999,13 @@ header.packet h1::after{
     <span class="lin-icon" aria-hidden="true">🧭</span>
     <p>Read this first. It explains what we are learning and shows you exactly how to solve it — step by step. Then head to the lesson activities and practice.</p>
   </div>
+  <div class="li-hook">
+    <span class="li-hook-emoji" aria-hidden="true">🚀</span>
+    <div>
+      <p class="li-hook-label">Why we're learning this</p>
+      <p class="li-hook-text">The space station has 18.9 kilograms of a rare mineral sample that must be divided equally among 6.3-kilogram storage pods. How many pods can be completely filled?</p>
+    </div>
+  </div>
   <div class="learn-actions no-print">
     <button type="button" id="li-listen" class="li-listen-btn">🔊 Listen to this page</button>
     <a class="li-workbench-btn" href="/curriculum/math-workbench/" target="_blank" rel="noopener" title="Open the Math Workbench scratch space in a new tab">✱ Math Workbench</a>
@@ -953,33 +1015,36 @@ header.packet h1::after{
     <h2 class="li-title">How do you divide with decimals?</h2>
     <p class="li-intro">Dividing splits a total into equal groups. When you divide by a decimal, you first make the divisor (the number you divide by) a whole number, so the division is easier.</p>
     <aside class="li-keyidea"><span class="li-keyidea-label">Key idea</span><p>Move the decimal point the same number of places in BOTH the divisor and the dividend; the answer stays the same.</p></aside>
-    <section class="li-block li-seeit">
-          <p class="li-eyebrow">👁️ Picture it</p>
-          <p class="li-lead">These pictures show what the math looks like.</p>
-          <div class="li-figure"><div class="li-visual-title">Filling 6.3 kg pods from 18.9 kg</div><div class="li-visual-unit">See this picture in the Launch.</div></div>
+    <nav class="li-journey no-print" aria-label="Your learning path">
+        <a class="li-jstep li-jstep-see" href="#li-see"><span class="li-jnum">1</span><span class="li-jico" aria-hidden="true">👁️</span><span class="li-jlabel">Picture it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-watch" href="#li-watch"><span class="li-jnum">2</span><span class="li-jico" aria-hidden="true">👀</span><span class="li-jlabel">Watch me solve it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-together" href="#li-together"><span class="li-jnum">3</span><span class="li-jico" aria-hidden="true">🤝</span><span class="li-jlabel">Try it with me</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-own" href="#li-own"><span class="li-jnum">4</span><span class="li-jico" aria-hidden="true">🚀</span><span class="li-jlabel">On your own</span></a>
+      </nav>
+    <section class="li-block li-stage li-stage-see" id="li-see">
+        <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">👁️</span><span class="li-stage-label">Picture it</span><span class="li-stage-sub">See what the math looks like</span></p>
+        <div class="li-figure"><div class="li-visual-title">Filling 6.3 kg pods from 18.9 kg</div><div class="li-visual-unit">See this picture in the Launch.</div></div>
           <div class="li-graphics"><figure class="li-graphic"><img src="../../assets/vocab-images/dividend.svg" alt="Illustration of Dividend: The number you are splitting up in a division problem." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption>Dividend</figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/divisor.svg" alt="Illustration of Divisor: The number you split by in a division problem." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption>Divisor</figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/quotient.svg" alt="Illustration of Quotient: The answer when you divide." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption>Quotient</figcaption></figure></div>
-        </section>
-    <section class="li-block">
-        <p class="li-eyebrow">Worked example</p>
+      </section><section class="li-block li-stage li-stage-watch" id="li-watch">
+        <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">👀</span><span class="li-stage-label">Watch me solve it</span><span class="li-stage-sub">I do — read every step</span></p>
         <p class="li-lead">Read each step. Tap a <span class="li-pop-demo">blue word</span> to see what it means.</p>
         <ol class="li-steps"><li>I want 18.9 ÷ 6.3. The <button type="button" class="li-pop" data-popover data-term="Divisor" data-term-es="Divisor" data-def="The number you split by in a division problem." data-def-es="El número entre el que divides en una división." data-img="../../assets/vocab-images/divisor.svg" aria-label="divisor — what does Divisor mean?">divisor<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> is 6.3, and I want it to be a whole number.</li><li>I move the decimal point 1 place right in the <button type="button" class="li-pop" data-popover data-term="Divisor" data-term-es="Divisor" data-def="The number you split by in a division problem." data-def-es="El número entre el que divides en una división." data-img="../../assets/vocab-images/divisor.svg" aria-label="divisor — what does Divisor mean?">divisor<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>: 6.3 becomes 63.</li><li>I must move the <button type="button" class="li-pop" data-popover data-term="Dividend" data-term-es="Dividendo" data-def="The number you are splitting up in a division problem." data-def-es="El número que estás repartiendo en una división." data-img="../../assets/vocab-images/dividend.svg" aria-label="dividend — what does Dividend mean?">dividend<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> the same 1 place right: 18.9 becomes 189. Now the problem is 189 ÷ 63.</li><li>I divide: 189 ÷ 63 = 3. So 18.9 ÷ 6.3 = 3.</li><li>I check by multiplying: 6.3 × 3 = 18.9. Correct — 3 pods can be filled.</li></ol>
-      </section>
-    <section class="li-block li-block-practice">
-        <p class="li-eyebrow">Try it with me</p>
+      </section><section class="li-block li-stage li-stage-together li-block-practice" id="li-together">
+        <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">🤝</span><span class="li-stage-label">Try it with me</span><span class="li-stage-sub">We do — fill in each step</span></p>
         <p class="li-lead">Work through the same steps on this one. Fill in each blank as we go.</p>
         <ol class="li-steps li-steps-fill"><li>Let's do 8.4 ÷ 2.1. How many places do we move to make 2.1 a whole number? (1 place, so 2.1 becomes 21.)<input class="li-input" type="text" data-nt-field placeholder="your work…" /></li><li>Move the <button type="button" class="li-pop" data-popover data-term="Dividend" data-term-es="Dividendo" data-def="The number you are splitting up in a division problem." data-def-es="El número que estás repartiendo en una división." data-img="../../assets/vocab-images/dividend.svg" aria-label="dividend — what does Dividend mean?">dividend<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> the same way: 8.4 becomes 84. What is the new problem? (84 ÷ 21.)<input class="li-input" type="text" data-nt-field placeholder="your work…" /></li><li>Divide: 84 ÷ 21 = 4. So 8.4 ÷ 2.1 = 4. Check: 2.1 × 4 = 8.4.<input class="li-input" type="text" data-nt-field placeholder="your work…" /></li></ol>
         <div class="li-work"><span class="li-work-label">Show your work</span></div>
         <p class="li-answer"><span class="li-answer-label">Answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type the answer" /></p>
-      </section>
-    <section class="li-block">
-        <p class="li-eyebrow">On your own</p>
+      </section><section class="li-block li-stage li-stage-own" id="li-own">
+        <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">🚀</span><span class="li-stage-label">On your own</span><span class="li-stage-sub">You do — solve it solo</span></p>
         <ul class="li-list"><li>Next, you will rewrite <button type="button" class="li-pop" data-popover data-term="Decimal division" data-term-es="División decimal" data-def="Dividing with decimals. First make the number you divide by a whole number." data-def-es="Dividir con decimales. Primero haz entero el número entre el que divides." data-img="../../assets/vocab-images/decimal.svg" aria-label="decimal divisions — what does Decimal division mean?">decimal divisions<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> as whole-number divisions and solve them on your own.</li><li>Remember: move the point the same number of places in both numbers.</li></ul>
         <p class="li-problem-q"><strong>Solve:</strong> A water tank holds 19.2 liters. It is poured into bottles that each hold 1.6 liters. How many bottles can be filled?</p>
         <div class="li-work"><span class="li-work-label">Show your work</span></div>
         <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
         <details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Answer:</strong> 12 bottles<br><span class="li-check-why">19.2 ÷ 1.6: multiply both by 10 → 192 ÷ 16 = 12 bottles.</span></div></details>
       </section>
-    <p class="li-ready">When you can finish <strong>Try it with me</strong> on your own, you're ready for the lesson.</p>
+    <section class="li-ready-card" id="li-ready">
+      <p class="li-ready-head">🎉 Ready to launch?</p>
+      <label class="li-ready-check"><input type="checkbox" /> <span>I can solve one of these on my own.</span></label>
+      <p class="li-ready-note">When you can finish <strong>Try it with me</strong> without help, head to the lesson activities and show what you know!</p>
+    </section>
   </article>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 1-7 · Standard 6.NS.3</footer>
 </main>
