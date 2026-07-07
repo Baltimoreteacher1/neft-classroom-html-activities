@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Equation Creature Lab — Train your creature by fixing one-step equation mistakes. Aligned to 6.EE.B.7: solve x+p=q and px=q."
+    />
+    <title>Equation Creature Lab — The Almost-Right Lab</title>
+    <link rel="canonical" href="https://eduwonderlab.com/curriculum/almost-right-lab/equations/" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#15487f" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap"
+    />
+    <style>
+      :root {
+        --navy: #15487f;
+        --teal: #205fa6;
+        --teal-light: rgba(32, 95, 166, 0.1);
+        --coral: #e05a2b;
+        --coral-light: rgba(224, 90, 43, 0.1);
+        --coral-dark: #c04a1f;
+        --cream: #eaf0f7;
+        --ink: #14223a;
+        --muted: #56627a;
+        --line: rgba(20, 34, 58, 0.1);
+        --card: #ffffff;
+        --surface-2: #f3f7fc;
+        --green: #2c7d6b;
+        --green-light: rgba(44, 125, 107, 0.1);
+        --focus-ring: #e05a2b;
+        --radius: 16px;
+        --shadow: 0 4px 24px rgba(20, 34, 58, 0.1);
+        --gold: #d97706;
+        --gold-light: rgba(217,119,6,0.1);
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background: var(--cream);
+        color: var(--ink);
+        font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+        font-size: 17px;
+        line-height: 1.6;
+        min-height: 100vh;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+      body::before {
+        content: "";
+        position: fixed; inset: 0; z-index: -1;
+        background:
+          radial-gradient(900px 400px at 90% -10%, rgba(224,90,43,0.1), transparent 60%),
+          radial-gradient(800px 400px at -5% 5%, rgba(32,95,166,0.14), transparent 55%),
+          var(--cream);
+      }
+      a { color: var(--teal); text-decoration: none; }
+      a:hover { color: var(--coral); }
+      :focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; border-radius: 4px; }
+
+      /* ── Breadcrumb ── */
+      .breadcrumb {
+        max-width: 1000px; margin: 0 auto;
+        padding: 20px 24px 0;
+        font-size: 13px; color: var(--muted);
+        display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+      }
+      .breadcrumb a { color: var(--teal); }
+
+      /* ── Header ── */
+      .page-header {
+        max-width: 1000px; margin: 0 auto;
+        padding: 28px 24px 20px;
+      }
+      .unit-eyebrow {
+        font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+        color: var(--coral); margin-bottom: 8px;
+      }
+      h1 {
+        font-family: "Nunito", system-ui, sans-serif;
+        font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900;
+        color: var(--ink); letter-spacing: -0.02em; line-height: 1.1;
+        margin-bottom: 10px;
+      }
+      .page-lede { color: var(--muted); font-size: 16px; max-width: 60ch; margin-bottom: 18px; }
+      .std-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+      .std-badge {
+        display: inline-block; font-size: 12px; font-weight: 700;
+        padding: 4px 12px; border-radius: 100px;
+        background: var(--teal-light); color: var(--navy);
+        border: 1px solid rgba(32,95,166,0.2);
+      }
+
+      /* ── Two-column layout ── */
+      .layout {
+        max-width: 1000px; margin: 0 auto;
+        padding: 0 24px 56px;
+        display: grid; grid-template-columns: 1fr 320px; gap: 28px;
+        align-items: start;
+      }
+      @media (max-width: 800px) {
+        .layout { grid-template-columns: 1fr; }
+        .sidebar { order: -1; }
+      }
+
+      /* ── Creature Setup Card ── */
+      .creature-card {
+        background: var(--card); border: 1px solid var(--line);
+        border-radius: var(--radius); box-shadow: var(--shadow);
+        padding: 28px; margin-bottom: 24px;
+        position: relative; overflow: hidden;
+      }
+      .creature-card::before {
+        content: ""; position: absolute; top: 0; left: 0; right: 0;
+        height: 4px; background: var(--coral);
+      }
+      .creature-row { display: flex; gap: 20px; align-items: center; }
+      .creature-avatar { flex-shrink: 0; }
+      .creature-setup { flex: 1; }
+      .setup-label { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+      .setup-title { font-family: "Nunito", system-ui, sans-serif; font-size: 1.25rem; font-weight: 800; color: var(--ink); margin-bottom: 12px; }
+      .name-field-wrap { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+      .name-field {
+        flex: 1; min-width: 140px;
+        border: 2px solid var(--line); border-radius: 10px;
+        padding: 10px 14px; font-size: 16px; font-family: inherit;
+        color: var(--ink); background: var(--surface-2);
+        transition: border-color 0.2s;
+      }
+      .name-field:focus { outline: none; border-color: var(--coral); background: white; }
+      .name-field::placeholder { color: var(--muted); }
+      .save-btn {
+        font-family: "Nunito", sans-serif; font-weight: 800; font-size: 15px;
+        background: var(--coral); color: white; border: none;
+        border-radius: 10px; padding: 10px 18px; cursor: pointer;
+        transition: background 0.18s, transform 0.14s;
+      }
+      .save-btn:hover { background: var(--coral-dark); transform: translateY(-1px); }
+      .save-btn:active { transform: translateY(0); }
+      .saved-msg { font-size: 13px; color: var(--green); font-weight: 700; opacity: 0; transition: opacity 0.3s; }
+      .saved-msg.show { opacity: 1; }
+
+      /* ── Mission Path ── */
+      .missions-card {
+        background: var(--card); border: 1px solid var(--line);
+        border-radius: var(--radius); box-shadow: var(--shadow); padding: 28px;
+        position: relative; overflow: hidden;
+      }
+      .missions-card::before {
+        content: ""; position: absolute; top: 0; left: 0; right: 0;
+        height: 4px; background: linear-gradient(90deg, var(--coral), var(--teal));
+      }
+      .card-heading {
+        font-family: "Nunito", system-ui, sans-serif;
+        font-size: 1.15rem; font-weight: 800; color: var(--ink);
+        margin-bottom: 20px;
+      }
+      .mission-list { display: flex; flex-direction: column; gap: 12px; }
+      .mission-item {
+        display: flex; align-items: center; gap: 14px;
+        padding: 14px 16px; border-radius: 12px;
+        border: 1px solid var(--line); background: var(--surface-2);
+        text-decoration: none; color: var(--ink);
+        transition: background 0.18s, border-color 0.18s, transform 0.14s;
+        position: relative;
+      }
+      .mission-item.unlocked:hover { background: white; border-color: var(--coral); transform: translateX(3px); }
+      .mission-item.locked { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+      .mission-item.completed { background: var(--green-light); border-color: rgba(44,125,107,0.3); }
+      .mission-num {
+        width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-family: "Nunito", sans-serif; font-size: 15px; font-weight: 800;
+        background: var(--teal-light); color: var(--navy);
+        border: 2px solid rgba(32,95,166,0.2);
+      }
+      .mission-item.completed .mission-num { background: var(--green); color: white; border-color: var(--green); }
+      .mission-item.locked .mission-num { background: var(--line); color: var(--muted); border-color: var(--line); }
+      .mission-text { flex: 1; }
+      .mission-name { font-size: 15px; font-weight: 700; color: var(--ink); }
+      .mission-skill { font-size: 13px; color: var(--muted); }
+      .mission-icon { font-size: 18px; }
+      .mission-badge {
+        position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+        font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+        padding: 3px 9px; border-radius: 100px;
+      }
+      .mission-badge.done { background: var(--green-light); color: var(--green); border: 1px solid rgba(44,125,107,0.3); }
+      .mission-badge.locked-badge { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+
+      .start-btn {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        width: 100%; margin-top: 20px;
+        font-family: "Nunito", sans-serif; font-weight: 900; font-size: 17px;
+        background: var(--coral); color: white; border: none; border-radius: 12px;
+        padding: 16px 24px; cursor: pointer; text-decoration: none;
+        transition: background 0.18s, transform 0.14s;
+        box-shadow: 0 4px 16px rgba(224,90,43,0.3);
+      }
+      .start-btn:hover { background: var(--coral-dark); transform: translateY(-2px); color: white; }
+      .start-btn:active { transform: translateY(0); }
+
+      /* ── Sidebar ── */
+      .sidebar-card {
+        background: var(--card); border: 1px solid var(--line);
+        border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px;
+        margin-bottom: 20px;
+      }
+      .sidebar-heading {
+        font-family: "Nunito", sans-serif; font-size: 14px; font-weight: 800;
+        color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em;
+        margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--line);
+      }
+      /* Badges area */
+      .badges-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+      .badge-slot {
+        width: 56px; height: 56px; border-radius: 12px;
+        border: 2px dashed var(--line); background: var(--surface-2);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 24px; position: relative; transition: all 0.2s;
+      }
+      .badge-slot.earned { border-style: solid; border-color: var(--gold); background: var(--gold-light); }
+      .badge-slot[title] { cursor: help; }
+      .badge-slot.locked-slot { opacity: 0.4; }
+      /* Standards */
+      .std-list { font-size: 14px; }
+      .std-item { padding: 8px 0; border-bottom: 1px solid var(--line); color: var(--muted); line-height: 1.5; }
+      .std-item:last-child { border-bottom: none; }
+      .std-item strong { color: var(--ink); }
+      /* Print btn */
+      .print-btn {
+        width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+        font-family: "Nunito", sans-serif; font-weight: 700; font-size: 14px;
+        background: white; color: var(--navy); border: 1.5px solid var(--line);
+        border-radius: 10px; padding: 11px 16px; cursor: pointer;
+        transition: all 0.18s;
+      }
+      .print-btn:hover { border-color: var(--navy); background: var(--surface-2); }
+
+      /* ── Print ── */
+      @media print {
+        body::before, .save-btn, .start-btn, .print-btn { display: none; }
+        .layout { display: block; }
+        .sidebar { display: none; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { transition: none !important; animation: none !important; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/curriculum/">Curriculum Hub</a>
+      <span aria-hidden="true">›</span>
+      <a href="/curriculum/almost-right-lab/">The Almost-Right Lab</a>
+      <span aria-hidden="true">›</span>
+      <span aria-current="page">One-Step Equations</span>
+    </nav>
+
+    <header class="page-header">
+      <div class="unit-eyebrow">Equation Creature Lab</div>
+      <h1>One-Step Equations</h1>
+      <p class="page-lede">
+        Your creature makes mistakes. Your job: find the error, teach the right rule, and check the fix. Train it through 5 missions.
+      </p>
+      <div class="std-badges" aria-label="Standards">
+        <span class="std-badge">6.EE.B.7</span>
+        <span class="std-badge">Inverse Operations</span>
+        <span class="std-badge">Balance</span>
+        <span class="std-badge">x + p = q · px = q</span>
+      </div>
+    </header>
+
+    <main class="layout" id="main-content">
+
+      <!-- Left: creature setup + missions -->
+      <div>
+        <!-- Creature Setup -->
+        <div class="creature-card" aria-label="Creature setup">
+          <div class="creature-row">
+            <div class="creature-avatar" aria-hidden="true" id="creature-avatar">
+              <!-- Inline SVG creature (confused state) -->
+              <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="50" cy="66" rx="28" ry="25" fill="#f4d9c6"/>
+                <circle cx="50" cy="40" r="24" fill="#f4d9c6"/>
+                <circle cx="42" cy="37" r="5" fill="white"/>
+                <circle cx="58" cy="37" r="5" fill="white"/>
+                <circle cx="43" cy="37.5" r="2.8" fill="#14223a"/>
+                <circle cx="59" cy="37.5" r="2.8" fill="#14223a"/>
+                <circle cx="44" cy="36.5" r="1" fill="white"/>
+                <circle cx="60" cy="36.5" r="1" fill="white"/>
+                <text x="47" y="30" font-size="9" font-weight="900" fill="#e05a2b" font-family="Nunito,sans-serif">?</text>
+                <path d="M43 47 Q50 43 57 47" stroke="#c04a1f" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+                <line x1="43" y1="16" x2="40" y2="7" stroke="#e05a2b" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="40" cy="6" r="3" fill="#e05a2b"/>
+                <line x1="57" y1="16" x2="60" y2="7" stroke="#e05a2b" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="60" cy="6" r="3" fill="#205fa6"/>
+              </svg>
+            </div>
+            <div class="creature-setup">
+              <div class="setup-label">Your creature</div>
+              <div class="setup-title" id="creature-display-name">Give your creature a name!</div>
+              <div class="name-field-wrap">
+                <label for="creature-name-input" class="sr-only">Creature name</label>
+                <input
+                  type="text"
+                  id="creature-name-input"
+                  class="name-field"
+                  placeholder="Type a name…"
+                  maxlength="24"
+                  aria-label="Enter your creature's name"
+                  autocomplete="off"
+                />
+                <button class="save-btn" id="save-name-btn" type="button" aria-label="Save creature name">Save</button>
+              </div>
+              <div class="saved-msg" id="saved-msg" role="status" aria-live="polite">✓ Name saved!</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mission Path -->
+        <div class="missions-card" aria-label="Mission list">
+          <div class="card-heading">Mission Path — One-Step Equations</div>
+          <div class="mission-list" role="list" id="mission-list">
+            <!-- populated by JS -->
+          </div>
+          <a
+            href="/curriculum/almost-right-lab/equations/mission-1/"
+            class="start-btn"
+            id="primary-mission-btn"
+            aria-label="Start Mission 1"
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><polygon points="6,4 16,10 6,16" fill="currentColor"/></svg>
+            Start Mission 1
+          </a>
+        </div>
+      </div>
+
+      <!-- Right Sidebar -->
+      <aside class="sidebar" aria-label="Progress sidebar">
+
+        <!-- Badges -->
+        <div class="sidebar-card" aria-label="Earned badges">
+          <div class="sidebar-heading">Badges Earned</div>
+          <div class="badges-grid" id="badges-grid" role="list" aria-label="Badge collection">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Standards -->
+        <div class="sidebar-card" aria-label="Standards alignment">
+          <div class="sidebar-heading">Standards</div>
+          <div class="std-list">
+            <div class="std-item">
+              <strong>6.EE.B.7</strong> — Solve real-world and mathematical problems by writing and solving equations of the form x + p = q and px = q.
+            </div>
+            <div class="std-item">
+              <strong>6.EE.B.5</strong> — Understand solving an equation as a process of answering a question.
+            </div>
+          </div>
+        </div>
+
+        <!-- Print -->
+        <div class="sidebar-card">
+          <div class="sidebar-heading">Print</div>
+          <button class="print-btn" id="print-btn" type="button" aria-label="Print teacher unit summary">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="5" width="12" height="8" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M5 5V3h6v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="5" y="9" width="6" height="1" rx="0.5" fill="currentColor"/></svg>
+            Print Teacher Summary
+          </button>
+        </div>
+
+      </aside>
+    </main>
+
+    <script>
+      // ── Data ──
+      const MISSIONS = [
+        { id: "mission-1", title: "The Adding Trap",            skill: "Solve x + a = b",         icon: "➕" },
+        { id: "mission-2", title: "The Subtraction Mix-Up",     skill: "Solve x − a = b",         icon: "➖" },
+        { id: "mission-3", title: "The Multiplication Monster", skill: "Solve ax = b",             icon: "✖️" },
+        { id: "mission-4", title: "The Division Confusion",     skill: "Solve x ÷ a = b",          icon: "➗" },
+        { id: "mission-5", title: "The Mixed-Up Brain Test",    skill: "Mixed one-step equations", icon: "🧠" }
+      ];
+      const BADGE_DATA = [
+        { id: "mission-1", emoji: "🔧", title: "Addition Fixer"     },
+        { id: "mission-2", emoji: "🔄", title: "Subtraction Coach"  },
+        { id: "mission-3", emoji: "🦁", title: "Monster Tamer"      },
+        { id: "mission-4", emoji: "🎯", title: "Division Detective"  },
+        { id: "mission-5", emoji: "🏆", title: "Equation Champion"  }
+      ];
+      const LS_KEY = "arl_progress";
+
+      // ── Storage helpers ──
+      function loadProgress() {
+        try { return JSON.parse(localStorage.getItem(LS_KEY) || "null") || freshProgress(); }
+        catch { return freshProgress(); }
+      }
+      function freshProgress() {
+        return { creatureName: "", completedMissions: [], masteredSkills: [], activeMisconceptions: [], badges: [], explanationStrength: 0, lastPlayedAt: "" };
+      }
+      function saveProgress(p) {
+        try { localStorage.setItem(LS_KEY, JSON.stringify(p)); } catch {}
+      }
+
+      // ── Init ──
+      const progress = loadProgress();
+
+      // Creature name
+      const nameInput = document.getElementById("creature-name-input");
+      const displayName = document.getElementById("creature-display-name");
+      const savedMsg = document.getElementById("saved-msg");
+
+      function renderName() {
+        if (progress.creatureName) {
+          displayName.textContent = progress.creatureName;
+          nameInput.value = progress.creatureName;
+        }
+      }
+      renderName();
+
+      document.getElementById("save-name-btn").addEventListener("click", () => {
+        const name = nameInput.value.trim();
+        if (!name) return;
+        progress.creatureName = name;
+        progress.lastPlayedAt = new Date().toISOString();
+        saveProgress(progress);
+        displayName.textContent = name;
+        savedMsg.classList.add("show");
+        setTimeout(() => savedMsg.classList.remove("show"), 2000);
+      });
+
+      // Mission list
+      function renderMissions() {
+        const list = document.getElementById("mission-list");
+        list.innerHTML = "";
+        let nextMission = null;
+        MISSIONS.forEach((m, i) => {
+          const done = progress.completedMissions.includes(m.id);
+          // Mission 1 always unlocked; rest unlock sequentially
+          const prevDone = i === 0 || progress.completedMissions.includes(MISSIONS[i-1].id);
+          const unlocked = prevDone;
+          if (unlocked && !done && !nextMission) nextMission = m;
+
+          const el = document.createElement(unlocked ? "a" : "div");
+          if (unlocked) {
+            el.href = `/curriculum/almost-right-lab/equations/${m.id}/`;
+            el.setAttribute("aria-label", `Mission ${i+1}: ${m.title} — ${done ? "Completed" : "Start"}`);
+          } else {
+            el.setAttribute("aria-label", `Mission ${i+1}: ${m.title} — Locked`);
+          }
+          el.className = `mission-item ${done ? "completed" : unlocked ? "unlocked" : "locked"}`;
+          el.setAttribute("role", "listitem");
+
+          el.innerHTML = `
+            <div class="mission-num" aria-hidden="true">${done ? "✓" : i+1}</div>
+            <div class="mission-text">
+              <div class="mission-name">${m.icon} ${m.title}</div>
+              <div class="mission-skill">${m.skill}</div>
+            </div>
+            ${done ? '<span class="mission-badge done" aria-hidden="true">Done</span>' : !unlocked ? '<span class="mission-badge locked-badge" aria-hidden="true">🔒</span>' : ""}
+          `;
+          list.appendChild(el);
+        });
+
+        // Update primary CTA
+        const btn = document.getElementById("primary-mission-btn");
+        if (nextMission) {
+          const idx = MISSIONS.findIndex(m => m.id === nextMission.id) + 1;
+          btn.href = `/curriculum/almost-right-lab/equations/${nextMission.id}/`;
+          btn.setAttribute("aria-label", `Start Mission ${idx}: ${nextMission.title}`);
+          btn.querySelector("span, svg + *") ;
+          btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><polygon points="6,4 16,10 6,16" fill="currentColor"/></svg> ${idx === 1 && progress.completedMissions.length === 0 ? "Start" : "Continue"} — Mission ${idx}`;
+        } else if (progress.completedMissions.length === MISSIONS.length) {
+          btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 10l4 4 6-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> All Missions Complete! 🏆`;
+          btn.href = "#";
+          btn.style.background = "var(--green)";
+          btn.style.boxShadow = "0 4px 16px rgba(44,125,107,0.3)";
+        }
+      }
+      renderMissions();
+
+      // Badges
+      function renderBadges() {
+        const grid = document.getElementById("badges-grid");
+        grid.innerHTML = "";
+        BADGE_DATA.forEach(b => {
+          const earned = progress.badges.includes(b.id);
+          const slot = document.createElement("div");
+          slot.className = `badge-slot ${earned ? "earned" : "locked-slot"}`;
+          slot.setAttribute("role", "listitem");
+          slot.setAttribute("aria-label", `${b.title} badge — ${earned ? "earned" : "not yet earned"}`);
+          slot.title = b.title;
+          slot.innerHTML = earned ? b.emoji : "🔒";
+          grid.appendChild(slot);
+        });
+      }
+      renderBadges();
+
+      // Print
+      document.getElementById("print-btn").addEventListener("click", () => window.print());
+    </script>
+    <style>
+      .sr-only {
+        position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+        overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border-width: 0;
+      }
+    </style>
+  </body>
+</html>
