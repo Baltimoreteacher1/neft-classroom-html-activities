@@ -26,14 +26,18 @@ import { DurableObject } from "cloudflare:workers";
 const MAX_PAYLOAD = 2_000_000; // mirror the /api/state cap (KV value limit is 25MB)
 const YEAR = 60 * 60 * 24 * 365;
 
-// Same normalization as functions/api/state.js keyFor() so a code maps to the
-// exact same KV key regardless of which transport wrote it.
-function keyFor(code) {
-  const clean = String(code || "")
+// Normalize a raw sync code the same way functions/api/state.js does, so every
+// device that resolves to the same room also shares the exact same KV key AND
+// the exact same WebSocket tag (used below for native fan-out filtering).
+function normCode(code) {
+  return String(code || "")
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9-]/g, "")
     .slice(0, 64);
+}
+function keyFor(code) {
+  const clean = normCode(code);
   return clean.length >= 1 ? "sync:" + clean : null;
 }
 
@@ -43,7 +47,7 @@ export class SyncRoom extends DurableObject {
       return new Response("expected a WebSocket upgrade", { status: 426 });
     }
     const url = new URL(request.url);
-    const code = url.searchParams.get("code") || "";
+    const code = normCode(url.searchParams.get("code") || "");
     const key = keyFor(code);
     if (!key) return new Response("invalid code", { status: 400 });
 
@@ -51,8 +55,9 @@ export class SyncRoom extends DurableObject {
     const [client, server] = Object.values(pair);
     // Hibernatable accept: the socket survives the DO being evicted while idle,
     // so a phone left open overnight stays connected without keeping the DO (and
-    // its billable duration) resident. The code tag lets us route broadcasts.
-    this.ctx.acceptWebSocket(server, [String(code)]);
+    // its billable duration) resident. The normalized code tag lets us fan out
+    // broadcasts to exactly this room via getWebSockets(code).
+    this.ctx.acceptWebSocket(server, [code]);
 
     // Hand the newcomer the current cloud snapshot immediately so it is live the
     // instant it connects, without waiting for anyone else to push.
@@ -105,12 +110,11 @@ export class SyncRoom extends DurableObject {
       }
     }
 
-    // Fan out to every OTHER device on the same code. Each client runs the same
+    // Fan out to every OTHER device on the same code. getWebSockets(code) filters
+    // by tag natively (no O(N) getTags scan). Each client runs the same
     // conflict-safe merge it uses for a KV pull, so ordering/races converge.
-    for (const peer of this.ctx.getWebSockets()) {
+    for (const peer of this.ctx.getWebSockets(code)) {
       if (peer === ws) continue;
-      const ptags = this.ctx.getTags(peer);
-      if (!ptags || ptags[0] !== code) continue;
       try {
         peer.send(payload);
       } catch {

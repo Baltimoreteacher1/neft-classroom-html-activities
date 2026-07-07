@@ -191,4 +191,47 @@ const base = () => {
   ok("_applyRemote unions concurrent routine checks from a live peer");
 }
 
-console.log(`\nfocus-school-realtime-sync: ${passed}/4 checks passed`);
+{
+  // Linking a new sync code must reconnect the live socket to the new room,
+  // not keep talking to the old one until a reload.
+  base();
+  live.connect();
+  await tick();
+  await tick();
+  const first = FakeWebSocket.last;
+  assert.ok(first.url.includes("focus-hawk-testcode1"), "first socket targets the original room");
+  api.getState().settings.sync.code = "focus-wolf-different99";
+  live.connect();
+  await tick();
+  await tick();
+  const second = FakeWebSocket.last;
+  assert.notEqual(second, first, "a fresh socket is opened for the new code");
+  assert.ok(second.url.includes("focus-wolf-different99"), "new socket targets the new room");
+  assert.equal(first.readyState, 3, "the old-room socket was closed");
+  assert.equal(live.connected, true, "the device is live on the new room");
+  live.close();
+  ok("changing the sync code reconnects the live socket to the new room");
+}
+
+{
+  // A stale socket finishing its close (e.g. it was CLOSING when we reconnected)
+  // must not clobber the current socket or flip us offline.
+  base();
+  live.connect();
+  await tick();
+  await tick();
+  const sockA = FakeWebSocket.last;
+  api.getState().settings.sync.code = "focus-lynx-another77";
+  live.connect();
+  await tick();
+  await tick();
+  const sockB = FakeWebSocket.last;
+  // The old socket's close finally lands — should be ignored.
+  sockA._emit("close", {});
+  assert.equal(live.ws, sockB, "old socket close did not clobber the live socket");
+  assert.equal(live.connected, true, "old socket close did not mark us offline");
+  live.close();
+  ok("a superseded socket's close is ignored (no orphaned/duplicate connection)");
+}
+
+console.log(`\nfocus-school-realtime-sync: ${passed}/6 checks passed`);

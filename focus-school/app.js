@@ -7353,6 +7353,7 @@ Due May 31"></textarea>
   const live = {
     ws: null,
     connected: false,
+    _code: null, // the sync code the current socket is bound to
     _retry: 0,
     _reconnectTimer: null,
     _manualClose: false,
@@ -7371,9 +7372,25 @@ Due May 31"></textarea>
     connect() {
       if (!state.settings.sync.enabled || !state.settings.sync.code) return;
       if (!this.available()) return;
-      // Already connecting (0) or open (1)? Don't stack sockets.
+      const code = state.settings.sync.code;
+      // If a socket exists for a DIFFERENT code (the user just linked/changed the
+      // sync code), tear it down so we reconnect to the new room instead of
+      // silently talking to the old one until a reload. Detach FIRST so the old
+      // socket's close handler (which may fire synchronously) sees this.ws !==
+      // itself and no-ops instead of scheduling a stray reconnect.
+      if (this.ws && this._code && this._code !== code) {
+        const old = this.ws;
+        this.ws = null;
+        try {
+          old.close();
+        } catch {
+          /* already closing */
+        }
+      }
+      // Already connecting (0) or open (1) for the SAME code? Don't stack sockets.
       if (this.ws && (this.ws.readyState === 0 || this.ws.readyState === 1)) return;
       this._manualClose = false;
+      this._code = code;
       let sock;
       try {
         sock = new WebSocket(this.url());
@@ -7382,15 +7399,22 @@ Due May 31"></textarea>
         return;
       }
       this.ws = sock;
+      // Each listener checks `this.ws === sock` so a stale socket (e.g. a prior
+      // one still in CLOSING when we reconnect) can't clobber the live socket's
+      // state or fire a spurious reconnect that orphans it.
       sock.addEventListener("open", () => {
+        if (this.ws !== sock) return;
         this._retry = 0;
         this.connected = true;
         cloud._setStatus("synced");
         // Announce our latest state so the server + peers converge immediately.
         this.broadcastLocal();
       });
-      sock.addEventListener("message", (ev) => this._onMessage(ev));
+      sock.addEventListener("message", (ev) => {
+        if (this.ws === sock) this._onMessage(ev);
+      });
       sock.addEventListener("close", () => {
+        if (this.ws !== sock) return;
         this.connected = false;
         this.ws = null;
         if (!this._manualClose) this._scheduleReconnect();
