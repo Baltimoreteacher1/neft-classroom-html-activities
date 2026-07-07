@@ -210,15 +210,23 @@
     });
 
     // Drag items / zones get role + names so SR users get context.
+    // role=option requires a listbox ancestor (axe aria-required-parent —
+    // role=group only counts when the group itself is inside a listbox), so
+    // both the item bank and the drop zones become labeled listboxes.
     $all(".drag-item:not([" + DONE_ATTR + "])").forEach(function (it) {
       try {
         if (!it.getAttribute("role")) it.setAttribute("role", "option");
+        var parent = it.parentElement;
+        if (parent && !parent.getAttribute("role")) {
+          parent.setAttribute("role", "listbox");
+          if (!parent.getAttribute("aria-label")) parent.setAttribute("aria-label", "Item bank");
+        }
         it.setAttribute(DONE_ATTR, "1");
       } catch (e) {}
     });
     $all(".drag-zone:not([" + DONE_ATTR + "])").forEach(function (z) {
       try {
-        if (!z.getAttribute("role")) z.setAttribute("role", "group");
+        if (!z.getAttribute("role")) z.setAttribute("role", "listbox");
         if (!hasName(z)) {
           var cat = z.getAttribute("data-cat");
           if (cat) setName(z, "Drop zone: " + cat);

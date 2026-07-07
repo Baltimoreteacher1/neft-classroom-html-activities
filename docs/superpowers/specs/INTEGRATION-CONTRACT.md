@@ -104,7 +104,7 @@ Type: `--font-display` (`"Outfit", system-ui, sans-serif`), `--font-body` (`"Han
 `--nt-bg` (page bg) · `--nt-surface` (cards/panels) · `--nt-text` (primary) · `--nt-muted` (secondary) · `--nt-accent` (links/buttons) · `--nt-border` (hairlines) · `--nt-focus` (focus ring). Both `light` and `dark` are defined; fallback `:root:not([data-theme="dark"])` = light. Opt-in by adding the `<link>` + `<script>` and styling with `--nt-*` (never hard-code colors).
 
 > **Collision note:** the representative lesson defines its **own** `:root` token
-> set inline (`--navy:#0f2b3c`, `--blue`, `--teal:#0e8a7d`, `--gold`, `--coral`,
+> set inline (`--navy:#0f2b3c`, `--blue`, `--teal:#0b6f65`, `--gold`, `--coral`,
 > `--green`, `--ink`, `--muted`, `--faint`, `--line`, `--bg`, `--card`, `--radius`,
 > `--shadow`, `--font`). These **shadow** the shared `design-tokens.css` values
 > (different hexes, e.g. lesson `--navy` ≠ token `--navy`). A platform layer

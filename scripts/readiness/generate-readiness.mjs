@@ -142,10 +142,10 @@ function renderPage(data) {
     <style>
       :root {
         --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc;
-        --teal: #0e8a7d; --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0;
+        --teal: #0b6f65; --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0;
         --coral: #c45a3c; --coral-light: #fdeee9; --green: #2d874b; --green-light: #e6f4eb;
         --purple: #6b4ea0; --purple-light: #efe9f7;
-        --ink: #1a2633; --muted: #5e6e7e; --line: #e2e7ec; --bg: #f7f9fb; --card: #fff;
+        --ink: #1a2633; --muted: #525f6e; --line: #e2e7ec; --bg: #f7f9fb; --card: #fff;
         --radius: 16px; --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
         --font: "Segoe UI", system-ui, sans-serif;
       }

@@ -92,7 +92,14 @@ if (warnings.length) {
 
 function walk(dir) {
   return readdirSync(dir).flatMap((name) => {
-    if (name === ".git" || name === "node_modules" || name === "dist" || name === ".vite")
+    if (
+      name === ".git" ||
+      name === "node_modules" ||
+      name === "dist" ||
+      name === ".vite" ||
+      name === "test-results" ||
+      name === "playwright-report"
+    )
       return [];
     const full = join(dir, name);
     return statSync(full).isDirectory() ? walk(full) : [full];

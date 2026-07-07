@@ -43,6 +43,8 @@ export const SKIP_DIRS = new Set([
   "workers",
   "shared", // the engine itself
   "tools",
+  "test-results", // Playwright trace artifacts (gitignored)
+  "playwright-report",
 ]);
 
 // Top-level surfaces that are NOT student activities (teacher/admin/infra).

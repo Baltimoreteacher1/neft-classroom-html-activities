@@ -78,8 +78,8 @@
     ".nt-pe-bar input{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid #9bb;",
     "min-width:140px;color:#111;}",
     ".nt-pe-bar button{font:inherit;padding:9px 14px;border-radius:8px;border:0;cursor:pointer;",
-    "background:#1fa6a2;color:#fff;min-height:40px;}",
-    ".nt-pe-bar button.doc{background:#4f8fd0;}",
+    "background:#0d7a76;color:#fff;min-height:40px;}",
+    ".nt-pe-bar button.doc{background:#2f6cad;}",
     ".nt-pe-bar label{opacity:.9;}",
     "@media print{.nt-pe-bar{display:none!important;}}",
   ].join("");

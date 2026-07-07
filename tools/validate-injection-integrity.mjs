@@ -37,6 +37,8 @@ const SKIP_DIRS = new Set([
   ".claude",
   ".wrangler",
   ".vscode",
+  "test-results", // Playwright trace artifacts (gitignored)
+  "playwright-report",
 ]);
 
 // Matches "<family>-injected" in either a :begin or :end sentinel comment.

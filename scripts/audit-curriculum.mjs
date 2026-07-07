@@ -45,7 +45,16 @@ const FLAGS = {
   write: !argv.has("--no-write"),
 };
 
-const IGNORE_DIRS = new Set([".git", "node_modules", ".serena", ".ruff_cache", "dist", ".github"]);
+const IGNORE_DIRS = new Set([
+  ".git",
+  "node_modules",
+  ".serena",
+  ".ruff_cache",
+  "dist",
+  ".github",
+  "test-results", // Playwright trace artifacts (gitignored)
+  "playwright-report",
+]);
 
 // --------------------------------------------------------------------------
 // Findings collection
