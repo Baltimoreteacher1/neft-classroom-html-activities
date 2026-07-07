@@ -866,7 +866,10 @@
     mirror(); // always write the sync mirror right away
     const write = () => {
       idb.set(STATE_KEY, state);
-      if (state.settings.sync.enabled && !suppressPush) cloud.push();
+      if (state.settings.sync.enabled && !suppressPush) {
+        cloud.markActive(); // a local edit → keep the pull loop in its fast cadence
+        cloud.push();
+      }
       // Re-arm the local notification scheduler whenever data changes (added,
       // edited, or completed reminders all shift what's due today). Defined later;
       // guarded so early saves during init don't throw.
@@ -7277,15 +7280,44 @@ Due May 31"></textarea>
         this._setStatus("offline");
         return;
       }
+      // Stamp so the adaptive loop doesn't immediately re-fire right after an
+      // event-driven pull (focus/visibility/online), and keep the loop hot for a
+      // minute since the user is clearly active right now.
+      this._lastPull = Date.now();
+      this.markActive();
       const changed = await this.pull({ forceMerge: true });
       if (changed) render();
     },
-    // Start/refresh the periodic pull loop while the tab is open.
+    // Recent local activity (a save or user interaction) → poll fast so an
+    // inbound change from another device appears within ~2–3s. Idle → back off
+    // to stay light on the KV endpoint. A hidden tab doesn't poll at all — the
+    // visibility/focus/online handlers pull the instant the user comes back.
+    _activeUntil: 0,
+    _lastPull: 0,
+    markActive() {
+      this._activeUntil = Date.now() + 60000;
+    },
+    _cadence() {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") {
+        return Infinity;
+      }
+      return Date.now() < this._activeUntil ? 2500 : 12000;
+    },
+    // Start/refresh the adaptive pull loop while the tab is open. The base tick
+    // is short, but each tick only actually fetches once its adaptive cadence has
+    // elapsed — so active use feels near-live without hammering KV while idle.
     startAuto() {
       this.stopAuto();
       if (!state.settings.sync.enabled) return;
-      // ~10s cadence: fresh enough to feel live, light on the KV endpoint.
-      this._interval = setInterval(() => this.autoPull(), 10000);
+      this.markActive(); // start hot so the first minute after open is snappy
+      this._interval = setInterval(() => {
+        const now = Date.now();
+        const cadence = this._cadence();
+        if (!isFinite(cadence)) return; // hidden tab — skip until visible/focus
+        if (now - this._lastPull < cadence) return;
+        this._lastPull = now;
+        this.autoPull();
+      }, 1000);
     },
     stopAuto() {
       if (this._interval) {
@@ -10171,7 +10203,8 @@ ${name}`;
     }
 
     // ---- Auto-pull triggers: keep this device live without any user action ----
-    // 1) Periodic pull while the tab is open (~50s).
+    // 1) Adaptive pull while the tab is open — ~2.5s while actively in use, ~12s
+    //    when idle, paused when the tab is hidden.
     cloud.startAuto();
     // 2) On window focus and 3) when the tab becomes visible again — grabs the
     //    latest the moment the user returns to the app (covers throttled timers).
@@ -10179,6 +10212,25 @@ ${name}`;
     addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") cloud.autoPull();
     });
+    // 4) When the network returns — flush local changes up and pull immediately,
+    //    so a device that was offline converges the moment it reconnects.
+    window.addEventListener("online", () => {
+      if (!state.settings.sync.enabled) return;
+      cloud.push();
+      cloud.autoPull();
+    });
+    // 5) While the user is actively interacting, keep sync in its fast cadence so
+    //    a change made on another device shows up here within ~2–3s. Throttled so
+    //    it costs nothing on a stream of pointer/key events.
+    let _lastActiveBump = 0;
+    const bumpActive = () => {
+      const now = Date.now();
+      if (now - _lastActiveBump < 5000) return;
+      _lastActiveBump = now;
+      cloud.markActive();
+    };
+    window.addEventListener("pointerdown", bumpActive, { passive: true });
+    window.addEventListener("keydown", bumpActive, { passive: true });
 
     // calm one-line briefing on open, plus the reminders loop
     dailyBriefing();
