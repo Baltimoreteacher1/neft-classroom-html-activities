@@ -1,12 +1,16 @@
 /* Monster Math Academy — service worker (offline app shell) */
-const CACHE = "mma-v1";
+const CACHE = "mma-v2";
 
 /* Stable shell assets. Hashed Vite build files (JS/CSS) are intentionally
    NOT listed here — they change every build. The runtime fetch handler
-   cache-first-populates them on first load instead. */
+   cache-first-populates them on first load instead ("cache teach assets"
+   below just means: everything the shell loads gets cached opportunistically
+   the first time it's fetched, so a full teach session works offline after
+   one online visit). */
 const SHELL = [
   "./",
   "./index.html",
+  "./offline.html",
   "./manifest.webmanifest",
   "./art/char-sprout.png",
   "./art/char-ember.png",
@@ -44,14 +48,17 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Network-first for navigations; fall back to cached shell offline.
+  // Network-first for navigations; fall back to the cached app shell offline,
+  // and to a friendly static offline page if even that isn't cached yet
+  // (a corrupted/never-populated cache shouldn't dead-end into a browser
+  // error page).
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request).catch(() =>
-        caches
-          .match("./index.html")
-          .then((cached) => cached || caches.match("./")),
-      ),
+      fetch(request).catch(async () => {
+        const shell =
+          (await caches.match("./index.html")) || (await caches.match("./"));
+        return shell || (await caches.match("./offline.html"));
+      }),
     );
     return;
   }
