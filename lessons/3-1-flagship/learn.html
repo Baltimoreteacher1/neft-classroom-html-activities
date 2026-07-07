@@ -790,6 +790,21 @@ header.packet h1::after{
   .li-stage-together>.li-eyebrow::before{background:#c98a10;}
   .li-stage-own{border-left-color:var(--navy);}
   .li-stage-own>.li-eyebrow::before{background:var(--navy);}
+  .li-stage-apply{border-left-color:#6b4fd6;}
+  .li-stage-apply>.li-eyebrow::before{background:#6b4fd6;}
+  .li-jstep-apply .li-jnum{background:#6b4fd6;}
+  .li-stage-talk{border-left-color:var(--teal);background:#fbfdfc;}
+  .li-stage-talk>.li-eyebrow::before{background:var(--teal);}
+  .li-jstep-talk .li-jnum{background:var(--teal);}
+  /* Turn & Talk sentence starters + word bank */
+  .li-stems-label{margin:2px 0 6px;font-size:13px;font-weight:700;color:var(--navy);}
+  .li-stems{margin:0 0 14px;padding-left:22px;}
+  .li-stems>li{font-size:16px;line-height:1.6;margin:0 0 8px;color:var(--ink);}
+  .li-stem-es{display:block;font-size:13.5px;color:var(--muted);font-style:italic;}
+  .li-wordbank{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f0faf8;
+    border:1px dashed var(--teal);border-radius:10px;padding:10px 12px;}
+  .li-wordbank-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--teal-ink);}
+  .li-word{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:4px 12px;font-weight:700;font-size:14px;}
   /* Confidence check + send-off */
   .li-ready-card{background:var(--teal-light);border:1.5px solid var(--teal);border-radius:14px;padding:18px 20px;margin:6px 0 0;}
   .li-ready-head{margin:0 0 10px;font-size:18px;font-weight:800;color:var(--navy);}
@@ -801,7 +816,10 @@ header.packet h1::after{
     .li-hook-label{color:#000;}
     .li-journey{display:none;}
     .li-stage{border-color:#000;border-left-color:#000;background:#fff;page-break-inside:avoid;}
-    .li-stage-together{background:#fff;}
+    .li-stage-together,.li-stage-talk{background:#fff;}
+    .li-wordbank{background:#fff;border:1px dashed #000;}
+    .li-word{background:#fff;color:#000;border:1px solid #000;}
+    .li-stems-label{color:#000;}
     .li-stage>.li-eyebrow::before,.li-jnum{background:#000;}
     .li-ready-card{background:#fff;border-color:#000;}
     .li-ready-head,.li-ready-check{color:#000;}
@@ -933,7 +951,7 @@ header.packet h1::after{
   (function(){
     var btn=null, speaking=false, hi=null;
     function collect(){
-      var sel='.li-hook-text, .li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q';
+      var sel='.li-hook-text, .li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q, .li-stems li';
       return Array.prototype.slice.call(document.querySelectorAll(sel)).filter(function(el){
         return el.offsetParent!==null && el.textContent.trim();
       });
@@ -1016,7 +1034,7 @@ header.packet h1::after{
     <p class="li-intro">A ratio compares two amounts. It tells how much of one thing there is for another thing.</p>
     <aside class="li-keyidea"><span class="li-keyidea-label">Key idea</span><p>A ratio compares two quantities, and the order you write them in matters.</p></aside>
     <nav class="li-journey no-print" aria-label="Your learning path">
-        <a class="li-jstep li-jstep-see" href="#li-see"><span class="li-jnum">1</span><span class="li-jico" aria-hidden="true">👁️</span><span class="li-jlabel">Picture it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-watch" href="#li-watch"><span class="li-jnum">2</span><span class="li-jico" aria-hidden="true">👀</span><span class="li-jlabel">Watch me solve it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-together" href="#li-together"><span class="li-jnum">3</span><span class="li-jico" aria-hidden="true">🤝</span><span class="li-jlabel">Try it with me</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-own" href="#li-own"><span class="li-jnum">4</span><span class="li-jico" aria-hidden="true">🚀</span><span class="li-jlabel">On your own</span></a>
+        <a class="li-jstep li-jstep-see" href="#li-see"><span class="li-jnum">1</span><span class="li-jico" aria-hidden="true">👁️</span><span class="li-jlabel">Picture it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-watch" href="#li-watch"><span class="li-jnum">2</span><span class="li-jico" aria-hidden="true">👀</span><span class="li-jlabel">Watch me solve it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-together" href="#li-together"><span class="li-jnum">3</span><span class="li-jico" aria-hidden="true">🤝</span><span class="li-jlabel">Try it with me</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-own" href="#li-own"><span class="li-jnum">4</span><span class="li-jico" aria-hidden="true">🚀</span><span class="li-jlabel">On your own</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-apply" href="#li-apply"><span class="li-jnum">5</span><span class="li-jico" aria-hidden="true">🌍</span><span class="li-jlabel">Apply it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-talk" href="#li-talk"><span class="li-jnum">6</span><span class="li-jico" aria-hidden="true">💬</span><span class="li-jlabel">Turn &amp; Talk</span></a>
       </nav>
     <section class="li-block li-stage li-stage-see" id="li-see">
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">👁️</span><span class="li-stage-label">Picture it</span><span class="li-stage-sub">See what the math looks like</span></p>
@@ -1039,6 +1057,18 @@ header.packet h1::after{
         <div class="li-work"><span class="li-work-label">Show your work</span></div>
         <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
         <details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Answer:</strong> 3:5<br><span class="li-check-why">The ratio of pineapple to melon compares pineapple (3) to melon (5), so the ratio is 3:5.</span></div></details>
+      </section><section class="li-block li-stage li-stage-apply" id="li-apply">
+        <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">🌍</span><span class="li-stage-label">Apply it</span><span class="li-stage-sub">Use the math in a real situation</span></p>
+        <p class="li-lead"><strong>Chef Reyes's Cookie Recipe</strong></p>
+        <p class="li-problem-q">Chef Reyes's signature cookie recipe uses 3 cups of flour for every 2 cups of sugar. The students are preparing one batch of dough. Question: What is the <button type="button" class="li-pop" data-popover data-term="Ratio" data-term-es="Razón" data-def="A way to compare two amounts, like 3 to 2." data-def-es="Una manera de comparar dos cantidades, como 3 a 2." data-img="../../assets/vocab-images/ratio.svg" aria-label="ratio — what does Ratio mean?">ratio<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> of flour to sugar in the recipe, and what is the <button type="button" class="li-pop" data-popover data-term="Part-to-whole" data-term-es="Parte a todo" data-def="A ratio comparing one part to the whole group." data-def-es="Una razón que compara una parte con todo el grupo." data-img="../../assets/vocab-images/ratio.svg" aria-label="part-to-whole — what does Part-to-whole mean?">part-to-whole<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> ratio of flour to the total cups of these two ingredients?</p>
+        <div class="li-work"><span class="li-work-label">Show your work</span></div>
+        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
+        <details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Sample answer:</strong> The ratio of flour to sugar is 3:2 (part-to-part). The total cups of these two ingredients is 3 + 2 = 5, so the part-to-whole ratio of flour to total is 3:5.</div></details>
+      </section><section class="li-block li-stage li-stage-talk" id="li-talk">
+        <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">💬</span><span class="li-stage-label">Turn &amp; Talk</span><span class="li-stage-sub">Say it out loud with a partner</span></p>
+        <p class="li-problem-q">Chef Reyes's signature cookie recipe uses 3 cups of flour for every 2 cups of sugar. How would you describe how these two ingredient amounts compare?</p>
+        <p class="li-stems-label">Try starting with:</p><ul class="li-stems"><li>The recipe compares ___ to ___.<span class="li-stem-es" lang="es">La receta compara ___ con ___.</span></li><li>For every ___ cups of flour there are ___ cups of sugar.<span class="li-stem-es" lang="es">Por cada ___ tazas de harina hay ___ tazas de azúcar.</span></li></ul>
+        <div class="li-wordbank"><span class="li-wordbank-label">Word bank</span><span class="li-word">Ratio</span><span class="li-word">Comparison</span><span class="li-word">Part-to-part</span></div>
       </section>
     <section class="li-ready-card" id="li-ready">
       <p class="li-ready-head">🎉 Ready to launch?</p>

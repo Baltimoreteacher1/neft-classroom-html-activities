@@ -790,6 +790,21 @@ header.packet h1::after{
   .li-stage-together>.li-eyebrow::before{background:#c98a10;}
   .li-stage-own{border-left-color:var(--navy);}
   .li-stage-own>.li-eyebrow::before{background:var(--navy);}
+  .li-stage-apply{border-left-color:#6b4fd6;}
+  .li-stage-apply>.li-eyebrow::before{background:#6b4fd6;}
+  .li-jstep-apply .li-jnum{background:#6b4fd6;}
+  .li-stage-talk{border-left-color:var(--teal);background:#fbfdfc;}
+  .li-stage-talk>.li-eyebrow::before{background:var(--teal);}
+  .li-jstep-talk .li-jnum{background:var(--teal);}
+  /* Turn & Talk sentence starters + word bank */
+  .li-stems-label{margin:2px 0 6px;font-size:13px;font-weight:700;color:var(--navy);}
+  .li-stems{margin:0 0 14px;padding-left:22px;}
+  .li-stems>li{font-size:16px;line-height:1.6;margin:0 0 8px;color:var(--ink);}
+  .li-stem-es{display:block;font-size:13.5px;color:var(--muted);font-style:italic;}
+  .li-wordbank{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f0faf8;
+    border:1px dashed var(--teal);border-radius:10px;padding:10px 12px;}
+  .li-wordbank-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--teal-ink);}
+  .li-word{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:4px 12px;font-weight:700;font-size:14px;}
   /* Confidence check + send-off */
   .li-ready-card{background:var(--teal-light);border:1.5px solid var(--teal);border-radius:14px;padding:18px 20px;margin:6px 0 0;}
   .li-ready-head{margin:0 0 10px;font-size:18px;font-weight:800;color:var(--navy);}
@@ -801,7 +816,10 @@ header.packet h1::after{
     .li-hook-label{color:#000;}
     .li-journey{display:none;}
     .li-stage{border-color:#000;border-left-color:#000;background:#fff;page-break-inside:avoid;}
-    .li-stage-together{background:#fff;}
+    .li-stage-together,.li-stage-talk{background:#fff;}
+    .li-wordbank{background:#fff;border:1px dashed #000;}
+    .li-word{background:#fff;color:#000;border:1px solid #000;}
+    .li-stems-label{color:#000;}
     .li-stage>.li-eyebrow::before,.li-jnum{background:#000;}
     .li-ready-card{background:#fff;border-color:#000;}
     .li-ready-head,.li-ready-check{color:#000;}
@@ -933,7 +951,7 @@ header.packet h1::after{
   (function(){
     var btn=null, speaking=false, hi=null;
     function collect(){
-      var sel='.li-hook-text, .li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q';
+      var sel='.li-hook-text, .li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q, .li-stems li';
       return Array.prototype.slice.call(document.querySelectorAll(sel)).filter(function(el){
         return el.offsetParent!==null && el.textContent.trim();
       });
@@ -1016,7 +1034,7 @@ header.packet h1::after{
     <p class="li-intro">Mean, median, and mode are three ways to find the center, or &quot;typical&quot; value, of a data set. The mean is the average, the median is the middle, and the mode is the most common value.</p>
     <aside class="li-keyidea"><span class="li-keyidea-label">Key idea</span><p>Mean = add then divide, median = the middle of the ordered numbers, mode = the value that shows up most.</p></aside>
     <nav class="li-journey no-print" aria-label="Your learning path">
-        <a class="li-jstep li-jstep-see" href="#li-see"><span class="li-jnum">1</span><span class="li-jico" aria-hidden="true">👁️</span><span class="li-jlabel">Picture it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-watch" href="#li-watch"><span class="li-jnum">2</span><span class="li-jico" aria-hidden="true">👀</span><span class="li-jlabel">Watch me solve it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-together" href="#li-together"><span class="li-jnum">3</span><span class="li-jico" aria-hidden="true">🤝</span><span class="li-jlabel">Try it with me</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-own" href="#li-own"><span class="li-jnum">4</span><span class="li-jico" aria-hidden="true">🚀</span><span class="li-jlabel">On your own</span></a>
+        <a class="li-jstep li-jstep-see" href="#li-see"><span class="li-jnum">1</span><span class="li-jico" aria-hidden="true">👁️</span><span class="li-jlabel">Picture it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-watch" href="#li-watch"><span class="li-jnum">2</span><span class="li-jico" aria-hidden="true">👀</span><span class="li-jlabel">Watch me solve it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-together" href="#li-together"><span class="li-jnum">3</span><span class="li-jico" aria-hidden="true">🤝</span><span class="li-jlabel">Try it with me</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-own" href="#li-own"><span class="li-jnum">4</span><span class="li-jico" aria-hidden="true">🚀</span><span class="li-jlabel">On your own</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-apply" href="#li-apply"><span class="li-jnum">5</span><span class="li-jico" aria-hidden="true">🌍</span><span class="li-jlabel">Apply it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-talk" href="#li-talk"><span class="li-jnum">6</span><span class="li-jico" aria-hidden="true">💬</span><span class="li-jlabel">Turn &amp; Talk</span></a>
       </nav>
     <section class="li-block li-stage li-stage-see" id="li-see">
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">👁️</span><span class="li-stage-label">Picture it</span><span class="li-stage-sub">See what the math looks like</span></p>
@@ -1039,6 +1057,18 @@ header.packet h1::after{
         <div class="li-work"><span class="li-work-label">Show your work</span></div>
         <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
         <details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Answer:</strong> 7<br><span class="li-check-why">With 6 values, the median is the average of the 3rd and 4th values: (6 + 8) ÷ 2 = 7.</span></div></details>
+      </section><section class="li-block li-stage li-stage-apply" id="li-apply">
+        <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">🌍</span><span class="li-stage-label">Apply it</span><span class="li-stage-sub">Use the math in a real situation</span></p>
+        <p class="li-lead"><strong>Real Estate</strong></p>
+        <p class="li-problem-q">Terrance is helping his grandmother sell her house. He uses a real estate website to look at the recent sale prices of similarly‑sized houses in their area and collects the prices in the table shown. What would be a fair, but competitive, selling price for Terrance’s grandmother’s house? Use the <button type="button" class="li-pop" data-popover data-term="Median" data-term-es="Mediana" data-def="The middle number when you put them in order." data-def-es="El número del medio cuando los pones en orden." data-img="../../assets/vocab-images/median.svg" aria-label="median — what does Median mean?">median<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> to justify your answer.</p>
+        <div class="li-work"><span class="li-work-label">Show your work</span></div>
+        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
+        <details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Sample answer:</strong> Sort the 16 sale prices from least to greatest: $160,000, $199,900, $239,900, $269,900, $307,000, $382,900, $385,400, $401,785, $402,400, $405,400, $423,400, $426,400, $454,400, $457,400, $460,400, $485,250. With 16 values (an even number), the median is the average of the 8th and 9th values: ($401,785 + $402,400) ÷ 2 = $804,185 ÷ 2 = $402,092.50. A fair, competitive selling price would be around $402,000, since that's the middle of the market and isn't pulled up or down by the lowest sale ($160,000) or the highest sale ($485,250).</div></details>
+      </section><section class="li-block li-stage li-stage-talk" id="li-talk">
+        <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">💬</span><span class="li-stage-label">Turn &amp; Talk</span><span class="li-stage-sub">Say it out loud with a partner</span></p>
+        <p class="li-problem-q">The team scored 42, 38, 55, 41, 38, 44, 40 points over 7 games. Which 'average' would best tell the coach the team's typical scoring: <button type="button" class="li-pop" data-popover data-term="Mean" data-term-es="Media" data-def="The average. Add all the numbers, then divide by how many there are." data-def-es="El promedio. Suma todos los números y divide entre cuántos hay." data-img="../../assets/vocab-images/mean.svg" aria-label="mean — what does Mean mean?">mean<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>, <button type="button" class="li-pop" data-popover data-term="Median" data-term-es="Mediana" data-def="The middle number when you put them in order." data-def-es="El número del medio cuando los pones en orden." data-img="../../assets/vocab-images/median.svg" aria-label="median — what does Median mean?">median<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>, or <button type="button" class="li-pop" data-popover data-term="Mode" data-term-es="Moda" data-def="The number that shows up most often." data-def-es="El número que aparece más veces." data-img="../../assets/vocab-images/mode.svg" aria-label="mode — what does Mode mean?">mode<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>?</p>
+        <p class="li-stems-label">Try starting with:</p><ul class="li-stems"><li>I would use the ___ because it best shows the typical score.<span class="li-stem-es" lang="es">Usaría la ___ porque muestra mejor el puntaje típico.</span></li><li>The ___ is the most common score, which is ___.<span class="li-stem-es" lang="es">La ___ es el puntaje más común, que es ___.</span></li></ul>
+        <div class="li-wordbank"><span class="li-wordbank-label">Word bank</span><span class="li-word">mean</span><span class="li-word">median</span><span class="li-word">mode</span><span class="li-word">average</span><span class="li-word">data set</span></div>
       </section>
     <section class="li-ready-card" id="li-ready">
       <p class="li-ready-head">🎉 Ready to launch?</p>

@@ -34,8 +34,8 @@
       // Compact by default: a 48px icon circle that stays clear of the lesson
       // content, expanding to reveal its label on hover/focus so it no longer
       // blocks navigation as a wide pill.
-      "#mwb-launcher{position:fixed;left:max(12px,env(safe-area-inset-left));" +
-      "bottom:max(12px,env(safe-area-inset-bottom));z-index:2147483000;" +
+      "#mwb-launcher{position:fixed;right:max(16px,env(safe-area-inset-right));" +
+      "bottom:max(72px,env(safe-area-inset-bottom));z-index:2147483000;" +
       "display:inline-flex;align-items:center;justify-content:center;gap:0;text-decoration:none;" +
       "width:48px;height:48px;padding:0;overflow:hidden;white-space:nowrap;" +
       "border-radius:999px;font:700 14px/1 system-ui,-apple-system,Segoe UI,sans-serif;" +
@@ -69,7 +69,7 @@
 
     // Some pages mount a fixed, full-width bottom action bar (e.g. the
     // nt-page-enhance "Save as PDF/DOC" bar, .nt-pe-bar) at a higher z-index.
-    // That bar would cover and click-block the lower-left launcher. Detect any
+    // That bar would cover and click-block the lower-right launcher. Detect any
     // such fixed bottom-anchored full-width bar and lift the launcher clear of
     // it so it stays visible and clickable. Re-check after load since bars may
     // mount asynchronously. Launcher CSS only — no page/content changes.
@@ -88,7 +88,7 @@
   // most of the viewport width and would overlap the launcher, then offset the
   // launcher above it (plus a small gap). Falls back to the default position.
   function avoidBottomBar(a) {
-    var base = 12; // matches the default bottom offset
+    var base = 72; // matches the default bottom offset (stacked above the Save/Resume pill, bottom-right)
     var clearance = base;
     try {
       var nodes = document.body.querySelectorAll("*");

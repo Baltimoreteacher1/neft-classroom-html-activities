@@ -123,7 +123,7 @@ function readAloudScript() {
   (function(){
     var btn=null, speaking=false, hi=null;
     function collect(){
-      var sel='.li-hook-text, .li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q';
+      var sel='.li-hook-text, .li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q, .li-stems li';
       return Array.prototype.slice.call(document.querySelectorAll(sel)).filter(function(el){
         return el.offsetParent!==null && el.textContent.trim();
       });
@@ -895,6 +895,57 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       sub: "You do — solve it solo",
       body: `${ownGuidance}
         <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>`,
+    });
+  }
+
+  // ⑤ Apply it — a real-world application problem (cfg.revealWordProblem) with
+  // an earned sample-answer reveal, so the skill lands in a concrete situation
+  // right after the gradual-release ladder.
+  const apply = cfg.revealWordProblem;
+  if (apply && apply.text) {
+    const applyTitle = (apply.title || "").replace(/^apply:\s*/i, "").trim();
+    stages.push({
+      id: "apply",
+      accent: "apply",
+      icon: "🌍",
+      label: "Apply it",
+      sub: "Use the math in a real situation",
+      body: `${applyTitle ? `<p class="li-lead"><strong>${esc(applyTitle)}</strong></p>` : ""}
+        <p class="li-problem-q">${popoverize(apply.text, vocab)}</p>
+        <div class="li-work"><span class="li-work-label">Show your work</span></div>
+        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
+        ${apply.sampleAnswer ? `<details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Sample answer:</strong> ${esc(apply.sampleAnswer)}</div></details>` : ""}`,
+    });
+  }
+
+  // ⑥ Turn & Talk — a discussion prompt with sentence starters (EN + ES) and a
+  // word bank so every learner, including ESOL, can talk the math through with a
+  // partner. Uses the lesson's first authored turn-and-talk item.
+  const tt = Array.isArray(cfg.turnAndTalk)
+    ? cfg.turnAndTalk.find((t) => t && t.question)
+    : null;
+  if (tt) {
+    const stems = Array.isArray(tt.stems)
+      ? tt.stems
+          .map(
+            (s) =>
+              `<li>${esc(s.en || s)}${s && s.es ? `<span class="li-stem-es" lang="es">${esc(s.es)}</span>` : ""}</li>`,
+          )
+          .join("")
+      : "";
+    const words =
+      Array.isArray(tt.wordBank) && tt.wordBank.length
+        ? `<div class="li-wordbank"><span class="li-wordbank-label">Word bank</span>${tt.wordBank.map((w) => `<span class="li-word">${esc(w)}</span>`).join("")}</div>`
+        : "";
+    stages.push({
+      id: "talk",
+      accent: "talk",
+      icon: "💬",
+      label: "Turn & Talk",
+      sub: "Say it out loud with a partner",
+      body: `<p class="li-problem-q">${popoverize(tt.question, vocab)}</p>
+        ${stems ? `<p class="li-stems-label">Try starting with:</p><ul class="li-stems">${stems}</ul>` : ""}
+        ${words}`,
     });
   }
 
@@ -2399,6 +2450,21 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
   .li-stage-together>.li-eyebrow::before{background:#c98a10;}
   .li-stage-own{border-left-color:var(--navy);}
   .li-stage-own>.li-eyebrow::before{background:var(--navy);}
+  .li-stage-apply{border-left-color:#6b4fd6;}
+  .li-stage-apply>.li-eyebrow::before{background:#6b4fd6;}
+  .li-jstep-apply .li-jnum{background:#6b4fd6;}
+  .li-stage-talk{border-left-color:var(--teal);background:#fbfdfc;}
+  .li-stage-talk>.li-eyebrow::before{background:var(--teal);}
+  .li-jstep-talk .li-jnum{background:var(--teal);}
+  /* Turn & Talk sentence starters + word bank */
+  .li-stems-label{margin:2px 0 6px;font-size:13px;font-weight:700;color:var(--navy);}
+  .li-stems{margin:0 0 14px;padding-left:22px;}
+  .li-stems>li{font-size:16px;line-height:1.6;margin:0 0 8px;color:var(--ink);}
+  .li-stem-es{display:block;font-size:13.5px;color:var(--muted);font-style:italic;}
+  .li-wordbank{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f0faf8;
+    border:1px dashed var(--teal);border-radius:10px;padding:10px 12px;}
+  .li-wordbank-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--teal-ink);}
+  .li-word{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:4px 12px;font-weight:700;font-size:14px;}
   /* Confidence check + send-off */
   .li-ready-card{background:var(--teal-light);border:1.5px solid var(--teal);border-radius:14px;padding:18px 20px;margin:6px 0 0;}
   .li-ready-head{margin:0 0 10px;font-size:18px;font-weight:800;color:var(--navy);}
@@ -2410,7 +2476,10 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
     .li-hook-label{color:#000;}
     .li-journey{display:none;}
     .li-stage{border-color:#000;border-left-color:#000;background:#fff;page-break-inside:avoid;}
-    .li-stage-together{background:#fff;}
+    .li-stage-together,.li-stage-talk{background:#fff;}
+    .li-wordbank{background:#fff;border:1px dashed #000;}
+    .li-word{background:#fff;color:#000;border:1px solid #000;}
+    .li-stems-label{color:#000;}
     .li-stage>.li-eyebrow::before,.li-jnum{background:#000;}
     .li-ready-card{background:#fff;border-color:#000;}
     .li-ready-head,.li-ready-check{color:#000;}

@@ -790,6 +790,21 @@ header.packet h1::after{
   .li-stage-together>.li-eyebrow::before{background:#c98a10;}
   .li-stage-own{border-left-color:var(--navy);}
   .li-stage-own>.li-eyebrow::before{background:var(--navy);}
+  .li-stage-apply{border-left-color:#6b4fd6;}
+  .li-stage-apply>.li-eyebrow::before{background:#6b4fd6;}
+  .li-jstep-apply .li-jnum{background:#6b4fd6;}
+  .li-stage-talk{border-left-color:var(--teal);background:#fbfdfc;}
+  .li-stage-talk>.li-eyebrow::before{background:var(--teal);}
+  .li-jstep-talk .li-jnum{background:var(--teal);}
+  /* Turn & Talk sentence starters + word bank */
+  .li-stems-label{margin:2px 0 6px;font-size:13px;font-weight:700;color:var(--navy);}
+  .li-stems{margin:0 0 14px;padding-left:22px;}
+  .li-stems>li{font-size:16px;line-height:1.6;margin:0 0 8px;color:var(--ink);}
+  .li-stem-es{display:block;font-size:13.5px;color:var(--muted);font-style:italic;}
+  .li-wordbank{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f0faf8;
+    border:1px dashed var(--teal);border-radius:10px;padding:10px 12px;}
+  .li-wordbank-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--teal-ink);}
+  .li-word{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:4px 12px;font-weight:700;font-size:14px;}
   /* Confidence check + send-off */
   .li-ready-card{background:var(--teal-light);border:1.5px solid var(--teal);border-radius:14px;padding:18px 20px;margin:6px 0 0;}
   .li-ready-head{margin:0 0 10px;font-size:18px;font-weight:800;color:var(--navy);}
@@ -801,7 +816,10 @@ header.packet h1::after{
     .li-hook-label{color:#000;}
     .li-journey{display:none;}
     .li-stage{border-color:#000;border-left-color:#000;background:#fff;page-break-inside:avoid;}
-    .li-stage-together{background:#fff;}
+    .li-stage-together,.li-stage-talk{background:#fff;}
+    .li-wordbank{background:#fff;border:1px dashed #000;}
+    .li-word{background:#fff;color:#000;border:1px solid #000;}
+    .li-stems-label{color:#000;}
     .li-stage>.li-eyebrow::before,.li-jnum{background:#000;}
     .li-ready-card{background:#fff;border-color:#000;}
     .li-ready-head,.li-ready-check{color:#000;}
@@ -933,7 +951,7 @@ header.packet h1::after{
   (function(){
     var btn=null, speaking=false, hi=null;
     function collect(){
-      var sel='.li-hook-text, .li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q';
+      var sel='.li-hook-text, .li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q, .li-stems li';
       return Array.prototype.slice.call(document.querySelectorAll(sel)).filter(function(el){
         return el.offsetParent!==null && el.textContent.trim();
       });
@@ -1016,7 +1034,7 @@ header.packet h1::after{
     <p class="li-intro">A discount lowers a price. A tax, tip, or markup raises a price. Each one is a percent of the price.</p>
     <aside class="li-keyidea"><span class="li-keyidea-label">Key idea</span><p>Take the discount off first to get the new lower price, then add the tax on that new price.</p></aside>
     <nav class="li-journey no-print" aria-label="Your learning path">
-        <a class="li-jstep li-jstep-see" href="#li-see"><span class="li-jnum">1</span><span class="li-jico" aria-hidden="true">👁️</span><span class="li-jlabel">Picture it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-watch" href="#li-watch"><span class="li-jnum">2</span><span class="li-jico" aria-hidden="true">👀</span><span class="li-jlabel">Watch me solve it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-together" href="#li-together"><span class="li-jnum">3</span><span class="li-jico" aria-hidden="true">🤝</span><span class="li-jlabel">Try it with me</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-own" href="#li-own"><span class="li-jnum">4</span><span class="li-jico" aria-hidden="true">🚀</span><span class="li-jlabel">On your own</span></a>
+        <a class="li-jstep li-jstep-see" href="#li-see"><span class="li-jnum">1</span><span class="li-jico" aria-hidden="true">👁️</span><span class="li-jlabel">Picture it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-watch" href="#li-watch"><span class="li-jnum">2</span><span class="li-jico" aria-hidden="true">👀</span><span class="li-jlabel">Watch me solve it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-together" href="#li-together"><span class="li-jnum">3</span><span class="li-jico" aria-hidden="true">🤝</span><span class="li-jlabel">Try it with me</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-own" href="#li-own"><span class="li-jnum">4</span><span class="li-jico" aria-hidden="true">🚀</span><span class="li-jlabel">On your own</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-apply" href="#li-apply"><span class="li-jnum">5</span><span class="li-jico" aria-hidden="true">🌍</span><span class="li-jlabel">Apply it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-talk" href="#li-talk"><span class="li-jnum">6</span><span class="li-jico" aria-hidden="true">💬</span><span class="li-jlabel">Turn &amp; Talk</span></a>
       </nav>
     <section class="li-block li-stage li-stage-see" id="li-see">
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">👁️</span><span class="li-stage-label">Picture it</span><span class="li-stage-sub">See what the math looks like</span></p>
@@ -1039,6 +1057,18 @@ header.packet h1::after{
         <div class="li-work"><span class="li-work-label">Show your work</span></div>
         <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
         <details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Answer:</strong> $37.80<br><span class="li-check-why">Markup: $30 × 1.40 = $42. Discount: $42 × 0.10 = $4.20. Final: $42 − $4.20 = $37.80.</span></div></details>
+      </section><section class="li-block li-stage li-stage-apply" id="li-apply">
+        <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">🌍</span><span class="li-stage-label">Apply it</span><span class="li-stage-sub">Use the math in a real situation</span></p>
+        <p class="li-lead"><strong>Book Fair</strong></p>
+        <p class="li-problem-q">Students were asked which night of the book fair they planned to attend. The results of the survey are shown. Twenty <button type="button" class="li-pop" data-popover data-term="Percent" data-term-es="Porcentaje" data-def="A way to compare a number to 100, shown with the % sign." data-def-es="Una manera de comparar un número con 100, con el signo %." data-img="../../assets/vocab-images/percent.svg" aria-label="percent — what does Percent mean?">percent<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> of the students who planned to attend on Wednesday attended on Thursday instead. Twenty-five percent of the students who planned to attend on Thursday attended on Friday instead. Which day, Thursday or Friday, had a greater actual attendance? How many more students attended that day?</p>
+        <div class="li-work"><span class="li-work-label">Show your work</span></div>
+        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
+        <details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Sample answer:</strong> The survey shows 70 students planned for Wednesday, 112 for Thursday, and 65 for Friday. 20% of the 70 Wednesday planners moved to Thursday: 0.20 × 70 = 14 students. 25% of the 112 Thursday planners moved to Friday: 0.25 × 112 = 28 students. Actual Thursday attendance = 112 − 28 + 14 = 98. Actual Friday attendance = 65 + 28 = 93. Thursday had greater actual attendance, by 98 − 93 = 5 students.</div></details>
+      </section><section class="li-block li-stage li-stage-talk" id="li-talk">
+        <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">💬</span><span class="li-stage-label">Turn &amp; Talk</span><span class="li-stage-sub">Say it out loud with a partner</span></p>
+        <p class="li-problem-q">At the prize shop a bear is 25% off but the shop adds 5% <button type="button" class="li-pop" data-popover data-term="Tax" data-term-es="Impuesto" data-def="Extra money added to a price for the government." data-def-es="Dinero extra que se suma a un precio para el gobierno." data-img="../../assets/vocab-images/percent.svg" aria-label="tax — what does Tax mean?">tax<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>. Which of these raises the price and which lowers it, and what do the words <button type="button" class="li-pop" data-popover data-term="Discount" data-term-es="Descuento" data-def="Money taken off the first price to make it cheaper." data-def-es="Dinero que se quita del precio original para que sea más barato." data-img="../../assets/vocab-images/discount.svg" aria-label="discount — what does Discount mean?">discount<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>, <button type="button" class="li-pop" data-popover data-term="Markup" data-term-es="Recargo (margen)" data-def="Money added to the cost to set the selling price." data-def-es="Dinero que se suma al costo para fijar el precio de venta." data-img="../../assets/vocab-images/percent.svg" aria-label="markup — what does Markup mean?">markup<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>, tax, and <button type="button" class="li-pop" data-popover data-term="Tip" data-term-es="Propina" data-def="Extra money you give for good service." data-def-es="Dinero extra que das por un buen servicio." data-img="../../assets/vocab-images/percent.svg" aria-label="tip — what does Tip mean?">tip<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> have in common?</p>
+        <p class="li-stems-label">Try starting with:</p><ul class="li-stems"><li>A ___ makes the price go down, but a ___ makes it go up.<span class="li-stem-es" lang="es">Un ___ hace que el precio baje, pero un ___ hace que suba.</span></li><li>They are alike because each is a ___ of the price.<span class="li-stem-es" lang="es">Se parecen porque cada uno es un ___ del precio.</span></li></ul>
+        <div class="li-wordbank"><span class="li-wordbank-label">Word bank</span><span class="li-word">discount</span><span class="li-word">markup</span><span class="li-word">tax</span><span class="li-word">tip</span><span class="li-word">percent</span></div>
       </section>
     <section class="li-ready-card" id="li-ready">
       <p class="li-ready-head">🎉 Ready to launch?</p>
