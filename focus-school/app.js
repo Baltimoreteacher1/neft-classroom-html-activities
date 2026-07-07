@@ -158,6 +158,12 @@
     if (!Array.isArray(state.health.items)) state.health.items = [];
     return state.health.items;
   }
+  // Emoji fields are interpolated into innerHTML without esc() in many card
+  // templates, so strip markup-significant characters at the data layer.
+  function cleanEmoji(v, fallback, max = 8) {
+    const s = typeof v === "string" ? v.replace(/[<>&"']/g, "").trim() : "";
+    return (s || fallback).slice(0, max);
+  }
   // Validate a synced/imported health payload so it can't poison state. Keeps
   // every well-formed movement item (built-in or custom) and only log entries
   // that reference a known item id, and preserves the first-run `seeded` flag.
@@ -174,7 +180,7 @@
       seenIds.add(id);
       items.push([
         id,
-        typeof emoji === "string" && emoji ? emoji.slice(0, 4) : "💪",
+        cleanEmoji(emoji, "💪", 4),
         label.trim().slice(0, 60),
         typeof hint === "string" ? hint.trim().slice(0, 80) : "",
       ]);
@@ -697,7 +703,7 @@
     return {
       id: c.id || uid("c"),
       name: String(c.name || "Class").slice(0, 60),
-      emoji: String(c.emoji || "📚").slice(0, 8),
+      emoji: cleanEmoji(c.emoji, "📚"),
       subject: String(c.subject || "").slice(0, 60),
       teacher: String(c.teacher || "").slice(0, 80),
       email: String(c.email || "").slice(0, 120),
@@ -826,7 +832,7 @@
     return {
       id: r.id || uid("r"),
       name,
-      emoji: String(r.emoji || "🔁").slice(0, 8),
+      emoji: cleanEmoji(r.emoji, "🔁"),
       slot:
         r.slot === undefined
           ? inferRoutineSlot(name)
@@ -2018,7 +2024,7 @@
 
     // Direct DOM updates for XP tracking elements to avoid full redrawing
     const xpRemainder = state.points % 100;
-    const circ = 2 * Math.PI * 40; // radius is 40
+    const circ = 2 * Math.PI * 36; // must match the r=36 ring in xpLevelCardHTML
     const offset = circ * (1 - xpRemainder / 100);
 
     document.querySelectorAll(".xp-level-ring circle.prog").forEach((ring) => {
@@ -4038,18 +4044,18 @@
           <p class="meta">June 29 - August 3, 2026</p>
         </div>
         
-        <div class="card status-card" style="margin-bottom: 16px; background: linear-gradient(135deg, var(--teal) 0%, var(--teal-bright) 100%); color: white; border: none;">
+        <div class="card status-card" style="margin-bottom: 16px; background: linear-gradient(135deg, var(--teal) 0%, var(--teal-bright) 100%); color: var(--on-teal); border: none;">
           <div class="head">
             <div>
-              <h3 style="color: white; margin: 0;">Overall Progress</h3>
-              <p style="color: rgba(255,255,255,0.85); font-size: 0.88rem; margin: 4px 0 0 0;">Keep up the great reading habit!</p>
+              <h3 style="color: var(--on-teal); margin: 0;">Overall Progress</h3>
+              <p style="color: var(--on-teal); opacity: 0.85; font-size: 0.88rem; margin: 4px 0 0 0;">Keep up the great reading habit!</p>
             </div>
             <div style="font-size: 1.5rem; font-weight: 800;">${completedDays} / ${totalDays} Days</div>
           </div>
-          <div class="progress-bar-container" style="background: rgba(255,255,255,0.25); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 12px;">
-            <div class="progress-bar-fill" style="background: white; width: ${percent}%; height: 100%; transition: width 0.3s ease;"></div>
+          <div class="progress-bar-container" style="background: color-mix(in srgb, var(--on-teal) 25%, transparent); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 12px;">
+            <div class="progress-bar-fill" style="background: var(--on-teal); width: ${percent}%; height: 100%; transition: width 0.3s ease;"></div>
           </div>
-          <div style="text-align: right; font-size: 0.75rem; margin-top: 4px; color: rgba(255,255,255,0.9); font-weight: 600;">${percent}% Completed</div>
+          <div style="text-align: right; font-size: 0.75rem; margin-top: 4px; color: var(--on-teal); opacity: 0.9; font-weight: 600;">${percent}% Completed</div>
         </div>
         
         <div class="note" style="margin-bottom: 16px;">
@@ -4210,12 +4216,6 @@
             ic: "🏫",
             title: "My classes",
             sub: "Subjects, times, colors",
-          },
-          {
-            act: "view-reminders",
-            ic: "🔔",
-            title: "Reminders",
-            sub: "Things to remember",
           },
           {
             act: "view-mail",
@@ -4639,9 +4639,9 @@ Due May 31"></textarea>
                 const req = getGradientLevelRequired(g[0]);
                 const isLocked = lvl < req;
                 return `
-                  <div class="theme-gradient-swatch ${isLocked ? "locked" : ""}" data-act="set-gradient-theme" data-arg="${esc(g[0])}" aria-pressed="${state.settings.themeGradient === g[0]}" style="background: ${g[0] || "linear-gradient(180deg, var(--bg-2), var(--bg))"}">
+                  <button type="button" class="theme-gradient-swatch ${isLocked ? "locked" : ""}" data-act="set-gradient-theme" data-arg="${esc(g[0])}" aria-pressed="${state.settings.themeGradient === g[0]}" style="background: ${g[0] || "linear-gradient(180deg, var(--bg-2), var(--bg))"}">
                     <b>${isLocked ? "🔒 " : ""}${esc(g[1])}${isLocked ? ` — unlocks as a ${focusTitleForLevel(req)}` : ""}</b>
-                  </div>
+                  </button>
                 `;
               }).join("")}
             </div>
@@ -4729,7 +4729,7 @@ Due May 31"></textarea>
                 <li>Go to <b>Google Cloud Console</b> → APIs &amp; Services.</li>
                 <li><b>Enable</b> the <b>Google Calendar API</b> and the <b>Gmail API</b>.</li>
                 <li>Create an <b>OAuth client ID</b> of type <b>Web application</b>.</li>
-                <li>Under <b>Authorized JavaScript origins</b> add: <code>https://focus.eduwonderlab.com</code></li>
+                <li>Under <b>Authorized JavaScript origins</b> add: <code>${esc(location.origin)}</code></li>
                 <li>On the <b>OAuth consent screen</b>, add scope <code>gmail.readonly</code>.</li>
                 <li>Copy the Client ID (ends in <code>.apps.googleusercontent.com</code>) and paste it above.</li>
               </ol>
@@ -6331,7 +6331,7 @@ Due May 31"></textarea>
           `<p>You focused for <b>${earned} minutes</b> and earned <b>+${earned} XP</b>!</p>
           <div id="brainBreakContainer">${renderBrainBreakCardHTML(currentBrainBreak)}</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 16px;justify-content:center;">
-            <button class="btn sm" data-act="spin-break" style="background:var(--accent);color:white">🔄 Spin Break Wheel</button>
+            <button class="btn sm" data-act="spin-break" style="background:var(--accent);color:var(--on-teal)">🔄 Spin Break Wheel</button>
             <button class="btn sm" data-act="choose-break" data-arg="stretch">🧘 Stretch</button>
             <button class="btn sm" data-act="choose-break" data-arg="active">🏃 Active</button>
             <button class="btn sm" data-act="choose-break" data-arg="relax">👀 Relax</button>
@@ -6995,6 +6995,63 @@ Due May 31"></textarea>
             ? rt.rememberText || ""
             : lt.rememberText || "",
       };
+    }
+
+    // 15. Merge the fields the sections above don't cover — otherwise the other
+    // device's garden growth, health log, check-ins, daily goal, and capture
+    // prompts are silently discarded on every merge (and then pushed back to
+    // the cloud, permanently overwriting them).
+    {
+      const remoteIsNewer = (remote.updatedAt || 0) > (local.updatedAt || 0);
+
+      // Garden: xp only ever increases, so the state with more xp is the one
+      // that has seen the most progress (waterReservoir/plantStage travel with
+      // it so spent water is never resurrected). Ties keep the newer blob.
+      const lg = local.garden || {};
+      const rg = remote.garden || {};
+      if ((rg.xp || 0) > (lg.xp || 0) || ((rg.xp || 0) === (lg.xp || 0) && remoteIsNewer)) {
+        merged.garden = { ...lg, ...rg };
+      }
+
+      // Health: union the per-day movement log (checks and __paid payouts from
+      // both devices count); the custom items list follows the newer blob.
+      const lh = local.health || {};
+      const rh = remote.health || {};
+      const healthLog = { ...(lh.log || {}) };
+      for (const [date, remDay] of Object.entries(rh.log || {})) {
+        const locDay = healthLog[date] || {};
+        const paid = [
+          ...new Set([
+            ...(Array.isArray(locDay.__paid) ? locDay.__paid : []),
+            ...(Array.isArray(remDay.__paid) ? remDay.__paid : []),
+          ]),
+        ];
+        healthLog[date] = { ...remDay, ...locDay, ...(paid.length ? { __paid: paid } : {}) };
+      }
+      // Remote is a raw KV blob and may predate the health feature — only let
+      // it drive the base object when it actually carries an items list.
+      merged.health = {
+        ...(remoteIsNewer && Array.isArray(rh.items) ? rh : lh),
+        log: healthLog,
+      };
+
+      // Check-ins (one { mood, priority } per day): union, newer blob wins on
+      // same-day conflicts.
+      merged.checkins = remoteIsNewer
+        ? { ...(local.checkins || {}), ...(remote.checkins || {}) }
+        : { ...(remote.checkins || {}), ...(local.checkins || {}) };
+
+      // Capture-prompt log ({ dateKey: true }): a day answered anywhere is
+      // answered everywhere.
+      merged.captureLog = { ...(remote.captureLog || {}), ...(local.captureLog || {}) };
+
+      // Daily goal: whichever blob carries the later goalDate; ties keep the
+      // newer blob's text.
+      const ld = local.daily || {};
+      const rd = remote.daily || {};
+      if ((rd.goalDate || "") > (ld.goalDate || "") || ((rd.goalDate || "") === (ld.goalDate || "") && remoteIsNewer && rd.goal)) {
+        merged.daily = { ...ld, ...rd };
+      }
     }
 
     merged.updatedAt = Date.now();
@@ -7874,8 +7931,10 @@ Due May 31"></textarea>
       const y = new Date().getFullYear();
       const d = new Date(`${m[1]} ${m[2]}, ${y} 12:00:00`);
       if (!isNaN(d)) {
-        if (daysUntil(d.toISOString().slice(0, 10)) < -30) d.setFullYear(y + 1); // assume next year if long past
-        return d.toISOString().slice(0, 10);
+        // ymd() formats in LOCAL time — toISOString() could shift the day for
+        // UTC+13/+14 users since local noon there is the previous UTC day.
+        if (daysUntil(ymd(d)) < -30) d.setFullYear(y + 1); // assume next year if long past
+        return ymd(d);
       }
     }
     return "";
@@ -8003,7 +8062,10 @@ Due May 31"></textarea>
     },
     nav: (_, arg) => setView(arg),
     "view-classes": () => setView("classes"),
-    "view-reminders": () => setView("reminders"),
+    // Reminders were folded into the to-do list (see normalize()); the old
+    // standalone view would always render empty after a reload, so any stale
+    // link lands on the Tasks view (which hosts the to-do list) instead.
+    "view-reminders": () => setView("tasks"),
     "view-mail": () => setView("mail"),
     "view-email": () => setView("email"),
     "view-import": () => setView("import"),
@@ -8165,7 +8227,7 @@ Due May 31"></textarea>
     "save-health-item": (id) => {
       const label = ($("#hLabel").value || "").trim();
       if (!label) return toast("Type what the movement is first.");
-      const emoji = ($("#hEmoji").value || "").trim().slice(0, 4) || "💪";
+      const emoji = cleanEmoji($("#hEmoji").value, "💪", 4);
       const hint = ($("#hHint").value || "").trim().slice(0, 80);
       const list = healthItems();
       if (id) {
@@ -8606,7 +8668,7 @@ Due May 31"></textarea>
         .filter((d) => DAYS.includes(d));
       const r = existing || { id: uid("r"), items: [], days: [] };
       r.name = $("#rName").value.trim() || "Routine";
-      r.emoji = $("#rEmoji").value.trim() || "🔁";
+      r.emoji = cleanEmoji($("#rEmoji").value, "🔁");
       const slotVal = $("#rSlot").value;
       r.slot = ROUTINE_SLOTS.includes(slotVal) ? slotVal : "";
       r.startMin = hhmmToMins($("#rStartTime").value);
@@ -8745,10 +8807,17 @@ Due May 31"></textarea>
       const done = !state.readingProgress[id].done;
       state.readingProgress[id].done = done;
       if (done) {
-        addPoints(5);
-        bumpActivity("tasks");
-        triggerConfetti();
-        toast("+5 Points! 📚");
+        // Points only the first time a day is finished — un-checking and
+        // re-checking must not farm XP/garden water.
+        if (!state.readingProgress[id].awarded) {
+          state.readingProgress[id].awarded = true;
+          addPoints(5);
+          bumpActivity("tasks");
+          triggerConfetti();
+          toast("+5 Points! 📚");
+        } else {
+          toast("Reading day checked ✓");
+        }
       }
       save();
       render();
@@ -8834,6 +8903,7 @@ Due May 31"></textarea>
       if (v) {
         state.wins.push({ text: v, date: new Date().toLocaleString() });
         addPoints(2);
+        render();
         toast("Win added 🏆");
       }
     },
@@ -9257,7 +9327,7 @@ ${name}`;
         `<div style="display:flex;flex-direction:column;gap:12px;font-weight:700">
           <p class="sub">Use these shortcuts to navigate faster on desktop:</p>
           <div class="row"><span class="pill">Cmd+K</span><span>or</span><span class="pill">/</span><span>Open search &amp; command bar</span></div>
-          <div class="row"><span class="pill">1</span><span>to</span><span class="pill">6</span><span>Switch tabs (Now, Today, Tasks...)</span></div>
+          <div class="row"><span class="pill">1</span><span>to</span><span class="pill">9</span><span>+</span><span class="pill">0</span><span>Switch tabs (Now, Homework, Reading...)</span></div>
           <div class="row"><span class="pill">f</span><span>Start/stop focus session for today's task</span></div>
           <div class="row"><span class="pill">Esc</span><span>Close any open modal or overlay</span></div>
           <div class="row"><span class="pill">?</span><span>Show this shortcuts guide</span></div>
@@ -9278,18 +9348,26 @@ ${name}`;
         toast("Please select a score for focus and mood!");
         return;
       }
+      // Points only for the first check-out of the day (edits don't re-award).
+      const firstToday = !state.reflections[todayKey()];
       state.reflections[todayKey()] = {
         focus: focusVal,
         mood: moodVal,
         text: textVal,
         timestamp: new Date().toISOString(),
       };
-      addPoints(5);
+      if (firstToday) addPoints(5);
+      else save();
       window._pendingReflectionFocus = 0;
       window._pendingReflectionMood = 0;
       window._pendingReflectionText = "";
-      triggerConfetti();
-      toast("Check-out saved! +5 points 📓");
+      render(); // flip the card to its saved summary
+      if (firstToday) {
+        triggerConfetti();
+        toast("Check-out saved! +5 points 📓");
+      } else {
+        toast("Check-out saved 📓");
+      }
     },
     "set-gradient-theme": (_, arg) => {
       const pts = state.points || 0;
@@ -9350,6 +9428,10 @@ ${name}`;
     },
     "set-focus-preset": (_, arg) => {
       const mins = Number(arg);
+      // Remember the choice so the NEXT focus block uses it too, not just the
+      // current one (normalize clamps defaultFocusMin to 5-60, so 45 is safe).
+      state.settings.defaultFocusMin = mins;
+      save();
       if (focus.phase === "focus") {
         focus.total = mins * 60;
         focus.remaining = focus.total;
@@ -9362,7 +9444,11 @@ ${name}`;
         const isPressed = btn.dataset.arg === arg;
         btn.setAttribute("aria-pressed", isPressed ? "true" : "false");
       });
-      toast(`Timer set to ${mins} minutes! ⏱️`);
+      toast(
+        focus.phase === "focus"
+          ? `Timer set to ${mins} minutes! ⏱️`
+          : `Next focus block will be ${mins} minutes. ⏱️`,
+      );
     },
     "open-command-bar": () => openCommandBar(),
     "close-command-bar": () => closeCommandBar(),
@@ -9535,6 +9621,19 @@ ${name}`;
       if (btn.tagName === "A") return;
       ev.preventDefault();
       ACTIONS[act](btn.dataset.id, btn.dataset.arg, ev, btn.dataset.sid);
+    });
+
+    // Non-native [role="button"] elements (e.g. the Payday home card) don't
+    // fire click on Enter/Space like a real <button> does — dispatch here so
+    // they stay keyboard-operable.
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key !== "Enter" && ev.key !== " ") return;
+      const el = ev.target instanceof Element ? ev.target.closest('[role="button"][data-act]') : null;
+      if (!el || el.tagName === "BUTTON" || el.tagName === "A") return;
+      const act = el.dataset.act;
+      if (!ACTIONS[act]) return;
+      ev.preventDefault();
+      ACTIONS[act](el.dataset.id, el.dataset.arg, ev, el.dataset.sid);
     });
 
     document.addEventListener("change", (ev) => {
@@ -10105,8 +10204,12 @@ ${name}`;
 
     // Deep link: ?sync=<code> links this device automatically (e.g. from a QR
     // or a shared link), so the second device doesn't have to type anything.
+    // Accept any plausible code, not just long generated ones — custom codes
+    // may be short ("noam"), and "Copy link" builds links from them too. Keep a
+    // small floor so a stray "?sync=" or one-char junk value can't hijack sync.
     const linkCode = (params.get("sync") || "").trim();
-    if (linkCode && linkCode.length >= 12) {
+    const linkCodeOk = linkCode.length >= 3 && /^[a-z0-9-]+$/i.test(linkCode);
+    if (linkCodeOk) {
       state.settings.sync.code = linkCode;
       state.settings.sync.enabled = true;
       view = "sync";
@@ -10126,7 +10229,7 @@ ${name}`;
     }
     suppressPush = false;
     // Save any code adopted from a deep link now that pushing is allowed.
-    if (linkCode && linkCode.length >= 12) {
+    if (linkCodeOk) {
       save();
       await cloud.push();
     }
