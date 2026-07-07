@@ -94,6 +94,15 @@ test.describe("Monster Math Academy smoke", () => {
     await expect(page.getByLabel(/load code|continuar|code/i).first()).toBeVisible();
   });
 
+  test("Math Workbench link on title screen", async ({ page }) => {
+    await expect(
+      page.getByRole("link", { name: /Math Workbench|Banco de Matematicas/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /Math Workbench|Banco de Matematicas/i }),
+    ).toHaveAttribute("href", /math-workbench/);
+  });
+
   test("teacher guide loads without PIN and shows time table", async ({ page }) => {
     await page.goto(`${MMA}#/guide`);
     await expect(
