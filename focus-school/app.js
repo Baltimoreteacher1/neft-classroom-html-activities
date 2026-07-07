@@ -868,7 +868,7 @@
       idb.set(STATE_KEY, state);
       if (state.settings.sync.enabled && !suppressPush) {
         cloud.markActive(); // a local edit → keep the pull loop in its fast cadence
-        cloud.push();
+        cloud.syncOut(); // durable KV PUT + instant live WebSocket fan-out
       }
       // Re-arm the local notification scheduler whenever data changes (added,
       // edited, or completed reminders all shift what's due today). Defined later;
@@ -7201,6 +7201,50 @@ Due May 31"></textarea>
         }
       }
     },
+    // Merge a remote state — from a KV pull OR the live WebSocket — into local
+    // using the conflict-safe item-level merge, persist it, and reconcile the
+    // cloud. Returns whether local CONTENT actually changed. Shared so the KV
+    // and real-time transports behave identically.
+    async _applyRemote(remoteState, remoteUpdated, { doRender = false } = {}) {
+      if (!remoteState) return false;
+      const localUpdated = state.updatedAt || 0;
+      const merged = mergeStates(state, remoteState);
+      const mergedNorm = normalize(merged);
+      // CONTENT-only comparison (ignoring the volatile top-level updatedAt) so a
+      // no-op merge is a true no-op and two open devices converge instead of
+      // re-stamping newer updatedAts at each other forever.
+      const changed =
+        JSON.stringify({ ...mergedNorm, updatedAt: 0 }) !==
+        JSON.stringify({ ...state, updatedAt: 0 });
+      let shouldPush = false;
+      if (changed) {
+        const prev = suppressPush;
+        suppressPush = true;
+        state = mergedNorm;
+        await save({ touch: false, immediate: true });
+        suppressPush = prev;
+        shouldPush = !prev;
+      } else if ((remoteUpdated || 0) < localUpdated && !suppressPush) {
+        // Content matches but our copy is newer than the server's — an earlier
+        // push was dropped/offline, so the cloud (and peers) are missing changes
+        // we already hold. Re-send them; without this a check that failed to push
+        // once would sit local-only forever.
+        shouldPush = true;
+      }
+      state.settings.sync.lastAt = new Date().toISOString();
+      mirror();
+      this._setStatus("synced");
+      if (shouldPush) this.syncOut();
+      if (changed && doRender) render();
+      return changed;
+    },
+    // Propagate the current local state to the cloud on BOTH transports: the
+    // durable KV PUT and (if connected) the real-time WebSocket. Callers use
+    // this instead of push() directly so every change fans out live.
+    syncOut() {
+      this.push();
+      if (typeof live !== "undefined") live.broadcastLocal();
+    },
     async pull({ forceMerge = false } = {}) {
       const code = state.settings.sync.code;
       if (!code || !this.available()) return false;
@@ -7216,46 +7260,10 @@ Due May 31"></textarea>
           const remoteUpdated = data.updatedAt || 0;
           const localUpdated = state.updatedAt || 0;
           if (remoteUpdated > localUpdated || forceMerge) {
-            const merged = mergeStates(state, data.state);
-            const mergedNorm = normalize(merged);
-            // Compare CONTENT, ignoring the volatile top-level `updatedAt`
-            // (mergeStates always stamps it fresh). Without this, the stringify
-            // comparison was always unequal, so the 10s auto-pull replaced
-            // state + re-rendered + pushed to KV every single tick — wiping any
-            // half-typed input and churning the store. Now a no-op pull is a
-            // true no-op. Both sides are normalized so key ordering can't lie.
-            //
-            // This is CONTENT-only on purpose: a `remoteUpdated > localUpdated`
-            // term would never converge with two devices both open, because
-            // each merge re-stamps a newer updatedAt and pushes it, so the peer
-            // always sees "remote is newer" and re-merges/re-renders forever
-            // (phantom churn that wipes input on Noam's phone + laptop). Once
-            // the content matches, changed=false and both devices settle.
-            const changed =
-              JSON.stringify({ ...mergedNorm, updatedAt: 0 }) !==
-              JSON.stringify({ ...state, updatedAt: 0 });
-            let shouldPushMerged = false;
-            if (changed) {
-              const prev = suppressPush;
-              suppressPush = true;
-              state = mergedNorm;
-              await save({ touch: false, immediate: true });
-              suppressPush = prev;
-              shouldPushMerged = !prev;
-            } else if (localUpdated > remoteUpdated && !suppressPush) {
-              // Content already matches, but our copy is newer than the server's
-              // — an earlier push was dropped (busy/offline/blip), so the cloud
-              // (and any peer) is missing changes we already hold. Re-send them.
-              // Without this, checked routine steps that failed to push once would
-              // sit local-only forever, since the merge sees "no change" and the
-              // 10s auto-pull would otherwise never retry the upload.
-              shouldPushMerged = true;
-            }
-            state.settings.sync.lastAt = new Date().toISOString();
-            mirror();
-            this._setStatus("synced");
-            if (shouldPushMerged) await this.push();
-            return changed;
+            // Delegate to the shared merge path (same logic the live WebSocket
+            // uses). CONTENT-only change detection keeps two open devices from
+            // re-stamping newer updatedAts at each other forever.
+            return await this._applyRemote(data.state, remoteUpdated, { doRender: false });
           }
         }
         // Local is same/newer — nothing to apply, but we're in sync. If local is
@@ -7263,7 +7271,7 @@ Due May 31"></textarea>
         // behind (e.g. this device made changes while it was the only one open).
         const remoteUpdated = (data && data.updatedAt) || 0;
         if ((state.updatedAt || 0) > remoteUpdated && !suppressPush) {
-          this.push();
+          this.syncOut();
         }
         state.settings.sync.lastAt = new Date().toISOString();
         mirror();
@@ -7301,11 +7309,16 @@ Due May 31"></textarea>
       if (typeof document !== "undefined" && document.visibilityState === "hidden") {
         return Infinity;
       }
+      // When the real-time WebSocket is healthy it delivers changes instantly, so
+      // KV polling drops to a slow self-healing safety net instead of the fast
+      // active cadence.
+      if (typeof live !== "undefined" && live.connected) return 20000;
       return Date.now() < this._activeUntil ? 2500 : 12000;
     },
     // Start/refresh the adaptive pull loop while the tab is open. The base tick
     // is short, but each tick only actually fetches once its adaptive cadence has
     // elapsed — so active use feels near-live without hammering KV while idle.
+    // Also (re)opens the real-time WebSocket, which supersedes polling when up.
     startAuto() {
       this.stopAuto();
       if (!state.settings.sync.enabled) return;
@@ -7318,11 +7331,120 @@ Due May 31"></textarea>
         this._lastPull = now;
         this.autoPull();
       }, 1000);
+      if (typeof live !== "undefined") live.connect();
     },
     stopAuto() {
       if (this._interval) {
         clearInterval(this._interval);
         this._interval = null;
+      }
+    },
+  };
+
+  // ---------------------------------------------------------------------------
+  // Real-time sync transport — WebSocket → SyncRoom Durable Object (/api/live).
+  // ---------------------------------------------------------------------------
+  // A pure accelerator layered over the KV sync. When /api/live and its Durable
+  // Object binding are provisioned, every change fans out to all of a user's
+  // devices in well under a second. If it isn't provisioned (503) or the socket
+  // drops, the client silently keeps using the near-live KV polling — real-time
+  // is additive and can never regress the baseline. Incoming states go through
+  // the exact same conflict-safe merge (`cloud._applyRemote`) as a KV pull.
+  const live = {
+    ws: null,
+    connected: false,
+    _retry: 0,
+    _reconnectTimer: null,
+    _manualClose: false,
+    available() {
+      return (
+        typeof WebSocket !== "undefined" &&
+        typeof location !== "undefined" &&
+        String(location.protocol || "").startsWith("http")
+      );
+    },
+    url() {
+      const code = state.settings.sync.code;
+      const scheme = location.protocol === "https:" ? "wss" : "ws";
+      return `${scheme}://${location.host}/api/live?code=${encodeURIComponent(code)}`;
+    },
+    connect() {
+      if (!state.settings.sync.enabled || !state.settings.sync.code) return;
+      if (!this.available()) return;
+      // Already connecting (0) or open (1)? Don't stack sockets.
+      if (this.ws && (this.ws.readyState === 0 || this.ws.readyState === 1)) return;
+      this._manualClose = false;
+      let sock;
+      try {
+        sock = new WebSocket(this.url());
+      } catch {
+        this._scheduleReconnect();
+        return;
+      }
+      this.ws = sock;
+      sock.addEventListener("open", () => {
+        this._retry = 0;
+        this.connected = true;
+        cloud._setStatus("synced");
+        // Announce our latest state so the server + peers converge immediately.
+        this.broadcastLocal();
+      });
+      sock.addEventListener("message", (ev) => this._onMessage(ev));
+      sock.addEventListener("close", () => {
+        this.connected = false;
+        this.ws = null;
+        if (!this._manualClose) this._scheduleReconnect();
+      });
+      sock.addEventListener("error", () => {
+        try {
+          sock.close();
+        } catch {
+          /* already closing */
+        }
+      });
+    },
+    _onMessage(ev) {
+      let msg;
+      try {
+        msg = JSON.parse(ev.data);
+      } catch {
+        return; // ignore non-JSON frames
+      }
+      if (!msg || !msg.state) return;
+      // Same trusted, conflict-safe merge a KV pull uses — rendered live.
+      cloud._applyRemote(msg.state, msg.updatedAt || 0, { doRender: true }).catch(() => {});
+    },
+    send(obj) {
+      if (!this.ws || this.ws.readyState !== 1) return false;
+      try {
+        this.ws.send(JSON.stringify(obj));
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    // Push the current local state over the live channel (no-op if not open).
+    broadcastLocal() {
+      return this.send({ type: "push", updatedAt: state.updatedAt, state });
+    },
+    _scheduleReconnect() {
+      if (this._manualClose || !state.settings.sync.enabled) return;
+      clearTimeout(this._reconnectTimer);
+      // Capped exponential backoff: 1,2,4,8,16,30,30…s.
+      const delay = Math.min(30000, 1000 * Math.pow(2, this._retry++));
+      this._reconnectTimer = setTimeout(() => this.connect(), delay);
+    },
+    close() {
+      this._manualClose = true;
+      clearTimeout(this._reconnectTimer);
+      this.connected = false;
+      if (this.ws) {
+        try {
+          this.ws.close();
+        } catch {
+          /* already closing */
+        }
+        this.ws = null;
       }
     },
   };
@@ -9216,6 +9338,7 @@ ${name}`;
       // From the ON view this only turns sync OFF (enable is its own action).
       state.settings.sync.enabled = false;
       cloud.stopAuto();
+      live.close();
       save();
       toast("Cloud sync off");
       render();
@@ -10292,6 +10415,7 @@ ${name}`;
   if (window.__FOCUS_SCHOOL_TEST__) {
     Object.assign(window.__FOCUS_SCHOOL_TEST__, {
       cloud,
+      live,
       mergeRoutineLogs,
       mergeStates,
       nextRoutineWindow,

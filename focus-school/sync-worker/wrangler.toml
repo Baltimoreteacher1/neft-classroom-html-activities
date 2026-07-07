@@ -1,0 +1,30 @@
+# Focus School real-time sync Worker.
+#
+# This Worker DEFINES the SyncRoom Durable Object. It is deployed independently
+# of the focus-school Pages project (Durable Objects cannot be defined inside a
+# Pages project). After deploying it, bind the SYNC_ROOM namespace to the Pages
+# project in the Cloudflare dashboard so /api/live can forward to it.
+#
+# Deploy:  cd focus-school/sync-worker && npx wrangler deploy
+# See README.md in this folder for the full one-time provisioning steps.
+
+name = "focus-school-sync"
+main = "src/sync-room.js"
+compatibility_date = "2026-05-25"
+
+# Same KV namespace the Pages /api/state endpoint uses, so the cloud copy is
+# identical whether it was written over WebSocket (here) or a plain KV PUT.
+# id below (noam-school-sync) is the live production namespace.
+[[kv_namespaces]]
+binding = "NOAM_SCHOOL_KV"
+id = "59075911253f400f807345430425946c"
+
+# The Durable Object this Worker defines and coordinates through.
+[[durable_objects.bindings]]
+name = "SYNC_ROOM"
+class_name = "SyncRoom"
+
+# SQLite-backed Durable Object (free-tier eligible, recommended default).
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["SyncRoom"]
