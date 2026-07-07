@@ -113,4 +113,35 @@ test.describe("Monster Math Academy smoke", () => {
       page.getByText(/Estimated time per unit|Tiempo estimado por unidad/i).first(),
     ).toBeVisible();
   });
+
+  test("teacher guide links to class analytics and shows standards checklist", async ({
+    page,
+  }) => {
+    await page.goto(`${MMA}#/guide`);
+    await expect(
+      page.getByText(/Standards Checklist|Lista de Estandares/i).first(),
+    ).toBeVisible();
+    await expect(
+      page.getByText(/Common Misconceptions|Errores Comunes/i).first(),
+    ).toBeVisible();
+    const statsLink = page.getByRole("link", {
+      name: /View Class Analytics|Ver Analitica de Clase/i,
+    });
+    await expect(statsLink).toBeVisible();
+    await statsLink.click();
+    await expect(
+      page.getByRole("heading", { name: /Class Analytics|Analitica de Clase/i }),
+    ).toBeVisible({ timeout: 8_000 });
+  });
+
+  test("teach view shows the lesson step rail with three beats", async ({
+    page,
+  }) => {
+    await page.getByRole("button", { name: /Create Your Monster|Crea/i }).click();
+    await page.getByRole("button", { name: /Bring It To Life|Dale Vida/i }).click();
+    await page.getByRole("button", { name: /Unit 1|Unidad 1/i }).click();
+    const rail = page.locator(".mma-step-rail");
+    await expect(rail).toBeVisible({ timeout: 8_000 });
+    await expect(rail.locator(".mma-step-rail-node")).toHaveCount(3);
+  });
 });
