@@ -28,6 +28,10 @@ export default defineConfig({
     baseURL: BASE_URL,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
+    // Monster Math Academy registers a PWA service worker whose fetch
+    // handler can stall reload navigations under parallel test load; no
+    // spec exercises SW behavior, so keep tests deterministic without it.
+    serviceWorkers: "block",
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   // Build once, then serve the static dist on the contract port. `vite preview`

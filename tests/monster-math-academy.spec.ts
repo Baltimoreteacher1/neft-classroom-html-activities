@@ -10,8 +10,20 @@ async function createMonster(page: import("@playwright/test").Page): Promise<voi
 
 test.describe("Monster Math Academy smoke", () => {
   test.beforeEach(async ({ page }) => {
+    // The build loads Google Fonts stylesheets ahead of its deferred module
+    // script; in egress-restricted environments those requests can stall for
+    // the whole test budget and hold DOMContentLoaded hostage. Abort them —
+    // font fallbacks are fine for behavioral assertions.
+    await page.route(/fonts\.(googleapis|gstatic)\.com/, (route) => route.abort());
     await page.goto(MMA);
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate(() => {
+      localStorage.clear();
+      // Pre-seed the first-run flag: the welcome tour overlay is modal and
+      // intercepts every pointer event on the title screen, which would block
+      // all click-driven tests. The tour itself is covered by the dedicated
+      // "onboarding tour can be dismissed" test below.
+      localStorage.setItem("mma:web:onboarded", "1");
+    });
     await page.reload();
   });
 
@@ -59,8 +71,21 @@ test.describe("Monster Math Academy smoke", () => {
     // Anchored on the colon: "Unit 1" is also a substring of "Unit 10", which
     // would otherwise make this locator ambiguous (strict-mode violation).
     await page.getByRole("button", { name: /Unit 1:|Unidad 1:/i }).click();
+    // The unit opens with a modal "Mission Briefing" story overlay that
+    // intercepts pointer events — skip it to reach the teach CTA.
+    const skipStory = page.getByRole("button", { name: /Skip story|Saltar historia/i });
+    if (
+      await skipStory
+        .waitFor({ state: "visible", timeout: 4_000 })
+        .then(() => true)
+        .catch(() => false)
+    ) {
+      await skipStory.click();
+    }
+    // 20s budget: the unit-intro CTA animates in and can stay "not stable"
+    // for several seconds on slow containers before settling.
     await page.getByRole("button", { name: /Let's teach|A enseñar|Ready|Listo/i }).first().click({
-      timeout: 10_000,
+      timeout: 20_000,
     });
     // The watch beat sometimes models a misconception ("catch the bug") —
     // resolve it if shown so the rest of the flow isn't blocked. The buggy
@@ -206,10 +231,12 @@ test.describe("Monster Math Academy smoke", () => {
   });
 
   test("title screen links to resume page", async ({ page }) => {
-    await expect(
-      page.getByRole("button", { name: /Already playing|Ya juegas/i }),
-    ).toBeVisible();
-    await page.getByRole("button", { name: /Already playing|Ya juegas/i }).click();
+    // Current build labels the resume entry "Continue with Code".
+    const resumeBtn = page.getByRole("button", {
+      name: /Continue with Code|Continuar con Codigo|Already playing|Ya juegas/i,
+    });
+    await expect(resumeBtn).toBeVisible();
+    await resumeBtn.click();
     await expect(page).toHaveURL(/#\/resume/);
     await expect(
       page.getByRole("heading", { name: /Welcome Back|Bienvenido de Nuevo/i }),
@@ -275,9 +302,17 @@ test.describe("Monster Math Academy smoke", () => {
   }) => {
     await page.getByRole("button", { name: /Create Your Monster|Crea/i }).click();
     await page.getByRole("button", { name: /Bring It To Life|Dale Vida/i }).click();
+    // Creating a monster lands on the adventure map; the Start Mission /
+    // Choose Level entries live on the title screen once a monster exists.
+    // Hash change (not goto): navigating from #/map to the bare URL is a
+    // same-document navigation whose load events never fire, so goto would
+    // hang. The SPA router responds to hashchange directly.
+    await page.evaluate(() => {
+      location.hash = "#/";
+    });
     await expect(
       page.getByRole("button", { name: /Start Mission|Iniciar Mision/i }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 8_000 });
     await expect(
       page.getByRole("button", { name: /Choose Level|Elegir Nivel/i }),
     ).toBeVisible();
@@ -289,7 +324,8 @@ test.describe("Monster Math Academy smoke", () => {
   test("HUD reward pill visible after monster created", async ({ page }) => {
     await createMonster(page);
     await expect(page.locator("#mma-reward-pill")).toBeVisible();
-    await expect(page.locator("#mma-reward-pill")).toContainText(/Level|Nivel/i);
+    // The pill abbreviates to "Lv <n>" in the current build.
+    await expect(page.locator("#mma-reward-pill")).toContainText(/Lv|Level|Nivel/i);
   });
 
   test("profile route loads player dashboard", async ({ page }) => {
@@ -301,16 +337,20 @@ test.describe("Monster Math Academy smoke", () => {
   });
 
   test("onboarding tour can be dismissed", async ({ page }) => {
+    // Undo the beforeEach pre-seed so the real first-run tour appears.
+    // domcontentloaded: blocked third-party font requests can hold the full
+    // "load" event past the test budget in sandboxed environments.
+    await page.evaluate(() => localStorage.removeItem("mma:web:onboarded"));
+    await page.reload({ waitUntil: "domcontentloaded" });
+    const overlay = page.locator(".mma-tour-overlay");
+    await expect(overlay).toBeVisible({ timeout: 8_000 });
+    await overlay.getByRole("button", { name: /Skip|Saltar/i }).click();
+    await expect(overlay).not.toBeVisible();
+    // Dismissal persists the first-run flag, so the title CTA is clickable.
     await createMonster(page);
-    const skip = page.getByRole("button", { name: /Skip|Saltar/i });
-    const shown = await skip
-      .waitFor({ state: "visible", timeout: 4_000 })
-      .then(() => true)
-      .catch(() => false);
-    if (shown) {
-      await skip.click();
-      await expect(skip).not.toBeVisible();
-    }
+    await expect(page.getByRole("heading", { name: /Adventure|Aventura/i })).toBeVisible({
+      timeout: 10_000,
+    });
   });
 
   test("whats-new route loads changelog", async ({ page }) => {
@@ -360,7 +400,7 @@ test.describe("Monster Math Academy smoke", () => {
     ).toBeVisible({ timeout: 8_000 });
   });
 
-  test("teach view shows the lesson step rail with three beats", async ({
+  test("teach view shows the lesson step rail with four beats", async ({
     page,
   }) => {
     await page.getByRole("button", { name: /Create Your Monster|Crea/i }).click();
@@ -368,7 +408,9 @@ test.describe("Monster Math Academy smoke", () => {
     await page.getByRole("button", { name: /Unit 1:|Unidad 1:/i }).click();
     const rail = page.locator(".mma-step-rail");
     await expect(rail).toBeVisible({ timeout: 8_000 });
-    await expect(rail.locator(".mma-step-rail-node")).toHaveCount(3);
+    // Watch → Repair → Together → Apply (the Apply beat was added in the
+    // TYMTR-style teach upgrade).
+    await expect(rail.locator(".mma-step-rail-node")).toHaveCount(4);
   });
 
   test("wardrobe shop is reachable from the header and shows aura colors", async ({
