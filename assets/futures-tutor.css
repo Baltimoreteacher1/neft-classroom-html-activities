@@ -1,13 +1,14 @@
 /* Neft Teacher — Futures Tutor styles (additive, namespaced nt-fx-).
- * Calm, no-timer study companion. Bottom-LEFT launcher to avoid colliding with
- * the Math Workbench / classic tutor launchers (bottom-right). All motion is
+ * Calm, no-timer study companion. Bottom-RIGHT launcher, stacked above the Math
+ * Workbench launcher and the Save/Resume pill so none of them cover the lesson
+ * cards a student works through (moved off bottom-left 2026-07-07). All motion is
  * gated behind .nt-fx-noanim (set when prefers-reduced-motion). Tap targets are
  * >=44px for mobile (matches assets/mobile-access.css intent). */
 
 .nt-fx-launch {
   position: fixed;
-  left: 16px;
-  bottom: 16px;
+  right: 16px;
+  bottom: 130px;
   z-index: 2147483000;
   display: inline-flex;
   align-items: center;
@@ -70,8 +71,8 @@
 
 .nt-fx-panel {
   position: fixed;
-  left: 16px;
-  bottom: 74px;
+  right: 16px;
+  bottom: 188px;
   z-index: 2147483000;
   width: min(380px, calc(100vw - 32px));
   max-height: min(70vh, 620px);
@@ -310,9 +311,10 @@
   }
 }
 
-/* When this launcher and the Math Workbench launcher share bottom-left,
- * stack the Workbench above it so both stay >=44px unobscured tap targets
- * (Lighthouse target-size). Progressive enhancement via :has(). */
+/* Bottom-RIGHT stack (above the Save/Resume pill): Save/Resume → Math Workbench
+ * → Study Buddy, bottom to top. The Study Buddy launcher (.nt-fx-launch) sits at
+ * bottom:130; keep the Workbench at its base so both stay >=44px unobscured tap
+ * targets (Lighthouse target-size) and neither covers the lesson cards. */
 body:has(.nt-fx-launch) #mwb-launcher {
-  bottom: max(76px, calc(env(safe-area-inset-bottom) + 64px));
+  bottom: max(72px, env(safe-area-inset-bottom));
 }

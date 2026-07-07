@@ -790,6 +790,21 @@ header.packet h1::after{
   .li-stage-together>.li-eyebrow::before{background:#c98a10;}
   .li-stage-own{border-left-color:var(--navy);}
   .li-stage-own>.li-eyebrow::before{background:var(--navy);}
+  .li-stage-apply{border-left-color:#6b4fd6;}
+  .li-stage-apply>.li-eyebrow::before{background:#6b4fd6;}
+  .li-jstep-apply .li-jnum{background:#6b4fd6;}
+  .li-stage-talk{border-left-color:var(--teal);background:#fbfdfc;}
+  .li-stage-talk>.li-eyebrow::before{background:var(--teal);}
+  .li-jstep-talk .li-jnum{background:var(--teal);}
+  /* Turn & Talk sentence starters + word bank */
+  .li-stems-label{margin:2px 0 6px;font-size:13px;font-weight:700;color:var(--navy);}
+  .li-stems{margin:0 0 14px;padding-left:22px;}
+  .li-stems>li{font-size:16px;line-height:1.6;margin:0 0 8px;color:var(--ink);}
+  .li-stem-es{display:block;font-size:13.5px;color:var(--muted);font-style:italic;}
+  .li-wordbank{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f0faf8;
+    border:1px dashed var(--teal);border-radius:10px;padding:10px 12px;}
+  .li-wordbank-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--teal-ink);}
+  .li-word{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:4px 12px;font-weight:700;font-size:14px;}
   /* Confidence check + send-off */
   .li-ready-card{background:var(--teal-light);border:1.5px solid var(--teal);border-radius:14px;padding:18px 20px;margin:6px 0 0;}
   .li-ready-head{margin:0 0 10px;font-size:18px;font-weight:800;color:var(--navy);}
@@ -801,7 +816,10 @@ header.packet h1::after{
     .li-hook-label{color:#000;}
     .li-journey{display:none;}
     .li-stage{border-color:#000;border-left-color:#000;background:#fff;page-break-inside:avoid;}
-    .li-stage-together{background:#fff;}
+    .li-stage-together,.li-stage-talk{background:#fff;}
+    .li-wordbank{background:#fff;border:1px dashed #000;}
+    .li-word{background:#fff;color:#000;border:1px solid #000;}
+    .li-stems-label{color:#000;}
     .li-stage>.li-eyebrow::before,.li-jnum{background:#000;}
     .li-ready-card{background:#fff;border-color:#000;}
     .li-ready-head,.li-ready-check{color:#000;}
@@ -933,7 +951,7 @@ header.packet h1::after{
   (function(){
     var btn=null, speaking=false, hi=null;
     function collect(){
-      var sel='.li-hook-text, .li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q';
+      var sel='.li-hook-text, .li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q, .li-stems li';
       return Array.prototype.slice.call(document.querySelectorAll(sel)).filter(function(el){
         return el.offsetParent!==null && el.textContent.trim();
       });
@@ -1016,7 +1034,7 @@ header.packet h1::after{
     <p class="li-intro">An exponent is a small raised number that tells you how many times to multiply a number by itself. We say 2³ as &quot;two to the third power.&quot;</p>
     <aside class="li-keyidea"><span class="li-keyidea-label">Key idea</span><p>A power like 2³ is a short way to write repeated multiplication: 2 × 2 × 2.</p></aside>
     <nav class="li-journey no-print" aria-label="Your learning path">
-        <a class="li-jstep li-jstep-see" href="#li-see"><span class="li-jnum">1</span><span class="li-jico" aria-hidden="true">👁️</span><span class="li-jlabel">Picture it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-watch" href="#li-watch"><span class="li-jnum">2</span><span class="li-jico" aria-hidden="true">👀</span><span class="li-jlabel">Watch me solve it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-together" href="#li-together"><span class="li-jnum">3</span><span class="li-jico" aria-hidden="true">🤝</span><span class="li-jlabel">Try it with me</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-own" href="#li-own"><span class="li-jnum">4</span><span class="li-jico" aria-hidden="true">🚀</span><span class="li-jlabel">On your own</span></a>
+        <a class="li-jstep li-jstep-see" href="#li-see"><span class="li-jnum">1</span><span class="li-jico" aria-hidden="true">👁️</span><span class="li-jlabel">Picture it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-watch" href="#li-watch"><span class="li-jnum">2</span><span class="li-jico" aria-hidden="true">👀</span><span class="li-jlabel">Watch me solve it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-together" href="#li-together"><span class="li-jnum">3</span><span class="li-jico" aria-hidden="true">🤝</span><span class="li-jlabel">Try it with me</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-own" href="#li-own"><span class="li-jnum">4</span><span class="li-jico" aria-hidden="true">🚀</span><span class="li-jlabel">On your own</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-apply" href="#li-apply"><span class="li-jnum">5</span><span class="li-jico" aria-hidden="true">🌍</span><span class="li-jlabel">Apply it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-talk" href="#li-talk"><span class="li-jnum">6</span><span class="li-jico" aria-hidden="true">💬</span><span class="li-jlabel">Turn &amp; Talk</span></a>
       </nav>
     <section class="li-block li-stage li-stage-see" id="li-see">
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">👁️</span><span class="li-stage-label">Picture it</span><span class="li-stage-sub">See what the math looks like</span></p>
@@ -1039,6 +1057,18 @@ header.packet h1::after{
         <div class="li-work"><span class="li-work-label">Show your work</span></div>
         <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
         <details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Answer:</strong> 64<br><span class="li-check-why">4³ = 4 × 4 × 4 = 64.</span></div></details>
+      </section><section class="li-block li-stage li-stage-apply" id="li-apply">
+        <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">🌍</span><span class="li-stage-label">Apply it</span><span class="li-stage-sub">Use the math in a real situation</span></p>
+        <p class="li-lead"><strong>Biology</strong></p>
+        <p class="li-problem-q">James studies how a type of bacteria grows. He records the number of bacteria every 5 hours and gets this table: at 0 hours there are 3 bacteria, at 5 hours there are 9, at 10 hours there are 27, and at 15 hours there are 81. The count is multiplied by 3 every 5 hours. Question 1: Each reading can be written as a <button type="button" class="li-pop" data-popover data-term="Power" data-term-es="Potencia" data-def="A number written with a base and an exponent, like 2³." data-def-es="Un número escrito con una base y un exponente, como 2³." data-img="../../assets/vocab-images/exponent.svg" aria-label="power — what does Power mean?">power<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> of 3 (3, 9, 27, 81 = 3¹, 3², 3³, 3⁴). What power of 3 gives the count at 10 hours? Question 2: Following the same pattern, what power of 3 would represent the number of bacteria after 25 hours, and what is its value?</p>
+        <div class="li-work"><span class="li-work-label">Show your work</span></div>
+        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
+        <details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Sample answer:</strong> Q1: At 10 hours the count is 27 = 3³, so the power is 3³. Q2: Every 5 hours adds one more factor of 3, so 25 hours = 5 readings after the start: 3¹, 3², 3³, 3⁴, 3⁵, 3⁶. After 25 hours the count is 3⁶ = 3 × 3 × 3 × 3 × 3 × 3 = 729 bacteria.</div></details>
+      </section><section class="li-block li-stage li-stage-talk" id="li-talk">
+        <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">💬</span><span class="li-stage-label">Turn &amp; Talk</span><span class="li-stage-sub">Say it out loud with a partner</span></p>
+        <p class="li-problem-q">Each switch flip doubles the volume: 1, then 2, then 4, then 8. How is each number related to the one before, and how could you write 2 times 2 times 2 a shorter way?</p>
+        <p class="li-stems-label">Try starting with:</p><ul class="li-stems"><li>Each number is the one before it times ___, so it is repeated ___.<span class="li-stem-es" lang="es">Cada número es el anterior por ___, así que es ___ repetida.</span></li><li>2 times 2 times 2 can be written as 2 to the ___ power.<span class="li-stem-es" lang="es">2 por 2 por 2 se puede escribir como 2 a la ___ potencia.</span></li></ul>
+        <div class="li-wordbank"><span class="li-wordbank-label">Word bank</span><span class="li-word">base</span><span class="li-word">exponent</span><span class="li-word">power</span><span class="li-word">evaluate</span><span class="li-word">double</span></div>
       </section>
     <section class="li-ready-card" id="li-ready">
       <p class="li-ready-head">🎉 Ready to launch?</p>
