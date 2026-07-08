@@ -63,11 +63,19 @@ function inject(rel) {
 
 const UNITS = [...Array.from({ length: 10 }, (_, i) => `unit-${i + 1}`), "statistics"];
 
-let changed = 0;
-console.log(`Projects VISUALS injection${DRY ? " (dry-run)" : ""}:`);
-for (const u of UNITS) {
-  for (const v of ["version-a", "version-b"]) {
-    if (inject(`math/${u}/projects/${v}/index.html`)) changed++;
+/* Runs as part of `npm run build` (before vite) so regenerated project pages
+   are re-injected automatically on every deploy. Non-fatal by design: a
+   build-time step must never block the whole site deploy. */
+try {
+  let changed = 0;
+  console.log(`Projects VISUALS injection${DRY ? " (dry-run)" : ""}:`);
+  for (const u of UNITS) {
+    for (const v of ["version-a", "version-b"]) {
+      if (inject(`math/${u}/projects/${v}/index.html`)) changed++;
+    }
   }
+  console.log(`${changed} file(s) updated${DRY ? " (would be)" : ""}.`);
+} catch (err) {
+  console.error(`inject-projects-visuals: non-fatal error — ${err?.message || err}`);
 }
-console.log(`${changed} file(s) updated${DRY ? " (would be)" : ""}.`);
+process.exit(0);
