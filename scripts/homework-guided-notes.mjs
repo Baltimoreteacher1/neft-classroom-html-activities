@@ -272,7 +272,15 @@ function ladderCard(prob) {
     if (!q || !Array.isArray(prob.choices) || !Number.isInteger(prob.correctIndex)) return null;
     const a = prob.choices[prob.correctIndex];
     if (a == null) return null;
-    return { q, a: String(a) };
+    // Carry the answer choices through so the ladder can render the options the
+    // stem refers to ("Which of the following…?"). Without them the family sees
+    // a question with no choices and only the reveal — impossible to answer.
+    return {
+      q,
+      a: String(a),
+      choices: prob.choices.map((c) => String(c)),
+      correctIndex: prob.correctIndex,
+    };
   }
   if (prob.type === "open-response") {
     const q = prob.prompt || prob.question || prob.stem || "";
@@ -1061,12 +1069,25 @@ function renderTogetherLadder(config) {
   const ladder = buildTogetherLadder(config);
   if (!ladder.length) return "";
 
+  const letters = "ABCDEFGH";
   const items = ladder
     .map((item, i) => {
+      const hasChoices = Array.isArray(item.choices) && item.choices.length > 0;
+      const choicesHtml = hasChoices
+        ? `<ol class="ladder-choices">${item.choices
+            .map((c) => `<li class="ladder-choice">${esc(c)}</li>`)
+            .join("")}</ol>`
+        : "";
+      // For multiple-choice, reveal the correct option with its letter (e.g. "A. …")
+      // so it lines up with the rendered choices; open-response just shows the sample.
+      const answerText =
+        hasChoices && Number.isInteger(item.correctIndex)
+          ? `${letters[item.correctIndex] ? `${letters[item.correctIndex]}. ` : ""}${item.a}`
+          : item.a;
       const answer = item.a
         ? `<details class="ladder-answer">
              <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
-             <p class="ladder-answer-text">${esc(item.a)}</p>
+             <p class="ladder-answer-text">${esc(answerText)}</p>
            </details>`
         : "";
       return `
@@ -1076,6 +1097,7 @@ function renderTogetherLadder(config) {
             <span class="ladder-tier"><span class="lang-en">${esc(item.tierEn)}</span><span class="lang-es" lang="es">${esc(item.tierEs)}</span></span>
           </div>
           <p class="ladder-q">${esc(item.q)}</p>
+          ${choicesHtml}
           <input type="text" id="ladder_${i}" name="ladder_${i}" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem ${i + 1}" />
           ${answer}
         </li>`;
@@ -2222,6 +2244,8 @@ body.help-modal-open { overflow: hidden; }
 .ladder-stars { color: #f5a623; font-size: 13px; letter-spacing: 1px; }
 .ladder-tier { font-family: var(--font-display); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--navy); }
 .ladder-q { margin: 0 0 8px; font-size: 14.5px; line-height: 1.4; }
+.ladder-choices { list-style: upper-alpha; margin: 0 0 8px; padding: 0 0 0 22px; display: flex; flex-direction: column; gap: 3px; }
+.ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
 .ladder-answer { margin-top: 7px; }
