@@ -1,0 +1,62 @@
+/* ==========================================================================
+   Projects VISUALS — interactive math-tool cards for the unit
+   culminating-project wizard pages. Companion to projects-visuals.js;
+   same contract as the PRO / GOLD / PUBLISHER layers (body.pro-projects
+   scoped, additive, print-safe). The manipulatives themselves
+   (shared/projects/manip-*.js) inject their own scoped styles — this file
+   only styles the wrapper card that frames them inside a step panel.
+   ========================================================================== */
+
+body.pro-projects .viz-card {
+  margin: 18px 0 6px;
+  border: 2px solid var(--blue, #1763c7);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(23, 99, 199, 0.06), rgba(23, 99, 199, 0.01));
+  padding: 14px 16px 16px;
+}
+
+body.pro-projects .viz-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+
+body.pro-projects .viz-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+body.pro-projects .viz-title {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+  color: var(--navy, #10243e);
+}
+
+body.pro-projects .viz-badge {
+  margin-left: auto;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blue, #1763c7);
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+body.pro-projects .viz-why {
+  margin: 4px 0 10px;
+  font-size: 0.95rem;
+  color: var(--muted, #54677c);
+}
+
+/* Interactive-only helper: the student's real work still lives in the
+   page's own inputs, so the tool card stays out of printed reports. */
+@media print {
+  body.pro-projects .viz-card {
+    display: none !important;
+  }
+}

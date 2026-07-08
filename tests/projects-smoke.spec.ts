@@ -111,7 +111,20 @@ for (const route of ROUTES) {
         () =>
           document.body?.dataset.proInit === "1" &&
           document.body?.dataset.goldInit === "1" &&
-          document.body?.dataset.pubInit === "1",
+          document.body?.dataset.pubInit === "1" &&
+          document.body?.dataset.vizInit === "1",
+        { timeout: 10_000 },
+      );
+
+      // VISUALS layer invariants: every version page ships a ./visuals.json,
+      // so at least one interactive math-tool card must mount inside a step
+      // panel and its manip widget must actually render (async fetch + lazy
+      // manip-*.js load).
+      await page.waitForFunction(
+        () => {
+          const holders = document.querySelectorAll(".step-panel .viz-card .pki-manip");
+          return holders.length > 0 && Array.from(holders).every((h) => h.children.length > 0);
+        },
         { timeout: 10_000 },
       );
 
