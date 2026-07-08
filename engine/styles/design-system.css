@@ -52,16 +52,8 @@ body {
   font-family: var(--font-body);
   color: var(--ink);
   background:
-    radial-gradient(
-      ellipse 85% 55% at 100% 0%,
-      var(--theme-glow) 0%,
-      transparent 58%
-    ),
-    radial-gradient(
-      ellipse 70% 45% at 0% 100%,
-      var(--theme-glow-alt) 0%,
-      transparent 52%
-    ),
+    radial-gradient(ellipse 85% 55% at 100% 0%, var(--theme-glow) 0%, transparent 58%),
+    radial-gradient(ellipse 70% 45% at 0% 100%, var(--theme-glow-alt) 0%, transparent 52%),
     linear-gradient(180deg, var(--bg) 0%, #f3efe6 100%);
   font-size: var(--fs-base);
   line-height: var(--lh-base);
@@ -1371,16 +1363,8 @@ body.obj-popup-open {
      The scrim deepens toward the bottom to keep text AA-legible on every
      theme while preserving the theme hue. */
   background:
-    linear-gradient(
-      180deg,
-      rgba(6, 17, 38, 0.1) 0%,
-      rgba(6, 17, 38, 0.45) 100%
-    ),
-    linear-gradient(
-      135deg,
-      var(--theme-hero-from) 0%,
-      var(--theme-hero-to) 100%
-    );
+    linear-gradient(180deg, rgba(6, 17, 38, 0.1) 0%, rgba(6, 17, 38, 0.45) 100%),
+    linear-gradient(135deg, var(--theme-hero-from) 0%, var(--theme-hero-to) 100%);
   color: white;
   padding: var(--sp-7) var(--sp-6) var(--sp-6);
   text-align: center;
@@ -1394,11 +1378,7 @@ body.obj-popup-open {
   right: -40px;
   width: 140px;
   height: 140px;
-  background: radial-gradient(
-    circle,
-    rgba(31, 166, 162, 0.2) 0%,
-    transparent 70%
-  );
+  background: radial-gradient(circle, rgba(31, 166, 162, 0.2) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -1742,11 +1722,7 @@ body:has(.identity-screen) .export-toolbar {
 
 /* ── In-lesson hero bar (persistent above phases) ── */
 .lesson-hero {
-  background: linear-gradient(
-    135deg,
-    var(--theme-hero-from) 0%,
-    var(--theme-hero-to) 100%
-  );
+  background: linear-gradient(135deg, var(--theme-hero-from) 0%, var(--theme-hero-to) 100%);
   color: white;
   border-radius: var(--radius-lg);
   padding: var(--sp-4) var(--sp-5);
@@ -1762,11 +1738,7 @@ body:has(.identity-screen) .export-toolbar {
   right: -30px;
   width: 100px;
   height: 100px;
-  background: radial-gradient(
-    circle,
-    rgba(31, 166, 162, 0.18) 0%,
-    transparent 70%
-  );
+  background: radial-gradient(circle, rgba(31, 166, 162, 0.18) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -2461,11 +2433,7 @@ body:has(.identity-screen) .export-toolbar {
 
 /* ── Worked example panel ── */
 .worked-example-panel {
-  background: linear-gradient(
-    135deg,
-    rgba(42, 157, 143, 0.06),
-    rgba(233, 196, 106, 0.08)
-  );
+  background: linear-gradient(135deg, rgba(42, 157, 143, 0.06), rgba(233, 196, 106, 0.08));
   border: 2px solid var(--teal-light);
   border-radius: var(--radius-md);
   padding: var(--sp-4);
@@ -3920,6 +3888,30 @@ html.projector .main {
   .nw-card,
   .nw-col {
     break-inside: avoid;
+  }
+}
+
+/* ── Notice & Wonder + language support, side-by-side ──────────────────────
+   The notice/wonder boxes fill the left column; the "Words & phrases to use"
+   support card sits to their right and drops below on narrow screens. */
+.nw-support-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+  align-items: flex-start;
+}
+.nw-support-main {
+  flex: 1 1 60%;
+  min-width: 300px;
+}
+.nw-support-aside {
+  flex: 1 1 260px;
+  min-width: 240px;
+}
+@media (max-width: 900px) {
+  .nw-support-main,
+  .nw-support-aside {
+    flex-basis: 100%;
   }
 }
 

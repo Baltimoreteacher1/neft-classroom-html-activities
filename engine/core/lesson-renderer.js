@@ -1631,7 +1631,11 @@ function renderObjectives(el, config) {
 // box they were last typing in. Supports English learners in observing and
 // describing the scene. Driven by config.launch.beCurious = { vocab:[], phrases:[] }.
 // Strict no-op when absent, so older configs render nothing.
-function renderNoticeWonderSupport(host, support, config) {
+// `fieldRoot` scopes the focus tracking and the tap-to-insert textarea lookup.
+// It defaults to `host`, but when the support card is laid out in its own column
+// beside the notice/wonder boxes, the caller passes the shared parent row so the
+// chips still insert into whichever notice/wonder box the student was using.
+function renderNoticeWonderSupport(host, support, config, fieldRoot = host) {
   if (!support || typeof support !== "object") return;
   const vocab = Array.isArray(support.vocab) ? support.vocab.filter(Boolean) : [];
   const phrases = Array.isArray(support.phrases) ? support.phrases.filter(Boolean) : [];
@@ -1658,12 +1662,12 @@ function renderNoticeWonderSupport(host, support, config) {
   // only textareas in the Launch phase are the Notice/Wonder boxes) so a tapped
   // chip lands in the box the student was using.
   let lastField = null;
-  host.addEventListener("focusin", (e) => {
+  fieldRoot.addEventListener("focusin", (e) => {
     if (e.target && e.target.tagName === "TEXTAREA") lastField = e.target;
   });
 
   const insert = (text) => {
-    const field = lastField || host.querySelector("textarea");
+    const field = lastField || fieldRoot.querySelector("textarea");
     if (!field) return;
     const cur = field.value;
     const sep = cur && !/\s$/.test(cur) ? " " : "";
@@ -1753,9 +1757,15 @@ function renderLaunchPhase(el, state, ctx, config) {
   // Opt-in; no-op when the lesson has no launch visual.
   renderLaunchVisual(el, cfg.visual);
 
+  // Notice & Wonder + language support laid out side-by-side: the notice/wonder
+  // boxes fill the left column (nwMain); the "Words & phrases to use" support
+  // card sits to their right (nwAside) and drops below on narrow screens.
+  const nwMain = document.createElement("div");
+  nwMain.className = "nw-support-main";
+
   // Notice & Wonder (Reveal data-context) capture — image + notice/wonder boxes.
   // No-op when absent.
-  renderNoticeAndWonder(el, config, state);
+  renderNoticeAndWonder(nwMain, config, state);
 
   // Generic Notice / Wonder capture — only when the lesson has no richer Reveal
   // Notice & Wonder card (see hasRevealNW), so students never see two identical
@@ -1791,15 +1801,28 @@ function renderLaunchPhase(el, state, ctx, config) {
     wonderCard.append(wonderTA);
 
     grid.append(noticeCard, wonderCard);
-    el.append(grid);
+    nwMain.append(grid);
   }
 
-  // ESOL support, rendered DIRECTLY under the notice/wonder boxes: academic words
-  // + sentence phrases tied to the picture, tap to insert into whichever response
-  // box is focused. Attaches to `el`, so it serves both the generic grid and the
-  // richer Reveal N&W boxes. `config` lets academic words open the glossary popup
-  // (image + simple EN/ES definition) when the lesson defines that term.
-  renderNoticeWonderSupport(el, cfg.beCurious, config);
+  // ESOL support, rendered to the RIGHT of the notice/wonder boxes: academic
+  // words + sentence phrases tied to the picture, tap to insert into whichever
+  // response box is focused. `fieldRoot` (the shared row) lets the chips still
+  // find the notice/wonder textareas in the sibling column. `config` lets
+  // academic words open the glossary popup when the lesson defines that term.
+  const nwRow = document.createElement("div");
+  nwRow.className = "nw-support-row";
+  const nwAside = document.createElement("div");
+  nwAside.className = "nw-support-aside";
+  renderNoticeWonderSupport(nwAside, cfg.beCurious, config, nwRow);
+
+  // Only build the two-column row when there is support content to show on the
+  // right; otherwise the notice/wonder boxes take the full width as before.
+  if (nwAside.childElementCount) {
+    nwRow.append(nwMain, nwAside);
+    el.append(nwRow);
+  } else {
+    el.append(nwMain);
+  }
 
   // Objectives now sit AFTER Be Curious (their own cards): students get curious
   // about the scene first, THEN see the formal "I can…" goals for today.
