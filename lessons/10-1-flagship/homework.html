@@ -1804,7 +1804,12 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-.ladder-answer { margin-top: 7px; }
+/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
+   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
+   the page into teacher mode (body.teacher-mode). Keep in sync with the
+   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
+.ladder-answer { display: none; margin-top: 7px; }
+body.teacher-mode .ladder-answer { display: block; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -2372,24 +2377,28 @@ header.packet h1::after{
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
-  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="/assets/favicon.svg">
-  <meta name="theme-color" content="#12355b">
-  <link rel="canonical" href="https://eduwonderlab.com/lessons/10-1-flagship/homework.html">
-  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 10-1-flagship: Volume with Whole Number Edges.">
-  <meta property="og:type" content="article">
-  <meta property="og:site_name" content="Neft Teacher">
-  <meta property="og:title" content="Help Your Student — Lesson 10-1-flagship: Volume with Whole Number Edges">
-  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 10-1-flagship: Volume with Whole Number Edges.">
-  <meta property="og:url" content="https://eduwonderlab.com/lessons/10-1-flagship/homework.html">
-  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
-  <!-- enthead-injected:end -->
 </head>
 <body>
+
+<script>
+/* Unified teacher-mode bootstrap. Reads the site-wide sticky key
+   (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
+   assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
+   and flips on body.teacher-mode so teacher-only content (e.g. the practice
+   answer reveals) becomes visible. Fail-closed: without this class the
+   answers stay display:none for students. ?student=1 / ?teacher=0 force
+   student view so a teacher can hand a device back. */
+(function () {
+  try {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get("student") === "1" || params.get("teacher") === "0") return;
+    var v = (localStorage.getItem("nt-teacher-mode") || "").toLowerCase();
+    if (v === "1" || v === "true" || v === "on" || v === "yes") {
+      document.body.classList.add("teacher-mode");
+    }
+  } catch (e) {}
+})();
+</script>
 
 <div class="container" role="main">
 
@@ -2932,40 +2941,40 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem">Put these steps in order for finding the volume of a box that is 8 in long, 5 in wide, and 3 in tall.</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
-        <div class="drag-order-workspace" id="dragorder_1" data-correct-order='[&quot;Identify: l = 8, w = 5, h = 3&quot;,&quot;Write the formula: V = l × w × h&quot;,&quot;Multiply: 8 × 5 = 40&quot;,&quot;Multiply: 40 × 3 = 120&quot;,&quot;Answer: V = 120 in³&quot;]' data-initial-order='[&quot;Identify: l = 8, w = 5, h = 3&quot;,&quot;Write the formula: V = l × w × h&quot;,&quot;Answer: V = 120 in³&quot;,&quot;Multiply: 8 × 5 = 40&quot;,&quot;Multiply: 40 × 3 = 120&quot;]'>
+        <div class="drag-order-workspace" id="dragorder_1" data-correct-order='[&quot;Identify: l = 8, w = 5, h = 3&quot;,&quot;Write the formula: V = l × w × h&quot;,&quot;Multiply: 8 × 5 = 40&quot;,&quot;Multiply: 40 × 3 = 120&quot;,&quot;Answer: V = 120 in³&quot;]' data-initial-order='[&quot;Answer: V = 120 in³&quot;,&quot;Multiply: 8 × 5 = 40&quot;,&quot;Identify: l = 8, w = 5, h = 3&quot;,&quot;Write the formula: V = l × w × h&quot;,&quot;Multiply: 40 × 3 = 120&quot;]'>
           <div class="drag-order-list" id="orderlist_1">
             
-              <div class="drag-order-row" draggable="true" id="order_1_0" data-step-text="Identify: l = 8, w = 5, h = 3" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_1_0" data-step-text="Answer: V = 120 in³" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">1</span>
-                <span class="drag-order-text">Identify: l = 8, w = 5, h = 3</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_1_1" data-step-text="Write the formula: V = l × w × h" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">2</span>
-                <span class="drag-order-text">Write the formula: V = l × w × h</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_1_2" data-step-text="Answer: V = 120 in³" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">3</span>
                 <span class="drag-order-text">Answer: V = 120 in³</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_1_3" data-step-text="Multiply: 8 × 5 = 40" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_1_1" data-step-text="Multiply: 8 × 5 = 40" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">2</span>
+                <span class="drag-order-text">Multiply: 8 × 5 = 40</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_1_2" data-step-text="Identify: l = 8, w = 5, h = 3" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">3</span>
+                <span class="drag-order-text">Identify: l = 8, w = 5, h = 3</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_1_3" data-step-text="Write the formula: V = l × w × h" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">4</span>
-                <span class="drag-order-text">Multiply: 8 × 5 = 40</span>
+                <span class="drag-order-text">Write the formula: V = l × w × h</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
@@ -3773,22 +3782,22 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem">Sort these rectangular prisms from LEAST volume to GREATEST volume.</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
-        <div class="drag-order-workspace" id="dragorder_11" data-correct-order='[&quot;3 × 3 × 3 = 27&quot;,&quot;10 × 2 × 2 = 40&quot;,&quot;5 × 4 × 3 = 60&quot;,&quot;6 × 6 × 2 = 72&quot;,&quot;8 × 5 × 4 = 160&quot;]' data-initial-order='[&quot;5 × 4 × 3 = 60&quot;,&quot;6 × 6 × 2 = 72&quot;,&quot;10 × 2 × 2 = 40&quot;,&quot;3 × 3 × 3 = 27&quot;,&quot;8 × 5 × 4 = 160&quot;]'>
+        <div class="drag-order-workspace" id="dragorder_11" data-correct-order='[&quot;3 × 3 × 3 = 27&quot;,&quot;10 × 2 × 2 = 40&quot;,&quot;5 × 4 × 3 = 60&quot;,&quot;6 × 6 × 2 = 72&quot;,&quot;8 × 5 × 4 = 160&quot;]' data-initial-order='[&quot;8 × 5 × 4 = 160&quot;,&quot;5 × 4 × 3 = 60&quot;,&quot;10 × 2 × 2 = 40&quot;,&quot;3 × 3 × 3 = 27&quot;,&quot;6 × 6 × 2 = 72&quot;]'>
           <div class="drag-order-list" id="orderlist_11">
             
-              <div class="drag-order-row" draggable="true" id="order_11_0" data-step-text="5 × 4 × 3 = 60" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_11_0" data-step-text="8 × 5 × 4 = 160" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">1</span>
-                <span class="drag-order-text">5 × 4 × 3 = 60</span>
+                <span class="drag-order-text">8 × 5 × 4 = 160</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(11, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(11, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_11_1" data-step-text="6 × 6 × 2 = 72" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_11_1" data-step-text="5 × 4 × 3 = 60" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">2</span>
-                <span class="drag-order-text">6 × 6 × 2 = 72</span>
+                <span class="drag-order-text">5 × 4 × 3 = 60</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(11, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(11, this, 1)" aria-label="Move down">▼</button>
@@ -3812,10 +3821,10 @@ header.packet h1::after{
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(11, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_11_4" data-step-text="8 × 5 × 4 = 160" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_11_4" data-step-text="6 × 6 × 2 = 72" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">5</span>
-                <span class="drag-order-text">8 × 5 × 4 = 160</span>
+                <span class="drag-order-text">6 × 6 × 2 = 72</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(11, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(11, this, 1)" aria-label="Move down">▼</button>

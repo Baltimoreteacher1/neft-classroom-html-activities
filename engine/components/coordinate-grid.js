@@ -70,11 +70,11 @@ export function renderCoordinateGrid(container, config = {}) {
   // Gridlines
   for (let x = xMin; x <= xMax; x += xStep) {
     const sx = toSvgX(x);
-    svgLine(svg, sx, PAD.top, sx, PAD.top + plotH, "#e8edf2", 0.5);
+    svgLine(svg, sx, PAD.top, sx, PAD.top + plotH, "#c3cedb", 1);
   }
   for (let y = yMin; y <= yMax; y += yStep) {
     const sy = toSvgY(y);
-    svgLine(svg, PAD.left, sy, PAD.left + plotW, sy, "#e8edf2", 0.5);
+    svgLine(svg, PAD.left, sy, PAD.left + plotW, sy, "#c3cedb", 1);
   }
 
   // Axes
@@ -97,13 +97,15 @@ export function renderCoordinateGrid(container, config = {}) {
   const yLabelX = xMin <= 0 && xMax >= 0 ? toSvgX(0) - 7 : PAD.left - 10;
   for (let x = xMin; x <= xMax; x += xStep) {
     if (x === 0) continue;
-    const t = svgText(svg, toSvgX(x), xLabelY, String(x), "10px", "#5f6f80");
+    const t = svgText(svg, toSvgX(x), xLabelY, String(x), "13px", "#1f2d3d");
     t.setAttribute("text-anchor", "middle");
+    t.setAttribute("font-weight", "600");
   }
   for (let y = yMin; y <= yMax; y += yStep) {
     if (y === 0) continue;
-    const t = svgText(svg, yLabelX, toSvgY(y) + 4, String(y), "10px", "#5f6f80");
+    const t = svgText(svg, yLabelX, toSvgY(y) + 4, String(y), "13px", "#1f2d3d");
     t.setAttribute("text-anchor", "end");
+    t.setAttribute("font-weight", "600");
   }
 
   // Axis labels
@@ -206,6 +208,7 @@ export function renderCoordinateGrid(container, config = {}) {
     const finalSy = toSvgY(gy);
     const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
     g.classList.add("cgrid-point");
+    g.style.cursor = "pointer";
     const dot = svgCircle(g, finalSx, finalSy, 7, "#f2c15b", "#12355b", 2);
     dot.classList.add("cgrid-dot");
     const lbl = svgText(g, finalSx + 12, finalSy - 8, `(${gx}, ${gy})`, "10px", "#12355b");
@@ -226,11 +229,16 @@ export function renderCoordinateGrid(container, config = {}) {
     if (announce) {
       live.textContent = `Plotted (${gx}, ${gy}). ${Math.max(0, targets.length - placedPoints.length)} remaining.`;
     }
-    // Right-click (or Backspace via keyboard) removes the point.
-    g.addEventListener("contextmenu", (ev) => {
+    // Remove the point by clicking it (or right-click / Backspace via keyboard).
+    // stopPropagation keeps the parent SVG click from immediately re-plotting.
+    const removeThis = (ev) => {
       ev.preventDefault();
+      ev.stopPropagation();
       removePoint(rec);
-    });
+      live.textContent = `Removed (${gx}, ${gy}). ${Math.max(0, targets.length - placedPoints.length)} remaining.`;
+    };
+    g.addEventListener("click", removeThis);
+    g.addEventListener("contextmenu", removeThis);
   }
 
   // Click to place points
@@ -412,7 +420,7 @@ export function renderCoordinateGrid(container, config = {}) {
       showFb(
         feedbackSlot,
         "hint",
-        `${correct} of ${targets.length} correct. Dashed circles show where missing points belong. Right-click a point to remove it.`,
+        `${correct} of ${targets.length} correct. Dashed circles show where missing points belong. Click a point to remove it.`,
       );
     }
   });

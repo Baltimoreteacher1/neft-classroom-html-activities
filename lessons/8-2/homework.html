@@ -1804,7 +1804,12 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-.ladder-answer { margin-top: 7px; }
+/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
+   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
+   the page into teacher mode (body.teacher-mode). Keep in sync with the
+   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
+.ladder-answer { display: none; margin-top: 7px; }
+body.teacher-mode .ladder-answer { display: block; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -2372,24 +2377,28 @@ header.packet h1::after{
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
-  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="/assets/favicon.svg">
-  <meta name="theme-color" content="#12355b">
-  <link rel="canonical" href="https://eduwonderlab.com/lessons/8-2/homework.html">
-  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 8-2: Mean, Median, and Mode.">
-  <meta property="og:type" content="article">
-  <meta property="og:site_name" content="Neft Teacher">
-  <meta property="og:title" content="Help Your Student — Lesson 8-2: Mean, Median, and Mode">
-  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 8-2: Mean, Median, and Mode.">
-  <meta property="og:url" content="https://eduwonderlab.com/lessons/8-2/homework.html">
-  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
-  <!-- enthead-injected:end -->
 </head>
 <body>
+
+<script>
+/* Unified teacher-mode bootstrap. Reads the site-wide sticky key
+   (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
+   assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
+   and flips on body.teacher-mode so teacher-only content (e.g. the practice
+   answer reveals) becomes visible. Fail-closed: without this class the
+   answers stay display:none for students. ?student=1 / ?teacher=0 force
+   student view so a teacher can hand a device back. */
+(function () {
+  try {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get("student") === "1" || params.get("teacher") === "0") return;
+    var v = (localStorage.getItem("nt-teacher-mode") || "").toLowerCase();
+    if (v === "1" || v === "true" || v === "on" || v === "yes") {
+      document.body.classList.add("teacher-mode");
+    }
+  } catch (e) {}
+})();
+</script>
 
 <div class="container" role="main">
 
@@ -4163,7 +4172,7 @@ header.packet h1::after{
         <span class="lang-es" lang="es">Refuercen el tema de hoy con un juego rápido en familia. ¡Ustedes preguntan; su estudiante decide!</span>
       </p>
       
-      <div class="hw-game hw-game-sort" id="hw_game_stats" data-game-type="drag-bucket" data-items='[{"text":"Heights of plants in cm","bucket":"stat"},{"text":"How many pets do students have?","bucket":"stat"},{"text":"Spell the word cat","bucket":"not"},{"text":"What is 2 + 2?","bucket":"not"},{"text":"What is your favorite color?","bucket":"stat"},{"text":"Minutes spent on homework","bucket":"stat"}]'>
+      <div class="hw-game hw-game-sort" id="hw_game_stats" data-game-type="drag-bucket" data-items='[{"text":"How many pets do students have?","bucket":"stat"},{"text":"What is 2 + 2?","bucket":"not"},{"text":"Spell the word cat","bucket":"not"},{"text":"What is your favorite color?","bucket":"stat"},{"text":"Heights of plants in cm","bucket":"stat"},{"text":"Minutes spent on homework","bucket":"stat"}]'>
         <div class="hw-game-header">
           <h3 class="hw-game-title">Stat Sort! <span lang="es">¡Estadística!</span></h3>
           <p class="hw-game-coach bilingual-block">
@@ -4186,23 +4195,23 @@ header.packet h1::after{
           
             <div class="hw-game-card" draggable="true" id="hwcard_0" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              Heights of plants in cm
-            </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_1" data-bucket="stat"
-                 ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
               How many pets do students have?
+            </div>
+            <div class="hw-game-card" draggable="true" id="hwcard_1" data-bucket="not"
+                 ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
+              What is 2 + 2?
             </div>
             <div class="hw-game-card" draggable="true" id="hwcard_2" data-bucket="not"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
               Spell the word cat
             </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_3" data-bucket="not"
+            <div class="hw-game-card" draggable="true" id="hwcard_3" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              What is 2 + 2?
+              What is your favorite color?
             </div>
             <div class="hw-game-card" draggable="true" id="hwcard_4" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              What is your favorite color?
+              Heights of plants in cm
             </div>
             <div class="hw-game-card" draggable="true" id="hwcard_5" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">

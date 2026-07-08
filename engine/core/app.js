@@ -833,6 +833,36 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           }
         });
       }
+
+      // ── Curated forward flow: Vocab → Learn It → Lesson ──────────────────────
+      // The Vocab panel gets a "Continue to Learn It" button; the Learn It panel
+      // hosts the moved Launch scenario + Show Your Work (via renderLearnItExtras)
+      // and a "Continue to the Lesson" button that returns to the current graded
+      // phase (Explore). Non-graded: these never touch phase state, XP, or stars.
+      const addContinue = (label, onClick) => {
+        const wrap = document.createElement("div");
+        wrap.style.cssText = "margin-top:var(--sp-4, 16px); text-align:center;";
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "btn btn-primary btn-lg";
+        b.textContent = label;
+        b.addEventListener("click", onClick);
+        wrap.append(b);
+        el.append(wrap);
+      };
+
+      if (kind === "vocab") {
+        addContinue("Continue to Learn It →", () => this.openExtra("learn"));
+      } else if (kind === "learn") {
+        // Render the moved Launch problems (scenario + guided solve) BELOW the
+        // Learn It iframe. The hook is set by renderLaunchPhase; guard for the
+        // resume case where Launch has not rendered this session.
+        this.renderLearnItExtras?.(el);
+        addContinue("Continue to the Lesson →", () =>
+          this.navigateTo(state.get().currentPhase ?? 1),
+        );
+      }
+
       el.scrollIntoView({ block: "start" });
     },
 

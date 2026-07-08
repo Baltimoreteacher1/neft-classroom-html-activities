@@ -105,6 +105,24 @@ const THEME_SVGS = {
     <line x1="160" y1="110" x2="172" y2="118" stroke="#e9c46a" stroke-width="2"/>
     <text x="160" y="175" font-size="11" font-weight="700" fill="#6b4c9a" text-anchor="middle">Est. 2026</text>
   </svg>`,
+
+  "architecture-firm": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
+    <defs><linearGradient id="arch-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#12355b"/><stop offset="100%" stop-color="#1b4a7a"/></linearGradient></defs>
+    <rect width="320" height="200" rx="16" fill="url(#arch-bg)"/>
+    <g stroke="#7fb0dd" stroke-width="1" opacity="0.35">
+      <line x1="0" y1="40" x2="320" y2="40"/><line x1="0" y1="80" x2="320" y2="80"/>
+      <line x1="0" y1="120" x2="320" y2="120"/><line x1="0" y1="160" x2="320" y2="160"/>
+      <line x1="60" y1="0" x2="60" y2="200"/><line x1="120" y1="0" x2="120" y2="200"/>
+      <line x1="180" y1="0" x2="180" y2="200"/><line x1="240" y1="0" x2="240" y2="200"/>
+    </g>
+    <rect x="70" y="55" width="180" height="110" fill="none" stroke="#e8edfe" stroke-width="2"/>
+    <polygon points="70,165 160,55 250,165" fill="rgba(42,157,143,0.28)" stroke="#2a9d8f" stroke-width="2.5"/>
+    <line x1="160" y1="55" x2="160" y2="165" stroke="#e9c46a" stroke-width="2" stroke-dasharray="5,4"/>
+    <text x="118" y="120" font-size="12" font-weight="800" fill="#e8edfe" text-anchor="middle">b</text>
+    <text x="168" y="115" font-size="12" font-weight="800" fill="#e9c46a" text-anchor="start">h</text>
+    <rect x="152" y="157" width="8" height="8" fill="none" stroke="#e8edfe" stroke-width="1.5"/>
+    <text x="160" y="185" font-size="12" font-weight="700" fill="#e8edfe" text-anchor="middle">A = ½ b × h</text>
+  </svg>`,
 };
 
 const DEFAULT_SVG = `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">

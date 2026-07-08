@@ -73,8 +73,8 @@ export function renderCoordinatePlane(
         y1: PAD,
         x2: toX(v),
         y2: PAD + plot,
-        stroke: "#e8edf2",
-        "stroke-width": v === 0 ? 0 : 0.5,
+        stroke: "#c3cedb",
+        "stroke-width": v === 0 ? 0 : 1,
       }),
     );
     svg.append(
@@ -83,8 +83,8 @@ export function renderCoordinatePlane(
         y1: toY(v),
         x2: PAD + plot,
         y2: toY(v),
-        stroke: "#e8edf2",
-        "stroke-width": v === 0 ? 0 : 0.5,
+        stroke: "#c3cedb",
+        "stroke-width": v === 0 ? 0 : 1,
       }),
     );
   }
@@ -115,9 +115,10 @@ export function renderCoordinatePlane(
     if (v === 0) continue;
     const tx = svgEl("text", {
       x: toX(v),
-      y: toY(0) + 14,
-      "font-size": "10px",
-      fill: "#5f6f80",
+      y: toY(0) + 15,
+      "font-size": "13px",
+      fill: "#1f2d3d",
+      "font-weight": "600",
       "text-anchor": "middle",
       "font-family": "Calibri, sans-serif",
     });
@@ -126,8 +127,9 @@ export function renderCoordinatePlane(
     const ty = svgEl("text", {
       x: toX(0) - 8,
       y: toY(v) + 4,
-      "font-size": "10px",
-      fill: "#5f6f80",
+      "font-size": "13px",
+      fill: "#1f2d3d",
+      "font-weight": "600",
       "text-anchor": "end",
       "font-family": "Calibri, sans-serif",
     });
@@ -215,10 +217,25 @@ export function renderCoordinatePlane(
     });
     lbl.textContent = `(${x}, ${y})`;
     g.append(dot, lbl);
+    g.style.cursor = "pointer";
     svg.append(g);
-    placed.push({ x, y, g, dot });
+    const rec = { x, y, g, dot };
+    placed.push(rec);
     live.textContent = `Plotted point at ${x}, ${y}. ${targets.length - placed.length} remaining.`;
     instr.textContent = remainingText();
+    // Click (or right-click) a placed point to remove it. stopPropagation keeps
+    // the parent SVG click from immediately re-plotting on the same spot.
+    const removeThis = (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const idx = placed.indexOf(rec);
+      if (idx >= 0) placed.splice(idx, 1);
+      g.remove();
+      live.textContent = `Removed point at ${x}, ${y}. ${targets.length - placed.length} remaining.`;
+      instr.textContent = remainingText();
+    };
+    g.addEventListener("click", removeThis);
+    g.addEventListener("contextmenu", removeThis);
   }
 
   svg.addEventListener("click", (e) => {

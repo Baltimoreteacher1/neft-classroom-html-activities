@@ -502,39 +502,14 @@ function renderLaunchVisual(host, visual) {
 
 // (The Launch concept-teaching block was removed: the lesson's conceptIntro now
 // renders in exactly one student-facing place — the Learn It page — instead of
-// triple-rendering across Launch, Learn It, and Notes. The Launch hands off to
-// it via renderLearnItBridge.)
-
-// Bridge the Launch hook straight into the full step-by-step Learn It page.
-// Opens the Learn It view inline (ctx.openExtra), so the launch scenario and
-// the teaching read as one connected flow. Learn It lives here (off the Launch)
-// rather than as its own sidebar tab.
-function renderLearnItBridge(host, ctx, config) {
-  const intro = (config.launch && config.launch.conceptIntro) || null;
-  const heading = intro && intro.heading ? intro.heading : "how to solve it";
-  const card = document.createElement("div");
-  card.className = "card learnit-bridge-card";
-  card.style.cssText =
-    "border-left:4px solid var(--gold,#d4952a); background:rgba(233,196,106,0.12); display:flex; flex-wrap:wrap; gap:var(--sp-3,12px); align-items:center; justify-content:space-between;";
-  card.innerHTML = `
-    <div style="flex:1 1 260px;">
-      <h4 style="color:var(--navy,#264653); margin:0 0 4px;">📖 Now learn ${esc(heading)
-        .replace(/^What is /i, "")
-        .replace(/\?$/, "")}</h4>
-      <p style="margin:0; font-size:0.95rem; line-height:1.5;">You've seen the problem. Open <strong>Learn It</strong> to see exactly how to solve it — step by step, with examples you can work through — then come back and keep going.</p>
-    </div>
-    <button type="button" class="btn btn-primary" data-open-learn style="flex:0 0 auto;">Open Learn It →</button>`;
-  const btn = card.querySelector("[data-open-learn]");
-  if (btn) {
-    // Open Learn It as its own page in a new tab so students keep the lesson
-    // open behind it (rather than replacing the Launch view inline).
-    btn.addEventListener("click", () => {
-      if (ctx && typeof ctx.openExtra === "function") ctx.openExtra("learn");
-      else window.open(`/lessons/${config.lessonId}/learn.html`, "_blank", "noopener");
-    });
-  }
-  host.append(card);
-}
+// triple-rendering across Launch, Learn It, and Notes.)
+//
+// The old renderLearnItBridge "Open Learn It" CTA was removed too: the curated
+// flow now routes students Launch (Be Curious) → Vocab → Learn It → Lesson via
+// the Continue buttons on each panel, so a stray Launch shortcut into Learn It
+// (which would bypass Vocab) is no longer wanted. The Launch scenario + Show
+// Your Work now render UNDER the Learn It panel — see ctx.renderLearnItExtras in
+// renderLaunchPhase and app.js openExtra("learn").
 
 // ── Turn & Talk (non-graded student discussion moments) ──────────────────────
 // A reusable, visually distinct "🗣️ Turn & Talk" block. It is driven by an
@@ -570,6 +545,43 @@ function defaultTurnTalkPrompt(phase, config) {
     question: `Turn and talk: how does ${topic} connect to the real world or to what you already know?`,
     stems: DEFAULT_TURN_TALK_STEMS,
   };
+}
+
+// Genuine "press for reasoning" follow-ups. A post-activity discussion must ask
+// something NEW — why a strategy works, when it breaks, how to convince a
+// partner — never a verbatim repeat of the activity/discourse prompt.
+// Universally-sensible reasoning prompts — every one fits any math topic and
+// none presuppose the method can "fail" (which reads oddly for always-true
+// formulas). Used only when the lesson gives us no keywords/authored follow-up.
+const DISCUSS_FOLLOWUPS = [
+  "Why does this method work — what makes it true every time?",
+  "How could you convince a partner that your answer is right?",
+  "What is one mistake someone could make here, and how would you catch it?",
+  "How would you explain your steps to someone who was absent today?",
+  "What stays the same, and what changes, if the numbers were different?",
+];
+
+// Turn an authored discourse SEED into a DISTINCT spoken follow-up question.
+// Preference order: (1) an explicitly authored follow-up; (2) a KEYWORD prompt
+// that asks students to reason using the activity's own math vocabulary — always
+// on-topic and distinct from the activity's question; (3) a generic reasoning
+// prompt, chosen deterministically per lesson so it stays stable across renders.
+function deriveDiscussionFollowUp(seed, config, opts = {}) {
+  if (opts.authored && String(opts.authored).trim()) return String(opts.authored).trim();
+
+  // Keep only real vocabulary words (drop bare numbers like "48" / "1/2").
+  const kws = (Array.isArray(opts.keywords) ? opts.keywords : [])
+    .map((k) => String(k || "").trim())
+    .filter((k) => /[a-zA-Z]/.test(k))
+    .slice(0, 3);
+  if (kws.length >= 2) {
+    return `Explain to your partner HOW you got your answer, using the words: ${kws.join(", ")}.`;
+  }
+
+  const key = String(config.lessonId || config.title || (seed ?? "lesson"));
+  let h = 0;
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+  return DISCUSS_FOLLOWUPS[h % DISCUSS_FOLLOWUPS.length];
 }
 
 // Resolve the turn-and-talk prompt for a given phase: prefer the authored
@@ -747,15 +759,21 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone) {
   return card;
 }
 
-async function completePhase(el, ctx, state, phaseIdx, name, correct, total) {
+async function completePhase(el, ctx, state, phaseIdx, name, correct, total, opts = {}) {
   // Participation coins for non-practice phases
   if (phaseIdx !== 3) {
     state.awardPhaseParticipation(phaseIdx, 2);
   }
   const xp = ctx.engagement.awardXP(phaseIdx, { correct, total });
-  const stars = state.get().phases[phaseIdx]?.stars ?? 0;
-  const transitionMeta = buildPhaseTransitionMeta(state, phaseIdx, name, xp, stars);
-  await ctx.engagement.showPhaseComplete(el, name, xp, stars, transitionMeta);
+  // `quiet` skips the full "Phase Done! → up next" celebration. Used for the
+  // Launch → Vocab hand-off, where the student is stepping into the Vocab →
+  // Learn It pre-work, NOT the next graded phase — a "Continue to Explore" card
+  // there would be misleading. Awards + phase advance still happen underneath.
+  if (!opts.quiet) {
+    const stars = state.get().phases[phaseIdx]?.stars ?? 0;
+    const transitionMeta = buildPhaseTransitionMeta(state, phaseIdx, name, xp, stars);
+    await ctx.engagement.showPhaseComplete(el, name, xp, stars, transitionMeta);
+  }
   ctx.navigateTo(phaseIdx + 1);
 }
 
@@ -1637,30 +1655,41 @@ function renderLaunchPhase(el, state, ctx, config) {
     el.append(grid);
   }
 
-  // ── Launch ────────────────────────────────────────────────────────────────
-  // Now the application scenario and the guided solve — the word problem lives
-  // here, after Be Curious / Notice & Wonder.
-  phaseHeader(el, "🚀", "section-icon-amber", "Launch", "Read the problem, then show your work.");
+  // ── Launch is now "Be Curious" only ─────────────────────────────────────────
+  // The application scenario (word problem) and the guided "Show Your Work" solve
+  // have MOVED out of the Launch phase. They now render UNDER the Learn It panel
+  // (app.js openExtra("learn")), below the learn.html iframe, via the
+  // ctx.renderLearnItExtras hook set below. The new curated flow is:
+  //   Launch (Be Curious) → Vocab → Learn It (concept + moved problems) → Lesson.
+  //
+  // The hook closes over this lesson's cfg / config / state. Show Your Work still
+  // reads and writes on phase index 0 (Launch) — see renderShowYourWork — so any
+  // work a student saved persists exactly as before, wherever it is rendered.
+  ctx.renderLearnItExtras = (learnHost) => {
+    if (!learnHost) return;
 
-  const scenario = document.createElement("div");
-  scenario.className = "card launch-scenario-card";
-  scenario.innerHTML = `
-    <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
-    <p class="launch-narrative" data-annotate="word-problem">${renderMathText(cfg.narrative)}</p>`;
-  if (cfg.contextImage || config.theme) {
-    renderThemeIllustration(scenario, config.theme, cfg.contextImage || null);
-  }
-  el.append(scenario);
+    // 1) The application scenario card (the word problem + optional theme art).
+    const scenario = document.createElement("div");
+    scenario.className = "card launch-scenario-card";
+    scenario.innerHTML = `
+      <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
+      <p class="launch-narrative" data-annotate="word-problem">${renderMathText(cfg.narrative)}</p>`;
+    if (cfg.contextImage || config.theme) {
+      renderThemeIllustration(scenario, config.theme, cfg.contextImage || null);
+    }
+    learnHost.append(scenario);
 
-  // Hand off to the full step-by-step Learn It page — the single place the
-  // concept is taught. (Concept teaching no longer renders inside Launch; it
-  // used to triple-render here, in Learn It, and in Notes.)
-  renderLearnItBridge(el, ctx, config);
+    // 2) Inline Reveal Math slides for the launch + instruction sections — the
+    //    "how it's taught" visuals belong with Learn It, not with Be Curious.
+    renderRevealSlides(learnHost, config, ["launch", "instruction"]);
 
-  // Show Your Work — the application problem + a guided, typeable solve-it
-  // scaffold (strategy choice, steps, answer, justification, self-check + revise).
-  // This is where students DO and SHOW math in the Launch (UIFR TEACH 2/3/4 L4).
-  renderShowYourWork(el, config, state);
+    // 3) Show Your Work — the application problem + a guided, typeable solve-it
+    //    scaffold. Persists on phase index 0 (Launch) so saved work survives.
+    renderShowYourWork(learnHost, config, state);
+
+    // 4) Let students mark up the word problems (highlight / underline / bold).
+    enableWordProblemAnnotation(learnHost);
+  };
 
   // Launch Turn & Talk — speech-bubble discussion moment (non-graded).
   const launchTT = resolveTurnTalk("launch", config);
@@ -1668,15 +1697,9 @@ function renderLaunchPhase(el, state, ctx, config) {
     renderTurnAndTalk(el, launchTT, state, 0);
   }
 
-  // Inline Reveal Math slides for this section (launch + instruction).
-  renderRevealSlides(el, config, ["launch", "instruction"]);
-
-  // Let students mark up the word problems (highlight / underline / bold).
-  enableWordProblemAnnotation(el);
-
   const btn = document.createElement("button");
   btn.className = "btn btn-primary btn-lg mt-6";
-  btn.textContent = "Continue to Explore →";
+  btn.textContent = "Continue to Vocab →";
   btn.addEventListener("click", async () => {
     if (
       noticeTA &&
@@ -1695,7 +1718,11 @@ function renderLaunchPhase(el, state, ctx, config) {
       return;
     }
     el.querySelector(".launch-fb")?.remove();
-    await completePhase(el, ctx, state, 0, "Launch", 1, 1);
+    // Quietly complete Launch (advances the phase underneath, no "up next"
+    // celebration), then open Vocab on top — the student steps through
+    // Vocab → Learn It before landing back in the lesson at Explore.
+    await completePhase(el, ctx, state, 0, "Launch", 1, 1, { quiet: true });
+    ctx.openExtra("vocab");
   });
   el.append(btn);
 }
@@ -1726,8 +1753,10 @@ function renderExplorePhase(el, state, ctx, config) {
   // Surface a Turn & Talk discussion moment after the Explore interaction.
   // It is non-graded: confirming it advances the phase. A "Skip / Continue"
   // affordance is built into the button flow so it never blocks progress.
-  const showTurnTalkThenComplete = () => {
-    renderTurnAndTalk(el, resolveTurnTalk("explore", config), state, 2, () => {
+  // An optional `ttPrompt` overrides the generic explore prompt — used to run
+  // the authored post-activity discussion as a SPOKEN follow-up (see below).
+  const showTurnTalkThenComplete = (ttPrompt) => {
+    renderTurnAndTalk(el, ttPrompt || resolveTurnTalk("explore", config), state, 2, () => {
       completePhase(el, ctx, state, 1, "Explore", 1, 1);
     });
     const cont = document.createElement("button");
@@ -1750,19 +1779,19 @@ function renderExplorePhase(el, state, ctx, config) {
     { ...cfg, stem: cfg.instructions || cfg.stem },
     () => {
       if (cfg.discourse) {
-        const disc = document.createElement("div");
-        disc.className = "card card-teal mt-6";
-        disc.innerHTML = `<h4 style="color:var(--teal-ink); margin-bottom:var(--sp-3);">💬 Discuss</h4>`;
-        renderOpenResponse(disc, {
-          prompt: cfg.discourse.prompt,
-          sentenceFrame: cfg.discourse.sentenceFrame,
-          keywords: cfg.discourse.keywords,
-          minLength: 20,
-          onSubmit() {
-            showTurnTalkThenComplete();
-          },
+        // Post-activity discussion is now a SPOKEN Turn & Talk (not a writing
+        // box) that asks a DISTINCT follow-up — "press for reasoning" — rather
+        // than repeating the activity's prompt. The authored discourse prompt is
+        // used only as a topic seed. Non-graded; the Continue button always
+        // advances the phase.
+        showTurnTalkThenComplete({
+          phase: "explore-discuss",
+          question: deriveDiscussionFollowUp(cfg.discourse.prompt, config, {
+            authored: cfg.discourse.followUp,
+            keywords: cfg.discourse.keywords,
+          }),
+          stems: DEFAULT_TURN_TALK_STEMS,
         });
-        el.append(disc);
       } else {
         showTurnTalkThenComplete();
       }

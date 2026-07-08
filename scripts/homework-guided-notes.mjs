@@ -2248,7 +2248,12 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-.ladder-answer { margin-top: 7px; }
+/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
+   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
+   the page into teacher mode (body.teacher-mode). Keep in sync with the
+   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
+.ladder-answer { display: none; margin-top: 7px; }
+body.teacher-mode .ladder-answer { display: block; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 

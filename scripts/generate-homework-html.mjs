@@ -2437,6 +2437,26 @@ ${EDITORIAL_OVERRIDES}
 </head>
 <body>
 
+<script>
+/* Unified teacher-mode bootstrap. Reads the site-wide sticky key
+   (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
+   assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
+   and flips on body.teacher-mode so teacher-only content (e.g. the practice
+   answer reveals) becomes visible. Fail-closed: without this class the
+   answers stay display:none for students. ?student=1 / ?teacher=0 force
+   student view so a teacher can hand a device back. */
+(function () {
+  try {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get("student") === "1" || params.get("teacher") === "0") return;
+    var v = (localStorage.getItem("nt-teacher-mode") || "").toLowerCase();
+    if (v === "1" || v === "true" || v === "on" || v === "yes") {
+      document.body.classList.add("teacher-mode");
+    }
+  } catch (e) {}
+})();
+</script>
+
 <div class="container" role="main">
 
   ${welcomeHtml}
