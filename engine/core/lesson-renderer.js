@@ -1847,8 +1847,8 @@ function renderLaunchPhase(el, state, ctx, config) {
     scenario.innerHTML = `
       <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
       <p class="launch-narrative" data-annotate="word-problem">${renderMathText(cfg.narrative)}</p>`;
-    if (cfg.contextImage || config.theme) {
-      renderThemeIllustration(scenario, config.theme, cfg.contextImage || null);
+    if (cfg.contextImage || config.theme || config.heroFigure) {
+      renderThemeIllustration(scenario, config.theme, cfg.contextImage || null, config.heroFigure);
     }
     learnHost.append(scenario);
 

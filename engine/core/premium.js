@@ -136,7 +136,12 @@ export function buildLessonCoverExtras(config, savedProgress) {
 /** Mount animated theme art into cover slot. */
 export function mountCoverArt(slot, config) {
   if (!slot || !config.theme) return;
-  renderThemeIllustration(slot, config.theme, config.launch?.contextImage || null);
+  renderThemeIllustration(
+    slot,
+    config.theme,
+    config.launch?.contextImage || null,
+    config.heroFigure,
+  );
   slot.querySelector(".theme-hero-svg")?.classList.add("cover-svg-animate");
 }
 

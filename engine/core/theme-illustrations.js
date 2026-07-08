@@ -121,7 +121,94 @@ const THEME_SVGS = {
     <text x="118" y="120" font-size="12" font-weight="800" fill="#e8edfe" text-anchor="middle">b</text>
     <text x="168" y="115" font-size="12" font-weight="800" fill="#e9c46a" text-anchor="start">h</text>
     <rect x="152" y="157" width="8" height="8" fill="none" stroke="#e8edfe" stroke-width="1.5"/>
-    <text x="160" y="185" font-size="12" font-weight="700" fill="#e8edfe" text-anchor="middle">A = ½ b × h</text>
+    <text x="160" y="185" font-size="12" font-weight="700" fill="#e8edfe" text-anchor="middle">base × height</text>
+  </svg>`,
+
+  // Per-topic area figures (Unit 5). Selected via config.heroFigure so each
+  // lesson shows its own shape + correct area formula, independent of theme.
+  "figure-parallelogram": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
+    <defs><linearGradient id="par-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#12355b"/><stop offset="100%" stop-color="#1b4a7a"/></linearGradient></defs>
+    <rect width="320" height="200" rx="16" fill="url(#par-bg)"/>
+    <g stroke="#7fb0dd" stroke-width="1" opacity="0.35">
+      <line x1="0" y1="40" x2="320" y2="40"/><line x1="0" y1="80" x2="320" y2="80"/>
+      <line x1="0" y1="120" x2="320" y2="120"/><line x1="0" y1="160" x2="320" y2="160"/>
+      <line x1="60" y1="0" x2="60" y2="200"/><line x1="120" y1="0" x2="120" y2="200"/>
+      <line x1="180" y1="0" x2="180" y2="200"/><line x1="240" y1="0" x2="240" y2="200"/>
+    </g>
+    <polygon points="80,150 200,150 230,70 110,70" fill="rgba(42,157,143,0.28)" stroke="#2a9d8f" stroke-width="2.5"/>
+    <line x1="140" y1="70" x2="140" y2="150" stroke="#e9c46a" stroke-width="2" stroke-dasharray="5,4"/>
+    <rect x="132" y="142" width="8" height="8" fill="none" stroke="#e8edfe" stroke-width="1.5"/>
+    <text x="140" y="168" font-size="12" font-weight="800" fill="#e8edfe" text-anchor="middle">b</text>
+    <text x="150" y="115" font-size="12" font-weight="800" fill="#e9c46a" text-anchor="start">h</text>
+    <text x="160" y="190" font-size="12" font-weight="700" fill="#e8edfe" text-anchor="middle">A = b × h</text>
+  </svg>`,
+
+  "figure-trapezoid": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
+    <defs><linearGradient id="tra-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#12355b"/><stop offset="100%" stop-color="#1b4a7a"/></linearGradient></defs>
+    <rect width="320" height="200" rx="16" fill="url(#tra-bg)"/>
+    <g stroke="#7fb0dd" stroke-width="1" opacity="0.35">
+      <line x1="0" y1="40" x2="320" y2="40"/><line x1="0" y1="80" x2="320" y2="80"/>
+      <line x1="0" y1="120" x2="320" y2="120"/><line x1="0" y1="160" x2="320" y2="160"/>
+      <line x1="60" y1="0" x2="60" y2="200"/><line x1="120" y1="0" x2="120" y2="200"/>
+      <line x1="180" y1="0" x2="180" y2="200"/><line x1="240" y1="0" x2="240" y2="200"/>
+    </g>
+    <polygon points="70,150 250,150 205,78 115,78" fill="rgba(42,157,143,0.28)" stroke="#2a9d8f" stroke-width="2.5"/>
+    <line x1="160" y1="78" x2="160" y2="150" stroke="#e9c46a" stroke-width="2" stroke-dasharray="5,4"/>
+    <rect x="152" y="142" width="8" height="8" fill="none" stroke="#e8edfe" stroke-width="1.5"/>
+    <text x="160" y="70" font-size="12" font-weight="800" fill="#e8edfe" text-anchor="middle">b₂</text>
+    <text x="160" y="168" font-size="12" font-weight="800" fill="#e8edfe" text-anchor="middle">b₁</text>
+    <text x="170" y="118" font-size="12" font-weight="800" fill="#e9c46a" text-anchor="start">h</text>
+    <text x="160" y="190" font-size="12" font-weight="700" fill="#e8edfe" text-anchor="middle">A = ½(b₁ + b₂)h</text>
+  </svg>`,
+
+  "figure-triangle": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
+    <defs><linearGradient id="tri-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#12355b"/><stop offset="100%" stop-color="#1b4a7a"/></linearGradient></defs>
+    <rect width="320" height="200" rx="16" fill="url(#tri-bg)"/>
+    <g stroke="#7fb0dd" stroke-width="1" opacity="0.35">
+      <line x1="0" y1="40" x2="320" y2="40"/><line x1="0" y1="80" x2="320" y2="80"/>
+      <line x1="0" y1="120" x2="320" y2="120"/><line x1="0" y1="160" x2="320" y2="160"/>
+      <line x1="60" y1="0" x2="60" y2="200"/><line x1="120" y1="0" x2="120" y2="200"/>
+      <line x1="180" y1="0" x2="180" y2="200"/><line x1="240" y1="0" x2="240" y2="200"/>
+    </g>
+    <polygon points="75,150 245,150 165,62" fill="rgba(42,157,143,0.28)" stroke="#2a9d8f" stroke-width="2.5"/>
+    <line x1="165" y1="62" x2="165" y2="150" stroke="#e9c46a" stroke-width="2" stroke-dasharray="5,4"/>
+    <rect x="157" y="142" width="8" height="8" fill="none" stroke="#e8edfe" stroke-width="1.5"/>
+    <text x="160" y="168" font-size="12" font-weight="800" fill="#e8edfe" text-anchor="middle">b</text>
+    <text x="174" y="112" font-size="12" font-weight="800" fill="#e9c46a" text-anchor="start">h</text>
+    <text x="160" y="190" font-size="12" font-weight="700" fill="#e8edfe" text-anchor="middle">A = ½ b × h</text>
+  </svg>`,
+
+  "figure-regular-polygon": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
+    <defs><linearGradient id="pol-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#12355b"/><stop offset="100%" stop-color="#1b4a7a"/></linearGradient></defs>
+    <rect width="320" height="200" rx="16" fill="url(#pol-bg)"/>
+    <g stroke="#7fb0dd" stroke-width="1" opacity="0.35">
+      <line x1="0" y1="40" x2="320" y2="40"/><line x1="0" y1="80" x2="320" y2="80"/>
+      <line x1="0" y1="120" x2="320" y2="120"/><line x1="0" y1="160" x2="320" y2="160"/>
+      <line x1="60" y1="0" x2="60" y2="200"/><line x1="120" y1="0" x2="120" y2="200"/>
+      <line x1="180" y1="0" x2="180" y2="200"/><line x1="240" y1="0" x2="240" y2="200"/>
+    </g>
+    <polygon points="160,50 205,76 205,124 160,150 115,124 115,76" fill="rgba(42,157,143,0.28)" stroke="#2a9d8f" stroke-width="2.5"/>
+    <line x1="160" y1="100" x2="205" y2="100" stroke="#e9c46a" stroke-width="2" stroke-dasharray="5,4"/>
+    <circle cx="160" cy="100" r="2.5" fill="#e8edfe"/>
+    <text x="182" y="94" font-size="12" font-weight="800" fill="#e9c46a" text-anchor="middle">a</text>
+    <text x="160" y="190" font-size="12" font-weight="700" fill="#e8edfe" text-anchor="middle">A = ½ a × P</text>
+  </svg>`,
+
+  "figure-composite": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
+    <defs><linearGradient id="com-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#12355b"/><stop offset="100%" stop-color="#1b4a7a"/></linearGradient></defs>
+    <rect width="320" height="200" rx="16" fill="url(#com-bg)"/>
+    <g stroke="#7fb0dd" stroke-width="1" opacity="0.35">
+      <line x1="0" y1="40" x2="320" y2="40"/><line x1="0" y1="80" x2="320" y2="80"/>
+      <line x1="0" y1="120" x2="320" y2="120"/><line x1="0" y1="160" x2="320" y2="160"/>
+      <line x1="60" y1="0" x2="60" y2="200"/><line x1="120" y1="0" x2="120" y2="200"/>
+      <line x1="180" y1="0" x2="180" y2="200"/><line x1="240" y1="0" x2="240" y2="200"/>
+    </g>
+    <rect x="110" y="95" width="100" height="55" fill="rgba(42,157,143,0.28)" stroke="#2a9d8f" stroke-width="2.5"/>
+    <polygon points="110,95 210,95 160,58" fill="rgba(233,196,106,0.28)" stroke="#e9c46a" stroke-width="2.5"/>
+    <line x1="110" y1="95" x2="210" y2="95" stroke="#e8edfe" stroke-width="1.5" stroke-dasharray="5,4"/>
+    <text x="160" y="128" font-size="13" font-weight="800" fill="#e8edfe" text-anchor="middle">A₁</text>
+    <text x="160" y="86" font-size="12" font-weight="800" fill="#e9c46a" text-anchor="middle">A₂</text>
+    <text x="160" y="190" font-size="12" font-weight="700" fill="#e8edfe" text-anchor="middle">A = A₁ + A₂</text>
   </svg>`,
 };
 
@@ -132,14 +219,16 @@ const DEFAULT_SVG = `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" cl
   <text x="160" y="165" font-size="13" font-weight="700" fill="var(--navy,#264653)" text-anchor="middle">Math in Action</text>
 </svg>`;
 
-export function themeIllustration(theme) {
-  return THEME_SVGS[theme] || DEFAULT_SVG;
+// `figure` (config.heroFigure) takes precedence over the theme default so a
+// lesson can pin a topic-correct shape/formula regardless of its visual theme.
+export function themeIllustration(theme, figure) {
+  return THEME_SVGS[figure] || THEME_SVGS[theme] || DEFAULT_SVG;
 }
 
-export function renderThemeIllustration(host, theme, caption) {
+export function renderThemeIllustration(host, theme, caption, figure) {
   const wrap = document.createElement("figure");
   wrap.className = "theme-illustration";
-  wrap.innerHTML = themeIllustration(theme);
+  wrap.innerHTML = themeIllustration(theme, figure);
   if (caption) {
     const figcap = document.createElement("figcaption");
     figcap.className = "theme-illustration-caption";
