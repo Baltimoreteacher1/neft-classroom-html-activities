@@ -1335,6 +1335,28 @@ function renderShowYourWork(host, config, state) {
   });
   card.append(checkBtn, checklist);
 
+  // Turn & Talk is integrated into the problem itself: after showing their work,
+  // students discuss their reasoning with a partner (non-graded). Uses the same
+  // authored/derived launch prompt the lesson already carries.
+  const tt = resolveTurnTalk("launch", config);
+  if (tt && tt.question) {
+    const stems = Array.isArray(tt.stems) ? tt.stems.filter((s) => s && s.en) : [];
+    const talk = document.createElement("div");
+    talk.className = "syw-turntalk";
+    talk.style.cssText =
+      "margin-top:var(--sp-4); padding:var(--sp-3); border-radius:var(--radius-md,12px); background:rgba(217,121,93,0.08); border:1px solid rgba(217,121,93,0.28);";
+    talk.innerHTML =
+      `<div style="font-weight:800; color:var(--coral); margin-bottom:var(--sp-2);">🗣️ Turn &amp; Talk</div>` +
+      `<p style="margin:0 0 var(--sp-2); font-weight:600;">${esc(tt.question)}</p>` +
+      (stems.length
+        ? `<div style="font-size:0.9rem; color:var(--muted);">Try starting with: ${stems
+            .slice(0, 2)
+            .map((s) => `“${esc(s.en)}”`)
+            .join(" · ")}</div>`
+        : "");
+    card.append(talk);
+  }
+
   host.append(card);
 }
 
@@ -1586,6 +1608,58 @@ function renderObjectives(el, config) {
   wireObjectiveTermPopups(block, vocab);
 }
 
+// Be-Curious ESOL support: academic vocabulary + sentence phrases tied to the
+// picture, each a chip the student TAPS to insert into whichever Notice/Wonder
+// box they were last typing in. Supports English learners in observing and
+// describing the scene. Driven by config.launch.beCurious = { vocab:[], phrases:[] }.
+// Strict no-op when absent, so older configs render nothing.
+function renderNoticeWonderSupport(host, support) {
+  if (!support || typeof support !== "object") return;
+  const vocab = Array.isArray(support.vocab) ? support.vocab.filter(Boolean) : [];
+  const phrases = Array.isArray(support.phrases) ? support.phrases.filter(Boolean) : [];
+  if (!vocab.length && !phrases.length) return;
+
+  // Track the most recently focused textarea inside the Be-Curious area (the
+  // only textareas in the Launch phase are the Notice/Wonder boxes) so a tapped
+  // chip lands in the box the student was using.
+  let lastField = null;
+  host.addEventListener("focusin", (e) => {
+    if (e.target && e.target.tagName === "TEXTAREA") lastField = e.target;
+  });
+
+  const insert = (text) => {
+    const field = lastField || host.querySelector("textarea");
+    if (!field) return;
+    const cur = field.value;
+    const sep = cur && !/\s$/.test(cur) ? " " : "";
+    field.value = cur + sep + text;
+    field.dispatchEvent(new Event("input", { bubbles: true }));
+    field.focus();
+  };
+
+  const card = document.createElement("section");
+  card.className = "card nw-support";
+  card.style.cssText = "background:var(--cream,#fdf6ec); border:1px dashed rgba(42,157,143,0.5);";
+  const row = (label, items, cls) =>
+    items.length
+      ? `<div style="margin-bottom:var(--sp-2); line-height:2;"><span style="font-weight:800; color:var(--navy,#264653); margin-right:var(--sp-2);">${esc(label)}</span>${items
+          .map(
+            (it) =>
+              `<button type="button" class="badge ${cls} nw-chip" data-insert="${esc(it)}" style="cursor:pointer; border:none; margin:2px 4px;">${esc(it)} <span aria-hidden="true">＋</span></button>`,
+          )
+          .join("")}</div>`
+      : "";
+  card.innerHTML =
+    `<h4 style="color:var(--teal-ink); margin-bottom:var(--sp-3);">🗝️ Words &amp; phrases to use — tap to add them to your answer</h4>` +
+    row("Academic words:", vocab, "badge-teal") +
+    row("Sentence phrases:", phrases, "badge-amber");
+  host.append(card);
+
+  card
+    .querySelectorAll(".nw-chip")
+    .forEach((btn) => btn.addEventListener("click", () => insert(btn.getAttribute("data-insert"))));
+}
+
 function renderLaunchPhase(el, state, ctx, config) {
   const cfg = config.launch;
 
@@ -1596,9 +1670,6 @@ function renderLaunchPhase(el, state, ctx, config) {
 
   // Top: student identity (name / period), homework link, pre-lesson hint.
   renderLaunchHeader(el, state, config);
-
-  // Objectives sit directly under the header — the formal "I can…" goals.
-  renderObjectives(el, config);
 
   // ── Be Curious ────────────────────────────────────────────────────────────
   // Its own part, right under the objectives: the Reveal Notice & Wonder
@@ -1659,6 +1730,15 @@ function renderLaunchPhase(el, state, ctx, config) {
     el.append(grid);
   }
 
+  // ESOL support for the Notice/Wonder: academic words + sentence phrases tied to
+  // the picture, tap to insert into whichever response box is focused. Attaches
+  // to `el`, so it serves both the generic grid and the richer Reveal N&W boxes.
+  renderNoticeWonderSupport(el, cfg.beCurious);
+
+  // Objectives now sit AFTER Be Curious (their own cards): students get curious
+  // about the scene first, THEN see the formal "I can…" goals for today.
+  renderObjectives(el, config);
+
   // ── Launch is now "Be Curious" only ─────────────────────────────────────────
   // The application scenario (word problem) and the guided "Show Your Work" solve
   // have MOVED out of the Launch phase. They now render UNDER the Learn It panel
@@ -1692,14 +1772,10 @@ function renderLaunchPhase(el, state, ctx, config) {
     renderShowYourWork(learnHost, config, state);
 
     // 4) Let students mark up the word problems (highlight / underline / bold).
+    //    (Turn & Talk is now integrated into the Show Your Work problem above,
+    //    via renderShowYourWork — not a separate card.)
     enableWordProblemAnnotation(learnHost);
   };
-
-  // Launch Turn & Talk — speech-bubble discussion moment (non-graded).
-  const launchTT = resolveTurnTalk("launch", config);
-  if (launchTT) {
-    renderTurnAndTalk(el, launchTT, state, 0);
-  }
 
   const btn = document.createElement("button");
   btn.className = "btn btn-primary btn-lg mt-6";
