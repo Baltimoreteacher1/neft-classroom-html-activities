@@ -1613,11 +1613,28 @@ function renderObjectives(el, config) {
 // box they were last typing in. Supports English learners in observing and
 // describing the scene. Driven by config.launch.beCurious = { vocab:[], phrases:[] }.
 // Strict no-op when absent, so older configs render nothing.
-function renderNoticeWonderSupport(host, support) {
+function renderNoticeWonderSupport(host, support, config) {
   if (!support || typeof support !== "object") return;
   const vocab = Array.isArray(support.vocab) ? support.vocab.filter(Boolean) : [];
   const phrases = Array.isArray(support.phrases) ? support.phrases.filter(Boolean) : [];
   if (!vocab.length && !phrases.length) return;
+
+  // Look up the lesson's vocabulary entries that carry popup content (a simple
+  // definition and/or an authored visual) so an academic word can open the same
+  // glossary popup used by the objectives — an image + a kid-friendly definition
+  // in English and Spanish. Words with no matching entry stay insert-only.
+  const lessonVocab = Array.isArray(config && config.vocabulary) ? config.vocabulary : [];
+  const hasPopupContent = (v) => !!(v && (v.definition || v.definitionEs || v.visual || v.example));
+  const normTerm = (s) =>
+    String(s || "")
+      .toLowerCase()
+      .replace(/s$/, "")
+      .trim();
+  const vocabByTerm = new Map();
+  lessonVocab.forEach((v) => {
+    const key = normTerm(v && v.term);
+    if (key && hasPopupContent(v) && !vocabByTerm.has(key)) vocabByTerm.set(key, v);
+  });
 
   // Track the most recently focused textarea inside the Be-Curious area (the
   // only textareas in the Launch phase are the Notice/Wonder boxes) so a tapped
@@ -1639,25 +1656,54 @@ function renderNoticeWonderSupport(host, support) {
 
   const card = document.createElement("section");
   card.className = "card nw-support";
-  card.style.cssText = "background:var(--cream,#fdf6ec); border:1px dashed rgba(42,157,143,0.5);";
-  const row = (label, items, cls) =>
+  card.style.cssText =
+    "background:var(--cream,#fdf6ec); border:1px solid rgba(42,157,143,0.35); border-radius:var(--radius,12px); margin-top:var(--sp-3);";
+
+  // A plain insert chip: one tap drops the text into the current answer box.
+  const insertChip = (it, cls) =>
+    `<button type="button" class="badge ${cls} nw-chip" data-insert="${esc(it)}" style="cursor:pointer; border:none;">${esc(it)} <span aria-hidden="true">＋</span></button>`;
+
+  // An academic-word pill: the word (underlined) opens the definition popup with
+  // an image + simple meaning; the trailing ＋ still inserts it into the answer.
+  const wordPill = (it, cls) => {
+    if (!vocabByTerm.has(normTerm(it))) return insertChip(it, cls);
+    return `<span class="badge ${cls} nw-vocab" style="display:inline-flex; align-items:center; gap:6px; padding-right:4px;">
+        <button type="button" class="nw-vocab-word" data-term="${esc(it)}" aria-haspopup="dialog" title="Tap for a picture and meaning" style="cursor:pointer; border:none; background:transparent; font:inherit; color:inherit; text-decoration:underline;">${esc(it)}</button>
+        <button type="button" class="nw-vocab-add" data-insert="${esc(it)}" aria-label="Add ${esc(it)} to your answer" title="Add to your answer" style="cursor:pointer; border:none; background:transparent; font:inherit; color:inherit; font-weight:800;">＋</button>
+      </span>`;
+  };
+
+  // A labeled chip strip: the label holds its own column and the chips wrap
+  // cleanly beside it with even spacing (no ragged line-height hack).
+  const row = (label, items, cls, chipFn) =>
     items.length
-      ? `<div style="margin-bottom:var(--sp-2); line-height:2;"><span style="font-weight:800; color:var(--navy,#264653); margin-right:var(--sp-2);">${esc(label)}</span>${items
-          .map(
-            (it) =>
-              `<button type="button" class="badge ${cls} nw-chip" data-insert="${esc(it)}" style="cursor:pointer; border:none; margin:2px 4px;">${esc(it)} <span aria-hidden="true">＋</span></button>`,
-          )
-          .join("")}</div>`
+      ? `<div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:var(--sp-2) var(--sp-3); margin-bottom:var(--sp-3);">
+          <span style="flex:0 0 auto; font-weight:800; color:var(--navy,#264653);">${esc(label)}</span>
+          <span style="display:flex; flex-wrap:wrap; gap:var(--sp-2);">${items
+            .map((it) => chipFn(it, cls))
+            .join("")}</span>
+        </div>`
       : "";
   card.innerHTML =
-    `<h4 style="color:var(--teal-ink); margin-bottom:var(--sp-3);">🗝️ Words &amp; phrases to use — tap to add them to your answer</h4>` +
-    row("Academic words:", vocab, "badge-teal") +
-    row("Sentence phrases:", phrases, "badge-amber");
+    `<h4 style="color:var(--teal-ink); margin:0 0 var(--sp-2);">🗝️ Words &amp; phrases to use</h4>
+     <p style="margin:0 0 var(--sp-3); color:var(--muted); font-size:0.95rem;">Tap a word for a picture and meaning, or tap ＋ to add it to your answer.</p>` +
+    row("Academic words:", vocab, "badge-teal", wordPill) +
+    row("Sentence phrases:", phrases, "badge-amber", insertChip);
   host.append(card);
 
-  card
-    .querySelectorAll(".nw-chip")
-    .forEach((btn) => btn.addEventListener("click", () => insert(btn.getAttribute("data-insert"))));
+  // Delegate: ＋ / plain chips insert; underlined words open the shared popup.
+  card.addEventListener("click", (e) => {
+    const ins = e.target.closest("[data-insert]");
+    if (ins && card.contains(ins)) {
+      insert(ins.getAttribute("data-insert"));
+      return;
+    }
+    const word = e.target.closest(".nw-vocab-word");
+    if (word && card.contains(word)) {
+      const entry = vocabByTerm.get(normTerm(word.getAttribute("data-term")));
+      if (entry) openObjectiveTermPopup(entry);
+    }
+  });
 }
 
 function renderLaunchPhase(el, state, ctx, config) {
@@ -1683,15 +1729,15 @@ function renderLaunchPhase(el, state, ctx, config) {
     "Look at today's scene. What do you notice? What do you wonder?",
   );
 
-  // Notice & Wonder (Reveal data-context). No-op when absent.
-  renderNoticeAndWonder(el, config, state);
-
-  // The observation visual + generic Notice/Wonder belong with the "Be Curious"
-  // image — the thing students observe — NOT the Launch word problem. They are
-  // rendered here, before Launch, so "I notice / I wonder" matches the Be Curious
-  // visual rather than the scenario.
-  // Opt-in concrete data visual so "I notice / I wonder" has something to see.
+  // The observation visual (the scene students look at) renders FIRST, so the
+  // "I notice / I wonder" prompts have something concrete to observe and the
+  // sentence starters / academic vocabulary can sit directly beneath the boxes.
+  // Opt-in; no-op when the lesson has no launch visual.
   renderLaunchVisual(el, cfg.visual);
+
+  // Notice & Wonder (Reveal data-context) capture — image + notice/wonder boxes.
+  // No-op when absent.
+  renderNoticeAndWonder(el, config, state);
 
   // Generic Notice / Wonder capture — only when the lesson has no richer Reveal
   // Notice & Wonder card (see hasRevealNW), so students never see two identical
@@ -1730,10 +1776,12 @@ function renderLaunchPhase(el, state, ctx, config) {
     el.append(grid);
   }
 
-  // ESOL support for the Notice/Wonder: academic words + sentence phrases tied to
-  // the picture, tap to insert into whichever response box is focused. Attaches
-  // to `el`, so it serves both the generic grid and the richer Reveal N&W boxes.
-  renderNoticeWonderSupport(el, cfg.beCurious);
+  // ESOL support, rendered DIRECTLY under the notice/wonder boxes: academic words
+  // + sentence phrases tied to the picture, tap to insert into whichever response
+  // box is focused. Attaches to `el`, so it serves both the generic grid and the
+  // richer Reveal N&W boxes. `config` lets academic words open the glossary popup
+  // (image + simple EN/ES definition) when the lesson defines that term.
+  renderNoticeWonderSupport(el, cfg.beCurious, config);
 
   // Objectives now sit AFTER Be Curious (their own cards): students get curious
   // about the scene first, THEN see the formal "I can…" goals for today.
