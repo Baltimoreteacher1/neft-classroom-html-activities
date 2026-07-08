@@ -438,15 +438,33 @@ function coordPlaneSVG(cfg) {
     grid += `<line x1="${pad}" y1="${Y(i)}" x2="${W - pad}" y2="${Y(i)}" stroke="rgba(0,0,0,0.06)"/>`;
   }
   const axes = `<line x1="${pad}" y1="${cy}" x2="${W - pad}" y2="${cy}" stroke="var(--ink,#333)" stroke-width="2"/><line x1="${cx}" y1="${pad}" x2="${cx}" y2="${H - pad}" stroke="var(--ink,#333)" stroke-width="2"/>`;
-  const pts = (cfg.points || [])
+  const rawPts = (cfg.points || []).map((p) => ({
+    x: Number(p.x),
+    y: Number(p.y),
+    label: p.label,
+  }));
+  // Closed outline connecting the vertices in cyclic order (sorted around the
+  // centroid) so a parallelogram/quadrilateral actually reads as a shape rather
+  // than four loose dots, and never self-intersects regardless of point order.
+  let outline = "";
+  if (rawPts.length >= 3) {
+    const gx = rawPts.reduce((s, p) => s + p.x, 0) / rawPts.length;
+    const gy = rawPts.reduce((s, p) => s + p.y, 0) / rawPts.length;
+    const ring = rawPts
+      .slice()
+      .sort((a, b) => Math.atan2(a.y - gy, a.x - gx) - Math.atan2(b.y - gy, b.x - gx));
+    const poly = ring.map((p) => `${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" ");
+    outline = `<polygon points="${poly}" fill="rgba(31,166,162,0.10)" stroke="#1fa6a2" stroke-width="2.5"/>`;
+  }
+  const pts = rawPts
     .map((p) => {
-      const px = X(Number(p.x)),
-        py = Y(Number(p.y));
+      const px = X(p.x),
+        py = Y(p.y);
       const lbl = p.label || `(${p.x}, ${p.y})`;
       return `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="6" fill="var(--coral,#d9795d)" stroke="#fff" stroke-width="2"/><text x="${(px + 8).toFixed(1)}" y="${(py - 8).toFixed(1)}" font-size="11" font-weight="700" fill="var(--navy,#264653)">${esc(lbl)}</text>`;
     })
     .join("");
-  return svgFigure(cfg, `${grid}${axes}${pts}`, W, H, 16);
+  return svgFigure(cfg, `${grid}${axes}${outline}${pts}`, W, H, 16);
 }
 
 // Unified visual builder → HTML string. Returns "" for unknown/empty kinds.

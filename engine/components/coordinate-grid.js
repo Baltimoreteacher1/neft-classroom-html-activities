@@ -350,8 +350,14 @@ export function renderCoordinateGrid(container, config = {}) {
         drawnLine = null;
       }
       if (cb.checked && placedPoints.length >= 2) {
-        drawnLine = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-        const pts = placedPoints.map((p) => `${toSvgX(p.coord.x)},${toSvgY(p.coord.y)}`).join(" ");
+        // Order the vertices cyclically around their centroid so the outline is
+        // a simple (non-self-intersecting) polygon no matter what order the
+        // student plotted them in, and close it (polygon) so 3+ points form a
+        // complete shape (e.g. a parallelogram) instead of an open path.
+        const ordered = orderRing(placedPoints);
+        const tag = ordered.length >= 3 ? "polygon" : "polyline";
+        drawnLine = document.createElementNS("http://www.w3.org/2000/svg", tag);
+        const pts = ordered.map((p) => `${toSvgX(p.coord.x)},${toSvgY(p.coord.y)}`).join(" ");
         drawnLine.setAttribute("points", pts);
         drawnLine.setAttribute("fill", "none");
         drawnLine.setAttribute("stroke", "#1fa6a2");
@@ -427,6 +433,21 @@ export function renderCoordinateGrid(container, config = {}) {
 
   wrapper.append(checkBtn);
   container.append(wrapper);
+}
+
+// Sort points into cyclic (counter-clockwise) order around their centroid so
+// consecutive points trace a simple, non-self-intersecting polygon perimeter.
+// Works for any convex shape (parallelograms, rectangles, triangles).
+function orderRing(points) {
+  if (points.length < 3) return points.slice();
+  const cx = points.reduce((s, p) => s + p.coord.x, 0) / points.length;
+  const cy = points.reduce((s, p) => s + p.coord.y, 0) / points.length;
+  return points
+    .slice()
+    .sort(
+      (a, b) =>
+        Math.atan2(a.coord.y - cy, a.coord.x - cx) - Math.atan2(b.coord.y - cy, b.coord.x - cx),
+    );
 }
 
 function svgLine(parent, x1, y1, x2, y2, stroke, width) {
