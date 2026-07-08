@@ -139,7 +139,11 @@ function figureAria(cfg, fallback = "Data figure") {
   } else if (Array.isArray(cfg?.values) && cfg.values.length) {
     parts.push("Values — " + cfg.values.join(", "));
   }
-  if (cfg && ["min", "q1", "median", "q3", "max"].some((k) => cfg[k] != null)) {
+  // Only describe a five-number summary for an actual box-plot (authored q1/
+  // median/q3). A number-line also carries min/max/step — keying off those made
+  // this spuriously announce "Q1 undefined, median undefined" for every number
+  // line. Box-plots built from `values` are already covered by the branch above.
+  if (cfg && ["q1", "median", "q3"].some((k) => cfg[k] != null)) {
     parts.push(
       `five-number summary: minimum ${cfg.min}, Q1 ${cfg.q1}, median ${cfg.median}, Q3 ${cfg.q3}, maximum ${cfg.max}`,
     );
