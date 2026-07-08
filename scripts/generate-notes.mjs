@@ -1121,24 +1121,6 @@ function enrichSection(practice = {}, usedStems = new Set()) {
   </div>`;
 }
 
-function reflectSection(reflect = {}) {
-  const et = reflect.exitTicket || {};
-  const stem = et.stem || "";
-  if (!stem) return "";
-  let choiceHtml = "";
-  if (Array.isArray(et.choices)) {
-    choiceHtml = `<ol class="try-choices" type="A">${et.choices
-      .map((c) => `<li>${esc(c)}</li>`)
-      .join("")}</ol>`;
-  }
-  return `<section class="section reflect">
-  <h2>Reflect — Exit Ticket</h2>
-  <p class="reflect-stem">${esc(stem)}</p>
-  ${choiceHtml}
-  <div class="work-space"><span class="ws-label">Your answer:</span>${blankLines(3)}</div>
-</section>`;
-}
-
 // Per-distractor "why this is wrong" guidance for an MCQ, rendered only for the
 // incorrect choices (keyed off correctIndex) and only when the config supplies
 // an explicit `choiceExplanations` array. Additive/forward-compatible: nothing
@@ -1218,18 +1200,6 @@ function answerKeySection(
     );
   });
 
-  const et = reflect.exitTicket || {};
-  if (et.stem) {
-    let ans = "";
-    if (Array.isArray(et.choices) && typeof et.correctIndex === "number") {
-      ans = `${choiceLetter(et.correctIndex)}. ${et.choices[et.correctIndex]}`;
-    }
-    rows.push(
-      `<li><strong>Exit Ticket:</strong> ${esc(ans)}${
-        et.explanation ? ` <span class="ak-why">— ${esc(et.explanation)}</span>` : ""
-      }</li>`,
-    );
-  }
   if (!rows.length) return "";
   return `<section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
@@ -2339,7 +2309,6 @@ ${autoSaveScript(`nt-notes:${esc(id)}`)}
   </header>
   ${missionBanner(cfg)}
   ${notesSection(cfg, worked, gn.html)}
-  ${reflectSection(cfg.reflect)}
   ${teacher ? answerKeySection({}, cfg.reflect, cfg, null, new Set(), gn.keyRows) : ""}
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson ${esc(id)}${standard ? " · " + standard : ""}${teacher ? " · Teacher Copy" : ""}</footer>
 </main>
