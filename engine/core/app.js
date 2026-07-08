@@ -575,6 +575,13 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       "position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:9998; display:none;";
     main.append(canvas);
 
+    // The drawing canvas (z-index 9998) spans the viewport when active and would
+    // otherwise paint OVER the sidebar — the sidebar (position:sticky) forms its
+    // own stacking context at level 0, so its controls (incl. the Draw toggle)
+    // would sit under the canvas and become unclickable, leaving no way to turn
+    // drawing back off. Lift the whole sidebar just above the canvas.
+    sidebar.style.zIndex = "9999";
+
     const ctx = canvas.getContext("2d");
     let drawing = false;
     let color = "#ef4444";
