@@ -229,9 +229,7 @@
           init() {
             if (!this.ctx)
               try {
-                this.ctx = new (
-                  window.AudioContext || window.webkitAudioContext
-                )();
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
               } catch (e) {}
           },
           beep(f, d, type = "sine", v = 0.15) {
@@ -242,10 +240,7 @@
               o.type = type;
               o.frequency.value = f;
               g.gain.setValueAtTime(v, this.ctx.currentTime);
-              g.gain.exponentialRampToValueAtTime(
-                0.001,
-                this.ctx.currentTime + d,
-              );
+              g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + d);
               o.connect(g);
               g.connect(this.ctx.destination);
               o.start();
@@ -263,9 +258,7 @@
             this.beep(520, 0.05, "square", 0.08);
           },
           win() {
-            [523, 659, 784, 1047].forEach((f, i) =>
-              setTimeout(() => this.beep(f, 0.2), i * 110),
-            );
+            [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => this.beep(f, 0.2), i * 110));
           },
         };
 
@@ -298,9 +291,7 @@
           let gotTheme = false;
           for (const id of ids) {
             try {
-              const res = await fetch(
-                `/lessons/${encodeURIComponent(id)}/config.json`,
-              );
+              const res = await fetch(`/lessons/${encodeURIComponent(id)}/config.json`);
               if (!res.ok) continue;
               const data = await res.json();
               if (data.title) firstTitles.push(data.title);
@@ -363,8 +354,7 @@
                   "arrow keys; no timer.",
               );
               cv.setAttribute("aria-roledescription", "math review game");
-              if (!cv.hasAttribute("tabindex"))
-                cv.setAttribute("tabindex", "0");
+              if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
             } catch (e) {}
           });
         }
@@ -374,8 +364,7 @@
         function buildRound(it) {
           if (!it || !it.type) return null;
           if (it.type === "multiple-choice") {
-            if (!it.stem || !Array.isArray(it.choices) || it.choices.length < 2)
-              return null;
+            if (!it.stem || !Array.isArray(it.choices) || it.choices.length < 2) return null;
             // Randomize the choice order. Every lesson config authors the correct
             // answer first (correctIndex 0) and the renderer keeps that order, so
             // without this the answer is always the top button — predictable and
@@ -413,8 +402,7 @@
                 const id = c.id || c.label;
                 (c.items || []).forEach((x) => {
                   const text = typeof x === "string" ? x : x && x.text;
-                  if (text != null)
-                    items.push({ text: String(text), category: id });
+                  if (text != null) items.push({ text: String(text), category: id });
                 });
               });
             }
@@ -436,7 +424,11 @@
             if (!Array.isArray(it.pairs) || it.pairs.length < 2) return null;
             return {
               kind: "match",
-              prompt: it.instructions || "Match each card to its partner.",
+              // Configs author the matching prompt under `label`; older ones use
+              // `instructions`. Fall back to a generic line only if both are absent
+              // (otherwise the authored question is silently replaced — the bug
+              // that made nearly every lesson read "Match each card to its partner").
+              prompt: it.instructions || it.label || it.prompt || "Match each card to its partner.",
               pairs: it.pairs
                 .filter((p) => p && p.term != null && p.match != null)
                 .slice(0, 5)
@@ -445,11 +437,13 @@
             };
           }
           if (it.type === "error-analysis") {
-            if (!Array.isArray(it.workedExample) || it.errorStep == null)
-              return null;
+            if (!Array.isArray(it.workedExample) || it.errorStep == null) return null;
             return {
               kind: "fixit",
-              prompt: it.title || "Find the step with the mistake.",
+              // Titles are authored with a teacher-facing tier tag
+              // ("Level 2 Extension — Catch the Mistake"); strip that prefix so
+              // students see only the scenario, not the differentiation label.
+              prompt: stripTierLabel(it.title) || "Find the step with the mistake.",
               steps: it.workedExample.map((s) => ({
                 label: s.label || "",
                 work: s.work || "",
@@ -488,17 +482,12 @@
           create() {
             drawStars(this);
             this.add
-              .text(
-                W / 2,
-                150,
-                isReviewMode ? "UNIT REVIEW" : "PRACTICE ARCADE",
-                {
-                  fontFamily: "Nunito, Segoe UI, sans-serif",
-                  fontSize: "52px",
-                  fontStyle: "bold",
-                  color: "#38bdf8",
-                },
-              )
+              .text(W / 2, 150, isReviewMode ? "UNIT REVIEW" : "PRACTICE ARCADE", {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "52px",
+                fontStyle: "bold",
+                color: "#38bdf8",
+              })
               .setOrigin(0.5);
             this.add
               .text(W / 2, 210, lessonTitle, {
@@ -542,12 +531,7 @@
             makeLink(this, W / 2, 560, "← Back to lessons", () => {
               window.location.href = "/curriculum/";
             });
-            srSay(
-              lessonTitle +
-                " Practice Arcade. " +
-                rounds.length +
-                " challenges. Press Start.",
-            );
+            srSay(lessonTitle + " Practice Arcade. " + rounds.length + " challenges. Press Start.");
           }
         }
 
@@ -558,8 +542,7 @@
           }
           create() {
             this.reduce = !!(
-              window.matchMedia &&
-              window.matchMedia("(prefers-reduced-motion: reduce)").matches
+              window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
             );
             this.idx = 0;
             this.score = 0;
@@ -634,16 +617,7 @@
             // Journey track: a goal flag the mascot walks toward, one step per round.
             this.journeyY = 74;
             this.add
-              .line(
-                0,
-                0,
-                120,
-                this.journeyY,
-                W - 70,
-                this.journeyY,
-                this.th.accentN,
-                0.4,
-              )
+              .line(0, 0, 120, this.journeyY, W - 70, this.journeyY, this.th.accentN, 0.4)
               .setOrigin(0, 0)
               .setLineWidth(2);
             this.add.text(W - 60, this.journeyY - 12, "🏁", {
@@ -694,9 +668,7 @@
               return;
             }
             const r = rounds[this.idx];
-            this.progressText.setText(
-              "Round " + (this.idx + 1) + " / " + rounds.length,
-            );
+            this.progressText.setText("Round " + (this.idx + 1) + " / " + rounds.length);
             // Prompt panel sized to text
             this.promptText.setText(r.prompt);
             const ph = Math.max(70, this.promptText.height + 30);
@@ -728,31 +700,19 @@
               const firstTry = this.tries === 0;
               this.streak = firstTry ? this.streak + 1 : 0;
               if (firstTry) this.correctCount++;
-              const gained =
-                (firstTry ? 100 : 40) + Math.min(this.streak, 5) * 20;
+              const gained = (firstTry ? 100 : 40) + Math.min(this.streak, 5) * 20;
               this.score += gained;
               // Juice escalates with the streak: more particles, bigger shake,
               // a second burst + confetti once it's rolling.
               JUICE.audio.correct(this.streak);
               const n = 18 + Math.min(this.streak, 6) * 4;
-              JUICE.burst(
-                this,
-                cx,
-                cy,
-                [0x34d399, PALETTE.accent, 0xffffff],
-                n,
-              );
-              if (this.streak >= 5)
-                JUICE.burst(this, cx, cy + 60, [0xfacc15, 0xffffff], 16);
+              JUICE.burst(this, cx, cy, [0x34d399, PALETTE.accent, 0xffffff], n);
+              if (this.streak >= 5) JUICE.burst(this, cx, cy + 60, [0xfacc15, 0xffffff], 16);
               JUICE.shake(this, 0.005 + Math.min(this.streak, 5) * 0.001);
               JUICE.floatText(this, cx, cy - 30, "+" + gained, "#34d399", 40);
               this.mascotReact(true);
               this.mascotSay(
-                firstTry
-                  ? this.streak >= 3
-                    ? "🔥 On fire!"
-                    : "Nice!"
-                  : "Got it! 🎉",
+                firstTry ? (this.streak >= 3 ? "🔥 On fire!" : "Nice!") : "Got it! 🎉",
               );
               const xp = 10 + Math.min(this.streak, 5) * 2;
               JUICE.award(xp, "practice-arcade");
@@ -776,12 +736,9 @@
               JUICE.audio.wrong();
               JUICE.shake(this, 0.006);
               this.mascotReact(false);
-              this.mascotSay(
-                this.tries >= 2 ? "Use the hint 👀" : "Try again 👀",
-              );
+              this.mascotSay(this.tries >= 2 ? "Use the hint 👀" : "Try again 👀");
               this.flashEdge(PALETTE.bad);
-              const msg =
-                this.tries >= 2 && w ? "Hint: " + w : "Not quite — try again!";
+              const msg = this.tries >= 2 && w ? "Hint: " + w : "Not quite — try again!";
               this.feedback.setColor("#fde68a").setText(msg).setAlpha(1);
               srSay("Not quite. Try again. " + (this.tries >= 2 ? w : ""));
               this.updateHUD();
@@ -799,19 +756,13 @@
 
           updateHUD() {
             this.scoreText.setText("Score: " + this.score);
-            this.streakText.setText(
-              this.streak > 1 ? "🔥 Streak " + this.streak : "",
-            );
-            this.livesText.setText(
-              "⭐ " + this.correctCount + " / " + rounds.length,
-            );
+            this.streakText.setText(this.streak > 1 ? "🔥 Streak " + this.streak : "");
+            this.livesText.setText("⭐ " + this.correctCount + " / " + rounds.length);
           }
 
           flashEdge(color) {
             if (this.reduce) return;
-            const r = this.add
-              .rectangle(W / 2, H / 2, W, H, color, 0.22)
-              .setDepth(50);
+            const r = this.add.rectangle(W / 2, H / 2, W, H, color, 0.22).setDepth(50);
             this.tweens.add({
               targets: r,
               alpha: 0,
@@ -831,18 +782,10 @@
               const t = this.makeTile(W / 2, y, tileW, 52, i + 1 + ".  " + c);
               this.layer.add(t.parts);
               tiles.push(t);
-              t.bg.on(
-                "pointerover",
-                () => !this.locked && t.bg.setFillStyle(PALETTE.tileHi),
-              );
-              t.bg.on(
-                "pointerout",
-                () => !this.locked && t.bg.setFillStyle(PALETTE.tile),
-              );
+              t.bg.on("pointerover", () => !this.locked && t.bg.setFillStyle(PALETTE.tileHi));
+              t.bg.on("pointerout", () => !this.locked && t.bg.setFillStyle(PALETTE.tile));
               t.bg.on("pointerdown", () => this.pickChoice(r, i, t));
-              this.input.keyboard.on("keydown-" + keyName(i + 1), () =>
-                this.pickChoice(r, i, t),
-              );
+              this.input.keyboard.on("keydown-" + keyName(i + 1), () => this.pickChoice(r, i, t));
             });
             // On a miss, flash the correct choice green so the answer is visible.
             this.revealCorrect = () => {
@@ -884,13 +827,7 @@
               g.fillStyle(PALETTE.panel, 0.9);
               g.lineStyle(2, PALETTE.accent, 0.7);
               g.fillRoundedRect(bx - binW / 2, binY - binH / 2, binW, binH, 12);
-              g.strokeRoundedRect(
-                bx - binW / 2,
-                binY - binH / 2,
-                binW,
-                binH,
-                12,
-              );
+              g.strokeRoundedRect(bx - binW / 2, binY - binH / 2, binW, binH, 12);
               const lbl = this.add
                 .text(bx, binY - binH / 2 + 18, c.label, {
                   fontFamily: "Nunito, Segoe UI, sans-serif",
@@ -943,11 +880,18 @@
               .setOrigin(0.5);
             this.layer.add(hint);
 
-            // Items in a row near the top of the play area
+            // Items in a staging grid above the bins. Item text is often a full
+            // expression ("Octagon tile triangle: ½ × 10 × 3 = 15 sq ft") that
+            // spilled out of the old narrow 132×46 tiles. Cap the grid at 3 wide,
+            // widen each tile, and give it height for a two-line wrap so nothing
+            // overflows the box.
             const items = shuffle(r.items);
-            const rowY = 92 + Math.max(70, this.promptText.height + 30) + 46;
-            const perRow = Math.min(items.length, 6);
-            const spacing = Math.min(150, (W - 120) / perRow);
+            const rowY = 92 + Math.max(70, this.promptText.height + 30) + 40;
+            const perRow = items.length <= 2 ? items.length : items.length <= 4 ? 2 : 3;
+            const spacing = Math.min(300, (W - 120) / perRow);
+            const tileW = spacing - 20;
+            const tileH = 62;
+            const rowGap = 74;
             let ix = (W - (perRow - 1) * spacing) / 2;
             this.sortTiles = [];
             this.sortHi = 0;
@@ -955,8 +899,8 @@
               const col = i % perRow;
               const row = Math.floor(i / perRow);
               const x = ix + col * spacing;
-              const y = rowY + row * 60;
-              const t = this.makeTile(x, y, spacing - 18, 46, it.text);
+              const y = rowY + row * rowGap;
+              const t = this.makeTile(x, y, tileW, tileH, it.text, "15px");
               t.homeX = x;
               t.homeY = y;
               t.data = it;
@@ -996,9 +940,7 @@
               // box or pressing its number — a reliable path on touch devices.
               t.parts.on("pointerup", (p) => {
                 if (t.assigned) return;
-                const moved =
-                  Phaser.Math.Distance.Between(p.downX, p.downY, p.upX, p.upY) >
-                  12;
+                const moved = Phaser.Math.Distance.Between(p.downX, p.downY, p.upX, p.upY) > 12;
                 if (!moved) this.selectSortTile(t);
               });
               this.sortTiles.push(t);
@@ -1007,21 +949,13 @@
 
             // Keyboard: number keys 1..N drop the highlighted tile into bin N
             this.bins.forEach((b, bi) => {
-              this.input.keyboard.on("keydown-" + keyName(bi + 1), () =>
-                this.placeHighlighted(bi),
-              );
+              this.input.keyboard.on("keydown-" + keyName(bi + 1), () => this.placeHighlighted(bi));
             });
             // Keyboard users confirm with Enter (the CHECK button is pointer-only).
             this.input.keyboard.on("keydown-ENTER", () => this.checkSort(r));
 
-            const cb = makeButton(
-              this,
-              W / 2,
-              binY - binH / 2 - 28,
-              160,
-              42,
-              "CHECK ✓",
-              () => this.checkSort(r),
+            const cb = makeButton(this, W / 2, binY - binH / 2 - 28, 160, 42, "CHECK ✓", () =>
+              this.checkSort(r),
             );
             this.layer.add(cb.bg);
             this.layer.add(cb.t);
@@ -1032,10 +966,7 @@
             let n = this.sortTiles.findIndex((t) => !t.assigned);
             this.sortHi = n < 0 ? 0 : n;
             this.sortTiles.forEach((t, i) =>
-              t.bg.setStrokeStyle(
-                i === this.sortHi && !t.assigned ? 4 : 0,
-                0xfacc15,
-              ),
+              t.bg.setStrokeStyle(i === this.sortHi && !t.assigned ? 4 : 0, 0xfacc15),
             );
           }
           // Tap-select a tile: make it the active (highlighted) one so a bin tap
@@ -1076,9 +1007,7 @@
             });
             const b = target >= 0 ? this.bins[target] : null;
             const nearBox =
-              b &&
-              Math.abs(gx - b.x) <= b.w / 2 + MARGIN &&
-              Math.abs(gy - b.y) <= b.h / 2 + MARGIN;
+              b && Math.abs(gx - b.x) <= b.w / 2 + MARGIN && Math.abs(gy - b.y) <= b.h / 2 + MARGIN;
             // Also accept if released anywhere in the horizontal band of the bins
             // (so a drop that overshoots vertically still snaps to the nearest box).
             const inBinsBand = b && gy >= b.y - b.h / 2 - MARGIN;
@@ -1126,13 +1055,9 @@
               srSay("Place every tile in a bin first.");
               return;
             }
-            const allRight = this.sortTiles.every(
-              (t) => t.assigned === t.data.category,
-            );
+            const allRight = this.sortTiles.every((t) => t.assigned === t.data.category);
             this.sortTiles.forEach((t) =>
-              t.bg.setFillStyle(
-                t.assigned === t.data.category ? PALETTE.good : PALETTE.bad,
-              ),
+              t.bg.setFillStyle(t.assigned === t.data.category ? PALETTE.good : PALETTE.bad),
             );
             if (allRight) {
               this.resolve(true, "");
@@ -1140,19 +1065,13 @@
             }
             // Wrong: keep the correctly-placed tiles, send the misplaced (red)
             // ones home and make them draggable again for another try.
-            this.resolve(
-              false,
-              "Move the red tiles to the right bin, then check.",
-            );
+            this.resolve(false, "Move the red tiles to the right bin, then check.");
             this.time.delayedCall(720, () => {
               if (this.locked) return;
               this.sortTiles.forEach((t) => {
                 if (t.assigned !== t.data.category) {
                   if (t.binSlot)
-                    this.bins[t.binSlot.bi].count = Math.max(
-                      0,
-                      this.bins[t.binSlot.bi].count - 1,
-                    );
+                    this.bins[t.binSlot.bi].count = Math.max(0, this.bins[t.binSlot.bi].count - 1);
                   t.assigned = null;
                   t.binSlot = null;
                   t.bg.setFillStyle(PALETTE.tile);
@@ -1182,13 +1101,7 @@
 
             terms.forEach((p, row) => {
               const y = topY + row * gap;
-              const t = this.makeTile(
-                leftX,
-                y,
-                280,
-                48,
-                row + 1 + ".  " + p.term,
-              );
+              const t = this.makeTile(leftX, y, 280, 48, row + 1 + ".  " + p.term);
               t.pairId = p.i;
               t.side = "L";
               t.expect = p.match; // value-based comparison (duplicate-text safe)
@@ -1196,19 +1109,12 @@
               t.bg.on("pointerdown", () => this.matchTap(t));
               this.matchLeft.push(t);
               this.input.keyboard.on("keydown-" + keyName(row + 1), () => {
-                if (!this.matchSel || this.matchSel.side === "R")
-                  this.matchTap(t);
+                if (!this.matchSel || this.matchSel.side === "R") this.matchTap(t);
               });
             });
             matches.forEach((p, row) => {
               const y = topY + row * gap;
-              const t = this.makeTile(
-                rightX,
-                y,
-                280,
-                48,
-                LETTERS[row] + ".  " + p.match,
-              );
+              const t = this.makeTile(rightX, y, 280, 48, LETTERS[row] + ".  " + p.match);
               t.pairId = p.i;
               t.side = "R";
               t.val = p.match;
@@ -1217,8 +1123,7 @@
               this.matchRight.push(t);
               if (LETTERS[row])
                 this.input.keyboard.on("keydown-" + LETTERS[row], () => {
-                  if (this.matchSel && this.matchSel.side === "L")
-                    this.matchTap(t);
+                  if (this.matchSel && this.matchSel.side === "L") this.matchTap(t);
                 });
             });
             // Screen-reader roster + instructions for keyboard users.
@@ -1267,8 +1172,7 @@
               this.score += 20;
               JUICE.audio.pop();
               this.updateHUD();
-              if (this.matchRemaining <= 0)
-                this.resolve(true, "All pairs matched!");
+              if (this.matchRemaining <= 0) this.resolve(true, "All pairs matched!");
             } else {
               a.bg.setFillStyle(PALETTE.bad);
               b.bg.setFillStyle(PALETTE.bad);
@@ -1285,34 +1189,31 @@
 
           // ── Renderer: FIXIT (spot the step with the mistake) ───────────────
           renderFixit(r) {
-            const topY = 92 + Math.max(70, this.promptText.height + 30) + 36;
+            const hintY = 92 + Math.max(70, this.promptText.height + 30) + 24;
+            // Tell the student what to DO — the prompt only names the scenario.
+            const cue = this.add
+              .text(W / 2, hintY, "One step below has a mistake. Tap the step that is wrong.", {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "15px",
+                color: "#e0e7ff",
+                align: "center",
+                wordWrap: { width: W - 200 },
+              })
+              .setOrigin(0.5);
+            this.layer.add(cue);
+            const topY = hintY + 34;
             const gap = Math.min(72, (H - topY - 70) / r.steps.length);
             const tiles = [];
             r.steps.forEach((s, i) => {
               const y = topY + i * gap;
               const label = (s.label ? s.label + ":  " : "") + s.work;
-              const t = this.makeTile(
-                W / 2,
-                y,
-                W - 220,
-                50,
-                i + 1 + ".  " + label,
-                "16px",
-              );
+              const t = this.makeTile(W / 2, y, W - 220, 50, i + 1 + ".  " + label, "16px");
               this.layer.add(t.parts);
               tiles.push(t);
-              t.bg.on(
-                "pointerover",
-                () => !this.locked && t.bg.setFillStyle(PALETTE.tileHi),
-              );
-              t.bg.on(
-                "pointerout",
-                () => !this.locked && t.bg.setFillStyle(PALETTE.tile),
-              );
+              t.bg.on("pointerover", () => !this.locked && t.bg.setFillStyle(PALETTE.tileHi));
+              t.bg.on("pointerout", () => !this.locked && t.bg.setFillStyle(PALETTE.tile));
               t.bg.on("pointerdown", () => this.pickFix(r, i, t));
-              this.input.keyboard.on("keydown-" + keyName(i + 1), () =>
-                this.pickFix(r, i, t),
-              );
+              this.input.keyboard.on("keydown-" + keyName(i + 1), () => this.pickFix(r, i, t));
             });
             this.revealCorrect = () => {
               const ct = tiles[r.errorStep];
@@ -1322,10 +1223,7 @@
               rounds[this.idx].prompt +
                 ". Steps: " +
                 r.steps
-                  .map(
-                    (s, i) =>
-                      i + 1 + ", " + ((s.label ? s.label + " " : "") + s.work),
-                  )
+                  .map((s, i) => i + 1 + ", " + ((s.label ? s.label + " " : "") + s.work))
                   .join("; ") +
                 ". Press the number of the step with the mistake.",
             );
@@ -1464,13 +1362,7 @@
               .text(
                 W / 2,
                 310,
-                "Score " +
-                  d.score +
-                  "\n" +
-                  d.correct +
-                  " of " +
-                  d.total +
-                  " correct",
+                "Score " + d.score + "\n" + d.correct + " of " + d.total + " correct",
                 {
                   fontFamily: "Nunito, Segoe UI, sans-serif",
                   fontSize: "24px",
@@ -1504,18 +1396,10 @@
                 });
             } catch (e) {}
             srSay(
-              "Review complete. " +
-                d.correct +
-                " of " +
-                d.total +
-                " correct. " +
-                stars +
-                " stars.",
+              "Review complete. " + d.correct + " of " + d.total + " correct. " + stars + " stars.",
             );
 
-            makeButton(this, W / 2, 420, 220, 56, "PLAY AGAIN 🔁", () =>
-              window.location.reload(),
-            );
+            makeButton(this, W / 2, 420, 220, 56, "PLAY AGAIN 🔁", () => window.location.reload());
             makeLink(this, W / 2, 510, "← Back to lessons", () => {
               window.location.href = "/curriculum/";
             });
@@ -1528,17 +1412,10 @@
           // look no longer depends on the muted per-lesson theme. A soft field of
           // white dots adds a little sparkle without lowering contrast.
           const bg = scene.add.graphics();
-          bg.fillGradientStyle(
-            PALETTE.bgTop,
-            PALETTE.bgTop,
-            PALETTE.bgBot,
-            PALETTE.bgBot,
-            1,
-          );
+          bg.fillGradientStyle(PALETTE.bgTop, PALETTE.bgTop, PALETTE.bgBot, PALETTE.bgBot, 1);
           bg.fillRect(0, 0, W, H);
           const reduce =
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
           const g = scene.add.graphics();
           g.fillStyle(0xffffff, 0.28);
           const n = reduce ? 36 : 80;
@@ -1580,6 +1457,15 @@
           t.on("pointerout", () => t.setColor("#7dd3fc"));
           t.on("pointerdown", onClick);
           return t;
+        }
+        // Strip a teacher-facing differentiation prefix ("Level 2 Extension — ",
+        // "Level 1: ", "Level 3 - ") from an authored title so only the
+        // student-facing scenario remains. Returns "" for empty/undefined input.
+        function stripTierLabel(s) {
+          if (!s) return "";
+          return String(s)
+            .replace(/^\s*level\s*\d+\s*(?:extension)?\s*[—:–-]\s*/i, "")
+            .trim();
         }
         // Map a 1-9 number to Phaser's digit key-code name (keydown-ONE … NINE).
         function keyName(n) {
