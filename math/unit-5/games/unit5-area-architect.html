@@ -44,12 +44,7 @@
         z-index: 0;
         overflow: hidden;
         pointer-events: none;
-        background: radial-gradient(
-          120% 80% at 50% 0%,
-          #142c4a 0%,
-          #0a1a2e 60%,
-          #06101d 100%
-        );
+        background: radial-gradient(120% 80% at 50% 0%, #142c4a 0%, #0a1a2e 60%, #06101d 100%);
       }
       #aa-bg-layer {
         position: absolute;
@@ -169,19 +164,11 @@
       // is gated by prefers-reduced-motion (rebuilt static if the user prefers).
       (function () {
         "use strict";
-        var reduceMQ =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)");
+        var reduceMQ = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
         var layer = document.getElementById("aa-bg-layer");
         if (!layer) return;
 
-        var TOWER_COLORS = [
-          "#1a3366",
-          "#224488",
-          "#2a4f93",
-          "#16294a",
-          "#1f3a6e",
-        ];
+        var TOWER_COLORS = ["#1a3366", "#224488", "#2a4f93", "#16294a", "#1f3a6e"];
 
         function rnd(a, b) {
           return a + Math.random() * (b - a);
@@ -215,8 +202,7 @@
             t.style.width = w.toFixed(0) + "px";
             t.style.height = h.toFixed(0) + "px";
             t.style.left = ((i / count) * 100 + rnd(-3, 3)).toFixed(2) + "%";
-            t.style.background =
-              TOWER_COLORS[Math.floor(Math.random() * TOWER_COLORS.length)];
+            t.style.background = TOWER_COLORS[Math.floor(Math.random() * TOWER_COLORS.length)];
             t.style.opacity = (0.4 + Math.random() * 0.3).toFixed(2);
             layer.appendChild(t);
           }
@@ -233,11 +219,7 @@
           var dx = e.clientX / (window.innerWidth || 1) - 0.5;
           var dy = e.clientY / (window.innerHeight || 1) - 0.5;
           layer.style.transform =
-            "translate3d(" +
-            (dx * 22).toFixed(2) +
-            "px," +
-            (dy * 14).toFixed(2) +
-            "px,0)";
+            "translate3d(" + (dx * 22).toFixed(2) + "px," + (dy * 14).toFixed(2) + "px,0)";
         }
         function attachDriver() {
           if (driverAttached || (reduceMQ && reduceMQ.matches)) return;
@@ -258,8 +240,7 @@
             if (reduceMQ.matches) detachDriver();
             else attachDriver();
           };
-          if (reduceMQ.addEventListener)
-            reduceMQ.addEventListener("change", onChange);
+          if (reduceMQ.addEventListener) reduceMQ.addEventListener("change", onChange);
           else if (reduceMQ.addListener) reduceMQ.addListener(onChange);
         }
 
@@ -287,8 +268,7 @@
       const SFX = {
         ctx: null,
         init() {
-          if (!this.ctx)
-            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+          if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
         },
         play(t, f, d, v = 0.2) {
           if (!this.ctx) return;
@@ -407,9 +387,7 @@
         return Math.floor(Math.random() * (b - a + 1)) + a;
       }
       function fmtNum(n) {
-        return Number.isInteger(n)
-          ? String(n)
-          : String(Math.round(n * 10) / 10);
+        return Number.isInteger(n) ? String(n) : String(Math.round(n * 10) / 10);
       }
       const DIM_LABELS = {
         b: "the base",
@@ -419,6 +397,17 @@
       };
       function dimLabel(k) {
         return DIM_LABELS[k] || k;
+      }
+      // Short labels used in the prompt + "what to change" hint so the
+      // wording maps directly onto the stepper rows the student sees.
+      const DIM_SHORT = {
+        b: "base b",
+        h: "height h",
+        b1: "base b₁",
+        b2: "base b₂",
+      };
+      function dimShort(k) {
+        return DIM_SHORT[k] || k;
       }
 
       // Rounds where the target is (base, height): the blueprint fixes one
@@ -491,13 +480,7 @@
         const types =
           levelNum === 1
             ? ["rectangle", "parallelogram", "triangle"]
-            : [
-                "rectangle",
-                "parallelogram",
-                "triangle",
-                "trapezoid",
-                "composite",
-              ];
+            : ["rectangle", "parallelogram", "triangle", "trapezoid", "composite"];
         return makeRound(types[randInt(0, types.length - 1)]);
       }
 
@@ -546,64 +529,46 @@
           return opt.a1 + " + " + opt.a2 + " = ?";
         }
         if (round.type === "triangle")
-          return (
-            "½ × " + d.b + " × " + d.h + " = " + fmtNum(currentArea(round))
-          );
+          return "½ × " + d.b + " × " + d.h + " = " + fmtNum(currentArea(round));
         if (round.type === "trapezoid")
-          return (
-            "½ × (" +
-            d.b1 +
-            " + " +
-            d.b2 +
-            ") × " +
-            d.h +
-            " = " +
-            fmtNum(currentArea(round))
-          );
+          return "½ × (" + d.b1 + " + " + d.b2 + ") × " + d.h + " = " + fmtNum(currentArea(round));
         return d.b + " × " + d.h + " = " + fmtNum(currentArea(round));
       }
 
-      function givenSentence(round) {
-        const k = Object.keys(round.given)[0];
-        return (
-          "The blueprint fixes " + dimLabel(k) + " at " + round.given[k] + "."
-        );
-      }
-
+      const SHAPE_TITLE = {
+        rectangle: "🏠 Rectangle floor",
+        parallelogram: "▱ Parallelogram wall",
+        triangle: "🔺 Triangle roof",
+        trapezoid: "⬢ Trapezoid plaza",
+        composite: "🏞️ L-shaped park",
+      };
+      // Short, action-first prompt: line 1 = the goal (target area),
+      // line 2 = what the blueprint locked, line 3 = exactly what YOU change.
       function promptFor(round) {
-        if (round.type === "rectangle")
-          return (
-            "Rectangle floor — target area " +
-            round.area +
-            " sq units. " +
-            givenSentence(round)
-          );
-        if (round.type === "parallelogram")
-          return (
-            "Parallelogram wall (drawn slanted — area is still b × h) — target area " +
-            round.area +
-            " sq units. " +
-            givenSentence(round)
-          );
-        if (round.type === "triangle")
-          return (
-            "Triangle roof — target area " +
-            fmtNum(round.area) +
-            " sq units. " +
-            givenSentence(round) +
-            " The dashed rectangle shows b × h — your triangle is half of it."
-          );
+        const title = SHAPE_TITLE[round.type] || "Build";
+        if (round.type === "composite")
+          return title + "\nSplit it into two rectangles, add their areas, then Lock It In.";
+        const goal = title + " — build an area of " + fmtNum(round.area) + " sq units.";
         if (round.type === "trapezoid")
           return (
-            "Trapezoid plaza — target area " +
-            fmtNum(round.area) +
-            " sq units. b₁ = " +
+            goal +
+            "\nBlueprint sets base b₁ = " +
             round.given.b1 +
-            " and height = " +
+            " and height h = " +
             round.given.h +
-            " are given. Size b₂ to match."
+            ".\nChange base b₂ until the area matches."
           );
-        return "L-shaped park — place one slicing line to split it into two rectangles, then add their areas and lock in the total.";
+        const gk = Object.keys(round.given)[0];
+        return (
+          goal +
+          "\nBlueprint sets " +
+          dimShort(gk) +
+          " = " +
+          round.given[gk] +
+          ".\nChange " +
+          dimShort(round.freeKey) +
+          " until the area matches."
+        );
       }
 
       // Decide whether a lock-in is correct; if not, return a teaching message
@@ -633,9 +598,7 @@
               ".",
           };
         }
-        const wrongGiven = Object.keys(round.given).find(
-          (k) => round.dims[k] !== round.given[k],
-        );
+        const wrongGiven = Object.keys(round.given).find((k) => round.dims[k] !== round.given[k]);
         if (wrongGiven) {
           return {
             ok: false,
@@ -812,8 +775,7 @@
         shapes.forEach((s) => {
           const g = this.add.graphics();
           g.fillStyle(s.color, 0.5);
-          if (s.type === "rect")
-            g.fillRect(s.x - s.w / 2, s.y - s.h / 2, s.w, s.h);
+          if (s.type === "rect") g.fillRect(s.x - s.w / 2, s.y - s.h / 2, s.w, s.h);
           else if (s.type === "tri") {
             g.beginPath();
             g.moveTo(s.x, s.y - s.h / 2);
@@ -925,34 +887,22 @@
         });
 
         this.add
-          .text(
-            cx,
-            210,
-            "Rectangles • Triangles • Parallelograms • Trapezoids",
-            {
-              fontSize: "14px",
-              color: "#6688aa",
-            },
-          )
+          .text(cx, 210, "Rectangles • Triangles • Parallelograms • Trapezoids", {
+            fontSize: "14px",
+            color: "#6688aa",
+          })
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            235,
-            "Size each shape to match the blueprint — you build it!",
-            {
-              fontSize: "14px",
-              color: "#88aacc",
-            },
-          )
+          .text(cx, 235, "Size each shape to match the blueprint — you build it!", {
+            fontSize: "14px",
+            color: "#88aacc",
+          })
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            258,
-            "Tap + / − or use the arrow keys, then press Enter to lock in.",
-            { fontSize: "13px", color: "#557788" },
-          )
+          .text(cx, 258, "Tap + / − or use the arrow keys, then press Enter to lock in.", {
+            fontSize: "13px",
+            color: "#557788",
+          })
           .setOrigin(0.5);
 
         // High score display
@@ -1067,9 +1017,7 @@
           SFX.init();
           SFX.place();
           this.cameras.main.fadeOut(300);
-          this.time.delayedCall(300, () =>
-            this.scene.start("Game", { level: lvl }),
-          );
+          this.time.delayedCall(300, () => this.scene.start("Game", { level: lvl }));
         };
         diffs.forEach((d, idx) => {
           const btn = this.add
@@ -1155,8 +1103,7 @@
         // Accessibility: respect the OS "reduce motion" preference. Used only
         // to soften purely-decorative animations (no gameplay change).
         this.reduceMotion = !!(
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
         this.score = 0;
         this.combo = 0; // consecutive first-try locks
@@ -1217,23 +1164,15 @@
         const gg = this.add.graphics();
         gg.lineStyle(1, 0x2a4a77, 0.5);
         for (let c = 0; c <= GRID_COLS; c++)
-          gg.lineBetween(
-            GRID_X + c * CELL,
-            GRID_Y,
-            GRID_X + c * CELL,
-            GRID_Y + GRID_H,
-          );
+          gg.lineBetween(GRID_X + c * CELL, GRID_Y, GRID_X + c * CELL, GRID_Y + GRID_H);
         for (let r = 0; r <= GRID_ROWS; r++)
-          gg.lineBetween(
-            GRID_X,
-            GRID_Y + r * CELL,
-            GRID_X + GRID_W,
-            GRID_Y + r * CELL,
-          );
+          gg.lineBetween(GRID_X, GRID_Y + r * CELL, GRID_X + GRID_W, GRID_Y + r * CELL);
 
         // City strip below the grid: every locked build adds a building here.
+        // Sits BELOW the shape's bottom "b = N" label band (which hugs the
+        // grid's bottom edge) so the two never overprint into garble.
         this.add
-          .text(GRID_X, GRID_Y + GRID_H + 16, "YOUR CITY:", {
+          .text(GRID_X, GRID_Y + GRID_H + 34, "YOUR CITY:", {
             fontSize: "13px",
             color: "#6688aa",
             fontStyle: "bold",
@@ -1270,9 +1209,7 @@
 
         // Streak counter with visual styling
         this.streakContainer = this.add.container(panelX + 320, 42).setDepth(5);
-        this.streakBg = this.add
-          .rectangle(0, 0, 0, 0, 0xffdd00, 0)
-          .setOrigin(0.5);
+        this.streakBg = this.add.rectangle(0, 0, 0, 0, 0xffdd00, 0).setOrigin(0.5);
         this.streakContainer.add(this.streakBg);
         this.comboText = this.add
           .text(0, 0, "", {
@@ -1308,16 +1245,18 @@
           color: "#ffdd00",
           fontStyle: "bold",
         });
+        // Anchored to the TOP so it grows downward only — it can never ride
+        // up into the "BLUEPRINT:" header the way the old centered box did.
         this.promptText = this.add
-          .text(panelX + 205, 158, "", {
-            fontSize: "18px",
+          .text(panelX + 205, 120, "", {
+            fontSize: "15px",
             color: "#ffffff",
             fontStyle: "bold",
-            wordWrap: { width: 385 },
+            wordWrap: { width: 392 },
             align: "center",
-            lineSpacing: 4,
+            lineSpacing: 3,
           })
-          .setOrigin(0.5);
+          .setOrigin(0.5, 0);
 
         // Live formula readout — the heart of the mechanic
         this.readoutText = this.add
@@ -1350,9 +1289,7 @@
           SFX.init();
           SFX.tick();
         });
-        this.lockBtn.on("pointerout", () =>
-          this.lockBtn.setFillStyle(0x44cc88),
-        );
+        this.lockBtn.on("pointerout", () => this.lockBtn.setFillStyle(0x44cc88));
         this.lockBtn.on("pointerdown", () => {
           SFX.init();
           this.onLock();
@@ -1397,14 +1334,10 @@
           .setDepth(20);
 
         // Gentle red wash for wrong locks (calm — low alpha, short)
-        this.redFlash = this.add
-          .rectangle(W / 2, H / 2, W, H, 0xff0000, 0)
-          .setDepth(30);
+        this.redFlash = this.add.rectangle(W / 2, H / 2, W, H, 0xff0000, 0).setDepth(30);
 
         // Stage transition overlay
-        this.transitionOverlay = this.add
-          .rectangle(W / 2, H / 2, W, H, 0x0a1a2e, 0)
-          .setDepth(50);
+        this.transitionOverlay = this.add.rectangle(W / 2, H / 2, W, H, 0x0a1a2e, 0).setDepth(50);
         this.transitionText = this.add
           .text(W / 2, H / 2, "", {
             fontSize: "40px",
@@ -1534,16 +1467,11 @@
           this.rowBgs.push(rowBg);
           const isGiven = Object.prototype.hasOwnProperty.call(r.given, key);
           const lbl = this.add
-            .text(
-              px + 12,
-              y,
-              labels[key] + (isGiven ? "  • given: " + r.given[key] : ""),
-              {
-                fontSize: "16px",
-                fontStyle: "bold",
-                color: isGiven ? "#ffdd00" : "#aaccff",
-              },
-            )
+            .text(px + 12, y, labels[key] + (isGiven ? "  • given: " + r.given[key] : ""), {
+              fontSize: "16px",
+              fontStyle: "bold",
+              color: isGiven ? "#ffdd00" : "#aaccff",
+            })
             .setOrigin(0, 0.5);
           this.roundUI.push(lbl);
           this.makeButton(px + 250, y, "−", () => {
@@ -1633,9 +1561,7 @@
 
       GameScene.prototype.setSel = function (i) {
         this.selRow = i;
-        this.rowBgs.forEach((bg, j) =>
-          bg.setStrokeStyle(2, j === i ? 0xffdd00 : 0x13284a),
-        );
+        this.rowBgs.forEach((bg, j) => bg.setStrokeStyle(2, j === i ? 0xffdd00 : 0x13284a));
       };
 
       GameScene.prototype.onArrowVert = function (dir) {
@@ -1668,10 +1594,7 @@
         const r = this.round;
         if (!r || this.lockBusy || r.type === "composite") return;
         const bounds = dimBounds(r, key);
-        const next = Math.min(
-          bounds.max,
-          Math.max(bounds.min, r.dims[key] + delta),
-        );
+        const next = Math.min(bounds.max, Math.max(bounds.min, r.dims[key] + delta));
         if (next === r.dims[key]) return;
         r.dims[key] = next;
         if (this.valueTexts[key]) this.valueTexts[key].setText(String(next));
@@ -1684,13 +1607,7 @@
 
       GameScene.prototype.adjustTotal = function (delta) {
         const r = this.round;
-        if (
-          !r ||
-          this.lockBusy ||
-          r.type !== "composite" ||
-          r.phase !== "total"
-        )
-          return;
+        if (!r || this.lockBusy || r.type !== "composite" || r.phase !== "total") return;
         r.total = Math.min(200, Math.max(0, r.total + delta));
         if (this.totalText) this.totalText.setText(String(r.total));
         SFX.init();
@@ -1700,13 +1617,7 @@
 
       GameScene.prototype.toggleSlice = function () {
         const r = this.round;
-        if (
-          !r ||
-          r.type !== "composite" ||
-          r.phase !== "slice" ||
-          this.lockBusy
-        )
-          return;
+        if (!r || r.type !== "composite" || r.phase !== "slice" || this.lockBusy) return;
         r.sliceIndex = r.sliceIndex === 0 ? 1 : 0;
         const opt = sliceOptions(r)[r.sliceIndex];
         if (this.sliceLabel) this.sliceLabel.setText(opt.name);
@@ -1738,13 +1649,7 @@
         }
       }
 
-      GameScene.prototype.addDimLabel = function (
-        x,
-        y,
-        text,
-        originX,
-        originY,
-      ) {
+      GameScene.prototype.addDimLabel = function (x, y, text, originX, originY) {
         const t = this.add
           .text(x, y, text, {
             fontSize: "15px",
@@ -1808,8 +1713,11 @@
           g.fillPath();
           g.strokePath();
           this.addDimLabel(ux(d.b / 2), uy(0) + 6, "b = " + d.b, 0.5, 0);
-          this.addDimLabel(ux(0) - 8, uy(d.h / 2), "h = " + d.h, 1, 0.5);
-          this.addDimLabel(ux(d.b) - 4, uy(d.h) + 4, "½ of b × h", 1, 0);
+          // Height on the RIGHT of the ghost rectangle (empty space) so it
+          // can't collide with the shape or run off the canvas edge. The
+          // "half of the rectangle" idea is carried by the dashed ghost box
+          // plus the "½ ×" in the live equation — no jammed on-shape label.
+          this.addDimLabel(ux(d.b) + 8, uy(d.h / 2), "h = " + d.h, 0, 0.5);
         } else if (r.type === "trapezoid") {
           // b2 on the bottom, b1 centered on top, height vertical.
           const off = (d.b2 - d.b1) / 2;
@@ -1826,13 +1734,7 @@
           g.lineStyle(2, 0xffffff, 0.9);
           dashLine(g, ux(d.b2 / 2), uy(0), ux(d.b2 / 2), uy(d.h), 6, 5);
           this.addDimLabel(ux(d.b2 / 2), uy(0) + 6, "b₂ = " + d.b2, 0.5, 0);
-          this.addDimLabel(
-            ux(off + d.b1 / 2),
-            uy(d.h) - 6,
-            "b₁ = " + d.b1,
-            0.5,
-            1,
-          );
+          this.addDimLabel(ux(off + d.b1 / 2), uy(d.h) - 6, "b₁ = " + d.b1, 0.5, 1);
           this.addDimLabel(ux(d.b2 / 2) + 6, uy(d.h / 2), "h = " + d.h, 0, 0.5);
         } else {
           // Composite L-shape: outer W×H minus a top-right nw×nh cut.
@@ -1851,55 +1753,23 @@
           g.strokePath();
           this.addDimLabel(ux(w / 2), uy(0) + 6, w + " across", 0.5, 0);
           this.addDimLabel(ux(0) - 8, uy(h / 2), h + " tall", 1, 0.5);
-          this.addDimLabel(
-            ux(w - nw / 2),
-            uy(h - nh / 2),
-            "cut: " + nw + " × " + nh,
-            0.5,
-            0.5,
-          );
+          this.addDimLabel(ux(w - nw / 2), uy(h - nh / 2), "cut: " + nw + " × " + nh, 0.5, 0.5);
           const opt = sliceOptions(r)[r.sliceIndex];
           if (r.phase === "slice") {
             g.lineStyle(3, 0xffdd00, 1);
-            if (opt.dir === "vertical")
-              dashLine(g, ux(w - nw), uy(0), ux(w - nw), uy(h), 8, 6);
+            if (opt.dir === "vertical") dashLine(g, ux(w - nw), uy(0), ux(w - nw), uy(h), 8, 6);
             else dashLine(g, ux(0), uy(h - nh), ux(w), uy(h - nh), 8, 6);
           } else {
             g.lineStyle(4, 0xffdd00, 1);
-            if (opt.dir === "vertical")
-              g.lineBetween(ux(w - nw), uy(0), ux(w - nw), uy(h));
+            if (opt.dir === "vertical") g.lineBetween(ux(w - nw), uy(0), ux(w - nw), uy(h));
             else g.lineBetween(ux(0), uy(h - nh), ux(w), uy(h - nh));
             // Label each rectangle piece with its counted area.
             if (opt.dir === "vertical") {
-              this.addDimLabel(
-                ux((w - nw) / 2),
-                uy(h / 2),
-                opt.a1 + " sq",
-                0.5,
-                0.5,
-              );
-              this.addDimLabel(
-                ux(w - nw / 2),
-                uy((h - nh) / 2),
-                opt.a2 + " sq",
-                0.5,
-                0.5,
-              );
+              this.addDimLabel(ux((w - nw) / 2), uy(h / 2), opt.a1 + " sq", 0.5, 0.5);
+              this.addDimLabel(ux(w - nw / 2), uy((h - nh) / 2), opt.a2 + " sq", 0.5, 0.5);
             } else {
-              this.addDimLabel(
-                ux(w / 2),
-                uy((h - nh) / 2),
-                opt.a1 + " sq",
-                0.5,
-                0.5,
-              );
-              this.addDimLabel(
-                ux((w - nw) / 2),
-                uy(h - nh / 2),
-                opt.a2 + " sq",
-                0.5,
-                0.5,
-              );
+              this.addDimLabel(ux(w / 2), uy((h - nh) / 2), opt.a1 + " sq", 0.5, 0.5);
+              this.addDimLabel(ux((w - nw) / 2), uy(h - nh / 2), opt.a2 + " sq", 0.5, 0.5);
             }
           }
         }
@@ -1918,13 +1788,26 @@
           this.readoutText.setColor("#ffffff");
           return;
         }
-        const match = currentArea(r) === r.area;
+        const now = currentArea(r);
+        const match = now === r.area;
         this.readoutText.setColor(match ? "#44cc88" : "#ffffff");
-        this.readoutHint.setText(
-          match
-            ? "It matches the target — lock it in!"
-            : "Target: " + fmtNum(r.area) + " sq units",
-        );
+        // Actionable hint: name the ONE dimension to change and which way.
+        let hint;
+        if (match) {
+          hint = "✓ Area = " + fmtNum(r.area) + " — press LOCK IT IN!";
+        } else {
+          const dir = now < r.area ? "bigger" : "smaller";
+          hint =
+            "Now " +
+            fmtNum(now) +
+            ", need " +
+            fmtNum(r.area) +
+            " — make " +
+            dimShort(r.freeKey) +
+            " " +
+            dir;
+        }
+        this.readoutHint.setText(hint);
       };
 
       // ── Lock-in resolution ──
@@ -1967,9 +1850,7 @@
           this.combo++;
           if (this.combo > this.maxCombo) this.maxCombo = this.combo;
         }
-        const pts = firstTry
-          ? 100 + this.combo * 20 + (this.stage - 1) * 10
-          : 50;
+        const pts = firstTry ? 100 + this.combo * 20 + (this.stage - 1) * 10 : 50;
         this.score += pts;
         this.shapesPlaced++;
 
@@ -1979,13 +1860,7 @@
           r.type === "composite"
             ? "total area " + r.area + " square units"
             : formulaFor(r) + " square units";
-        srSay(
-          "Correct! " +
-            summary +
-            ". Plus " +
-            pts +
-            " points. Building added to your city.",
-        );
+        srSay("Correct! " + summary + ". Plus " + pts + " points. Building added to your city.");
 
         this.showFloatingText(
           GRID_X + GRID_W / 2,
@@ -1999,31 +1874,13 @@
         if (firstTry) {
           if (this.combo === 3) {
             SFX.streak3();
-            this.showFloatingText(
-              W / 2,
-              H / 2 - 30,
-              "STREAK x3!",
-              "#ffdd00",
-              "30px",
-            );
+            this.showFloatingText(W / 2, H / 2 - 30, "STREAK x3!", "#ffdd00", "30px");
           } else if (this.combo === 5) {
             SFX.streak5();
-            this.showFloatingText(
-              W / 2,
-              H / 2 - 30,
-              "STREAK x5! AMAZING!",
-              "#ff8844",
-              "32px",
-            );
+            this.showFloatingText(W / 2, H / 2 - 30, "STREAK x5! AMAZING!", "#ff8844", "32px");
           } else if (this.combo === 7) {
             SFX.streak7();
-            this.showFloatingText(
-              W / 2,
-              H / 2 - 30,
-              "STREAK x7! UNSTOPPABLE!",
-              "#ff4488",
-              "34px",
-            );
+            this.showFloatingText(W / 2, H / 2 - 30, "STREAK x7! UNSTOPPABLE!", "#ff4488", "34px");
           } else if (this.combo >= 3) {
             SFX.combo();
           }
@@ -2044,15 +1901,9 @@
 
         // Confetti burst — intensity scales with streak
         this.confettiEmitter.setQuantity(Math.min(10 + this.combo * 5, 40));
-        this.confettiEmitter.emitParticleAt(
-          GRID_X + GRID_W / 2,
-          GRID_Y + GRID_H / 2,
-        );
+        this.confettiEmitter.emitParticleAt(GRID_X + GRID_W / 2, GRID_Y + GRID_H / 2);
         if (!this.reduceMotion)
-          this.cameras.main.shake(
-            120,
-            Math.min(0.004 + this.combo * 0.002, 0.015),
-          );
+          this.cameras.main.shake(120, Math.min(0.004 + this.combo * 0.002, 0.015));
 
         this.addBuilding(SHAPE_COLORS[r.type]);
 
@@ -2106,9 +1957,7 @@
         const bh = randInt(30, 105);
         const bx = GRID_X + 18 + idx * 29;
         const by = 583;
-        const bld = this.add
-          .rectangle(bx, by, bw, bh, color, 0.85)
-          .setOrigin(0.5, 1);
+        const bld = this.add.rectangle(bx, by, bw, bh, color, 0.85).setOrigin(0.5, 1);
         SFX.drop();
         if (this.reduceMotion) {
           bld.setScale(1, 1);
@@ -2135,13 +1984,7 @@
 
       // ── Shared flair helpers ──
 
-      GameScene.prototype.showFloatingText = function (
-        x,
-        y,
-        text,
-        color,
-        size,
-      ) {
+      GameScene.prototype.showFloatingText = function (x, y, text, color, size) {
         const ft = this.add
           .text(x, y, text, {
             fontSize: size || "20px",
@@ -2203,12 +2046,8 @@
 
       GameScene.prototype.updateHUD = function () {
         this.scoreText.setText("Score: " + this.score);
-        this.levelText.setText(
-          "Level " + this.levelNum + " • Stage " + this.stage,
-        );
-        this.livesText.setText(
-          "♥".repeat(this.lives) + "♡".repeat(Math.max(0, 3 - this.lives)),
-        );
+        this.levelText.setText("Level " + this.levelNum + " • Stage " + this.stage);
+        this.livesText.setText("♥".repeat(this.lives) + "♡".repeat(Math.max(0, 3 - this.lives)));
         this.buildingsText.setText("Buildings: " + this.shapesPlaced);
         this.progressBarFill.width = (this.roundsAsked / this.maxRounds) * 200;
         this.progressText.setText(this.roundsAsked + "/" + this.maxRounds);
@@ -2276,14 +2115,7 @@
           const bw = randInt(25, 55),
             bh = randInt(40, 150);
           const bx = i * 80 + 20;
-          this.add.rectangle(
-            bx,
-            H - bh / 2 - 5,
-            bw,
-            bh,
-            colors[i % colors.length],
-            0.6,
-          );
+          this.add.rectangle(bx, H - bh / 2 - 5, bw, bh, colors[i % colors.length], 0.6);
           for (let wy = H - bh + 8; wy < H - 8; wy += 16) {
             for (let wx = bx - bw / 2 + 6; wx < bx + bw / 2 - 6; wx += 12) {
               this.add.rectangle(wx, wy, 5, 7, 0xffdd88, 0.7);
@@ -2423,16 +2255,7 @@
           });
         });
 
-        const grade =
-          pct >= 90
-            ? "A+"
-            : pct >= 80
-              ? "A"
-              : pct >= 70
-                ? "B"
-                : pct >= 60
-                  ? "C"
-                  : "D";
+        const grade = pct >= 90 ? "A+" : pct >= 80 ? "A" : pct >= 70 ? "B" : pct >= 60 ? "C" : "D";
         this.add
           .text(cx, 460, grade, {
             fontSize: "48px",
@@ -2474,9 +2297,7 @@
         retry.on("pointerout", () => retry.setFillStyle(0x44cc88));
         retry.on("pointerdown", () => {
           this.cameras.main.fadeOut(300);
-          this.time.delayedCall(300, () =>
-            this.scene.start("Game", { level: d.levelNum }),
-          );
+          this.time.delayedCall(300, () => this.scene.start("Game", { level: d.levelNum }));
         });
 
         const menu = this.add
