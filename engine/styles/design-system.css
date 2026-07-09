@@ -3807,23 +3807,41 @@ html.projector .main {
   line-height: 1.6;
   color: var(--ink);
 }
+/* Image beside the notice/wonder boxes: image column left, boxes stacked in the
+   right column. Collapses to a single column on narrow screens. */
+.nw-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: var(--sp-5);
+  align-items: start;
+}
+.nw-layout-noimg {
+  grid-template-columns: 1fr;
+}
 .nw-figure {
-  margin: 0 0 var(--sp-5);
+  margin: 0;
+  position: sticky;
+  top: var(--sp-4);
 }
 .nw-img {
   display: block;
   width: 100%;
   height: auto;
-  max-width: 640px;
   margin: 0 auto;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--card);
 }
+/* Inside the side-by-side layout the two boxes stack vertically in their column
+   so each stays wide enough to write in; the standalone grid (no image) keeps
+   the classic two-up arrangement. */
 .nw-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: var(--sp-4);
+}
+.nw-layout-noimg .nw-grid {
+  grid-template-columns: 1fr 1fr;
 }
 .nw-col {
   padding: var(--sp-5);
@@ -3878,8 +3896,15 @@ html.projector .main {
   font-size: 1.15rem;
   line-height: 1.6;
 }
-@media (max-width: 640px) {
-  .nw-grid {
+@media (max-width: 860px) {
+  .nw-layout {
+    grid-template-columns: 1fr;
+  }
+  .nw-figure {
+    position: static;
+    max-width: 560px;
+  }
+  .nw-layout-noimg .nw-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -3887,34 +3912,26 @@ html.projector .main {
   .nw-chip {
     display: none;
   }
+  .nw-layout {
+    grid-template-columns: 7fr 5fr;
+  }
   .nw-card,
   .nw-col {
     break-inside: avoid;
   }
 }
 
-/* ── Notice & Wonder + language support, side-by-side ──────────────────────
-   The notice/wonder boxes fill the left column; the "Words & phrases to use"
-   support card sits to their right and drops below on narrow screens. */
-.nw-support-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-4);
-  align-items: flex-start;
+/* ── Notice & Wonder + language support, stacked ───────────────────────────
+   The image + notice/wonder boxes render on top (see `.nw-layout`); the
+   "Words & phrases to use" support card sits full-width directly beneath. */
+.nw-support-stack {
+  display: block;
+}
+.nw-support-stack .nw-support {
+  margin-top: var(--sp-4);
 }
 .nw-support-main {
-  flex: 1 1 60%;
-  min-width: 300px;
-}
-.nw-support-aside {
-  flex: 1 1 260px;
-  min-width: 240px;
-}
-@media (max-width: 900px) {
-  .nw-support-main,
-  .nw-support-aside {
-    flex-basis: 100%;
-  }
+  min-width: 0;
 }
 
 /* ── Reveal Word Problem (config.revealWordProblem) ────────────────────────

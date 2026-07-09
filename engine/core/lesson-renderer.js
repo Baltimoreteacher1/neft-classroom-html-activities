@@ -1120,6 +1120,11 @@ function renderNoticeAndWonder(host, config, state) {
     card.append(ctxP);
   }
 
+  // Image and the notice/wonder boxes sit SIDE BY SIDE (image left, boxes right)
+  // so students can look at the scene while they write. `.nw-layout` stacks to a
+  // single column on narrow screens. The image column is omitted when absent.
+  const layout = document.createElement("div");
+  layout.className = "nw-layout";
   if (nw.image) {
     const fig = document.createElement("figure");
     fig.className = "nw-figure";
@@ -1130,7 +1135,9 @@ function renderNoticeAndWonder(host, config, state) {
     img.src = String(nw.image);
     img.alt = nw.context ? String(nw.context) : "Notice and Wonder data display";
     fig.append(img);
-    card.append(fig);
+    layout.append(fig);
+  } else {
+    layout.classList.add("nw-layout-noimg");
   }
 
   const grid = document.createElement("div");
@@ -1207,7 +1214,8 @@ function renderNoticeAndWonder(host, config, state) {
     }),
   );
 
-  card.append(grid);
+  layout.append(grid);
+  card.append(layout);
   host.append(card);
 }
 
@@ -1812,20 +1820,16 @@ function renderLaunchPhase(el, state, ctx, config) {
   // response box is focused. `fieldRoot` (the shared row) lets the chips still
   // find the notice/wonder textareas in the sibling column. `config` lets
   // academic words open the glossary popup when the lesson defines that term.
-  const nwRow = document.createElement("div");
-  nwRow.className = "nw-support-row";
-  const nwAside = document.createElement("div");
-  nwAside.className = "nw-support-aside";
-  renderNoticeWonderSupport(nwAside, cfg.beCurious, config, nwRow);
-
-  // Only build the two-column row when there is support content to show on the
-  // right; otherwise the notice/wonder boxes take the full width as before.
-  if (nwAside.childElementCount) {
-    nwRow.append(nwMain, nwAside);
-    el.append(nwRow);
-  } else {
-    el.append(nwMain);
-  }
+  // ESOL support (academic words + sentence phrases) renders in a full-width
+  // strip BELOW the image + notice/wonder boxes, so the layout reads top-to-
+  // bottom: scene image beside the boxes, then the word/phrase bank under them.
+  // Tapped chips still insert into whichever notice/wonder box was focused —
+  // `nwStack` is the shared root that scopes that focus lookup.
+  const nwStack = document.createElement("div");
+  nwStack.className = "nw-support-stack";
+  nwStack.append(nwMain);
+  renderNoticeWonderSupport(nwStack, cfg.beCurious, config, nwStack);
+  el.append(nwStack);
 
   // Objectives now sit AFTER Be Curious (their own cards): students get curious
   // about the scene first, THEN see the formal "I can…" goals for today.
