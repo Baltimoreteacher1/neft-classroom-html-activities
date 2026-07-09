@@ -817,7 +817,7 @@
           renderSort(r) {
             const cats = r.categories;
             const binW = Math.min(260, (W - 120) / cats.length - 20);
-            const binH = 150;
+            const binH = 160;
             const binY = H - 130;
             const totalW = cats.length * binW + (cats.length - 1) * 24;
             let bx = (W - totalW) / 2 + binW / 2;
@@ -1015,8 +1015,20 @@
               this.assignTile(t, target);
             } else {
               // released up near the staging row — snap back home
-              t.parts.x = t.homeX;
-              t.parts.y = t.homeY;
+              if (JUICE.reduceMotion) {
+                t.parts.x = t.homeX;
+                t.parts.y = t.homeY;
+                t.parts.setScale(1.0);
+              } else {
+                this.tweens.add({
+                  targets: t.parts,
+                  x: t.homeX,
+                  y: t.homeY,
+                  scale: 1.0,
+                  duration: 220,
+                  ease: "Back.Out",
+                });
+              }
             }
           }
           assignTile(t, bi) {
@@ -1035,15 +1047,17 @@
             assignedTiles.forEach((t, slot) => {
               t.binSlot = { bi, slot };
               const tx = b.x;
-              const ty = b.y - b.h / 2 + 42 + slot * 28;
+              const ty = b.y - b.h / 2 + 32 + slot * 30;
               if (JUICE.reduceMotion) {
                 t.parts.x = tx;
                 t.parts.y = ty;
+                t.parts.setScale(0.75);
               } else {
                 this.tweens.add({
                   targets: t.parts,
                   x: tx,
                   y: ty,
+                  scale: 0.75,
                   duration: 220,
                   ease: "Back.Out",
                 });
@@ -1083,8 +1097,20 @@
                   t.assigned = null;
                   t.binSlot = null;
                   t.bg.setFillStyle(PALETTE.tile);
-                  t.parts.x = t.homeX;
-                  t.parts.y = t.homeY;
+                  if (JUICE.reduceMotion) {
+                    t.parts.x = t.homeX;
+                    t.parts.y = t.homeY;
+                    t.parts.setScale(1.0);
+                  } else {
+                    this.tweens.add({
+                      targets: t.parts,
+                      x: t.homeX,
+                      y: t.homeY,
+                      scale: 1.0,
+                      duration: 220,
+                      ease: "Back.Out",
+                    });
+                  }
                   this.input.setDraggable(t.parts, true);
                 }
               });
