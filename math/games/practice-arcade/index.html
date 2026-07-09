@@ -552,13 +552,16 @@
             this.th = JUICE.theme(themeId);
             drawStars(this);
 
-            // Scene-wide drag listeners to prevent multiple overlapping tiles dragging together
+            // Scene-wide drag listeners with activeDragObject locking to prevent multiple overlapping tiles from dragging together
+            this.activeDragObject = null;
             this.input.on("dragstart", (pointer, gameObject) => {
-              if (gameObject._tileObj) {
+              if (gameObject._tileObj && !this.activeDragObject) {
+                this.activeDragObject = gameObject;
                 gameObject.setDepth(20);
               }
             });
             this.input.on("drag", (pointer, gameObject) => {
+              if (gameObject !== this.activeDragObject) return;
               const t = gameObject._tileObj;
               if (t && !t.assigned) {
                 gameObject.x = pointer.worldX;
@@ -566,10 +569,13 @@
               }
             });
             this.input.on("dragend", (pointer, gameObject) => {
-              const t = gameObject._tileObj;
-              if (t) {
+              if (gameObject === this.activeDragObject) {
+                this.activeDragObject = null;
                 gameObject.setDepth(0);
-                this.dropTile(t);
+                const t = gameObject._tileObj;
+                if (t) {
+                  this.dropTile(t);
+                }
               }
             });
 
