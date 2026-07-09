@@ -1,0 +1,161 @@
+/* family-letter.css — interactive layer for the bilingual Family Letters
+   (math/family/unit-N/index.html). Progressive enhancement: every control is
+   added by family-letter.js and degrades to plain, printable content when JS
+   is off. Content stays untouched; this only adds controls + view state. */
+
+/* ---- Language focus toggle ------------------------------------------------ */
+.fl-langbar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 4px 0 14px;
+  padding: 6px;
+  background: #eef3f6;
+  border: 1px solid var(--line, #e2e7ec);
+  border-radius: 12px;
+}
+.fl-langbar .fl-lang-label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #5e6e7e;
+  margin: 0 6px 0 4px;
+}
+.fl-seg {
+  background: #fff;
+  color: #0f2b3c;
+  border: 1px solid var(--line, #e2e7ec);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  min-height: 40px;
+}
+.fl-seg[aria-pressed="true"] {
+  background: #0f2b3c;
+  color: #fff;
+  border-color: #0f2b3c;
+}
+.fl-seg:focus-visible {
+  outline: 3px solid #1a6fb5;
+  outline-offset: 2px;
+}
+
+/* View state: hide the language that isn't selected. */
+.cols[data-lang-view="en"] .lang-es,
+.cols[data-lang-view="es"] .lang-en {
+  display: none;
+}
+
+/* ---- Per-column read-aloud button ---------------------------------------- */
+.fl-col-tools {
+  display: flex;
+  justify-content: flex-end;
+  margin: -4px 0 2px;
+}
+.fl-speak {
+  background: #fff;
+  color: #1a6fb5;
+  border: 1px solid #b9d3e8;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-weight: 700;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  min-height: 36px;
+}
+.fl-speak[aria-pressed="true"] {
+  background: #1a6fb5;
+  color: #fff;
+  border-color: #1a6fb5;
+}
+.fl-speak:focus-visible {
+  outline: 3px solid #1a6fb5;
+  outline-offset: 2px;
+}
+
+/* ---- Interactive "Try it together" --------------------------------------- */
+.fl-reveal {
+  background: #0f2b3c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  margin-top: 8px;
+  min-height: 40px;
+}
+.fl-reveal:focus-visible {
+  outline: 3px solid #d4952a;
+  outline-offset: 2px;
+}
+.fl-answer[hidden] {
+  display: none;
+}
+.fl-answer {
+  display: block;
+  margin-top: 8px;
+  font-weight: 700;
+  color: #0f2b3c;
+}
+
+/* ---- "We practiced together" completion check ---------------------------- */
+.fl-done {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 4px;
+  padding: 14px 18px;
+  background: #eef7ef;
+  border: 1px solid #c7e3cc;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f5130;
+  cursor: pointer;
+}
+.fl-done input {
+  width: 24px;
+  height: 24px;
+  accent-color: #2f8f4e;
+  cursor: pointer;
+  flex: none;
+}
+.fl-done.is-done {
+  background: #dff2e2;
+  border-color: #9fd3a9;
+}
+.fl-done .fl-done-cheer {
+  margin-left: auto;
+  font-size: 20px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.fl-done.is-done .fl-done-cheer {
+  opacity: 1;
+}
+
+/* ---- Print: always show both languages and all answers ------------------- */
+@media print {
+  .fl-langbar,
+  .fl-col-tools,
+  .fl-reveal,
+  .fl-done {
+    display: none !important;
+  }
+  .cols[data-lang-view] .lang-en,
+  .cols[data-lang-view] .lang-es {
+    display: block !important;
+  }
+  .fl-answer[hidden] {
+    display: block !important;
+  }
+}
