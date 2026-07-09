@@ -26,7 +26,7 @@
 
   var COLORS = ["#1aa179", "#f0a400", "#3b7dd8", "#e0542f", "#9b5de5"];
   var SUCCESS_CLASS = /(^|\s)(right|correct|is-correct|is-right|ok|success|won|gfx-correct)(\s|$)/i;
-  var WRONG_CLASS = /(^|\s)(wrong|incorrect|is-incorrect|is-wrong|fail|error|gfx-wrong)(\s|$)/i;
+  var WRONG_CLASS = /(^|\s)(wrong|incorrect|is-incorrect|is-wrong|fail|error|gfx-wrong|bad)(\s|$)/i;
   var INTERACTIVE = /(^|\s)(opt|option|choice|answer|tile|card|btn|cell|key)(\s|$)/i;
 
   var DICT = {
@@ -109,35 +109,32 @@
 
   function burst(cx, cy) {
     if (reduce) return;
-    for (var i = 0; i < 16; i++) {
+    for (var i = 0; i < 20; i++) {
       var s = document.createElement("div");
       s.className = "gfx-spark";
       s.style.left = cx + "px";
       s.style.top = cy + "px";
       s.style.background = COLORS[i % COLORS.length];
       document.body.appendChild(s);
-      var ang = (Math.PI * 2 * i) / 16;
-      var dist = 40 + Math.random() * 40;
+      var ang = (Math.PI * 2 * i) / 20 + (Math.random() - 0.5) * 0.4;
+      var dist = 50 + Math.random() * 60;
       var tx = Math.cos(ang) * dist;
       var ty = Math.sin(ang) * dist;
       try {
         var anim = s.animate(
           [
-            {
-              transform: "translate(-50%,-50%) scale(1.3) rotate(0deg)",
-              opacity: 1,
-            },
+            { transform: "translate(-50%,-50%) scale(1.4) rotate(0deg)", opacity: 1 },
             {
               transform:
                 "translate(calc(-50% + " +
                 tx +
                 "px), calc(-50% + " +
                 ty +
-                "px)) scale(0) rotate(180deg)",
+                "px)) scale(0) rotate(" + (180 + Math.random() * 180) + "deg)",
               opacity: 0,
             },
           ],
-          { duration: 750, easing: "cubic-bezier(.1,.8,.3,1)" },
+          { duration: 600 + Math.random() * 300, easing: "cubic-bezier(.1,.8,.2,1)" },
         );
         anim.onfinish = (function (node) {
           return function () {
@@ -162,6 +159,17 @@
     el.classList.remove("gfx-pop");
     void el.offsetWidth;
     el.classList.add("gfx-pop");
+  }
+
+  function shakeScreen() {
+    if (reduce) return;
+    var el = document.querySelector("canvas") || document.body;
+    el.classList.remove("gfx-shake");
+    void el.offsetWidth;
+    el.classList.add("gfx-shake");
+    setTimeout(function () {
+      el.classList.remove("gfx-shake");
+    }, 400);
   }
 
   // --- Programmatic Audio & Retro Music Synthesizer ---
@@ -197,36 +205,111 @@
         osc.stop(t + duration);
       } catch (e) {}
     },
+    noise: function (duration, vol) {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+      try {
+        var bufferSize = this.ctx.sampleRate * duration;
+        var buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        var data = buffer.getChannelData(0);
+        for (var i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+        var noiseSource = this.ctx.createBufferSource();
+        noiseSource.buffer = buffer;
+        
+        var gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(vol || 0.05, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+        
+        noiseSource.connect(gain);
+        gain.connect(this.ctx.destination);
+        noiseSource.start();
+        noiseSource.stop(this.ctx.currentTime + duration);
+      } catch (e) {}
+    },
     playSuccess: function () {
-      this.playTone(523.25, "triangle", 0.1, 0.12);
+      this.playTone(523.25, "triangle", 0.08, 0.1);
       var self = this;
       setTimeout(function () {
-        self.playTone(659.25, "triangle", 0.1, 0.12);
-      }, 80);
+        self.playTone(659.25, "triangle", 0.08, 0.1);
+      }, 60);
       setTimeout(function () {
-        self.playTone(783.99, "triangle", 0.2, 0.15);
-      }, 160);
+        self.playTone(783.99, "triangle", 0.12, 0.1);
+      }, 120);
+      setTimeout(function () {
+        self.playTone(1046.50, "sine", 0.18, 0.1);
+      }, 180);
     },
     playError: function () {
-      this.playTone(180, "sawtooth", 0.15, 0.1);
+      this.playTone(150, "sawtooth", 0.1, 0.12);
       var self = this;
       setTimeout(function () {
-        self.playTone(110, "sawtooth", 0.25, 0.12);
-      }, 100);
+        self.playTone(90, "sawtooth", 0.25, 0.15);
+      }, 80);
+      this.noise(0.2, 0.06);
     },
     startMusic: function () {
       if (this.playingMusic) return;
       this.playingMusic = true;
-      var notes = [261.63, 293.66, 329.63, 392.0, 440.0, 523.25, 392.0, 329.63]; // C4 pentatonic loop
-      var step = 0;
+      this.init();
+      if (!this.ctx) return;
       var self = this;
+      var step = 0;
+
+      // Pentatonic retro melody progression
+      var melody = [
+        329.63, 392.00, 440.00, 523.25, 587.33, 523.25, 440.00, 392.00,
+        329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 587.33, 523.25
+      ];
+      var bassProgression = [130.81, 97.99, 110.00, 87.31];
 
       musicTimer = setInterval(function () {
         if (self.muted || !self.playingMusic) return;
-        // Super soft retro arpeggio
-        self.playTone(notes[step % notes.length], "sine", 0.2, 0.015);
+
+        var time = self.ctx.currentTime;
+        var bar = Math.floor(step / 8);
+        var beat = step % 8;
+
+        // 1. Bassline (beats 0, 2, 4, 6)
+        if (beat % 2 === 0) {
+          var bassFreq = bassProgression[bar % bassProgression.length];
+          if (beat === 0) bassFreq *= 0.5; // drop octave
+          self.playTone(bassFreq, "triangle", 0.35, 0.01);
+        }
+
+        // 2. Retro Lead Melody (low volume square wave)
+        var melNote = melody[step % melody.length];
+        if (beat % 2 !== 0 || Math.random() > 0.45) {
+          self.playTone(melNote, "square", 0.12, 0.004);
+        }
+
+        // 3. Synthesized Drums
+        if (beat === 0 || beat === 4) {
+          // Kick drum: rapid frequency sweep down
+          try {
+            var osc = self.ctx.createOscillator();
+            var gain = self.ctx.createGain();
+            osc.connect(gain);
+            gain.connect(self.ctx.destination);
+            osc.frequency.setValueAtTime(120, time);
+            osc.frequency.exponentialRampToValueAtTime(40, time + 0.1);
+            gain.gain.setValueAtTime(0.015, time);
+            gain.gain.linearRampToValueAtTime(0.001, time + 0.1);
+            osc.start(time);
+            osc.stop(time + 0.1);
+          } catch (e) {}
+        } else if (beat === 2 || beat === 6) {
+          // Snare: noise burst
+          self.noise(0.08, 0.006);
+        } else if (beat % 2 !== 0) {
+          // Hi-hat: shorter noise burst
+          self.noise(0.02, 0.003);
+        }
+
         step++;
-      }, 350);
+      }, 180);
     },
     stopMusic: function () {
       this.playingMusic = false;
@@ -543,6 +626,7 @@
     celebrate: celebrate,
     burst: burst,
     pop: pop,
+    shake: shakeScreen,
     reduce: reduce,
     bilingual: true,
     soundInjected: true,
@@ -738,6 +822,7 @@
             LMSBridge.reportScore(finalScore, null, finalStars);
           } else if (isWrong) {
             AudioSynth.playError();
+            shakeScreen();
             comboStreak = 0;
             updateComboHUD(0);
           }
@@ -779,6 +864,7 @@
               updateComboHUD(comboStreak);
             } else if (isIncorrect) {
               AudioSynth.playError();
+              shakeScreen();
               comboStreak = 0;
               updateComboHUD(0);
             }

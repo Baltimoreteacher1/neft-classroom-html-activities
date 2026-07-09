@@ -208,10 +208,30 @@ body.high-contrast select {
   color: #0f172a;
 }
 
+
+/* Screen Shake Visual FX */
+@keyframes gfx-shake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  10% { transform: translate(-4px, -2px) rotate(-1deg); }
+  20% { transform: translate(3px, 4px) rotate(1deg); }
+  30% { transform: translate(-5px, 2px) rotate(-1.5deg); }
+  40% { transform: translate(4px, -3px) rotate(1.5deg); }
+  50% { transform: translate(-3px, 4px) rotate(-1deg); }
+  60% { transform: translate(3px, -2px) rotate(1deg); }
+  70% { transform: translate(-4px, 2px) rotate(-1.5deg); }
+  80% { transform: translate(4px, 3px) rotate(1.5deg); }
+  90% { transform: translate(-2px, -3px) rotate(-0.5deg); }
+}
+
+.gfx-shake {
+  animation: gfx-shake 0.35s cubic-bezier(.36,.07,.19,.97) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .gfx-spark,
   .gfx-pop,
-  .gfx-ripple {
+  .gfx-ripple,
+  .gfx-shake {
     animation: none !important;
     display: none !important;
   }
@@ -220,3 +240,4 @@ body.high-contrast select {
     transform: none !important;
   }
 }
+
