@@ -66,6 +66,104 @@
   var comboStreak = 0;
   var musicTimer = null;
 
+  var lastPointer = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+  window.addEventListener("pointerdown", function (e) {
+    lastPointer.x = e.clientX;
+    lastPointer.y = e.clientY;
+  }, true);
+
+  function spawnFloatingScore(text, x, y) {
+    if (reduce) return;
+    var bubble = document.createElement("div");
+    bubble.className = "gfx-floating-score";
+    bubble.style.left = x + "px";
+    bubble.style.top = y + "px";
+    bubble.textContent = text;
+    document.body.appendChild(bubble);
+    setTimeout(function() {
+      bubble.remove();
+    }, 800);
+  }
+
+  function triggerBiosBoot() {
+    if (reduce) {
+      document.body.classList.add("crt-active");
+      var scan = document.createElement("div");
+      scan.className = "gfx-scanlines";
+      document.body.appendChild(scan);
+      return;
+    }
+    
+    var bios = document.createElement("div");
+    bios.id = "gfx-bios-screen";
+    bios.innerHTML = '<div class="bios-line bios-orange">EDU WONDER LAB ARCADE CORE SYSTEM v2.5</div>' +
+                     '<div class="bios-line">SYSTEM MEMORY: 640KB OK</div>' +
+                     '<div id="bios-lines-container"></div>' +
+                     '<div class="bios-line" style="margin-top:10px;"><span id="bios-curr-line"></span><span class="bios-cursor"></span></div>';
+    document.body.appendChild(bios);
+    
+    var container = document.getElementById("bios-lines-container");
+    var curr = document.getElementById("bios-curr-line");
+    
+    var lines = [
+      { text: "INITIALIZING RETRO SYNTHESIZER MELODY ENGINE...", color: "" },
+      { text: "AUDIO CHANNEL 1: SQUARE WAVE ACTIVE [OK]", color: "bios-green" },
+      { text: "AUDIO CHANNEL 2: TRIANGLE BASS WAVE ACTIVE [OK]", color: "bios-green" },
+      { text: "AUDIO CHANNEL 3: WHITE NOISE DRUM ENVELOPE ACTIVE [OK]", color: "bios-green" },
+      { text: "DETECTING CORE COMPONENT: PHASER ENGINE CONTROLLER...", color: "" },
+      { text: "EMULATION SHADER LAYER CURVATURE ENGINE ACTIVE [OK]", color: "bios-green" },
+      { text: "MATH INTERACTION GRADING CO-PROCESSOR ONLINE [OK]", color: "bios-green" },
+      { text: "CRT BARREL DISTORTION INTERFERENCE SCREEN ONLINE [OK]", color: "bios-green" },
+      { text: "LOADING GRAPHICS MEMORY FLUSH RESUME CACHE...", color: "bios-orange" },
+      { text: "BOOT COMPLETED SUCCESS. ENJOY CLASSROOM PLAY!", color: "bios-green" }
+    ];
+    
+    var lineIdx = 0;
+    var charIdx = 0;
+    
+    function typeChar() {
+      if (lineIdx >= lines.length) {
+        setTimeout(function() {
+          bios.animate([
+            { opacity: 1, filter: "blur(0px)" },
+            { opacity: 0, filter: "blur(8px)" }
+          ], { duration: 300, fill: "forwards" }).onfinish = function() {
+            bios.remove();
+            document.body.classList.add("crt-active");
+            var scan = document.createElement("div");
+            scan.className = "gfx-scanlines";
+            document.body.appendChild(scan);
+          };
+        }, 400);
+        return;
+      }
+      
+      var l = lines[lineIdx];
+      if (charIdx === 0) {
+        AudioSynth.playTone(600 + Math.random() * 400, "sine", 0.02, 0.005);
+      }
+      
+      curr.textContent += l.text[charIdx];
+      charIdx++;
+      
+      if (charIdx >= l.text.length) {
+        var div = document.createElement("div");
+        div.className = "bios-line " + l.color;
+        div.textContent = curr.textContent;
+        container.appendChild(div);
+        
+        curr.textContent = "";
+        charIdx = 0;
+        lineIdx++;
+        setTimeout(typeChar, 80 + Math.random() * 50);
+      } else {
+        setTimeout(typeChar, 10 + Math.random() * 15);
+      }
+    }
+    
+    setTimeout(typeChar, 150);
+  }
+
   function translateDOM(isEs) {
     document.body.classList.toggle("es", isEs);
 
@@ -691,6 +789,9 @@
     // Start background retro music loop (motion-safe users only, one loop max)
     if (!reduce && !hasJuice) AudioSynth.startMusic();
 
+    // Trigger bios boot sequence!
+    triggerBiosBoot();
+
     // 1. Inject Floating Bilingual, Sound, Contrast, Controls & TTS Toolbar
     var toolbar = document.createElement("div");
     toolbar.id = "game-pub-toolbar";
@@ -859,6 +960,12 @@
               }
               celebrate(t);
               AudioSynth.playSuccess();
+
+              var scoreMsg = "+100";
+              if (comboStreak >= 3) {
+                scoreMsg = "+" + (100 * comboStreak) + " COMBO!";
+              }
+              spawnFloatingScore(scoreMsg, lastPointer.x, lastPointer.y);
 
               comboStreak++;
               updateComboHUD(comboStreak);

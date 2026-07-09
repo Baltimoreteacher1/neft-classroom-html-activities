@@ -209,6 +209,7 @@ body.high-contrast select {
 }
 
 
+
 /* Screen Shake Visual FX */
 @keyframes gfx-shake {
   0%, 100% { transform: translate(0, 0) rotate(0deg); }
@@ -227,11 +228,114 @@ body.high-contrast select {
   animation: gfx-shake 0.35s cubic-bezier(.36,.07,.19,.97) both;
 }
 
+/* CRT Arcade Screen Warp & Vignette */
+body.crt-active {
+  perspective: 1000px;
+}
+body.crt-active canvas,
+body.crt-active #wrap,
+body.crt-active .page-shell {
+  position: relative;
+  animation: crt-warmup 0.5s ease-out;
+  transform: rotateX(2deg) scale(0.99);
+}
+body.crt-active::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99999;
+  background: radial-gradient(circle, transparent 55%, rgba(0,0,0,0.5) 100%),
+              linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+              linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: 100% 100%, 100% 4px, 6px 100%;
+  opacity: 0.85;
+}
+/* Retro Scanline grid overlay */
+.gfx-scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 99998;
+  pointer-events: none;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.15) 50%
+  );
+  background-size: 100% 3px;
+  opacity: 0.7;
+}
+
+@keyframes crt-warmup {
+  0% { transform: scaleY(0.01) scaleX(0); filter: brightness(3); }
+  40% { transform: scaleY(0.01) scaleX(1); filter: brightness(3); }
+  100% { transform: rotateX(2deg) scale(0.99); filter: brightness(1); }
+}
+
+/* Floating Score Popup Visual FX */
+.gfx-floating-score {
+  position: fixed;
+  pointer-events: none;
+  z-index: 100000;
+  font-family: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 2px 4px rgba(0,0,0,0.5);
+  animation: gfx-float-up 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+  will-change: transform, opacity;
+}
+@keyframes gfx-float-up {
+  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+  25% { transform: translate(-50%, -100%) scale(1.3); opacity: 1; }
+  100% { transform: translate(-50%, -220%) scale(0.9); opacity: 0; }
+}
+
+/* Retro BIOS Boot Diagnostic Screen */
+#gfx-bios-screen {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  color: #38bdf8;
+  font-family: monospace;
+  font-size: 14px;
+  padding: 30px;
+  z-index: 100001;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  line-height: 1.6;
+}
+.bios-line {
+  white-space: pre-wrap;
+  width: 100%;
+}
+.bios-green {
+  color: #10b981;
+}
+.bios-orange {
+  color: #f59e0b;
+}
+.bios-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 15px;
+  background: #38bdf8;
+  animation: bios-blink 0.8s infinite;
+}
+@keyframes bios-blink {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .gfx-spark,
   .gfx-pop,
   .gfx-ripple,
-  .gfx-shake {
+  .gfx-shake,
+  .gfx-scanlines,
+  #gfx-bios-screen,
+  .gfx-floating-score {
     animation: none !important;
     display: none !important;
   }
@@ -239,5 +343,15 @@ body.high-contrast select {
   .ghero .deco {
     transform: none !important;
   }
+  body.crt-active canvas,
+  body.crt-active #wrap,
+  body.crt-active .page-shell {
+    animation: none !important;
+    transform: none !important;
+  }
+  body.crt-active::after {
+    display: none !important;
+  }
 }
+
 
