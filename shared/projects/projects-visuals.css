@@ -53,10 +53,45 @@ body.pro-projects .viz-why {
   color: var(--muted, #54677c);
 }
 
+/* ---- Student-owned Math Workspace --------------------------------------- */
+body.pro-projects .mw-card {
+  margin: 16px 0 8px;
+  border: 1px solid rgba(15, 118, 110, 0.35);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.08), rgba(255, 255, 255, 0.8));
+  overflow: hidden;
+}
+
+body.pro-projects .mw-summary {
+  display: grid;
+  gap: 2px;
+  padding: 13px 16px;
+  cursor: pointer;
+  color: var(--navy, #10243e);
+}
+
+body.pro-projects .mw-summary::marker { color: var(--teal, #0f766e); }
+body.pro-projects .mw-kicker { color: var(--teal, #0f766e); font-size: .7rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+body.pro-projects .mw-title { font-size: 1rem; }
+body.pro-projects .mw-body { padding: 0 16px 16px; }
+body.pro-projects .mw-intro { margin: 0 0 13px; color: var(--muted, #54677c); font-size: .92rem; }
+body.pro-projects .mw-grid { display: grid; grid-template-columns: repeat(5, minmax(100px, 1fr)); gap: 9px; }
+body.pro-projects .mw-label { display: grid; gap: 4px; color: var(--navy, #10243e); font-size: .78rem; font-weight: 800; }
+body.pro-projects .mw-input, body.pro-projects .mw-explain { width: 100%; border: 1.5px solid #b9d5d1; border-radius: 9px; background: #fff; color: #172033; font: inherit; padding: 8px 9px; }
+body.pro-projects .mw-input:focus, body.pro-projects .mw-explain:focus { outline: 3px solid rgba(13, 148, 136, .22); border-color: var(--teal, #0f766e); }
+body.pro-projects .mw-result { display: grid; gap: 2px; margin: 13px 0; padding: 11px 13px; border-radius: 10px; background: #fff; color: var(--navy, #10243e); }
+body.pro-projects .mw-result-label { color: var(--teal, #0f766e); font-size: .74rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+body.pro-projects .mw-result strong { font-size: 1.05rem; }
+body.pro-projects .mw-result small { color: var(--muted, #54677c); }
+body.pro-projects .mw-explain { min-height: 58px; resize: vertical; }
+
+@media (max-width: 700px) { body.pro-projects .mw-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
 /* Interactive-only helper: the student's real work still lives in the
    page's own inputs, so the tool card stays out of printed reports. */
 @media print {
   body.pro-projects .viz-card {
     display: none !important;
   }
+  body.pro-projects .mw-card { display: none !important; }
 }

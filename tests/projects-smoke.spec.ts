@@ -165,6 +165,13 @@ for (const route of ROUTES) {
       expect(portfolio.dialog, `portfolio dialog missing on ${route.url}`).toBe(1);
       expect(portfolio.trigger, `portfolio trigger missing on ${route.url}`).toBe(1);
 
+      const workspace = await page.evaluate(() => ({
+        cards: document.querySelectorAll(".mw-card").length,
+        inputs: document.querySelectorAll(".mw-card .mw-input").length,
+      }));
+      expect(workspace.cards, `math workspaces missing on ${route.url}`).toBeGreaterThan(0);
+      expect(workspace.inputs, `math workspace inputs missing on ${route.url}`).toBeGreaterThan(4);
+
       // The submission flow must follow the page's existing EN/ES toggle,
       // rather than leaving Spanish-speaking students at an English-only end.
       await page.evaluate(() => {

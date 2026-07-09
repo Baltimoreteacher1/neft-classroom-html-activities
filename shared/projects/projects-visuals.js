@@ -143,6 +143,198 @@
     return true;
   }
 
+  /* ------------------------------------------------------------------------
+     Math Workspace
+
+     Every project gets a local, student-owned Estimate → Model → Explain
+     workspace in each step. It deliberately uses student-entered quantities
+     rather than task data: the goal is sense-making and model rehearsal, not
+     an answer key. Nothing leaves the browser.
+     ------------------------------------------------------------------------ */
+  function workspaceKey(index) {
+    return "nt-project-workspace:" + location.pathname + ":" + index;
+  }
+
+  function readWorkspace(index) {
+    try {
+      return JSON.parse(localStorage.getItem(workspaceKey(index)) || "{}") || {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveWorkspace(index, data) {
+    try {
+      localStorage.setItem(workspaceKey(index), JSON.stringify(data));
+    } catch (e) {
+      /* private mode / full storage: the workspace remains usable */
+    }
+  }
+
+  function workspaceField(type, name, value) {
+    var input = document.createElement("input");
+    input.type = type;
+    input.name = name;
+    input.value = value || "";
+    input.className = "mw-input";
+    if (type === "number") {
+      input.step = "any";
+      input.inputMode = "decimal";
+      input.min = "-1000000000";
+      input.max = "1000000000";
+    }
+    return input;
+  }
+
+  function workspaceLabel(en, es, control) {
+    var label = document.createElement("label");
+    label.className = "mw-label";
+    label.appendChild(biText("span", "mw-label-text", en, es));
+    label.appendChild(control);
+    return label;
+  }
+
+  function operationSelect(value) {
+    var select = document.createElement("select");
+    select.name = "op";
+    select.className = "mw-input";
+    [
+      ["add", "+", "+"],
+      ["subtract", "−", "−"],
+      ["multiply", "×", "×"],
+      ["divide", "÷", "÷"],
+      ["percent", "% of", "% de"],
+    ].forEach(function (item) {
+      var option = document.createElement("option");
+      option.value = item[0];
+      option.textContent = item[1];
+      option.dataset.es = item[2];
+      if (item[0] === value) option.selected = true;
+      select.appendChild(option);
+    });
+    return select;
+  }
+
+  function formatNumber(value) {
+    return Math.abs(value) >= 1000 || Number.isInteger(value)
+      ? value.toLocaleString(undefined, { maximumFractionDigits: 2 })
+      : value.toLocaleString(undefined, { maximumFractionDigits: 3 });
+  }
+
+  function calculate(a, op, b) {
+    if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+    if (op === "add") return a + b;
+    if (op === "subtract") return a - b;
+    if (op === "multiply") return a * b;
+    if (op === "divide") return b === 0 ? null : a / b;
+    if (op === "percent") return (a / 100) * b;
+    return null;
+  }
+
+  function mountWorkspace(panel, index) {
+    if (panel.querySelector(".mw-card")) return;
+    var saved = readWorkspace(index);
+    var card = document.createElement("details");
+    card.className = "mw-card";
+    card.open = saved.open === true;
+
+    var summary = document.createElement("summary");
+    summary.className = "mw-summary";
+    summary.appendChild(biText("span", "mw-kicker", "Math Workspace", "Espacio matemático"));
+    summary.appendChild(biText("strong", "mw-title", "Estimate → Model → Explain", "Estima → Modela → Explica"));
+    card.appendChild(summary);
+
+    var body = document.createElement("div");
+    body.className = "mw-body";
+    body.appendChild(
+      biText(
+        "p",
+        "mw-intro",
+        "Try your own quantities here. This is a private practice space, not the project answer.",
+        "Prueba aquí tus propias cantidades. Este es un espacio privado para practicar, no la respuesta del proyecto.",
+      ),
+    );
+
+    var grid = document.createElement("div");
+    grid.className = "mw-grid";
+    var estimate = workspaceField("number", "estimate", saved.estimate);
+    var quantityA = workspaceField("number", "a", saved.a);
+    var operation = operationSelect(saved.op || "multiply");
+    var quantityB = workspaceField("number", "b", saved.b);
+    var unit = workspaceField("text", "unit", saved.unit);
+    unit.placeholder = "items, dollars, miles…";
+    grid.appendChild(workspaceLabel("My estimate", "Mi estimación", estimate));
+    grid.appendChild(workspaceLabel("Quantity A", "Cantidad A", quantityA));
+    grid.appendChild(workspaceLabel("Operation", "Operación", operation));
+    grid.appendChild(workspaceLabel("Quantity B", "Cantidad B", quantityB));
+    grid.appendChild(workspaceLabel("Unit or label", "Unidad o etiqueta", unit));
+    body.appendChild(grid);
+
+    var result = document.createElement("div");
+    result.className = "mw-result";
+    result.setAttribute("aria-live", "polite");
+    body.appendChild(result);
+
+    var explain = document.createElement("textarea");
+    explain.name = "explain";
+    explain.className = "mw-explain";
+    explain.rows = 2;
+    explain.value = saved.explain || "";
+    explain.placeholder = "What does this result mean in this situation?";
+    body.appendChild(workspaceLabel("Explain what the result means", "Explica lo que significa el resultado", explain));
+    card.appendChild(body);
+
+    function refresh() {
+      var a = Number(quantityA.value);
+      var b = Number(quantityB.value);
+      var answer = calculate(a, operation.value, b);
+      var estimateValue = Number(estimate.value);
+      var opSymbol = operation.options[operation.selectedIndex].textContent;
+      var suffix = unit.value.trim() ? " " + unit.value.trim() : "";
+      if (!quantityA.value || !quantityB.value) {
+        result.innerHTML = "<strong>" + (document.querySelector("#body.es") ? "Escribe dos cantidades para crear un modelo." : "Enter two quantities to build a model.") + "</strong>";
+      } else if (answer === null) {
+        result.innerHTML = "<strong>" + (operation.value === "divide" && b === 0 ? (document.querySelector("#body.es") ? "No se puede dividir entre cero. Cambia la segunda cantidad." : "You cannot divide by zero. Change Quantity B.") : (document.querySelector("#body.es") ? "Usa números válidos para crear un modelo." : "Use valid numbers to build a model.")) + "</strong>";
+      } else {
+        var equation = formatNumber(a) + " " + opSymbol + " " + formatNumber(b) + " = " + formatNumber(answer) + suffix;
+        var check = "";
+        if (estimate.value && Number.isFinite(estimateValue)) {
+          var difference = Math.abs(estimateValue - answer);
+          var percent = answer === 0 ? null : Math.round((difference / Math.abs(answer)) * 100);
+          check = "<small>" + (document.querySelector("#body.es") ? "Tu estimación difiere por " : "Your estimate differs by ") + formatNumber(difference) + suffix + (percent === null ? "." : " (" + percent + "%).") + "</small>";
+        }
+        result.innerHTML = '<span class="mw-result-label">' + (document.querySelector("#body.es") ? "Mi modelo" : "My model") + "</span><strong>" + equation + "</strong>" + check;
+      }
+      saveWorkspace(index, {
+        open: card.open,
+        estimate: estimate.value,
+        a: quantityA.value,
+        op: operation.value,
+        b: quantityB.value,
+        unit: unit.value,
+        explain: explain.value,
+      });
+    }
+
+    [estimate, quantityA, operation, quantityB, unit, explain].forEach(function (field) {
+      field.addEventListener("input", refresh);
+      field.addEventListener("change", refresh);
+    });
+    card.addEventListener("toggle", refresh);
+    refresh();
+    panel.appendChild(card);
+  }
+
+  function mountWorkspaces() {
+    Array.prototype.forEach.call(document.querySelectorAll(".step-panel"), function (panel, index) {
+      try {
+        mountWorkspace(panel, index + 1);
+      } catch (e) {
+        /* a workspace never blocks the project step */
+      }
+    });
+  }
+
   function loadWidget(manip) {
     var src = "/shared/projects/manip-" + manip + ".js";
     if (document.querySelector('script[src="' + src + '"]')) return;
@@ -158,6 +350,7 @@
       if (!body || !body.classList.contains("pro-projects")) return;
       if (body.dataset.vizInit === "1") return;
       body.dataset.vizInit = "1";
+      mountWorkspaces();
       if (typeof fetch !== "function") return;
 
       fetch("./visuals.json", { cache: "no-cache" })
