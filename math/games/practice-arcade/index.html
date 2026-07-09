@@ -551,6 +551,28 @@
             this.tries = 0; // attempts on the current round
             this.th = JUICE.theme(themeId);
             drawStars(this);
+
+            // Scene-wide drag listeners to prevent multiple overlapping tiles dragging together
+            this.input.on("dragstart", (pointer, gameObject) => {
+              if (gameObject._tileObj) {
+                gameObject.setDepth(20);
+              }
+            });
+            this.input.on("drag", (pointer, gameObject) => {
+              const t = gameObject._tileObj;
+              if (t && !t.assigned) {
+                gameObject.x = pointer.worldX;
+                gameObject.y = pointer.worldY;
+              }
+            });
+            this.input.on("dragend", (pointer, gameObject) => {
+              const t = gameObject._tileObj;
+              if (t) {
+                gameObject.setDepth(0);
+                this.dropTile(t);
+              }
+            });
+
             // Audio + ambient music (unlocked by the Start tap on the Title scene).
             JUICE.audio.unlock();
             JUICE.audio.musicStart();
@@ -919,23 +941,8 @@
                 ),
                 Phaser.Geom.Rectangle.Contains,
               );
+              t.parts._tileObj = t;
               this.input.setDraggable(t.parts);
-              // Position the tile from the pointer's world coords (Scale.FIT-
-              // correct). NOTE: dragX/dragY from the event do NOT update for a
-              // container nested in another container (this.layer), so we must use
-              // the pointer. We CENTRE the tile on the pointer (no grab offset) so
-              // the tile's centre — which dropTile tests against the bins — is
-              // exactly where the student is aiming. That makes it land in the box.
-              t.parts.on("dragstart", () => t.parts.setDepth(20));
-              t.parts.on("drag", (p) => {
-                if (t.assigned) return;
-                t.parts.x = p.worldX;
-                t.parts.y = p.worldY;
-              });
-              t.parts.on("dragend", () => {
-                t.parts.setDepth(0);
-                this.dropTile(t);
-              });
               // Tap (not a drag) selects the tile so it can be placed by tapping a
               // box or pressing its number — a reliable path on touch devices.
               t.parts.on("pointerup", (p) => {
