@@ -338,6 +338,93 @@ function barChartSVG(cfg) {
   return svgFigure(cfg, `${axis}${rects}`, W, H, padT);
 }
 
+// Draw a real, structured SVG factor tree diagram from config tree.
+function factorTreeSVG(cfg) {
+  const W = 360;
+  const H = 220;
+  
+  function getDepth(node) {
+    if (!node) return 0;
+    return 1 + Math.max(getDepth(node.left), getDepth(node.right));
+  }
+  
+  const maxDepth = getDepth(cfg);
+  let elements = [];
+  
+  function traverse(node, x, y, dx, depth) {
+    if (!node) return;
+    
+    const isPrime = !node.left && !node.right;
+    const fill = isPrime ? "#e2f9f5" : "#fbf4e6";
+    const stroke = isPrime ? "#0d7a76" : "#d4952a";
+    const textColor = isPrime ? "#095350" : "#8a5800";
+    
+    elements.push({
+      type: "node",
+      x,
+      y,
+      value: node.value,
+      fill,
+      stroke,
+      textColor
+    });
+    
+    if (node.left) {
+      const lx = x - dx;
+      const ly = y + 52;
+      elements.push({
+        type: "line",
+        x1: x,
+        y1: y + 16,
+        x2: lx,
+        y2: ly - 16
+      });
+      traverse(node.left, lx, ly, dx * 0.5, depth + 1);
+    }
+    
+    if (node.right) {
+      const rx = x + dx;
+      const ry = y + 52;
+      elements.push({
+        type: "line",
+        x1: x,
+        y1: y + 16,
+        x2: rx,
+        y2: ry - 16
+      });
+      traverse(node.right, rx, ry, dx * 0.5, depth + 1);
+    }
+  }
+  
+  traverse(cfg, W / 2, 28, W / 4, 1);
+  
+  let linesSvg = "";
+  let nodesSvg = "";
+  
+  elements.forEach((el) => {
+    if (el.type === "line") {
+      linesSvg += `<line x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="#d7e2ed" stroke-width="2.5" />`;
+    } else if (el.type === "node") {
+      nodesSvg += `
+        <g class="ft-node">
+          <circle cx="${el.x}" cy="${el.y}" r="16" fill="${el.fill}" stroke="${el.stroke}" stroke-width="2" />
+          <text x="${el.x}" y="${el.y}" dy="5" font-family="Segoe UI, sans-serif" font-weight="700" font-size="12px" fill="${el.textColor}" text-anchor="middle">${el.value}</text>
+        </g>
+      `;
+    }
+  });
+  
+  return `
+    <div class="factor-tree-figure" style="margin:var(--sp-3) 0; display:flex; flex-direction:column; align-items:center;">
+      ${cfg.title ? `<div style="font-weight:700; color:var(--navy,#12355b); margin-bottom:var(--sp-1); font-size:0.95rem;">${esc(cfg.title)}</div>` : ""}
+      <svg viewBox="0 0 ${W} ${H}" style="width:100%; height:auto; max-width:320px; display:block; background:#fff; border:1px solid #d7e2ed; border-radius:12px; padding:10px;">
+        ${linesSvg}
+        ${nodesSvg}
+      </svg>
+    </div>
+  `;
+}
+
 // Simple labeled number line with optional marked points.
 function numberLineSVG(cfg) {
   const min = Number(cfg.min ?? 0),
@@ -488,6 +575,8 @@ function buildVisual(v) {
       return tapeDiagramSVG(v);
     case "coordinate-plane":
       return coordPlaneSVG(v);
+    case "factor-tree":
+      return factorTreeSVG(v);
     default:
       return "";
   }

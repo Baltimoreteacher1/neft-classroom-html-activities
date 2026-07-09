@@ -423,11 +423,25 @@ function wireZoneKeyboard(zone, labelText) {
 function createDragItem(item) {
   const el = document.createElement("div");
   el.className = "drag-item";
-  el.textContent = item.text;
   el.draggable = true;
-  // Unique id (falls back to text for any legacy caller) — keyed on by grading
-  // and drag/drop so duplicate item texts don't collide.
   el.dataset.itemId = item._id != null ? item._id : item.text;
+
+  el.style.cssText = "display:inline-flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 14px; gap:4px; text-align:center; min-width:80px;";
+
+  const labelSpan = document.createElement("span");
+  labelSpan.textContent = item.text;
+  labelSpan.style.cssText = "font-weight:700; font-size:1.1rem; line-height:1.2;";
+  el.append(labelSpan);
+
+  const numVal = parseInt(item.text);
+  if (!isNaN(numVal) && numVal > 1 && numVal <= 30) {
+    const svgHtml = createNumberArraySVG(numVal);
+    if (svgHtml) {
+      const svgContainer = document.createElement("div");
+      svgContainer.innerHTML = svgHtml;
+      el.append(svgContainer);
+    }
+  }
 
   // Keyboard/tap selection (paired with wireZoneKeyboard on the drop zones).
   el.tabIndex = 0;
@@ -590,3 +604,43 @@ function setupDragDrop(zones, _ctx) {
     });
   });
 }
+
+function createNumberArraySVG(num) {
+  if (isNaN(num) || num <= 1 || num > 30) return "";
+  
+  // Find closest factor pair (a, b) where a <= b and a * b = num
+  let r = Math.floor(Math.sqrt(num));
+  let cols = num;
+  let rows = 1;
+  for (let i = r; i >= 1; i--) {
+    if (num % i === 0) {
+      rows = i;
+      cols = num / i;
+      break;
+    }
+  }
+  
+  const isPrime = (rows === 1);
+  const dotRadius = 3;
+  const gap = 9;
+  const padding = 4;
+  
+  const width = (cols - 1) * gap + padding * 2;
+  const height = (rows - 1) * gap + padding * 2;
+  
+  let dotsSvg = "";
+  // In drag-sort: dark theme is not active, standard light styling is used.
+  // We use standard colors: teal-dark (#0d7a76) for primes, amber-dark (#b07a10) for composites.
+  const color = isPrime ? "#0d7a76" : "#b07a10";
+  
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const cx = padding + c * gap;
+      const cy = padding + r * gap;
+      dotsSvg += `<circle cx="${cx}" cy="${cy}" r="${dotRadius}" fill="${color}" opacity="0.85" />`;
+    }
+  }
+  
+  return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="display:block; margin:4px auto 0; overflow:visible;">${dotsSvg}</svg>`;
+}
+
