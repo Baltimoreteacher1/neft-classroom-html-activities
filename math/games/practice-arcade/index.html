@@ -549,6 +549,13 @@
             this.streak = 0;
             this.correctCount = 0; // first-try solves (drives stars)
             this.tries = 0; // attempts on the current round
+            // ── Power-up meter ── first-try solves charge it; at full it grants a
+            // DOUBLE-POINTS state for the next solve, then discharges. Pure reward
+            // for mastery — never a timer, never a penalty (calm, no-fail).
+            this.power = 0;
+            this.powerMax = 3;
+            this.doubled = false;
+            this.gems = []; // collected-gem sprites in the tray
             this.th = JUICE.theme(themeId);
             drawStars(this);
             // Audio + ambient music (unlocked by the Start tap on the Title scene).
@@ -627,11 +634,110 @@
               .text(120, this.journeyY, mascot, { fontSize: "40px" })
               .setOrigin(0.5);
 
+            // ── Power meter (top-left, under the score) ──────────────────────
+            const pmX = 110,
+              pmY = 66,
+              pmW = 168,
+              pmH = 14;
+            this.powerBase = this.add
+              .rectangle(pmX, pmY, pmW, pmH, 0x1e1b4b, 0.9)
+              .setOrigin(0, 0.5)
+              .setStrokeStyle(2, PALETTE.panelLine, 0.7);
+            this.powerFill = this.add
+              .rectangle(pmX + 2, pmY, 0, pmH - 6, PALETTE.gold, 1)
+              .setOrigin(0, 0.5);
+            this.powerLabel = this.add
+              .text(pmX + pmW + 8, pmY, "⚡", { fontSize: "16px" })
+              .setOrigin(0, 0.5)
+              .setAlpha(0.5);
+
+            // ── Gem tray (bottom-left) ── one gem drops in per first-try solve,
+            // so progress you earn stacks up somewhere you can see it grow.
+            this.trayX = 40;
+            this.trayY = H - 74;
+            this.add
+              .text(this.trayX, this.trayY - 26, "Gems", {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "13px",
+                fontStyle: "bold",
+                color: "#c7d2fe",
+              })
+              .setOrigin(0, 0.5);
+
             // Layer that holds per-round interactive objects (cleared each round)
             this.layer = this.add.container(0, 0);
             this.locked = false;
             this.updateHUD();
             this.startRound();
+          }
+
+          // Charge the power meter on a first-try solve; at full, arm DOUBLE POINTS
+          // for the next solve and discharge. Returns nothing — updateHUD paints it.
+          chargePower() {
+            if (this.doubled) return; // already armed; spend it before recharging
+            this.power = Math.min(this.powerMax, this.power + 1);
+            if (this.power >= this.powerMax) {
+              this.doubled = true;
+              this.power = this.powerMax;
+              this.showBanner("⚡ DOUBLE POINTS! ⚡", "#facc15");
+              JUICE.audio.pop();
+              if (this.powerLabel) this.powerLabel.setAlpha(1).setScale(1.4);
+            }
+          }
+
+          // Drop a collectible gem into the tray for a first-try solve.
+          dropGem() {
+            const i = this.gems.length;
+            const gx = this.trayX + 10 + (i % 12) * 22;
+            const gy = this.trayY + Math.floor(i / 12) * 22;
+            const gem = this.add.text(gx, gy - 120, "💎", { fontSize: "18px" }).setOrigin(0.5);
+            this.gems.push(gem);
+            if (JUICE.reduceMotion) {
+              gem.y = gy;
+              return;
+            }
+            this.tweens.add({
+              targets: gem,
+              y: gy,
+              ease: "Bounce.Out",
+              duration: 620 + i * 20,
+            });
+          }
+
+          // Centered milestone banner that slides in, holds, and fades out.
+          showBanner(text, color) {
+            const b = this.add
+              .text(W / 2, 210, text, {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "30px",
+                fontStyle: "bold",
+                color: color || "#ffffff",
+                stroke: "#0b1020",
+                strokeThickness: 5,
+              })
+              .setOrigin(0.5)
+              .setDepth(60);
+            if (JUICE.reduceMotion) {
+              this.time.delayedCall(900, () => b.destroy());
+              return;
+            }
+            b.setScale(0.4).setAlpha(0);
+            this.tweens.add({
+              targets: b,
+              scale: 1,
+              alpha: 1,
+              ease: "Back.Out",
+              duration: 320,
+            });
+            this.time.delayedCall(1050, () => {
+              this.tweens.add({
+                targets: b,
+                alpha: 0,
+                y: 170,
+                duration: 340,
+                onComplete: () => b.destroy(),
+              });
+            });
           }
 
           // Slide the mascot along the journey track toward the goal flag.
@@ -680,6 +786,15 @@
             this.promptText.setY(92 + ph / 2);
             srSay("Round " + (this.idx + 1) + ". " + r.prompt);
 
+            // Milestone cheer: a quick banner at the halfway mark and on the
+            // final round to give the run a sense of shape (calm, no timer).
+            const total = rounds.length;
+            if (total >= 4 && this.idx === Math.floor(total / 2)) {
+              this.showBanner("⭐ Halfway there!", "#38bdf8");
+            } else if (total >= 3 && this.idx === total - 1) {
+              this.showBanner("🏁 Last one — finish strong!", "#a3e635");
+            }
+
             const kind = r.kind;
             if (kind === "sort") this.renderSort(r);
             else if (kind === "match") this.renderMatch(r);
@@ -699,8 +814,20 @@
               this.locked = true;
               const firstTry = this.tries === 0;
               this.streak = firstTry ? this.streak + 1 : 0;
-              if (firstTry) this.correctCount++;
-              const gained = (firstTry ? 100 : 40) + Math.min(this.streak, 5) * 20;
+              if (firstTry) {
+                this.correctCount++;
+                this.chargePower();
+                this.dropGem();
+              }
+              // Spend a charged DOUBLE-POINTS state on this solve.
+              const doubling = this.doubled;
+              let gained = (firstTry ? 100 : 40) + Math.min(this.streak, 5) * 20;
+              if (doubling) {
+                gained *= 2;
+                this.doubled = false;
+                this.power = 0;
+                if (this.powerLabel) this.powerLabel.setAlpha(0.5).setScale(1);
+              }
               this.score += gained;
               // Juice escalates with the streak: more particles, bigger shake,
               // a second burst + confetti once it's rolling.
@@ -709,7 +836,15 @@
               JUICE.burst(this, cx, cy, [0x34d399, PALETTE.accent, 0xffffff], n);
               if (this.streak >= 5) JUICE.burst(this, cx, cy + 60, [0xfacc15, 0xffffff], 16);
               JUICE.shake(this, 0.005 + Math.min(this.streak, 5) * 0.001);
-              JUICE.floatText(this, cx, cy - 30, "+" + gained, "#34d399", 40);
+              JUICE.floatText(
+                this,
+                cx,
+                cy - 30,
+                (doubling ? "⚡ +" : "+") + gained,
+                doubling ? "#facc15" : "#34d399",
+                doubling ? 48 : 40,
+              );
+              if (doubling) JUICE.confetti(this, 1);
               this.mascotReact(true);
               this.mascotSay(
                 firstTry ? (this.streak >= 3 ? "🔥 On fire!" : "Nice!") : "Got it! 🎉",
@@ -758,6 +893,23 @@
             this.scoreText.setText("Score: " + this.score);
             this.streakText.setText(this.streak > 1 ? "🔥 Streak " + this.streak : "");
             this.livesText.setText("⭐ " + this.correctCount + " / " + rounds.length);
+            // Paint the power meter fill (gold when charging, cyan+pulse when armed).
+            if (this.powerFill && this.powerBase) {
+              const frac = this.doubled ? 1 : this.power / this.powerMax;
+              const fullW = this.powerBase.width - 4;
+              const targetW = Math.max(0, fullW * frac);
+              this.powerFill.setFillStyle(this.doubled ? PALETTE.accent : PALETTE.gold, 1);
+              if (JUICE.reduceMotion) {
+                this.powerFill.width = targetW;
+              } else {
+                this.tweens.add({
+                  targets: this.powerFill,
+                  width: targetW,
+                  duration: 260,
+                  ease: "Quad.Out",
+                });
+              }
+            }
           }
 
           flashEdge(color) {
@@ -1385,6 +1537,66 @@
               })
               .setOrigin(0.5);
 
+            // Rank title — a friendly label that rewards higher accuracy and
+            // gives the score a name to aim to beat on replay.
+            const flawless = d.total > 0 && d.correct === d.total;
+            const rank = flawless
+              ? "🏆 FLAWLESS — Math Champion!"
+              : stars === 3
+                ? "🌟 Math Star"
+                : stars === 2
+                  ? "💪 Getting Strong"
+                  : "🌱 Keep Growing";
+            this.add
+              .text(W / 2, 392, rank, {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "20px",
+                fontStyle: "bold",
+                color: flawless ? "#facc15" : "#a5f3fc",
+              })
+              .setOrigin(0.5);
+
+            // Personal best (per lesson, localStorage). Celebrate a new record.
+            let best = 0;
+            const bestKey = "pa-best-" + activeLesson;
+            try {
+              best = parseInt(localStorage.getItem(bestKey) || "0", 10) || 0;
+            } catch (e) {}
+            const isNewBest = d.score > best;
+            if (isNewBest) {
+              try {
+                localStorage.setItem(bestKey, String(d.score));
+              } catch (e) {}
+              const nb = this.add
+                .text(W / 2, 430, "🎉 NEW BEST SCORE!", {
+                  fontFamily: "Nunito, Segoe UI, sans-serif",
+                  fontSize: "22px",
+                  fontStyle: "bold",
+                  color: "#34d399",
+                })
+                .setOrigin(0.5);
+              if (!JUICE.reduceMotion) {
+                nb.setScale(0);
+                this.tweens.add({
+                  targets: nb,
+                  scale: 1,
+                  ease: "Back.Out",
+                  duration: 360,
+                  delay: 500,
+                  onStart: () => JUICE.confetti(this, 1),
+                });
+              }
+            } else if (best > 0) {
+              this.add
+                .text(W / 2, 430, "Best: " + best + " — beat it next time!", {
+                  fontFamily: "Nunito, Segoe UI, sans-serif",
+                  fontSize: "17px",
+                  color: "#cbd5e1",
+                })
+                .setOrigin(0.5);
+            }
+            if (flawless && !JUICE.reduceMotion) JUICE.confetti(this, 1);
+
             try {
               window.EduPulse &&
                 EduPulse.record({
@@ -1399,8 +1611,8 @@
               "Review complete. " + d.correct + " of " + d.total + " correct. " + stars + " stars.",
             );
 
-            makeButton(this, W / 2, 420, 220, 56, "PLAY AGAIN 🔁", () => window.location.reload());
-            makeLink(this, W / 2, 510, "← Back to lessons", () => {
+            makeButton(this, W / 2, 512, 220, 56, "PLAY AGAIN 🔁", () => window.location.reload());
+            makeLink(this, W / 2, 578, "← Back to lessons", () => {
               window.location.href = "/curriculum/";
             });
           }
