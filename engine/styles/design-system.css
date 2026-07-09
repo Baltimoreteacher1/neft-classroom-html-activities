@@ -4284,3 +4284,40 @@ textarea.syw-input {
   background: rgba(42, 157, 143, 0.08);
   border: 1px solid var(--teal, #2a9d8f);
 }
+
+/* ---- Reading-progress rail (engine/core/reading-progress.js) ----
+ * Slim scroll-progress indicator pinned to the top of every lesson. Calm,
+ * brand-gold, and invisible until there's real content to scroll through. */
+#nt-read-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  z-index: 2147482000; /* below the Save/Resume launcher + modals, above content */
+  background: transparent;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+#nt-read-progress.is-active {
+  opacity: 1;
+}
+#nt-read-progress .nt-read-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--amber, #f59e0b), var(--gold, #d4952a));
+  box-shadow: 0 0 6px rgba(212, 149, 42, 0.5);
+  transition: width 0.12s linear;
+}
+@media print {
+  #nt-read-progress {
+    display: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #nt-read-progress,
+  #nt-read-progress .nt-read-progress-fill {
+    transition: none;
+  }
+}

@@ -30,6 +30,7 @@ import { renderThemeIllustration } from "./theme-illustrations.js";
 import { deriveWorkedSteps } from "./worked-steps.js";
 import { isTeacherMode } from "./teacher-mode.js";
 import { mountStuckSupport } from "./stuck-support.js";
+import { mountReadingProgress } from "./reading-progress.js";
 import {
   buildPhaseTransitionMeta,
   buildPrintableSummary,
@@ -57,6 +58,8 @@ export function bootLesson(config) {
       (el, state, ctx) => renderReflectPhase(el, state, ctx, config),
     ],
   });
+  // Slim scroll-progress rail across the top of the lesson (additive, defensive).
+  mountReadingProgress();
 }
 
 // ── Helpers ──

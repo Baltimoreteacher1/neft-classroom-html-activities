@@ -1349,6 +1349,20 @@
     $("#nsr-code-in").addEventListener("keydown", function (e) {
       if (e.key === "Enter") $("#nsr-continue").click();
     });
+    // Live-normalise the code as the student types or pastes it: uppercase and
+    // drop anything that isn't a letter, digit, or dash. Preserves caret position.
+    $("#nsr-code-in").addEventListener("input", function () {
+      var box = this;
+      var start = box.selectionStart;
+      var cleaned = box.value.toUpperCase().replace(/[^A-Z0-9-]/g, "");
+      if (cleaned !== box.value) {
+        var delta = box.value.length - cleaned.length;
+        box.value = cleaned;
+        try {
+          box.setSelectionRange(Math.max(0, start - delta), Math.max(0, start - delta));
+        } catch (e) {}
+      }
+    });
     $("#nsr-copy").addEventListener("click", function () {
       var code = self.record && self.record.saveCode;
       if (!code) return;
@@ -1369,6 +1383,17 @@
     // Shared-device path: forget the remembered name/class so the next student
     // is asked fresh. Also drops this browser's active session.
     $("#nsr-switch-student").addEventListener("click", function () {
+      // Guard against a mis-tap wiping the current student on a shared device.
+      var ok = safe(
+        function () {
+          return window.confirm(
+            "Switch student? This clears the saved name and code on this device. Your saved work is safe — you can reopen it with its code.",
+          );
+        },
+        "confirm-switch",
+        true,
+      );
+      if (!ok) return;
       clearIdentity();
       self.reset();
       $("#nsr-name").value = "";
@@ -1471,10 +1496,23 @@
     offline: "Saved locally (offline — will sync later)",
     error: "Couldn't save — try again",
   };
+  var pulseTimer;
   function setStatus(self, key) {
     var text = STATUS_TEXT[key] || key;
     if (ui.status) ui.status.textContent = text;
     if (ui.dot) ui.dot.className = "nsr-dot nsr-dot-" + key;
+    // Brief confirmation pulse on the launcher when a save lands, so students
+    // get visible feedback even with the panel closed. Restarts cleanly.
+    if ((key === "saved" || key === "saved-local") && ui.root) {
+      ui.root.classList.remove("nsr-just-saved");
+      // force reflow so the animation re-triggers on rapid successive saves
+      void ui.root.offsetWidth;
+      ui.root.classList.add("nsr-just-saved");
+      clearTimeout(pulseTimer);
+      pulseTimer = setTimeout(function () {
+        ui.root.classList.remove("nsr-just-saved");
+      }, 1200);
+    }
   }
   var toastTimer;
   function showToast(self, msg) {

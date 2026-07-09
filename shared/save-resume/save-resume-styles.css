@@ -320,11 +320,64 @@
   }
 }
 
+/* ---- Save-confirmation pulse ---- */
+/* A brief, calm ring + lift when work is saved, so students trust the save even
+ * with the panel closed. Applied to #nsr-root via the .nsr-just-saved class. */
+@keyframes nsr-saved-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes nsr-saved-ring {
+  0% {
+    box-shadow:
+      var(--nsr-shadow),
+      0 0 0 0 rgba(52, 211, 153, 0.55);
+  }
+  100% {
+    box-shadow:
+      var(--nsr-shadow),
+      0 0 0 12px rgba(52, 211, 153, 0);
+  }
+}
+.nsr-just-saved #nsr-launcher {
+  animation:
+    nsr-saved-pop 0.5s ease,
+    nsr-saved-ring 0.9s ease-out;
+}
+
+/* ---- Touch targets ---- */
+/* On touch/coarse-pointer devices, guarantee a comfortable ≥44px tap target
+ * even though the launcher is visually compact on pointer devices. */
+@media (pointer: coarse) {
+  #nsr-launcher {
+    min-height: 44px;
+    padding: 9px 15px;
+    font-size: 0.9rem;
+  }
+  .nsr-btn {
+    min-height: 44px;
+  }
+  .nsr-x {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
 /* ---- Reduced motion ---- */
 @media (prefers-reduced-motion: reduce) {
   #nsr-launcher,
   #nsr-toast {
     transition: none;
+  }
+  .nsr-just-saved #nsr-launcher {
+    animation: none;
   }
 }
 
