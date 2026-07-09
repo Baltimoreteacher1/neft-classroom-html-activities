@@ -374,6 +374,7 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
 // mouse drag. A single item is selected at a time; clicking/activating a drop
 // zone moves the selected item there. Shared across items/zones in one render.
 let dsSelected = null;
+let activeDragElement = null;
 function dsClearSelection() {
   if (dsSelected) {
     dsSelected.classList.remove("ds-selected");
@@ -446,6 +447,7 @@ function createDragItem(item) {
   });
 
   el.addEventListener("dragstart", (e) => {
+    activeDragElement = el;
     e.dataTransfer.setData("text/plain", el.dataset.itemId);
     e.dataTransfer.effectAllowed = "move";
     el.classList.add("dragging");
@@ -454,27 +456,30 @@ function createDragItem(item) {
 
   el.addEventListener("dragend", () => {
     el.classList.remove("dragging", "drag-ghost");
+    if (activeDragElement === el) {
+      activeDragElement = null;
+    }
   });
 
-  // Touch support for Chromebooks
+  // Touch support for Chromebooks / iPads with conflict prevention
   let touchClone = null;
   let originZone = null;
 
   el.addEventListener(
     "touchstart",
     (e) => {
+      // Disable native HTML5 drag processing to prevent dual-cursor rendering and sticking
+      el.draggable = false;
       originZone = el.parentElement;
       touchClone = el.cloneNode(true);
-      // ds-touch-ghost adds the (reduced-motion-gated) glow, rotate, and deep
-      // shadow. The base inline styles keep it functional even when motion is
-      // reduced (the animation/transform simply does not apply).
+      // ds-touch-ghost adds the glow, rotate, and shadow
       touchClone.classList.add("ds-touch-ghost");
       touchClone.style.cssText = `
-      position:fixed; z-index:1000; pointer-events:none; opacity:0.9;
-      box-shadow:0 8px 24px rgba(18,53,91,0.2);
-    `;
+        position:fixed; z-index:1000; pointer-events:none; opacity:0.9;
+        box-shadow:0 8px 24px rgba(18,53,91,0.2);
+      `;
       document.body.append(touchClone);
-      moveTouchClone(e);
+      moveTouchClone(e, touchClone);
     },
     { passive: true },
   );
@@ -483,7 +488,7 @@ function createDragItem(item) {
     "touchmove",
     (e) => {
       e.preventDefault();
-      moveTouchClone(e);
+      moveTouchClone(e, touchClone);
       const target = getDropZoneUnderTouch(e);
       document.querySelectorAll(".drag-zone").forEach((z) => z.classList.remove("over"));
       if (target) target.classList.add("over");
@@ -492,6 +497,7 @@ function createDragItem(item) {
   );
 
   el.addEventListener("touchend", (e) => {
+    el.draggable = true; // Restore native drag capability
     if (touchClone) {
       touchClone.remove();
       touchClone = null;
@@ -502,6 +508,16 @@ function createDragItem(item) {
       target.append(el);
       springBounce(el);
     }
+    originZone = null;
+  });
+
+  el.addEventListener("touchcancel", () => {
+    el.draggable = true; // Restore native drag capability
+    if (touchClone) {
+      touchClone.remove();
+      touchClone = null;
+    }
+    document.querySelectorAll(".drag-zone").forEach((z) => z.classList.remove("over"));
     originZone = null;
   });
 
@@ -517,11 +533,9 @@ function showFb(slot, type, msg) {
   slot.append(fb);
 }
 
-function moveTouchClone(e) {
+function moveTouchClone(e, clone) {
   const touch = e.touches?.[0] || e.changedTouches?.[0];
-  if (!touch) return;
-  const clone = document.querySelector('.drag-item[style*="fixed"]');
-  if (!clone) return;
+  if (!touch || !clone) return;
   clone.style.left = `${touch.clientX - 40}px`;
   clone.style.top = `${touch.clientY - 20}px`;
 }
@@ -533,13 +547,10 @@ function getDropZoneUnderTouch(e) {
   return elements.find((el) => el.classList.contains("drag-zone")) || null;
 }
 
-// Apply the ease-out spring bounce to an item that just landed. CSS-gated by
-// prefers-reduced-motion, so it is a no-op visual when motion is reduced. The
-// class is removed after the animation so a future drop can replay it.
+// Apply the ease-out spring bounce to an item that just landed.
 function springBounce(el) {
   if (!el) return;
   el.classList.remove("ds-landed");
-  // Force reflow so re-adding the class restarts the animation.
   void el.offsetWidth;
   el.classList.add("ds-landed");
   el.addEventListener("animationend", () => el.classList.remove("ds-landed"), {
@@ -547,9 +558,6 @@ function springBounce(el) {
   });
 }
 
-// The optional second argument is accepted for forward-compatible call sites
-// (e.g. parallax context); the bank's setup omits it. It does not alter
-// drop/checking behavior.
 function setupDragDrop(zones, _ctx) {
   zones.forEach((zone) => {
     zone.addEventListener("dragover", (e) => {
@@ -564,8 +572,12 @@ function setupDragDrop(zones, _ctx) {
     zone.addEventListener("drop", (e) => {
       e.preventDefault();
       zone.classList.remove("over");
+      // Fall back to module level tracker if dataTransfer is empty/blocked
       const text = e.dataTransfer.getData("text/plain");
-      const dragEl = document.querySelector(`.drag-item[data-item-id="${CSS.escape(text)}"]`);
+      let dragEl = activeDragElement;
+      if (!dragEl && text) {
+        dragEl = document.querySelector(`.drag-item[data-item-id="${CSS.escape(text)}"]`);
+      }
       if (dragEl) {
         dragEl.classList.remove("correct", "incorrect");
         zone.append(dragEl);
