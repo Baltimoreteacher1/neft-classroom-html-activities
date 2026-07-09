@@ -817,7 +817,7 @@
           renderSort(r) {
             const cats = r.categories;
             const binW = Math.min(260, (W - 120) / cats.length - 20);
-            const binH = 150;
+            const binH = 160;
             const binY = H - 130;
             const totalW = cats.length * binW + (cats.length - 1) * 24;
             let bx = (W - totalW) / 2 + binW / 2;
@@ -1015,8 +1015,20 @@
               this.assignTile(t, target);
             } else {
               // released up near the staging row — snap back home
-              t.parts.x = t.homeX;
-              t.parts.y = t.homeY;
+              if (JUICE.reduceMotion) {
+                t.parts.x = t.homeX;
+                t.parts.y = t.homeY;
+                t.parts.setScale(1.0);
+              } else {
+                this.tweens.add({
+                  targets: t.parts,
+                  x: t.homeX,
+                  y: t.homeY,
+                  scale: 1.0,
+                  duration: 220,
+                  ease: "Back.Out",
+                });
+              }
             }
           }
           assignTile(t, bi) {
@@ -1024,25 +1036,33 @@
             JUICE.audio.pop();
             const b = this.bins[bi];
             t.assigned = b.id;
-            const slot = b.count++;
-            const tx = b.x - b.w / 2 + 14 + (slot % 2) * (b.w / 2);
-            const ty = b.y - b.h / 2 + 44 + Math.floor(slot / 2) * 30;
-            t.binSlot = { bi, slot }; // remembered so a wrong check can free it
-            // Snap with a springy tween so the drop has weight (absolute coords).
-            if (JUICE.reduceMotion) {
-              t.parts.x = tx;
-              t.parts.y = ty;
-            } else {
-              this.tweens.add({
-                targets: t.parts,
-                x: tx,
-                y: ty,
-                duration: 220,
-                ease: "Back.Out",
-              });
-            }
+            this.reindexBin(bi);
             this.input.setDraggable(t.parts, false);
             this.highlightSort();
+          }
+          reindexBin(bi) {
+            const b = this.bins[bi];
+            const assignedTiles = this.sortTiles.filter((t) => t.assigned === b.id);
+            b.count = assignedTiles.length;
+            assignedTiles.forEach((t, slot) => {
+              t.binSlot = { bi, slot };
+              const tx = b.x;
+              const ty = b.y - b.h / 2 + 32 + slot * 30;
+              if (JUICE.reduceMotion) {
+                t.parts.x = tx;
+                t.parts.y = ty;
+                t.parts.setScale(0.75);
+              } else {
+                this.tweens.add({
+                  targets: t.parts,
+                  x: tx,
+                  y: ty,
+                  scale: 0.75,
+                  duration: 220,
+                  ease: "Back.Out",
+                });
+              }
+            });
           }
           checkSort(r) {
             if (this.locked) return;
@@ -1068,18 +1088,33 @@
             this.resolve(false, "Move the red tiles to the right bin, then check.");
             this.time.delayedCall(720, () => {
               if (this.locked) return;
+              const binsToReindex = new Set();
               this.sortTiles.forEach((t) => {
                 if (t.assigned !== t.data.category) {
-                  if (t.binSlot)
-                    this.bins[t.binSlot.bi].count = Math.max(0, this.bins[t.binSlot.bi].count - 1);
+                  if (t.binSlot) {
+                    binsToReindex.add(t.binSlot.bi);
+                  }
                   t.assigned = null;
                   t.binSlot = null;
                   t.bg.setFillStyle(PALETTE.tile);
-                  t.parts.x = t.homeX;
-                  t.parts.y = t.homeY;
+                  if (JUICE.reduceMotion) {
+                    t.parts.x = t.homeX;
+                    t.parts.y = t.homeY;
+                    t.parts.setScale(1.0);
+                  } else {
+                    this.tweens.add({
+                      targets: t.parts,
+                      x: t.homeX,
+                      y: t.homeY,
+                      scale: 1.0,
+                      duration: 220,
+                      ease: "Back.Out",
+                    });
+                  }
                   this.input.setDraggable(t.parts, true);
                 }
               });
+              binsToReindex.forEach((bi) => this.reindexBin(bi));
               this.highlightSort();
             });
           }
