@@ -2536,6 +2536,14 @@
             <span class="i">🧮</span><span class="txt">Calculator</span>
           </button>
           <button
+            class="tbtn"
+            id="multBtn"
+            title="Open the times table (multiplication chart, 1–12)"
+            aria-pressed="false"
+          >
+            <span class="i">✖️</span><span class="txt">Times Table</span>
+          </button>
+          <button
             class="tbtn premium"
             id="guideBtn"
             title="Open guided problem templates and support cards"
@@ -9418,5 +9426,305 @@
         });
       })();
     </script>
+    <!-- mult-chart-injected:begin (Times Table reference tool) -->
+    <style>
+      .mult-panel {
+        position: fixed;
+        top: 92px;
+        right: 24px;
+        z-index: 9999;
+        width: min(560px, calc(100vw - 32px));
+        background: #fff;
+        border: 1px solid #cdd8e3;
+        border-radius: 14px;
+        box-shadow: 0 18px 50px rgba(18, 53, 91, 0.28);
+        overflow: hidden;
+        font-family: "Atkinson Hyperlegible", "Nunito", sans-serif;
+        display: flex;
+        flex-direction: column;
+        max-height: 90vh;
+      }
+      .mult-panel[hidden] {
+        display: none;
+      }
+      .mult-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        background: #12355b;
+        color: #fff;
+        cursor: grab;
+        touch-action: none;
+      }
+      .mult-head.dragging {
+        cursor: grabbing;
+      }
+      .mult-title {
+        font-weight: 700;
+        font-size: 16px;
+      }
+      .mult-eq {
+        flex: 1;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 700;
+        color: #ffe08a;
+        min-height: 20px;
+      }
+      .mult-hbtn {
+        border: 0;
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .mult-hbtn:hover,
+      .mult-hbtn:focus-visible {
+        background: rgba(255, 255, 255, 0.3);
+        outline: 2px solid #ffd23f;
+      }
+      .mult-body {
+        padding: 10px;
+        overflow: auto;
+      }
+      table.mult-grid {
+        border-collapse: collapse;
+        width: 100%;
+        table-layout: fixed;
+      }
+      table.mult-grid th,
+      table.mult-grid td {
+        border: 1px solid #dbe4ee;
+        text-align: center;
+        font-size: clamp(11px, 2.4vw, 15px);
+        padding: 2px;
+        height: 30px;
+        font-variant-numeric: tabular-nums;
+      }
+      table.mult-grid th {
+        background: #eef4fb;
+        color: #12355b;
+        font-weight: 700;
+      }
+      table.mult-grid th.mult-corner {
+        background: #12355b;
+        color: #fff;
+        font-size: 18px;
+      }
+      table.mult-grid td.mult-diag {
+        background: #fff7e6;
+      }
+      /* highlight the picked row + column path */
+      table.mult-grid .is-lit {
+        background: #cdeee6 !important;
+        color: #0f4c46;
+      }
+      table.mult-grid th.is-lit {
+        background: #7fd6c8 !important;
+        color: #08312b;
+      }
+      table.mult-grid td.is-pick {
+        background: #ffd23f !important;
+        color: #12355b;
+        font-weight: 800;
+        outline: 2px solid #b9860b;
+      }
+      .mult-hint {
+        padding: 8px 12px 12px;
+        font-size: 13px;
+        color: #4b5b6b;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .mult-panel {
+          box-shadow: 0 6px 18px rgba(18, 53, 91, 0.28);
+        }
+      }
+    </style>
+    <div
+      id="multPanel"
+      class="mult-panel"
+      hidden
+      role="dialog"
+      aria-label="Times table — multiplication chart"
+    >
+      <div class="mult-head" id="multHead">
+        <span class="mult-title">Times Table</span>
+        <span class="mult-eq" id="multEq" aria-live="polite"></span>
+        <button
+          type="button"
+          id="multClose"
+          class="mult-hbtn"
+          title="Close the times table"
+          aria-label="Close"
+        >
+          ✕
+        </button>
+      </div>
+      <div class="mult-body">
+        <table class="mult-grid" id="multGrid" aria-label="Multiplication chart, 1 to 12"></table>
+      </div>
+      <p class="mult-hint">
+        Hover or tap a square to see the multiplication fact and light up its row and column.
+      </p>
+    </div>
+    <script>
+      (function () {
+        var N = 12;
+        var panel = document.getElementById("multPanel");
+        var btn = document.getElementById("multBtn");
+        var grid = document.getElementById("multGrid");
+        var eq = document.getElementById("multEq");
+        var closeBtn = document.getElementById("multClose");
+        if (!panel || !btn || !grid) return;
+
+        // Build the 1..N grid once.
+        (function build() {
+          var thead = document.createElement("thead");
+          var htr = document.createElement("tr");
+          var corner = document.createElement("th");
+          corner.className = "mult-corner";
+          corner.setAttribute("scope", "col");
+          corner.textContent = "×";
+          htr.appendChild(corner);
+          for (var c = 1; c <= N; c++) {
+            var th = document.createElement("th");
+            th.setAttribute("scope", "col");
+            th.dataset.col = c;
+            th.textContent = c;
+            htr.appendChild(th);
+          }
+          thead.appendChild(htr);
+          grid.appendChild(thead);
+
+          var tbody = document.createElement("tbody");
+          for (var r = 1; r <= N; r++) {
+            var tr = document.createElement("tr");
+            var rh = document.createElement("th");
+            rh.setAttribute("scope", "row");
+            rh.dataset.row = r;
+            rh.textContent = r;
+            tr.appendChild(rh);
+            for (var cc = 1; cc <= N; cc++) {
+              var td = document.createElement("td");
+              td.dataset.row = r;
+              td.dataset.col = cc;
+              td.textContent = r * cc;
+              td.tabIndex = 0;
+              if (r === cc) td.className = "mult-diag";
+              tr.appendChild(td);
+            }
+            tbody.appendChild(tr);
+          }
+          grid.appendChild(tbody);
+        })();
+
+        var cells = grid.querySelectorAll("td");
+        var colHeads = grid.querySelectorAll("th[data-col]");
+        var rowHeads = grid.querySelectorAll("th[data-row]");
+        var pinned = null;
+
+        function clear() {
+          for (var i = 0; i < cells.length; i++) cells[i].classList.remove("is-lit", "is-pick");
+          colHeads.forEach(function (h) {
+            h.classList.remove("is-lit");
+          });
+          rowHeads.forEach(function (h) {
+            h.classList.remove("is-lit");
+          });
+          eq.textContent = "";
+        }
+
+        function light(r, c) {
+          clear();
+          for (var i = 0; i < cells.length; i++) {
+            var cr = +cells[i].dataset.row,
+              cc = +cells[i].dataset.col;
+            if ((cr === r && cc <= c) || (cc === c && cr <= r)) cells[i].classList.add("is-lit");
+            if (cr === r && cc === c) cells[i].classList.add("is-pick");
+          }
+          colHeads.forEach(function (h) {
+            if (+h.dataset.col === c) h.classList.add("is-lit");
+          });
+          rowHeads.forEach(function (h) {
+            if (+h.dataset.row === r) h.classList.add("is-lit");
+          });
+          eq.textContent = r + " × " + c + " = " + r * c;
+        }
+
+        grid.addEventListener("mouseover", function (e) {
+          var td = e.target.closest("td");
+          if (td && !pinned) light(+td.dataset.row, +td.dataset.col);
+        });
+        grid.addEventListener("mouseleave", function () {
+          if (!pinned) clear();
+        });
+        grid.addEventListener("focusin", function (e) {
+          var td = e.target.closest("td");
+          if (td) light(+td.dataset.row, +td.dataset.col);
+        });
+        grid.addEventListener("click", function (e) {
+          var td = e.target.closest("td");
+          if (!td) return;
+          var key = td.dataset.row + "x" + td.dataset.col;
+          if (pinned === key) {
+            pinned = null;
+            clear();
+          } else {
+            pinned = key;
+            light(+td.dataset.row, +td.dataset.col);
+          }
+        });
+
+        function open() {
+          panel.hidden = false;
+          btn.setAttribute("aria-pressed", "true");
+        }
+        function close() {
+          panel.hidden = true;
+          btn.setAttribute("aria-pressed", "false");
+          pinned = null;
+          clear();
+        }
+        btn.addEventListener("click", function () {
+          panel.hidden ? open() : close();
+        });
+        if (closeBtn) closeBtn.addEventListener("click", close);
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && !panel.hidden) close();
+        });
+
+        // Lightweight drag on the header (mirrors the calculator panel).
+        var head = document.getElementById("multHead");
+        if (head) {
+          var dx = 0,
+            dy = 0,
+            dragging = false;
+          head.addEventListener("pointerdown", function (e) {
+            if (e.target.closest("button")) return;
+            dragging = true;
+            head.classList.add("dragging");
+            var rect = panel.getBoundingClientRect();
+            dx = e.clientX - rect.left;
+            dy = e.clientY - rect.top;
+            panel.style.right = "auto";
+            head.setPointerCapture(e.pointerId);
+          });
+          head.addEventListener("pointermove", function (e) {
+            if (!dragging) return;
+            panel.style.left = Math.max(0, Math.min(window.innerWidth - 80, e.clientX - dx)) + "px";
+            panel.style.top = Math.max(0, Math.min(window.innerHeight - 40, e.clientY - dy)) + "px";
+          });
+          head.addEventListener("pointerup", function () {
+            dragging = false;
+            head.classList.remove("dragging");
+          });
+        }
+      })();
+    </script>
+    <!-- mult-chart-injected:end -->
   </body>
 </html>
