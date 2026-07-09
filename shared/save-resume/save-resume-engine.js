@@ -736,7 +736,9 @@
           location.hash = nav.hash;
         } catch (e) {}
       }
-      if (typeof nav.scrollY === "number") window.scrollTo(0, nav.scrollY);
+      // Always return the student to the top of the lesson when they resume,
+      // rather than dropping them at a saved mid-page scroll position.
+      window.scrollTo(0, 0);
     }, "restore-nav");
   }
   function restoreDragDrop(map) {
@@ -1211,8 +1213,26 @@
    * ------------------------------------------------------------------------ */
   var ui = { root: null, panel: null, status: null, fields: {} };
 
+  // True when this document is rendered inside an <iframe> (e.g. the practice
+  // arcade / math-workbench embedded in a student lesson page). In that case the
+  // parent lesson already shows the Save/Resume launcher, so a second one inside
+  // the frame is a redundant duplicate. Autosave still runs; only the UI is hidden.
+  function isEmbedded() {
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true; // cross-origin embed — treat as embedded and stay quiet
+    }
+  }
+
   function buildUI(self) {
-    if (document.getElementById("nsr-root")) return;
+    if (isEmbedded()) return;
+    // Defensive de-dup: never allow more than one launcher on a page.
+    var existing = document.querySelectorAll("#nsr-root");
+    if (existing.length) {
+      for (var i = 1; i < existing.length; i++) existing[i].remove();
+      return;
+    }
     var root = el("div", { id: "nsr-root" });
 
     // Floating launcher button.
