@@ -136,6 +136,46 @@
     }
   } catch(e) {}
 
+  function drawBezelEqualizer() {
+    var canvas = document.getElementById("gfx-equalizer");
+    if (!canvas) {
+      setTimeout(drawBezelEqualizer, 100);
+      return;
+    }
+    var ctx2d = canvas.getContext("2d");
+    if (!ctx2d) {
+      setTimeout(drawBezelEqualizer, 100);
+      return;
+    }
+    
+    var w = canvas.width;
+    var h = canvas.height;
+    
+    function draw() {
+      requestAnimationFrame(draw);
+      ctx2d.clearRect(0, 0, w, h);
+      
+      var data = null;
+      if (AudioSynth.analyser && AudioSynth.analyserData) {
+        AudioSynth.analyser.getByteFrequencyData(AudioSynth.analyserData);
+        data = AudioSynth.analyserData;
+      }
+      
+      var barW = w / 8;
+      ctx2d.fillStyle = "#38bdf8"; // Neon Sky Blue
+      
+      for (var i = 0; i < 8; i++) {
+        var val = data ? data[i] : 0;
+        var barH = (val / 255) * h * 0.85 + 2; // scale and add baseline height
+        var x = i * barW + 1;
+        var y = h - barH;
+        
+        ctx2d.fillRect(x, y, barW - 2, barH);
+      }
+    }
+    draw();
+  }
+
   function triggerBiosBoot() {
     AudioSynth.muffle();
     if (reduce) {
@@ -348,6 +388,8 @@
     delayGain: null,
     humOsc: null,
     humGain: null,
+    analyser: null,
+    analyserData: null,
     init: function () {
       if (this.ctx) return;
       try {
@@ -371,6 +413,13 @@
         this.delayGain.connect(this.delay);
         
         this.delay.connect(this.filter);
+
+        // 3. Audio-Reactive AnalyserNode
+        this.analyser = this.ctx.createAnalyser();
+        this.analyser.fftSize = 32;
+        this.filter.connect(this.analyser);
+        
+        this.analyserData = new Uint8Array(this.analyser.frequencyBinCount);
       } catch (e) {}
     },
     startHum: function() {
@@ -413,21 +462,35 @@
       this.init();
       if (!this.ctx) return;
       try {
-        var osc = this.ctx.createOscillator();
+        var carrier = this.ctx.createOscillator();
         var gain = this.ctx.createGain();
-        osc.connect(gain);
+        carrier.connect(gain);
         gain.connect(this.filter || this.ctx.destination);
         if (this.delay) gain.connect(this.delay);
 
         var t = this.ctx.currentTime;
-        osc.type = type || "sine";
-        osc.frequency.setValueAtTime(freq, t);
+        carrier.type = type || "sine";
+        carrier.frequency.setValueAtTime(freq, t);
+
+        // Gold-Standard FM Synthesis: Modulator voice
+        var modulator = this.ctx.createOscillator();
+        var modGain = this.ctx.createGain();
+        
+        // Metallic FM ratio (2:1 frequency ratio, modulation depth indexing on carrier frequency)
+        modulator.frequency.setValueAtTime(freq * 2, t);
+        modGain.gain.setValueAtTime(freq * 0.35, t);
+        
+        modulator.connect(modGain);
+        modGain.connect(carrier.frequency);
 
         gain.gain.setValueAtTime(vol || 0.1, t);
         gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
 
-        osc.start(t);
-        osc.stop(t + duration);
+        carrier.start(t);
+        modulator.start(t);
+        
+        carrier.stop(t + duration);
+        modulator.stop(t + duration);
       } catch (e) {}
     },
     noise: function (duration, vol) {
@@ -1026,6 +1089,17 @@
     meterDiv.innerHTML = '<div id="gfx-combo-fill"></div>';
     document.body.appendChild(meterDiv);
 
+    // Glass specular glare layer for 3D parallax depth
+    var glare = document.createElement("div");
+    glare.className = "gfx-specular-glare no-print";
+    document.body.appendChild(glare);
+
+    // Pointer move listener to drive the glass parallax glare shift
+    window.addEventListener("pointermove", function (e) {
+      document.body.style.setProperty("--glare-x", String(e.clientX));
+      document.body.style.setProperty("--glare-y", String(e.clientY));
+    });
+
     var cabinet = document.createElement("div");
     cabinet.id = "gfx-arcade-controls";
     cabinet.className = "no-print";
@@ -1033,8 +1107,12 @@
       <button class="arcade-switch active" id="sw-crt" onclick="toggleCabinetCRT()">📺 CRT</button>
       <button class="arcade-switch active" id="sw-lines" onclick="toggleCabinetLines()">💈 Scanlines</button>
       <button class="arcade-switch" id="sw-filter" onclick="toggleCabinetFilter()">🎛️ Audio LPF</button>
+      <canvas id="gfx-equalizer" width="70" height="24"></canvas>
     `;
     document.body.appendChild(cabinet);
+
+    // Start the audio-reactive visualizer renderer loop
+    drawBezelEqualizer();
 
     // 3. Inject Hidden Teacher Cheat Console — teacher-mode devices only
     // (sticky nt-teacher-mode key; students have no path in).

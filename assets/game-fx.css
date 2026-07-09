@@ -248,10 +248,25 @@ body.crt-active::after {
   z-index: 99999;
   background: radial-gradient(circle at center, transparent 60%, rgba(0,0,0,0.55) 100%),
               linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.22) 50%),
-              linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05)),
-              linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 45%);
-  background-size: 100% 100%, 100% 4px, 6px 100%, 100% 100%;
+              linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
+  background-size: 100% 100%, 100% 4px, 6px 100%;
   opacity: 0.85;
+}
+
+/* Glass Specular Glare Parallax */
+.gfx-specular-glare {
+  position: fixed;
+  inset: -60px; /* Bleed outer margins for movement */
+  pointer-events: none;
+  z-index: 99998;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.065) 0%, rgba(255, 255, 255, 0) 45%);
+  background-size: 100% 100%;
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+  transform: translate(calc(var(--glare-x, 0) * -0.04px), calc(var(--glare-y, 0) * -0.04px));
+}
+body.crt-active .gfx-specular-glare {
+  opacity: 1;
 }
 
 /* Electro-Magnetic CRT Glitch Visuals */
@@ -395,6 +410,15 @@ body.crt-glitch .page-shell {
   color: #fff;
   border-color: #38bdf8;
   box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+}
+#gfx-equalizer {
+  width: 70px;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 4px;
+  margin-left: 8px;
+  display: block;
 }
 
 /* Retro BIOS Boot Diagnostic Screen */
