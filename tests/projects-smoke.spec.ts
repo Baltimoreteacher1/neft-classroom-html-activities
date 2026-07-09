@@ -154,6 +154,17 @@ for (const route of ROUTES) {
       ).toBeGreaterThan(0);
       expect(pub.saRows, `Rate My Work rows missing on ${route.url}`).toBeGreaterThan(0);
 
+      // Portfolio layer: each project offers a local evidence review and a
+      // student-owned printable portfolio, without requiring an account.
+      const portfolio = await page.evaluate(() => ({
+        readiness: document.querySelectorAll(".ntf-readiness").length,
+        dialog: document.querySelectorAll(".ntf-portfolio").length,
+        trigger: document.querySelectorAll(".ntf-fab").length,
+      }));
+      expect(portfolio.readiness, `portfolio evidence check missing on ${route.url}`).toBe(1);
+      expect(portfolio.dialog, `portfolio dialog missing on ${route.url}`).toBe(1);
+      expect(portfolio.trigger, `portfolio trigger missing on ${route.url}`).toBe(1);
+
       // The wizard must render its step trail, panels, and Level 1/2 toggles.
       const panels = await page.locator(".step-panel").count();
       expect(panels, `wizard panels did not render on ${route.url}`).toBeGreaterThan(0);

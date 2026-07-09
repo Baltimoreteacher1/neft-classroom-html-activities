@@ -5,10 +5,11 @@
  * exist. Everything is wrapped defensively: a failure here must NEVER break the
  * project's existing navigation, levels, language toggle, or read-aloud.
  *
- * Adds three research-backed features:
+ * Adds four research-backed features:
  *   1. Per-step "Explain it back" metacognition prompt (retrieval + self-explain).
- *   2. Portfolio summary export (student-as-author, printable artifact).
- *   3. Teacher-only "learning-visible" telemetry (time-on-task, steps, reflections).
+ *   2. Submission-ready evidence check (math, reasoning, and rubric evidence).
+ *   3. Portfolio summary export (student-as-author, printable artifact).
+ *   4. Teacher-only "learning-visible" telemetry (time-on-task, steps, reflections).
  *
  * Storage is local-only, namespaced per page path. Nothing leaves the browser.
  */
@@ -226,26 +227,94 @@
     return list;
   }
 
-  function exportSummary() {
-    var title = (document.title || "Unit Project").replace(/\s*—.*$/, "");
-    var work = collectWork();
-    var refl = reflectionsList();
-    var mins = Math.round(
-      Object.keys(state.stepMs).reduce(function (a, k) {
-        return a + state.stepMs[k];
+  function totalMinutes() {
+    return Math.round(
+      Object.keys(state.stepMs).reduce(function (total, key) {
+        return total + state.stepMs[key];
       }, 0) / 60000,
     );
+  }
+
+  function evidenceSnapshot() {
+    var work = collectWork();
+    var reflections = reflectionsList();
+    var panels = document.querySelectorAll(".step-panel").length;
+    var ratings = document.querySelectorAll(".pub-sa-btn[aria-pressed='true']").length;
+    var checks = document.querySelectorAll(".checklist input[type='checkbox']:checked").length;
+    var substantive = work.filter(function (item) {
+      return item.value.length >= 3;
+    }).length;
+    var ready = substantive >= 3 && reflections.length >= 1 && ratings >= 1;
+    return {
+      work: work,
+      reflections: reflections,
+      panels: panels,
+      ratings: ratings,
+      checks: checks,
+      substantive: substantive,
+      ready: ready,
+    };
+  }
+
+  function buildReadinessPanel() {
+    if (document.querySelector(".ntf-readiness")) return;
+    var panels = document.querySelectorAll(".step-panel");
+    var host = panels[panels.length - 1];
+    if (!host) return;
+
+    var panel = document.createElement("aside");
+    panel.className = "ntf-readiness no-print";
+    panel.setAttribute("aria-label", "Submission readiness check");
+    panel.innerHTML =
+      '<div class="ntf-readiness__head"><span aria-hidden="true">✓</span><div>' +
+      '<h3>Build Your Submission Portfolio</h3>' +
+      '<p>Before you turn it in, make your math, reasoning, and self-check visible.</p>' +
+      "</div></div>" +
+      '<ul class="ntf-readiness__list" aria-live="polite"></ul>' +
+      '<button type="button" class="ntf-readiness__open">Preview my portfolio</button>';
+    host.appendChild(panel);
+    panel.querySelector(".ntf-readiness__open").addEventListener("click", openPortfolio);
+    refreshReadiness();
+  }
+
+  function refreshReadiness() {
+    var list = document.querySelector(".ntf-readiness__list");
+    if (!list) return;
+    var evidence = evidenceSnapshot();
+    var items = [
+      [evidence.substantive >= 3, "Math evidence", evidence.substantive + " completed response" + (evidence.substantive === 1 ? "" : "s")],
+      [evidence.reflections.length >= 1, "Reasoning", evidence.reflections.length + " explain-it-back reflection" + (evidence.reflections.length === 1 ? "" : "s")],
+      [evidence.ratings >= 1, "Quality check", evidence.ratings + " rubric rating" + (evidence.ratings === 1 ? "" : "s")],
+    ];
+    list.innerHTML = items
+      .map(function (item) {
+        return '<li class="' + (item[0] ? "is-ready" : "needs-work") + '"><span aria-hidden="true">' + (item[0] ? "✓" : "→") + "</span><strong>" + item[1] + ":</strong> " + item[2] + "</li>";
+      })
+      .join("");
+  }
+
+  function exportSummary() {
+    var title = (document.title || "Unit Project").replace(/\s*—.*$/, "");
+    var evidence = evidenceSnapshot();
+    var work = evidence.work;
+    var refl = evidence.reflections;
+    var mins = totalMinutes();
     var html =
       "<!doctype html><html><head><meta charset='utf-8'><title>" +
       esc(title) +
       " — My Summary</title><style>body{font:15px/1.5 system-ui,sans-serif;max-width:720px;margin:32px auto;padding:0 20px;color:#222}h1{color:#4a3fb0}h2{margin-top:26px;border-bottom:2px solid #eee;padding-bottom:4px}li{margin:6px 0}.meta{color:#666;font-size:13px}</style></head><body>";
     html += "<h1>" + esc(title) + "</h1>";
     html +=
-      "<p class='meta'>My project summary • time on task ≈ " +
+      "<p class='meta'>Student submission portfolio • time on task ≈ " +
       mins +
       " min • steps reached " +
       state.maxStep +
       "</p>";
+    html += "<section><h2>Evidence Check</h2><ul>";
+    html += "<li><strong>Math evidence:</strong> " + evidence.substantive + " completed response" + (evidence.substantive === 1 ? "" : "s") + "</li>";
+    html += "<li><strong>Reasoning:</strong> " + refl.length + " reflection" + (refl.length === 1 ? "" : "s") + "</li>";
+    html += "<li><strong>Rubric self-check:</strong> " + evidence.ratings + " rating" + (evidence.ratings === 1 ? "" : "s") + "</li>";
+    html += "</ul></section>";
     if (work.length) {
       html += "<h2>My Work</h2><ul>";
       work.forEach(function (w) {
@@ -279,14 +348,49 @@
     }
   }
 
+  function openPortfolio() {
+    var dialog = document.querySelector(".ntf-portfolio");
+    if (!dialog) return;
+    var evidence = evidenceSnapshot();
+    var status = evidence.ready
+      ? "Your core evidence is ready to review."
+      : "Keep building: add at least three responses, one reflection, and one rubric rating.";
+    dialog.querySelector(".ntf-portfolio__status").textContent = status;
+    dialog.querySelector(".ntf-portfolio__evidence").innerHTML =
+      '<li><strong>Math evidence</strong><span>' + evidence.substantive + " response" + (evidence.substantive === 1 ? "" : "s") + "</span></li>" +
+      '<li><strong>Reasoning</strong><span>' + evidence.reflections.length + " reflection" + (evidence.reflections.length === 1 ? "" : "s") + "</span></li>" +
+      '<li><strong>Quality check</strong><span>' + evidence.ratings + " rubric rating" + (evidence.ratings === 1 ? "" : "s") + "</span></li>" +
+      '<li><strong>Project checklist</strong><span>' + evidence.checks + " item" + (evidence.checks === 1 ? "" : "s") + " checked</span></li>";
+    if (typeof dialog.showModal === "function") dialog.showModal();
+    else dialog.setAttribute("open", "open");
+  }
+
+  function injectPortfolioDialog() {
+    if (document.querySelector(".ntf-portfolio")) return;
+    var dialog = document.createElement("dialog");
+    dialog.className = "ntf-portfolio";
+    dialog.setAttribute("aria-labelledby", "ntf-portfolio-title");
+    dialog.innerHTML =
+      '<form method="dialog" class="ntf-portfolio__card">' +
+      '<button class="ntf-portfolio__close" aria-label="Close portfolio preview">×</button>' +
+      '<p class="ntf-portfolio__eyebrow">Submission review</p>' +
+      '<h2 id="ntf-portfolio-title">My Project Portfolio</h2>' +
+      '<p class="ntf-portfolio__status" role="status"></p>' +
+      '<ul class="ntf-portfolio__evidence"></ul>' +
+      '<div class="ntf-portfolio__actions"><button type="button" class="ntf-portfolio__export">Open printable portfolio</button><button type="submit" class="ntf-portfolio__cancel">Keep working</button></div>' +
+      "</form>";
+    dialog.querySelector(".ntf-portfolio__export").addEventListener("click", exportSummary);
+    document.body.appendChild(dialog);
+  }
+
   function injectFab() {
     if (document.querySelector(".ntf-fab")) return;
     var btn = document.createElement("button");
     btn.className = "ntf-fab no-print";
     btn.type = "button";
     btn.innerHTML =
-      "📤 <span class='ntf-en-only'>My Summary</span><span class='ntf-es-only'>Mi Resumen</span>";
-    btn.addEventListener("click", exportSummary);
+      "📁 <span class='ntf-en-only'>My Portfolio</span><span class='ntf-es-only'>Mi Portafolio</span>";
+    btn.addEventListener("click", openPortfolio);
     document.body.appendChild(btn);
   }
 
@@ -339,8 +443,12 @@
       hookNavigation();
       hookHints();
       injectReflections();
+      injectPortfolioDialog();
+      buildReadinessPanel();
       injectFab();
       injectTeacher();
+      document.addEventListener("input", refreshReadiness, true);
+      document.addEventListener("change", refreshReadiness, true);
       save(state);
     } catch (e) {
       if (window.console) console.warn("[projects-future] disabled:", e);
@@ -361,5 +469,5 @@
     boot();
   }
 
-  window.NTFuture = { state: state, export: exportSummary };
+  window.NTFuture = { state: state, export: exportSummary, portfolio: openPortfolio };
 })();
