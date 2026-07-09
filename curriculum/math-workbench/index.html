@@ -9533,10 +9533,36 @@
         font-weight: 800;
         outline: 2px solid #b9860b;
       }
+      .mult-hbtn.txt {
+        width: auto;
+        padding: 0 10px;
+        font-size: 13px;
+        font-weight: 700;
+      }
       .mult-hint {
-        padding: 8px 12px 12px;
+        padding: 8px 12px 4px;
         font-size: 13px;
         color: #4b5b6b;
+      }
+      .mult-foot {
+        padding: 4px 12px 12px;
+      }
+      .mult-mode {
+        width: 100%;
+        min-height: 42px;
+        padding: 9px 12px;
+        border: 1px solid #12355b;
+        border-radius: 10px;
+        background: #eef4fb;
+        color: #12355b;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .mult-mode:hover,
+      .mult-mode:focus-visible {
+        background: #dce9f7;
+        outline: 2px solid #ffd23f;
       }
       @media (prefers-reduced-motion: reduce) {
         .mult-panel {
@@ -9552,13 +9578,21 @@
       aria-label="Times table — multiplication chart"
     >
       <div class="mult-head" id="multHead">
-        <span class="mult-title">Times Table</span>
+        <span class="mult-title" id="multTitle">Times Table</span>
         <span class="mult-eq" id="multEq" aria-live="polite"></span>
+        <button
+          type="button"
+          id="multClearBtn"
+          class="mult-hbtn txt"
+          title="Clear the highlighted row and column"
+        >
+          Clear
+        </button>
         <button
           type="button"
           id="multClose"
           class="mult-hbtn"
-          title="Close the times table"
+          title="Close the table"
           aria-label="Close"
         >
           ✕
@@ -9567,9 +9601,14 @@
       <div class="mult-body">
         <table class="mult-grid" id="multGrid" aria-label="Multiplication chart, 1 to 12"></table>
       </div>
-      <p class="mult-hint">
+      <p class="mult-hint" id="multHint">
         Hover or tap a square to see the multiplication fact and light up its row and column.
       </p>
+      <div class="mult-foot">
+        <button type="button" id="multModeBtn" class="mult-mode" aria-pressed="false">
+          ➗ Show Division Table
+        </button>
+      </div>
     </div>
     <script>
       (function () {
@@ -9626,6 +9665,46 @@
         var colHeads = grid.querySelectorAll("th[data-col]");
         var rowHeads = grid.querySelectorAll("th[data-row]");
         var pinned = null;
+        var mode = "mult"; // "mult" | "div"
+        var corner = grid.querySelector(".mult-corner");
+        var title = document.getElementById("multTitle");
+        var hint = document.getElementById("multHint");
+        var clearBtn = document.getElementById("multClearBtn");
+        var modeBtn = document.getElementById("multModeBtn");
+
+        function factText(r, c) {
+          if (mode === "div") {
+            var p = r * c;
+            return r === c
+              ? p + " ÷ " + r + " = " + c
+              : p + " ÷ " + c + " = " + r + "  ·  " + p + " ÷ " + r + " = " + c;
+          }
+          return r + " × " + c + " = " + r * c;
+        }
+
+        function applyMode() {
+          var div = mode === "div";
+          if (corner) corner.textContent = div ? "÷" : "×";
+          if (title) title.textContent = div ? "Division Table" : "Times Table";
+          if (modeBtn) {
+            modeBtn.textContent = div ? "✖️ Show Multiplication Table" : "➗ Show Division Table";
+            modeBtn.setAttribute("aria-pressed", div ? "true" : "false");
+          }
+          if (hint)
+            hint.textContent = div
+              ? "Find a number in the grid, then read its row and column as a division fact."
+              : "Hover or tap a square to see the multiplication fact and light up its row and column.";
+          panel.setAttribute(
+            "aria-label",
+            div ? "Division table chart" : "Times table — multiplication chart",
+          );
+          if (pinned) {
+            var pr = pinned.split("x");
+            light(+pr[0], +pr[1]);
+          } else {
+            clear();
+          }
+        }
 
         function clear() {
           for (var i = 0; i < cells.length; i++) cells[i].classList.remove("is-lit", "is-pick");
@@ -9652,7 +9731,7 @@
           rowHeads.forEach(function (h) {
             if (+h.dataset.row === r) h.classList.add("is-lit");
           });
-          eq.textContent = r + " × " + c + " = " + r * c;
+          eq.textContent = factText(r, c);
         }
 
         grid.addEventListener("mouseover", function (e) {
@@ -9693,6 +9772,16 @@
           panel.hidden ? open() : close();
         });
         if (closeBtn) closeBtn.addEventListener("click", close);
+        if (clearBtn)
+          clearBtn.addEventListener("click", function () {
+            pinned = null;
+            clear();
+          });
+        if (modeBtn)
+          modeBtn.addEventListener("click", function () {
+            mode = mode === "div" ? "mult" : "div";
+            applyMode();
+          });
         document.addEventListener("keydown", function (e) {
           if (e.key === "Escape" && !panel.hidden) close();
         });
