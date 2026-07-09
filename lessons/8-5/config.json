@@ -265,7 +265,24 @@
     }
   ],
   "launch": {
-    "beCurious": {"vocab":["box","whisker","median","middle","spread","longer","highest"],"phrases":["I notice the box goes from ___ to ___.","I notice the line inside the box is at ___.","I notice one whisker reaches all the way out to ___.","I wonder why the box is longer than the ___.","I wonder how spread out the middle half of the scores is."]},
+    "beCurious": {
+      "vocab": [
+        "box",
+        "whisker",
+        "median",
+        "middle",
+        "spread",
+        "longer",
+        "highest"
+      ],
+      "phrases": [
+        "I notice the box goes from ___ to ___.",
+        "I notice the line inside the box is at ___.",
+        "I notice one whisker reaches all the way out to ___.",
+        "I wonder why the box is longer than the ___.",
+        "I wonder how spread out the middle half of the scores is."
+      ]
+    },
     "badge": "Team Scoring Breakdown",
     "narrative": "The basketball league wants to compare scoring across teams. Here are the points scored by each player on the Wildcats in their last game: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. The league needs a quick visual that shows the spread, the middle 50%, and any high or low scorers. Time to build a box plot!",
     "contextImage": "Basketball scoreboard with individual player stat lines",
@@ -533,6 +550,11 @@
           "This is the spread, but IQR is Q3 − Q1 only.",
           "Full range from min to max is 25, but IQR is different.",
           "IQR only uses the quartiles, not min and max."
+        ],
+        "hints": [
+          "You're given five numbers, but IQR only uses two of them: Q1 and Q3. Ignore the min, median, and max.",
+          "IQR = Q3 − Q1. Find Q3 (28) and Q1 (15) in the summary — the IQR is their difference, the width of the box.",
+          "Set up the subtraction Q3 − Q1: that's 28 − 15. The difference you get is the IQR."
         ]
       },
       {
@@ -551,6 +573,11 @@
           "The line shows center—but mean is a different measure.",
           "The line is always the middle value, not an average.",
           ""
+        ],
+        "hints": [
+          "Picture a box plot: a box with whiskers, and a line cutting through the box. That line marks the CENTER of the data.",
+          "The box runs from Q1 to Q3, so the line inside splits the middle 50% in half. Think about which measure splits ordered data into halves.",
+          "First step: recall which measure means 'the middle value of the ordered data.' The line inside the box always marks that exact measure."
         ]
       },
       {
@@ -569,6 +596,11 @@
           "The box shows the inner half—is it 25%?",
           "Q1 to Q3 is the middle section—what fraction is that?",
           "Each quarter is 25%—Q1 to Q3 is two quarters."
+        ],
+        "hints": [
+          "Quartiles cut the data into 4 equal parts — 'quart' like 'quarter.' Each part holds the same share of the data.",
+          "Each quarter of the data is 25%. Count how many quarters sit between Q1 and Q3: Q1 to the median, then the median to Q3.",
+          "First step: Q1 to the median is one quarter — 25%. Add the quarter from the median up to Q3 to get the box's total share."
         ]
       },
       {
@@ -587,6 +619,11 @@
           "Find max and min—is range the minimum?",
           "Max is 31, min is 8—range is the difference.",
           "Range is spread—subtract max from min, don't add."
+        ],
+        "hints": [
+          "Range = how far the data stretches: the gap between the biggest and smallest values only. The middle values don't matter.",
+          "Scan the list 14, 22, 8, 31, 17: find the maximum and the minimum, then subtract the min from the max.",
+          "First step: the max is 31 and the min is 8. Set up 31 − 8 — that difference is the range."
         ]
       },
       {
@@ -703,6 +740,11 @@
             "col": 1,
             "answer": "17.5"
           }
+        ],
+        "hints": [
+          "The 9 values are already in order — that's step zero done for you. The middle (5th) value is your median.",
+          "Split the list at the median: lower half 5, 8, 12, 15 and upper half 20, 25, 30, 35. Q1 and Q3 are the medians of those halves.",
+          "Q1 first: the lower half has 4 values, so average the middle two, 8 and 12. Do the same with 25 and 30 for Q3, then subtract for IQR."
         ]
       },
       {
@@ -734,7 +776,12 @@
           }
         ],
         "label": "Match each box plot term to its meaning.",
-        "columns": 4
+        "columns": 4,
+        "hints": [
+          "Think of the five-number summary in order: Min, Q1, Median, Q3, Max — plus IQR, which measures the box's width.",
+          "Use the halves rule: Q1 is the middle of the LOWER half, Q3 the middle of the UPPER half, and IQR is the gap between them.",
+          "Start with Minimum and Maximum — the smallest and largest values. Then place Q1, Median, Q3, and IQR using the halves rule."
+        ]
       },
       {
         "type": "number-line",
@@ -786,6 +833,11 @@
           "Bigger IQR doesn't mean better—it means more variation.",
           "IQR tells consistency—smaller is tighter.",
           "IQR is always about consistency in the middle 50%."
+        ],
+        "hints": [
+          "IQR measures the width of the box — how spread out the MIDDLE 50% of each team's scores is.",
+          "Compare a narrow box (IQR 8) with a wide box (IQR 22). Ask what narrow vs wide says about consistency — not about which team is better.",
+          "First step: translate each number — Team A's middle scores span only 8 points; Team B's span 22. Then choose the statement that matches."
         ]
       },
       {
@@ -860,7 +912,12 @@
           "middle 50%"
         ],
         "minLength": 50,
-        "hint": "Order each team's scores, then find the median and the quartiles (Q1 and Q3)."
+        "hint": "Order each team's scores, then find the median and the quartiles (Q1 and Q3).",
+        "hints": [
+          "Both score lists are already ordered, 9 games each — so the 5th score is each team's median. That's your anchor point.",
+          "For each team: Min = 1st value, Max = 9th, Median = 5th. Q1 = middle of the first four, Q3 = middle of the last four. Then IQR = Q3 − Q1.",
+          "Team A first: Min = 40, Max = 56, Median = 48 (the 5th value). Now average 42 and 44 for Q1, and 52 and 54 for Q3."
+        ]
       },
       {
         "type": "matching-game",
@@ -883,6 +940,11 @@
             "term": "Very large box (large IQR)",
             "match": "Middle 50% is widely spread — high variability"
           }
+        ],
+        "hints": [
+          "Each feature is about shape: whisker length shows skew, box size shows how spread out the middle 50% is.",
+          "Split the cards into two groups: the two about whiskers or the median line (symmetry vs skew), and the two about box size (small vs large IQR).",
+          "Start with 'Very small box': a small box means a small IQR, so the middle 50% barely spreads. Find the card that says that, then match the rest."
         ]
       }
     ],
@@ -895,7 +957,18 @@
     "commonMistake": "A common mistake in Display Data: Box Plots is treating a quartile as just one data point instead of the median of a half — for the lower half 4, 8, 10, 14, some students pick 10 (the last value) as Q1 instead of finding the median of that half: Q1 = (8 + 10) ÷ 2 = 9. A second common slip is finding IQR by adding the quartiles instead of subtracting, writing IQR = Q3 + Q1 (like 30 + 18 = 48) instead of IQR = Q3 − Q1 (30 − 18 = 12) — always order the data first, then subtract Q1 from Q3 to find the spread of the middle 50%."
   },
   "connect": {
-    "diagram": {"kind":"box-plot","title":"Team B Points Per Game — Box Plot","caption":"The 80 the fan brags about is a single game at the whisker's tip. Team B's box (middle half) runs 55–65 with a median of 61 — compare that to Team A's 52–68 box and median of 60.","min":35,"q1":55,"median":61,"q3":65,"max":80,"axisMin":30,"axisMax":85},
+    "diagram": {
+      "kind": "box-plot",
+      "title": "Team B Points Per Game — Box Plot",
+      "caption": "The 80 the fan brags about is a single game at the whisker's tip. Team B's box (middle half) runs 55–65 with a median of 61 — compare that to Team A's 52–68 box and median of 60.",
+      "min": 35,
+      "q1": 55,
+      "median": 61,
+      "q3": 65,
+      "max": 80,
+      "axisMin": 30,
+      "axisMax": 85
+    },
     "scenario": "Two basketball teams' scoring data are displayed as box plots. Team A: Min=40, Q1=52, Median=60, Q3=68, Max=75. Team B: Min=35, Q1=55, Median=61, Q3=65, Max=80. A fan says Team B is better because they scored 80 points once.",
     "promptQuestion": "Which team is more consistently scoring high? Use the box plot values to support your answer.",
     "prompt": "Team A's IQR is ___ and Team B's IQR is ___. Team B's middle 50% scores between ___ and ___. The fan is wrong because ___. The box plot shows that Team B is more consistent because its Q1 and median are higher and its IQR (10) is smaller, while ___.",
@@ -926,6 +999,11 @@
         "IQR subtracts Q1 from Q3, it doesn't add them.",
         "28 is the midpoint — IQR is Q3 − Q1, the spread.",
         "36 is just Q3 — subtract Q1 to find the range between them."
+      ],
+      "hints": [
+        "Two things to check in each choice: the IQR calculation AND what the IQR means. Both parts must be correct.",
+        "IQR = Q3 − Q1 — a subtraction. And it describes the spread of the middle half of the data, not a total and not a midpoint.",
+        "Set up 36 − 20, then ask: does my choice pair that difference with 'spread of the middle 50%'? Rule out any that add or average instead."
       ]
     }
   },
