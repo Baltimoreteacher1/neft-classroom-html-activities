@@ -192,6 +192,22 @@
     return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
+  function isSpanish() {
+    return !!document.querySelector("#body.es");
+  }
+
+  function languageHtml(en, es) {
+    return '<span class="ntf-en-only">' + esc(en) + '</span><span class="ntf-es-only">' + esc(es) + "</span>";
+  }
+
+  function languageText(en, es) {
+    return isSpanish() ? es : en;
+  }
+
+  function counted(count, enSingle, enPlural, esSingle, esPlural) {
+    return count + " " + languageHtml(count === 1 ? enSingle : enPlural, count === 1 ? esSingle : esPlural);
+  }
+
   // ---- Feature 2: portfolio summary export ----------------------------------
   function collectWork() {
     var out = [];
@@ -267,11 +283,11 @@
     panel.setAttribute("aria-label", "Submission readiness check");
     panel.innerHTML =
       '<div class="ntf-readiness__head"><span aria-hidden="true">✓</span><div>' +
-      '<h3>Build Your Submission Portfolio</h3>' +
-      '<p>Before you turn it in, make your math, reasoning, and self-check visible.</p>' +
+      "<h3>" + languageHtml("Build Your Submission Portfolio", "Prepara tu portafolio de entrega") + "</h3>" +
+      "<p>" + languageHtml("Before you turn it in, make your math, reasoning, and self-check visible.", "Antes de entregarlo, muestra tus matemáticas, razonamiento y autoevaluación.") + "</p>" +
       "</div></div>" +
       '<ul class="ntf-readiness__list" aria-live="polite"></ul>' +
-      '<button type="button" class="ntf-readiness__open">Preview my portfolio</button>';
+      '<button type="button" class="ntf-readiness__open">' + languageHtml("Preview my portfolio", "Vista previa de mi portafolio") + "</button>";
     host.appendChild(panel);
     panel.querySelector(".ntf-readiness__open").addEventListener("click", openPortfolio);
     refreshReadiness();
@@ -282,15 +298,49 @@
     if (!list) return;
     var evidence = evidenceSnapshot();
     var items = [
-      [evidence.substantive >= 3, "Math evidence", evidence.substantive + " completed response" + (evidence.substantive === 1 ? "" : "s")],
-      [evidence.reflections.length >= 1, "Reasoning", evidence.reflections.length + " explain-it-back reflection" + (evidence.reflections.length === 1 ? "" : "s")],
-      [evidence.ratings >= 1, "Quality check", evidence.ratings + " rubric rating" + (evidence.ratings === 1 ? "" : "s")],
+      [evidence.substantive >= 3, "work", languageHtml("Math evidence", "Evidencia matemática"), counted(evidence.substantive, "completed response", "completed responses", "respuesta completada", "respuestas completadas")],
+      [evidence.reflections.length >= 1, "reflection", languageHtml("Reasoning", "Razonamiento"), counted(evidence.reflections.length, "explain-it-back reflection", "explain-it-back reflections", "reflexión de explicación", "reflexiones de explicación")],
+      [evidence.ratings >= 1, "rubric", languageHtml("Quality check", "Control de calidad"), counted(evidence.ratings, "rubric rating", "rubric ratings", "calificación de la rúbrica", "calificaciones de la rúbrica")],
     ];
     list.innerHTML = items
       .map(function (item) {
-        return '<li class="' + (item[0] ? "is-ready" : "needs-work") + '"><span aria-hidden="true">' + (item[0] ? "✓" : "→") + "</span><strong>" + item[1] + ":</strong> " + item[2] + "</li>";
+        var action = item[0]
+          ? ""
+          : '<button type="button" class="ntf-readiness__jump" data-ntf-focus="' + item[1] + '">' + languageHtml("Take me there", "Llévame allí") + "</button>";
+        return '<li class="' + (item[0] ? "is-ready" : "needs-work") + '"><span aria-hidden="true">' + (item[0] ? "✓" : "→") + "</span><strong>" + item[2] + ":</strong> " + item[3] + action + "</li>";
       })
       .join("");
+  }
+
+  function fieldNeedsWork(field) {
+    return (field.value || "").trim().length < 3;
+  }
+
+  function takeToField(kind) {
+    var target = null;
+    if (kind === "work") {
+      var fields = document.querySelectorAll("input[type=text], input[type=number], textarea");
+      target = Array.prototype.find.call(fields, function (field) {
+        return !field.closest(".ntf-reflect, .pub-selfassess") && fieldNeedsWork(field);
+      });
+    } else if (kind === "reflection") {
+      var reflections = document.querySelectorAll(".ntf-reflect textarea");
+      target = Array.prototype.find.call(reflections, function (field) {
+        return !(field.value || "").trim();
+      });
+    } else if (kind === "rubric") {
+      target = document.querySelector(".pub-selfassess");
+    }
+    if (!target) return;
+    var step = target.closest(".step-panel");
+    if (step && typeof window.goStep === "function") {
+      var steps = Array.prototype.slice.call(document.querySelectorAll(".step-panel"));
+      window.goStep(steps.indexOf(step) + 1);
+    }
+    window.setTimeout(function () {
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (typeof target.focus === "function") target.focus({ preventScroll: true });
+    }, 80);
   }
 
   function exportSummary() {
@@ -302,35 +352,35 @@
     var html =
       "<!doctype html><html><head><meta charset='utf-8'><title>" +
       esc(title) +
-      " — My Summary</title><style>body{font:15px/1.5 system-ui,sans-serif;max-width:720px;margin:32px auto;padding:0 20px;color:#222}h1{color:#4a3fb0}h2{margin-top:26px;border-bottom:2px solid #eee;padding-bottom:4px}li{margin:6px 0}.meta{color:#666;font-size:13px}</style></head><body>";
+      " — " + esc(languageText("My Portfolio", "Mi portafolio")) + "</title><style>body{font:15px/1.5 system-ui,sans-serif;max-width:720px;margin:32px auto;padding:0 20px;color:#222}h1{color:#4a3fb0}h2{margin-top:26px;border-bottom:2px solid #eee;padding-bottom:4px}li{margin:6px 0}.meta{color:#666;font-size:13px}</style></head><body>";
     html += "<h1>" + esc(title) + "</h1>";
     html +=
-      "<p class='meta'>Student submission portfolio • time on task ≈ " +
+      "<p class='meta'>" + esc(languageText("Student submission portfolio", "Portafolio de entrega del estudiante")) + " • " + esc(languageText("time on task ≈", "tiempo de trabajo ≈")) + " " +
       mins +
-      " min • steps reached " +
+      " " + esc(languageText("min", "min")) + " • " + esc(languageText("steps reached", "pasos alcanzados")) + " " +
       state.maxStep +
       "</p>";
-    html += "<section><h2>Evidence Check</h2><ul>";
-    html += "<li><strong>Math evidence:</strong> " + evidence.substantive + " completed response" + (evidence.substantive === 1 ? "" : "s") + "</li>";
-    html += "<li><strong>Reasoning:</strong> " + refl.length + " reflection" + (refl.length === 1 ? "" : "s") + "</li>";
-    html += "<li><strong>Rubric self-check:</strong> " + evidence.ratings + " rating" + (evidence.ratings === 1 ? "" : "s") + "</li>";
+    html += "<section><h2>" + esc(languageText("Evidence Check", "Revisión de evidencia")) + "</h2><ul>";
+    html += "<li><strong>" + esc(languageText("Math evidence", "Evidencia matemática")) + ":</strong> " + evidence.substantive + " " + esc(languageText("completed response", "respuesta completada")) + "</li>";
+    html += "<li><strong>" + esc(languageText("Reasoning", "Razonamiento")) + ":</strong> " + refl.length + " " + esc(languageText("reflection", "reflexión")) + "</li>";
+    html += "<li><strong>" + esc(languageText("Rubric self-check", "Autoevaluación de la rúbrica")) + ":</strong> " + evidence.ratings + " " + esc(languageText("rating", "calificación")) + "</li>";
     html += "</ul></section>";
     if (work.length) {
-      html += "<h2>My Work</h2><ul>";
+      html += "<h2>" + esc(languageText("My Work", "Mi trabajo")) + "</h2><ul>";
       work.forEach(function (w) {
         html += "<li><strong>" + esc(w.label) + ":</strong> " + esc(w.value) + "</li>";
       });
       html += "</ul>";
     }
     if (refl.length) {
-      html += "<h2>My Reasoning (Explain it back)</h2><ul>";
+      html += "<h2>" + esc(languageText("My Reasoning (Explain it back)", "Mi razonamiento (Explícalo con tus palabras)")) + "</h2><ul>";
       refl.forEach(function (r) {
-        html += "<li><strong>Step " + r.step + ":</strong> " + esc(r.text) + "</li>";
+        html += "<li><strong>" + esc(languageText("Step", "Paso")) + " " + r.step + ":</strong> " + esc(r.text) + "</li>";
       });
       html += "</ul>";
     }
     if (!work.length && !refl.length) {
-      html += "<p>Fill in your project steps and reflections, then export again.</p>";
+      html += "<p>" + esc(languageText("Fill in your project steps and reflections, then export again.", "Completa los pasos y las reflexiones del proyecto, y vuelve a exportar.")) + "</p>";
     }
     html += "</body></html>";
 
@@ -353,14 +403,14 @@
     if (!dialog) return;
     var evidence = evidenceSnapshot();
     var status = evidence.ready
-      ? "Your core evidence is ready to review."
-      : "Keep building: add at least three responses, one reflection, and one rubric rating.";
-    dialog.querySelector(".ntf-portfolio__status").textContent = status;
+      ? languageHtml("Your core evidence is ready to review.", "Tu evidencia principal está lista para revisar.")
+      : languageHtml("Keep building: add at least three responses, one reflection, and one rubric rating.", "Sigue trabajando: agrega al menos tres respuestas, una reflexión y una calificación de la rúbrica.");
+    dialog.querySelector(".ntf-portfolio__status").innerHTML = status;
     dialog.querySelector(".ntf-portfolio__evidence").innerHTML =
-      '<li><strong>Math evidence</strong><span>' + evidence.substantive + " response" + (evidence.substantive === 1 ? "" : "s") + "</span></li>" +
-      '<li><strong>Reasoning</strong><span>' + evidence.reflections.length + " reflection" + (evidence.reflections.length === 1 ? "" : "s") + "</span></li>" +
-      '<li><strong>Quality check</strong><span>' + evidence.ratings + " rubric rating" + (evidence.ratings === 1 ? "" : "s") + "</span></li>" +
-      '<li><strong>Project checklist</strong><span>' + evidence.checks + " item" + (evidence.checks === 1 ? "" : "s") + " checked</span></li>";
+      "<li><strong>" + languageHtml("Math evidence", "Evidencia matemática") + "</strong><span>" + counted(evidence.substantive, "response", "responses", "respuesta", "respuestas") + "</span></li>" +
+      "<li><strong>" + languageHtml("Reasoning", "Razonamiento") + "</strong><span>" + counted(evidence.reflections.length, "reflection", "reflections", "reflexión", "reflexiones") + "</span></li>" +
+      "<li><strong>" + languageHtml("Quality check", "Control de calidad") + "</strong><span>" + counted(evidence.ratings, "rubric rating", "rubric ratings", "calificación de la rúbrica", "calificaciones de la rúbrica") + "</span></li>" +
+      "<li><strong>" + languageHtml("Project checklist", "Lista de verificación del proyecto") + "</strong><span>" + counted(evidence.checks, "item checked", "items checked", "elemento marcado", "elementos marcados") + "</span></li>";
     if (typeof dialog.showModal === "function") dialog.showModal();
     else dialog.setAttribute("open", "open");
   }
@@ -373,11 +423,11 @@
     dialog.innerHTML =
       '<form method="dialog" class="ntf-portfolio__card">' +
       '<button class="ntf-portfolio__close" aria-label="Close portfolio preview">×</button>' +
-      '<p class="ntf-portfolio__eyebrow">Submission review</p>' +
-      '<h2 id="ntf-portfolio-title">My Project Portfolio</h2>' +
+      '<p class="ntf-portfolio__eyebrow">' + languageHtml("Submission review", "Revisión de entrega") + "</p>" +
+      '<h2 id="ntf-portfolio-title">' + languageHtml("My Project Portfolio", "Mi portafolio del proyecto") + "</h2>" +
       '<p class="ntf-portfolio__status" role="status"></p>' +
       '<ul class="ntf-portfolio__evidence"></ul>' +
-      '<div class="ntf-portfolio__actions"><button type="button" class="ntf-portfolio__export">Open printable portfolio</button><button type="submit" class="ntf-portfolio__cancel">Keep working</button></div>' +
+      '<div class="ntf-portfolio__actions"><button type="button" class="ntf-portfolio__export">' + languageHtml("Open printable portfolio", "Abrir portafolio imprimible") + "</button><button type=\"submit\" class=\"ntf-portfolio__cancel\">" + languageHtml("Keep working", "Seguir trabajando") + "</button></div>" +
       "</form>";
     dialog.querySelector(".ntf-portfolio__export").addEventListener("click", exportSummary);
     document.body.appendChild(dialog);
@@ -449,6 +499,10 @@
       injectTeacher();
       document.addEventListener("input", refreshReadiness, true);
       document.addEventListener("change", refreshReadiness, true);
+      document.addEventListener("click", function (event) {
+        var button = event.target.closest("[data-ntf-focus]");
+        if (button) takeToField(button.getAttribute("data-ntf-focus"));
+      });
       save(state);
     } catch (e) {
       if (window.console) console.warn("[projects-future] disabled:", e);

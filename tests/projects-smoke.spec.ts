@@ -165,6 +165,23 @@ for (const route of ROUTES) {
       expect(portfolio.dialog, `portfolio dialog missing on ${route.url}`).toBe(1);
       expect(portfolio.trigger, `portfolio trigger missing on ${route.url}`).toBe(1);
 
+      // The submission flow must follow the page's existing EN/ES toggle,
+      // rather than leaving Spanish-speaking students at an English-only end.
+      await page.evaluate(() => {
+        const toggle = window as unknown as { toggleLanguage?: () => void };
+        toggle.toggleLanguage?.();
+      });
+      const spanishPortfolio = await page.locator(".ntf-readiness").innerText();
+      expect(spanishPortfolio, `Spanish portfolio copy missing on ${route.url}`).toContain(
+        "portafolio",
+      );
+      await page.evaluate(() => {
+        const toggle = window as unknown as { toggleLanguage?: () => void };
+        toggle.toggleLanguage?.();
+      });
+      const jumpCount = await page.locator(".ntf-readiness__jump").count();
+      expect(jumpCount, `evidence-coach actions missing on ${route.url}`).toBeGreaterThan(0);
+
       // The wizard must render its step trail, panels, and Level 1/2 toggles.
       const panels = await page.locator(".step-panel").count();
       expect(panels, `wizard panels did not render on ${route.url}`).toBeGreaterThan(0);
