@@ -248,9 +248,24 @@ body.crt-active::after {
   z-index: 99999;
   background: radial-gradient(circle at center, transparent 60%, rgba(0,0,0,0.55) 100%),
               linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.22) 50%),
-              linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
-  background-size: 100% 100%, 100% 4px, 6px 100%;
+              linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05)),
+              linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 45%);
+  background-size: 100% 100%, 100% 4px, 6px 100%, 100% 100%;
   opacity: 0.85;
+}
+
+/* Electro-Magnetic CRT Glitch Visuals */
+@keyframes gfx-crt-glitch {
+  0% { transform: rotateX(1.5deg) scale(0.985) translate(0); filter: hue-rotate(0deg) saturate(1.5); }
+  5% { transform: rotateX(1.5deg) scale(0.99) translate(-5px, 2px) skewX(6deg); filter: hue-rotate(90deg) contrast(1.4); }
+  10% { transform: rotateX(1.5deg) scale(0.98) translate(5px, -2px) skewX(-12deg); filter: hue-rotate(180deg) brightness(1.2); }
+  15% { transform: rotateX(1.5deg) scale(0.985) translate(0) skewX(0); filter: hue-rotate(0deg); }
+  100% { transform: rotateX(1.5deg) scale(0.985) translate(0); filter: none; }
+}
+body.crt-glitch canvas,
+body.crt-glitch #wrap,
+body.crt-glitch .page-shell {
+  animation: gfx-crt-glitch 0.22s linear infinite !important;
 }
 /* Retro Scanline grid overlay */
 .gfx-scanlines {

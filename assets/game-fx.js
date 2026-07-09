@@ -115,6 +115,27 @@
     } catch(e) { flash.remove(); }
   }
 
+  function triggerScreenGlitch(duration) {
+    if (reduce) return;
+    document.body.classList.add("crt-glitch");
+    setTimeout(function() {
+      document.body.classList.remove("crt-glitch");
+    }, duration || 250);
+  }
+
+  // Hook into Phaser GameJuice wrong audio to trigger CRT glitch
+  try {
+    if (window.GameJuice && window.GameJuice.audio) {
+      var origWrong = window.GameJuice.audio.wrong;
+      if (typeof origWrong === "function") {
+        window.GameJuice.audio.wrong = function() {
+          origWrong.apply(this, arguments);
+          triggerScreenGlitch(300);
+        };
+      }
+    }
+  } catch(e) {}
+
   function triggerBiosBoot() {
     AudioSynth.muffle();
     if (reduce) {
@@ -323,16 +344,57 @@
     playingMusic: false,
     ctx: null,
     filter: null,
+    delay: null,
+    delayGain: null,
+    humOsc: null,
+    humGain: null,
     init: function () {
       if (this.ctx) return;
       try {
         var AudioContextClass = window.AudioContext || window.webkitAudioContext;
         this.ctx = new AudioContextClass();
+        
+        // 1. Main LPF Filter Node
         this.filter = this.ctx.createBiquadFilter();
         this.filter.type = "lowpass";
         this.filter.frequency.setValueAtTime(2000, this.ctx.currentTime);
         this.filter.connect(this.ctx.destination);
+        
+        // 2. Feedback Delay Echo unit (Reverb emulation)
+        this.delay = this.ctx.createDelay(1.0);
+        this.delay.delayTime.setValueAtTime(0.18, this.ctx.currentTime); // 180ms delay
+        
+        this.delayGain = this.ctx.createGain();
+        this.delayGain.gain.setValueAtTime(0.35, this.ctx.currentTime); // 35% feedback loop volume
+        
+        this.delay.connect(this.delayGain);
+        this.delayGain.connect(this.delay);
+        
+        this.delay.connect(this.filter);
       } catch (e) {}
+    },
+    startHum: function() {
+      this.init();
+      if (!this.ctx || this.humOsc) return;
+      try {
+        this.humOsc = this.ctx.createOscillator();
+        this.humGain = this.ctx.createGain();
+        
+        this.humOsc.frequency.setValueAtTime(55, this.ctx.currentTime); // 55Hz cabinet power hum
+        this.humOsc.type = "sine";
+        this.humGain.gain.setValueAtTime(0.003, this.ctx.currentTime); // very subtle
+        
+        this.humOsc.connect(this.humGain);
+        this.humGain.connect(this.filter || this.ctx.destination);
+        this.humOsc.start();
+      } catch(e) {}
+    },
+    stopHum: function() {
+      if (this.humOsc) {
+        try { this.humOsc.stop(); } catch(e) {}
+        this.humOsc = null;
+        this.humGain = null;
+      }
     },
     muffle: function() {
       this.init();
@@ -355,6 +417,7 @@
         var gain = this.ctx.createGain();
         osc.connect(gain);
         gain.connect(this.filter || this.ctx.destination);
+        if (this.delay) gain.connect(this.delay);
 
         var t = this.ctx.currentTime;
         osc.type = type || "sine";
@@ -387,6 +450,8 @@
         
         noiseSource.connect(gain);
         gain.connect(this.filter || this.ctx.destination);
+        if (this.delay) gain.connect(this.delay);
+        
         noiseSource.start();
         noiseSource.stop(this.ctx.currentTime + duration);
       } catch (e) {}
@@ -417,6 +482,7 @@
       this.playingMusic = true;
       this.init();
       if (!this.ctx) return;
+      this.startHum();
       var self = this;
       var step = 0;
 
@@ -501,6 +567,7 @@
     },
     stopMusic: function () {
       this.playingMusic = false;
+      this.stopHum();
       if (musicTimer) {
         clearTimeout(musicTimer);
         musicTimer = null;
@@ -840,6 +907,7 @@
     shake: shakeScreen,
     flash: flashScreen,
     shockwave: spawnShockwave,
+    glitch: triggerScreenGlitch,
     reduce: reduce,
     bilingual: true,
     soundInjected: true,
@@ -1081,6 +1149,7 @@
           } else if (isWrong) {
             AudioSynth.playError();
             flashScreen("rgba(239, 68, 68, 0.35)");
+            triggerScreenGlitch(300);
             shakeScreen();
             comboStreak = 0;
             updateComboHUD(0);
@@ -1132,6 +1201,7 @@
             } else if (isIncorrect) {
               AudioSynth.playError();
               flashScreen("rgba(239, 68, 68, 0.35)");
+              triggerScreenGlitch(300);
               shakeScreen();
               comboStreak = 0;
               updateComboHUD(0);
