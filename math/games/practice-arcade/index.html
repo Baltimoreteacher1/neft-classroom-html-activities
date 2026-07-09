@@ -554,6 +554,20 @@
 
             // Scene-wide drag listeners with activeDragObject locking to prevent multiple overlapping tiles from dragging together
             this.activeDragObject = null;
+            
+            // Global window listeners to ensure the drag lock is cleared under any window blur/release scenario
+            if (!window._dragLockHandlersRegistered) {
+              window._dragLockHandlersRegistered = true;
+              window.addEventListener("pointerup", () => {
+                const activeScene = findPhaserGame()?.scene.getScenes(true)[0];
+                if (activeScene) activeScene.activeDragObject = null;
+              });
+              window.addEventListener("blur", () => {
+                const activeScene = findPhaserGame()?.scene.getScenes(true)[0];
+                if (activeScene) activeScene.activeDragObject = null;
+              });
+            }
+
             this.input.on("dragstart", (pointer, gameObject) => {
               if (gameObject._tileObj && !this.activeDragObject) {
                 this.activeDragObject = gameObject;

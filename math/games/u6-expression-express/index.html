@@ -1093,7 +1093,25 @@
           .setDepth(90);
 
         // Drag plumbing (Phaser drag events at scene scope).
+        this.activeDragObject = null;
+        if (!window._dragLockHandlersRegisteredExpress) {
+          window._dragLockHandlersRegisteredExpress = true;
+          window.addEventListener("pointerup", () => {
+            if (this.sys && this.sys.game) {
+              const activeScene = this.sys.game.scene.getScenes(true)[0];
+              if (activeScene) activeScene.activeDragObject = null;
+            }
+          });
+          window.addEventListener("blur", () => {
+            if (this.sys && this.sys.game) {
+              const activeScene = this.sys.game.scene.getScenes(true)[0];
+              if (activeScene) activeScene.activeDragObject = null;
+            }
+          });
+        }
         this.input.on("dragstart", (p, g) => {
+          if (this.activeDragObject) return;
+          this.activeDragObject = g;
           this.tweens.killTweensOf(g); // Prevent any active tween from fighting the drag!
           g.setDepth(50);
           JUICE.tilePop(this, g);
@@ -1110,6 +1128,7 @@
           }
         });
         this.input.on("drag", (p, g) => {
+          if (g !== this.activeDragObject) return;
           // Mark as dragged HERE (not only in dragstart): Phaser fires dragstart
           // before the tile's own pointerdown, which resets _wasDragged to false.
           // The drag event always fires after pointerdown, so the flag sticks and
@@ -1119,8 +1138,11 @@
           g.y = p.worldY;
         });
         this.input.on("dragend", (p, g) => {
-          g.setDepth(8);
-          if (g._tileObj) this.dropTile(g._tileObj);
+          if (g === this.activeDragObject) {
+            this.activeDragObject = null;
+            g.setDepth(8);
+            if (g._tileObj) this.dropTile(g._tileObj);
+          }
         });
 
         // Keyboard: ← → move slot cursor; ↑ ↓ cycle the tile in the slot;
