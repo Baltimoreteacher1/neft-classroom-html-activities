@@ -85,12 +85,44 @@
     }, 800);
   }
 
+  function spawnShockwave(x, y) {
+    if (reduce) return;
+    var shock = document.createElement("div");
+    shock.className = "gfx-shockwave";
+    shock.style.left = x + "px";
+    shock.style.top = y + "px";
+    document.body.appendChild(shock);
+    setTimeout(function() {
+      shock.remove();
+    }, 600);
+  }
+
+  function flashScreen(color) {
+    if (reduce) return;
+    var flash = document.createElement("div");
+    flash.style.position = "fixed";
+    flash.style.inset = "0";
+    flash.style.background = color || "rgba(239, 68, 68, 0.4)";
+    flash.style.pointerEvents = "none";
+    flash.style.zIndex = "100002";
+    document.body.appendChild(flash);
+    try {
+      var anim = flash.animate([
+        { opacity: 1 },
+        { opacity: 0 }
+      ], { duration: 300 });
+      anim.onfinish = function() { flash.remove(); };
+    } catch(e) { flash.remove(); }
+  }
+
   function triggerBiosBoot() {
+    AudioSynth.muffle();
     if (reduce) {
       document.body.classList.add("crt-active");
       var scan = document.createElement("div");
       scan.className = "gfx-scanlines";
       document.body.appendChild(scan);
+      AudioSynth.unmuffle();
       return;
     }
     
@@ -133,6 +165,7 @@
             var scan = document.createElement("div");
             scan.className = "gfx-scanlines";
             document.body.appendChild(scan);
+            AudioSynth.unmuffle();
           };
         }, 400);
         return;
@@ -207,42 +240,56 @@
 
   function burst(cx, cy) {
     if (reduce) return;
-    for (var i = 0; i < 20; i++) {
-      var s = document.createElement("div");
-      s.className = "gfx-spark";
-      s.style.left = cx + "px";
-      s.style.top = cy + "px";
-      s.style.background = COLORS[i % COLORS.length];
-      document.body.appendChild(s);
-      var ang = (Math.PI * 2 * i) / 20 + (Math.random() - 0.5) * 0.4;
-      var dist = 50 + Math.random() * 60;
-      var tx = Math.cos(ang) * dist;
-      var ty = Math.sin(ang) * dist;
-      try {
-        var anim = s.animate(
-          [
-            { transform: "translate(-50%,-50%) scale(1.4) rotate(0deg)", opacity: 1 },
-            {
-              transform:
-                "translate(calc(-50% + " +
-                tx +
-                "px), calc(-50% + " +
-                ty +
-                "px)) scale(0) rotate(" + (180 + Math.random() * 180) + "deg)",
-              opacity: 0,
-            },
-          ],
-          { duration: 600 + Math.random() * 300, easing: "cubic-bezier(.1,.8,.2,1)" },
-        );
-        anim.onfinish = (function (node) {
-          return function () {
-            if (node.parentNode) node.parentNode.removeChild(node);
-          };
-        })(s);
-      } catch (e) {
-        if (s.parentNode) s.parentNode.removeChild(s);
+    var particles = [];
+    var count = 25;
+    for (var i = 0; i < count; i++) {
+      var el = document.createElement("div");
+      el.className = "gfx-spark";
+      el.style.left = cx + "px";
+      el.style.top = cy + "px";
+      el.style.background = COLORS[i % COLORS.length];
+      document.body.appendChild(el);
+      var angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.3;
+      var speed = 3 + Math.random() * 6;
+      particles.push({
+        el: el,
+        x: cx,
+        y: cy,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 2,
+        alpha: 1,
+        decay: 0.02 + Math.random() * 0.02,
+        scale: 1.2 + Math.random() * 0.6
+      });
+    }
+
+    function updateParticles() {
+      var active = false;
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        if (p.alpha <= 0) continue;
+        p.vy += 0.18; // gravity
+        p.vx *= 0.98; // air drag
+        p.vy *= 0.98;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= p.decay;
+        p.scale *= 0.97;
+        p.el.style.left = p.x + "px";
+        p.el.style.top = p.y + "px";
+        p.el.style.opacity = p.alpha;
+        p.el.style.transform = "translate(-50%, -50%) scale(" + p.scale + ") rotate(" + (p.alpha * 360) + "deg)";
+        if (p.alpha > 0) {
+          active = true;
+        } else {
+          p.el.remove();
+        }
+      }
+      if (active) {
+        requestAnimationFrame(updateParticles);
       }
     }
+    requestAnimationFrame(updateParticles);
   }
 
   function celebrate(el) {
@@ -275,12 +322,29 @@
     muted: false,
     playingMusic: false,
     ctx: null,
+    filter: null,
     init: function () {
       if (this.ctx) return;
       try {
         var AudioContextClass = window.AudioContext || window.webkitAudioContext;
         this.ctx = new AudioContextClass();
+        this.filter = this.ctx.createBiquadFilter();
+        this.filter.type = "lowpass";
+        this.filter.frequency.setValueAtTime(2000, this.ctx.currentTime);
+        this.filter.connect(this.ctx.destination);
       } catch (e) {}
+    },
+    muffle: function() {
+      this.init();
+      if (this.filter && this.ctx) {
+        this.filter.frequency.exponentialRampToValueAtTime(350, this.ctx.currentTime + 0.3);
+      }
+    },
+    unmuffle: function() {
+      this.init();
+      if (this.filter && this.ctx) {
+        this.filter.frequency.exponentialRampToValueAtTime(2000, this.ctx.currentTime + 0.3);
+      }
     },
     playTone: function (freq, type, duration, vol) {
       if (this.muted) return;
@@ -290,7 +354,7 @@
         var osc = this.ctx.createOscillator();
         var gain = this.ctx.createGain();
         osc.connect(gain);
-        gain.connect(this.ctx.destination);
+        gain.connect(this.filter || this.ctx.destination);
 
         var t = this.ctx.currentTime;
         osc.type = type || "sine";
@@ -322,7 +386,7 @@
         gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
         
         noiseSource.connect(gain);
-        gain.connect(this.ctx.destination);
+        gain.connect(this.filter || this.ctx.destination);
         noiseSource.start();
         noiseSource.stop(this.ctx.currentTime + duration);
       } catch (e) {}
@@ -363,56 +427,82 @@
       ];
       var bassProgression = [130.81, 97.99, 110.00, 87.31];
 
-      musicTimer = setInterval(function () {
-        if (self.muted || !self.playingMusic) return;
+      function playBeat() {
+        if (!self.playingMusic) return;
 
-        var time = self.ctx.currentTime;
-        var bar = Math.floor(step / 8);
-        var beat = step % 8;
+        var lives = 3;
+        try {
+          if (typeof window.S !== "undefined" && typeof window.S.lives !== "undefined") {
+            lives = window.S.lives;
+          } else {
+            var pg = findPhaserGame();
+            if (pg) {
+              var activeScene = pg.scene.getScenes(true)[0];
+              if (activeScene && typeof activeScene.lives !== "undefined") {
+                lives = activeScene.lives;
+              }
+            }
+          }
+        } catch (e) {}
 
-        // 1. Bassline (beats 0, 2, 4, 6)
-        if (beat % 2 === 0) {
-          var bassFreq = bassProgression[bar % bassProgression.length];
-          if (beat === 0) bassFreq *= 0.5; // drop octave
-          self.playTone(bassFreq, "triangle", 0.35, 0.01);
+        var speedMultiplier = 1.0;
+        var pitchOctave = 1.0;
+        if (lives === 1) {
+          speedMultiplier = 1.4;
+          pitchOctave = 2.0;
+        } else if (lives === 2) {
+          speedMultiplier = 1.15;
+          pitchOctave = 1.0;
         }
 
-        // 2. Retro Lead Melody (low volume square wave)
-        var melNote = melody[step % melody.length];
-        if (beat % 2 !== 0 || Math.random() > 0.45) {
-          self.playTone(melNote, "square", 0.12, 0.004);
-        }
+        if (!self.muted) {
+          var time = self.ctx.currentTime;
+          var bar = Math.floor(step / 8);
+          var beat = step % 8;
 
-        // 3. Synthesized Drums
-        if (beat === 0 || beat === 4) {
-          // Kick drum: rapid frequency sweep down
-          try {
-            var osc = self.ctx.createOscillator();
-            var gain = self.ctx.createGain();
-            osc.connect(gain);
-            gain.connect(self.ctx.destination);
-            osc.frequency.setValueAtTime(120, time);
-            osc.frequency.exponentialRampToValueAtTime(40, time + 0.1);
-            gain.gain.setValueAtTime(0.015, time);
-            gain.gain.linearRampToValueAtTime(0.001, time + 0.1);
-            osc.start(time);
-            osc.stop(time + 0.1);
-          } catch (e) {}
-        } else if (beat === 2 || beat === 6) {
-          // Snare: noise burst
-          self.noise(0.08, 0.006);
-        } else if (beat % 2 !== 0) {
-          // Hi-hat: shorter noise burst
-          self.noise(0.02, 0.003);
+          if (beat % 2 === 0) {
+            var bassFreq = bassProgression[bar % bassProgression.length];
+            if (beat === 0) bassFreq *= 0.5;
+            self.playTone(bassFreq * pitchOctave, "triangle", 0.35 / speedMultiplier, 0.012);
+          }
+
+          var melNote = melody[step % melody.length];
+          if (beat % 2 !== 0 || Math.random() > 0.45) {
+            self.playTone(melNote * pitchOctave, "square", 0.12 / speedMultiplier, 0.004);
+          }
+
+          if (beat === 0 || beat === 4) {
+            try {
+              var osc = self.ctx.createOscillator();
+              var gain = self.ctx.createGain();
+              osc.connect(gain);
+              gain.connect(self.filter || self.ctx.destination);
+              osc.frequency.setValueAtTime(120, time);
+              osc.frequency.exponentialRampToValueAtTime(40, time + 0.1);
+              gain.gain.setValueAtTime(0.02, time);
+              gain.gain.linearRampToValueAtTime(0.001, time + 0.1);
+              osc.start(time);
+              osc.stop(time + 0.1);
+            } catch (e) {}
+          } else if (beat === 2 || beat === 6) {
+            self.noise(0.08, 0.008);
+          } else if (beat % 2 !== 0) {
+            self.noise(0.02, 0.004);
+          }
         }
 
         step++;
-      }, 180);
+        var baseInterval = 180;
+        var nextBeatTime = baseInterval / speedMultiplier;
+        musicTimer = setTimeout(playBeat, nextBeatTime);
+      }
+
+      playBeat();
     },
     stopMusic: function () {
       this.playingMusic = false;
       if (musicTimer) {
-        clearInterval(musicTimer);
+        clearTimeout(musicTimer);
         musicTimer = null;
       }
     },
@@ -443,20 +533,43 @@
   }
 
   // --- Combo Score Multiplier HUD ---
+  var comboDrainTimer = null;
   function updateComboHUD(streak) {
     var hud = document.getElementById("game-combo-hud");
+    var meter = document.getElementById("gfx-combo-meter");
+    var fill = document.getElementById("gfx-combo-fill");
     if (!hud) return;
 
     if (streak >= 3) {
       hud.textContent = "🔥 STREAK x" + streak + "! 🔥";
       hud.className = "show pop";
-      // Synthesize quick pitch scale tone matching streak count!
       AudioSynth.playTone(300 + streak * 60, "triangle", 0.1, 0.1);
       setTimeout(function () {
         hud.classList.remove("pop");
       }, 300);
+
+      if (meter && fill) {
+        meter.classList.add("active");
+        fill.style.width = "100%";
+        if (comboDrainTimer) clearInterval(comboDrainTimer);
+        var width = 100;
+        comboDrainTimer = setInterval(function() {
+          width -= 2.5;
+          fill.style.width = width + "%";
+          if (width <= 0) {
+            clearInterval(comboDrainTimer);
+            comboStreak = 0;
+            updateComboHUD(0);
+          }
+        }, 100);
+      }
     } else {
       hud.className = "";
+      if (meter) meter.classList.remove("active");
+      if (comboDrainTimer) {
+        clearInterval(comboDrainTimer);
+        comboDrainTimer = null;
+      }
     }
   }
 
@@ -725,10 +838,37 @@
     burst: burst,
     pop: pop,
     shake: shakeScreen,
+    flash: flashScreen,
+    shockwave: spawnShockwave,
     reduce: reduce,
     bilingual: true,
     soundInjected: true,
     comboInjected: true,
+  };
+
+  window.toggleCabinetCRT = function() {
+    var active = document.body.classList.toggle("crt-active");
+    var btn = document.getElementById("sw-crt");
+    if (btn) btn.classList.toggle("active", active);
+  };
+  window.toggleCabinetLines = function() {
+    var el = document.querySelector(".gfx-scanlines");
+    if (el) {
+      var active = el.classList.toggle("scanlines-off");
+      var btn = document.getElementById("sw-lines");
+      if (btn) btn.classList.toggle("active", !active);
+    }
+  };
+  window.toggleCabinetFilter = function() {
+    var btn = document.getElementById("sw-filter");
+    if (btn) {
+      var active = btn.classList.toggle("active");
+      if (active) {
+        AudioSynth.muffle();
+      } else {
+        AudioSynth.unmuffle();
+      }
+    }
   };
 
   window.toggleGameLanguage = function () {
@@ -810,6 +950,23 @@
     comboHud.id = "game-combo-hud";
     comboHud.className = "no-print";
     document.body.appendChild(comboHud);
+
+    // 2b. Inject Combo energy meter gauge and control switches bezel
+    var meterDiv = document.createElement("div");
+    meterDiv.id = "gfx-combo-meter";
+    meterDiv.className = "no-print";
+    meterDiv.innerHTML = '<div id="gfx-combo-fill"></div>';
+    document.body.appendChild(meterDiv);
+
+    var cabinet = document.createElement("div");
+    cabinet.id = "gfx-arcade-controls";
+    cabinet.className = "no-print";
+    cabinet.innerHTML = `
+      <button class="arcade-switch active" id="sw-crt" onclick="toggleCabinetCRT()">📺 CRT</button>
+      <button class="arcade-switch active" id="sw-lines" onclick="toggleCabinetLines()">💈 Scanlines</button>
+      <button class="arcade-switch" id="sw-filter" onclick="toggleCabinetFilter()">🎛️ Audio LPF</button>
+    `;
+    document.body.appendChild(cabinet);
 
     // 3. Inject Hidden Teacher Cheat Console — teacher-mode devices only
     // (sticky nt-teacher-mode key; students have no path in).
@@ -923,6 +1080,7 @@
             LMSBridge.reportScore(finalScore, null, finalStars);
           } else if (isWrong) {
             AudioSynth.playError();
+            flashScreen("rgba(239, 68, 68, 0.35)");
             shakeScreen();
             comboStreak = 0;
             updateComboHUD(0);
@@ -960,6 +1118,8 @@
               }
               celebrate(t);
               AudioSynth.playSuccess();
+              flashScreen("rgba(16, 185, 129, 0.15)");
+              spawnShockwave(lastPointer.x, lastPointer.y);
 
               var scoreMsg = "+100";
               if (comboStreak >= 3) {
@@ -971,6 +1131,7 @@
               updateComboHUD(comboStreak);
             } else if (isIncorrect) {
               AudioSynth.playError();
+              flashScreen("rgba(239, 68, 68, 0.35)");
               shakeScreen();
               comboStreak = 0;
               updateComboHUD(0);
