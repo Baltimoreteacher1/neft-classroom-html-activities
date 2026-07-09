@@ -374,6 +374,7 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
 // mouse drag. A single item is selected at a time; clicking/activating a drop
 // zone moves the selected item there. Shared across items/zones in one render.
 let dsSelected = null;
+let activeDragElement = null;
 function dsClearSelection() {
   if (dsSelected) {
     dsSelected.classList.remove("ds-selected");
@@ -422,11 +423,25 @@ function wireZoneKeyboard(zone, labelText) {
 function createDragItem(item) {
   const el = document.createElement("div");
   el.className = "drag-item";
-  el.textContent = item.text;
   el.draggable = true;
-  // Unique id (falls back to text for any legacy caller) — keyed on by grading
-  // and drag/drop so duplicate item texts don't collide.
   el.dataset.itemId = item._id != null ? item._id : item.text;
+
+  el.style.cssText = "display:inline-flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 14px; gap:4px; text-align:center; min-width:80px;";
+
+  const labelSpan = document.createElement("span");
+  labelSpan.textContent = item.text;
+  labelSpan.style.cssText = "font-weight:700; font-size:1.1rem; line-height:1.2;";
+  el.append(labelSpan);
+
+  const numVal = parseInt(item.text);
+  if (!isNaN(numVal) && numVal > 1 && numVal <= 30) {
+    const svgHtml = createNumberArraySVG(numVal);
+    if (svgHtml) {
+      const svgContainer = document.createElement("div");
+      svgContainer.innerHTML = svgHtml;
+      el.append(svgContainer);
+    }
+  }
 
   // Keyboard/tap selection (paired with wireZoneKeyboard on the drop zones).
   el.tabIndex = 0;
@@ -446,6 +461,7 @@ function createDragItem(item) {
   });
 
   el.addEventListener("dragstart", (e) => {
+    activeDragElement = el;
     e.dataTransfer.setData("text/plain", el.dataset.itemId);
     e.dataTransfer.effectAllowed = "move";
     el.classList.add("dragging");
@@ -454,27 +470,30 @@ function createDragItem(item) {
 
   el.addEventListener("dragend", () => {
     el.classList.remove("dragging", "drag-ghost");
+    if (activeDragElement === el) {
+      activeDragElement = null;
+    }
   });
 
-  // Touch support for Chromebooks
+  // Touch support for Chromebooks / iPads with conflict prevention
   let touchClone = null;
   let originZone = null;
 
   el.addEventListener(
     "touchstart",
     (e) => {
+      // Disable native HTML5 drag processing to prevent dual-cursor rendering and sticking
+      el.draggable = false;
       originZone = el.parentElement;
       touchClone = el.cloneNode(true);
-      // ds-touch-ghost adds the (reduced-motion-gated) glow, rotate, and deep
-      // shadow. The base inline styles keep it functional even when motion is
-      // reduced (the animation/transform simply does not apply).
+      // ds-touch-ghost adds the glow, rotate, and shadow
       touchClone.classList.add("ds-touch-ghost");
       touchClone.style.cssText = `
-      position:fixed; z-index:1000; pointer-events:none; opacity:0.9;
-      box-shadow:0 8px 24px rgba(18,53,91,0.2);
-    `;
+        position:fixed; z-index:1000; pointer-events:none; opacity:0.9;
+        box-shadow:0 8px 24px rgba(18,53,91,0.2);
+      `;
       document.body.append(touchClone);
-      moveTouchClone(e);
+      moveTouchClone(e, touchClone);
     },
     { passive: true },
   );
@@ -483,7 +502,7 @@ function createDragItem(item) {
     "touchmove",
     (e) => {
       e.preventDefault();
-      moveTouchClone(e);
+      moveTouchClone(e, touchClone);
       const target = getDropZoneUnderTouch(e);
       document.querySelectorAll(".drag-zone").forEach((z) => z.classList.remove("over"));
       if (target) target.classList.add("over");
@@ -492,6 +511,7 @@ function createDragItem(item) {
   );
 
   el.addEventListener("touchend", (e) => {
+    el.draggable = true; // Restore native drag capability
     if (touchClone) {
       touchClone.remove();
       touchClone = null;
@@ -502,6 +522,16 @@ function createDragItem(item) {
       target.append(el);
       springBounce(el);
     }
+    originZone = null;
+  });
+
+  el.addEventListener("touchcancel", () => {
+    el.draggable = true; // Restore native drag capability
+    if (touchClone) {
+      touchClone.remove();
+      touchClone = null;
+    }
+    document.querySelectorAll(".drag-zone").forEach((z) => z.classList.remove("over"));
     originZone = null;
   });
 
@@ -517,11 +547,9 @@ function showFb(slot, type, msg) {
   slot.append(fb);
 }
 
-function moveTouchClone(e) {
+function moveTouchClone(e, clone) {
   const touch = e.touches?.[0] || e.changedTouches?.[0];
-  if (!touch) return;
-  const clone = document.querySelector('.drag-item[style*="fixed"]');
-  if (!clone) return;
+  if (!touch || !clone) return;
   clone.style.left = `${touch.clientX - 40}px`;
   clone.style.top = `${touch.clientY - 20}px`;
 }
@@ -533,13 +561,10 @@ function getDropZoneUnderTouch(e) {
   return elements.find((el) => el.classList.contains("drag-zone")) || null;
 }
 
-// Apply the ease-out spring bounce to an item that just landed. CSS-gated by
-// prefers-reduced-motion, so it is a no-op visual when motion is reduced. The
-// class is removed after the animation so a future drop can replay it.
+// Apply the ease-out spring bounce to an item that just landed.
 function springBounce(el) {
   if (!el) return;
   el.classList.remove("ds-landed");
-  // Force reflow so re-adding the class restarts the animation.
   void el.offsetWidth;
   el.classList.add("ds-landed");
   el.addEventListener("animationend", () => el.classList.remove("ds-landed"), {
@@ -547,9 +572,6 @@ function springBounce(el) {
   });
 }
 
-// The optional second argument is accepted for forward-compatible call sites
-// (e.g. parallax context); the bank's setup omits it. It does not alter
-// drop/checking behavior.
 function setupDragDrop(zones, _ctx) {
   zones.forEach((zone) => {
     zone.addEventListener("dragover", (e) => {
@@ -564,8 +586,12 @@ function setupDragDrop(zones, _ctx) {
     zone.addEventListener("drop", (e) => {
       e.preventDefault();
       zone.classList.remove("over");
+      // Fall back to module level tracker if dataTransfer is empty/blocked
       const text = e.dataTransfer.getData("text/plain");
-      const dragEl = document.querySelector(`.drag-item[data-item-id="${CSS.escape(text)}"]`);
+      let dragEl = activeDragElement;
+      if (!dragEl && text) {
+        dragEl = document.querySelector(`.drag-item[data-item-id="${CSS.escape(text)}"]`);
+      }
       if (dragEl) {
         dragEl.classList.remove("correct", "incorrect");
         zone.append(dragEl);
@@ -578,3 +604,43 @@ function setupDragDrop(zones, _ctx) {
     });
   });
 }
+
+function createNumberArraySVG(num) {
+  if (isNaN(num) || num <= 1 || num > 30) return "";
+  
+  // Find closest factor pair (a, b) where a <= b and a * b = num
+  let r = Math.floor(Math.sqrt(num));
+  let cols = num;
+  let rows = 1;
+  for (let i = r; i >= 1; i--) {
+    if (num % i === 0) {
+      rows = i;
+      cols = num / i;
+      break;
+    }
+  }
+  
+  const isPrime = (rows === 1);
+  const dotRadius = 3;
+  const gap = 9;
+  const padding = 4;
+  
+  const width = (cols - 1) * gap + padding * 2;
+  const height = (rows - 1) * gap + padding * 2;
+  
+  let dotsSvg = "";
+  // In drag-sort: dark theme is not active, standard light styling is used.
+  // We use standard colors: teal-dark (#0d7a76) for primes, amber-dark (#b07a10) for composites.
+  const color = isPrime ? "#0d7a76" : "#b07a10";
+  
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const cx = padding + c * gap;
+      const cy = padding + r * gap;
+      dotsSvg += `<circle cx="${cx}" cy="${cy}" r="${dotRadius}" fill="${color}" opacity="0.85" />`;
+    }
+  }
+  
+  return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="display:block; margin:4px auto 0; overflow:visible;">${dotsSvg}</svg>`;
+}
+
