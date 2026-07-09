@@ -748,6 +748,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         .querySelectorAll(".extra-btn")
         .forEach((b) => b.classList.toggle("active", b.dataset.extra === kind));
       sidebar.setAttribute("data-viewing-extra", kind || "");
+      // Vocab + Learn It open as a full-viewport takeover; lock the page behind
+      // it so there's no double scrollbar and it sits truly edge-to-edge. Every
+      // panel transition (openExtra/openProjects/…/navigateTo→clearExtraActive)
+      // routes through here, so this both sets and clears the lock.
+      document.documentElement.classList.toggle(
+        "nt-extra-fullpage-open",
+        kind === "vocab" || kind === "learn",
+      );
     },
     clearExtraActive() {
       this.setExtraActive(null);
@@ -806,12 +814,25 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
                     desc: "Read along and fill these in. Use Print for a paper copy.",
                   };
 
+      // Vocab and Learn It open as an immersive full-viewport takeover that
+      // stays on the same page (no separate tab). The panel still lives inside
+      // phaseContainer, so navigating to any phase/tab tears it down for free.
+      const fullPage = kind === "vocab" || kind === "learn";
+
       this.setExtraActive(kind);
       phaseContainer.innerHTML = "";
       const el = document.createElement("div");
-      el.className = "phase active extra-panel";
+      el.className = "phase active extra-panel" + (fullPage ? " extra-panel--fullpage" : "");
       el.setAttribute("role", "region");
       el.setAttribute("aria-label", meta.title);
+      const frameStyle = fullPage
+        ? "width:100%; height:calc(100vh - 132px); min-height:480px; border:0; border-radius:0; background:var(--card, #fff);"
+        : "width:100%; height:calc(100vh - 190px); min-height:560px; border:1px solid var(--line, #e4ddc9); border-radius:var(--radius-md, 12px); background:var(--card, #fff);";
+      // On the full-page takeover the same-page view IS the full experience, so
+      // the "open in a new tab" affordance is replaced by a Close button.
+      const trailingAction = fullPage
+        ? `<button class="btn btn-secondary" data-act="close">✕ Close</button>`
+        : `<a class="btn btn-secondary" href="${meta.full}" target="_blank" rel="noopener">Open full page ↗</a>`;
       el.innerHTML = `
         <div class="extra-head" style="display:flex; flex-wrap:wrap; gap:var(--sp-3, 12px); align-items:center; justify-content:space-between; margin-bottom:var(--sp-3, 12px);">
           <div>
@@ -820,16 +841,33 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           </div>
           <div class="extra-actions" style="display:flex; gap:var(--sp-2, 8px); flex-wrap:wrap;">
             ${kind === "notes" || kind === "learn" || kind === "vocab" ? `<button class="btn btn-secondary" data-act="print">🖨️ Print</button>` : ""}
-            <a class="btn btn-secondary" href="${meta.full}" target="_blank" rel="noopener">Open full page ↗</a>
+            ${trailingAction}
           </div>
         </div>
         <iframe class="extra-frame" title="${escHtml(meta.title)}" src="${meta.src}"
-          style="width:100%; height:calc(100vh - 190px); min-height:560px; border:1px solid var(--line, #e4ddc9); border-radius:var(--radius-md, 12px); background:var(--card, #fff);"></iframe>
+          style="${frameStyle}"></iframe>
       `;
       phaseContainer.append(el);
 
       const frame = el.querySelector(".extra-frame");
       const printBtn = el.querySelector('[data-act="print"]');
+      // Close / Escape return to the graded lesson underneath (state untouched).
+      if (fullPage) {
+        const closeToLesson = () => this.navigateTo(state.get().currentPhase ?? 0);
+        const closeBtn = el.querySelector('[data-act="close"]');
+        if (closeBtn) closeBtn.addEventListener("click", closeToLesson);
+        const onKey = (e) => {
+          if (!document.body.contains(el)) {
+            document.removeEventListener("keydown", onKey);
+            return;
+          }
+          if (e.key === "Escape") {
+            document.removeEventListener("keydown", onKey);
+            closeToLesson();
+          }
+        };
+        document.addEventListener("keydown", onKey);
+      }
       if (printBtn) {
         printBtn.addEventListener("click", () => {
           try {
