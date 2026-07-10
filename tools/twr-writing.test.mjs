@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { JSDOM } from "jsdom";
@@ -88,6 +89,18 @@ for (const lessonId of lessonIds) {
     bannedLegacyLanguage,
     `${lessonId}: old generated prompt remains`,
   );
+}
+
+for (const lessonId of lessonIds) {
+  const docxPath = join(lessonsDir, lessonId, "downloads", `${lessonId}-notes.docx`);
+  const documentXml = execFileSync("unzip", ["-p", docxPath, "word/document.xml"], {
+    encoding: "utf8",
+  });
+  assert.match(documentXml, /Understand the Question/, `${lessonId}: DOCX missing Understand`);
+  assert.match(documentXml, /Plan Your Math Words/, `${lessonId}: DOCX missing Plan`);
+  assert.match(documentXml, /Build Your Explanation/, `${lessonId}: DOCX missing Build`);
+  assert.match(documentXml, /Check Your Explanation/, `${lessonId}: DOCX missing Check`);
+  assert.doesNotMatch(documentXml, bannedLegacyLanguage, `${lessonId}: DOCX has old prompts`);
 }
 
 const noSpanish = {

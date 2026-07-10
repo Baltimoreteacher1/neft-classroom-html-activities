@@ -16,33 +16,34 @@
 //
 // Output: lessons/<id>/downloads/<id>-notes.docx
 
-import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { Resvg } from "@resvg/resvg-js";
 import {
-  Document,
-  Packer,
-  Paragraph,
-  TextRun,
-  ImageRun,
-  HeadingLevel,
   AlignmentType,
   BorderStyle,
-  PageNumber,
-  Header,
+  Document,
   Footer,
-  Table,
-  TableRow,
-  TableCell,
-  WidthType,
-  VerticalAlign,
+  Header,
+  HeadingLevel,
+  ImageRun,
+  Packer,
+  PageNumber,
+  Paragraph,
   ShadingType,
-  TabStopType,
+  Table,
+  TableCell,
+  TableRow,
   TabStopPosition,
+  TabStopType,
+  TextRun,
+  VerticalAlign,
+  WidthType,
 } from "docx";
-import { Resvg } from "@resvg/resvg-js";
-import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
+import { deriveTWR } from "../engine/core/twr.js";
 import { resolveVocabImage } from "../engine/core/vocab-images.js";
+import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -792,6 +793,115 @@ function independentPracticeBlock(cfg, excludeStems = new Set()) {
   return out;
 }
 
+// ── WRITE ABOUT THE MATH (ESOL-SCAFFOLDED) ──────────────────────────────────
+function writingBlock(cfg) {
+  const twr = deriveTWR(cfg);
+  const out = [sectionHeading("Write About the Math", { pageBreak: true })];
+  out.push(muted("Use the support level you need. Every level answers the same math question."));
+
+  out.push(subHeading("1. Understand the Question", twr.focus.action, AMBER));
+  out.push(
+    calloutBox(
+      [
+        bilingual(twr.focus.questionEn, twr.focus.questionEs),
+        para(
+          [
+            new TextRun({ text: "Your job:  ", bold: true, color: NAVY, size: 20 }),
+            new TextRun({ text: twr.focus.jobEn, size: 20 }),
+            new TextRun({
+              text: twr.focus.jobEs,
+              break: 1,
+              italics: true,
+              color: MUTED,
+              size: 18,
+            }),
+          ],
+          { spacing: { after: 0 } },
+        ),
+      ],
+      { fill: TEAL_BG, border: TEAL },
+    ),
+  );
+
+  out.push(subHeading("2. Plan Your Math Words", "check at least two", TEAL));
+  for (const word of twr.vocabulary) {
+    out.push(
+      para(
+        [
+          new TextRun({ text: "☐  ", bold: true, color: TEAL, size: 22 }),
+          new TextRun({ text: `${word.term} — `, bold: true, color: NAVY, size: 20 }),
+          new TextRun({ text: word.definition, size: 20 }),
+          word.termEs || word.definitionEs
+            ? new TextRun({
+                text: `${word.termEs}${word.definitionEs ? ` — ${word.definitionEs}` : ""}`,
+                break: 1,
+                italics: true,
+                color: MUTED,
+                size: 18,
+              })
+            : new TextRun(""),
+        ],
+        { spacing: { after: 60 } },
+      ),
+    );
+  }
+  out.push(
+    calloutBox(
+      [
+        para(
+          [
+            new TextRun({ text: "Say it first:  ", bold: true, color: TEAL, size: 20 }),
+            new TextRun({ text: twr.rehearsal.directionEn, size: 20 }),
+          ],
+          { spacing: { after: 50 } },
+        ),
+        bilingual(twr.rehearsal.frameEn, twr.rehearsal.frameEs),
+      ],
+      { fill: "F7FFFD", border: TEAL },
+    ),
+  );
+
+  out.push(subHeading("3. Build Your Explanation", "choose your support", AMBER));
+  out.push(
+    calloutBox(
+      [
+        muted(twr.model.note, { spacing: { after: 50 } }),
+        para([
+          new TextRun({ text: "Claim:  ", bold: true, color: NAVY, size: 19 }),
+          new TextRun({ text: twr.model.claim, size: 19 }),
+        ]),
+        para([
+          new TextRun({ text: "Evidence:  ", bold: true, color: NAVY, size: 19 }),
+          new TextRun({ text: twr.model.evidence, size: 19 }),
+        ]),
+        para([
+          new TextRun({ text: "Reasoning:  ", bold: true, color: NAVY, size: 19 }),
+          new TextRun({ text: twr.model.reasoning, size: 19 }),
+        ]),
+      ],
+      { fill: BOX_BG, border: BOX_BORDER },
+    ),
+  );
+  for (const level of twr.levels) {
+    out.push(subHeading(level.label, level.support, level.id === "start" ? TEAL : AMBER));
+    out.push(bilingual(level.directionEn, level.directionEs));
+    for (const frame of level.frames) out.push(bilingual(frame.en, frame.es));
+    out.push(workBox(level.id === "explain" ? 5 : 3, AMBER_BG));
+  }
+
+  out.push(subHeading("4. Check Your Explanation", "five quick checks", TEAL));
+  for (const item of twr.checklist) {
+    out.push(
+      para([
+        new TextRun({ text: "☐  ", bold: true, color: TEAL, size: 22 }),
+        new TextRun({ text: item.en, size: 20 }),
+        new TextRun({ text: item.es, break: 1, italics: true, color: MUTED, size: 18 }),
+      ]),
+    );
+  }
+  return out;
+}
+
 // ── REFLECT / EXIT TICKET ─────────────────────────────────────────────────────
 function reflectBlock(cfg) {
   const et = (cfg.reflect || {}).exitTicket || {};
@@ -960,6 +1070,17 @@ function answerKeyBlock(cfg, worked, excludeStems = new Set()) {
     );
   }
 
+  const twr = deriveTWR(cfg);
+  out.push(subHeading("Math Writing Criteria"));
+  out.push(
+    muted(
+      "The support level changes the amount of language scaffolding, not the mathematical expectation.",
+    ),
+  );
+  for (const item of twr.teacherCriteria) {
+    out.push(para(new TextRun({ text: `☐  ${item.en}`, size: 20 })));
+  }
+
   return out;
 }
 
@@ -1120,6 +1241,7 @@ function buildDoc(id, cfg, variant = "student") {
         ...objectivesBlock(cfg),
         ...vocabBlock(cfg.vocabulary),
         ...guidedNotesBlock(cfg),
+        ...writingBlock(cfg),
         ...workedExampleBlock(cfg, worked),
         ...level0Block(cfg),
         ...reflectBlock(cfg),
@@ -1129,6 +1251,7 @@ function buildDoc(id, cfg, variant = "student") {
         ...objectivesBlock(cfg),
         ...vocabBlock(cfg.vocabulary),
         ...guidedNotesBlock(cfg),
+        ...writingBlock(cfg),
         ...workedExampleBlock(cfg, worked),
         ...guidedPracticeBlock(cfg, worked),
         ...independentPracticeBlock(cfg, excludeStems),
