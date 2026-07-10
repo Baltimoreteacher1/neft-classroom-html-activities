@@ -122,6 +122,53 @@
         font-size: 13px;
         color: var(--ink-soft);
       }
+      /* ---- section picker ---- */
+      .section-pick {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 6px 10px 6px 13px;
+        box-shadow: var(--shadow);
+      }
+      .section-pick label {
+        font-family: "Nunito", sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+      }
+      .section-pick select {
+        font-family: "Nunito", sans-serif;
+        font-weight: 800;
+        font-size: 15px;
+        color: var(--navy);
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        padding: 2px 4px;
+      }
+      .section-pick select:focus-visible {
+        outline: 2px solid var(--amber);
+        border-radius: 6px;
+      }
+      .section-badge {
+        display: inline-block;
+        font-family: "Nunito", sans-serif;
+        font-weight: 800;
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.32);
+        border-radius: 999px;
+        padding: 4px 12px;
+        margin-bottom: 10px;
+      }
       .live-pill {
         display: inline-flex;
         align-items: center;
@@ -805,14 +852,8 @@
     <div class="wrap">
       <!-- Teacher control banner (only in edit mode) -->
       <div class="edit-banner" role="region" aria-label="Teacher board controls">
-        <b>✏️ Teacher edit mode</b>
+        <b>✏️ Editing: <span id="editingSection">All Classes</span></b>
         <span class="save-state" id="saveState">Local changes not published</span>
-        <select id="boardSel" title="Which board / section">
-          <option value="main">All Classes</option>
-          <option value="601">Period 601</option>
-          <option value="602">Period 602</option>
-          <option value="603">Period 603</option>
-        </select>
         <span class="grow"></span>
         <button class="btn ghost" id="addDayBtn" style="color: #fff; border-color: #33507a">
           + Group
@@ -835,6 +876,15 @@
             <span>Neft Teacher · Grade 6 Math</span>
           </div>
         </div>
+        <div class="section-pick">
+          <label for="sectionSel">Section</label>
+          <select id="sectionSel" title="Choose your class section">
+            <option value="main">All Classes</option>
+            <option value="601">Period 601</option>
+            <option value="602">Period 602</option>
+            <option value="603">Period 603</option>
+          </select>
+        </div>
         <span class="live-pill"
           ><span class="dot" id="liveDot"></span><span id="liveTxt">Live</span></span
         >
@@ -850,6 +900,7 @@
 
       <!-- Hero -->
       <section class="hero">
+        <span class="section-badge" id="sectionBadge">All Classes</span>
         <p class="eyebrow" data-edit="week.eyebrow">This Week</p>
         <h1 data-edit="week.label">Loading the board…</h1>
         <div class="theme" data-edit="week.theme">—</div>
@@ -1089,6 +1140,14 @@
       }
 
       // ---- state + backend --------------------------------------------
+      // Each section (601/602/603) is a fully independent board: its own D1 row,
+      // its own local cache, all features edited and published per section.
+      const SECTIONS = {
+        main: "All Classes",
+        601: "Period 601",
+        602: "Period 602",
+        603: "Period 603",
+      };
       let state = seed();
       let boardId = "main";
       let serverUpdatedAt = 0;
@@ -1097,6 +1156,21 @@
 
       const $ = (s, r = document) => r.querySelector(s);
       const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+      function sectionLabel(id) {
+        return SECTIONS[id] || (/^\d+$/.test(id) ? "Period " + id : id);
+      }
+      function updateSectionUI() {
+        const label = sectionLabel(boardId);
+        const sel = $("#sectionSel");
+        if (sel && sel.value !== boardId) sel.value = SECTIONS[boardId] ? boardId : "main";
+        const badge = $("#sectionBadge");
+        if (badge) badge.textContent = label;
+        const es = $("#editingSection");
+        if (es) es.textContent = label;
+        try {
+          localStorage.setItem("nt-board-section", boardId);
+        } catch {}
+      }
       function keyLS() {
         return "nt-board-" + boardId;
       }
@@ -1765,13 +1839,19 @@
         markDirty();
         renderShouts();
       };
-      $("#boardSel").onchange = (e) => {
-        if (dirty && !confirm("Switch boards? Unpublished changes will be lost.")) {
+      $("#sectionSel").onchange = (e) => {
+        if (dirty && !confirm("Switch sections? Unpublished changes will be lost.")) {
           e.target.value = boardId;
           return;
         }
         boardId = e.target.value;
         dirty = false;
+        // Start each section clean so an unsaved section shows the starter,
+        // not the section we just left. loadBoard() then paints its own
+        // cache / server copy over this.
+        state = seed();
+        serverUpdatedAt = 0;
+        updateSectionUI();
         loadBoard();
       };
       $("#presentBtn").onclick = () => {
@@ -1792,16 +1872,13 @@
         }
       });
 
-      // Deep-link ?board=601 and ?edit=1
+      // Section resolution: ?board= (deep link) wins, else the last section
+      // this device viewed, else All Classes. Keeps a projector on its period.
       const params = new URLSearchParams(location.search);
-      if (params.get("board")) {
-        boardId =
-          params
-            .get("board")
-            .replace(/[^a-z0-9-]/gi, "")
-            .toLowerCase() || "main";
-        $("#boardSel").value = boardId;
-      }
+      const fromUrl = (params.get("board") || "").replace(/[^a-z0-9-]/gi, "").toLowerCase();
+      const remembered = (localStorage.getItem("nt-board-section") || "").toLowerCase();
+      boardId = fromUrl || (SECTIONS[remembered] ? remembered : "main");
+      updateSectionUI();
 
       tick();
       setInterval(tick, 1000 * 15);
