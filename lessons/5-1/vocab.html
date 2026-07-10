@@ -735,7 +735,64 @@ header.packet h1::after{
 
 </style>
 </style>
-<style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
+<style>
+html.nt-embed .topbar{display:none!important;}
+html.nt-embed body{background:var(--card,#fff)!important;}
+html.nt-embed .sheet{
+  max-width:min(92vw,1160px)!important;
+  width:100%!important;
+  margin:0 auto!important;
+  padding:clamp(12px,1.5vw,20px) clamp(12px,2vw,28px)!important;
+  box-sizing:border-box;
+  min-height:100vh;
+}
+html.nt-embed .vocab-grid{
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr))!important;
+  gap:clamp(12px,1.5vw,18px)!important;
+}
+html.nt-embed .vocab-figure img{max-height:140px!important;}
+/* Reading measure — white stage stays full-bleed via body */
+html.nt-embed .li-intro{max-width:65ch!important;}
+html.nt-embed .vx-wall{
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))!important;
+  gap:clamp(12px,1.6vw,18px)!important;
+}
+html.nt-embed .vx-section,
+html.nt-embed .vx-match,
+html.nt-embed .vx-bank,
+html.nt-embed .vx-clozelist,
+html.nt-embed footer.packet{
+  max-width:none!important;
+}
+html.nt-embed .vx-card{
+  padding:clamp(12px,1.4vw,16px)!important;
+  min-height:100%;
+}
+html.nt-embed .vx-figure{padding:12px!important;margin-bottom:10px!important;}
+html.nt-embed .vx-figure img{max-height:140px!important;}
+html.nt-embed .vx-term{font-size:clamp(16px,1.25vw,19px)!important;}
+html.nt-embed .vx-def{font-size:clamp(14px,1.05vw,16px)!important;line-height:1.5!important;}
+html.nt-embed .vx-mcols{
+  grid-template-columns:minmax(0,1fr) minmax(0,1.35fr)!important;
+  gap:clamp(12px,1.6vw,18px)!important;
+}
+html.nt-embed .vx-mterm,
+html.nt-embed .vx-mdef{
+  font-size:clamp(14px,1.1vw,16.5px)!important;
+  padding:clamp(10px,1.2vw,14px)!important;
+  min-height:44px;
+}
+html.nt-embed header.packet h1{font-size:clamp(22px,2vw,28px)!important;}
+html.nt-embed .li-title{font-size:clamp(20px,1.9vw,26px)!important;}
+html.nt-embed .li-steps>li{font-size:clamp(15px,1.15vw,17.5px)!important;}
+html.nt-embed .li-stage{padding:clamp(12px,1.4vw,18px)!important;}
+@media (max-width:1100px){
+  html.nt-embed .vx-wall{
+    grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))!important;
+  }
+  html.nt-embed .vx-mcols{grid-template-columns:1fr!important;}
+}
+</style>
 <script>
   if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
 </script>
