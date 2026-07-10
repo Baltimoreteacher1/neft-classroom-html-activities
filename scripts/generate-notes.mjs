@@ -2364,7 +2364,41 @@ function buildLearnPage(id, cfg, isFlagship) {
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${esc(cfg.title)} — Learn It</title>
 ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
-<style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}
+<style>
+html.nt-embed .topbar{display:none!important;}
+html.nt-embed body{background:var(--card,#fff)!important;}
+html.nt-embed .sheet{
+  max-width:none!important;
+  width:100%!important;
+  margin:0!important;
+  padding:clamp(14px,2vw,28px) clamp(12px,2.2vw,36px)!important;
+  box-sizing:border-box;
+  min-height:100vh;
+}
+html.nt-embed .vocab-grid{
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr))!important;
+  gap:18px!important;
+}
+html.nt-embed .vocab-figure img{max-height:180px!important;}
+html.nt-embed .li-intro{max-width:none!important;}
+html.nt-embed .vx-wall{
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr))!important;
+  gap:clamp(14px,2vw,22px)!important;
+}
+html.nt-embed .vx-card{padding:clamp(14px,1.6vw,20px)!important;}
+html.nt-embed .vx-figure{padding:14px!important;margin-bottom:12px!important;}
+html.nt-embed .vx-figure img{max-height:160px!important;}
+html.nt-embed .vx-term{font-size:clamp(18px,1.5vw,22px)!important;}
+html.nt-embed .vx-def{font-size:clamp(15px,1.15vw,17px)!important;}
+html.nt-embed .vx-mcols{gap:clamp(12px,2vw,20px)!important;}
+html.nt-embed .vx-mterm,
+html.nt-embed .vx-mdef{
+  font-size:clamp(15px,1.2vw,18px)!important;
+  padding:clamp(12px,1.4vw,16px)!important;
+}
+html.nt-embed header.packet h1{font-size:clamp(26px,2.4vw,34px)!important;}
+html.nt-embed .li-title{font-size:clamp(24px,2.2vw,32px)!important;}
+html.nt-embed .li-steps>li{font-size:clamp(17px,1.35vw,20px)!important;}
   .learn-intro-note{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
     border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 16px;}
   .learn-intro-note .lin-icon{font-size:22px;line-height:1;flex:0 0 auto;}
@@ -2637,7 +2671,42 @@ function buildVocabPage(id, cfg, isFlagship) {
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${esc(cfg.title)} — Vocab Explorer</title>
 ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
-<style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
+<style>
+html.nt-embed .topbar{display:none!important;}
+html.nt-embed body{background:var(--card,#fff)!important;}
+html.nt-embed .sheet{
+  max-width:none!important;
+  width:100%!important;
+  margin:0!important;
+  padding:clamp(14px,2vw,28px) clamp(12px,2.2vw,36px)!important;
+  box-sizing:border-box;
+  min-height:100vh;
+}
+html.nt-embed .vocab-grid{
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr))!important;
+  gap:18px!important;
+}
+html.nt-embed .vocab-figure img{max-height:180px!important;}
+html.nt-embed .li-intro{max-width:none!important;}
+html.nt-embed .vx-wall{
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr))!important;
+  gap:clamp(14px,2vw,22px)!important;
+}
+html.nt-embed .vx-card{padding:clamp(14px,1.6vw,20px)!important;}
+html.nt-embed .vx-figure{padding:14px!important;margin-bottom:12px!important;}
+html.nt-embed .vx-figure img{max-height:160px!important;}
+html.nt-embed .vx-term{font-size:clamp(18px,1.5vw,22px)!important;}
+html.nt-embed .vx-def{font-size:clamp(15px,1.15vw,17px)!important;}
+html.nt-embed .vx-mcols{gap:clamp(12px,2vw,20px)!important;}
+html.nt-embed .vx-mterm,
+html.nt-embed .vx-mdef{
+  font-size:clamp(15px,1.2vw,18px)!important;
+  padding:clamp(12px,1.4vw,16px)!important;
+}
+html.nt-embed header.packet h1{font-size:clamp(26px,2.4vw,34px)!important;}
+html.nt-embed .li-title{font-size:clamp(24px,2.2vw,32px)!important;}
+html.nt-embed .li-steps>li{font-size:clamp(17px,1.35vw,20px)!important;}
+</style>
 <script>
   if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
 </script>

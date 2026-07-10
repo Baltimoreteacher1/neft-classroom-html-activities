@@ -828,7 +828,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       el.setAttribute("role", "region");
       el.setAttribute("aria-label", meta.title);
       const frameStyle = fullPage
-        ? "width:100%; height:calc(100vh - 132px); min-height:480px; border:0; border-radius:0; background:var(--card, #fff);"
+        ? "width:100%; height:calc(100vh - 96px); min-height:520px; border:0; border-radius:0; background:var(--card, #fff);"
         : "width:100%; height:calc(100vh - 190px); min-height:560px; border:1px solid var(--line, #e4ddc9); border-radius:var(--radius-md, 12px); background:var(--card, #fff);";
       // On the full-page takeover the same-page view IS the full experience, so
       // the "open in a new tab" affordance is replaced by a Close button.
