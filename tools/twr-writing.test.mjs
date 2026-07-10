@@ -66,6 +66,30 @@ for (const lessonId of lessonIds) {
   );
 }
 
+for (const lessonId of lessonIds) {
+  const notesPath = join(lessonsDir, lessonId, "notes.html");
+  const notes = readFileSync(notesPath, "utf8");
+  const sectionMatch = notes.match(/<section class="section twr">([\s\S]*?)<\/section>/);
+  assert.ok(sectionMatch, `${lessonId}: generated writing section is missing`);
+  const writingSection = sectionMatch[1];
+  assert.match(writingSection, /1\. Understand the Question/, `${lessonId}: missing Understand`);
+  assert.match(writingSection, /2\. Plan Your Math Words/, `${lessonId}: missing Plan`);
+  assert.match(writingSection, /3\. Build Your Explanation/, `${lessonId}: missing Build`);
+  assert.match(writingSection, /4\. Check Your Explanation/, `${lessonId}: missing Check`);
+  assert.match(writingSection, /data-support-level="start"/, `${lessonId}: missing Start support`);
+  assert.match(writingSection, /data-support-level="build"/, `${lessonId}: missing Build support`);
+  assert.match(
+    writingSection,
+    /data-support-level="explain"/,
+    `${lessonId}: missing Explain support`,
+  );
+  assert.doesNotMatch(
+    writingSection,
+    bannedLegacyLanguage,
+    `${lessonId}: old generated prompt remains`,
+  );
+}
+
 const noSpanish = {
   lessonId: "test-no-spanish",
   title: "Compare Ratios",

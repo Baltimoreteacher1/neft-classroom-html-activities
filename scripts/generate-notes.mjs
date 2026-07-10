@@ -1,6 +1,7 @@
-import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { deriveTWR } from "../engine/core/twr.js";
 import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
 import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
@@ -921,9 +922,7 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
   // ⑥ Turn & Talk — a discussion prompt with sentence starters (EN + ES) and a
   // word bank so every learner, including ESOL, can talk the math through with a
   // partner. Uses the lesson's first authored turn-and-talk item.
-  const tt = Array.isArray(cfg.turnAndTalk)
-    ? cfg.turnAndTalk.find((t) => t && t.question)
-    : null;
+  const tt = Array.isArray(cfg.turnAndTalk) ? cfg.turnAndTalk.find((t) => t && t.question) : null;
   if (tt) {
     const stems = Array.isArray(tt.stems)
       ? tt.stems
@@ -1641,6 +1640,32 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 .twr-exp-lines{min-width:0;}
 .twr-hint{margin:0 0 4px;font-size:13px;color:var(--muted);}
 .twr-stems{margin:0 0 8px;}
+.twr-guide-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:10px;
+  padding:14px 16px;margin:0 0 14px;break-inside:avoid;page-break-inside:avoid;}
+.twr-guide-step>h3{margin:0 0 9px;color:var(--navy);font-size:17px;}
+.twr-focus-question{background:var(--teal-light);border-radius:8px;padding:11px 13px;margin:0 0 8px;
+  font-size:16px;font-weight:800;line-height:1.45;}
+.twr-job{margin:7px 0;line-height:1.5;}
+.twr-action{display:inline-block;background:#fef0d8;border:1px solid var(--amber);border-radius:999px;
+  padding:2px 9px;font-size:12px;font-weight:800;text-transform:uppercase;color:var(--navy);}
+.twr-word-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin:8px 0 12px;}
+.twr-word{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:9px;
+  min-height:48px;font-size:13.5px;line-height:1.4;}
+.twr-word input,.twr-check input{width:18px;height:18px;flex:0 0 auto;margin-top:2px;}
+.twr-rehearse{border:1px dashed var(--teal);border-radius:8px;padding:10px 12px;margin:8px 0;background:#f7fffd;}
+.twr-model-parts{background:#f7fafc;border-radius:8px;padding:10px 13px;margin:8px 0 12px;}
+.twr-model-parts p{margin:4px 0;font-size:13.5px;line-height:1.45;}
+.twr-level-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.twr-level-card{border:1px solid var(--line);border-top:4px solid var(--teal);border-radius:8px;padding:10px;min-width:0;}
+.twr-level-card h4{margin:0 0 3px;color:var(--navy);font-size:15px;}
+.twr-level-support{margin:0 0 7px;color:var(--muted);font-size:12px;font-weight:700;}
+.twr-level-card ul{margin:7px 0;padding-left:18px;font-size:13px;line-height:1.45;}
+.twr-level-card .writeline-area{min-height:78px;}
+.twr-checklist{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+.twr-check{display:flex;gap:8px;align-items:flex-start;min-height:44px;padding:7px 9px;border:1px solid var(--line);
+  border-radius:8px;font-size:13.5px;line-height:1.4;}
+.twr-es-support{display:block;color:var(--muted);font-style:italic;font-size:12.5px;margin-top:2px;}
+@media(max-width:760px){.twr-level-grid{grid-template-columns:1fr}.twr-checklist{grid-template-columns:1fr}}
 /* Turn & Talk — Discussion Points */
 .section.turn-and-talk>h2{border-left-color:var(--teal);}
 .tt-card{border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:8px;
@@ -1984,6 +2009,89 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
 ${EDITORIAL_OVERRIDES}
 </style>
 </style>`;
+}
+
+function twrSpanish(text) {
+  return text ? `<span class="twr-es-support" lang="es">${esc(text)}</span>` : "";
+}
+
+function twrSection(cfg, teacher = false) {
+  const twr = deriveTWR(cfg);
+  const words = twr.vocabulary
+    .map(
+      (word) => `<label class="twr-word">
+      <input type="checkbox" data-nt-field aria-label="Use ${esc(word.term)} in my explanation" />
+      <span><strong>${esc(word.term)}</strong> — ${esc(word.definition)}${
+        word.termEs || word.definitionEs
+          ? twrSpanish(`${word.termEs}${word.definitionEs ? ` — ${word.definitionEs}` : ""}`)
+          : ""
+      }</span>
+    </label>`,
+    )
+    .join("");
+  const levels = twr.levels
+    .map(
+      (level) => `<div class="twr-level-card" data-support-level="${esc(level.id)}">
+      <h4>${esc(level.label)}</h4>
+      <p class="twr-level-support">${esc(level.support)}</p>
+      <p>${esc(level.directionEn)}${twrSpanish(level.directionEs)}</p>
+      <ul>${level.frames
+        .map((frame) => `<li><strong>${esc(frame.en)}</strong>${twrSpanish(frame.es)}</li>`)
+        .join("")}</ul>
+      ${blankLines(level.id === "explain" ? 5 : 3)}
+    </div>`,
+    )
+    .join("");
+  const checklist = twr.checklist
+    .map(
+      (item) => `<label class="twr-check">
+      <input type="checkbox" data-nt-field />
+      <span>${esc(item.en)}${twrSpanish(item.es)}</span>
+    </label>`,
+    )
+    .join("");
+
+  return `<section class="section twr">
+  <h2>Write About the Math <span class="twr-method">Guided ESOL writing</span></h2>
+  <p class="level-note">Use the support level you need. Every level answers the same math question.</p>
+  <div class="twr-guide-step">
+    <h3>1. Understand the Question</h3>
+    <span class="twr-action">${esc(twr.focus.action)}</span>
+    <p class="twr-focus-question">${esc(twr.focus.questionEn)}${twrSpanish(twr.focus.questionEs)}</p>
+    <p class="twr-job"><strong>Your job:</strong> ${esc(twr.focus.jobEn)}${twrSpanish(twr.focus.jobEs)}</p>
+  </div>
+  <div class="twr-guide-step">
+    <h3>2. Plan Your Math Words</h3>
+    <p>Check at least two words you will use.</p>
+    <div class="twr-word-grid">${words}</div>
+    <div class="twr-rehearse"><strong>Say it first:</strong> ${esc(twr.rehearsal.directionEn)}${twrSpanish(
+      twr.rehearsal.directionEs,
+    )}<p><strong>${esc(twr.rehearsal.frameEn)}</strong>${twrSpanish(twr.rehearsal.frameEs)}</p></div>
+  </div>
+  <div class="twr-guide-step">
+    <h3>3. Build Your Explanation</h3>
+    <div class="twr-model-parts">
+      <p><strong>Model the parts:</strong> ${esc(twr.model.note)}</p>
+      <p><strong>Claim:</strong> ${esc(twr.model.claim)}</p>
+      <p><strong>Evidence:</strong> ${esc(twr.model.evidence)}</p>
+      <p><strong>Reasoning:</strong> ${esc(twr.model.reasoning)}</p>
+    </div>
+    <div class="twr-level-grid">${levels}</div>
+  </div>
+  <div class="twr-guide-step">
+    <h3>4. Check Your Explanation</h3>
+    <div class="twr-checklist">${checklist}</div>
+  </div>
+</section>${teacher ? twrTeacherGuide(cfg) : ""}`;
+}
+
+function twrTeacherGuide(cfg) {
+  const twr = deriveTWR(cfg);
+  return `<section class="answer-key twr-teacher-guide">
+  <h2>Writing Guide — Teacher Copy</h2>
+  <p>The support level changes the amount of language scaffolding, not the mathematical expectation. Look for the same five features in every response.</p>
+  <ul class="ak-list">${twr.teacherCriteria.map((item) => `<li>${esc(item.en)}</li>`).join("")}</ul>
+</section>`;
 }
 
 function missionBanner(cfg) {
@@ -2370,6 +2478,7 @@ ${autoSaveScript(`nt-notes:${esc(id)}`)}
   </header>
   ${missionBanner(cfg)}
   ${notesSection(cfg, worked, gn.html)}
+  ${twrSection(cfg, teacher)}
   ${teacher ? answerKeySection({}, cfg.reflect, cfg, null, new Set(), gn.keyRows) : ""}
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson ${esc(id)}${standard ? " · " + standard : ""}${teacher ? " · Teacher Copy" : ""}</footer>
 </main>
@@ -2789,7 +2898,7 @@ a:hover{text-decoration:underline;}
 <body>
 <div class="wrap">
   <h1>Notes Packets</h1>
-  <p>Printable, leveled guided-notes sheets for all ${lessons.length} Grade 6 math lessons (${coreTotal} core + ${flagshipTotal} flagship). Each sheet includes a <strong>Key Vocabulary — Level 1 support</strong> section (visual-first), a <strong>Write About the Math</strong> writing block built on <em>The Writing Revolution</em> (kernel sentences, sentence expansion, sentence types, and reasoning stems), and a <strong>Level 2 enrichment</strong> stretch challenge. Every packet downloads as <strong>HTML, PDF, or Word (DOCX)</strong> and prints with a branded header, footer, page numbers, and answer key.</p>
+  <p>Printable, leveled guided-notes sheets for all ${lessons.length} Grade 6 math lessons (${coreTotal} core + ${flagshipTotal} flagship). Each sheet includes visual vocabulary and a four-step, lesson-specific <strong>Write About the Math</strong> routine with oral rehearsal, leveled frames, and a self-check. Every packet downloads as <strong>HTML, PDF, or Word (DOCX)</strong> and prints with a branded header, footer, and page numbers.</p>
   <p class="legend"><span class="tag tag-core">Core</span> standard lesson &nbsp; <span class="tag tag-flagship">Flagship</span> mission-based lesson</p>
   ${groups}
 </div>
