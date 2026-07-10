@@ -1028,6 +1028,177 @@
       body.ts1 .hint {
         font-size: 15px;
       }
+      /* ---- assignments + canvas + save codes ---- */
+      .assign-card {
+        border-top: 5px solid var(--green);
+      }
+      .assign-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .assign-head h2 {
+        margin: 0;
+      }
+      .canvas-btn {
+        margin-left: auto;
+        font-family: "Nunito", sans-serif;
+        font-weight: 800;
+        font-size: 14px;
+        text-decoration: none;
+        color: #fff;
+        background: linear-gradient(135deg, #e13b2b, #b52a1c);
+        border-radius: 12px;
+        padding: 9px 15px;
+        box-shadow: var(--shadow);
+        white-space: nowrap;
+      }
+      .canvas-btn:hover {
+        transform: translateY(-1px);
+      }
+      .assigns {
+        display: grid;
+        gap: 10px;
+        margin-top: 4px;
+      }
+      .assign {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px 12px;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px 14px;
+        background: linear-gradient(180deg, #fff, #f9fcfa);
+      }
+      .assign .a-name {
+        font-family: "Nunito", sans-serif;
+        font-weight: 800;
+        color: var(--ink);
+      }
+      .assign .a-due {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 800;
+        font-family: "Nunito", sans-serif;
+        color: var(--amber);
+        background: rgba(184, 121, 31, 0.12);
+        border-radius: 999px;
+        padding: 2px 9px;
+        margin-left: 8px;
+      }
+      .assign .a-links {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .assign .a-open {
+        font-size: 13px;
+        font-weight: 800;
+        font-family: "Nunito", sans-serif;
+        text-decoration: none;
+        color: var(--teal);
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 5px 11px;
+        white-space: nowrap;
+      }
+      .assign .a-code {
+        grid-column: 1 / -1;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+        border-top: 1px dashed var(--line);
+        padding-top: 9px;
+      }
+      .assign .a-code label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--ink-soft);
+      }
+      .assign .a-code input {
+        flex: 1 1 130px;
+        min-width: 110px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 6px 10px;
+        font-size: 14px;
+        font-family: "Atkinson Hyperlegible", monospace;
+        letter-spacing: 0.04em;
+      }
+      .assign .a-code .saved {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--green);
+      }
+      .mini.copy {
+        color: var(--teal);
+      }
+      /* my-codes overlay */
+      .codes-box {
+        text-align: left;
+        max-width: 520px;
+      }
+      .codes-box h3 {
+        text-align: center;
+        color: var(--navy);
+        font-size: 20px;
+        margin-bottom: 6px;
+      }
+      .codes-add {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 12px 0;
+      }
+      .codes-add input {
+        flex: 1 1 140px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 9px 11px;
+        font-size: 14px;
+      }
+      .codes-list {
+        display: grid;
+        gap: 8px;
+        max-height: 320px;
+        overflow: auto;
+        margin-bottom: 14px;
+      }
+      .code-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: #f7fafe;
+      }
+      .code-item .ci-label {
+        font-weight: 800;
+        font-family: "Nunito", sans-serif;
+        color: var(--navy);
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .code-item .ci-code {
+        font-family: "Atkinson Hyperlegible", monospace;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: var(--teal);
+      }
+      .codes-empty {
+        text-align: center;
+        color: var(--ink-soft);
+        font-size: 14px;
+        padding: 18px 0;
+      }
       .edit-banner {
         display: none;
         position: sticky;
@@ -1248,6 +1419,26 @@
               <button class="mini" id="addVocabBtn">+ Word</button>
             </div>
           </section>
+
+          <!-- Assignments + Canvas + save codes -->
+          <section class="card assign-card">
+            <div class="assign-head">
+              <h2><span class="ico">📌</span> Assignments &amp; Save Codes</h2>
+              <a class="canvas-btn" id="canvasBtn" href="#" target="_blank" rel="noopener" hidden>
+                📚 Open Canvas
+              </a>
+            </div>
+            <p class="hint" data-edit="assignments.note">
+              This week's assignments. Save your code next to each one so you can pick up where you
+              left off.
+            </p>
+            <div class="assigns" id="assigns"></div>
+            <div class="row-tools">
+              <button class="mini" id="myCodesBtn">🎒 My saved codes</button>
+              <button class="mini edit-only" id="addAssignBtn">+ Assignment</button>
+              <button class="mini edit-only" id="setCanvasBtn">🔗 Set Canvas link</button>
+            </div>
+          </section>
         </div>
 
         <div class="col-side">
@@ -1363,6 +1554,26 @@
           <button class="btn primary" id="timerStartBtn">Start</button>
           <button class="btn ghost" id="timerResetBtn">Reset</button>
           <button class="btn ghost" id="timerCloseBtn">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- My saved codes overlay (student, this device) -->
+    <div class="overlay" id="codesOverlay" hidden>
+      <div class="overlay-box codes-box">
+        <h3>🎒 My Saved Codes</h3>
+        <p class="modal-help">
+          Your save codes let you pick up multi-day work where you left off. They live on this
+          device only — no one else sees them. Add a code and a label so you never lose it.
+        </p>
+        <div class="codes-add">
+          <input type="text" id="codeLabel" placeholder="Assignment (e.g. Lesson 1-1)" />
+          <input type="text" id="codeValue" placeholder="Save code (e.g. ABC-1234)" />
+          <button class="btn primary" id="codeAddBtn">Save</button>
+        </div>
+        <div class="codes-list" id="codesList"></div>
+        <div class="overlay-actions">
+          <button class="btn ghost" id="codesCloseBtn">Close</button>
         </div>
       </div>
     </div>
@@ -1517,6 +1728,17 @@
                 meaning: "equal in value",
                 example: "1:2 is equivalent to 2:4",
               },
+            ],
+          },
+          canvas: {
+            url: "",
+            note: "Everything you turn in lives in Canvas. Tap to open your class.",
+          },
+          assignments: {
+            note: "This week's assignments. Save your code next to each one so you can pick up where you left off.",
+            items: [
+              { name: "Lesson 1-1 — Ratios (homework)", link: "", due: "Fri" },
+              { name: "ALEKS — 3 topics", link: "", due: "Mon" },
             ],
           },
         };
@@ -1737,10 +1959,205 @@
         renderWeek();
         renderPods();
         renderVocab();
+        renderCanvas();
+        renderAssignments();
         renderAleks();
         renderCheckin();
         renderNotes();
         renderShouts();
+      }
+
+      // ---- assignments + canvas + per-student save codes --------------
+      function normUrl(u) {
+        u = String(u || "").trim();
+        if (!u) return "";
+        if (/^https?:\/\//i.test(u) || u.startsWith("/")) return u;
+        return "https://" + u;
+      }
+      function renderCanvas() {
+        const btn = $("#canvasBtn");
+        if (!btn) return;
+        const url = normUrl(state.canvas && state.canvas.url);
+        if (url) {
+          btn.href = url;
+          btn.hidden = false;
+        } else {
+          btn.hidden = true;
+        }
+      }
+      // Per-device, per-section save codes: { "board::assignment": "CODE" }.
+      function loadCodes() {
+        try {
+          return JSON.parse(localStorage.getItem("nt-board-mycodes") || "{}") || {};
+        } catch {
+          return {};
+        }
+      }
+      function saveCodes(codes) {
+        try {
+          localStorage.setItem("nt-board-mycodes", JSON.stringify(codes));
+        } catch {}
+      }
+      function codeKey(name) {
+        return (
+          boardId +
+          "::" +
+          String(name || "")
+            .trim()
+            .toLowerCase()
+        );
+      }
+      function renderAssignments() {
+        const host = $("#assigns");
+        if (!host) return;
+        const items = (state.assignments && state.assignments.items) || [];
+        const codes = loadCodes();
+        host.innerHTML = items
+          .map((a, i) => {
+            const link = normUrl(a.link);
+            const canvas = normUrl(state.canvas && state.canvas.url);
+            const openHref = link || canvas;
+            const open = openHref
+              ? `<a class="a-open" href="${esc(openHref)}" target="_blank" rel="noopener">${link ? "Open" : "Canvas"} ↗</a>`
+              : "";
+            const mine = codes[codeKey(a.name)] || "";
+            return `<div class="assign">
+                <div>
+                  <span class="a-name" ${editing ? `contenteditable="true" data-as="${i}" data-asname="1"` : ""}>${esc(a.name)}</span>
+                  ${a.due || editing ? `<span class="a-due" ${editing ? `contenteditable="true" data-as="${i}" data-asdue="1"` : ""}>${esc(a.due || "due")}</span>` : ""}
+                </div>
+                <div class="a-links">
+                  ${open}
+                  ${editing ? `<button class="mini danger" data-delas="${i}">✕</button>` : ""}
+                </div>
+                ${
+                  editing
+                    ? `<div class="a-code"><label>Canvas / link:</label><input type="text" data-as="${i}" data-aslink="1" value="${esc(a.link || "")}" placeholder="Canvas assignment URL (optional)" /></div>`
+                    : `<div class="a-code">
+                        <label>My save code:</label>
+                        <input type="text" data-code="${i}" value="${esc(mine)}" placeholder="type your code" aria-label="Your save code for ${esc(a.name)}" />
+                        <button class="mini copy" data-copycode="${i}" ${mine ? "" : "hidden"}>Copy</button>
+                        <span class="saved" data-savedflag="${i}" ${mine ? "" : "hidden"}>✓ saved on this device</span>
+                      </div>`
+                }
+              </div>`;
+          })
+          .join("");
+
+        if (editing) {
+          $$("#assigns [data-asname]").forEach(
+            (el) =>
+              (el.oninput = () => {
+                items[+el.dataset.as].name = el.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#assigns [data-asdue]").forEach(
+            (el) =>
+              (el.oninput = () => {
+                items[+el.dataset.as].due = el.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#assigns [data-aslink]").forEach(
+            (el) =>
+              (el.onchange = () => {
+                items[+el.dataset.as].link = el.value.trim();
+                markDirty();
+              }),
+          );
+          $$("#assigns [data-delas]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                items.splice(+b.dataset.delas, 1);
+                markDirty();
+                renderAssignments();
+              }),
+          );
+        } else {
+          // Student: save code locally as they type (debounced-lite: on input).
+          $$("#assigns [data-code]").forEach((inp) => {
+            inp.oninput = () => {
+              const i = +inp.dataset.code;
+              const c = loadCodes();
+              const val = inp.value.trim().toUpperCase();
+              if (val) c[codeKey(items[i].name)] = val;
+              else delete c[codeKey(items[i].name)];
+              saveCodes(c);
+              const copyBtn = host.querySelector(`[data-copycode="${i}"]`);
+              const flag = host.querySelector(`[data-savedflag="${i}"]`);
+              if (copyBtn) copyBtn.hidden = !val;
+              if (flag) flag.hidden = !val;
+            };
+          });
+          $$("#assigns [data-copycode]").forEach((b) => {
+            b.onclick = () => {
+              const i = +b.dataset.copycode;
+              const val = loadCodes()[codeKey(items[i].name)] || "";
+              copyText(val, b);
+            };
+          });
+        }
+      }
+
+      function copyText(text, btn) {
+        if (!text) return;
+        const done = () => {
+          if (!btn) return;
+          const t = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = t), 1200);
+        };
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done, done);
+          } else {
+            done();
+          }
+        } catch {
+          done();
+        }
+      }
+
+      // My Codes overlay — every code this device has saved, across assignments.
+      function renderCodesList() {
+        const host = $("#codesList");
+        const codes = loadCodes();
+        const keys = Object.keys(codes);
+        if (!keys.length) {
+          host.innerHTML = `<p class="codes-empty">No saved codes yet. Add one above, or type your code next to an assignment.</p>`;
+          return;
+        }
+        host.innerHTML = keys
+          .map((k) => {
+            const label = k.includes("::") ? k.split("::").slice(1).join("::") : k;
+            const board = k.split("::")[0];
+            return `<div class="code-item">
+                <span class="ci-label" title="${esc(label)}">${esc(label || "(code)")}<span style="font-weight:400;color:var(--ink-soft);font-size:12px"> · ${esc(sectionLabel(board))}</span></span>
+                <span class="ci-code">${esc(codes[k])}</span>
+                <button class="mini copy" data-copykey="${esc(k)}">Copy</button>
+                <button class="mini danger" data-delkey="${esc(k)}">✕</button>
+              </div>`;
+          })
+          .join("");
+        $$("#codesList [data-copykey]").forEach(
+          (b) => (b.onclick = () => copyText(loadCodes()[b.dataset.copykey], b)),
+        );
+        $$("#codesList [data-delkey]").forEach(
+          (b) =>
+            (b.onclick = () => {
+              const c = loadCodes();
+              delete c[b.dataset.delkey];
+              saveCodes(c);
+              renderCodesList();
+              renderAssignments();
+            }),
+        );
+      }
+      function openMyCodes() {
+        renderCodesList();
+        $("#codesOverlay").hidden = false;
+        $("#codeLabel").focus();
       }
 
       function renderVocab() {
@@ -2541,6 +2958,50 @@
         renderVocab();
       };
 
+      // Assignments + Canvas (teacher) and My Codes (student)
+      $("#addAssignBtn").onclick = () => {
+        state.assignments = state.assignments || { items: [] };
+        (state.assignments.items = state.assignments.items || []).push({
+          name: "New assignment",
+          link: "",
+          due: "",
+        });
+        markDirty();
+        renderAssignments();
+      };
+      $("#setCanvasBtn").onclick = () => {
+        state.canvas = state.canvas || {};
+        const cur = state.canvas.url || "";
+        const url = prompt(
+          "Paste your Canvas course URL (students get an “Open Canvas” button):",
+          cur,
+        );
+        if (url === null) return;
+        state.canvas.url = url.trim();
+        markDirty();
+        renderCanvas();
+      };
+      $("#myCodesBtn").onclick = openMyCodes;
+      $("#codesCloseBtn").onclick = () => ($("#codesOverlay").hidden = true);
+      $("#codeAddBtn").onclick = () => {
+        const label = $("#codeLabel").value.trim();
+        const val = $("#codeValue").value.trim().toUpperCase();
+        if (!val) {
+          $("#codeValue").focus();
+          return;
+        }
+        const c = loadCodes();
+        c[boardId + "::" + (label || "code " + (Object.keys(c).length + 1)).toLowerCase()] = val;
+        saveCodes(c);
+        $("#codeLabel").value = "";
+        $("#codeValue").value = "";
+        renderCodesList();
+        renderAssignments();
+      };
+      $("#codeValue").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") $("#codeAddBtn").click();
+      });
+
       // Confidence check-in votes
       $$("#checkinBtns .checkin-btn").forEach(
         (b) => (b.onclick = () => sendCheckin(b.dataset.vote)),
@@ -2598,7 +3059,7 @@
         }
       };
       // Click the dark backdrop (outside the box) to close an overlay.
-      ["#pickOverlay", "#timerOverlay"].forEach((sel) => {
+      ["#pickOverlay", "#timerOverlay", "#codesOverlay"].forEach((sel) => {
         const ov = $(sel);
         ov.addEventListener("click", (e) => {
           if (e.target === ov) {
@@ -2637,6 +3098,7 @@
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           if (!$("#aleksModal").hidden) closeAleksModal();
+          else if (!$("#codesOverlay").hidden) $("#codesOverlay").hidden = true;
           else if (!$("#pickOverlay").hidden) $("#pickOverlay").hidden = true;
           else if (!$("#timerOverlay").hidden) {
             stopTimer();
