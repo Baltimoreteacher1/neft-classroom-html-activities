@@ -3,270 +3,839 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Curriculum Progress — Teacher Dashboard</title>
-    <link rel="stylesheet" href="/assets/curriculum-enhancements.css" />
+    <title>Curriculum Progress · Teacher Dashboard · Neft Teacher</title>
+    <link rel="icon" href="/assets/favicon.svg" />
+    <meta name="robots" content="noindex" />
     <style>
       :root {
-        --bg: #07080e;
-        --card: #11131f;
-        --ink: #f8fafc;
-        --muted: #94a3b8;
-        --teal: #2dd4bf;
-        --line: rgba(255, 255, 255, 0.08);
+        --bg: #0b111d;
+        --bg2: #0e1626;
+        --panel: #161f33;
+        --panel2: #101a2e;
+        --field: #0b1220;
+        --line: #283755;
+        --ink: #eef3fc;
+        --muted: #9aabca;
+        --faint: #6f819f;
+        --accent: #5b95ff;
+        --accent-ink: #04122e;
+        --good: #34c77b;
+        --warn: #e0a32e;
+        --bad: #f0635a;
+        --radius: 14px;
+        --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.55);
       }
       * {
         box-sizing: border-box;
       }
       body {
         margin: 0;
-        font-family: "Hanken Grotesk", system-ui, sans-serif;
-        background: var(--bg);
+        font-family:
+          "Hanken Grotesk",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background:
+          radial-gradient(1200px 600px at 80% -10%, rgba(91, 149, 255, 0.12), transparent 60%),
+          var(--bg);
+        background-attachment: fixed;
         color: var(--ink);
         line-height: 1.5;
       }
       .wrap {
-        max-width: 960px;
+        max-width: 1100px;
         margin: 0 auto;
-        padding: 24px 16px 48px;
+        padding: 20px 16px 64px;
+      }
+      a {
+        color: var(--accent);
+      }
+      .topbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .back {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
       }
       h1 {
         font-family: Outfit, system-ui, sans-serif;
-        font-size: 1.75rem;
-        margin: 0 0 8px;
+        font-size: clamp(1.5rem, 3.5vw, 2rem);
+        margin: 4px 0 2px;
+        letter-spacing: -0.01em;
       }
       .sub {
         color: var(--muted);
-        margin: 0 0 24px;
+        margin: 0;
+        max-width: 62ch;
+        font-size: 14px;
       }
       .panel {
-        background: var(--card);
+        background: linear-gradient(180deg, var(--panel), var(--panel2));
         border: 1px solid var(--line);
-        border-radius: 16px;
+        border-radius: var(--radius);
         padding: 20px;
         margin-bottom: 16px;
+        box-shadow: var(--shadow);
+      }
+      .panel h2 {
+        margin: 0 0 14px;
+        font-size: 1.05rem;
+        font-family: Outfit, system-ui, sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .panel .count {
+        color: var(--faint);
+        font-weight: 500;
+        font-size: 0.8rem;
       }
       label {
         display: block;
-        font-size: 13px;
-        font-weight: 600;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
         margin-bottom: 6px;
-        color: var(--muted);
+        color: var(--faint);
       }
       input,
       select {
         width: 100%;
-        padding: 10px 12px;
+        padding: 11px 12px;
         border-radius: 10px;
         border: 1px solid var(--line);
-        background: #0f111a;
+        background: var(--field);
         color: var(--ink);
         font: inherit;
-        margin-bottom: 12px;
       }
-      button {
-        background: var(--teal);
-        color: #042f2e;
+      input:focus,
+      select:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+        border-color: var(--accent);
+      }
+      .btn {
+        background: var(--accent);
+        color: var(--accent-ink);
         border: none;
         border-radius: 10px;
-        padding: 10px 18px;
+        padding: 11px 18px;
         font-weight: 700;
         cursor: pointer;
+        font: inherit;
+        font-weight: 700;
       }
-      button:disabled {
-        opacity: 0.5;
+      .btn:disabled {
+        opacity: 0.55;
         cursor: wait;
       }
-      table {
-        width: 100%;
-        border-collapse: collapse;
+      .btn.ghost {
+        background: transparent;
+        color: var(--ink);
+        border: 1px solid var(--line);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+      }
+      .btn.ghost:hover {
+        border-color: var(--accent);
+      }
+      .err {
+        color: var(--bad);
+        font-size: 14px;
+        margin: 12px 0 0;
+      }
+      .hidden {
+        display: none !important;
+      }
+
+      /* ---- Gate ---- */
+      .gate {
+        max-width: 440px;
+        margin: 8vh auto 0;
+        text-align: center;
+      }
+      .gate .lock {
+        font-size: 2.4rem;
+      }
+      .gate p {
+        color: var(--muted);
         font-size: 14px;
       }
-      th,
-      td {
-        text-align: left;
-        padding: 10px 8px;
-        border-bottom: 1px solid var(--line);
+      .gate .row {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
       }
-      th {
+      .gate input {
+        flex: 1;
+      }
+
+      /* ---- Stat cards ---- */
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .stat {
+        background: linear-gradient(180deg, var(--panel), var(--panel2));
+        border-radius: var(--radius);
+        padding: 16px;
+        border: 1px solid var(--line);
+      }
+      .stat strong {
+        display: block;
+        font-size: 1.75rem;
+        font-family: Outfit, system-ui, sans-serif;
+        line-height: 1.1;
+      }
+      .stat span {
         color: var(--muted);
         font-size: 12px;
         text-transform: uppercase;
         letter-spacing: 0.04em;
       }
-      .stat-grid {
+
+      /* ---- Controls bar ---- */
+      .controls {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        grid-template-columns: 1fr 1fr auto auto;
         gap: 12px;
-        margin-bottom: 16px;
+        align-items: end;
       }
-      .stat {
-        background: #0f111a;
-        border-radius: 12px;
-        padding: 14px;
-        border: 1px solid var(--line);
+      .controls .field {
+        min-width: 0;
       }
-      .stat strong {
+      @media (max-width: 640px) {
+        .controls {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      /* ---- Tables ---- */
+      .table-scroll {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        min-width: 520px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 11px 10px;
+        border-bottom: 1px solid var(--line);
+        white-space: nowrap;
+      }
+      td.wrap-cell {
+        white-space: normal;
+      }
+      th {
+        color: var(--faint);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        user-select: none;
+      }
+      th[data-sort]::after {
+        content: "";
+        opacity: 0.4;
+        margin-left: 4px;
+      }
+      th.sort-asc::after {
+        content: "▲";
+      }
+      th.sort-desc::after {
+        content: "▼";
+      }
+      tbody tr:hover {
+        background: rgba(91, 149, 255, 0.06);
+      }
+      .num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ---- Progress bar ---- */
+      .bar {
+        display: inline-block;
+        width: 120px;
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+        vertical-align: middle;
+        margin-right: 8px;
+      }
+      .bar > i {
         display: block;
-        font-size: 1.5rem;
-        font-family: Outfit, sans-serif;
+        height: 100%;
+        border-radius: 999px;
+        background: var(--accent);
       }
-      .stat span {
-        color: var(--muted);
+      .pct {
+        font-variant-numeric: tabular-nums;
+      }
+      .pill {
+        display: inline-block;
+        padding: 2px 9px;
+        border-radius: 999px;
         font-size: 12px;
+        font-weight: 700;
       }
-      .err {
-        color: #fca5a5;
+      .pill.good {
+        background: rgba(52, 199, 123, 0.16);
+        color: var(--good);
+      }
+      .pill.warn {
+        background: rgba(224, 163, 46, 0.16);
+        color: var(--warn);
+      }
+      .pill.low {
+        background: rgba(240, 99, 90, 0.16);
+        color: var(--bad);
+      }
+
+      .empty {
+        color: var(--muted);
+        text-align: center;
+        padding: 28px 12px;
         font-size: 14px;
       }
-      a.back {
-        color: var(--teal);
-        text-decoration: none;
-        font-weight: 600;
+      .muted-note {
+        color: var(--faint);
+        font-size: 12px;
+        margin: 10px 2px 0;
       }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <div class="wrap">
-      <p><a class="back" href="/curriculum/">← Curriculum Hub</a></p>
-      <h1>Teacher Progress Dashboard</h1>
-      <p class="sub">
-        Roster completion from D1 progress sync. Students are identified by class
-        number / handle (not legal names).
-      </p>
-
-      <div class="panel">
-        <label for="tenant">Tenant / school slug</label>
-        <input id="tenant" value="harbor-view" autocomplete="off" />
-        <label for="section">Section filter (optional)</label>
-        <input id="section" placeholder="e.g. Period 3" autocomplete="off" />
-        <button type="button" id="load">Refresh roster</button>
-        <p id="err" class="err" hidden></p>
+      <div class="topbar">
+        <div>
+          <a class="back" href="/curriculum/">← Curriculum Hub</a>
+          <h1>Curriculum Progress</h1>
+          <p class="sub">
+            Class-wide movement through the curriculum, pulled live from the classroom progress
+            database. Students are identified by save code and handle — never legal names.
+          </p>
+        </div>
+        <button type="button" id="signout" class="btn ghost hidden">Sign out</button>
       </div>
 
-      <div id="stats" class="stat-grid" hidden></div>
-
-      <div class="panel" id="students-panel" hidden>
-        <h2 style="margin: 0 0 12px; font-size: 1.1rem">Students</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Student</th>
-              <th>Completed</th>
-              <th>Records</th>
-              <th>Avg %</th>
-            </tr>
-          </thead>
-          <tbody id="students"></tbody>
-        </table>
+      <!-- Gate -->
+      <div id="gate" class="panel gate">
+        <div class="lock" aria-hidden="true">🔒</div>
+        <h2 style="justify-content: center">Teacher access</h2>
+        <p id="gateMsg">
+          Enter your teacher key to view class progress. It's the same key as the Gradebook and
+          stays on this device only.
+        </p>
+        <div class="row">
+          <input
+            id="keyInput"
+            type="password"
+            placeholder="Teacher key"
+            autocomplete="current-password"
+            aria-label="Teacher key"
+          />
+          <button type="button" id="keyGo" class="btn">Unlock</button>
+        </div>
+        <p class="muted-note">
+          Gated server-side by <code>TEACHER_KEY</code>. Also available:
+          <a href="/teacher-tools/gradebook/">Gradebook</a> ·
+          <a href="/teacher-tools/mastery/">Mastery</a>
+        </p>
       </div>
 
-      <div class="panel" id="units-panel" hidden>
-        <h2 style="margin: 0 0 12px; font-size: 1.1rem">By unit</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Unit</th>
-              <th>Completed</th>
-              <th>Records</th>
-            </tr>
-          </thead>
-          <tbody id="units"></tbody>
-        </table>
+      <!-- App -->
+      <div id="app" class="hidden">
+        <div class="panel">
+          <div class="controls">
+            <div class="field">
+              <label for="section">Class / section</label>
+              <select id="section">
+                <option value="">All classes</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="search">Find a student</label>
+              <input id="search" placeholder="Name or save code…" autocomplete="off" />
+            </div>
+            <button type="button" id="refresh" class="btn">Refresh</button>
+            <a id="exportCsv" class="btn ghost" href="#" title="Download the full roster as CSV"
+              >Export CSV</a
+            >
+          </div>
+          <p id="err" class="err hidden"></p>
+          <p id="updated" class="muted-note"></p>
+        </div>
+
+        <div id="stats" class="stat-grid"></div>
+
+        <div class="panel">
+          <h2>By unit <span id="unitCount" class="count"></span></h2>
+          <div class="table-scroll">
+            <table id="unitTable">
+              <thead>
+                <tr>
+                  <th data-sort="unit">Unit</th>
+                  <th data-sort="avg">Class progress</th>
+                  <th class="num" data-sort="completed">Completed</th>
+                  <th class="num" data-sort="active">In progress</th>
+                  <th class="num" data-sort="students">Students</th>
+                </tr>
+              </thead>
+              <tbody id="units"></tbody>
+            </table>
+          </div>
+          <div id="unitsEmpty" class="empty hidden">No unit activity yet.</div>
+        </div>
+
+        <div class="panel">
+          <h2>By student <span id="studentCount" class="count"></span></h2>
+          <div class="table-scroll">
+            <table id="studentTable">
+              <thead>
+                <tr>
+                  <th data-sort="name">Student</th>
+                  <th data-sort="section">Class</th>
+                  <th data-sort="avg">Progress</th>
+                  <th class="num" data-sort="completed">Completed</th>
+                  <th class="num" data-sort="records">Activities</th>
+                  <th data-sort="updated">Last seen</th>
+                </tr>
+              </thead>
+              <tbody id="students"></tbody>
+            </table>
+          </div>
+          <div id="studentsEmpty" class="empty hidden">No students match this filter.</div>
+        </div>
+
+        <div class="panel">
+          <h2>Recent activity <span class="count">(latest 20)</span></h2>
+          <div class="table-scroll">
+            <table id="recentTable">
+              <thead>
+                <tr>
+                  <th data-sort="updated">When</th>
+                  <th data-sort="name">Student</th>
+                  <th data-sort="activity">Activity</th>
+                  <th data-sort="progress">Progress</th>
+                </tr>
+              </thead>
+              <tbody id="recent"></tbody>
+            </table>
+          </div>
+          <div id="recentEmpty" class="empty hidden">No recent activity.</div>
+        </div>
       </div>
     </div>
 
     <script>
       (function () {
-        var API =
-          (window.CURRICULUM_SYNC && window.CURRICULUM_SYNC.apiBase) ||
-          "https://neft-school-hub-api.neftjd.workers.dev";
+        "use strict";
+        var API = "/api/progress";
+        var LS_KEY = "neft.teacher.key"; // shared with Gradebook / Mastery
+        var key = localStorage.getItem(LS_KEY) || "";
+        var records = []; // raw roster rows from the server
+        var sortState = { unitTable: null, studentTable: null, recentTable: null };
 
         function $(id) {
           return document.getElementById(id);
         }
-
-        function fmtTime(ms) {
-          if (!ms) return "—";
-          return new Date(ms).toLocaleString();
+        function esc(s) {
+          return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+          });
+        }
+        function fmtTime(v) {
+          if (!v) return "—";
+          var t = typeof v === "number" ? v : Date.parse(v);
+          if (!t || isNaN(t)) return "—";
+          return new Date(t).toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+          });
+        }
+        function timeVal(v) {
+          if (!v) return 0;
+          var t = typeof v === "number" ? v : Date.parse(v);
+          return t && !isNaN(t) ? t : 0;
+        }
+        function num(v) {
+          var n = Number(v);
+          return isFinite(n) ? n : 0;
+        }
+        // Derive a curriculum unit label from an activity/lesson slug.
+        // Handles "1-3", "unit-3-...", "u3", "Unit 3: …"; else "Other".
+        function unitOf(activity) {
+          var a = String(activity || "");
+          var m =
+            a.match(/(?:^|[^0-9])(\d{1,2})\s*[-.:]\s*\d/) || // 3-2, 3.2
+            a.match(/unit[\s_-]*(\d{1,2})/i) ||
+            a.match(/(?:^|[^a-z])u(\d{1,2})(?![0-9])/i);
+          return m ? "Unit " + m[1] : "Other";
+        }
+        function unitSortKey(label) {
+          var m = label.match(/(\d+)/);
+          return m ? Number(m[1]) : 999;
+        }
+        function pctPill(p) {
+          var cls = p >= 80 ? "good" : p >= 40 ? "warn" : "low";
+          return '<span class="pill ' + cls + '">' + p + "%</span>";
+        }
+        function barCell(p) {
+          return (
+            '<span class="bar"><i style="width:' +
+            Math.max(0, Math.min(100, p)) +
+            '%"></i></span><span class="pct">' +
+            p +
+            "%</span>"
+          );
         }
 
-        function loadSummary() {
-          var tenant = $("tenant").value.trim();
-          var section = $("section").value.trim();
-          $("err").hidden = true;
-          $("load").disabled = true;
-          var params = new URLSearchParams({ tenant_id: tenant });
-          if (section) params.set("section", section);
-          fetch(API.replace(/\/$/, "") + "/api/curriculum/progress/summary?" + params)
+        // --- Gate ---
+        function showApp() {
+          $("gate").classList.add("hidden");
+          $("app").classList.remove("hidden");
+          $("signout").classList.remove("hidden");
+        }
+        function showGate(msg) {
+          $("gate").classList.remove("hidden");
+          $("app").classList.add("hidden");
+          $("signout").classList.add("hidden");
+          if (msg) $("gateMsg").textContent = msg;
+        }
+        $("keyGo").addEventListener("click", function () {
+          key = $("keyInput").value.trim();
+          if (!key) return;
+          localStorage.setItem(LS_KEY, key);
+          load();
+        });
+        $("keyInput").addEventListener("keydown", function (e) {
+          if (e.key === "Enter") $("keyGo").click();
+        });
+        $("signout").addEventListener("click", function () {
+          localStorage.removeItem(LS_KEY);
+          key = "";
+          records = [];
+          showGate("");
+        });
+
+        // --- Load ---
+        function load() {
+          if (!key) {
+            showGate("");
+            return;
+          }
+          $("err").classList.add("hidden");
+          $("refresh").disabled = true;
+          $("exportCsv").href = API + "/roster?format=csv&key=" + encodeURIComponent(key);
+          fetch(API + "/roster?key=" + encodeURIComponent(key), {
+            headers: { "x-teacher-key": key },
+          })
             .then(function (r) {
+              if (r.status === 401) throw new Error("Wrong teacher key.");
+              if (r.status === 503)
+                throw new Error(
+                  "Progress backend not enabled on the server (TEACHER_KEY / D1 not set).",
+                );
               if (!r.ok) throw new Error("HTTP " + r.status);
               return r.json();
             })
             .then(function (data) {
-              var s = data.summary || {};
-              $("stats").hidden = false;
-              $("stats").innerHTML =
-                '<div class="stat"><strong>' +
-                (s.completed_count || 0) +
-                '</strong><span>Activities completed</span></div>' +
-                '<div class="stat"><strong>' +
-                (s.by_student ? s.by_student.length : 0) +
-                '</strong><span>Students tracked</span></div>' +
-                '<div class="stat"><strong>' +
-                (s.average_progress_percent || 0) +
-                '%</strong><span>Average progress</span></div>' +
-                '<div class="stat"><strong>' +
-                fmtTime(s.last_updated) +
-                "</strong><span>Last activity</span></div>";
-
-              var stBody = $("students");
-              stBody.innerHTML = "";
-              (s.by_student || []).forEach(function (row) {
-                var tr = document.createElement("tr");
-                tr.innerHTML =
-                  "<td>" +
-                  (row.student_label || row.student || "—") +
-                  "</td><td>" +
-                  (row.completed || 0) +
-                  "</td><td>" +
-                  (row.records || 0) +
-                  "</td><td>" +
-                  Math.round(row.average_progress_percent || 0) +
-                  "%</td>";
-                stBody.appendChild(tr);
-              });
-              $("students-panel").hidden = !(s.by_student && s.by_student.length);
-
-              var uBody = $("units");
-              uBody.innerHTML = "";
-              (s.by_unit || []).forEach(function (row) {
-                var tr = document.createElement("tr");
-                tr.innerHTML =
-                  "<td>" +
-                  (row.unit_id || "—") +
-                  "</td><td>" +
-                  (row.completed || 0) +
-                  "</td><td>" +
-                  (row.records || 0) +
-                  "</td>";
-                uBody.appendChild(tr);
-              });
-              $("units-panel").hidden = !(s.by_unit && s.by_unit.length);
+              if (!data || !data.ok) throw new Error("Could not load progress.");
+              records = data.records || [];
+              showApp();
+              buildSectionFilter();
+              renderAll();
             })
             .catch(function (e) {
-              $("err").textContent = "Could not load summary: " + e.message;
-              $("err").hidden = false;
+              var m = String(e.message || e);
+              if (/teacher key/i.test(m)) {
+                showGate(m);
+              } else {
+                $("err").textContent = m;
+                $("err").classList.remove("hidden");
+              }
             })
             .finally(function () {
-              $("load").disabled = false;
+              $("refresh").disabled = false;
             });
         }
 
-        $("load").addEventListener("click", loadSummary);
-        loadSummary();
+        function buildSectionFilter() {
+          var cur = $("section").value;
+          var secs = {};
+          records.forEach(function (r) {
+            if (r.section) secs[r.section] = true;
+          });
+          var opts = ['<option value="">All classes</option>'];
+          Object.keys(secs)
+            .sort()
+            .forEach(function (s) {
+              opts.push('<option value="' + esc(s) + '">' + esc(s) + "</option>");
+            });
+          $("section").innerHTML = opts.join("");
+          $("section").value = cur;
+        }
+
+        // Records the current filters keep. Manual placeholder codes (MAN-)
+        // count as students but have no real activity.
+        function filtered() {
+          var sec = $("section").value;
+          var q = $("search").value.trim().toLowerCase();
+          return records.filter(function (r) {
+            if (sec && r.section !== sec) return false;
+            if (q) {
+              var hay = ((r.name || "") + " " + (r.code || "")).toLowerCase();
+              if (hay.indexOf(q) === -1) return false;
+            }
+            return true;
+          });
+        }
+        function isManual(r) {
+          return typeof r.code === "string" && r.code.indexOf("MAN-") === 0;
+        }
+        function isReal(r) {
+          return r.activity && !isManual(r);
+        }
+
+        function renderAll() {
+          var rows = filtered();
+          renderStats(rows);
+          renderStudents(rows);
+          renderUnits(rows);
+          renderRecent(rows);
+          var latest = rows.reduce(function (m, r) {
+            return Math.max(m, timeVal(r.updatedAt));
+          }, 0);
+          $("updated").textContent = latest
+            ? "Live from /api/progress · latest activity " + fmtTime(latest)
+            : "Live from /api/progress";
+        }
+
+        function renderStats(rows) {
+          var students = {};
+          var completed = 0;
+          var progSum = 0;
+          var progN = 0;
+          rows.forEach(function (r) {
+            var sid = (r.section || "—") + "|" + (r.name || r.code);
+            students[sid] = true;
+            if (!isReal(r)) return;
+            var p = num(r.progress);
+            if (p >= 100) completed++;
+            progSum += p;
+            progN++;
+          });
+          var avg = progN ? Math.round(progSum / progN) : 0;
+          $("stats").innerHTML =
+            stat(Object.keys(students).length, "Students tracked") +
+            stat(completed, "Activities completed") +
+            stat(avg + "%", "Average progress") +
+            stat(rows.filter(isReal).length, "Activity records");
+        }
+        function stat(v, label) {
+          return '<div class="stat"><strong>' + v + "</strong><span>" + label + "</span></div>";
+        }
+
+        function renderStudents(rows) {
+          var byStudent = {};
+          rows.forEach(function (r) {
+            var sid = (r.section || "—") + "|" + (r.name || r.code);
+            if (!byStudent[sid])
+              byStudent[sid] = {
+                name: r.name || r.code || "(unnamed)",
+                section: r.section || "",
+                completed: 0,
+                records: 0,
+                progSum: 0,
+                updated: 0,
+              };
+            var s = byStudent[sid];
+            s.updated = Math.max(s.updated, timeVal(r.updatedAt));
+            if (!isReal(r)) return;
+            s.records++;
+            var p = num(r.progress);
+            s.progSum += p;
+            if (p >= 100) s.completed++;
+          });
+          var list = Object.keys(byStudent).map(function (k) {
+            var s = byStudent[k];
+            s.avg = s.records ? Math.round(s.progSum / s.records) : 0;
+            return s;
+          });
+          sortRows(list, sortState.studentTable, "name");
+          var body = list
+            .map(function (s) {
+              return (
+                "<tr><td class='wrap-cell'>" +
+                esc(s.name) +
+                "</td><td>" +
+                esc(s.section || "—") +
+                "</td><td>" +
+                barCell(s.avg) +
+                "</td><td class='num'>" +
+                s.completed +
+                "</td><td class='num'>" +
+                s.records +
+                "</td><td>" +
+                fmtTime(s.updated) +
+                "</td></tr>"
+              );
+            })
+            .join("");
+          $("students").innerHTML = body;
+          $("studentCount").textContent = "(" + list.length + ")";
+          $("studentsEmpty").classList.toggle("hidden", list.length > 0);
+        }
+
+        function renderUnits(rows) {
+          var byUnit = {};
+          rows.forEach(function (r) {
+            if (!isReal(r)) return;
+            var u = unitOf(r.activity);
+            if (!byUnit[u])
+              byUnit[u] = {
+                unit: u,
+                completed: 0,
+                active: 0,
+                progSum: 0,
+                records: 0,
+                students: {},
+              };
+            var b = byUnit[u];
+            b.records++;
+            b.students[(r.section || "—") + "|" + (r.name || r.code)] = true;
+            var p = num(r.progress);
+            b.progSum += p;
+            if (p >= 100) b.completed++;
+            else if (p > 0) b.active++;
+          });
+          var list = Object.keys(byUnit).map(function (k) {
+            var b = byUnit[k];
+            b.avg = b.records ? Math.round(b.progSum / b.records) : 0;
+            b.students = Object.keys(b.students).length;
+            return b;
+          });
+          if (sortState.unitTable) sortRows(list, sortState.unitTable, "unit");
+          else
+            list.sort(function (a, b) {
+              return unitSortKey(a.unit) - unitSortKey(b.unit);
+            });
+          $("units").innerHTML = list
+            .map(function (b) {
+              return (
+                "<tr><td>" +
+                esc(b.unit) +
+                "</td><td>" +
+                barCell(b.avg) +
+                "</td><td class='num'>" +
+                b.completed +
+                "</td><td class='num'>" +
+                b.active +
+                "</td><td class='num'>" +
+                b.students +
+                "</td></tr>"
+              );
+            })
+            .join("");
+          $("unitCount").textContent = "(" + list.length + ")";
+          $("unitsEmpty").classList.toggle("hidden", list.length > 0);
+        }
+
+        function renderRecent(rows) {
+          var real = rows.filter(isReal).slice();
+          real.sort(function (a, b) {
+            return timeVal(b.updatedAt) - timeVal(a.updatedAt);
+          });
+          var top = real.slice(0, 20);
+          $("recent").innerHTML = top
+            .map(function (r) {
+              return (
+                "<tr><td>" +
+                fmtTime(r.updatedAt) +
+                "</td><td class='wrap-cell'>" +
+                esc(r.name || r.code) +
+                "</td><td class='wrap-cell'>" +
+                esc(r.activity) +
+                "</td><td>" +
+                pctPill(num(r.progress)) +
+                "</td></tr>"
+              );
+            })
+            .join("");
+          $("recentEmpty").classList.toggle("hidden", top.length > 0);
+        }
+
+        // --- Sorting ---
+        function sortRows(list, state, defKey) {
+          var k = (state && state.key) || defKey;
+          var dir = state && state.dir === "desc" ? -1 : 1;
+          list.sort(function (a, b) {
+            var av = a[k],
+              bv = b[k];
+            if (k === "unit") return (unitSortKey(a.unit) - unitSortKey(b.unit)) * dir;
+            if (typeof av === "string" || typeof bv === "string")
+              return String(av).localeCompare(String(bv)) * dir;
+            return (num(av) - num(bv)) * dir;
+          });
+        }
+        function wireSort(tableId, rerender) {
+          var table = $(tableId);
+          table.querySelectorAll("th[data-sort]").forEach(function (th) {
+            th.addEventListener("click", function () {
+              var k = th.getAttribute("data-sort");
+              var cur = sortState[tableId];
+              var dir = cur && cur.key === k && cur.dir === "asc" ? "desc" : "asc";
+              sortState[tableId] = { key: k, dir: dir };
+              table.querySelectorAll("th").forEach(function (h) {
+                h.classList.remove("sort-asc", "sort-desc");
+              });
+              th.classList.add(dir === "asc" ? "sort-asc" : "sort-desc");
+              rerender();
+            });
+          });
+        }
+
+        // --- Wiring ---
+        $("refresh").addEventListener("click", load);
+        $("section").addEventListener("change", renderAll);
+        $("search").addEventListener("input", function () {
+          renderStudents(filtered());
+        });
+        wireSort("studentTable", function () {
+          renderStudents(filtered());
+        });
+        wireSort("unitTable", function () {
+          renderUnits(filtered());
+        });
+        wireSort("recentTable", function () {
+          renderRecent(filtered());
+        });
+
+        // --- Boot ---
+        if (key) load();
+        else showGate("");
       })();
     </script>
   </body>
