@@ -52,14 +52,14 @@ ALLOW_DEPLOY=1 npm run ship:rebuild   # empty commit: unfreeze a stuck CF build
 
 ## Troubleshooting
 
-| Symptom                                                   | Likely cause                                                   | Fix                                                                               |
-| --------------------------------------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `ship` says "NOT confirmed live" after 12 min             | CF build failed or production frozen                           | Check the Pages build log; if code is fine, `ALLOW_DEPLOY=1 npm run ship:rebuild` |
-| Stamp commit ≠ `origin/main` HEAD long after a push       | Silent CF build failure (Pages serves last _successful_ build) | Read the build log; check for dev-dep imports in build scripts                    |
-| QA loop fails on `validate:lesson-boot` with 0/16         | Orphan smoke server on port 41847                              | `ship` kills it automatically; manually: `lsof -ti tcp:41847 \| xargs kill`       |
-| Cherry-pick conflict during `ship`                        | Your commit predates newer `main` work                         | Rebase your branch on `origin/main`, re-commit, ship the new SHA                  |
-| Shipped an `assets/` change but the site serves old bytes | CF zone rule caches `/assets/*` for 4 h despite `_headers`     | Wait, or reference the asset with `?v=...`; verify with `?cb=`                    |
-| Push rejected with GH007                                  | Private author email on a commit                               | `ship` rewrites these automatically; hand-pushes must use the noreply identity    |
+| Symptom                                                   | Likely cause                                                   | Fix                                                                                                                                               |
+| --------------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ship` says "NOT confirmed live" after 12 min             | CF build failed or production frozen                           | Check the Pages build log; if code is fine, `ALLOW_DEPLOY=1 npm run ship:rebuild`                                                                 |
+| Stamp commit ≠ `origin/main` HEAD long after a push       | Silent CF build failure (Pages serves last _successful_ build) | Read the build log; check for dev-dep imports in build scripts                                                                                    |
+| QA loop fails on `validate:lesson-boot` with `-1 content` | Historically: concurrent runs fighting over fixed port 41847   | Fixed 2026-07-10 — the smoke test now uses an ephemeral port per run (pin with `SMOKE_PORT=<n>` if needed); a repeat failure is a real render bug |
+| Cherry-pick conflict during `ship`                        | Your commit predates newer `main` work                         | Rebase your branch on `origin/main`, re-commit, ship the new SHA                                                                                  |
+| Shipped an `assets/` change but the site serves old bytes | CF zone rule caches `/assets/*` for 4 h despite `_headers`     | Wait, or reference the asset with `?v=...`; verify with `?cb=`                                                                                    |
+| Push rejected with GH007                                  | Private author email on a commit                               | `ship` rewrites these automatically; hand-pushes must use the noreply identity                                                                    |
 
 ## Verifying what production is actually serving
 

@@ -44,7 +44,11 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, "..");
 const LESSONS_DIR = path.join(ROOT, "lessons");
 const MANIFEST = path.join(ROOT, "night-shift", "render-manifest.json");
-const PORT = 41847; // fixed, strict — fail loudly if occupied rather than race
+// Ephemeral port by default: concurrent runs (pre-push gate, ship worktrees,
+// background automation) used to fight over a fixed 41847 — one run's server
+// getting killed mid-probe produced the recurring "-1 content" / connection-
+// refused false failures. SMOKE_PORT=<n> pins a port when determinism matters.
+const PORT = Number(process.env.SMOKE_PORT || 0) || 0;
 const LESSON_MIN = 800; // a rendered lesson is ~10k chars; a blank shell is 0
 const NAV_TIMEOUT = 25000;
 const RENDER_TIMEOUT = 12000; // how long to wait for the mount to fill
@@ -108,6 +112,19 @@ async function loadRouteManifest() {
   }
 }
 
+/** Ask the OS for a free ephemeral port. */
+async function getFreePort() {
+  const { createServer } = await import("node:net");
+  return new Promise((resolve, reject) => {
+    const srv = createServer();
+    srv.once("error", reject);
+    srv.listen(0, "127.0.0.1", () => {
+      const { port } = srv.address();
+      srv.close(() => resolve(port));
+    });
+  });
+}
+
 /** Spawn `vite preview` on dist/ and resolve once it serves, or throw. */
 async function startPreviewServer() {
   if (!(await pathExists(path.join(ROOT, "dist", "index.html")))) {
@@ -115,12 +132,13 @@ async function startPreviewServer() {
     err.code = "NO_DIST";
     throw err;
   }
+  const port = PORT || (await getFreePort());
   const child = spawn(
     "npx",
-    ["vite", "preview", "--port", String(PORT), "--strictPort", "--host", "127.0.0.1"],
+    ["vite", "preview", "--port", String(port), "--strictPort", "--host", "127.0.0.1"],
     { cwd: ROOT, stdio: ["ignore", "pipe", "pipe"] },
   );
-  const base = `http://127.0.0.1:${PORT}`;
+  const base = `http://127.0.0.1:${port}`;
   const deadline = Date.now() + 20000;
   while (Date.now() < deadline) {
     try {
