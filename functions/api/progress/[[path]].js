@@ -29,13 +29,67 @@ const JSON_HEADERS = {
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
-function json(obj, status = 200) {
-  return new Response(JSON.stringify(obj), { status, headers: JSON_HEADERS });
+function json(obj, status = 200, extraHeaders) {
+  const headers = extraHeaders ? { ...JSON_HEADERS, ...extraHeaders } : JSON_HEADERS;
+  return new Response(JSON.stringify(obj), { status, headers });
 }
 
 // Loose validation of a resume code: PREFIX-SUFFIX, safe characters only.
 function validCode(code) {
   return typeof code === "string" && /^[A-Z0-9]{1,12}-[A-Z0-9]{3,8}$/.test(code);
+}
+
+// --- /load anti-enumeration guard ------------------------------------------
+// A harvester can't be blocked by auth (students resume with only a code), so
+// we cap how many *guesses* (misses) a single IP can make per window. Valid
+// resumes never count, so real students — even a whole class on one NAT — are
+// never throttled. Miss buckets are pruned opportunistically so the table stays
+// tiny. See the /load route for the rationale.
+const LOAD_WINDOW_SEC = 300; // 5-minute window
+const LOAD_MAX_MISSES = 50; // misses per IP per window before 429
+
+function clientIp(request) {
+  return request.headers.get("CF-Connecting-IP") || request.headers.get("x-forwarded-for") || "?";
+}
+function loadBucket() {
+  return Math.floor(Date.now() / 1000 / LOAD_WINDOW_SEC);
+}
+async function ensureLoadGuardSchema(db) {
+  await db
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS load_miss (
+        ip     TEXT NOT NULL,
+        bucket INTEGER NOT NULL,
+        hits   INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (ip, bucket)
+      )`,
+    )
+    .run();
+}
+async function loadMissCount(db, ip, bucket) {
+  const row = await db
+    .prepare("SELECT hits FROM load_miss WHERE ip = ? AND bucket = ?")
+    .bind(ip, bucket)
+    .first();
+  return row ? Number(row.hits) || 0 : 0;
+}
+async function noteLoadMiss(db, ip, bucket) {
+  await db
+    .prepare(
+      `INSERT INTO load_miss (ip, bucket, hits) VALUES (?, ?, 1)
+         ON CONFLICT(ip, bucket) DO UPDATE SET hits = hits + 1`,
+    )
+    .bind(ip, bucket)
+    .run();
+  // Opportunistic cleanup of stale windows keeps the table from growing.
+  try {
+    await db
+      .prepare("DELETE FROM load_miss WHERE bucket < ?")
+      .bind(bucket - 1)
+      .run();
+  } catch (e) {
+    /* prune is best-effort */
+  }
 }
 
 function clamp(s, n) {
@@ -619,10 +673,32 @@ export async function onRequest(context) {
     if (seg === "load" && method === "GET") {
       const code = (new URL(request.url).searchParams.get("code") || "").toUpperCase();
       if (!validCode(code)) return json({ ok: false, error: "bad-code" }, 400);
+
+      // Anti-enumeration guard. /load is a bearer lookup — anyone holding a save
+      // code can resume that work, which is the whole point of Save/Resume. The
+      // real risk is a brute-force harvester guessing codes to scrape student
+      // names + work. We throttle by counting only *misses* (404s) per client IP
+      // per window, and block that IP once it exceeds the cap — capping any
+      // single IP to LOAD_MAX_MISSES guesses per window. Legitimate resumes
+      // return a real record and never count as a miss, so a normal class (even
+      // a whole school behind one NAT) never fills its bucket and is never
+      // throttled. The only collateral is a client sharing an IP with an active
+      // guess-flood, which clears when the window rolls.
+      const ip = clientIp(request);
+      const bucket = loadBucket();
+      await ensureLoadGuardSchema(env.DB);
+      if ((await loadMissCount(env.DB, ip, bucket)) > LOAD_MAX_MISSES) {
+        return json({ ok: false, error: "rate-limited" }, 429, {
+          "Retry-After": String(LOAD_WINDOW_SEC),
+        });
+      }
       const row = await env.DB.prepare("SELECT * FROM student_progress WHERE save_code = ?")
         .bind(code)
         .first();
-      if (!row) return json({ ok: false, error: "not-found" }, 404);
+      if (!row) {
+        await noteLoadMiss(env.DB, ip, bucket);
+        return json({ ok: false, error: "not-found" }, 404);
+      }
       return json({ ok: true, record: recordFromRow(row) });
     }
 
