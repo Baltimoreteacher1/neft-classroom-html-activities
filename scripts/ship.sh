@@ -175,8 +175,20 @@ cleanup() {
   if [ "$KEEP_WT" = "1" ]; then
     say "Worktree kept for inspection: $WT"
     say "Remove with: git worktree remove --force '$WT'"
-  else
-    git worktree remove --force "$WT" 2>/dev/null || true
+    return 0
+  fi
+  # Concurrent automation in this repo can transiently hold files in the
+  # worktree; retry the removal briefly, then surface any survivor loudly.
+  local tries=0
+  while [ -d "$WT" ] && [ "$tries" -lt 3 ]; do
+    git worktree remove --force "$WT" 2>/dev/null && break
+    tries=$((tries + 1))
+    sleep 1
+  done
+  git worktree prune 2>/dev/null || true
+  if [ -d "$WT" ]; then
+    say "⚠ Could not remove worktree $WT — remove it manually:" >&2
+    say "    git worktree remove --force '$WT'" >&2
   fi
 }
 trap cleanup EXIT
