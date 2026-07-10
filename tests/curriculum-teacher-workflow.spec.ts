@@ -1,0 +1,72 @@
+import AxeBuilder from "@axe-core/playwright";
+import { expect, test } from "@playwright/test";
+
+test("public curriculum keeps the teacher workflow hidden", async ({ page }) => {
+  await page.goto("/curriculum/");
+  await expect(page.locator("#hub-mode-toggle")).toContainText("Student Mode");
+  await expect(page.locator("#curriculum-teacher-workflow")).toBeHidden();
+  await expect(page.getByText("Gradebook & Save Codes")).toBeHidden();
+});
+
+test.describe("teacher command center", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem("nt-teacher-mode", "1"));
+    await page.goto("/curriculum/");
+    await expect(page.locator("#curriculum-teacher-workflow")).toBeVisible();
+  });
+
+  test("selects and launches a student-safe lesson", async ({ page }) => {
+    const workflow = page.locator("#curriculum-teacher-workflow");
+    await expect(workflow.getByRole("heading", { name: "Plan it. Teach it. Launch it." })).toBeVisible();
+    const today = workflow.locator(".ctw-today-card");
+    await expect(today.getByRole("heading", { name: /1-1 · Prime Factorization/ })).toBeVisible();
+    const launch = today.getByRole("link", { name: "Launch for students" });
+    await expect(launch).toHaveAttribute("href", /\/curriculum\/student-launch\/\?lesson=1-1$/);
+    await expect(workflow.getByRole("heading", { name: "Lesson Readiness" })).toBeVisible();
+    await expect(workflow.getByRole("heading", { name: "WIDA 1–2" })).toBeVisible();
+    await expect(workflow.getByRole("heading", { name: "Common misconception" })).toBeVisible();
+  });
+
+  test("saves weekly pacing locally", async ({ page }) => {
+    await page.getByRole("button", { name: "Weekly Pacing" }).click();
+    const monday = page.getByLabel("Monday lesson");
+    await monday.selectOption("2-1");
+    await page.reload();
+    await page.getByRole("button", { name: "Weekly Pacing" }).click();
+    await expect(page.getByLabel("Monday lesson")).toHaveValue("2-1");
+  });
+
+  test("builds a canonical student playlist", async ({ page }) => {
+    await page.getByRole("button", { name: "Student Playlist" }).click();
+    await page.locator(".ctw-planning-card select").selectOption("1-1");
+    await page.getByRole("button", { name: "Add lesson" }).click();
+    await page.locator(".ctw-planning-card select").selectOption("1-2");
+    await page.getByRole("button", { name: "Add lesson" }).click();
+    const preview = page.getByRole("link", { name: "Preview student playlist" });
+    await expect(preview).toHaveAttribute("href", /playlist=1-1,1-2$/);
+  });
+
+  test("stores aggregate next-day evidence without student names", async ({ page }) => {
+    await page.getByRole("button", { name: "Next-Day Plan" }).click();
+    const workflow = page.locator("#curriculum-teacher-workflow");
+    await workflow.getByRole("spinbutton", { name: "Ready", exact: true }).fill("12");
+    await workflow.getByRole("spinbutton", { name: "Developing", exact: true }).fill("7");
+    await workflow.getByRole("spinbutton", { name: "Reteach", exact: true }).fill("3");
+    await expect(page.getByRole("heading", { name: "Extend · 12" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Core practice · 7" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Reteach · 3" })).toBeVisible();
+    await expect(page.getByText(/No names, IDs, or responses/)).toBeVisible();
+  });
+});
+
+test("student launcher is focused, safe, and accessible", async ({ page }) => {
+  await page.goto("/curriculum/student-launch/?playlist=1-1,1-2");
+  await expect(page.getByRole("heading", { name: "Prime Factorization" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Start lesson" })).toHaveAttribute("href", "/lessons/1-1/");
+  await expect(page.getByText("Lesson 1 of 2")).toBeVisible();
+  await page.getByRole("button", { name: "Next lesson →" }).click();
+  await expect(page.getByRole("heading", { name: "Greatest Common Factor" })).toBeVisible();
+  await expect(page.getByText(/answer key|teacher notes|gradebook/i)).toHaveCount(0);
+  const results = await new AxeBuilder({ page }).analyze();
+  expect(results.violations).toEqual([]);
+});

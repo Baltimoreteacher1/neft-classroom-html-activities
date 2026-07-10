@@ -363,7 +363,7 @@
       lessons = DATA.launch.lessons || [];
       lessons.forEach(function (lesson) { lessonsById[lesson.id] = lesson; });
       if (!lessonsById[state.selected]) state.selected = lessons[0].id;
-      var anchor = document.getElementById("top1-start-here") || document.querySelector(".controls");
+      var anchor = document.querySelector(".wrap");
       if (!anchor?.parentNode) return;
       anchor.parentNode.insertBefore(buildPanel(), anchor);
       window.CurriculumTeacherPlanning?.organizeTools?.();
