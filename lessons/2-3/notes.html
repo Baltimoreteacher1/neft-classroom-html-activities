@@ -585,6 +585,13 @@ html.level-l3 .l1-only, html.level-l3 .l2-only, html.level-l3 .l2-only-block { d
 .pill-btn input[type="radio"]:checked:hover span {
   color: var(--navy);
 }
+@media(max-width:640px){.topbar{position:static;display:grid;grid-template-columns:1fr;gap:10px;padding:12px;}
+  .topbar .brand{text-align:center;}.level-selector{width:100%;justify-content:center;flex-wrap:wrap;}
+  .selector-label{width:100%;text-align:center;}.pill-group{display:grid;grid-template-columns:repeat(3,1fr);width:100%;}
+  .pill-btn span{display:block;padding:8px 6px;text-align:center;white-space:nowrap;}
+  .topbar-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;}
+  .topbar-actions>*{min-width:0;}.topbar-actions .print-btn{width:100%;height:100%;padding:10px 6px;font-size:13px;}
+  .sheet{padding:28px 18px;}.name-line{gap:12px;}}
 
 /* Leveled component details */
 .vocab-def-prompt, .notes-step-prompt {
@@ -899,7 +906,7 @@ header.packet h1::after{
       </label>
     </div>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+  <div class="topbar-actions" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
     <button class="nt-clear no-print" type="button" id="nt-clear-btn">Clear my work</button>
     <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
     <div class="dl-wrap">

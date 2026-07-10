@@ -70,6 +70,12 @@ for (const lessonId of lessonIds) {
 for (const lessonId of lessonIds) {
   const notesPath = join(lessonsDir, lessonId, "notes.html");
   const notes = readFileSync(notesPath, "utf8");
+  assert.match(notes, /class="topbar-actions"/, `${lessonId}: mobile toolbar hook is missing`);
+  assert.match(
+    notes,
+    /@media\(max-width:640px\)\{\.topbar\{/,
+    `${lessonId}: mobile toolbar layout is missing`,
+  );
   const sectionMatch = notes.match(/<section class="section twr">([\s\S]*?)<\/section>/);
   assert.ok(sectionMatch, `${lessonId}: generated writing section is missing`);
   const writingSection = sectionMatch[1];
