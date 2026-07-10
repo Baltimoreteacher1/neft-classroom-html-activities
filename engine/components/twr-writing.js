@@ -48,6 +48,41 @@ function ensureTwrStyles() {
       box-shadow: 0 2px 10px rgba(15, 118, 110, 0.18);
     }
 
+    .twr-check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-2, 8px);
+      min-height: 44px;
+      padding: var(--sp-2, 8px);
+      border-radius: var(--radius-sm, 8px);
+      cursor: pointer;
+    }
+
+    .twr-check-row:focus-within {
+      outline: 2px solid var(--teal, #0f766e);
+      outline-offset: 2px;
+    }
+
+    .twr-check-row input {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 auto;
+      margin-top: 2px;
+    }
+
+    .twr-levels {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: var(--sp-3, 12px);
+    }
+
+    .twr-level {
+      min-width: 0;
+      padding: var(--sp-3, 12px);
+      border: 1px solid var(--line, #cbd5e1);
+      border-radius: var(--radius-sm, 8px);
+    }
+
     @media (prefers-reduced-motion: no-preference) {
       .twr-card {
         animation: twr-fade-in 0.45s ease both;
@@ -230,88 +265,120 @@ export function renderTwrWriting(container, config, { getResponse, saveResponse,
     twr.languageObjective || "Build strong math sentences. Write each one, then read it out loud.";
   card.append(lead);
 
-  // 1. Kernel sentence
-  card.append(subhead("1. Kernel Sentence", "subject + verb"));
-  const kModel = document.createElement("p");
-  kModel.style.cssText =
-    "background:var(--teal-light); border-radius:var(--radius-sm); padding:var(--sp-2) var(--sp-3); margin:0 0 var(--sp-2); font-size:0.95rem;";
-  kModel.innerHTML = `<strong style="color:var(--teal-ink);">Model:</strong> ${esc(twr.kernel.en)}`;
-  card.append(kModel);
-  inputs.push(
-    writeRow(card, {
-      key: "twr_kernel",
-      frameEn: twr.kernel.promptEn,
-      frameEs: twr.kernel.promptEs,
-      rows: 2,
-      getResponse,
-      saveResponse,
-    }),
-  );
+  // 1. Understand the question
+  card.append(subhead("1. Understand the Question", twr.focus.action));
+  const question = document.createElement("div");
+  question.style.cssText =
+    "background:var(--teal-light); border-left:4px solid var(--teal); border-radius:var(--radius-sm); padding:var(--sp-3); margin-bottom:var(--sp-2);";
+  question.innerHTML = `<p style="margin:0 0 var(--sp-1); font-weight:800;">${esc(twr.focus.questionEn)}</p>${
+    twr.focus.questionEs
+      ? `<p lang="es" style="margin:0; color:var(--muted); font-style:italic;">${esc(twr.focus.questionEs)}</p>`
+      : ""
+  }`;
+  card.append(question);
+  const job = document.createElement("p");
+  job.innerHTML = `<strong>Your job:</strong> ${esc(twr.focus.jobEn)}<span lang="es" style="display:block; color:var(--muted); font-style:italic;">${esc(twr.focus.jobEs)}</span>`;
+  card.append(job);
 
-  // 2. Sentence expansion
-  card.append(subhead("2. Sentence Expansion", "because · but · so"));
-  const kInfo = document.createElement("p");
-  kInfo.style.cssText = "margin:0 0 var(--sp-2); font-size:0.9rem;";
-  kInfo.innerHTML = `<strong style="color:var(--teal-ink);">Kernel:</strong> ${esc(twr.expansion.kernelEn)}`;
-  card.append(kInfo);
-  twr.expansion.conjunctions.forEach((c, i) => {
-    inputs.push(
-      writeRow(card, {
-        key: `twr_expand_${c.word}`,
-        frameEn: c.frameEn,
-        frameEs: c.frameEs,
-        rows: 1,
-        getResponse,
-        saveResponse,
-      }),
-    );
-  });
+  // 2. Plan vocabulary and rehearse orally
+  card.append(subhead("2. Plan Your Math Words", "choose at least 2"));
+  const vocabulary = document.createElement("fieldset");
+  vocabulary.style.cssText = "border:0; padding:0; margin:0 0 var(--sp-3);";
+  const vocabularyLegend = document.createElement("legend");
+  vocabularyLegend.className = "sr-only";
+  vocabularyLegend.textContent = "Choose the math words you plan to use";
+  vocabulary.append(vocabularyLegend);
+  for (const word of twr.vocabulary) {
+    const row = document.createElement("label");
+    row.className = "twr-check-row";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = word.term;
+    const text = document.createElement("span");
+    text.innerHTML = `<strong>${esc(word.term)}</strong> — ${esc(word.definition)}${
+      word.termEs || word.definitionEs
+        ? `<span lang="es" style="display:block; color:var(--muted); font-style:italic;"><strong>${esc(word.termEs)}</strong>${word.definitionEs ? ` — ${esc(word.definitionEs)}` : ""}</span>`
+        : ""
+    }`;
+    row.append(checkbox, text);
+    vocabulary.append(row);
+  }
+  card.append(vocabulary);
 
-  // 3. Sentence types
-  card.append(subhead("3. Sentence Types", "4 ways to write a math idea"));
-  twr.sentenceTypes.forEach((t) => {
-    const hint = document.createElement("p");
-    hint.style.cssText = "margin:var(--sp-2) 0 var(--sp-1); font-weight:700;";
-    hint.innerHTML = `${esc(t.type)} <span style="font-weight:400; color:var(--muted); font-style:italic;">— ${esc(t.hintEn)}</span>`;
-    card.append(hint);
-    inputs.push(
-      writeRow(card, {
-        key: `twr_type_${t.type}`,
-        frameEn: t.frameEn,
-        frameEs: t.frameEs,
-        rows: 1,
-        getResponse,
-        saveResponse,
-      }),
-    );
-  });
+  const rehearsal = document.createElement("div");
+  rehearsal.style.cssText =
+    "border:1px dashed var(--teal); border-radius:var(--radius-sm); padding:var(--sp-3); margin-bottom:var(--sp-3);";
+  rehearsal.innerHTML = `<strong>Say it first:</strong> ${esc(twr.rehearsal.directionEn)}<span lang="es" style="display:block; color:var(--muted); font-style:italic;">${esc(twr.rehearsal.directionEs)}</span><p style="margin:var(--sp-2) 0 0; font-weight:700;">${esc(twr.rehearsal.frameEn)}${
+    twr.rehearsal.frameEs
+      ? `<span lang="es" style="display:block; color:var(--muted); font-style:italic;">${esc(twr.rehearsal.frameEs)}</span>`
+      : ""
+  }</p>`;
+  card.append(rehearsal);
 
-  // 4. Explain your reasoning
-  card.append(subhead("4. Explain Your Reasoning", "use a sentence starter"));
-  if (twr.reasoningStems.length) {
-    const stems = document.createElement("ul");
-    stems.style.cssText = "margin:0 0 var(--sp-2); padding-left:1.1rem;";
-    twr.reasoningStems.forEach((s) => {
-      const li = document.createElement("li");
-      li.style.cssText = "margin-bottom:var(--sp-1);";
-      li.innerHTML = `<strong>${esc(s.en)}</strong>${
-        s.es
-          ? `<span style="display:block; color:var(--muted); font-style:italic;">${esc(s.es)}</span>`
+  // 3. Build one explanation using the support level the student needs.
+  card.append(subhead("3. Build Your Explanation", "choose your support"));
+  const model = document.createElement("aside");
+  model.style.cssText =
+    "background:var(--surface-2, #f8fafc); border-radius:var(--radius-sm); padding:var(--sp-3); margin-bottom:var(--sp-3);";
+  model.innerHTML = `<strong>Model the parts:</strong><p style="margin:var(--sp-1) 0; color:var(--muted);">${esc(twr.model.note)}</p><ul style="margin:0; padding-left:1.2rem;"><li><strong>Claim:</strong> ${esc(twr.model.claim)}</li><li><strong>Evidence:</strong> ${esc(twr.model.evidence)}</li><li><strong>Reasoning:</strong> ${esc(twr.model.reasoning)}</li></ul>`;
+  card.append(model);
+
+  const levels = document.createElement("div");
+  levels.className = "twr-levels";
+  for (const level of twr.levels) {
+    const panel = document.createElement("section");
+    panel.className = "twr-level";
+    panel.dataset.supportLevel = level.id;
+    const title = document.createElement("h5");
+    title.style.cssText = "margin:0 0 var(--sp-1); color:var(--navy);";
+    title.textContent = `${level.label} — ${level.support}`;
+    const direction = document.createElement("p");
+    direction.style.cssText = "margin:0 0 var(--sp-2);";
+    direction.innerHTML = `${esc(level.directionEn)}<span lang="es" style="display:block; color:var(--muted); font-style:italic;">${esc(level.directionEs)}</span>`;
+    const frames = document.createElement("ul");
+    frames.style.cssText = "margin:0 0 var(--sp-2); padding-left:1.1rem;";
+    for (const frame of level.frames) {
+      const item = document.createElement("li");
+      item.innerHTML = `<strong>${esc(frame.en)}</strong>${
+        frame.es
+          ? `<span lang="es" style="display:block; color:var(--muted); font-style:italic;">${esc(frame.es)}</span>`
           : ""
       }`;
-      stems.append(li);
-    });
-    card.append(stems);
+      frames.append(item);
+    }
+    panel.append(title, direction, frames);
+    inputs.push(
+      writeRow(panel, {
+        key: `twr_${level.id}`,
+        frameEn: "",
+        rows: level.id === "explain" ? 5 : 3,
+        getResponse,
+        saveResponse,
+      }),
+    );
+    levels.append(panel);
   }
-  inputs.push(
-    writeRow(card, {
-      key: "twr_reasoning",
-      frameEn: "",
-      rows: 3,
-      getResponse,
-      saveResponse,
-    }),
-  );
+  card.append(levels);
+
+  // 4. Check the explanation against the same criteria the teacher uses.
+  card.append(subhead("4. Check Your Explanation", "5 quick checks"));
+  const checklist = document.createElement("fieldset");
+  checklist.style.cssText = "border:0; padding:0; margin:0;";
+  const checklistLegend = document.createElement("legend");
+  checklistLegend.className = "sr-only";
+  checklistLegend.textContent = "Check your explanation";
+  checklist.append(checklistLegend);
+  for (const criterion of twr.checklist) {
+    const row = document.createElement("label");
+    row.className = "twr-check-row";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    const text = document.createElement("span");
+    text.innerHTML = `${esc(criterion.en)}<span lang="es" style="display:block; color:var(--muted); font-style:italic;">${esc(criterion.es)}</span>`;
+    row.append(checkbox, text);
+    checklist.append(row);
+  }
+  card.append(checklist);
 
   // Submit / feedback (formative, never blocks the lesson)
   const feedbackSlot = document.createElement("div");
@@ -332,7 +399,7 @@ export function renderTwrWriting(container, config, { getResponse, saveResponse,
     } else {
       fb.className = "feedback feedback-success visible twr-feedback";
       fb.setAttribute("role", "status");
-      fb.innerHTML = `<span class="feedback-icon">✓</span><span>Nice work! You wrote ${written} of ${inputs.length} sentences. Read them out loud to a partner.</span>`;
+      fb.innerHTML = `<span class="feedback-icon">✓</span><span>Your writing is saved. You used ${written} of ${inputs.length} support paths. Finish the checklist before you submit.</span>`;
       // Success polish: highlight frame + confetti (both reduced-motion safe).
       card.classList.add("is-celebrating");
       fireConfetti(card);

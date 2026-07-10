@@ -3,6 +3,8 @@
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { JSDOM } from "jsdom";
+import { renderTwrWriting } from "../engine/components/twr-writing.js";
 import { deriveTWR } from "../engine/core/twr.js";
 
 const root = new URL("../", import.meta.url).pathname;
@@ -88,5 +90,34 @@ assert.ok(
   englishOnly.vocabulary.every((word) => word.termEs === "" && word.definitionEs === ""),
   "must not fabricate Spanish vocabulary",
 );
+
+const interactiveConfig = JSON.parse(readFileSync(join(lessonsDir, "2-2", "config.json"), "utf8"));
+const dom = new JSDOM(
+  "<!doctype html><html><head></head><body><main id=app></main></body></html>",
+  {
+    url: "https://example.test/lessons/2-2/",
+  },
+);
+globalThis.window = dom.window;
+globalThis.document = dom.window.document;
+const container = document.querySelector("#app");
+let renderError;
+try {
+  renderTwrWriting(container, interactiveConfig);
+} catch (error) {
+  renderError = error;
+}
+assert.equal(renderError, undefined, `interactive renderer failed: ${renderError?.message}`);
+assert.match(container.textContent, /1\. Understand the Question/);
+assert.match(container.textContent, /2\. Plan Your Math Words/);
+assert.match(container.textContent, /3\. Build Your Explanation/);
+assert.match(container.textContent, /4\. Check Your Explanation/);
+assert.equal(container.querySelectorAll("[data-support-level]").length, 3);
+assert.equal(container.querySelectorAll('input[type="checkbox"]').length >= 5, true);
+assert.equal(container.querySelectorAll("textarea").length, 3);
+assert.doesNotMatch(container.textContent, bannedLegacyLanguage);
+dom.window.close();
+delete globalThis.window;
+delete globalThis.document;
 
 console.log(`twr-writing: PASS (${lessonIds.length} lesson configurations)`);
