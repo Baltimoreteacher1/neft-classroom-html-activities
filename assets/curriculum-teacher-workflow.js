@@ -358,6 +358,30 @@
     return doc;
   }
 
+  // Deep-links this lesson into the full Lesson Plan Generator, pre-filled with
+  // the real standard/title/objective/time so it auto-generates the complete
+  // 14-section editable plan (with Word/PDF export) instead of a generic guess.
+  // Opens in a new tab so the teacher keeps the hub open.
+  function generatorLink(lesson) {
+    var query = new URLSearchParams({
+      standard: lesson.standard || "",
+      topic: lesson.title || "",
+      focus: lesson.objective || "",
+      length: lesson.timeEstimate || "",
+      autogen: "1",
+    });
+    var node = link(
+      "Full plan + Word →",
+      "/teacher-tools/lesson-plan-generator/?" + query.toString(),
+      "ctw-generator",
+    );
+    node.target = "_blank";
+    node.rel = "noopener";
+    node.title =
+      "Open this lesson in the Lesson Plan Generator — full editable 14-section plan with Word/PDF export";
+    return node;
+  }
+
   function printLessonPlan(lesson, readiness, support) {
     var host = document.getElementById("ctw-plan-print");
     if (host) host.remove();
@@ -461,6 +485,7 @@
         printLessonPlan(lesson, readiness, support);
       }),
     );
+    actions.appendChild(generatorLink(lesson));
     actions.appendChild(
       button(
         (state.favorites || []).includes(lesson.id) ? "★ Favorited" : "☆ Favorite",

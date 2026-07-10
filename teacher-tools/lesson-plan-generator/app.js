@@ -1858,9 +1858,44 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
     els.fDate.value = local.toISOString().slice(0, 10);
   }
 
+  /* Deep-link intake — lets the Curriculum Hub (or any link) open the generator
+   * pre-filled for a specific lesson and optionally auto-generate. Supported
+   * query params: standard, topic (unit), focus (lesson focus/objective),
+   * length, date, grade, autogen (1|true). A bad or empty query is a no-op, so
+   * a normal visit is unaffected. */
+  function applyDeepLink() {
+    var params;
+    try {
+      params = new URLSearchParams(location.search);
+    } catch (e) {
+      return;
+    }
+    if (!params.toString()) return;
+    var setIf = function (elm, val) {
+      if (elm && val) elm.value = val;
+    };
+    setIf(els.fStandards, params.get("standard"));
+    setIf(els.fUnit, params.get("topic"));
+    setIf(els.fFocus, params.get("focus"));
+    setIf(els.fLength, params.get("length"));
+    setIf(els.fDate, params.get("date"));
+    setIf(els.fGrade, params.get("grade"));
+    var autogen = params.get("autogen");
+    if (
+      (autogen === "1" || autogen === "true") &&
+      (els.fUnit.value || els.fFocus.value || els.fStandards.value)
+    ) {
+      // Defer so all wiring/output-card state is ready before the pipeline runs.
+      setTimeout(function () {
+        generate();
+      }, 0);
+    }
+  }
+
   window.__LPG__ = { buildContentMap, gatherFields, runQA, renderPlanHtml };
 
   initTheme();
   setDefaultDate();
   wire();
+  applyDeepLink();
 })();
