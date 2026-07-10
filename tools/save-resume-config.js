@@ -83,7 +83,10 @@ export const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
 //   - games-live/*               → ephemeral live multiplayer host/join lobby
 //   - games/3d/*                 → 3D game launchers (no form fields / canvas)
 //   - math/intervention/index.html → the intervention nav hub (links only)
+//   - math/student-board/index.html → the live Class Board (teacher-authored,
+//     student-visible display; its own state lives in D1 via /api/board, not in
+//     the generic student save/resume widget)
 // (The math/intervention/<topic>/ pages DO carry student self-assessment +
 // quiz state and are intentionally NOT excluded.)
 export const SKIP_PATH_RE =
-  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|games-live\/|games\/3d\/|math\/intervention\/index\.html$)/i;
+  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|games-live\/|games\/3d\/|math\/(?:intervention|student-board)\/index\.html$)/i;

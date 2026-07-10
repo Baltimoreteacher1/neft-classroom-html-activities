@@ -1,0 +1,1503 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="The Class Board — a live daily board for Mr. Neft's Grade 6 math class: this week's guide, learning targets, work groups, ALEKS minute goals, and shout-outs. Teacher-edited, student-visible, updates live."
+    />
+    <title>Class Board — Neft Teacher Grade 6 Math</title>
+    <meta name="theme-color" content="#15487f" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap"
+    />
+    <style>
+      :root {
+        --navy: #15487f;
+        --navy-deep: #0f3763;
+        --teal: #205fa6;
+        --green: #256b5b;
+        --amber: #b8791f;
+        --cream: #eef3f9;
+        --paper: #ffffff;
+        --ink: #14223a;
+        --ink-soft: #47566d;
+        --line: #d7e0ec;
+        --shadow: 0 10px 30px rgba(15, 55, 99, 0.1);
+        --shadow-lg: 0 22px 60px rgba(15, 55, 99, 0.18);
+        --radius: 20px;
+        /* pod accent palette — calm, distinct, AA on white */
+        --pod-1: #2563a6;
+        --pod-2: #2f7d5b;
+        --pod-3: #9a5a1e;
+        --pod-4: #7048a8;
+        --pod-5: #b03a63;
+        --pod-6: #1f7f92;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        margin: 0;
+        font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+        color: var(--ink);
+        background: radial-gradient(1200px 600px at 12% -10%, #e7eefb 0%, var(--cream) 55%) fixed;
+        line-height: 1.5;
+        min-height: 100vh;
+      }
+      h1,
+      h2,
+      h3,
+      .display {
+        font-family: "Nunito", "Atkinson Hyperlegible", sans-serif;
+        margin: 0;
+        line-height: 1.15;
+      }
+      a {
+        color: var(--teal);
+      }
+      .wrap {
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 18px clamp(14px, 3vw, 34px) 64px;
+      }
+
+      /* ---------- top bar ---------- */
+      .topbar {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        padding: 12px 4px 18px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-right: auto;
+      }
+      .brand .mark {
+        width: 46px;
+        height: 46px;
+        border-radius: 13px;
+        background: linear-gradient(135deg, var(--teal), var(--navy));
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 24px;
+        box-shadow: var(--shadow);
+      }
+      .brand b {
+        font-family: "Nunito", sans-serif;
+        font-size: 15px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--navy);
+        display: block;
+      }
+      .brand span {
+        font-size: 13px;
+        color: var(--ink-soft);
+      }
+      .clock {
+        text-align: right;
+        font-family: "Nunito", sans-serif;
+      }
+      .clock .time {
+        font-size: 24px;
+        font-weight: 900;
+        color: var(--navy);
+        font-variant-numeric: tabular-nums;
+      }
+      .clock .date {
+        font-size: 13px;
+        color: var(--ink-soft);
+      }
+      .live-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 7px 13px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--ink-soft);
+        box-shadow: var(--shadow);
+      }
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 0 0 rgba(37, 107, 91, 0.5);
+        animation: pulse 2.4s infinite;
+      }
+      .dot.stale {
+        background: var(--amber);
+        animation: none;
+      }
+      .dot.off {
+        background: #b0bccd;
+        animation: none;
+      }
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(37, 107, 91, 0.5);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(37, 107, 91, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(37, 107, 91, 0);
+        }
+      }
+      .btn {
+        font-family: "Nunito", sans-serif;
+        font-weight: 800;
+        font-size: 14px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--navy);
+        border-radius: 12px;
+        padding: 9px 15px;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+        transition:
+          transform 0.12s ease,
+          box-shadow 0.12s ease;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-lg);
+      }
+      .btn.primary {
+        background: linear-gradient(135deg, var(--teal), var(--navy));
+        color: #fff;
+        border-color: transparent;
+      }
+      .btn.ghost {
+        background: transparent;
+        box-shadow: none;
+      }
+      .btn:focus-visible {
+        outline: 3px solid var(--amber);
+        outline-offset: 2px;
+      }
+
+      /* ---------- hero ---------- */
+      .hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 26px;
+        color: #fff;
+        padding: clamp(22px, 3.4vw, 40px);
+        background: linear-gradient(120deg, var(--navy-deep), var(--teal) 70%, #2b7fbf);
+        box-shadow: var(--shadow-lg);
+      }
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          600px 260px at 90% -30%,
+          rgba(255, 255, 255, 0.22),
+          transparent 60%
+        );
+        pointer-events: none;
+      }
+      .hero .eyebrow {
+        font-family: "Nunito", sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 13px;
+        font-weight: 800;
+        opacity: 0.85;
+        margin: 0 0 6px;
+      }
+      .hero h1 {
+        font-size: clamp(30px, 5vw, 54px);
+        font-weight: 900;
+        letter-spacing: -0.01em;
+      }
+      .hero .theme {
+        font-size: clamp(16px, 2.2vw, 22px);
+        font-weight: 700;
+        margin-top: 8px;
+        opacity: 0.95;
+      }
+      .hero .banner {
+        margin-top: 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 16px;
+        padding: 14px 18px;
+        backdrop-filter: blur(3px);
+      }
+      .hero .banner .emoji {
+        font-size: 34px;
+        line-height: 1;
+      }
+      .hero .banner .txt b {
+        display: block;
+        font-family: "Nunito", sans-serif;
+        font-size: 18px;
+      }
+      .hero .banner .txt span {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      /* ---------- focus rail ---------- */
+      .rail {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 18px;
+      }
+      .focus {
+        background: var(--paper);
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        border-top: 5px solid var(--teal);
+        padding: 18px 20px;
+        box-shadow: var(--shadow);
+        position: relative;
+      }
+      .focus.now {
+        border-top-color: var(--green);
+      }
+      .focus.next {
+        border-top-color: var(--amber);
+      }
+      .focus.target {
+        border-top-color: var(--pod-4);
+      }
+      .focus .lab {
+        font-family: "Nunito", sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--ink-soft);
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .focus .big {
+        font-family: "Nunito", sans-serif;
+        font-size: clamp(19px, 2.3vw, 26px);
+        font-weight: 800;
+        margin-top: 8px;
+        color: var(--ink);
+      }
+      .focus .sub {
+        font-size: 14px;
+        color: var(--ink-soft);
+        margin-top: 6px;
+      }
+
+      /* ---------- section grid ---------- */
+      .grid {
+        display: grid;
+        grid-template-columns: 1.55fr 1fr;
+        gap: 18px;
+        margin-top: 18px;
+        align-items: start;
+      }
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 20px 22px;
+        box-shadow: var(--shadow);
+      }
+      .card > h2 {
+        font-size: 20px;
+        font-weight: 900;
+        color: var(--navy);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 4px;
+      }
+      .card > h2 .ico {
+        font-size: 22px;
+      }
+      .card .hint {
+        font-size: 13px;
+        color: var(--ink-soft);
+        margin: 2px 0 14px;
+      }
+
+      /* weekly guide */
+      .week {
+        display: grid;
+        gap: 10px;
+      }
+      .day {
+        display: grid;
+        grid-template-columns: 84px 1fr;
+        gap: 14px;
+        align-items: stretch;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px 14px;
+        background: linear-gradient(180deg, #fff, #fafcff);
+      }
+      .day.today {
+        border-color: var(--teal);
+        box-shadow: inset 4px 0 0 var(--teal);
+        background: linear-gradient(180deg, #fff, #f2f7ff);
+      }
+      .day .dname {
+        font-family: "Nunito", sans-serif;
+        font-weight: 900;
+        color: var(--navy);
+      }
+      .day .dname small {
+        display: block;
+        font-weight: 700;
+        color: var(--ink-soft);
+        font-size: 12px;
+      }
+      .day .dbody ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+      .day .dbody li {
+        margin: 2px 0;
+      }
+      .day .dtag {
+        display: inline-block;
+        margin-top: 6px;
+        font-size: 12px;
+        font-weight: 800;
+        font-family: "Nunito", sans-serif;
+        color: var(--green);
+        background: rgba(37, 107, 91, 0.1);
+        border-radius: 999px;
+        padding: 3px 10px;
+      }
+
+      /* groups */
+      .pods {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 12px;
+      }
+      .pod {
+        border-radius: 16px;
+        padding: 14px 15px;
+        color: #fff;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+      .pod::after {
+        content: "";
+        position: absolute;
+        right: -30px;
+        top: -30px;
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.14);
+      }
+      .pod h3 {
+        font-size: 17px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .pod .task {
+        font-size: 13px;
+        opacity: 0.95;
+        margin-top: 3px;
+      }
+      .pod .members {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+      }
+      .pod .chip {
+        background: rgba(255, 255, 255, 0.22);
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      /* aleks tracker */
+      .aleks-top {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .ring {
+        --p: 0;
+        width: 132px;
+        height: 132px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        flex: none;
+        background: conic-gradient(var(--green) calc(var(--p) * 1%), #e6edf5 0);
+        transition: background 0.8s ease;
+      }
+      .ring .inner {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: #fff;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        box-shadow: inset 0 0 0 1px var(--line);
+      }
+      .ring .inner b {
+        font-family: "Nunito", sans-serif;
+        font-size: 26px;
+        font-weight: 900;
+        color: var(--navy);
+        display: block;
+      }
+      .ring .inner small {
+        font-size: 11px;
+        color: var(--ink-soft);
+      }
+      .aleks-note {
+        font-size: 14px;
+        color: var(--ink-soft);
+      }
+      .aleks-note b {
+        color: var(--navy);
+        font-family: "Nunito", sans-serif;
+      }
+      .bars {
+        margin-top: 14px;
+        display: grid;
+        gap: 9px;
+      }
+      .bar-row {
+        display: grid;
+        grid-template-columns: 96px 1fr 48px;
+        gap: 10px;
+        align-items: center;
+        font-size: 14px;
+      }
+      .bar-row .who {
+        font-weight: 700;
+      }
+      .bar {
+        height: 14px;
+        border-radius: 999px;
+        background: #e6edf5;
+        overflow: hidden;
+      }
+      .bar > span {
+        display: block;
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--teal), var(--green));
+        width: 0;
+        transition: width 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+      }
+      .bar-row.hit .bar > span {
+        background: linear-gradient(90deg, var(--green), #2f9e79);
+      }
+      .bar-row .val {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+        color: var(--ink-soft);
+      }
+
+      /* lists */
+      .stack {
+        display: grid;
+        gap: 12px;
+      }
+      .note {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px 14px;
+        background: #fff;
+      }
+      .note .e {
+        font-size: 22px;
+        line-height: 1;
+      }
+      .note p {
+        margin: 0;
+        font-size: 15px;
+      }
+      .shout {
+        background: linear-gradient(135deg, #fff, #fff8ec);
+        border-color: #f0dcb6;
+      }
+      .shout .name {
+        font-family: "Nunito", sans-serif;
+        font-weight: 900;
+        color: var(--amber);
+      }
+
+      .col-side {
+        display: grid;
+        gap: 18px;
+      }
+
+      /* ---------- teacher editing ---------- */
+      [contenteditable="true"] {
+        outline: 2px dashed rgba(32, 95, 166, 0.55);
+        outline-offset: 2px;
+        border-radius: 6px;
+        background: rgba(32, 95, 166, 0.05);
+        cursor: text;
+      }
+      [contenteditable="true"]:focus {
+        outline: 2px solid var(--teal);
+        background: rgba(32, 95, 166, 0.1);
+      }
+      .edit-only {
+        display: none;
+      }
+      body.edit .edit-only {
+        display: inline-flex;
+      }
+      .mini {
+        font-family: "Nunito", sans-serif;
+        font-weight: 800;
+        font-size: 12px;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 9px;
+        padding: 4px 9px;
+        cursor: pointer;
+        color: var(--navy);
+        margin-left: 6px;
+      }
+      .mini.danger {
+        color: var(--pod-5);
+        border-color: #e9cdd8;
+      }
+      .row-tools {
+        margin-top: 10px;
+      }
+      .edit-banner {
+        display: none;
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        background: #10233d;
+        color: #fff;
+        border-radius: 14px;
+        padding: 12px 16px;
+        margin-bottom: 14px;
+        box-shadow: var(--shadow-lg);
+      }
+      body.edit .edit-banner {
+        display: flex;
+      }
+      .edit-banner b {
+        font-family: "Nunito", sans-serif;
+      }
+      .edit-banner .grow {
+        margin-left: auto;
+      }
+      .edit-banner input,
+      .edit-banner select {
+        font-family: "Atkinson Hyperlegible", sans-serif;
+        border-radius: 9px;
+        border: 1px solid #33507a;
+        background: #0c1a30;
+        color: #fff;
+        padding: 7px 10px;
+        font-size: 14px;
+      }
+      .save-state {
+        font-size: 13px;
+        opacity: 0.9;
+      }
+
+      /* ---------- footer ---------- */
+      .foot {
+        margin-top: 26px;
+        text-align: center;
+        color: var(--ink-soft);
+        font-size: 13px;
+      }
+      .foot a {
+        font-weight: 700;
+      }
+
+      /* ---------- present / fullscreen ---------- */
+      body.present .topbar,
+      body.present .foot,
+      body.present .edit-banner {
+        display: none;
+      }
+      body.present .wrap {
+        padding-top: 8px;
+      }
+
+      /* ---------- confetti ---------- */
+      .confetti {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 50;
+      }
+      .confetti i {
+        position: absolute;
+        top: -12px;
+        width: 9px;
+        height: 14px;
+        opacity: 0.9;
+        animation: fall linear forwards;
+      }
+      @keyframes fall {
+        to {
+          transform: translateY(105vh) rotate(540deg);
+          opacity: 0;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .rail,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.001ms !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <!-- Teacher control banner (only in edit mode) -->
+      <div class="edit-banner" role="region" aria-label="Teacher board controls">
+        <b>✏️ Teacher edit mode</b>
+        <span class="save-state" id="saveState">Local changes not published</span>
+        <select id="boardSel" title="Which board / section">
+          <option value="main">All Classes</option>
+          <option value="601">Period 601</option>
+          <option value="602">Period 602</option>
+          <option value="603">Period 603</option>
+        </select>
+        <span class="grow"></span>
+        <button class="btn ghost" id="addDayBtn" style="color: #fff; border-color: #33507a">
+          + Group
+        </button>
+        <button class="btn ghost" id="resetBtn" style="color: #fff; border-color: #33507a">
+          Reset
+        </button>
+        <button class="btn primary" id="publishBtn">Publish to students</button>
+        <button class="btn ghost" id="exitEditBtn" style="color: #fff; border-color: #33507a">
+          Done
+        </button>
+      </div>
+
+      <!-- Top bar -->
+      <div class="topbar">
+        <div class="brand">
+          <div class="mark">🧭</div>
+          <div>
+            <b>The Class Board</b>
+            <span>Neft Teacher · Grade 6 Math</span>
+          </div>
+        </div>
+        <span class="live-pill"
+          ><span class="dot" id="liveDot"></span><span id="liveTxt">Live</span></span
+        >
+        <div class="clock">
+          <div class="time" id="clockTime">—</div>
+          <div class="date" id="clockDate">—</div>
+        </div>
+        <button class="btn ghost" id="presentBtn" title="Fullscreen for the projector">
+          ⛶ Present
+        </button>
+        <button class="btn" id="teacherBtn" title="Teacher edit mode">✏️ Edit</button>
+      </div>
+
+      <!-- Hero -->
+      <section class="hero">
+        <p class="eyebrow" data-edit="week.eyebrow">This Week</p>
+        <h1 data-edit="week.label">Loading the board…</h1>
+        <div class="theme" data-edit="week.theme">—</div>
+        <div class="banner">
+          <span class="emoji" data-edit="banner.emoji">📌</span>
+          <div class="txt">
+            <b data-edit="banner.headline">Welcome!</b>
+            <span data-edit="banner.subtext">Your daily plan lives here.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Focus rail -->
+      <div class="rail">
+        <div class="focus now">
+          <div class="lab">🟢 Right Now</div>
+          <div class="big" data-edit="focus.now">—</div>
+          <div class="sub" data-edit="focus.nowSub">—</div>
+        </div>
+        <div class="focus next">
+          <div class="lab">⏭️ Up Next</div>
+          <div class="big" data-edit="focus.next">—</div>
+          <div class="sub" data-edit="focus.nextSub">—</div>
+        </div>
+        <div class="focus target">
+          <div class="lab">🎯 Today's Target</div>
+          <div class="big" data-edit="focus.target">—</div>
+          <div class="sub" data-edit="focus.targetSub">—</div>
+        </div>
+      </div>
+
+      <!-- Main grid -->
+      <div class="grid">
+        <div class="col-main" style="display: grid; gap: 18px">
+          <!-- Weekly guide -->
+          <section class="card">
+            <h2><span class="ico">🗓️</span> This Week's Guide</h2>
+            <p class="hint">
+              What we're doing each day. Look for the highlighted row — that's today.
+            </p>
+            <div class="week" id="week"></div>
+          </section>
+
+          <!-- Groups -->
+          <section class="card">
+            <h2><span class="ico">👥</span> Work Groups Today</h2>
+            <p class="hint">Find your name. Your group and your job for today are on your card.</p>
+            <div class="pods" id="pods"></div>
+          </section>
+        </div>
+
+        <div class="col-side">
+          <!-- ALEKS -->
+          <section class="card">
+            <h2><span class="ico">📊</span> ALEKS Minutes</h2>
+            <p class="hint" data-edit="aleks.note">Goal this week. Keep your streak going!</p>
+            <div class="aleks-top">
+              <div class="ring" id="aleksRing">
+                <div class="inner"><b id="aleksPct">0%</b><small>of goal</small></div>
+              </div>
+              <div class="aleks-note">
+                Class goal: <b><span data-edit="aleks.goal">60</span> min</b> each<br />
+                Total logged: <b id="aleksTotal">0</b> min<br />
+                <span id="aleksOnTrack"></span>
+              </div>
+            </div>
+            <div class="bars" id="aleksBars"></div>
+            <div class="row-tools edit-only">
+              <button class="mini" id="addAleksBtn">+ Add student</button>
+            </div>
+          </section>
+
+          <!-- Announcements -->
+          <section class="card">
+            <h2><span class="ico">📣</span> Announcements</h2>
+            <div class="stack" id="notes"></div>
+            <div class="row-tools edit-only">
+              <button class="mini" id="addNoteBtn">+ Announcement</button>
+            </div>
+          </section>
+
+          <!-- Shout-outs -->
+          <section class="card">
+            <h2><span class="ico">🌟</span> Shout-Outs</h2>
+            <p class="hint">Great work this week — keep it up!</p>
+            <div class="stack" id="shouts"></div>
+            <div class="row-tools edit-only">
+              <button class="mini" id="addShoutBtn">+ Shout-out</button>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div class="foot">
+        The Class Board · <a href="/math/">Math Home</a> · <a href="/curriculum/">Curriculum Hub</a
+        ><br />
+        <span id="footStamp"></span>
+      </div>
+    </div>
+
+    <script>
+      "use strict";
+      // ===================================================================
+      // The Class Board — live, teacher-edited, student-visible.
+      // Data is stored in D1 via /api/board; falls back to localStorage.
+      // ===================================================================
+      const TEACHER_PIN = "TeacherNeft"; // matches the site-wide teacher toggle
+      const POD_COLORS = [
+        "var(--pod-1)",
+        "var(--pod-2)",
+        "var(--pod-3)",
+        "var(--pod-4)",
+        "var(--pod-5)",
+        "var(--pod-6)",
+      ];
+      const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+
+      function seed() {
+        return {
+          week: {
+            eyebrow: "This Week",
+            label: "Week of the Ratio Lab",
+            theme: "Unit 1 · Ratios & Rates — thinking in comparisons",
+          },
+          banner: {
+            emoji: "🚀",
+            headline: "New unit starts today!",
+            subtext: "Bring a sharp pencil, your notebook, and your best thinking.",
+          },
+          focus: {
+            now: "Warm-Up: Ratio Number Talk",
+            nowSub: "Silent solve, then share your strategy.",
+            next: "Explore: Mixing Paint Ratios",
+            nextSub: "Table groups build a ratio table together.",
+            target: "I can write and compare ratios.",
+            targetSub: "Show it 3 ways: words, a table, and a picture.",
+          },
+          agenda: [
+            { items: ["Number Talk", "Vocabulary: ratio, rate, per"], tag: "ALEKS: 15 min" },
+            { items: ["Explore ratio tables", "Partner practice"], tag: "Quiz Thu" },
+            { items: ["Double number lines", "Show Your Work journal"], tag: "" },
+            { items: ["Unit rate stations", "Exit ticket"], tag: "Quiz today" },
+            {
+              items: ["Ratio Reasoning Challenge", "Reflect & set next goal"],
+              tag: "ALEKS: 20 min",
+            },
+          ],
+          groups: [
+            {
+              name: "Blue Jays",
+              emoji: "🐦",
+              task: "Ratio tables — Station A",
+              members: ["Ava", "Marcus", "Lena", "Diego"],
+            },
+            {
+              name: "Green Foxes",
+              emoji: "🦊",
+              task: "Double number lines — Station B",
+              members: ["Sofia", "Isaiah", "Priya", "Noah"],
+            },
+            {
+              name: "Amber Owls",
+              emoji: "🦉",
+              task: "Unit rate — Station C",
+              members: ["Kai", "Maya", "Omar", "Ella"],
+            },
+            {
+              name: "Violet Wolves",
+              emoji: "🐺",
+              task: "Challenge problems",
+              members: ["Leo", "Zoe", "Amir", "Nina"],
+            },
+          ],
+          aleks: {
+            goal: 60,
+            note: "Log your minutes at home and in class. We celebrate effort, not just answers.",
+            students: [
+              { name: "Ava", minutes: 62 },
+              { name: "Marcus", minutes: 48 },
+              { name: "Sofia", minutes: 70 },
+              { name: "Kai", minutes: 35 },
+              { name: "Leo", minutes: 55 },
+              { name: "Priya", minutes: 60 },
+            ],
+          },
+          notes: [
+            {
+              emoji: "📝",
+              text: "Unit 1 vocab quiz is Thursday — flashcards are on the Curriculum Hub.",
+            },
+            { emoji: "🏠", text: "Homework: ALEKS 3 topics + Lesson 1-1 reflection." },
+            {
+              emoji: "🤝",
+              text: "Reminder: help your group before you ask me. Be a first responder!",
+            },
+          ],
+          shouts: [
+            { name: "Sofia", text: "hit her ALEKS goal 3 weeks in a row! 🔥" },
+            { name: "Table 2", text: "for an amazing math argument during the Number Talk." },
+          ],
+        };
+      }
+
+      // ---- state + backend --------------------------------------------
+      let state = seed();
+      let boardId = "main";
+      let serverUpdatedAt = 0;
+      let dirty = false;
+      let editing = false;
+
+      const $ = (s, r = document) => r.querySelector(s);
+      const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+      function keyLS() {
+        return "nt-board-" + boardId;
+      }
+      function teacherKey() {
+        return localStorage.getItem("nt-board-teacher-key") || "";
+      }
+
+      function get(obj, path) {
+        return path.split(".").reduce((o, k) => (o == null ? undefined : o[k]), obj);
+      }
+      function set(obj, path, val) {
+        const parts = path.split(".");
+        const last = parts.pop();
+        let o = obj;
+        for (const p of parts) o = o[p] = o[p] || {};
+        o[last] = val;
+      }
+
+      async function loadBoard() {
+        // 1) local cache for instant paint
+        try {
+          const cached = JSON.parse(localStorage.getItem(keyLS()) || "null");
+          if (cached && cached.state) {
+            state = cached.state;
+            serverUpdatedAt = cached.updatedAt || 0;
+          }
+        } catch {}
+        render();
+        // 2) authoritative fetch
+        try {
+          const r = await fetch("/api/board/get?board=" + encodeURIComponent(boardId), {
+            cache: "no-store",
+          });
+          if (r.ok) {
+            const d = await r.json();
+            if (d.ok && d.state && (d.updatedAt || 0) >= serverUpdatedAt) {
+              if (!dirty) {
+                state = d.state;
+                serverUpdatedAt = d.updatedAt || 0;
+                cacheLocal();
+                render();
+              }
+              setLive("live", d.updatedAt);
+            } else if (d.ok && !d.state) {
+              setLive("live", 0);
+            }
+          } else {
+            setLive("local");
+          }
+        } catch {
+          setLive("local");
+        }
+      }
+
+      function cacheLocal() {
+        try {
+          localStorage.setItem(keyLS(), JSON.stringify({ state, updatedAt: serverUpdatedAt }));
+        } catch {}
+      }
+
+      async function publish() {
+        const now = Date.now();
+        setSaveState("Publishing…");
+        try {
+          const r = await fetch("/api/board/save?board=" + encodeURIComponent(boardId), {
+            method: "PUT",
+            headers: { "content-type": "application/json", "x-teacher-key": teacherKey() },
+            body: JSON.stringify({ state, updatedAt: now, updatedBy: "teacher" }),
+          });
+          const d = await r.json().catch(() => ({}));
+          if (r.status === 401) {
+            const k = prompt(
+              "This board is protected. Enter the teacher key to publish:",
+              teacherKey(),
+            );
+            if (k) {
+              localStorage.setItem("nt-board-teacher-key", k);
+              return publish();
+            }
+            setSaveState("Publish cancelled — key required");
+            return;
+          }
+          if (r.ok && d.ok) {
+            serverUpdatedAt = d.updatedAt || now;
+            dirty = false;
+            cacheLocal();
+            setSaveState(
+              d.kept === "server"
+                ? "A newer copy was already saved"
+                : "✓ Published — students see it now",
+            );
+            setLive("live", serverUpdatedAt);
+          } else if (r.status === 503) {
+            // No backend configured — still saved locally on this device.
+            dirty = false;
+            cacheLocal();
+            setSaveState("Saved on this device (cloud board not enabled)");
+          } else {
+            setSaveState("Could not publish (" + (d.error || r.status) + ") — saved locally");
+            cacheLocal();
+          }
+        } catch {
+          setSaveState("Offline — saved locally, will need re-publish");
+          cacheLocal();
+        }
+      }
+
+      function setSaveState(msg) {
+        const el = $("#saveState");
+        if (el) el.textContent = msg;
+      }
+      function markDirty() {
+        dirty = true;
+        setSaveState("Local changes not published");
+      }
+
+      function setLive(kind, updatedAt) {
+        const dot = $("#liveDot"),
+          txt = $("#liveTxt");
+        if (!dot) return;
+        dot.className = "dot";
+        if (kind === "local") {
+          dot.classList.add("off");
+          txt.textContent = "Local";
+        } else {
+          const ago = updatedAt ? Date.now() - updatedAt : 0;
+          if (updatedAt && ago > 1000 * 60 * 60 * 20) {
+            dot.classList.add("stale");
+          }
+          txt.textContent = updatedAt ? "Updated " + relTime(updatedAt) : "Live";
+        }
+        const stamp = $("#footStamp");
+        if (stamp)
+          stamp.textContent = updatedAt
+            ? "Last updated " + new Date(updatedAt).toLocaleString()
+            : "Showing the starter board";
+      }
+      function relTime(ts) {
+        const s = Math.round((Date.now() - ts) / 1000);
+        if (s < 60) return "just now";
+        const m = Math.round(s / 60);
+        if (m < 60) return m + " min ago";
+        const h = Math.round(m / 60);
+        if (h < 24) return h + " hr ago";
+        return Math.round(h / 24) + " day(s) ago";
+      }
+
+      // ---- rendering ---------------------------------------------------
+      function esc(s) {
+        return String(s == null ? "" : s).replace(
+          /[<>&]/g,
+          (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" })[c],
+        );
+      }
+      function todayIdx() {
+        const d = new Date().getDay();
+        return d >= 1 && d <= 5 ? d - 1 : -1;
+      }
+
+      function bindEditables() {
+        $$("[data-edit]").forEach((el) => {
+          const path = el.getAttribute("data-edit");
+          el.textContent = get(state, path) ?? "";
+          el.contentEditable = editing ? "true" : "false";
+          el.oninput = editing
+            ? () => {
+                set(state, path, el.textContent.trim());
+                markDirty();
+              }
+            : null;
+        });
+      }
+
+      function render() {
+        bindEditables();
+        renderWeek();
+        renderPods();
+        renderAleks();
+        renderNotes();
+        renderShouts();
+      }
+
+      function renderWeek() {
+        const host = $("#week");
+        if (!host) return;
+        const ti = todayIdx();
+        host.innerHTML = state.agenda
+          .map((d, i) => {
+            const items = (d.items || [])
+              .map(
+                (x, j) =>
+                  `<li ${editing ? `contenteditable="true" data-day="${i}" data-item="${j}"` : ""}>${esc(x)}</li>`,
+              )
+              .join("");
+            const tag = d.tag
+              ? `<span class="dtag" ${editing ? `contenteditable="true" data-day="${i}" data-tag="1"` : ""}>${esc(d.tag)}</span>`
+              : editing
+                ? `<span class="dtag" contenteditable="true" data-day="${i}" data-tag="1">add tag</span>`
+                : "";
+            return `<div class="day ${i === ti ? "today" : ""}">
+              <div class="dname">${DAYS[i]}${i === ti ? "<small>Today</small>" : ""}</div>
+              <div class="dbody"><ul>${items}</ul>${tag}
+              ${editing ? `<div class="row-tools"><button class="mini" data-additem="${i}">+ item</button></div>` : ""}</div>
+            </div>`;
+          })
+          .join("");
+        if (editing) {
+          $$("#week [data-item]", document).forEach(
+            (li) =>
+              (li.oninput = () => {
+                state.agenda[+li.dataset.day].items[+li.dataset.item] = li.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#week [data-tag]", document).forEach(
+            (t) =>
+              (t.oninput = () => {
+                state.agenda[+t.dataset.day].tag = t.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#week [data-additem]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                state.agenda[+b.dataset.additem].items.push("New item");
+                markDirty();
+                renderWeek();
+              }),
+          );
+        }
+      }
+
+      function renderPods() {
+        const host = $("#pods");
+        if (!host) return;
+        host.innerHTML = state.groups
+          .map((g, i) => {
+            const color = POD_COLORS[i % POD_COLORS.length];
+            const members = (g.members || [])
+              .map(
+                (m, j) =>
+                  `<span class="chip" ${editing ? `contenteditable="true" data-grp="${i}" data-mem="${j}"` : ""}>${esc(m)}</span>`,
+              )
+              .join("");
+            return `<div class="pod" style="background:linear-gradient(135deg, ${color}, ${color})">
+              <h3><span ${editing ? `contenteditable="true" data-grp="${i}" data-emoji="1"` : ""}>${esc(g.emoji || "•")}</span>
+                  <span ${editing ? `contenteditable="true" data-grp="${i}" data-name="1"` : ""}>${esc(g.name)}</span></h3>
+              <div class="task" ${editing ? `contenteditable="true" data-grp="${i}" data-task="1"` : ""}>${esc(g.task || "")}</div>
+              <div class="members">${members}</div>
+              ${editing ? `<div class="row-tools"><button class="mini" data-addmem="${i}">+ name</button><button class="mini danger" data-delgrp="${i}">✕ group</button></div>` : ""}
+            </div>`;
+          })
+          .join("");
+        if (editing) {
+          const bind = (attr, fn) =>
+            $$(`#pods [data-${attr}]`).forEach(
+              (el) =>
+                (el.oninput = () => {
+                  fn(el);
+                  markDirty();
+                }),
+            );
+          bind("name", (el) => (state.groups[+el.dataset.grp].name = el.textContent.trim()));
+          bind("emoji", (el) => (state.groups[+el.dataset.grp].emoji = el.textContent.trim()));
+          bind("task", (el) => (state.groups[+el.dataset.grp].task = el.textContent.trim()));
+          $$("#pods [data-mem]").forEach(
+            (el) =>
+              (el.oninput = () => {
+                state.groups[+el.dataset.grp].members[+el.dataset.mem] = el.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#pods [data-addmem]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                state.groups[+b.dataset.addmem].members.push("Name");
+                markDirty();
+                renderPods();
+              }),
+          );
+          $$("#pods [data-delgrp]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                state.groups.splice(+b.dataset.delgrp, 1);
+                markDirty();
+                renderPods();
+              }),
+          );
+        }
+      }
+
+      function renderAleks() {
+        const goal = Number(state.aleks.goal) || 60;
+        const studs = state.aleks.students || [];
+        const total = studs.reduce((a, s) => a + (Number(s.minutes) || 0), 0);
+        const avgPct = studs.length ? Math.round((total / (goal * studs.length)) * 100) : 0;
+        const ring = $("#aleksRing");
+        ring.style.setProperty("--p", Math.min(avgPct, 100));
+        $("#aleksPct").textContent = avgPct + "%";
+        $("#aleksTotal").textContent = total;
+        const met = studs.filter((s) => (Number(s.minutes) || 0) >= goal).length;
+        $("#aleksOnTrack").innerHTML = studs.length
+          ? `<b>${met}/${studs.length}</b> hit goal 🎉`
+          : "";
+        $("#aleksBars").innerHTML = studs
+          .map((s, i) => {
+            const min = Number(s.minutes) || 0;
+            const pct = Math.min(Math.round((min / goal) * 100), 100);
+            const hit = min >= goal;
+            return `<div class="bar-row ${hit ? "hit" : ""}">
+              <span class="who" ${editing ? `contenteditable="true" data-al="${i}" data-alname="1"` : ""}>${esc(s.name)}</span>
+              <span class="bar"><span style="width:${pct}%"></span></span>
+              <span class="val" ${editing ? `contenteditable="true" data-al="${i}" data-almin="1"` : ""}>${min}${hit ? "✓" : ""}</span>
+            </div>`;
+          })
+          .join("");
+        if (editing) {
+          $$("#aleksBars [data-alname]").forEach(
+            (el) =>
+              (el.oninput = () => {
+                studs[+el.dataset.al].name = el.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#aleksBars [data-almin]").forEach(
+            (el) =>
+              (el.oninput = () => {
+                studs[+el.dataset.al].minutes = parseInt(el.textContent, 10) || 0;
+                markDirty();
+              }),
+          );
+        }
+      }
+
+      function renderNotes() {
+        const host = $("#notes");
+        if (!host) return;
+        host.innerHTML = (state.notes || [])
+          .map(
+            (n, i) =>
+              `<div class="note"><span class="e" ${editing ? `contenteditable="true" data-note="${i}" data-ne="1"` : ""}>${esc(n.emoji || "•")}</span>
+             <p ${editing ? `contenteditable="true" data-note="${i}" data-nt="1"` : ""}>${esc(n.text)}</p>
+             ${editing ? `<button class="mini danger" data-delnote="${i}">✕</button>` : ""}</div>`,
+          )
+          .join("");
+        if (editing) {
+          $$("#notes [data-ne]").forEach(
+            (el) =>
+              (el.oninput = () => {
+                state.notes[+el.dataset.note].emoji = el.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#notes [data-nt]").forEach(
+            (el) =>
+              (el.oninput = () => {
+                state.notes[+el.dataset.note].text = el.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#notes [data-delnote]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                state.notes.splice(+b.dataset.delnote, 1);
+                markDirty();
+                renderNotes();
+              }),
+          );
+        }
+      }
+
+      function renderShouts() {
+        const host = $("#shouts");
+        if (!host) return;
+        host.innerHTML = (state.shouts || [])
+          .map(
+            (s, i) =>
+              `<div class="note shout"><span class="e">🌟</span>
+             <p><span class="name" ${editing ? `contenteditable="true" data-sh="${i}" data-shn="1"` : ""}>${esc(s.name)}</span>
+                <span ${editing ? `contenteditable="true" data-sh="${i}" data-sht="1"` : ""}>${esc(s.text)}</span></p>
+             ${editing ? `<button class="mini danger" data-delsh="${i}">✕</button>` : ""}</div>`,
+          )
+          .join("");
+        if (editing) {
+          $$("#shouts [data-shn]").forEach(
+            (el) =>
+              (el.oninput = () => {
+                state.shouts[+el.dataset.sh].name = el.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#shouts [data-sht]").forEach(
+            (el) =>
+              (el.oninput = () => {
+                state.shouts[+el.dataset.sh].text = el.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#shouts [data-delsh]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                state.shouts.splice(+b.dataset.delsh, 1);
+                markDirty();
+                renderShouts();
+              }),
+          );
+        }
+      }
+
+      // ---- teacher mode ------------------------------------------------
+      function enterEdit() {
+        const stored = localStorage.getItem("nt-teacher-mode") === "on";
+        if (!stored) {
+          const pin = prompt("Teacher PIN to edit the board:");
+          if (pin !== TEACHER_PIN) {
+            if (pin !== null) alert("That PIN didn't match.");
+            return;
+          }
+          localStorage.setItem("nt-teacher-mode", "on");
+        }
+        editing = true;
+        document.body.classList.add("edit");
+        render();
+      }
+      function exitEdit() {
+        editing = false;
+        document.body.classList.remove("edit");
+        render();
+      }
+
+      // ---- confetti (subtle, respects reduced motion) ------------------
+      function celebrate() {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        const box = document.createElement("div");
+        box.className = "confetti";
+        const colors = ["#205fa6", "#256b5b", "#b8791f", "#7048a8", "#b03a63"];
+        for (let i = 0; i < 40; i++) {
+          const p = document.createElement("i");
+          p.style.left = Math.random() * 100 + "vw";
+          p.style.background = colors[i % colors.length];
+          p.style.animationDuration = 2 + Math.random() * 2 + "s";
+          p.style.animationDelay = Math.random() * 0.6 + "s";
+          box.appendChild(p);
+        }
+        document.body.appendChild(box);
+        setTimeout(() => box.remove(), 4500);
+      }
+
+      // ---- clock -------------------------------------------------------
+      function tick() {
+        const now = new Date();
+        $("#clockTime").textContent = now.toLocaleTimeString([], {
+          hour: "numeric",
+          minute: "2-digit",
+        });
+        $("#clockDate").textContent = now.toLocaleDateString([], {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+        });
+      }
+
+      // ---- wire up -----------------------------------------------------
+      $("#teacherBtn").onclick = () => (editing ? exitEdit() : enterEdit());
+      $("#exitEditBtn").onclick = exitEdit;
+      $("#publishBtn").onclick = () => {
+        publish().then(celebrate);
+      };
+      $("#resetBtn").onclick = () => {
+        if (confirm("Reset this board to the starter template? (You still need to Publish.)")) {
+          state = seed();
+          markDirty();
+          render();
+        }
+      };
+      $("#addDayBtn").onclick = () => {
+        state.groups.push({ name: "New Group", emoji: "✨", task: "Task", members: ["Name"] });
+        markDirty();
+        renderPods();
+      };
+      $("#addAleksBtn").onclick = () => {
+        state.aleks.students.push({ name: "Name", minutes: 0 });
+        markDirty();
+        renderAleks();
+      };
+      $("#addNoteBtn").onclick = () => {
+        state.notes.push({ emoji: "📌", text: "New announcement" });
+        markDirty();
+        renderNotes();
+      };
+      $("#addShoutBtn").onclick = () => {
+        state.shouts.push({ name: "Name", text: "for great work!" });
+        markDirty();
+        renderShouts();
+      };
+      $("#boardSel").onchange = (e) => {
+        if (dirty && !confirm("Switch boards? Unpublished changes will be lost.")) {
+          e.target.value = boardId;
+          return;
+        }
+        boardId = e.target.value;
+        dirty = false;
+        loadBoard();
+      };
+      $("#presentBtn").onclick = () => {
+        document.body.classList.toggle("present");
+        if (
+          document.body.classList.contains("present") &&
+          document.documentElement.requestFullscreen
+        ) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        }
+      };
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") document.body.classList.remove("present");
+      });
+
+      // Deep-link ?board=601 and ?edit=1
+      const params = new URLSearchParams(location.search);
+      if (params.get("board")) {
+        boardId =
+          params
+            .get("board")
+            .replace(/[^a-z0-9-]/gi, "")
+            .toLowerCase() || "main";
+        $("#boardSel").value = boardId;
+      }
+
+      tick();
+      setInterval(tick, 1000 * 15);
+      loadBoard();
+      if (params.get("edit") === "1") setTimeout(enterEdit, 300);
+      // Students: poll for a fresh board every 25s (skips while a teacher edits).
+      setInterval(() => {
+        if (!editing) loadBoard();
+      }, 25000);
+    </script>
+  </body>
+</html>
