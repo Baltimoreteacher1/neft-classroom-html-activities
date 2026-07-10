@@ -112,13 +112,98 @@
   }
 }
 
-/* ── 10 · Mobile: keep the AI-tutor launcher above the save bar ───────────
-   The full-width Save bar (.nt-pe-bar, max z-index) otherwise sits on top of
-   the fixed tutor/help launchers, hiding them. nt-page-enhance publishes the
-   bar's live height as --nt-savebar-h; lift the corner launchers clear of it. */
+/* ── 10 · Mobile bottom-dock stacking contract ─────────────────
+   On phones several independent fixed layers all pin to the bottom and overlap:
+   the Save bar (.nt-pe-bar, full-width, max z-index) covers the lesson progress
+   strip (.score-bar) and the juice HUD (.ntj-hud, which also carries the
+   read-aloud + mute controls). Rather than hide any of them, dock them in one
+   non-overlapping stack, bottom -> up:
+     0  Save bar    bottom: 0                         (anchor, one tidy row)
+     1  Score strip above the save bar
+     2  Juice HUD   above the score strip (own row; it is inherently wide)
+     +  Launchers   floated clear of the whole dock
+   nt-page-enhance publishes --nt-savebar-h / --nt-scorebar-h / --nt-hud-h
+   (live, via ResizeObserver). Desktop keeps its own layout (HUD is a top-right
+   pill) and is untouched. */
+
+/* Keep the save bar to a single tidy row on phones (it otherwise wraps to ~2x
+   height). Its own styles are injected by nt-page-enhance later in the head, so
+   these need !important to win. */
+@media (max-width: 520px) {
+  .nt-pe-bar {
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+  }
+  .nt-pe-bar label {
+    display: none !important;
+  }
+  .nt-pe-bar input {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+  .nt-pe-bar button {
+    flex: 0 0 auto;
+    padding: 9px 12px !important;
+    white-space: nowrap;
+  }
+}
+
+/* Layer 1 — lesson progress strip sits directly on top of the save bar. */
+@media (max-width: 520px) {
+  .score-bar {
+    bottom: var(--nt-savebar-h, 0px) !important;
+  }
+}
+
+/* Layer 2 — juice HUD shares the score strip's row instead of taking its own.
+   The score strip already shows lesson progress ("X of N correct"), so the
+   HUD's progress ring (.ntj-arc) is redundant, and its level/XP stat duplicates
+   the lifetime passport pill — both are hidden on phones. What is left (the
+   consecutive-correct streak + the read-aloud and mute controls, which live
+   nowhere else) collapses to a compact pill docked on the right of the score
+   row. This reclaims a whole ~60px row of bottom chrome. */
+@media (max-width: 520px) {
+  /* Hide the redundant read-outs: the progress ring duplicates the score strip;
+     the streak + level/XP duplicate the lifetime passport pill (top-left). What
+     remains are the read-aloud + mute controls, which live nowhere else. */
+  .ntj-hud .ntj-arc,
+  .ntj-hud .ntj-stat {
+    display: none !important;
+  }
+  .ntj-hud {
+    left: auto !important;
+    right: 64px !important;
+    width: auto !important;
+    padding: 4px 6px !important;
+    gap: 6px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    justify-content: flex-end !important;
+    bottom: calc(var(--nt-savebar-h, 0px) + 8px) !important;
+  }
+  /* Pack the score text + Start Over to the left so the controls + Workbench
+     button (#mwb-launcher, pinned bottom-right) both have room on this row. */
+  .score-inner {
+    justify-content: flex-start !important;
+    padding-right: 96px;
+  }
+}
+
+/* Action launchers float clear of the dock (save + score strips). */
 @media (max-width: 700px) {
   .lp-tutor-launcher,
   .ntf-dock {
-    bottom: calc(var(--nt-savebar-h, 12px) + 14px) !important;
+    bottom: calc(
+      var(--nt-savebar-h, 12px) + var(--nt-scorebar-h, 0px) + 14px
+    ) !important;
+  }
+}
+
+/* Reserve scroll space so the last question clears the docked bars. */
+@media (max-width: 520px) {
+  .main {
+    padding-bottom: calc(
+      var(--nt-savebar-h, 0px) + var(--nt-scorebar-h, 0px) + 24px
+    );
   }
 }
