@@ -1287,6 +1287,12 @@ body{margin:0;background:var(--cream);color:var(--ink);
 .topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
   justify-content:space-between;align-items:center;padding:12px 18px;}
 .topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+@media (max-width:760px){
+  .topbar{flex-wrap:wrap;row-gap:8px;}
+  .topbar .level-selector{flex-wrap:wrap;row-gap:4px;}
+  .topbar .pill-group{flex-wrap:wrap;}
+  main.sheet{padding:28px 18px;}
+}
 .print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
   padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
 header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
