@@ -1193,6 +1193,8 @@ header.homework-header h1 {
 }
 .vocab-container {
   display: flex;
+  justify-content: center;
+  justify-content: safe center;
   gap: 16px;
   overflow-x: auto;
   padding-bottom: 8px;

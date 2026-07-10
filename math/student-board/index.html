@@ -751,6 +751,559 @@
         opacity: 0.5;
         cursor: not-allowed;
       }
+      /* ---- vocabulary of the week ---- */
+      .vocab {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .vword {
+        border: 1px solid var(--line);
+        border-left: 5px solid var(--teal);
+        border-radius: 14px;
+        padding: 12px 14px;
+        background: linear-gradient(180deg, #fff, #f7fafe);
+      }
+      .vword .term {
+        font-family: "Nunito", sans-serif;
+        font-weight: 900;
+        font-size: 18px;
+        color: var(--navy);
+      }
+      .vword .mean {
+        font-size: 14px;
+        margin-top: 3px;
+      }
+      .vword .ex {
+        font-size: 13px;
+        color: var(--ink-soft);
+        margin-top: 6px;
+        font-style: italic;
+      }
+      .vword .say {
+        border: none;
+        background: var(--teal-light);
+        color: var(--teal);
+        border-radius: 8px;
+        padding: 3px 9px;
+        font-size: 12px;
+        font-weight: 800;
+        font-family: "Nunito", sans-serif;
+        cursor: pointer;
+        margin-top: 8px;
+      }
+      /* ---- voice level strip ---- */
+      .voice-strip {
+        margin-top: 18px;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .voice-strip[hidden] {
+        display: none;
+      }
+      .voice-strip .vlab {
+        font-family: "Nunito", sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--ink-soft);
+        white-space: nowrap;
+      }
+      .voice-levels {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        flex: 1;
+        min-width: 260px;
+      }
+      .voice-lvl {
+        flex: 1 1 118px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 9px 8px;
+        background: #f6f9fd;
+        color: var(--ink-soft);
+        font-family: "Nunito", sans-serif;
+        font-weight: 800;
+        font-size: 13px;
+        opacity: 0.6;
+        cursor: default;
+      }
+      .voice-lvl .ve {
+        font-size: 20px;
+        line-height: 1;
+      }
+      .voice-lvl.on {
+        opacity: 1;
+        color: #fff;
+        background: linear-gradient(135deg, var(--teal), var(--navy));
+        border-color: transparent;
+        box-shadow: var(--shadow);
+        transform: scale(1.04);
+      }
+      body.edit .voice-lvl {
+        cursor: pointer;
+      }
+      body.edit .voice-lvl:hover {
+        opacity: 1;
+      }
+      /* ---- floating timer dock (timer keeps running with overlay closed) ---- */
+      .timer-dock {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 55;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        border: none;
+        background: #10233d;
+        color: #fff;
+        border-radius: 999px;
+        padding: 11px 19px;
+        font-family: "Nunito", sans-serif;
+        font-weight: 900;
+        font-size: 20px;
+        font-variant-numeric: tabular-nums;
+        box-shadow: var(--shadow-lg);
+        cursor: pointer;
+      }
+      .timer-dock.low {
+        background: var(--pod-5);
+      }
+      .timer-dock[hidden] {
+        display: none;
+      }
+      /* ---- Canvas / LMS embed mode (?embed=1 or auto-detected iframe) ---- */
+      body.embed .topbar,
+      body.embed .foot,
+      body.embed .edit-banner {
+        display: none;
+      }
+      body.embed .wrap {
+        padding: 10px clamp(10px, 2vw, 22px) 40px;
+      }
+      .embed-bar {
+        display: none;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        padding: 0 4px 10px;
+        font-size: 13px;
+        color: var(--ink-soft);
+      }
+      body.embed .embed-bar {
+        display: flex;
+      }
+      .embed-bar a {
+        font-family: "Nunito", sans-serif;
+        font-weight: 800;
+        text-decoration: none;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        padding: 6px 13px;
+        box-shadow: var(--shadow);
+      }
+      /* ---- overlays (picker + timer) ---- */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 65;
+        display: grid;
+        place-items: center;
+        padding: 20px;
+        background: rgba(16, 35, 61, 0.7);
+        backdrop-filter: blur(3px);
+      }
+      .overlay[hidden] {
+        display: none;
+      }
+      .overlay-box {
+        background: var(--paper);
+        border-radius: 22px;
+        box-shadow: var(--shadow-lg);
+        width: min(680px, 96vw);
+        padding: 26px;
+        text-align: center;
+      }
+      .overlay-mode,
+      .timer-presets {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .pill {
+        font-family: "Nunito", sans-serif;
+        font-weight: 800;
+        font-size: 14px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--navy);
+        border-radius: 999px;
+        padding: 8px 16px;
+        cursor: pointer;
+      }
+      .pill.on {
+        background: linear-gradient(135deg, var(--teal), var(--navy));
+        color: #fff;
+        border-color: transparent;
+      }
+      .pick-stage {
+        font-family: "Nunito", sans-serif;
+        font-weight: 900;
+        font-size: clamp(34px, 8vw, 72px);
+        color: var(--navy);
+        min-height: 1.2em;
+        margin: 10px 0 6px;
+        transition:
+          transform 0.15s ease,
+          opacity 0.15s ease;
+      }
+      .pick-stage.spin {
+        opacity: 0.35;
+        transform: scale(0.94);
+      }
+      .pick-stage.reveal {
+        color: var(--green);
+        animation: pop 0.4s ease;
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(0.7);
+        }
+        60% {
+          transform: scale(1.08);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .pick-pool {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: center;
+        margin: 8px 0 18px;
+        min-height: 24px;
+      }
+      .pick-pool .chip {
+        font-size: 12px;
+        border-radius: 999px;
+        padding: 3px 10px;
+        background: #eef3f9;
+        color: var(--ink-soft);
+      }
+      .pick-pool .chip.done {
+        opacity: 0.4;
+        text-decoration: line-through;
+      }
+      .overlay-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .timer-display {
+        font-family: "Nunito", sans-serif;
+        font-weight: 900;
+        font-size: clamp(64px, 18vw, 160px);
+        color: var(--navy);
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+        margin: 4px 0 16px;
+      }
+      .timer-display.low {
+        color: var(--pod-5);
+      }
+      .timer-display.done {
+        color: var(--green);
+        animation: pop 0.5s ease;
+      }
+      .timer-custom {
+        display: flex;
+        justify-content: center;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+        font-size: 14px;
+        color: var(--ink-soft);
+      }
+      .timer-custom input[type="number"] {
+        width: 70px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 5px 8px;
+        font-size: 14px;
+      }
+      /* ---- text-size scaling (student / back-of-room) ---- */
+      body.ts1 {
+        font-size: 18px;
+      }
+      body.ts2 {
+        font-size: 20px;
+      }
+      body.ts1 .card > h2,
+      body.ts2 .card > h2 {
+        font-size: 22px;
+      }
+      body.ts2 .hint,
+      body.ts1 .hint {
+        font-size: 15px;
+      }
+      /* ---- assignments + canvas + save codes ---- */
+      .assign-card {
+        border-top: 5px solid var(--green);
+      }
+      .assign-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .assign-head h2 {
+        margin: 0;
+      }
+      .canvas-btn {
+        margin-left: auto;
+        font-family: "Nunito", sans-serif;
+        font-weight: 800;
+        font-size: 14px;
+        text-decoration: none;
+        color: #fff;
+        background: linear-gradient(135deg, #e13b2b, #b52a1c);
+        border-radius: 12px;
+        padding: 9px 15px;
+        box-shadow: var(--shadow);
+        white-space: nowrap;
+      }
+      .canvas-btn:hover {
+        transform: translateY(-1px);
+      }
+      .canvas-setup,
+      .canvas-set {
+        font-size: 13px;
+        border-radius: 12px;
+        padding: 11px 14px;
+        margin: 4px 0 12px;
+        line-height: 1.5;
+      }
+      .canvas-setup {
+        color: var(--ink);
+        background: rgba(225, 59, 43, 0.06);
+        border: 1px solid rgba(225, 59, 43, 0.25);
+      }
+      .canvas-setup code {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        padding: 1px 5px;
+        font-size: 12px;
+        word-break: break-all;
+      }
+      .canvas-set {
+        color: var(--ink-soft);
+        background: rgba(37, 107, 91, 0.08);
+        border: 1px solid rgba(37, 107, 91, 0.25);
+      }
+      .canvas-set a {
+        font-weight: 700;
+        word-break: break-all;
+      }
+      .assigns {
+        display: grid;
+        gap: 10px;
+        margin-top: 4px;
+      }
+      .assign {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px 12px;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px 14px;
+        background: linear-gradient(180deg, #fff, #f9fcfa);
+      }
+      .assign .a-name {
+        font-family: "Nunito", sans-serif;
+        font-weight: 800;
+        color: var(--ink);
+      }
+      .assign .a-due {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 800;
+        font-family: "Nunito", sans-serif;
+        color: var(--amber);
+        background: rgba(184, 121, 31, 0.12);
+        border-radius: 999px;
+        padding: 2px 9px;
+        margin-left: 8px;
+      }
+      .assign .a-due.due-today {
+        color: var(--pod-5);
+        background: rgba(176, 58, 99, 0.13);
+        box-shadow: inset 0 0 0 1px rgba(176, 58, 99, 0.35);
+      }
+      .assign .a-links {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .assign .a-open {
+        font-size: 13px;
+        font-weight: 800;
+        font-family: "Nunito", sans-serif;
+        text-decoration: none;
+        color: var(--teal);
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 5px 11px;
+        white-space: nowrap;
+      }
+      .assign .a-code {
+        grid-column: 1 / -1;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+        border-top: 1px dashed var(--line);
+        padding-top: 9px;
+      }
+      .assign .a-code label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--ink-soft);
+      }
+      .assign .a-code input {
+        flex: 1 1 130px;
+        min-width: 110px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 6px 10px;
+        font-size: 14px;
+        font-family: "Atkinson Hyperlegible", monospace;
+        letter-spacing: 0.04em;
+      }
+      .assign .a-code .saved {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--green);
+      }
+      .mini.copy {
+        color: var(--teal);
+      }
+      /* my-codes overlay */
+      .codes-box {
+        text-align: left;
+        max-width: 520px;
+      }
+      .codes-box h3 {
+        text-align: center;
+        color: var(--navy);
+        font-size: 20px;
+        margin-bottom: 6px;
+      }
+      .codes-add {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 12px 0;
+      }
+      .codes-add input {
+        flex: 1 1 140px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 9px 11px;
+        font-size: 14px;
+      }
+      .codes-list {
+        display: grid;
+        gap: 8px;
+        max-height: 320px;
+        overflow: auto;
+        margin-bottom: 14px;
+      }
+      .code-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: #f7fafe;
+      }
+      .code-item .ci-label {
+        font-weight: 800;
+        font-family: "Nunito", sans-serif;
+        color: var(--navy);
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .code-item .ci-code {
+        font-family: "Atkinson Hyperlegible", monospace;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: var(--teal);
+      }
+      .codes-empty {
+        text-align: center;
+        color: var(--ink-soft);
+        font-size: 14px;
+        padding: 18px 0;
+      }
+      /* auto-discovered lesson work (save-resume records on this device) */
+      .codes-auto h4 {
+        font-family: "Nunito", sans-serif;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+        margin: 14px 0 8px;
+      }
+      .codes-auto .code-item {
+        background: #f4faf6;
+        border-color: #cfe6d8;
+      }
+      .codes-auto[hidden] {
+        display: none;
+      }
+      .code-suggest {
+        color: var(--green);
+        border-color: #cfe6d8;
+        background: #f4faf6;
+      }
+      .sync-chip {
+        font-size: 13px;
+        color: var(--ink-soft);
+        background: rgba(32, 95, 166, 0.06);
+        border: 1px solid rgba(32, 95, 166, 0.18);
+        border-radius: 10px;
+        padding: 8px 11px;
+        margin: 0 0 12px;
+      }
+      .sync-chip[hidden] {
+        display: none;
+      }
       .edit-banner {
         display: none;
         position: sticky;
@@ -853,8 +1406,21 @@
       <!-- Teacher control banner (only in edit mode) -->
       <div class="edit-banner" role="region" aria-label="Teacher board controls">
         <b>✏️ Editing: <span id="editingSection">All Classes</span></b>
-        <span class="save-state" id="saveState">Local changes not published</span>
+        <span class="save-state" id="saveState" aria-live="polite"
+          >Local changes not published</span
+        >
         <span class="grow"></span>
+        <select id="copyFromSel" title="Load another section's published board into this one">
+          <option value="">Copy from…</option>
+        </select>
+        <button
+          class="btn ghost"
+          id="shuffleBtn"
+          style="color: #fff; border-color: #33507a"
+          title="Randomly re-mix all names across the groups"
+        >
+          🔀 Shuffle groups
+        </button>
         <button class="btn ghost" id="addDayBtn" style="color: #fff; border-color: #33507a">
           + Group
         </button>
@@ -892,10 +1458,27 @@
           <div class="time" id="clockTime">—</div>
           <div class="date" id="clockDate">—</div>
         </div>
+        <button class="btn ghost" id="pickBtn" title="Fair name / group picker">🎲 Pick</button>
+        <button class="btn ghost" id="bellBtn" title="Attention signal — play a gentle chime">
+          🔔 Bell
+        </button>
+        <button class="btn ghost" id="timerBtn" title="Class work timer">⏱ Timer</button>
+        <button class="btn ghost" id="readBtn" title="Read the board aloud">🔊 Read</button>
+        <button class="btn ghost" id="textSizeBtn" title="Bigger text" aria-label="Text size">
+          🔤 A+
+        </button>
         <button class="btn ghost" id="presentBtn" title="Fullscreen for the projector">
           ⛶ Present
         </button>
         <button class="btn" id="teacherBtn" title="Teacher edit mode">✏️ Edit</button>
+      </div>
+
+      <!-- Slim bar shown only when the board is embedded (e.g. a Canvas page) -->
+      <div class="embed-bar">
+        <span>Live from your class board</span>
+        <a id="embedOpenLink" href="/math/student-board/" target="_blank" rel="noopener"
+          >Open full board ↗</a
+        >
       </div>
 
       <!-- Hero -->
@@ -932,6 +1515,12 @@
         </div>
       </div>
 
+      <!-- Voice level -->
+      <section class="voice-strip" id="voiceStrip" hidden aria-label="Voice level for right now">
+        <span class="vlab">🔊 Voice Level</span>
+        <div class="voice-levels" id="voiceLevels" role="group" aria-label="Voice levels"></div>
+      </section>
+
       <!-- Main grid -->
       <div class="grid">
         <div class="col-main" style="display: grid; gap: 18px">
@@ -952,6 +1541,56 @@
               🔒 First names or initials only — the whole class sees this board.
             </p>
             <div class="pods" id="pods"></div>
+          </section>
+
+          <!-- Vocabulary of the week -->
+          <section class="card">
+            <h2><span class="ico">📖</span> Words We're Using</h2>
+            <p class="hint" data-edit="vocab.note">
+              This week's math words. Read them, say them, use them in your talk and writing.
+            </p>
+            <div class="vocab" id="vocab"></div>
+            <div class="row-tools edit-only">
+              <button class="mini" id="addVocabBtn">+ Word</button>
+            </div>
+          </section>
+
+          <!-- Assignments + Canvas + save codes -->
+          <section class="card assign-card">
+            <div class="assign-head">
+              <h2><span class="ico">📌</span> Assignments &amp; Save Codes</h2>
+              <a class="canvas-btn" id="canvasBtn" href="#" target="_blank" rel="noopener" hidden>
+                📚 Open Canvas
+              </a>
+            </div>
+            <p class="hint" data-edit="assignments.note">
+              This week's assignments. Save your code next to each one so you can pick up where you
+              left off.
+            </p>
+            <div class="canvas-setup edit-only" id="canvasHint" hidden>
+              <b>📚 Canvas isn't linked yet.</b> When your official course page is ready, tap
+              <b>Set Canvas link</b> and paste its URL (e.g.
+              <code>https://bcpss.instructure.com/courses/12345</code>). Students then get an
+              <b>Open Canvas</b> button. Each section (601 / 602 / 603) can point to its own course
+              — set it once per section.
+            </div>
+            <div class="canvas-set edit-only" id="canvasSet" hidden>
+              📚 Canvas linked: <a id="canvasSetLink" href="#" target="_blank" rel="noopener"></a>
+            </div>
+            <p class="sync-chip" id="lessonSync" hidden></p>
+            <div class="assigns" id="assigns"></div>
+            <div class="row-tools">
+              <button class="mini" id="myCodesBtn">🎒 My saved codes</button>
+              <button class="mini edit-only" id="addAssignBtn">+ Assignment</button>
+              <button class="mini edit-only" id="setCanvasBtn">🔗 Set Canvas link</button>
+              <button
+                class="mini edit-only"
+                id="embedCodeBtn"
+                title="Copy an iframe snippet — paste into a Canvas Page via its HTML editor"
+              >
+                📋 Canvas embed code
+              </button>
+            </div>
           </section>
         </div>
 
@@ -1009,6 +1648,84 @@
       </div>
     </div>
 
+    <!-- Floating timer dock — visible while the timer runs with its overlay closed -->
+    <button class="timer-dock" id="timerDock" hidden title="Timer is running — tap to open">
+      ⏱ <span id="timerDockTime">05:00</span>
+    </button>
+
+    <!-- Fair picker overlay -->
+    <div class="overlay" id="pickOverlay" hidden>
+      <div class="overlay-box" role="dialog" aria-modal="true" aria-label="Fair picker">
+        <div class="overlay-mode" role="tablist" aria-label="Pick mode">
+          <button class="pill on" id="pickStudentTab">A student</button>
+          <button class="pill" id="pickGroupTab">A group</button>
+        </div>
+        <div class="pick-stage" id="pickStage" aria-live="polite">Tap “Pick” to start</div>
+        <div class="pick-pool" id="pickPool"></div>
+        <div class="overlay-actions">
+          <button class="btn ghost" id="pickResetBtn">Reset pool</button>
+          <button class="btn primary" id="pickGoBtn">🎲 Pick</button>
+          <button class="btn ghost" id="pickCloseBtn">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Class timer overlay -->
+    <div class="overlay" id="timerOverlay" hidden>
+      <div class="overlay-box" role="dialog" aria-modal="true" aria-label="Class timer">
+        <div class="timer-display" id="timerDisplay">05:00</div>
+        <div class="timer-presets" id="timerPresets">
+          <button class="pill" data-min="2">2 min</button>
+          <button class="pill on" data-min="5">5 min</button>
+          <button class="pill" data-min="10">10 min</button>
+          <button class="pill" data-min="15">15 min</button>
+        </div>
+        <div class="timer-custom">
+          <label
+            >Custom:
+            <input type="number" id="timerCustom" min="1" max="90" step="1" placeholder="min" />
+          </label>
+          <label class="timer-chime">
+            <input type="checkbox" id="timerChime" checked /> Chime at 0
+          </label>
+        </div>
+        <div class="overlay-actions">
+          <button class="btn primary" id="timerStartBtn">Start</button>
+          <button class="btn ghost" id="timerResetBtn">Reset</button>
+          <button class="btn ghost" id="timerCloseBtn">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- My saved codes overlay (student, this device) -->
+    <div class="overlay" id="codesOverlay" hidden>
+      <div
+        class="overlay-box codes-box"
+        role="dialog"
+        aria-modal="true"
+        aria-label="My saved codes"
+      >
+        <h3>🎒 My Saved Codes</h3>
+        <p class="modal-help">
+          Your save codes let you pick up multi-day work where you left off. They live on this
+          device only — no one else sees them. Add a code and a label so you never lose it.
+        </p>
+        <div class="codes-add">
+          <input type="text" id="codeLabel" placeholder="Assignment (e.g. Lesson 1-1)" />
+          <input type="text" id="codeValue" placeholder="Save code (e.g. ABC-1234)" />
+          <button class="btn primary" id="codeAddBtn">Save</button>
+        </div>
+        <div class="codes-list" id="codesList"></div>
+        <div class="codes-auto" id="codesAuto" hidden>
+          <h4>🔄 Found from your lessons (this device)</h4>
+          <div class="codes-list" id="codesAutoList"></div>
+        </div>
+        <div class="overlay-actions">
+          <button class="btn ghost" id="codesCloseBtn">Close</button>
+        </div>
+      </div>
+    </div>
+
     <!-- ALEKS CSV import modal (teacher only) -->
     <div class="modal-backdrop" id="aleksModal" hidden>
       <div class="modal" role="dialog" aria-modal="true" aria-labelledby="aleksModalTitle">
@@ -1052,7 +1769,15 @@
         "var(--pod-6)",
       ];
       const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
-
+      // Classic classroom voice-level scale (0–4). The teacher taps one in edit
+      // mode; students see the active level highlighted on the strip.
+      const VOICE_LEVELS = [
+        { emoji: "🤫", label: "Silent" },
+        { emoji: "🤏", label: "Whisper" },
+        { emoji: "💬", label: "Partner Talk" },
+        { emoji: "👥", label: "Group Talk" },
+        { emoji: "🎤", label: "Presenter" },
+      ];
       function seed() {
         return {
           week: {
@@ -1136,6 +1861,43 @@
             { name: "Sofia", text: "hit her ALEKS goal 3 weeks in a row! 🔥" },
             { name: "Table 2", text: "for an amazing math argument during the Number Talk." },
           ],
+          vocab: {
+            note: "This week's math words. Read them, say them, use them in your talk and writing.",
+            words: [
+              {
+                term: "ratio",
+                meaning: "a comparison of two amounts",
+                example: "3 cups flour to 2 cups sugar = 3:2",
+              },
+              {
+                term: "rate",
+                meaning: "a ratio that compares two different units",
+                example: "60 miles in 1 hour",
+              },
+              {
+                term: "unit rate",
+                meaning: "a rate for exactly 1 of something",
+                example: "$3 per pound",
+              },
+              {
+                term: "equivalent",
+                meaning: "equal in value",
+                example: "1:2 is equivalent to 2:4",
+              },
+            ],
+          },
+          canvas: {
+            url: "",
+            note: "Everything you turn in lives in Canvas. Tap to open your class.",
+          },
+          voice: { level: 2 },
+          assignments: {
+            note: "This week's assignments. Save your code next to each one so you can pick up where you left off.",
+            items: [
+              { name: "Lesson 1-1 — Ratios (homework)", link: "", due: "Fri" },
+              { name: "ALEKS — 3 topics", link: "", due: "Mon" },
+            ],
+          },
         };
       }
 
@@ -1156,6 +1918,23 @@
 
       const $ = (s, r = document) => r.querySelector(s);
       const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+      // Safe storage: inside a Canvas/LMS iframe with third-party storage
+      // blocked, even READING window.localStorage throws. Every access goes
+      // through here so the board still renders (it just won't remember).
+      const store = {
+        get(k) {
+          try {
+            return localStorage.getItem(k);
+          } catch {
+            return null;
+          }
+        },
+        set(k, v) {
+          try {
+            localStorage.setItem(k, v);
+          } catch {}
+        },
+      };
       function sectionLabel(id) {
         return SECTIONS[id] || (/^\d+$/.test(id) ? "Period " + id : id);
       }
@@ -1167,15 +1946,14 @@
         if (badge) badge.textContent = label;
         const es = $("#editingSection");
         if (es) es.textContent = label;
-        try {
-          localStorage.setItem("nt-board-section", boardId);
-        } catch {}
+        store.set("nt-board-section", boardId);
+        fillCopyFrom();
       }
       function keyLS() {
         return "nt-board-" + boardId;
       }
       function teacherKey() {
-        return localStorage.getItem("nt-board-teacher-key") || "";
+        return store.get("nt-board-teacher-key") || "";
       }
 
       function get(obj, path) {
@@ -1192,7 +1970,7 @@
       async function loadBoard() {
         // 1) local cache for instant paint
         try {
-          const cached = JSON.parse(localStorage.getItem(keyLS()) || "null");
+          const cached = JSON.parse(store.get(keyLS()) || "null");
           if (cached && cached.state) {
             state = cached.state;
             serverUpdatedAt = cached.updatedAt || 0;
@@ -1226,9 +2004,7 @@
       }
 
       function cacheLocal() {
-        try {
-          localStorage.setItem(keyLS(), JSON.stringify({ state, updatedAt: serverUpdatedAt }));
-        } catch {}
+        store.set(keyLS(), JSON.stringify({ state, updatedAt: serverUpdatedAt }));
       }
 
       async function publish() {
@@ -1247,7 +2023,7 @@
               teacherKey(),
             );
             if (k) {
-              localStorage.setItem("nt-board-teacher-key", k);
+              store.set("nt-board-teacher-key", k);
               return publish();
             }
             setSaveState("Publish cancelled — key required");
@@ -1346,11 +2122,428 @@
 
       function render() {
         bindEditables();
+        renderVoice();
         renderWeek();
         renderPods();
+        renderVocab();
+        renderCanvas();
+        renderLessonSync();
+        renderAssignments();
         renderAleks();
         renderNotes();
         renderShouts();
+      }
+
+      // ---- voice level ------------------------------------------------
+      function renderVoice() {
+        const strip = $("#voiceStrip");
+        if (!strip) return;
+        const lvl =
+          state.voice && Number.isInteger(Number(state.voice.level))
+            ? Math.min(Math.max(Number(state.voice.level), 0), VOICE_LEVELS.length - 1)
+            : -1;
+        // Boards published before this feature have no level yet: students see
+        // nothing; the teacher sees the strip in edit mode and can set one.
+        strip.hidden = lvl < 0 && !editing;
+        $("#voiceLevels").innerHTML = VOICE_LEVELS.map(
+          (v, i) =>
+            `<button class="voice-lvl ${i === lvl ? "on" : ""}" data-vlvl="${i}" ${editing ? "" : "disabled"}
+              aria-pressed="${i === lvl}" aria-label="Voice level ${i}: ${v.label}">
+              <span class="ve">${v.emoji}</span><span>${i} · ${v.label}</span></button>`,
+        ).join("");
+        if (editing) {
+          $$("#voiceLevels [data-vlvl]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                state.voice = { level: +b.dataset.vlvl };
+                markDirty();
+                renderVoice();
+              }),
+          );
+        }
+      }
+
+      // ---- assignments + canvas + per-student save codes --------------
+      function normUrl(u) {
+        u = String(u || "").trim();
+        if (!u) return "";
+        if (/^https?:\/\//i.test(u) || u.startsWith("/")) return u;
+        return "https://" + u;
+      }
+      function renderCanvas() {
+        const btn = $("#canvasBtn");
+        if (!btn) return;
+        const url = normUrl(state.canvas && state.canvas.url);
+        // Student-facing button: only when a URL is set.
+        btn.hidden = !url;
+        if (url) btn.href = url;
+        // Teacher edit-mode status: guide setup when empty, confirm when set.
+        const hint = $("#canvasHint");
+        const setEl = $("#canvasSet");
+        if (hint) hint.hidden = !(editing && !url);
+        if (setEl) {
+          setEl.hidden = !(editing && url);
+          if (editing && url) {
+            const a = $("#canvasSetLink");
+            a.href = url;
+            a.textContent = url;
+          }
+        }
+      }
+      // ---- seamless sync from lessons & the Curriculum Hub --------------
+      // Lessons/activities on this site save their state through the shared
+      // Save/Resume engine (localStorage "nsr:rec:<CODE>") and the Curriculum
+      // Hub tracks check-offs ("curriculumProgress"). Same origin, same
+      // device — so the board surfaces that work automatically: no retyping
+      // codes, no copying anything over.
+      function lessonWork() {
+        const out = [];
+        try {
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (!k || !k.startsWith("nsr:rec:")) continue;
+            try {
+              const r = JSON.parse(localStorage.getItem(k) || "null");
+              if (r && r.saveCode)
+                out.push({
+                  code: String(r.saveCode),
+                  title: String(r.activityTitle || r.activityId || "Lesson work"),
+                  id: String(r.activityId || ""),
+                  at: Number(r.updatedAt) || 0,
+                });
+            } catch {}
+          }
+        } catch {}
+        return out.sort((a, b) => b.at - a.at).slice(0, 30);
+      }
+      function curriculumDone() {
+        try {
+          const p = JSON.parse(store.get("curriculumProgress") || "{}");
+          return Object.keys(p || {}).length;
+        } catch {
+          return 0;
+        }
+      }
+      function normTitle(s) {
+        return String(s || "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "");
+      }
+      // Conservative fuzzy match: assignment name vs a lesson's title/id, one
+      // containing the other, with a length floor so short names can't hit.
+      function matchWork(work, name) {
+        const n = normTitle(name);
+        if (n.length < 4) return null;
+        return (
+          work.find((w) => {
+            const t = normTitle(w.title);
+            const d = normTitle(w.id);
+            return (
+              (t.length >= 6 && (t.includes(n) || n.includes(t))) ||
+              (d.length >= 6 && (d.includes(n) || n.includes(d)))
+            );
+          }) || null
+        );
+      }
+      function renderLessonSync() {
+        const el = $("#lessonSync");
+        if (!el) return;
+        const work = lessonWork().length;
+        const done = curriculumDone();
+        if (editing || (!work && !done)) {
+          el.hidden = true;
+          return;
+        }
+        el.hidden = false;
+        el.innerHTML =
+          "🔄 Synced from this device: " +
+          [
+            work ? `<b>${work}</b> lesson save code${work === 1 ? "" : "s"}` : "",
+            done ? `<b>${done}</b> Curriculum Hub check-off${done === 1 ? "" : "s"}` : "",
+          ]
+            .filter(Boolean)
+            .join(" · ") +
+          ` · <a href="/curriculum/" target="_blank" rel="noopener">Curriculum Hub ↗</a>`;
+      }
+
+      // Per-device, per-section save codes: { "board::assignment": "CODE" }.
+      function loadCodes() {
+        try {
+          return JSON.parse(store.get("nt-board-mycodes") || "{}") || {};
+        } catch {
+          return {};
+        }
+      }
+      function saveCodes(codes) {
+        store.set("nt-board-mycodes", JSON.stringify(codes));
+      }
+      function codeKey(name) {
+        return (
+          boardId +
+          "::" +
+          String(name || "")
+            .trim()
+            .toLowerCase()
+        );
+      }
+      function renderAssignments() {
+        const host = $("#assigns");
+        if (!host) return;
+        const items = (state.assignments && state.assignments.items) || [];
+        const codes = loadCodes();
+        // "Fri" / "Friday" / "today" in the due field lights up on that day.
+        const todayName = new Date()
+          .toLocaleDateString("en-US", { weekday: "short" })
+          .toLowerCase();
+        const work = editing ? [] : lessonWork();
+        host.innerHTML = items
+          .map((a, i) => {
+            const link = normUrl(a.link);
+            const canvas = normUrl(state.canvas && state.canvas.url);
+            const openHref = link || canvas;
+            const open = openHref
+              ? `<a class="a-open" href="${esc(openHref)}" target="_blank" rel="noopener">${link ? "Open" : "Canvas"} ↗</a>`
+              : "";
+            const mine = codes[codeKey(a.name)] || "";
+            const dueRaw = String(a.due || "")
+              .trim()
+              .toLowerCase();
+            const dueToday = dueRaw.startsWith(todayName) || dueRaw.includes("today");
+            return `<div class="assign">
+                <div>
+                  <span class="a-name" ${editing ? `contenteditable="true" data-as="${i}" data-asname="1"` : ""}>${esc(a.name)}</span>
+                  ${a.due || editing ? `<span class="a-due ${dueToday ? "due-today" : ""}" ${editing ? `contenteditable="true" data-as="${i}" data-asdue="1"` : ""} ${dueToday ? 'title="Due today!"' : ""}>${esc(a.due || "due")}</span>` : ""}
+                </div>
+                <div class="a-links">
+                  ${open}
+                  ${editing ? `<button class="mini danger" data-delas="${i}">✕</button>` : ""}
+                </div>
+                ${
+                  editing
+                    ? `<div class="a-code"><label>Canvas / link:</label><input type="text" data-as="${i}" data-aslink="1" value="${esc(a.link || "")}" placeholder="Canvas assignment URL (optional)" /></div>`
+                    : `<div class="a-code">
+                        <label>My save code:</label>
+                        <input type="text" data-code="${i}" value="${esc(mine)}" placeholder="type your code" aria-label="Your save code for ${esc(a.name)}" />
+                        ${(() => {
+                          const sug = mine ? null : matchWork(work, a.name);
+                          return sug
+                            ? `<button class="mini code-suggest" data-sugfill="${i}" data-sugcode="${esc(sug.code)}" title="This code was saved by your lesson work on this device">📥 Use ${esc(sug.code)}</button>`
+                            : "";
+                        })()}
+                        <button class="mini copy" data-copycode="${i}" ${mine ? "" : "hidden"}>Copy</button>
+                        <span class="saved" data-savedflag="${i}" ${mine ? "" : "hidden"}>✓ saved on this device</span>
+                      </div>`
+                }
+              </div>`;
+          })
+          .join("");
+
+        if (editing) {
+          $$("#assigns [data-asname]").forEach(
+            (el) =>
+              (el.oninput = () => {
+                items[+el.dataset.as].name = el.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#assigns [data-asdue]").forEach(
+            (el) =>
+              (el.oninput = () => {
+                items[+el.dataset.as].due = el.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#assigns [data-aslink]").forEach(
+            (el) =>
+              (el.onchange = () => {
+                items[+el.dataset.as].link = el.value.trim();
+                markDirty();
+              }),
+          );
+          $$("#assigns [data-delas]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                items.splice(+b.dataset.delas, 1);
+                markDirty();
+                renderAssignments();
+              }),
+          );
+        } else {
+          // Student: save code locally as they type (debounced-lite: on input).
+          $$("#assigns [data-code]").forEach((inp) => {
+            inp.oninput = () => {
+              const i = +inp.dataset.code;
+              const c = loadCodes();
+              const val = inp.value.trim().toUpperCase();
+              if (val) c[codeKey(items[i].name)] = val;
+              else delete c[codeKey(items[i].name)];
+              saveCodes(c);
+              const copyBtn = host.querySelector(`[data-copycode="${i}"]`);
+              const flag = host.querySelector(`[data-savedflag="${i}"]`);
+              if (copyBtn) copyBtn.hidden = !val;
+              if (flag) flag.hidden = !val;
+            };
+          });
+          $$("#assigns [data-copycode]").forEach((b) => {
+            b.onclick = () => {
+              const i = +b.dataset.copycode;
+              const val = loadCodes()[codeKey(items[i].name)] || "";
+              copyText(val, b);
+            };
+          });
+          // One tap adopts the code a lesson already saved on this device.
+          $$("#assigns [data-sugfill]").forEach((b) => {
+            b.onclick = () => {
+              const i = +b.dataset.sugfill;
+              const c = loadCodes();
+              c[codeKey(items[i].name)] = b.dataset.sugcode;
+              saveCodes(c);
+              renderAssignments();
+            };
+          });
+        }
+      }
+
+      function copyText(text, btn) {
+        if (!text) return;
+        const done = () => {
+          if (!btn) return;
+          const t = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = t), 1200);
+        };
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done, done);
+          } else {
+            done();
+          }
+        } catch {
+          done();
+        }
+      }
+
+      // My Codes overlay — every code this device has saved, across assignments.
+      function renderCodesList() {
+        const host = $("#codesList");
+        const codes = loadCodes();
+        const keys = Object.keys(codes);
+        if (!keys.length) {
+          host.innerHTML = `<p class="codes-empty">No saved codes yet. Add one above, or type your code next to an assignment.</p>`;
+          return;
+        }
+        host.innerHTML = keys
+          .map((k) => {
+            const label = k.includes("::") ? k.split("::").slice(1).join("::") : k;
+            const board = k.split("::")[0];
+            return `<div class="code-item">
+                <span class="ci-label" title="${esc(label)}">${esc(label || "(code)")}<span style="font-weight:400;color:var(--ink-soft);font-size:12px"> · ${esc(sectionLabel(board))}</span></span>
+                <span class="ci-code">${esc(codes[k])}</span>
+                <button class="mini copy" data-copykey="${esc(k)}">Copy</button>
+                <button class="mini danger" data-delkey="${esc(k)}">✕</button>
+              </div>`;
+          })
+          .join("");
+        $$("#codesList [data-copykey]").forEach(
+          (b) => (b.onclick = () => copyText(loadCodes()[b.dataset.copykey], b)),
+        );
+        $$("#codesList [data-delkey]").forEach(
+          (b) =>
+            (b.onclick = () => {
+              const c = loadCodes();
+              delete c[b.dataset.delkey];
+              saveCodes(c);
+              renderCodesList();
+              renderAssignments();
+            }),
+        );
+        renderAutoCodes();
+      }
+      // Work discovered from lessons on this device — shown below the manual
+      // list so nothing from /curriculum ever has to be typed in by hand.
+      function renderAutoCodes() {
+        const box = $("#codesAuto");
+        const host = $("#codesAutoList");
+        if (!box || !host) return;
+        const work = lessonWork();
+        box.hidden = !work.length;
+        if (!work.length) return;
+        host.innerHTML = work
+          .map(
+            (w, i) => `<div class="code-item">
+                <span class="ci-label" title="${esc(w.title)}">${esc(w.title)}${
+                  w.at
+                    ? `<span style="font-weight:400;color:var(--ink-soft);font-size:12px"> · ${esc(relTime(w.at))}</span>`
+                    : ""
+                }</span>
+                <span class="ci-code">${esc(w.code)}</span>
+                <button class="mini copy" data-autocopy="${i}">Copy</button>
+              </div>`,
+          )
+          .join("");
+        $$("#codesAutoList [data-autocopy]").forEach(
+          (b) => (b.onclick = () => copyText(work[+b.dataset.autocopy].code, b)),
+        );
+      }
+      function openMyCodes() {
+        renderCodesList();
+        $("#codesOverlay").hidden = false;
+        $("#codeLabel").focus();
+      }
+
+      function renderVocab() {
+        const host = $("#vocab");
+        if (!host) return;
+        const words = (state.vocab && state.vocab.words) || [];
+        host.innerHTML = words
+          .map((w, i) => {
+            return `<div class="vword">
+              <div class="term" ${editing ? `contenteditable="true" data-vw="${i}" data-vterm="1"` : ""}>${esc(w.term)}</div>
+              <div class="mean" ${editing ? `contenteditable="true" data-vw="${i}" data-vmean="1"` : ""}>${esc(w.meaning)}</div>
+              ${w.example || editing ? `<div class="ex" ${editing ? `contenteditable="true" data-vw="${i}" data-vex="1"` : ""}>${esc(w.example || "example…")}</div>` : ""}
+              <button class="say" data-sayword="${i}" title="Hear the word">🔊 Say it</button>
+              ${editing ? `<button class="mini danger" data-delvw="${i}">✕</button>` : ""}
+            </div>`;
+          })
+          .join("");
+        $$("#vocab [data-sayword]").forEach(
+          (b) =>
+            (b.onclick = () => {
+              const w = words[+b.dataset.sayword];
+              speak(w.term + ". " + w.meaning + (w.example ? ". For example, " + w.example : ""));
+            }),
+        );
+        if (editing) {
+          $$("#vocab [data-vterm]").forEach(
+            (el) =>
+              (el.oninput = () => {
+                words[+el.dataset.vw].term = el.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#vocab [data-vmean]").forEach(
+            (el) =>
+              (el.oninput = () => {
+                words[+el.dataset.vw].meaning = el.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#vocab [data-vex]").forEach(
+            (el) =>
+              (el.oninput = () => {
+                words[+el.dataset.vw].example = el.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#vocab [data-delvw]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                words.splice(+b.dataset.delvw, 1);
+                markDirty();
+                renderVocab();
+              }),
+          );
+        }
       }
 
       function renderWeek() {
@@ -1582,14 +2775,14 @@
 
       // ---- teacher mode ------------------------------------------------
       function enterEdit() {
-        const stored = localStorage.getItem("nt-teacher-mode") === "on";
+        const stored = store.get("nt-teacher-mode") === "on";
         if (!stored) {
           const pin = prompt("Teacher PIN to edit the board:");
           if (pin !== TEACHER_PIN) {
             if (pin !== null) alert("That PIN didn't match.");
             return;
           }
-          localStorage.setItem("nt-teacher-mode", "on");
+          store.set("nt-teacher-mode", "on");
         }
         editing = true;
         document.body.classList.add("edit");
@@ -1599,6 +2792,210 @@
         editing = false;
         document.body.classList.remove("edit");
         render();
+      }
+
+      // ---- text-to-speech (accessibility / ESOL) ----------------------
+      function speak(text) {
+        try {
+          if (!("speechSynthesis" in window)) return;
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(text);
+          u.rate = 0.95;
+          u.lang = "en-US";
+          window.speechSynthesis.speak(u);
+        } catch {}
+      }
+      function readBoardAloud() {
+        if ("speechSynthesis" in window && window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          return;
+        }
+        const parts = [];
+        const w = state.week || {};
+        parts.push(sectionLabel(boardId) + ". " + (w.label || "") + ". " + (w.theme || ""));
+        const f = state.focus || {};
+        if (f.now) parts.push("Right now: " + f.now + ". " + (f.nowSub || ""));
+        if (f.next) parts.push("Up next: " + f.next + ".");
+        if (f.target) parts.push("Today's goal: " + f.target + ".");
+        const vl = state.voice && VOICE_LEVELS[Number(state.voice.level)];
+        if (vl) parts.push("Voice level: " + vl.label + ".");
+        (state.notes || []).forEach((n) => parts.push(n.text));
+        speak(parts.filter(Boolean).join(". "));
+      }
+
+      // ---- text size (projector / back of room) -----------------------
+      function applyTextSize() {
+        const lvl = parseInt(store.get("nt-board-textsize") || "0", 10) || 0;
+        document.body.classList.remove("ts1", "ts2");
+        if (lvl === 1) document.body.classList.add("ts1");
+        if (lvl === 2) document.body.classList.add("ts2");
+        const btn = $("#textSizeBtn");
+        if (btn) btn.textContent = lvl === 0 ? "🔤 A+" : lvl === 1 ? "🔤 A++" : "🔤 A";
+      }
+      function cycleTextSize() {
+        const lvl = (parseInt(store.get("nt-board-textsize") || "0", 10) + 1) % 3;
+        store.set("nt-board-textsize", String(lvl));
+        applyTextSize();
+      }
+
+      // ---- fair picker (equity, no-repeat) ----------------------------
+      let pickMode = "student";
+      let pickedSet = new Set();
+      function pickPool() {
+        const groups = state.groups || [];
+        if (pickMode === "group") return groups.map((g) => g.name).filter(Boolean);
+        return groups.flatMap((g) => g.members || []).filter(Boolean);
+      }
+      function poolKey() {
+        return "pick:" + boardId + ":" + pickMode;
+      }
+      function renderPickPool() {
+        const pool = pickPool();
+        $("#pickPool").innerHTML = pool
+          .map((n) => `<span class="chip ${pickedSet.has(n) ? "done" : ""}">${esc(n)}</span>`)
+          .join("");
+      }
+      function pickOne() {
+        const pool = pickPool();
+        const remaining = pool.filter((n) => !pickedSet.has(n));
+        const choices = remaining.length ? remaining : pool;
+        if (!choices.length) {
+          $("#pickStage").textContent = "Add names in a group first";
+          return;
+        }
+        if (!remaining.length) pickedSet = new Set(); // full cycle done → reset
+        const stage = $("#pickStage");
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        let ticks = reduce ? 1 : 12;
+        stage.classList.remove("reveal");
+        const spin = () => {
+          stage.classList.add("spin");
+          stage.textContent = choices[Math.floor(Math.random() * choices.length)];
+          ticks--;
+          if (ticks > 0) {
+            setTimeout(spin, 60 + (12 - ticks) * 12);
+          } else {
+            const chosen = choices[Math.floor(Math.random() * choices.length)];
+            pickedSet.add(chosen);
+            stage.classList.remove("spin");
+            stage.classList.add("reveal");
+            stage.textContent = chosen;
+            renderPickPool();
+          }
+        };
+        spin();
+      }
+      function openPicker() {
+        pickedSet = new Set();
+        $("#pickStage").textContent = 'Tap "Pick" to start';
+        $("#pickStage").className = "pick-stage";
+        renderPickPool();
+        $("#pickOverlay").hidden = false;
+      }
+
+      // ---- class work timer -------------------------------------------
+      let timerSecs = 300;
+      let timerLeft = 300;
+      let timerId = null;
+      function fmtTimer(s) {
+        const m = Math.floor(s / 60);
+        return String(m).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+      }
+      function paintTimer() {
+        const d = $("#timerDisplay");
+        d.textContent = fmtTimer(Math.max(0, timerLeft));
+        d.classList.toggle("low", timerLeft <= 10 && timerLeft > 0);
+        d.classList.toggle("done", timerLeft <= 0);
+        const dockTime = $("#timerDockTime");
+        if (dockTime) dockTime.textContent = fmtTimer(Math.max(0, timerLeft));
+        const dock = $("#timerDock");
+        if (dock) dock.classList.toggle("low", timerLeft <= 10 && timerLeft > 0);
+        updateTimerDock();
+      }
+      // The dock keeps a running timer visible after its overlay is closed.
+      function updateTimerDock() {
+        const dock = $("#timerDock");
+        if (dock) dock.hidden = !(timerId && $("#timerOverlay").hidden);
+      }
+      function setTimerMinutes(min) {
+        timerSecs = Math.max(1, Math.min(90, Math.round(min))) * 60;
+        timerLeft = timerSecs;
+        stopTimer();
+        paintTimer();
+      }
+      function startTimer() {
+        if (timerId) return;
+        if (timerLeft <= 0) timerLeft = timerSecs;
+        $("#timerStartBtn").textContent = "Pause";
+        timerId = setInterval(() => {
+          timerLeft--;
+          paintTimer();
+          if (timerLeft <= 0) {
+            const docked = $("#timerOverlay").hidden;
+            stopTimer();
+            if ($("#timerChime").checked) timerChime();
+            if (docked) {
+              // Flash "Time!" on the dock so a docked finish is still visible.
+              const dock = $("#timerDock");
+              if (dock) {
+                dock.hidden = false;
+                $("#timerDockTime").textContent = "Time!";
+                setTimeout(updateTimerDock, 6000);
+              }
+            }
+          }
+        }, 1000);
+      }
+      function stopTimer() {
+        if (timerId) {
+          clearInterval(timerId);
+          timerId = null;
+        }
+        const b = $("#timerStartBtn");
+        if (b) b.textContent = "Start";
+        updateTimerDock();
+      }
+      // Attention bell — a gentle rising three-note chime the teacher taps to
+      // signal a transition ("give me five"). Explicit user action, so it is
+      // not gated behind reduced-motion.
+      function attentionChime() {
+        try {
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          if (!Ctx) return;
+          const ac = new Ctx();
+          [523.25, 659.25, 783.99].forEach((f, i) => {
+            const o = ac.createOscillator();
+            const g = ac.createGain();
+            o.frequency.value = f;
+            o.connect(g);
+            g.connect(ac.destination);
+            g.gain.setValueAtTime(0.0001, ac.currentTime + i * 0.22);
+            g.gain.exponentialRampToValueAtTime(0.22, ac.currentTime + i * 0.22 + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + i * 0.22 + 0.65);
+            o.start(ac.currentTime + i * 0.22);
+            o.stop(ac.currentTime + i * 0.22 + 0.7);
+          });
+        } catch {}
+      }
+      function timerChime() {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        try {
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          if (!Ctx) return;
+          const ac = new Ctx();
+          [660, 880].forEach((f, i) => {
+            const o = ac.createOscillator();
+            const g = ac.createGain();
+            o.frequency.value = f;
+            o.connect(g);
+            g.connect(ac.destination);
+            g.gain.setValueAtTime(0.0001, ac.currentTime + i * 0.18);
+            g.gain.exponentialRampToValueAtTime(0.25, ac.currentTime + i * 0.18 + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + i * 0.18 + 0.5);
+            o.start(ac.currentTime + i * 0.18);
+            o.stop(ac.currentTime + i * 0.18 + 0.5);
+          });
+        } catch {}
       }
 
       // ---- ALEKS CSV import -------------------------------------------
@@ -1807,6 +3204,73 @@
         markDirty();
         renderPods();
       };
+      // Fair re-mix: pool every name, shuffle, deal back round-robin so the
+      // groups stay the same size (±1) with fresh mixes.
+      $("#shuffleBtn").onclick = () => {
+        const groups = state.groups || [];
+        const names = groups.flatMap((g) => g.members || []).filter(Boolean);
+        if (groups.length < 2 || names.length < 2) {
+          alert("Add at least two groups with names first.");
+          return;
+        }
+        if (
+          !confirm(
+            "Shuffle all " + names.length + " names randomly across " + groups.length + " groups?",
+          )
+        )
+          return;
+        for (let i = names.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [names[i], names[j]] = [names[j], names[i]];
+        }
+        groups.forEach((g) => (g.members = []));
+        names.forEach((n, i) => groups[i % groups.length].members.push(n));
+        markDirty();
+        renderPods();
+        setSaveState("Groups shuffled — review, then Publish");
+      };
+      // Copy another section's published board into this one (e.g. set up 601,
+      // copy to 602/603, tweak, publish). Reads only; publishing stays manual.
+      function fillCopyFrom() {
+        const sel = $("#copyFromSel");
+        if (!sel) return;
+        sel.innerHTML =
+          '<option value="">Copy from…</option>' +
+          Object.keys(SECTIONS)
+            .filter((k) => k !== boardId)
+            .map((k) => `<option value="${esc(k)}">${esc(SECTIONS[k])}</option>`)
+            .join("");
+      }
+      $("#copyFromSel").onchange = async (e) => {
+        const from = e.target.value;
+        e.target.value = "";
+        if (!from) return;
+        if (
+          !confirm(
+            "Replace this board's content with the published board from " +
+              sectionLabel(from) +
+              "? (Nothing goes live until you Publish.)",
+          )
+        )
+          return;
+        setSaveState("Copying from " + sectionLabel(from) + "…");
+        try {
+          const r = await fetch("/api/board/get?board=" + encodeURIComponent(from), {
+            cache: "no-store",
+          });
+          const d = await r.json();
+          if (d && d.ok && d.state) {
+            state = JSON.parse(JSON.stringify(d.state));
+            markDirty();
+            render();
+            setSaveState("Copied from " + sectionLabel(from) + " — review, then Publish");
+          } else {
+            setSaveState(sectionLabel(from) + " has no published board yet");
+          }
+        } catch {
+          setSaveState("Could not load " + sectionLabel(from) + " — check your connection");
+        }
+      };
       $("#addAleksBtn").onclick = () => {
         state.aleks.students.push({ name: "Name", minutes: 0 });
         markDirty();
@@ -1839,6 +3303,153 @@
         markDirty();
         renderShouts();
       };
+      $("#addVocabBtn").onclick = () => {
+        (state.vocab.words = state.vocab.words || []).push({
+          term: "word",
+          meaning: "meaning",
+          example: "",
+        });
+        markDirty();
+        renderVocab();
+      };
+
+      // Assignments + Canvas (teacher) and My Codes (student)
+      $("#addAssignBtn").onclick = () => {
+        state.assignments = state.assignments || { items: [] };
+        (state.assignments.items = state.assignments.items || []).push({
+          name: "New assignment",
+          link: "",
+          due: "",
+        });
+        markDirty();
+        renderAssignments();
+      };
+      $("#setCanvasBtn").onclick = () => {
+        state.canvas = state.canvas || {};
+        const cur = state.canvas.url || "";
+        const url = prompt(
+          "Paste your Canvas course URL for " +
+            sectionLabel(boardId) +
+            " (e.g. https://bcpss.instructure.com/courses/12345). Students get an “Open Canvas” button. Leave blank to remove.",
+          cur,
+        );
+        if (url === null) return;
+        state.canvas.url = url.trim();
+        markDirty();
+        renderCanvas();
+        setSaveState(
+          state.canvas.url
+            ? "Canvas link set — Publish to make it live for students"
+            : "Canvas link removed — Publish to update",
+        );
+      };
+      // Copy a ready-to-paste iframe snippet for a Canvas Page. The site's CSP
+      // (frame-ancestors 'self' https:) already lets Canvas frame this board.
+      $("#embedCodeBtn").onclick = () => {
+        const url =
+          location.origin +
+          location.pathname +
+          "?board=" +
+          encodeURIComponent(boardId) +
+          "&embed=1";
+        const code = `<p><iframe src="${url}" width="100%" height="1400" style="border:0;border-radius:12px;" title="The Class Board — ${sectionLabel(boardId)}" allowfullscreen="allowfullscreen"></iframe></p>`;
+        copyText(code, $("#embedCodeBtn"));
+        setSaveState(
+          "Embed code copied — in Canvas, edit a Page, open the HTML editor (</>), paste, save",
+        );
+      };
+      $("#myCodesBtn").onclick = openMyCodes;
+      $("#codesCloseBtn").onclick = () => ($("#codesOverlay").hidden = true);
+      $("#codeAddBtn").onclick = () => {
+        const label = $("#codeLabel").value.trim();
+        const val = $("#codeValue").value.trim().toUpperCase();
+        if (!val) {
+          $("#codeValue").focus();
+          return;
+        }
+        const c = loadCodes();
+        c[boardId + "::" + (label || "code " + (Object.keys(c).length + 1)).toLowerCase()] = val;
+        saveCodes(c);
+        $("#codeLabel").value = "";
+        $("#codeValue").value = "";
+        renderCodesList();
+        renderAssignments();
+      };
+      $("#codeValue").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") $("#codeAddBtn").click();
+      });
+
+      // Classroom tools
+      $("#readBtn").onclick = readBoardAloud;
+      $("#bellBtn").onclick = attentionChime;
+      $("#textSizeBtn").onclick = cycleTextSize;
+      $("#pickBtn").onclick = openPicker;
+      $("#pickGoBtn").onclick = pickOne;
+      $("#pickResetBtn").onclick = () => {
+        pickedSet = new Set();
+        renderPickPool();
+        $("#pickStage").textContent = 'Tap "Pick" to start';
+        $("#pickStage").className = "pick-stage";
+      };
+      $("#pickCloseBtn").onclick = () => ($("#pickOverlay").hidden = true);
+      $("#pickStudentTab").onclick = () => {
+        pickMode = "student";
+        $("#pickStudentTab").classList.add("on");
+        $("#pickGroupTab").classList.remove("on");
+        pickedSet = new Set();
+        renderPickPool();
+      };
+      $("#pickGroupTab").onclick = () => {
+        pickMode = "group";
+        $("#pickGroupTab").classList.add("on");
+        $("#pickStudentTab").classList.remove("on");
+        pickedSet = new Set();
+        renderPickPool();
+      };
+      $("#timerBtn").onclick = () => {
+        paintTimer();
+        $("#timerOverlay").hidden = false;
+        updateTimerDock();
+      };
+      $("#timerStartBtn").onclick = () => (timerId ? stopTimer() : startTimer());
+      $("#timerResetBtn").onclick = () => setTimerMinutes(timerSecs / 60);
+      // Closing the overlay does NOT stop the timer — it docks to a floating
+      // chip so the class keeps working with the board visible.
+      $("#timerCloseBtn").onclick = () => {
+        $("#timerOverlay").hidden = true;
+        updateTimerDock();
+      };
+      $("#timerDock").onclick = () => {
+        $("#timerOverlay").hidden = false;
+        paintTimer();
+      };
+      $$("#timerPresets .pill").forEach(
+        (b) =>
+          (b.onclick = () => {
+            $$("#timerPresets .pill").forEach((x) => x.classList.remove("on"));
+            b.classList.add("on");
+            setTimerMinutes(+b.dataset.min);
+          }),
+      );
+      $("#timerCustom").onchange = (e) => {
+        const v = parseInt(e.target.value, 10);
+        if (v > 0) {
+          $$("#timerPresets .pill").forEach((x) => x.classList.remove("on"));
+          setTimerMinutes(v);
+        }
+      };
+      // Click the dark backdrop (outside the box) to close an overlay. A
+      // running timer keeps going and docks instead of being cancelled.
+      ["#pickOverlay", "#timerOverlay", "#codesOverlay"].forEach((sel) => {
+        const ov = $(sel);
+        ov.addEventListener("click", (e) => {
+          if (e.target === ov) {
+            ov.hidden = true;
+            if (sel === "#timerOverlay") updateTimerDock();
+          }
+        });
+      });
+
       $("#sectionSel").onchange = (e) => {
         if (dirty && !confirm("Switch sections? Unpublished changes will be lost.")) {
           e.target.value = boardId;
@@ -1868,7 +3479,24 @@
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           if (!$("#aleksModal").hidden) closeAleksModal();
-          else document.body.classList.remove("present");
+          else if (!$("#codesOverlay").hidden) $("#codesOverlay").hidden = true;
+          else if (!$("#pickOverlay").hidden) $("#pickOverlay").hidden = true;
+          else if (!$("#timerOverlay").hidden) {
+            $("#timerOverlay").hidden = true;
+            updateTimerDock();
+          } else document.body.classList.remove("present");
+        }
+        // Ctrl/Cmd+S publishes while editing (muscle memory beats data loss).
+        if (editing && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
+          e.preventDefault();
+          publish().then(celebrate);
+        }
+      });
+      // Don't let the teacher close the tab with unpublished edits by accident.
+      window.addEventListener("beforeunload", (e) => {
+        if (dirty && editing) {
+          e.preventDefault();
+          e.returnValue = "";
         }
       });
 
@@ -1876,10 +3504,26 @@
       // this device viewed, else All Classes. Keeps a projector on its period.
       const params = new URLSearchParams(location.search);
       const fromUrl = (params.get("board") || "").replace(/[^a-z0-9-]/gi, "").toLowerCase();
-      const remembered = (localStorage.getItem("nt-board-section") || "").toLowerCase();
+      const remembered = (store.get("nt-board-section") || "").toLowerCase();
       boardId = fromUrl || (SECTIONS[remembered] ? remembered : "main");
       updateSectionUI();
 
+      // Embed mode: compact chrome when framed by Canvas (or ?embed=1). The
+      // full board opens in its own tab via the embed bar link.
+      const inFrame = (() => {
+        try {
+          return window.self !== window.top;
+        } catch {
+          return true;
+        }
+      })();
+      if (params.get("embed") === "1" || inFrame) {
+        document.body.classList.add("embed");
+        const link = $("#embedOpenLink");
+        if (link) link.href = location.pathname + "?board=" + encodeURIComponent(boardId);
+      }
+
+      applyTextSize();
       tick();
       setInterval(tick, 1000 * 15);
       loadBoard();

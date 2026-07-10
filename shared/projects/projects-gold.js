@@ -133,14 +133,34 @@
     }
   }
 
-  /* --- 3. Confetti honors prefers-reduced-motion --------------------------- */
+  /* --- 3. Confetti honors prefers-reduced-motion and never prints ---------- */
   function gateConfetti() {
     if (typeof window.playConfetti !== "function") return;
     var orig = window.playConfetti;
     window.playConfetti = function () {
       if (reducedMotion()) return;
-      return orig.apply(this, arguments);
+      // The page builds the confetti container inside its own closure, so tag
+      // whatever playConfetti appended to <body> — the "Generate report →
+      // Print" flow otherwise sends mid-animation confetti to the printer.
+      var before = [];
+      try {
+        before = Array.prototype.slice.call(document.body.children);
+      } catch (e) {}
+      var out = orig.apply(this, arguments);
+      try {
+        Array.prototype.forEach.call(document.body.children, function (node) {
+          if (before.indexOf(node) === -1) node.classList.add("gold-confetti");
+        });
+      } catch (e) {}
+      return out;
     };
+    window.addEventListener("beforeprint", function () {
+      try {
+        document.querySelectorAll(".gold-confetti").forEach(function (node) {
+          node.remove();
+        });
+      } catch (e) {}
+    });
   }
 
   /* --- 4. Move focus into the newly-activated wizard panel ----------------- */

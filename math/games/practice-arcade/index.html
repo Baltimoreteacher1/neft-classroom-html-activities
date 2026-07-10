@@ -414,6 +414,11 @@
           score: { en: "Score", es: "Puntos" },
           of: { en: "of", es: "de" },
           correctWord: { en: "correct", es: "correctas" },
+          steps: { en: "Steps", es: "Pasos" },
+          guidedSteps: { en: "Guided Steps", es: "Pasos Guiados" },
+          level1: { en: "Level 1 · Support", es: "Nivel 1 · Apoyo" },
+          level2: { en: "Level 2 · Stretch", es: "Nivel 2 · Reto" },
+          gotIt: { en: "GOT IT ✓", es: "¡ENTENDIDO! ✓" },
         };
         function t(key) {
           const e = STR[key];
@@ -1200,8 +1205,201 @@
             // Layer that holds per-round interactive objects (cleared each round)
             this.layer = this.add.container(0, 0);
             this.locked = false;
+
+            // ── Reliable drag-sort pickup (registered ONCE) ──────────────────
+            // Phaser's drag events on a container nested inside another container
+            // are flaky (short/quick drags silently fail on trackpads + touch
+            // Chromebooks — the recurring "dragging doesn't work" report). So we
+            // drive the carried tile from SCENE-level pointermove/up, which fire
+            // reliably on mouse AND touch. `this.carrying` is null outside sort
+            // rounds, so these handlers are inert elsewhere.
+            this.input.on("pointermove", (p) => {
+              // Number-line marker uses the SAME reliable scene-pointer approach
+              // (not Phaser's flaky nested-container drag); nlOnMove is set while
+              // the dot is held (see renderNumberLine) and null otherwise.
+              if (this.nlOnMove) this.nlOnMove(p);
+              const t = this.carrying;
+              if (!t || t.assigned) return;
+              t.parts.x = p.worldX - (this.grabDX || 0);
+              t.parts.y = p.worldY - (this.grabDY || 0);
+              if (Phaser.Math.Distance.Between(p.downX, p.downY, p.x, p.y) > 6) {
+                this.carryMoved = true;
+                this.highlightNearBin(t);
+              }
+            });
+            this.input.on("pointerup", () => {
+              this.nlOnMove = null; // release the number-line marker
+              const t = this.carrying;
+              if (!t) return;
+              this.carrying = null;
+              this.clearBinHover();
+              t.parts.setDepth(0);
+              if (!JUICE.reduceMotion)
+                this.tweens.add({ targets: t.parts, scale: 1, duration: 120 });
+              else t.parts.setScale(1);
+              if (t.assigned) return;
+              // A real drag → drop into the nearest bin (forgiving). A tap (no
+              // move) → just keep it selected so a bin/number tap can place it.
+              if (this.carryMoved) this.dropTile(t);
+              else this.selectSortTile(t);
+            });
+
+            // Persistent, tier-aware "Guided Steps" helper — a calm workspace that
+            // scaffolds HOW to attack the current round (process, never the answer).
+            this.stepsBtn = makeButton(this, 92, H - 30, 150, 40, "🪜 " + t("steps"), () =>
+              this.openSteps(),
+            );
+
             this.updateHUD();
             this.startRound();
+          }
+
+          // Highlight the bin the carried tile is currently nearest to, so the
+          // drop target is obvious while dragging.
+          highlightNearBin(t) {
+            if (!this.bins) return;
+            const gx = t.parts.x,
+              gy = t.parts.y;
+            let best = -1,
+              bd = Infinity;
+            this.bins.forEach((b, i) => {
+              const d = Math.hypot(gx - b.x, gy - b.y);
+              if (d < bd) {
+                bd = d;
+                best = i;
+              }
+            });
+            this.bins.forEach((b, i) => {
+              if (b.hi) b.hi.setVisible(i === best);
+            });
+          }
+          clearBinHover() {
+            (this.bins || []).forEach((b) => {
+              if (b.hi) b.hi.setVisible(false);
+            });
+          }
+
+          // Tier-aware guided steps for the current round. Pure PROCESS scaffolds
+          // — deliberately no literal answer / `why` text (scaffold, not giveaway).
+          guidedSteps(r) {
+            const isL2 = tier === "l2" || r.tier === 2;
+            const s = [];
+            if (r.kind === "sort") {
+              const labels = (r.categories || []).map((c) => c.label).join("   vs   ");
+              s.push("Read what each tile says.");
+              s.push("Ask: which group does it fit? Boxes: " + labels + ".");
+              s.push(
+                "Tap a tile, then tap its box — or drag it in. (Keys 1–" +
+                  (r.categories || []).length +
+                  " work too.)",
+              );
+              s.push("When every tile is placed, press CHECK ✓.");
+            } else if (r.kind === "fixit") {
+              s.push("Work the problem yourself, one step at a time.");
+              s.push("Compare each step to your own work.");
+              s.push("Tap the FIRST step where the numbers stop matching.");
+            } else if (r.kind === "build") {
+              s.push("Look closely at the answer you must make.");
+              s.push("Tap the pieces in order to build it; tap a placed piece to take it back.");
+              s.push("Check every piece is used, then submit.");
+            } else if (r.kind === "numline") {
+              s.push("Find the two labels your value sits between.");
+              s.push("Count the tick marks to land exactly on it.");
+              s.push("Drag the marker there, then check.");
+            } else if (r.kind === "balance") {
+              s.push("Both sides of the scale must be equal.");
+              s.push("Change your side a little at a time until it is level.");
+            } else {
+              s.push("Read the question slowly — say it in your own words.");
+              s.push("Rule out the choices you know are wrong first.");
+              s.push("Pick the choice that must be true, then tap it.");
+            }
+            s.push(
+              isL2
+                ? "🚀 Stretch: once you solve it, explain WHY it works — could you prove it another way?"
+                : "🧩 Take your time — no timer. Tap 🔊 to hear the prompt, or use the hint if stuck.",
+            );
+            return s;
+          }
+
+          // Open the guided-steps workspace overlay for the current round.
+          openSteps() {
+            if (this.stepsPanel) {
+              this.closeSteps();
+              return;
+            }
+            const r = rounds[this.idx];
+            if (!r) return;
+            JUICE.audio.tap();
+            const steps = this.guidedSteps(r);
+            const isL2 = tier === "l2" || r.tier === 2;
+            const panel = this.add.container(0, 0).setDepth(120);
+            const shade = this.add.rectangle(W / 2, H / 2, W, H, 0x0b1020, 0.62).setInteractive();
+            shade.on("pointerdown", () => this.closeSteps());
+            panel.add(shade);
+            const pw = Math.min(680, W - 80);
+            const ph = Math.min(H - 90, 150 + steps.length * 62);
+            const card = this.add.graphics();
+            card.fillStyle(PALETTE.panel, 0.98);
+            card.lineStyle(3, isL2 ? PALETTE.gold : PALETTE.accent, 0.95);
+            card.fillRoundedRect(W / 2 - pw / 2, H / 2 - ph / 2, pw, ph, 18);
+            card.strokeRoundedRect(W / 2 - pw / 2, H / 2 - ph / 2, pw, ph, 18);
+            panel.add(card);
+            const title = this.add
+              .text(W / 2, H / 2 - ph / 2 + 30, "🪜  " + t("guidedSteps"), {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "24px",
+                fontStyle: "bold",
+                color: "#ffffff",
+              })
+              .setOrigin(0.5);
+            panel.add(title);
+            const chip = this.add
+              .text(W / 2, H / 2 - ph / 2 + 58, isL2 ? t("level2") : t("level1"), {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "13px",
+                fontStyle: "bold",
+                color: "#06283f",
+                backgroundColor: isL2 ? "#facc15" : "#7dd3fc",
+                padding: { x: 12, y: 4 },
+              })
+              .setOrigin(0.5);
+            panel.add(chip);
+            let sy = H / 2 - ph / 2 + 92;
+            steps.forEach((txt, i) => {
+              const isNote = /^[🚀🧩]/.test(txt);
+              const num = this.add
+                .text(W / 2 - pw / 2 + 34, sy, isNote ? "" : String(i + 1), {
+                  fontFamily: "Nunito, Segoe UI, sans-serif",
+                  fontSize: "20px",
+                  fontStyle: "bold",
+                  color: isL2 ? "#facc15" : "#7dd3fc",
+                })
+                .setOrigin(0.5, 0);
+              const body = this.add
+                .text(W / 2 - pw / 2 + 62, sy, txt, {
+                  fontFamily: "Nunito, Segoe UI, sans-serif",
+                  fontSize: "16px",
+                  color: isNote ? "#fde68a" : "#e8edff",
+                  wordWrap: { width: pw - 96 },
+                })
+                .setOrigin(0, 0);
+              panel.add(num);
+              panel.add(body);
+              sy += Math.max(52, body.height + 16);
+            });
+            const cb = makeButton(this, W / 2, H / 2 + ph / 2 - 30, 150, 42, t("gotIt"), () =>
+              this.closeSteps(),
+            );
+            panel.add(cb.bg);
+            panel.add(cb.t);
+            this.stepsPanel = panel;
+            srSay(t("guidedSteps") + ". " + steps.join(". "));
+          }
+          closeSteps() {
+            if (!this.stepsPanel) return;
+            this.stepsPanel.destroy();
+            this.stepsPanel = null;
           }
 
           // Charge the power meter on a first-try solve; at full, arm DOUBLE POINTS
@@ -1302,6 +1500,12 @@
             this.locked = false;
             this.tries = 0;
             this.revealCorrect = null;
+            // Drop any half-carried sort tile from a previous round (defensive).
+            this.carrying = null;
+            this.carryMoved = false;
+            this.nlOnMove = null;
+            this.bins = null;
+            this.sortTiles = null;
             // Input-settle window: ignore selection input for a beat after a round
             // renders. The pointer-UP that started the game (or advanced the last
             // round) can otherwise fall onto the new round's first interactive
@@ -1598,10 +1802,12 @@
           // ── Renderer: SORT (drag-sort into category bins) ──────────────────
           renderSort(r) {
             const cats = r.categories;
-            const binW = Math.min(260, (W - 120) / cats.length - 20);
-            const binH = 150;
-            const binY = H - 130;
-            const totalW = cats.length * binW + (cats.length - 1) * 24;
+            // Big, easy drop targets — the bottom boxes fill most of the width so
+            // tiles are simple to aim into and have room to land INSIDE the box.
+            const binW = Math.min(300, (W - 120) / cats.length - 16);
+            const binH = 208;
+            const binY = H - 150;
+            const totalW = cats.length * binW + (cats.length - 1) * 22;
             let bx = (W - totalW) / 2 + binW / 2;
             this.bins = [];
             cats.forEach((c) => {
@@ -1620,7 +1826,15 @@
                   wordWrap: { width: binW - 16 },
                 })
                 .setOrigin(0.5, 0);
+              // Bright drop-target glow, hidden until a carried tile hovers near
+              // this box (see highlightNearBin) — makes the target obvious.
+              const hi = this.add.graphics().setVisible(false);
+              hi.lineStyle(4, PALETTE.gold, 1);
+              hi.strokeRoundedRect(bx - binW / 2 - 3, binY - binH / 2 - 3, binW + 6, binH + 6, 14);
+              hi.fillStyle(PALETTE.gold, 0.12);
+              hi.fillRoundedRect(bx - binW / 2, binY - binH / 2, binW, binH, 12);
               this.layer.add(g);
+              this.layer.add(hi);
               this.layer.add(lbl);
               this.bins.push({
                 id: c.id,
@@ -1629,6 +1843,7 @@
                 w: binW,
                 h: binH,
                 count: 0,
+                hi,
               });
               // Touch-friendly: an invisible tappable zone over the box so a
               // student can TAP a tile then TAP a box to place it (canvas
@@ -1639,7 +1854,7 @@
                 .setInteractive({ useHandCursor: true });
               zone.on("pointerup", () => this.placeHighlighted(bi));
               this.layer.add(zone);
-              bx += binW + 24;
+              bx += binW + 22;
             });
 
             // Visible hint so the keyboard path (and drag) is discoverable.
@@ -1662,19 +1877,32 @@
               .setOrigin(0.5);
             this.layer.add(hint);
 
-            // Items in a staging grid above the bins. Item text is often a full
-            // expression ("Octagon tile triangle: ½ × 10 × 3 = 15 sq ft") that
-            // spilled out of the old narrow 132×46 tiles. Cap the grid at 3 wide,
-            // widen each tile, and give it height for a two-line wrap so nothing
-            // overflows the box.
+            // Items in a staging grid above the bins. Size tiles TO THEIR CONTENT:
+            // short numbers ("99", "17") get a small tile — the old fixed ~260px
+            // tiles were absurdly large ("too big"). Long expressions
+            // ("½ × 10 × 3 = 15 sq ft") widen and wrap on a taller tile so nothing
+            // overflows. Uniform per set (items in one sort are similar length).
             const items = shuffle(r.items);
-            const rowY = 92 + Math.max(70, this.promptText.height + 30) + 40;
-            const perRow = items.length <= 2 ? items.length : items.length <= 4 ? 2 : 3;
-            const spacing = Math.min(300, (W - 120) / perRow);
-            const tileW = spacing - 20;
-            const tileH = 62;
-            const rowGap = 74;
+            const rowY = 92 + Math.max(70, this.promptText.height + 30) + 34;
+            const maxLen = Math.max(...items.map((it) => String(it.text).length));
+            const tileW = Math.round(Math.min(240, Math.max(66, maxLen * 10 + 24)));
+            // Height follows the wrapped text so long expressions don't overflow
+            // the tile (short numbers stay compact).
+            const charsPerLine = Math.max(6, Math.floor((tileW - 24) / 8.2));
+            const lines = Math.max(1, Math.ceil(maxLen / charsPerLine));
+            const tileH = Math.min(116, Math.max(44, lines * 20 + 22));
+            // Fit as many per row as the width allows (up to 4), never more items.
+            const perRow = Math.min(
+              items.length,
+              Math.max(1, Math.floor((W - 80) / (tileW + 22))),
+              4,
+            );
+            const spacing = tileW + 22;
+            const rowGap = tileH + 18;
             let ix = (W - (perRow - 1) * spacing) / 2;
+            // Remember tile size so assignTile can grid placed tiles INSIDE a bin.
+            this.sortTileW = tileW;
+            this.sortTileH = tileH;
             this.sortTiles = [];
             this.sortHi = 0;
             items.forEach((it, i) => {
@@ -1688,9 +1916,8 @@
               t.data = it;
               t.assigned = null;
               this.layer.add(t.parts);
-              // Drag the whole tile (the container), not its child rect — dragging
-              // a container child is the Phaser pitfall that broke this before.
-              // Disable the child's input so the container owns the pointer.
+              // The container (not its child rect) owns the pointer — disable the
+              // child so pointerdown lands on the whole tile.
               t.bg.disableInteractive();
               t.parts.setInteractive(
                 new Phaser.Geom.Rectangle(
@@ -1701,29 +1928,22 @@
                 ),
                 Phaser.Geom.Rectangle.Contains,
               );
-              this.input.setDraggable(t.parts);
-              // Position the tile from the pointer's world coords (Scale.FIT-
-              // correct). NOTE: dragX/dragY from the event do NOT update for a
-              // container nested in another container (this.layer), so we must use
-              // the pointer. We CENTRE the tile on the pointer (no grab offset) so
-              // the tile's centre — which dropTile tests against the bins — is
-              // exactly where the student is aiming. That makes it land in the box.
-              t.parts.on("dragstart", () => t.parts.setDepth(20));
-              t.parts.on("drag", (p) => {
+              // PICK UP on pointerdown, then the SCENE-level pointermove/up
+              // (registered once in create) carry + drop it. We do NOT use Phaser's
+              // setDraggable/drag events — on a container nested in this.layer they
+              // fire unreliably for short/quick gestures (the recurring "drag
+              // doesn't work"). A grab-offset keeps the tile under the finger with
+              // no lurch; centring is not needed because dropTile is forgiving.
+              t.parts.on("pointerdown", (p) => {
                 if (t.assigned) return;
-                t.parts.x = p.worldX;
-                t.parts.y = p.worldY;
-              });
-              t.parts.on("dragend", () => {
-                t.parts.setDepth(0);
-                this.dropTile(t);
-              });
-              // Tap (not a drag) selects the tile so it can be placed by tapping a
-              // box or pressing its number — a reliable path on touch devices.
-              t.parts.on("pointerup", (p) => {
-                if (t.assigned) return;
-                const moved = Phaser.Math.Distance.Between(p.downX, p.downY, p.upX, p.upY) > 12;
-                if (!moved) this.selectSortTile(t);
+                this.carrying = t;
+                this.carryMoved = false;
+                this.grabDX = p.worldX - t.parts.x;
+                this.grabDY = p.worldY - t.parts.y;
+                t.parts.setDepth(20);
+                if (!JUICE.reduceMotion)
+                  this.tweens.add({ targets: t.parts, scale: 1.06, duration: 110 });
+                this.selectSortTile(t);
               });
               this.sortTiles.push(t);
             });
@@ -1808,24 +2028,62 @@
             const b = this.bins[bi];
             t.assigned = b.id;
             const slot = b.count++;
-            const tx = b.x - b.w / 2 + 14 + (slot % 2) * (b.w / 2);
-            const ty = b.y - b.h / 2 + 44 + Math.floor(slot / 2) * 30;
             t.binSlot = { bi, slot }; // remembered so a wrong check can free it
-            // Snap with a springy tween so the drop has weight (absolute coords).
-            if (JUICE.reduceMotion) {
-              t.parts.x = tx;
-              t.parts.y = ty;
-            } else {
-              this.tweens.add({
-                targets: t.parts,
-                x: tx,
-                y: ty,
-                duration: 220,
-                ease: "Back.Out",
-              });
-            }
+            (b.tiles = b.tiles || []).push(t);
             this.input.setDraggable(t.parts, false);
+            this.layoutBin(bi);
             this.highlightSort();
+          }
+          // Grid + AUTO-FIT every tile already dropped in bin `bi` so the whole
+          // stack always stays INSIDE the box — no matter how many tall (long-text)
+          // tiles land in one bin, the tiles shrink together to fit rather than
+          // spilling past the bottom edge.
+          layoutBin(bi) {
+            const b = this.bins[bi];
+            const tiles = b.tiles || [];
+            if (!tiles.length) return;
+            const tw = this.sortTileW || 70,
+              th = this.sortTileH || 44;
+            const padX = 14,
+              padBottom = 14,
+              gap = 8,
+              labelSpace = 40;
+            const availW = b.w - padX * 2;
+            const availH = b.h - labelSpace - padBottom;
+            const cols = Math.max(1, Math.floor((availW + gap) / (tw + gap)));
+            const rows = Math.ceil(tiles.length / cols);
+            const gridW = Math.min(tiles.length, cols) * (tw + gap) - gap;
+            const gridH = rows * (th + gap) - gap;
+            // Shrink uniformly if the grid is wider/taller than the usable space.
+            const scale = Math.min(1, availW / gridW, availH / gridH);
+            const cw = (tw + gap) * scale,
+              ch = (th + gap) * scale;
+            tiles.forEach((tile, i) => {
+              const col = i % cols,
+                row = Math.floor(i / cols);
+              const rowCount = Math.min(cols, tiles.length - row * cols);
+              const rowW = rowCount * cw - gap * scale;
+              const tx = b.x - rowW / 2 + cw / 2 + col * cw;
+              const ty = b.y - b.h / 2 + labelSpace + (th * scale) / 2 + row * ch;
+              // Kill any in-flight tween on this tile first — layoutBin re-runs as
+              // each tile lands, and overlapping tweens on one target fight and can
+              // settle at the wrong scale/position.
+              this.tweens.killTweensOf(tile.parts);
+              if (JUICE.reduceMotion) {
+                tile.parts.x = tx;
+                tile.parts.y = ty;
+                tile.parts.setScale(scale);
+              } else {
+                this.tweens.add({
+                  targets: tile.parts,
+                  x: tx,
+                  y: ty,
+                  scale,
+                  duration: 200,
+                  ease: "Back.Out",
+                });
+              }
+            });
           }
           checkSort(r) {
             if (this.locked) return;
@@ -1851,18 +2109,26 @@
             this.resolve(false, "Move the red tiles to the right bin, then check.");
             this.time.delayedCall(720, () => {
               if (this.locked) return;
+              const touched = new Set();
               this.sortTiles.forEach((t) => {
                 if (t.assigned !== t.data.category) {
-                  if (t.binSlot)
-                    this.bins[t.binSlot.bi].count = Math.max(0, this.bins[t.binSlot.bi].count - 1);
+                  if (t.binSlot != null) {
+                    const bin = this.bins[t.binSlot.bi];
+                    bin.count = Math.max(0, bin.count - 1);
+                    if (bin.tiles) bin.tiles = bin.tiles.filter((x) => x !== t);
+                    touched.add(t.binSlot.bi);
+                  }
                   t.assigned = null;
                   t.binSlot = null;
                   t.bg.setFillStyle(PALETTE.tile);
+                  t.parts.setScale(1); // undo any in-bin shrink before it goes home
                   t.parts.x = t.homeX;
                   t.parts.y = t.homeY;
                   this.input.setDraggable(t.parts, true);
                 }
               });
+              // Re-fit the tiles that stayed, so a freed slot lets them grow back.
+              touched.forEach((bi) => this.layoutBin(bi));
               this.highlightSort();
             });
           }
@@ -2081,10 +2347,16 @@
               marker.x = valToX(this.nlVal);
               bubble.setText(this.fmt(this.nlVal) + (r.unit || ""));
             };
-            this.input.setDraggable(hit);
-            hit.on("drag", (p) => {
-              this.nlVal = snap(r.min + range * ((p.worldX - x0) / (x1 - x0)));
-              refresh();
+            // Reliable marker drag: hold the dot, then a SCENE-level pointermove
+            // (registered once in create) tracks it — same fix as the sort tiles,
+            // since Phaser's drag events on this nested marker are flaky on
+            // trackpads/touch. Clamp to the line so the dot never escapes it.
+            hit.on("pointerdown", () => {
+              this.nlOnMove = (p) => {
+                const clampedX = Math.max(x0, Math.min(x1, p.worldX));
+                this.nlVal = snap(r.min + range * ((clampedX - x0) / (x1 - x0)));
+                refresh();
+              };
             });
             const nudge = (d) => {
               this.nlVal = Math.min(r.max, Math.max(r.min, this.nlVal + d * r.step));
