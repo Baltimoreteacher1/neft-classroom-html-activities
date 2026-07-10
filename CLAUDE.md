@@ -112,6 +112,7 @@ the strongest one(s) relevant to what you changed:
 | `npm run validate:canvas-coverage`            | Asserts every assignable surface (catalog activities, injectOnly pages, lesson homework) exists on disk, carries the canvas-bridge sentinel, and has a unique SCORM package slug. Part of `validate`.                | Any change to `activity-catalog.json`, `inject-canvas-bridge.js`, or the SCORM builders.        |
 | `npm run build`                               | Vite production build to `dist/`.                                                                                                                                                                                    | Anything touching Vite-built lesson launchers, config, or before a deploy-affecting change.     |
 | `npm run preview`                             | Serves the built `dist/` for smoke testing.                                                                                                                                                                          | Manual browser/smoke verification after a build.                                                |
+| `npm run ship:verify`                         | Read-only: polls the public build stamp (`/access-practice-lab/config.json`) until production serves the expected commit (default `origin/main`).                                                                     | After any deploy, or when checking whether production is fresh vs frozen.                       |
 | `npm run audit`                               | `audit-curriculum.mjs` site-wide structural audit (links/redirects/orphans).                                                                                                                                         | Curriculum/lesson data changes.                                                                 |
 | `npm run generate-curriculum-manifest`        | Rebuilds `data/curriculum-manifest.json` (curriculum SoT) from lesson configs + disk checks.                                                                                                                         | After adding/removing a lesson or its resources.                                                |
 | `npm run audit:curriculum`                    | `audit-curriculum-resources.mjs` per-lesson resource-completeness audit → `reports/curriculum-audit-resources.{json,md}`.                                                                                            | Checking which lessons are missing family/teacher/student/etc. resources.                       |
@@ -135,6 +136,16 @@ lockfile match), then run the checks.
   has Cloudflare Git integration **enabled** — production branch `main`, preview
   branches disabled. A push to `main` auto-runs `npm run build` (Vite) and
   promotes to production in ~1-2 min.
+  - **Canonical deploy command: `ALLOW_DEPLOY=1 npm run ship -- <sha> [sha...]`**
+    (`scripts/ship.sh`). It automates the entire known-good flow: stale-clone
+    guard → fetch → clean detached worktree at `origin/main` → cherry-pick the
+    named commits → rewrite private author emails (GH007) → push `main` (the
+    pre-push QA loop gates it) → poll the public build stamp
+    (`/access-practice-lab/config.json`) until production serves the new commit.
+    `npm run ship:verify` is the read-only freshness check;
+    `ALLOW_DEPLOY=1 npm run ship:rebuild` pushes an empty commit to unfreeze a
+    stuck Pages build. Never assemble `main` by hand-pushing the working branch —
+    the repo auto-commits during sessions, so `main` takes cherry-picked SHAs only.
   - **Do NOT run `wrangler pages deploy` manually.** Mixing manual wrangler with
     Git auto-deploy is what historically caused the site to "revert to an old
     version" (competing builds racing to production). One path only: `git push`.
@@ -178,7 +189,8 @@ A repeatable, conservative build → audit → fix → retest loop, defined in
   with placeholders. These are enforced by `permissions.deny` and the
   `pre-bash-guard.sh` PreToolUse hook in `.claude/settings.json`.
 - **Deploy rule:** push to `main` is the only deploy path (Cloudflare Git
-  integration). **Never** run `wrangler` / `npm run deploy` manually — it is
+  integration), and `ALLOW_DEPLOY=1 npm run ship -- <sha>` is the only supported
+  way to push it. **Never** run `wrangler` / `npm run deploy` manually — it is
   blocked.
 - **Structure rule:** do not change curriculum / page / route / lesson-card
   structure unless Joel explicitly asks.

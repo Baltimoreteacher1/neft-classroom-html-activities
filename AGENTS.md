@@ -40,11 +40,19 @@ Preserve existing student-facing routes. This repo is live-classroom oriented: c
 - Validation command: `npm run validate`
 - Static validation: `npm run validate:static`
 - Reveal Math validation: `npm run validate:reveal-math`
-- Deploy command exists: `npm run deploy`
+- Deploy command: `ALLOW_DEPLOY=1 npm run ship -- <sha> [sha...]` — cherry-picks the
+  named commits onto a clean detached worktree at `origin/main`, fixes private author
+  emails (GH007), pushes to `main` (pre-push QA loop gates it), then polls the public
+  build stamp until production actually serves the new commit.
+- `npm run ship:verify` (read-only) polls the live build stamp; `ALLOW_DEPLOY=1 npm run
+  ship:rebuild` pushes an empty commit to unfreeze a stuck Cloudflare Pages build.
 - Do not deploy unless Joel explicitly requests deployment in the current task.
-- Production deploys require `ALLOW_DEPLOY=1 npm run deploy`; plain `npm run deploy` must fail safely.
-- PR branches should rely on GitHub/Cloudflare preview deployments only unless Joel explicitly approves production deployment.
-- Do not run Cloudflare Pages deploys with `--branch=main` from a feature branch unless the current prompt explicitly approves production deployment.
+  `ALLOW_DEPLOY=1` is the explicit-approval token; `npm run ship` without it must fail.
+- `npm run deploy` is a permanent hard refusal (`scripts/guard-deploy.js`) — manual
+  wrangler deploys froze production for 16 days in 2026-06; never re-enable them.
+- Never push the working branch or working tree state to `main` directly — the repo
+  auto-commits during sessions; `main` is assembled only by cherry-picking reviewed SHAs
+  (which `npm run ship` automates).
 - No top-level lint/typecheck/test scripts are currently defined; do not invent them.
 
 ## Default Workflow
