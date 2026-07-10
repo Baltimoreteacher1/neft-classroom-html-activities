@@ -1,209 +1,243 @@
-// ── The Writing Revolution (TWR) — derivation core ───────────────────────────
-// Pure logic (no DOM, no Node APIs) so it can be imported by BOTH the notes
-// generator (Node) and the live lesson engine (browser).
+// Canonical ESOL math-writing derivation.
 //
-// Everything here is AUTO-DERIVED from a lesson's existing `config.json` fields
-// (contentObjective, languageObjective, vocabulary[], turnAndTalk[], title,
-// standard). No new hand-authored content is required per lesson.
-//
-// TWR Core set produced:
-//   1. Kernel sentence  — subject + verb statement of the key concept.
-//   2. Sentence expansion — expand the kernel with because / but / so.
-//   3. Sentence types   — statement, question, exclamation, command.
-//   4. Explain-your-reasoning stems — adapted from turnAndTalk stems.
-//
-// Output is a plain data object; the generator turns it into print HTML and
-// DOCX, the engine turns it into interactive typed-input boxes.
+// This module is deliberately pure so the browser, printable HTML, DOCX, and
+// PDF workflows all receive the same lesson-specific writing support.
 
-function cleanObjective(text) {
-  if (!text) return "";
-  // Strip a leading "I can " so the derived sentence reads like a topic phrase.
-  return String(text)
-    .replace(/^\s*I can\s+/i, "")
+const FIXED_SPANISH = Object.freeze({
+  job: "Responde la pregunta. Usa evidencia matemática. Explica cómo la evidencia demuestra tu respuesta.",
+  rehearsal: "Di tu respuesta primero: Mi respuesta es ___ porque ___.",
+});
+
+const CHECKLIST = Object.freeze([
+  Object.freeze({
+    en: "I answered the question.",
+    es: "Respondí la pregunta.",
+  }),
+  Object.freeze({
+    en: "I used math evidence: numbers, an equation, a model, or a comparison.",
+    es: "Usé evidencia matemática: números, una ecuación, un modelo o una comparación.",
+  }),
+  Object.freeze({
+    en: "I explained how the evidence proves my answer.",
+    es: "Expliqué cómo la evidencia demuestra mi respuesta.",
+  }),
+  Object.freeze({
+    en: "I used at least two math words.",
+    es: "Usé por lo menos dos palabras matemáticas.",
+  }),
+  Object.freeze({
+    en: "I reread complete sentences and punctuation.",
+    es: "Volví a leer mis oraciones completas y la puntuación.",
+  }),
+]);
+
+const SYSTEM_FRAMES = Object.freeze({
+  start: Object.freeze([
+    Object.freeze({ en: "My answer is ___.", es: "Mi respuesta es ___." }),
+    Object.freeze({ en: "I know because ___.", es: "Lo sé porque ___." }),
+  ]),
+  build: Object.freeze([
+    Object.freeze({ en: "My claim is ___.", es: "Mi afirmación es ___." }),
+    Object.freeze({ en: "I know because ___.", es: "Lo sé porque ___." }),
+    Object.freeze({ en: "So ___.", es: "Entonces ___." }),
+  ]),
+  explain: Object.freeze([
+    Object.freeze({ en: "My claim is ___.", es: "Mi afirmación es ___." }),
+    Object.freeze({ en: "My math evidence is ___.", es: "Mi evidencia matemática es ___." }),
+    Object.freeze({
+      en: "This proves ___ because ___.",
+      es: "Esto demuestra ___ porque ___.",
+    }),
+  ]),
+});
+
+function cleanText(value) {
+  return String(value ?? "")
     .replace(/\s+/g, " ")
-    .trim()
-    .replace(/[.]+$/, "");
+    .trim();
 }
 
-function firstSentence(text) {
-  if (!text) return "";
-  const m = String(text).split(/(?<=[.!?])\s+/)[0];
-  return (m || "").trim();
+function cleanObjective(value) {
+  return cleanText(value)
+    .replace(/^I can\s+/i, "")
+    .replace(/[.!?]+$/, "");
 }
 
-// The main concept noun phrase: prefer the richest vocabulary term (the one
-// whose definition is longest is usually the lesson's central idea), else the
-// title.
-function mainConcept(config) {
-  const vocab = Array.isArray(config.vocabulary) ? config.vocabulary : [];
-  if (vocab.length) {
-    // The lesson's central term is usually the one that echoes the title.
-    const title = String(config.title || "").toLowerCase();
-    const byTitle = vocab.find((v) => title && v.term && title.includes(v.term.toLowerCase()));
-    if (byTitle) return byTitle;
-    // Otherwise pick the term with the longest definition (most load-bearing).
-    return vocab
-      .slice()
-      .sort((a, b) => String(b.definition || "").length - String(a.definition || "").length)[0];
-  }
-  return null;
+function firstSentence(value) {
+  const [sentence = ""] = cleanText(value).split(/(?<=[.!?])\s+/);
+  return sentence;
 }
 
-function lowerFirst(s) {
-  if (!s) return "";
-  return s.charAt(0).toLowerCase() + s.slice(1);
+function ensureQuestion(value) {
+  const question = cleanText(value).replace(/[.!?]+$/, "");
+  return question ? `${question}?` : "How can you explain your mathematical thinking?";
 }
 
-// ── 1. Kernel sentence ───────────────────────────────────────────────────────
-// A subject + verb sentence stating the lesson's key concept.
-export function deriveKernel(config) {
-  const concept = mainConcept(config);
-  const topic = cleanObjective(config.contentObjective) || config.title || "";
-  let en;
-  let es;
+function selectWritingSource(config) {
+  const blocks = Array.isArray(config.turnAndTalk) ? config.turnAndTalk : [];
+  return (
+    blocks.find((block) => block?.phase === "explore" && block.question) ||
+    blocks.find((block) => block?.question) ||
+    null
+  );
+}
 
-  if (concept && concept.term) {
-    const def = String(concept.definition || "").replace(/[.]+$/, "");
-    const defEs = String(concept.definitionEs || "").replace(/[.]+$/, "");
-    en = `${capitalize(concept.term)} is ${lowerFirst(def)}.`;
-    es = concept.termEs && defEs ? `${capitalize(concept.termEs)} es ${lowerFirst(defEs)}.` : "";
-  } else if (topic) {
-    en = `Today I can ${lowerFirst(topic)}.`;
-    es = "";
-  } else {
-    en = `${config.title || "This lesson"} is an important math idea.`;
-    es = "";
-  }
+function selectModelSource(config, focusSource) {
+  const blocks = Array.isArray(config.turnAndTalk) ? config.turnAndTalk : [];
+  return blocks.find((block) => block !== focusSource && block?.kernel) || focusSource || null;
+}
 
+function deriveAction(question) {
+  const lower = cleanText(question).toLowerCase();
+  if (/\bcompare|same|different|greater|less\b/.test(lower)) return "compare";
+  if (/\bdescribe\b/.test(lower)) return "describe";
+  if (/\bjustify|prove\b/.test(lower)) return "justify";
+  return "explain";
+}
+
+function normalizeFrame(frame) {
+  if (typeof frame === "string") return { en: cleanText(frame), es: "" };
   return {
-    en,
-    es,
-    // What the student is asked to do: write their OWN kernel (subject + verb).
-    promptEn: `Write a kernel sentence about ${concept && concept.term ? concept.term.toLowerCase() : config.title || "today's idea"}. Use a subject and a verb.`,
-    promptEs: `Escribe una oración base sobre ${concept && concept.termEs ? concept.termEs.toLowerCase() : config.title || "la idea de hoy"}. Usa un sujeto y un verbo.`,
+    en: cleanText(frame?.en),
+    es: cleanText(frame?.es),
   };
 }
 
-// ── 2. Sentence expansion (because / but / so) ───────────────────────────────
-export function deriveExpansion(config) {
-  const concept = mainConcept(config);
-  const subject = concept && concept.term ? capitalize(concept.term) : config.title || "This idea";
-  const subjectEs = concept && concept.termEs ? capitalize(concept.termEs) : null;
+function selectVocabulary(config, source) {
+  const authored = Array.isArray(config.vocabulary) ? config.vocabulary : [];
+  const requested = new Set(
+    (Array.isArray(source?.wordBank) ? source.wordBank : []).map((word) =>
+      cleanText(word).toLowerCase(),
+    ),
+  );
+  const ranked = authored.map((word, index) => ({
+    word,
+    index,
+    preferred: requested.has(cleanText(word?.term).toLowerCase()) ? 1 : 0,
+  }));
+  ranked.sort((a, b) => b.preferred - a.preferred || a.index - b.index);
+  return ranked.slice(0, 5).map(({ word }) => ({
+    term: cleanText(word?.term),
+    termEs: cleanText(word?.termEs),
+    definition: cleanText(word?.definition),
+    definitionEs: cleanText(word?.definitionEs),
+  }));
+}
 
-  const kernelEn = `${subject} matters in math`;
-  const kernelEs = subjectEs ? `${subjectEs} importa en matemáticas` : null;
-
+function deriveFocus(config, source) {
+  const objective = cleanObjective(config.contentObjective);
+  const questionEn = ensureQuestion(
+    source?.question ||
+      (objective
+        ? `How can you show and explain that you can ${objective}`
+        : `How can you explain the main idea in ${config.title || "this lesson"}`),
+  );
+  const questionEs = source?.questionEs ? ensureQuestion(source.questionEs) : "";
   return {
-    kernelEn,
-    kernelEs,
-    conjunctions: [
-      {
-        word: "because",
-        wordEs: "porque",
-        frameEn: `${kernelEn} because ___.`,
-        frameEs: kernelEs ? `${kernelEs} porque ___.` : "",
-      },
-      {
-        word: "but",
-        wordEs: "pero",
-        frameEn: `${kernelEn}, but ___.`,
-        frameEs: kernelEs ? `${kernelEs}, pero ___.` : "",
-      },
-      {
-        word: "so",
-        wordEs: "entonces",
-        frameEn: `${kernelEn}, so ___.`,
-        frameEs: kernelEs ? `${kernelEs}, entonces ___.` : "",
-      },
-    ],
+    questionEn,
+    questionEs,
+    action: deriveAction(questionEn),
+    actionMeaning: "Tell how the math evidence proves your answer.",
+    jobEn: "Answer the question. Use math evidence. Explain how the evidence proves your answer.",
+    jobEs: FIXED_SPANISH.job,
   };
 }
 
-// ── 3. Sentence types ────────────────────────────────────────────────────────
-// Write the math idea as a statement, a question, an exclamation, a command.
-export function deriveSentenceTypes(config) {
-  const concept = mainConcept(config);
-  const term = concept && concept.term ? concept.term.toLowerCase() : null;
-  const topic = term || cleanObjective(config.contentObjective) || config.title || "this idea";
+function deriveRehearsal(source) {
+  const firstAuthored = (Array.isArray(source?.stems) ? source.stems : [])
+    .map(normalizeFrame)
+    .find((frame) => frame.en);
+  return {
+    directionEn: "Say your idea to a partner or quietly to yourself before you write.",
+    directionEs: "Di tu idea a un compañero o en voz baja antes de escribir.",
+    frameEn: firstAuthored?.en || "My answer is ___ because ___.",
+    frameEs: firstAuthored?.es || FIXED_SPANISH.rehearsal,
+  };
+}
+
+function deriveLevels(source) {
+  const authored = (Array.isArray(source?.stems) ? source.stems : [])
+    .map(normalizeFrame)
+    .filter((frame) => frame.en)
+    .slice(0, 2);
+  const startFrames =
+    authored.length >= 2 ? authored : [...authored, ...SYSTEM_FRAMES.start].slice(0, 2);
 
   return [
     {
-      type: "Statement",
-      typeEs: "Afirmación",
-      hintEn: `Tell one true fact about ${topic}.`,
-      hintEs: `Di un hecho verdadero sobre ${topic}.`,
-      frameEn: `${capitalize(topic)} ___.`,
-      frameEs: "",
+      id: "start",
+      label: "Start",
+      support: "Most language support",
+      directionEn: "Complete the frames. Use the word bank.",
+      directionEs: "Completa las oraciones. Usa el banco de palabras.",
+      frames: startFrames,
     },
     {
-      type: "Question",
-      typeEs: "Pregunta",
-      hintEn: `Ask a question about ${topic}.`,
-      hintEs: `Haz una pregunta sobre ${topic}.`,
-      frameEn: `How does ___ ?`,
-      frameEs: `¿Cómo ___ ?`,
+      id: "build",
+      label: "Build",
+      support: "Some language support",
+      directionEn: "Write two connected sentences. Use because, so, or but.",
+      directionEs: "Escribe dos oraciones conectadas. Usa porque, entonces o pero.",
+      frames: SYSTEM_FRAMES.build,
     },
     {
-      type: "Exclamation",
-      typeEs: "Exclamación",
-      hintEn: `Show excitement about ${topic}.`,
-      hintEs: `Muestra entusiasmo sobre ${topic}.`,
-      frameEn: `Wow, ___ !`,
-      frameEs: `¡Guau, ___ !`,
-    },
-    {
-      type: "Command",
-      typeEs: "Mandato",
-      hintEn: `Tell a partner what to do with ${topic}.`,
-      hintEs: `Dile a un compañero qué hacer con ${topic}.`,
-      frameEn: `First, ___ .`,
-      frameEs: `Primero, ___ .`,
+      id: "explain",
+      label: "Explain",
+      support: "Light language support",
+      directionEn: "Write a claim, give math evidence, and explain your reasoning.",
+      directionEs: "Escribe una afirmación, da evidencia matemática y explica tu razonamiento.",
+      frames: SYSTEM_FRAMES.explain,
     },
   ];
 }
 
-// ── 4. Explain-your-reasoning stems (adapted from turnAndTalk) ───────────────
-const FALLBACK_REASON_STEMS = [
-  { en: "I know ___ because ___.", es: "Sé que ___ porque ___." },
-  { en: "First I ___, then I ___.", es: "Primero ___, luego ___." },
-  {
-    en: "This is important because ___.",
-    es: "Esto es importante porque ___.",
-  },
-];
-
-export function deriveReasoningStems(config) {
-  const tt = Array.isArray(config.turnAndTalk) ? config.turnAndTalk : [];
-  const collected = [];
-  for (const block of tt) {
-    if (!block || !Array.isArray(block.stems)) continue;
-    for (const s of block.stems) {
-      const en = typeof s === "string" ? s : s && s.en;
-      const es = typeof s === "string" ? "" : (s && s.es) || "";
-      if (en && !collected.some((c) => c.en === en)) {
-        collected.push({ en, es });
-      }
-    }
-  }
-  const stems = collected.length ? collected : FALLBACK_REASON_STEMS;
-  return stems.slice(0, 3);
+function mainConcept(config) {
+  const vocabulary = Array.isArray(config.vocabulary) ? config.vocabulary : [];
+  const title = cleanText(config.title).toLowerCase();
+  return (
+    vocabulary.find((word) => title.includes(cleanText(word?.term).toLowerCase())) ||
+    vocabulary[0] ||
+    null
+  );
 }
 
-// ── Bundle everything ────────────────────────────────────────────────────────
-export function deriveTWR(config) {
+function deriveModel(config, focusSource) {
+  const source = selectModelSource(config, focusSource);
+  const concept = mainConcept(config);
+  const conceptTerm = cleanText(concept?.term) || cleanText(config.title) || "The math idea";
+  const conceptDefinition = cleanText(concept?.definition);
+  const claim = cleanText(source?.kernel) || `${conceptTerm} means ${conceptDefinition}`;
+  const evidence =
+    cleanText(source?.listenFor) ||
+    (conceptDefinition
+      ? `The lesson defines ${conceptTerm.toLowerCase()} as ${conceptDefinition}`
+      : "The numbers and model show the relationship.");
+  const reasoning = conceptDefinition
+    ? `This evidence connects the definition of ${conceptTerm.toLowerCase()} to the mathematical claim.`
+    : "This evidence explains how the math supports the claim.";
+
   return {
-    title: config.title || "",
-    languageObjective: firstSentence(config.languageObjective),
-    kernel: deriveKernel(config),
-    expansion: deriveExpansion(config),
-    sentenceTypes: deriveSentenceTypes(config),
-    reasoningStems: deriveReasoningStems(config),
+    note: "This model shows the parts of an explanation. It does not answer your writing question.",
+    claim,
+    evidence,
+    reasoning,
   };
 }
 
-function capitalize(s) {
-  if (!s) return "";
-  return s.charAt(0).toUpperCase() + s.slice(1);
+export function deriveTWR(config = {}) {
+  const source = selectWritingSource(config);
+  const checklist = CHECKLIST.map((item) => ({ ...item }));
+  return {
+    title: cleanText(config.title),
+    languageObjective: firstSentence(config.languageObjective),
+    focus: deriveFocus(config, source),
+    vocabulary: selectVocabulary(config, source),
+    rehearsal: deriveRehearsal(source),
+    levels: deriveLevels(source),
+    model: deriveModel(config, source),
+    checklist,
+    teacherCriteria: checklist,
+  };
 }
 
 export default deriveTWR;
