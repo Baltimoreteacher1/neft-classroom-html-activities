@@ -370,11 +370,13 @@
       length: lesson.timeEstimate || "",
       autogen: "1",
     });
-    var node = link(
-      "Full plan + Word →",
-      "/teacher-tools/lesson-plan-generator/?" + query.toString(),
-      "ctw-generator",
-    );
+    var href = "/teacher-tools/lesson-plan-generator/?" + query.toString();
+    // Keep the always-visible hub "Lesson Plan Generator" feature card in sync,
+    // so its Open button also pre-fills + auto-generates for the lesson the
+    // teacher is currently planning here (not a blank generator).
+    var staticBtn = document.querySelector(".lpg-feature a.mf-btn.solid");
+    if (staticBtn) staticBtn.setAttribute("href", href);
+    var node = link("Full plan + Word →", href, "ctw-generator");
     node.target = "_blank";
     node.rel = "noopener";
     node.title =
