@@ -89,6 +89,9 @@
       try {
         foldIntoReport();
       } catch (e) {}
+      try {
+        stepCoherence();
+      } catch (e) {}
     };
 
     // publisher.json lives next to each page; a 404 / file:// failure just
@@ -108,6 +111,79 @@
     } else {
       apply();
     }
+  }
+
+  /* --- 4. Step-number coherence -------------------------------------------
+     Panel headings, in-page prose, and the generated report all number the
+     WORK steps 1..N, treating Key Words as an unnumbered prep panel — but the
+     page-built trail chips and progress label count panels positionally
+     (1..N+1). Students then see "Step 4 of 6" directly above a heading that
+     says "Step 3". Relabel the chips + progress label to the headings' own
+     scheme so every number on screen agrees. The page rebuilds both on every
+     navigation, so a MutationObserver re-applies; writes only happen when a
+     value is wrong, so the observer can never loop. */
+  function stepCoherence() {
+    var trail = document.getElementById("stepTrail");
+    var panels = Array.prototype.slice.call(document.querySelectorAll(".step-panel"));
+    if (!trail || !panels.length) return;
+    if (trail.dataset.pubCoherence === "1") return;
+
+    // Each panel's own step number, read from its heading (null = prep panel).
+    var nums = panels.map(function (p) {
+      var h = p.querySelector("h2.card-title");
+      var m = h && /Step\s+(\d+)/i.exec(h.textContent || "");
+      return m ? m[1] : null;
+    });
+    var workTotal = nums.reduce(function (mx, n) {
+      return n ? Math.max(mx, Number(n)) : mx;
+    }, 0);
+    // Nothing to fix when headings already count positionally (or unnumbered).
+    if (!workTotal || workTotal >= panels.length) return;
+    trail.dataset.pubCoherence = "1";
+
+    var progLabel = document.getElementById("progLabel");
+    var applyLabels = function () {
+      var items = trail.querySelectorAll(".step-trail-item");
+      if (items.length === panels.length) {
+        for (var i = 0; i < items.length; i++) {
+          var s = items[i].querySelector(".s-num");
+          if (!s) continue;
+          var want = nums[i] === null ? "★" : String(nums[i]);
+          // Only positional digits are wrong; never touch the done "✓".
+          if (/^\d+$/.test(s.textContent.trim()) && s.textContent.trim() !== want)
+            s.textContent = want;
+        }
+      }
+      if (progLabel) {
+        var active = document.querySelector(".step-panel.active");
+        var idx = panels.indexOf(active);
+        if (idx !== -1) {
+          var k = nums[idx];
+          var en = k ? "Step " + k + " of " + workTotal : "Get Ready — Key Words";
+          var es = k ? "Paso " + k + " de " + workTotal : "Preparación — Palabras clave";
+          var enSpan = progLabel.querySelector(".en-text");
+          var esSpan = progLabel.querySelector(".es-text");
+          if (enSpan || esSpan) {
+            if (enSpan && enSpan.textContent !== en) enSpan.textContent = en;
+            if (esSpan && esSpan.textContent !== es) esSpan.textContent = es;
+          } else {
+            var text = document.body.classList.contains("es") ? es : en;
+            if (progLabel.textContent !== text) progLabel.textContent = text;
+          }
+        }
+      }
+    };
+
+    applyLabels();
+    var mo = new MutationObserver(function () {
+      try {
+        applyLabels();
+      } catch (e) {}
+    });
+    mo.observe(trail, { childList: true, subtree: true, characterData: true });
+    if (progLabel) mo.observe(progLabel, { childList: true, subtree: true, characterData: true });
+    var wizard = trail.closest(".wizard") || document.body;
+    mo.observe(wizard, { attributes: true, attributeFilter: ["class"], subtree: true });
   }
 
   /* --- 1. Sentence starters on written-response boxes ---------------------- */
