@@ -25,6 +25,18 @@
     document.head.appendChild(s);
   })();
 
+  // Additive publisher-polish layer: token-based, low-specificity refinements
+  // (card depth, choice affordance, focus rings, legible sentence frames).
+  // Enhancement-only — never overrides a lesson's own state styling.
+  (function loadPublisherPolish() {
+    if (document.querySelector("link[data-nt-publisher-polish]")) return;
+    var l = document.createElement("link");
+    l.rel = "stylesheet";
+    l.href = "/assets/lesson-publisher-polish.css";
+    l.setAttribute("data-nt-publisher-polish", "1");
+    document.head.appendChild(l);
+  })();
+
   // Safety: clear any dark-mode state
   try {
     document.documentElement.classList.remove("nt-dark");
@@ -79,7 +91,8 @@
     "min-width:140px;color:#111;}",
     ".nt-pe-bar button{font:inherit;padding:9px 14px;border-radius:8px;border:0;cursor:pointer;",
     "background:#0d7a76;color:#fff;min-height:40px;}",
-    ".nt-pe-bar button.doc{background:#2f6cad;}",
+    ".nt-pe-bar button.doc{background:transparent;border:1.5px solid rgba(255,255,255,.55);}",
+    ".nt-pe-bar button.doc:hover{background:rgba(255,255,255,.12);}",
     ".nt-pe-bar label{opacity:.9;}",
     "@media print{.nt-pe-bar{display:none!important;}}",
   ].join("");

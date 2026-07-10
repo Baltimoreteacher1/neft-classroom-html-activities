@@ -1,0 +1,102 @@
+/*!
+ * lesson-publisher-polish.css — additive publisher refinement layer.
+ *
+ * Loaded at runtime by nt-page-enhance.js on lesson/activity pages. Every rule
+ * is low-specificity and ENHANCEMENT-ONLY: it adds depth, tap affordance,
+ * keyboard focus, and legibility. It intentionally does NOT set colors that a
+ * lesson's own state classes control (.selected / .is-correct / .is-wrong /
+ * .correct / .incorrect), so grading feedback always wins. All accent values
+ * fall back to the shared design tokens when a page defines them.
+ */
+
+/* ── 1 · Card materiality ────────────────────────────────────────────────
+   Question cards ship with only a flat 1px border. A soft, layered shadow
+   gives them the printed-page lift a publisher expects, without changing
+   geometry. */
+.q-card {
+  box-shadow:
+    0 1px 2px rgba(18, 53, 91, 0.04),
+    0 10px 24px -12px rgba(18, 53, 91, 0.16);
+  transition:
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+/* ── 2 · Answer-choice affordance ────────────────────────────────────────
+   Choices read as flat gray pills. Add a resting hairline shadow, a clear
+   pointer, smooth motion, and a hover lift — but never on locked/graded
+   states, so post-answer feedback stays calm. */
+.mc-btn {
+  cursor: pointer;
+  box-shadow: 0 1px 1px rgba(18, 53, 91, 0.03);
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.12s ease;
+}
+.mc-btn:hover:not(.locked):not(.is-correct):not(.is-wrong):not(.selected) {
+  box-shadow: 0 6px 16px -6px rgba(31, 110, 170, 0.4);
+  transform: translateY(-1px);
+}
+.mc-btn:active:not(.locked) {
+  transform: translateY(0);
+}
+.mc-btn .letter {
+  font-weight: 700;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+/* ── 3 · Sentence frames ────────────────────────────────────────────────
+   The scaffolded "sentence frame" prompt was faint italic text easy to skip.
+   Keep it quiet but make it legible: token teal-ink and a touch more weight. */
+.sentence-frame {
+  color: var(--teal-ink, #0c6f6b);
+  font-weight: 600;
+}
+
+/* ── 4 · Hint / vocabulary callouts ─────────────────────────────────────
+   Give the tinted scaffold boxes a hair of depth so they separate from the
+   card behind them. */
+.scaffold {
+  box-shadow: 0 1px 2px rgba(12, 111, 107, 0.06);
+}
+
+/* ── 5 · Section rhythm ─────────────────────────────────────────────────*/
+.section-header {
+  letter-spacing: -0.01em;
+}
+
+/* ── 6 · Level toggle ───────────────────────────────────────────────────
+   Firm up the selected level chip so the active band is unmistakable. */
+.level-btn.active {
+  box-shadow:
+    0 1px 4px rgba(15, 43, 60, 0.18),
+    0 0 0 1px rgba(18, 53, 91, 0.05);
+}
+
+/* ── 7 · Accessible keyboard focus ──────────────────────────────────────
+   Visible focus rings for keyboard/switch users across the interactive
+   controls. focus-visible only paints on keyboard interaction, so mouse
+   users see no change. */
+.mc-btn:focus-visible,
+.level-btn:focus-visible,
+.check-btn:focus-visible,
+.q-card button:focus-visible {
+  outline: 3px solid rgba(31, 110, 170, 0.55);
+  outline-offset: 2px;
+}
+
+/* ── 8 · Respect reduced-motion ─────────────────────────────────────────*/
+@media (prefers-reduced-motion: reduce) {
+  .q-card,
+  .mc-btn,
+  .mc-btn .letter {
+    transition: none;
+  }
+  .mc-btn:hover {
+    transform: none;
+  }
+}
