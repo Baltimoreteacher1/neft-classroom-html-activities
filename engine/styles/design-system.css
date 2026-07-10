@@ -315,9 +315,12 @@ h4 {
 }
 
 /* ── Main Content ── */
+/* Fill the full width of the content column (the app grid already reserves the
+   260px sidebar). A high cap keeps line lengths sane on ultra-wide monitors
+   while letting normal laptops/tablets use the whole page. */
 .main {
   padding: var(--sp-7);
-  max-width: 1000px;
+  max-width: 1600px;
   width: 100%;
 }
 
@@ -3807,19 +3810,34 @@ html.projector .main {
   line-height: 1.6;
   color: var(--ink);
 }
+/* Three columns across the full width: image | What do you notice? | What do
+   you wonder?. The image gets a slightly wider column so it stays large; the
+   notice/wonder grid fills the rest as two equal columns. Collapses gracefully
+   on smaller screens. */
+.nw-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 2fr);
+  gap: var(--sp-5);
+  align-items: start;
+}
+.nw-layout-noimg {
+  grid-template-columns: 1fr;
+}
 .nw-figure {
-  margin: 0 0 var(--sp-5);
+  margin: 0;
+  position: sticky;
+  top: var(--sp-4);
 }
 .nw-img {
   display: block;
   width: 100%;
   height: auto;
-  max-width: 640px;
   margin: 0 auto;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--card);
 }
+/* The notice + wonder boxes sit side by side in the remaining two columns. */
 .nw-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -3878,7 +3896,20 @@ html.projector .main {
   font-size: 1.15rem;
   line-height: 1.6;
 }
-@media (max-width: 640px) {
+/* Below ~980px three columns get cramped: drop the image to its own full row
+   on top, keep notice + wonder side by side beneath it. */
+@media (max-width: 980px) {
+  .nw-layout {
+    grid-template-columns: 1fr;
+  }
+  .nw-figure {
+    position: static;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+}
+/* On phones, stack everything: image, then notice, then wonder. */
+@media (max-width: 620px) {
   .nw-grid {
     grid-template-columns: 1fr;
   }
@@ -3887,34 +3918,26 @@ html.projector .main {
   .nw-chip {
     display: none;
   }
+  .nw-layout {
+    grid-template-columns: 1.15fr 2fr;
+  }
   .nw-card,
   .nw-col {
     break-inside: avoid;
   }
 }
 
-/* ── Notice & Wonder + language support, side-by-side ──────────────────────
-   The notice/wonder boxes fill the left column; the "Words & phrases to use"
-   support card sits to their right and drops below on narrow screens. */
-.nw-support-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-4);
-  align-items: flex-start;
+/* ── Notice & Wonder + language support, stacked ───────────────────────────
+   The image + notice/wonder boxes render on top (see `.nw-layout`); the
+   "Words & phrases to use" support card sits full-width directly beneath. */
+.nw-support-stack {
+  display: block;
+}
+.nw-support-stack .nw-support {
+  margin-top: var(--sp-4);
 }
 .nw-support-main {
-  flex: 1 1 60%;
-  min-width: 300px;
-}
-.nw-support-aside {
-  flex: 1 1 260px;
-  min-width: 240px;
-}
-@media (max-width: 900px) {
-  .nw-support-main,
-  .nw-support-aside {
-    flex-basis: 100%;
-  }
+  min-width: 0;
 }
 
 /* ── Reveal Word Problem (config.revealWordProblem) ────────────────────────

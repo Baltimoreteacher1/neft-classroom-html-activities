@@ -748,13 +748,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         .querySelectorAll(".extra-btn")
         .forEach((b) => b.classList.toggle("active", b.dataset.extra === kind));
       sidebar.setAttribute("data-viewing-extra", kind || "");
-      // Vocab + Learn It open as a full-viewport takeover; lock the page behind
-      // it so there's no double scrollbar and it sits truly edge-to-edge. Every
-      // panel transition (openExtra/openProjects/…/navigateTo→clearExtraActive)
-      // routes through here, so this both sets and clears the lock.
+      // Vocab, Learn It, and Guided Notes open as a full-viewport takeover; lock
+      // the page behind it so there's no double scrollbar and it sits truly
+      // edge-to-edge. Every panel transition (openExtra/openProjects/…/
+      // navigateTo→clearExtraActive) routes through here, so this both sets and
+      // clears the lock.
       document.documentElement.classList.toggle(
         "nt-extra-fullpage-open",
-        kind === "vocab" || kind === "learn",
+        kind === "vocab" || kind === "learn" || kind === "notes",
       );
     },
     clearExtraActive() {
@@ -814,10 +815,11 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
                     desc: "Read along and fill these in. Use Print for a paper copy.",
                   };
 
-      // Vocab and Learn It open as an immersive full-viewport takeover that
-      // stays on the same page (no separate tab). The panel still lives inside
-      // phaseContainer, so navigating to any phase/tab tears it down for free.
-      const fullPage = kind === "vocab" || kind === "learn";
+      // Vocab, Learn It, and Guided Notes open as an immersive full-viewport
+      // takeover that stays on the same page (no separate tab). The panel still
+      // lives inside phaseContainer, so navigating to any phase/tab tears it
+      // down for free.
+      const fullPage = kind === "vocab" || kind === "learn" || kind === "notes";
 
       this.setExtraActive(kind);
       phaseContainer.innerHTML = "";
