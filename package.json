@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run generate-curriculum-search-index && node tools/canvas/build-studio-index.mjs && node tools/canvas/build-command-center.mjs && node tools/sync-access-shell.mjs && node tools/scorm/build-canvas-scorm-page.mjs && node tools/inject-projects-visuals.mjs && vite build && node tools/stamp-build.mjs && node tools/gen-access-inventory.mjs && node tools/generate-access-printables.mjs",
+    "build": "npm run generate-curriculum-search-index && npm run generate-curriculum-launch-manifest && node tools/canvas/build-studio-index.mjs && node tools/canvas/build-command-center.mjs && node tools/sync-access-shell.mjs && node tools/scorm/build-canvas-scorm-page.mjs && node tools/inject-projects-visuals.mjs && vite build && node tools/stamp-build.mjs && node tools/gen-access-inventory.mjs && node tools/generate-access-printables.mjs",
     "deploy": "node scripts/guard-deploy.js",
     "deploy:noam": "bash scripts/deploy-noam.sh",
     "preview": "vite preview",
@@ -76,6 +76,7 @@
     "standards-crosswalk:init": "node scripts/apply-standards-crosswalk.mjs --init",
     "standards-crosswalk:apply": "node scripts/apply-standards-crosswalk.mjs --apply",
     "generate-curriculum-search-index": "node scripts/generate-curriculum-search-index.mjs",
+    "generate-curriculum-launch-manifest": "node scripts/generate-curriculum-launch-manifest.mjs",
     "audit:curriculum": "node scripts/audit-curriculum-resources.mjs",
     "generate-support-pages": "node scripts/generate-lesson-support-pages.mjs",
     "qa:loop": "bash scripts/qa-loop.sh",
