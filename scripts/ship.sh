@@ -167,9 +167,12 @@ if [ -n "$ORPHANS" ]; then
 fi
 
 # --- Clean detached worktree at origin/main -----------------------------------------
-WT="$ROOT/.claude/worktrees/ship-$(date +%Y%m%d-%H%M%S)-$$"
-mkdir -p "$ROOT/.claude/worktrees"
-git worktree add --detach "$WT" origin/main --quiet || fail "could not create worktree at origin/main"
+# MUST live outside the repo and contain no dot-dir path segment: vite's
+# copyStandaloneHtml filter skips any absolute path containing /.claude/ etc.,
+# so a worktree under .claude/worktrees/ builds a dist with ALL standalone
+# content silently filtered out (every copied dir empty; QA false-fails).
+WT="$(mktemp -d "${TMPDIR:-/tmp}/eduwonderlab-ship-XXXXXX")" || fail "mktemp failed"
+git worktree add --detach --force "$WT" origin/main --quiet || fail "could not create worktree at origin/main"
 KEEP_WT=0
 cleanup() {
   if [ "$KEEP_WT" = "1" ]; then
