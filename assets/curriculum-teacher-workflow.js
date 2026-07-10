@@ -119,9 +119,11 @@
 
   function updateRecent(lessonId) {
     state.recent = [lessonId]
-      .concat((state.recent || []).filter(function (id) {
-        return id !== lessonId && lessonsById[id];
-      }))
+      .concat(
+        (state.recent || []).filter(function (id) {
+          return id !== lessonId && lessonsById[id];
+        }),
+      )
       .slice(0, 6);
     saveState();
   }
@@ -137,7 +139,9 @@
     image.referrerPolicy = "no-referrer";
     image.src = `https://api.qrserver.com/v1/create-qr-code/?size=296x296&margin=10&data=${encodeURIComponent(url)}`;
     image.addEventListener("error", function () {
-      container.replaceChildren(el("p", "ctw-muted", "QR unavailable offline. Use Copy student link."));
+      container.replaceChildren(
+        el("p", "ctw-muted", "QR unavailable offline. Use Copy student link."),
+      );
     });
     container.appendChild(image);
   }
@@ -174,7 +178,13 @@
     });
 
     var unit = el("select", "ctw-select");
-    Array.from(new Set(lessons.map(function (lesson) { return lesson.unit; }))).forEach(function (number) {
+    Array.from(
+      new Set(
+        lessons.map(function (lesson) {
+          return lesson.unit;
+        }),
+      ),
+    ).forEach(function (number) {
       var option = el("option", null, `Unit ${number}`);
       option.value = String(number);
       unit.appendChild(option);
@@ -184,12 +194,17 @@
     var lessonSelect = el("select", "ctw-select");
     function fillLessons(unitNumber) {
       lessonSelect.replaceChildren();
-      lessons.filter(function (lesson) { return lesson.unit === Number(unitNumber); }).forEach(function (lesson) {
-        var option = el("option", null, `${lesson.id} · ${lesson.title}`);
-        option.value = lesson.id;
-        lessonSelect.appendChild(option);
-      });
-      if (lessonsById[state.selected]?.unit === Number(unitNumber)) lessonSelect.value = state.selected;
+      lessons
+        .filter(function (lesson) {
+          return lesson.unit === Number(unitNumber);
+        })
+        .forEach(function (lesson) {
+          var option = el("option", null, `${lesson.id} · ${lesson.title}`);
+          option.value = lesson.id;
+          lessonSelect.appendChild(option);
+        });
+      if (lessonsById[state.selected]?.unit === Number(unitNumber))
+        lessonSelect.value = state.selected;
       else state.selected = lessonSelect.value;
     }
     fillLessons(unit.value);
@@ -210,11 +225,173 @@
     container.appendChild(field("Lesson", lessonSelect));
   }
 
+  // ── Assembled printable lesson plan ──────────────────────────────────────
+  // Builds a clean, fully-expanded lesson-plan document from every part of the
+  // lesson (objectives, materials, vocabulary, readiness, differentiation, the
+  // 45/90-min sequences, a sub-friendly plan, and the student link + QR), then
+  // prints just that document. Replaces the old behavior that printed the live
+  // interactive panel — where the sequence <details> printed collapsed, so the
+  // steps were missing.
+  function planSection(title, build) {
+    var sec = el("section", "ctw-plan-section");
+    sec.appendChild(el("h2", null, title));
+    build(sec);
+    return sec;
+  }
+
+  function planRows(sec, rows) {
+    var dl = el("dl", "ctw-plan-dl");
+    rows.forEach(function (row) {
+      if (row[1] == null || row[1] === "") return;
+      dl.appendChild(el("dt", null, row[0]));
+      dl.appendChild(el("dd", null, row[1]));
+    });
+    if (dl.children.length) sec.appendChild(dl);
+  }
+
+  function planList(sec, steps) {
+    var list = el("ol", "ctw-plan-list");
+    (steps || []).forEach(function (step) {
+      list.appendChild(el("li", null, step));
+    });
+    sec.appendChild(list);
+  }
+
+  function buildLessonPlan(lesson, readiness, support) {
+    var url = studentUrl(lesson);
+    var doc = el("article", "ctw-plan-doc");
+    doc.setAttribute("aria-label", "Printable lesson plan for " + lesson.id + " " + lesson.title);
+
+    var head = el("header", "ctw-plan-head");
+    head.appendChild(el("p", "ctw-plan-brand", "Neft Teacher · Grade 6 Math · Lesson Plan"));
+    head.appendChild(el("h1", null, lesson.id + " · " + lesson.title));
+    head.appendChild(
+      el(
+        "p",
+        "ctw-plan-meta",
+        [
+          "Class " + state.section,
+          "Unit " + lesson.unit,
+          lesson.standard,
+          lesson.timeEstimate,
+          "Date: ____________",
+          "Teacher: Mr. Neft",
+        ]
+          .filter(Boolean)
+          .join("  ·  "),
+      ),
+    );
+    doc.appendChild(head);
+
+    doc.appendChild(
+      planSection("Objectives", function (sec) {
+        planRows(sec, [
+          ["Content objective", lesson.objective],
+          ["Language objective", lesson.languageObjective],
+          ["Success criteria", readiness.successCriteria],
+        ]);
+      }),
+    );
+
+    doc.appendChild(
+      planSection("Materials & Vocabulary", function (sec) {
+        planRows(sec, [
+          ["Materials", readiness.materials],
+          ["Vocabulary", (support.vocabulary || lesson.vocabulary || []).join(", ")],
+          ["Sentence frame", support.sentenceFrame || (lesson.sentenceFrames || [])[0]],
+        ]);
+      }),
+    );
+
+    doc.appendChild(
+      planSection("Readiness & Misconceptions", function (sec) {
+        planRows(sec, [
+          ["Prerequisite", readiness.prerequisite],
+          ["Common misconception", readiness.misconception],
+          ["Teacher response", readiness.responseMove],
+        ]);
+      }),
+    );
+
+    doc.appendChild(
+      planSection("Differentiation", function (sec) {
+        planRows(sec, [
+          ["WIDA 1–2 (entering/emerging)", support.wida12],
+          ["WIDA 3–4 (developing/expanding)", support.wida34],
+          ["SPED access", support.sped],
+          ["Enrichment", support.extension],
+        ]);
+      }),
+    );
+
+    doc.appendChild(
+      planSection("45-Minute Lesson Sequence", function (sec) {
+        planList(sec, DATA.workflow.sequences.minutes45);
+      }),
+    );
+    doc.appendChild(
+      planSection("90-Minute Lesson Sequence", function (sec) {
+        planList(sec, DATA.workflow.sequences.minutes90);
+      }),
+    );
+
+    doc.appendChild(
+      planSection("If a Substitute Teaches This", function (sec) {
+        planList(sec, [
+          "Do Now (5 min): Ask students to name what they remember about the prerequisite.",
+          "Lesson (15 min): Open the interactive lesson and complete the model together.",
+          "Practice (15 min): Students use guided notes or the practice handout.",
+          "Explain (5 min): " + (support.sentenceFrame || "My answer is ___ because ___."),
+          "Check (5 min): Complete the lesson check and leave student work for Mr. Neft.",
+        ]);
+      }),
+    );
+
+    var linkSec = el("section", "ctw-plan-section ctw-plan-link");
+    linkSec.appendChild(el("h2", null, "Student Lesson Link"));
+    linkSec.appendChild(el("p", "ctw-plan-url", url));
+    var qr = el("div", "ctw-plan-qr");
+    renderQr(qr, url);
+    linkSec.appendChild(qr);
+    doc.appendChild(linkSec);
+
+    return doc;
+  }
+
+  function printLessonPlan(lesson, readiness, support) {
+    var host = document.getElementById("ctw-plan-print");
+    if (host) host.remove();
+    host = el("div");
+    host.id = "ctw-plan-print";
+    host.appendChild(buildLessonPlan(lesson, readiness, support));
+    document.body.appendChild(host);
+    document.body.classList.add("ctw-plan-printing");
+
+    var cleaned = false;
+    function cleanup() {
+      if (cleaned) return;
+      cleaned = true;
+      document.body.classList.remove("ctw-plan-printing");
+      var node = document.getElementById("ctw-plan-print");
+      if (node) node.remove();
+      window.removeEventListener("afterprint", cleanup);
+    }
+    window.addEventListener("afterprint", cleanup);
+    // Small delay lets the (usually already-cached) QR image settle before the
+    // print dialog snapshots the page. The link text always prints regardless.
+    setTimeout(function () {
+      window.print();
+    }, 80);
+    setTimeout(cleanup, 12000);
+  }
+
   function sequence(title, steps) {
     var details = el("details", "ctw-sequence");
     details.appendChild(el("summary", null, title));
     var list = el("ol");
-    (steps || []).forEach(function (step) { list.appendChild(el("li", null, step)); });
+    (steps || []).forEach(function (step) {
+      list.appendChild(el("li", null, step));
+    });
     details.appendChild(list);
     return details;
   }
@@ -224,27 +401,45 @@
     var family = familyFor(lesson);
     var readiness = DATA.workflow.families[family] || DATA.workflow.families.general;
     var support = DATA.supports.families[family] || DATA.supports.families.general;
-    var index = lessons.findIndex(function (item) { return item.id === lesson.id; });
+    var index = lessons.findIndex(function (item) {
+      return item.id === lesson.id;
+    });
     var safeUrl = studentUrl(lesson);
     stage.replaceChildren();
 
     var selectors = el("div", "ctw-selectors");
-    renderSelectors(selectors, function () { renderToday(stage); });
+    renderSelectors(selectors, function () {
+      renderToday(stage);
+    });
     stage.appendChild(selectors);
 
     var nav = el("div", "ctw-lesson-nav");
-    nav.appendChild(button("← Previous", function () {
-      if (index > 0) { state.selected = lessons[index - 1].id; updateRecent(state.selected); renderToday(stage); }
-    }));
+    nav.appendChild(
+      button("← Previous", function () {
+        if (index > 0) {
+          state.selected = lessons[index - 1].id;
+          updateRecent(state.selected);
+          renderToday(stage);
+        }
+      }),
+    );
     nav.appendChild(el("span", "ctw-position", `Lesson ${index + 1} of ${lessons.length}`));
-    nav.appendChild(button("Next →", function () {
-      if (index < lessons.length - 1) { state.selected = lessons[index + 1].id; updateRecent(state.selected); renderToday(stage); }
-    }));
+    nav.appendChild(
+      button("Next →", function () {
+        if (index < lessons.length - 1) {
+          state.selected = lessons[index + 1].id;
+          updateRecent(state.selected);
+          renderToday(stage);
+        }
+      }),
+    );
     stage.appendChild(nav);
 
     var hero = el("section", "ctw-today-card");
     var copy = el("div", "ctw-today-copy");
-    copy.appendChild(el("p", "ctw-kicker", `Today's Teaching · ${state.section} · Unit ${lesson.unit}`));
+    copy.appendChild(
+      el("p", "ctw-kicker", `Today's Teaching · ${state.section} · Unit ${lesson.unit}`),
+    );
     copy.appendChild(el("h3", null, `${lesson.id} · ${lesson.title}`));
     copy.appendChild(el("p", "ctw-objective", lesson.objective));
     copy.appendChild(el("p", "ctw-language", `Language objective: ${lesson.languageObjective}`));
@@ -256,13 +451,28 @@
     var actions = el("div", "ctw-actions");
     actions.appendChild(link("Teach this lesson", lesson.resources.lesson, "ctw-primary"));
     actions.appendChild(link("Launch for students", safeUrl, "ctw-student"));
-    actions.appendChild(button("Copy student link", function (event) { copyText(safeUrl, event.currentTarget); }));
-    actions.appendChild(button("Print lesson plan", function () { document.body.classList.add("ctw-printing"); window.print(); }));
-    actions.appendChild(button((state.favorites || []).includes(lesson.id) ? "★ Favorited" : "☆ Favorite", function () {
-      var set = new Set(state.favorites || []);
-      set.has(lesson.id) ? set.delete(lesson.id) : set.add(lesson.id);
-      state.favorites = Array.from(set); saveState(); renderToday(stage);
-    }));
+    actions.appendChild(
+      button("Copy student link", function (event) {
+        copyText(safeUrl, event.currentTarget);
+      }),
+    );
+    actions.appendChild(
+      button("Print lesson plan", function () {
+        printLessonPlan(lesson, readiness, support);
+      }),
+    );
+    actions.appendChild(
+      button(
+        (state.favorites || []).includes(lesson.id) ? "★ Favorited" : "☆ Favorite",
+        function () {
+          var set = new Set(state.favorites || []);
+          set.has(lesson.id) ? set.delete(lesson.id) : set.add(lesson.id);
+          state.favorites = Array.from(set);
+          saveState();
+          renderToday(stage);
+        },
+      ),
+    );
     copy.appendChild(actions);
     hero.appendChild(copy);
     var qr = el("div", "ctw-qr-wrap");
@@ -296,13 +506,20 @@
     var quick = el("section", "ctw-quick");
     quick.appendChild(el("h3", null, "Favorites & recent lessons"));
     var quickLinks = el("div", "ctw-quick-links");
-    Array.from(new Set((state.favorites || []).concat(state.recent || []))).slice(0, 8).forEach(function (id) {
-      if (!lessonsById[id]) return;
-      quickLinks.appendChild(button(`${id} · ${lessonsById[id].title}`, function () {
-        state.selected = id; updateRecent(id); renderToday(stage);
-      }));
-    });
-    if (!quickLinks.children.length) quickLinks.appendChild(el("p", "ctw-muted", "Favorite a lesson to keep it here."));
+    Array.from(new Set((state.favorites || []).concat(state.recent || [])))
+      .slice(0, 8)
+      .forEach(function (id) {
+        if (!lessonsById[id]) return;
+        quickLinks.appendChild(
+          button(`${id} · ${lessonsById[id].title}`, function () {
+            state.selected = id;
+            updateRecent(id);
+            renderToday(stage);
+          }),
+        );
+      });
+    if (!quickLinks.children.length)
+      quickLinks.appendChild(el("p", "ctw-muted", "Favorite a lesson to keep it here."));
     quick.appendChild(quickLinks);
     stage.appendChild(quick);
   }
@@ -316,8 +533,15 @@
     if (state.view === "today") renderToday(stage);
     else if (window.CurriculumTeacherPlanning?.render) {
       window.CurriculumTeacherPlanning.render(state.view, stage, {
-        state: state, saveState: saveState, lessons: lessons, lessonsById: lessonsById,
-        data: DATA, studentUrl: studentUrl, button: button, link: link, el: el,
+        state: state,
+        saveState: saveState,
+        lessons: lessons,
+        lessonsById: lessonsById,
+        data: DATA,
+        studentUrl: studentUrl,
+        button: button,
+        link: link,
+        el: el,
       });
     }
   }
@@ -329,15 +553,28 @@
     var hero = el("header", "ctw-header");
     hero.appendChild(el("p", "ctw-kicker", "Teacher Command Center · Local & private"));
     hero.appendChild(el("h2", null, "Plan it. Teach it. Launch it."));
-    hero.appendChild(el("p", null, "Start with today's lesson, then build the week, a student playlist, a unit map, or tomorrow's groups."));
+    hero.appendChild(
+      el(
+        "p",
+        null,
+        "Start with today's lesson, then build the week, a student playlist, a unit map, or tomorrow's groups.",
+      ),
+    );
     panel.appendChild(hero);
     var tabs = el("nav", "ctw-tabs");
     tabs.setAttribute("aria-label", "Teacher workflow views");
     [
-      ["today", "Today's Teaching"], ["week", "Weekly Pacing"],
-      ["playlist", "Student Playlist"], ["unit", "Unit Map"], ["next", "Next-Day Plan"],
+      ["today", "Today's Teaching"],
+      ["week", "Weekly Pacing"],
+      ["playlist", "Student Playlist"],
+      ["unit", "Unit Map"],
+      ["next", "Next-Day Plan"],
     ].forEach(function (entry) {
-      var tab = button(entry[1], function () { state.view = entry[0]; saveState(); renderPanel(); });
+      var tab = button(entry[1], function () {
+        state.view = entry[0];
+        saveState();
+        renderPanel();
+      });
       tab.dataset.ctwView = entry[0];
       tabs.appendChild(tab);
     });
@@ -358,19 +595,36 @@
       getJson("/data/curriculum-supports.json"),
       getJson("/data/curriculum-teacher-workflow.json"),
       getJson("/data/curriculum-uifr-level4.json"),
-    ]).then(function (results) {
-      DATA.launch = results[0]; DATA.supports = results[1]; DATA.workflow = results[2]; DATA.uifr = results[3];
-      lessons = DATA.launch.lessons || [];
-      lessons.forEach(function (lesson) { lessonsById[lesson.id] = lesson; });
-      if (!lessonsById[state.selected]) state.selected = lessons[0].id;
-      var anchor = document.querySelector(".wrap");
-      if (!anchor?.parentNode) return;
-      anchor.parentNode.insertBefore(buildPanel(), anchor);
-      window.CurriculumTeacherPlanning?.organizeTools?.();
-      syncTeacherMode();
-      new MutationObserver(syncTeacherMode).observe(document.body, { attributes: true, attributeFilter: ["class"] });
-      window.addEventListener("afterprint", function () { document.body.classList.remove("ctw-printing"); });
-    }).catch(function (error) { console.error("Teacher workflow unavailable", error); });
+    ])
+      .then(function (results) {
+        DATA.launch = results[0];
+        DATA.supports = results[1];
+        DATA.workflow = results[2];
+        DATA.uifr = results[3];
+        lessons = DATA.launch.lessons || [];
+        lessons.forEach(function (lesson) {
+          lessonsById[lesson.id] = lesson;
+        });
+        if (!lessonsById[state.selected]) state.selected = lessons[0].id;
+        var anchor = document.querySelector(".wrap");
+        if (!anchor?.parentNode) return;
+        anchor.parentNode.insertBefore(buildPanel(), anchor);
+        window.CurriculumTeacherPlanning?.organizeTools?.();
+        syncTeacherMode();
+        new MutationObserver(syncTeacherMode).observe(document.body, {
+          attributes: true,
+          attributeFilter: ["class"],
+        });
+        // Shared cleanup for the planning views' printView() (Weekly Pacing,
+        // Unit Map, etc.), which toggle body.ctw-printing. The "Print lesson
+        // plan" button manages its own ctw-plan-printing lifecycle separately.
+        window.addEventListener("afterprint", function () {
+          document.body.classList.remove("ctw-printing");
+        });
+      })
+      .catch(function (error) {
+        console.error("Teacher workflow unavailable", error);
+      });
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);

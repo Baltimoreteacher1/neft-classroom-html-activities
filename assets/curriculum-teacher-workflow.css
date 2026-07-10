@@ -474,3 +474,118 @@
     break-inside: avoid;
   }
 }
+
+/* Assembled printable lesson plan (built by the "Print lesson plan" button).
+   Hidden on screen; only rendered to paper. */
+#ctw-plan-print {
+  display: none;
+}
+
+@media print {
+  body.ctw-plan-printing {
+    background: #fff;
+  }
+
+  body.ctw-plan-printing > *:not(#ctw-plan-print) {
+    display: none !important;
+  }
+
+  body.ctw-plan-printing #ctw-plan-print {
+    display: block;
+  }
+
+  @page {
+    margin: 14mm;
+  }
+
+  .ctw-plan-doc {
+    font:
+      12pt/1.45 "Hanken Grotesk",
+      system-ui,
+      sans-serif;
+    color: #000;
+    max-width: 100%;
+  }
+
+  .ctw-plan-head {
+    border-bottom: 3px solid #12355b;
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+  }
+
+  .ctw-plan-brand {
+    margin: 0 0 4px;
+    font-size: 9pt;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #0d7a76;
+  }
+
+  .ctw-plan-head h1 {
+    margin: 0 0 6px;
+    font-size: 20pt;
+    color: #12355b;
+  }
+
+  .ctw-plan-meta {
+    margin: 0;
+    font-size: 10pt;
+    color: #333;
+  }
+
+  .ctw-plan-section {
+    margin: 0 0 12px;
+    break-inside: avoid;
+  }
+
+  .ctw-plan-section h2 {
+    margin: 0 0 6px;
+    padding-bottom: 3px;
+    font-size: 12pt;
+    color: #12355b;
+    border-bottom: 1px solid #cbd6e2;
+  }
+
+  .ctw-plan-dl {
+    display: grid;
+    grid-template-columns: 175px 1fr;
+    gap: 3px 14px;
+    margin: 0;
+  }
+
+  .ctw-plan-dl dt {
+    font-weight: 700;
+    color: #333;
+  }
+
+  .ctw-plan-dl dd {
+    margin: 0;
+  }
+
+  .ctw-plan-list {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  .ctw-plan-list li {
+    margin: 0 0 3px;
+    break-inside: avoid;
+  }
+
+  .ctw-plan-link {
+    break-inside: avoid;
+  }
+
+  .ctw-plan-url {
+    margin: 0 0 8px;
+    font-family: ui-monospace, "SF Mono", monospace;
+    font-size: 9.5pt;
+    word-break: break-all;
+  }
+
+  .ctw-plan-qr .ctw-qr {
+    width: 120px;
+    height: 120px;
+  }
+}
