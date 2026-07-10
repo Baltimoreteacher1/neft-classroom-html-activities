@@ -245,6 +245,9 @@
    * overrides applied AFTER auto-match, so a mismatch never recurs. Omitting it
    * preserves the original behavior exactly.
    * returns { matched:[{name,code,grade,rosterIndex}], unmatched:[...], gradeByIndex:{} }
+   * entries[].label (optional) overrides the default "score/max (percent%)"
+   * text shown in the preview — used by sources that carry only a percent
+   * (e.g. the live gradebook, where "90%" is clearer than "90/undefined (90%)").
    */
   function applyScores(roster, entries, pointsPossible, manualMap) {
     var lookup = rosterLookup(roster);
@@ -259,7 +262,7 @@
         var mk = norm(e.name);
         if (mk in manual) idx = manual[mk];
       }
-      var label = e.score + "/" + e.max + " (" + e.percent + "%)";
+      var label = e.label != null ? e.label : e.score + "/" + e.max + " (" + e.percent + "%)";
       if (idx >= 0) {
         gradeByIndex[idx] = grade;
         matched.push({

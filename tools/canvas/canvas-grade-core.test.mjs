@@ -53,6 +53,16 @@ assert.deepEqual(res.missing, ["Smith, John"], "Smith has no submission");
 assert.equal(res.gradeByIndex[0], 18, "Maria -> 18");
 assert.equal(res.gradeByIndex[1], 15, "Binh -> 15");
 
+/* 3b. Optional per-entry label overrides the default score/max text (used by
+ *     the live-gradebook source, which carries only a percent). */
+const live = G.applyScores(
+  roster,
+  [{ name: "Maria Garcia", percent: 90, score: 90, label: "90%" }],
+  20,
+);
+assert.equal(live.matched[0].code, "90%", "custom label passthrough");
+assert.equal(live.matched[0].grade, 18, "live percent scales with score fallback");
+
 const grid = G.buildImportCsv(roster, "Ratios Lesson", 20, res.gradeByIndex);
 assert.deepEqual(
   grid[0],
