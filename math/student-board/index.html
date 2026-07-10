@@ -602,6 +602,108 @@
       .row-tools {
         margin-top: 10px;
       }
+      .privacy-hint {
+        display: none;
+        margin: 8px 0 0;
+        font-size: 12px;
+        color: var(--ink-soft);
+        background: rgba(184, 121, 31, 0.08);
+        border: 1px solid rgba(184, 121, 31, 0.25);
+        border-radius: 10px;
+        padding: 7px 10px;
+      }
+      body.edit .privacy-hint {
+        display: block;
+      }
+      body.edit .privacy-hint.edit-only {
+        display: block;
+      }
+      /* ---- modal ---- */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(16, 35, 61, 0.55);
+        display: grid;
+        place-items: center;
+        z-index: 60;
+        padding: 18px;
+        backdrop-filter: blur(2px);
+      }
+      .modal-backdrop[hidden] {
+        display: none;
+      }
+      .modal {
+        background: var(--paper);
+        border-radius: 18px;
+        box-shadow: var(--shadow-lg);
+        width: min(560px, 96vw);
+        max-height: 90vh;
+        overflow: auto;
+        padding: 22px 24px;
+      }
+      .modal h3 {
+        font-size: 20px;
+        color: var(--navy);
+        margin-bottom: 8px;
+      }
+      .modal-help {
+        font-size: 13px;
+        color: var(--ink-soft);
+        margin: 0 0 12px;
+      }
+      .modal-help code {
+        background: #eef3f9;
+        border-radius: 5px;
+        padding: 1px 5px;
+        font-size: 12px;
+      }
+      .modal textarea {
+        width: 100%;
+        font-family: "Atkinson Hyperlegible", monospace;
+        font-size: 14px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 12px;
+        resize: vertical;
+      }
+      .modal-opt {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        margin: 12px 0;
+        color: var(--ink);
+      }
+      .modal-preview {
+        font-size: 13px;
+        color: var(--ink-soft);
+        background: #f4f8fd;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin-bottom: 12px;
+        max-height: 180px;
+        overflow: auto;
+      }
+      .modal-preview[hidden] {
+        display: none;
+      }
+      .modal-preview .add {
+        color: var(--green);
+        font-weight: 700;
+      }
+      .modal-preview .skip {
+        color: var(--ink-soft);
+      }
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+      .btn[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
       .edit-banner {
         display: none;
         position: sticky;
@@ -795,6 +897,9 @@
           <section class="card">
             <h2><span class="ico">👥</span> Work Groups Today</h2>
             <p class="hint">Find your name. Your group and your job for today are on your card.</p>
+            <p class="privacy-hint edit-only">
+              🔒 First names or initials only — the whole class sees this board.
+            </p>
             <div class="pods" id="pods"></div>
           </section>
         </div>
@@ -817,6 +922,11 @@
             <div class="bars" id="aleksBars"></div>
             <div class="row-tools edit-only">
               <button class="mini" id="addAleksBtn">+ Add student</button>
+              <button class="mini" id="importAleksBtn">⬆ Import ALEKS CSV</button>
+              <p class="privacy-hint">
+                🔒 This board is visible to the whole class. Use first names or initials only — no
+                last names or IDs.
+              </p>
             </div>
           </section>
 
@@ -845,6 +955,33 @@
         The Class Board · <a href="/math/">Math Home</a> · <a href="/curriculum/">Curriculum Hub</a
         ><br />
         <span id="footStamp"></span>
+      </div>
+    </div>
+
+    <!-- ALEKS CSV import modal (teacher only) -->
+    <div class="modal-backdrop" id="aleksModal" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="aleksModalTitle">
+        <h3 id="aleksModalTitle">Import ALEKS minutes</h3>
+        <p class="modal-help">
+          In ALEKS, open <b>Reports → Time and Topic</b> (or any report with a name and total-time
+          column), export/copy it, and paste it below. Accepts CSV or tab-separated (straight from a
+          spreadsheet). Time reads as <code>H:MM</code>, whole minutes, or decimal hours.
+        </p>
+        <textarea
+          id="aleksPaste"
+          rows="9"
+          placeholder="Student Name, Total Time&#10;Ava R., 1:02&#10;Marcus T., 48&#10;Sofia L., 1.2"
+        ></textarea>
+        <label class="modal-opt">
+          <input type="checkbox" id="aleksFirstName" checked />
+          Keep first names only (recommended — the class sees this board)
+        </label>
+        <div class="modal-preview" id="aleksPreview" hidden></div>
+        <div class="modal-actions">
+          <button class="btn ghost" id="aleksCancel">Cancel</button>
+          <button class="btn" id="aleksPreviewBtn">Preview</button>
+          <button class="btn primary" id="aleksApply" disabled>Import minutes</button>
+        </div>
       </div>
     </div>
 
@@ -1390,6 +1527,162 @@
         render();
       }
 
+      // ---- ALEKS CSV import -------------------------------------------
+      // Parses an ALEKS "Time and Topic" style export (or any name + time
+      // report). Accepts comma OR tab separated (paste straight from a sheet).
+      // Time cell reads as H:MM, whole minutes, or decimal hours.
+      function toMinutes(raw) {
+        const v = String(raw || "")
+          .trim()
+          .replace(/["']/g, "");
+        if (!v) return null;
+        let m = v.match(/^(\d+):(\d{1,2})$/); // H:MM
+        if (m) return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+        m = v.match(/^(\d+)\s*h(?:rs?)?\s*(\d+)?\s*m?/i); // "1h 20m"
+        if (m) return parseInt(m[1], 10) * 60 + (m[2] ? parseInt(m[2], 10) : 0);
+        const num = parseFloat(v.replace(/[^0-9.]/g, ""));
+        if (!isFinite(num)) return null;
+        // A decimal (e.g. 1.2) is hours; a whole number is minutes.
+        return Math.round(/[.]/.test(v) ? num * 60 : num);
+      }
+      function firstName(name) {
+        let n = String(name || "")
+          .trim()
+          .replace(/["']/g, "");
+        if (n.includes(",")) n = n.split(",")[1] || n.split(",")[0]; // "Last, First" -> First
+        n = n.trim().split(/\s+/)[0] || n; // first token
+        return n;
+      }
+      function normKey(name) {
+        return firstName(name)
+          .toLowerCase()
+          .replace(/[^a-z]/g, "");
+      }
+      function parseAleksCsv(text) {
+        const lines = String(text || "")
+          .split(/\r?\n/)
+          .map((l) => l.trim())
+          .filter(Boolean);
+        if (!lines.length) return [];
+        const delim = lines[0].includes("\t") ? "\t" : ",";
+        // Quote-aware split so a quoted "Last, First" name keeps its comma.
+        const split = (l) => {
+          const cells = [];
+          let cur = "",
+            q = false;
+          for (let i = 0; i < l.length; i++) {
+            const ch = l[i];
+            if (ch === '"') {
+              if (q && l[i + 1] === '"') {
+                cur += '"';
+                i++;
+              } else q = !q;
+            } else if (ch === delim && !q) {
+              cells.push(cur);
+              cur = "";
+            } else cur += ch;
+          }
+          cells.push(cur);
+          return cells.map((c) => c.trim());
+        };
+        // Detect a header row and which columns hold the name and the time.
+        let nameCol = 0,
+          timeCol = 1,
+          start = 0;
+        const head = split(lines[0]).map((c) => c.toLowerCase());
+        const looksHeader =
+          head.some((c) => /name|student/.test(c)) || head.some((c) => /time|min|hour/.test(c));
+        if (looksHeader) {
+          start = 1;
+          const ni = head.findIndex((c) => /name|student/.test(c));
+          const ti = head.findIndex((c) => /total.*time|time|minutes?|hours?/.test(c));
+          if (ni >= 0) nameCol = ni;
+          if (ti >= 0) timeCol = ti;
+        }
+        const out = [];
+        for (let i = start; i < lines.length; i++) {
+          const cells = split(lines[i]);
+          const name = cells[nameCol];
+          const mins = toMinutes(cells[timeCol] != null ? cells[timeCol] : cells[cells.length - 1]);
+          if (name && mins != null) out.push({ name, minutes: mins });
+        }
+        return out;
+      }
+      function planAleksImport(rows, firstOnly) {
+        const studs = state.aleks.students || (state.aleks.students = []);
+        const byKey = new Map(studs.map((s) => [normKey(s.name), s]));
+        const matched = [],
+          added = [];
+        rows.forEach((r) => {
+          const key = normKey(r.name);
+          const existing = byKey.get(key);
+          const label = firstOnly ? firstName(r.name) : String(r.name).replace(/["']/g, "").trim();
+          if (existing) matched.push({ from: existing.name, to: label, min: r.minutes });
+          else {
+            byKey.set(key, { name: label });
+            added.push({ name: label, min: r.minutes });
+          }
+        });
+        return {
+          matched,
+          added,
+          apply: () => {
+            rows.forEach((r) => {
+              const key = normKey(r.name);
+              const label = firstOnly
+                ? firstName(r.name)
+                : String(r.name).replace(/["']/g, "").trim();
+              let s = studs.find((x) => normKey(x.name) === key);
+              if (!s) {
+                s = { name: label, minutes: 0 };
+                studs.push(s);
+              }
+              s.name = label;
+              s.minutes = r.minutes;
+            });
+          },
+        };
+      }
+      let aleksPlan = null;
+      function openAleksModal() {
+        $("#aleksModal").hidden = false;
+        $("#aleksPaste").focus();
+      }
+      function closeAleksModal() {
+        $("#aleksModal").hidden = true;
+        $("#aleksPaste").value = "";
+        $("#aleksPreview").hidden = true;
+        $("#aleksApply").disabled = true;
+        aleksPlan = null;
+      }
+      function previewAleks() {
+        const rows = parseAleksCsv($("#aleksPaste").value);
+        const firstOnly = $("#aleksFirstName").checked;
+        const prev = $("#aleksPreview");
+        if (!rows.length) {
+          prev.hidden = false;
+          prev.innerHTML =
+            "<span class='skip'>No rows found. Check that each line has a name and a time.</span>";
+          $("#aleksApply").disabled = true;
+          return;
+        }
+        aleksPlan = planAleksImport(rows, firstOnly);
+        const fmt = (m) => (m >= 60 ? Math.floor(m / 60) + "h " + (m % 60) + "m" : m + "m");
+        prev.hidden = false;
+        prev.innerHTML =
+          `<b>${rows.length}</b> row(s): <b>${aleksPlan.matched.length}</b> updated, ` +
+          `<span class="add"><b>${aleksPlan.added.length}</b> new</span>.<br />` +
+          rows
+            .slice(0, 20)
+            .map((r) => {
+              const label = firstOnly ? firstName(r.name) : r.name;
+              return `${esc(label)} — ${fmt(r.minutes)}`;
+            })
+            .join(" · ") +
+          (rows.length > 20 ? " …" : "");
+        $("#aleksApply").disabled = false;
+      }
+
       // ---- confetti (subtle, respects reduced motion) ------------------
       function celebrate() {
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -1445,6 +1738,23 @@
         markDirty();
         renderAleks();
       };
+      $("#importAleksBtn").onclick = openAleksModal;
+      $("#aleksCancel").onclick = closeAleksModal;
+      $("#aleksPreviewBtn").onclick = previewAleks;
+      $("#aleksFirstName").onchange = () => {
+        if (!$("#aleksPreview").hidden) previewAleks();
+      };
+      $("#aleksApply").onclick = () => {
+        if (!aleksPlan) return;
+        aleksPlan.apply();
+        markDirty();
+        renderAleks();
+        closeAleksModal();
+        setSaveState("ALEKS minutes imported — review, then Publish");
+      };
+      $("#aleksModal").addEventListener("click", (e) => {
+        if (e.target === $("#aleksModal")) closeAleksModal();
+      });
       $("#addNoteBtn").onclick = () => {
         state.notes.push({ emoji: "📌", text: "New announcement" });
         markDirty();
@@ -1476,7 +1786,10 @@
         }
       };
       document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") document.body.classList.remove("present");
+        if (e.key === "Escape") {
+          if (!$("#aleksModal").hidden) closeAleksModal();
+          else document.body.classList.remove("present");
+        }
       });
 
       // Deep-link ?board=601 and ?edit=1
