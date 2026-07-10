@@ -442,14 +442,477 @@ header p {
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
+
+<!-- pct-styles:begin -->
+<style>
+/* ===== PERCENT MODE — TAB SHELL ===== */
+.pct-tab-bar {
+  max-width: 1200px;
+  margin: 0 auto 0;
+  padding: 0 20px;
+  display: flex;
+  gap: 8px;
+}
+
+.pct-tab-btn {
+  background: rgba(20,24,38,0.7);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  color: var(--text-muted);
+  padding: 10px 22px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.pct-tab-btn.pct-active {
+  background: rgba(20,24,38,0.95);
+  color: #fff;
+  box-shadow: 0 0 14px rgba(0,240,255,0.25);
+  border-color: var(--neon-blue);
+}
+
+.pct-tab-btn:hover:not(.pct-active) {
+  background: rgba(30,36,55,0.9);
+  color: var(--text-light);
+}
+
+.pct-tab-panel {
+  display: none;
+}
+.pct-tab-panel.pct-active {
+  display: block;
+}
+
+/* ===== 10×10 PIXEL GRID ===== */
+#pct-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
+  background: #11141d;
+  border: 2px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 6px;
+  width: 340px;
+  height: 340px;
+  flex-shrink: 0;
+  user-select: none;
+  touch-action: none;
+}
+
+.pct-cell {
+  border-radius: 3px;
+  background: rgba(255,255,255,0.05);
+  cursor: crosshair;
+  transition: transform 0.08s;
+}
+
+.pct-cell:hover {
+  transform: scale(1.12);
+  z-index: 1;
+}
+
+/* ===== COLOR PALETTE ===== */
+#pct-palette {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 14px 0 0;
+}
+
+.pct-swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pct-swatch:hover {
+  transform: scale(1.18);
+}
+
+.pct-swatch.pct-chosen {
+  border-color: #fff;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.4), 0 0 16px currentColor;
+  transform: scale(1.22);
+}
+
+.pct-eraser {
+  background: linear-gradient(135deg, #2a2d3e, #404560);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #fff;
+  border-radius: 50%;
+}
+
+/* ===== STATS HUD ===== */
+#pct-hud {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-top: 18px;
+  font-size: 0.85rem;
+}
+
+.pct-hud-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.pct-hud-row {
+  display: grid;
+  grid-template-columns: 16px 1fr 60px 60px 52px 52px;
+  gap: 6px;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.pct-hud-row:last-child { border-bottom: none; }
+
+.pct-hud-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pct-hud-label {
+  color: var(--text-light);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pct-hud-cell {
+  font-family: monospace;
+  text-align: right;
+  color: var(--neon-blue);
+  font-size: 0.82rem;
+}
+
+.pct-totals {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  gap: 20px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.pct-totals span {
+  font-family: monospace;
+  color: var(--text-light);
+}
+
+/* ===== SCALE-UP ENGINE ===== */
+#pct-scaleup {
+  background: rgba(0,240,255,0.04);
+  border: 1px solid rgba(0,240,255,0.12);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-top: 14px;
+  font-size: 0.85rem;
+}
+
+.pct-scaleup-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--neon-blue);
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pct-n-input {
+  background: #11141d;
+  border: 1px solid rgba(0,240,255,0.3);
+  border-radius: 6px;
+  color: #fff;
+  padding: 4px 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  width: 72px;
+  outline: none;
+}
+
+.pct-n-input:focus { border-color: var(--neon-blue); }
+
+.pct-preset-btn {
+  background: rgba(0,240,255,0.1);
+  border: 1px solid rgba(0,240,255,0.25);
+  border-radius: 6px;
+  color: var(--neon-blue);
+  padding: 3px 9px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pct-preset-btn:hover {
+  background: var(--neon-blue);
+  color: var(--bg-dark);
+}
+
+#pct-scaleup-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.pct-scaleup-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: monospace;
+  font-size: 0.82rem;
+  color: var(--text-light);
+}
+
+.pct-scaleup-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pct-scaleup-formula {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+/* ===== CHALLENGE MODE ===== */
+#pct-challenge {
+  background: rgba(255,215,0,0.04);
+  border: 1px solid rgba(255,215,0,0.15);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-top: 14px;
+  font-size: 0.85rem;
+}
+
+.pct-challenge-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.pct-challenge-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--neon-yellow);
+  letter-spacing: 1.5px;
+  font-weight: 700;
+}
+
+.pct-challenge-toggle {
+  background: transparent;
+  border: 1px solid var(--neon-yellow);
+  border-radius: 6px;
+  color: var(--neon-yellow);
+  padding: 4px 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.pct-challenge-toggle.pct-on {
+  background: var(--neon-yellow);
+  color: var(--bg-dark);
+  box-shadow: 0 0 10px rgba(255,240,31,0.4);
+}
+
+#pct-challenge-desc {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  min-height: 1.4em;
+}
+
+.pct-prog-row {
+  display: grid;
+  grid-template-columns: 12px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.pct-prog-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.pct-prog-bar-wrap {
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.pct-prog-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.2s ease;
+}
+
+.pct-prog-label {
+  font-family: monospace;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  min-width: 70px;
+  text-align: right;
+}
+
+/* ===== CELEBRATE ANIMATION ===== */
+@keyframes pctPop {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.08); }
+  60%  { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+.pct-celebrate {
+  animation: pctPop 0.45s ease forwards;
+  box-shadow: 0 0 30px rgba(57,255,20,0.5) !important;
+  border-color: var(--neon-green) !important;
+}
+
+/* ===== LAYOUT WRAPPER ===== */
+#pct-percent-panel .pct-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 840px) {
+  #pct-percent-panel .pct-inner {
+    grid-template-columns: 1fr;
+  }
+  #pct-grid { width: 100%; height: auto; aspect-ratio: 1; }
+}
+
+.pct-left { display: flex; flex-direction: column; align-items: center; }
+
+.pct-right { display: flex; flex-direction: column; }
+
+.pct-right-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.pct-right-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #e91e8c, #ffd700, #39ff14);
+}
+
+.pct-reset-btn {
+  margin-top: 10px;
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--neon-pink);
+  border-radius: 8px;
+  color: var(--neon-pink);
+  padding: 9px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+}
+
+.pct-reset-btn:hover {
+  background: var(--neon-pink);
+  color: var(--bg-dark);
+  box-shadow: 0 0 14px var(--neon-pink);
+}
+
+.pct-grid-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+  font-weight: 700;
+  align-self: flex-start;
+}
+</style>
+<!-- pct-styles:end -->
 </head>
 <body>
 
 <header>
   <h1>Pixel Area Model</h1>
-  <p>Fraction & Decimal Multiplier Canvas</p>
+  <p>Fraction &amp; Decimal Multiplier Canvas</p>
 </header>
 
+<!-- pct-tabbar:begin -->
+<div class="pct-tab-bar" role="tablist" aria-label="Activity Tabs">
+  <button
+    id="pct-tab-btn-fraction"
+    class="pct-tab-btn pct-active"
+    role="tab"
+    aria-selected="true"
+    aria-controls="pct-fraction-panel"
+    onclick="pctSwitchTab('fraction')"
+  >🔢 Fraction Model</button>
+  <button
+    id="pct-tab-btn-percent"
+    class="pct-tab-btn"
+    role="tab"
+    aria-selected="false"
+    aria-controls="pct-percent-panel"
+    onclick="pctSwitchTab('percent')"
+  >🎨 Percent Mode</button>
+</div>
+<!-- pct-tabbar:end -->
+
+<div id="pct-fraction-panel" class="pct-tab-panel pct-active" role="tabpanel" aria-labelledby="pct-tab-btn-fraction">
 <main class="container">
   <!-- Left Side: Interactive Area Model SVG -->
   <section class="panel canvas-area">
@@ -557,6 +1020,81 @@ header p {
     <button class="diagnostics-btn" onclick="selfTest()">Run Diagnostic Self-Test</button>
   </section>
 </main>
+</div><!-- /pct-fraction-panel -->
+
+<!-- pct-percent-panel:begin -->
+<div id="pct-percent-panel" class="pct-tab-panel" role="tabpanel" aria-labelledby="pct-tab-btn-percent">
+  <div class="pct-inner">
+
+    <!-- LEFT: Grid + Palette + Reset -->
+    <div class="pct-left">
+      <div class="pct-grid-label">10 × 10 Paint Grid — each cell = 1%</div>
+      <div id="pct-grid" aria-label="10 by 10 paintable percent grid"></div>
+
+      <div id="pct-palette" role="group" aria-label="Color palette">
+        <button class="pct-swatch pct-chosen" id="pct-sw-0" style="background:#e91e8c;" title="Neon Pink" aria-label="Neon Pink" data-color="#e91e8c" data-name="Pink" onclick="pctPickColor(this)"></button>
+        <button class="pct-swatch" id="pct-sw-1" style="background:#00d4ff;" title="Cyan" aria-label="Cyan" data-color="#00d4ff" data-name="Cyan" onclick="pctPickColor(this)"></button>
+        <button class="pct-swatch" id="pct-sw-2" style="background:#ffd700;" title="Gold" aria-label="Gold" data-color="#ffd700" data-name="Gold" onclick="pctPickColor(this)"></button>
+        <button class="pct-swatch" id="pct-sw-3" style="background:#39ff14;" title="Lime" aria-label="Lime" data-color="#39ff14" data-name="Lime" onclick="pctPickColor(this)"></button>
+        <button class="pct-swatch" id="pct-sw-4" style="background:#ff6b6b;" title="Coral" aria-label="Coral" data-color="#ff6b6b" data-name="Coral" onclick="pctPickColor(this)"></button>
+        <button class="pct-swatch" id="pct-sw-5" style="background:#9b59b6;" title="Violet" aria-label="Violet" data-color="#9b59b6" data-name="Violet" onclick="pctPickColor(this)"></button>
+        <button class="pct-swatch pct-eraser" id="pct-sw-eraser" title="Eraser" aria-label="Eraser" data-color="" data-name="Eraser" onclick="pctPickColor(this)">🧹</button>
+      </div>
+
+      <button class="pct-reset-btn" id="pct-reset-btn" onclick="pctResetGrid()" aria-label="Reset percent grid">🗑 Reset Percent Grid</button>
+    </div>
+
+    <!-- RIGHT: HUD + Scale-Up + Challenge -->
+    <div class="pct-right">
+      <div class="pct-right-panel">
+
+        <!-- LIVE STATS HUD -->
+        <div id="pct-hud">
+          <div class="pct-hud-title">Live Stats</div>
+          <div id="pct-hud-rows">
+            <!-- rows injected by JS -->
+          </div>
+          <div class="pct-totals">
+            Total painted: <span id="pct-total-painted">0</span>&nbsp;/100&nbsp;&nbsp;
+            Blank (0%): <span id="pct-total-blank">100</span>
+          </div>
+        </div>
+
+        <!-- SCALE-UP ENGINE -->
+        <div id="pct-scaleup">
+          <div class="pct-scaleup-title">
+            🔭 Scale-Up Engine &nbsp;
+            <input type="number" id="pct-n-val" class="pct-n-input" value="200" min="1" max="100000" aria-label="Scale-up N value" oninput="pctRenderScaleup()" />
+            <button class="pct-preset-btn" onclick="pctSetN(200)" aria-label="Set N to 200">200</button>
+            <button class="pct-preset-btn" onclick="pctSetN(500)" aria-label="Set N to 500">500</button>
+            <button class="pct-preset-btn" onclick="pctSetN(1000)" aria-label="Set N to 1000">1000</button>
+          </div>
+          <div id="pct-scaleup-rows">
+            <!-- rows injected by JS -->
+          </div>
+        </div>
+
+        <!-- CHALLENGE MODE -->
+        <div id="pct-challenge">
+          <div class="pct-challenge-header">
+            <div class="pct-challenge-title">🎯 Challenge Mode</div>
+            <button
+              class="pct-challenge-toggle"
+              id="pct-challenge-toggle"
+              onclick="pctToggleChallenge()"
+              aria-pressed="false"
+              aria-label="Toggle challenge mode"
+            >OFF</button>
+          </div>
+          <div id="pct-challenge-desc">Toggle ON to receive a painting challenge!</div>
+          <div id="pct-challenge-bars"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- pct-percent-panel:end -->
 
 <div class="success-modal" id="successModal">
   <div class="success-content">
@@ -1094,6 +1632,304 @@ window.addEventListener("load", () => {
   UI.log("🎨 Area pixel canvas ready. Draggable vector boundaries online.");
 });
 </script>
+
+<!-- pct-script:begin -->
+<script>
+/* =====================================================
+   PERCENT MODE — pct- namespace
+   All IDs and globals prefixed with pct- / PCT_
+   ===================================================== */
+
+/* -------- GCD -------- */
+function pctGcd(a, b) { return b ? pctGcd(b, a % b) : a; }
+
+/* -------- PALETTE DEFINITIONS -------- */
+const PCT_PALETTE = [
+  { color: '#e91e8c', name: 'Pink'   },
+  { color: '#00d4ff', name: 'Cyan'   },
+  { color: '#ffd700', name: 'Gold'   },
+  { color: '#39ff14', name: 'Lime'   },
+  { color: '#ff6b6b', name: 'Coral'  },
+  { color: '#9b59b6', name: 'Violet' },
+];
+
+/* -------- STATE -------- */
+const PCT_STATE = {
+  cells: new Array(100).fill(''),   // '' = blank, else hex color
+  activeColor: '#e91e8c',
+  activeName: 'Pink',
+  isPainting: false,
+  challengeOn: false,
+  challengeTargets: [],  // [{name, color, kind, target}]
+  challengeComplete: false,
+};
+
+/* -------- GRID INIT -------- */
+function pctInitGrid() {
+  const grid = document.getElementById('pct-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  for (let i = 0; i < 100; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'pct-cell';
+    cell.id = `pct-cell-${i}`;
+    cell.setAttribute('aria-label', `Cell ${i + 1}`);
+    cell.addEventListener('mousedown',  () => { PCT_STATE.isPainting = true;  pctPaintCell(i); });
+    cell.addEventListener('mouseenter', () => { if (PCT_STATE.isPainting) pctPaintCell(i); });
+    cell.addEventListener('touchstart', (e) => { e.preventDefault(); PCT_STATE.isPainting = true; pctPaintCell(i); }, { passive: false });
+    cell.addEventListener('touchmove',  (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (el && el.classList.contains('pct-cell')) {
+        const idx = parseInt(el.id.replace('pct-cell-', ''));
+        if (!isNaN(idx)) pctPaintCell(idx);
+      }
+    }, { passive: false });
+    grid.appendChild(cell);
+  }
+}
+
+window.addEventListener('mouseup', () => { PCT_STATE.isPainting = false; });
+window.addEventListener('touchend', () => { PCT_STATE.isPainting = false; });
+
+/* -------- PAINT -------- */
+function pctPaintCell(idx) {
+  PCT_STATE.cells[idx] = PCT_STATE.activeColor; // '' when eraser
+  const cell = document.getElementById(`pct-cell-${idx}`);
+  if (!cell) return;
+  cell.style.background = PCT_STATE.activeColor || 'rgba(255,255,255,0.05)';
+  pctRenderHUD();
+  pctRenderScaleup();
+  if (PCT_STATE.challengeOn) pctCheckChallenge();
+}
+
+/* -------- RESET -------- */
+function pctResetGrid() {
+  PCT_STATE.cells.fill('');
+  PCT_STATE.challengeComplete = false;
+  const grid = document.getElementById('pct-grid');
+  if (!grid) return;
+  grid.classList.remove('pct-celebrate');
+  grid.querySelectorAll('.pct-cell').forEach(c => {
+    c.style.background = 'rgba(255,255,255,0.05)';
+  });
+  pctRenderHUD();
+  pctRenderScaleup();
+  if (PCT_STATE.challengeOn) pctCheckChallenge();
+}
+
+/* -------- PICK COLOR -------- */
+function pctPickColor(swatchEl) {
+  document.querySelectorAll('.pct-swatch').forEach(s => s.classList.remove('pct-chosen'));
+  swatchEl.classList.add('pct-chosen');
+  PCT_STATE.activeColor = swatchEl.dataset.color || '';
+  PCT_STATE.activeName  = swatchEl.dataset.name  || 'Eraser';
+}
+
+/* -------- STATS COMPUTATION -------- */
+function pctComputeStats() {
+  const counts = {};
+  PCT_PALETTE.forEach(p => { counts[p.color] = { name: p.name, color: p.color, count: 0 }; });
+  let painted = 0;
+  PCT_STATE.cells.forEach(c => {
+    if (c && counts[c]) { counts[c].count++; painted++; }
+  });
+  const active = PCT_PALETTE
+    .map(p => counts[p.color])
+    .filter(e => e.count > 0);
+  return { active, painted, blank: 100 - painted };
+}
+
+/* -------- SIMPLIFIED FRACTION -------- */
+function pctSimplify(num, den) {
+  const g = pctGcd(num, den);
+  return g > 1 ? `${num/g}/${den/g}` : `${num}/${den}`;
+}
+
+/* -------- HUD RENDER -------- */
+function pctRenderHUD() {
+  const { active, painted, blank } = pctComputeStats();
+  const rowsEl = document.getElementById('pct-hud-rows');
+  if (!rowsEl) return;
+
+  if (active.length === 0) {
+    rowsEl.innerHTML = '<div style="color:var(--text-muted);font-size:0.82rem;padding:4px 0;">Paint cells to see stats!</div>';
+  } else {
+    rowsEl.innerHTML = active.map(e => {
+      const frac    = `${e.count}/100`;
+      const simp    = pctSimplify(e.count, 100);
+      const dec     = (e.count / 100).toFixed(2);
+      const pct     = `${e.count}%`;
+      const simpTxt = simp !== frac ? `<span style="color:var(--neon-green);">(= ${simp})</span>` : '';
+      return `
+        <div class="pct-hud-row">
+          <div class="pct-hud-dot" style="background:${e.color};box-shadow:0 0 5px ${e.color};"></div>
+          <div class="pct-hud-label">${e.name}</div>
+          <div class="pct-hud-cell" style="color:${e.color};">${frac} ${simpTxt}</div>
+          <div class="pct-hud-cell">${dec}</div>
+          <div class="pct-hud-cell">${pct}</div>
+        </div>`;
+    }).join('');
+  }
+
+  const paintedEl = document.getElementById('pct-total-painted');
+  const blankEl   = document.getElementById('pct-total-blank');
+  if (paintedEl) paintedEl.textContent = painted;
+  if (blankEl)   blankEl.textContent   = blank;
+}
+
+/* -------- SCALE-UP ENGINE -------- */
+function pctSetN(val) {
+  const inp = document.getElementById('pct-n-val');
+  if (inp) inp.value = val;
+  pctRenderScaleup();
+}
+
+function pctRenderScaleup() {
+  const inp = document.getElementById('pct-n-val');
+  const rowsEl = document.getElementById('pct-scaleup-rows');
+  if (!inp || !rowsEl) return;
+  const N = parseInt(inp.value) || 200;
+  const { active } = pctComputeStats();
+
+  if (active.length === 0) {
+    rowsEl.innerHTML = '<div style="color:var(--text-muted);font-size:0.8rem;">Paint cells to see scale-up calculations.</div>';
+    return;
+  }
+
+  rowsEl.innerHTML = active.map(e => {
+    const answer = ((e.count / 100) * N).toFixed(1);
+    return `
+      <div class="pct-scaleup-row">
+        <div class="pct-scaleup-dot" style="background:${e.color};"></div>
+        <div>
+          <strong style="color:${e.color};">${e.name}</strong>
+          <span class="pct-scaleup-formula">${e.count}% × ${N} = <strong style="color:#fff;">${answer}</strong> cells</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* -------- CHALLENGE MODE -------- */
+const PCT_CHALLENGE_TEMPLATES = [
+  (a,b,c) => `Paint exactly ${a.tgt}% in ${a.name}, ${b.tgtFrac} in ${b.name}, ${c.tgtDec} in ${c.name}`,
+  (a,b,c) => `Target: ${a.tgtFrac} in ${a.name} • ${b.tgt}% in ${b.name} • ${c.tgtDec} in ${c.name}`,
+  (a,b,c) => `Goal: ${a.tgtDec} decimal in ${a.name}, ${b.tgtFrac} fraction in ${b.name}, ${c.tgt}% in ${c.name}`,
+];
+
+function pctBuildChallenge() {
+  // Pick 3 random colors
+  const shuffled = [...PCT_PALETTE].sort(() => Math.random() - 0.5).slice(0, 3);
+  // Each gets a random cell count (multiples of 5 from 5..30 to keep totals ≤ 100)
+  const pool = [5,10,15,20,25,30];
+  PCT_STATE.challengeTargets = shuffled.map((p, i) => {
+    const tgt = pool[Math.floor(Math.random() * pool.length)];
+    const g   = pctGcd(tgt, 100);
+    return {
+      name:    p.name,
+      color:   p.color,
+      kind:    ['percent','frac','dec'][i % 3],
+      target:  tgt,
+      tgt:     tgt,
+      tgtFrac: `${tgt/g}/${100/g}`,
+      tgtDec:  (tgt/100).toFixed(2),
+    };
+  });
+  PCT_STATE.challengeComplete = false;
+  const tmpl = PCT_CHALLENGE_TEMPLATES[Math.floor(Math.random() * PCT_CHALLENGE_TEMPLATES.length)];
+  const [a,b,c] = PCT_STATE.challengeTargets;
+  document.getElementById('pct-challenge-desc').textContent = tmpl(a,b,c);
+  pctCheckChallenge();
+}
+
+function pctToggleChallenge() {
+  PCT_STATE.challengeOn = !PCT_STATE.challengeOn;
+  const btn = document.getElementById('pct-challenge-toggle');
+  if (!btn) return;
+  if (PCT_STATE.challengeOn) {
+    btn.textContent = 'ON';
+    btn.classList.add('pct-on');
+    btn.setAttribute('aria-pressed', 'true');
+    pctBuildChallenge();
+  } else {
+    btn.textContent = 'OFF';
+    btn.classList.remove('pct-on');
+    btn.setAttribute('aria-pressed', 'false');
+    document.getElementById('pct-challenge-desc').textContent = 'Toggle ON to receive a painting challenge!';
+    document.getElementById('pct-challenge-bars').innerHTML = '';
+    PCT_STATE.challengeTargets = [];
+    PCT_STATE.challengeComplete = false;
+    const grid = document.getElementById('pct-grid');
+    if (grid) grid.classList.remove('pct-celebrate');
+  }
+}
+
+function pctCheckChallenge() {
+  const barsEl = document.getElementById('pct-challenge-bars');
+  if (!barsEl || !PCT_STATE.challengeTargets.length) { if (barsEl) barsEl.innerHTML=''; return; }
+
+  const { active } = pctComputeStats();
+  const counts = {};
+  active.forEach(e => { counts[e.color] = e.count; });
+
+  let allHit = true;
+  barsEl.innerHTML = PCT_STATE.challengeTargets.map(t => {
+    const actual  = counts[t.color] || 0;
+    const diff    = Math.abs(actual - t.target);
+    const hit     = diff <= 1;
+    if (!hit) allHit = false;
+    const pct     = Math.min(100, Math.round((actual / t.target) * 100));
+    const barColor = hit ? 'var(--neon-green)' : t.color;
+    const hitMark  = hit ? ' ✅' : '';
+    return `
+      <div class="pct-prog-row">
+        <div class="pct-prog-dot" style="background:${t.color};"></div>
+        <div class="pct-prog-bar-wrap">
+          <div class="pct-prog-fill" style="width:${pct}%;background:${barColor};"></div>
+        </div>
+        <div class="pct-prog-label" style="color:${hit ? 'var(--neon-green)' : 'var(--text-muted)'}">
+          ${t.name}: ${actual}/${t.target}${hitMark}
+        </div>
+      </div>`;
+  }).join('');
+
+  if (allHit && !PCT_STATE.challengeComplete) {
+    PCT_STATE.challengeComplete = true;
+    const grid = document.getElementById('pct-grid');
+    if (grid) {
+      grid.classList.remove('pct-celebrate');
+      void grid.offsetWidth; // reflow to restart animation
+      grid.classList.add('pct-celebrate');
+    }
+    // Optionally auto-regenerate after short delay
+    setTimeout(() => {
+      if (PCT_STATE.challengeOn) pctBuildChallenge();
+    }, 2200);
+  }
+}
+
+/* -------- TAB SWITCHER -------- */
+function pctSwitchTab(tab) {
+  ['fraction','percent'].forEach(t => {
+    document.getElementById(`pct-${t}-panel`).classList.toggle('pct-active', t === tab);
+    const btn = document.getElementById(`pct-tab-btn-${t}`);
+    if (btn) {
+      btn.classList.toggle('pct-active', t === tab);
+      btn.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+    }
+  });
+}
+
+/* -------- BOOT -------- */
+document.addEventListener('DOMContentLoaded', () => {
+  pctInitGrid();
+  pctRenderHUD();
+  pctRenderScaleup();
+});
+</script>
+<!-- pct-script:end -->
+
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->

@@ -785,6 +785,229 @@
     }
 
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+
+    /* ── sz2: New Mission Shared Styles ── */
+    .sz2-mission-panel {
+      display: none;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .sz2-mission-panel.sz2-active {
+      display: flex;
+    }
+
+    /* Rational Tundra – number line area */
+    .sz2-nl-viewport {
+      background: #010611;
+      border: 1.5px solid rgba(14, 165, 233, 0.2);
+      border-radius: var(--radius-md);
+      padding: 20px 16px 28px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 4px 20px rgba(0,0,0,0.7);
+    }
+    .sz2-nl-svg { width: 100%; height: 120px; display: block; overflow: visible; }
+    .sz2-token-tray {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+      min-height: 48px;
+    }
+    .sz2-token {
+      background: linear-gradient(135deg, var(--primary) 0%, #0369a1 100%);
+      border: 2px solid rgba(255,255,255,0.18);
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0 4px 12px rgba(14,165,233,0.35);
+      transition: box-shadow 0.2s, transform 0.15s;
+      touch-action: none;
+    }
+    .sz2-token:active { cursor: grabbing; transform: scale(1.08); }
+    .sz2-token.sz2-placed {
+      background: linear-gradient(135deg, var(--secondary) 0%, #be185d 100%);
+      cursor: default;
+      opacity: 0.6;
+    }
+    .sz2-nl-feedback {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 14px;
+      font-size: 0.84rem;
+    }
+    .sz2-fb-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .sz2-fb-row.sz2-ok  { border-color: var(--secondary); background: rgba(236,72,153,0.07); }
+    .sz2-fb-row.sz2-err { border-color: var(--accent);    background: rgba(244,63,94,0.07); }
+
+    /* Altitude Distance – sliders */
+    .sz2-alt-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 700px) { .sz2-alt-controls { grid-template-columns: 1fr; } }
+    .sz2-slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .sz2-slider-label {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .sz2-slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+    }
+    .sz2-slider.sz2-sub { background: linear-gradient(to right,#be185d,#ec4899); }
+    .sz2-slider.sz2-air { background: linear-gradient(to right,#0369a1,#0ea5e9); }
+    .sz2-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      cursor: pointer;
+    }
+    .sz2-alt-display-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .sz2-alt-chip {
+      background: rgba(14,165,233,0.04);
+      border: 1px solid rgba(14,165,233,0.15);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      text-align: center;
+      color: var(--primary);
+    }
+    .sz2-alt-chip.sz2-sub-chip { border-color: rgba(236,72,153,0.25); color: var(--secondary); }
+    .sz2-alt-chip.sz2-dist-chip {
+      border-color: rgba(251,191,36,0.3);
+      color: #fbbf24;
+      font-size: 1rem;
+    }
+    .sz2-alt-chip.sz2-cmp-chip { border-color: rgba(255,255,255,0.08); color: var(--text-muted); }
+    .sz2-worked-example {
+      background: rgba(255,255,255,0.01);
+      border: 1px dashed rgba(14,165,233,0.2);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      font-size: 0.83rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    /* Signal Word Problems – quiz panel */
+    .sz2-quiz-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .sz2-quiz-counter {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .sz2-question-card {
+      background: rgba(14,165,233,0.03);
+      border: 1px solid rgba(14,165,233,0.18);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .sz2-question-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.6;
+      color: var(--text-main);
+    }
+    .sz2-answer-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .sz2-answer-input {
+      width: 90px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      text-align: center;
+      outline: none;
+      transition: var(--transition);
+    }
+    .sz2-answer-input:focus { border-color: var(--primary); box-shadow: 0 0 6px var(--primary-glow); }
+    .sz2-quiz-feedback {
+      font-size: 0.88rem;
+      line-height: 1.55;
+      padding: 10px 14px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      display: none;
+    }
+    .sz2-quiz-feedback.sz2-ok  { display: block; border-color: var(--secondary); background: rgba(236,72,153,0.07); color: var(--secondary); }
+    .sz2-quiz-feedback.sz2-err { display: block; border-color: var(--accent);    background: rgba(244,63,94,0.07);  color: #f87171; }
+    .sz2-score-badge {
+      background: rgba(14,165,233,0.08);
+      border: 1px solid rgba(14,165,233,0.2);
+      border-radius: 30px;
+      padding: 6px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .sz2-vocab-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 12px 0 4px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .sz2-vocab-badge {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
@@ -941,6 +1164,154 @@
           <!-- Vocab chips dynamically populated -->
         </div>
       </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           sz2: Mission 4 — Rational Tundra (Number Line Placement)
+           ═══════════════════════════════════════════════════════════ -->
+      <section class="glass-panel sz2-mission-panel" id="sz2-panel-4" aria-labelledby="sz2-panel4-heading">
+        <div class="panel-meta">
+          <h3 id="sz2-panel4-heading">❄️ Rational Tundra — Number Line Placement</h3>
+          <button class="cyber-btn outline" onclick="sz2ResetTundra()">🔄 Reset Tokens</button>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:18px;">
+          <!-- Token tray -->
+          <div>
+            <div style="font-size:0.78rem;font-weight:800;color:var(--primary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">📦 Drag tokens onto the number line below</div>
+            <div class="sz2-token-tray" id="sz2-token-tray">
+              <!-- Tokens injected by JS -->
+            </div>
+          </div>
+
+          <!-- SVG Number Line -->
+          <div class="sz2-nl-viewport">
+            <svg class="sz2-nl-svg" id="sz2-nl-svg" viewBox="0 0 700 120" style="background:transparent;">
+              <!-- Drawn by JS -->
+            </svg>
+            <!-- Drop overlay canvas for detecting drops -->
+            <div id="sz2-nl-dropzone" style="position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none;"></div>
+          </div>
+
+          <!-- Check + feedback -->
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+            <button class="cyber-btn" onclick="sz2CheckTundra()" id="sz2-btn-check-tundra">✔ Check Placements</button>
+            <button class="cyber-btn outline" onclick="sz2ResetTundra()">↩ Reset</button>
+            <span id="sz2-tundra-score" class="sz2-score-badge" style="display:none;"></span>
+          </div>
+          <div class="sz2-nl-feedback" id="sz2-tundra-feedback"></div>
+
+          <!-- Vocabulary -->
+          <div class="sz2-vocab-row">
+            <span class="sz2-vocab-badge">rational number</span>
+            <span class="sz2-vocab-badge">fraction</span>
+            <span class="sz2-vocab-badge">decimal equivalent</span>
+            <span class="sz2-vocab-badge">number line</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           sz2: Mission 5 — Altitude Distance (Absolute Value)
+           ═══════════════════════════════════════════════════════════ -->
+      <section class="glass-panel sz2-mission-panel" id="sz2-panel-5" aria-labelledby="sz2-panel5-heading">
+        <div class="panel-meta">
+          <h3 id="sz2-panel5-heading">🛩️ Altitude Distance — Absolute Value & Distance</h3>
+          <button class="cyber-btn outline" onclick="sz2ResetAltitude()">🔄 Reset Sliders</button>
+        </div>
+
+        <div class="polar-split">
+          <!-- Dual-marker SVG -->
+          <div class="model-viewport">
+            <svg id="sz2-alt-svg" viewBox="0 0 200 400" style="background:transparent;"></svg>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            <!-- Sliders -->
+            <div class="sz2-alt-controls">
+              <div class="sz2-slider-group">
+                <label class="sz2-slider-label" style="color:var(--secondary);" for="sz2-sub-slider">🟣 Submarine Depth</label>
+                <input type="range" class="sz2-slider sz2-sub" id="sz2-sub-slider"
+                       min="-10" max="0" value="-6" step="1"
+                       aria-label="Submarine position" oninput="sz2UpdateAltitude()">
+                <div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--secondary);text-align:center;" id="sz2-sub-readout">−6 m</div>
+              </div>
+              <div class="sz2-slider-group">
+                <label class="sz2-slider-label" style="color:var(--primary);" for="sz2-air-slider">🔵 Aircraft Altitude</label>
+                <input type="range" class="sz2-slider sz2-air" id="sz2-air-slider"
+                       min="0" max="10" value="4" step="1"
+                       aria-label="Aircraft position" oninput="sz2UpdateAltitude()">
+                <div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--primary);text-align:center;" id="sz2-air-readout">+4 m</div>
+              </div>
+            </div>
+
+            <!-- Live display chips -->
+            <div class="sz2-alt-display-grid">
+              <div class="sz2-alt-chip sz2-sub-chip" id="sz2-abs-sub">|submarine| = 6</div>
+              <div class="sz2-alt-chip" id="sz2-abs-air">|aircraft| = 4</div>
+              <div class="sz2-alt-chip sz2-dist-chip" id="sz2-dist-display">Distance = 6 + 4 = 10 m</div>
+              <div class="sz2-alt-chip sz2-cmp-chip" id="sz2-farther-display">Submarine is farther from 0</div>
+            </div>
+
+            <!-- Worked example -->
+            <div class="sz2-worked-example">
+              <strong style="color:var(--primary);">📖 Worked Example:</strong><br>
+              |−6| = 6, because −6 is <em>6 units from zero</em> on the number line.<br>
+              Distance between submarine and aircraft crosses zero, so we <strong>add</strong> their absolute values:<br>
+              |submarine| + |aircraft| = total distance.
+            </div>
+
+            <!-- Vocabulary -->
+            <div class="sz2-vocab-row">
+              <span class="sz2-vocab-badge">absolute value</span>
+              <span class="sz2-vocab-badge">distance from zero</span>
+              <span class="sz2-vocab-badge">opposite signs</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           sz2: Mission 6 — Signal Word Problems
+           ═══════════════════════════════════════════════════════════ -->
+      <section class="glass-panel sz2-mission-panel" id="sz2-panel-6" aria-labelledby="sz2-panel6-heading">
+        <div class="panel-meta">
+          <h3 id="sz2-panel6-heading">📡 Signal Word Problems — Real-World Integers</h3>
+          <span class="sz2-score-badge" id="sz2-quiz-score-badge">Score: 0 / 4</span>
+        </div>
+
+        <!-- Navigation row -->
+        <div class="sz2-quiz-nav">
+          <button class="cyber-btn outline" id="sz2-btn-prev" onclick="sz2NavQuiz(-1)">◀ Prev</button>
+          <span class="sz2-quiz-counter" id="sz2-quiz-counter">Problem 1 of 4</span>
+          <button class="cyber-btn outline" id="sz2-btn-next" onclick="sz2NavQuiz(1)">Next ▶</button>
+        </div>
+
+        <!-- Question card -->
+        <div class="sz2-question-card">
+          <div class="sz2-question-text" id="sz2-question-text">Loading…</div>
+          <div class="sz2-answer-row">
+            <input type="number" class="sz2-answer-input" id="sz2-answer-input"
+                   placeholder="?" aria-label="Your answer"
+                   onkeydown="if(event.key==='Enter') sz2SubmitQuiz()">
+            <button class="cyber-btn" onclick="sz2SubmitQuiz()" id="sz2-btn-submit-quiz">Submit Answer</button>
+          </div>
+          <div class="sz2-quiz-feedback" id="sz2-quiz-feedback"></div>
+        </div>
+
+        <!-- Progress pips -->
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="font-size:0.75rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Progress:</span>
+          <div id="sz2-progress-pips" style="display:flex;gap:6px;"></div>
+        </div>
+
+        <!-- Vocabulary -->
+        <div class="sz2-vocab-row">
+          <span class="sz2-vocab-badge">integer operations</span>
+          <span class="sz2-vocab-badge">absolute value</span>
+          <span class="sz2-vocab-badge">real-world context</span>
+          <span class="sz2-vocab-badge">distance on number line</span>
+        </div>
+      </section>
     </div>
   </main>
 
@@ -1017,6 +1388,45 @@
         ],
         svgDrawFunc: drawThermometerScale
       }
+      // ── sz2: Mission 4 — Rational Tundra ──
+      ,{
+        id: 4,
+        titleEN: "Mission 4: Rational Tundra",
+        titleES: "Misión 4: Tundra Racional",
+        descEN: "Drag rational number tokens onto the number line and snap them to their correct decimal positions.",
+        descES: "Arrastra fichas de números racionales sobre la recta numérica y colócalas en su posición decimal correcta.",
+        totalTargetVal: 5,
+        components: [],
+        customPanel: true,
+        panelId: 'sz2-panel-4',
+        svgDrawFunc: sz2DrawTundraPlaceholder
+      },
+      // ── sz2: Mission 5 — Altitude Distance ──
+      {
+        id: 5,
+        titleEN: "Mission 5: Altitude Distance",
+        titleES: "Misión 5: Distancia de Altitud",
+        descEN: "Use sliders to position a submarine and aircraft. Explore absolute value and total vertical distance between them.",
+        descES: "Usa deslizadores para posicionar un submarino y una aeronave. Explora el valor absoluto y la distancia vertical total.",
+        totalTargetVal: 0,
+        components: [],
+        customPanel: true,
+        panelId: 'sz2-panel-5',
+        svgDrawFunc: sz2DrawAltitudePlaceholder
+      },
+      // ── sz2: Mission 6 — Signal Word Problems ──
+      {
+        id: 6,
+        titleEN: "Mission 6: Signal Word Problems",
+        titleES: "Misión 6: Problemas con Palabras",
+        descEN: "Solve 4 real-world integer word problems. Track your score as you navigate each challenge.",
+        descES: "Resuelve 4 problemas con palabras sobre enteros en contextos reales. Registra tu puntaje en cada desafío.",
+        totalTargetVal: 4,
+        components: [],
+        customPanel: true,
+        panelId: 'sz2-panel-6',
+        svgDrawFunc: sz2DrawQuizPlaceholder
+      }
     ];
 
     const VOCAB_MAP = {
@@ -1090,6 +1500,8 @@
             comp3_val: '', comp3_abs: ''
           };
 
+          // sz2: toggle between main glass-panel and custom panels
+          sz2SwitchPanel(data);
           renderWorksheet();
           playSynthNote(293.66, 'triangle', 0.1);
           break;
@@ -1099,11 +1511,37 @@
             comp2_val: '', comp2_abs: '',
             comp3_val: '', comp3_abs: ''
           };
+          sz2SwitchPanel(STATE.activeCaseId);
           renderWorksheet();
           playSynthNote(220, 'sine', 0.15);
           break;
       }
       updateExpedition();
+    }
+
+    // sz2: Show the correct workspace panel for a given case id
+    function sz2SwitchPanel(caseId) {
+      const activeCase = CASE_QUESTS.find(c => c.id === caseId);
+      const mainPanels = document.querySelectorAll('.canvas-layout > section:not(.sz2-mission-panel)');
+      const sz2Panels = document.querySelectorAll('.sz2-mission-panel');
+
+      if (activeCase && activeCase.customPanel) {
+        // Hide standard panels, show the right sz2 panel
+        mainPanels.forEach(p => p.style.display = 'none');
+        sz2Panels.forEach(p => p.classList.remove('sz2-active'));
+        const target = document.getElementById(activeCase.panelId);
+        if (target) {
+          target.classList.add('sz2-active');
+          // Trigger panel-specific init
+          if (caseId === 4) sz2InitTundra();
+          if (caseId === 5) sz2UpdateAltitude();
+          if (caseId === 6) sz2RenderQuizQuestion();
+        }
+      } else {
+        // Show standard panels, hide all sz2 panels
+        mainPanels.forEach(p => p.style.display = '');
+        sz2Panels.forEach(p => p.classList.remove('sz2-active'));
+      }
     }
 
     function updateExpedition() {
@@ -1689,6 +2127,500 @@
         alert("✗ Diagnostics check failed. Review terminal log outputs.");
       }
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    // sz2: MISSION 4 — RATIONAL TUNDRA
+    // ═══════════════════════════════════════════════════════════════
+
+    const SZ2_TOKENS = [
+      { label: '−¾',   value: -0.75 },
+      { label: '0.5',  value:  0.5  },
+      { label: '−1.25',value: -1.25 },
+      { label: '2⅓',   value:  2.333 },
+      { label: '−3½',  value: -3.5  }
+    ];
+
+    // placed positions map: label -> decimal placed value (null = not placed)
+    let sz2TundraPlaced = {};
+    let sz2TundraAttempts = 0;
+
+    function sz2DrawTundraPlaceholder() { /* placeholder for updateExpedition compatibility */ }
+
+    function sz2InitTundra() {
+      sz2TundraPlaced = {};
+      SZ2_TOKENS.forEach(t => { sz2TundraPlaced[t.label] = null; });
+      sz2RenderTundraTokens();
+      sz2DrawNumberLine();
+      document.getElementById('sz2-tundra-feedback').innerHTML = '';
+      const badge = document.getElementById('sz2-tundra-score');
+      badge.style.display = 'none';
+    }
+
+    function sz2DrawNumberLine() {
+      const svg = document.getElementById('sz2-nl-svg');
+      svg.innerHTML = '';
+      const W = 700, H = 120;
+      const leftPad = 40, rightPad = 40;
+      const axisY = 80;
+      const minV = -5, maxV = 5;
+      const range = maxV - minV;
+
+      // Axis line
+      const axis = document.createElementNS('http://www.w3.org/2000/svg','line');
+      axis.setAttribute('x1', leftPad); axis.setAttribute('y1', axisY);
+      axis.setAttribute('x2', W - rightPad); axis.setAttribute('y2', axisY);
+      axis.setAttribute('stroke','var(--text-muted)'); axis.setAttribute('stroke-width','3');
+      svg.appendChild(axis);
+
+      // Arrowheads
+      [leftPad - 10, W - rightPad + 10].forEach((xEnd, idx) => {
+        const arr = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+        if (idx === 0) {
+          arr.setAttribute('points', `${xEnd},${axisY} ${xEnd+10},${axisY-4} ${xEnd+10},${axisY+4}`);
+        } else {
+          arr.setAttribute('points', `${xEnd},${axisY} ${xEnd-10},${axisY-4} ${xEnd-10},${axisY+4}`);
+        }
+        arr.setAttribute('fill','var(--text-muted)');
+        svg.appendChild(arr);
+      });
+
+      // Ticks every 0.5
+      const axisWidth = W - leftPad - rightPad;
+      for (let v = minV; v <= maxV; v += 0.5) {
+        const x = leftPad + ((v - minV) / range) * axisWidth;
+        const isMajor = Number.isInteger(v);
+        const tick = document.createElementNS('http://www.w3.org/2000/svg','line');
+        tick.setAttribute('x1', x); tick.setAttribute('y1', axisY - (isMajor ? 10 : 5));
+        tick.setAttribute('x2', x); tick.setAttribute('y2', axisY + (isMajor ? 10 : 5));
+        tick.setAttribute('stroke', isMajor ? 'var(--primary)' : 'rgba(56,189,248,0.4)');
+        tick.setAttribute('stroke-width', isMajor ? '2' : '1');
+        svg.appendChild(tick);
+
+        if (isMajor) {
+          const lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
+          lbl.setAttribute('x', x); lbl.setAttribute('y', axisY + 24);
+          lbl.setAttribute('text-anchor','middle');
+          lbl.setAttribute('fill','var(--text-muted)');
+          lbl.setAttribute('font-family','var(--font-mono)');
+          lbl.setAttribute('font-size','12');
+          lbl.textContent = v;
+          svg.appendChild(lbl);
+        }
+      }
+
+      // Draw placed markers
+      SZ2_TOKENS.forEach(t => {
+        if (sz2TundraPlaced[t.label] !== null) {
+          const px = sz2ValToX(sz2TundraPlaced[t.label], minV, maxV, leftPad, axisWidth);
+          const circ = document.createElementNS('http://www.w3.org/2000/svg','circle');
+          circ.setAttribute('cx', px); circ.setAttribute('cy', axisY);
+          circ.setAttribute('r','8');
+          circ.setAttribute('fill','var(--secondary)');
+          circ.setAttribute('filter','drop-shadow(0 0 5px var(--secondary-glow))');
+          svg.appendChild(circ);
+
+          const ml = document.createElementNS('http://www.w3.org/2000/svg','text');
+          ml.setAttribute('x', px); ml.setAttribute('y', axisY - 14);
+          ml.setAttribute('text-anchor','middle');
+          ml.setAttribute('fill','var(--secondary)');
+          ml.setAttribute('font-family','var(--font-mono)');
+          ml.setAttribute('font-size','11');
+          ml.setAttribute('font-weight','700');
+          ml.textContent = t.label;
+          svg.appendChild(ml);
+        }
+      });
+    }
+
+    function sz2ValToX(v, minV, maxV, leftPad, axisWidth) {
+      return leftPad + ((v - minV) / (maxV - minV)) * axisWidth;
+    }
+
+    function sz2SnapTo025(v) {
+      return Math.round(v * 4) / 4;
+    }
+
+    function sz2XToVal(x, minV, maxV, leftPad, axisWidth) {
+      return minV + ((x - leftPad) / axisWidth) * (maxV - minV);
+    }
+
+    function sz2RenderTundraTokens() {
+      const tray = document.getElementById('sz2-token-tray');
+      tray.innerHTML = '';
+      SZ2_TOKENS.forEach(t => {
+        const placed = sz2TundraPlaced[t.label] !== null;
+        const btn = document.createElement('div');
+        btn.className = `sz2-token${placed ? ' sz2-placed' : ''}`;
+        btn.textContent = t.label;
+        btn.dataset.label = t.label;
+        if (!placed) {
+          btn.setAttribute('draggable', 'true');
+          btn.addEventListener('dragstart', sz2TokenDragStart);
+          // Touch support
+          btn.addEventListener('touchstart', sz2TouchStart, { passive: false });
+        }
+        tray.appendChild(btn);
+      });
+
+      // Make SVG/viewport a drop target
+      const viewport = document.querySelector('#sz2-panel-4 .sz2-nl-viewport');
+      viewport.ondragover = e => e.preventDefault();
+      viewport.ondrop = sz2HandleDrop;
+    }
+
+    let sz2DraggingLabel = null;
+    let sz2TouchToken = null;
+    let sz2TouchClone = null;
+
+    function sz2TokenDragStart(e) {
+      sz2DraggingLabel = e.currentTarget.dataset.label;
+      e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function sz2HandleDrop(e) {
+      e.preventDefault();
+      if (!sz2DraggingLabel) return;
+      const rect = document.getElementById('sz2-nl-svg').getBoundingClientRect();
+      const svgW = rect.width;
+      const leftPad = 40 * (svgW / 700);
+      const axisWidth = (700 - 80) * (svgW / 700);
+      const rawX = e.clientX - rect.left;
+      const rawVal = sz2XToVal(rawX, -5, 5, leftPad, axisWidth);
+      const snapped = Math.max(-5, Math.min(5, sz2SnapTo025(rawVal)));
+      sz2TundraPlaced[sz2DraggingLabel] = snapped;
+      sz2DraggingLabel = null;
+      sz2RenderTundraTokens();
+      sz2DrawNumberLine();
+    }
+
+    function sz2TouchStart(e) {
+      e.preventDefault();
+      const token = e.currentTarget;
+      sz2TouchToken = token;
+      sz2DraggingLabel = token.dataset.label;
+
+      const clone = token.cloneNode(true);
+      clone.style.position = 'fixed';
+      clone.style.pointerEvents = 'none';
+      clone.style.opacity = '0.85';
+      clone.style.zIndex = '9999';
+      document.body.appendChild(clone);
+      sz2TouchClone = clone;
+
+      const mv = e => sz2TouchMove(e);
+      const up = e => sz2TouchEnd(e, mv, up);
+      document.addEventListener('touchmove', mv, { passive: false });
+      document.addEventListener('touchend', up, { once: true });
+    }
+
+    function sz2TouchMove(e) {
+      e.preventDefault();
+      const t = e.touches[0];
+      if (sz2TouchClone) {
+        sz2TouchClone.style.left = (t.clientX - 30) + 'px';
+        sz2TouchClone.style.top  = (t.clientY - 20) + 'px';
+      }
+    }
+
+    function sz2TouchEnd(e, mvListener, upListener) {
+      document.removeEventListener('touchmove', mvListener);
+      const t = e.changedTouches[0];
+      if (sz2TouchClone) { document.body.removeChild(sz2TouchClone); sz2TouchClone = null; }
+
+      const rect = document.getElementById('sz2-nl-svg').getBoundingClientRect();
+      if (t.clientX >= rect.left && t.clientX <= rect.right &&
+          t.clientY >= rect.top  && t.clientY <= rect.bottom) {
+        const svgW = rect.width;
+        const leftPad = 40 * (svgW / 700);
+        const axisWidth = (700 - 80) * (svgW / 700);
+        const rawX = t.clientX - rect.left;
+        const rawVal = sz2XToVal(rawX, -5, 5, leftPad, axisWidth);
+        const snapped = Math.max(-5, Math.min(5, sz2SnapTo025(rawVal)));
+        sz2TundraPlaced[sz2DraggingLabel] = snapped;
+        sz2DrawNumberLine();
+        sz2RenderTundraTokens();
+      }
+      sz2DraggingLabel = null;
+    }
+
+    function sz2CheckTundra() {
+      const tolerance = 0.15;
+      const fbContainer = document.getElementById('sz2-tundra-feedback');
+      fbContainer.innerHTML = '';
+      let correct = 0;
+      const total = SZ2_TOKENS.length;
+
+      SZ2_TOKENS.forEach(t => {
+        const placed = sz2TundraPlaced[t.label];
+        const row = document.createElement('div');
+        row.className = 'sz2-fb-row';
+
+        if (placed === null) {
+          row.innerHTML = `<span>⬜</span> <strong>${t.label}</strong> — not yet placed on the line`;
+        } else {
+          const ok = Math.abs(placed - t.value) <= tolerance;
+          row.classList.add(ok ? 'sz2-ok' : 'sz2-err');
+          if (ok) {
+            correct++;
+            row.innerHTML = `<span>✓</span> <strong>${t.label}</strong> placed at ${placed} — Correct! (exact: ${t.value})`;
+          } else {
+            row.innerHTML = `<span>✗</span> <strong>${t.label}</strong> placed at ${placed}, but the correct position is ${t.value}`;
+          }
+        }
+        fbContainer.appendChild(row);
+      });
+
+      const badge = document.getElementById('sz2-tundra-score');
+      badge.textContent = `✔ ${correct} / ${total} Correct`;
+      badge.style.display = '';
+
+      if (correct === total && !STATE.casesCompleted.includes(4)) {
+        STATE.casesCompleted.push(4);
+        renderQuests();
+        playSynthNote(440, 'sine', 0.2);
+        setTimeout(() => { playSynthNote(554.37,'sine',0.2); playSynthNote(659.25,'sine',0.35); }, 150);
+        logDiag('EXPEDITION SECURED: Mission 4 — Rational Tundra completed!');
+      }
+    }
+
+    function sz2ResetTundra() {
+      sz2InitTundra();
+      playSynthNote(220, 'sine', 0.1);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // sz2: MISSION 5 — ALTITUDE DISTANCE
+    // ═══════════════════════════════════════════════════════════════
+
+    function sz2DrawAltitudePlaceholder() { /* placeholder */ }
+
+    function sz2UpdateAltitude() {
+      const subSlider = document.getElementById('sz2-sub-slider');
+      const airSlider = document.getElementById('sz2-air-slider');
+      if (!subSlider || !airSlider) return;
+
+      const subV = parseInt(subSlider.value);
+      const airV = parseInt(airSlider.value);
+      const absS = Math.abs(subV);
+      const absA = Math.abs(airV);
+      const dist  = absS + absA;
+
+      document.getElementById('sz2-sub-readout').textContent  = `${subV < 0 ? '−' : '+'}${absS} m`;
+      document.getElementById('sz2-air-readout').textContent  = `+${airV} m`;
+      document.getElementById('sz2-abs-sub').textContent      = `|submarine| = ${absS}`;
+      document.getElementById('sz2-abs-air').textContent      = `|aircraft|   = ${absA}`;
+      document.getElementById('sz2-dist-display').textContent = `Distance = ${absS} + ${absA} = ${dist} m`;
+      document.getElementById('sz2-farther-display').textContent =
+        absS > absA  ? 'Submarine is farther from 0' :
+        absA > absS  ? 'Aircraft is farther from 0'  :
+                       'Both are equally far from 0';
+
+      sz2DrawAltitudeSVG(subV, airV);
+    }
+
+    function sz2DrawAltitudeSVG(subV, airV) {
+      const svg = document.getElementById('sz2-alt-svg');
+      if (!svg) return;
+      svg.innerHTML = '';
+      drawCompassSkeleton(svg, -10, 10, 'meters');
+
+      // Submarine marker (negative side)
+      const subY = 200 - (subV / 10) * 160;
+      const subCirc = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      subCirc.setAttribute('cx', 100); subCirc.setAttribute('cy', subY);
+      subCirc.setAttribute('r','9');
+      subCirc.setAttribute('fill','var(--secondary)');
+      subCirc.setAttribute('filter','drop-shadow(0 0 6px var(--secondary-glow))');
+      svg.appendChild(subCirc);
+
+      const subLbl = document.createElementNS('http://www.w3.org/2000/svg','text');
+      subLbl.setAttribute('x', 124); subLbl.setAttribute('y', subY + 4);
+      subLbl.setAttribute('fill','var(--secondary)');
+      subLbl.setAttribute('font-family','var(--font-mono)');
+      subLbl.setAttribute('font-size','10'); subLbl.setAttribute('font-weight','700');
+      subLbl.textContent = `${subV}m 🟣`;
+      svg.appendChild(subLbl);
+
+      // Aircraft marker (positive side)
+      const airY = 200 - (airV / 10) * 160;
+      const airPoly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      airPoly.setAttribute('points',`85,${airY-7} 115,${airY-7} 100,${airY+7}`);
+      airPoly.setAttribute('fill','var(--primary)');
+      airPoly.setAttribute('filter','drop-shadow(0 0 5px var(--primary-glow))');
+      svg.appendChild(airPoly);
+
+      const airLbl = document.createElementNS('http://www.w3.org/2000/svg','text');
+      airLbl.setAttribute('x', 124); airLbl.setAttribute('y', airY + 4);
+      airLbl.setAttribute('fill','var(--primary)');
+      airLbl.setAttribute('font-family','var(--font-mono)');
+      airLbl.setAttribute('font-size','10'); airLbl.setAttribute('font-weight','700');
+      airLbl.textContent = `+${airV}m 🔵`;
+      svg.appendChild(airLbl);
+
+      // Distance bracket
+      const bx = 60;
+      const bracket = document.createElementNS('http://www.w3.org/2000/svg','line');
+      bracket.setAttribute('x1', bx); bracket.setAttribute('y1', Math.min(subY, airY));
+      bracket.setAttribute('x2', bx); bracket.setAttribute('y2', Math.max(subY, airY));
+      bracket.setAttribute('stroke','#fbbf24'); bracket.setAttribute('stroke-width','2');
+      bracket.setAttribute('stroke-dasharray','4,3');
+      svg.appendChild(bracket);
+    }
+
+    function sz2ResetAltitude() {
+      const s = document.getElementById('sz2-sub-slider');
+      const a = document.getElementById('sz2-air-slider');
+      if (s) s.value = -6;
+      if (a) a.value =  4;
+      sz2UpdateAltitude();
+      playSynthNote(220,'sine',0.1);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // sz2: MISSION 6 — SIGNAL WORD PROBLEMS
+    // ═══════════════════════════════════════════════════════════════
+
+    function sz2DrawQuizPlaceholder() { /* placeholder */ }
+
+    const SZ2_QUIZ_PROBLEMS = [
+      {
+        question: "The ocean floor is at −240 ft. A whale swims at −80 ft. How far apart are they? (Enter a positive number)",
+        answer: 160,
+        solution: "|-240 - (-80)| = |-240 + 80| = |-160| = 160 ft apart. The whale is 160 feet above the ocean floor."
+      },
+      {
+        question: "The temperature at dawn is −12°C. It rises 18°C by noon. What is the temperature at noon?",
+        answer: 6,
+        solution: "−12 + 18 = 6°C. Starting below zero and adding 18 degrees crosses zero and ends at +6°C."
+      },
+      {
+        question: "Which is farther from 0: −7 or +5? Enter the absolute value of the farther number.",
+        answer: 7,
+        solution: "|−7| = 7 and |+5| = 5. Since 7 > 5, the number −7 is farther from zero. Answer: 7."
+      },
+      {
+        question: "An elevator starts at floor −3 (basement), then goes up 9 floors. What floor does it stop on?",
+        answer: 6,
+        solution: "−3 + 9 = 6. Moving up 9 floors from −3 passes 0 and lands on floor 6."
+      }
+    ];
+
+    let sz2QuizIdx     = 0;
+    let sz2QuizScore   = 0;
+    let sz2QuizResults = [null, null, null, null]; // null | 'correct' | 'wrong'
+    let sz2QuizAttempts = [0, 0, 0, 0];
+
+    function sz2RenderQuizQuestion() {
+      const p = SZ2_QUIZ_PROBLEMS[sz2QuizIdx];
+      document.getElementById('sz2-question-text').textContent = p.question;
+      document.getElementById('sz2-quiz-counter').textContent  = `Problem ${sz2QuizIdx + 1} of ${SZ2_QUIZ_PROBLEMS.length}`;
+      document.getElementById('sz2-answer-input').value = '';
+      document.getElementById('sz2-answer-input').disabled = sz2QuizResults[sz2QuizIdx] === 'correct';
+
+      const fb = document.getElementById('sz2-quiz-feedback');
+      fb.className = 'sz2-quiz-feedback';
+      fb.textContent = '';
+
+      // If already answered show feedback
+      if (sz2QuizResults[sz2QuizIdx] === 'correct') {
+        fb.classList.add('sz2-ok');
+        fb.textContent = `✓ Correct! ${p.solution}`;
+      } else if (sz2QuizAttempts[sz2QuizIdx] >= 2) {
+        fb.classList.add('sz2-err');
+        fb.textContent = `Solution: ${p.solution}`;
+      }
+
+      document.getElementById('sz2-btn-prev').disabled = sz2QuizIdx === 0;
+      document.getElementById('sz2-btn-next').disabled = sz2QuizIdx === SZ2_QUIZ_PROBLEMS.length - 1;
+      sz2UpdateQuizPips();
+    }
+
+    function sz2SubmitQuiz() {
+      const inputEl = document.getElementById('sz2-answer-input');
+      const val = parseFloat(inputEl.value);
+      if (isNaN(val)) { inputEl.focus(); return; }
+
+      const p = SZ2_QUIZ_PROBLEMS[sz2QuizIdx];
+      const fb = document.getElementById('sz2-quiz-feedback');
+
+      if (sz2QuizResults[sz2QuizIdx] === 'correct') return; // already done
+
+      sz2QuizAttempts[sz2QuizIdx]++;
+
+      if (val === p.answer) {
+        sz2QuizResults[sz2QuizIdx] = 'correct';
+        if (!STATE.casesCompleted.includes(6)) {
+          sz2QuizScore++;
+        }
+        fb.className = 'sz2-quiz-feedback sz2-ok';
+        fb.textContent = `✓ Correct! ${p.solution}`;
+        inputEl.disabled = true;
+        playSynthNote(440,'sine',0.15);
+        setTimeout(() => { playSynthNote(554.37,'sine',0.15); }, 120);
+
+        // Check if all 4 done
+        if (sz2QuizResults.every(r => r === 'correct') && !STATE.casesCompleted.includes(6)) {
+          STATE.casesCompleted.push(6);
+          renderQuests();
+          playSynthNote(659.25,'sine',0.35);
+          logDiag('EXPEDITION SECURED: Mission 6 — Signal Word Problems completed!');
+        }
+      } else {
+        sz2QuizResults[sz2QuizIdx] = 'wrong';
+        if (sz2QuizAttempts[sz2QuizIdx] >= 2) {
+          fb.className = 'sz2-quiz-feedback sz2-err';
+          fb.textContent = `✗ Not quite. Solution: ${p.solution}`;
+        } else {
+          fb.className = 'sz2-quiz-feedback sz2-err';
+          fb.textContent = `✗ Try again — 1 attempt remaining.`;
+        }
+        playSynthNote(180,'sawtooth',0.08);
+      }
+
+      sz2UpdateQuizScore();
+      sz2UpdateQuizPips();
+    }
+
+    function sz2NavQuiz(dir) {
+      const next = sz2QuizIdx + dir;
+      if (next < 0 || next >= SZ2_QUIZ_PROBLEMS.length) return;
+      sz2QuizIdx = next;
+      sz2RenderQuizQuestion();
+      playSynthNote(293.66,'triangle',0.06);
+    }
+
+    function sz2UpdateQuizScore() {
+      const correct = sz2QuizResults.filter(r => r === 'correct').length;
+      document.getElementById('sz2-quiz-score-badge').textContent = `Score: ${correct} / ${SZ2_QUIZ_PROBLEMS.length}`;
+    }
+
+    function sz2UpdateQuizPips() {
+      const pips = document.getElementById('sz2-progress-pips');
+      if (!pips) return;
+      pips.innerHTML = '';
+      SZ2_QUIZ_PROBLEMS.forEach((_, i) => {
+        const pip = document.createElement('div');
+        pip.style.cssText = `width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.15);`;
+        if (sz2QuizResults[i] === 'correct') {
+          pip.style.background = 'var(--secondary)';
+          pip.style.borderColor = 'var(--secondary)';
+          pip.title = `Q${i+1}: Correct`;
+        } else if (sz2QuizAttempts[i] >= 2) {
+          pip.style.background = 'var(--accent)';
+          pip.style.borderColor = 'var(--accent)';
+          pip.title = `Q${i+1}: Revealed`;
+        } else if (i === sz2QuizIdx) {
+          pip.style.background = 'var(--primary)';
+          pip.style.borderColor = 'var(--primary)';
+          pip.title = `Q${i+1}: Current`;
+        } else {
+          pip.style.background = 'transparent';
+          pip.title = `Q${i+1}: Not yet answered`;
+        }
+        pips.appendChild(pip);
+      });
+    }
+
   </script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
