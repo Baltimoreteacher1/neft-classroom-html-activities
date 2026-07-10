@@ -624,6 +624,11 @@
         border-radius: 8px;
         text-decoration: none;
         cursor: pointer;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         transition:
           background 0.2s,
           transform 0.1s;
@@ -7600,7 +7605,16 @@
                 var selectedActText = sel.options[sel.selectedIndex].textContent;
                 launchBtn.href = href;
                 launchBtn.style.display = "";
-                launchBtn.textContent = "Launch: " + selectedActText + " →";
+                
+                var cleanText = selectedActText;
+                if (cleanText.indexOf("Lesson ") === 0 && cleanText.indexOf(":") > -1) {
+                  cleanText = cleanText.substring(cleanText.indexOf(":") + 1).trim();
+                }
+                if (cleanText.length > 28) {
+                  cleanText = cleanText.substring(0, 25) + "...";
+                }
+                
+                launchBtn.textContent = "Launch: " + cleanText + " →";
                 syncHubUrl(u, lesson.lessonId, href);
                 var isMobile = window.matchMedia("(max-width: 640px)").matches;
                 if (!isMobile) {
