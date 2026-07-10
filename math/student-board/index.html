@@ -1057,6 +1057,36 @@
       .canvas-btn:hover {
         transform: translateY(-1px);
       }
+      .canvas-setup,
+      .canvas-set {
+        font-size: 13px;
+        border-radius: 12px;
+        padding: 11px 14px;
+        margin: 4px 0 12px;
+        line-height: 1.5;
+      }
+      .canvas-setup {
+        color: var(--ink);
+        background: rgba(225, 59, 43, 0.06);
+        border: 1px solid rgba(225, 59, 43, 0.25);
+      }
+      .canvas-setup code {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        padding: 1px 5px;
+        font-size: 12px;
+        word-break: break-all;
+      }
+      .canvas-set {
+        color: var(--ink-soft);
+        background: rgba(37, 107, 91, 0.08);
+        border: 1px solid rgba(37, 107, 91, 0.25);
+      }
+      .canvas-set a {
+        font-weight: 700;
+        word-break: break-all;
+      }
       .assigns {
         display: grid;
         gap: 10px;
@@ -1432,6 +1462,16 @@
               This week's assignments. Save your code next to each one so you can pick up where you
               left off.
             </p>
+            <div class="canvas-setup edit-only" id="canvasHint" hidden>
+              <b>📚 Canvas isn't linked yet.</b> When your official course page is ready, tap
+              <b>Set Canvas link</b> and paste its URL (e.g.
+              <code>https://bcpss.instructure.com/courses/12345</code>). Students then get an
+              <b>Open Canvas</b> button. Each section (601 / 602 / 603) can point to its own course
+              — set it once per section.
+            </div>
+            <div class="canvas-set edit-only" id="canvasSet" hidden>
+              📚 Canvas linked: <a id="canvasSetLink" href="#" target="_blank" rel="noopener"></a>
+            </div>
             <div class="assigns" id="assigns"></div>
             <div class="row-tools">
               <button class="mini" id="myCodesBtn">🎒 My saved codes</button>
@@ -1978,11 +2018,20 @@
         const btn = $("#canvasBtn");
         if (!btn) return;
         const url = normUrl(state.canvas && state.canvas.url);
-        if (url) {
-          btn.href = url;
-          btn.hidden = false;
-        } else {
-          btn.hidden = true;
+        // Student-facing button: only when a URL is set.
+        btn.hidden = !url;
+        if (url) btn.href = url;
+        // Teacher edit-mode status: guide setup when empty, confirm when set.
+        const hint = $("#canvasHint");
+        const setEl = $("#canvasSet");
+        if (hint) hint.hidden = !(editing && !url);
+        if (setEl) {
+          setEl.hidden = !(editing && url);
+          if (editing && url) {
+            const a = $("#canvasSetLink");
+            a.href = url;
+            a.textContent = url;
+          }
         }
       }
       // Per-device, per-section save codes: { "board::assignment": "CODE" }.
@@ -2973,13 +3022,20 @@
         state.canvas = state.canvas || {};
         const cur = state.canvas.url || "";
         const url = prompt(
-          "Paste your Canvas course URL (students get an “Open Canvas” button):",
+          "Paste your Canvas course URL for " +
+            sectionLabel(boardId) +
+            " (e.g. https://bcpss.instructure.com/courses/12345). Students get an “Open Canvas” button. Leave blank to remove.",
           cur,
         );
         if (url === null) return;
         state.canvas.url = url.trim();
         markDirty();
         renderCanvas();
+        setSaveState(
+          state.canvas.url
+            ? "Canvas link set — Publish to make it live for students"
+            : "Canvas link removed — Publish to update",
+        );
       };
       $("#myCodesBtn").onclick = openMyCodes;
       $("#codesCloseBtn").onclick = () => ($("#codesOverlay").hidden = true);
