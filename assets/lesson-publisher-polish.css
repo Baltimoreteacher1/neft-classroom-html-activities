@@ -155,21 +155,46 @@
   }
 }
 
-/* Layer 2 — juice HUD docks on its own row above the score strip (kept
-   full-width, since its ring + streak + level + read-aloud + mute do not
-   shrink to a corner pill). No longer hidden behind the save bar. */
+/* Layer 2 — juice HUD shares the score strip's row instead of taking its own.
+   The score strip already shows lesson progress ("X of N correct"), so the
+   HUD's progress ring (.ntj-arc) is redundant, and its level/XP stat duplicates
+   the lifetime passport pill — both are hidden on phones. What is left (the
+   consecutive-correct streak + the read-aloud and mute controls, which live
+   nowhere else) collapses to a compact pill docked on the right of the score
+   row. This reclaims a whole ~60px row of bottom chrome. */
 @media (max-width: 520px) {
+  /* Hide the redundant read-outs: the progress ring duplicates the score strip;
+     the streak + level/XP duplicate the lifetime passport pill (top-left). What
+     remains are the read-aloud + mute controls, which live nowhere else. */
+  .ntj-hud .ntj-arc,
+  .ntj-hud .ntj-stat {
+    display: none !important;
+  }
   .ntj-hud {
-    bottom: calc(var(--nt-savebar-h, 0px) + var(--nt-scorebar-h, 0px) + 6px) !important;
+    left: auto !important;
+    right: 64px !important;
+    width: auto !important;
+    padding: 4px 6px !important;
+    gap: 6px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    justify-content: flex-end !important;
+    bottom: calc(var(--nt-savebar-h, 0px) + 8px) !important;
+  }
+  /* Pack the score text + Start Over to the left so the controls + Workbench
+     button (#mwb-launcher, pinned bottom-right) both have room on this row. */
+  .score-inner {
+    justify-content: flex-start !important;
+    padding-right: 96px;
   }
 }
 
-/* Action launchers float clear of the entire dock (save + score + HUD). */
+/* Action launchers float clear of the dock (save + score strips). */
 @media (max-width: 700px) {
   .lp-tutor-launcher,
   .ntf-dock {
     bottom: calc(
-      var(--nt-savebar-h, 12px) + var(--nt-scorebar-h, 0px) + var(--nt-hud-h, 0px) + 14px
+      var(--nt-savebar-h, 12px) + var(--nt-scorebar-h, 0px) + 14px
     ) !important;
   }
 }
@@ -178,7 +203,7 @@
 @media (max-width: 520px) {
   .main {
     padding-bottom: calc(
-      var(--nt-savebar-h, 0px) + var(--nt-scorebar-h, 0px) + var(--nt-hud-h, 0px) + 24px
+      var(--nt-savebar-h, 0px) + var(--nt-scorebar-h, 0px) + 24px
     );
   }
 }
