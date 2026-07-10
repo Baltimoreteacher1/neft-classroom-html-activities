@@ -2022,35 +2022,62 @@
             const b = this.bins[bi];
             t.assigned = b.id;
             const slot = b.count++;
-            // Grid the placed tile fully INSIDE the box: pad from the edges, leave
-            // room under the label, and pack columns/rows that fit the tile size so
-            // a tile never spills past the border.
+            t.binSlot = { bi, slot }; // remembered so a wrong check can free it
+            (b.tiles = b.tiles || []).push(t);
+            this.input.setDraggable(t.parts, false);
+            this.layoutBin(bi);
+            this.highlightSort();
+          }
+          // Grid + AUTO-FIT every tile already dropped in bin `bi` so the whole
+          // stack always stays INSIDE the box — no matter how many tall (long-text)
+          // tiles land in one bin, the tiles shrink together to fit rather than
+          // spilling past the bottom edge.
+          layoutBin(bi) {
+            const b = this.bins[bi];
+            const tiles = b.tiles || [];
+            if (!tiles.length) return;
             const tw = this.sortTileW || 70,
               th = this.sortTileH || 44;
             const padX = 14,
+              padBottom = 14,
               gap = 8,
               labelSpace = 40;
-            const cols = Math.max(1, Math.floor((b.w - padX * 2 + gap) / (tw + gap)));
-            const col = slot % cols,
-              rowN = Math.floor(slot / cols);
-            const tx = b.x - b.w / 2 + padX + tw / 2 + col * (tw + gap);
-            const ty = b.y - b.h / 2 + labelSpace + th / 2 + rowN * (th + gap);
-            t.binSlot = { bi, slot }; // remembered so a wrong check can free it
-            // Snap with a springy tween so the drop has weight (absolute coords).
-            if (JUICE.reduceMotion) {
-              t.parts.x = tx;
-              t.parts.y = ty;
-            } else {
-              this.tweens.add({
-                targets: t.parts,
-                x: tx,
-                y: ty,
-                duration: 220,
-                ease: "Back.Out",
-              });
-            }
-            this.input.setDraggable(t.parts, false);
-            this.highlightSort();
+            const availW = b.w - padX * 2;
+            const availH = b.h - labelSpace - padBottom;
+            const cols = Math.max(1, Math.floor((availW + gap) / (tw + gap)));
+            const rows = Math.ceil(tiles.length / cols);
+            const gridW = Math.min(tiles.length, cols) * (tw + gap) - gap;
+            const gridH = rows * (th + gap) - gap;
+            // Shrink uniformly if the grid is wider/taller than the usable space.
+            const scale = Math.min(1, availW / gridW, availH / gridH);
+            const cw = (tw + gap) * scale,
+              ch = (th + gap) * scale;
+            tiles.forEach((tile, i) => {
+              const col = i % cols,
+                row = Math.floor(i / cols);
+              const rowCount = Math.min(cols, tiles.length - row * cols);
+              const rowW = rowCount * cw - gap * scale;
+              const tx = b.x - rowW / 2 + cw / 2 + col * cw;
+              const ty = b.y - b.h / 2 + labelSpace + (th * scale) / 2 + row * ch;
+              // Kill any in-flight tween on this tile first — layoutBin re-runs as
+              // each tile lands, and overlapping tweens on one target fight and can
+              // settle at the wrong scale/position.
+              this.tweens.killTweensOf(tile.parts);
+              if (JUICE.reduceMotion) {
+                tile.parts.x = tx;
+                tile.parts.y = ty;
+                tile.parts.setScale(scale);
+              } else {
+                this.tweens.add({
+                  targets: tile.parts,
+                  x: tx,
+                  y: ty,
+                  scale,
+                  duration: 200,
+                  ease: "Back.Out",
+                });
+              }
+            });
           }
           checkSort(r) {
             if (this.locked) return;
@@ -2076,18 +2103,26 @@
             this.resolve(false, "Move the red tiles to the right bin, then check.");
             this.time.delayedCall(720, () => {
               if (this.locked) return;
+              const touched = new Set();
               this.sortTiles.forEach((t) => {
                 if (t.assigned !== t.data.category) {
-                  if (t.binSlot)
-                    this.bins[t.binSlot.bi].count = Math.max(0, this.bins[t.binSlot.bi].count - 1);
+                  if (t.binSlot != null) {
+                    const bin = this.bins[t.binSlot.bi];
+                    bin.count = Math.max(0, bin.count - 1);
+                    if (bin.tiles) bin.tiles = bin.tiles.filter((x) => x !== t);
+                    touched.add(t.binSlot.bi);
+                  }
                   t.assigned = null;
                   t.binSlot = null;
                   t.bg.setFillStyle(PALETTE.tile);
+                  t.parts.setScale(1); // undo any in-bin shrink before it goes home
                   t.parts.x = t.homeX;
                   t.parts.y = t.homeY;
                   this.input.setDraggable(t.parts, true);
                 }
               });
+              // Re-fit the tiles that stayed, so a freed slot lets them grow back.
+              touched.forEach((bi) => this.layoutBin(bi));
               this.highlightSort();
             });
           }
