@@ -85,48 +85,6 @@ async function ensureSchema(db) {
     .run();
 }
 
-// Anonymous confidence check-in: one row per (board, local-day, device token),
-// so a device can change its vote but each device counts once. No names — just
-// how the class feels about today's target. Resets naturally each day.
-async function ensureCheckinSchema(db) {
-  await db
-    .prepare(
-      `CREATE TABLE IF NOT EXISTS board_checkin (
-        board_id   TEXT NOT NULL,
-        day        TEXT NOT NULL,
-        token      TEXT NOT NULL,
-        value      TEXT NOT NULL,
-        updated_at INTEGER NOT NULL DEFAULT 0,
-        PRIMARY KEY (board_id, day, token)
-      )`,
-    )
-    .run();
-}
-
-const CHECKIN_VALUES = ["ready", "almost", "stuck"];
-
-// A stable local-day string (UTC date) for bucketing votes. Good enough for a
-// classroom pulse; the exact rollover hour is not important.
-function dayKey(now) {
-  return new Date(now).toISOString().slice(0, 10);
-}
-
-async function checkinTally(db, id, day) {
-  const rows = await db
-    .prepare(
-      `SELECT value, COUNT(*) AS n FROM board_checkin WHERE board_id = ? AND day = ? GROUP BY value`,
-    )
-    .bind(id, day)
-    .all();
-  const tally = { ready: 0, almost: 0, stuck: 0 };
-  for (const r of rows.results || []) {
-    if (tally[r.value] != null) tally[r.value] = r.n;
-  }
-  tally.total = tally.ready + tally.almost + tally.stuck;
-  tally.day = day;
-  return tally;
-}
-
 // Writes are allowed when TEACHER_KEY is unset (fresh project / local dev) so
 // the board is usable out of the box; once the key is set, writes require it.
 function authorizeWrite(request, env, url) {
@@ -166,19 +124,12 @@ export async function onRequest(context) {
     if (!id) return json({ ok: false, error: "invalid board id" }, 400, request);
     try {
       await ensureSchema(env.DB);
-      await ensureCheckinSchema(env.DB);
       const row = await env.DB.prepare(
         `SELECT state_json, updated_at, updated_by FROM class_board WHERE board_id = ?`,
       )
         .bind(id)
         .first();
-      const tally = await checkinTally(env.DB, id, dayKey(Date.now()));
-      if (!row)
-        return json(
-          { ok: true, board: id, state: null, updatedAt: 0, checkin: tally },
-          200,
-          request,
-        );
+      if (!row) return json({ ok: true, board: id, state: null, updatedAt: 0 }, 200, request);
       let state = null;
       try {
         state = JSON.parse(row.state_json);
@@ -192,7 +143,6 @@ export async function onRequest(context) {
           state,
           updatedAt: row.updated_at || 0,
           updatedBy: row.updated_by || null,
-          checkin: tally,
         },
         200,
         request,
@@ -257,51 +207,6 @@ export async function onRequest(context) {
     } catch (e) {
       return json(
         { ok: false, error: "write-failed", detail: String(e && e.message) },
-        500,
-        request,
-      );
-    }
-  }
-
-  // ---- POST /api/board/checkin -------------------------------------------
-  // Anonymous student confidence vote on today's target. No names; one vote per
-  // device (token), changeable. Returns the updated class tally.
-  if (seg === "checkin" && method === "POST") {
-    const id = boardId(url.searchParams.get("board"));
-    if (!id) return json({ ok: false, error: "invalid board id" }, 400, request);
-    let body;
-    try {
-      body = await request.json();
-    } catch {
-      return json({ ok: false, error: "invalid body" }, 400, request);
-    }
-    const value = String((body && body.value) || "").toLowerCase();
-    if (!CHECKIN_VALUES.includes(value)) {
-      return json({ ok: false, error: "invalid value" }, 400, request);
-    }
-    // Device token dedupes votes without identifying the student. Fall back to a
-    // coarse IP-based token if the client didn't send one.
-    let token = String((body && body.token) || "")
-      .replace(/[^a-z0-9-]/gi, "")
-      .slice(0, 40);
-    if (token.length < 6) token = "ip-" + (request.headers.get("CF-Connecting-IP") || "anon");
-    const now = Date.now();
-    const day = dayKey(now);
-    try {
-      await ensureCheckinSchema(env.DB);
-      await env.DB.prepare(
-        `INSERT INTO board_checkin (board_id, day, token, value, updated_at)
-         VALUES (?, ?, ?, ?, ?)
-         ON CONFLICT(board_id, day, token) DO UPDATE SET
-           value = excluded.value, updated_at = excluded.updated_at`,
-      )
-        .bind(id, day, token, value, now)
-        .run();
-      const tally = await checkinTally(env.DB, id, day);
-      return json({ ok: true, checkin: tally, you: value }, 200, request);
-    } catch (e) {
-      return json(
-        { ok: false, error: "checkin-failed", detail: String(e && e.message) },
         500,
         request,
       );

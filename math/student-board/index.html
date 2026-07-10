@@ -792,93 +792,130 @@
         cursor: pointer;
         margin-top: 8px;
       }
-      /* ---- confidence check-in ---- */
-      .checkin-card {
-        border-top: 5px solid var(--pod-4);
-      }
-      .checkin-btns {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        margin-top: 6px;
-      }
-      .checkin-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 5px;
+      /* ---- voice level strip ---- */
+      .voice-strip {
+        margin-top: 18px;
+        background: var(--paper);
         border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 12px 6px;
-        background: #fff;
-        cursor: pointer;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .voice-strip[hidden] {
+        display: none;
+      }
+      .voice-strip .vlab {
+        font-family: "Nunito", sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--ink-soft);
+        white-space: nowrap;
+      }
+      .voice-levels {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        flex: 1;
+        min-width: 260px;
+      }
+      .voice-lvl {
+        flex: 1 1 118px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 9px 8px;
+        background: #f6f9fd;
+        color: var(--ink-soft);
         font-family: "Nunito", sans-serif;
         font-weight: 800;
         font-size: 13px;
-        color: var(--ink);
-        transition:
-          transform 0.1s ease,
-          border-color 0.1s ease;
+        opacity: 0.6;
+        cursor: default;
       }
-      .checkin-btn .ce {
-        font-size: 30px;
+      .voice-lvl .ve {
+        font-size: 20px;
         line-height: 1;
       }
-      .checkin-btn:hover {
-        transform: translateY(-2px);
+      .voice-lvl.on {
+        opacity: 1;
+        color: #fff;
+        background: linear-gradient(135deg, var(--teal), var(--navy));
+        border-color: transparent;
+        box-shadow: var(--shadow);
+        transform: scale(1.04);
       }
-      .checkin-btn.picked {
-        border-color: var(--pod-4);
-        background: rgba(112, 72, 168, 0.08);
-        box-shadow: inset 0 0 0 1px var(--pod-4);
+      body.edit .voice-lvl {
+        cursor: pointer;
       }
-      .checkin-tally {
-        margin-top: 14px;
-        display: grid;
-        gap: 7px;
+      body.edit .voice-lvl:hover {
+        opacity: 1;
       }
-      .checkin-tally[hidden] {
-        display: none;
-      }
-      .ct-row {
-        display: grid;
-        grid-template-columns: 30px 1fr 34px;
-        gap: 9px;
+      /* ---- floating timer dock (timer keeps running with overlay closed) ---- */
+      .timer-dock {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 55;
+        display: flex;
         align-items: center;
-        font-size: 14px;
-      }
-      .ct-bar {
-        height: 12px;
+        gap: 9px;
+        border: none;
+        background: #10233d;
+        color: #fff;
         border-radius: 999px;
-        background: #e6edf5;
-        overflow: hidden;
+        padding: 11px 19px;
+        font-family: "Nunito", sans-serif;
+        font-weight: 900;
+        font-size: 20px;
+        font-variant-numeric: tabular-nums;
+        box-shadow: var(--shadow-lg);
+        cursor: pointer;
       }
-      .ct-bar > span {
-        display: block;
-        height: 100%;
-        border-radius: 999px;
-        width: 0;
-        transition: width 0.7s ease;
-      }
-      .ct-ready > span {
-        background: var(--green);
-      }
-      .ct-almost > span {
-        background: var(--amber);
-      }
-      .ct-stuck > span {
+      .timer-dock.low {
         background: var(--pod-5);
       }
-      .ct-val {
-        text-align: right;
-        font-variant-numeric: tabular-nums;
-        font-weight: 700;
+      .timer-dock[hidden] {
+        display: none;
+      }
+      /* ---- Canvas / LMS embed mode (?embed=1 or auto-detected iframe) ---- */
+      body.embed .topbar,
+      body.embed .foot,
+      body.embed .edit-banner {
+        display: none;
+      }
+      body.embed .wrap {
+        padding: 10px clamp(10px, 2vw, 22px) 40px;
+      }
+      .embed-bar {
+        display: none;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        padding: 0 4px 10px;
+        font-size: 13px;
         color: var(--ink-soft);
       }
-      .checkin-anon {
-        font-size: 12px;
-        color: var(--ink-soft);
-        margin: 10px 0 0;
+      body.embed .embed-bar {
+        display: flex;
+      }
+      .embed-bar a {
+        font-family: "Nunito", sans-serif;
+        font-weight: 800;
+        text-decoration: none;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        padding: 6px 13px;
+        box-shadow: var(--shadow);
       }
       /* ---- overlays (picker + timer) ---- */
       .overlay {
@@ -1118,6 +1155,11 @@
         padding: 2px 9px;
         margin-left: 8px;
       }
+      .assign .a-due.due-today {
+        color: var(--pod-5);
+        background: rgba(176, 58, 99, 0.13);
+        box-shadow: inset 0 0 0 1px rgba(176, 58, 99, 0.35);
+      }
       .assign .a-links {
         display: flex;
         gap: 8px;
@@ -1229,6 +1271,39 @@
         font-size: 14px;
         padding: 18px 0;
       }
+      /* auto-discovered lesson work (save-resume records on this device) */
+      .codes-auto h4 {
+        font-family: "Nunito", sans-serif;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+        margin: 14px 0 8px;
+      }
+      .codes-auto .code-item {
+        background: #f4faf6;
+        border-color: #cfe6d8;
+      }
+      .codes-auto[hidden] {
+        display: none;
+      }
+      .code-suggest {
+        color: var(--green);
+        border-color: #cfe6d8;
+        background: #f4faf6;
+      }
+      .sync-chip {
+        font-size: 13px;
+        color: var(--ink-soft);
+        background: rgba(32, 95, 166, 0.06);
+        border: 1px solid rgba(32, 95, 166, 0.18);
+        border-radius: 10px;
+        padding: 8px 11px;
+        margin: 0 0 12px;
+      }
+      .sync-chip[hidden] {
+        display: none;
+      }
       .edit-banner {
         display: none;
         position: sticky;
@@ -1331,8 +1406,21 @@
       <!-- Teacher control banner (only in edit mode) -->
       <div class="edit-banner" role="region" aria-label="Teacher board controls">
         <b>✏️ Editing: <span id="editingSection">All Classes</span></b>
-        <span class="save-state" id="saveState">Local changes not published</span>
+        <span class="save-state" id="saveState" aria-live="polite"
+          >Local changes not published</span
+        >
         <span class="grow"></span>
+        <select id="copyFromSel" title="Load another section's published board into this one">
+          <option value="">Copy from…</option>
+        </select>
+        <button
+          class="btn ghost"
+          id="shuffleBtn"
+          style="color: #fff; border-color: #33507a"
+          title="Randomly re-mix all names across the groups"
+        >
+          🔀 Shuffle groups
+        </button>
         <button class="btn ghost" id="addDayBtn" style="color: #fff; border-color: #33507a">
           + Group
         </button>
@@ -1371,6 +1459,9 @@
           <div class="date" id="clockDate">—</div>
         </div>
         <button class="btn ghost" id="pickBtn" title="Fair name / group picker">🎲 Pick</button>
+        <button class="btn ghost" id="bellBtn" title="Attention signal — play a gentle chime">
+          🔔 Bell
+        </button>
         <button class="btn ghost" id="timerBtn" title="Class work timer">⏱ Timer</button>
         <button class="btn ghost" id="readBtn" title="Read the board aloud">🔊 Read</button>
         <button class="btn ghost" id="textSizeBtn" title="Bigger text" aria-label="Text size">
@@ -1380,6 +1471,14 @@
           ⛶ Present
         </button>
         <button class="btn" id="teacherBtn" title="Teacher edit mode">✏️ Edit</button>
+      </div>
+
+      <!-- Slim bar shown only when the board is embedded (e.g. a Canvas page) -->
+      <div class="embed-bar">
+        <span>Live from your class board</span>
+        <a id="embedOpenLink" href="/math/student-board/" target="_blank" rel="noopener"
+          >Open full board ↗</a
+        >
       </div>
 
       <!-- Hero -->
@@ -1415,6 +1514,12 @@
           <div class="sub" data-edit="focus.targetSub">—</div>
         </div>
       </div>
+
+      <!-- Voice level -->
+      <section class="voice-strip" id="voiceStrip" hidden aria-label="Voice level for right now">
+        <span class="vlab">🔊 Voice Level</span>
+        <div class="voice-levels" id="voiceLevels" role="group" aria-label="Voice levels"></div>
+      </section>
 
       <!-- Main grid -->
       <div class="grid">
@@ -1472,35 +1577,24 @@
             <div class="canvas-set edit-only" id="canvasSet" hidden>
               📚 Canvas linked: <a id="canvasSetLink" href="#" target="_blank" rel="noopener"></a>
             </div>
+            <p class="sync-chip" id="lessonSync" hidden></p>
             <div class="assigns" id="assigns"></div>
             <div class="row-tools">
               <button class="mini" id="myCodesBtn">🎒 My saved codes</button>
               <button class="mini edit-only" id="addAssignBtn">+ Assignment</button>
               <button class="mini edit-only" id="setCanvasBtn">🔗 Set Canvas link</button>
+              <button
+                class="mini edit-only"
+                id="embedCodeBtn"
+                title="Copy an iframe snippet — paste into a Canvas Page via its HTML editor"
+              >
+                📋 Canvas embed code
+              </button>
             </div>
           </section>
         </div>
 
         <div class="col-side">
-          <!-- Confidence check-in -->
-          <section class="card checkin-card">
-            <h2><span class="ico">✋</span> How's Today's Goal?</h2>
-            <p class="hint" id="checkinTarget">Tap how you feel about today's learning target.</p>
-            <div class="checkin-btns" id="checkinBtns">
-              <button class="checkin-btn" data-vote="ready">
-                <span class="ce">😀</span><span>I've got it</span>
-              </button>
-              <button class="checkin-btn" data-vote="almost">
-                <span class="ce">🙂</span><span>Almost</span>
-              </button>
-              <button class="checkin-btn" data-vote="stuck">
-                <span class="ce">🤔</span><span>Still working</span>
-              </button>
-            </div>
-            <div class="checkin-tally" id="checkinTally" hidden></div>
-            <p class="checkin-anon">Anonymous — no names, just how the class feels.</p>
-          </section>
-
           <!-- ALEKS -->
           <section class="card">
             <h2><span class="ico">📊</span> ALEKS Minutes</h2>
@@ -1554,9 +1648,14 @@
       </div>
     </div>
 
+    <!-- Floating timer dock — visible while the timer runs with its overlay closed -->
+    <button class="timer-dock" id="timerDock" hidden title="Timer is running — tap to open">
+      ⏱ <span id="timerDockTime">05:00</span>
+    </button>
+
     <!-- Fair picker overlay -->
     <div class="overlay" id="pickOverlay" hidden>
-      <div class="overlay-box">
+      <div class="overlay-box" role="dialog" aria-modal="true" aria-label="Fair picker">
         <div class="overlay-mode" role="tablist" aria-label="Pick mode">
           <button class="pill on" id="pickStudentTab">A student</button>
           <button class="pill" id="pickGroupTab">A group</button>
@@ -1573,7 +1672,7 @@
 
     <!-- Class timer overlay -->
     <div class="overlay" id="timerOverlay" hidden>
-      <div class="overlay-box">
+      <div class="overlay-box" role="dialog" aria-modal="true" aria-label="Class timer">
         <div class="timer-display" id="timerDisplay">05:00</div>
         <div class="timer-presets" id="timerPresets">
           <button class="pill" data-min="2">2 min</button>
@@ -1600,7 +1699,12 @@
 
     <!-- My saved codes overlay (student, this device) -->
     <div class="overlay" id="codesOverlay" hidden>
-      <div class="overlay-box codes-box">
+      <div
+        class="overlay-box codes-box"
+        role="dialog"
+        aria-modal="true"
+        aria-label="My saved codes"
+      >
         <h3>🎒 My Saved Codes</h3>
         <p class="modal-help">
           Your save codes let you pick up multi-day work where you left off. They live on this
@@ -1612,6 +1716,10 @@
           <button class="btn primary" id="codeAddBtn">Save</button>
         </div>
         <div class="codes-list" id="codesList"></div>
+        <div class="codes-auto" id="codesAuto" hidden>
+          <h4>🔄 Found from your lessons (this device)</h4>
+          <div class="codes-list" id="codesAutoList"></div>
+        </div>
         <div class="overlay-actions">
           <button class="btn ghost" id="codesCloseBtn">Close</button>
         </div>
@@ -1661,7 +1769,15 @@
         "var(--pod-6)",
       ];
       const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
-
+      // Classic classroom voice-level scale (0–4). The teacher taps one in edit
+      // mode; students see the active level highlighted on the strip.
+      const VOICE_LEVELS = [
+        { emoji: "🤫", label: "Silent" },
+        { emoji: "🤏", label: "Whisper" },
+        { emoji: "💬", label: "Partner Talk" },
+        { emoji: "👥", label: "Group Talk" },
+        { emoji: "🎤", label: "Presenter" },
+      ];
       function seed() {
         return {
           week: {
@@ -1774,6 +1890,7 @@
             url: "",
             note: "Everything you turn in lives in Canvas. Tap to open your class.",
           },
+          voice: { level: 2 },
           assignments: {
             note: "This week's assignments. Save your code next to each one so you can pick up where you left off.",
             items: [
@@ -1798,10 +1915,26 @@
       let serverUpdatedAt = 0;
       let dirty = false;
       let editing = false;
-      let checkin = { ready: 0, almost: 0, stuck: 0, total: 0, day: "" };
 
       const $ = (s, r = document) => r.querySelector(s);
       const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+      // Safe storage: inside a Canvas/LMS iframe with third-party storage
+      // blocked, even READING window.localStorage throws. Every access goes
+      // through here so the board still renders (it just won't remember).
+      const store = {
+        get(k) {
+          try {
+            return localStorage.getItem(k);
+          } catch {
+            return null;
+          }
+        },
+        set(k, v) {
+          try {
+            localStorage.setItem(k, v);
+          } catch {}
+        },
+      };
       function sectionLabel(id) {
         return SECTIONS[id] || (/^\d+$/.test(id) ? "Period " + id : id);
       }
@@ -1813,15 +1946,14 @@
         if (badge) badge.textContent = label;
         const es = $("#editingSection");
         if (es) es.textContent = label;
-        try {
-          localStorage.setItem("nt-board-section", boardId);
-        } catch {}
+        store.set("nt-board-section", boardId);
+        fillCopyFrom();
       }
       function keyLS() {
         return "nt-board-" + boardId;
       }
       function teacherKey() {
-        return localStorage.getItem("nt-board-teacher-key") || "";
+        return store.get("nt-board-teacher-key") || "";
       }
 
       function get(obj, path) {
@@ -1838,7 +1970,7 @@
       async function loadBoard() {
         // 1) local cache for instant paint
         try {
-          const cached = JSON.parse(localStorage.getItem(keyLS()) || "null");
+          const cached = JSON.parse(store.get(keyLS()) || "null");
           if (cached && cached.state) {
             state = cached.state;
             serverUpdatedAt = cached.updatedAt || 0;
@@ -1852,10 +1984,6 @@
           });
           if (r.ok) {
             const d = await r.json();
-            if (d.checkin) {
-              checkin = d.checkin;
-              renderCheckin();
-            }
             if (d.ok && d.state && (d.updatedAt || 0) >= serverUpdatedAt) {
               if (!dirty) {
                 state = d.state;
@@ -1876,9 +2004,7 @@
       }
 
       function cacheLocal() {
-        try {
-          localStorage.setItem(keyLS(), JSON.stringify({ state, updatedAt: serverUpdatedAt }));
-        } catch {}
+        store.set(keyLS(), JSON.stringify({ state, updatedAt: serverUpdatedAt }));
       }
 
       async function publish() {
@@ -1897,7 +2023,7 @@
               teacherKey(),
             );
             if (k) {
-              localStorage.setItem("nt-board-teacher-key", k);
+              store.set("nt-board-teacher-key", k);
               return publish();
             }
             setSaveState("Publish cancelled — key required");
@@ -1996,15 +2122,45 @@
 
       function render() {
         bindEditables();
+        renderVoice();
         renderWeek();
         renderPods();
         renderVocab();
         renderCanvas();
+        renderLessonSync();
         renderAssignments();
         renderAleks();
-        renderCheckin();
         renderNotes();
         renderShouts();
+      }
+
+      // ---- voice level ------------------------------------------------
+      function renderVoice() {
+        const strip = $("#voiceStrip");
+        if (!strip) return;
+        const lvl =
+          state.voice && Number.isInteger(Number(state.voice.level))
+            ? Math.min(Math.max(Number(state.voice.level), 0), VOICE_LEVELS.length - 1)
+            : -1;
+        // Boards published before this feature have no level yet: students see
+        // nothing; the teacher sees the strip in edit mode and can set one.
+        strip.hidden = lvl < 0 && !editing;
+        $("#voiceLevels").innerHTML = VOICE_LEVELS.map(
+          (v, i) =>
+            `<button class="voice-lvl ${i === lvl ? "on" : ""}" data-vlvl="${i}" ${editing ? "" : "disabled"}
+              aria-pressed="${i === lvl}" aria-label="Voice level ${i}: ${v.label}">
+              <span class="ve">${v.emoji}</span><span>${i} · ${v.label}</span></button>`,
+        ).join("");
+        if (editing) {
+          $$("#voiceLevels [data-vlvl]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                state.voice = { level: +b.dataset.vlvl };
+                markDirty();
+                renderVoice();
+              }),
+          );
+        }
       }
 
       // ---- assignments + canvas + per-student save codes --------------
@@ -2034,18 +2190,92 @@
           }
         }
       }
+      // ---- seamless sync from lessons & the Curriculum Hub --------------
+      // Lessons/activities on this site save their state through the shared
+      // Save/Resume engine (localStorage "nsr:rec:<CODE>") and the Curriculum
+      // Hub tracks check-offs ("curriculumProgress"). Same origin, same
+      // device — so the board surfaces that work automatically: no retyping
+      // codes, no copying anything over.
+      function lessonWork() {
+        const out = [];
+        try {
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (!k || !k.startsWith("nsr:rec:")) continue;
+            try {
+              const r = JSON.parse(localStorage.getItem(k) || "null");
+              if (r && r.saveCode)
+                out.push({
+                  code: String(r.saveCode),
+                  title: String(r.activityTitle || r.activityId || "Lesson work"),
+                  id: String(r.activityId || ""),
+                  at: Number(r.updatedAt) || 0,
+                });
+            } catch {}
+          }
+        } catch {}
+        return out.sort((a, b) => b.at - a.at).slice(0, 30);
+      }
+      function curriculumDone() {
+        try {
+          const p = JSON.parse(store.get("curriculumProgress") || "{}");
+          return Object.keys(p || {}).length;
+        } catch {
+          return 0;
+        }
+      }
+      function normTitle(s) {
+        return String(s || "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "");
+      }
+      // Conservative fuzzy match: assignment name vs a lesson's title/id, one
+      // containing the other, with a length floor so short names can't hit.
+      function matchWork(work, name) {
+        const n = normTitle(name);
+        if (n.length < 4) return null;
+        return (
+          work.find((w) => {
+            const t = normTitle(w.title);
+            const d = normTitle(w.id);
+            return (
+              (t.length >= 6 && (t.includes(n) || n.includes(t))) ||
+              (d.length >= 6 && (d.includes(n) || n.includes(d)))
+            );
+          }) || null
+        );
+      }
+      function renderLessonSync() {
+        const el = $("#lessonSync");
+        if (!el) return;
+        const work = lessonWork().length;
+        const done = curriculumDone();
+        if (editing || (!work && !done)) {
+          el.hidden = true;
+          return;
+        }
+        el.hidden = false;
+        el.innerHTML =
+          "🔄 Synced from this device: " +
+          [
+            work ? `<b>${work}</b> lesson save code${work === 1 ? "" : "s"}` : "",
+            done ? `<b>${done}</b> Curriculum Hub check-off${done === 1 ? "" : "s"}` : "",
+          ]
+            .filter(Boolean)
+            .join(" · ") +
+          ` · <a href="/curriculum/" target="_blank" rel="noopener">Curriculum Hub ↗</a>`;
+      }
+
       // Per-device, per-section save codes: { "board::assignment": "CODE" }.
       function loadCodes() {
         try {
-          return JSON.parse(localStorage.getItem("nt-board-mycodes") || "{}") || {};
+          return JSON.parse(store.get("nt-board-mycodes") || "{}") || {};
         } catch {
           return {};
         }
       }
       function saveCodes(codes) {
-        try {
-          localStorage.setItem("nt-board-mycodes", JSON.stringify(codes));
-        } catch {}
+        store.set("nt-board-mycodes", JSON.stringify(codes));
       }
       function codeKey(name) {
         return (
@@ -2061,6 +2291,11 @@
         if (!host) return;
         const items = (state.assignments && state.assignments.items) || [];
         const codes = loadCodes();
+        // "Fri" / "Friday" / "today" in the due field lights up on that day.
+        const todayName = new Date()
+          .toLocaleDateString("en-US", { weekday: "short" })
+          .toLowerCase();
+        const work = editing ? [] : lessonWork();
         host.innerHTML = items
           .map((a, i) => {
             const link = normUrl(a.link);
@@ -2070,10 +2305,14 @@
               ? `<a class="a-open" href="${esc(openHref)}" target="_blank" rel="noopener">${link ? "Open" : "Canvas"} ↗</a>`
               : "";
             const mine = codes[codeKey(a.name)] || "";
+            const dueRaw = String(a.due || "")
+              .trim()
+              .toLowerCase();
+            const dueToday = dueRaw.startsWith(todayName) || dueRaw.includes("today");
             return `<div class="assign">
                 <div>
                   <span class="a-name" ${editing ? `contenteditable="true" data-as="${i}" data-asname="1"` : ""}>${esc(a.name)}</span>
-                  ${a.due || editing ? `<span class="a-due" ${editing ? `contenteditable="true" data-as="${i}" data-asdue="1"` : ""}>${esc(a.due || "due")}</span>` : ""}
+                  ${a.due || editing ? `<span class="a-due ${dueToday ? "due-today" : ""}" ${editing ? `contenteditable="true" data-as="${i}" data-asdue="1"` : ""} ${dueToday ? 'title="Due today!"' : ""}>${esc(a.due || "due")}</span>` : ""}
                 </div>
                 <div class="a-links">
                   ${open}
@@ -2085,6 +2324,12 @@
                     : `<div class="a-code">
                         <label>My save code:</label>
                         <input type="text" data-code="${i}" value="${esc(mine)}" placeholder="type your code" aria-label="Your save code for ${esc(a.name)}" />
+                        ${(() => {
+                          const sug = mine ? null : matchWork(work, a.name);
+                          return sug
+                            ? `<button class="mini code-suggest" data-sugfill="${i}" data-sugcode="${esc(sug.code)}" title="This code was saved by your lesson work on this device">📥 Use ${esc(sug.code)}</button>`
+                            : "";
+                        })()}
                         <button class="mini copy" data-copycode="${i}" ${mine ? "" : "hidden"}>Copy</button>
                         <span class="saved" data-savedflag="${i}" ${mine ? "" : "hidden"}>✓ saved on this device</span>
                       </div>`
@@ -2146,6 +2391,16 @@
               copyText(val, b);
             };
           });
+          // One tap adopts the code a lesson already saved on this device.
+          $$("#assigns [data-sugfill]").forEach((b) => {
+            b.onclick = () => {
+              const i = +b.dataset.sugfill;
+              const c = loadCodes();
+              c[codeKey(items[i].name)] = b.dataset.sugcode;
+              saveCodes(c);
+              renderAssignments();
+            };
+          });
         }
       }
 
@@ -2201,6 +2456,33 @@
               renderCodesList();
               renderAssignments();
             }),
+        );
+        renderAutoCodes();
+      }
+      // Work discovered from lessons on this device — shown below the manual
+      // list so nothing from /curriculum ever has to be typed in by hand.
+      function renderAutoCodes() {
+        const box = $("#codesAuto");
+        const host = $("#codesAutoList");
+        if (!box || !host) return;
+        const work = lessonWork();
+        box.hidden = !work.length;
+        if (!work.length) return;
+        host.innerHTML = work
+          .map(
+            (w, i) => `<div class="code-item">
+                <span class="ci-label" title="${esc(w.title)}">${esc(w.title)}${
+                  w.at
+                    ? `<span style="font-weight:400;color:var(--ink-soft);font-size:12px"> · ${esc(relTime(w.at))}</span>`
+                    : ""
+                }</span>
+                <span class="ci-code">${esc(w.code)}</span>
+                <button class="mini copy" data-autocopy="${i}">Copy</button>
+              </div>`,
+          )
+          .join("");
+        $$("#codesAutoList [data-autocopy]").forEach(
+          (b) => (b.onclick = () => copyText(work[+b.dataset.autocopy].code, b)),
         );
       }
       function openMyCodes() {
@@ -2262,40 +2544,6 @@
               }),
           );
         }
-      }
-
-      function renderCheckin() {
-        const target = state.focus && state.focus.target;
-        const tEl = $("#checkinTarget");
-        if (tEl)
-          tEl.textContent = target
-            ? "🎯 " + target
-            : "Tap how you feel about today's learning target.";
-        // Show which one this device picked today.
-        const mine = checkinMine();
-        $$("#checkinBtns .checkin-btn").forEach((b) =>
-          b.classList.toggle("picked", b.dataset.vote === mine),
-        );
-        const host = $("#checkinTally");
-        if (!host) return;
-        if (!checkin.total) {
-          host.hidden = true;
-          return;
-        }
-        host.hidden = false;
-        const pct = (n) => Math.round((n / checkin.total) * 100);
-        const rows = [
-          ["ready", "😀", checkin.ready],
-          ["almost", "🙂", checkin.almost],
-          ["stuck", "🤔", checkin.stuck],
-        ];
-        host.innerHTML =
-          rows
-            .map(
-              ([k, e, n]) =>
-                `<div class="ct-row"><span>${e}</span><span class="ct-bar ct-${k}"><span style="width:${pct(n)}%"></span></span><span class="ct-val">${n}</span></div>`,
-            )
-            .join("") + `<p class="checkin-anon">${checkin.total} response(s) today</p>`;
       }
 
       function renderWeek() {
@@ -2527,14 +2775,14 @@
 
       // ---- teacher mode ------------------------------------------------
       function enterEdit() {
-        const stored = localStorage.getItem("nt-teacher-mode") === "on";
+        const stored = store.get("nt-teacher-mode") === "on";
         if (!stored) {
           const pin = prompt("Teacher PIN to edit the board:");
           if (pin !== TEACHER_PIN) {
             if (pin !== null) alert("That PIN didn't match.");
             return;
           }
-          localStorage.setItem("nt-teacher-mode", "on");
+          store.set("nt-teacher-mode", "on");
         }
         editing = true;
         document.body.classList.add("edit");
@@ -2569,13 +2817,15 @@
         if (f.now) parts.push("Right now: " + f.now + ". " + (f.nowSub || ""));
         if (f.next) parts.push("Up next: " + f.next + ".");
         if (f.target) parts.push("Today's goal: " + f.target + ".");
+        const vl = state.voice && VOICE_LEVELS[Number(state.voice.level)];
+        if (vl) parts.push("Voice level: " + vl.label + ".");
         (state.notes || []).forEach((n) => parts.push(n.text));
         speak(parts.filter(Boolean).join(". "));
       }
 
       // ---- text size (projector / back of room) -----------------------
       function applyTextSize() {
-        const lvl = parseInt(localStorage.getItem("nt-board-textsize") || "0", 10) || 0;
+        const lvl = parseInt(store.get("nt-board-textsize") || "0", 10) || 0;
         document.body.classList.remove("ts1", "ts2");
         if (lvl === 1) document.body.classList.add("ts1");
         if (lvl === 2) document.body.classList.add("ts2");
@@ -2583,63 +2833,9 @@
         if (btn) btn.textContent = lvl === 0 ? "🔤 A+" : lvl === 1 ? "🔤 A++" : "🔤 A";
       }
       function cycleTextSize() {
-        const lvl = (parseInt(localStorage.getItem("nt-board-textsize") || "0", 10) + 1) % 3;
-        try {
-          localStorage.setItem("nt-board-textsize", String(lvl));
-        } catch {}
+        const lvl = (parseInt(store.get("nt-board-textsize") || "0", 10) + 1) % 3;
+        store.set("nt-board-textsize", String(lvl));
         applyTextSize();
-      }
-
-      // ---- confidence check-in ----------------------------------------
-      function checkinToken() {
-        let t = "";
-        try {
-          t = localStorage.getItem("nt-board-token") || "";
-          if (!t) {
-            t =
-              "d" +
-              Math.abs(hashStr(navigator.userAgent + screen.width + performance.now())).toString(
-                36,
-              ) +
-              Date.now().toString(36);
-            localStorage.setItem("nt-board-token", t);
-          }
-        } catch {
-          t = "anon";
-        }
-        return t;
-      }
-      function hashStr(s) {
-        let h = 0;
-        for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
-        return h;
-      }
-      function checkinMine() {
-        try {
-          const raw = JSON.parse(localStorage.getItem("nt-board-vote") || "null");
-          if (raw && raw.board === boardId && raw.day === checkin.day) return raw.value;
-        } catch {}
-        return "";
-      }
-      async function sendCheckin(value) {
-        try {
-          const r = await fetch("/api/board/checkin?board=" + encodeURIComponent(boardId), {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({ value, token: checkinToken() }),
-          });
-          const d = await r.json().catch(() => ({}));
-          if (d && d.ok && d.checkin) {
-            checkin = d.checkin;
-            try {
-              localStorage.setItem(
-                "nt-board-vote",
-                JSON.stringify({ board: boardId, day: checkin.day, value }),
-              );
-            } catch {}
-            renderCheckin();
-          }
-        } catch {}
       }
 
       // ---- fair picker (equity, no-repeat) ----------------------------
@@ -2710,6 +2906,16 @@
         d.textContent = fmtTimer(Math.max(0, timerLeft));
         d.classList.toggle("low", timerLeft <= 10 && timerLeft > 0);
         d.classList.toggle("done", timerLeft <= 0);
+        const dockTime = $("#timerDockTime");
+        if (dockTime) dockTime.textContent = fmtTimer(Math.max(0, timerLeft));
+        const dock = $("#timerDock");
+        if (dock) dock.classList.toggle("low", timerLeft <= 10 && timerLeft > 0);
+        updateTimerDock();
+      }
+      // The dock keeps a running timer visible after its overlay is closed.
+      function updateTimerDock() {
+        const dock = $("#timerDock");
+        if (dock) dock.hidden = !(timerId && $("#timerOverlay").hidden);
       }
       function setTimerMinutes(min) {
         timerSecs = Math.max(1, Math.min(90, Math.round(min))) * 60;
@@ -2725,8 +2931,18 @@
           timerLeft--;
           paintTimer();
           if (timerLeft <= 0) {
+            const docked = $("#timerOverlay").hidden;
             stopTimer();
             if ($("#timerChime").checked) timerChime();
+            if (docked) {
+              // Flash "Time!" on the dock so a docked finish is still visible.
+              const dock = $("#timerDock");
+              if (dock) {
+                dock.hidden = false;
+                $("#timerDockTime").textContent = "Time!";
+                setTimeout(updateTimerDock, 6000);
+              }
+            }
           }
         }, 1000);
       }
@@ -2737,6 +2953,29 @@
         }
         const b = $("#timerStartBtn");
         if (b) b.textContent = "Start";
+        updateTimerDock();
+      }
+      // Attention bell — a gentle rising three-note chime the teacher taps to
+      // signal a transition ("give me five"). Explicit user action, so it is
+      // not gated behind reduced-motion.
+      function attentionChime() {
+        try {
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          if (!Ctx) return;
+          const ac = new Ctx();
+          [523.25, 659.25, 783.99].forEach((f, i) => {
+            const o = ac.createOscillator();
+            const g = ac.createGain();
+            o.frequency.value = f;
+            o.connect(g);
+            g.connect(ac.destination);
+            g.gain.setValueAtTime(0.0001, ac.currentTime + i * 0.22);
+            g.gain.exponentialRampToValueAtTime(0.22, ac.currentTime + i * 0.22 + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + i * 0.22 + 0.65);
+            o.start(ac.currentTime + i * 0.22);
+            o.stop(ac.currentTime + i * 0.22 + 0.7);
+          });
+        } catch {}
       }
       function timerChime() {
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -2965,6 +3204,73 @@
         markDirty();
         renderPods();
       };
+      // Fair re-mix: pool every name, shuffle, deal back round-robin so the
+      // groups stay the same size (±1) with fresh mixes.
+      $("#shuffleBtn").onclick = () => {
+        const groups = state.groups || [];
+        const names = groups.flatMap((g) => g.members || []).filter(Boolean);
+        if (groups.length < 2 || names.length < 2) {
+          alert("Add at least two groups with names first.");
+          return;
+        }
+        if (
+          !confirm(
+            "Shuffle all " + names.length + " names randomly across " + groups.length + " groups?",
+          )
+        )
+          return;
+        for (let i = names.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [names[i], names[j]] = [names[j], names[i]];
+        }
+        groups.forEach((g) => (g.members = []));
+        names.forEach((n, i) => groups[i % groups.length].members.push(n));
+        markDirty();
+        renderPods();
+        setSaveState("Groups shuffled — review, then Publish");
+      };
+      // Copy another section's published board into this one (e.g. set up 601,
+      // copy to 602/603, tweak, publish). Reads only; publishing stays manual.
+      function fillCopyFrom() {
+        const sel = $("#copyFromSel");
+        if (!sel) return;
+        sel.innerHTML =
+          '<option value="">Copy from…</option>' +
+          Object.keys(SECTIONS)
+            .filter((k) => k !== boardId)
+            .map((k) => `<option value="${esc(k)}">${esc(SECTIONS[k])}</option>`)
+            .join("");
+      }
+      $("#copyFromSel").onchange = async (e) => {
+        const from = e.target.value;
+        e.target.value = "";
+        if (!from) return;
+        if (
+          !confirm(
+            "Replace this board's content with the published board from " +
+              sectionLabel(from) +
+              "? (Nothing goes live until you Publish.)",
+          )
+        )
+          return;
+        setSaveState("Copying from " + sectionLabel(from) + "…");
+        try {
+          const r = await fetch("/api/board/get?board=" + encodeURIComponent(from), {
+            cache: "no-store",
+          });
+          const d = await r.json();
+          if (d && d.ok && d.state) {
+            state = JSON.parse(JSON.stringify(d.state));
+            markDirty();
+            render();
+            setSaveState("Copied from " + sectionLabel(from) + " — review, then Publish");
+          } else {
+            setSaveState(sectionLabel(from) + " has no published board yet");
+          }
+        } catch {
+          setSaveState("Could not load " + sectionLabel(from) + " — check your connection");
+        }
+      };
       $("#addAleksBtn").onclick = () => {
         state.aleks.students.push({ name: "Name", minutes: 0 });
         markDirty();
@@ -3037,6 +3343,21 @@
             : "Canvas link removed — Publish to update",
         );
       };
+      // Copy a ready-to-paste iframe snippet for a Canvas Page. The site's CSP
+      // (frame-ancestors 'self' https:) already lets Canvas frame this board.
+      $("#embedCodeBtn").onclick = () => {
+        const url =
+          location.origin +
+          location.pathname +
+          "?board=" +
+          encodeURIComponent(boardId) +
+          "&embed=1";
+        const code = `<p><iframe src="${url}" width="100%" height="1400" style="border:0;border-radius:12px;" title="The Class Board — ${sectionLabel(boardId)}" allowfullscreen="allowfullscreen"></iframe></p>`;
+        copyText(code, $("#embedCodeBtn"));
+        setSaveState(
+          "Embed code copied — in Canvas, edit a Page, open the HTML editor (</>), paste, save",
+        );
+      };
       $("#myCodesBtn").onclick = openMyCodes;
       $("#codesCloseBtn").onclick = () => ($("#codesOverlay").hidden = true);
       $("#codeAddBtn").onclick = () => {
@@ -3058,13 +3379,9 @@
         if (e.key === "Enter") $("#codeAddBtn").click();
       });
 
-      // Confidence check-in votes
-      $$("#checkinBtns .checkin-btn").forEach(
-        (b) => (b.onclick = () => sendCheckin(b.dataset.vote)),
-      );
-
       // Classroom tools
       $("#readBtn").onclick = readBoardAloud;
+      $("#bellBtn").onclick = attentionChime;
       $("#textSizeBtn").onclick = cycleTextSize;
       $("#pickBtn").onclick = openPicker;
       $("#pickGoBtn").onclick = pickOne;
@@ -3092,12 +3409,19 @@
       $("#timerBtn").onclick = () => {
         paintTimer();
         $("#timerOverlay").hidden = false;
+        updateTimerDock();
       };
       $("#timerStartBtn").onclick = () => (timerId ? stopTimer() : startTimer());
       $("#timerResetBtn").onclick = () => setTimerMinutes(timerSecs / 60);
+      // Closing the overlay does NOT stop the timer — it docks to a floating
+      // chip so the class keeps working with the board visible.
       $("#timerCloseBtn").onclick = () => {
-        stopTimer();
         $("#timerOverlay").hidden = true;
+        updateTimerDock();
+      };
+      $("#timerDock").onclick = () => {
+        $("#timerOverlay").hidden = false;
+        paintTimer();
       };
       $$("#timerPresets .pill").forEach(
         (b) =>
@@ -3114,13 +3438,14 @@
           setTimerMinutes(v);
         }
       };
-      // Click the dark backdrop (outside the box) to close an overlay.
+      // Click the dark backdrop (outside the box) to close an overlay. A
+      // running timer keeps going and docks instead of being cancelled.
       ["#pickOverlay", "#timerOverlay", "#codesOverlay"].forEach((sel) => {
         const ov = $(sel);
         ov.addEventListener("click", (e) => {
           if (e.target === ov) {
-            if (sel === "#timerOverlay") stopTimer();
             ov.hidden = true;
+            if (sel === "#timerOverlay") updateTimerDock();
           }
         });
       });
@@ -3157,9 +3482,21 @@
           else if (!$("#codesOverlay").hidden) $("#codesOverlay").hidden = true;
           else if (!$("#pickOverlay").hidden) $("#pickOverlay").hidden = true;
           else if (!$("#timerOverlay").hidden) {
-            stopTimer();
             $("#timerOverlay").hidden = true;
+            updateTimerDock();
           } else document.body.classList.remove("present");
+        }
+        // Ctrl/Cmd+S publishes while editing (muscle memory beats data loss).
+        if (editing && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
+          e.preventDefault();
+          publish().then(celebrate);
+        }
+      });
+      // Don't let the teacher close the tab with unpublished edits by accident.
+      window.addEventListener("beforeunload", (e) => {
+        if (dirty && editing) {
+          e.preventDefault();
+          e.returnValue = "";
         }
       });
 
@@ -3167,9 +3504,24 @@
       // this device viewed, else All Classes. Keeps a projector on its period.
       const params = new URLSearchParams(location.search);
       const fromUrl = (params.get("board") || "").replace(/[^a-z0-9-]/gi, "").toLowerCase();
-      const remembered = (localStorage.getItem("nt-board-section") || "").toLowerCase();
+      const remembered = (store.get("nt-board-section") || "").toLowerCase();
       boardId = fromUrl || (SECTIONS[remembered] ? remembered : "main");
       updateSectionUI();
+
+      // Embed mode: compact chrome when framed by Canvas (or ?embed=1). The
+      // full board opens in its own tab via the embed bar link.
+      const inFrame = (() => {
+        try {
+          return window.self !== window.top;
+        } catch {
+          return true;
+        }
+      })();
+      if (params.get("embed") === "1" || inFrame) {
+        document.body.classList.add("embed");
+        const link = $("#embedOpenLink");
+        if (link) link.href = location.pathname + "?board=" + encodeURIComponent(boardId);
+      }
 
       applyTextSize();
       tick();
