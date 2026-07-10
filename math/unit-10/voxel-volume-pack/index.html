@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voxel Volume Pack — Voxel Packing Game</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+
+    :root {
+      --bg: #060b13;
+      --surface: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #ffffff;
+      --text-muted: #848f9f;
+      --cyan: #00d4ff;
+      --green: #39ff14;
+      --amber: #ffaa00;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    #space-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at center, #0f1826 0%, #060b13 100%);
+      z-index: -1;
+    }
+
+    header {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.8rem;
+      color: var(--cyan);
+      text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .name-field {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+
+    .name-field:focus {
+      outline: none;
+      border-color: var(--cyan);
+      box-shadow: 0 0 8px rgba(0, 212, 255, 0.2);
+    }
+
+    .btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.9rem;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--cyan), #008cb3);
+      color: #060b13;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.2);
+      box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--cyan);
+    }
+
+    main {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 30px;
+      flex-grow: 1;
+    }
+
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.2rem;
+      color: var(--text);
+      border-left: 3px solid var(--cyan);
+      padding-left: 10px;
+      margin-bottom: 5px;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    .input-box {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-box label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+    }
+
+    .input-num {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 1.1rem;
+      color: #fff;
+      text-align: center;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    .input-num:focus {
+      outline: none;
+      border-color: var(--cyan);
+      box-shadow: 0 0 10px rgba(0, 212, 255, 0.25);
+    }
+
+    .formula-card {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .formula-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    .formula-step {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.3rem;
+      color: var(--cyan);
+    }
+
+    .formula-res {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.8rem;
+      color: var(--green);
+      font-weight: bold;
+    }
+
+    .canvas-container {
+      background: #030508;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    .canvas-svg {
+      width: 100%;
+      max-width: 440px;
+      height: 380px;
+    }
+
+    .challenge-box {
+      background: rgba(255, 170, 0, 0.02);
+      border: 1px solid rgba(255, 170, 0, 0.2);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .challenge-target {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.4rem;
+      color: var(--amber);
+      font-weight: bold;
+    }
+
+    @media print {
+      body { background: white; color: black; }
+      #space-bg, .btn, .header-controls, .input-row, .challenge-box { display: none !important; }
+      .panel, .canvas-container { border: 1px solid #ccc; background: white; backdrop-filter: none; }
+      h1, .formula-res { color: black !important; text-shadow: none !important; }
+    }
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+
+  <div id="space-bg"></div>
+
+  <header>
+    <div>
+      <h1>📦 Voxel Volume Pack</h1>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Unit 10 Lesson 10-1 Volume of Rectangular Prisms Game</p>
+    </div>
+    <div class="header-controls">
+      <input type="text" id="student-name" class="name-field" placeholder="Enter Student Name" aria-label="Student Name" />
+      <button class="btn btn-secondary" onclick="window.print()" aria-label="Print/Save Results">🖨️ Save/Print</button>
+      <button class="btn btn-secondary" onclick="resetGame()" aria-label="Reset Game">↺ Reset</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left Panel: Dimensions Console -->
+    <div class="panel">
+      <div>
+        <h2 class="panel-title">Prism Dimensions</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Adjust the dimensions to pack the box with fractional unit cubes.</p>
+      </div>
+
+      <div class="input-row">
+        <div class="input-box">
+          <label for="length-in">Length (l)</label>
+          <input type="number" id="length-in" class="input-num" min="1" max="6" step="0.5" value="3" oninput="updatePrism()" />
+        </div>
+        <div class="input-box">
+          <label for="width-in">Width (w)</label>
+          <input type="number" id="width-in" class="input-num" min="1" max="6" step="0.5" value="2" oninput="updatePrism()" />
+        </div>
+        <div class="input-box">
+          <label for="height-in">Height (h)</label>
+          <input type="number" id="height-in" class="input-num" min="1" max="6" step="0.5" value="2.5" oninput="updatePrism()" />
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <span class="formula-title">Volume Formula (6.G.A.2)</span>
+        <span class="formula-step">$V = l \times w \times h$</span>
+        <div class="formula-step" id="volume-calc">3 × 2 × 2.5</div>
+        <div class="formula-res" id="volume-result">15 units³</div>
+      </div>
+
+      <div class="challenge-box">
+        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px;">MISSION TARGET</span>
+        <div class="challenge-target" id="challenge-target-text">Pack exactly 12 units³ of Volume!</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">Find a combination of dimensions (including fractional parts like 0.5) that equals the target volume.</p>
+      </div>
+
+      <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 10px; padding: 15px; font-size: 0.85rem; line-height: 1.4;">
+        <span style="font-family: 'Share Tech Mono', monospace; color: var(--cyan); font-weight: 600;">💡 Packing Voxel Rule</span>
+        <p>You can pack fractional edge lengths using <strong>half-sized unit cubes</strong>. For example, a height of 2.5 means 2 full rows and 1 half-height row of cubes.</p>
+      </div>
+    </div>
+
+    <!-- Right Panel: Isometric 3D SVG Projection -->
+    <div class="canvas-container">
+      <svg class="canvas-svg" viewBox="0 0 400 400" aria-label="Isometric 3D container wireframe box">
+        <!-- Isometric projection grid center (200, 250) -->
+        <g id="voxel-cubes"></g>
+        <g id="box-wireframe" stroke="var(--cyan)" stroke-width="2.5" fill="none" opacity="0.8"></g>
+      </svg>
+    </div>
+  </main>
+
+  <script>
+    let length = 3;
+    let width = 2;
+    let height = 2.5;
+    let targetVol = 12;
+    let score = 0;
+
+    const targets = [6, 8, 9, 12, 15, 18, 20, 24, 30];
+
+    // Isometric Projection Transformation: 3D to 2D
+    // x = (L - W) * cos(30)
+    // y = (L + W) * sin(30) - H
+    const cos30 = 0.866;
+    const sin30 = 0.5;
+    const scale = 36; // size of 1 unit cube
+
+    function updatePrism() {
+      length = parseFloat(document.getElementById('length-in').value) || 1;
+      width = parseFloat(document.getElementById('width-in').value) || 1;
+      height = parseFloat(document.getElementById('height-in').value) || 1;
+
+      // Compute volume
+      const volume = length * width * height;
+      document.getElementById('volume-calc').innerHTML = `${length} &times; ${width} &times; ${height}`;
+      document.getElementById('volume-result').textContent = `${volume.toLocaleString()} units³`;
+
+      draw3DPrism();
+
+      // Check success
+      if (Math.abs(volume - targetVol) < 0.001) {
+        triggerSuccess();
+      }
+    }
+
+    function draw3DPrism() {
+      const cubesG = document.getElementById('voxel-cubes');
+      cubesG.innerHTML = '';
+
+      // Draw packed cubes (back-to-front order to handle depth sorting)
+      for (let hIdx = 0; hIdx < Math.ceil(height); hIdx++) {
+        const isHalfHeight = (hIdx === Math.floor(height) && height % 1 !== 0);
+        const cubeH = isHalfHeight ? 0.5 : 1;
+        
+        for (let wIdx = 0; wIdx < Math.ceil(width); wIdx++) {
+          const isHalfWidth = (wIdx === Math.floor(width) && width % 1 !== 0);
+          const cubeW = isHalfWidth ? 0.5 : 1;
+
+          for (let lIdx = 0; lIdx < Math.ceil(length); lIdx++) {
+            const isHalfLength = (lIdx === Math.floor(length) && length % 1 !== 0);
+            const cubeL = isHalfLength ? 0.5 : 1;
+
+            // Draw isometric block face
+            const isoFace = createIsoBlock(lIdx, wIdx, hIdx, cubeL, cubeW, cubeH);
+            cubesG.appendChild(isoFace);
+          }
+        }
+      }
+
+      // Draw container wireframe bounding box
+      const wireG = document.getElementById('box-wireframe');
+      wireG.innerHTML = '';
+      
+      const originX = 200;
+      const originY = 280;
+
+      // Vertices of bounding box
+      const v0 = getIso2D(0, 0, 0, originX, originY);
+      const v1 = getIso2D(length, 0, 0, originX, originY);
+      const v2 = getIso2D(length, width, 0, originX, originY);
+      const v3 = getIso2D(0, width, 0, originX, originY);
+      const v4 = getIso2D(0, 0, height, originX, originY);
+      const v5 = getIso2D(length, 0, height, originX, originY);
+      const v6 = getIso2D(length, width, height, originX, originY);
+      const v7 = getIso2D(0, width, height, originX, originY);
+
+      // Back edges (dashed or thin)
+      drawWireLine(wireG, v0, v1, true);
+      drawWireLine(wireG, v0, v3, true);
+      drawWireLine(wireG, v0, v4, true);
+
+      // Front edges (thick)
+      drawWireLine(wireG, v1, v2);
+      drawWireLine(wireG, v2, v3);
+      drawWireLine(wireG, v3, v7);
+      drawWireLine(wireG, v7, v6);
+      drawWireLine(wireG, v6, v5);
+      drawWireLine(wireG, v5, v1);
+      drawWireLine(wireG, v4, v5);
+      drawWireLine(wireG, v4, v7);
+      drawWireLine(wireG, v2, v6);
+    }
+
+    function getIso2D(l, w, h, originX, originY) {
+      const rx = originX + (l - w) * scale * cos30;
+      const ry = originY + (l + w) * scale * sin30 - (h * scale);
+      return { x: rx, y: ry };
+    }
+
+    function drawWireLine(g, p1, p2, isDashed = false) {
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', p1.x);
+      line.setAttribute('y1', p1.y);
+      line.setAttribute('x2', p2.x);
+      line.setAttribute('y2', p2.y);
+      if (isDashed) {
+        line.setAttribute('stroke-dasharray', '3,3');
+        line.setAttribute('stroke-width', '1.5');
+        line.setAttribute('stroke', 'rgba(0, 212, 255, 0.4)');
+      }
+      g.appendChild(line);
+    }
+
+    function createIsoBlock(l, w, h, sizeL, sizeW, sizeH) {
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      const originX = 200;
+      const originY = 280;
+
+      // Project vertices for the isometric block face
+      const pTop0 = getIso2D(l, w, h + sizeH, originX, originY);
+      const pTop1 = getIso2D(l + sizeL, w, h + sizeH, originX, originY);
+      const pTop2 = getIso2D(l + sizeL, w + sizeW, h + sizeH, originX, originY);
+      const pTop3 = getIso2D(l, w + sizeW, h + sizeH, originX, originY);
+      
+      const pBot0 = getIso2D(l, w, h, originX, originY);
+      const pBot1 = getIso2D(l + sizeL, w, h, originX, originY);
+      const pBot2 = getIso2D(l + sizeL, w + sizeW, h, originX, originY);
+      const pBot3 = getIso2D(l, w + sizeW, h, originX, originY);
+
+      // Top Face
+      const fTop = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      fTop.setAttribute('points', `${pTop0.x},${pTop0.y} ${pTop1.x},${pTop1.y} ${pTop2.x},${pTop2.y} ${pTop3.x},${pTop3.y}`);
+      fTop.setAttribute('fill', 'rgba(0, 212, 255, 0.35)');
+      fTop.setAttribute('stroke', 'var(--cyan)');
+      fTop.setAttribute('stroke-width', '0.5');
+
+      // Right Face
+      const fRight = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      fRight.setAttribute('points', `${pTop1.x},${pTop1.y} ${pTop2.x},${pTop2.y} ${pBot2.x},${pBot2.y} ${pBot1.x},${pBot1.y}`);
+      fRight.setAttribute('fill', 'rgba(0, 150, 180, 0.35)');
+      fRight.setAttribute('stroke', 'var(--cyan)');
+      fRight.setAttribute('stroke-width', '0.5');
+
+      // Left Face
+      const fLeft = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      fLeft.setAttribute('points', `${pTop2.x},${pTop2.y} ${pTop3.x},${pTop3.y} ${pBot3.x},${pBot3.y} ${pBot2.x},${pBot2.y}`);
+      fLeft.setAttribute('fill', 'rgba(0, 100, 130, 0.35)');
+      fLeft.setAttribute('stroke', 'var(--cyan)');
+      fLeft.setAttribute('stroke-width', '0.5');
+
+      g.appendChild(fTop);
+      g.appendChild(fRight);
+      g.appendChild(fLeft);
+      return g;
+    }
+
+    function triggerSuccess() {
+      score++;
+      
+      const wire = document.getElementById('box-wireframe');
+      wire.setAttribute('stroke', 'var(--green)');
+
+      setTimeout(() => {
+        wire.setAttribute('stroke', 'var(--cyan)');
+        pickNewTarget();
+      }, 1500);
+    }
+
+    function pickNewTarget() {
+      let newTarget = targetVol;
+      while (newTarget === targetVol) {
+        newTarget = targets[Math.floor(Math.random() * targets.length)];
+      }
+      targetVol = newTarget;
+      document.getElementById('challenge-target-text').textContent = `Pack exactly ${targetVol} units³ of Volume!`;
+    }
+
+    function resetGame() {
+      score = 0;
+      document.getElementById('length-in').value = 3;
+      document.getElementById('width-in').value = 2;
+      document.getElementById('height-in').value = 2.5;
+      pickNewTarget();
+      updatePrism();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updatePrism();
+    });
+  </script>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

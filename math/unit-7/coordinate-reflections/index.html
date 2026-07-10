@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coordinate Flight & Reflections Game</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+
+    :root {
+      --bg: #03080e;
+      --surface: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #ffffff;
+      --text-muted: #7d8b9e;
+      --radar-green: #00ff66;
+      --radar-cyan: #00f0ff;
+      --radar-orange: #ff7700;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    #space-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at center, #051624 0%, #03080e 100%);
+      z-index: -1;
+    }
+
+    header {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.8rem;
+      color: var(--radar-cyan);
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .name-field {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+
+    .name-field:focus {
+      outline: none;
+      border-color: var(--radar-cyan);
+      box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
+    }
+
+    .btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.9rem;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--radar-cyan), #007799);
+      color: #03080e;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.2);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--radar-cyan);
+    }
+
+    main {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 30px;
+      flex-grow: 1;
+    }
+
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.2rem;
+      color: var(--text);
+      border-left: 3px solid var(--radar-cyan);
+      padding-left: 10px;
+      margin-bottom: 5px;
+    }
+
+    .radar-container {
+      background: #020407;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    .radar-svg {
+      width: 100%;
+      max-width: 420px;
+      height: 420px;
+    }
+
+    .metrics-banner {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      text-align: center;
+    }
+
+    .metric-box label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .metric-val {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.5rem;
+      color: var(--radar-green);
+      text-shadow: 0 0 8px rgba(0, 255, 102, 0.25);
+    }
+
+    .operation-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .success-alert {
+      position: absolute;
+      background: rgba(0, 255, 102, 0.95);
+      color: #000;
+      padding: 12px 24px;
+      border-radius: 20px;
+      font-family: 'Share Tech Mono', monospace;
+      font-weight: bold;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+      display: none;
+      z-index: 10;
+    }
+
+    @media print {
+      body { background: white; color: black; }
+      #space-bg, .btn, .header-controls, .operation-grid, .metrics-banner { display: none !important; }
+      .panel, .radar-container { border: 1px solid #ccc; background: white; backdrop-filter: none; }
+      h1, .metric-val { color: black !important; text-shadow: none !important; }
+    }
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+
+  <div id="space-bg"></div>
+
+  <header>
+    <div>
+      <h1>🛩️ Coordinate Flight &amp; Reflections</h1>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Unit 9 Lesson 9-6 Graph Reflections of Points Game</p>
+    </div>
+    <div class="header-controls">
+      <input type="text" id="student-name" class="name-field" placeholder="Enter Student Name" aria-label="Student Name" />
+      <button class="btn btn-secondary" onclick="window.print()" aria-label="Print/Save Results">🖨️ Save/Print</button>
+      <button class="btn btn-secondary" onclick="resetGame()" aria-label="Reset Game">↺ Reset</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left Panel: Control Deck -->
+    <div class="panel">
+      <div>
+        <h2 class="panel-title">Flight Deck Telemetry</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Reflect the drone across the coordinate axes to hit the target ring.</p>
+      </div>
+
+      <div class="metrics-banner">
+        <div class="metric-box">
+          <label>Drone Position</label>
+          <div class="metric-val" id="drone-pos-display">(4, 3)</div>
+        </div>
+        <div class="metric-box">
+          <label>Target Ring</label>
+          <div class="metric-val" style="color: var(--radar-orange); text-shadow: 0 0 8px rgba(255, 119, 0, 0.25);" id="target-pos-display">(-4, 3)</div>
+        </div>
+      </div>
+
+      <div class="operation-grid">
+        <button class="btn btn-primary" onclick="reflect('x')">Reflect Across X-Axis</button>
+        <button class="btn btn-primary" onclick="reflect('y')">Reflect Across Y-Axis</button>
+        <button class="btn btn-primary" onclick="reflect('origin')">Reflect Across Origin (Both Axes)</button>
+      </div>
+
+      <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 10px; padding: 15px; font-size: 0.85rem; line-height: 1.4;">
+        <span style="font-family: 'Share Tech Mono', monospace; color: var(--radar-cyan); font-weight: 600;">💡 Reflecting Rules (6.NS.C.6.b)</span>
+        <p>• Reflect across <strong>X-axis</strong>: keep x, opposite y $\rightarrow (x, -y)$</p>
+        <p>• Reflect across <strong>Y-axis</strong>: opposite x, keep y $\rightarrow (-x, y)$</p>
+        <p>• Reflect across <strong>Origin</strong>: opposite both x and y $\rightarrow (-x, -y)$</p>
+      </div>
+    </div>
+
+    <!-- Right Panel: Radar Grid SVG -->
+    <div class="radar-container">
+      <div class="success-alert" id="success-alert">TARGET HIT!</div>
+      <svg class="radar-svg" viewBox="0 0 400 400" aria-label="Coordinate plane radar display">
+        <!-- Dynamic Grid Lines injected by JS -->
+        <g id="radar-grid" stroke="rgba(0, 240, 255, 0.07)" stroke-width="1"></g>
+        
+        <!-- Axes -->
+        <line x1="0" y1="200" x2="400" y2="200" stroke="rgba(0, 240, 255, 0.4)" stroke-width="2" />
+        <line x1="200" y1="0" x2="200" y2="400" stroke="rgba(0, 240, 255, 0.4)" stroke-width="2" />
+
+        <!-- Axis Labels -->
+        <text x="390" y="215" fill="var(--radar-cyan)" font-size="10" font-family="Share Tech Mono">x</text>
+        <text x="210" y="15" fill="var(--radar-cyan)" font-size="10" font-family="Share Tech Mono">y</text>
+
+        <!-- Quadrant Labels -->
+        <text x="300" y="100" fill="rgba(255,255,255,0.1)" font-size="24" font-family="Share Tech Mono" text-anchor="middle">Q I</text>
+        <text x="100" y="100" fill="rgba(255,255,255,0.1)" font-size="24" font-family="Share Tech Mono" text-anchor="middle">Q II</text>
+        <text x="100" y="300" fill="rgba(255,255,255,0.1)" font-size="24" font-family="Share Tech Mono" text-anchor="middle">Q III</text>
+        <text x="300" y="300" fill="rgba(255,255,255,0.1)" font-size="24" font-family="Share Tech Mono" text-anchor="middle">Q IV</text>
+
+        <!-- Target Ring -->
+        <circle id="target-ring" cx="100" cy="100" r="12" fill="none" stroke="var(--radar-orange)" stroke-width="3" stroke-dasharray="4" filter="url(#glowTarget)" />
+
+        <!-- Drone Dot -->
+        <g id="drone-group" transform="translate(300, 100)">
+          <circle cx="0" cy="0" r="8" fill="var(--radar-green)" filter="url(#glowDrone)" />
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="var(--radar-green)" stroke-width="1.5" />
+          <line x1="0" y1="-12" x2="0" y2="12" stroke="var(--radar-green)" stroke-width="1.5" />
+        </g>
+
+        <!-- Glow Filters -->
+        <defs>
+          <filter id="glowDrone" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" />
+            <feMerge>
+              <feMergeNode />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="glowTarget" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" />
+            <feMerge>
+              <feMergeNode />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+      </svg>
+    </div>
+  </main>
+
+  <script>
+    let droneCoord = { x: 4, y: 3 };
+    let targetCoord = { x: -4, y: 3 };
+    let score = 0;
+
+    function initRadar() {
+      const gridG = document.getElementById('radar-grid');
+      gridG.innerHTML = '';
+      
+      // Draw grid lines (-8 to 8)
+      for (let i = -8; i <= 8; i++) {
+        if (i === 0) continue;
+        const pos = 200 + (i * 22); // Scale factor
+        
+        // Vertical lines
+        const vLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        vLine.setAttribute('x1', pos);
+        vLine.setAttribute('y1', 0);
+        vLine.setAttribute('x2', pos);
+        vLine.setAttribute('y2', 400);
+        gridG.appendChild(vLine);
+
+        // Horizontal lines
+        const hLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        hLine.setAttribute('x1', 0);
+        hLine.setAttribute('y1', pos);
+        hLine.setAttribute('x2', 400);
+        hLine.setAttribute('y2', pos);
+        gridG.appendChild(hLine);
+      }
+
+      pickNewTarget();
+    }
+
+    function drawTelemetry() {
+      // Map coordinate point values to SVG coordinates (0-400, center at 200)
+      const droneSVGX = 200 + (droneCoord.x * 22);
+      const droneSVGY = 200 - (droneCoord.y * 22);
+      
+      const drone = document.getElementById('drone-group');
+      drone.setAttribute('transform', `translate(${droneSVGX}, ${droneSVGY})`);
+      document.getElementById('drone-pos-display').textContent = `(${droneCoord.x}, ${droneCoord.y})`;
+
+      const targetSVGX = 200 + (targetCoord.x * 22);
+      const targetSVGY = 200 - (targetCoord.y * 22);
+      
+      const ring = document.getElementById('target-ring');
+      ring.setAttribute('cx', targetSVGX);
+      ring.setAttribute('cy', targetSVGY);
+      document.getElementById('target-pos-display').textContent = `(${targetCoord.x}, ${targetCoord.y})`;
+    }
+
+    function reflect(axis) {
+      if (axis === 'x') {
+        droneCoord.y = -droneCoord.y;
+      } else if (axis === 'y') {
+        droneCoord.x = -droneCoord.x;
+      } else if (axis === 'origin') {
+        droneCoord.x = -droneCoord.x;
+        droneCoord.y = -droneCoord.y;
+      }
+
+      drawTelemetry();
+
+      // Check success
+      if (droneCoord.x === targetCoord.x && droneCoord.y === targetCoord.y) {
+        triggerHit();
+      }
+    }
+
+    function triggerHit() {
+      score++;
+      document.getElementById('success-alert').style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('success-alert').style.display = 'none';
+        pickNewTarget();
+      }, 1500);
+    }
+
+    function pickNewTarget() {
+      // Pick random drone coordinate in Quadrant I (both positive, to make reflections clear)
+      droneCoord.x = Math.floor(Math.random() * 5) + 3; // 3 to 7
+      droneCoord.y = Math.floor(Math.random() * 5) + 3; // 3 to 7
+
+      // Pick target coordinate in a different quadrant (random reflections choice)
+      const choice = Math.floor(Math.random() * 3);
+      if (choice === 0) {
+        // Quadrant II (reflect across y-axis)
+        targetCoord.x = -droneCoord.x;
+        targetCoord.y = droneCoord.y;
+      } else if (choice === 1) {
+        // Quadrant III (reflect across origin)
+        targetCoord.x = -droneCoord.x;
+        targetCoord.y = -droneCoord.y;
+      } else {
+        // Quadrant IV (reflect across x-axis)
+        targetCoord.x = droneCoord.x;
+        targetCoord.y = -droneCoord.y;
+      }
+
+      drawTelemetry();
+    }
+
+    function resetGame() {
+      score = 0;
+      pickNewTarget();
+    }
+
+    window.addEventListener('DOMContentLoaded', initRadar);
+  </script>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>
