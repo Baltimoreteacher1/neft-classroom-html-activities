@@ -199,49 +199,110 @@
       }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <!-- canvas-console-banner:begin -->
-    <div style="background:#12355b;color:#fff;padding:8px 16px;font:600 0.85rem system-ui,sans-serif;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span>🎛 Part of the</span><a href="/teacher-tools/canvas-console/" style="color:#f2a93b;text-decoration:underline">Canvas Console</a><span>— every Canvas tool in one place.</span></div>
+    <div
+      style="
+        background: #12355b;
+        color: #fff;
+        padding: 8px 16px;
+        font:
+          600 0.85rem system-ui,
+          sans-serif;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      "
+    >
+      <span>🎛 Part of the</span
+      ><a href="/teacher-tools/canvas-console/" style="color: #f2a93b; text-decoration: underline"
+        >Canvas Console</a
+      ><span>— every Canvas tool in one place.</span>
+    </div>
     <!-- canvas-console-banner:end -->
 
     <header>
       <h1>Canvas Grade Bridge</h1>
       <p>
-        Turn pasted student completion codes into a ready-to-import Canvas
-        gradebook CSV. Teacher-only.
+        Turn student completion codes — or scores from the live gradebook — into a ready-to-import
+        Canvas gradebook CSV. Teacher-only.
       </p>
     </header>
     <main>
       <p class="note">
-        <strong>One-time setup:</strong> export your Canvas gradebook once (<em
-          >Grades → Export</em
-        >) and drop it below to save your class roster.
-        <strong>After that</strong>, each assignment is just: paste codes → name
-        the assignment → download → <em>Grades → Import</em>. No more exports.
+        <strong>One-time setup:</strong> export your Canvas gradebook once (<em>Grades → Export</em
+        >) and drop it below to save your class roster. <strong>After that</strong>, each assignment
+        is just: provide scores (paste codes <em>or</em> pull the live gradebook) → name the
+        assignment → download → <em>Grades → Import</em>. No more exports.
       </p>
 
       <div id="rosterBar" class="roster empty"></div>
 
       <section class="step">
-        <h2><span class="n">1</span>Paste submitted completion codes</h2>
+        <h2><span class="n">1</span>Provide student scores</h2>
         <p class="hint">
-          One per line. Paste straight from the Canvas SpeedGrader / submission
-          column — extra text is ignored.
+          <strong>Option A — paste completion codes.</strong> One per line, straight from the Canvas
+          SpeedGrader / submission column. Extra text is ignored.
         </p>
-        <textarea
-          id="codes"
-          placeholder="NTG1.xxxxxxxx.AB12&#10;NTG1.yyyyyyyy.CD34"
-        ></textarea>
+        <textarea id="codes" placeholder="NTG1.xxxxxxxx.AB12&#10;NTG1.yyyyyyyy.CD34"></textarea>
+
+        <div
+          style="
+            border-top: 1px dashed var(--line);
+            margin: 18px 0 14px;
+            text-align: center;
+            position: relative;
+          "
+        >
+          <span
+            style="
+              position: relative;
+              top: -11px;
+              background: #fff;
+              padding: 0 12px;
+              color: var(--muted);
+              font-size: 13px;
+              font-weight: 700;
+            "
+            >— or —</span
+          >
+        </div>
+
+        <p class="hint">
+          <strong>Option B — pull from the live gradebook.</strong> No codes needed. Uses the scores
+          students already saved through the activities (Save/Resume). Needs your teacher key.
+          Student IDs never leave this page — only scores come from the server, matched by name
+          against your saved roster.
+        </p>
+        <div class="row">
+          <input
+            id="liveKey"
+            type="password"
+            placeholder="Teacher key"
+            style="min-width: 200px"
+            autocomplete="off"
+          />
+          <button id="liveLoadBtn" class="ghost">Load live gradebook</button>
+        </div>
+        <div id="liveStatus" class="hint" style="margin-top: 10px"></div>
+        <div class="row" id="liveActivityRow" style="display: none">
+          <label
+            >Activity to grade:
+            <select id="liveActivity" style="min-width: 260px"></select>
+          </label>
+          <button id="buildLiveBtn" class="ghost">Match &amp; preview (from live gradebook)</button>
+        </div>
       </section>
 
       <section class="step">
         <h2><span class="n">2</span>Name the assignment &amp; points</h2>
         <p class="hint">
-          Type the assignment name <strong>exactly</strong> as it appears in
-          Canvas, and its total points.
+          Type the assignment name <strong>exactly</strong> as it appears in Canvas, and its total
+          points.
         </p>
         <div class="row">
           <input
@@ -250,10 +311,7 @@
             placeholder="e.g. Ratios Lesson, Game, or Mission"
             style="min-width: 260px"
           />
-          <label
-            >Points possible:
-            <input id="assignPts" type="number" value="100" min="1"
-          /></label>
+          <label>Points possible: <input id="assignPts" type="number" value="100" min="1" /></label>
           <button id="buildBtn" disabled>Match &amp; preview</button>
         </div>
         <div id="report"></div>
@@ -262,9 +320,7 @@
       <section class="step" id="dlStep" style="display: none">
         <h2><span class="n">3</span>Download for Canvas import</h2>
         <p class="hint">
-          Review the preview above, then download and import in Canvas (<em
-            >Grades → Import</em
-          >).
+          Review the preview above, then download and import in Canvas (<em>Grades → Import</em>).
         </p>
         <button id="dlBtn">⬇ Download Canvas CSV</button>
       </section>
@@ -274,8 +330,8 @@
           Advanced: fill an existing export instead
         </h2>
         <p class="hint">
-          Prefer to fill a column inside this assignment's exact Canvas export?
-          Drop it here — it also (re)saves your roster.
+          Prefer to fill a column inside this assignment's exact Canvas export? Drop it here — it
+          also (re)saves your roster.
         </p>
         <input id="csvFile" type="file" accept=".csv,text/csv" />
         <div id="csvInfo" class="hint"></div>
@@ -284,9 +340,7 @@
             >Assignment column:
             <select id="colSelect"></select
           ></label>
-          <button id="buildColBtn" class="ghost">
-            Match &amp; preview (from export)
-          </button>
+          <button id="buildColBtn" class="ghost">Match &amp; preview (from export)</button>
         </div>
       </section>
     </main>
@@ -363,9 +417,7 @@
               r
                 .map((c) => {
                   c = c == null ? "" : String(c);
-                  return /[",\n]/.test(c)
-                    ? '"' + c.replace(/"/g, '""') + '"'
-                    : c;
+                  return /[",\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c;
                 })
                 .join(","),
             )
@@ -385,8 +437,7 @@
             keys.add(norm(p[1] + p[0]));
           } else {
             const p = s.split(/\s+/);
-            if (p.length >= 2)
-              keys.add(norm(p[p.length - 1] + p.slice(0, -1).join("")));
+            if (p.length >= 2) keys.add(norm(p[p.length - 1] + p.slice(0, -1).join("")));
           }
           keys.delete("");
           return [...keys];
@@ -506,12 +557,15 @@
           $("buildBtn").disabled = !(roster.length && hasCodes && hasName);
         }
 
-        /* ---------- quick build: roster + codes + assignment name ---------- */
-        function buildFromRoster() {
-          const name = $("assignName").value.trim();
-          const pp = Number($("assignPts").value) || null;
-          const { valid, forged, junk } = decodeCodes();
-
+        /* ---------- shared: match entries to roster, build Canvas grid ----------
+         * entries: [{ name, pc, raw?, label }]
+         *   pc  = percent (0-100) used to scale to points-possible
+         *   raw = raw points fallback when no points-possible is set
+         *   label = human-readable source score shown in the preview
+         * extra: { forged?, junk? } passed straight through to the report.
+         * This is the single build path shared by the codes and live-gradebook
+         * sources, so both scale, match, and export identically. */
+        function finishFromEntries(entries, name, pp, extra) {
           const lookup = new Map();
           roster.forEach((stu, i) =>
             nameKeys(stu.name).forEach((k) => {
@@ -522,55 +576,168 @@
           const grades = new Array(roster.length).fill("");
           const matched = [],
             unmatched = [];
-          valid.forEach((p) => {
+          entries.forEach((e) => {
             let idx = -1;
-            for (const k of nameKeys(p.n)) {
+            for (const k of nameKeys(e.name)) {
               if (lookup.has(k)) {
                 idx = lookup.get(k);
                 break;
               }
             }
-            const raw = p.s == null ? 0 : p.s;
             const grade =
-              pp != null && p.pc != null ? Math.round((p.pc / 100) * pp) : raw;
+              pp != null && e.pc != null
+                ? Math.round((e.pc / 100) * pp)
+                : e.raw != null
+                  ? e.raw
+                  : e.pc != null
+                    ? e.pc
+                    : 0;
             if (idx >= 0) {
               grades[idx] = String(grade);
-              matched.push({
-                name: roster[idx].name,
-                code: `${p.s}/${p.m} (${p.pc}%)`,
-                grade,
-              });
-            } else
-              unmatched.push({
-                name: p.n || "(no name)",
-                code: `${p.s}/${p.m} (${p.pc}%)`,
-                grade,
-              });
+              matched.push({ name: roster[idx].name, code: e.label, grade });
+            } else {
+              unmatched.push({ name: e.name || "(no name)", code: e.label, grade });
+            }
           });
-          const missing = roster
-            .filter((_, i) => grades[i] === "")
-            .map((s) => s.name);
+          const missing = roster.filter((_, i) => grades[i] === "").map((s) => s.name);
 
           // minimal Canvas import grid
           const out = [
             ["Student", "ID", "SIS Login ID", "Section", name],
             ["    Points Possible", "", "", "", pp != null ? String(pp) : ""],
           ];
-          roster.forEach((stu, i) =>
-            out.push([stu.name, stu.id, stu.sis, stu.section, grades[i]]),
-          );
+          roster.forEach((stu, i) => out.push([stu.name, stu.id, stu.sis, stu.section, grades[i]]));
           built = { out };
 
           renderReport({
             matched,
             unmatched,
-            forged,
-            junk,
+            forged: (extra && extra.forged) || [],
+            junk: (extra && extra.junk) || [],
             missing,
             pp,
             col: name,
           });
           $("dlStep").style.display = matched.length ? "block" : "none";
+        }
+
+        /* ---------- quick build: roster + codes + assignment name ---------- */
+        function buildFromRoster() {
+          const name = $("assignName").value.trim();
+          const pp = Number($("assignPts").value) || null;
+          const { valid, forged, junk } = decodeCodes();
+          const entries = valid.map((p) => ({
+            name: p.n,
+            pc: p.pc,
+            raw: p.s == null ? 0 : p.s,
+            label: `${p.s}/${p.m} (${p.pc}%)`,
+          }));
+          finishFromEntries(entries, name, pp, { forged, junk });
+        }
+
+        /* ---------- live gradebook: pull saved scores from the D1 backend ---------- */
+        let liveData = null; // { activities:[...], rows:[[name, section, ...cells, avg]] }
+        function setLiveStatus(msg, kind) {
+          const el = $("liveStatus");
+          el.textContent = msg;
+          el.className = "hint" + (kind ? " t-" + kind : "");
+        }
+        async function loadLive() {
+          const key = $("liveKey").value.trim();
+          if (!key) {
+            setLiveStatus("Enter your teacher key first.", "warn");
+            return;
+          }
+          try {
+            localStorage.setItem("neft.teacher.key", key);
+          } catch {}
+          setLiveStatus("Loading live gradebook…");
+          $("liveLoadBtn").disabled = true;
+          try {
+            const res = await fetch("/api/progress/grades?format=json", {
+              headers: { "x-teacher-key": key },
+            });
+            if (res.status === 401) {
+              setLiveStatus("Teacher key rejected. Check the key and try again.", "bad");
+              return;
+            }
+            if (res.status === 503) {
+              setLiveStatus(
+                "The live gradebook backend isn't enabled on this site (no TEACHER_KEY/D1 configured).",
+                "warn",
+              );
+              return;
+            }
+            const data = await res.json().catch(() => null);
+            if (!data || !data.ok) {
+              setLiveStatus(
+                "Couldn't load the gradebook (" + ((data && data.error) || "error") + ").",
+                "bad",
+              );
+              return;
+            }
+            liveData = { activities: data.activities || [], rows: data.rows || [] };
+            renderLiveActivities();
+          } catch (e) {
+            setLiveStatus("Network error loading the gradebook.", "bad");
+          } finally {
+            $("liveLoadBtn").disabled = false;
+          }
+        }
+        function renderLiveActivities() {
+          const sel = $("liveActivity");
+          sel.innerHTML = "";
+          const acts = (liveData && liveData.activities) || [];
+          if (!acts.length) {
+            $("liveActivityRow").style.display = "none";
+            setLiveStatus("No graded activities in the live gradebook yet.", "warn");
+            return;
+          }
+          acts.forEach((a, i) => {
+            const o = document.createElement("option");
+            o.value = String(i);
+            o.textContent = a;
+            sel.append(o);
+          });
+          $("liveActivityRow").style.display = "flex";
+          const n = (liveData.rows || []).length;
+          setLiveStatus(
+            `Loaded ${acts.length} activit${acts.length === 1 ? "y" : "ies"} · ${n} student${n === 1 ? "" : "s"}. Pick an activity, name it in step 2, then Match & preview.`,
+            "ok",
+          );
+        }
+        function buildFromLive() {
+          if (!roster.length) {
+            alert(
+              "Save your class roster first — drop a Canvas gradebook export in the Advanced box below.",
+            );
+            return;
+          }
+          const name = $("assignName").value.trim();
+          if (!name) {
+            alert("Type the assignment name in step 2 (exactly as it appears in Canvas) first.");
+            return;
+          }
+          const ai = Number($("liveActivity").value);
+          if (!liveData || Number.isNaN(ai)) return;
+          const pp = Number($("assignPts").value) || null;
+          // Pivot row layout: [name, section, ...oneCellPerActivity, average].
+          const col = 2 + ai;
+          const entries = [];
+          (liveData.rows || []).forEach((r) => {
+            const cell = r[col];
+            const num = Number(cell);
+            // Skip blanks and letter/manual grades — only numeric scores export.
+            if (cell === "" || cell == null || !Number.isFinite(num)) return;
+            entries.push({ name: r[0], pc: num, label: `${num}%` });
+          });
+          if (!entries.length) {
+            alert(
+              "No numeric scores found for that activity (letter grades and blanks are skipped).",
+            );
+            return;
+          }
+          finishFromEntries(entries, name, pp, null);
         }
 
         /* ---------- precise build: fill a column in the uploaded export ---------- */
@@ -604,8 +771,7 @@
               }
             }
             const raw = p.s == null ? 0 : p.s;
-            const grade =
-              pp != null && p.pc != null ? Math.round((p.pc / 100) * pp) : raw;
+            const grade = pp != null && p.pc != null ? Math.round((p.pc / 100) * pp) : raw;
             if (row >= 0) {
               out[row][colIdx] = String(grade);
               filled.add(row);
@@ -621,9 +787,7 @@
                 grade,
               });
           });
-          const missing = studentRows
-            .filter((r) => !filled.has(r))
-            .map((r) => grid[r][0]);
+          const missing = studentRows.filter((r) => !filled.has(r)).map((r) => grid[r][0]);
           built = { out };
           renderReport({
             matched,
@@ -639,10 +803,7 @@
 
         function renderReport(d) {
           const esc = (s) =>
-            String(s).replace(
-              /[<>&]/g,
-              (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" })[c],
-            );
+            String(s).replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" })[c]);
           let html = `<div class="row" style="margin-top:14px;">
             <span class="pill">${d.matched.length} matched</span>
             ${d.unmatched.length ? `<span class="pill warn">${d.unmatched.length} unmatched name</span>` : ""}
@@ -662,18 +823,13 @@
           if (d.unmatched.length) {
             html += `<p class="hint t-warn" style="margin-top:14px;"><strong>Unmatched (name didn't match roster — fix spelling or grade manually):</strong></p>`;
             html += d.unmatched
-              .map(
-                (u) =>
-                  `<span class="pill warn">${esc(u.name)} · ${esc(u.code)}</span>`,
-              )
+              .map((u) => `<span class="pill warn">${esc(u.name)} · ${esc(u.code)}</span>`)
               .join(" ");
           }
           if (d.forged.length) {
             html += `<p class="hint t-bad" style="margin-top:14px;"><strong>Invalid / edited codes (checksum failed — do not trust):</strong></p>`;
             html += d.forged
-              .map(
-                (f) => `<span class="pill bad">${esc(f.slice(0, 24))}…</span>`,
-              )
+              .map((f) => `<span class="pill bad">${esc(f.slice(0, 24))}…</span>`)
               .join(" ");
           }
           $("report").innerHTML = html;
@@ -703,6 +859,13 @@
         $("buildBtn").addEventListener("click", buildFromRoster);
         $("buildColBtn").addEventListener("click", buildFromExport);
         $("dlBtn").addEventListener("click", download);
+        $("liveLoadBtn").addEventListener("click", loadLive);
+        $("buildLiveBtn").addEventListener("click", buildFromLive);
+        // Prefill the teacher key if it was saved by another Neft teacher tool.
+        try {
+          const savedKey = localStorage.getItem("neft.teacher.key");
+          if (savedKey) $("liveKey").value = savedKey;
+        } catch {}
 
         renderRosterBar();
         refreshBuildState();
