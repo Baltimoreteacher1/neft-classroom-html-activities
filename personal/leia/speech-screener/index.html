@@ -1,0 +1,4372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Domain-based speech-language screening and referral decision tool for PreK through Grade 5. Offline, private — all data stays on this device.">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23127d79'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='36' font-weight='bold' fill='%23eafffb' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+<title>Speech-Language Screening — PreK–Grade 5</title>
+<style>
+:root {
+  --ink: #1c2a38;
+  --ink-2: #3d4f60;
+  --mute: #68788a;
+  --faint: #93a1b0;
+  --navy: #142c44;
+  --navy-2: #1e3d5c;
+  --navy-3: #0e2233;
+  --teal: #127d79;
+  --teal-2: #0f6663;
+  --teal-soft: #e3f0ee;
+  --teal-line: #bcd9d5;
+  --paper: #f3f1ec;
+  --card: #fffefb;
+  --line: #e3ded4;
+  --line-2: #d5cfc2;
+  --amber: #a8700a;
+  --amber-bg: #faf3e0;
+  --amber-line: #e8d9ae;
+  --green: #20714f;
+  --green-bg: #e7f2ea;
+  --green-line: #bedcc8;
+  --red: #a63324;
+  --red-bg: #faeae6;
+  --red-line: #ecc7bd;
+  --shadow-1:
+    0 1px 2px rgba(28, 42, 56, 0.06), 0 1px 3px rgba(28, 42, 56, 0.05);
+  --shadow-2:
+    0 4px 16px rgba(28, 42, 56, 0.1), 0 2px 4px rgba(28, 42, 56, 0.06);
+  --shadow-3: 0 18px 48px rgba(14, 34, 51, 0.22);
+  --serif:
+    "Charter", "Iowan Old Style", "Palatino Nova", Palatino, Georgia,
+    "Times New Roman", serif;
+  --sans:
+    "Seravek", "Avenir Next", "Avenir", "Segoe UI", -apple-system,
+    BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --r-s: 7px;
+  --r-m: 10px;
+  --r-l: 14px;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  font-family: var(--sans);
+  color: var(--ink);
+  background: var(--paper);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+  background:
+    radial-gradient(
+      1200px 500px at 85% -10%,
+      rgba(18, 125, 121, 0.05),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 420px at -10% 110%,
+      rgba(20, 44, 68, 0.05),
+      transparent 60%
+    );
+}
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-weight: 700;
+  color: var(--navy);
+}
+h1,
+h2,
+.vtitle,
+.rdoc h1 {
+  font-family: var(--serif);
+  letter-spacing: 0.1px;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+a {
+  color: var(--teal-2);
+}
+:focus-visible {
+  outline: 2.5px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+::selection {
+  background: rgba(18, 125, 121, 0.18);
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto;
+  }
+}
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--navy);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 0 0 8px 0;
+  font-weight: 600;
+}
+.skip-link:focus {
+  left: 0;
+}
+/* ---------- App bar ---------- */
+.appbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: linear-gradient(180deg, var(--navy) 0%, var(--navy-3) 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  border-bottom: 3px solid var(--teal);
+  box-shadow: 0 2px 12px rgba(14, 34, 51, 0.25);
+}
+.appbar .brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.appbar .logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  background: linear-gradient(140deg, #1c9b95, #0d5a57);
+  display: grid;
+  place-items: center;
+  color: #eafffb;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 17px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.appbar .bname {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 16.5px;
+  letter-spacing: 0.2px;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+.appbar .sub {
+  color: #9fc0d4;
+  font-weight: 500;
+  font-size: 11.5px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.appbar .spacer {
+  flex: 1;
+}
+.abtn {
+  border-radius: 8px;
+  border: 1px solid rgba(159, 192, 212, 0.4);
+  background: rgba(255, 255, 255, 0.07);
+  color: #e8f1f7;
+  padding: 7px 13px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+.abtn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(159, 192, 212, 0.7);
+}
+.abtn.primary {
+  background: var(--teal);
+  border-color: transparent;
+  color: #f2fffd;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+.abtn.primary:hover {
+  background: #169188;
+}
+.save-state {
+  font-size: 12px;
+  color: #9fc0d4;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 118px;
+  justify-content: flex-end;
+  font-variant-numeric: tabular-nums;
+}
+.dot-live {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ecf9d;
+  box-shadow: 0 0 0 3px rgba(78, 207, 157, 0.18);
+  flex-shrink: 0;
+}
+.dot-live.pending {
+  background: #e8b93c;
+  box-shadow: 0 0 0 3px rgba(232, 185, 60, 0.18);
+}
+/* ---------- Layout ---------- */
+.wrap {
+  display: grid;
+  grid-template-columns: 264px minmax(0, 1fr);
+  min-height: calc(100vh - 58px);
+  position: relative;
+  z-index: 1;
+}
+.side {
+  background: var(--card);
+  border-right: 1px solid var(--line);
+  padding: 16px 12px 28px;
+  position: sticky;
+  top: 58px;
+  height: calc(100vh - 58px);
+  overflow-y: auto;
+}
+.navgroup {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 1.1px;
+  color: var(--faint);
+  font-weight: 700;
+  margin: 18px 10px 7px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.navgroup::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.navitem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 8.5px 11px;
+  border-radius: 8px;
+  color: var(--ink-2);
+  font-size: 14px;
+  margin-bottom: 2px;
+  font-weight: 500;
+  transition:
+    background 0.13s,
+    color 0.13s;
+}
+.navitem:hover {
+  background: #f2efe7;
+  color: var(--navy);
+}
+.navitem.active {
+  background: var(--navy);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: var(--shadow-1);
+}
+.navitem.active .nname {
+  color: #fff;
+}
+.navitem[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.navitem .nname {
+  flex: 1;
+  min-width: 0;
+}
+.navitem .ncheck {
+  font-size: 11px;
+  color: var(--faint);
+}
+.navitem.active .ncheck {
+  color: #9fc0d4;
+}
+.sdot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #d3ccbe;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.sdot.WNL {
+  background: var(--green);
+}
+.sdot.MON {
+  background: #cf9110;
+}
+.sdot.CON {
+  background: var(--red);
+}
+.side-progress {
+  margin: 6px 10px 2px;
+  padding: 12px 12px 13px;
+  background: var(--teal-soft);
+  border: 1px solid var(--teal-line);
+  border-radius: var(--r-m);
+}
+.side-progress .sp-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--teal-2);
+  margin-bottom: 7px;
+  letter-spacing: 0.3px;
+}
+.side-progress .progressbar {
+  height: 7px;
+}
+.main {
+  padding: 30px 40px 90px;
+  max-width: 1020px;
+  min-width: 0;
+}
+.view {
+  animation: viewin 0.28s ease both;
+}
+@keyframes viewin {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.crumb {
+  font-size: 11.5px;
+  color: var(--teal-2);
+  margin-bottom: 6px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+.vtitle {
+  font-size: 29px;
+  margin-bottom: 5px;
+  line-height: 1.15;
+}
+.vsub {
+  color: var(--mute);
+  margin-bottom: 22px;
+  font-size: 14.5px;
+  max-width: 70ch;
+}
+/* ---------- Cards ---------- */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-l);
+  box-shadow: var(--shadow-1);
+  padding: 20px 24px;
+  margin-bottom: 18px;
+}
+.card h3 {
+  font-size: 16.5px;
+  margin-bottom: 12px;
+  font-family: var(--serif);
+}
+.card.section-head {
+  border-left: 4px solid var(--teal);
+}
+.rulebox {
+  background: #f8f6f1;
+  border: 1px solid var(--line);
+  border-radius: var(--r-m);
+  padding: 12px 16px;
+  margin: 12px 0 4px;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.rulebox b {
+  color: var(--navy);
+}
+.rulebox ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+.rulebox li {
+  margin: 3px 0;
+}
+/* ---------- Forms ---------- */
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 22px;
+}
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.field input,
+.field select,
+textarea,
+select.plain {
+  width: 100%;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-s);
+  padding: 9.5px 12px;
+  font-size: 14.5px;
+  font-family: inherit;
+  color: var(--ink);
+  background: #fff;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.field input:focus,
+.field select:focus,
+textarea:focus,
+select.plain:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(18, 125, 121, 0.14);
+}
+textarea {
+  resize: vertical;
+  min-height: 44px;
+  line-height: 1.5;
+}
+.gradebox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.gradebox select {
+  width: auto;
+}
+.pill {
+  display: inline-block;
+  background: var(--teal-soft);
+  color: var(--teal-2);
+  font-weight: 700;
+  font-size: 12.5px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--teal-line);
+}
+/* ---------- Task cards ---------- */
+.task {
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--teal);
+  border-radius: var(--r-m);
+  padding: 14px 17px;
+  margin-bottom: 12px;
+  background: linear-gradient(180deg, #fffefb, #fcfaf4);
+}
+.task .tlabel {
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 7px;
+  font-size: 15px;
+  font-family: var(--serif);
+}
+.task .row {
+  font-size: 13.5px;
+  margin: 3.5px 0;
+}
+.task .row b {
+  color: var(--navy);
+  font-weight: 700;
+}
+.task ul {
+  margin: 5px 0 5px 2px;
+  padding-left: 18px;
+}
+.task ul li {
+  margin: 2.5px 0;
+  font-size: 13.5px;
+}
+.task .pass {
+  color: var(--green);
+}
+.task .concern {
+  color: var(--red);
+}
+.intro-note {
+  background: var(--teal-soft);
+  border: 1px solid var(--teal-line);
+  border-radius: var(--r-m);
+  padding: 12px 16px;
+  font-size: 13.5px;
+  color: var(--ink-2);
+  margin-bottom: 16px;
+  font-style: italic;
+}
+/* ---------- Scoring ---------- */
+.scorehead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.scorehead h3 {
+  margin: 0;
+}
+.chip {
+  font-weight: 700;
+  font-size: 12.5px;
+  padding: 5px 13px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  letter-spacing: 0.2px;
+}
+.chip.none {
+  background: #efece4;
+  color: var(--mute);
+  border-color: var(--line);
+}
+.chip.WNL {
+  background: var(--green-bg);
+  color: var(--green);
+  border-color: var(--green-line);
+}
+.chip.MON {
+  background: var(--amber-bg);
+  color: var(--amber);
+  border-color: var(--amber-line);
+}
+.chip.CON {
+  background: var(--red-bg);
+  color: var(--red);
+  border-color: var(--red-line);
+}
+.progress-wrap {
+  display: grid;
+  gap: 7px;
+  margin: 0 0 14px;
+}
+.progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--mute);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.progressbar {
+  height: 9px;
+  background: #e6e1d5;
+  border-radius: 20px;
+  overflow: hidden;
+}
+.progressbar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--teal), #1c9b95);
+  border-radius: 20px;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.quality-list {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.quality-list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+.quality-list .qdot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+  background: #cf9110;
+}
+.quality-list .ok .qdot {
+  background: var(--green);
+}
+.quality-list .risk .qdot {
+  background: var(--red);
+}
+.quality-list .muted {
+  color: var(--mute);
+}
+.checklist {
+  margin: 6px 0;
+}
+.checkrow {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  padding: 8px 10px;
+  border-radius: 8px;
+  transition: background 0.12s;
+}
+.checkrow:hover {
+  background: #f6f3ec;
+}
+.checkrow input {
+  margin-top: 3px;
+  width: 17px;
+  height: 17px;
+  accent-color: var(--teal);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.checkrow label {
+  font-size: 14px;
+  cursor: pointer;
+}
+.checkrow .eg {
+  color: var(--mute);
+  font-style: italic;
+  font-size: 13px;
+}
+.checkrow.attest {
+  border-top: 1px dashed var(--line-2);
+  margin-top: 12px;
+  padding-top: 13px;
+  border-radius: 0;
+}
+.checkrow.attest label {
+  font-weight: 600;
+  color: var(--navy);
+}
+.hint {
+  font-size: 12.5px;
+  color: var(--mute);
+  margin: 2px 0 8px;
+}
+.notes-wrap {
+  margin-top: 14px;
+}
+.notes-wrap label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-size: 13px;
+}
+.ref-table th,
+.ref-table td {
+  border: 1px solid var(--line);
+  padding: 8px 11px;
+  text-align: left;
+  vertical-align: top;
+}
+.ref-table th {
+  background: var(--navy);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.ref-row-hi td {
+  background: var(--teal-soft);
+}
+/* ---------- Stimulus board ---------- */
+.stim-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(136px, 1fr));
+  gap: 13px;
+  margin: 8px 0 4px;
+}
+.stim-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px 10px 9px;
+  text-align: center;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s,
+    transform 0.15s;
+}
+.stim-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-2);
+}
+.stim-card.err {
+  border-color: var(--red);
+  box-shadow: 0 0 0 2.5px var(--red-bg);
+}
+.stim-card.ok {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2.5px var(--green-bg);
+}
+.stim-img {
+  width: 100%;
+  height: 80px;
+  display: grid;
+  place-items: center;
+  background: #f6f4ee;
+  border-radius: 9px;
+  margin-bottom: 8px;
+}
+.stim-img svg {
+  width: 64px;
+  height: 64px;
+  display: block;
+}
+.stim-word {
+  font-weight: 700;
+  color: var(--navy);
+  font-size: 15.5px;
+  text-transform: lowercase;
+  font-family: var(--serif);
+}
+.stim-tag {
+  font-size: 11px;
+  color: var(--mute);
+  margin-bottom: 8px;
+  letter-spacing: 0.2px;
+}
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.seg button {
+  border: none;
+  background: #fff;
+  color: var(--mute);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5.5px 11px;
+  transition:
+    background 0.12s,
+    color 0.12s;
+}
+.seg button + button {
+  border-left: 1px solid var(--line-2);
+}
+.seg button:hover {
+  background: #f2efe7;
+}
+.seg button.on-ok {
+  background: var(--green);
+  color: #fff;
+}
+.seg button.on-err {
+  background: var(--red);
+  color: #fff;
+}
+.stim-summary {
+  font-size: 13px;
+  color: var(--mute);
+  margin: 4px 0 12px;
+}
+/* ---------- Buttons & pager ---------- */
+.btn {
+  border: 1px solid var(--line-2);
+  background: #fff;
+  color: var(--navy);
+  font-weight: 600;
+  border-radius: 9px;
+  padding: 10px 18px;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition:
+    border-color 0.15s,
+    color 0.15s,
+    background 0.15s,
+    box-shadow 0.15s;
+}
+.btn:hover {
+  border-color: var(--teal);
+  color: var(--teal-2);
+  box-shadow: var(--shadow-1);
+}
+.btn.primary {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #f2fffd;
+}
+.btn.primary:hover {
+  background: var(--teal-2);
+  color: #fff;
+}
+.btn.danger:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+.btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.btn.sm {
+  padding: 6px 12px;
+  font-size: 12.5px;
+  border-radius: 7px;
+}
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.report-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.readiness {
+  border-left: 4px solid #cf9110;
+}
+.readiness.ready {
+  border-left-color: var(--green);
+}
+.readiness.risk {
+  border-left-color: var(--red);
+}
+.tier-select {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 10px 0 4px;
+}
+.tier-select select {
+  width: auto;
+  max-width: 100%;
+}
+.suggested {
+  font-size: 13px;
+  color: var(--mute);
+}
+.empty {
+  color: var(--mute);
+  text-align: center;
+  padding: 56px 20px;
+  font-size: 14.5px;
+}
+/* ---------- Report document ---------- */
+.rdoc {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-l);
+  box-shadow: var(--shadow-2);
+  padding: 40px 48px;
+  color: var(--ink);
+}
+.rdoc .rhead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  border-bottom: 3px solid var(--teal);
+  padding-bottom: 12px;
+  margin-bottom: 6px;
+}
+.rdoc h1 {
+  font-size: 23px;
+  border: none;
+  padding: 0;
+  margin: 0;
+  line-height: 1.2;
+}
+.rdoc .org {
+  font-size: 12.5px;
+  color: var(--mute);
+  text-align: right;
+  font-weight: 600;
+  white-space: pre-line;
+}
+.rdoc .rsub {
+  color: var(--mute);
+  font-size: 12.5px;
+  margin-bottom: 18px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+.rdoc h2 {
+  font-family: var(--serif);
+  font-size: 15.5px;
+  color: var(--teal-2);
+  margin: 20px 0 8px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 5px;
+}
+.rdoc table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 6px 0;
+}
+.rdoc table.meta td {
+  padding: 3.5px 6px;
+  border: none;
+}
+.rdoc table.meta td.k {
+  color: var(--navy);
+  font-weight: 700;
+  width: 140px;
+  letter-spacing: 0.2px;
+}
+.rdoc table.results th,
+.rdoc table.results td {
+  border: 1px solid var(--line);
+  padding: 7.5px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+.rdoc table.results th {
+  background: var(--navy);
+  color: #fff;
+}
+.rdoc .res-WNL {
+  color: var(--green);
+  font-weight: 700;
+}
+.rdoc .res-MON {
+  color: var(--amber);
+  font-weight: 700;
+}
+.rdoc .res-CON {
+  color: var(--red);
+  font-weight: 700;
+}
+.rdoc p {
+  font-size: 13.5px;
+  margin: 7px 0;
+}
+.rdoc .disc {
+  font-size: 11px;
+  color: var(--mute);
+  border-top: 1px solid var(--line);
+  margin-top: 18px;
+  padding-top: 10px;
+  line-height: 1.55;
+}
+.rdoc .sig {
+  margin-top: 26px;
+  font-size: 13px;
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+.rdoc .sig span {
+  border-top: 1px solid var(--ink);
+  padding-top: 4px;
+  min-width: 170px;
+  color: var(--mute);
+  font-size: 11.5px;
+}
+.rdoc .rfoot {
+  margin-top: 14px;
+  font-size: 10.5px;
+  color: var(--faint);
+}
+/* ---------- Guide ---------- */
+.guide-tiers {
+  counter-reset: tier;
+}
+.tiercard {
+  display: flex;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-m);
+  padding: 13px 16px;
+  margin-bottom: 10px;
+  background: #fffefb;
+}
+.tiercard .tno {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.tiercard.t1 .tno {
+  background: var(--green);
+}
+.tiercard.t2 .tno {
+  background: #3f8f6d;
+}
+.tiercard.t3 .tno {
+  background: #cf9110;
+}
+.tiercard.t4 .tno {
+  background: var(--red);
+}
+.tiercard b {
+  color: var(--navy);
+}
+.tiercard .trule {
+  font-size: 13px;
+  color: var(--ink-2);
+  margin: 2px 0;
+}
+.tiercard .tact {
+  font-size: 13px;
+  color: var(--teal-2);
+  font-weight: 600;
+}
+.refs {
+  font-size: 12.5px;
+  color: var(--mute);
+  padding-left: 18px;
+}
+.refs li {
+  margin: 5px 0;
+}
+kbd {
+  background: #f0ede5;
+  border: 1px solid var(--line-2);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 1px 6px;
+  font-size: 11.5px;
+  font-family: inherit;
+  color: var(--ink-2);
+}
+/* ---------- Toasts ---------- */
+#toastHost {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 90;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  pointer-events: none;
+}
+.toast {
+  background: var(--navy-3);
+  color: #eef6fa;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 11px 20px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-3);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  animation: toastin 0.25s ease both;
+  max-width: min(560px, 90vw);
+}
+.toast.out {
+  animation: toastout 0.3s ease both;
+}
+.toast .ticon {
+  color: #4ecf9d;
+}
+.toast.warn .ticon {
+  color: #e8b93c;
+}
+@keyframes toastin {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes toastout {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+/* ---------- Modal ---------- */
+.modal-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(14, 34, 51, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  animation: toastin 0.18s ease both;
+}
+.modal {
+  background: var(--card);
+  border-radius: var(--r-l);
+  box-shadow: var(--shadow-3);
+  width: min(660px, 100%);
+  max-height: min(84vh, 760px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-top: 4px solid var(--teal);
+}
+.modal header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 22px 12px;
+}
+.modal header h2 {
+  font-size: 19px;
+}
+.modal .mbody {
+  padding: 4px 22px 18px;
+  overflow-y: auto;
+}
+.modal footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 22px;
+  border-top: 1px solid var(--line);
+  background: #faf8f2;
+  flex-wrap: wrap;
+}
+@media (max-width: 600px) {
+  .modal footer {
+    justify-content: stretch;
+  }
+  .modal footer .btn {
+    flex: 1 1 44%;
+    justify-content: center;
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+  .scr-row {
+    flex-wrap: wrap;
+  }
+  .scr-row .acts {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+.mclose {
+  border: none;
+  background: transparent;
+  font-size: 21px;
+  color: var(--mute);
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.mclose:hover {
+  background: #f0ede5;
+  color: var(--navy);
+}
+.scr-tools {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.scr-tools input[type="search"] {
+  flex: 1;
+  min-width: 180px;
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  padding: 8.5px 12px;
+  font-size: 14px;
+  font-family: inherit;
+}
+.scr-tools input[type="search"]:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(18, 125, 121, 0.14);
+}
+.scr-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 10px;
+  border-bottom: 1px solid var(--line);
+}
+.scr-row:last-child {
+  border-bottom: none;
+}
+.scr-row.current {
+  background: var(--teal-soft);
+  border-radius: 8px;
+}
+.scr-row .who {
+  flex: 1;
+  min-width: 0;
+}
+.scr-row .who b {
+  color: var(--navy);
+  font-size: 14.5px;
+}
+.scr-row .who .meta {
+  font-size: 12px;
+  color: var(--mute);
+}
+.scr-row .acts {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .wrap {
+    grid-template-columns: 1fr;
+  }
+  .side {
+    position: static;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 10px 12px;
+  }
+  .navgroup {
+    width: 100%;
+    margin: 8px 6px 3px;
+  }
+  .navgroup::after {
+    display: none;
+  }
+  .navitem {
+    width: auto;
+    padding: 7px 11px;
+  }
+  .navitem .ncheck {
+    display: none;
+  }
+  .side-progress {
+    width: 100%;
+    order: -1;
+    margin: 2px 4px 6px;
+  }
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+  .main {
+    padding: 20px 16px 70px;
+  }
+  .vtitle {
+    font-size: 24px;
+  }
+  .rdoc {
+    padding: 24px 20px;
+  }
+  .appbar {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+  .appbar .sub {
+    display: none;
+  }
+  .save-state {
+    min-width: 0;
+  }
+}
+/* ---------- Print ---------- */
+#printArea {
+  display: none;
+}
+@media print {
+  .appbar,
+  .side,
+  .main,
+  .wrap,
+  #toastHost,
+  .modal-scrim {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+  body::before {
+    display: none;
+  }
+  #printArea {
+    display: block;
+  }
+  #printArea .rdoc {
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+  }
+  @page {
+    margin: 0.7in;
+  }
+}
+/* ---------- Wave 2: presentation mode, error types, stopwatch, handout ---------- */
+.present-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 2px 0 10px;
+}
+.etype {
+  width: 100%;
+  margin-top: 8px;
+  border: 1px solid var(--red-line);
+  background: var(--red-bg);
+  color: var(--red);
+  border-radius: 7px;
+  padding: 5px 8px;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 600;
+}
+.etype:focus {
+  outline: none;
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(166, 51, 36, 0.12);
+}
+.stim-img {
+  cursor: zoom-in;
+}
+.present-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 85;
+  background: linear-gradient(180deg, #fffefb 0%, #f3f1ec 100%);
+  display: flex;
+  flex-direction: column;
+  padding: 18px clamp(16px, 4vw, 48px);
+  animation: toastin 0.2s ease both;
+}
+.pres-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.pres-counter {
+  font-family: var(--serif);
+  font-weight: 700;
+  color: var(--navy);
+  font-size: 16px;
+}
+.pres-sound {
+  font-size: 13px;
+  color: var(--mute);
+  letter-spacing: 0.3px;
+}
+.pres-state {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 14px;
+}
+.pres-state.ok {
+  background: var(--green-bg);
+  color: var(--green);
+}
+.pres-state.err {
+  background: var(--red-bg);
+  color: var(--red);
+}
+.pres-img {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+}
+.pres-img svg {
+  width: min(62vh, 78vw);
+  height: min(62vh, 78vw);
+  display: block;
+  filter: drop-shadow(0 10px 30px rgba(20, 44, 68, 0.15));
+}
+.pres-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  padding: 10px 0 4px;
+  flex-wrap: wrap;
+}
+.pres-actions .btn {
+  font-size: 16px;
+  padding: 13px 26px;
+  border-radius: 12px;
+}
+.pres-actions .pres-ok {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+.pres-actions .pres-ok:hover {
+  background: #1a5f42;
+  color: #fff;
+}
+.pres-actions .pres-err {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+.pres-actions .pres-err:hover {
+  background: #8c2a1d;
+  color: #fff;
+}
+.pres-help {
+  text-align: center;
+  font-size: 12px;
+  color: var(--faint);
+  padding-bottom: 2px;
+}
+.stopwatch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  border: 1px dashed var(--line-2);
+  border-radius: var(--r-m);
+  padding: 10px 14px;
+  margin-top: 4px;
+  background: #faf8f2;
+}
+.sw-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
+  flex: 1;
+  min-width: 180px;
+}
+.sw-time {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 19px;
+  color: var(--navy);
+  min-width: 70px;
+  text-align: right;
+}
+.handout-preview {
+  max-height: 46vh;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-m);
+}
+.handout-preview .rdoc {
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 22px 26px;
+}
+.rdoc.handout ul {
+  margin: 4px 0;
+  padding-left: 20px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.rdoc.handout li {
+  margin: 4px 0;
+}
+@media print {
+  .present-scrim {
+    display: none !important;
+  }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="appbar">
+  <div class="brand">
+    <span class="logo" aria-hidden="true">S</span>
+    <div>
+      <div class="bname">Speech-Language Screening</div>
+      <div class="sub">PreK – Grade 5 · Screening &amp; Referral</div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <button
+    id="screeningsBtn"
+    class="abtn"
+    title="Open, search, back up, or import screenings"
+  >
+    ☰ Screenings
+  </button>
+  <button id="newBtn" class="abtn primary">+ New screening</button>
+  <div class="save-state" id="saveState" aria-live="polite">
+    <span class="dot-live"></span><span>Ready</span>
+  </div>
+</header>
+<div class="wrap">
+  <nav class="side" id="side" aria-label="Screening sections"></nav>
+  <main class="main" id="main" tabindex="-1"></main>
+</div>
+<div id="toastHost" aria-live="polite" role="status"></div>
+<div id="modalHost"></div>
+<div id="printArea"></div>
+<script>
+const DATA = {"meta":{"title":"Speech-Language Screening","subtitle":"PreK – Grade 5  •  Domain-Based Screening & Referral Decision Tool","version":"v1.0"},"domainNames":{"REC":"Receptive Language (Understanding)","EXP":"Expressive Language (Use)","PRAG":"Pragmatic / Social Language"},"tiers":[{"name":"1 — Within Normal Limits","rule":"No domain concerns; skills age-appropriate.","action":"No further action. Rescreen per district protocol."},{"name":"2 — Developmentally Appropriate / Monitor","rule":"Only isolated errors typical for age (e.g., /r/ or /th/ in K–Grade 1).","action":"Provide classroom strategies; rescreen in 8–12 weeks."},{"name":"3 — Watch / Informal Intervention","rule":"Mild concern in one domain below the referral threshold and not impacting access.","action":"Teacher/parent strategies; progress-monitor; rescreen. Document."},{"name":"4 — Refer for Comprehensive Evaluation","rule":"Concern meeting threshold in ≥1 domain, any concern impacting academic/social functioning, or a Grade 2+ articulation/voice/fluency concern.","action":"Recommend full speech-language evaluation."}],"perDomain":["0–1 expected skills not demonstrated → Within normal limits for the domain.","2 expected skills not demonstrated → Monitor.","3 or more (or ≥ ~40% of the domain) not demonstrated → Area of concern."],"speechRules":["Articulation — any sound that should already be acquired for the student’s grade and is in consistent error is an area of concern (Grade 2+ : any consistent error).","Fluency — atypical disfluencies (part-word repetitions, prolongations, blocks), tension, or avoidance that affect communication = area of concern.","Voice — atypical quality, pitch, loudness, or resonance persisting beyond 2–4 weeks = area of concern (rule out medical cause first)."],"disclaimers":["This is a screening tool, not a diagnostic instrument. A screening identifies students who may need a full evaluation; it cannot diagnose a disorder or determine eligibility for services.","Difference is not disorder. For multilingual and dialectally diverse students, consider the student’s home language(s) and dialect. Features consistent with the home language or a language variety, or with typical second-language acquisition, are a language difference — not a disorder — and should not be scored as errors. When possible, gather information in the home language.","Final referral decisions rest on the clinician’s judgment together with local district eligibility criteria, classroom data, and parent/teacher input.","Administer and interpret under the direction of a licensed/certified speech-language pathologist (ASHA CCC-SLP or state equivalent). Align cut points to district policy before use."],"references":["ASHA. Your Child’s Communication Development: Kindergarten Through Fifth Grade. asha.org.","ASHA. Communication Milestones (ages 4–11) and Suggestions for Parents. asha.org.","McLeod, S., & Crowe, K. (2018). Children’s consonant acquisition in 27 languages: A cross-linguistic review. American Journal of Speech-Language Pathology, 27(4), 1546–1571. doi:10.1044/2018_AJSLP-17-0100.","Original instrument. Not derived from any commercial product; developmental indicators paraphrased from the public sources above."],"artic":{"patterns":[{"text":"Cluster reduction","eg":"“poon” for spoon — typically gone by ~4","gone":"4"},{"text":"Fronting (k/g → t/d)","eg":"“tup” for cup — typically gone by ~3;6","gone":"3;6"},{"text":"Stopping of fricatives","eg":"“dun” for sun — most gone by ~3–5 depending on sound","gone":"3–5"},{"text":"Gliding (r/l → w/y)","eg":"“wabbit” for rabbit — may persist to ~5–6","gone":"5–6"},{"text":"Final consonant deletion","eg":"“ca” for cat — typically gone by ~3;3","gone":"3;3"},{"text":"Weak syllable deletion","eg":"“nana” for banana — typically gone by ~4","gone":"4"}],"intelligibility":{"PREK":"~75–90% intelligible to unfamiliar listeners by age 4.","K":"Nearly fully intelligible to unfamiliar listeners by age 5.","G1":"Fully intelligible; isolated /r/, /th/ may still be emerging at 6.","G2":"Fully intelligible; all consonants expected. Any consistent error is a concern.","G3":"All consonants expected. Any consistent error is a concern — refer.","G4":"All consonants expected. Any consistent error is a concern — refer.","G5":"All consonants expected. Any consistent error is a concern — refer."},"developmentalOK":{"PREK":"Developmental: v s z sh ch j l (emerging); th, zh, r, and blends may be in error.","K":"Developmental: th(voiced), zh, r may still be emerging; voiceless th may be in error.","G1":"Developmental: /r/ and voiceless /th/ may still be emerging at 6.","G2":"None expected — all sounds should be acquired.","G3":"None expected — all sounds should be acquired.","G4":"None expected — all sounds should be acquired.","G5":"None expected — all sounds should be acquired."},"note":"Screen connected speech and single words. Mark any sound produced in error. Then compare to the age-expectation note for the student's grade. A sound that should already be acquired and is in consistent error is a concern."},"hfvItems":{"FLU":[{"text":"Speech flows smoothly at an even rate without atypical disfluency","eg":"connected conversation is easy to follow"},{"text":"No sound or part-word repetitions, prolongations, or silent blocks","eg":"not “b-b-b-ball,” “ssssun,” or stuck with no sound coming out"},{"text":"No visible physical tension or secondary behaviors","eg":"no eye blinks, facial/neck tension, or head movement tied to talking"},{"text":"No word avoidance, substitution, or reluctance to speak due to disfluency","eg":"does not switch words or stop talking to get past a stutter"}],"VOICE":[{"text":"Vocal quality is clear","eg":"not chronically hoarse, breathy, harsh, or strained"},{"text":"Pitch is appropriate for age and sex","eg":"not unusually high or low for the child"},{"text":"Loudness is appropriate","eg":"not habitually too loud or too quiet to be heard"},{"text":"Resonance is balanced","eg":"not hypernasal (“talking through the nose”) or hyponasal (“stuffy”)"}]},"universalTasks":{"ARTIC":{"name":"Articulation / Phonology","intro":"Use the picture set below to sample each target sound, then take a short connected-speech sample. Compare results to the grade reference (Grade 2+: any consistent error is a concern).","tasks":[{"label":"Picture naming (single words)","materials":"Picture stimulus set (below).","say":"Point to each picture and ask, “What is this?” If the student does not know the word, name it and ask them to repeat it (mark imitated items). Mark each target as Correct or Error and note where any error falls in the word (start / middle / end).","probes":["Listen for the target sound, not just whether the whole word is recognizable.","Note the error type: substitution (wabbit/rabbit), distortion (slushy s), or omission (_at/cat)."],"pass":"All age-expected sounds produced correctly across the set.","concern":"Any sound expected by this grade is consistently in error, or a phonological pattern persists past its elimination age."},{"label":"Connected-speech intelligibility","materials":"Open-ended prompt or a picture scene.","say":"Collect 3–4 spontaneous sentences: “Tell me about your favorite game and how you play it,” or have the student describe a scene.","probes":["Rate how easily an unfamiliar listener understands the student.","Note any errors that appear only in running speech."],"pass":"Intelligible at the level expected for the grade.","concern":"Reduced intelligibility for age, or errors emerge in connected speech."}]},"FLU":{"name":"Fluency","intro":"Collect a connected-speech sample of at least ~100 syllables across conversation and a short narrative. Note disfluency types, frequency, physical tension, and the student’s reaction.","tasks":[{"label":"Connected-speech fluency sample","materials":"Quiet space; open-ended prompts; optional stopwatch.","say":"Engage the student in relaxed conversation, then a brief monologue. For Grade 2+, also have them read 2–3 sentences aloud.","probes":["“Tell me about what you did this weekend.”","“Tell me the rules of a game you like.”","“Tell me a story — real or made up.”","Record: disfluency types (sound / part-word repetitions, prolongations, blocks vs. typical whole-word or phrase repetitions, revisions, fillers); estimated percent stuttered; tension or secondary behaviors; the student’s reaction."],"pass":"Smooth speech with only typical disfluencies; no tension, secondary behaviors, avoidance, or negative reaction.","concern":"Part-word repetitions, prolongations, or blocks; visible tension or secondary behaviors; avoidance; or a negative reaction — refer (family history and parent concern raise priority)."}]},"VOICE":{"name":"Voice & Resonance","intro":"Judge vocal quality, pitch, loudness, and resonance during connected speech and a sustained vowel. Rule out a medical cause for any persistent hoarseness before considering voice therapy.","tasks":[{"label":"Voice & resonance sample","materials":"Quiet space; optional stopwatch.","say":"Use the fluency sample plus the two short tasks below.","probes":["“Take a deep breath and say ‘ahhh’ for as long as you can.” (note steadiness and duration)","“Count from 1 to 10 in your normal voice.”","Rate: quality (clear / hoarse / breathy / harsh / strained), pitch (appropriate / high / low), loudness, and resonance (balanced / hypernasal / hyponasal)."],"pass":"Clear quality, age- and sex-appropriate pitch and loudness, balanced resonance.","concern":"Persistent hoarseness, breathiness, or harshness (>2–4 weeks); inappropriate pitch or loudness; or hyper-/hyponasality — refer (ENT / medical first for hoarseness)."}]}},"grades":[{"key":"PREK","label":"Pre-Kindergarten","age":"Age 4–5","domains":{"REC":[{"text":"Follows two-step related directions","eg":"“Get your coat and stand by the door.”"},{"text":"Understands basic spatial concepts","eg":"in / on / under / next to / behind"},{"text":"Understands who, what, and where questions","eg":"answers “Where is the dog?”"},{"text":"Identifies objects by category and function","eg":"“Which one do we eat with?”"},{"text":"Understands quantity and comparison concepts","eg":"more / less, big / little, empty / full"},{"text":"Comprehends a short story read aloud","eg":"answers simple questions about what happened"}],"EXP":[{"text":"Uses sentences of 4–5+ words","eg":"“I want the red truck please.”"},{"text":"Uses pronouns and plurals correctly most of the time","eg":"I / you / he / she; “two cats”"},{"text":"Uses grammatical markers","eg":"present ‑ing and regular past ‑ed emerging (“walking,” “jumped”)"},{"text":"Asks questions to get information","eg":"“What’s that?” “Where are we going?”"},{"text":"Tells about a recent experience in 2–3 connected sentences","eg":"recounts what happened at recess"},{"text":"Names common objects, colors, and some letters or numbers","eg":"labels familiar items and a few colors"}],"PRAG":[{"text":"Initiates and maintains brief conversations","eg":"starts a topic and adds a related comment"},{"text":"Takes turns in conversation and play","eg":"waits, then responds on topic"},{"text":"Uses language for varied purposes","eg":"to request, comment, protest, and pretend"},{"text":"Engages in cooperative or pretend play with peers","eg":"shared roles in dramatic play"}]},"tasks":{"REC":[{"label":"Follow two-step related directions","materials":"Crayon, paper, cup.","say":"Give each direction once, with no gestures.","probes":["“Put the crayon on the paper.”","“Pick up the cup and give it to me.”","“Touch your nose, then clap your hands.”"],"pass":"Follows ≥2 of 3 without repetition or gesture.","concern":"Needs repetition or gestures, or follows <2 of 3."},{"label":"Identify spatial concepts","materials":"A box and a small toy.","say":"“Put the toy …” (give one location at a time).","probes":["in the box","on the box","under the box","next to the box","behind the box"],"pass":"4 of 5 correct.","concern":"≤3 of 5 correct."},{"label":"Comprehend a short story","materials":"Passage below.","say":"Read aloud once, then ask the three questions.","probes":["“Sam had a red ball. He kicked it to his dog, Max. Max ran fast and got the ball.”","Who is Max? (the dog)","What color is the ball? (red)","Why did Max run? (to get the ball)"],"pass":"2 of 3 correct.","concern":"<2 of 3 correct."}],"EXP":[{"label":"Describe a picture (sentence length)","materials":"A busy picture or a familiar activity.","say":"“Tell me everything you see” or “Tell me what is happening.”","probes":["Record the length and variety of utterances."],"pass":"Produces several 4–5+ word sentences.","concern":"Mostly 1–3 word utterances."},{"label":"Elicit early grammar","materials":"None.","say":"Use cloze prompts; pause for the student to fill in.","probes":["“Here is one cat. Here are two ___.” (cats)","“He is running. What is she doing?” (running)","“Whose shoe is this? It is the ___.” (girl’s)"],"pass":"Most markers correct for age (plurals, ‑ing, pronouns, possessives).","concern":"Frequent errors beyond the developmental level."},{"label":"Give a personal recount","materials":"None.","say":"“Tell me what you did at recess (or this morning).”","probes":["Listen for 2–3 connected, sequenced sentences."],"pass":"2–3 connected sentences in order.","concern":"Single words or no sequence."}],"PRAG":[{"label":"Observe conversation & play","materials":"Toys or natural interaction.","say":"Engage in a 3–4 turn conversation and brief play.","probes":["Note: initiation, turn-taking, range of functions (requesting, commenting, protesting), and pretend or cooperative play."],"pass":"Initiates, takes turns, and uses varied functions.","concern":"Limited initiation or turn-taking, or a narrow range of functions."},{"label":"Greeting & request routine","materials":"A desired object slightly out of reach.","say":"Set up a natural reason to greet and request.","probes":["Does the student greet, gain attention appropriately, and request (words or clear gesture)?"],"pass":"Greets and requests appropriately.","concern":"Does not greet or request, or uses only grabbing / leading."}]}},{"key":"K","label":"Kindergarten","age":"Age 5–6","domains":{"REC":[{"text":"Follows one- to two-step directions reliably","eg":"“Put your name on the paper and start.”"},{"text":"Answers yes/no and wh- questions about activities and stories","eg":"“Why was the boy sad?”"},{"text":"Understands sequence and time words","eg":"first / next / last; today / tomorrow"},{"text":"Shows early phonological awareness","eg":"identifies rhymes; isolates the first sound in a word"},{"text":"Comprehends a grade-level story read aloud","eg":"identifies characters and main idea"}],"EXP":[{"text":"Uses complete, grammatically correct sentences most of the time","eg":"subject + verb + object intact"},{"text":"Retells a simple story or recounts the day in order","eg":"beginning → middle → end"},{"text":"Uses past, present, and future tense","eg":"“went,” “going,” “will go”"},{"text":"Asks and answers questions to keep a conversation going","eg":"back-and-forth exchange on one topic"},{"text":"Speaks clearly enough to be understood by unfamiliar listeners","eg":"a new adult follows the child easily"},{"text":"Uses a growing vocabulary of categories and positions","eg":"names groups; uses location words"}],"PRAG":[{"text":"Takes turns and stays on topic in conversation","eg":"several on-topic exchanges"},{"text":"Initiates conversation and shows interest in others","eg":"asks a peer a question"},{"text":"Begins to adjust language to the listener or situation","eg":"quieter voice in library, polite request"},{"text":"Uses appropriate body orientation and gaze for the cultural context","eg":"faces partner; attends to speaker"}]},"tasks":{"REC":[{"label":"Follow directions with sequence words","materials":"Classroom objects.","say":"Give each direction once.","probes":["“First touch the table, then touch the chair.”","“Before you stand up, put your hands on your head.”","“Show me what you do at night, then in the morning.”"],"pass":"Follows ≥2 of 3, including the order.","concern":"Misses the order or follows <2 of 3."},{"label":"Comprehend a story (with inference)","materials":"Passage below.","say":"Read once, then ask.","probes":["“Mia woke up early. She put on her boots because it was raining. At school she splashed in a big puddle and laughed.”","What did Mia put on? (boots)","Why did she wear boots? (it was raining)","How do you think Mia felt? Why? (happy — she laughed)"],"pass":"2 of 3, including an attempt at the inference.","concern":"<2 of 3, or no inference."},{"label":"Early phonological awareness","materials":"None.","say":"Ask each item.","probes":["“Do cat and hat rhyme? Do cat and dog rhyme?”","“Tell me a word that rhymes with sun.”","“What is the first sound in milk?” (/m/)"],"pass":"Judges rhyme and gives a first sound.","concern":"Cannot judge rhyme or isolate a first sound."}],"EXP":[{"label":"Retell a story","materials":"A short story (read aloud).","say":"Read a 4–5 sentence story, then: “Now you tell the story back to me.”","probes":["Listen for beginning / middle / end and the key events."],"pass":"Retells in order with the main events.","concern":"Out of order, fragmentary, or missing key events."},{"label":"Use tense & complete sentences","materials":"None.","say":"Use prompts.","probes":["“Yesterday I walked. Today I am ___.” (walking)","“Tomorrow we ___ go to the park.” (will)","“Make a sentence with the word because.”"],"pass":"Uses past / present / future in complete sentences.","concern":"Tense errors or incomplete sentences."},{"label":"Intelligibility to an unfamiliar listener","materials":"Conversation.","say":"Hold a brief conversation about a familiar topic.","probes":["Judge whether a new adult follows the student easily."],"pass":"Fully intelligible to an unfamiliar listener.","concern":"Frequent breakdowns in intelligibility."}],"PRAG":[{"label":"Conversation skills","materials":"Natural interaction.","say":"Hold a multi-turn conversation; create a “quiet voice” situation.","probes":["Note: turn-taking, topic maintenance, initiation, interest in others, and adjusting voice to the setting."],"pass":"Takes turns, stays on topic, and adjusts to the setting.","concern":"Poor turn-taking or topic control, or no register adjustment."},{"label":"Ask for help appropriately","materials":"A task with a small obstacle (e.g., a sealed bag).","say":"Give a task they will likely need help with.","probes":["Does the student ask for help in words and accept it?"],"pass":"Requests help clearly and appropriately.","concern":"Gives up, or does not request help in words."}]}},{"key":"G1","label":"First Grade","age":"Age 6–7","domains":{"REC":[{"text":"Remembers and follows two- to three-step directions","eg":"“Get your book, open to page 10, and read.”"},{"text":"Understands grade-level vocabulary and concepts","eg":"classroom and content words"},{"text":"Comprehends what is heard or read","eg":"answers literal and simple inferential questions"},{"text":"Understands temporal and comparative concepts","eg":"before / after; taller / shorter"}],"EXP":[{"text":"Speaks in complete, grammatically correct sentences","eg":"consistent subject-verb agreement"},{"text":"Uses morphology correctly","eg":"plurals, possessives, regular past tense, pronouns"},{"text":"Tells and retells stories with logical sequence","eg":"events in order with key details"},{"text":"Asks and answers who/what/when/where/why questions","eg":"gives a relevant reason for “why”"},{"text":"Uses increasingly specific vocabulary","eg":"chooses precise words over “thing” / “stuff”"},{"text":"Shows phonological awareness for literacy","eg":"blends and segments sounds; produces rhymes"}],"PRAG":[{"text":"Stays on topic, takes turns, and gives relevant responses","eg":"answers match the question asked"},{"text":"Starts conversations and gives simple directions to others","eg":"explains a game to a peer"},{"text":"Repairs communication breakdowns when not understood","eg":"rephrases or adds detail after “huh?”"}]},"tasks":{"REC":[{"label":"Follow two- to three-step directions","materials":"Book and pencil.","say":"Give each direction once.","probes":["“Get your book, open to page 10, and pick up your pencil.”","“Put the pencil under the book, then give me the book.”"],"pass":"Completes all steps in order.","concern":"Loses a step or the order."},{"label":"Comprehend (literal + inferential)","materials":"Passage below.","say":"Read once, then ask.","probes":["“The class went to the zoo. Tom wanted to see the lions, but they were sleeping. Instead, he watched the monkeys swing and throw their food.”","Where did the class go? (zoo)","What did Tom want to see? (lions)","Why did he watch the monkeys instead? (the lions were sleeping)"],"pass":"3 of 3, including the inference.","concern":"Misses the inferential question."},{"label":"Understand temporal & comparative concepts","materials":"None or two drawn lines.","say":"Ask each.","probes":["“Which comes first, breakfast or dinner?”","“Show me the taller line / the shorter line.”"],"pass":"Both correct.","concern":"Either incorrect."}],"EXP":[{"label":"Retell with logical sequence","materials":"A short story.","say":"Read aloud, then ask for a retell.","probes":["Listen for logical order and supporting details."],"pass":"Sequenced retell with key details.","concern":"Disorganized or sparse retell."},{"label":"Elicit morphology","materials":"None.","say":"Use cloze prompts.","probes":["“One foot, two ___.” (feet)","“This is the dog’s bone — whose bone? The ___.” (dog’s)","“Yesterday he ran. He ___ all day.” (ran)"],"pass":"Plurals, possessives, past tense, and pronouns correct.","concern":"Repeated morphology errors."},{"label":"Answer why-questions with a reason","materials":"None.","say":"Ask reasoning questions.","probes":["“Why do we wear coats in winter?”","“Why do we look both ways before we cross?”"],"pass":"Gives a relevant reason.","concern":"Irrelevant or no reason."}],"PRAG":[{"label":"Conversation & repair","materials":"Natural interaction.","say":"Converse; once, pretend not to understand (“I didn’t get that”).","probes":["Note: topic maintenance, turn-taking, relevant responses, and whether the student repairs the breakdown."],"pass":"Stays on topic and repairs breakdowns.","concern":"Goes off topic or makes no repair attempt."},{"label":"Give directions to a partner","materials":"A simple object or drawing.","say":"“Tell me how to draw / make this so I can do it.”","probes":["Are the directions clear, ordered, and adjusted when the listener is confused?"],"pass":"Clear, ordered directions with adjustment.","concern":"Vague or unordered, with no adjustment."}]}},{"key":"G2","label":"Second Grade","age":"Age 7–8","domains":{"REC":[{"text":"Follows three- to four-step directions","eg":"multi-step task without re-prompting"},{"text":"Understands direction and academic vocabulary","eg":"here / there / next to; grade-level terms"},{"text":"Answers literal and inferential questions about grade-level text","eg":"“How do you think she felt? Why?”"}],"EXP":[{"text":"Uses compound and complex sentences","eg":"joins ideas with because, so, but, when"},{"text":"Explains words and ideas and gives 3–4-step directions","eg":"defines a term; tells how to do something"},{"text":"Retells and summarizes with beginning, middle, and end","eg":"organized recount of a story"},{"text":"Uses language to inform, persuade, and entertain","eg":"shares a fact, makes a case, tells a joke"},{"text":"Uses correct grammar including irregulars","eg":"irregular past tense; comparatives/superlatives"}],"PRAG":[{"text":"Maintains a topic across several turns","eg":"sustained, relevant exchange"},{"text":"Uses appropriate eye contact and repairs breakdowns","eg":"clarifies when misunderstood"},{"text":"Starts and ends conversations appropriately","eg":"greeting and closing fit the situation"}]},"tasks":{"REC":[{"label":"Follow three- to four-step directions","materials":"Several small objects.","say":"Give the direction once.","probes":["“Put the red one in the cup, hand me the blue one, then turn the page.”"],"pass":"Completes all steps in order.","concern":"Loses steps or the order."},{"label":"Answer inferential questions","materials":"Passage below.","say":"Read once, then ask.","probes":["“J.P. packed his bag the night before the trip. In the morning he could not find his shoes. He searched everywhere and finally found them under his bed, so he ran to the bus.”","What was J.P. getting ready for? (a trip)","Why did he have to search? (he couldn’t find his shoes)","How do you think he felt when he found them? Why? (relieved / worried about the bus)"],"pass":"Answers literal and inferential questions.","concern":"Misses the inference."}],"EXP":[{"label":"Form complex sentences","materials":"None.","say":"Prompt sentences with connectors.","probes":["“Make a sentence with because.”","“Make a sentence with but.”","“Tell me what happened, then what happened next.”"],"pass":"Produces compound / complex sentences with connectors.","concern":"Only simple sentences, or connector errors."},{"label":"Explain & give multi-step directions","materials":"None.","say":"Ask the student to explain a familiar process.","probes":["“Explain how to make a sandwich in 3–4 steps.”","“What does the word brave mean?”"],"pass":"Clear, ordered directions; defines a word.","concern":"Vague or out-of-order explanation."},{"label":"Summarize a story","materials":"A short story.","say":"Read aloud, then: “Tell me what the story was mostly about.”","probes":["Listen for beginning, middle, and end."],"pass":"Gives an organized summary.","concern":"Lists details with no structure."}],"PRAG":[{"label":"Sustain an extended conversation","materials":"Natural interaction.","say":"Hold a longer conversation; observe how it opens and closes.","probes":["Note: topic maintenance across turns, eye contact, repair, and appropriate openings / closings."],"pass":"Sustains the topic and opens / closes appropriately.","concern":"Topic drifts, or transitions are abrupt or odd."},{"label":"Read a simple social situation","materials":"None.","say":"Pose a short scenario.","probes":["“Your friend looks sad at recess. What could you say or do?”"],"pass":"Offers an appropriate, considerate response.","concern":"No response or a socially inappropriate one."}]}},{"key":"G3","label":"Third Grade","age":"Age 8–9","domains":{"REC":[{"text":"Attends and comprehends during group instruction","eg":"follows whole-class discussion"},{"text":"Understands content-area and beginning figurative vocabulary","eg":"math/science terms; simple idioms"},{"text":"Comprehends multi-step verbal information","eg":"holds and acts on several pieces of information"}],"EXP":[{"text":"Uses precise vocabulary, including content-area terms, and can define words","eg":"explains what a word means"},{"text":"Uses and analyzes morphology","eg":"root words, prefixes, and suffixes"},{"text":"Summarizes, explains learning, and predicts with justification","eg":"“I think… because…”"},{"text":"Uses well-formed complex sentences","eg":"multiple clauses, correct connectors"}],"PRAG":[{"text":"Participates in group discussion with turn-taking and topic maintenance","eg":"builds on peers’ ideas"},{"text":"Uses an appropriate register and relevant, organized contributions","eg":"matches formality to the setting"},{"text":"Uses eye contact and nonverbal cues appropriately for the context","eg":"attends to and signals the listener"}]},"tasks":{"REC":[{"label":"Hold & reorder multi-step information","materials":"None.","say":"Present 3–4 linked facts, then ask.","probes":["“We will line up, get our coats, walk to the gym, and sit on the blue line. What do we do right after we get our coats?” (walk to the gym)"],"pass":"Holds and reorders the information.","concern":"Cannot recall or reorder the steps."},{"label":"Understand content & beginning figurative vocabulary","materials":"None.","say":"Ask for meanings.","probes":["“What does estimate mean?”","“What does someone mean if they say ‘hold your horses’?” (wait)"],"pass":"Explains a content word and a simple idiom.","concern":"Misses both."}],"EXP":[{"label":"Define & use precise vocabulary","materials":"None.","say":"Ask the student to define and use words.","probes":["“Define the word ancient and use it in a sentence.”","“Give me another word for happy.”"],"pass":"Accurate definition and appropriate use.","concern":"Vague definition or misuse."},{"label":"Analyze word parts","materials":"None.","say":"Probe roots and affixes.","probes":["“What does unhappy mean? What does un‑ do?”","“If I redo something, what does re‑ mean?”"],"pass":"Explains the meaning an affix adds.","concern":"Cannot analyze the word parts."},{"label":"Explain with justification","materials":"None.","say":"Ask the student to summarize and justify.","probes":["“Tell me something you learned this week and why it matters.”"],"pass":"Organized explanation with a reason.","concern":"Disorganized or no justification."}],"PRAG":[{"label":"Participate in a discussion","materials":"Small-group or simulated.","say":"Observe or simulate a short discussion.","probes":["Note: turn-taking, topic maintenance, relevance, register, and nonverbal cues."],"pass":"Relevant, organized contributions with appropriate register.","concern":"Interrupts, goes off topic, or mismatches register."},{"label":"Take another’s perspective","materials":"None.","say":"Pose a brief perspective question.","probes":["“Why might a new student feel nervous on the first day?”"],"pass":"Names a plausible feeling and reason.","concern":"Cannot take the other perspective."}]}},{"key":"G4","label":"Fourth Grade","age":"Age 9–10","domains":{"REC":[{"text":"Listens to learn and to form opinions","eg":"identifies the purpose for listening"},{"text":"Understands figurative language","eg":"“This classroom is a zoo!”"},{"text":"Comprehends and follows multi-step directions and content material","eg":"applies new information across subjects"}],"EXP":[{"text":"Uses varied vocabulary for many functions","eg":"to question, argue, explain, and joke"},{"text":"Summarizes ideas in own words and organizes information clearly","eg":"restates a lesson coherently"},{"text":"Gives clear directions and short presentations","eg":"organized, audience-aware delivery"},{"text":"Uses complex grammar accurately","eg":"varied sentence types with few errors"}],"PRAG":[{"text":"Takes part in group discussion and adjusts language to audience and purpose","eg":"shifts style for the listener"},{"text":"Uses figurative and idiomatic language socially","eg":"understands and uses common idioms"},{"text":"Manages topic, turn-taking, and breakdown repair across longer exchanges","eg":"sustains multi-turn discussion"}]},"tasks":{"REC":[{"label":"Listen for a purpose","materials":"Paragraph below.","say":"Read aloud, then ask.","probes":["“Honeybees live in large groups called colonies. Each bee has a job. Worker bees gather nectar, which the colony turns into honey to eat in winter.”","What is the main job of worker bees? (gather nectar)","Why does the colony make honey? (food for winter)"],"pass":"Identifies the main idea and purpose.","concern":"Misses the main idea or purpose."},{"label":"Interpret figurative language","materials":"None.","say":"Ask for the meaning.","probes":["“What does ‘This classroom is a zoo’ mean?”","“What does ‘break the ice’ mean?”"],"pass":"Explains both non-literally.","concern":"Gives only a literal interpretation."}],"EXP":[{"label":"Summarize in your own words","materials":"Use the paragraph above.","say":"“Tell me what that was about in your own words.”","probes":["Listen for an organized restatement, not copied wording."],"pass":"Clear, organized summary.","concern":"Copies wording or is disorganized."},{"label":"Give a short explanation / mini-presentation","materials":"None.","say":"Pick a familiar topic.","probes":["“Explain how to play your favorite sport or game so a younger student could follow.”"],"pass":"Sequenced and audience-aware.","concern":"Disorganized or not audience-aware."},{"label":"Show word knowledge","materials":"None.","say":"Probe synonyms and definitions.","probes":["“Give two words that mean almost the same as big.”","“Define the word average.”"],"pass":"Provides synonyms and definitions.","concern":"Cannot provide them."}],"PRAG":[{"label":"Adjust to audience in discussion","materials":"Conversation.","say":"Discuss a topic; vary the imagined listener (friend vs. principal).","probes":["Note: adjusting language to audience and purpose, idiom use, topic management, and repair."],"pass":"Adjusts register and manages the topic and repairs.","concern":"No adjustment, or difficulty with idioms or repair."},{"label":"Resolve a social problem","materials":"None.","say":"Pose a short scenario.","probes":["“Two friends both want the last turn. What are two fair ways to solve it?”"],"pass":"Offers reasonable, fair solutions.","concern":"No solution or an inappropriate one."}]}},{"key":"G5","label":"Fifth Grade","age":"Age 10–11","domains":{"REC":[{"text":"Listens and draws conclusions across content areas","eg":"infers a main point from a lesson"},{"text":"Understands abstract, figurative, and multiple-meaning vocabulary","eg":"interprets idioms; chooses correct meaning"},{"text":"Comprehends complex, multi-step information and content lectures","eg":"follows extended explanations"}],"EXP":[{"text":"Uses rich, varied vocabulary and varied sentence structure","eg":"precise word choice; sentence variety"},{"text":"Plans and delivers organized presentations to an audience","eg":"audience-aware, sequenced speech"},{"text":"Summarizes main points and justifies opinions with reasons","eg":"states a claim and supports it"},{"text":"Uses correct, complex grammar consistently","eg":"few errors in connected discourse"}],"PRAG":[{"text":"Participates effectively in discussion and adjusts register to audience","eg":"formal vs. casual as appropriate"},{"text":"Uses nonverbal communication appropriately","eg":"eye contact and gestures support the message"},{"text":"Manages topic, makes social inferences, and repairs breakdowns","eg":"reads the situation and adjusts"}]},"tasks":{"REC":[{"label":"Draw conclusions","materials":"Paragraph below.","say":"Read aloud, then ask.","probes":["“The sky turned dark and the wind picked up. People at the park grabbed their bags and hurried to their cars before the first drops fell.”","What was about to happen? (a storm / rain)","How do you know? (dark sky, wind, hurrying, first drops)"],"pass":"Draws a conclusion and supports it.","concern":"Cannot infer or support the conclusion."},{"label":"Interpret abstract & multiple-meaning vocabulary","materials":"None.","say":"Probe word meanings.","probes":["“Give two meanings of the word current.”","“What does it mean to be ‘under the weather’?”"],"pass":"Provides multiple meanings and interprets the idiom.","concern":"Gives only one literal meaning."}],"EXP":[{"label":"State & justify an opinion","materials":"None.","say":"Ask for a claim with reasons.","probes":["“Should students have homework? Give your opinion and two reasons.”"],"pass":"States a claim with supporting reasons.","concern":"No claim, or reasons are missing."},{"label":"Deliver an organized explanation","materials":"None.","say":"Ask for a brief, planned talk.","probes":["“Tell me about a place you’d recommend visiting and why — organize it for a listener.”"],"pass":"Sequenced, audience-aware, with varied vocabulary.","concern":"Disorganized or limited vocabulary."},{"label":"Use complex grammar in discourse","materials":"Use the samples above.","say":"Listen across the expressive sample.","probes":["Judge sentence variety and grammatical accuracy in connected speech."],"pass":"Varied, accurate complex grammar.","concern":"Frequent errors or limited variety."}],"PRAG":[{"label":"Discuss with register & inference","materials":"Conversation / discussion.","say":"Discuss a topic that requires perspective-taking.","probes":["Note: effective participation, register suited to the audience, social inference, nonverbal cues, and repair."],"pass":"Participates effectively, reads the situation, and repairs.","concern":"Register mismatch, weak social inference, or no repair."},{"label":"Interpret intent","materials":"None.","say":"Pose a short scenario.","probes":["“Someone says ‘Nice job’ in a sarcastic voice after a mistake. What do they really mean?”"],"pass":"Recognizes the non-literal intent.","concern":"Interprets only literally."}]}}]};
+/* ---- Articulation picture stimulus set (inline SVG, offline) ---- */
+const SVG_NS='<svg viewBox="0 0 100 100" aria-hidden="true">';
+const ART_STIMULI=[
+ {word:'pig',sound:'/p/',pos:'beginning',svg:SVG_NS+'<ellipse cx="34" cy="32" rx="9" ry="12" fill="#f0a3b8"/><ellipse cx="66" cy="32" rx="9" ry="12" fill="#f0a3b8"/><circle cx="50" cy="55" r="30" fill="#f4adc0"/><ellipse cx="50" cy="62" rx="15" ry="11" fill="#e7869f"/><circle cx="45" cy="62" r="2.6" fill="#8a4f60"/><circle cx="55" cy="62" r="2.6" fill="#8a4f60"/><circle cx="40" cy="47" r="3.2" fill="#3a2530"/><circle cx="60" cy="47" r="3.2" fill="#3a2530"/></svg>'},
+ {word:'ball',sound:'/b/',pos:'beginning',svg:SVG_NS+'<circle cx="50" cy="52" r="32" fill="#ef6f6c"/><path d="M50 20 Q70 52 50 84" stroke="#fff" stroke-width="4" fill="none"/><path d="M50 20 Q30 52 50 84" stroke="#fff" stroke-width="4" fill="none"/><path d="M20 44 Q50 56 80 44" stroke="#fff" stroke-width="4" fill="none"/></svg>'},
+ {word:'tent',sound:'/t/',pos:'beginning',svg:SVG_NS+'<line x1="50" y1="14" x2="50" y2="24" stroke="#5a5a5a" stroke-width="3"/><path d="M50 22 L84 78 H16 Z" fill="#f0894b"/><path d="M50 42 L64 78 H36 Z" fill="#7a3f1d"/><line x1="12" y1="78" x2="88" y2="78" stroke="#9c6b3f" stroke-width="3"/></svg>'},
+ {word:'dog',sound:'/d/',pos:'beginning',svg:SVG_NS+'<ellipse cx="22" cy="46" rx="10" ry="18" fill="#a96f3d"/><ellipse cx="78" cy="46" rx="10" ry="18" fill="#a96f3d"/><ellipse cx="50" cy="54" rx="28" ry="26" fill="#c98a52"/><ellipse cx="50" cy="66" rx="13" ry="9" fill="#e7c8a0"/><ellipse cx="50" cy="58" rx="6" ry="5" fill="#3a2a1a"/><circle cx="40" cy="48" r="3.2" fill="#3a2a1a"/><circle cx="60" cy="48" r="3.2" fill="#3a2a1a"/></svg>'},
+ {word:'cat',sound:'/k/',pos:'beginning',svg:SVG_NS+'<path d="M28 36 L24 14 L45 31 Z" fill="#9aa3ad"/><path d="M72 36 L76 14 L55 31 Z" fill="#9aa3ad"/><circle cx="50" cy="56" r="27" fill="#aab2bb"/><path d="M50 54 L46 60 H54 Z" fill="#e7869f"/><circle cx="40" cy="50" r="3.2" fill="#2f3a45"/><circle cx="60" cy="50" r="3.2" fill="#2f3a45"/><line x1="22" y1="58" x2="38" y2="60" stroke="#6b7681" stroke-width="2"/><line x1="78" y1="58" x2="62" y2="60" stroke="#6b7681" stroke-width="2"/></svg>'},
+ {word:'gift',sound:'/g/',pos:'beginning',svg:SVG_NS+'<rect x="22" y="44" width="56" height="40" rx="3" fill="#5aa9e6"/><rect x="22" y="44" width="56" height="11" fill="#3f86c4"/><rect x="44" y="44" width="12" height="40" fill="#ffd23f"/><path d="M50 44 Q38 28 30 38 Q34 46 50 44 Z" fill="#ffd23f"/><path d="M50 44 Q62 28 70 38 Q66 46 50 44 Z" fill="#ffd23f"/></svg>'},
+ {word:'moon',sound:'/m/',pos:'beginning',svg:SVG_NS+'<path d="M64 16 A34 34 0 1 0 64 84 A27 30 0 1 1 64 16 Z" fill="#ffce3a"/></svg>'},
+ {word:'nut',sound:'/n/',pos:'beginning',svg:SVG_NS+'<rect x="47" y="18" width="6" height="10" rx="2" fill="#5a3514"/><path d="M30 46 Q50 24 70 46 Z" fill="#7a4a22"/><path d="M34 46 Q50 92 66 46 Z" fill="#c98a52"/></svg>'},
+ {word:'ring',sound:'/ng/',pos:'end',svg:SVG_NS+'<path d="M50 16 L40 30 L50 42 L60 30 Z" fill="#5ec8e6"/><ellipse cx="50" cy="62" rx="24" ry="22" fill="none" stroke="#f4c542" stroke-width="8"/></svg>'},
+ {word:'fish',sound:'/f/',pos:'beginning',svg:SVG_NS+'<path d="M72 54 L92 40 V68 Z" fill="#2a9aa0"/><ellipse cx="46" cy="54" rx="30" ry="19" fill="#39c0c8"/><circle cx="34" cy="50" r="4" fill="#fff"/><circle cx="34" cy="50" r="2" fill="#1d3b44"/><path d="M50 54 q8 -8 16 0 q-8 8 -16 0" fill="#2a9aa0" opacity=".4"/></svg>'},
+ {word:'van',sound:'/v/',pos:'beginning',svg:SVG_NS+'<rect x="12" y="40" width="76" height="30" rx="6" fill="#e2574c"/><rect x="60" y="46" width="20" height="14" rx="2" fill="#bfe3f0"/><circle cx="32" cy="72" r="9" fill="#333"/><circle cx="68" cy="72" r="9" fill="#333"/><circle cx="32" cy="72" r="3.5" fill="#aaa"/><circle cx="68" cy="72" r="3.5" fill="#aaa"/></svg>'},
+ {word:'sun',sound:'/s/',pos:'beginning',svg:SVG_NS+'<g stroke="#ffce3a" stroke-width="4" stroke-linecap="round"><line x1="50" y1="14" x2="50" y2="24"/><line x1="50" y1="80" x2="50" y2="90"/><line x1="14" y1="52" x2="24" y2="52"/><line x1="76" y1="52" x2="86" y2="52"/><line x1="25" y1="27" x2="32" y2="34"/><line x1="68" y1="70" x2="75" y2="77"/><line x1="75" y1="27" x2="68" y2="34"/><line x1="32" y1="70" x2="25" y2="77"/></g><circle cx="50" cy="52" r="19" fill="#ffce3a"/></svg>'},
+ {word:'zipper',sound:'/z/',pos:'beginning',svg:SVG_NS+'<g fill="#8893a0"><rect x="36" y="16" width="11" height="6"/><rect x="36" y="26" width="11" height="6"/><rect x="36" y="36" width="11" height="6"/><rect x="53" y="16" width="11" height="6"/><rect x="53" y="26" width="11" height="6"/><rect x="53" y="36" width="11" height="6"/></g><rect x="44" y="48" width="12" height="36" fill="#6b7681"/><rect x="40" y="48" width="20" height="16" rx="3" fill="#cdd6df"/><rect x="47" y="62" width="6" height="20" rx="3" fill="#cdd6df"/></svg>'},
+ {word:'shoe',sound:'/sh/',pos:'beginning',svg:SVG_NS+'<path d="M14 62 Q16 48 32 48 L52 48 Q62 50 76 60 L86 64 Q90 66 90 70 V74 H14 Z" fill="#5aa9e6"/><rect x="12" y="73" width="80" height="6" rx="3" fill="#2f3a45"/><path d="M36 50 l8 8 M44 50 l8 9 M52 51 l8 9" stroke="#fff" stroke-width="2.4"/></svg>'},
+ {word:'chair',sound:'/ch/',pos:'beginning',svg:SVG_NS+'<rect x="30" y="20" width="9" height="52" fill="#b5793f"/><rect x="30" y="26" width="26" height="6" fill="#cfa274"/><rect x="30" y="38" width="26" height="6" fill="#cfa274"/><rect x="30" y="52" width="40" height="8" fill="#b5793f"/><rect x="61" y="52" width="9" height="28" fill="#b5793f"/><rect x="30" y="60" width="9" height="20" fill="#b5793f"/></svg>'},
+ {word:'jar',sound:'/j/',pos:'beginning',svg:SVG_NS+'<rect x="28" y="24" width="44" height="12" rx="3" fill="#7a8794"/><rect x="31" y="34" width="38" height="50" rx="9" fill="#bfe3d6"/><rect x="37" y="50" width="26" height="20" rx="2" fill="#fff" opacity=".85"/></svg>'},
+ {word:'leaf',sound:'/l/',pos:'beginning',svg:SVG_NS+'<path d="M50 16 Q82 40 50 88 Q18 40 50 16 Z" fill="#5cb85c"/><path d="M50 22 L50 82" stroke="#3d8b3d" stroke-width="3"/><path d="M50 40 L38 34 M50 52 L36 48 M50 40 L62 34 M50 52 L64 48" stroke="#3d8b3d" stroke-width="2"/></svg>'},
+ {word:'rainbow',sound:'/r/',pos:'beginning',svg:SVG_NS+'<g fill="none" stroke-width="7"><path d="M16 76 A34 34 0 0 1 84 76" stroke="#e2574c"/><path d="M25 76 A25 25 0 0 1 75 76" stroke="#f0a44b"/><path d="M34 76 A16 16 0 0 1 66 76" stroke="#5cb85c"/></g><ellipse cx="20" cy="78" rx="11" ry="7" fill="#dfe7ee"/><ellipse cx="80" cy="78" rx="11" ry="7" fill="#dfe7ee"/></svg>'},
+ {word:'web',sound:'/w/',pos:'beginning',svg:SVG_NS+'<g stroke="#7a8794" stroke-width="2" fill="none"><line x1="50" y1="14" x2="50" y2="86"/><line x1="14" y1="50" x2="86" y2="50"/><line x1="24" y1="24" x2="76" y2="76"/><line x1="76" y1="24" x2="24" y2="76"/><polygon points="50,28 67,42 61,63 39,63 33,42"/><polygon points="50,40 58,48 55,59 45,59 42,48"/></g></svg>'},
+ {word:'yo-yo',sound:'/y/',pos:'beginning',svg:SVG_NS+'<circle cx="50" cy="20" r="5" fill="none" stroke="#7a8794" stroke-width="2"/><line x1="50" y1="24" x2="50" y2="54" stroke="#7a8794" stroke-width="2"/><circle cx="50" cy="62" r="22" fill="#ef6f6c"/><circle cx="50" cy="62" r="7" fill="#fff"/><circle cx="50" cy="62" r="3" fill="#c0392b"/></svg>'},
+ {word:'hat',sound:'/h/',pos:'beginning',svg:SVG_NS+'<ellipse cx="50" cy="74" rx="34" ry="8" fill="#39414b"/><rect x="32" y="24" width="36" height="50" rx="3" fill="#39414b"/><rect x="32" y="58" width="36" height="9" fill="#e2574c"/></svg>'},
+ {word:'thumb',sound:'/th/',pos:'beginning',svg:SVG_NS+'<rect x="38" y="46" width="32" height="36" rx="9" fill="#f0c39e"/><path d="M40 54 Q34 28 46 28 Q54 28 52 52 Z" fill="#f0c39e"/><path d="M46 56 H66 M46 64 H66 M46 72 H66" stroke="#d39e74" stroke-width="2"/></svg>'},
+ {word:'star',sound:'/st/',pos:'blend',svg:SVG_NS+'<path d="M50 14 L60 40 L88 40 L65 57 L74 84 L50 67 L26 84 L35 57 L12 40 L40 40 Z" fill="#ffce3a"/></svg>'},
+ {word:'tree',sound:'/tr/',pos:'blend',svg:SVG_NS+'<rect x="44" y="58" width="12" height="28" rx="2" fill="#8a5a2b"/><circle cx="50" cy="40" r="22" fill="#5cb85c"/><circle cx="34" cy="48" r="14" fill="#5cb85c"/><circle cx="66" cy="48" r="14" fill="#5cb85c"/></svg>'},
+ {word:'spoon',sound:'/sp/',pos:'blend',svg:SVG_NS+'<ellipse cx="50" cy="34" rx="14" ry="18" fill="#cdd6df"/><ellipse cx="50" cy="34" rx="9" ry="12" fill="#aab4be"/><rect x="46" y="48" width="8" height="40" rx="4" fill="#cdd6df"/></svg>'},
+];
+/* ================= storage ================= */
+const store = {
+  mem: {},
+  set(k, v) {
+    try {
+      localStorage.setItem(k, JSON.stringify(v));
+    } catch (e) {
+      this.mem[k] = v;
+    }
+  },
+  get(k, d) {
+    try {
+      const v = localStorage.getItem(k);
+      return v ? JSON.parse(v) : k in this.mem ? this.mem[k] : d;
+    } catch (e) {
+      return k in this.mem ? this.mem[k] : d;
+    }
+  },
+  del(k) {
+    try {
+      localStorage.removeItem(k);
+    } catch (e) {}
+    delete this.mem[k];
+  },
+};
+const PREFIX = "slscreen_",
+  INDEX = PREFIX + "index",
+  LAST = PREFIX + "last",
+  SETTINGS = PREFIX + "settings";
+const APP_VERSION = "2.0";
+function getSettings() {
+  return Object.assign(
+    { org: "", defaultScreener: "" },
+    store.get(SETTINGS, {}),
+  );
+}
+function setSettings(s) {
+  store.set(SETTINGS, s);
+}
+/* ================= domain registry ================= */
+const SPEECH = [
+  { k: "ARTIC", name: "Articulation / Phonology" },
+  { k: "FLU", name: "Fluency" },
+  { k: "VOICE", name: "Voice & Resonance" },
+];
+const LANG = [{ k: "REC" }, { k: "EXP" }, { k: "PRAG" }];
+const ALL_DOMAINS = ["ARTIC", "FLU", "VOICE", "REC", "EXP", "PRAG"];
+/* ================= helpers ================= */
+const $ = (s) => document.querySelector(s);
+const el = (t, a = {}, ...kids) => {
+  const e = document.createElement(t);
+  for (const k in a) {
+    if (k === "class") e.className = a[k];
+    else if (k === "html") e.innerHTML = a[k];
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), a[k]);
+    else e.setAttribute(k, a[k]);
+  }
+  kids.flat().forEach((c) => {
+    if (c != null)
+      e.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+  });
+  return e;
+};
+const esc = (s) =>
+  (s == null ? "" : String(s)).replace(
+    /[&<>"]/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+  );
+/* Local-timezone-safe date handling: parse ISO date strings as local dates. */
+function parseLocal(iso) {
+  if (!iso) return null;
+  const p = String(iso).split("-").map(Number);
+  if (p.length !== 3 || p.some(isNaN)) return null;
+  const d = new Date(p[0], p[1] - 1, p[2]);
+  return isNaN(d) ? null : d;
+}
+const todayISO = () => {
+  const d = new Date();
+  return (
+    d.getFullYear() +
+    "-" +
+    String(d.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(d.getDate()).padStart(2, "0")
+  );
+};
+function fmtDate(iso) {
+  const d = parseLocal(iso);
+  if (!d) return "—";
+  return d.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+const gradeByKey = (k) => DATA.grades.find((g) => g.key === k);
+/* ================= grade auto-calc (Sept 1 cutoff, local time) ================= */
+function ageOn(dobISO, onDate) {
+  const dob = parseLocal(dobISO);
+  if (!dob || !onDate) return null;
+  let a = onDate.getFullYear() - dob.getFullYear();
+  const m = onDate.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && onDate.getDate() < dob.getDate())) a--;
+  return a;
+}
+function computeGradeKey(dob, date) {
+  if (!dob || !date) return "";
+  const d = parseLocal(date);
+  if (!d) return "";
+  const cutYear = d.getMonth() >= 8 ? d.getFullYear() : d.getFullYear() - 1;
+  const a = ageOn(dob, new Date(cutYear, 8, 1));
+  if (a == null || a < 4) return "";
+  if (a > 10) return "G5";
+  return (
+    { 4: "PREK", 5: "K", 6: "G1", 7: "G2", 8: "G3", 9: "G4", 10: "G5" }[a] || ""
+  );
+}
+/* ================= state ================= */
+let S = null;
+function newId() {
+  return (
+    "scr_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7)
+  );
+}
+function blankState() {
+  const set = getSettings();
+  return {
+    id: newId(),
+    v: 2,
+    created: new Date().toISOString(),
+    intake: {
+      student: "",
+      dob: "",
+      date: todayISO(),
+      teacher: "",
+      home: "",
+      screener: set.defaultScreener || "",
+    },
+    gradeKey: "",
+    gradeAuto: true,
+    artic: { cards: [], types: [], pat: [], notes: "" },
+    hfv: { FLU: { c: [], notes: "" }, VOICE: { c: [], notes: "" } },
+    lang: {
+      REC: { c: [], notes: "" },
+      EXP: { c: [], notes: "" },
+      PRAG: { c: [], notes: "" },
+    },
+    reviewed: {
+      ARTIC: false,
+      FLU: false,
+      VOICE: false,
+      REC: false,
+      EXP: false,
+      PRAG: false,
+    },
+    report: { comments: "", finalTier: "" },
+    view: "intake",
+  };
+}
+function ensureArrays() {
+  S.v = 2;
+  S.intake = Object.assign(
+    {
+      student: "",
+      dob: "",
+      date: todayISO(),
+      teacher: "",
+      home: "",
+      screener: "",
+    },
+    S.intake || {},
+  );
+  S.artic = Object.assign(
+    { cards: [], types: [], pat: [], notes: "" },
+    S.artic || {},
+  );
+  S.hfv = S.hfv || {};
+  S.lang = S.lang || {};
+  S.report = Object.assign({ comments: "", finalTier: "" }, S.report || {});
+  S.reviewed = S.reviewed || {};
+  S.artic.cards = fitStr(S.artic.cards, ART_STIMULI.length);
+  S.artic.pat = fit(S.artic.pat, DATA.artic.patterns.length);
+  S.artic.types = fitStr(S.artic.types, ART_STIMULI.length);
+  ALL_DOMAINS.forEach((k) => {
+    if (typeof S.reviewed[k] !== "boolean") S.reviewed[k] = false;
+  });
+  ["FLU", "VOICE"].forEach((k) => {
+    S.hfv[k] = Object.assign({ c: [], notes: "" }, S.hfv[k] || {});
+    S.hfv[k].c = fit(S.hfv[k].c, DATA.hfvItems[k].length);
+  });
+  const g = gradeByKey(S.gradeKey);
+  LANG.forEach((d) => {
+    S.lang[d.k] = Object.assign({ c: [], notes: "" }, S.lang[d.k] || {});
+    const n = g ? g.domains[d.k].length : 0;
+    S.lang[d.k].c = fit(S.lang[d.k].c, n);
+  });
+  if (!S.view) S.view = "intake";
+}
+const fit = (arr, n) => {
+  arr = Array.isArray(arr) ? arr.slice(0, n) : [];
+  while (arr.length < n) arr.push(false);
+  return arr;
+};
+const fitStr = (arr, n) => {
+  arr = Array.isArray(arr) ? arr.slice(0, n) : [];
+  while (arr.length < n) arr.push("");
+  return arr;
+};
+/* ================= scoring ================= */
+const count = (a) => a.reduce((s, v) => s + (v ? 1 : 0), 0);
+function langStatus(dk) {
+  const g = gradeByKey(S.gradeKey);
+  if (!g) return null;
+  const n = g.domains[dk].length,
+    miss = n - count(S.lang[dk].c);
+  return miss <= 1 ? st("WNL") : miss === 2 ? st("MON") : st("CON");
+}
+function hfvStatus(k) {
+  const n = DATA.hfvItems[k].length,
+    miss = n - count(S.hfv[k].c);
+  return miss === 0 ? st("WNL") : miss === 1 ? st("MON") : st("CON");
+}
+function articStatus() {
+  const e = S.artic.cards.filter((v) => v === "E").length + count(S.artic.pat);
+  if (e === 0) return st("WNL");
+  return ["G2", "G3", "G4", "G5"].includes(S.gradeKey) ? st("CON") : st("MON");
+}
+function st(k) {
+  return {
+    k,
+    label: { WNL: "Within limits", MON: "Monitor", CON: "Concern" }[k],
+  };
+}
+function domainStatus(key) {
+  if (key === "ARTIC") return articStatus();
+  if (key === "FLU" || key === "VOICE") return hfvStatus(key);
+  return langStatus(key);
+}
+function suggestedTier() {
+  const sts = ALL_DOMAINS.map(domainStatus).filter(Boolean);
+  if (sts.some((s) => s.k === "CON")) return 3;
+  if (sts.some((s) => s.k === "MON")) return 2;
+  return 0;
+}
+function requiredDomains() {
+  return [
+    "ARTIC",
+    "FLU",
+    "VOICE",
+    ...(gradeByKey(S.gradeKey) ? LANG.map((d) => d.k) : []),
+  ];
+}
+function intakeComplete() {
+  return !!(
+    S.intake.student &&
+    S.intake.dob &&
+    S.intake.date &&
+    S.intake.screener &&
+    gradeByKey(S.gradeKey)
+  );
+}
+function completionStats() {
+  const req = ["intake", ...requiredDomains()];
+  const done = req.filter((k) =>
+    k === "intake" ? intakeComplete() : S.reviewed[k],
+  );
+  return {
+    done: done.length,
+    total: req.length,
+    pct: Math.round((done.length / req.length) * 100),
+  };
+}
+function qualityIssues() {
+  const issues = [];
+  if (!S.intake.student)
+    issues.push({ type: "risk", text: "Student identifier is missing." });
+  if (!S.intake.dob || !S.intake.date || !gradeByKey(S.gradeKey))
+    issues.push({
+      type: "risk",
+      text: "DOB, screening date, or grade is incomplete.",
+    });
+  if (!S.intake.screener)
+    issues.push({ type: "risk", text: "Screener / SLP is missing." });
+  const unreviewed = requiredDomains().filter((k) => !S.reviewed[k]);
+  if (unreviewed.length)
+    issues.push({
+      type: "warn",
+      text:
+        "Not yet marked reviewed: " +
+        unreviewed.map(domainLabel).join(", ") +
+        ".",
+    });
+  const unmarked = ART_STIMULI.length - S.artic.cards.filter(Boolean).length;
+  if (unmarked)
+    issues.push({
+      type: "warn",
+      text:
+        unmarked +
+        " articulation picture card" +
+        (unmarked === 1 ? " is" : "s are") +
+        " unmarked.",
+    });
+  requiredDomains().forEach((k) => {
+    const s = domainStatus(k),
+      notes = domainNotes(k);
+    if (s && s.k !== "WNL" && !notes.trim())
+      issues.push({
+        type: "warn",
+        text:
+          domainLabel(k) +
+          " is " +
+          s.label.toLowerCase() +
+          " but has no notes.",
+      });
+  });
+  return issues;
+}
+function domainLabel(k) {
+  return (
+    {
+      ARTIC: "Articulation / Phonology",
+      FLU: "Fluency",
+      VOICE: "Voice & Resonance",
+    }[k] ||
+    DATA.domainNames[k] ||
+    k
+  );
+}
+function domainNotes(k) {
+  return k === "ARTIC"
+    ? S.artic.notes || ""
+    : k === "FLU" || k === "VOICE"
+      ? S.hfv[k].notes || ""
+      : S.lang[k].notes || "";
+}
+/* ================= persistence ================= */
+let saveTimer = null;
+function persist() {
+  if (!S) return;
+  clearTimeout(saveTimer);
+  saveTimer = null;
+  store.set(PREFIX + S.id, S);
+  let idx = store.get(INDEX, []);
+  idx = idx.filter((x) => x.id !== S.id);
+  idx.unshift({
+    id: S.id,
+    student: S.intake.student || "(unnamed)",
+    date: S.intake.date,
+    grade: S.gradeKey,
+    ts: Date.now(),
+  });
+  store.set(INDEX, idx.slice(0, 120));
+  store.set(LAST, S.id);
+  setSaveState("saved");
+  renderNav();
+}
+function setSaveState(mode) {
+  const t = new Date().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const box = $("#saveState");
+  if (!box) return;
+  box.innerHTML =
+    mode === "pending"
+      ? '<span class="dot-live pending"></span><span>Saving…</span>'
+      : '<span class="dot-live"></span><span>Saved ' + t + "</span>";
+}
+function change() {
+  setSaveState("pending");
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(persist, 300);
+}
+function flushSave() {
+  if (saveTimer) {
+    persist();
+  }
+}
+window.addEventListener("beforeunload", flushSave);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") flushSave();
+});
+/* ================= toasts ================= */
+function toast(msg, type) {
+  const host = $("#toastHost");
+  const t = el(
+    "div",
+    { class: "toast" + (type === "warn" ? " warn" : "") },
+    el(
+      "span",
+      { class: "ticon", "aria-hidden": "true" },
+      type === "warn" ? "⚠" : "✓",
+    ),
+    el("span", {}, msg),
+  );
+  host.appendChild(t);
+  setTimeout(() => {
+    t.classList.add("out");
+    setTimeout(() => t.remove(), 320);
+  }, 2600);
+}
+/* ================= modal ================= */
+function showModal({ title, body, actions, onClose }) {
+  const host = $("#modalHost");
+  host.innerHTML = "";
+  const prevFocus = document.activeElement;
+  const close = () => {
+    host.innerHTML = "";
+    document.removeEventListener("keydown", onKey);
+    if (prevFocus && prevFocus.focus) prevFocus.focus();
+    if (onClose) onClose();
+  };
+  const onKey = (e) => {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      close();
+    }
+  };
+  document.addEventListener("keydown", onKey);
+  const box = el("div", {
+    class: "modal",
+    role: "dialog",
+    "aria-modal": "true",
+    "aria-label": title,
+  });
+  box.appendChild(
+    el(
+      "header",
+      {},
+      el("h2", {}, title),
+      el(
+        "button",
+        { class: "mclose", "aria-label": "Close dialog", onclick: close },
+        "×",
+      ),
+    ),
+  );
+  const mb = el("div", { class: "mbody" });
+  if (typeof body === "string") mb.innerHTML = body;
+  else mb.appendChild(body);
+  box.appendChild(mb);
+  if (actions && actions.length) {
+    const f = el("footer", {});
+    actions.forEach((a) =>
+      f.appendChild(
+        el(
+          "button",
+          {
+            class:
+              "btn" +
+              (a.primary ? " primary" : "") +
+              (a.danger ? " danger" : ""),
+            onclick: () => {
+              const r = a.onclick ? a.onclick() : undefined;
+              if (r !== false) close();
+            },
+          },
+          a.label,
+        ),
+      ),
+    );
+    box.appendChild(f);
+  }
+  const scrim = el(
+    "div",
+    {
+      class: "modal-scrim",
+      onclick: (e) => {
+        if (e.target === scrim) close();
+      },
+    },
+    box,
+  );
+  host.appendChild(scrim);
+  const first =
+    box.querySelector("input,select,textarea,button:not(.mclose)") ||
+    box.querySelector("button");
+  if (first) first.focus();
+  return close;
+}
+function confirmDialog(
+  msg,
+  { title = "Please confirm", okLabel = "Confirm", danger = false } = {},
+) {
+  return new Promise((res) => {
+    let decided = false;
+    showModal({
+      title,
+      body:
+        '<p style="font-size:14.5px;margin:6px 0 10px">' + esc(msg) + "</p>",
+      actions: [
+        { label: "Cancel" },
+        {
+          label: okLabel,
+          primary: !danger,
+          danger,
+          onclick: () => {
+            decided = true;
+          },
+        },
+      ],
+      onClose: () => res(decided),
+    });
+  });
+}
+/* ================= navigation ================= */
+function viewSequence() {
+  return [
+    "intake",
+    "ARTIC",
+    "FLU",
+    "VOICE",
+    ...(gradeByKey(S.gradeKey) ? ["REC", "EXP", "PRAG"] : []),
+    "report",
+  ];
+}
+function renderNav() {
+  const side = $("#side");
+  if (!side) return;
+  side.innerHTML = "";
+  const stats = completionStats();
+  const sp = el(
+    "div",
+    { class: "side-progress" },
+    el(
+      "div",
+      { class: "sp-top" },
+      el("span", {}, "Completion"),
+      el("span", {}, stats.pct + "%"),
+    ),
+    el(
+      "div",
+      {
+        class: "progressbar",
+        role: "progressbar",
+        "aria-valuenow": String(stats.pct),
+        "aria-valuemin": "0",
+        "aria-valuemax": "100",
+        "aria-label": "Screening completion",
+      },
+      el("span", { style: "width:" + stats.pct + "%" }),
+    ),
+  );
+  side.appendChild(sp);
+  side.appendChild(
+    navItem("intake", "Student &amp; intake", null, false, intakeComplete()),
+  );
+  side.appendChild(el("div", { class: "navgroup" }, "Speech screens"));
+  SPEECH.forEach((d) =>
+    side.appendChild(
+      navItem(d.k, d.name, domainStatus(d.k), false, S.reviewed[d.k]),
+    ),
+  );
+  const g = gradeByKey(S.gradeKey);
+  side.appendChild(
+    el("div", { class: "navgroup" }, "Language" + (g ? " · " + g.label : "")),
+  );
+  LANG.forEach((d) =>
+    side.appendChild(
+      navItem(
+        d.k,
+        DATA.domainNames[d.k],
+        g ? domainStatus(d.k) : null,
+        !g,
+        g ? S.reviewed[d.k] : false,
+      ),
+    ),
+  );
+  side.appendChild(el("div", { class: "navgroup" }, "Output"));
+  side.appendChild(navItem("report", "Report &amp; export", null));
+  side.appendChild(navItem("guide", "Scoring guide &amp; references", null));
+}
+function navItem(key, name, status, disabled, done) {
+  const dot = el("span", {
+    class: "sdot " + (status ? status.k : ""),
+    "aria-hidden": "true",
+  });
+  const b = el(
+    "button",
+    {
+      class: "navitem" + (S.view === key ? " active" : ""),
+      "aria-current": S.view === key ? "page" : "false",
+      onclick: () => {
+        if (!disabled) go(key);
+      },
+    },
+    dot,
+    el("span", { class: "nname", html: name }),
+    done
+      ? el(
+          "span",
+          { class: "ncheck", title: "Complete", "aria-label": "complete" },
+          "✓",
+        )
+      : null,
+  );
+  if (disabled) {
+    b.setAttribute("disabled", "");
+    b.setAttribute("title", "Set the student’s grade on the intake page first");
+  }
+  if (status)
+    b.setAttribute(
+      "aria-label",
+      name.replace(/&amp;/g, "&") + " — " + status.label,
+    );
+  return b;
+}
+function go(key) {
+  S.view = key;
+  persist();
+  render();
+  const m = $("#main");
+  if (m) {
+    m.focus({ preventScroll: true });
+    window.scrollTo({ top: 0 });
+  }
+}
+function render() {
+  ensureArrays();
+  stopStopwatch();
+  renderNav();
+  const m = $("#main");
+  m.innerHTML = "";
+  const v = S.view;
+  if (v === "intake") m.appendChild(viewIntake());
+  else if (v === "ARTIC") m.appendChild(viewArtic());
+  else if (v === "FLU" || v === "VOICE") m.appendChild(viewHFV(v));
+  else if (["REC", "EXP", "PRAG"].includes(v)) m.appendChild(viewLang(v));
+  else if (v === "report") m.appendChild(viewReport());
+  else if (v === "guide") m.appendChild(viewGuide());
+  else m.appendChild(viewIntake());
+}
+function pager(current) {
+  const seq = viewSequence(),
+    i = seq.indexOf(current);
+  const wrap = el("div", { class: "pager" });
+  const prev = i > 0 ? seq[i - 1] : null,
+    next = i >= 0 && i < seq.length - 1 ? seq[i + 1] : null;
+  wrap.appendChild(
+    prev
+      ? el(
+          "button",
+          { class: "btn", onclick: () => go(prev) },
+          "← " + seqLabel(prev),
+        )
+      : el("span", {}),
+  );
+  wrap.appendChild(
+    next
+      ? el(
+          "button",
+          { class: "btn primary", onclick: () => go(next) },
+          seqLabel(next) + " →",
+        )
+      : el("span", {}),
+  );
+  return wrap;
+}
+function seqLabel(k) {
+  return (
+    {
+      intake: "Intake",
+      ARTIC: "Articulation",
+      FLU: "Fluency",
+      VOICE: "Voice",
+      REC: "Receptive",
+      EXP: "Expressive",
+      PRAG: "Pragmatics",
+      report: "Report",
+    }[k] || k
+  );
+}
+/* ================= intake view ================= */
+function viewIntake() {
+  const wrap = el("div", { class: "view" });
+  wrap.appendChild(el("div", { class: "crumb" }, "Step 1 · Intake"));
+  wrap.appendChild(el("h1", { class: "vtitle" }, "Student & intake"));
+  wrap.appendChild(
+    el(
+      "div",
+      { class: "vsub" },
+      "Grade is calculated automatically from date of birth and screening date (September 1 cutoff). You can override it. All data stays on this device.",
+    ),
+  );
+  const card = el("div", { class: "card" });
+  const grid = el("div", { class: "grid2" });
+  const fld = (label, key, type = "text", auto) => {
+    const id = "in_" + key;
+    const inp = el("input", {
+      type,
+      id,
+      value: S.intake[key] || "",
+      autocomplete: "off",
+      oninput: (e) => {
+        S.intake[key] = e.target.value;
+        if ((key === "dob" || key === "date") && S.gradeAuto) {
+          S.gradeKey = computeGradeKey(S.intake.dob, S.intake.date);
+          ensureArrays();
+          refreshGradePill();
+          renderNav();
+        }
+        if (key === "home") refreshHomeCard();
+        change();
+      },
+    });
+    return el("div", { class: "field" }, el("label", { for: id }, label), inp);
+  };
+  grid.appendChild(fld("Student (ID or initials)", "student"));
+  grid.appendChild(fld("Screener / SLP", "screener"));
+  grid.appendChild(fld("Date of birth", "dob", "date"));
+  grid.appendChild(fld("Date screened", "date", "date"));
+  grid.appendChild(fld("Teacher", "teacher"));
+  grid.appendChild(fld("Home language(s)", "home"));
+  card.appendChild(grid);
+  const gsel = el("select", {
+    id: "gradeSel",
+    "aria-label": "Grade level",
+    onchange: (e) => {
+      S.gradeAuto = e.target.value === "__auto";
+      if (S.gradeAuto)
+        S.gradeKey = computeGradeKey(S.intake.dob, S.intake.date);
+      else S.gradeKey = e.target.value;
+      ensureArrays();
+      refreshGradePill();
+      renderNav();
+      change();
+    },
+  });
+  gsel.appendChild(
+    el(
+      "option",
+      { value: "__auto" },
+      "Auto" +
+        (S.gradeAuto && S.gradeKey
+          ? " (" + gradeByKey(S.gradeKey).label + ")"
+          : ""),
+    ),
+  );
+  DATA.grades.forEach((g) => {
+    const o = el("option", { value: g.key }, g.label);
+    if (!S.gradeAuto && S.gradeKey === g.key) o.setAttribute("selected", "");
+    gsel.appendChild(o);
+  });
+  if (S.gradeAuto) gsel.value = "__auto";
+  const pill = el("span", { class: "pill", id: "gradePill" }, gradeLabelText());
+  card.appendChild(
+    el(
+      "div",
+      { class: "grid2", style: "margin-top:16px" },
+      el(
+        "div",
+        { class: "field" },
+        el("label", { for: "gradeSel" }, "Grade level"),
+        el("div", { class: "gradebox" }, gsel, pill),
+      ),
+      el("div", {}),
+    ),
+  );
+  wrap.appendChild(card);
+  wrap.appendChild(
+    el(
+      "div",
+      {
+        id: "homeCard",
+        class: "card section-head",
+        style: (S.intake.home || "").trim() ? "" : "display:none",
+      },
+      el("h3", {}, "Multilingual consideration"),
+      el("p", {
+        style: "margin:0;font-size:14px",
+        html:
+          'Home language noted: <b id="homeLangName">' +
+          esc(S.intake.home) +
+          "</b>. Score only true errors. Features consistent with the home language, a dialect, or typical second-language acquisition are a <b>language difference, not a disorder</b> — do not count them as missed skills. Gather information in the home language where possible.",
+      }),
+    ),
+  );
+  wrap.appendChild(progressPanel(true));
+  wrap.appendChild(pager("intake"));
+  return wrap;
+}
+function gradeLabelText() {
+  const g = gradeByKey(S.gradeKey);
+  return g
+    ? g.label + " · " + g.age
+    : S.intake.dob
+      ? "Enter a valid DOB"
+      : "Set DOB to auto-calc";
+}
+function refreshGradePill() {
+  const p = $("#gradePill");
+  if (p) p.textContent = gradeLabelText();
+}
+function refreshHomeCard() {
+  const c = $("#homeCard"),
+    n = $("#homeLangName");
+  if (!c) return;
+  const v = (S.intake.home || "").trim();
+  c.style.display = v ? "" : "none";
+  if (n) n.textContent = v;
+}
+/* ================= shared builders ================= */
+function taskCard(t) {
+  const c = el("div", { class: "task" });
+  c.appendChild(el("div", { class: "tlabel" }, t.label));
+  if (t.materials)
+    c.appendChild(
+      el("div", {
+        class: "row",
+        html: "<b>Materials:</b> " + esc(t.materials),
+      }),
+    );
+  if (t.say)
+    c.appendChild(
+      el("div", { class: "row", html: "<b>Say / do:</b> " + esc(t.say) }),
+    );
+  if (t.probes && t.probes.length) {
+    c.appendChild(el("div", { class: "row", html: "<b>Probes:</b>" }));
+    const ul = el("ul");
+    t.probes.forEach((p) => ul.appendChild(el("li", {}, p)));
+    c.appendChild(ul);
+  }
+  if (t.pass)
+    c.appendChild(
+      el("div", { class: "row pass", html: "<b>Pass:</b> " + esc(t.pass) }),
+    );
+  if (t.concern)
+    c.appendChild(
+      el("div", {
+        class: "row concern",
+        html: "<b>Concern:</b> " + esc(t.concern),
+      }),
+    );
+  return c;
+}
+function scoreHeader(title, status) {
+  return el(
+    "div",
+    { class: "scorehead" },
+    el("h3", {}, title),
+    el(
+      "span",
+      {
+        class: "chip " + (status ? status.k : "none"),
+        id: "chip",
+        role: "status",
+      },
+      status ? status.label : "—",
+    ),
+  );
+}
+function notesField(getv, setv) {
+  const ta = el("textarea", {
+    rows: "2",
+    id: "notes_" + S.view,
+    placeholder: "Notes / observations…",
+    oninput: (e) => {
+      setv(e.target.value);
+      change();
+    },
+  });
+  ta.value = getv() || "";
+  return el(
+    "div",
+    { class: "notes-wrap" },
+    el("label", { for: "notes_" + S.view }, "Notes"),
+    ta,
+  );
+}
+function reviewedControl(key) {
+  const id = "reviewed_" + key;
+  return el(
+    "div",
+    { class: "checkrow attest" },
+    el("input", {
+      type: "checkbox",
+      id,
+      onchange: (e) => {
+        S.reviewed[key] = e.target.checked;
+        change();
+        renderNav();
+      },
+      ...(S.reviewed[key] ? { checked: "" } : {}),
+    }),
+    el(
+      "label",
+      { for: id },
+      "I reviewed this domain and the scoring reflects my clinical judgment.",
+    ),
+  );
+}
+function progressPanel(compact = false) {
+  const stats = completionStats(),
+    issues = qualityIssues();
+  const card = el("div", {
+    class:
+      "card readiness " +
+      (issues.some((i) => i.type === "risk")
+        ? "risk"
+        : issues.length
+          ? ""
+          : "ready"),
+  });
+  card.appendChild(
+    el("h3", {}, compact ? "Report readiness" : "Screening quality gate"),
+  );
+  card.appendChild(
+    el(
+      "div",
+      { class: "progress-wrap" },
+      el(
+        "div",
+        { class: "progress-meta" },
+        el(
+          "span",
+          {},
+          stats.done + " of " + stats.total + " required sections complete",
+        ),
+        el("span", {}, stats.pct + "%"),
+      ),
+      el(
+        "div",
+        {
+          class: "progressbar",
+          role: "progressbar",
+          "aria-valuenow": String(stats.pct),
+          "aria-valuemin": "0",
+          "aria-valuemax": "100",
+          "aria-label": "Screening completion",
+        },
+        el("span", { style: "width:" + stats.pct + "%" }),
+      ),
+    ),
+  );
+  const list = el("ul", { class: "quality-list" });
+  if (!issues.length)
+    list.appendChild(
+      el(
+        "li",
+        { class: "ok" },
+        el("span", { class: "qdot" }),
+        el(
+          "span",
+          {},
+          "Ready for export. Required intake fields are present and all loaded domains are reviewed.",
+        ),
+      ),
+    );
+  issues
+    .slice(0, compact ? 4 : 8)
+    .forEach((i) =>
+      list.appendChild(
+        el(
+          "li",
+          { class: i.type === "risk" ? "risk" : "" },
+          el("span", { class: "qdot" }),
+          el("span", {}, i.text),
+        ),
+      ),
+    );
+  if (compact && issues.length > 4)
+    list.appendChild(
+      el(
+        "li",
+        {},
+        el("span", { class: "qdot" }),
+        el(
+          "span",
+          { class: "muted" },
+          issues.length - 4 + " more item(s) to review.",
+        ),
+      ),
+    );
+  card.appendChild(list);
+  return card;
+}
+/* ================= stimulus cards & presentation mode ================= */
+const ERROR_TYPES = ["substitution", "omission", "distortion", "unsure"];
+function stimStateClass(i) {
+  return S.artic.cards[i] === "E"
+    ? "err"
+    : S.artic.cards[i] === "C"
+      ? "ok"
+      : "";
+}
+function buildStimCard(s, i) {
+  const card = el("div", {
+    class: "stim-card " + stimStateClass(i),
+    id: "stim" + i,
+  });
+  const img = el("div", {
+    class: "stim-img",
+    html: s.svg,
+    title: "Open full-screen for the student",
+    onclick: () => openPresentation(i),
+  });
+  card.appendChild(img);
+  card.appendChild(el("div", { class: "stim-word" }, s.word));
+  card.appendChild(el("div", { class: "stim-tag" }, s.sound + " · " + s.pos));
+  const seg = el("div", {
+    class: "seg",
+    role: "group",
+    "aria-label": s.word + " " + s.sound,
+  });
+  const typeSel = el(
+    "select",
+    {
+      class: "etype",
+      "aria-label": "Error type for " + s.word,
+      style: S.artic.cards[i] === "E" ? "" : "display:none",
+      onchange: (e) => {
+        S.artic.types[i] = e.target.value;
+        change();
+      },
+    },
+    el("option", { value: "" }, "error type…"),
+    ...ERROR_TYPES.map((t) => {
+      const o = el("option", { value: t }, t);
+      if (S.artic.types[i] === t) o.setAttribute("selected", "");
+      return o;
+    }),
+  );
+  const setv = (v) => {
+    S.artic.cards[i] = S.artic.cards[i] === v ? "" : v;
+    if (S.artic.cards[i] !== "E") {
+      S.artic.types[i] = "";
+      typeSel.value = "";
+    }
+    typeSel.style.display = S.artic.cards[i] === "E" ? "" : "none";
+    card.className = "stim-card " + stimStateClass(i);
+    okB.className = S.artic.cards[i] === "C" ? "on-ok" : "";
+    errB.className = S.artic.cards[i] === "E" ? "on-err" : "";
+    okB.setAttribute("aria-pressed", S.artic.cards[i] === "C");
+    errB.setAttribute("aria-pressed", S.artic.cards[i] === "E");
+    reChip(articStatus());
+    const sum = $("#stimSummary");
+    if (sum) sum.textContent = stimSummaryText();
+    change();
+  };
+  const okB = el(
+    "button",
+    {
+      class: S.artic.cards[i] === "C" ? "on-ok" : "",
+      "aria-pressed": String(S.artic.cards[i] === "C"),
+      onclick: () => setv("C"),
+    },
+    "✓ Correct",
+  );
+  const errB = el(
+    "button",
+    {
+      class: S.artic.cards[i] === "E" ? "on-err" : "",
+      "aria-pressed": String(S.artic.cards[i] === "E"),
+      onclick: () => setv("E"),
+    },
+    "✗ Error",
+  );
+  seg.appendChild(okB);
+  seg.appendChild(errB);
+  card.appendChild(seg);
+  card.appendChild(typeSel);
+  return card;
+}
+/* Full-screen student-facing card deck. No readable words shown to the student;
+   the examiner can peek at the word via the reveal control. */
+let presKeyHandler = null;
+function closePresentation() {
+  const scrim = $("#presentScrim");
+  if (scrim) scrim.remove();
+  if (presKeyHandler) {
+    document.removeEventListener("keydown", presKeyHandler);
+    presKeyHandler = null;
+  }
+  if (S.view === "ARTIC") render();
+}
+function openPresentation(startIdx) {
+  closePresentation();
+  let idx = Math.max(0, Math.min(startIdx || 0, ART_STIMULI.length - 1));
+  let revealed = false;
+  const img = el("div", { class: "pres-img" });
+  const counter = el("div", { class: "pres-counter" });
+  const soundTag = el("div", { class: "pres-sound" });
+  const wordBtn = el(
+    "button",
+    {
+      class: "btn sm",
+      title: "Reveal the target word (examiner only)",
+      onclick: () => {
+        revealed = !revealed;
+        draw();
+      },
+    },
+    "Show word",
+  );
+  const mark = (v) => {
+    S.artic.cards[idx] = v;
+    if (v !== "E") S.artic.types[idx] = "";
+    change();
+    if (idx < ART_STIMULI.length - 1) {
+      idx++;
+      revealed = false;
+      draw();
+    } else closePresentation();
+  };
+  const nav = (d) => {
+    idx = Math.max(0, Math.min(idx + d, ART_STIMULI.length - 1));
+    revealed = false;
+    draw();
+  };
+  const stateChip = el("span", { class: "pres-state" });
+  function draw() {
+    const s = ART_STIMULI[idx];
+    img.innerHTML = s.svg;
+    counter.textContent = "Card " + (idx + 1) + " of " + ART_STIMULI.length;
+    soundTag.textContent = s.sound + " · " + s.pos;
+    wordBtn.textContent = revealed ? s.word : "Show word";
+    const v = S.artic.cards[idx];
+    stateChip.textContent =
+      v === "C" ? "marked correct" : v === "E" ? "marked error" : "";
+    stateChip.className =
+      "pres-state " + (v === "C" ? "ok" : v === "E" ? "err" : "");
+  }
+  draw();
+  const scrim = el(
+    "div",
+    {
+      id: "presentScrim",
+      class: "present-scrim",
+      role: "dialog",
+      "aria-modal": "true",
+      "aria-label": "Picture card presentation",
+    },
+    el(
+      "div",
+      { class: "pres-top" },
+      counter,
+      soundTag,
+      stateChip,
+      el("span", { style: "flex:1" }),
+      wordBtn,
+      el(
+        "button",
+        {
+          class: "btn sm",
+          "aria-label": "Close presentation",
+          onclick: closePresentation,
+        },
+        "✕ Close",
+      ),
+    ),
+    img,
+    el(
+      "div",
+      { class: "pres-actions" },
+      el("button", { class: "btn pres-prev", onclick: () => nav(-1) }, "←"),
+      el(
+        "button",
+        { class: "btn pres-err", onclick: () => mark("E") },
+        "✗ Error",
+      ),
+      el(
+        "button",
+        { class: "btn pres-ok", onclick: () => mark("C") },
+        "✓ Correct",
+      ),
+      el("button", { class: "btn pres-next", onclick: () => nav(1) }, "→"),
+    ),
+    el(
+      "div",
+      { class: "pres-help" },
+      "Keys: ← → move · C correct · E error · W word · Esc close",
+    ),
+  );
+  presKeyHandler = (e) => {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      closePresentation();
+    } else if (e.key === "ArrowRight") nav(1);
+    else if (e.key === "ArrowLeft") nav(-1);
+    else if (e.key.toLowerCase() === "c") mark("C");
+    else if (e.key.toLowerCase() === "e") mark("E");
+    else if (e.key.toLowerCase() === "w") {
+      revealed = !revealed;
+      draw();
+    }
+  };
+  document.addEventListener("keydown", presKeyHandler);
+  document.body.appendChild(scrim);
+}
+/* ================= articulation view ================= */
+function viewArtic() {
+  const w = el("div", { class: "view" });
+  w.appendChild(el("div", { class: "crumb" }, "Speech screen · universal"));
+  w.appendChild(el("h1", { class: "vtitle" }, "Articulation / Phonology"));
+  const ut = DATA.universalTasks.ARTIC;
+  w.appendChild(el("div", { class: "intro-note" }, ut.intro));
+  const tcard = el("div", { class: "card" });
+  tcard.appendChild(el("h3", {}, "Administer"));
+  ut.tasks.forEach((t) => tcard.appendChild(taskCard(t)));
+  w.appendChild(tcard);
+  const pc = el("div", { class: "card" });
+  pc.appendChild(
+    scoreHeader("Picture naming — mark each production", articStatus()),
+  );
+  pc.appendChild(
+    el(
+      "div",
+      { class: "present-row" },
+      el(
+        "button",
+        {
+          class: "btn sm primary",
+          title:
+            "Full-screen picture cards for the student — no readable words on screen; mark with keyboard or buttons",
+          onclick: () => openPresentation(0),
+        },
+        "▶ Present to student",
+      ),
+      el(
+        "span",
+        { class: "hint", style: "margin:0" },
+        "Full-screen cards for tabletop or shared-screen administration.",
+      ),
+    ),
+  );
+  pc.appendChild(
+    el("div", { class: "stim-summary", id: "stimSummary" }, stimSummaryText()),
+  );
+  const grid = el("div", {
+    class: "stim-grid",
+    role: "group",
+    "aria-label": "Articulation picture cards",
+  });
+  ART_STIMULI.forEach((s, i) => grid.appendChild(buildStimCard(s, i)));
+  pc.appendChild(grid);
+  pc.appendChild(
+    el(
+      "div",
+      { class: "hint", style: "margin-top:14px" },
+      "Phonological patterns present (mark only if beyond elimination age):",
+    ),
+  );
+  DATA.artic.patterns.forEach((p, i) => {
+    const id = "pat" + i;
+    pc.appendChild(
+      el(
+        "div",
+        { class: "checkrow" },
+        el("input", {
+          type: "checkbox",
+          id,
+          onchange: (e) => {
+            S.artic.pat[i] = e.target.checked;
+            reChip(articStatus());
+            change();
+          },
+          ...(S.artic.pat[i] ? { checked: "" } : {}),
+        }),
+        el("label", {
+          for: id,
+          html: esc(p.text) + ' <span class="eg">— ' + esc(p.eg) + "</span>",
+        }),
+      ),
+    );
+  });
+  const g = gradeByKey(S.gradeKey);
+  if (g) {
+    const tbl = el("table", { class: "ref-table" });
+    tbl.innerHTML =
+      '<tr><th scope="col">This grade</th><th scope="col">Intelligibility expected</th><th scope="col">Still developmental (not a concern)</th></tr>' +
+      '<tr class="ref-row-hi"><td><b>' +
+      esc(g.label) +
+      "</b></td><td>" +
+      esc(DATA.artic.intelligibility[g.key]) +
+      "</td><td>" +
+      esc(DATA.artic.developmentalOK[g.key]) +
+      "</td></tr>";
+    pc.appendChild(tbl);
+  }
+  pc.appendChild(
+    el("div", {
+      class: "rulebox",
+      html: "<b>Scoring rule.</b> " + esc(DATA.speechRules[0]),
+    }),
+  );
+  pc.appendChild(
+    notesField(
+      () => S.artic.notes,
+      (v) => (S.artic.notes = v),
+    ),
+  );
+  pc.appendChild(reviewedControl("ARTIC"));
+  w.appendChild(pc);
+  w.appendChild(pager("ARTIC"));
+  return w;
+}
+function stimSummaryText() {
+  const e = S.artic.cards.filter((v) => v === "E").length,
+    c = S.artic.cards.filter((v) => v === "C").length;
+  return (
+    "Show each picture and ask “What is this?”  ·  " +
+    c +
+    " correct, " +
+    e +
+    " in error, " +
+    (ART_STIMULI.length - c - e) +
+    " not yet marked."
+  );
+}
+/* ================= stopwatch ================= */
+let swInterval = null;
+function stopStopwatch() {
+  if (swInterval) {
+    clearInterval(swInterval);
+    swInterval = null;
+  }
+}
+function stopwatchRow(label) {
+  let start = 0,
+    acc = 0;
+  const disp = el("span", { class: "sw-time", "aria-live": "off" }, "0:00.0");
+  const fmt = (ms) => {
+    const t = Math.floor(ms / 100),
+      m = Math.floor(t / 600),
+      s = Math.floor((t % 600) / 10),
+      d = t % 10;
+    return m + ":" + String(s).padStart(2, "0") + "." + d;
+  };
+  const tick = () => {
+    disp.textContent = fmt(acc + (Date.now() - start));
+  };
+  const startB = el(
+    "button",
+    {
+      class: "btn sm",
+      onclick: () => {
+        if (swInterval) {
+          acc += Date.now() - start;
+          stopStopwatch();
+          startB.textContent = "Resume";
+        } else {
+          start = Date.now();
+          stopStopwatch();
+          swInterval = setInterval(tick, 100);
+          startB.textContent = "Stop";
+        }
+      },
+    },
+    "Start",
+  );
+  const resetB = el(
+    "button",
+    {
+      class: "btn sm",
+      onclick: () => {
+        stopStopwatch();
+        acc = 0;
+        disp.textContent = "0:00.0";
+        startB.textContent = "Start";
+      },
+    },
+    "Reset",
+  );
+  return el(
+    "div",
+    { class: "stopwatch" },
+    el("span", { class: "sw-label" }, "⏱ " + label),
+    disp,
+    startB,
+    resetB,
+  );
+}
+/* ================= support strategies (teacher & family handout) ================= */
+const STRATEGIES = {
+  ARTIC: [
+    "Model the correct sound naturally: repeat the student’s message back correctly and slightly emphasize the target sound (“Yes — a wabbit? A rrrabbit!”). Do not demand a repetition.",
+    "Face the student and speak clearly at a relaxed pace so they can see and hear how sounds are made.",
+    "Never imitate, correct harshly, or allow teasing about speech errors.",
+    "Read aloud daily and pause on words with the target sound; songs and rhymes count.",
+    "Praise the message, not just the speech: respond to what the student says.",
+  ],
+  FLU: [
+    "Model slow, relaxed speech yourself — this helps more than telling the student to slow down.",
+    "Do not say “slow down,” “take a breath,” or finish the student’s sentences; give unhurried, full attention until they finish.",
+    "Reduce time pressure: build in wait time, avoid rapid-fire questioning, and set one-at-a-time turn rules in groups.",
+    "Keep natural eye contact during moments of disfluency; react to the message, not the stutter.",
+    "Notice situations that increase disfluency (excitement, competition for airtime) and quietly reduce them.",
+  ],
+  VOICE: [
+    "Encourage an easy, relaxed voice; discourage shouting, growling character voices, and loud talking over noise.",
+    "Replace habitual throat clearing with a sip of water or a gentle swallow.",
+    "Encourage water throughout the day (hydration supports the voice).",
+    "Use a class-wide quiet signal instead of asking students to shout over noise.",
+    "If hoarseness persists beyond 2–4 weeks, follow up with the school nurse / a medical provider to rule out a physical cause.",
+  ],
+  REC: [
+    "Gain the student’s attention (name, proximity) before giving directions.",
+    "Chunk directions into short steps and pair them with visuals, gestures, or a model.",
+    "Check understanding by having the student repeat back or show the first step — not just “Do you understand?”",
+    "Pre-teach key vocabulary before new lessons or stories, with pictures where possible.",
+    "Seat the student near the point of instruction and away from noise.",
+  ],
+  EXP: [
+    "Expand what the student says by adding one or two words, then move on (“Big dog!” → “Yes, a big brown dog!”).",
+    "Offer choices instead of yes/no questions (“Do you want the red one or the blue one?”).",
+    "Provide sentence starters and frames (“I think ___ because ___”).",
+    "Narrate routines and label objects, actions, and feelings during everyday activities.",
+    "Give 5–10 seconds of wait time after questions before rephrasing or moving on.",
+  ],
+  PRAG: [
+    "Use structured partner activities with clear roles so successful interaction is built in.",
+    "Model and name social moves out loud (“I’m going to ask Maya a question about her story.”).",
+    "Role-play greetings, joining play, taking turns, and fixing misunderstandings in low-stakes moments.",
+    "Post and practice visual conversation rules: one voice at a time, stay on topic, look toward your partner (as culturally appropriate).",
+    "Catch and specifically praise positive peer interactions when they happen.",
+  ],
+};
+function flaggedDomains() {
+  return requiredDomains().filter((k) => {
+    const s = domainStatus(k);
+    return s && s.k !== "WNL";
+  });
+}
+function buildHandoutInner() {
+  const i = S.intake,
+    g = gradeByKey(S.gradeKey),
+    set = getSettings(),
+    tier = DATA.tiers[finalTierIndex()];
+  const flagged = flaggedDomains();
+  const domains = flagged.length ? flagged : requiredDomains();
+  const secs = domains
+    .map((k) => {
+      const s = domainStatus(k);
+      return (
+        "<h2>" +
+        esc(domainLabel(k)) +
+        (s && s.k !== "WNL"
+          ? ' <span class="res-' +
+            s.k +
+            '">(' +
+            esc(s.label.toLowerCase()) +
+            ")</span>"
+          : "") +
+        "</h2><ul>" +
+        (STRATEGIES[k] || []).map((t) => "<li>" + esc(t) + "</li>").join("") +
+        "</ul>"
+      );
+    })
+    .join("");
+  return (
+    '<div class="rdoc handout">' +
+    '<div class="rhead"><h1>Classroom &amp; Home Support Strategies</h1>' +
+    (set.org ? '<div class="org">' + esc(set.org) + "</div>" : "") +
+    "</div>" +
+    '<div class="rsub">Follow-up to a speech-language screening · not a diagnosis or treatment plan</div>' +
+    '<table class="meta">' +
+    '<tr><td class="k">Student</td><td>' +
+    esc(i.student || "—") +
+    '</td><td class="k">Grade</td><td>' +
+    (g ? esc(g.label) : "—") +
+    "</td></tr>" +
+    '<tr><td class="k">Screened</td><td>' +
+    fmtDate(i.date) +
+    '</td><td class="k">Screener / SLP</td><td>' +
+    esc(i.screener || "—") +
+    "</td></tr></table>" +
+    "<p>" +
+    esc(
+      (i.student || "This student") +
+        " recently took part in a brief speech-language screening. The strategies below support the areas we are " +
+        (flagged.length ? "monitoring" : "encouraging") +
+        ". They are good practice for all learners and take no special materials — a few, used consistently, make the biggest difference.",
+    ) +
+    "</p>" +
+    secs +
+    "<h2>What happens next</h2><p>" +
+    esc(tier.action) +
+    "</p>" +
+    '<p class="disc">These strategies are general supports, not therapy. A screening is not a diagnosis; if you have concerns about this student’s communication, contact the school speech-language pathologist. ' +
+    esc(DATA.disclaimers[1]) +
+    "</p>" +
+    '<div class="rfoot">Generated ' +
+    fmtDate(todayISO()) +
+    " · " +
+    esc(DATA.meta.title) +
+    " v" +
+    APP_VERSION +
+    "</div></div>"
+  );
+}
+function openHandoutModal() {
+  const body = el("div", {});
+  body.appendChild(
+    el(
+      "p",
+      { class: "hint", style: "margin:4px 0 12px" },
+      "A one-page follow-up for the classroom teacher and family. Domains marked Monitor/Concern are included automatically" +
+        (flaggedDomains().length
+          ? "."
+          : " — all domains are within limits, so general strategies are shown."),
+    ),
+  );
+  body.appendChild(
+    el("div", { class: "handout-preview", html: buildHandoutInner() }),
+  );
+  showModal({
+    title: "Teacher & family strategies",
+    body,
+    actions: [
+      { label: "Close" },
+      {
+        label: "Word (.doc)",
+        onclick: () => {
+          downloadHandoutWord();
+          return false;
+        },
+      },
+      {
+        label: "Print / Save PDF",
+        primary: true,
+        onclick: () => {
+          $("#printArea").innerHTML = buildHandoutInner();
+          const prevTitle = document.title;
+          document.title = reportFilename("pdf").replace(".pdf", "_Strategies");
+          const restore = () => {
+            document.title = prevTitle;
+            window.removeEventListener("afterprint", restore);
+          };
+          window.addEventListener("afterprint", restore);
+          window.print();
+          setTimeout(restore, 2000);
+          return false;
+        },
+      },
+    ],
+  });
+}
+function downloadHandoutWord() {
+  const styles =
+    "<style>" +
+    "body{font-family:Calibri,Arial,sans-serif;color:#1c2a38;font-size:11pt}" +
+    "h1{font-size:15pt;color:#142c44;border-bottom:2px solid #127d79;padding-bottom:4pt;font-family:Cambria,Georgia,serif}" +
+    "h2{font-size:12pt;color:#0f6663;margin-top:12pt;font-family:Cambria,Georgia,serif}" +
+    "ul{margin:4pt 0;padding-left:18pt} li{margin:3pt 0}" +
+    "table.meta td{padding:2pt 5pt} table.meta td.k{font-weight:bold;color:#142c44;width:110px}" +
+    ".res-MON{color:#a8700a}.res-CON{color:#a63324}" +
+    ".rsub{color:#68788a;font-size:9.5pt}.org{color:#68788a;font-size:9.5pt;text-align:right}" +
+    ".disc{font-size:8.5pt;color:#68788a;border-top:1px solid #ccc;padding-top:6pt;margin-top:12pt}" +
+    ".rfoot{font-size:8pt;color:#93a1b0;margin-top:10pt}" +
+    "</style>";
+  const html =
+    '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">' +
+    styles +
+    "</head><body>" +
+    buildHandoutInner() +
+    "</body></html>";
+  triggerDownload(
+    new Blob(["﻿", html], { type: "application/msword" }),
+    reportFilename("doc").replace(".doc", "_Strategies.doc"),
+  );
+  toast("Strategies handout downloaded");
+}
+/* ================= prior-screening comparison ================= */
+function statusesFor(record) {
+  const prev = S;
+  try {
+    S = JSON.parse(JSON.stringify(record));
+    ensureArrays();
+    const out = {};
+    ALL_DOMAINS.forEach((k) => {
+      const s =
+        ["REC", "EXP", "PRAG"].includes(k) && !gradeByKey(S.gradeKey)
+          ? null
+          : domainStatus(k);
+      out[k] = s ? s.k : null;
+    });
+    out.__tier = suggestedTier();
+    out.__final = finalTierIndex();
+    return out;
+  } finally {
+    S = prev;
+  }
+}
+function priorScreening() {
+  const me = (S.intake.student || "").trim().toLowerCase();
+  const myDate = S.intake.date || "";
+  if (!me || !myDate) return null;
+  const idx = store.get(INDEX, []);
+  const candidates = idx
+    .filter(
+      (x) =>
+        x.id !== S.id &&
+        (x.student || "").trim().toLowerCase() === me &&
+        (x.date || "") < myDate,
+    )
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
+  for (const c of candidates) {
+    const rec = store.get(PREFIX + c.id, null);
+    if (rec) return rec;
+  }
+  return null;
+}
+const STATUS_RANK = { WNL: 0, MON: 1, CON: 2 };
+function comparisonHTML() {
+  const prior = priorScreening();
+  if (!prior) return "";
+  const then = statusesFor(prior),
+    now = statusesFor(S);
+  const rows = ALL_DOMAINS.map((k) => {
+    const a = then[k],
+      b = now[k];
+    if (a == null && b == null) return "";
+    const lab = (v) => (v ? st(v).label : "—");
+    let chg = "—",
+      cls = "";
+    if (a != null && b != null) {
+      const d = STATUS_RANK[b] - STATUS_RANK[a];
+      if (d < 0) {
+        chg = "▲ improved";
+        cls = "res-WNL";
+      } else if (d > 0) {
+        chg = "▼ increased concern";
+        cls = "res-CON";
+      } else chg = "no change";
+    }
+    return (
+      "<tr><td><b>" +
+      esc(domainLabel(k)) +
+      "</b></td><td>" +
+      lab(a) +
+      "</td><td>" +
+      lab(b) +
+      '</td><td class="' +
+      cls +
+      '">' +
+      chg +
+      "</td></tr>"
+    );
+  }).join("");
+  return (
+    "<h2>Progress since prior screening (" +
+    fmtDate(prior.intake && prior.intake.date) +
+    ")</h2>" +
+    '<table class="results"><tr><th scope="col">Domain</th><th scope="col">Prior</th><th scope="col">Current</th><th scope="col">Change</th></tr>' +
+    rows +
+    "</table>"
+  );
+}
+/* ================= caseload CSV export ================= */
+function csvField(v) {
+  return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
+}
+function exportCSV() {
+  flushSave();
+  const idx = store.get(INDEX, []);
+  const head = [
+    "Student",
+    "DOB",
+    "Grade",
+    "Date screened",
+    "Screener",
+    "Teacher",
+    "Home language(s)",
+    "Articulation",
+    "Fluency",
+    "Voice",
+    "Receptive",
+    "Expressive",
+    "Pragmatic",
+    "Suggested tier",
+    "Final tier",
+    "Comments",
+  ];
+  const lines = [head.map(csvField).join(",")];
+  idx.forEach((x) => {
+    const r = store.get(PREFIX + x.id, null);
+    if (!r) return;
+    const sts = statusesFor(r);
+    const g = gradeByKey(r.gradeKey);
+    const lab = (v) => (v ? st(v).label : "");
+    lines.push(
+      [
+        (r.intake && r.intake.student) || "",
+        (r.intake && r.intake.dob) || "",
+        g ? g.label : "",
+        (r.intake && r.intake.date) || "",
+        (r.intake && r.intake.screener) || "",
+        (r.intake && r.intake.teacher) || "",
+        (r.intake && r.intake.home) || "",
+        lab(sts.ARTIC),
+        lab(sts.FLU),
+        lab(sts.VOICE),
+        lab(sts.REC),
+        lab(sts.EXP),
+        lab(sts.PRAG),
+        DATA.tiers[sts.__tier] ? DATA.tiers[sts.__tier].name : "",
+        DATA.tiers[sts.__final] ? DATA.tiers[sts.__final].name : "",
+        (r.report && r.report.comments) || "",
+      ]
+        .map(csvField)
+        .join(","),
+    );
+  });
+  triggerDownload(
+    new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" }),
+    "SL_Screening_Caseload_" + todayISO() + ".csv",
+  );
+  toast("Caseload CSV downloaded (" + (lines.length - 1) + " screenings)");
+}
+/* ================= fluency / voice view ================= */
+function viewHFV(key) {
+  const w = el("div", { class: "view" });
+  w.appendChild(el("div", { class: "crumb" }, "Speech screen · universal"));
+  w.appendChild(el("h1", { class: "vtitle" }, DATA.universalTasks[key].name));
+  const ut = DATA.universalTasks[key];
+  w.appendChild(el("div", { class: "intro-note" }, ut.intro));
+  const tcard = el("div", { class: "card" });
+  tcard.appendChild(el("h3", {}, "Administer"));
+  ut.tasks.forEach((t) => tcard.appendChild(taskCard(t)));
+  tcard.appendChild(
+    stopwatchRow(
+      key === "FLU"
+        ? "Time the speech sample (~100 syllables)"
+        : "Time the sustained “ahhh” (typical: 5–10+ seconds)",
+    ),
+  );
+  w.appendChild(tcard);
+  const sc = el("div", { class: "card" });
+  sc.appendChild(
+    scoreHeader("Score — check all within limits", hfvStatus(key)),
+  );
+  const list = el("div", { class: "checklist" });
+  DATA.hfvItems[key].forEach((it, i) => {
+    const id = key + i;
+    list.appendChild(
+      el(
+        "div",
+        { class: "checkrow" },
+        el("input", {
+          type: "checkbox",
+          id,
+          onchange: (e) => {
+            S.hfv[key].c[i] = e.target.checked;
+            reChip(hfvStatus(key));
+            change();
+          },
+          ...(S.hfv[key].c[i] ? { checked: "" } : {}),
+        }),
+        el("label", {
+          for: id,
+          html:
+            esc(it.text) +
+            (it.eg ? ' <span class="eg">— ' + esc(it.eg) + "</span>" : ""),
+        }),
+      ),
+    );
+  });
+  sc.appendChild(list);
+  sc.appendChild(
+    el("div", {
+      class: "rulebox",
+      html:
+        "<b>Scoring rule.</b> " + esc(DATA.speechRules[key === "FLU" ? 1 : 2]),
+    }),
+  );
+  sc.appendChild(
+    notesField(
+      () => S.hfv[key].notes,
+      (v) => (S.hfv[key].notes = v),
+    ),
+  );
+  sc.appendChild(reviewedControl(key));
+  w.appendChild(sc);
+  w.appendChild(pager(key));
+  return w;
+}
+/* ================= language view ================= */
+function viewLang(dk) {
+  const g = gradeByKey(S.gradeKey);
+  const w = el("div", { class: "view" });
+  if (!g) {
+    w.appendChild(
+      el(
+        "div",
+        { class: "empty" },
+        "Set the student’s grade on the intake page to load language tasks.",
+      ),
+    );
+    w.appendChild(pager("intake"));
+    return w;
+  }
+  w.appendChild(el("div", { class: "crumb" }, "Language · " + g.label));
+  w.appendChild(el("h1", { class: "vtitle" }, DATA.domainNames[dk]));
+  w.appendChild(el("div", { class: "vsub" }, g.age));
+  const tcard = el("div", { class: "card" });
+  tcard.appendChild(el("h3", {}, "Administer"));
+  (g.tasks[dk] || []).forEach((t) => tcard.appendChild(taskCard(t)));
+  w.appendChild(tcard);
+  const sc = el("div", { class: "card" });
+  sc.appendChild(
+    scoreHeader("Score — check all consistently observed", langStatus(dk)),
+  );
+  const list = el("div", { class: "checklist" });
+  g.domains[dk].forEach((it, i) => {
+    const id = dk + i;
+    list.appendChild(
+      el(
+        "div",
+        { class: "checkrow" },
+        el("input", {
+          type: "checkbox",
+          id,
+          onchange: (e) => {
+            S.lang[dk].c[i] = e.target.checked;
+            reChip(langStatus(dk));
+            change();
+          },
+          ...(S.lang[dk].c[i] ? { checked: "" } : {}),
+        }),
+        el("label", {
+          for: id,
+          html:
+            esc(it.text) +
+            (it.eg ? ' <span class="eg">— ' + esc(it.eg) + "</span>" : ""),
+        }),
+      ),
+    );
+  });
+  sc.appendChild(list);
+  sc.appendChild(
+    el("div", {
+      class: "rulebox",
+      html:
+        "<b>Domain scoring.</b><ul>" +
+        DATA.perDomain.map((r) => "<li>" + esc(r) + "</li>").join("") +
+        "</ul>",
+    }),
+  );
+  sc.appendChild(
+    notesField(
+      () => S.lang[dk].notes,
+      (v) => (S.lang[dk].notes = v),
+    ),
+  );
+  sc.appendChild(reviewedControl(dk));
+  w.appendChild(sc);
+  w.appendChild(pager(dk));
+  return w;
+}
+function reChip(status) {
+  const c = $("#chip");
+  if (c) {
+    c.className = "chip " + status.k;
+    c.textContent = status.label;
+  }
+  renderNav();
+}
+/* ================= report view ================= */
+function viewReport() {
+  const w = el("div", { class: "view" });
+  w.appendChild(el("div", { class: "crumb" }, "Output"));
+  w.appendChild(el("h1", { class: "vtitle" }, "Report & export"));
+  w.appendChild(
+    el(
+      "div",
+      { class: "vsub" },
+      "Auto-generated from the screening. Review the readiness checks, set the final tier, add comments, then export.",
+    ),
+  );
+  const sug = suggestedTier();
+  const tierWrap = el("div", { class: "card" });
+  tierWrap.appendChild(el("h3", {}, "Conclusion"));
+  tierWrap.appendChild(
+    el(
+      "div",
+      { class: "suggested" },
+      "Suggested (from scores): " + DATA.tiers[sug].name,
+    ),
+  );
+  const tsel = el("select", {
+    class: "plain",
+    "aria-label": "Final tier decision",
+    onchange: (e) => {
+      S.report.finalTier = e.target.value;
+      change();
+      updatePreview();
+    },
+  });
+  tsel.appendChild(
+    el(
+      "option",
+      { value: "" },
+      "Use suggested (" + DATA.tiers[sug].name.split("—")[0].trim() + ")",
+    ),
+  );
+  DATA.tiers.forEach((t, i) => {
+    const o = el("option", { value: String(i) }, "Tier " + t.name);
+    if (S.report.finalTier === String(i)) o.setAttribute("selected", "");
+    tsel.appendChild(o);
+  });
+  tierWrap.appendChild(
+    el(
+      "div",
+      { class: "tier-select" },
+      el(
+        "label",
+        { style: "font-weight:700;color:var(--navy);font-size:13px" },
+        "Final decision:",
+      ),
+      tsel,
+    ),
+  );
+  const cta = el("textarea", {
+    rows: "3",
+    id: "clinComments",
+    placeholder: "Clinician comments / recommendations…",
+    oninput: (e) => {
+      S.report.comments = e.target.value;
+      change();
+      updatePreview();
+    },
+  });
+  cta.value = S.report.comments || "";
+  tierWrap.appendChild(
+    el(
+      "div",
+      { class: "notes-wrap" },
+      el("label", { for: "clinComments" }, "Clinician comments"),
+      cta,
+    ),
+  );
+  w.appendChild(tierWrap);
+  w.appendChild(progressPanel());
+  const acts = el("div", { class: "report-actions" });
+  acts.appendChild(
+    el(
+      "button",
+      { class: "btn primary", onclick: downloadPDF },
+      "⬇ Print / Save PDF",
+    ),
+  );
+  acts.appendChild(
+    el("button", { class: "btn", onclick: downloadWord }, "⬇ Word (.doc)"),
+  );
+  acts.appendChild(
+    el("button", { class: "btn", onclick: copySummary }, "Copy summary"),
+  );
+  acts.appendChild(
+    el(
+      "button",
+      { class: "btn", onclick: () => exportJSON(false) },
+      "Export data (.json)",
+    ),
+  );
+  acts.appendChild(
+    el(
+      "button",
+      {
+        class: "btn",
+        title:
+          "One-page classroom & home strategies handout for the teacher and family",
+        onclick: openHandoutModal,
+      },
+      "🧩 Teacher & family strategies",
+    ),
+  );
+  w.appendChild(acts);
+  w.appendChild(el("div", { id: "reportPreview", html: buildReportInner() }));
+  w.appendChild(pager("report"));
+  return w;
+}
+function updatePreview() {
+  const p = $("#reportPreview");
+  if (p) p.innerHTML = buildReportInner();
+}
+function finalTierIndex() {
+  return S.report.finalTier !== "" && S.report.finalTier != null
+    ? parseInt(S.report.finalTier, 10)
+    : suggestedTier();
+}
+function buildNarrative() {
+  /* returns PLAIN text (unescaped); escape at render time */
+  const i = S.intake,
+    g = gradeByKey(S.gradeKey);
+  const summary =
+    (i.student || "The student") +
+    " (DOB " +
+    (i.dob ? fmtDate(i.dob) : "—") +
+    ") was screened on " +
+    fmtDate(i.date) +
+    (g ? " as a " + g.label + " student" : "") +
+    ". " +
+    "A domain-based speech-language screening was administered covering articulation/phonology, fluency, voice and resonance, and receptive, expressive, and pragmatic language.";
+  const lines = [];
+  const aS = articStatus();
+  const aErr = ART_STIMULI.map((s, j) => ({ s, j }))
+    .filter(({ j }) => S.artic.cards[j] === "E")
+    .map(({ s, j }) => {
+      const ty =
+        S.artic.types[j] && S.artic.types[j] !== "unsure"
+          ? ", " + S.artic.types[j]
+          : "";
+      return s.word + " (" + s.sound + ty + ")";
+    });
+  const aPat = DATA.artic.patterns
+    .filter((p, j) => S.artic.pat[j])
+    .map((p) => p.text);
+  lines.push(
+    "Articulation/Phonology was " +
+      verbal(aS) +
+      (aErr.length || aPat.length
+        ? " (errors noted on " + [...aErr, ...aPat].join(", ") + ")"
+        : "") +
+      ".",
+  );
+  ["FLU", "VOICE"].forEach((k) => {
+    const s = hfvStatus(k),
+      n = DATA.hfvItems[k].length,
+      obs = count(S.hfv[k].c);
+    lines.push(
+      DATA.universalTasks[k].name +
+        " was " +
+        verbal(s) +
+        " (" +
+        obs +
+        "/" +
+        n +
+        " indicators within limits).",
+    );
+  });
+  if (g)
+    LANG.forEach((d) => {
+      const s = langStatus(d.k),
+        n = g.domains[d.k].length,
+        obs = count(S.lang[d.k].c);
+      lines.push(
+        DATA.domainNames[d.k] +
+          ": " +
+          obs +
+          " of " +
+          n +
+          " expected skills observed — " +
+          verbal(s) +
+          ".",
+      );
+    });
+  return { summary, lines };
+}
+function verbal(s) {
+  return s.k === "WNL"
+    ? "within normal limits"
+    : s.k === "MON"
+      ? "an area to monitor"
+      : "an area of concern";
+}
+function buildReportInner() {
+  const i = S.intake,
+    g = gradeByKey(S.gradeKey),
+    nar = buildNarrative(),
+    ti = finalTierIndex(),
+    tier = DATA.tiers[ti];
+  const set = getSettings();
+  const rowsKeys = [
+    ["Articulation / Phonology", "ARTIC"],
+    ["Fluency", "FLU"],
+    ["Voice & Resonance", "VOICE"],
+    ["Receptive Language", "REC"],
+    ["Expressive Language", "EXP"],
+    ["Pragmatic / Social", "PRAG"],
+  ];
+  const resRows = rowsKeys
+    .map(([nm, k]) => {
+      const s =
+        ["REC", "EXP", "PRAG"].includes(k) && !g ? null : domainStatus(k);
+      const detail =
+        k === "ARTIC"
+          ? ART_STIMULI.map((x, j) => ({ x, j }))
+              .filter(({ j }) => S.artic.cards[j] === "E")
+              .map(
+                ({ x, j }) =>
+                  x.word +
+                  " " +
+                  x.sound +
+                  (S.artic.types[j] && S.artic.types[j] !== "unsure"
+                    ? " (" + S.artic.types[j] + ")"
+                    : ""),
+              )
+              .concat(
+                DATA.artic.patterns
+                  .filter((p, j) => S.artic.pat[j])
+                  .map((p) => p.text),
+              )
+              .join(", ") || "—"
+          : k === "FLU" || k === "VOICE"
+            ? S.hfv[k].notes || "—"
+            : g
+              ? S.lang[k].notes || "—"
+              : "grade not set";
+      return (
+        "<tr><td><b>" +
+        nm +
+        '</b></td><td class="' +
+        (s ? "res-" + s.k : "") +
+        '">' +
+        (s ? s.label : "—") +
+        "</td><td>" +
+        esc(detail) +
+        "</td></tr>"
+      );
+    })
+    .join("");
+  const meta =
+    '<table class="meta">' +
+    '<tr><td class="k">Student</td><td>' +
+    esc(i.student || "—") +
+    '</td><td class="k">Date of birth</td><td>' +
+    (i.dob ? fmtDate(i.dob) : "—") +
+    "</td></tr>" +
+    '<tr><td class="k">Grade</td><td>' +
+    (g ? esc(g.label) : "—") +
+    '</td><td class="k">Date screened</td><td>' +
+    fmtDate(i.date) +
+    "</td></tr>" +
+    '<tr><td class="k">Teacher</td><td>' +
+    esc(i.teacher || "—") +
+    '</td><td class="k">Home language(s)</td><td>' +
+    esc(i.home || "—") +
+    "</td></tr>" +
+    '<tr><td class="k">Screener / SLP</td><td colspan="3">' +
+    esc(i.screener || "—") +
+    "</td></tr></table>";
+  return (
+    '<div class="rdoc">' +
+    '<div class="rhead"><h1>Speech-Language Screening — Summary Report</h1>' +
+    (set.org ? '<div class="org">' + esc(set.org) + "</div>" : "") +
+    "</div>" +
+    '<div class="rsub">PreK–Grade 5 · domain-based screening &amp; referral tool</div>' +
+    meta +
+    "<h2>Results by domain</h2>" +
+    '<table class="results"><tr><th scope="col">Domain</th><th scope="col">Result</th><th scope="col">Detail / notes</th></tr>' +
+    resRows +
+    "</table>" +
+    "<h2>Clinical impression</h2>" +
+    "<p>" +
+    esc(nar.summary) +
+    "</p>" +
+    "<p>" +
+    nar.lines.map(esc).join(" ") +
+    "</p>" +
+    comparisonHTML() +
+    "<h2>Recommendation</h2>" +
+    "<p><b>" +
+    esc(tier.name) +
+    ".</b> " +
+    esc(tier.action) +
+    ' <span style="color:#68788a">' +
+    esc(tier.rule) +
+    "</span></p>" +
+    "<h2>Clinician comments</h2>" +
+    "<p>" +
+    (esc(S.report.comments) || "—") +
+    "</p>" +
+    '<p class="disc">' +
+    DATA.disclaimers.map(esc).join(" ") +
+    "</p>" +
+    '<div class="sig"><span>Screener signature</span><span>Credentials</span><span>Date</span></div>' +
+    '<div class="rfoot">Generated ' +
+    fmtDate(todayISO()) +
+    " · " +
+    esc(DATA.meta.title) +
+    " v" +
+    APP_VERSION +
+    " · Screening data remains on the administering device.</div>" +
+    "</div>"
+  );
+}
+/* ================= guide view ================= */
+function viewGuide() {
+  const w = el("div", { class: "view" });
+  w.appendChild(el("div", { class: "crumb" }, "Reference"));
+  w.appendChild(el("h1", { class: "vtitle" }, "Scoring guide & references"));
+  w.appendChild(
+    el(
+      "div",
+      { class: "vsub" },
+      DATA.meta.subtitle + " · Version " + APP_VERSION,
+    ),
+  );
+  const how = el("div", { class: "card" });
+  how.appendChild(el("h3", {}, "How a screening flows"));
+  how.appendChild(
+    el("div", {
+      html:
+        '<ol style="margin:4px 0;padding-left:20px;font-size:14px;line-height:1.7">' +
+        "<li><b>Intake</b> — enter the student, DOB, and screening date; grade auto-calculates (Sept 1 cutoff).</li>" +
+        "<li><b>Speech screens</b> — articulation picture set, fluency sample, and voice sample are administered at every grade.</li>" +
+        "<li><b>Language domains</b> — receptive, expressive, and pragmatic checklists load for the student’s grade.</li>" +
+        "<li><b>Quality gate</b> — the readiness panel flags missing intake fields, unmarked cards, and unreviewed domains.</li>" +
+        "<li><b>Report</b> — a tier is suggested from the scores; the clinician confirms or overrides it, then exports.</li></ol>" +
+        '<p class="hint" style="margin-top:8px">Shortcuts: <kbd>⌘/Ctrl</kbd>+<kbd>S</kbd> saves immediately · <kbd>Esc</kbd> closes dialogs. Autosave runs continuously.</p>',
+    }),
+  );
+  w.appendChild(how);
+  const dom = el("div", { class: "card" });
+  dom.appendChild(el("h3", {}, "Language domain cut points"));
+  dom.appendChild(
+    el("div", {
+      class: "rulebox",
+      html:
+        '<ul style="margin:2px 0">' +
+        DATA.perDomain.map((r) => "<li>" + esc(r) + "</li>").join("") +
+        "</ul>",
+    }),
+  );
+  dom.appendChild(el("h3", { style: "margin-top:16px" }, "Speech rules"));
+  dom.appendChild(
+    el("div", {
+      class: "rulebox",
+      html:
+        '<ul style="margin:2px 0">' +
+        DATA.speechRules.map((r) => "<li>" + esc(r) + "</li>").join("") +
+        "</ul>",
+    }),
+  );
+  w.appendChild(dom);
+  const tc = el("div", { class: "card guide-tiers" });
+  tc.appendChild(el("h3", {}, "Referral tiers"));
+  DATA.tiers.forEach((t, i) => {
+    tc.appendChild(
+      el(
+        "div",
+        { class: "tiercard t" + (i + 1) },
+        el("div", { class: "tno", "aria-hidden": "true" }, String(i + 1)),
+        el(
+          "div",
+          {},
+          el("b", {}, t.name),
+          el("div", { class: "trule" }, t.rule),
+          el("div", { class: "tact" }, t.action),
+        ),
+      ),
+    );
+  });
+  w.appendChild(tc);
+  const dc = el("div", { class: "card" });
+  dc.appendChild(el("h3", {}, "Use & limitations"));
+  const ul = el("ul", {
+    style:
+      "margin:4px 0;padding-left:20px;font-size:13.5px;line-height:1.65;color:var(--ink-2)",
+  });
+  DATA.disclaimers.forEach((d) =>
+    ul.appendChild(el("li", { style: "margin:6px 0" }, d)),
+  );
+  dc.appendChild(ul);
+  dc.appendChild(el("h3", { style: "margin-top:16px" }, "Sources"));
+  const rl = el("ul", { class: "refs" });
+  DATA.references.forEach((r) => rl.appendChild(el("li", {}, r)));
+  dc.appendChild(rl);
+  w.appendChild(dc);
+  const priv = el("div", { class: "card section-head" });
+  priv.appendChild(el("h3", {}, "Data & privacy"));
+  priv.appendChild(
+    el(
+      "p",
+      { style: "margin:0;font-size:14px" },
+      "All screening data is stored locally in this browser — nothing is transmitted anywhere. Use “Screenings → Back up all” to export a JSON file before clearing the browser or moving devices, and “Import backup” to restore it. Prefer student IDs or initials over full names.",
+    ),
+  );
+  w.appendChild(priv);
+  return w;
+}
+/* ================= exports ================= */
+function reportFilename(ext) {
+  const i = S.intake;
+  const safe =
+    (i.student || "screening")
+      .replace(/[^a-z0-9]+/gi, "_")
+      .replace(/^_+|_+$/g, "")
+      .slice(0, 30) || "screening";
+  return "SL_Screening_" + safe + "_" + (i.date || todayISO()) + "." + ext;
+}
+function downloadPDF() {
+  flushSave();
+  $("#printArea").innerHTML = buildReportInner();
+  const prevTitle = document.title;
+  document.title = reportFilename("pdf").replace(".pdf", "");
+  const restore = () => {
+    document.title = prevTitle;
+    window.removeEventListener("afterprint", restore);
+  };
+  window.addEventListener("afterprint", restore);
+  window.print();
+  setTimeout(restore, 2000);
+}
+function downloadWord() {
+  flushSave();
+  const styles =
+    "<style>" +
+    "body{font-family:Calibri,Arial,sans-serif;color:#1c2a38;font-size:11pt}" +
+    "h1{font-size:16pt;color:#142c44;border-bottom:2px solid #127d79;padding-bottom:4pt;font-family:Cambria,Georgia,serif}" +
+    "h2{font-size:12pt;color:#0f6663;margin-top:14pt;font-family:Cambria,Georgia,serif}" +
+    "table{border-collapse:collapse;width:100%;font-size:10.5pt}" +
+    "table.results th,table.results td{border:1px solid #cccccc;padding:5pt 7pt;text-align:left}" +
+    "table.results th{background:#142c44;color:#fff}" +
+    "table.meta td{padding:2pt 5pt} table.meta td.k{font-weight:bold;color:#142c44;width:130px}" +
+    ".res-WNL{color:#20714f;font-weight:bold}.res-MON{color:#a8700a;font-weight:bold}.res-CON{color:#a63324;font-weight:bold}" +
+    ".rsub{color:#68788a;font-size:9.5pt}.org{color:#68788a;font-size:9.5pt;text-align:right}" +
+    ".disc{font-size:8.5pt;color:#68788a;border-top:1px solid #ccc;padding-top:6pt;margin-top:12pt}" +
+    ".sig span{display:inline-block;border-top:1px solid #1c2a38;padding-top:3pt;margin-right:24pt;min-width:150pt;font-size:9pt;color:#68788a}" +
+    ".rfoot{font-size:8pt;color:#93a1b0;margin-top:10pt}" +
+    "</style>";
+  const html =
+    '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">' +
+    styles +
+    "</head><body>" +
+    buildReportInner() +
+    "</body></html>";
+  const blob = new Blob(["﻿", html], { type: "application/msword" });
+  triggerDownload(blob, reportFilename("doc"));
+  toast("Word document downloaded");
+}
+function triggerDownload(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const a = el("a", { href: url, download: name });
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+    a.remove();
+  }, 400);
+}
+function reportPlainText() {
+  const nar = buildNarrative(),
+    tier = DATA.tiers[finalTierIndex()],
+    issues = qualityIssues();
+  return [
+    "Speech-Language Screening Summary",
+    "",
+    nar.summary,
+    nar.lines.join(" "),
+    "",
+    "Recommendation: " + tier.name + ". " + tier.action + " " + tier.rule,
+    S.report.comments ? "\nClinician comments: " + S.report.comments : "",
+    issues.length
+      ? "\nReadiness items to review: " + issues.map((i) => i.text).join(" ")
+      : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+function copySummary() {
+  const text = reportPlainText();
+  const done = () => toast("Summary copied to clipboard");
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard
+      .writeText(text)
+      .then(done)
+      .catch(() => fallbackCopy(text, done));
+  } else fallbackCopy(text, done);
+}
+function fallbackCopy(text, done) {
+  const ta = el("textarea", { style: "position:fixed;left:-9999px;top:0" });
+  ta.value = text;
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand("copy");
+    done();
+  } catch (e) {
+    toast("Copy failed — select the preview text manually", "warn");
+  }
+  ta.remove();
+}
+/* ================= backup / import ================= */
+function exportJSON(all) {
+  flushSave();
+  let blob, name;
+  if (all) {
+    const idx = store.get(INDEX, []);
+    const screenings = idx
+      .map((x) => store.get(PREFIX + x.id, null))
+      .filter(Boolean);
+    blob = new Blob(
+      [
+        JSON.stringify(
+          {
+            type: "sl-screening-backup",
+            app: DATA.meta.title,
+            version: 2,
+            exported: new Date().toISOString(),
+            settings: getSettings(),
+            screenings,
+          },
+          null,
+          1,
+        ),
+      ],
+      { type: "application/json" },
+    );
+    name = "SL_Screening_Backup_" + todayISO() + ".json";
+  } else {
+    blob = new Blob(
+      [
+        JSON.stringify(
+          {
+            type: "sl-screening-backup",
+            app: DATA.meta.title,
+            version: 2,
+            exported: new Date().toISOString(),
+            screenings: [S],
+          },
+          null,
+          1,
+        ),
+      ],
+      { type: "application/json" },
+    );
+    name = reportFilename("json");
+  }
+  triggerDownload(blob, name);
+  toast(
+    all ? "Backup of all screenings downloaded" : "Screening data downloaded",
+  );
+}
+function importJSON() {
+  const inp = el("input", {
+    type: "file",
+    accept: ".json,application/json",
+    style: "display:none",
+  });
+  inp.addEventListener("change", () => {
+    const f = inp.files && inp.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const data = JSON.parse(r.result);
+        const list = Array.isArray(data)
+          ? data
+          : data && Array.isArray(data.screenings)
+            ? data.screenings
+            : data && data.intake
+              ? [data]
+              : null;
+        if (!list || !list.length) throw new Error("no screenings found");
+        let added = 0,
+          updated = 0;
+        list.forEach((s) => {
+          if (!s || typeof s !== "object" || !s.intake) return;
+          if (!s.id || typeof s.id !== "string") s.id = newId();
+          const existed = !!store.get(PREFIX + s.id, null);
+          store.set(PREFIX + s.id, s);
+          let idx = store.get(INDEX, []);
+          idx = idx.filter((x) => x.id !== s.id);
+          idx.unshift({
+            id: s.id,
+            student: (s.intake && s.intake.student) || "(unnamed)",
+            date: s.intake && s.intake.date,
+            grade: s.gradeKey || "",
+            ts: Date.now(),
+          });
+          store.set(INDEX, idx.slice(0, 120));
+          existed ? updated++ : added++;
+        });
+        if (
+          data &&
+          data.settings &&
+          typeof data.settings === "object" &&
+          !Array.isArray(data.settings)
+        ) {
+          setSettings(Object.assign(getSettings(), data.settings));
+        }
+        if (!added && !updated) throw new Error("no valid screenings");
+        toast(
+          "Imported " +
+            (added + updated) +
+            " screening" +
+            (added + updated === 1 ? "" : "s") +
+            (updated ? " (" + updated + " updated)" : ""),
+        );
+        openScreeningsModal();
+      } catch (e) {
+        toast(
+          "Import failed — that file is not a valid screening backup",
+          "warn",
+        );
+      }
+    };
+    r.readAsText(f);
+  });
+  document.body.appendChild(inp);
+  inp.click();
+  setTimeout(() => inp.remove(), 4000);
+}
+/* ================= screenings manager ================= */
+function rescreenFrom(src) {
+  const n = blankState();
+  n.intake = Object.assign({}, src.intake, { date: todayISO() });
+  n.gradeKey = "";
+  n.gradeAuto = true;
+  n.gradeKey = computeGradeKey(n.intake.dob, n.intake.date);
+  S = n;
+  ensureArrays();
+  persist();
+  render();
+  toast(
+    "Rescreen started for " +
+      (n.intake.student || "student") +
+      " — scores reset, intake carried over",
+  );
+}
+function openScreeningsModal() {
+  const idx = store.get(INDEX, []);
+  const body = el("div", {});
+  const tools = el("div", { class: "scr-tools" });
+  const search = el("input", {
+    type: "search",
+    placeholder: "Search by student, grade, or date…",
+    "aria-label": "Search screenings",
+  });
+  tools.appendChild(search);
+  body.appendChild(tools);
+  const listWrap = el("div", {});
+  body.appendChild(listWrap);
+  const renderList = () => {
+    const q = search.value.trim().toLowerCase();
+    listWrap.innerHTML = "";
+    const rows = idx.filter(
+      (x) =>
+        !q || [x.student, x.grade, x.date].join(" ").toLowerCase().includes(q),
+    );
+    if (!rows.length) {
+      listWrap.appendChild(
+        el(
+          "div",
+          { class: "empty", style: "padding:28px 10px" },
+          q ? "No screenings match your search." : "No saved screenings yet.",
+        ),
+      );
+      return;
+    }
+    rows.forEach((x) => {
+      const isCur = S && x.id === S.id;
+      const g = gradeByKey(x.grade);
+      const row = el(
+        "div",
+        { class: "scr-row" + (isCur ? " current" : "") },
+        el(
+          "div",
+          { class: "who" },
+          el("b", {}, x.student || "(unnamed)"),
+          el(
+            "div",
+            { class: "meta" },
+            (g ? g.label : "Grade —") +
+              " · screened " +
+              (x.date ? fmtDate(x.date) : "—") +
+              (isCur ? " · currently open" : ""),
+          ),
+        ),
+        el(
+          "div",
+          { class: "acts" },
+          isCur
+            ? null
+            : el(
+                "button",
+                {
+                  class: "btn sm",
+                  onclick: () => {
+                    closeModal();
+                    loadScreening(x.id);
+                    toast("Opened " + (x.student || "screening"));
+                  },
+                },
+                "Open",
+              ),
+          el(
+            "button",
+            {
+              class: "btn sm",
+              title:
+                "Start a new screening with this student’s intake info and fresh scores",
+              onclick: () => {
+                const src = store.get(PREFIX + x.id, null);
+                if (src) {
+                  closeModal();
+                  rescreenFrom(src);
+                } else toast("Could not load that screening", "warn");
+              },
+            },
+            "Rescreen",
+          ),
+          el(
+            "button",
+            {
+              class: "btn sm danger",
+              onclick: async () => {
+                const ok = await confirmDialog(
+                  "Delete the screening for “" +
+                    (x.student || "(unnamed)") +
+                    "” permanently? This cannot be undone.",
+                  {
+                    title: "Delete screening",
+                    okLabel: "Delete",
+                    danger: true,
+                  },
+                );
+                if (!ok) {
+                  openScreeningsModal();
+                  return;
+                }
+                store.del(PREFIX + x.id);
+                const rest = store.get(INDEX, []).filter((r) => r.id !== x.id);
+                store.set(INDEX, rest);
+                if (S && S.id === x.id) {
+                  if (rest.length) loadScreening(rest[0].id);
+                  else newScreening();
+                }
+                toast("Screening deleted");
+                openScreeningsModal();
+              },
+            },
+            "Delete",
+          ),
+        ),
+      );
+      listWrap.appendChild(row);
+    });
+  };
+  search.addEventListener("input", renderList);
+  renderList();
+  const closeModal = showModal({
+    title: "Screenings",
+    body,
+    actions: [
+      {
+        label: "Settings…",
+        onclick: () => {
+          setTimeout(openSettingsModal, 0);
+        },
+      },
+      {
+        label: "Import backup…",
+        onclick: () => {
+          setTimeout(importJSON, 0);
+        },
+      },
+      {
+        label: "Back up all (.json)",
+        onclick: () => {
+          exportJSON(true);
+          return false;
+        },
+      },
+      {
+        label: "Caseload CSV",
+        onclick: () => {
+          exportCSV();
+          return false;
+        },
+      },
+      { label: "Done", primary: true },
+    ],
+  });
+}
+function openSettingsModal() {
+  const set = getSettings();
+  const body = el("div", {});
+  const f1 = el("textarea", {
+    rows: "2",
+    id: "set_org",
+    placeholder: "e.g., Riverside Elementary School\nSpeech-Language Services",
+  });
+  f1.value = set.org || "";
+  const f2 = el("input", {
+    type: "text",
+    id: "set_scr",
+    value: set.defaultScreener || "",
+    placeholder: "e.g., J. Neft, MS CCC-SLP",
+  });
+  body.appendChild(
+    el(
+      "div",
+      { class: "field", style: "margin-bottom:14px" },
+      el(
+        "label",
+        { for: "set_org" },
+        "School / district (shown on report header)",
+      ),
+      f1,
+    ),
+  );
+  body.appendChild(
+    el(
+      "div",
+      { class: "field" },
+      el(
+        "label",
+        { for: "set_scr" },
+        "Default screener / SLP (pre-filled on new screenings)",
+      ),
+      f2,
+    ),
+  );
+  showModal({
+    title: "Settings",
+    body,
+    actions: [
+      { label: "Cancel" },
+      {
+        label: "Save settings",
+        primary: true,
+        onclick: () => {
+          setSettings({
+            org: f1.value.trim(),
+            defaultScreener: f2.value.trim(),
+          });
+          toast("Settings saved");
+          updatePreview();
+        },
+      },
+    ],
+  });
+}
+/* ================= app controls ================= */
+function loadScreening(id) {
+  const s = store.get(PREFIX + id, null);
+  if (s) {
+    flushSave();
+    S = s;
+    ensureArrays();
+    store.set(LAST, S.id);
+    render();
+  }
+}
+function newScreening() {
+  flushSave();
+  S = blankState();
+  ensureArrays();
+  persist();
+  render();
+}
+$("#newBtn").addEventListener("click", () => {
+  newScreening();
+  toast("New screening started — the previous one is saved");
+});
+$("#screeningsBtn").addEventListener("click", openScreeningsModal);
+document.addEventListener("keydown", (e) => {
+  if (
+    (e.metaKey || e.ctrlKey) &&
+    !e.shiftKey &&
+    !e.altKey &&
+    e.key.toLowerCase() === "s"
+  ) {
+    e.preventDefault();
+    persist();
+    toast("Screening saved");
+  }
+});
+/* ================= boot ================= */
+(function init() {
+  const last = store.get(LAST, null);
+  const idx = store.get(INDEX, []);
+  if (last && store.get(PREFIX + last, null)) loadScreening(last);
+  else if (idx.length && store.get(PREFIX + idx[0].id, null))
+    loadScreening(idx[0].id);
+  else newScreening();
+})();
+</script>
+</body>
+</html>
