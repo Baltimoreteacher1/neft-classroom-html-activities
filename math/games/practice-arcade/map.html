@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arcade World Map — Practice Arcade</title>
+    <meta
+      name="description"
+      content="Pick your world. Every math unit is its own arcade level — replay a lesson, take the whole-unit review, and collect stars as you go."
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --ink: #0b1020;
+        --bg: #0f172a;
+        --card-ink: #f8fafc;
+      }
+      body {
+        font-family: "Nunito", "Segoe UI", system-ui, sans-serif;
+        background: radial-gradient(
+          1200px 700px at 50% -10%,
+          #1e2a52 0%,
+          #0f172a 60%,
+          #0a0f1f 100%
+        );
+        color: var(--card-ink);
+        min-height: 100vh;
+        padding: 24px 16px 64px;
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      header.hero {
+        text-align: center;
+        margin-bottom: 26px;
+      }
+      header.hero h1 {
+        font-size: clamp(28px, 5vw, 46px);
+        letter-spacing: 0.5px;
+        text-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+      }
+      header.hero p {
+        opacity: 0.85;
+        margin-top: 8px;
+        font-size: clamp(14px, 2.4vw, 18px);
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        padding: 10px 18px;
+        font-weight: 800;
+        font-size: 15px;
+        text-decoration: none;
+        cursor: pointer;
+        transition:
+          transform 0.12s ease,
+          background 0.12s ease;
+      }
+      .btn:hover {
+        background: rgba(255, 255, 255, 0.22);
+        transform: translateY(-1px);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 18px;
+      }
+      .world {
+        border-radius: 20px;
+        padding: 18px 18px 16px;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+      }
+      .world::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          220px 160px at 85% 15%,
+          rgba(255, 255, 255, 0.22),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .world .whead {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 6px;
+      }
+      .world .boss {
+        font-size: 40px;
+        filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.4));
+      }
+      .world .wname {
+        font-size: 22px;
+        font-weight: 900;
+        line-height: 1.05;
+        text-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+      }
+      .world .wsub {
+        font-size: 12.5px;
+        font-weight: 800;
+        opacity: 0.9;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+      }
+      .prog {
+        height: 9px;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.28);
+        margin: 12px 0 4px;
+        overflow: hidden;
+      }
+      .prog > i {
+        display: block;
+        height: 100%;
+        background: #fde047;
+        border-radius: 999px;
+      }
+      .progtxt {
+        font-size: 12px;
+        font-weight: 800;
+        opacity: 0.92;
+        margin-bottom: 12px;
+      }
+      .lessons {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .lesson {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        background: rgba(0, 0, 0, 0.22);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+        padding: 8px 12px;
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 14px;
+        transition: background 0.12s ease;
+      }
+      .lesson:hover {
+        background: rgba(0, 0, 0, 0.36);
+      }
+      .lesson .name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .lesson .star {
+        flex: 0 0 auto;
+        font-size: 13px;
+        opacity: 0.95;
+      }
+      .review {
+        display: block;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.92);
+        color: #06283f;
+        border-radius: 12px;
+        padding: 11px;
+        font-weight: 900;
+        text-decoration: none;
+        letter-spacing: 0.3px;
+        box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+      }
+      .review:hover {
+        filter: brightness(1.05);
+      }
+      #status {
+        text-align: center;
+        opacity: 0.8;
+        margin-top: 30px;
+        font-size: 15px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .btn,
+        .lesson {
+          transition: none;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="wrap">
+      <div class="topbar">
+        <a class="btn" href="/curriculum/">← Back to lessons</a>
+        <a class="btn" id="langBtn" href="#" role="button">EN · es</a>
+      </div>
+      <header class="hero">
+        <h1>🗺️ Arcade World Map</h1>
+        <p id="tagline">Pick your world. Every unit is its own level — collect ⭐ as you go.</p>
+      </header>
+      <div class="grid" id="grid"></div>
+      <div id="status">Loading worlds…</div>
+    </div>
+
+    <script>
+      // World identities — kept in sync with the arcade engine's WORLDS table.
+      var WORLDS = {
+        1: { name: "Number Nebula", top: "#4338ca", bot: "#6d28d9", boss: "🦉" },
+        2: { name: "Fraction Falls", top: "#0f766e", bot: "#115e59", boss: "🐢" },
+        3: { name: "Ratio Reef", top: "#0369a1", bot: "#1e40af", boss: "🐬" },
+        4: { name: "Percent Peaks", top: "#7e22ce", bot: "#a21caf", boss: "🦄" },
+        5: { name: "Ember Expanse", top: "#b45309", bot: "#9a3412", boss: "🦊" },
+        6: { name: "Grove of Signs", top: "#15803d", bot: "#166534", boss: "🐸" },
+        7: { name: "Cipher Caverns", top: "#1e3a8a", bot: "#334155", boss: "🦈" },
+        8: { name: "Data Dunes", top: "#be185d", bot: "#9d174d", boss: "🦩" },
+        9: { name: "Grid Galaxy", top: "#0e7490", bot: "#1e40af", boss: "🤖" },
+        10: { name: "Prism Peaks", top: "#a16207", bot: "#854d0e", boss: "🐻" },
+      };
+      var lang = "en";
+      try {
+        var sv = localStorage.getItem("pa-lang");
+        if (sv === "es" || sv === "en") lang = sv;
+      } catch (e) {}
+      var STR = {
+        title: { en: "🗺️ Arcade World Map", es: "🗺️ Mapa del Arcade" },
+        tagline: {
+          en: "Pick your world. Every unit is its own level — collect ⭐ as you go.",
+          es: "Elige tu mundo. Cada unidad es su propio nivel — colecciona ⭐ mientras juegas.",
+        },
+        back: { en: "← Back to lessons", es: "← Volver a las lecciones" },
+        review: { en: "▶ Play Unit Review", es: "▶ Repaso de Unidad" },
+        lessonsWord: { en: "lessons played", es: "lecciones jugadas" },
+        loadFail: {
+          en: "Could not load the lesson list — you can still open any unit review.",
+          es: "No se pudo cargar la lista — aún puedes abrir cualquier repaso de unidad.",
+        },
+      };
+      function t(k) {
+        return (STR[k] && (STR[k][lang] || STR[k].en)) || k;
+      }
+      function best(id) {
+        try {
+          return parseInt(localStorage.getItem("pa-best-" + id) || "0", 10) || 0;
+        } catch (e) {
+          return 0;
+        }
+      }
+      function starFor(score) {
+        if (!score) return "";
+        return score >= 800 ? "⭐⭐⭐" : score >= 400 ? "⭐⭐" : "⭐";
+      }
+      function esc(s) {
+        return String(s).replace(/[&<>"]/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+        });
+      }
+
+      document.getElementById("langBtn").textContent = lang === "es" ? "en · ES" : "EN · es";
+      document.querySelector(".hero h1").textContent = t("title");
+      document.getElementById("tagline").textContent = t("tagline");
+      document.querySelector(".topbar .btn").textContent = t("back");
+      document.getElementById("langBtn").addEventListener("click", function (e) {
+        e.preventDefault();
+        lang = lang === "es" ? "en" : "es";
+        try {
+          localStorage.setItem("pa-lang", lang);
+        } catch (e2) {}
+        location.reload();
+      });
+
+      function render(byUnit) {
+        var grid = document.getElementById("grid");
+        grid.innerHTML = "";
+        Object.keys(WORLDS).forEach(function (u) {
+          var w = WORLDS[u];
+          var lessons = byUnit[u] || [];
+          var played = lessons.filter(function (l) {
+            return best(l.id) > 0;
+          }).length;
+          var pct = lessons.length ? Math.round((played / lessons.length) * 100) : 0;
+          var card = document.createElement("div");
+          card.className = "world";
+          card.style.background = "linear-gradient(160deg," + w.top + "," + w.bot + ")";
+          var lessonHtml = lessons
+            .map(function (l) {
+              var s = starFor(best(l.id));
+              return (
+                '<a class="lesson" href="/math/games/practice-arcade/?lesson=' +
+                encodeURIComponent(l.id) +
+                '"><span class="name">' +
+                l.lesson +
+                ". " +
+                esc(l.title) +
+                '</span><span class="star">' +
+                (s || "▶") +
+                "</span></a>"
+              );
+            })
+            .join("");
+          card.innerHTML =
+            '<div class="whead"><div class="boss">' +
+            w.boss +
+            '</div><div><div class="wname">' +
+            esc(w.name) +
+            '</div><div class="wsub">Unit ' +
+            u +
+            "</div></div></div>" +
+            '<div class="prog"><i style="width:' +
+            pct +
+            '%"></i></div>' +
+            '<div class="progtxt">' +
+            played +
+            " / " +
+            lessons.length +
+            " " +
+            t("lessonsWord") +
+            "</div>" +
+            '<div class="lessons">' +
+            lessonHtml +
+            "</div>" +
+            '<a class="review" href="/math/games/practice-arcade/?unit=' +
+            u +
+            '">' +
+            t("review") +
+            "</a>";
+          grid.appendChild(card);
+        });
+        document.getElementById("status").textContent = "";
+      }
+
+      fetch("/data/curriculum-manifest.json")
+        .then(function (r) {
+          return r.ok ? r.json() : null;
+        })
+        .then(function (m) {
+          var byUnit = {};
+          var lessons = (m && m.lessons) || [];
+          lessons.forEach(function (l) {
+            if (l.unit == null || l.id == null) return;
+            // Skip the "-flagship" twins so each lesson shows once on the map.
+            if (String(l.id).indexOf("flagship") > -1) return;
+            (byUnit[l.unit] = byUnit[l.unit] || []).push({
+              id: l.id,
+              lesson: l.lesson,
+              title: l.title || l.id,
+            });
+          });
+          Object.keys(byUnit).forEach(function (u) {
+            byUnit[u].sort(function (a, b) {
+              return (a.lesson || 0) - (b.lesson || 0);
+            });
+          });
+          render(byUnit);
+        })
+        .catch(function () {
+          render({});
+          document.getElementById("status").textContent = t("loadFail");
+        });
+    </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>
