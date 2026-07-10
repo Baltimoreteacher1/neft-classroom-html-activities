@@ -275,17 +275,38 @@
   // Publish the save bar's live height as a CSS variable so fixed corner
   // launchers (AI tutor, futures dock) can float clear of it instead of being
   // hidden underneath. Updates on resize/orientation since the bar wraps.
+  // Publish the live heights of the fixed bottom layers as CSS variables so the
+  // mobile bottom-dock (see lesson-publisher-polish.css) can stack them without
+  // overlap: the save bar (this script), the lesson's own .score-bar, and the
+  // juice .ntj-hud. Re-measured whenever any of them changes size.
+  function setVar(name, el) {
+    var h = el && el.isConnected ? el.getBoundingClientRect().height || 0 : 0;
+    document.documentElement.style.setProperty(name, Math.round(h) + "px");
+  }
   function publishBarHeight() {
-    if (!bar.isConnected) return;
-    var h = bar.getBoundingClientRect().height || 0;
-    document.documentElement.style.setProperty("--nt-savebar-h", Math.round(h) + "px");
+    setVar("--nt-savebar-h", bar);
+    setVar("--nt-scorebar-h", document.querySelector(".score-bar"));
+    setVar("--nt-hud-h", document.querySelector(".ntj-hud"));
+  }
+  function watch(el) {
+    if (el && window.ResizeObserver) {
+      try {
+        new ResizeObserver(publishBarHeight).observe(el);
+      } catch (e) {}
+    }
   }
 
   function mount() {
     if (!isActivityPage()) return;
     document.body.appendChild(bar);
     publishBarHeight();
+    // Re-measure after async stylesheets/fonts settle the wrapped heights.
     if (window.requestAnimationFrame) requestAnimationFrame(publishBarHeight);
+    window.addEventListener("load", publishBarHeight, { passive: true });
+    setTimeout(publishBarHeight, 400);
+    watch(bar);
+    watch(document.querySelector(".score-bar"));
+    watch(document.querySelector(".ntj-hud"));
     window.addEventListener("resize", publishBarHeight, { passive: true });
     window.addEventListener("orientationchange", publishBarHeight, { passive: true });
   }
