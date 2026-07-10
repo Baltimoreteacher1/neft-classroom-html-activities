@@ -146,6 +146,7 @@ lockfile match), then run the checks.
     `ALLOW_DEPLOY=1 npm run ship:rebuild` pushes an empty commit to unfreeze a
     stuck Pages build. Never assemble `main` by hand-pushing the working branch —
     the repo auto-commits during sessions, so `main` takes cherry-picked SHAs only.
+    Full runbook + troubleshooting: [`docs/deploy.md`](docs/deploy.md).
   - **Do NOT run `wrangler pages deploy` manually.** Mixing manual wrangler with
     Git auto-deploy is what historically caused the site to "revert to an old
     version" (competing builds racing to production). One path only: `git push`.

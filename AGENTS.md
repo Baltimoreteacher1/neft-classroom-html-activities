@@ -52,7 +52,7 @@ Preserve existing student-facing routes. This repo is live-classroom oriented: c
   wrangler deploys froze production for 16 days in 2026-06; never re-enable them.
 - Never push the working branch or working tree state to `main` directly — the repo
   auto-commits during sessions; `main` is assembled only by cherry-picking reviewed SHAs
-  (which `npm run ship` automates).
+  (which `npm run ship` automates). Full runbook: `docs/deploy.md`.
 - No top-level lint/typecheck/test scripts are currently defined; do not invent them.
 
 ## Default Workflow

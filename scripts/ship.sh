@@ -20,6 +20,7 @@
 #
 # Usage (production deploys require explicit authorization):
 #   ALLOW_DEPLOY=1 npm run ship -- <sha> [sha...]   # deploy specific commits
+#   ALLOW_DEPLOY=1 npm run ship -- <a>..<b>         # deploy a commit range
 #   ALLOW_DEPLOY=1 npm run ship -- HEAD             # deploy current commit
 #   ALLOW_DEPLOY=1 npm run ship -- --rebuild        # empty commit: unfreeze a
 #                                                   # stuck CF Pages build
@@ -128,8 +129,20 @@ fi
 # --- Resolve what to ship -----------------------------------------------------------
 if [ "$MODE" = "ship" ]; then
   [ "${#SHAS[@]}" -gt 0 ] || fail "no commits given. Usage: ALLOW_DEPLOY=1 npm run ship -- <sha> [sha...]"
-  RESOLVED=()
+  # Expand any <a>..<b> ranges into individual commits (oldest first).
+  EXPANDED=()
   for s in "${SHAS[@]}"; do
+    case "$s" in
+    *..*)
+      while IFS= read -r rc; do EXPANDED+=("$rc"); done \
+        < <(git rev-list --reverse --no-merges "$s" 2>/dev/null)
+      [ "${#EXPANDED[@]}" -gt 0 ] || fail "range resolves to no commits: $s"
+      ;;
+    *) EXPANDED+=("$s") ;;
+    esac
+  done
+  RESOLVED=()
+  for s in "${EXPANDED[@]}"; do
     r="$(git rev-parse --verify --quiet "${s}^{commit}")" || fail "cannot resolve commit: $s"
     if git merge-base --is-ancestor "$r" "$MAIN_SHA"; then
       say "• ${r:0:9} is already on origin/main — skipping"
@@ -216,4 +229,17 @@ fi
 say "✓ Pushed. Cloudflare Pages is building..."
 
 # --- Verify it actually went live ---------------------------------------------------------
-poll_stamp "$NEW_SHA"
+poll_stamp "$NEW_SHA" || exit 1
+
+# Known gotcha: a Cloudflare zone rule serves /assets/* with max-age=14400 (4 h)
+# despite _headers saying max-age=0, so STABLE-NAMED files under assets/ can keep
+# serving the old bytes at the edge for up to 4 hours after a fresh deploy.
+if [ "$MODE" = "ship" ]; then
+  ASSET_TOUCHED="$(git log --no-walk --name-only --format= "${RESOLVED[@]}" | grep -c '^assets/' || true)"
+  if [ "${ASSET_TOUCHED:-0}" -gt 0 ]; then
+    say ""
+    say "⚠ $ASSET_TOUCHED file(s) under assets/ shipped. The CF edge caches /assets/*"
+    say "  for up to 4 h regardless of _headers. If a change must be visible NOW,"
+    say "  reference it with a cache-busting query (?v=...) or verify with ?cb=."
+  fi
+fi
