@@ -1214,6 +1214,10 @@
             // reliably on mouse AND touch. `this.carrying` is null outside sort
             // rounds, so these handlers are inert elsewhere.
             this.input.on("pointermove", (p) => {
+              // Number-line marker uses the SAME reliable scene-pointer approach
+              // (not Phaser's flaky nested-container drag); nlOnMove is set while
+              // the dot is held (see renderNumberLine) and null otherwise.
+              if (this.nlOnMove) this.nlOnMove(p);
               const t = this.carrying;
               if (!t || t.assigned) return;
               t.parts.x = p.worldX - (this.grabDX || 0);
@@ -1224,6 +1228,7 @@
               }
             });
             this.input.on("pointerup", () => {
+              this.nlOnMove = null; // release the number-line marker
               const t = this.carrying;
               if (!t) return;
               this.carrying = null;
@@ -1498,6 +1503,7 @@
             // Drop any half-carried sort tile from a previous round (defensive).
             this.carrying = null;
             this.carryMoved = false;
+            this.nlOnMove = null;
             this.bins = null;
             this.sortTiles = null;
             // Input-settle window: ignore selection input for a beat after a round
@@ -2341,10 +2347,16 @@
               marker.x = valToX(this.nlVal);
               bubble.setText(this.fmt(this.nlVal) + (r.unit || ""));
             };
-            this.input.setDraggable(hit);
-            hit.on("drag", (p) => {
-              this.nlVal = snap(r.min + range * ((p.worldX - x0) / (x1 - x0)));
-              refresh();
+            // Reliable marker drag: hold the dot, then a SCENE-level pointermove
+            // (registered once in create) tracks it — same fix as the sort tiles,
+            // since Phaser's drag events on this nested marker are flaky on
+            // trackpads/touch. Clamp to the line so the dot never escapes it.
+            hit.on("pointerdown", () => {
+              this.nlOnMove = (p) => {
+                const clampedX = Math.max(x0, Math.min(x1, p.worldX));
+                this.nlVal = snap(r.min + range * ((clampedX - x0) / (x1 - x0)));
+                refresh();
+              };
             });
             const nudge = (d) => {
               this.nlVal = Math.min(r.max, Math.max(r.min, this.nlVal + d * r.step));
