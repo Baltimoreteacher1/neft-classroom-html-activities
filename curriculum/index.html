@@ -1586,10 +1586,10 @@
                 This week's plan, live — the daily board students see and you keep up to date.
               </p>
               <p class="mf-text">
-                One calm home base per class (601 / 602 / 603): this week's guide, today's
-                learning target, work groups, ALEKS minute goals, vocabulary, and shout-outs —
-                plus an anonymous confidence check-in, a fair name picker, and a projector work
-                timer. Students see it live; you edit and publish in seconds.
+                One calm home base per class (601 / 602 / 603): this week's guide, today's learning
+                target, work groups, ALEKS minute goals, vocabulary, and shout-outs — plus an
+                anonymous confidence check-in, a fair name picker, and a projector work timer.
+                Students see it live; you edit and publish in seconds.
               </p>
               <div class="mf-actions">
                 <a class="mf-btn solid" href="/math/student-board/">Open the Class Board</a>
@@ -7371,8 +7371,13 @@
         // in a ready-to-upload SCORM 1.2 zip (functions/api/scorm.js), so a
         // download link only needs the target path + a Canvas-facing title.
         // Only same-site targets can be packaged (also enforced server-side).
+        // File downloads (printables: PDF/DOCX/etc.) are excluded — a SCORM
+        // package that iframes a file can never report a grade to Canvas.
         function canPackageForScorm(href) {
           href = String(href || "");
+          if (/\.(pdf|docx?|pptx?|xlsx?|zip|png|jpe?g|gif|svg|mp[34])([?#]|$)/i.test(href)) {
+            return false;
+          }
           if (href.charAt(0) === "/") return true;
           return /^https?:\/\/(www\.)?eduwonderlab\.com\//i.test(href);
         }
