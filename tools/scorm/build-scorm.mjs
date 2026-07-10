@@ -58,12 +58,20 @@ const lessonUrl = isUrl
   : isLessonId
     ? `${SITE}/lessons/${target}/`
     : `${SITE}/${target.replace(/^\/+/, "")}`;
-// Stable id/slug for filenames + the SCORM manifest identifier.
-const lessonId =
-  (idArg && idArg.trim()) ||
-  (isLessonId
-    ? target
-    : new URL(lessonUrl).pathname.split("/").filter(Boolean).pop() || "activity");
+// Stable id/slug for filenames + the SCORM manifest identifier. When no
+// explicit id is given, fold the recognizable query params in so targets that
+// share a path (practice-arcade/?unit=1 vs ?lesson=1-3) never collide —
+// mirrors functions/_lib/scorm.js resolveTarget.
+const defaultId = () => {
+  const u = new URL(lessonUrl);
+  let id = u.pathname.split("/").filter(Boolean).pop() || "activity";
+  const qLesson = u.searchParams.get("lesson");
+  const qUnit = u.searchParams.get("unit");
+  if (qLesson) id += `-lesson-${qLesson}`;
+  else if (qUnit) id += `-unit-${qUnit}`;
+  return id;
+};
+const lessonId = (idArg && idArg.trim()) || (isLessonId ? target : defaultId());
 const title = titleArg || (isLessonId ? `Lesson ${target}` : lessonId);
 const LAUNCH_QUERY = (lessonUrl.includes("?") ? "&" : "?") + LAUNCH_PARAMS;
 

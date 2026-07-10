@@ -66,6 +66,21 @@ check(
   "missing the End-of-Unit ?unit=N review-game link construction",
 );
 
+// Canvas (SCORM) download layer — every unit, lesson, and activity gets a
+// one-click /api/scorm download, generated at RENDER time so new lessons /
+// units / activities pick it up automatically with no per-file step. These
+// invariants stop a rewrite from silently dropping that layer.
+check(/function\s+makeScormLink/.test(html), "missing the makeScormLink helper (SCORM layer)");
+check(
+  /window\.NeftScorm\s*=/.test(html),
+  "missing window.NeftScorm (shared SCORM helpers for the enhancement layers)",
+);
+check(
+  /scorm-lesson-btn/.test(html),
+  "missing the per-lesson Canvas (SCORM) download button (scorm-lesson-btn)",
+);
+check(/\/api\/scorm\?activity=/.test(html), "missing /api/scorm download link construction");
+
 if (failures.length) {
   console.error("✗ Curriculum Hub lock FAILED — the hub looks clobbered/stripped:");
   failures.forEach((f) => console.error("   • " + f));

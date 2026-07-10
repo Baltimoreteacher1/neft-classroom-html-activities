@@ -791,6 +791,51 @@
         color: #ffffff;
       }
 
+      /* Canvas (SCORM) download links — one-click /api/scorm packages for
+         every unit, lesson, and activity (see functions/api/scorm.js). */
+      .scorm-dl {
+        flex: 0 0 auto;
+      }
+      .lesson-outline-item a.scorm-dl {
+        padding: 6px 8px;
+        font-size: 12px;
+        color: var(--muted);
+        background: transparent;
+        border-style: dashed;
+      }
+      .lesson-outline-item a.scorm-dl:hover {
+        color: #ffffff;
+        border-style: solid;
+        border-color: var(--teal);
+      }
+      .scorm-lesson-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        align-self: flex-start;
+        font-size: 12.5px;
+        font-weight: 600;
+        text-decoration: none;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        padding: 7px 12px;
+        transition: all 0.2s;
+      }
+      .scorm-lesson-btn:hover {
+        color: #ffffff;
+        border-style: solid;
+        border-color: var(--teal);
+        background: rgba(255, 255, 255, 0.06);
+      }
+      @media print {
+        .scorm-dl,
+        .scorm-lesson-btn {
+          display: none !important;
+        }
+      }
+
       /* Search results section */
       .search-results-panel {
         display: flex;
@@ -1005,6 +1050,24 @@
       body.light-theme .unit-resource-btn:hover {
         background: var(--teal);
         color: #ffffff;
+      }
+      body.light-theme .lesson-outline-item a.scorm-dl {
+        background: transparent;
+        color: var(--muted);
+      }
+      body.light-theme .lesson-outline-item a.scorm-dl:hover {
+        color: var(--teal);
+        border-color: var(--teal);
+      }
+      body.light-theme .scorm-lesson-btn {
+        color: var(--muted);
+        background: #ffffff;
+        border: 1px dashed var(--line);
+      }
+      body.light-theme .scorm-lesson-btn:hover {
+        color: var(--teal);
+        border-color: var(--teal);
+        background: var(--teal-light);
       }
       body.light-theme .search-result-item {
         background: #ffffff;
@@ -7304,7 +7367,40 @@
           return OUTLINE_GROUPS.length;
         }
 
-        function makeOutlineItem(act, isProject) {
+        // Canvas (SCORM) one-click downloads. /api/scorm wraps the LIVE page
+        // in a ready-to-upload SCORM 1.2 zip (functions/api/scorm.js), so a
+        // download link only needs the target path + a Canvas-facing title.
+        // Only same-site targets can be packaged (also enforced server-side).
+        function canPackageForScorm(href) {
+          href = String(href || "");
+          if (href.charAt(0) === "/") return true;
+          return /^https?:\/\/(www\.)?eduwonderlab\.com\//i.test(href);
+        }
+        function scormDownloadHref(target, title) {
+          return (
+            "/api/scorm?activity=" +
+            encodeURIComponent(target) +
+            (title ? "&title=" + encodeURIComponent(title) : "")
+          );
+        }
+        function makeScormLink(target, title, label, className) {
+          var a = document.createElement("a");
+          a.className = className;
+          a.href = scormDownloadHref(target, title);
+          a.title = "Download “" + title + "” as a Canvas-ready SCORM package";
+          a.setAttribute("aria-label", a.title);
+          a.textContent = label;
+          return a;
+        }
+        // Shared with the deferred enhancement layers so search results carry
+        // the same one-click downloads (assets/curriculum-enhancements.js).
+        window.NeftScorm = {
+          canPackage: canPackageForScorm,
+          downloadHref: scormDownloadHref,
+          makeLink: makeScormLink,
+        };
+
+        function makeOutlineItem(act, isProject, scormTitlePrefix) {
           var li = document.createElement("li");
           li.className = "lesson-outline-item";
           var a = document.createElement("a");
@@ -7317,6 +7413,16 @@
           }
           a.innerHTML = outlineItemIcon(act, isProject) + " " + act.text;
           li.appendChild(a);
+          if (canPackageForScorm(act.href)) {
+            li.appendChild(
+              makeScormLink(
+                act.href,
+                (scormTitlePrefix ? scormTitlePrefix + " — " : "") + act.text,
+                "⬇",
+                "scorm-dl",
+              ),
+            );
+          }
           return li;
         }
 
@@ -7324,7 +7430,7 @@
         // sections. Each non-empty group gets a sub-header; items keep their
         // original relative order. `projects` is the lesson's projects array
         // (used to flag project items), may be undefined.
-        function buildGroupedOutline(listEl, allActs, projects) {
+        function buildGroupedOutline(listEl, allActs, projects, scormTitlePrefix) {
           // Buckets: one per defined group, plus a final Practice & Games
           // catch-all.
           var buckets = [];
@@ -7358,7 +7464,7 @@
             subList.className = "lesson-outline-list";
             section.items.forEach(function (act) {
               var isProject = projects && projects.indexOf(act) > -1;
-              subList.appendChild(makeOutlineItem(act, isProject));
+              subList.appendChild(makeOutlineItem(act, isProject, scormTitlePrefix));
             });
             groupEl.appendChild(subList);
             listEl.appendChild(groupEl);
@@ -7716,17 +7822,29 @@
               "</div>";
             card.appendChild(header);
 
-            // Unit-wide Resources
-            if (u.resources.length > 0) {
-              var resRow = document.createElement("div");
-              resRow.className = "unit-resources-row";
-              u.resources.forEach(function (r) {
-                var a = document.createElement("a");
-                a.className = "unit-resource-btn";
-                a.href = r.href;
-                a.textContent = r.text;
-                resRow.appendChild(a);
-              });
+            // Unit-wide Resources + the unit-level Canvas (SCORM) package.
+            // The unit package wraps the unit-cumulative review game — the
+            // one graded page that spans the whole unit.
+            var resRow = document.createElement("div");
+            resRow.className = "unit-resources-row";
+            u.resources.forEach(function (r) {
+              var a = document.createElement("a");
+              a.className = "unit-resource-btn";
+              a.href = r.href;
+              a.textContent = r.text;
+              resRow.appendChild(a);
+            });
+            if (u.unitIndex) {
+              resRow.appendChild(
+                makeScormLink(
+                  "/math/games/practice-arcade/?unit=" + u.unitIndex,
+                  u.num + " Review Game",
+                  "🎓 Canvas (SCORM)",
+                  "unit-resource-btn scorm-dl",
+                ),
+              );
+            }
+            if (resRow.children.length > 0) {
               card.appendChild(resRow);
             }
 
@@ -7808,6 +7926,12 @@
             launchBtn.target = "_blank";
             infoBlock.appendChild(launchBtn);
 
+            // One-click Canvas package for the selected lesson (End-of-Unit
+            // rows package the unit-cumulative review game instead).
+            var scormLessonBtn = document.createElement("a");
+            scormLessonBtn.className = "scorm-lesson-btn";
+            infoBlock.appendChild(scormLessonBtn);
+
             card.appendChild(infoBlock);
 
             // Update details depending on the selected lesson
@@ -7881,7 +8005,29 @@
               // Update Outline list — grouped into labeled sections
               // (appearance/organization only; same items, no data changed).
               outlineList.innerHTML = "";
-              buildGroupedOutline(outlineList, allActs, lesson.projects);
+              buildGroupedOutline(outlineList, allActs, lesson.projects, lesson.title);
+
+              // Lesson-level Canvas (SCORM) package: the lesson page itself,
+              // or the unit review game for the End-of-Unit pseudo-lesson.
+              var scormTarget = "";
+              var scormTitle = "";
+              if (lesson.lessonId) {
+                scormTarget = lesson.lessonId;
+                scormTitle = lesson.title;
+              } else if (lesson.isEndOfUnit && lesson.unitInteger) {
+                scormTarget = "/math/games/practice-arcade/?unit=" + lesson.unitInteger;
+                scormTitle = u.num + " Review Game";
+              }
+              if (scormTarget) {
+                scormLessonBtn.href = scormDownloadHref(scormTarget, scormTitle);
+                scormLessonBtn.textContent = "🎓 Download for Canvas (SCORM)";
+                scormLessonBtn.title =
+                  "Download “" + scormTitle + "” as a Canvas-ready SCORM package";
+                scormLessonBtn.setAttribute("aria-label", scormLessonBtn.title);
+                scormLessonBtn.style.display = "";
+              } else {
+                scormLessonBtn.style.display = "none";
+              }
 
               // Launch from whichever phase dropdown changed. Selecting an
               // activity in one phase resets the other two to their
@@ -8115,7 +8261,7 @@
       src="https://cdn.jsdelivr.net/npm/minisearch@7.1.2/dist/umd/minisearch.min.js"
       defer
     ></script>
-    <script src="/assets/curriculum-enhancements.js?v=20260703-chipscroll" defer></script>
+    <script src="/assets/curriculum-enhancements.js?v=20260710-scormdl" defer></script>
     <script src="/assets/curriculum-audit-badges.js" defer></script>
     <script src="/assets/curriculum-sidebar.js?v=20260615-sidebar3" defer></script>
     <script src="/assets/curriculum-top1.js?v=20260617-top1" defer></script>

@@ -61,9 +61,16 @@ export function resolveTarget(target, site = SITE_DEFAULT) {
   if (!ALLOWED_HOSTS.includes(u.hostname)) {
     throw new Error("activity must be on eduwonderlab.com");
   }
-  const id = isLessonId
+  let id = isLessonId
     ? slug(target)
     : slug(u.pathname.split("/").filter(Boolean).pop() || "activity");
+  // Fold the recognizable query params into the id so assignables that share
+  // a path (practice-arcade/?unit=1 vs ?lesson=1-3) get distinct zip
+  // filenames + SCORM manifest identifiers instead of colliding.
+  const qLesson = u.searchParams.get("lesson");
+  const qUnit = u.searchParams.get("unit");
+  if (qLesson) id = slug(id + "-lesson-" + qLesson);
+  else if (qUnit) id = slug(id + "-unit-" + qUnit);
   return { lessonUrl, id, origin: u.origin };
 }
 

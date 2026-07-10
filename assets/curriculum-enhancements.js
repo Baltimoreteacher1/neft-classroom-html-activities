@@ -723,6 +723,18 @@
             if (act.isBonus) a.className = "res-bonus";
             a.textContent = act.text;
             li.appendChild(a);
+            // One-click Canvas (SCORM) download — same affordance as the hub
+            // outline (helpers exposed by the hub as window.NeftScorm).
+            if (window.NeftScorm && window.NeftScorm.canPackage(act.href)) {
+              li.appendChild(
+                window.NeftScorm.makeLink(
+                  act.href,
+                  (l.title ? l.title + " — " : "") + act.text,
+                  "⬇",
+                  "scorm-dl",
+                ),
+              );
+            }
             outlineList.appendChild(li);
           });
           item.appendChild(outlineList);
