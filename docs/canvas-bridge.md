@@ -50,11 +50,22 @@ auto-graded **QTI quizzes** path.
 2. **Completion codes (graded)** — `npm run library-cartridge -- --mode=graded`
    Each item becomes a text-entry assignment. Students finish the activity, get
    a `NTG1.…` code, and paste it into Canvas. Decode codes into scores with the
-   existing **Canvas Grades** tool (`teacher-tools/canvas-grades/`). The codec
+   **Canvas Grades** tool (`teacher-tools/canvas-grades/`). The codec
    (`assets/canvas-code-codec.js`) is the same one the engine lessons use, so
    lesson codes and activity codes verify through one pipeline.
 
-3. **Auto-graded quizzes (QTI)** — `npm run course -- --quizzes-only`
+3. **Live gradebook → Canvas CSV** — no codes, no student action.
+   The **Canvas Grades** tool can also pull the scores students already saved
+   through the activities (the live Save/Resume gradebook, `/api/progress/grades`,
+   teacher-key gated). Pick an activity, and the tool name-matches those scores
+   against your saved Canvas roster and scales them to the assignment's points —
+   producing the same ready-to-import CSV as the completion-code path. Student
+   IDs never leave the browser (they come from the roster you dropped once);
+   only scores come from the server. Needs `TEACHER_KEY` + the D1 `DB` binding
+   on the Pages project. The scale/match/export contract is locked by
+   `tools/canvas/canvas-grade-core.test.mjs` (`npm test`).
+
+4. **Auto-graded quizzes (QTI)** — `npm run course -- --quizzes-only`
    Native Canvas quizzes built from lesson questions; they grade themselves.
    Lessons only (needs structured questions).
 
