@@ -100,3 +100,25 @@
     transform: none;
   }
 }
+
+/* ── 9 · Mobile: clear the fixed passport pill off the header title ───────
+   The lifetime-XP pill (.ntp-pill, fixed top-left) overlaps the left of the
+   lesson H1 once the header goes single-column on narrow screens, hiding the
+   first word of the title. Scoped with :has() so it only reserves top space
+   on pages that actually render the pill. */
+@media (max-width: 600px) {
+  body:has(.ntp-pill) .header .header-inner {
+    padding-top: 44px;
+  }
+}
+
+/* ── 10 · Mobile: keep the AI-tutor launcher above the save bar ───────────
+   The full-width Save bar (.nt-pe-bar, max z-index) otherwise sits on top of
+   the fixed tutor/help launchers, hiding them. nt-page-enhance publishes the
+   bar's live height as --nt-savebar-h; lift the corner launchers clear of it. */
+@media (max-width: 700px) {
+  .lp-tutor-launcher,
+  .ntf-dock {
+    bottom: calc(var(--nt-savebar-h, 12px) + 14px) !important;
+  }
+}

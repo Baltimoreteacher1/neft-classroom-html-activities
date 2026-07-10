@@ -272,8 +272,22 @@
     return false;
   }
 
+  // Publish the save bar's live height as a CSS variable so fixed corner
+  // launchers (AI tutor, futures dock) can float clear of it instead of being
+  // hidden underneath. Updates on resize/orientation since the bar wraps.
+  function publishBarHeight() {
+    if (!bar.isConnected) return;
+    var h = bar.getBoundingClientRect().height || 0;
+    document.documentElement.style.setProperty("--nt-savebar-h", Math.round(h) + "px");
+  }
+
   function mount() {
-    if (isActivityPage()) document.body.appendChild(bar);
+    if (!isActivityPage()) return;
+    document.body.appendChild(bar);
+    publishBarHeight();
+    if (window.requestAnimationFrame) requestAnimationFrame(publishBarHeight);
+    window.addEventListener("resize", publishBarHeight, { passive: true });
+    window.addEventListener("orientationchange", publishBarHeight, { passive: true });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
   else mount();
