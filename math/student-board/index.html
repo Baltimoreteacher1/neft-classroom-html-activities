@@ -751,6 +751,283 @@
         opacity: 0.5;
         cursor: not-allowed;
       }
+      /* ---- vocabulary of the week ---- */
+      .vocab {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .vword {
+        border: 1px solid var(--line);
+        border-left: 5px solid var(--teal);
+        border-radius: 14px;
+        padding: 12px 14px;
+        background: linear-gradient(180deg, #fff, #f7fafe);
+      }
+      .vword .term {
+        font-family: "Nunito", sans-serif;
+        font-weight: 900;
+        font-size: 18px;
+        color: var(--navy);
+      }
+      .vword .mean {
+        font-size: 14px;
+        margin-top: 3px;
+      }
+      .vword .ex {
+        font-size: 13px;
+        color: var(--ink-soft);
+        margin-top: 6px;
+        font-style: italic;
+      }
+      .vword .say {
+        border: none;
+        background: var(--teal-light);
+        color: var(--teal);
+        border-radius: 8px;
+        padding: 3px 9px;
+        font-size: 12px;
+        font-weight: 800;
+        font-family: "Nunito", sans-serif;
+        cursor: pointer;
+        margin-top: 8px;
+      }
+      /* ---- confidence check-in ---- */
+      .checkin-card {
+        border-top: 5px solid var(--pod-4);
+      }
+      .checkin-btns {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 6px;
+      }
+      .checkin-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px 6px;
+        background: #fff;
+        cursor: pointer;
+        font-family: "Nunito", sans-serif;
+        font-weight: 800;
+        font-size: 13px;
+        color: var(--ink);
+        transition:
+          transform 0.1s ease,
+          border-color 0.1s ease;
+      }
+      .checkin-btn .ce {
+        font-size: 30px;
+        line-height: 1;
+      }
+      .checkin-btn:hover {
+        transform: translateY(-2px);
+      }
+      .checkin-btn.picked {
+        border-color: var(--pod-4);
+        background: rgba(112, 72, 168, 0.08);
+        box-shadow: inset 0 0 0 1px var(--pod-4);
+      }
+      .checkin-tally {
+        margin-top: 14px;
+        display: grid;
+        gap: 7px;
+      }
+      .checkin-tally[hidden] {
+        display: none;
+      }
+      .ct-row {
+        display: grid;
+        grid-template-columns: 30px 1fr 34px;
+        gap: 9px;
+        align-items: center;
+        font-size: 14px;
+      }
+      .ct-bar {
+        height: 12px;
+        border-radius: 999px;
+        background: #e6edf5;
+        overflow: hidden;
+      }
+      .ct-bar > span {
+        display: block;
+        height: 100%;
+        border-radius: 999px;
+        width: 0;
+        transition: width 0.7s ease;
+      }
+      .ct-ready > span {
+        background: var(--green);
+      }
+      .ct-almost > span {
+        background: var(--amber);
+      }
+      .ct-stuck > span {
+        background: var(--pod-5);
+      }
+      .ct-val {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+        color: var(--ink-soft);
+      }
+      .checkin-anon {
+        font-size: 12px;
+        color: var(--ink-soft);
+        margin: 10px 0 0;
+      }
+      /* ---- overlays (picker + timer) ---- */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 65;
+        display: grid;
+        place-items: center;
+        padding: 20px;
+        background: rgba(16, 35, 61, 0.7);
+        backdrop-filter: blur(3px);
+      }
+      .overlay[hidden] {
+        display: none;
+      }
+      .overlay-box {
+        background: var(--paper);
+        border-radius: 22px;
+        box-shadow: var(--shadow-lg);
+        width: min(680px, 96vw);
+        padding: 26px;
+        text-align: center;
+      }
+      .overlay-mode,
+      .timer-presets {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .pill {
+        font-family: "Nunito", sans-serif;
+        font-weight: 800;
+        font-size: 14px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--navy);
+        border-radius: 999px;
+        padding: 8px 16px;
+        cursor: pointer;
+      }
+      .pill.on {
+        background: linear-gradient(135deg, var(--teal), var(--navy));
+        color: #fff;
+        border-color: transparent;
+      }
+      .pick-stage {
+        font-family: "Nunito", sans-serif;
+        font-weight: 900;
+        font-size: clamp(34px, 8vw, 72px);
+        color: var(--navy);
+        min-height: 1.2em;
+        margin: 10px 0 6px;
+        transition:
+          transform 0.15s ease,
+          opacity 0.15s ease;
+      }
+      .pick-stage.spin {
+        opacity: 0.35;
+        transform: scale(0.94);
+      }
+      .pick-stage.reveal {
+        color: var(--green);
+        animation: pop 0.4s ease;
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(0.7);
+        }
+        60% {
+          transform: scale(1.08);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .pick-pool {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: center;
+        margin: 8px 0 18px;
+        min-height: 24px;
+      }
+      .pick-pool .chip {
+        font-size: 12px;
+        border-radius: 999px;
+        padding: 3px 10px;
+        background: #eef3f9;
+        color: var(--ink-soft);
+      }
+      .pick-pool .chip.done {
+        opacity: 0.4;
+        text-decoration: line-through;
+      }
+      .overlay-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .timer-display {
+        font-family: "Nunito", sans-serif;
+        font-weight: 900;
+        font-size: clamp(64px, 18vw, 160px);
+        color: var(--navy);
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+        margin: 4px 0 16px;
+      }
+      .timer-display.low {
+        color: var(--pod-5);
+      }
+      .timer-display.done {
+        color: var(--green);
+        animation: pop 0.5s ease;
+      }
+      .timer-custom {
+        display: flex;
+        justify-content: center;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+        font-size: 14px;
+        color: var(--ink-soft);
+      }
+      .timer-custom input[type="number"] {
+        width: 70px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 5px 8px;
+        font-size: 14px;
+      }
+      /* ---- text-size scaling (student / back-of-room) ---- */
+      body.ts1 {
+        font-size: 18px;
+      }
+      body.ts2 {
+        font-size: 20px;
+      }
+      body.ts1 .card > h2,
+      body.ts2 .card > h2 {
+        font-size: 22px;
+      }
+      body.ts2 .hint,
+      body.ts1 .hint {
+        font-size: 15px;
+      }
       .edit-banner {
         display: none;
         position: sticky;
@@ -892,6 +1169,12 @@
           <div class="time" id="clockTime">—</div>
           <div class="date" id="clockDate">—</div>
         </div>
+        <button class="btn ghost" id="pickBtn" title="Fair name / group picker">🎲 Pick</button>
+        <button class="btn ghost" id="timerBtn" title="Class work timer">⏱ Timer</button>
+        <button class="btn ghost" id="readBtn" title="Read the board aloud">🔊 Read</button>
+        <button class="btn ghost" id="textSizeBtn" title="Bigger text" aria-label="Text size">
+          🔤 A+
+        </button>
         <button class="btn ghost" id="presentBtn" title="Fullscreen for the projector">
           ⛶ Present
         </button>
@@ -953,9 +1236,40 @@
             </p>
             <div class="pods" id="pods"></div>
           </section>
+
+          <!-- Vocabulary of the week -->
+          <section class="card">
+            <h2><span class="ico">📖</span> Words We're Using</h2>
+            <p class="hint" data-edit="vocab.note">
+              This week's math words. Read them, say them, use them in your talk and writing.
+            </p>
+            <div class="vocab" id="vocab"></div>
+            <div class="row-tools edit-only">
+              <button class="mini" id="addVocabBtn">+ Word</button>
+            </div>
+          </section>
         </div>
 
         <div class="col-side">
+          <!-- Confidence check-in -->
+          <section class="card checkin-card">
+            <h2><span class="ico">✋</span> How's Today's Goal?</h2>
+            <p class="hint" id="checkinTarget">Tap how you feel about today's learning target.</p>
+            <div class="checkin-btns" id="checkinBtns">
+              <button class="checkin-btn" data-vote="ready">
+                <span class="ce">😀</span><span>I've got it</span>
+              </button>
+              <button class="checkin-btn" data-vote="almost">
+                <span class="ce">🙂</span><span>Almost</span>
+              </button>
+              <button class="checkin-btn" data-vote="stuck">
+                <span class="ce">🤔</span><span>Still working</span>
+              </button>
+            </div>
+            <div class="checkin-tally" id="checkinTally" hidden></div>
+            <p class="checkin-anon">Anonymous — no names, just how the class feels.</p>
+          </section>
+
           <!-- ALEKS -->
           <section class="card">
             <h2><span class="ico">📊</span> ALEKS Minutes</h2>
@@ -1006,6 +1320,50 @@
         The Class Board · <a href="/math/">Math Home</a> · <a href="/curriculum/">Curriculum Hub</a
         ><br />
         <span id="footStamp"></span>
+      </div>
+    </div>
+
+    <!-- Fair picker overlay -->
+    <div class="overlay" id="pickOverlay" hidden>
+      <div class="overlay-box">
+        <div class="overlay-mode" role="tablist" aria-label="Pick mode">
+          <button class="pill on" id="pickStudentTab">A student</button>
+          <button class="pill" id="pickGroupTab">A group</button>
+        </div>
+        <div class="pick-stage" id="pickStage" aria-live="polite">Tap “Pick” to start</div>
+        <div class="pick-pool" id="pickPool"></div>
+        <div class="overlay-actions">
+          <button class="btn ghost" id="pickResetBtn">Reset pool</button>
+          <button class="btn primary" id="pickGoBtn">🎲 Pick</button>
+          <button class="btn ghost" id="pickCloseBtn">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Class timer overlay -->
+    <div class="overlay" id="timerOverlay" hidden>
+      <div class="overlay-box">
+        <div class="timer-display" id="timerDisplay">05:00</div>
+        <div class="timer-presets" id="timerPresets">
+          <button class="pill" data-min="2">2 min</button>
+          <button class="pill on" data-min="5">5 min</button>
+          <button class="pill" data-min="10">10 min</button>
+          <button class="pill" data-min="15">15 min</button>
+        </div>
+        <div class="timer-custom">
+          <label
+            >Custom:
+            <input type="number" id="timerCustom" min="1" max="90" step="1" placeholder="min" />
+          </label>
+          <label class="timer-chime">
+            <input type="checkbox" id="timerChime" checked /> Chime at 0
+          </label>
+        </div>
+        <div class="overlay-actions">
+          <button class="btn primary" id="timerStartBtn">Start</button>
+          <button class="btn ghost" id="timerResetBtn">Reset</button>
+          <button class="btn ghost" id="timerCloseBtn">Close</button>
+        </div>
       </div>
     </div>
 
@@ -1136,6 +1494,31 @@
             { name: "Sofia", text: "hit her ALEKS goal 3 weeks in a row! 🔥" },
             { name: "Table 2", text: "for an amazing math argument during the Number Talk." },
           ],
+          vocab: {
+            note: "This week's math words. Read them, say them, use them in your talk and writing.",
+            words: [
+              {
+                term: "ratio",
+                meaning: "a comparison of two amounts",
+                example: "3 cups flour to 2 cups sugar = 3:2",
+              },
+              {
+                term: "rate",
+                meaning: "a ratio that compares two different units",
+                example: "60 miles in 1 hour",
+              },
+              {
+                term: "unit rate",
+                meaning: "a rate for exactly 1 of something",
+                example: "$3 per pound",
+              },
+              {
+                term: "equivalent",
+                meaning: "equal in value",
+                example: "1:2 is equivalent to 2:4",
+              },
+            ],
+          },
         };
       }
 
@@ -1153,6 +1536,7 @@
       let serverUpdatedAt = 0;
       let dirty = false;
       let editing = false;
+      let checkin = { ready: 0, almost: 0, stuck: 0, total: 0, day: "" };
 
       const $ = (s, r = document) => r.querySelector(s);
       const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -1206,6 +1590,10 @@
           });
           if (r.ok) {
             const d = await r.json();
+            if (d.checkin) {
+              checkin = d.checkin;
+              renderCheckin();
+            }
             if (d.ok && d.state && (d.updatedAt || 0) >= serverUpdatedAt) {
               if (!dirty) {
                 state = d.state;
@@ -1348,9 +1736,100 @@
         bindEditables();
         renderWeek();
         renderPods();
+        renderVocab();
         renderAleks();
+        renderCheckin();
         renderNotes();
         renderShouts();
+      }
+
+      function renderVocab() {
+        const host = $("#vocab");
+        if (!host) return;
+        const words = (state.vocab && state.vocab.words) || [];
+        host.innerHTML = words
+          .map((w, i) => {
+            return `<div class="vword">
+              <div class="term" ${editing ? `contenteditable="true" data-vw="${i}" data-vterm="1"` : ""}>${esc(w.term)}</div>
+              <div class="mean" ${editing ? `contenteditable="true" data-vw="${i}" data-vmean="1"` : ""}>${esc(w.meaning)}</div>
+              ${w.example || editing ? `<div class="ex" ${editing ? `contenteditable="true" data-vw="${i}" data-vex="1"` : ""}>${esc(w.example || "example…")}</div>` : ""}
+              <button class="say" data-sayword="${i}" title="Hear the word">🔊 Say it</button>
+              ${editing ? `<button class="mini danger" data-delvw="${i}">✕</button>` : ""}
+            </div>`;
+          })
+          .join("");
+        $$("#vocab [data-sayword]").forEach(
+          (b) =>
+            (b.onclick = () => {
+              const w = words[+b.dataset.sayword];
+              speak(w.term + ". " + w.meaning + (w.example ? ". For example, " + w.example : ""));
+            }),
+        );
+        if (editing) {
+          $$("#vocab [data-vterm]").forEach(
+            (el) =>
+              (el.oninput = () => {
+                words[+el.dataset.vw].term = el.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#vocab [data-vmean]").forEach(
+            (el) =>
+              (el.oninput = () => {
+                words[+el.dataset.vw].meaning = el.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#vocab [data-vex]").forEach(
+            (el) =>
+              (el.oninput = () => {
+                words[+el.dataset.vw].example = el.textContent.trim();
+                markDirty();
+              }),
+          );
+          $$("#vocab [data-delvw]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                words.splice(+b.dataset.delvw, 1);
+                markDirty();
+                renderVocab();
+              }),
+          );
+        }
+      }
+
+      function renderCheckin() {
+        const target = state.focus && state.focus.target;
+        const tEl = $("#checkinTarget");
+        if (tEl)
+          tEl.textContent = target
+            ? "🎯 " + target
+            : "Tap how you feel about today's learning target.";
+        // Show which one this device picked today.
+        const mine = checkinMine();
+        $$("#checkinBtns .checkin-btn").forEach((b) =>
+          b.classList.toggle("picked", b.dataset.vote === mine),
+        );
+        const host = $("#checkinTally");
+        if (!host) return;
+        if (!checkin.total) {
+          host.hidden = true;
+          return;
+        }
+        host.hidden = false;
+        const pct = (n) => Math.round((n / checkin.total) * 100);
+        const rows = [
+          ["ready", "😀", checkin.ready],
+          ["almost", "🙂", checkin.almost],
+          ["stuck", "🤔", checkin.stuck],
+        ];
+        host.innerHTML =
+          rows
+            .map(
+              ([k, e, n]) =>
+                `<div class="ct-row"><span>${e}</span><span class="ct-bar ct-${k}"><span style="width:${pct(n)}%"></span></span><span class="ct-val">${n}</span></div>`,
+            )
+            .join("") + `<p class="checkin-anon">${checkin.total} response(s) today</p>`;
       }
 
       function renderWeek() {
@@ -1601,6 +2080,219 @@
         render();
       }
 
+      // ---- text-to-speech (accessibility / ESOL) ----------------------
+      function speak(text) {
+        try {
+          if (!("speechSynthesis" in window)) return;
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(text);
+          u.rate = 0.95;
+          u.lang = "en-US";
+          window.speechSynthesis.speak(u);
+        } catch {}
+      }
+      function readBoardAloud() {
+        if ("speechSynthesis" in window && window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          return;
+        }
+        const parts = [];
+        const w = state.week || {};
+        parts.push(sectionLabel(boardId) + ". " + (w.label || "") + ". " + (w.theme || ""));
+        const f = state.focus || {};
+        if (f.now) parts.push("Right now: " + f.now + ". " + (f.nowSub || ""));
+        if (f.next) parts.push("Up next: " + f.next + ".");
+        if (f.target) parts.push("Today's goal: " + f.target + ".");
+        (state.notes || []).forEach((n) => parts.push(n.text));
+        speak(parts.filter(Boolean).join(". "));
+      }
+
+      // ---- text size (projector / back of room) -----------------------
+      function applyTextSize() {
+        const lvl = parseInt(localStorage.getItem("nt-board-textsize") || "0", 10) || 0;
+        document.body.classList.remove("ts1", "ts2");
+        if (lvl === 1) document.body.classList.add("ts1");
+        if (lvl === 2) document.body.classList.add("ts2");
+        const btn = $("#textSizeBtn");
+        if (btn) btn.textContent = lvl === 0 ? "🔤 A+" : lvl === 1 ? "🔤 A++" : "🔤 A";
+      }
+      function cycleTextSize() {
+        const lvl = (parseInt(localStorage.getItem("nt-board-textsize") || "0", 10) + 1) % 3;
+        try {
+          localStorage.setItem("nt-board-textsize", String(lvl));
+        } catch {}
+        applyTextSize();
+      }
+
+      // ---- confidence check-in ----------------------------------------
+      function checkinToken() {
+        let t = "";
+        try {
+          t = localStorage.getItem("nt-board-token") || "";
+          if (!t) {
+            t =
+              "d" +
+              Math.abs(hashStr(navigator.userAgent + screen.width + performance.now())).toString(
+                36,
+              ) +
+              Date.now().toString(36);
+            localStorage.setItem("nt-board-token", t);
+          }
+        } catch {
+          t = "anon";
+        }
+        return t;
+      }
+      function hashStr(s) {
+        let h = 0;
+        for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+        return h;
+      }
+      function checkinMine() {
+        try {
+          const raw = JSON.parse(localStorage.getItem("nt-board-vote") || "null");
+          if (raw && raw.board === boardId && raw.day === checkin.day) return raw.value;
+        } catch {}
+        return "";
+      }
+      async function sendCheckin(value) {
+        try {
+          const r = await fetch("/api/board/checkin?board=" + encodeURIComponent(boardId), {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ value, token: checkinToken() }),
+          });
+          const d = await r.json().catch(() => ({}));
+          if (d && d.ok && d.checkin) {
+            checkin = d.checkin;
+            try {
+              localStorage.setItem(
+                "nt-board-vote",
+                JSON.stringify({ board: boardId, day: checkin.day, value }),
+              );
+            } catch {}
+            renderCheckin();
+          }
+        } catch {}
+      }
+
+      // ---- fair picker (equity, no-repeat) ----------------------------
+      let pickMode = "student";
+      let pickedSet = new Set();
+      function pickPool() {
+        const groups = state.groups || [];
+        if (pickMode === "group") return groups.map((g) => g.name).filter(Boolean);
+        return groups.flatMap((g) => g.members || []).filter(Boolean);
+      }
+      function poolKey() {
+        return "pick:" + boardId + ":" + pickMode;
+      }
+      function renderPickPool() {
+        const pool = pickPool();
+        $("#pickPool").innerHTML = pool
+          .map((n) => `<span class="chip ${pickedSet.has(n) ? "done" : ""}">${esc(n)}</span>`)
+          .join("");
+      }
+      function pickOne() {
+        const pool = pickPool();
+        const remaining = pool.filter((n) => !pickedSet.has(n));
+        const choices = remaining.length ? remaining : pool;
+        if (!choices.length) {
+          $("#pickStage").textContent = "Add names in a group first";
+          return;
+        }
+        if (!remaining.length) pickedSet = new Set(); // full cycle done → reset
+        const stage = $("#pickStage");
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        let ticks = reduce ? 1 : 12;
+        stage.classList.remove("reveal");
+        const spin = () => {
+          stage.classList.add("spin");
+          stage.textContent = choices[Math.floor(Math.random() * choices.length)];
+          ticks--;
+          if (ticks > 0) {
+            setTimeout(spin, 60 + (12 - ticks) * 12);
+          } else {
+            const chosen = choices[Math.floor(Math.random() * choices.length)];
+            pickedSet.add(chosen);
+            stage.classList.remove("spin");
+            stage.classList.add("reveal");
+            stage.textContent = chosen;
+            renderPickPool();
+          }
+        };
+        spin();
+      }
+      function openPicker() {
+        pickedSet = new Set();
+        $("#pickStage").textContent = 'Tap "Pick" to start';
+        $("#pickStage").className = "pick-stage";
+        renderPickPool();
+        $("#pickOverlay").hidden = false;
+      }
+
+      // ---- class work timer -------------------------------------------
+      let timerSecs = 300;
+      let timerLeft = 300;
+      let timerId = null;
+      function fmtTimer(s) {
+        const m = Math.floor(s / 60);
+        return String(m).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+      }
+      function paintTimer() {
+        const d = $("#timerDisplay");
+        d.textContent = fmtTimer(Math.max(0, timerLeft));
+        d.classList.toggle("low", timerLeft <= 10 && timerLeft > 0);
+        d.classList.toggle("done", timerLeft <= 0);
+      }
+      function setTimerMinutes(min) {
+        timerSecs = Math.max(1, Math.min(90, Math.round(min))) * 60;
+        timerLeft = timerSecs;
+        stopTimer();
+        paintTimer();
+      }
+      function startTimer() {
+        if (timerId) return;
+        if (timerLeft <= 0) timerLeft = timerSecs;
+        $("#timerStartBtn").textContent = "Pause";
+        timerId = setInterval(() => {
+          timerLeft--;
+          paintTimer();
+          if (timerLeft <= 0) {
+            stopTimer();
+            if ($("#timerChime").checked) timerChime();
+          }
+        }, 1000);
+      }
+      function stopTimer() {
+        if (timerId) {
+          clearInterval(timerId);
+          timerId = null;
+        }
+        const b = $("#timerStartBtn");
+        if (b) b.textContent = "Start";
+      }
+      function timerChime() {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        try {
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          if (!Ctx) return;
+          const ac = new Ctx();
+          [660, 880].forEach((f, i) => {
+            const o = ac.createOscillator();
+            const g = ac.createGain();
+            o.frequency.value = f;
+            o.connect(g);
+            g.connect(ac.destination);
+            g.gain.setValueAtTime(0.0001, ac.currentTime + i * 0.18);
+            g.gain.exponentialRampToValueAtTime(0.25, ac.currentTime + i * 0.18 + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + i * 0.18 + 0.5);
+            o.start(ac.currentTime + i * 0.18);
+            o.stop(ac.currentTime + i * 0.18 + 0.5);
+          });
+        } catch {}
+      }
+
       // ---- ALEKS CSV import -------------------------------------------
       // Parses an ALEKS "Time and Topic" style export (or any name + time
       // report). Accepts comma OR tab separated (paste straight from a sheet).
@@ -1839,6 +2531,83 @@
         markDirty();
         renderShouts();
       };
+      $("#addVocabBtn").onclick = () => {
+        (state.vocab.words = state.vocab.words || []).push({
+          term: "word",
+          meaning: "meaning",
+          example: "",
+        });
+        markDirty();
+        renderVocab();
+      };
+
+      // Confidence check-in votes
+      $$("#checkinBtns .checkin-btn").forEach(
+        (b) => (b.onclick = () => sendCheckin(b.dataset.vote)),
+      );
+
+      // Classroom tools
+      $("#readBtn").onclick = readBoardAloud;
+      $("#textSizeBtn").onclick = cycleTextSize;
+      $("#pickBtn").onclick = openPicker;
+      $("#pickGoBtn").onclick = pickOne;
+      $("#pickResetBtn").onclick = () => {
+        pickedSet = new Set();
+        renderPickPool();
+        $("#pickStage").textContent = 'Tap "Pick" to start';
+        $("#pickStage").className = "pick-stage";
+      };
+      $("#pickCloseBtn").onclick = () => ($("#pickOverlay").hidden = true);
+      $("#pickStudentTab").onclick = () => {
+        pickMode = "student";
+        $("#pickStudentTab").classList.add("on");
+        $("#pickGroupTab").classList.remove("on");
+        pickedSet = new Set();
+        renderPickPool();
+      };
+      $("#pickGroupTab").onclick = () => {
+        pickMode = "group";
+        $("#pickGroupTab").classList.add("on");
+        $("#pickStudentTab").classList.remove("on");
+        pickedSet = new Set();
+        renderPickPool();
+      };
+      $("#timerBtn").onclick = () => {
+        paintTimer();
+        $("#timerOverlay").hidden = false;
+      };
+      $("#timerStartBtn").onclick = () => (timerId ? stopTimer() : startTimer());
+      $("#timerResetBtn").onclick = () => setTimerMinutes(timerSecs / 60);
+      $("#timerCloseBtn").onclick = () => {
+        stopTimer();
+        $("#timerOverlay").hidden = true;
+      };
+      $$("#timerPresets .pill").forEach(
+        (b) =>
+          (b.onclick = () => {
+            $$("#timerPresets .pill").forEach((x) => x.classList.remove("on"));
+            b.classList.add("on");
+            setTimerMinutes(+b.dataset.min);
+          }),
+      );
+      $("#timerCustom").onchange = (e) => {
+        const v = parseInt(e.target.value, 10);
+        if (v > 0) {
+          $$("#timerPresets .pill").forEach((x) => x.classList.remove("on"));
+          setTimerMinutes(v);
+        }
+      };
+      // Click the dark backdrop (outside the box) to close an overlay.
+      ["#pickOverlay", "#timerOverlay"].forEach((sel) => {
+        const ov = $(sel);
+        ov.addEventListener("click", (e) => {
+          if (e.target === ov) {
+            if (sel === "#timerOverlay") stopTimer();
+            ov.hidden = true;
+          }
+        });
+      });
+
       $("#sectionSel").onchange = (e) => {
         if (dirty && !confirm("Switch sections? Unpublished changes will be lost.")) {
           e.target.value = boardId;
@@ -1868,7 +2637,11 @@
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           if (!$("#aleksModal").hidden) closeAleksModal();
-          else document.body.classList.remove("present");
+          else if (!$("#pickOverlay").hidden) $("#pickOverlay").hidden = true;
+          else if (!$("#timerOverlay").hidden) {
+            stopTimer();
+            $("#timerOverlay").hidden = true;
+          } else document.body.classList.remove("present");
         }
       });
 
@@ -1880,6 +2653,7 @@
       boardId = fromUrl || (SECTIONS[remembered] ? remembered : "main");
       updateSectionUI();
 
+      applyTextSize();
       tick();
       setInterval(tick, 1000 * 15);
       loadBoard();
