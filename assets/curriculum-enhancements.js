@@ -337,16 +337,36 @@
     return loadJson("/data/curriculum-search-index.json").then(function (data) {
       if (!data || !data.index) return;
       if (typeof MiniSearch === "undefined") return;
-      searchIndex = MiniSearch.loadJSON(data.index, {
-        fields: data.index.fields || ["title", "standard", "objective", "searchText"],
-        storeFields: data.index.storeFields || ["id", "title", "standard", "unit", "lessonPath"],
+      // data.index is the parsed object from miniSearch.toJSON(), so use
+      // loadJS (loadJSON expects a string). The fields/storeFields lists MUST
+      // mirror scripts/generate-curriculum-search-index.mjs exactly — the
+      // serialized index does not carry them.
+      searchIndex = MiniSearch.loadJS(data.index, {
+        fields: [
+          "title",
+          "standard",
+          "objective",
+          "languageObjective",
+          "topic",
+          "resources",
+          "searchText",
+        ],
+        storeFields: [
+          "id",
+          "unit",
+          "unitLabel",
+          "lesson",
+          "title",
+          "standard",
+          "objective",
+          "lessonPath",
+        ],
         searchOptions: {
-          boost: { title: 3, standard: 2 },
+          boost: { title: 3, standard: 2, objective: 1.5 },
           fuzzy: 0.2,
           prefix: true,
         },
       });
-      data.index.documentCount || 0; // touch for lint silence
     });
   }
 
