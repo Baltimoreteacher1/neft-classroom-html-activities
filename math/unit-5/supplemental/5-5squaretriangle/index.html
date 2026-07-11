@@ -2729,6 +2729,8 @@
                           class="short-input"
                           data-save="table_base"
                           aria-label="Base shape"
+                          data-answer="square|cuadrado"
+                          data-hint="Look at the very bottom of the pyramid in the picture. What flat shape does it sit on?"
                         />
                       </td>
                       <td>
@@ -2736,6 +2738,8 @@
                           class="short-input"
                           data-save="table_faces"
                           aria-label="Side faces"
+                          data-answer="triangle|triangles|triangular|triangulo|triangulos"
+                          data-hint="Count the slanted faces that lean in from each side of the base, then name their shape."
                         />
                       </td>
                       <td>
@@ -2743,12 +2747,26 @@
                           class="short-input"
                           data-save="table_name"
                           aria-label="3D name"
+                          data-answer="square pyramid|pyramid|piramide"
+                          data-hint="Name the base shape first, then add the solid family it belongs to. The Vocabulary tab can help."
                         />
                       </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
+              <button
+                class="primary-btn"
+                onclick="
+                  ntSelfCheck(
+                    ['table_base', 'table_faces', 'table_name'],
+                    'practiceFeedback3',
+                  )
+                "
+              >
+                Check #3
+              </button>
+              <div class="feedback" id="practiceFeedback3"></div>
             </div>
 
             <div class="practice-item">
@@ -2819,8 +2837,18 @@
               <input
                 class="short-input"
                 data-save="exit_1"
+                aria-label="What can help Yuzuki"
+                data-answer="net|a net|red|patron"
+                data-hint="Think of the flat 2-D pattern that folds up into a 3-D figure. The Vocabulary tab has this word."
                 placeholder="A ___ can help Yuzuki."
               />
+              <button
+                class="primary-btn"
+                onclick="ntSelfCheck(['exit_1'], 'exitFeedback1')"
+              >
+                Check #1
+              </button>
+              <div class="feedback" id="exitFeedback1"></div>
             </div>
             <div class="practice-item">
               <p>
@@ -3358,6 +3386,86 @@
             }
           });
         });
+      }
+
+      /* Gentle self-check for typed answer blanks (pilot pattern).
+         data-answer lists accepted equivalent forms separated by "|".
+         Hints come from data-hint and never reveal the answer. */
+      function ntNorm(s) {
+        return (s || "")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9/.\-\s]/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+      function ntNumVal(s) {
+        const t = ntNorm(s).replace(/\s/g, "").replace(/^\$/, "");
+        const frac = t.match(/^(-?\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/);
+        if (frac) return parseFloat(frac[1]) / parseFloat(frac[2]);
+        return /^-?(?:\d+\.?\d*|\.\d+)$/.test(t) ? parseFloat(t) : NaN;
+      }
+      function ntMatches(value, spec) {
+        const text = ntNorm(value);
+        if (!text) return false;
+        return String(spec || "")
+          .split("|")
+          .some((raw) => {
+            const acc = ntNorm(raw);
+            if (!acc) return false;
+            const nv = ntNumVal(value);
+            const na = ntNumVal(acc);
+            if (isFinite(nv) && isFinite(na)) return Math.abs(nv - na) < 0.005;
+            if (text === acc) return true;
+            const esc = acc.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            return new RegExp("(^| )" + esc + "( |$)").test(text);
+          });
+      }
+      function ntSelfCheck(keys, feedbackId) {
+        const fb = document.getElementById(feedbackId);
+        const lines = [];
+        let right = 0;
+        keys.forEach((key) => {
+          const el = document.querySelector('[data-save="' + key + '"]');
+          if (!el) return;
+          const label = el.getAttribute("aria-label") || "This blank";
+          if (!el.value.trim()) {
+            el.style.borderColor = "";
+            el.style.background = "";
+            lines.push("✏️ " + label + ": type your idea first.");
+            return;
+          }
+          if (ntMatches(el.value, el.dataset.answer)) {
+            right++;
+            el.style.borderColor = "#2f9e6b";
+            el.style.background = "#eafaf1";
+            lines.push("✓ " + label + " — correct!");
+          } else {
+            el.style.borderColor = "#e2b93f";
+            el.style.background = "#fff9ec";
+            lines.push(
+              "💡 " +
+                label +
+                ": " +
+                (el.dataset.hint ||
+                  "Recheck this one using the picture and the word bank."),
+            );
+          }
+        });
+        fb.className =
+          "feedback show " + (right === keys.length ? "good" : "try");
+        fb.innerHTML =
+          (right === keys.length
+            ? "Nice work — every answer checks out!"
+            : "Good effort — " +
+              right +
+              " of " +
+              keys.length +
+              " so far. Keep going!") +
+          "<br>" +
+          lines.join("<br>");
+        persist();
       }
 
       function checkSingleChoice(selector, feedbackId) {

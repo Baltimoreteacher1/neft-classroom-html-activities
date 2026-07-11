@@ -663,6 +663,12 @@
       body.level-2 .lvl2-block {
         border-color: var(--blue);
       }
+      .lvl0-only {
+        display: none;
+      }
+      body.level-0 .lvl0-only {
+        display: block;
+      }
 
       /* ---- Vocab cards ---- */
       .vocab-grid {
@@ -841,13 +847,13 @@
     <!-- projects-gold-injected:begin (gold hardening layer — tools/inject-projects-gold.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-gold.css" />
     <!-- projects-gold-injected:end -->
-      <!-- projects-publisher-injected:begin (publisher pedagogy layer — tools/inject-projects-publisher.mjs) -->
+    <!-- projects-publisher-injected:begin (publisher pedagogy layer — tools/inject-projects-publisher.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-publisher.css" />
     <!-- projects-publisher-injected:end -->
     <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-visuals.css" />
     <!-- projects-visuals-injected:end -->
-</head>
+  </head>
   <body class="level-1 pro-projects" id="body">
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
@@ -878,6 +884,10 @@
         </span>
       </div>
       <div class="level-bar">
+        <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+          <span class="en-text">🟠 Level 0 · Extra Support</span>
+          <span class="es-text">🟠 Nivel 0 · Apoyo Extra</span>
+        </button>
         <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
           <span class="en-text">🟢 Level 1 — With Support</span>
           <span class="es-text">🟢 Nivel 1 — Con Soporte</span>
@@ -1089,7 +1099,8 @@
               ><span class="es-text">NOAA — ¿Qué tan profundo es el océano? ↗</span></a
             >
             <small class="sr-hint"
-              ><span class="en-text">Fill in: Average depth ___ m; maximum depth ___ m (negatives).</span
+              ><span class="en-text"
+                >Fill in: Average depth ___ m; maximum depth ___ m (negatives).</span
               ><span class="es-text"
                 >Completa: Profundidad media ___ m; máxima ___ m (negativos).</span
               ></small
@@ -1340,6 +1351,28 @@
                 D
               </text>
             </svg>
+          </div>
+
+          <!-- Level 0 Extra Support -->
+          <div class="instruct lvl0-only">
+            <span class="en-text"
+              >🟠 <strong>Level 0 Support:</strong> Plot one checkpoint at a time.<br />
+              1. Look at the x number: go right (+) or left (−). 2. Look at the y number: go up (+)
+              or down (−).<br />
+              Micro-example (different numbers): a buoy at (1, −2) means 1 right, then 2 down.<br />
+              Easy start: keep the numbers already in the boxes — check where each point lands.<br />
+              Say it: "Checkpoint A is at (___, ___) because ___."</span
+            >
+            <span class="es-text"
+              >🟠 <strong>Apoyo de Nivel 0:</strong> Ubica un punto de control a la vez.<br />
+              1. Mira el número x: ve a la derecha (+) o a la izquierda (−). 2. Mira el número y: ve
+              hacia arriba (+) o hacia abajo (−).<br />
+              Micro-ejemplo (con otros números): una boya en (1, −2) significa 1 a la derecha y
+              luego 2 hacia abajo.<br />
+              Comienzo fácil: deja los números que ya están en las casillas y revisa dónde cae cada
+              punto.<br />
+              Dilo: "El punto de control A está en (___, ___) porque ___".</span
+            >
           </div>
 
           <!-- Level 1 Tip -->
@@ -2036,9 +2069,7 @@
             >
             <small class="sr-hint"
               ><span class="en-text">Fill in: The ___ zone runs from ___ m to ___ m.</span
-              ><span class="es-text"
-                >Completa: La zona ___ va de ___ m a ___ m.</span
-              ></small
+              ><span class="es-text">Completa: La zona ___ va de ___ m a ___ m.</span></small
             >
             <input
               type="text"
@@ -3045,6 +3076,8 @@
     <script src="/assets/app.js" defer></script>
     <script>
       const PRESETS = {};
+      // Level 0 (extra support) starter values — checkpoint boxes are pre-filled, so no extras.
+      const PRESETS_L0 = {};
 
       // ---- No-giveaway attempt tracker (per-input coaching ladder) ----
       const _tries = {};
@@ -3058,8 +3091,9 @@
 
       function handleLevelPreset(n) {
         try {
-          if (n === 1) {
-            for (const [id, val] of Object.entries(PRESETS)) {
+          if (n === 0 || n === 1) {
+            const presets = n === 0 ? Object.assign({}, PRESETS, PRESETS_L0) : PRESETS;
+            for (const [id, val] of Object.entries(presets)) {
               const el = document.getElementById(id);
               if (el && !el.value) {
                 el.value = val;
@@ -3068,12 +3102,14 @@
               }
             }
           } else if (n === 2) {
-            for (const [id, val] of Object.entries(PRESETS)) {
-              const el = document.getElementById(id);
-              if (el && String(el.value) === String(val)) {
-                el.value = "";
-                el.dispatchEvent(new Event("input", { bubbles: true }));
-                el.dispatchEvent(new Event("change", { bubbles: true }));
+            for (const presetMap of [PRESETS, PRESETS_L0]) {
+              for (const [id, val] of Object.entries(presetMap)) {
+                const el = document.getElementById(id);
+                if (el && String(el.value) === String(val)) {
+                  el.value = "";
+                  el.dispatchEvent(new Event("input", { bubbles: true }));
+                  el.dispatchEvent(new Event("change", { bubbles: true }));
+                }
               }
             }
           }
@@ -3146,8 +3182,9 @@
       // ---- Level toggle ----
       function setLevel(n) {
         // Surgical class swap — preserve `es` and injected `pro-projects` classes
-        document.body.classList.remove("level-1", "level-2");
+        document.body.classList.remove("level-0", "level-1", "level-2");
         document.body.classList.add("level-" + n);
+        document.getElementById("btn-lv0").classList.toggle("active", n === 0);
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
 
@@ -4674,13 +4711,13 @@
     <script src="/shared/projects/projects-gold.js" defer></script>
     <!-- projects-gold-injected:end -->
     <!-- projects-publisher-injected:begin (publisher pedagogy layer — tools/inject-projects-publisher.mjs) -->
-  <script src="/shared/projects/projects-publisher.js" defer></script>
-  <!-- projects-publisher-injected:end -->
-  <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
-  <script src="/shared/projects/projects-visuals.js" defer></script>
-  <!-- projects-visuals-injected:end -->
-  <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
-  <script src="/assets/canvas-bridge.js" defer></script>
-  <!-- canvas-bridge-injected:end -->
-</body>
+    <script src="/shared/projects/projects-publisher.js" defer></script>
+    <!-- projects-publisher-injected:end -->
+    <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
+    <script src="/shared/projects/projects-visuals.js" defer></script>
+    <!-- projects-visuals-injected:end -->
+    <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+  </body>
 </html>

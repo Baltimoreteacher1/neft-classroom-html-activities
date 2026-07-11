@@ -642,6 +642,12 @@
       }
 
       /* ---- Level-gated content ---- */
+      .lvl0-only {
+        display: none;
+      }
+      body.level-0 .lvl0-only {
+        display: block;
+      }
       .lvl1-only {
         display: none;
       }
@@ -868,6 +874,10 @@
         </span>
       </div>
       <div class="level-bar">
+        <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+          <span class="en-text">🟠 Level 0 · Extra Support</span>
+          <span class="es-text">🟠 Nivel 0 · Apoyo Extra</span>
+        </button>
         <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
           <span class="en-text">🟢 Level 1 — With Support</span>
           <span class="es-text">🟢 Nivel 1 — Con apoyo</span>
@@ -1203,6 +1213,23 @@
           </svg>
 
           <!-- Level 1 hint -->
+          <!-- Level 0 support -->
+          <div class="instruct lvl0-only">
+            <span class="en-text"
+              >🟠 <strong>Level 0 — one step at a time:</strong><br />
+              Step 1: Type <strong>2</strong> cups for Ingredient 1.<br />
+              Step 2: Type <strong>1</strong> cup for Ingredient 2.<br />
+              Tiny example with other numbers: 4 apples and 2 pears make the ratio 4 : 2.<br />
+              Say it: “I chose ___ because ___.”</span
+            >
+            <span class="es-text"
+              >🟠 <strong>Nivel 0 — un paso a la vez:</strong><br />
+              Paso 1: Escribe <strong>2</strong> tazas para el ingrediente 1.<br />
+              Paso 2: Escribe <strong>1</strong> taza para el ingrediente 2.<br />
+              Ejemplo pequeño con otros números: 4 manzanas y 2 peras forman la razón 4 : 2.<br />
+              Dilo: “Elegí ___ porque ___.”</span
+            >
+          </div>
           <div class="instruct lvl1-only">
             <span class="en-text"
               >🟢 <strong>Level 1 tip:</strong> Try using friendly whole numbers like 3 cups
@@ -2444,10 +2471,12 @@
     <script src="/assets/app.js" defer></script>
     <script>
       const PRESETS = {};
+      const PRESETS_LV0 = { "r-ing1-cups": 2, "r-ing2-cups": 1 };
       function handleLevelPreset(n) {
         try {
-          if (n === 1) {
-            for (const [id, val] of Object.entries(PRESETS)) {
+          if (n === 0 || n === 1) {
+            const bank = n === 0 ? PRESETS_LV0 : PRESETS;
+            for (const [id, val] of Object.entries(bank)) {
               const el = document.getElementById(id);
               if (el && !el.value) {
                 el.value = val;
@@ -2456,7 +2485,9 @@
               }
             }
           } else if (n === 2) {
-            for (const [id, val] of Object.entries(PRESETS)) {
+            for (const [id, val] of Object.entries(PRESETS).concat(
+              Object.entries(PRESETS_LV0),
+            )) {
               const el = document.getElementById(id);
               if (el && String(el.value) === String(val)) {
                 el.value = "";
@@ -2545,8 +2576,9 @@
       // ---- Level toggle ----
       function setLevel(n) {
         const body = document.getElementById("body");
-        body.classList.remove("level-1", "level-2");
+        body.classList.remove("level-0", "level-1", "level-2");
         body.classList.add("level-" + n);
+        document.getElementById("btn-lv0").classList.toggle("active", n === 0);
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
         handleLevelPreset(n);
