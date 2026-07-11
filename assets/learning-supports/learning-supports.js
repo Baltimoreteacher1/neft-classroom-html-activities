@@ -17,19 +17,23 @@
       "build-math": "Build Mathematical Models",
       "express-thinking": "Express Math Thinking",
       "language-support": "Language Support (ESOL)",
-      "challenge-extend": "Challenge & Extend"
+      "challenge-extend": "Challenge & Extend",
     };
     return names[key] || key;
   }
 
   function getProfileDescription(key) {
     const descs = {
-      "read-understand": "Provides vocabulary, worked examples, and text-to-speech to support comprehension.",
+      "read-understand":
+        "Provides vocabulary, worked examples, and text-to-speech to support comprehension.",
       "focus-organize": "Reduces visual clutter and enables focus tools to support concentration.",
-      "build-math": "Links to prerequisite foundations and readiness checks for background knowledge.",
+      "build-math":
+        "Links to prerequisite foundations and readiness checks for background knowledge.",
       "express-thinking": "Provides discourse sentence frames, response stems, and word banks.",
-      "language-support": "Provides bilingual terminology, translations, and multilingual visual aids.",
-      "challenge-extend": "Provides advanced concepts, error analysis challenges, and extension tasks."
+      "language-support":
+        "Provides bilingual terminology, translations, and multilingual visual aids.",
+      "challenge-extend":
+        "Provides advanced concepts, error analysis challenges, and extension tasks.",
     };
     return descs[key] || "";
   }
@@ -43,7 +47,9 @@
   let activeSpeechUtterance = null;
 
   // Initialize profiles to false
-  PROFILE_KEYS.forEach(k => { activeProfiles[k] = false; });
+  PROFILE_KEYS.forEach((k) => {
+    activeProfiles[k] = false;
+  });
 
   // Safe localStorage helper
   function getStoredPreferences() {
@@ -51,7 +57,7 @@
       const data = localStorage.getItem(STORAGE_KEY);
       if (!data) return null;
       return JSON.parse(data);
-    } catch (e) {
+    } catch (_e) {
       console.warn("Learning supports: LocalStorage access blocked or unavailable.");
       return null;
     }
@@ -60,7 +66,7 @@
   function saveStoredPreferences(pref) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(pref));
-    } catch (e) {
+    } catch (_e) {
       console.warn("Learning supports: Failed to save preferences to LocalStorage.");
     }
   }
@@ -68,7 +74,9 @@
   // Parse hash/query parameter
   function parseSettings(str) {
     const settings = {};
-    PROFILE_KEYS.forEach(k => { settings[k] = false; });
+    PROFILE_KEYS.forEach((k) => {
+      settings[k] = false;
+    });
     if (!str) return settings;
 
     // Supports format: supports=read-understand,focus-organize or comma-separated lists
@@ -91,7 +99,7 @@
     }
 
     if (listStr) {
-      listStr.split(",").forEach(item => {
+      listStr.split(",").forEach((item) => {
         const trimmed = item.trim();
         if (PROFILE_KEYS.includes(trimmed)) {
           settings[trimmed] = true;
@@ -103,7 +111,7 @@
   }
 
   function serializeSettings(settings) {
-    return PROFILE_KEYS.filter(k => settings[k]).join(",");
+    return PROFILE_KEYS.filter((k) => settings[k]).join(",");
   }
 
   // Idempotent initialization
@@ -153,7 +161,7 @@
     } else {
       const stored = getStoredPreferences();
       if (stored) {
-        PROFILE_KEYS.forEach(k => {
+        PROFILE_KEYS.forEach((k) => {
           if (typeof stored[k] === "boolean") {
             activeProfiles[k] = stored[k];
           }
@@ -219,7 +227,8 @@
     // Explainer
     const explainer = document.createElement("p");
     explainer.className = "ewl-supports-dialog-intro";
-    explainer.textContent = "Activate accessibility profiles to support student learning without lowering standards. No student data or IEP details are stored.";
+    explainer.textContent =
+      "Activate accessibility profiles to support student learning without lowering standards. No student data or IEP details are stored.";
     dialogBody.appendChild(explainer);
 
     // Checkbox list
@@ -227,7 +236,7 @@
     form.className = "ewl-supports-dialog-form";
     form.addEventListener("submit", (e) => e.preventDefault());
 
-    PROFILE_KEYS.forEach(key => {
+    PROFILE_KEYS.forEach((key) => {
       const row = document.createElement("div");
       row.className = "ewl-supports-checkbox-row";
 
@@ -417,7 +426,7 @@
     if (!toolsDock) return;
 
     // Checkboxes sync
-    PROFILE_KEYS.forEach(key => {
+    PROFILE_KEYS.forEach((key) => {
       const checkbox = document.getElementById(`ewl-profile-${key}`);
       if (checkbox) checkbox.checked = activeProfiles[key];
     });
@@ -433,12 +442,23 @@
       const listenBtn = toolsDock.querySelector('[data-tool="listen"]');
 
       // Visibility conditions
-      if (wordsBtn) wordsBtn.style.display = (activeProfiles["read-understand"] || activeProfiles["language-support"]) ? "inline-flex" : "none";
-      if (exampleBtn) exampleBtn.style.display = activeProfiles["read-understand"] ? "inline-flex" : "none";
+      if (wordsBtn)
+        wordsBtn.style.display =
+          activeProfiles["read-understand"] || activeProfiles["language-support"]
+            ? "inline-flex"
+            : "none";
+      if (exampleBtn)
+        exampleBtn.style.display = activeProfiles["read-understand"] ? "inline-flex" : "none";
       if (modelBtn) modelBtn.style.display = activeProfiles["build-math"] ? "inline-flex" : "none";
-      if (explainBtn) explainBtn.style.display = activeProfiles["express-thinking"] ? "inline-flex" : "none";
-      if (focusBtn) focusBtn.style.display = activeProfiles["focus-organize"] ? "inline-flex" : "none";
-      if (listenBtn) listenBtn.style.display = (activeProfiles["read-understand"] || activeProfiles["language-support"]) ? "inline-flex" : "none";
+      if (explainBtn)
+        explainBtn.style.display = activeProfiles["express-thinking"] ? "inline-flex" : "none";
+      if (focusBtn)
+        focusBtn.style.display = activeProfiles["focus-organize"] ? "inline-flex" : "none";
+      if (listenBtn)
+        listenBtn.style.display =
+          activeProfiles["read-understand"] || activeProfiles["language-support"]
+            ? "inline-flex"
+            : "none";
     } else {
       toolsDock.hidden = true;
       closePanel();
@@ -485,10 +505,10 @@
         const list = document.createElement("dl");
         list.className = "ewl-supports-vocab-list";
 
-        manifestData.vocabulary.forEach(v => {
+        manifestData.vocabulary.forEach((v) => {
           const dt = document.createElement("dt");
           dt.className = "ewl-supports-vocab-term";
-          
+
           if (isSpanish && v.termEs) {
             dt.textContent = `${v.term} (${v.termEs})`;
           } else {
@@ -497,7 +517,7 @@
 
           const dd = document.createElement("dd");
           dd.className = "ewl-supports-vocab-definition";
-          dd.textContent = (isSpanish && v.definitionEs) ? v.definitionEs : v.definition;
+          dd.textContent = isSpanish && v.definitionEs ? v.definitionEs : v.definition;
 
           list.appendChild(dt);
           list.appendChild(dd);
@@ -527,7 +547,8 @@
     } else if (tab === "model") {
       titleEl.textContent = "Prerequisite Practice & Tools";
       const desc = document.createElement("p");
-      desc.textContent = "Prepare your math foundations with the readiness warm-up or virtual manipulatives.";
+      desc.textContent =
+        "Prepare your math foundations with the readiness warm-up or virtual manipulatives.";
       bodyEl.appendChild(desc);
 
       const readinessLink = document.createElement("a");
@@ -538,7 +559,8 @@
     } else if (tab === "explain") {
       titleEl.textContent = "Sentence Frames & Stems";
       const desc = document.createElement("p");
-      desc.textContent = "Use these stems to frame your mathematical discourse and written explanations.";
+      desc.textContent =
+        "Use these stems to frame your mathematical discourse and written explanations.";
       bodyEl.appendChild(desc);
 
       // Sentence frames list
@@ -548,7 +570,7 @@
         bodyEl.appendChild(frameTitle);
 
         const list = document.createElement("ul");
-        manifestData.sentenceFrames.forEach(f => {
+        manifestData.sentenceFrames.forEach((f) => {
           const item = document.createElement("li");
           item.textContent = f;
           list.appendChild(item);
@@ -564,7 +586,7 @@
 
         const bankContainer = document.createElement("div");
         bankContainer.className = "ewl-supports-word-bank";
-        manifestData.wordBank.forEach(word => {
+        manifestData.wordBank.forEach((word) => {
           const chip = document.createElement("span");
           chip.className = "ewl-supports-word-chip";
           chip.textContent = word;
@@ -577,7 +599,7 @@
     // Set aria-pressed on tool buttons
     const toolsDock = document.querySelector("[data-ewl-supports-tools]");
     if (toolsDock) {
-      toolsDock.querySelectorAll(".ewl-supports-tool-btn").forEach(btn => {
+      toolsDock.querySelectorAll(".ewl-supports-tool-btn").forEach((btn) => {
         const tool = btn.getAttribute("data-tool");
         btn.setAttribute("aria-pressed", String(tool === tab));
       });
@@ -595,8 +617,11 @@
     // Reset button states
     const toolsDock = document.querySelector("[data-ewl-supports-tools]");
     if (toolsDock) {
-      toolsDock.querySelectorAll(".ewl-supports-tool-btn").forEach(btn => {
-        if (btn.getAttribute("data-tool") !== "focus" && btn.getAttribute("data-tool") !== "listen") {
+      toolsDock.querySelectorAll(".ewl-supports-tool-btn").forEach((btn) => {
+        if (
+          btn.getAttribute("data-tool") !== "focus" &&
+          btn.getAttribute("data-tool") !== "listen"
+        ) {
           btn.setAttribute("aria-pressed", "false");
         }
       });
@@ -649,11 +674,13 @@
 
     // Prepare text to read: Content Objective and Language Objective, then Vocabulary terms
     let text = "";
-    if (manifestData.contentObjective) text += `Today's objective. ${manifestData.contentObjective}. `;
-    if (manifestData.languageObjective) text += `Language objective. ${manifestData.languageObjective}. `;
+    if (manifestData.contentObjective)
+      text += `Today's objective. ${manifestData.contentObjective}. `;
+    if (manifestData.languageObjective)
+      text += `Language objective. ${manifestData.languageObjective}. `;
     if (manifestData.vocabulary && manifestData.vocabulary.length > 0) {
       text += "Key vocabulary terms. ";
-      manifestData.vocabulary.forEach(v => {
+      manifestData.vocabulary.forEach((v) => {
         text += `${v.term}. Definition. ${v.definition}. `;
       });
     }
@@ -689,15 +716,17 @@
     }
 
     // Verification step: ensure no PII exists in hash
-    const piiMatch = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(url.href) || 
-                     url.href.includes("studentName") || 
-                     url.href.includes("studentId");
+    const piiMatch =
+      /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(url.href) ||
+      url.href.includes("studentName") ||
+      url.href.includes("studentId");
     if (piiMatch) {
       console.error("Personalized link generation aborted due to possible PII detection.");
       return;
     }
 
-    navigator.clipboard.writeText(url.href)
+    navigator.clipboard
+      .writeText(url.href)
       .then(() => {
         const origText = btn.textContent;
         btn.textContent = "✓ Copied!";
@@ -705,7 +734,7 @@
           btn.textContent = origText;
         }, 1500);
       })
-      .catch(e => {
+      .catch((e) => {
         console.error("Failed to copy link.", e);
       });
   }
@@ -713,7 +742,9 @@
   // Reset supports
   function resetAllSupports() {
     // Clear selections
-    PROFILE_KEYS.forEach(k => { activeProfiles[k] = false; });
+    PROFILE_KEYS.forEach((k) => {
+      activeProfiles[k] = false;
+    });
     saveStoredPreferences(activeProfiles);
 
     // Reset layout classes
@@ -723,7 +754,7 @@
     stopSpeaking();
 
     // Reset checkbox state
-    PROFILE_KEYS.forEach(key => {
+    PROFILE_KEYS.forEach((key) => {
       const checkbox = document.getElementById(`ewl-profile-${key}`);
       if (checkbox) checkbox.checked = false;
     });

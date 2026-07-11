@@ -6,8 +6,8 @@
 // Usage: node scripts/generate-lesson-shells.mjs
 //        node scripts/generate-lesson-shells.mjs 3-2 6-1   # specific lessons
 
-import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -41,9 +41,15 @@ function readTitle(lessonDir) {
 
 function buildShell(lessonId, title) {
   const isCanonical = /^\d+-\d+$/.test(lessonId);
-  const htmlTag = isCanonical ? `<html lang="en" data-ewl-supports-lesson="${lessonId}">` : `<html lang="en">`;
-  const supportHead = isCanonical ? `\n<!-- ewl-supports-injected:begin -->\n  <link rel="stylesheet" href="/assets/learning-supports/learning-supports.css" />\n<!-- ewl-supports-injected:end -->` : "";
-  const supportBody = isCanonical ? `\n<!-- ewl-supports-injected:begin -->\n  <script src="/assets/learning-supports/learning-supports.js" defer></script>\n<!-- ewl-supports-injected:end -->` : "";
+  const htmlTag = isCanonical
+    ? `<html lang="en" data-ewl-supports-lesson="${lessonId}">`
+    : `<html lang="en">`;
+  const supportHead = isCanonical
+    ? `\n<!-- ewl-supports-injected:begin -->\n  <link rel="stylesheet" href="/assets/learning-supports/learning-supports.css" />\n<!-- ewl-supports-injected:end -->`
+    : "";
+  const supportBody = isCanonical
+    ? `\n<!-- ewl-supports-injected:begin -->\n  <script src="/assets/learning-supports/learning-supports.js" defer></script>\n<!-- ewl-supports-injected:end -->`
+    : "";
 
   return `<!doctype html>
 ${htmlTag}

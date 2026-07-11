@@ -4,8 +4,8 @@
  * manifest from canonical lesson configurations.
  * ========================================================================== */
 
-import { existsSync, readFileSync, writeFileSync, readdirSync, mkdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -27,7 +27,7 @@ function cleanText(str, maxLength = 1000) {
   if (typeof str !== "string") return "";
   let cleaned = str
     .replace(/<[^>]*>/g, "") // strip HTML tags
-    .replace(/\s+/g, " ")    // normalize whitespace
+    .replace(/\s+/g, " ") // normalize whitespace
     .trim();
   if (cleaned.length > maxLength) {
     cleaned = cleaned.slice(0, maxLength);
@@ -50,13 +50,15 @@ function processLesson(lessonId) {
   const languageObjective = cleanText(rawConfig.languageObjective);
 
   // 2. Vocabulary (student-safe, sanitized)
-  const vocabulary = (rawConfig.vocabulary || []).map((v) => ({
-    term: cleanText(v.term),
-    termEs: cleanText(v.termEs),
-    definition: cleanText(v.definition),
-    definitionEs: cleanText(v.definitionEs),
-    visual: cleanText(v.visual),
-  })).filter((v) => v.term && v.definition);
+  const vocabulary = (rawConfig.vocabulary || [])
+    .map((v) => ({
+      term: cleanText(v.term),
+      termEs: cleanText(v.termEs),
+      definition: cleanText(v.definition),
+      definitionEs: cleanText(v.definitionEs),
+      visual: cleanText(v.visual),
+    }))
+    .filter((v) => v.term && v.definition);
 
   // 3. Worked Example (from launch.conceptIntro.iDo.lines)
   let workedExample = "";

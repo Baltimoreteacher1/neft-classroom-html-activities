@@ -9,8 +9,8 @@
  *   node tools/inject-learning-supports.mjs --check    # Check status
  * ========================================================================== */
 
-import { existsSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -48,7 +48,8 @@ function revertFile(file, lessonId) {
   let changed = false;
 
   // 1. Remove sentinel blocks
-  const blockRe = /<!--\s*ewl-supports-injected:begin\s*-->[\s\S]*?<!--\s*ewl-supports-injected:end\s*-->\s*/gi;
+  const blockRe =
+    /<!--\s*ewl-supports-injected:begin\s*-->[\s\S]*?<!--\s*ewl-supports-injected:end\s*-->\s*/gi;
   if (blockRe.test(html)) {
     html = html.replace(blockRe, "");
     changed = true;
@@ -121,7 +122,9 @@ function main() {
   const isRevert = args.includes("--revert");
   const isCheck = args.includes("--check");
 
-  console.log(`Learning Supports Integration - Mode: ${isRevert ? "REVERT" : isCheck ? "CHECK" : "INJECT"}`);
+  console.log(
+    `Learning Supports Integration - Mode: ${isRevert ? "REVERT" : isCheck ? "CHECK" : "INJECT"}`,
+  );
 
   const lessons = getCanonicalLessons();
   let touched = 0;
@@ -151,7 +154,9 @@ function main() {
   }
 
   if (isCheck) {
-    console.log(`Check complete. ${lessons.length - invalidCount}/${lessons.length} lessons integrated.`);
+    console.log(
+      `Check complete. ${lessons.length - invalidCount}/${lessons.length} lessons integrated.`,
+    );
     process.exit(invalidCount > 0 ? 1 : 0);
   } else {
     console.log(`Operation complete. Modified ${touched} lesson launchers.`);

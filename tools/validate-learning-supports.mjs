@@ -11,8 +11,8 @@
  *   - Validates profile keys.
  * ========================================================================== */
 
-import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -97,7 +97,9 @@ function runValidation() {
   console.log(`Found ${canonicalLessonIds.length} canonical lesson directories.`);
 
   if (canonicalLessonIds.length !== 64) {
-    console.error(`Error: Expected exactly 64 canonical lesson directories, but found ${canonicalLessonIds.length}.`);
+    console.error(
+      `Error: Expected exactly 64 canonical lesson directories, but found ${canonicalLessonIds.length}.`,
+    );
     process.exit(1);
   }
 
@@ -161,7 +163,9 @@ function runValidation() {
 
     // Value assertions
     if (entry.lessonId !== lessonId) {
-      console.error(`FAIL: Field "lessonId" (${entry.lessonId}) does not match key (${lessonId}) in ${path}`);
+      console.error(
+        `FAIL: Field "lessonId" (${entry.lessonId}) does not match key (${lessonId}) in ${path}`,
+      );
       process.exit(1);
     }
 
@@ -268,38 +272,44 @@ function runValidation() {
     const html = readFileSync(indexPath, "utf8");
 
     // Check sentinels
-    const beginCount = (html.split("ewl-supports-injected:begin").length - 1);
-    const endCount = (html.split("ewl-supports-injected:end").length - 1);
+    const beginCount = html.split("ewl-supports-injected:begin").length - 1;
+    const endCount = html.split("ewl-supports-injected:end").length - 1;
     if (beginCount !== 2 || endCount !== 2) {
-      console.error(`FAIL: ${lessonId}/index.html must contain exactly two learning-support sentinel blocks. Found begin=${beginCount}, end=${endCount}`);
+      console.error(
+        `FAIL: ${lessonId}/index.html must contain exactly two learning-support sentinel blocks. Found begin=${beginCount}, end=${endCount}`,
+      );
       process.exit(1);
     }
 
     // Check html tag data attribute
     const hasLessonAttr = html.includes(`data-ewl-supports-lesson="${lessonId}"`);
     if (!hasLessonAttr) {
-      console.error(`FAIL: ${lessonId}/index.html missing data-ewl-supports-lesson="${lessonId}" attribute`);
+      console.error(
+        `FAIL: ${lessonId}/index.html missing data-ewl-supports-lesson="${lessonId}" attribute`,
+      );
       process.exit(1);
     }
 
     // Check stylesheet reference inside sentinels
-    const hasCss = html.includes('/assets/learning-supports/learning-supports.css');
+    const hasCss = html.includes("/assets/learning-supports/learning-supports.css");
     if (!hasCss) {
       console.error(`FAIL: ${lessonId}/index.html missing learning-supports.css link reference`);
       process.exit(1);
     }
 
     // Check script reference inside sentinels
-    const hasJs = html.includes('/assets/learning-supports/learning-supports.js');
+    const hasJs = html.includes("/assets/learning-supports/learning-supports.js");
     if (!hasJs) {
       console.error(`FAIL: ${lessonId}/index.html missing learning-supports.js script reference`);
       process.exit(1);
     }
 
     // Idempotency: verify no other occurrence of data-ewl-supports-lesson outside html element
-    const attrOccurrences = html.split('data-ewl-supports-lesson=').length - 1;
+    const attrOccurrences = html.split("data-ewl-supports-lesson=").length - 1;
     if (attrOccurrences !== 1) {
-      console.error(`FAIL: ${lessonId}/index.html contains duplicate data-ewl-supports-lesson attributes`);
+      console.error(
+        `FAIL: ${lessonId}/index.html contains duplicate data-ewl-supports-lesson attributes`,
+      );
       process.exit(1);
     }
   }
@@ -316,14 +326,19 @@ function runValidation() {
 
   // A11y & Explainer Text checks
   if (!hubHtml.includes("access without lowering the learning target")) {
-    console.error("FAIL: curriculum/index.html missing 'access without lowering the learning target' copy");
+    console.error(
+      "FAIL: curriculum/index.html missing 'access without lowering the learning target' copy",
+    );
     process.exit(1);
   }
   if (!hubHtml.includes("no IEP data is stored") && !hubHtml.includes("no IEP data")) {
     console.error("FAIL: curriculum/index.html missing 'no IEP data is stored' copy");
     process.exit(1);
   }
-  if (!hubHtml.includes('href="/lessons/1-1/"') && !hubHtml.includes('href="/lessons/1-1/index.html"')) {
+  if (
+    !hubHtml.includes('href="/lessons/1-1/"') &&
+    !hubHtml.includes('href="/lessons/1-1/index.html"')
+  ) {
     console.error("FAIL: curriculum/index.html missing link to canonical preview lesson 1-1");
     process.exit(1);
   }
