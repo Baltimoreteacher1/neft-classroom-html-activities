@@ -54,8 +54,12 @@ function processLesson(lessonId) {
     .map((v) => ({
       term: cleanText(v.term),
       termEs: cleanText(v.termEs),
+      termVi: cleanText(v.termVi),
+      termAr: cleanText(v.termAr),
       definition: cleanText(v.definition),
       definitionEs: cleanText(v.definitionEs),
+      definitionVi: cleanText(v.definitionVi),
+      definitionAr: cleanText(v.definitionAr),
       visual: cleanText(v.visual),
     }))
     .filter((v) => v.term && v.definition);
@@ -109,6 +113,8 @@ function processLesson(lessonId) {
   vocabulary.forEach((v) => {
     wordBankSet.add(v.term.toLowerCase());
     if (v.termEs) wordBankSet.add(v.termEs.toLowerCase());
+    if (v.termVi) wordBankSet.add(v.termVi.toLowerCase());
+    if (v.termAr) wordBankSet.add(v.termAr.toLowerCase());
   });
   const wordBank = Array.from(wordBankSet).sort();
 
