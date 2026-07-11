@@ -81,8 +81,9 @@
           }
         }
         function report(pct) {
-          if (!API) return;
+          if (!API || finished) return;
           start();
+          if (!started) return;
           var status = pct >= MASTERY ? "passed" : "completed";
           try {
             API.LMSSetValue("cmi.core.score.min", "0");
