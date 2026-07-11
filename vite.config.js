@@ -200,6 +200,46 @@ function copyStandaloneHtml() {
           }
         }
       }
+
+      // --- Fail-safe: verify the critical shared runtime assets landed. -------
+      // Every hub (curriculum, monster-math, …) loads these committed static
+      // scripts. If the copy above silently omits their top-level dir — e.g. a
+      // freshly-created deploy worktree whose git checkout hasn't fully settled
+      // when readdirSync(__dirname) runs — the published dist/ is incomplete and
+      // the hubs render blank. Re-copy their dirs on miss, then FAIL LOUDLY
+      // rather than shipping a broken bundle (a silent incomplete dist is far
+      // worse than a build error the deploy can retry).
+      const CRITICAL_ASSETS = [
+        "assets/neft-theme.js",
+        "assets/nt-page-enhance.js",
+        "shared/save-resume/save-resume-engine.js",
+      ];
+      const missingCritical = () =>
+        CRITICAL_ASSETS.filter(
+          (rel) =>
+            existsSync(resolve(__dirname, rel)) && // present in source…
+            !existsSync(resolve(__dirname, "dist", rel)), // …but not copied to dist
+        );
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        const missing = missingCritical();
+        if (!missing.length) break;
+        if (attempt === 3) {
+          throw new Error(
+            "copy-standalone-html: incomplete build — shared runtime assets are " +
+              "present in source but missing from dist/ after 3 copy attempts: " +
+              missing.join(", ") +
+              ". Aborting so an incomplete bundle is not published.",
+          );
+        }
+        for (const top of new Set(missing.map((rel) => rel.split("/")[0]))) {
+          const src = resolve(__dirname, top);
+          const dest = resolve(__dirname, "dist", top);
+          if (existsSync(src)) {
+            mkdirSync(dest, { recursive: true });
+            cpSync(src, dest, { recursive: true, filter: copyFilter });
+          }
+        }
+      }
     },
   };
 }
