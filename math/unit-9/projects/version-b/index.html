@@ -848,6 +848,8 @@
       #teacher-console .prefill-btn:hover {
         background: #0369a1;
       }
+          .lvl0-only { display: none; }
+      body.level-0 .lvl0-only { display: block; }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -871,6 +873,7 @@
     <!-- projects-publisher-injected:end -->
     <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-visuals.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-zoom.css" />
     <!-- projects-visuals-injected:end -->
 </head>
   <body class="level-1 pro-projects" id="body">
@@ -888,6 +891,10 @@
         <span class="tag">Version B</span>
       </div>
       <div class="level-bar">
+        <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+          <span class="en-text">🟠 Level 0 — Extra Support</span>
+          <span class="es-text">🟠 Nivel 0 — Apoyo Extra</span>
+        </button>
         <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
           🟢 Level 1 — With Support
         </button>
@@ -1277,6 +1284,10 @@
           </svg>
 
           <!-- Scaffolding hints -->
+          <div class="instruct lvl0-only">
+            <span class="en-text">🟠 <strong>Level 0:</strong> Cost has two parts. Step 1: flat fee + (rate × gigs). Tiny example: $10 + $5×2 = $20. Starter: “My cost is $___.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> El costo tiene dos partes. Paso 1: tarifa fija + (tasa × gigas). Ejemplo: $10 + $5×2 = $20. Empieza: “Mi costo es $___.”</span>
+          </div>
           <div class="instruct lvl1-only">
             🟢 <strong>Level 1 tip:</strong> Try round, friendly values. For example, choose a
             <strong>$20 flat fee</strong> and a <strong>$10 cost per GB</strong>. Your equation will
@@ -1434,6 +1445,10 @@
             </text>
           </svg>
 
+          <div class="instruct lvl0-only">
+            <span class="en-text">🟠 <strong>Level 0:</strong> Put in a number for g. Step 1: multiply gigs by rate, then add the fee. Tiny example: g=3, $5×3=$15, +$10=$25. Starter: “For ___ GB, cost = $___.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> Sustituye un número por g. Paso 1: multiplica gigas por tasa, luego suma la tarifa. Ejemplo: g=3, $5×3=$15, +$10=$25. Empieza: “Para ___ GB, costo = $___.”</span>
+          </div>
           <div class="lvl1-only instruct teal">
             🟢 <strong>Level 1 tip:</strong> Multiply the gigabytes (g) by your rate, then add the
             base flat fee.
@@ -2211,8 +2226,9 @@
       // ---- Level toggle ----
       function setLevel(n) {
         const bodyEl = document.getElementById("body");
-        bodyEl.classList.remove("level-1", "level-2");
+        bodyEl.classList.remove("level-0", "level-1", "level-2");
         bodyEl.classList.add("level-" + n);
+        document.getElementById("btn-lv0").classList.toggle("active", n === 0);
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
 
@@ -3615,6 +3631,7 @@
   <!-- projects-publisher-injected:end -->
   <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
   <script src="/shared/projects/projects-visuals.js" defer></script>
+  <script src="/shared/projects/projects-zoom.js" defer></script>
   <!-- projects-visuals-injected:end -->
   <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
   <script src="/assets/canvas-bridge.js" defer></script>

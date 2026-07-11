@@ -1,0 +1,137 @@
+/* ==========================================================================
+   Projects ZOOM — enlarge + click-to-zoom for the static .visual-svg
+   diagrams on the unit culminating-project wizard pages (version-a /
+   version-b). Additive and print-safe: JS (projects-zoom.js) tags each
+   diagram with `.nz-zoomable`, wraps it in a `<figure class="nz-fig">`,
+   and drives the fullscreen lightbox. Selectors are class-qualified so
+   they win over each page's inline `.visual-svg { max-width: 520px }`
+   without editing per-page styles.
+   ========================================================================== */
+
+/* ---- Inline enlarge (vectors scale crisply) --------------------------- */
+.visual-svg.nz-zoomable {
+  max-width: 760px;
+  cursor: zoom-in;
+  transition:
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+.visual-svg.nz-zoomable:hover,
+.visual-svg.nz-zoomable:focus-visible {
+  box-shadow: 0 6px 22px rgba(16, 43, 60, 0.18);
+  outline: none;
+}
+.visual-svg.nz-zoomable:focus-visible {
+  box-shadow:
+    0 0 0 3px rgba(23, 99, 199, 0.45),
+    0 6px 22px rgba(16, 43, 60, 0.18);
+}
+
+.nz-fig {
+  position: relative;
+  margin: 0 auto 20px;
+  width: fit-content;
+  max-width: 100%;
+}
+.nz-fig .visual-svg.nz-zoomable {
+  margin: 0 auto; /* figure owns the outer margin now */
+}
+
+/* ---- "Tap to enlarge" hint -------------------------------------------- */
+.nz-hint {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #10243e;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1.5px solid rgba(23, 99, 199, 0.4);
+  border-radius: 999px;
+  pointer-events: none;
+  box-shadow: 0 1px 4px rgba(16, 43, 60, 0.12);
+}
+
+/* ---- Fullscreen lightbox ---------------------------------------------- */
+.nz-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  background: rgba(10, 22, 38, 0.82);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: nz-fade 0.16s ease;
+}
+@keyframes nz-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.nz-lightbox svg {
+  width: auto;
+  height: auto;
+  max-width: 92vw;
+  max-height: 82vh;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
+}
+
+.nz-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #10243e;
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+.nz-close:focus-visible {
+  outline: 3px solid #7db4ff;
+  outline-offset: 2px;
+}
+
+.nz-caption {
+  max-width: 92vw;
+  text-align: center;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+@media print {
+  .nz-hint {
+    display: none !important;
+  }
+  .nz-lightbox {
+    display: none !important;
+  }
+  .visual-svg.nz-zoomable {
+    cursor: default;
+    box-shadow: none;
+  }
+}

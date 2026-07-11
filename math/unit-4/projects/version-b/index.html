@@ -660,8 +660,14 @@
       .lvl1-only {
         display: none;
       }
+      .lvl0-only {
+        display: none;
+      }
       .lvl2-only {
         display: none;
+      }
+      body.level-0 .lvl0-only {
+        display: block;
       }
       body.level-1 .lvl1-only {
         display: block;
@@ -860,6 +866,7 @@
     <!-- projects-publisher-injected:end -->
     <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-visuals.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-zoom.css" />
     <!-- projects-visuals-injected:end -->
 </head>
   <body class="level-1 pro-projects" id="body">
@@ -894,6 +901,10 @@
         </span>
       </div>
       <div class="level-bar">
+        <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+          <span class="en-text">🟠 Level 0 — Extra Support</span>
+          <span class="es-text">🟠 Nivel 0 — Apoyo Extra</span>
+        </button>
         <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
           <span class="en-text">🟢 Level 1 — With Support</span>
           <span class="es-text">🟢 Nivel 1 — Con Apoyo</span>
@@ -1266,6 +1277,10 @@
           </svg>
 
           <!-- Level 1 hint -->
+          <div class="instruct lvl0-only">
+            <span class="en-text">🟠 <strong>Level 0:</strong> Which is the better buy? Step 1: Price ÷ ounces = price per ounce. Tiny example: $2 for 4 oz = $0.50/oz. Try $3 for 6 oz. Starter: “Item ___ costs $___ per ounce.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> ¿Cuál conviene más? Paso 1: Precio ÷ onzas = precio por onza. Ejemplo: $2 por 4 oz = $0.50/oz. Prueba $3 por 6 oz. Empieza: “El artículo ___ cuesta $___ por onza.”</span>
+          </div>
           <div class="instruct lvl1-only">
             <span class="en-text"
               >🟢 <strong>Level 1 tip:</strong> Try comparing friendly numbers
@@ -1717,6 +1732,10 @@
           </svg>
 
           <!-- Level 1 hint -->
+          <div class="instruct lvl0-only">
+            <span class="en-text">🟠 <strong>Level 0:</strong> A discount takes money OFF. Step 1: Find 10% first (move the point one place). Tiny example: 10% of $20 = $2. Starter: “I save $___.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> Un descuento QUITA dinero. Paso 1: Encuentra el 10% primero (mueve el punto un lugar). Ejemplo: 10% de $20 = $2. Empieza: “Ahorro $___.”</span>
+          </div>
           <div class="instruct lvl1-only teal">
             <span class="en-text"
               >🟢 <strong>Level 1 tip:</strong> Try an original price of $60.00
@@ -2022,6 +2041,10 @@
           </svg>
 
           <!-- Level 1 hint -->
+          <div class="instruct lvl0-only">
+            <span class="en-text">🟠 <strong>Level 0:</strong> Tax adds a little. Step 1: For every $1, add about 6 cents. Tiny example: $10 → $0.60 tax. Starter: “Tax is about $___.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> El impuesto agrega un poco. Paso 1: Por cada $1, agrega unos 6 centavos. Ejemplo: $10 → $0.60 de impuesto. Empieza: “El impuesto es de unos $___.”</span>
+          </div>
           <div class="instruct lvl1-only gold">
             <span class="en-text"
               >🟢 <strong>Level 1 tip:</strong> Try values like $14.50, $28.00,
@@ -3128,8 +3151,9 @@
       function setLevel(n) {
         // Surgical class swap — preserve injected classes like `pro-projects`.
         const body = document.getElementById("body");
-        body.classList.remove("level-1", "level-2");
+        body.classList.remove("level-0", "level-1", "level-2");
         body.classList.add("level-" + n);
+        document.getElementById("btn-lv0").classList.toggle("active", n === 0);
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
         // Recalculate to update outputs/readouts
@@ -4107,6 +4131,7 @@
   <!-- projects-publisher-injected:end -->
   <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
   <script src="/shared/projects/projects-visuals.js" defer></script>
+  <script src="/shared/projects/projects-zoom.js" defer></script>
   <!-- projects-visuals-injected:end -->
   <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
   <script src="/assets/canvas-bridge.js" defer></script>

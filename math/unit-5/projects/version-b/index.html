@@ -308,6 +308,8 @@
       #teacher-console .prefill-btn { width: 100%; margin-top: 12px; background: #0284c7; border: none; border-radius: 6px; padding: 8px; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s; }
       #teacher-console .prefill-btn:hover { background: #0369a1; }
 
+          .lvl0-only { display: none; }
+      body.level-0 .lvl0-only { display: block; }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -328,6 +330,7 @@
     <!-- projects-publisher-injected:end -->
     <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-visuals.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-zoom.css" />
     <!-- projects-visuals-injected:end -->
 </head>
   <body class="level-1 pro-projects" id="body">
@@ -355,6 +358,10 @@
         </span>
       </div>
       <div class="level-bar">
+        <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+          <span class="en-text">🟠 Level 0 — Extra Support</span>
+          <span class="es-text">🟠 Nivel 0 — Apoyo Extra</span>
+        </button>
         <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
           <span class="en-text">🟢 Level 1 — With Support</span>
           <span class="es-text">🟢 Nivel 1 — Con apoyo</span>
@@ -525,6 +532,10 @@
           </svg>
 
           <!-- Level 1 tip -->
+          <div class="instruct lvl0-only">
+            <span class="en-text">🟠 <strong>Level 0:</strong> Find the wall area. Step 1: length × width. Tiny example: 5 ft × 4 ft = 20 sq ft. Starter: “The wall is ___ sq ft.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> Encuentra el área de la pared. Paso 1: largo × ancho. Ejemplo: 5 ft × 4 ft = 20 ft². Empieza: “La pared mide ___ ft².”</span>
+          </div>
           <div class="instruct lvl1-only">
             <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try friendly round numbers like 15 ft length and 12 ft width.</span>
             <span class="es-text">🟢 <strong>Consejo de Nivel 1:</strong> Intenta usar números enteros sencillos como 15 pies de largo y 12 pies de ancho.</span>
@@ -655,6 +666,10 @@
           </svg>
 
           <!-- Level 1 tip -->
+          <div class="instruct lvl0-only">
+            <span class="en-text">🟠 <strong>Level 0:</strong> Subtract what you don’t paint. Step 1: wall area − window − door. Tiny example: 20 − 3 − 2 = 15 sq ft. Starter: “I paint ___ sq ft.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> Resta lo que no pintas. Paso 1: área de pared − ventana − puerta. Ejemplo: 20 − 3 − 2 = 15 ft². Empieza: “Pinto ___ ft².”</span>
+          </div>
           <div class="instruct lvl1-only teal">
             <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try standard room metrics: Height = 8 ft, Window Area = 30 sq ft, Door Area = 20 sq ft.</span>
             <span class="es-text">🟢 <strong>Consejo de Nivel 1:</strong> Intenta usar medidas estándar: Altura = 8 pies, Área de ventanas = 30 pies², Área de puertas = 20 pies².</span>
@@ -1362,8 +1377,9 @@
           window.speechSynthesis.cancel();
         }
         handleLevelPreset(n);
-        document.body.classList.remove('level-1', 'level-2');
+        document.body.classList.remove('level-0', 'level-1', 'level-2');
         document.body.classList.add('level-' + n);
+        document.getElementById('btn-lv0').classList.toggle('active', n === 0);
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
         recalcAll();
@@ -2205,6 +2221,7 @@
   <!-- projects-publisher-injected:end -->
   <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
   <script src="/shared/projects/projects-visuals.js" defer></script>
+  <script src="/shared/projects/projects-zoom.js" defer></script>
   <!-- projects-visuals-injected:end -->
   <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
   <script src="/assets/canvas-bridge.js" defer></script>
