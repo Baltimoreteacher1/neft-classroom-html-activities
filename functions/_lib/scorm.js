@@ -120,6 +120,7 @@ function sco(lessonUrl, launchQuery, origin, title) {
          edits never require re-uploading. ?lms=scorm relays the score to Canvas
          and hides the code popup; ?embed=1 alone keeps the save-code prompt. -->
     <iframe id="lesson" data-src="${lessonUrl}${launchQuery}" allow="fullscreen; clipboard-write" title="${title}"></iframe>
+    <noscript><p style="padding:1rem;font-family:system-ui,-apple-system,sans-serif">This activity needs JavaScript enabled. <a href="${lessonUrl}">Open the activity directly</a>.</p></noscript>
     <script>
       (function () {
         "use strict";
@@ -144,11 +145,17 @@ function sco(lessonUrl, launchQuery, origin, title) {
         var API = null;
         try { API = findAPI(window); } catch (e) {}
         if (!API) { try { if (window.opener) API = findAPI(window.opener); } catch (e) {} }
-        var started = false, finished = false;
+        var started = false, finished = false, startedAt = 0;
         function start() {
           if (API && !started) {
-            try { API.LMSInitialize(""); started = true; API.LMSSetValue("cmi.core.lesson_status", "incomplete"); API.LMSCommit(""); } catch (e) {}
+            try { API.LMSInitialize(""); started = true; startedAt = Date.now(); API.LMSSetValue("cmi.core.lesson_status", "incomplete"); API.LMSCommit(""); } catch (e) {}
           }
+        }
+        // SCORM 1.2 CMITimespan (HHHH:MM:SS) so the LMS records time-on-task.
+        function sessionTime() {
+          var s = Math.max(0, Math.round((Date.now() - (startedAt || Date.now())) / 1000));
+          function p(n) { return (n < 10 ? "0" : "") + n; }
+          return p(Math.floor(s / 3600)) + ":" + p(Math.floor((s % 3600) / 60)) + ":" + p(s % 60);
         }
         // Canvas identity → live activity: read the LMS-provided student name/id
         // and hand them to the lesson so the student is auto-identified inside
@@ -189,7 +196,15 @@ function sco(lessonUrl, launchQuery, origin, title) {
             API.LMSCommit("");
           } catch (e) {}
         }
-        function finish() { if (API && started && !finished) { try { API.LMSFinish(""); finished = true; } catch (e) {} } }
+        function finish() {
+          if (API && started && !finished) {
+            try {
+              API.LMSSetValue("cmi.core.session_time", sessionTime());
+              API.LMSCommit("");
+              API.LMSFinish(""); finished = true;
+            } catch (e) {}
+          }
+        }
         // Register the score listener BEFORE loading the activity so no early
         // completion message is missed, then launch with the Canvas identity.
         window.addEventListener("message", function (e) {
