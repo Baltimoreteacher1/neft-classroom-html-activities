@@ -1623,6 +1623,38 @@
             }, 300);
         }
 
+        // Diagnostics console (overlay panel + rolling log)
+        function openDiagnostics() {
+            const overlay = document.getElementById('diagnostics-overlay');
+            if (overlay) overlay.style.display = 'block';
+        }
+
+        function closeDiagnostics() {
+            const overlay = document.getElementById('diagnostics-overlay');
+            if (overlay) overlay.style.display = 'none';
+        }
+
+        function clearDiagnosticsLogs() {
+            const box = document.getElementById('diagnostics-logs');
+            if (box) box.innerHTML = '';
+        }
+
+        function logDiagnostics(message, type) {
+            const box = document.getElementById('diagnostics-logs');
+            if (!box) return;
+            const line = document.createElement('div');
+            if (type === 'success' || type === 'error' || type === 'warning') {
+                line.className = 'log-' + type;
+            }
+            const stamp = new Date().toLocaleTimeString([], { hour12: false });
+            line.textContent = `[${stamp}] ${message}`;
+            box.appendChild(line);
+            while (box.childElementCount > 200) {
+                box.removeChild(box.firstElementChild);
+            }
+            box.scrollTop = box.scrollHeight;
+        }
+
         // Automated Self-Test Suite
         function runSelfTests() {
             openDiagnostics();
