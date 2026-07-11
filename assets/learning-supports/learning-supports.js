@@ -1,4 +1,11 @@
 (function () {
+  "use strict";
+
+  // Prevent multiple executions
+  if (window.EWLLearningSupports) return;
+
+  const STORAGE_KEY = "ewl-supports:v1:preferences";
+
   const PROFILE_KEYS = [
     "read-understand",
     "focus-organize",
@@ -8,14 +15,12 @@
     "challenge-extend",
   ];
 
-  const STORAGE_KEY = "ewl-supports:v1:preferences";
-
   function getProfileDisplayName(key) {
     const names = {
       "read-understand": "Read & Understand",
       "focus-organize": "Focus & Organize",
-      "build-math": "Build Mathematical Models",
-      "express-thinking": "Express Math Thinking",
+      "build-math": "Build Math Models",
+      "express-thinking": "Express Thinking",
       "language-support": "Language Support (ESOL)",
       "challenge-extend": "Challenge & Extend",
     };
@@ -43,6 +48,8 @@
   let activeLessonId = null;
   let manifestData = null;
   let activeProfiles = {};
+  let activeLanguage = "en";
+  let activeSpeechRate = 1.0;
   let rootEl = null;
   let activeSpeechUtterance = null;
 
@@ -56,7 +63,19 @@
     try {
       const data = localStorage.getItem(STORAGE_KEY);
       if (!data) return null;
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      if (parsed && typeof parsed === "object") {
+        if (parsed.profiles !== undefined) {
+          return parsed;
+        }
+        // Legacy layout support
+        return {
+          profiles: parsed,
+          language: "en",
+          speechRate: 1.0,
+        };
+      }
+      return null;
     } catch (_e) {
       console.warn("Learning supports: LocalStorage access blocked or unavailable.");
       return null;
@@ -79,12 +98,10 @@
     });
     if (!str) return settings;
 
-    // Supports format: supports=read-understand,focus-organize or comma-separated lists
     const cleanStr = str.replace(/^[#?]/, "");
     const parts = cleanStr.split("&");
     let listStr = "";
 
-    // Check for query param supports=...
     for (const part of parts) {
       const [k, v] = part.split("=");
       if (k === "supports" && v) {
@@ -93,7 +110,6 @@
       }
     }
 
-    // Fallback: if the whole string is just a list of comma-separated profiles
     if (!listStr && !cleanStr.includes("=")) {
       listStr = cleanStr;
     }
@@ -118,7 +134,6 @@
   async function init() {
     if (initialized) return;
 
-    // Get lesson ID from html attribute
     const htmlEl = document.documentElement;
     activeLessonId = htmlEl.getAttribute("data-ewl-supports-lesson");
     if (!activeLessonId) {
@@ -126,7 +141,6 @@
       return;
     }
 
-    // Fetch manifest data
     try {
       const res = await fetch("/assets/learning-supports/manifest.json");
       if (!res.ok) throw new Error(`Status ${res.status}`);
@@ -152,20 +166,30 @@
       settings = parseSettings(window.location.search);
     }
 
-    // If URL settings were parsed and have at least one active profile, use them and save.
-    // Otherwise, load from LocalStorage.
     const hasUrlActive = settings && Object.values(settings).some(Boolean);
     if (hasUrlActive) {
       activeProfiles = settings;
-      saveStoredPreferences(activeProfiles);
+      saveStoredPreferences({
+        profiles: activeProfiles,
+        language: activeLanguage,
+        speechRate: activeSpeechRate,
+      });
     } else {
       const stored = getStoredPreferences();
       if (stored) {
-        PROFILE_KEYS.forEach((k) => {
-          if (typeof stored[k] === "boolean") {
-            activeProfiles[k] = stored[k];
-          }
-        });
+        if (stored.profiles) {
+          PROFILE_KEYS.forEach((k) => {
+            if (typeof stored.profiles[k] === "boolean") {
+              activeProfiles[k] = stored.profiles[k];
+            }
+          });
+        }
+        if (stored.language) {
+          activeLanguage = stored.language;
+        }
+        if (typeof stored.speechRate === "number") {
+          activeSpeechRate = stored.speechRate;
+        }
       }
     }
 
@@ -175,7 +199,6 @@
   }
 
   function renderInterface() {
-    // Prevent duplicates
     if (document.querySelector("[data-ewl-supports-root]")) return;
 
     rootEl = document.createElement("div");
@@ -224,7 +247,6 @@
     const dialogBody = document.createElement("div");
     dialogBody.className = "ewl-supports-dialog-body";
 
-    // Explainer
     const explainer = document.createElement("p");
     explainer.className = "ewl-supports-dialog-intro";
     explainer.textContent =
@@ -239,17 +261,19 @@
     PROFILE_KEYS.forEach((key) => {
       const row = document.createElement("div");
       row.className = "ewl-supports-checkbox-row";
+      row.style.flexDirection = "column";
+
+      const topRow = document.createElement("div");
+      topRow.style.display = "flex";
+      topRow.style.alignItems = "flex-start";
+      topRow.style.gap = "12px";
+      topRow.style.width = "100%";
 
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.id = `ewl-profile-${key}`;
       checkbox.checked = activeProfiles[key];
       checkbox.className = "ewl-supports-checkbox";
-      checkbox.addEventListener("change", (e) => {
-        activeProfiles[key] = e.target.checked;
-        saveStoredPreferences(activeProfiles);
-        updateUIStates();
-      });
 
       const label = document.createElement("label");
       label.setAttribute("for", `ewl-profile-${key}`);
@@ -265,8 +289,78 @@
 
       label.appendChild(titleSpan);
       label.appendChild(descSpan);
-      row.appendChild(checkbox);
-      row.appendChild(label);
+      topRow.appendChild(checkbox);
+      topRow.appendChild(label);
+      row.appendChild(topRow);
+
+      // Upgrade: Lang selection drop-down inline for language support
+      if (key === "language-support") {
+        const langContainer = document.createElement("div");
+        langContainer.id = "ewl-lang-select-container";
+        langContainer.style.paddingLeft = "36px";
+        langContainer.style.marginTop = "8px";
+        langContainer.style.width = "100%";
+        langContainer.style.display = activeProfiles["language-support"] ? "block" : "none";
+
+        const langLabel = document.createElement("label");
+        langLabel.setAttribute("for", "ewl-lang-select");
+        langLabel.textContent = "Preferred Language: ";
+        langLabel.style.fontSize = "13px";
+        langLabel.style.fontWeight = "700";
+        langLabel.style.marginRight = "8px";
+
+        const langSelect = document.createElement("select");
+        langSelect.id = "ewl-lang-select";
+        langSelect.style.padding = "4px 8px";
+        langSelect.style.fontSize = "13px";
+        langSelect.style.borderRadius = "6px";
+        langSelect.style.border = "1px solid var(--ewl-color-border)";
+
+        const languages = [
+          { code: "en", name: "English" },
+          { code: "es", name: "Español (Spanish)" },
+          { code: "vi", name: "Tiếng Việt (Vietnamese)" },
+          { code: "ar", name: "العربية (Arabic)" },
+        ];
+
+        languages.forEach((lang) => {
+          const opt = document.createElement("option");
+          opt.value = lang.code;
+          opt.textContent = lang.name;
+          if (lang.code === activeLanguage) opt.selected = true;
+          langSelect.appendChild(opt);
+        });
+
+        langSelect.addEventListener("change", (e) => {
+          activeLanguage = e.target.value;
+          saveStoredPreferences({
+            profiles: activeProfiles,
+            language: activeLanguage,
+            speechRate: activeSpeechRate,
+          });
+          updatePanelContent();
+        });
+
+        langContainer.appendChild(langLabel);
+        langContainer.appendChild(langSelect);
+        row.appendChild(langContainer);
+
+        checkbox.addEventListener("change", (e) => {
+          langContainer.style.display = e.target.checked ? "block" : "none";
+        });
+      }
+
+      checkbox.addEventListener("change", (e) => {
+        activeProfiles[key] = e.target.checked;
+        saveStoredPreferences({
+          profiles: activeProfiles,
+          language: activeLanguage,
+          speechRate: activeSpeechRate,
+        });
+        updateUIStates();
+        updatePanelContent();
+      });
+
       form.appendChild(row);
     });
 
@@ -298,13 +392,12 @@
     dialog.appendChild(dialogBody);
     rootEl.appendChild(dialog);
 
-    // 3. Student Tools Dock (Floating Action Buttons)
+    // 3. Student Tools Dock (Floating Action Buttons Capsule)
     const studentTools = document.createElement("div");
     studentTools.setAttribute("data-ewl-supports-tools", "1");
     studentTools.className = "ewl-supports-tools-dock";
     studentTools.hidden = true;
 
-    // Inner Toolbar Buttons
     const toolsInner = document.createElement("div");
     toolsInner.className = "ewl-supports-tools-inner";
 
@@ -356,6 +449,39 @@
     listenBtn.addEventListener("click", toggleListenMode);
     toolsInner.appendChild(listenBtn);
 
+    // Upgrade: Rate cycling trigger button inside tools dock
+    const rateBtn = document.createElement("button");
+    rateBtn.className = "ewl-supports-tool-btn";
+    rateBtn.setAttribute("data-tool", "rate");
+    rateBtn.textContent = `⏱️ ${activeSpeechRate}x`;
+    rateBtn.title = "TTS Reading Speed";
+    rateBtn.addEventListener("click", () => {
+      if (activeSpeechRate === 1.0) activeSpeechRate = 1.25;
+      else if (activeSpeechRate === 1.25) activeSpeechRate = 1.5;
+      else if (activeSpeechRate === 1.5) activeSpeechRate = 0.8;
+      else activeSpeechRate = 1.0;
+
+      rateBtn.textContent = `⏱️ ${activeSpeechRate}x`;
+
+      saveStoredPreferences({
+        profiles: activeProfiles,
+        language: activeLanguage,
+        speechRate: activeSpeechRate,
+      });
+
+      // If playing, restart with new rate
+      const isSpeaking = listenBtn.classList.contains("is-active");
+      if (isSpeaking) {
+        stopSpeaking();
+        startSpeaking(() => {
+          listenBtn.classList.remove("is-active");
+          listenBtn.textContent = "🔊 Listen";
+          listenBtn.setAttribute("aria-pressed", "false");
+        });
+      }
+    });
+    toolsInner.appendChild(rateBtn);
+
     studentTools.appendChild(toolsInner);
     rootEl.appendChild(studentTools);
 
@@ -385,7 +511,6 @@
 
     document.body.appendChild(rootEl);
 
-    // Handle Escape key to close dialog or panel
     document.addEventListener("keydown", handleKeydown);
   }
 
@@ -394,7 +519,6 @@
       const dialog = document.querySelector("[data-ewl-supports-dialog]");
       if (dialog && !dialog.hidden) {
         showDialog(false);
-        // Return focus to trigger button
         const trigger = document.querySelector(".ewl-supports-btn-teacher");
         if (trigger) trigger.focus();
         return;
@@ -412,7 +536,6 @@
     dialog.hidden = !show;
     if (show) {
       dialog.classList.add("is-visible");
-      // Trap focus or focus on first element
       const firstCheck = dialog.querySelector("input");
       if (firstCheck) firstCheck.focus();
     } else {
@@ -425,15 +548,28 @@
     const toolsDock = document.querySelector("[data-ewl-supports-tools]");
     if (!toolsDock) return;
 
-    // Checkboxes sync
     PROFILE_KEYS.forEach((key) => {
       const checkbox = document.getElementById(`ewl-profile-${key}`);
       if (checkbox) checkbox.checked = activeProfiles[key];
     });
 
+    const langContainer = document.getElementById("ewl-lang-select-container");
+    if (langContainer) {
+      langContainer.style.display = activeProfiles["language-support"] ? "block" : "none";
+    }
+
+    const langSelect = document.getElementById("ewl-lang-select");
+    if (langSelect) {
+      langSelect.value = activeLanguage;
+    }
+
+    const rateBtn = toolsDock.querySelector('[data-tool="rate"]');
+    if (rateBtn) {
+      rateBtn.textContent = `⏱️ ${activeSpeechRate}x`;
+    }
+
     if (hasAnyActive) {
       toolsDock.hidden = false;
-      // Show/hide specific tool buttons depending on active profiles
       const wordsBtn = toolsDock.querySelector('[data-tool="words"]');
       const exampleBtn = toolsDock.querySelector('[data-tool="example"]');
       const modelBtn = toolsDock.querySelector('[data-tool="model"]');
@@ -441,7 +577,6 @@
       const focusBtn = toolsDock.querySelector('[data-tool="focus"]');
       const listenBtn = toolsDock.querySelector('[data-tool="listen"]');
 
-      // Visibility conditions
       if (wordsBtn)
         wordsBtn.style.display =
           activeProfiles["read-understand"] || activeProfiles["language-support"]
@@ -459,10 +594,14 @@
           activeProfiles["read-understand"] || activeProfiles["language-support"]
             ? "inline-flex"
             : "none";
+      if (rateBtn)
+        rateBtn.style.display =
+          activeProfiles["read-understand"] || activeProfiles["language-support"]
+            ? "inline-flex"
+            : "none";
     } else {
       toolsDock.hidden = true;
       closePanel();
-      // Remove focus mode classes if all supports turned off
       document.body.classList.remove("ewl-supports-focus-active");
       const focusBtn = toolsDock.querySelector('[data-tool="focus"]');
       if (focusBtn) focusBtn.classList.remove("is-active");
@@ -486,16 +625,14 @@
     panel.hidden = false;
     panel.classList.add("is-visible");
 
-    // Populate panel details based on manifest
     const titleEl = panel.querySelector(".ewl-supports-panel-title");
     const bodyEl = panel.querySelector(".ewl-supports-panel-body");
 
-    // Clear body safely
     bodyEl.textContent = "";
 
     if (tab === "words") {
       titleEl.textContent = "Vocabulary Helper";
-      const isSpanish = activeProfiles["language-support"];
+      const isLangSupport = activeProfiles["language-support"];
 
       if (!manifestData.vocabulary || manifestData.vocabulary.length === 0) {
         const fallback = document.createElement("p");
@@ -509,15 +646,27 @@
           const dt = document.createElement("dt");
           dt.className = "ewl-supports-vocab-term";
 
-          if (isSpanish && v.termEs) {
-            dt.textContent = `${v.term} (${v.termEs})`;
-          } else {
-            dt.textContent = v.term;
+          let displayTerm = v.term;
+          let displayDef = v.definition;
+
+          if (isLangSupport) {
+            if (activeLanguage === "es" && v.termEs) {
+              displayTerm = `${v.term} (${v.termEs})`;
+              displayDef = v.definitionEs || v.definition;
+            } else if (activeLanguage === "vi" && v.termVi) {
+              displayTerm = `${v.term} (${v.termVi})`;
+              displayDef = v.definitionVi || v.definition;
+            } else if (activeLanguage === "ar" && v.termAr) {
+              displayTerm = `${v.term} (${v.termAr})`;
+              displayDef = v.definitionAr || v.definition;
+            }
           }
+
+          dt.textContent = displayTerm;
 
           const dd = document.createElement("dd");
           dd.className = "ewl-supports-vocab-definition";
-          dd.textContent = isSpanish && v.definitionEs ? v.definitionEs : v.definition;
+          dd.textContent = displayDef;
 
           list.appendChild(dt);
           list.appendChild(dd);
@@ -563,7 +712,6 @@
         "Use these stems to frame your mathematical discourse and written explanations.";
       bodyEl.appendChild(desc);
 
-      // Sentence frames list
       if (manifestData.sentenceFrames && manifestData.sentenceFrames.length > 0) {
         const frameTitle = document.createElement("h4");
         frameTitle.textContent = "Sentence Frames";
@@ -578,7 +726,6 @@
         bodyEl.appendChild(list);
       }
 
-      // Word bank list
       if (manifestData.wordBank && manifestData.wordBank.length > 0) {
         const bankTitle = document.createElement("h4");
         bankTitle.textContent = "Word Bank";
@@ -596,13 +743,20 @@
       }
     }
 
-    // Set aria-pressed on tool buttons
     const toolsDock = document.querySelector("[data-ewl-supports-tools]");
     if (toolsDock) {
       toolsDock.querySelectorAll(".ewl-supports-tool-btn").forEach((btn) => {
         const tool = btn.getAttribute("data-tool");
         btn.setAttribute("aria-pressed", String(tool === tab));
       });
+    }
+  }
+
+  function updatePanelContent() {
+    if (activePanelTab) {
+      const tab = activePanelTab;
+      activePanelTab = null;
+      togglePanel(tab);
     }
   }
 
@@ -614,14 +768,11 @@
     }
     activePanelTab = null;
 
-    // Reset button states
     const toolsDock = document.querySelector("[data-ewl-supports-tools]");
     if (toolsDock) {
       toolsDock.querySelectorAll(".ewl-supports-tool-btn").forEach((btn) => {
-        if (
-          btn.getAttribute("data-tool") !== "focus" &&
-          btn.getAttribute("data-tool") !== "listen"
-        ) {
+        const tool = btn.getAttribute("data-tool");
+        if (tool !== "focus" && tool !== "listen" && tool !== "rate") {
           btn.setAttribute("aria-pressed", "false");
         }
       });
@@ -669,23 +820,74 @@
       return;
     }
 
-    // Stop current speech first
     stopSpeaking();
 
-    // Prepare text to read: Content Objective and Language Objective, then Vocabulary terms
     let text = "";
-    if (manifestData.contentObjective)
-      text += `Today's objective. ${manifestData.contentObjective}. `;
+    const isLangSupport = activeProfiles["language-support"];
+
+    let objTitle = "Today's objective.";
+    let langObjTitle = "Language objective.";
+    let vocabTitle = "Key vocabulary terms.";
+    let definitionLabel = "Definition.";
+
+    if (isLangSupport) {
+      if (activeLanguage === "es") {
+        objTitle = "Objetivo de hoy.";
+        langObjTitle = "Objetivo lingüístico.";
+        vocabTitle = "Términos de vocabulario clave.";
+        definitionLabel = "Definición.";
+      } else if (activeLanguage === "vi") {
+        objTitle = "Mục tiêu hôm nay.";
+        langObjTitle = "Mục tiêu ngôn ngữ.";
+        vocabTitle = "Các thuật ngữ từ vựng chính.";
+        definitionLabel = "Định nghĩa.";
+      } else if (activeLanguage === "ar") {
+        objTitle = "هدف اليوم.";
+        langObjTitle = "الهدف اللغوي.";
+        vocabTitle = "مصطلحات المفردات الرئيسية.";
+        definitionLabel = "تعريف.";
+      }
+    }
+
+    if (manifestData.contentObjective) text += `${objTitle} ${manifestData.contentObjective}. `;
     if (manifestData.languageObjective)
-      text += `Language objective. ${manifestData.languageObjective}. `;
+      text += `${langObjTitle} ${manifestData.languageObjective}. `;
+
     if (manifestData.vocabulary && manifestData.vocabulary.length > 0) {
-      text += "Key vocabulary terms. ";
+      text += `${vocabTitle} `;
       manifestData.vocabulary.forEach((v) => {
-        text += `${v.term}. Definition. ${v.definition}. `;
+        let termText = v.term;
+        let defText = v.definition;
+
+        if (isLangSupport) {
+          if (activeLanguage === "es") {
+            termText = v.termEs || v.term;
+            defText = v.definitionEs || v.definition;
+          } else if (activeLanguage === "vi") {
+            termText = v.termVi || v.term;
+            defText = v.definitionVi || v.definition;
+          } else if (activeLanguage === "ar") {
+            termText = v.termAr || v.term;
+            defText = v.definitionAr || v.definition;
+          }
+        }
+        text += `${termText}. ${definitionLabel} ${defText}. `;
       });
     }
 
     activeSpeechUtterance = new SpeechSynthesisUtterance(text);
+
+    if (isLangSupport) {
+      if (activeLanguage === "es") activeSpeechUtterance.lang = "es-ES";
+      else if (activeLanguage === "vi") activeSpeechUtterance.lang = "vi-VN";
+      else if (activeLanguage === "ar") activeSpeechUtterance.lang = "ar-SA";
+      else activeSpeechUtterance.lang = "en-US";
+    } else {
+      activeSpeechUtterance.lang = "en-US";
+    }
+
+    activeSpeechUtterance.rate = activeSpeechRate;
+
     activeSpeechUtterance.onend = () => {
       activeSpeechUtterance = null;
       if (onEnd) onEnd();
@@ -715,7 +917,6 @@
       url.hash = "";
     }
 
-    // Verification step: ensure no PII exists in hash
     const piiMatch =
       /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(url.href) ||
       url.href.includes("studentName") ||
@@ -741,25 +942,30 @@
 
   // Reset supports
   function resetAllSupports() {
-    // Clear selections
     PROFILE_KEYS.forEach((k) => {
       activeProfiles[k] = false;
     });
-    saveStoredPreferences(activeProfiles);
+    activeLanguage = "en";
+    activeSpeechRate = 1.0;
 
-    // Reset layout classes
+    saveStoredPreferences({
+      profiles: activeProfiles,
+      language: activeLanguage,
+      speechRate: activeSpeechRate,
+    });
+
     document.body.classList.remove("ewl-supports-focus-active");
 
-    // Stop speaking
     stopSpeaking();
 
-    // Reset checkbox state
     PROFILE_KEYS.forEach((key) => {
       const checkbox = document.getElementById(`ewl-profile-${key}`);
       if (checkbox) checkbox.checked = false;
     });
 
-    // Close components
+    const langSelect = document.getElementById("ewl-lang-select");
+    if (langSelect) langSelect.value = "en";
+
     updateUIStates();
   }
 
@@ -767,16 +973,12 @@
   function destroy() {
     if (!initialized) return;
 
-    // Reset focus styles
     document.body.classList.remove("ewl-supports-focus-active");
 
-    // Stop TTS
     stopSpeaking();
 
-    // Remove event listener
     document.removeEventListener("keydown", handleKeydown);
 
-    // Remove root element
     if (rootEl && rootEl.parentNode) {
       rootEl.parentNode.removeChild(rootEl);
     }
@@ -787,19 +989,16 @@
     activeLessonId = null;
   }
 
-  // Global namespace exports
   const EWLLearningSupports = {
-    version: "1.0.0",
+    version: "1.1.0",
     init,
     destroy,
     parseSettings,
     serializeSettings,
   };
 
-  // Expose to window globally
   window.EWLLearningSupports = EWLLearningSupports;
 
-  // Auto-init on script load
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else {

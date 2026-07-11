@@ -110,4 +110,43 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
     );
     expect(blocking, `serious/critical WCAG violations found: ${JSON.stringify(blocking, null, 2)}`).toEqual([]);
   });
+
+  test("multilingual ESOL language selection translates content", async ({ page }) => {
+    await page.goto(`${TEST_LESSON_PATH}#supports=language-support`, { waitUntil: "networkidle" });
+
+    // Open dialog
+    await page.locator(".ewl-supports-btn-teacher").click();
+    await expect(page.locator("#ewl-lang-select-container")).toBeVisible();
+
+    // Select Spanish
+    await page.locator("#ewl-lang-select").selectOption("es");
+
+    // Close dialog
+    await page.locator(".ewl-supports-dialog-close").click();
+
+    // Open Words panel and verify Spanish vocabulary text is shown
+    await page.locator('[data-tool="words"]').click();
+    await expect(page.locator(".ewl-supports-vocab-term").first()).toContainText("Número primo");
+  });
+
+  test("synthesis playback rate cycles on dock click", async ({ page }) => {
+    await page.goto(`${TEST_LESSON_PATH}#supports=read-understand`, { waitUntil: "networkidle" });
+
+    const rateBtn = page.locator('[data-tool="rate"]');
+    await expect(rateBtn).toBeVisible();
+    await expect(rateBtn).toContainText("1x");
+
+    // Cycle rate: 1.0 -> 1.25 -> 1.5 -> 0.8 -> 1.0
+    await rateBtn.click();
+    await expect(rateBtn).toContainText("1.25x");
+
+    await rateBtn.click();
+    await expect(rateBtn).toContainText("1.5x");
+
+    await rateBtn.click();
+    await expect(rateBtn).toContainText("0.8x");
+
+    await rateBtn.click();
+    await expect(rateBtn).toContainText("1x");
+  });
 });
