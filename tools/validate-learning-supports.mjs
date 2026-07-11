@@ -94,9 +94,26 @@ function validateManifest(manifest, ids) {
   });
 }
 
+function validateIntegrations(ids) {
+  const errors = [];
+  for (const id of ids) {
+    const path = join(LESSONS, id, "index.html");
+    const html = readFileSync(path, "utf8");
+    const attr = `data-ewl-supports-lesson="${id}"`;
+    if ((html.match(new RegExp(attr, "g")) || []).length !== 1) errors.push(`${id}: lesson ID integration`);
+    if ((html.match(/learning-supports\.css/g) || []).length !== 1) errors.push(`${id}: stylesheet integration`);
+    if ((html.match(/learning-supports\.js/g) || []).length !== 1) errors.push(`${id}: script integration`);
+    if (!html.includes("ewl-supports-injected:begin") || !html.includes("ewl-supports-injected:end")) {
+      errors.push(`${id}: integration markers`);
+    }
+  }
+  assert.deepEqual(errors, [], `Learning Supports integration failures:\n${errors.join("\n")}`);
+}
+
 const ids = canonicalLessonIds();
 assert.equal(ids.length, 64, `expected 64 canonical lessons, found ${ids.length}`);
 assert.ok(existsSync(MANIFEST_PATH), "assets/learning-supports/manifest.json does not exist");
 const manifest = JSON.parse(readFileSync(MANIFEST_PATH, "utf8"));
 validateManifest(manifest, ids);
+validateIntegrations(ids);
 console.log(`Learning Supports validation PASS — ${ids.length}/${ids.length} canonical lessons covered`);

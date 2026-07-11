@@ -41,7 +41,7 @@ function readTitle(lessonDir) {
 
 function buildShell(lessonId, title) {
   return `<!doctype html>
-<html lang="en">
+<html lang="en"${/^\d+-\d+$/.test(lessonId) ? ` data-ewl-supports-lesson="${lessonId}"` : ""}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -49,6 +49,9 @@ function buildShell(lessonId, title) {
     <title>${title}</title>
 ${FONT_LINK}
 ${SAVE_RESUME_HEAD}
+${/^\d+-\d+$/.test(lessonId) ? `    <!-- ewl-supports-injected:begin -->
+    <link rel="stylesheet" href="/assets/learning-supports/learning-supports.css" />
+    <!-- ewl-supports-injected:end -->` : ""}
 </head>
   <body>
     <div id="app"></div>
@@ -58,6 +61,9 @@ ${SAVE_RESUME_HEAD}
     <script src="/assets/edupulse-config.js" defer></script>
     <script src="/assets/edupulse-bridge.js" defer></script>
 ${SAVE_RESUME_BODY}
+${/^\d+-\d+$/.test(lessonId) ? `    <!-- ewl-supports-injected:begin -->
+    <script src="/assets/learning-supports/learning-supports.js" defer></script>
+    <!-- ewl-supports-injected:end -->` : ""}
 </body>
 </html>
 `;
