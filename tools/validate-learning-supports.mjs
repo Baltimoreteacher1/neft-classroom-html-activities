@@ -305,6 +305,30 @@ function runValidation() {
   }
   console.log("PASS: All 64 canonical lesson launchers have correct supports injected.");
 
+  // 7. Curriculum Hub checks (Task 5 Step 1)
+  console.log("Checking Curriculum Hub integration...");
+  const hubPath = join(ROOT, "curriculum", "index.html");
+  if (!existsSync(hubPath)) {
+    console.error("FAIL: Missing curriculum/index.html");
+    process.exit(1);
+  }
+  const hubHtml = readFileSync(hubPath, "utf8");
+
+  // A11y & Explainer Text checks
+  if (!hubHtml.includes("access without lowering the learning target")) {
+    console.error("FAIL: curriculum/index.html missing 'access without lowering the learning target' copy");
+    process.exit(1);
+  }
+  if (!hubHtml.includes("no IEP data is stored") && !hubHtml.includes("no IEP data")) {
+    console.error("FAIL: curriculum/index.html missing 'no IEP data is stored' copy");
+    process.exit(1);
+  }
+  if (!hubHtml.includes('href="/lessons/1-1/"') && !hubHtml.includes('href="/lessons/1-1/index.html"')) {
+    console.error("FAIL: curriculum/index.html missing link to canonical preview lesson 1-1");
+    process.exit(1);
+  }
+  console.log("PASS: Curriculum Hub learning supports explainer validated.");
+
   console.log(`PASS: 64/64 canonical lessons covered, schema, route, and privacy checks passed.`);
   process.exit(0);
 }

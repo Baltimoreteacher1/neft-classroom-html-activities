@@ -1860,6 +1860,167 @@
               </div>
             </div>
           </section>
+
+          <style>
+            .supports-feature .mf-icon {
+              background: linear-gradient(135deg, #4f46e5, #312e81);
+              color: #fff;
+            }
+            .supports-feature .mf-tag {
+              color: #4f46e5;
+              background: rgba(79, 70, 229, 0.1);
+            }
+            .ewl-hub-link-generator {
+              margin-top: 14px;
+              background: rgba(20, 34, 58, 0.04);
+              border: 1px solid var(--line);
+              border-radius: 12px;
+              padding: 14px;
+              display: flex;
+              flex-direction: column;
+              gap: 10px;
+            }
+            .ewl-hub-gen-title {
+              font-size: 13px;
+              font-weight: 700;
+              text-transform: uppercase;
+              color: var(--muted);
+              margin: 0;
+            }
+            .ewl-hub-profile-checkboxes {
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+              gap: 8px;
+            }
+            .ewl-hub-checkbox-item {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              font-size: 13px;
+              cursor: pointer;
+              color: var(--ink);
+            }
+            .ewl-hub-checkbox-item input {
+              cursor: pointer;
+            }
+            .ewl-hub-selector-row {
+              display: flex;
+              gap: 10px;
+              align-items: center;
+            }
+            .ewl-hub-select {
+              flex: 1;
+              min-height: 38px;
+              padding: 0 10px;
+              border: 1px solid var(--line);
+              border-radius: 8px;
+              font-size: 13.5px;
+              background: #fff;
+              color: var(--ink);
+            }
+            .ewl-hub-btn-copy {
+              min-height: 38px;
+              padding: 0 14px;
+              font-size: 13px;
+              background: var(--teal);
+              color: #fff;
+              border: none;
+              border-radius: 8px;
+              font-weight: 700;
+              cursor: pointer;
+              transition: background-color 0.2s;
+            }
+            .ewl-hub-btn-copy:hover {
+              background: var(--amber);
+            }
+          </style>
+          <section class="mailbox-feature supports-feature" aria-labelledby="supports-feature-title">
+            <span class="mf-icon" aria-hidden="true">🛠️</span>
+            <div class="mf-body">
+              <span class="mf-tag">Accessibility · Learning Supports</span>
+              <h2 id="supports-feature-title">Layered Learning Supports</h2>
+              <p class="mf-sub">Personalized accommodations: access without lowering the learning target.</p>
+              <p class="mf-text">
+                Deploy student-safe learning accommodations like text-to-speech, bilingual ESOL aids, visual models, and structured sentence frames. This system provides access without lowering the learning target. To respect student privacy, no IEP data is stored.
+              </p>
+              <div class="mf-actions">
+                <a class="mf-btn solid" href="/lessons/1-1/">Preview Supports (1-1)</a>
+              </div>
+              
+              <div class="ewl-hub-link-generator">
+                <h3 class="ewl-hub-gen-title">Link Generator for Individual Students</h3>
+                <div class="ewl-hub-profile-checkboxes">
+                  <label class="ewl-hub-checkbox-item">
+                    <input type="checkbox" data-profile="read-understand"> Read &amp; Understand
+                  </label>
+                  <label class="ewl-hub-checkbox-item">
+                    <input type="checkbox" data-profile="focus-organize"> Focus &amp; Organize
+                  </label>
+                  <label class="ewl-hub-checkbox-item">
+                    <input type="checkbox" data-profile="build-math"> Build Math Models
+                  </label>
+                  <label class="ewl-hub-checkbox-item">
+                    <input type="checkbox" data-profile="express-thinking"> Express Thinking
+                  </label>
+                  <label class="ewl-hub-checkbox-item">
+                    <input type="checkbox" data-profile="language-support"> Language Support
+                  </label>
+                  <label class="ewl-hub-checkbox-item">
+                    <input type="checkbox" data-profile="challenge-extend"> Challenge &amp; Extend
+                  </label>
+                </div>
+                <div class="ewl-hub-selector-row">
+                  <select class="ewl-hub-select" id="ewl-hub-lesson-select">
+                    <option value="1-1">Lesson 1.1</option>
+                  </select>
+                  <button type="button" class="ewl-hub-btn-copy" id="ewl-hub-btn-generate">Copy Student Link</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <script>
+            document.addEventListener("DOMContentLoaded", () => {
+              const select = document.getElementById("ewl-hub-lesson-select");
+              if (!select) return;
+              const lessonsCount = {
+                1: 7, 2: 5, 3: 7, 4: 7, 5: 5, 6: 7, 7: 7, 8: 7, 9: 7, 10: 5
+              };
+              select.innerHTML = "";
+              for (let u = 1; u <= 10; u++) {
+                const count = lessonsCount[u];
+                for (let l = 1; l <= count; l++) {
+                  const id = `${u}-${l}`;
+                  const opt = document.createElement("option");
+                  opt.value = id;
+                  opt.textContent = `Lesson ${u}.${l}`;
+                  select.appendChild(opt);
+                }
+              }
+
+              const btn = document.getElementById("ewl-hub-btn-generate");
+              btn.addEventListener("click", () => {
+                const selectedLesson = select.value;
+                const checkboxes = document.querySelectorAll(".ewl-hub-profile-checkboxes input");
+                const profiles = [];
+                checkboxes.forEach(cb => {
+                  if (cb.checked) profiles.push(cb.getAttribute("data-profile"));
+                });
+
+                const base = window.location.origin;
+                const hash = profiles.length > 0 ? `#supports=${profiles.join(",")}` : "";
+                const url = `${base}/lessons/${selectedLesson}/${hash}`;
+
+                navigator.clipboard.writeText(url).then(() => {
+                  const origText = btn.textContent;
+                  btn.textContent = "✓ Copied!";
+                  setTimeout(() => { btn.textContent = origText; }, 1500);
+                }).catch(err => {
+                  console.error("Clipboard copy failed:", err);
+                });
+              });
+            });
+          </script>
         </div>
 
         <!-- Seasonal entry point: End-of-Year Command Center -->
