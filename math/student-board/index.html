@@ -1220,6 +1220,119 @@
         font-size: 20px;
         margin-bottom: 6px;
       }
+      .codes-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .codes-head h3 {
+        text-align: left;
+        margin: 0;
+        flex: 1 1 auto;
+      }
+      .codes-canvas {
+        text-decoration: none;
+        white-space: nowrap;
+        font-size: 14px;
+      }
+      .codes-canvas[hidden] {
+        display: none;
+      }
+      /* assignments block inside My Work */
+      .codes-assigns h4,
+      .codes-manual > summary {
+        font-family: "Nunito", sans-serif;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+        margin: 14px 0 8px;
+      }
+      .codes-assigns[hidden] {
+        display: none;
+      }
+      .codes-manual {
+        margin: 6px 0 10px;
+      }
+      .codes-manual > summary {
+        cursor: pointer;
+        text-transform: none;
+        letter-spacing: 0;
+        font-weight: 700;
+        color: var(--teal);
+      }
+      .cw-item {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 4px 10px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: #f7fafe;
+      }
+      .cw-item .cw-name {
+        font-weight: 800;
+        font-family: "Nunito", sans-serif;
+        color: var(--navy);
+      }
+      .cw-item .cw-due {
+        font-size: 12px;
+        color: var(--ink-soft);
+        margin-left: 6px;
+        font-weight: 600;
+      }
+      .cw-item .cw-open {
+        justify-self: end;
+        font-size: 13px;
+        white-space: nowrap;
+        color: var(--teal);
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .cw-item .cw-code {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 4px;
+      }
+      .cw-item .cw-code input {
+        flex: 1 1 140px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 10px;
+        font-size: 14px;
+        font-family: "Atkinson Hyperlegible", monospace;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      /* prominent student front-door button in the top bar */
+      .btn.student-cta {
+        background: var(--teal);
+        color: #fff;
+        border-color: var(--teal);
+        font-weight: 800;
+      }
+      .btn.student-cta:hover {
+        filter: brightness(1.06);
+      }
+      /* My Work reachable while embedded in Canvas */
+      .embed-mywork {
+        border: 0;
+        background: rgba(255, 255, 255, 0.16);
+        color: #fff;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 4px 12px;
+        cursor: pointer;
+        font-size: 13px;
+      }
+      .embed-mywork:hover {
+        background: rgba(255, 255, 255, 0.28);
+      }
       .codes-add {
         display: flex;
         gap: 8px;
@@ -1401,9 +1514,9 @@
       }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <div class="wrap">
       <!-- Teacher control banner (only in edit mode) -->
@@ -1467,6 +1580,13 @@
         </button>
         <button class="btn ghost" id="timerBtn" title="Class work timer">⏱ Timer</button>
         <button class="btn ghost" id="readBtn" title="Read the board aloud">🔊 Read</button>
+        <button
+          class="btn student-cta"
+          id="myWorkBtn"
+          title="Your assignments, save codes & Canvas — all in one place"
+        >
+          🎒 My Work
+        </button>
         <button class="btn ghost" id="textSizeBtn" title="Bigger text" aria-label="Text size">
           🔤 A+
         </button>
@@ -1479,6 +1599,7 @@
       <!-- Slim bar shown only when the board is embedded (e.g. a Canvas page) -->
       <div class="embed-bar">
         <span>Live from your class board</span>
+        <button class="embed-mywork" id="myWorkBtnEmbed">🎒 My Work</button>
         <a id="embedOpenLink" href="/math/student-board/" target="_blank" rel="noopener"
           >Open full board ↗</a
         >
@@ -1702,22 +1823,35 @@
 
     <!-- My saved codes overlay (student, this device) -->
     <div class="overlay" id="codesOverlay" hidden>
-      <div
-        class="overlay-box codes-box"
-        role="dialog"
-        aria-modal="true"
-        aria-label="My saved codes"
-      >
-        <h3>🎒 My Saved Codes</h3>
-        <p class="modal-help">
-          Your save codes let you pick up multi-day work where you left off. They live on this
-          device only — no one else sees them. Add a code and a label so you never lose it.
-        </p>
-        <div class="codes-add">
-          <input type="text" id="codeLabel" placeholder="Assignment (e.g. Lesson 1-1)" />
-          <input type="text" id="codeValue" placeholder="Save code (e.g. ABC-1234)" />
-          <button class="btn primary" id="codeAddBtn">Save</button>
+      <div class="overlay-box codes-box" role="dialog" aria-modal="true" aria-label="My work">
+        <div class="codes-head">
+          <h3>🎒 My Work — <span id="codesSection">All Classes</span></h3>
+          <a
+            class="btn primary codes-canvas"
+            id="codesCanvasBtn"
+            href="#"
+            target="_blank"
+            rel="noopener"
+            hidden
+            >📚 Open my Canvas course ↗</a
+          >
         </div>
+        <p class="modal-help">
+          Everything you need in one place: this week's assignments, your save codes, and your
+          Canvas course. Save codes live on this device only — no one else sees them.
+        </p>
+        <div class="codes-assigns" id="codesAssigns" hidden>
+          <h4>📋 This week's assignments</h4>
+          <div class="codes-list" id="codesAssignsList"></div>
+        </div>
+        <details class="codes-manual">
+          <summary>➕ Add a save code by hand</summary>
+          <div class="codes-add">
+            <input type="text" id="codeLabel" placeholder="Assignment (e.g. Lesson 1-1)" />
+            <input type="text" id="codeValue" placeholder="Save code (e.g. ABC-1234)" />
+            <button class="btn primary" id="codeAddBtn">Save</button>
+          </div>
+        </details>
         <div class="codes-list" id="codesList"></div>
         <div class="codes-auto" id="codesAuto" hidden>
           <h4>🔄 Found from your lessons (this device)</h4>
@@ -2488,10 +2622,89 @@
           (b) => (b.onclick = () => copyText(work[+b.dataset.autocopy].code, b)),
         );
       }
+      // The student's "My Work" front door: their section, a one-tap link to
+      // their Canvas course, this week's assignments (each with a Canvas deep
+      // link + save-code field), plus the saved-code locker below.
+      function renderMyWorkHeader() {
+        const sec = $("#codesSection");
+        if (sec) sec.textContent = sectionLabel(boardId);
+        const cb = $("#codesCanvasBtn");
+        if (cb) {
+          const url = normUrl(state.canvas && state.canvas.url);
+          cb.hidden = !url;
+          if (url) cb.href = url;
+        }
+      }
+      function renderMyWorkAssigns() {
+        const box = $("#codesAssigns");
+        const host = $("#codesAssignsList");
+        if (!box || !host) return;
+        const items = (state.assignments && state.assignments.items) || [];
+        if (!items.length) {
+          box.hidden = true;
+          host.innerHTML = "";
+          return;
+        }
+        box.hidden = false;
+        const codes = loadCodes();
+        const canvas = normUrl(state.canvas && state.canvas.url);
+        const work = lessonWork();
+        host.innerHTML = items
+          .map((a, i) => {
+            const own = normUrl(a.link);
+            const openHref = own || canvas;
+            const mine = codes[codeKey(a.name)] || "";
+            const sug = mine ? null : matchWork(work, a.name);
+            return `<div class="cw-item">
+                <div>
+                  <span class="cw-name">${esc(a.name)}</span>
+                  ${a.due ? `<span class="cw-due">${esc(a.due)}</span>` : ""}
+                </div>
+                ${
+                  openHref
+                    ? `<a class="cw-open" href="${esc(openHref)}" target="_blank" rel="noopener">${own ? "Open" : "Canvas"} ↗</a>`
+                    : "<span></span>"
+                }
+                <div class="cw-code">
+                  <input type="text" data-cwcode="${i}" value="${esc(mine)}" placeholder="type your save code" aria-label="Save code for ${esc(a.name)}" />
+                  ${
+                    sug
+                      ? `<button class="mini code-suggest" data-cwsug="${i}" data-cwsugcode="${esc(sug.code)}" title="Saved by your lesson work on this device">📥 Use ${esc(sug.code)}</button>`
+                      : ""
+                  }
+                </div>
+              </div>`;
+          })
+          .join("");
+        $$("#codesAssignsList [data-cwcode]").forEach((inp) => {
+          inp.oninput = () => {
+            const i = +inp.dataset.cwcode;
+            const c = loadCodes();
+            const val = inp.value.trim().toUpperCase();
+            if (val) c[codeKey(items[i].name)] = val;
+            else delete c[codeKey(items[i].name)];
+            saveCodes(c);
+            renderCodesList();
+            renderAssignments();
+          };
+        });
+        $$("#codesAssignsList [data-cwsug]").forEach((b) => {
+          b.onclick = () => {
+            const i = +b.dataset.cwsug;
+            const c = loadCodes();
+            c[codeKey(items[i].name)] = b.dataset.cwsugcode;
+            saveCodes(c);
+            renderMyWorkAssigns();
+            renderCodesList();
+            renderAssignments();
+          };
+        });
+      }
       function openMyCodes() {
+        renderMyWorkHeader();
+        renderMyWorkAssigns();
         renderCodesList();
         $("#codesOverlay").hidden = false;
-        $("#codeLabel").focus();
       }
 
       function renderVocab() {
@@ -3362,6 +3575,9 @@
         );
       };
       $("#myCodesBtn").onclick = openMyCodes;
+      $("#myWorkBtn").onclick = openMyCodes;
+      const myWorkEmbedBtn = $("#myWorkBtnEmbed");
+      if (myWorkEmbedBtn) myWorkEmbedBtn.onclick = openMyCodes;
       $("#codesCloseBtn").onclick = () => ($("#codesOverlay").hidden = true);
       $("#codeAddBtn").onclick = () => {
         const label = $("#codeLabel").value.trim();
