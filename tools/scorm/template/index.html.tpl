@@ -30,7 +30,7 @@
     -->
     <iframe
       id="lesson"
-      src="{{LESSON_URL}}{{LAUNCH_QUERY}}"
+      data-src="{{LESSON_URL}}{{LAUNCH_QUERY}}"
       allow="fullscreen; clipboard-write"
       title="{{TITLE}}"
     ></iframe>
@@ -41,6 +41,8 @@
         var MASTERY = 70;
 
         // ---- locate the SCORM 1.2 API (walk parents, then opener) ----
+        // Every window access is guarded: in Canvas the SCO is commonly framed
+        // cross-origin, where reading win.API / win.parent throws SecurityError.
         function findAPI(win) {
           var tries = 0;
           while (win && tries++ < 12) {
@@ -80,6 +82,36 @@
             } catch (e) {}
           }
         }
+        // Canvas identity → live activity: read the LMS-provided student name/id
+        // and hand them to the lesson so the student is auto-identified inside
+        // Canvas (no name-entry screen, resume keyed to the Canvas roster).
+        // SCORM 1.2 returns the name as "Last, First"; normalize to "First Last".
+        function lmsGet(key) {
+          try {
+            return API ? String(API.LMSGetValue(key) || "") : "";
+          } catch (e) {
+            return "";
+          }
+        }
+        function normalizeName(raw) {
+          raw = (raw || "").trim();
+          if (!raw) return "";
+          var c = raw.indexOf(",");
+          if (c > -1) return (raw.slice(c + 1).trim() + " " + raw.slice(0, c).trim()).trim();
+          return raw;
+        }
+        function launchUrl() {
+          var iframe = document.getElementById("lesson");
+          var base = iframe.getAttribute("data-src");
+          start();
+          var name = normalizeName(lmsGet("cmi.core.student_name"));
+          var sid = lmsGet("cmi.core.student_id");
+          var sep = base.indexOf("?") > -1 ? "&" : "?";
+          var q = "";
+          if (name) q += sep + "sn=" + encodeURIComponent(name);
+          if (sid) q += (q ? "&" : sep) + "si=" + encodeURIComponent(sid);
+          iframe.src = base + q;
+        }
         function report(pct) {
           if (!API || finished) return;
           start();
@@ -105,7 +137,8 @@
           }
         }
 
-        start();
+        // Register the score listener BEFORE loading the activity so no early
+        // completion message is missed, then launch with the Canvas identity.
         window.addEventListener("message", function (e) {
           if (LESSON_ORIGIN && e.origin !== LESSON_ORIGIN) return;
           var d = e.data || {};
@@ -119,6 +152,7 @@
         });
         window.addEventListener("pagehide", finish);
         window.addEventListener("unload", finish);
+        launchUrl();
       })();
     </script>
   </body>

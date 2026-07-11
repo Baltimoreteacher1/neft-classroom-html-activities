@@ -125,12 +125,25 @@ function sco(lessonUrl, launchQuery, origin, title) {
         "use strict";
         var LESSON_ORIGIN = "${origin}";
         var MASTERY = 70;
+        // Locate the SCORM 1.2 API by walking parent frames then the opener.
+        // Every window access is wrapped: in Canvas the SCO is commonly framed
+        // cross-origin, where reading win.API / win.parent throws SecurityError.
+        // An uncaught throw here would abort the wrapper before launchUrl() runs
+        // — leaving a blank frame and no grade — so guard each access.
         function findAPI(win) {
           var tries = 0;
-          while (win && win.API == null && win.parent && win.parent !== win && tries++ < 12) win = win.parent;
-          return win ? win.API : null;
+          while (win && tries++ < 12) {
+            try { if (win.API != null) return win.API; } catch (e) { break; }
+            try {
+              if (!win.parent || win.parent === win) break;
+              win = win.parent;
+            } catch (e) { break; }
+          }
+          return null;
         }
-        var API = findAPI(window) || (window.opener ? findAPI(window.opener) : null);
+        var API = null;
+        try { API = findAPI(window); } catch (e) {}
+        if (!API) { try { if (window.opener) API = findAPI(window.opener); } catch (e) {} }
         var started = false, finished = false;
         function start() {
           if (API && !started) {
@@ -162,7 +175,11 @@ function sco(lessonUrl, launchQuery, origin, title) {
           iframe.src = base + q;
         }
         function report(pct) {
-          if (!API) return; start();
+          // Never write after LMSFinish (illegal in SCORM 1.2) or before a
+          // successful LMSInitialize — some LMS runtimes throw on either.
+          if (!API || finished) return;
+          start();
+          if (!started) return;
           var status = pct >= MASTERY ? "passed" : "completed";
           try {
             API.LMSSetValue("cmi.core.score.min", "0");
