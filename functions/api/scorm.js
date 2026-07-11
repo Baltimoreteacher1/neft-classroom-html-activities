@@ -23,7 +23,7 @@ function esc(s) {
 // A failed chip click navigates the teacher's tab here (a successful one is an
 // attachment download and never leaves the page), so errors must be a friendly
 // page with a way back — not bare text stranding them off the Curriculum Hub.
-function errorPage(message) {
+function errorPage(message, status = 400) {
   return new Response(
     `<!doctype html>
 <html lang="en">
@@ -57,10 +57,37 @@ function errorPage(message) {
 </html>
 `,
     {
-      status: 400,
+      status,
       headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
     },
   );
+}
+
+// Verify the resolved activity actually exists before packaging, so a mistyped
+// id doesn't yield a "valid" SCORM zip that iframes a 404 page. Fail OPEN: only
+// a definitive 404 blocks — auth gates (401/403), method quirks (405), and
+// transient 5xx / network errors / timeouts all let the download through, so a
+// hiccup never blocks a legitimate package.
+async function targetExists(lessonUrl) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 4000);
+  try {
+    let res = await fetch(lessonUrl, { method: "HEAD", redirect: "follow", signal: ctrl.signal });
+    if (res.status === 405) {
+      // Some hosts reject HEAD — retry with a 1-byte ranged GET to avoid a false miss.
+      res = await fetch(lessonUrl, {
+        method: "GET",
+        redirect: "follow",
+        signal: ctrl.signal,
+        headers: { Range: "bytes=0-0" },
+      });
+    }
+    return res.status !== 404;
+  } catch (e) {
+    return true;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export async function onRequest(context) {
@@ -79,6 +106,16 @@ export async function onRequest(context) {
     pkg = buildScormFiles({ target, title, codes });
   } catch (e) {
     return errorPage("Could not build package: " + (e.message || e));
+  }
+
+  if (!(await targetExists(pkg.lessonUrl))) {
+    return errorPage(
+      "No activity exists at " +
+        pkg.lessonUrl +
+        " — the link returned 404. " +
+        "Double-check the lesson id or path and try again.",
+      404,
+    );
   }
 
   const zip = zipStore(pkg.files);
