@@ -649,6 +649,12 @@
       }
 
       /* ---- Level-gated content ---- */
+      .lvl0-only {
+        display: none;
+      }
+      body.level-0 .lvl0-only {
+        display: block;
+      }
       .lvl1-only {
         display: none;
       }
@@ -875,6 +881,10 @@
         </span>
       </div>
       <div class="level-bar">
+        <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+          <span class="en-text">🟠 Level 0 · Extra Support</span>
+          <span class="es-text">🟠 Nivel 0 · Apoyo Extra</span>
+        </button>
         <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
           <span class="en-text">🟢 Level 1 — With Support</span>
           <span class="es-text">🟢 Nivel 1 — Con apoyo</span>
@@ -1166,6 +1176,23 @@
           </svg>
 
           <!-- Level 1 hint -->
+          <!-- Level 0 support -->
+          <div class="instruct lvl0-only">
+            <span class="en-text"
+              >🟠 <strong>Level 0 — one step at a time:</strong><br />
+              Step 1: Type <strong>10</strong> stickers.<br />
+              Step 2: Type <strong>20</strong> granola bars.<br />
+              Tiny example with other numbers: 6 and 9 share the factor 3, so you could make 3 equal bags.<br />
+              Say it: “I chose ___ because ___.”</span
+            >
+            <span class="es-text"
+              >🟠 <strong>Nivel 0 — un paso a la vez:</strong><br />
+              Paso 1: Escribe <strong>10</strong> pegatinas.<br />
+              Paso 2: Escribe <strong>20</strong> barras de granola.<br />
+              Ejemplo pequeño con otros números: 6 y 9 comparten el factor 3, así que podrías hacer 3 bolsas iguales.<br />
+              Dilo: “Elegí ___ porque ___.”</span
+            >
+          </div>
           <div class="instruct lvl1-only">
             <span class="en-text"
               >🟢 <strong>Level 1 tip:</strong> Try friendly numbers that share factors, like 24
@@ -1412,6 +1439,23 @@
             <text x="294" y="46" text-anchor="middle" font-size="16">⭐</text>
           </svg>
 
+          <!-- Level 0 support -->
+          <div class="instruct lvl0-only teal">
+            <span class="en-text"
+              >🟠 <strong>Level 0 — one step at a time:</strong><br />
+              Step 1: Type <strong>2</strong> minutes for the music.<br />
+              Step 2: Type <strong>4</strong> minutes for the bubbles.<br />
+              Tiny example with other numbers: every 3 minutes and every 6 minutes first happen together at minute 6.<br />
+              Say it: “I chose ___ because ___.”</span
+            >
+            <span class="es-text"
+              >🟠 <strong>Nivel 0 — un paso a la vez:</strong><br />
+              Paso 1: Escribe <strong>2</strong> minutos para la música.<br />
+              Paso 2: Escribe <strong>4</strong> minutos para las burbujas.<br />
+              Ejemplo pequeño con otros números: cada 3 minutos y cada 6 minutos coinciden por primera vez en el minuto 6.<br />
+              Dilo: “Elegí ___ porque ___.”</span
+            >
+          </div>
           <div class="lvl1-only instruct teal">
             <span class="en-text"
               >🟢 <strong>Level 1 tip:</strong> Try numbers like 4 and 6 — their LCM is 12.</span
@@ -1725,6 +1769,25 @@
             <text x="445" y="102" text-anchor="middle" font-size="10" fill="#c9820f">$___</text>
           </svg>
 
+          <!-- Level 0 support -->
+          <div class="instruct lvl0-only gold">
+            <span class="en-text"
+              >🟠 <strong>Level 0 — one step at a time:</strong><br />
+              Step 1: Type <strong>$50</strong> for food.<br />
+              Step 2: Type <strong>$20</strong> decorations and <strong>$10</strong> activities.<br />
+              Step 3: Type <strong>10</strong> guests.<br />
+              Tiny example with other numbers: $20 + $10 = $30, and $30 ÷ 5 guests = $6 each.<br />
+              Say it: “I chose ___ because ___.”</span
+            >
+            <span class="es-text"
+              >🟠 <strong>Nivel 0 — un paso a la vez:</strong><br />
+              Paso 1: Escribe <strong>$50</strong> para comida.<br />
+              Paso 2: Escribe <strong>$20</strong> en decoraciones y <strong>$10</strong> en actividades.<br />
+              Paso 3: Escribe <strong>10</strong> invitados.<br />
+              Ejemplo pequeño con otros números: $20 + $10 = $30, y $30 ÷ 5 invitados = $6 cada uno.<br />
+              Dilo: “Elegí ___ porque ___.”</span
+            >
+          </div>
           <div class="lvl1-only instruct gold">
             <span class="en-text"
               >🟢 <strong>Level 1 tip:</strong> Try round numbers like $80 food, $40 decorations,
@@ -2329,10 +2392,12 @@
         "l-music": 5,
         "l-bubble": 7,
       };
+      const PRESETS_LV0 = { "g-stickers": 10, "g-bars": 20, "l-music": 2, "l-bubble": 4 };
       function handleLevelPreset(n) {
         try {
-          if (n === 1) {
-            for (const [id, val] of Object.entries(PRESETS)) {
+          if (n === 0 || n === 1) {
+            const bank = n === 0 ? PRESETS_LV0 : PRESETS;
+            for (const [id, val] of Object.entries(bank)) {
               const el = document.getElementById(id);
               if (el && !el.value) {
                 el.value = val;
@@ -2341,7 +2406,9 @@
               }
             }
           } else if (n === 2) {
-            for (const [id, val] of Object.entries(PRESETS)) {
+            for (const [id, val] of Object.entries(PRESETS).concat(
+              Object.entries(PRESETS_LV0),
+            )) {
               const el = document.getElementById(id);
               if (el && String(el.value) === String(val)) {
                 el.value = "";
@@ -2428,8 +2495,9 @@
       // ---- Level toggle ----
       function setLevel(n) {
         const body = document.getElementById("body");
-        body.classList.remove("level-1", "level-2");
+        body.classList.remove("level-0", "level-1", "level-2");
         body.classList.add("level-" + n);
+        document.getElementById("btn-lv0").classList.toggle("active", n === 0);
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
 

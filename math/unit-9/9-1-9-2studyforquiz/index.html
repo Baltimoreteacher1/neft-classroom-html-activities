@@ -2330,10 +2330,24 @@
       // ── COMPLETE THE TABLE ──
       var ctCorrect = {},
         ctTotal = 15;
+      // Accept mathematically equivalent forms (1.50, .5, $3, 3/2) so a
+      // correct value typed in a different format is never marked wrong.
+      function ctNumber(s) {
+        var t = String(s).trim().replace(/^\$/, "").replace(/\s/g, "");
+        var frac = t.match(/^(-?\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/);
+        if (frac) return parseFloat(frac[1]) / parseFloat(frac[2]);
+        return /^-?(?:\d+\.?\d*|\.\d+)$/.test(t) ? parseFloat(t) : NaN;
+      }
+      function ctEquivalent(val, answer) {
+        if (val === answer) return true;
+        var a = ctNumber(val);
+        var b = ctNumber(answer);
+        return isFinite(a) && isFinite(b) && Math.abs(a - b) < 0.005;
+      }
       function checkCT(id, answer) {
         var inp = document.getElementById(id);
         var val = inp.value.trim().replace(/\s/g, "");
-        if (val === answer) {
+        if (val !== "" && ctEquivalent(val, answer)) {
           inp.classList.add("correct-inp");
           inp.classList.remove("wrong-inp");
           ctCorrect[id] = true;
@@ -2350,7 +2364,7 @@
         ids.forEach((id, i) => {
           var inp = document.getElementById(id);
           var val = inp.value.trim().replace(/\s/g, "");
-          if (val === answers[i]) {
+          if (val !== "" && ctEquivalent(val, answers[i])) {
             inp.classList.add("correct-inp");
             inp.classList.remove("wrong-inp");
             ctCorrect[id] = true;

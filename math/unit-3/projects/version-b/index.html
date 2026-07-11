@@ -642,6 +642,12 @@
       }
 
       /* ---- Level-gated content ---- */
+      .lvl0-only {
+        display: none;
+      }
+      body.level-0 .lvl0-only {
+        display: block;
+      }
       .lvl1-only {
         display: none;
       }
@@ -869,6 +875,10 @@
         </span>
       </div>
       <div class="level-bar">
+        <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+          <span class="en-text">🟠 Level 0 · Extra Support</span>
+          <span class="es-text">🟠 Nivel 0 · Apoyo Extra</span>
+        </button>
         <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
           <span class="en-text">🟢 Level 1 — With Support</span>
           <span class="es-text">🟢 Nivel 1 — Con Apoyo</span>
@@ -1280,6 +1290,23 @@
           </svg>
 
           <!-- Level 1 support hints -->
+          <!-- Level 0 support -->
+          <div class="instruct lvl0-only">
+            <span class="en-text"
+              >🟠 <strong>Level 0 — one step at a time:</strong><br />
+              Step 1: Type <strong>20</strong> points.<br />
+              Step 2: Type <strong>10</strong> minutes.<br />
+              Tiny example with other numbers: 9 points in 3 minutes is 9 ÷ 3 = 3 points per minute.<br />
+              Say it: “I chose ___ because ___.”</span
+            >
+            <span class="es-text"
+              >🟠 <strong>Nivel 0 — un paso a la vez:</strong><br />
+              Paso 1: Escribe <strong>20</strong> puntos.<br />
+              Paso 2: Escribe <strong>10</strong> minutos.<br />
+              Ejemplo pequeño con otros números: 9 puntos en 3 minutos es 9 ÷ 3 = 3 puntos por minuto.<br />
+              Dilo: “Elegí ___ porque ___.”</span
+            >
+          </div>
           <div class="instruct lvl1-only">
             <span class="en-text"
               >🟢 <strong>Level 1 tip:</strong> Try friendly numbers, like 60 points in 30 minutes
@@ -1597,6 +1624,23 @@
             </text>
           </svg>
 
+          <!-- Level 0 support -->
+          <div class="instruct lvl0-only teal">
+            <span class="en-text"
+              >🟠 <strong>Level 0 — one step at a time:</strong><br />
+              Step 1: Type <strong>10</strong> minutes per game.<br />
+              Step 2: Press <strong>Generate Ratio Table</strong>.<br />
+              Tiny example with other numbers: 3 points each minute for 5 minutes is 3 × 5 = 15 points.<br />
+              Say it: “I chose ___ because ___.”</span
+            >
+            <span class="es-text"
+              >🟠 <strong>Nivel 0 — un paso a la vez:</strong><br />
+              Paso 1: Escribe <strong>10</strong> minutos por juego.<br />
+              Paso 2: Presiona <strong>Generar Tabla de Razones</strong>.<br />
+              Ejemplo pequeño con otros números: 3 puntos por minuto durante 5 minutos son 3 × 5 = 15 puntos.<br />
+              Dilo: “Elegí ___ porque ___.”</span
+            >
+          </div>
           <div class="lvl1-only instruct teal">
             <span class="en-text"
               >🟢 <strong>Level 1 tip:</strong> Standard youth games are 20 minutes long. Pro games
@@ -2655,10 +2699,12 @@
     <script src="/assets/app.js" defer></script>
     <script>
       const PRESETS = { "ath-pts": 60, "ath-min": 30 };
+      const PRESETS_LV0 = { "ath-pts": 20, "ath-min": 10, "proj-mpg": 10 };
       function handleLevelPreset(n) {
         try {
-          if (n === 1) {
-            for (const [id, val] of Object.entries(PRESETS)) {
+          if (n === 0 || n === 1) {
+            const bank = n === 0 ? PRESETS_LV0 : PRESETS;
+            for (const [id, val] of Object.entries(bank)) {
               const el = document.getElementById(id);
               if (el && !el.value) {
                 el.value = val;
@@ -2667,7 +2713,9 @@
               }
             }
           } else if (n === 2) {
-            for (const [id, val] of Object.entries(PRESETS)) {
+            for (const [id, val] of Object.entries(PRESETS).concat(
+              Object.entries(PRESETS_LV0),
+            )) {
               const el = document.getElementById(id);
               if (el && String(el.value) === String(val)) {
                 el.value = "";
@@ -2845,15 +2893,12 @@
       // ---- Level toggle ----
       function setLevel(n) {
         const body = document.getElementById("body");
-        if (n === 1) {
-          body.classList.add("level-1");
-          body.classList.remove("level-2");
-
+        body.classList.remove("level-0", "level-1", "level-2");
+        body.classList.add("level-" + n);
+        if (n === 0 || n === 1) {
           handleLevelPreset(n);
-        } else {
-          body.classList.add("level-2");
-          body.classList.remove("level-1");
         }
+        document.getElementById("btn-lv0").classList.toggle("active", n === 0);
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
 

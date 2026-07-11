@@ -675,6 +675,12 @@
       body.level-2 div.lvl2-only {
         display: block;
       }
+      .lvl0-only {
+        display: none;
+      }
+      body.level-0 .lvl0-only {
+        display: block;
+      }
 
       /* ---- Vocab cards ---- */
       .vocab-grid {
@@ -946,13 +952,13 @@
     <!-- projects-gold-injected:begin (gold hardening layer — tools/inject-projects-gold.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-gold.css" />
     <!-- projects-gold-injected:end -->
-      <!-- projects-publisher-injected:begin (publisher pedagogy layer — tools/inject-projects-publisher.mjs) -->
+    <!-- projects-publisher-injected:begin (publisher pedagogy layer — tools/inject-projects-publisher.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-publisher.css" />
     <!-- projects-publisher-injected:end -->
     <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-visuals.css" />
     <!-- projects-visuals-injected:end -->
-</head>
+  </head>
   <body class="level-1 pro-projects" id="body">
     <!-- ====== HERO ====== -->
     <header class="hero no-print">
@@ -979,6 +985,10 @@
         <span class="tag">Version A</span>
       </div>
       <div class="level-bar" style="margin-bottom: 10px">
+        <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+          🟠 <span class="en-text">Level 0 · Extra Support</span>
+          <span class="es-text">Nivel 0 · Apoyo Extra</span>
+        </button>
         <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
           🟢 <span class="en-text">Level 1 — With Support</span>
           <span class="es-text">Nivel 1 — Con Apoyo</span>
@@ -1228,9 +1238,7 @@
             >
             <small class="sr-hint"
               ><span class="en-text">Fill in: ___ (attraction) is at ( ___ , ___ ).</span
-              ><span class="es-text"
-                >Completa: ___ (atracción) está en ( ___ , ___ ).</span
-              ></small
+              ><span class="es-text">Completa: ___ (atracción) está en ( ___ , ___ ).</span></small
             >
             <input
               type="text"
@@ -1260,9 +1268,7 @@
             >
             <small class="sr-hint"
               ><span class="en-text">Fill in: ___ (ride) goes at ( ___ , ___ ).</span
-              ><span class="es-text"
-                >Completa: ___ (atracción) va en ( ___ , ___ ).</span
-              ></small
+              ><span class="es-text">Completa: ___ (atracción) va en ( ___ , ___ ).</span></small
             >
             <input
               type="text"
@@ -1290,6 +1296,25 @@
             viewBox="0 0 300 300"
             xmlns="http://www.w3.org/2000/svg"
           ></svg>
+
+          <!-- Level 0 Extra Support -->
+          <div class="instruct lvl0-only">
+            <span class="en-text"
+              >🟠 <strong>Level 0 Support:</strong> Place one ride at a time.<br />
+              1. Pick one ride. 2. Type a number for x. 3. Type a number for y.<br />
+              Micro-example (different numbers): a snack stand at (1, 2) means 1 right, 2 up.<br />
+              Easy start: use small numbers like 1, 2, or 3.<br />
+              Say it: "I put my ride at (___, ___) because ___."</span
+            >
+            <span class="es-text"
+              >🟠 <strong>Apoyo de Nivel 0:</strong> Coloca una atracción a la vez.<br />
+              1. Elige una atracción. 2. Escribe un número para x. 3. Escribe un número para y.<br />
+              Micro-ejemplo (con otros números): un puesto de comida en (1, 2) significa 1 a la
+              derecha y 2 hacia arriba.<br />
+              Comienzo fácil: usa números pequeños como 1, 2 o 3.<br />
+              Dilo: "Puse mi atracción en (___, ___) porque ___".</span
+            >
+          </div>
 
           <!-- Level 1 Support -->
           <div class="instruct lvl1-only">
@@ -1663,7 +1688,8 @@
               ><span class="es-text">Wikipedia — Cedar Point (tamaño del parque) ↗</span></a
             >
             <small class="sr-hint"
-              ><span class="en-text">Fill in: The park is ___ × ___ units; rides sit ___ apart.</span
+              ><span class="en-text"
+                >Fill in: The park is ___ × ___ units; rides sit ___ apart.</span
               ><span class="es-text"
                 >Completa: El parque mide ___ × ___ unidades; las atracciones a ___.</span
               ></small
@@ -2860,6 +2886,8 @@
     <script src="/assets/app.js" defer></script>
     <script>
       const PRESETS = {};
+      // Level 0 (extra support) starter values — simplest friendly numbers.
+      const PRESETS_L0 = { "attr1-x": 2, "attr1-y": 3 };
 
       // ---- No-giveaway attempt tracker (per-input coaching ladder) ----
       const _tries = {};
@@ -2873,8 +2901,9 @@
 
       function handleLevelPreset(n) {
         try {
-          if (n === 1) {
-            for (const [id, val] of Object.entries(PRESETS)) {
+          if (n === 0 || n === 1) {
+            const presets = n === 0 ? Object.assign({}, PRESETS, PRESETS_L0) : PRESETS;
+            for (const [id, val] of Object.entries(presets)) {
               const el = document.getElementById(id);
               if (el && !el.value) {
                 el.value = val;
@@ -2883,12 +2912,14 @@
               }
             }
           } else if (n === 2) {
-            for (const [id, val] of Object.entries(PRESETS)) {
-              const el = document.getElementById(id);
-              if (el && String(el.value) === String(val)) {
-                el.value = "";
-                el.dispatchEvent(new Event("input", { bubbles: true }));
-                el.dispatchEvent(new Event("change", { bubbles: true }));
+            for (const presetMap of [PRESETS, PRESETS_L0]) {
+              for (const [id, val] of Object.entries(presetMap)) {
+                const el = document.getElementById(id);
+                if (el && String(el.value) === String(val)) {
+                  el.value = "";
+                  el.dispatchEvent(new Event("input", { bubbles: true }));
+                  el.dispatchEvent(new Event("change", { bubbles: true }));
+                }
               }
             }
           }
@@ -2974,8 +3005,9 @@
       function setLevel(n) {
         activeLevel = n;
         // Surgical class swap — preserve `es` and injected `pro-projects` classes
-        document.body.classList.remove("level-1", "level-2");
+        document.body.classList.remove("level-0", "level-1", "level-2");
         document.body.classList.add("level-" + n);
+        document.getElementById("btn-lv0").classList.toggle("active", n === 0);
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
         updatePlot();
@@ -4709,13 +4741,13 @@
     <script src="/shared/projects/projects-gold.js" defer></script>
     <!-- projects-gold-injected:end -->
     <!-- projects-publisher-injected:begin (publisher pedagogy layer — tools/inject-projects-publisher.mjs) -->
-  <script src="/shared/projects/projects-publisher.js" defer></script>
-  <!-- projects-publisher-injected:end -->
-  <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
-  <script src="/shared/projects/projects-visuals.js" defer></script>
-  <!-- projects-visuals-injected:end -->
-  <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
-  <script src="/assets/canvas-bridge.js" defer></script>
-  <!-- canvas-bridge-injected:end -->
-</body>
+    <script src="/shared/projects/projects-publisher.js" defer></script>
+    <!-- projects-publisher-injected:end -->
+    <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
+    <script src="/shared/projects/projects-visuals.js" defer></script>
+    <!-- projects-visuals-injected:end -->
+    <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+  </body>
 </html>
