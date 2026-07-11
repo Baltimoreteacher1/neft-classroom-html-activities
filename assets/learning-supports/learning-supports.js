@@ -1190,7 +1190,11 @@
       if (onEnd) onEnd();
     };
 
-    window.speechSynthesis.speak(activeSpeechUtterance);
+    setTimeout(() => {
+      if (window.speechSynthesis && activeSpeechUtterance) {
+        window.speechSynthesis.speak(activeSpeechUtterance);
+      }
+    }, 50);
   }
 
   function speakSingleTerm(termText, definitionText) {
@@ -1214,7 +1218,11 @@
     }
 
     activeSpeechUtterance = utterance;
-    window.speechSynthesis.speak(utterance);
+    setTimeout(() => {
+      if (window.speechSynthesis && activeSpeechUtterance === utterance) {
+        window.speechSynthesis.speak(utterance);
+      }
+    }, 50);
   }
 
   function stopSpeaking() {
