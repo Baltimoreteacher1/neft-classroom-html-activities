@@ -1,0 +1,551 @@
+/* =============================================================================
+ * learning-supports.css — fully namespaced, accessible learning support styles
+ * ========================================================================== */
+
+:root {
+  --ewl-color-primary: #1e293b;
+  --ewl-color-accent: #2563eb;
+  --ewl-color-accent-hover: #1d4ed8;
+  --ewl-color-bg-glass: rgba(255, 255, 255, 0.85);
+  --ewl-color-border: rgba(30, 41, 59, 0.15);
+  --ewl-color-text: #0f172a;
+  --ewl-color-text-muted: #475569;
+  --ewl-color-white: #ffffff;
+  --ewl-color-focus: #3b82f6;
+  --ewl-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15), 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Base Namespaced Reset & Typography */
+[data-ewl-supports-root] {
+  font-family: 'Atkinson Hyperlegible', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ewl-color-text);
+  box-sizing: border-box;
+}
+
+[data-ewl-supports-root] *,
+[data-ewl-supports-root] *::before,
+[data-ewl-supports-root] *::after {
+  box-sizing: inherit;
+}
+
+/* Accessibility: Strong Focus Rings */
+[data-ewl-supports-root] *:focus-visible {
+  outline: 3px solid var(--ewl-color-focus) !important;
+  outline-offset: 2px !important;
+}
+
+/* 1. Prepare Supports Button (Teacher Control) */
+.ewl-supports-teacher-btn-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.ewl-supports-btn-teacher {
+  min-height: 44px;
+  padding: 10px 20px;
+  background: var(--ewl-color-primary);
+  color: var(--ewl-color-white);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: var(--ewl-shadow);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.ewl-supports-btn-teacher:hover {
+  background-color: #334155;
+  transform: translateY(-2px);
+}
+
+.ewl-supports-btn-teacher:active {
+  transform: translateY(0);
+}
+
+/* 2. Accessible Configuration Dialog */
+.ewl-supports-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: 90%;
+  max-width: 520px;
+  max-height: 85vh;
+  background: var(--ewl-color-white);
+  border: 1px solid var(--ewl-color-border);
+  border-radius: 20px;
+  box-shadow: var(--ewl-shadow);
+  z-index: 10001;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s;
+}
+
+.ewl-supports-dialog.is-visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.ewl-supports-dialog[hidden] {
+  display: none !important;
+}
+
+.ewl-supports-dialog-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--ewl-color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+}
+
+.ewl-supports-dialog-header h2 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--ewl-color-primary);
+}
+
+.ewl-supports-dialog-close {
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--ewl-color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.ewl-supports-dialog-close:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.ewl-supports-dialog-body {
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ewl-supports-dialog-intro {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ewl-color-text-muted);
+  line-height: 1.6;
+}
+
+/* Checkbox Row styled with 44px target standard */
+.ewl-supports-dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ewl-supports-checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--ewl-color-border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  min-height: 56px;
+}
+
+.ewl-supports-checkbox-row:hover {
+  background-color: #f8fafc;
+  border-color: var(--ewl-color-focus);
+}
+
+.ewl-supports-checkbox {
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.ewl-supports-checkbox-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  flex-grow: 1;
+}
+
+.ewl-supports-profile-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ewl-color-text);
+}
+
+.ewl-supports-profile-desc {
+  font-size: 12.5px;
+  color: var(--ewl-color-text-muted);
+  line-height: 1.4;
+}
+
+/* Actions Panel */
+.ewl-supports-dialog-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.ewl-supports-btn-action {
+  flex: 1;
+  min-height: 46px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  border: none;
+}
+
+.ewl-supports-btn-action:active {
+  transform: scale(0.98);
+}
+
+.ewl-supports-btn-copy {
+  background: var(--ewl-color-accent);
+  color: var(--ewl-color-white);
+}
+
+.ewl-supports-btn-copy:hover {
+  background-color: var(--ewl-color-accent-hover);
+}
+
+.ewl-supports-btn-reset {
+  background: #f1f5f9;
+  color: var(--ewl-color-text);
+  border: 1px solid var(--ewl-color-border);
+}
+
+.ewl-supports-btn-reset:hover {
+  background-color: #e2e8f0;
+}
+
+/* 3. Student Tools Dock */
+.ewl-supports-tools-dock {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9998;
+  width: auto;
+  max-width: 90%;
+}
+
+.ewl-supports-tools-inner {
+  display: flex;
+  gap: 8px;
+  background: var(--ewl-color-bg-glass);
+  border: 1px solid var(--ewl-color-border);
+  padding: 8px 12px;
+  border-radius: 99px;
+  box-shadow: var(--ewl-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow-x: auto;
+}
+
+.ewl-supports-tool-btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 16px;
+  background: transparent;
+  border: none;
+  color: var(--ewl-color-text);
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 99px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.ewl-supports-tool-btn:hover {
+  background-color: rgba(30, 41, 59, 0.08);
+}
+
+.ewl-supports-tool-btn.is-active,
+.ewl-supports-tool-btn[aria-pressed="true"] {
+  background-color: var(--ewl-color-primary);
+  color: var(--ewl-color-white);
+}
+
+/* 4. Slide-out Content Panel */
+.ewl-supports-content-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  max-width: 400px;
+  height: 100%;
+  background: var(--ewl-color-white);
+  border-left: 1px solid var(--ewl-color-border);
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.08);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ewl-supports-content-panel.is-visible {
+  transform: translateX(0);
+}
+
+.ewl-supports-content-panel[hidden] {
+  display: none !important;
+}
+
+.ewl-supports-panel-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--ewl-color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+}
+
+.ewl-supports-panel-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ewl-color-primary);
+}
+
+.ewl-supports-panel-close {
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--ewl-color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.ewl-supports-panel-close:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.ewl-supports-panel-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+/* Panel content styles */
+.ewl-supports-panel-body p {
+  margin: 0 0 16px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ewl-color-text-muted);
+}
+
+.ewl-supports-vocab-list dt {
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--ewl-color-primary);
+  margin-top: 14px;
+}
+
+.ewl-supports-vocab-list dd {
+  margin: 4px 0 12px 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--ewl-color-text-muted);
+}
+
+.ewl-supports-vocab-visual {
+  background: #f8fafc;
+  border: 1px solid var(--ewl-color-border);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13.5px;
+  margin-bottom: 18px;
+  color: var(--ewl-color-text);
+  font-weight: 500;
+}
+
+.ewl-supports-example-text {
+  font-family: inherit;
+  white-space: pre-wrap;
+  background: #f8fafc;
+  border: 1px solid var(--ewl-color-border);
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ewl-color-text);
+  margin: 0;
+}
+
+.ewl-supports-link-model {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  background: var(--ewl-color-accent);
+  color: var(--ewl-color-white);
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 12px;
+  margin-top: 12px;
+  transition: background-color 0.2s;
+}
+
+.ewl-supports-link-model:hover {
+  background-color: var(--ewl-color-accent-hover);
+}
+
+.ewl-supports-panel-body h4 {
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ewl-color-text-muted);
+  margin: 20px 0 10px;
+  border-bottom: 1px solid var(--ewl-color-border);
+  padding-bottom: 4px;
+}
+
+.ewl-supports-panel-body ul {
+  margin: 0 0 16px;
+  padding-left: 20px;
+}
+
+.ewl-supports-panel-body li {
+  font-size: 14.5px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+  color: var(--ewl-color-text);
+}
+
+.ewl-supports-word-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.ewl-supports-word-chip {
+  background: #e2e8f0;
+  color: var(--ewl-color-primary);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+
+/* 5. Reversible Focus Mode overlay styles */
+body.ewl-supports-focus-active #app {
+  filter: grayscale(40%) opacity(30%);
+  transition: filter 0.3s;
+}
+
+body.ewl-supports-focus-active #app input,
+body.ewl-supports-focus-active #app button,
+body.ewl-supports-focus-active #app textarea,
+body.ewl-supports-focus-active #app [role="button"] {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+body.ewl-supports-focus-active [data-ewl-supports-root] {
+  z-index: 100000;
+}
+
+/* 6. prefers-reduced-motion media query */
+@media (prefers-reduced-motion: reduce) {
+  .ewl-supports-dialog,
+  .ewl-supports-content-panel,
+  .ewl-supports-btn-teacher,
+  body.ewl-supports-focus-active #app {
+    transition: none !important;
+    transform: none !important;
+  }
+  .ewl-supports-dialog {
+    transform: translate(-50%, -50%) !important;
+  }
+}
+
+/* 7. Forced Colors Mode (High Contrast Accessibility) */
+@media (forced-colors: active) {
+  [data-ewl-supports-root] button,
+  [data-ewl-supports-root] a {
+    border: 2px solid ButtonText !important;
+    background: ButtonFace !important;
+    color: ButtonText !important;
+  }
+  .ewl-supports-word-chip {
+    border: 1px solid ButtonText !important;
+  }
+}
+
+/* 8. Print Suppression stylesheet */
+@media print {
+  body:not(.ewl-supports-print-enabled) [data-ewl-supports-root] {
+    display: none !important;
+  }
+}
+
+/* Responsive Mobile reflow & 320px support */
+@media (max-width: 480px) {
+  .ewl-supports-dialog {
+    width: 95%;
+    max-height: 90vh;
+  }
+  .ewl-supports-dialog-body {
+    padding: 16px;
+  }
+  .ewl-supports-content-panel {
+    max-width: 100%;
+  }
+  .ewl-supports-tools-dock {
+    width: 95%;
+  }
+  .ewl-supports-tools-inner {
+    justify-content: flex-start;
+    padding: 6px;
+  }
+}
+
+@media (max-width: 320px) {
+  .ewl-supports-btn-teacher {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+  .ewl-supports-tool-btn {
+    padding: 0 8px;
+    font-size: 12px;
+  }
+}

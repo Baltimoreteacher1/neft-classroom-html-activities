@@ -123,6 +123,49 @@ async function runTests() {
 
   console.log("PASS: Basic controller boot asserts passed");
 
+  // Accessibility Contract Assertions (Task 3 Step 1)
+  const dialog = document.getElementById("ewl-supports-dialog");
+  assert.equal(dialog.getAttribute("role"), "dialog");
+  assert.equal(dialog.getAttribute("aria-modal"), "true");
+  assert.ok(dialog.getAttribute("aria-label"), "Dialog must have an aria-label");
+
+  // No positive tabindex
+  const positiveTab = Array.from(document.querySelectorAll("[tabindex]")).some(el => {
+    const val = Number(el.getAttribute("tabindex"));
+    return !isNaN(val) && val > 0;
+  });
+  assert.equal(positiveTab, false, "Accessibility fail: Positive tabindex is not allowed");
+
+  // Button accessibility & naming
+  const allButtons = document.querySelectorAll("[data-ewl-supports-root] button");
+  assert.ok(allButtons.length > 0, "No buttons found in supports UI");
+  for (const btn of allButtons) {
+    const hasText = btn.textContent.trim().length > 0;
+    const hasLabel = btn.getAttribute("aria-label");
+    assert.ok(hasText || hasLabel, "Accessibility fail: All buttons must have text content or an aria-label");
+
+    // 44px class contract check
+    const hasNamespacedClass = Array.from(btn.classList).some(cls => cls.startsWith("ewl-supports-"));
+    assert.ok(hasNamespacedClass, `CSS contract fail: Button does not have namespaced support class: ${btn.className}`);
+  }
+
+  // Keyboard Dialog Flow & Focus Return
+  const configBtn = document.querySelector(".ewl-supports-btn-teacher");
+  configBtn.focus();
+  assert.equal(document.activeElement, configBtn);
+
+  // Click config button to open
+  configBtn.click();
+  assert.equal(dialog.hidden, false, "Dialog should show after click");
+
+  // Send Escape key to document to close dialog and return focus
+  const escEvent = new dom.window.KeyboardEvent("keydown", { key: "Escape", bubbles: true });
+  document.dispatchEvent(escEvent);
+  assert.equal(dialog.hidden, true, "Dialog should hide on Escape");
+  assert.equal(document.activeElement, configBtn, "Focus must return to teacher trigger on Escape");
+
+  console.log("PASS: Accessibility and focus return contract assertions passed");
+
   // Clean up
   await EWLLearningSupports.destroy();
   dom.window.close();
