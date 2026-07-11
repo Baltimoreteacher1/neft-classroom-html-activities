@@ -65,6 +65,24 @@ const report = {
   skippedFile: [],
 };
 
+
+// Find the real closing tag: skip occurrences inside <script> blocks (vendored
+// libs / print-template string literals contain "</head>" text; injecting
+// there corrupts the page's inline script — see inject-game-access.js).
+function realCloseIndex(html, closeTag) {
+  const lower = html.toLowerCase();
+  const candidates = [];
+  let i = lower.indexOf(closeTag);
+  while (i !== -1) {
+    const before = lower.slice(0, i);
+    const opens = (before.match(/<script\b/g) || []).length;
+    const closes = (before.match(/<\/script>/g) || []).length;
+    if (opens === closes) candidates.push(i);
+    i = lower.indexOf(closeTag, i + 1);
+  }
+  return candidates.length ? candidates[candidates.length - 1] : -1;
+}
+
 function walk(dir, topLevel) {
   for (const name of readdirSync(dir)) {
     const full = join(dir, name);
@@ -140,7 +158,12 @@ function handleFile(file) {
   // the LAST </body> — the real document close. The first </body> can be a literal
   // inside a JS template string (print/report generators); injecting there would
   // put the </script> inside the page's main inline script and terminate it early.
-  let out = html.replace(/<\/head>/i, `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n</head>`);
+  const headAt = realCloseIndex(html, "</head>");
+  if (headAt === -1) {
+    report.skippedNoTags.push(rel);
+    return;
+  }
+  let out = html.slice(0, headAt) + `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n` + html.slice(headAt);
   const bodies = [...out.matchAll(/<\/body>/gi)];
   const at = bodies[bodies.length - 1].index;
   out = out.slice(0, at) + `${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n  ` + out.slice(at);
