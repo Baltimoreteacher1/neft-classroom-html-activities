@@ -268,7 +268,23 @@
   }
 
   document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape" && state.root && !state.root.querySelector("[role=dialog]").hidden) closeDialog();
+    if (!state.root) return;
+    var dialog = state.root.querySelector("[role=dialog]");
+    if (dialog.hidden) return;
+    if (event.key === "Escape") closeDialog();
+    if (event.key === "Tab") {
+      var focusable = Array.from(dialog.querySelectorAll("button:not([hidden]), a[href]:not([hidden])"));
+      if (!focusable.length) return;
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+      if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      } else if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      }
+    }
   });
   window.EWLLearningSupports = { __loaded: true, version: "1.0.0", init: init, destroy: destroy, parseSettings: parseSettings, serializeSettings: serializeSettings };
   if (document.body) init();
