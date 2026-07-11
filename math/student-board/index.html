@@ -169,6 +169,32 @@
         padding: 4px 12px;
         margin-bottom: 10px;
       }
+      /* student-visible "today's lesson" anchor in the hero (additive) */
+      .lesson-badge {
+        display: inline-block;
+        font-family: "Nunito", sans-serif;
+        font-weight: 800;
+        font-size: 12px;
+        letter-spacing: 0.02em;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.34);
+        border-radius: 999px;
+        padding: 4px 12px;
+        margin: 0 0 10px 8px;
+        text-decoration: none;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: top;
+      }
+      .lesson-badge:hover {
+        background: rgba(255, 255, 255, 0.28);
+      }
+      .lesson-badge[hidden] {
+        display: none;
+      }
       .live-pill {
         display: inline-flex;
         align-items: center;
@@ -1706,6 +1732,7 @@
       <!-- Hero -->
       <section class="hero">
         <span class="section-badge" id="sectionBadge">All Classes</span>
+        <a class="lesson-badge" id="lessonBadge" href="#" target="_blank" rel="noopener" hidden></a>
         <p class="eyebrow" data-edit="week.eyebrow">This Week</p>
         <h1 data-edit="week.label">Loading the board…</h1>
         <div class="theme" data-edit="week.theme">—</div>
@@ -2450,15 +2477,24 @@
       // My Work and the Canvas deep-links light up from one tap. Per section,
       // stored in state.currentLesson and published with the board.
       function renderLessonChip() {
-        const chip = $("#lessonChip");
-        if (!chip) return;
         const cur = state.currentLesson;
-        if (!editing || !cur || !cur.id) {
-          chip.hidden = true;
-          return;
+        const has = !!(cur && cur.id);
+        // Edit-mode helper chip in the Assignments card.
+        const chip = $("#lessonChip");
+        if (chip) {
+          chip.hidden = !(editing && has);
+          if (editing && has)
+            chip.textContent = "📘 Today's lesson: " + cur.id + " · " + (cur.title || "");
         }
-        chip.hidden = false;
-        chip.textContent = "📘 Today's lesson: " + cur.id + " · " + (cur.title || "");
+        // Student-visible anchor in the hero (taps through to the lesson).
+        const badge = $("#lessonBadge");
+        if (badge) {
+          badge.hidden = !has;
+          if (has) {
+            badge.textContent = "📘 Today: " + cur.id + " · " + (cur.title || "");
+            badge.href = cur.path || (cur.id ? "/lessons/" + cur.id + "/" : "#");
+          }
+        }
       }
       async function loadLessons() {
         if (lessonCatalog) return lessonCatalog;
