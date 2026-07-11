@@ -1,0 +1,291 @@
+/* EduWonderLab Learning Supports — every selector is feature-namespaced. */
+:root {
+  --ewl-supports-navy: #12355b;
+  --ewl-supports-blue: #1769aa;
+  --ewl-supports-teal: #087f77;
+  --ewl-supports-ink: #172b3a;
+  --ewl-supports-muted: #526574;
+  --ewl-supports-line: #c8d7e3;
+  --ewl-supports-surface: #ffffff;
+  --ewl-supports-soft: #eef7f7;
+  --ewl-supports-focus: #f4b400;
+}
+
+.ewl-supports-root,
+.ewl-supports-root * {
+  box-sizing: border-box;
+}
+
+.ewl-supports-root {
+  position: fixed;
+  z-index: 2147482000;
+  right: 16px;
+  bottom: 16px;
+  max-width: min(440px, calc(100vw - 24px));
+  color: var(--ewl-supports-ink);
+  font: 600 16px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.ewl-supports-root button,
+.ewl-supports-root a {
+  min-height: 44px;
+  font: inherit;
+}
+
+.ewl-supports-root button:focus-visible,
+.ewl-supports-root a:focus-visible {
+  outline: 3px solid var(--ewl-supports-focus);
+  outline-offset: 3px;
+}
+
+.ewl-supports-teacher,
+.ewl-supports-tools,
+.ewl-supports-content {
+  box-shadow: 0 12px 34px rgb(18 53 91 / 20%);
+}
+
+.ewl-supports-teacher {
+  float: right;
+  padding: 11px 18px;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  color: #ffffff;
+  background: var(--ewl-supports-navy);
+  cursor: pointer;
+}
+
+.ewl-supports-teacher:hover {
+  background: #0b2948;
+}
+
+.ewl-supports-tools {
+  clear: both;
+  display: flex;
+  max-width: min(620px, calc(100vw - 24px));
+  margin-top: 10px;
+  padding: 8px;
+  overflow-x: auto;
+  gap: 6px;
+  border: 1px solid var(--ewl-supports-line);
+  border-radius: 16px;
+  background: var(--ewl-supports-surface);
+}
+
+.ewl-supports-tools[hidden],
+.ewl-supports-content[hidden],
+.ewl-supports-dialog[hidden] {
+  display: none !important;
+}
+
+.ewl-supports-tools button {
+  flex: 0 0 auto;
+  padding: 8px 13px;
+  border: 1px solid var(--ewl-supports-line);
+  border-radius: 10px;
+  color: var(--ewl-supports-navy);
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.ewl-supports-tools button[aria-pressed="true"] {
+  border-color: var(--ewl-supports-teal);
+  color: #ffffff;
+  background: var(--ewl-supports-teal);
+}
+
+.ewl-supports-content {
+  clear: both;
+  max-height: min(54vh, 520px);
+  margin-top: 10px;
+  padding: 18px;
+  overflow: auto;
+  border: 1px solid var(--ewl-supports-line);
+  border-radius: 16px;
+  background: var(--ewl-supports-surface);
+}
+
+.ewl-supports-content h3,
+.ewl-supports-content h4,
+.ewl-supports-content p {
+  margin-top: 0;
+}
+
+.ewl-supports-content-list {
+  margin: 0;
+  padding-left: 24px;
+}
+
+.ewl-supports-content-list li + li {
+  margin-top: 10px;
+}
+
+.ewl-supports-word {
+  padding: 12px 0;
+  border-top: 1px solid var(--ewl-supports-line);
+}
+
+.ewl-supports-word:first-of-type {
+  border-top: 0;
+}
+
+.ewl-supports-visual,
+.ewl-supports-word-bank {
+  padding: 10px 12px;
+  border-left: 4px solid var(--ewl-supports-teal);
+  border-radius: 0 8px 8px 0;
+  color: var(--ewl-supports-muted);
+  background: var(--ewl-supports-soft);
+}
+
+.ewl-supports-dialog {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  width: min(680px, calc(100vw - 24px));
+  max-height: min(88vh, 760px);
+  padding: 22px;
+  overflow: auto;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--ewl-supports-navy);
+  border-radius: 20px;
+  color: var(--ewl-supports-ink);
+  background: var(--ewl-supports-surface);
+  box-shadow: 0 22px 70px rgb(5 24 42 / 35%);
+}
+
+.ewl-supports-dialog::backdrop {
+  background: rgb(10 30 46 / 55%);
+}
+
+.ewl-supports-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.ewl-supports-dialog-header h2 {
+  margin: 0;
+  color: var(--ewl-supports-navy);
+  font-size: clamp(22px, 4vw, 30px);
+  line-height: 1.2;
+}
+
+.ewl-supports-close {
+  width: 44px;
+  padding: 0;
+  border: 1px solid var(--ewl-supports-line);
+  border-radius: 50%;
+  color: var(--ewl-supports-navy);
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 26px !important;
+}
+
+.ewl-supports-profiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.ewl-supports-profiles button {
+  display: flex;
+  min-width: 0;
+  padding: 14px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  text-align: left;
+  border: 2px solid var(--ewl-supports-line);
+  border-radius: 14px;
+  color: var(--ewl-supports-ink);
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.ewl-supports-profiles button span {
+  color: var(--ewl-supports-muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.ewl-supports-profiles button[aria-pressed="true"] {
+  border-color: var(--ewl-supports-teal);
+  background: var(--ewl-supports-soft);
+}
+
+.ewl-supports-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.ewl-supports-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 14px;
+  border: 2px solid var(--ewl-supports-blue);
+  border-radius: 10px;
+  color: var(--ewl-supports-blue);
+  background: #ffffff;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.ewl-supports-action:hover {
+  color: #ffffff;
+  background: var(--ewl-supports-blue);
+}
+
+body.ewl-supports-focus-active main {
+  outline: 4px solid rgb(8 127 119 / 35%);
+  outline-offset: 6px;
+}
+
+@media (max-width: 560px) {
+  .ewl-supports-root {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .ewl-supports-profiles {
+    grid-template-columns: 1fr;
+  }
+
+  .ewl-supports-dialog {
+    padding: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ewl-supports-root,
+  .ewl-supports-root * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .ewl-supports-root button,
+  .ewl-supports-root a,
+  .ewl-supports-dialog,
+  .ewl-supports-content {
+    border: 2px solid ButtonText;
+  }
+}
+
+@media print {
+  .ewl-supports-root {
+    display: none !important;
+  }
+
+  body.ewl-supports-print-enabled .ewl-supports-content {
+    position: static;
+    display: block !important;
+    max-height: none;
+    box-shadow: none;
+  }
+}

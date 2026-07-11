@@ -7,8 +7,15 @@ import { JSDOM } from "jsdom";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SCRIPT = join(ROOT, "assets", "learning-supports", "learning-supports.js");
+const STYLES = join(ROOT, "assets", "learning-supports", "learning-supports.css");
 assert.ok(existsSync(SCRIPT), "learning-supports.js must exist");
+assert.ok(existsSync(STYLES), "learning-supports.css must exist");
 const source = readFileSync(SCRIPT, "utf8");
+const styles = readFileSync(STYLES, "utf8");
+assert.match(styles, /min-height:\s*44px/, "support controls need 44px minimum targets");
+assert.match(styles, /prefers-reduced-motion/, "support styles must honor reduced motion");
+assert.match(styles, /forced-colors/, "support styles must support forced colors");
+assert.match(styles, /@media\s+print/, "support styles need print behavior");
 
 const lesson = {
   lessonId: "1-1",
