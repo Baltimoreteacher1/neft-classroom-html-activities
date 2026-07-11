@@ -38,7 +38,7 @@ Implement assertions that canonical lesson directories match `/^\d+-\d+$/`, tota
 
 - [ ] **Step 2: Run the validator to verify it fails**
 
-Run: `node tools/validate-learning-supports.mjs`  
+Run: `node tools/validate-learning-supports.mjs`
 Expected: FAIL because `assets/learning-supports/manifest.json` does not exist.
 
 - [ ] **Step 3: Implement deterministic manifest generation**
@@ -60,7 +60,7 @@ const PROFILE_KEYS = [
 
 - [ ] **Step 4: Generate and validate the manifest**
 
-Run: `node scripts/generate-learning-supports-manifest.mjs && node tools/validate-learning-supports.mjs`  
+Run: `node scripts/generate-learning-supports-manifest.mjs && node tools/validate-learning-supports.mjs`
 Expected: PASS with `64/64 canonical lessons covered` and zero privacy, schema, route, or answer-leakage errors.
 
 - [ ] **Step 5: Commit manifest foundation**
@@ -92,7 +92,7 @@ Also test invalid manifest data, unknown fragment keys, unavailable localStorage
 
 - [ ] **Step 2: Run the focused test to verify it fails**
 
-Run: `node tools/learning-supports.test.mjs`  
+Run: `node tools/learning-supports.test.mjs`
 Expected: FAIL because the controller does not exist.
 
 - [ ] **Step 3: Implement parsing and state helpers**
@@ -113,7 +113,7 @@ Use `createElement`, `textContent`, `setAttribute`, and event listeners; do not 
 
 - [ ] **Step 6: Run the focused behavior test**
 
-Run: `node tools/learning-supports.test.mjs`  
+Run: `node tools/learning-supports.test.mjs`
 Expected: PASS for all state, privacy, safe rendering, and preservation assertions.
 
 - [ ] **Step 7: Commit controller behavior**
@@ -135,7 +135,7 @@ Assert semantic dialog labeling, button names, `aria-pressed` state, live copy s
 
 - [ ] **Step 2: Run the focused test to verify it fails**
 
-Run: `node tools/learning-supports.test.mjs`  
+Run: `node tools/learning-supports.test.mjs`
 Expected: FAIL on the new accessibility contract assertions.
 
 - [ ] **Step 3: Implement namespaced styles**
@@ -144,7 +144,7 @@ Use only `.ewl-supports-*`, `[data-ewl-supports-*]`, and `body.ewl-supports-focu
 
 - [ ] **Step 4: Re-run accessibility contract tests**
 
-Run: `node tools/learning-supports.test.mjs`  
+Run: `node tools/learning-supports.test.mjs`
 Expected: PASS.
 
 - [ ] **Step 5: Commit the visual layer**
@@ -168,7 +168,7 @@ Require exactly one `data-ewl-supports-lesson` ID, one stylesheet, and one defer
 
 - [ ] **Step 2: Run the validator to verify it fails**
 
-Run: `node tools/validate-learning-supports.mjs`  
+Run: `node tools/validate-learning-supports.mjs`
 Expected: FAIL with 64 missing integrations.
 
 - [ ] **Step 3: Implement the targeted injector**
@@ -188,7 +188,7 @@ Update `buildShell(lessonId, title)` so future generation includes the same stab
 
 - [ ] **Step 5: Inject and validate all canonical launchers**
 
-Run: `node tools/inject-learning-supports.mjs && node tools/inject-learning-supports.mjs --check && node tools/validate-learning-supports.mjs`  
+Run: `node tools/inject-learning-supports.mjs && node tools/inject-learning-supports.mjs --check && node tools/validate-learning-supports.mjs`
 Expected: PASS with 64 integrated, zero duplicates, and no host-markup mutation outside the support markers and lesson ID.
 
 - [ ] **Step 6: Commit integration**
@@ -210,7 +210,7 @@ Require one accessible Learning Supports explainer that links to a canonical pre
 
 - [ ] **Step 2: Run the validator to verify it fails**
 
-Run: `node tools/validate-learning-supports.mjs`  
+Run: `node tools/validate-learning-supports.mjs`
 Expected: FAIL on the missing curriculum entry.
 
 - [ ] **Step 3: Add the additive hub entry**
@@ -219,7 +219,7 @@ Insert a card consistent with the existing curriculum design system. Copy must d
 
 - [ ] **Step 4: Validate the hub and supports**
 
-Run: `node tools/validate-learning-supports.mjs && npm run validate:hub && npm run validate:curriculum-top1`  
+Run: `node tools/validate-learning-supports.mjs && npm run validate:hub && npm run validate:curriculum-top1`
 Expected: PASS.
 
 - [ ] **Step 5: Commit the hub entry**
@@ -232,7 +232,7 @@ git commit -m "feat: add curriculum learning supports entry"
 ### Task 6: Browser regression and accessibility QA
 
 **Files:**
-- Create: `tests/learning-supports.spec.js`
+- Create: `tests/learning-supports.spec.ts`
 - Modify: `playwright.config.js` only if an existing project cannot serve the Vite preview.
 
 - [ ] **Step 1: Write failing Playwright coverage**
@@ -241,7 +241,7 @@ Test lesson `1-1`, one lesson from each unit, and each distinct launcher templat
 
 - [ ] **Step 2: Run focused browser tests to verify they fail**
 
-Run: `npx playwright test tests/learning-supports.spec.js`  
+Run: `npx playwright test tests/learning-supports.spec.ts`
 Expected: FAIL until selectors and support behavior meet the browser contract.
 
 - [ ] **Step 3: Make targeted implementation corrections**
@@ -250,13 +250,13 @@ Correct only support-owned JS/CSS, manifest generation, or injection logic ident
 
 - [ ] **Step 4: Run focused browser and accessibility tests**
 
-Run: `npx playwright test tests/learning-supports.spec.js`  
+Run: `npx playwright test tests/learning-supports.spec.ts`
 Expected: PASS at desktop, Chromebook/tablet, and mobile viewports with zero serious or critical axe violations in support UI.
 
 - [ ] **Step 5: Commit browser QA**
 
 ```bash
-git add tests/learning-supports.spec.js assets/learning-supports tools/validate-learning-supports.mjs
+git add tests/learning-supports.spec.ts assets/learning-supports tools/validate-learning-supports.mjs
 git commit -m "test: cover learning supports regressions"
 ```
 
@@ -298,7 +298,7 @@ Confirm no unrelated files, dependency changes, answer keys, student identifiers
 - [ ] **Step 4: Commit final targeted fixes**
 
 ```bash
-git add assets/learning-supports scripts/generate-learning-supports-manifest.mjs scripts/generate-lesson-shells.mjs tools/inject-learning-supports.mjs tools/learning-supports.test.mjs tools/validate-learning-supports.mjs tests/learning-supports.spec.js curriculum/index.html
+git add assets/learning-supports scripts/generate-learning-supports-manifest.mjs scripts/generate-lesson-shells.mjs tools/inject-learning-supports.mjs tools/learning-supports.test.mjs tools/validate-learning-supports.mjs tests/learning-supports.spec.ts curriculum/index.html
 git commit -m "fix: complete learning supports release gate"
 ```
 
@@ -311,12 +311,12 @@ Skip this commit if verification requires no corrections.
 
 - [ ] **Step 1: Confirm branch and commit scope**
 
-Run: `git status --short --branch && git log --oneline origin/main..HEAD && git diff --stat origin/main...HEAD`  
+Run: `git status --short --branch && git log --oneline origin/main..HEAD && git diff --stat origin/main...HEAD`
 Expected: clean feature branch containing only the design, plan, supports implementation, 64 mechanical integrations, tests, and curriculum entry.
 
 - [ ] **Step 2: Deploy through the guarded ship workflow**
 
-Run: `ALLOW_DEPLOY=1 npm run ship -- $(git rev-list --reverse origin/main..HEAD)`  
+Run: `ALLOW_DEPLOY=1 npm run ship -- $(git rev-list --reverse origin/main..HEAD)`
 Expected: the script cherry-picks reviewed commits onto a clean `origin/main` worktree, runs its pre-push QA gate, pushes main, and reports the production build stamp serving the new commit.
 
 - [ ] **Step 3: Verify production**

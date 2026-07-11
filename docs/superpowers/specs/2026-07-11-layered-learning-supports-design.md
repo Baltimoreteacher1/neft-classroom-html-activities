@@ -1,8 +1,8 @@
 # Layered Learning Supports — Publisher-Grade Design
 
-**Status:** Approved for implementation planning  
-**Date:** 2026-07-11  
-**Product:** EduWonderLab Grade 6 Reveal Math curriculum  
+**Status:** Approved for implementation planning
+**Date:** 2026-07-11
+**Product:** EduWonderLab Grade 6 Reveal Math curriculum
 **Initial scope:** Curriculum hub and all 64 Reveal lesson launchers
 
 ## 1. Purpose
@@ -265,4 +265,3 @@ The release is complete only when:
 ## 13. Future phases
 
 After the Grade 6 Reveal launch proves stable, the same validated support contract may expand to games, projects, WebQuests, HyperDocs, reading-and-math activities, and other curricula. Expansion requires template-specific regression baselines and authored manifests; the system must not be enabled indiscriminately across unreviewed pages.
-
