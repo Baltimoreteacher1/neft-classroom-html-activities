@@ -58,6 +58,25 @@ const report = {
   skippedNoTags: [],
 };
 
+
+// Find the real closing tag: skip occurrences that sit inside a <script> block
+// (vendored libs / print-template string literals contain "</head>"/"</body>"
+// text; injecting a <script> there terminates the page's inline script early —
+// this corrupted neft-data-studio and reveal-evidence-studio).
+function realCloseIndex(html, closeTag) {
+  const lower = html.toLowerCase();
+  const candidates = [];
+  let i = lower.indexOf(closeTag);
+  while (i !== -1) {
+    const before = lower.slice(0, i);
+    const opens = (before.match(/<script\b/g) || []).length;
+    const closes = (before.match(/<\/script>/g) || []).length;
+    if (opens === closes) candidates.push(i);
+    i = lower.indexOf(closeTag, i + 1);
+  }
+  return candidates.length ? candidates[candidates.length - 1] : -1;
+}
+
 function walk(dir, out) {
   for (const name of readdirSync(dir)) {
     if (SKIP_DIRS.has(name) || name.startsWith(".")) continue;
@@ -100,7 +119,12 @@ function processFile(file) {
     return;
   }
 
-  html = html.replace(/<\/head>/i, `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n</head>`);
+  const headAt = realCloseIndex(html, "</head>");
+  if (headAt === -1) {
+    report.skippedNoTags.push(file);
+    return;
+  }
+  html = html.slice(0, headAt) + `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n` + html.slice(headAt);
   if (!DRY) writeFileSync(file, html);
   report.injected++;
 }
