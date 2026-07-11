@@ -51,6 +51,7 @@
   let activeLanguage = "en";
   let activeSpeechRate = 1.0;
   let rulerActive = false;
+  let comfortActive = false;
   let rootEl = null;
   let activeSpeechUtterance = null;
 
@@ -74,6 +75,7 @@
           profiles: parsed,
           language: "en",
           speechRate: 1.0,
+          comfortMode: false,
         };
       }
       return null;
@@ -174,6 +176,7 @@
         profiles: activeProfiles,
         language: activeLanguage,
         speechRate: activeSpeechRate,
+        comfortMode: comfortActive,
       });
     } else {
       const stored = getStoredPreferences();
@@ -190,6 +193,12 @@
         }
         if (typeof stored.speechRate === "number") {
           activeSpeechRate = stored.speechRate;
+        }
+        if (typeof stored.comfortMode === "boolean") {
+          comfortActive = stored.comfortMode;
+          if (comfortActive) {
+            document.body.classList.add("ewl-supports-comfort-active");
+          }
         }
       }
     }
@@ -343,6 +352,7 @@
             profiles: activeProfiles,
             language: activeLanguage,
             speechRate: activeSpeechRate,
+            comfortMode: comfortActive,
           });
           updatePanelContent();
         });
@@ -362,6 +372,7 @@
           profiles: activeProfiles,
           language: activeLanguage,
           speechRate: activeSpeechRate,
+          comfortMode: comfortActive,
         });
         updateUIStates();
         updatePanelContent();
@@ -455,6 +466,22 @@
     rulerBtn.addEventListener("click", toggleRulerMode);
     toolsInner.appendChild(rulerBtn);
 
+    // Dyslexia / Comfort Spacing Trigger
+    const comfortBtn = document.createElement("button");
+    comfortBtn.className = "ewl-supports-tool-btn";
+    comfortBtn.setAttribute("data-tool", "comfort");
+    comfortBtn.textContent = "👓 Comfort";
+    comfortBtn.addEventListener("click", toggleComfortMode);
+    toolsInner.appendChild(comfortBtn);
+
+    // Student Notepad tab Trigger
+    const notepadBtn = document.createElement("button");
+    notepadBtn.className = "ewl-supports-tool-btn";
+    notepadBtn.setAttribute("data-tool", "notepad");
+    notepadBtn.textContent = "📝 Notepad";
+    notepadBtn.addEventListener("click", () => togglePanel("notepad"));
+    toolsInner.appendChild(notepadBtn);
+
     // Formative Confidence Check-In Trigger
     const checkinBtn = document.createElement("button");
     checkinBtn.className = "ewl-supports-tool-btn";
@@ -489,6 +516,7 @@
         profiles: activeProfiles,
         language: activeLanguage,
         speechRate: activeSpeechRate,
+        comfortMode: comfortActive,
       });
 
       // If playing, restart with new rate
@@ -590,6 +618,13 @@
       langSelect.value = activeLanguage;
     }
 
+    const comfortBtn = toolsDock.querySelector('[data-tool="comfort"]');
+    if (comfortBtn) {
+      comfortBtn.setAttribute("aria-pressed", String(comfortActive));
+      if (comfortActive) comfortBtn.classList.add("is-active");
+      else comfortBtn.classList.remove("is-active");
+    }
+
     const rateBtn = toolsDock.querySelector('[data-tool="rate"]');
     if (rateBtn) {
       rateBtn.textContent = `⏱️ ${activeSpeechRate}x`;
@@ -603,6 +638,7 @@
       const explainBtn = toolsDock.querySelector('[data-tool="explain"]');
       const focusBtn = toolsDock.querySelector('[data-tool="focus"]');
       const rulerBtn = toolsDock.querySelector('[data-tool="ruler"]');
+      const notepadBtn = toolsDock.querySelector('[data-tool="notepad"]');
       const checkinBtn = toolsDock.querySelector('[data-tool="checkin"]');
       const listenBtn = toolsDock.querySelector('[data-tool="listen"]');
 
@@ -620,7 +656,10 @@
         focusBtn.style.display = activeProfiles["focus-organize"] ? "inline-flex" : "none";
       if (rulerBtn)
         rulerBtn.style.display = activeProfiles["focus-organize"] ? "inline-flex" : "none";
-      if (checkinBtn) checkinBtn.style.display = "inline-flex"; // always display check-in for self-regulation
+      if (comfortBtn)
+        comfortBtn.style.display = activeProfiles["focus-organize"] ? "inline-flex" : "none";
+      if (notepadBtn) notepadBtn.style.display = "inline-flex"; // universally helpful
+      if (checkinBtn) checkinBtn.style.display = "inline-flex"; // universally helpful
       if (listenBtn)
         listenBtn.style.display =
           activeProfiles["read-understand"] || activeProfiles["language-support"]
@@ -635,6 +674,8 @@
       toolsDock.hidden = true;
       closePanel();
       document.body.classList.remove("ewl-supports-focus-active");
+      document.body.classList.remove("ewl-supports-comfort-active");
+
       const focusBtn = toolsDock.querySelector('[data-tool="focus"]');
       if (focusBtn) focusBtn.classList.remove("is-active");
 
@@ -704,7 +745,20 @@
             }
           }
 
-          dt.textContent = displayTerm;
+          const termSpan = document.createElement("span");
+          termSpan.textContent = displayTerm;
+          dt.appendChild(termSpan);
+
+          // Speak button next to each term (Modular TTS)
+          const speakBtn = document.createElement("button");
+          speakBtn.type = "button";
+          speakBtn.className = "ewl-supports-vocab-speak-btn";
+          speakBtn.textContent = "🗣️";
+          speakBtn.setAttribute("aria-label", `Listen to pronunciation of ${displayTerm}`);
+          speakBtn.addEventListener("click", () => {
+            speakSingleTerm(displayTerm, displayDef);
+          });
+          dt.appendChild(speakBtn);
 
           const dd = document.createElement("dd");
           dd.className = "ewl-supports-vocab-definition";
@@ -783,6 +837,38 @@
         });
         bodyEl.appendChild(bankContainer);
       }
+    } else if (tab === "notepad") {
+      titleEl.textContent = "My Notes & Scratchpad";
+
+      const desc = document.createElement("p");
+      desc.textContent =
+        "Write notes, numbers, or intermediate math calculations here. Your notes save automatically on your device.";
+      bodyEl.appendChild(desc);
+
+      const textarea = document.createElement("textarea");
+      textarea.className = "ewl-supports-notepad-textarea";
+      textarea.placeholder = "Type your thoughts, notes, or equations here...";
+      textarea.setAttribute("aria-label", "Student Scratchpad Notepad");
+
+      const noteKey = `ewl-supports:v1:notes:${activeLessonId}`;
+      try {
+        const savedNotes = localStorage.getItem(noteKey);
+        if (savedNotes) textarea.value = savedNotes;
+      } catch (_e) {}
+
+      textarea.addEventListener("input", (e) => {
+        try {
+          localStorage.setItem(noteKey, e.target.value);
+        } catch (_err) {}
+      });
+
+      bodyEl.appendChild(textarea);
+
+      const hint = document.createElement("p");
+      hint.className = "ewl-supports-notepad-hint";
+      hint.textContent =
+        "🔒 Safe & Private: Notes stay on this device and are never shared or sent to a server.";
+      bodyEl.appendChild(hint);
     } else if (tab === "checkin") {
       titleEl.textContent = "My Learning Check-in";
 
@@ -913,7 +999,13 @@
     if (toolsDock) {
       toolsDock.querySelectorAll(".ewl-supports-tool-btn").forEach((btn) => {
         const tool = btn.getAttribute("data-tool");
-        if (tool !== "focus" && tool !== "listen" && tool !== "rate" && tool !== "ruler") {
+        if (
+          tool !== "focus" &&
+          tool !== "listen" &&
+          tool !== "rate" &&
+          tool !== "ruler" &&
+          tool !== "comfort"
+        ) {
           btn.setAttribute("aria-pressed", "false");
         }
       });
@@ -969,6 +1061,27 @@
         ruler.style.top = `${e.touches[0].clientY}px`;
       }
     }
+  }
+
+  // Dyslexia / Comfort Typography Active Styles
+  function toggleComfortMode(e) {
+    comfortActive = !comfortActive;
+    const btn = e.target;
+    btn.setAttribute("aria-pressed", String(comfortActive));
+    if (comfortActive) {
+      document.body.classList.add("ewl-supports-comfort-active");
+      btn.classList.add("is-active");
+    } else {
+      document.body.classList.remove("ewl-supports-comfort-active");
+      btn.classList.remove("is-active");
+    }
+
+    saveStoredPreferences({
+      profiles: activeProfiles,
+      language: activeLanguage,
+      speechRate: activeSpeechRate,
+      comfortMode: comfortActive,
+    });
   }
 
   // Listen (Text to speech) mode
@@ -1080,6 +1193,30 @@
     window.speechSynthesis.speak(activeSpeechUtterance);
   }
 
+  function speakSingleTerm(termText, definitionText) {
+    if (!window.speechSynthesis) return;
+    stopSpeaking();
+
+    const cleanTerm = termText.replace(/\([^)]*\)/g, "").trim();
+    const text = `${cleanTerm}. Definition. ${definitionText}`;
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = activeSpeechRate;
+
+    const isLangSupport = activeProfiles["language-support"];
+    if (isLangSupport) {
+      if (activeLanguage === "es") utterance.lang = "es-ES";
+      else if (activeLanguage === "vi") utterance.lang = "vi-VN";
+      else if (activeLanguage === "ar") utterance.lang = "ar-SA";
+      else utterance.lang = "en-US";
+    } else {
+      utterance.lang = "en-US";
+    }
+
+    activeSpeechUtterance = utterance;
+    window.speechSynthesis.speak(utterance);
+  }
+
   function stopSpeaking() {
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
@@ -1127,14 +1264,17 @@
     });
     activeLanguage = "en";
     activeSpeechRate = 1.0;
+    comfortActive = false;
 
     saveStoredPreferences({
       profiles: activeProfiles,
       language: activeLanguage,
       speechRate: activeSpeechRate,
+      comfortMode: comfortActive,
     });
 
     document.body.classList.remove("ewl-supports-focus-active");
+    document.body.classList.remove("ewl-supports-comfort-active");
 
     // Reset ruler
     rulerActive = false;
@@ -1161,6 +1301,7 @@
     if (!initialized) return;
 
     document.body.classList.remove("ewl-supports-focus-active");
+    document.body.classList.remove("ewl-supports-comfort-active");
 
     // Reset ruler
     rulerActive = false;
@@ -1184,7 +1325,7 @@
   }
 
   const EWLLearningSupports = {
-    version: "1.2.0",
+    version: "1.3.0",
     init,
     destroy,
     parseSettings,

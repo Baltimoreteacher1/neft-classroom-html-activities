@@ -197,4 +197,45 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
     expect(saved).not.toBeNull();
     expect(JSON.parse(saved!).choice).toBe("got-it");
   });
+
+  test("visual comfort spacing toggle applies body class", async ({ page }) => {
+    await page.goto(`${TEST_LESSON_PATH}#supports=focus-organize`, { waitUntil: "networkidle" });
+
+    const comfortBtn = page.locator('[data-tool="comfort"]');
+    await expect(comfortBtn).toBeVisible();
+
+    // Body should not have class initially
+    await expect(page.locator("body")).not.toHaveClass(/ewl-supports-comfort-active/);
+
+    // Toggle comfort spacing mode
+    await comfortBtn.click();
+    await expect(page.locator("body")).toHaveClass(/ewl-supports-comfort-active/);
+
+    // Toggle off
+    await comfortBtn.click();
+    await expect(page.locator("body")).not.toHaveClass(/ewl-supports-comfort-active/);
+  });
+
+  test("student notepad autosaves notes locally", async ({ page }) => {
+    await page.goto(`${TEST_LESSON_PATH}#supports=read-understand`, { waitUntil: "networkidle" });
+
+    const notepadBtn = page.locator('[data-tool="notepad"]');
+    await expect(notepadBtn).toBeVisible();
+    await notepadBtn.click();
+
+    // Verify Notepad opens
+    const panel = page.locator("[data-ewl-supports-panel]");
+    await expect(panel).toBeVisible();
+    await expect(panel.locator(".ewl-supports-panel-title")).toContainText("My Notes & Scratchpad");
+
+    // Write notes in textarea
+    const textarea = page.locator(".ewl-supports-notepad-textarea");
+    await expect(textarea).toBeVisible();
+    await textarea.fill("Calculations: 36 = 2^2 * 3^2");
+
+    // Retrieve storage value to verify autosave
+    const noteKey = "ewl-supports:v1:notes:1-1";
+    const notes = await page.evaluate((key) => localStorage.getItem(key), noteKey);
+    expect(notes).toBe("Calculations: 36 = 2^2 * 3^2");
+  });
 });
