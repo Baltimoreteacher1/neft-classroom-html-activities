@@ -917,6 +917,30 @@
         padding: 6px 13px;
         box-shadow: var(--shadow);
       }
+      /* ---- Add-to-Canvas helper modal ---- */
+      .embed-steps {
+        margin: 4px 0 12px 20px;
+        padding: 0;
+        display: grid;
+        gap: 6px;
+        font-size: 14px;
+        color: var(--ink);
+      }
+      .embed-steps li {
+        line-height: 1.4;
+      }
+      .modal-code {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-family: "Consolas", monospace;
+        font-size: 12.5px;
+        color: var(--navy);
+        background: #f7fafe;
+        resize: vertical;
+        box-sizing: border-box;
+      }
       /* ---- overlays (picker + timer) ---- */
       .overlay {
         position: fixed;
@@ -1710,9 +1734,9 @@
               <button
                 class="mini edit-only"
                 id="embedCodeBtn"
-                title="Copy an iframe snippet — paste into a Canvas Page via its HTML editor"
+                title="Put this live board inside a Canvas page — copy, paste, done"
               >
-                📋 Canvas embed code
+                📚 Add to Canvas
               </button>
             </div>
           </section>
@@ -1886,6 +1910,42 @@
           <button class="btn ghost" id="aleksCancel">Cancel</button>
           <button class="btn" id="aleksPreviewBtn">Preview</button>
           <button class="btn primary" id="aleksApply" disabled>Import minutes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add to Canvas helper (teacher only) — self-serve embed, no IT needed -->
+    <div class="modal-backdrop" id="canvasEmbedModal" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="canvasEmbedTitle">
+        <h3 id="canvasEmbedTitle">📚 Add this board to Canvas</h3>
+        <p class="modal-help">
+          This drops the <b>live</b> board straight into a Canvas page — it keeps updating on its
+          own, and each student's 🎒 My Work travels with them. No IT, no plugins. Two steps:
+        </p>
+        <ol class="embed-steps">
+          <li><b>Copy</b> the code below.</li>
+          <li>
+            In Canvas: <b>Pages → + Page</b> (or edit one) → click the <b>&lt;/&gt;</b> HTML editor
+            → <b>paste</b> → <b>Save</b>. That's it.
+          </li>
+        </ol>
+        <textarea
+          class="modal-code"
+          id="canvasEmbedCode"
+          readonly
+          rows="4"
+          aria-label="Canvas embed code"
+        ></textarea>
+        <label class="modal-opt">
+          Embedding for:
+          <select id="canvasEmbedSection" title="Which section's board to embed"></select>
+        </label>
+        <div class="modal-actions">
+          <button class="btn ghost" id="canvasEmbedClose">Close</button>
+          <a class="btn" id="canvasEmbedPreview" href="#" target="_blank" rel="noopener"
+            >👁 Preview student view</a
+          >
+          <button class="btn primary" id="canvasEmbedCopy">📋 Copy code</button>
         </div>
       </div>
     </div>
@@ -3561,18 +3621,45 @@
       };
       // Copy a ready-to-paste iframe snippet for a Canvas Page. The site's CSP
       // (frame-ancestors 'self' https:) already lets Canvas frame this board.
-      $("#embedCodeBtn").onclick = () => {
-        const url =
-          location.origin +
-          location.pathname +
-          "?board=" +
-          encodeURIComponent(boardId) +
-          "&embed=1";
-        const code = `<p><iframe src="${url}" width="100%" height="1400" style="border:0;border-radius:12px;" title="The Class Board — ${sectionLabel(boardId)}" allowfullscreen="allowfullscreen"></iframe></p>`;
-        copyText(code, $("#embedCodeBtn"));
-        setSaveState(
-          "Embed code copied — in Canvas, edit a Page, open the HTML editor (</>), paste, save",
+      // Add-to-Canvas helper: a self-serve modal (copy → paste into a Canvas
+      // page → done). Live board, no IT, no plugins. The section picker lets a
+      // teacher embed any one section's board.
+      function embedUrlFor(id) {
+        return (
+          location.origin + location.pathname + "?board=" + encodeURIComponent(id) + "&embed=1"
         );
+      }
+      function embedCodeFor(id) {
+        const url = embedUrlFor(id);
+        return `<p><iframe src="${url}" width="100%" height="1400" style="border:0;border-radius:12px;" title="The Class Board — ${sectionLabel(id)}" allowfullscreen="allowfullscreen"></iframe></p>`;
+      }
+      function refreshCanvasEmbed() {
+        const sel = $("#canvasEmbedSection");
+        const id = sel && sel.value ? sel.value : boardId;
+        const ta = $("#canvasEmbedCode");
+        if (ta) ta.value = embedCodeFor(id);
+        const prev = $("#canvasEmbedPreview");
+        if (prev) prev.href = embedUrlFor(id);
+      }
+      function openCanvasEmbed() {
+        const sel = $("#canvasEmbedSection");
+        if (sel && !sel.options.length) {
+          sel.innerHTML = Object.keys(SECTIONS)
+            .map((id) => `<option value="${id}">${esc(SECTIONS[id])}</option>`)
+            .join("");
+        }
+        if (sel) sel.value = SECTIONS[boardId] ? boardId : "main";
+        refreshCanvasEmbed();
+        $("#canvasEmbedModal").hidden = false;
+      }
+      $("#embedCodeBtn").onclick = openCanvasEmbed;
+      const canvasEmbedSectionSel = $("#canvasEmbedSection");
+      if (canvasEmbedSectionSel) canvasEmbedSectionSel.onchange = refreshCanvasEmbed;
+      $("#canvasEmbedClose").onclick = () => ($("#canvasEmbedModal").hidden = true);
+      $("#canvasEmbedCopy").onclick = () => {
+        const ta = $("#canvasEmbedCode");
+        if (ta) ta.select();
+        copyText(ta ? ta.value : "", $("#canvasEmbedCopy"));
       };
       $("#myCodesBtn").onclick = openMyCodes;
       $("#myWorkBtn").onclick = openMyCodes;
