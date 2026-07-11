@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Domain-based speech-language screening and referral decision tool for PreK through Grade 5. Offline, private — all data stays on this device.">
 <meta name="color-scheme" content="light">
+<meta name="theme-color" content="#142c44">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23127d79'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='36' font-weight='bold' fill='%23eafffb' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="manifest" href="manifest.webmanifest">
 <title>Speech-Language Screening — PreK–Grade 5</title>
 <style>
 :root {
@@ -1535,6 +1538,202 @@ kbd {
     display: none !important;
   }
 }
+/* ---------- Audio recorder (speech samples) ---------- */
+.audio-rec {
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-m);
+  padding: 12px 14px;
+  margin-top: 14px;
+  background: #faf8f2;
+}
+.audio-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin-bottom: 9px;
+}
+.audio-head .audio-ic {
+  font-size: 14px;
+}
+.audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.audio-controls .audio-record {
+  color: var(--red);
+  border-color: var(--red-line);
+}
+.audio-controls .audio-record:hover {
+  background: var(--red-bg);
+  border-color: var(--red);
+  color: var(--red);
+}
+.audio-status {
+  font-size: 12.5px;
+  color: var(--mute);
+  font-variant-numeric: tabular-nums;
+  margin-left: 2px;
+}
+.audio-player {
+  width: 100%;
+  margin-top: 10px;
+  height: 34px;
+}
+@media print {
+  .audio-rec {
+    display: none !important;
+  }
+}
+/* ---------- v2.2: analytics, caseload, timeline, sign-off ---------- */
+.estim {
+  width: 100%;
+  margin-top: 6px;
+  border: 1px solid var(--amber-line);
+  background: var(--amber-bg);
+  color: var(--amber);
+  border-radius: 7px;
+  padding: 5px 8px;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 600;
+}
+.estim:focus {
+  outline: none;
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px rgba(168, 112, 10, 0.12);
+}
+.caseload-summary {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  background: #f6f4ee;
+  border: 1px solid var(--line);
+  border-radius: var(--r-m);
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.caseload-summary .res-CON {
+  color: var(--red);
+}
+.caseload-summary .res-WNL {
+  color: var(--green);
+}
+.scr-tools select.plain,
+.scr-tools .flt-check {
+  flex-shrink: 0;
+}
+.flt-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.flt-check input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--teal);
+}
+.tier-badge {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 1.5px 7px;
+  border-radius: 11px;
+  vertical-align: middle;
+  text-transform: uppercase;
+}
+.tier-badge.t1 {
+  background: var(--green-bg);
+  color: var(--green);
+}
+.tier-badge.t2 {
+  background: #eaf3ee;
+  color: #3f8f6d;
+}
+.tier-badge.t3 {
+  background: var(--amber-bg);
+  color: var(--amber);
+}
+.tier-badge.t4 {
+  background: var(--red-bg);
+  color: var(--red);
+}
+.scr-row .meta.due {
+  font-weight: 600;
+  color: var(--teal-2);
+}
+.scr-row .meta.due.overdue {
+  color: var(--red);
+}
+.tl-wrap {
+  overflow-x: auto;
+}
+.tl-table td,
+.tl-table th {
+  white-space: nowrap;
+}
+.tl-chip {
+  display: inline-block;
+  min-width: 22px;
+  text-align: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 5px;
+  margin: 1px;
+  border-radius: 5px;
+  background: #eef2f5;
+  color: var(--mute);
+}
+.tl-chip.WNL {
+  background: var(--green-bg);
+  color: var(--green);
+}
+.tl-chip.MON {
+  background: var(--amber-bg);
+  color: var(--amber);
+}
+.tl-chip.CON {
+  background: var(--red-bg);
+  color: var(--red);
+}
+.signed-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  margin-bottom: 16px;
+  background: var(--green-bg);
+  border: 1px solid var(--green-line);
+  border-left: 4px solid var(--green);
+  border-radius: var(--r-m);
+  font-size: 14px;
+  color: var(--ink);
+}
+.signed-banner .sb-ic {
+  font-size: 16px;
+}
+.rdoc.referral h1 {
+  border-color: var(--red);
+}
+@media print {
+  .signed-banner .btn {
+    display: none !important;
+  }
+}
 </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
@@ -1630,15 +1829,72 @@ const PREFIX = "slscreen_",
   INDEX = PREFIX + "index",
   LAST = PREFIX + "last",
   SETTINGS = PREFIX + "settings";
-const APP_VERSION = "2.0";
+const APP_VERSION = "2.3";
+/* ---- i18n scaffold: t(key) resolves against the active language pack, falling
+   back to English then the key. Only English ships today; a Spanish (or other)
+   pack drops in as I18N.es = {...} and is selectable in Settings. Applied to the
+   app chrome; full item/report localization is the follow-on translation pass. */
+const I18N = {
+  en: {
+    appTitle: "Speech-Language Screening",
+    appSub: "PreK – Grade 5 · Screening & Referral",
+    navScreenings: "☰ Caseload",
+    navNew: "+ New screening",
+    grpSpeech: "Speech screens",
+    grpLanguage: "Language",
+    grpOutput: "Output",
+    navIntake: "Student &amp; intake",
+    navReport: "Report &amp; export",
+    navGuide: "Scoring guide &amp; references",
+  },
+};
+const LANG_NAMES = { en: "English" };
+function appLang() {
+  const l = getSettings().lang || "en";
+  return I18N[l] ? l : "en";
+}
+function t(key, fallback) {
+  const pack = I18N[appLang()] || I18N.en;
+  if (pack[key] != null) return pack[key];
+  if (I18N.en[key] != null) return I18N.en[key];
+  return fallback != null ? fallback : key;
+}
+/* Default scoring cut points (missed skills/indicators). Editable in Settings so
+   the tool can be aligned to district policy. Defaults reproduce the published
+   rules exactly: language 0-1 WNL / 2 Monitor / 3+ Concern; fluency & voice
+   0 WNL / 1 Monitor / 2+ Concern. */
+const SCORING_DEFAULTS = {
+  langMonitor: 2, // missed language skills (>=) → Monitor
+  langConcern: 3, // missed language skills (>=) → Concern
+  hfvConcern: 2, // missed fluency/voice indicators (>=) → Concern (Monitor at 1)
+};
 function getSettings() {
-  return Object.assign(
-    { org: "", defaultScreener: "" },
+  const s = Object.assign(
+    { org: "", defaultScreener: "", scoring: {}, lang: "en" },
     store.get(SETTINGS, {}),
   );
+  s.scoring = Object.assign({}, SCORING_DEFAULTS, s.scoring || {});
+  return s;
 }
 function setSettings(s) {
   store.set(SETTINGS, s);
+}
+/* Sanitised, monotonic thresholds (concern is always ≥ monitor ≥ 1). */
+function scoringCfg() {
+  const c = getSettings().scoring;
+  const langMonitor = Math.max(
+    1,
+    Math.round(Number(c.langMonitor) || SCORING_DEFAULTS.langMonitor),
+  );
+  const langConcern = Math.max(
+    langMonitor + 1,
+    Math.round(Number(c.langConcern) || SCORING_DEFAULTS.langConcern),
+  );
+  const hfvConcern = Math.max(
+    2,
+    Math.round(Number(c.hfvConcern) || SCORING_DEFAULTS.hfvConcern),
+  );
+  return { langMonitor, langConcern, hfvConcern };
 }
 /* ================= domain registry ================= */
 const SPEECH = [
@@ -1741,7 +1997,7 @@ function blankState() {
     },
     gradeKey: "",
     gradeAuto: true,
-    artic: { cards: [], types: [], pat: [], notes: "" },
+    artic: { cards: [], types: [], stim: [], pat: [], notes: "" },
     hfv: { FLU: { c: [], notes: "" }, VOICE: { c: [], notes: "" } },
     lang: {
       REC: { c: [], notes: "" },
@@ -1756,7 +2012,9 @@ function blankState() {
       EXP: false,
       PRAG: false,
     },
-    report: { comments: "", finalTier: "" },
+    audio: {}, // {ARTIC|FLU|VOICE: {ms, mime}} — blobs live in IndexedDB
+    report: { comments: "", finalTier: "", signoff: null, locked: false },
+    log: [{ t: new Date().toISOString(), e: "Screening created" }],
     view: "intake",
   };
 }
@@ -1774,16 +2032,22 @@ function ensureArrays() {
     S.intake || {},
   );
   S.artic = Object.assign(
-    { cards: [], types: [], pat: [], notes: "" },
+    { cards: [], types: [], stim: [], pat: [], notes: "" },
     S.artic || {},
   );
   S.hfv = S.hfv || {};
   S.lang = S.lang || {};
-  S.report = Object.assign({ comments: "", finalTier: "" }, S.report || {});
+  S.report = Object.assign(
+    { comments: "", finalTier: "", signoff: null, locked: false },
+    S.report || {},
+  );
   S.reviewed = S.reviewed || {};
+  S.audio = S.audio || {};
+  S.log = Array.isArray(S.log) ? S.log : [];
   S.artic.cards = fitStr(S.artic.cards, ART_STIMULI.length);
   S.artic.pat = fit(S.artic.pat, DATA.artic.patterns.length);
   S.artic.types = fitStr(S.artic.types, ART_STIMULI.length);
+  S.artic.stim = fitStr(S.artic.stim, ART_STIMULI.length);
   ALL_DOMAINS.forEach((k) => {
     if (typeof S.reviewed[k] !== "boolean") S.reviewed[k] = false;
   });
@@ -1814,19 +2078,67 @@ const count = (a) => a.reduce((s, v) => s + (v ? 1 : 0), 0);
 function langStatus(dk) {
   const g = gradeByKey(S.gradeKey);
   if (!g) return null;
-  const n = g.domains[dk].length,
+  const cfg = scoringCfg(),
+    n = g.domains[dk].length,
     miss = n - count(S.lang[dk].c);
-  return miss <= 1 ? st("WNL") : miss === 2 ? st("MON") : st("CON");
+  return miss >= cfg.langConcern
+    ? st("CON")
+    : miss >= cfg.langMonitor
+      ? st("MON")
+      : st("WNL");
 }
 function hfvStatus(k) {
-  const n = DATA.hfvItems[k].length,
+  const cfg = scoringCfg(),
+    n = DATA.hfvItems[k].length,
     miss = n - count(S.hfv[k].c);
-  return miss === 0 ? st("WNL") : miss === 1 ? st("MON") : st("CON");
+  return miss >= cfg.hfvConcern ? st("CON") : miss >= 1 ? st("MON") : st("WNL");
 }
 function articStatus() {
   const e = S.artic.cards.filter((v) => v === "E").length + count(S.artic.pat);
   if (e === 0) return st("WNL");
   return ["G2", "G3", "G4", "G5"].includes(S.gradeKey) ? st("CON") : st("MON");
+}
+/* Articulation analytics from the marked picture set: PCC-style accuracy on
+   single-word consonant targets, error breakdown by word position, the error
+   sound inventory, and stimulability of errored sounds. */
+function articAnalysis() {
+  const marked = [],
+    errors = [],
+    byPos = {};
+  ART_STIMULI.forEach((s, i) => {
+    const v = S.artic.cards[i];
+    if (v !== "C" && v !== "E") return;
+    marked.push(i);
+    const pos = s.pos || "other";
+    byPos[pos] = byPos[pos] || { total: 0, err: 0 };
+    byPos[pos].total++;
+    if (v === "E") {
+      byPos[pos].err++;
+      errors.push({
+        i,
+        word: s.word,
+        sound: s.sound,
+        pos,
+        type: S.artic.types[i] || "",
+        stim: S.artic.stim[i] || "",
+      });
+    }
+  });
+  const correct = marked.length - errors.length;
+  const pcc = marked.length
+    ? Math.round((correct / marked.length) * 100)
+    : null;
+  return {
+    markedCount: marked.length,
+    correct,
+    errorCount: errors.length,
+    pcc, // % consonant targets correct across marked single words
+    errors,
+    byPos,
+    errorSounds: [...new Set(errors.map((e) => e.sound))],
+    stimulable: errors.filter((e) => e.stim === "Y").length,
+    notStimulable: errors.filter((e) => e.stim === "N").length,
+  };
 }
 function st(k) {
   return {
@@ -2146,9 +2458,9 @@ function renderNav() {
   );
   side.appendChild(sp);
   side.appendChild(
-    navItem("intake", "Student &amp; intake", null, false, intakeComplete()),
+    navItem("intake", t("navIntake"), null, false, intakeComplete()),
   );
-  side.appendChild(el("div", { class: "navgroup" }, "Speech screens"));
+  side.appendChild(el("div", { class: "navgroup" }, t("grpSpeech")));
   SPEECH.forEach((d) =>
     side.appendChild(
       navItem(d.k, d.name, domainStatus(d.k), false, S.reviewed[d.k]),
@@ -2156,7 +2468,11 @@ function renderNav() {
   );
   const g = gradeByKey(S.gradeKey);
   side.appendChild(
-    el("div", { class: "navgroup" }, "Language" + (g ? " · " + g.label : "")),
+    el(
+      "div",
+      { class: "navgroup" },
+      t("grpLanguage") + (g ? " · " + g.label : ""),
+    ),
   );
   LANG.forEach((d) =>
     side.appendChild(
@@ -2169,9 +2485,9 @@ function renderNav() {
       ),
     ),
   );
-  side.appendChild(el("div", { class: "navgroup" }, "Output"));
-  side.appendChild(navItem("report", "Report &amp; export", null));
-  side.appendChild(navItem("guide", "Scoring guide &amp; references", null));
+  side.appendChild(el("div", { class: "navgroup" }, t("grpOutput")));
+  side.appendChild(navItem("report", t("navReport"), null));
+  side.appendChild(navItem("guide", t("navGuide"), null));
 }
 function navItem(key, name, status, disabled, done) {
   const dot = el("span", {
@@ -2577,6 +2893,286 @@ function progressPanel(compact = false) {
   card.appendChild(list);
   return card;
 }
+/* ================= audio capture (speech samples) =================
+   Blobs are stored in IndexedDB (not localStorage) so large recordings never
+   threaten the text data or hit the ~5MB quota. State keeps only small metadata
+   ({ms, mime}) per speech domain. An in-memory fallback keeps playback working
+   in the session if IndexedDB is unavailable (private mode). */
+const AUDIO_OK =
+  typeof navigator !== "undefined" &&
+  navigator.mediaDevices &&
+  navigator.mediaDevices.getUserMedia &&
+  typeof window !== "undefined" &&
+  window.MediaRecorder;
+const _audioMem = {}; // key -> Blob (fallback + live cache)
+const audioKey = (domain) => S.id + ":" + domain;
+let _adbPromise = null;
+function adb() {
+  if (_adbPromise) return _adbPromise;
+  _adbPromise = new Promise((resolve, reject) => {
+    if (!window.indexedDB) {
+      reject(new Error("no-idb"));
+      return;
+    }
+    const req = indexedDB.open("slscreen_audio", 1);
+    req.onupgradeneeded = () => {
+      if (!req.result.objectStoreNames.contains("clips"))
+        req.result.createObjectStore("clips");
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error || new Error("idb-open"));
+  }).catch((e) => {
+    _adbPromise = null;
+    throw e;
+  });
+  return _adbPromise;
+}
+function adbTx(mode, fn) {
+  return adb().then(
+    (db) =>
+      new Promise((resolve, reject) => {
+        const tx = db.transaction("clips", mode);
+        const store = tx.objectStore("clips");
+        const r = fn(store);
+        tx.oncomplete = () => resolve(r && r.result);
+        tx.onerror = () => reject(tx.error);
+      }),
+  );
+}
+function audioPut(key, blob) {
+  _audioMem[key] = blob;
+  return adbTx("readwrite", (s) => s.put(blob, key)).catch(() => {}); // mem fallback already set
+}
+function audioGet(key) {
+  if (_audioMem[key]) return Promise.resolve(_audioMem[key]);
+  return adbTx("readonly", (s) => s.get(key))
+    .then((b) => {
+      if (b) _audioMem[key] = b;
+      return b || null;
+    })
+    .catch(() => null);
+}
+function audioDel(key) {
+  delete _audioMem[key];
+  return adbTx("readwrite", (s) => s.delete(key)).catch(() => {});
+}
+function audioDelAll(id) {
+  Object.keys(_audioMem).forEach((k) => {
+    if (k.indexOf(id + ":") === 0) delete _audioMem[k];
+  });
+  ["ARTIC", "FLU", "VOICE"].forEach((d) => audioDel(id + ":" + d));
+}
+function fmtClock(ms) {
+  const t = Math.round((ms || 0) / 1000),
+    m = Math.floor(t / 60);
+  return m + ":" + String(t % 60).padStart(2, "0");
+}
+function audioRecordLine(domain) {
+  const a = S.audio && S.audio[domain];
+  return a && a.ms
+    ? "<p><b>Audio sample:</b> " +
+        fmtClock(a.ms) +
+        " recorded (retained on the administering device).</p>"
+    : "";
+}
+/* Compact one-liner for the summary report listing any recorded samples. */
+function audioReportParagraph() {
+  const names = { ARTIC: "connected speech", FLU: "fluency", VOICE: "voice" };
+  const got = ["ARTIC", "FLU", "VOICE"]
+    .filter((k) => S.audio && S.audio[k] && S.audio[k].ms)
+    .map((k) => names[k] + " (" + fmtClock(S.audio[k].ms) + ")");
+  return got.length
+    ? "<p><b>Audio samples on file (device-local):</b> " +
+        esc(got.join(", ")) +
+        ".</p>"
+    : "";
+}
+/* Recorder UI for one speech domain (ARTIC/FLU/VOICE). */
+function audioRecorder(domain, label) {
+  const wrap = el("div", { class: "audio-rec" });
+  wrap.appendChild(
+    el(
+      "div",
+      { class: "audio-head" },
+      el("span", { class: "audio-ic", "aria-hidden": "true" }, "🎙"),
+      el("span", {}, label),
+    ),
+  );
+  if (!AUDIO_OK) {
+    wrap.appendChild(
+      el(
+        "div",
+        { class: "hint", style: "margin:0" },
+        "Audio recording isn’t available in this browser.",
+      ),
+    );
+    return wrap;
+  }
+  const controls = el("div", { class: "audio-controls" });
+  const status = el(
+    "span",
+    { class: "audio-status", "aria-live": "polite" },
+    "",
+  );
+  const player = el("audio", {
+    controls: "",
+    class: "audio-player",
+    style: "display:none",
+  });
+  let mediaRec = null,
+    chunks = [],
+    startedAt = 0,
+    timer = null,
+    stream = null,
+    curUrl = null;
+  const key = audioKey(domain);
+  const setUrl = (blob) => {
+    if (curUrl) URL.revokeObjectURL(curUrl);
+    curUrl = URL.createObjectURL(blob);
+    player.src = curUrl;
+    player.style.display = "";
+  };
+  const meta = () => (S.audio[domain] = S.audio[domain] || null);
+  const refresh = () => {
+    const has = !!(S.audio[domain] && S.audio[domain].ms);
+    recBtn.style.display = mediaRec ? "none" : "";
+    stopBtn.style.display = mediaRec ? "" : "none";
+    delBtn.style.display = has && !mediaRec ? "" : "none";
+    dlBtn.style.display = has && !mediaRec ? "" : "none";
+    recBtn.textContent = has ? "● Re-record" : "● Record";
+    status.textContent = mediaRec
+      ? "Recording… " + fmtClock(Date.now() - startedAt)
+      : has
+        ? fmtClock(S.audio[domain].ms) + " sample"
+        : "No sample yet";
+  };
+  const stopTracks = () => {
+    if (stream) stream.getTracks().forEach((t) => t.stop());
+    stream = null;
+  };
+  const recBtn = el(
+    "button",
+    {
+      class: "btn sm audio-record",
+      onclick: async () => {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (e) {
+          status.textContent = "Microphone permission denied.";
+          return;
+        }
+        chunks = [];
+        const mime = MediaRecorder.isTypeSupported("audio/webm")
+          ? "audio/webm"
+          : "";
+        mediaRec = mime
+          ? new MediaRecorder(stream, { mimeType: mime })
+          : new MediaRecorder(stream);
+        mediaRec.ondataavailable = (ev) => {
+          if (ev.data && ev.data.size) chunks.push(ev.data);
+        };
+        mediaRec.onstop = () => {
+          const blob = new Blob(chunks, {
+            type: mediaRec.mimeType || "audio/webm",
+          });
+          const ms = Date.now() - startedAt;
+          mediaRec = null;
+          stopTracks();
+          if (timer) {
+            clearInterval(timer);
+            timer = null;
+          }
+          if (blob.size > 0) {
+            S.audio[domain] = { ms, mime: blob.type };
+            audioPut(key, blob);
+            setUrl(blob);
+            change();
+            renderNav();
+          }
+          refresh();
+        };
+        startedAt = Date.now();
+        mediaRec.start();
+        timer = setInterval(refresh, 250);
+        refresh();
+      },
+    },
+    "● Record",
+  );
+  const stopBtn = el(
+    "button",
+    {
+      class: "btn sm",
+      style: "display:none",
+      onclick: () => {
+        if (mediaRec && mediaRec.state !== "inactive") mediaRec.stop();
+      },
+    },
+    "■ Stop",
+  );
+  const delBtn = el(
+    "button",
+    {
+      class: "btn sm danger",
+      style: "display:none",
+      onclick: async () => {
+        const ok = await confirmDialog(
+          "Delete the recorded " + label.toLowerCase() + "?",
+          {
+            title: "Delete recording",
+            okLabel: "Delete",
+            danger: true,
+          },
+        );
+        if (!ok) return;
+        S.audio[domain] = null;
+        audioDel(key);
+        if (curUrl) {
+          URL.revokeObjectURL(curUrl);
+          curUrl = null;
+        }
+        player.style.display = "none";
+        player.removeAttribute("src");
+        change();
+        renderNav();
+        refresh();
+      },
+    },
+    "Delete",
+  );
+  const dlBtn = el(
+    "button",
+    {
+      class: "btn sm",
+      style: "display:none",
+      onclick: async () => {
+        const blob = await audioGet(key);
+        if (blob)
+          triggerDownload(
+            blob,
+            reportFilename("webm").replace(".webm", "_" + domain + ".webm"),
+          );
+      },
+    },
+    "⬇ Download",
+  );
+  controls.appendChild(recBtn);
+  controls.appendChild(stopBtn);
+  controls.appendChild(delBtn);
+  controls.appendChild(dlBtn);
+  controls.appendChild(status);
+  wrap.appendChild(controls);
+  wrap.appendChild(player);
+  meta();
+  // Load an existing clip for playback.
+  if (S.audio[domain] && S.audio[domain].ms) {
+    audioGet(key).then((b) => {
+      if (b) setUrl(b);
+    });
+  }
+  refresh();
+  return wrap;
+}
 /* ================= stimulus cards & presentation mode ================= */
 const ERROR_TYPES = ["substitution", "omission", "distortion", "unsure"];
 function stimStateClass(i) {
@@ -2613,6 +3209,7 @@ function buildStimCard(s, i) {
       style: S.artic.cards[i] === "E" ? "" : "display:none",
       onchange: (e) => {
         S.artic.types[i] = e.target.value;
+        refreshArticAnalysis();
         change();
       },
     },
@@ -2623,13 +3220,38 @@ function buildStimCard(s, i) {
       return o;
     }),
   );
+  const stimSel = el(
+    "select",
+    {
+      class: "estim",
+      "aria-label": "Stimulable for " + s.word,
+      style: S.artic.cards[i] === "E" ? "" : "display:none",
+      onchange: (e) => {
+        S.artic.stim[i] = e.target.value;
+        refreshArticAnalysis();
+        change();
+      },
+    },
+    el("option", { value: "" }, "stimulable?"),
+    ...[
+      ["Y", "stimulable"],
+      ["N", "not stimulable"],
+    ].map(([v, t]) => {
+      const o = el("option", { value: v }, t);
+      if (S.artic.stim[i] === v) o.setAttribute("selected", "");
+      return o;
+    }),
+  );
   const setv = (v) => {
     S.artic.cards[i] = S.artic.cards[i] === v ? "" : v;
     if (S.artic.cards[i] !== "E") {
       S.artic.types[i] = "";
       typeSel.value = "";
+      S.artic.stim[i] = "";
+      stimSel.value = "";
     }
     typeSel.style.display = S.artic.cards[i] === "E" ? "" : "none";
+    stimSel.style.display = S.artic.cards[i] === "E" ? "" : "none";
     card.className = "stim-card " + stimStateClass(i);
     okB.className = S.artic.cards[i] === "C" ? "on-ok" : "";
     errB.className = S.artic.cards[i] === "E" ? "on-err" : "";
@@ -2638,6 +3260,7 @@ function buildStimCard(s, i) {
     reChip(articStatus());
     const sum = $("#stimSummary");
     if (sum) sum.textContent = stimSummaryText();
+    refreshArticAnalysis();
     change();
   };
   const okB = el(
@@ -2662,6 +3285,7 @@ function buildStimCard(s, i) {
   seg.appendChild(errB);
   card.appendChild(seg);
   card.appendChild(typeSel);
+  card.appendChild(stimSel);
   return card;
 }
 /* Full-screen student-facing card deck. No readable words shown to the student;
@@ -2791,6 +3415,90 @@ function openPresentation(startIdx) {
   document.body.appendChild(scrim);
 }
 /* ================= articulation view ================= */
+function articAnalysisHTML() {
+  const a = articAnalysis();
+  if (!a.markedCount) return "";
+  const posOrder = ["beginning", "end", "blend", "other"];
+  const posLabel = {
+    beginning: "Initial",
+    end: "Final",
+    blend: "Blends",
+    other: "Other",
+  };
+  const posRows = posOrder
+    .filter((p) => a.byPos[p])
+    .map(
+      (p) =>
+        "<tr><td>" +
+        posLabel[p] +
+        "</td><td>" +
+        (a.byPos[p].total - a.byPos[p].err) +
+        " / " +
+        a.byPos[p].total +
+        " correct" +
+        (a.byPos[p].err
+          ? " · " +
+            a.byPos[p].err +
+            " error" +
+            (a.byPos[p].err === 1 ? "" : "s")
+          : "") +
+        "</td></tr>",
+    )
+    .join("");
+  let h =
+    "<table class='meta'><tr><td class='k'>Single-word accuracy (PCC)</td><td><b>" +
+    (a.pcc == null ? "—" : a.pcc + "%") +
+    "</b> (" +
+    a.correct +
+    " of " +
+    a.markedCount +
+    " targets correct)</td></tr>";
+  if (a.errorSounds.length)
+    h +=
+      "<tr><td class='k'>Error sound inventory</td><td>" +
+      esc(a.errorSounds.join(", ")) +
+      "</td></tr>";
+  if (a.errorCount)
+    h +=
+      "<tr><td class='k'>Stimulability</td><td>" +
+      a.stimulable +
+      " stimulable · " +
+      a.notStimulable +
+      " not · " +
+      (a.errorCount - a.stimulable - a.notStimulable) +
+      " untested</td></tr>";
+  h += "</table>";
+  if (posRows)
+    h +=
+      "<table class='results' style='margin-top:6px'><tr><th scope='col'>Word position</th><th scope='col'>Accuracy</th></tr>" +
+      posRows +
+      "</table>";
+  return h;
+}
+function articAnalysisBodyHTML() {
+  const a = articAnalysis();
+  return a.markedCount
+    ? articAnalysisHTML()
+    : '<div class="hint" style="margin:0">Mark picture cards above to see accuracy (PCC), error-sound inventory, position analysis, and stimulability.</div>';
+}
+function refreshArticAnalysis() {
+  const box = $("#articAnalysis");
+  if (box) box.innerHTML = articAnalysisBodyHTML();
+}
+function articAnalysisPanel() {
+  const card = el("div", { class: "rulebox", style: "margin-top:14px" });
+  card.appendChild(
+    el(
+      "div",
+      { style: "font-weight:700;color:var(--navy);margin-bottom:6px" },
+      "Articulation analysis",
+    ),
+  );
+  card.appendChild(
+    el("div", { id: "articAnalysis", html: articAnalysisBodyHTML() }),
+  );
+  return card;
+}
 function viewArtic() {
   const w = el("div", { class: "view" });
   w.appendChild(el("div", { class: "crumb" }, "Speech screen · universal"));
@@ -2886,6 +3594,8 @@ function viewArtic() {
       html: "<b>Scoring rule.</b> " + esc(DATA.speechRules[0]),
     }),
   );
+  pc.appendChild(articAnalysisPanel());
+  pc.appendChild(audioRecorder("ARTIC", "Connected-speech sample"));
   pc.appendChild(
     notesField(
       () => S.artic.notes,
@@ -3163,6 +3873,248 @@ function downloadHandoutWord() {
   );
   toast("Strategies handout downloaded");
 }
+/* ================= full screening record ================= */
+function frSection(title, status, reviewed) {
+  return (
+    "<h2>" +
+    esc(title) +
+    (status
+      ? ' <span class="res-' +
+        status.k +
+        '">(' +
+        esc(status.label.toLowerCase()) +
+        ")</span>"
+      : "") +
+    (reviewed
+      ? ' <span style="color:#20714f;font-weight:400">· reviewed</span>'
+      : "") +
+    "</h2>"
+  );
+}
+function frNote(text) {
+  return text && text.trim() ? "<p><b>Notes:</b> " + esc(text) + "</p>" : "";
+}
+function frItemRows(items, checks) {
+  return items
+    .map(
+      (it, j) =>
+        "<tr><td>" +
+        (checks[j] ? "☑" : "☐") +
+        "</td><td>" +
+        esc(it.text) +
+        (it.eg
+          ? ' <span style="color:#68788a">— ' + esc(it.eg) + "</span>"
+          : "") +
+        "</td></tr>",
+    )
+    .join("");
+}
+function buildFullRecordInner() {
+  const i = S.intake,
+    g = gradeByKey(S.gradeKey),
+    set = getSettings();
+  const meta =
+    '<table class="meta">' +
+    '<tr><td class="k">Student</td><td>' +
+    esc(i.student || "—") +
+    '</td><td class="k">Date of birth</td><td>' +
+    (i.dob ? fmtDate(i.dob) : "—") +
+    "</td></tr>" +
+    '<tr><td class="k">Grade</td><td>' +
+    (g ? esc(g.label) : "—") +
+    '</td><td class="k">Date screened</td><td>' +
+    fmtDate(i.date) +
+    "</td></tr>" +
+    '<tr><td class="k">Teacher</td><td>' +
+    esc(i.teacher || "—") +
+    '</td><td class="k">Home language(s)</td><td>' +
+    esc(i.home || "—") +
+    "</td></tr>" +
+    '<tr><td class="k">Screener / SLP</td><td colspan="3">' +
+    esc(i.screener || "—") +
+    "</td></tr></table>";
+  let h =
+    '<div class="rdoc">' +
+    '<div class="rhead"><h1>Complete Screening Record</h1>' +
+    (set.org ? '<div class="org">' + esc(set.org) + "</div>" : "") +
+    "</div>" +
+    '<div class="rsub">Task-by-task record · companion to the summary report</div>' +
+    meta;
+  // Articulation
+  h += frSection("Articulation / Phonology", articStatus(), S.reviewed.ARTIC);
+  h +=
+    '<table class="results"><tr><th scope="col">Production</th><th scope="col">Target</th><th scope="col">Result</th></tr>';
+  ART_STIMULI.forEach((s, j) => {
+    const v = S.artic.cards[j];
+    const res =
+      v === "C"
+        ? '<span class="res-WNL">Correct</span>'
+        : v === "E"
+          ? '<span class="res-CON">Error</span>' +
+            (S.artic.types[j] ? " (" + esc(S.artic.types[j]) + ")" : "")
+          : "—";
+    h +=
+      "<tr><td>" +
+      esc(s.word) +
+      "</td><td>" +
+      esc(s.sound + " · " + s.pos) +
+      "</td><td>" +
+      res +
+      "</td></tr>";
+  });
+  h += "</table>";
+  const pats = DATA.artic.patterns
+    .filter((p, j) => S.artic.pat[j])
+    .map((p) => p.text);
+  if (pats.length)
+    h +=
+      "<p><b>Phonological patterns present:</b> " +
+      esc(pats.join(", ")) +
+      "</p>";
+  {
+    const an = articAnalysisHTML();
+    if (an)
+      h += "<h3 style='font-size:12pt;margin:8pt 0 2pt'>Analysis</h3>" + an;
+  }
+  h += audioRecordLine("ARTIC");
+  h += frNote(S.artic.notes);
+  // Fluency & Voice
+  ["FLU", "VOICE"].forEach((k) => {
+    h += frSection(DATA.universalTasks[k].name, hfvStatus(k), S.reviewed[k]);
+    h +=
+      '<table class="results"><tr><th scope="col">✓</th><th scope="col">Indicator (within limits)</th></tr>' +
+      frItemRows(DATA.hfvItems[k], S.hfv[k].c) +
+      "</table>";
+    h += audioRecordLine(k);
+    h += frNote(S.hfv[k].notes);
+  });
+  // Language
+  if (g)
+    LANG.forEach((d) => {
+      const k = d.k;
+      h += frSection(DATA.domainNames[k], langStatus(k), S.reviewed[k]);
+      h +=
+        '<table class="results"><tr><th scope="col">✓</th><th scope="col">Expected skill</th></tr>' +
+        frItemRows(g.domains[k], S.lang[k].c) +
+        "</table>";
+      h += frNote(S.lang[k].notes);
+    });
+  // Conclusion
+  const tier = DATA.tiers[finalTierIndex()];
+  h +=
+    "<h2>Conclusion</h2><p><b>" +
+    esc(tier.name) +
+    ".</b> " +
+    esc(tier.action) +
+    "</p>";
+  if (S.report.comments)
+    h += "<p><b>Clinician comments:</b> " + esc(S.report.comments) + "</p>";
+  // Audit trail
+  if (Array.isArray(S.log) && S.log.length) {
+    h +=
+      "<h2>Audit trail</h2><table class='results'><tr><th scope='col'>When</th><th scope='col'>Event</th></tr>" +
+      S.log
+        .map((ev) => {
+          const d = new Date(ev.t);
+          const when = isNaN(d)
+            ? esc(ev.t)
+            : d.toLocaleString(undefined, {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              });
+          return "<tr><td>" + when + "</td><td>" + esc(ev.e) + "</td></tr>";
+        })
+        .join("") +
+      "</table>";
+  }
+  h += '<p class="disc">' + DATA.disclaimers.map(esc).join(" ") + "</p>";
+  h += sigBlock();
+  h +=
+    '<div class="rfoot">Generated ' +
+    fmtDate(todayISO()) +
+    " · " +
+    esc(DATA.meta.title) +
+    " v" +
+    APP_VERSION +
+    " · Complete task-level record.</div>";
+  h += "</div>";
+  return h;
+}
+function openFullRecordModal() {
+  const body = el("div", {});
+  body.appendChild(
+    el(
+      "p",
+      { class: "hint", style: "margin:4px 0 12px" },
+      "Every task response, error type, and note — for the cumulative student file. The summary report is the referral document; this is the underlying record.",
+    ),
+  );
+  body.appendChild(
+    el("div", { class: "handout-preview", html: buildFullRecordInner() }),
+  );
+  showModal({
+    title: "Complete screening record",
+    body,
+    actions: [
+      { label: "Close" },
+      {
+        label: "Word (.doc)",
+        onclick: () => {
+          downloadFullRecordWord();
+          return false;
+        },
+      },
+      {
+        label: "Print / Save PDF",
+        primary: true,
+        onclick: () => {
+          $("#printArea").innerHTML = buildFullRecordInner();
+          const prevTitle = document.title;
+          document.title = reportFilename("pdf").replace(".pdf", "_Record");
+          const restore = () => {
+            document.title = prevTitle;
+            window.removeEventListener("afterprint", restore);
+          };
+          window.addEventListener("afterprint", restore);
+          window.print();
+          setTimeout(restore, 2000);
+          return false;
+        },
+      },
+    ],
+  });
+}
+function downloadFullRecordWord() {
+  const styles =
+    "<style>" +
+    "body{font-family:Calibri,Arial,sans-serif;color:#1c2a38;font-size:11pt}" +
+    "h1{font-size:16pt;color:#142c44;border-bottom:2px solid #127d79;padding-bottom:4pt;font-family:Cambria,Georgia,serif}" +
+    "h2{font-size:12pt;color:#0f6663;margin-top:14pt;font-family:Cambria,Georgia,serif}" +
+    "table{border-collapse:collapse;width:100%;font-size:10pt;margin:4pt 0}" +
+    "table.results th,table.results td{border:1px solid #cccccc;padding:3pt 6pt;text-align:left;vertical-align:top}" +
+    "table.results th{background:#142c44;color:#fff}" +
+    "table.meta td{padding:2pt 5pt} table.meta td.k{font-weight:bold;color:#142c44;width:120px}" +
+    ".res-WNL{color:#20714f;font-weight:bold}.res-MON{color:#a8700a;font-weight:bold}.res-CON{color:#a63324;font-weight:bold}" +
+    ".rsub{color:#68788a;font-size:9.5pt}.org{color:#68788a;font-size:9.5pt;text-align:right}" +
+    ".disc{font-size:8.5pt;color:#68788a;border-top:1px solid #ccc;padding-top:6pt;margin-top:12pt}" +
+    ".sig span{display:inline-block;border-top:1px solid #1c2a38;padding-top:3pt;margin-right:24pt;min-width:150pt;font-size:9pt;color:#68788a}" +
+    ".rfoot{font-size:8pt;color:#93a1b0;margin-top:10pt}" +
+    "</style>";
+  const html =
+    '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">' +
+    styles +
+    "</head><body>" +
+    buildFullRecordInner() +
+    "</body></html>";
+  triggerDownload(
+    new Blob(["﻿", html], { type: "application/msword" }),
+    reportFilename("doc").replace(".doc", "_Record.doc"),
+  );
+  toast("Complete record downloaded");
+}
 /* ================= prior-screening comparison ================= */
 function statusesFor(record) {
   const prev = S;
@@ -3367,6 +4319,9 @@ function viewHFV(key) {
     }),
   );
   sc.appendChild(
+    audioRecorder(key, key === "FLU" ? "Fluency sample" : "Voice sample"),
+  );
+  sc.appendChild(
     notesField(
       () => S.hfv[key].notes,
       (v) => (S.hfv[key].notes = v),
@@ -3461,6 +4416,7 @@ function reChip(status) {
 /* ================= report view ================= */
 function viewReport() {
   const w = el("div", { class: "view" });
+  const locked = !!(S.report.signoff && S.report.locked);
   w.appendChild(el("div", { class: "crumb" }, "Output"));
   w.appendChild(el("h1", { class: "vtitle" }, "Report & export"));
   w.appendChild(
@@ -3470,6 +4426,31 @@ function viewReport() {
       "Auto-generated from the screening. Review the readiness checks, set the final tier, add comments, then export.",
     ),
   );
+  if (locked) {
+    const so = S.report.signoff;
+    w.appendChild(
+      el(
+        "div",
+        { class: "signed-banner", role: "status" },
+        el("span", { class: "sb-ic", "aria-hidden": "true" }, "🔒"),
+        el(
+          "span",
+          {},
+          el("b", {}, "Signed & locked"),
+          " — " +
+            esc(so.name || "") +
+            (so.credentials ? ", " + esc(so.credentials) : "") +
+            " on " +
+            fmtDate(so.date),
+        ),
+        el(
+          "button",
+          { class: "btn sm", style: "margin-left:auto", onclick: unlockReport },
+          "Unlock to edit",
+        ),
+      ),
+    );
+  }
   const sug = suggestedTier();
   const tierWrap = el("div", { class: "card" });
   tierWrap.appendChild(el("h3", {}, "Conclusion"));
@@ -3483,6 +4464,7 @@ function viewReport() {
   const tsel = el("select", {
     class: "plain",
     "aria-label": "Final tier decision",
+    ...(locked ? { disabled: "" } : {}),
     onchange: (e) => {
       S.report.finalTier = e.target.value;
       change();
@@ -3517,6 +4499,7 @@ function viewReport() {
     rows: "3",
     id: "clinComments",
     placeholder: "Clinician comments / recommendations…",
+    ...(locked ? { readonly: "" } : {}),
     oninput: (e) => {
       S.report.comments = e.target.value;
       change();
@@ -3567,6 +4550,60 @@ function viewReport() {
       "🧩 Teacher & family strategies",
     ),
   );
+  acts.appendChild(
+    el(
+      "button",
+      {
+        class: "btn",
+        title:
+          "Full screening record — every task response, notes, and error type — for the student file",
+        onclick: openFullRecordModal,
+      },
+      "📋 Complete record",
+    ),
+  );
+  acts.appendChild(
+    el(
+      "button",
+      {
+        class: "btn",
+        title:
+          "District referral form for the evaluation / IEP team (print or Word)",
+        onclick: openReferralModal,
+      },
+      "📨 Referral form",
+    ),
+  );
+  acts.appendChild(
+    el(
+      "button",
+      {
+        class: "btn",
+        title:
+          "Draft an editable clinical narrative with AI — sends DE-IDENTIFIED results only (opt-in)",
+        onclick: openAIDraftModal,
+      },
+      "✨ Draft with AI",
+    ),
+  );
+  acts.appendChild(
+    locked
+      ? el(
+          "button",
+          { class: "btn", onclick: unlockReport },
+          "🔓 Unlock report",
+        )
+      : el(
+          "button",
+          {
+            class: "btn",
+            title:
+              "Record the screener sign-off and lock the conclusion against further edits",
+            onclick: signReport,
+          },
+          "🖊 Sign & lock",
+        ),
+  );
   w.appendChild(acts);
   w.appendChild(el("div", { id: "reportPreview", html: buildReportInner() }));
   w.appendChild(pager("report"));
@@ -3576,10 +4613,478 @@ function updatePreview() {
   const p = $("#reportPreview");
   if (p) p.innerHTML = buildReportInner();
 }
+/* ---- e-signature / lock + audit trail (Tier 3) ---- */
+function logEvent(e) {
+  S.log = Array.isArray(S.log) ? S.log : [];
+  S.log.push({ t: new Date().toISOString(), e });
+  if (S.log.length > 60) S.log = S.log.slice(-60);
+}
+function signReport() {
+  const set = getSettings();
+  const body = el("div", {});
+  const nm = el("input", {
+    type: "text",
+    id: "sign_name",
+    value:
+      (S.report.signoff && S.report.signoff.name) ||
+      S.intake.screener ||
+      set.defaultScreener ||
+      "",
+    placeholder: "Screener name",
+  });
+  const cr = el("input", {
+    type: "text",
+    id: "sign_cred",
+    value: (S.report.signoff && S.report.signoff.credentials) || "",
+    placeholder: "e.g., MS CCC-SLP",
+  });
+  body.appendChild(
+    el(
+      "p",
+      { class: "hint", style: "margin:2px 0 12px" },
+      "Records your sign-off and locks the conclusion (tier + comments) against edits. You can unlock at any time to revise, which is logged in the audit trail.",
+    ),
+  );
+  body.appendChild(
+    el(
+      "div",
+      { class: "field", style: "margin-bottom:12px" },
+      el("label", { for: "sign_name" }, "Screener"),
+      nm,
+    ),
+  );
+  body.appendChild(
+    el(
+      "div",
+      { class: "field" },
+      el("label", { for: "sign_cred" }, "Credentials"),
+      cr,
+    ),
+  );
+  showModal({
+    title: "Sign & lock report",
+    body,
+    actions: [
+      { label: "Cancel" },
+      {
+        label: "Sign & lock",
+        primary: true,
+        onclick: () => {
+          const name = nm.value.trim();
+          if (!name) {
+            toast("Enter a screener name to sign", "warn");
+            return false;
+          }
+          S.report.signoff = {
+            name,
+            credentials: cr.value.trim(),
+            date: todayISO(),
+          };
+          S.report.locked = true;
+          logEvent(
+            "Signed by " +
+              name +
+              (cr.value.trim() ? ", " + cr.value.trim() : "") +
+              " (tier: " +
+              DATA.tiers[finalTierIndex()].name +
+              ")",
+          );
+          change();
+          render();
+          toast("Report signed & locked");
+        },
+      },
+    ],
+  });
+}
+async function unlockReport() {
+  const ok = await confirmDialog(
+    "Unlock the report for editing? The existing sign-off will be cleared and must be re-signed. This is recorded in the audit trail.",
+    { title: "Unlock report", okLabel: "Unlock" },
+  );
+  if (!ok) return;
+  logEvent(
+    "Unlocked for editing (was signed by " +
+      ((S.report.signoff && S.report.signoff.name) || "—") +
+      ")",
+  );
+  S.report.signoff = null;
+  S.report.locked = false;
+  change();
+  render();
+  toast("Report unlocked");
+}
+/* ---- district referral form (Tier 3) ---- */
+function buildReferralInner() {
+  const i = S.intake,
+    g = gradeByKey(S.gradeKey),
+    set = getSettings(),
+    ti = finalTierIndex(),
+    tier = DATA.tiers[ti];
+  const concerns = requiredDomains().filter((k) => {
+    const s = domainStatus(k);
+    return s && s.k !== "WNL";
+  });
+  const concernRows = concerns.length
+    ? concerns
+        .map((k) => {
+          const s = domainStatus(k);
+          return (
+            "<tr><td><b>" +
+            esc(domainLabel(k)) +
+            "</b></td><td class='res-" +
+            s.k +
+            "'>" +
+            esc(s.label) +
+            "</td><td>" +
+            esc(domainNotes(k) || "—") +
+            "</td></tr>"
+          );
+        })
+        .join("")
+    : "<tr><td colspan='3'>No domain flagged below the within-limits threshold.</td></tr>";
+  const so = S.report.signoff;
+  return (
+    '<div class="rdoc referral">' +
+    '<div class="rhead"><h1>Speech-Language Referral</h1>' +
+    (set.org ? '<div class="org">' + esc(set.org) + "</div>" : "") +
+    "</div>" +
+    '<div class="rsub">Referral to the evaluation / IEP team · based on a speech-language screening</div>' +
+    '<table class="meta">' +
+    '<tr><td class="k">Student</td><td>' +
+    esc(i.student || "—") +
+    '</td><td class="k">Date of birth</td><td>' +
+    (i.dob ? fmtDate(i.dob) : "—") +
+    "</td></tr>" +
+    '<tr><td class="k">Grade</td><td>' +
+    (g ? esc(g.label) : "—") +
+    '</td><td class="k">Date screened</td><td>' +
+    fmtDate(i.date) +
+    "</td></tr>" +
+    '<tr><td class="k">Teacher</td><td>' +
+    esc(i.teacher || "—") +
+    '</td><td class="k">Home language(s)</td><td>' +
+    esc(i.home || "—") +
+    "</td></tr>" +
+    "</table>" +
+    "<h2>Reason for referral</h2>" +
+    "<p><b>" +
+    esc(tier.name) +
+    ".</b> " +
+    esc(tier.action) +
+    " <span style='color:#68788a'>" +
+    esc(tier.rule) +
+    "</span></p>" +
+    "<h2>Areas of concern</h2>" +
+    "<table class='results'><tr><th scope='col'>Domain</th><th scope='col'>Screening result</th><th scope='col'>Observations</th></tr>" +
+    concernRows +
+    "</table>" +
+    (S.report.comments
+      ? "<h2>Clinician comments</h2><p>" + esc(S.report.comments) + "</p>"
+      : "") +
+    "<h2>Requested action</h2><p>Please review for a comprehensive speech-language evaluation and consideration of eligibility, consistent with district timelines and procedures. Parent/guardian notification and consent to be obtained per district policy.</p>" +
+    '<p class="disc">A screening is not a diagnosis; it identifies students who may need a full evaluation. ' +
+    esc(DATA.disclaimers[3] || "") +
+    "</p>" +
+    '<div class="sig">' +
+    (so
+      ? "<span style='border-top:none;color:#1c2a38;font-size:13px'>Referred by <b>" +
+        esc(so.name) +
+        "</b>" +
+        (so.credentials ? ", " + esc(so.credentials) : "") +
+        " · " +
+        fmtDate(so.date) +
+        "</span>"
+      : "<span>Screener signature</span><span>Credentials</span><span>Date</span>") +
+    "</div>" +
+    '<div class="sig" style="margin-top:20px"><span>Received by (evaluation team)</span><span>Date</span></div>' +
+    '<div class="rfoot">Generated ' +
+    fmtDate(todayISO()) +
+    " · " +
+    esc(DATA.meta.title) +
+    " v" +
+    APP_VERSION +
+    "</div>" +
+    "</div>"
+  );
+}
+function openReferralModal() {
+  const body = el("div", {});
+  body.appendChild(
+    el(
+      "p",
+      { class: "hint", style: "margin:4px 0 12px" },
+      finalTierIndex() === 3
+        ? "Formal referral to the evaluation / IEP team, pre-filled from this screening."
+        : "This student is not currently at the referral tier — the form is still available if you are referring on clinical judgment.",
+    ),
+  );
+  body.appendChild(
+    el("div", { class: "handout-preview", html: buildReferralInner() }),
+  );
+  showModal({
+    title: "Referral form",
+    body,
+    actions: [
+      { label: "Close" },
+      {
+        label: "Word (.doc)",
+        onclick: () => {
+          downloadReferralWord();
+          return false;
+        },
+      },
+      {
+        label: "Print / Save PDF",
+        primary: true,
+        onclick: () => {
+          $("#printArea").innerHTML = buildReferralInner();
+          const prev = document.title;
+          document.title = reportFilename("pdf").replace(".pdf", "_Referral");
+          const restore = () => {
+            document.title = prev;
+            window.removeEventListener("afterprint", restore);
+          };
+          window.addEventListener("afterprint", restore);
+          window.print();
+          setTimeout(restore, 2000);
+          return false;
+        },
+      },
+    ],
+  });
+}
+function downloadReferralWord() {
+  const styles =
+    "<style>" +
+    "body{font-family:Calibri,Arial,sans-serif;color:#1c2a38;font-size:11pt}" +
+    "h1{font-size:16pt;color:#142c44;border-bottom:2px solid #127d79;padding-bottom:4pt;font-family:Cambria,Georgia,serif}" +
+    "h2{font-size:12pt;color:#0f6663;margin-top:14pt;font-family:Cambria,Georgia,serif}" +
+    "table{border-collapse:collapse;width:100%;font-size:10.5pt;margin:4pt 0}" +
+    "table.results th,table.results td{border:1px solid #cccccc;padding:5pt 7pt;text-align:left;vertical-align:top}" +
+    "table.results th{background:#142c44;color:#fff}" +
+    "table.meta td{padding:2pt 5pt} table.meta td.k{font-weight:bold;color:#142c44;width:120px}" +
+    ".res-WNL{color:#20714f;font-weight:bold}.res-MON{color:#a8700a;font-weight:bold}.res-CON{color:#a63324;font-weight:bold}" +
+    ".rsub{color:#68788a;font-size:9.5pt}.org{color:#68788a;font-size:9.5pt;text-align:right}" +
+    ".disc{font-size:8.5pt;color:#68788a;border-top:1px solid #ccc;padding-top:6pt;margin-top:12pt}" +
+    ".sig span{display:inline-block;border-top:1px solid #1c2a38;padding-top:3pt;margin-right:24pt;min-width:150pt;font-size:9pt;color:#68788a}" +
+    ".rfoot{font-size:8pt;color:#93a1b0;margin-top:10pt}" +
+    "</style>";
+  const html =
+    '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">' +
+    styles +
+    "</head><body>" +
+    buildReferralInner() +
+    "</body></html>";
+  triggerDownload(
+    new Blob(["﻿", html], { type: "application/msword" }),
+    reportFilename("doc").replace(".doc", "_Referral.doc"),
+  );
+  toast("Referral form downloaded");
+}
+/* ---- #2 AI narrative assist (opt-in; sends DE-IDENTIFIED results only) ---- */
+function deidentifiedPayload() {
+  const g = gradeByKey(S.gradeKey);
+  const tier = DATA.tiers[finalTierIndex()];
+  const domains = [];
+  const aErr = ART_STIMULI.map((s, j) => ({ s, j }))
+    .filter(({ j }) => S.artic.cards[j] === "E")
+    .map(({ s }) => s.word + " " + s.sound);
+  const aPat = DATA.artic.patterns
+    .filter((p, j) => S.artic.pat[j])
+    .map((p) => p.text);
+  domains.push({
+    name: "Articulation / Phonology",
+    result: articStatus().label,
+    detail: [...aErr, ...aPat].join(", "),
+  });
+  ["FLU", "VOICE"].forEach((k) => {
+    const s = hfvStatus(k),
+      n = DATA.hfvItems[k].length,
+      obs = count(S.hfv[k].c);
+    domains.push({
+      name: DATA.universalTasks[k].name,
+      result: s.label,
+      detail: obs + "/" + n + " indicators within limits",
+    });
+  });
+  if (g)
+    LANG.forEach((d) => {
+      const s = langStatus(d.k),
+        n = g.domains[d.k].length,
+        obs = count(S.lang[d.k].c);
+      domains.push({
+        name: DATA.domainNames[d.k],
+        result: s.label,
+        detail: obs + " of " + n + " expected skills observed",
+      });
+    });
+  // NO student name, DOB, initials, teacher, screener, or free-text notes.
+  return {
+    grade: g ? g.label : "",
+    homeLanguage: (S.intake.home || "").trim(),
+    tier: tier.name,
+    domains,
+  };
+}
+function openAIDraftModal() {
+  const payload = deidentifiedPayload();
+  const body = el("div", {});
+  body.appendChild(
+    el(
+      "div",
+      {
+        class: "rulebox",
+        style:
+          "margin:2px 0 12px;border-color:var(--amber-line);background:var(--amber-bg)",
+      },
+      el(
+        "div",
+        { style: "font-weight:700;color:var(--navy);margin-bottom:4px" },
+        "This is the only feature that leaves the device",
+      ),
+      el(
+        "div",
+        { style: "font-size:13px" },
+        "It sends the DE-IDENTIFIED results below to an AI service to draft an editable narrative — no student name, date of birth, initials, teacher, or notes are included. Nothing is stored. Review and edit anything it drafts; you are responsible for the final clinical wording.",
+      ),
+    ),
+  );
+  body.appendChild(
+    el("div", {
+      class: "rulebox",
+      style: "margin:0 0 12px",
+      html:
+        "<b>Sent:</b> Grade " +
+        esc(payload.grade || "—") +
+        (payload.homeLanguage
+          ? " · Home language " + esc(payload.homeLanguage)
+          : "") +
+        " · Tier " +
+        esc(payload.tier) +
+        "<br>" +
+        payload.domains
+          .map((d) => esc(d.name) + ": " + esc(d.result))
+          .join(" · "),
+    }),
+  );
+  const out = el("div", { id: "aiOut" });
+  body.appendChild(out);
+  let close = null;
+  const doDraft = async () => {
+    out.innerHTML =
+      '<div class="hint" style="margin:8px 0">Drafting… contacting the AI service.</div>';
+    let res;
+    try {
+      const r = await fetch("/api/screener-assist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      res = await r.json().catch(() => null);
+      if (!r.ok || !res || !res.ok) {
+        out.innerHTML =
+          '<div class="rulebox" style="border-color:var(--red-line);background:var(--red-bg)">' +
+          (res && res.error === "not-configured"
+            ? "AI drafting isn’t configured on the server yet (ANTHROPIC_API_KEY). Everything else works offline."
+            : "AI drafting isn’t available right now. Please try again shortly, or write the narrative manually.") +
+          "</div>";
+        return;
+      }
+    } catch {
+      out.innerHTML =
+        '<div class="rulebox" style="border-color:var(--red-line);background:var(--red-bg)">Could not reach the AI service (offline?). Write the narrative manually.</div>';
+      return;
+    }
+    out.innerHTML = "";
+    const impTa = el("textarea", { rows: "6", style: "width:100%" });
+    impTa.value = res.impression || "";
+    const parTa = el("textarea", { rows: "4", style: "width:100%" });
+    parTa.value = res.parent || "";
+    out.appendChild(
+      el(
+        "div",
+        { class: "notes-wrap" },
+        el("label", {}, "Clinical impression (editable draft)"),
+        impTa,
+      ),
+    );
+    out.appendChild(
+      el(
+        "div",
+        { class: "report-actions", style: "margin:8px 0 4px" },
+        el(
+          "button",
+          {
+            class: "btn sm primary",
+            onclick: () => {
+              S.report.comments =
+                (S.report.comments ? S.report.comments.trim() + "\n\n" : "") +
+                impTa.value.trim();
+              logEvent(
+                "AI-drafted clinical impression inserted into comments (clinician-editable)",
+              );
+              change();
+              if (close) close();
+              render();
+              toast("Draft inserted into clinician comments");
+            },
+          },
+          "Insert into comments",
+        ),
+        el(
+          "button",
+          {
+            class: "btn sm",
+            onclick: () =>
+              fallbackCopy(impTa.value, () => toast("Impression copied")),
+          },
+          "Copy",
+        ),
+      ),
+    );
+    if (parTa.value)
+      out.appendChild(
+        el(
+          "div",
+          { class: "notes-wrap" },
+          el("label", {}, "Parent-friendly explanation (editable draft)"),
+          parTa,
+        ),
+      );
+  };
+  close = showModal({
+    title: "Draft narrative with AI",
+    body,
+    actions: [
+      { label: "Close" },
+      {
+        label: "Draft narrative",
+        primary: true,
+        onclick: () => {
+          doDraft();
+          return false;
+        },
+      },
+    ],
+  });
+}
 function finalTierIndex() {
   return S.report.finalTier !== "" && S.report.finalTier != null
     ? parseInt(S.report.finalTier, 10)
     : suggestedTier();
+}
+function sigBlock() {
+  const so = S.report.signoff;
+  return so
+    ? '<div class="sig"><span style="border-top:none;color:#1c2a38;font-size:13px">Signed: <b>' +
+        esc(so.name) +
+        "</b>" +
+        (so.credentials ? ", " + esc(so.credentials) : "") +
+        " · " +
+        fmtDate(so.date) +
+        "</span></div>"
+    : '<div class="sig"><span>Screener signature</span><span>Credentials</span><span>Date</span></div>';
 }
 function buildNarrative() {
   /* returns PLAIN text (unescaped); escape at render time */
@@ -3750,6 +5255,7 @@ function buildReportInner() {
     "<p>" +
     nar.lines.map(esc).join(" ") +
     "</p>" +
+    audioReportParagraph() +
     comparisonHTML() +
     "<h2>Recommendation</h2>" +
     "<p><b>" +
@@ -3766,7 +5272,7 @@ function buildReportInner() {
     '<p class="disc">' +
     DATA.disclaimers.map(esc).join(" ") +
     "</p>" +
-    '<div class="sig"><span>Screener signature</span><span>Credentials</span><span>Date</span></div>' +
+    sigBlock() +
     '<div class="rfoot">Generated ' +
     fmtDate(todayISO()) +
     " · " +
@@ -3815,6 +5321,31 @@ function viewGuide() {
         "</ul>",
     }),
   );
+  (() => {
+    const cfg = scoringCfg(),
+      custom =
+        cfg.langMonitor !== SCORING_DEFAULTS.langMonitor ||
+        cfg.langConcern !== SCORING_DEFAULTS.langConcern ||
+        cfg.hfvConcern !== SCORING_DEFAULTS.hfvConcern;
+    dom.appendChild(
+      el("div", {
+        class: "rulebox",
+        style: custom
+          ? "border-color:var(--amber-line);background:var(--amber-bg)"
+          : "",
+        html:
+          "<b>Active cut points" +
+          (custom ? " (customised for this site)" : " (published defaults)") +
+          ":</b> Language — Monitor at " +
+          cfg.langMonitor +
+          " missed, Concern at " +
+          cfg.langConcern +
+          " missed. Fluency &amp; Voice — Monitor at 1, Concern at " +
+          cfg.hfvConcern +
+          ". Edit under <b>Screenings → Settings</b>.",
+      }),
+    );
+  })();
   dom.appendChild(el("h3", { style: "margin-top:16px" }, "Speech rules"));
   dom.appendChild(
     el("div", {
@@ -3867,6 +5398,20 @@ function viewGuide() {
       "p",
       { style: "margin:0;font-size:14px" },
       "All screening data is stored locally in this browser — nothing is transmitted anywhere. Use “Screenings → Back up all” to export a JSON file before clearing the browser or moving devices, and “Import backup” to restore it. Prefer student IDs or initials over full names.",
+    ),
+  );
+  priv.appendChild(
+    el(
+      "p",
+      { style: "margin:8px 0 0;font-size:14px" },
+      "Audio recordings are kept on this device only (in the browser’s local database) — they are never uploaded and are not included in the JSON backup, which keeps voice samples of minors device-local by design. Use each recorder’s Download to save a clip to the student file, and Delete to remove it.",
+    ),
+  );
+  priv.appendChild(
+    el(
+      "p",
+      { style: "margin:8px 0 0;font-size:14px" },
+      "“Draft with AI” (on the Report page) is the one optional feature that sends data off the device. It transmits only de-identified results — grade, home language, tier, and per-domain results, with no student name, date of birth, initials, or notes — to draft an editable narrative. Nothing is stored by the service, and the clinician is responsible for the final wording. Skip it to keep the tool fully offline.",
     ),
   );
   w.appendChild(priv);
@@ -4112,32 +5657,210 @@ function rescreenFrom(src) {
       " — scores reset, intake carried over",
   );
 }
+/* Rescreen scheduling: derive a suggested rescreen-by date from the final tier
+   and screening date. Tier 2 (monitor) → 10 weeks; Tier 3 (watch) → 8 weeks;
+   Tier 1 = per district protocol (no due date); Tier 4 = evaluation pending. */
+function addDaysISO(iso, days) {
+  const d = parseLocal(iso);
+  if (!d) return null;
+  d.setDate(d.getDate() + days);
+  return (
+    d.getFullYear() +
+    "-" +
+    String(d.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(d.getDate()).padStart(2, "0")
+  );
+}
+const RESCREEN_WEEKS = { 1: 10, 2: 8 };
+function rescreenDue(record) {
+  const ti = statusesFor(record).__final;
+  const wk = RESCREEN_WEEKS[ti];
+  if (!wk)
+    return {
+      tier: ti,
+      dueISO: null,
+      overdue: false,
+      note: ti === 3 ? "Evaluation pending" : ti === 0 ? "Per protocol" : "",
+    };
+  const dueISO = addDaysISO(record.intake && record.intake.date, wk * 7);
+  return {
+    tier: ti,
+    dueISO,
+    overdue: !!(dueISO && dueISO < todayISO()),
+    note: "",
+  };
+}
+const TIER_SHORT = ["Within limits", "Monitor", "Watch", "Refer"];
+function domainChipsHTML(sts) {
+  return ALL_DOMAINS.map((k) => {
+    const v = sts[k];
+    const lab = {
+      ARTIC: "Ar",
+      FLU: "Fl",
+      VOICE: "Vo",
+      REC: "Re",
+      EXP: "Ex",
+      PRAG: "Pr",
+    }[k];
+    return (
+      '<span class="tl-chip ' +
+      (v || "none") +
+      '" title="' +
+      esc(domainLabel(k)) +
+      (v ? " — " + st(v).label : "") +
+      '">' +
+      lab +
+      "</span>"
+    );
+  }).join("");
+}
+/* Per-student longitudinal timeline (progress over multiple screenings). */
+function openTimelineModal(studentName) {
+  const key = (studentName || "").trim().toLowerCase();
+  const recs = store
+    .get(INDEX, [])
+    .filter((x) => (x.student || "").trim().toLowerCase() === key)
+    .map((x) => store.get(PREFIX + x.id, null))
+    .filter(Boolean)
+    .sort((a, b) => ((a.intake.date || "") < (b.intake.date || "") ? -1 : 1));
+  const body = el("div", {});
+  if (recs.length < 1) {
+    body.appendChild(
+      el("div", { class: "empty" }, "No screenings for this student."),
+    );
+  } else {
+    body.appendChild(
+      el(
+        "p",
+        { class: "hint", style: "margin:2px 0 12px" },
+        recs.length +
+          " screening" +
+          (recs.length === 1 ? "" : "s") +
+          " · Ar Articulation · Fl Fluency · Vo Voice · Re Receptive · Ex Expressive · Pr Pragmatic",
+      ),
+    );
+    const rows = recs
+      .map((r) => {
+        const sts = statusesFor(r),
+          g = gradeByKey(r.gradeKey);
+        return (
+          "<tr><td>" +
+          fmtDate(r.intake.date) +
+          "</td><td>" +
+          (g ? esc(g.label) : "—") +
+          "</td><td>" +
+          domainChipsHTML(sts) +
+          '</td><td class="res-' +
+          (sts.__final === 3 ? "CON" : sts.__final >= 1 ? "MON" : "WNL") +
+          '">' +
+          esc(TIER_SHORT[sts.__final] || "—") +
+          "</td></tr>"
+        );
+      })
+      .join("");
+    body.appendChild(
+      el("div", {
+        class: "tl-wrap",
+        html:
+          "<table class='results tl-table'><tr><th>Screened</th><th>Grade</th><th>Domains</th><th>Result</th></tr>" +
+          rows +
+          "</table>",
+      }),
+    );
+  }
+  showModal({
+    title: "Timeline — " + (studentName || "student"),
+    body,
+    actions: [
+      { label: "Back", onclick: () => setTimeout(openScreeningsModal, 0) },
+    ],
+  });
+}
 function openScreeningsModal() {
   const idx = store.get(INDEX, []);
+  // Precompute per-record tier/due for the caseload view.
+  const meta = {};
+  idx.forEach((x) => {
+    const r = store.get(PREFIX + x.id, null);
+    meta[x.id] = r
+      ? rescreenDue(r)
+      : { tier: 0, dueISO: null, overdue: false, note: "" };
+  });
+  const overdueTotal = idx.filter((x) => meta[x.id].overdue).length;
+  const referTotal = idx.filter((x) => meta[x.id].tier === 3).length;
   const body = el("div", {});
+  // caseload summary
+  if (idx.length)
+    body.appendChild(
+      el("div", {
+        class: "caseload-summary",
+        html:
+          "<span><b>" +
+          idx.length +
+          "</b> screening" +
+          (idx.length === 1 ? "" : "s") +
+          "</span>" +
+          (referTotal
+            ? "<span class='res-CON'><b>" + referTotal + "</b> referred</span>"
+            : "") +
+          (overdueTotal
+            ? "<span class='res-CON'><b>" +
+              overdueTotal +
+              "</b> rescreen overdue</span>"
+            : "<span class='res-WNL'>rescreens on track</span>"),
+      }),
+    );
   const tools = el("div", { class: "scr-tools" });
   const search = el("input", {
     type: "search",
     placeholder: "Search by student, grade, or date…",
     "aria-label": "Search screenings",
   });
+  const gradeFilter = el(
+    "select",
+    {
+      class: "plain",
+      style: "max-width:150px",
+      "aria-label": "Filter by grade",
+    },
+    el("option", { value: "" }, "All grades"),
+    ...DATA.grades.map((g) => el("option", { value: g.key }, g.label)),
+  );
+  const overdueOnly = el("input", { type: "checkbox", id: "flt_overdue" });
   tools.appendChild(search);
+  tools.appendChild(gradeFilter);
+  tools.appendChild(
+    el(
+      "label",
+      { for: "flt_overdue", class: "flt-check" },
+      overdueOnly,
+      el("span", {}, "Overdue only"),
+    ),
+  );
   body.appendChild(tools);
   const listWrap = el("div", {});
   body.appendChild(listWrap);
   const renderList = () => {
     const q = search.value.trim().toLowerCase();
+    const gf = gradeFilter.value;
+    const od = overdueOnly.checked;
     listWrap.innerHTML = "";
     const rows = idx.filter(
       (x) =>
-        !q || [x.student, x.grade, x.date].join(" ").toLowerCase().includes(q),
+        (!q ||
+          [x.student, x.grade, x.date].join(" ").toLowerCase().includes(q)) &&
+        (!gf || x.grade === gf) &&
+        (!od || meta[x.id].overdue),
     );
     if (!rows.length) {
       listWrap.appendChild(
         el(
           "div",
           { class: "empty", style: "padding:28px 10px" },
-          q ? "No screenings match your search." : "No saved screenings yet.",
+          idx.length
+            ? "No screenings match these filters."
+            : "No saved screenings yet.",
         ),
       );
       return;
@@ -4145,13 +5868,26 @@ function openScreeningsModal() {
     rows.forEach((x) => {
       const isCur = S && x.id === S.id;
       const g = gradeByKey(x.grade);
+      const m = meta[x.id];
+      const dueTxt = m.dueISO
+        ? (m.overdue ? "⚠ rescreen due " : "rescreen by ") + fmtDate(m.dueISO)
+        : m.note;
       const row = el(
         "div",
         { class: "scr-row" + (isCur ? " current" : "") },
         el(
           "div",
           { class: "who" },
-          el("b", {}, x.student || "(unnamed)"),
+          el(
+            "b",
+            {},
+            x.student || "(unnamed)",
+            el(
+              "span",
+              { class: "tier-badge t" + (m.tier + 1) },
+              TIER_SHORT[m.tier] || "",
+            ),
+          ),
           el(
             "div",
             { class: "meta" },
@@ -4160,6 +5896,13 @@ function openScreeningsModal() {
               (x.date ? fmtDate(x.date) : "—") +
               (isCur ? " · currently open" : ""),
           ),
+          dueTxt
+            ? el(
+                "div",
+                { class: "meta due" + (m.overdue ? " overdue" : "") },
+                dueTxt,
+              )
+            : null,
         ),
         el(
           "div",
@@ -4178,6 +5921,18 @@ function openScreeningsModal() {
                 },
                 "Open",
               ),
+          el(
+            "button",
+            {
+              class: "btn sm",
+              title: "Progress over time for this student",
+              onclick: () => {
+                closeModal();
+                openTimelineModal(x.student);
+              },
+            },
+            "Timeline",
+          ),
           el(
             "button",
             {
@@ -4214,6 +5969,7 @@ function openScreeningsModal() {
                   return;
                 }
                 store.del(PREFIX + x.id);
+                audioDelAll(x.id);
                 const rest = store.get(INDEX, []).filter((r) => r.id !== x.id);
                 store.set(INDEX, rest);
                 if (S && S.id === x.id) {
@@ -4232,23 +5988,19 @@ function openScreeningsModal() {
     });
   };
   search.addEventListener("input", renderList);
+  gradeFilter.addEventListener("change", renderList);
+  overdueOnly.addEventListener("change", renderList);
   renderList();
   const closeModal = showModal({
-    title: "Screenings",
+    title: "Caseload",
     body,
     actions: [
+      { label: "Settings…", onclick: () => setTimeout(openSettingsModal, 0) },
       {
-        label: "Settings…",
-        onclick: () => {
-          setTimeout(openSettingsModal, 0);
-        },
+        label: "Import roster (CSV)…",
+        onclick: () => setTimeout(importRoster, 0),
       },
-      {
-        label: "Import backup…",
-        onclick: () => {
-          setTimeout(importJSON, 0);
-        },
-      },
+      { label: "Import backup…", onclick: () => setTimeout(importJSON, 0) },
       {
         label: "Back up all (.json)",
         onclick: () => {
@@ -4266,6 +6018,128 @@ function openScreeningsModal() {
       { label: "Done", primary: true },
     ],
   });
+}
+/* ---- #5 roster import: create screenings in bulk from a class-list CSV ---- */
+function parseCSV(text) {
+  const rows = [];
+  let row = [],
+    cur = "",
+    q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) {
+      if (c === '"' && text[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else if (c === '"') q = false;
+      else cur += c;
+    } else if (c === '"') q = true;
+    else if (c === ",") {
+      row.push(cur);
+      cur = "";
+    } else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(cur);
+      cur = "";
+      if (row.some((v) => v.trim() !== "")) rows.push(row);
+      row = [];
+    } else cur += c;
+  }
+  if (cur !== "" || row.length) {
+    row.push(cur);
+    if (row.some((v) => v.trim() !== "")) rows.push(row);
+  }
+  return rows;
+}
+function importRoster() {
+  const inp = el("input", {
+    type: "file",
+    accept: ".csv,text/csv",
+    style: "display:none",
+  });
+  inp.addEventListener("change", () => {
+    const f = inp.files && inp.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const rows = parseCSV(String(r.result));
+        if (rows.length < 1) throw new Error("empty");
+        // Map header columns flexibly.
+        const header = rows[0].map((h) => h.trim().toLowerCase());
+        const col = (names) =>
+          header.findIndex((h) => names.some((n) => h.includes(n)));
+        const ci = {
+          student: col(["student", "name", "id", "initial"]),
+          dob: col(["dob", "birth"]),
+          teacher: col(["teacher"]),
+          home: col(["home", "language"]),
+          screener: col(["screener", "slp"]),
+        };
+        // If no recognizable header, treat first column as student and no header row.
+        const hasHeader = ci.student >= 0 || ci.dob >= 0;
+        const dataRows = hasHeader ? rows.slice(1) : rows;
+        if (!hasHeader) ci.student = 0;
+        const set = getSettings();
+        let created = 0;
+        const idx = store.get(INDEX, []);
+        const norm = (iso) => {
+          // accept YYYY-MM-DD or M/D/YYYY
+          iso = (iso || "").trim();
+          if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+          const m = iso.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+          if (m)
+            return (
+              m[3] + "-" + m[1].padStart(2, "0") + "-" + m[2].padStart(2, "0")
+            );
+          return "";
+        };
+        dataRows.forEach((cells) => {
+          const student = (cells[ci.student] || "").trim();
+          if (!student) return;
+          const s = blankState();
+          s.intake.student = student;
+          s.intake.dob = ci.dob >= 0 ? norm(cells[ci.dob]) : "";
+          s.intake.teacher =
+            ci.teacher >= 0 ? (cells[ci.teacher] || "").trim() : "";
+          s.intake.home = ci.home >= 0 ? (cells[ci.home] || "").trim() : "";
+          s.intake.screener =
+            (ci.screener >= 0 && (cells[ci.screener] || "").trim()) ||
+            set.defaultScreener ||
+            "";
+          s.gradeKey = computeGradeKey(s.intake.dob, s.intake.date);
+          store.set(PREFIX + s.id, s);
+          idx.unshift({
+            id: s.id,
+            student,
+            date: s.intake.date,
+            grade: s.gradeKey || "",
+            ts: Date.now(),
+          });
+          created++;
+        });
+        if (!created) throw new Error("no rows");
+        store.set(INDEX, idx.slice(0, 120));
+        toast(
+          "Roster imported — " +
+            created +
+            " screening" +
+            (created === 1 ? "" : "s") +
+            " created",
+        );
+        openScreeningsModal();
+      } catch (e) {
+        toast(
+          "Roster import failed — expected a CSV with a student column (optional dob, teacher, home language, screener)",
+          "warn",
+        );
+      }
+    };
+    r.readAsText(f);
+  });
+  document.body.appendChild(inp);
+  inp.click();
+  setTimeout(() => inp.remove(), 4000);
 }
 function openSettingsModal() {
   const set = getSettings();
@@ -4306,20 +6180,124 @@ function openSettingsModal() {
       f2,
     ),
   );
+  // Interface language (i18n scaffold — English ships; more packs drop in).
+  const langSel = el(
+    "select",
+    { class: "plain", id: "set_lang", style: "max-width:200px" },
+    ...Object.keys(I18N).map((code) => {
+      const o = el("option", { value: code }, LANG_NAMES[code] || code);
+      if ((set.lang || "en") === code) o.setAttribute("selected", "");
+      return o;
+    }),
+  );
+  body.appendChild(
+    el(
+      "div",
+      { class: "field", style: "margin-top:14px" },
+      el("label", { for: "set_lang" }, "Interface language"),
+      langSel,
+    ),
+  );
+  // Scoring cut points (district policy alignment).
+  const sc = set.scoring;
+  const numFld = (id, label, val, hint) => {
+    const inp = el("input", {
+      type: "number",
+      id,
+      min: "1",
+      max: "12",
+      step: "1",
+      value: String(val),
+      style: "max-width:90px",
+    });
+    return el(
+      "div",
+      { class: "field" },
+      el("label", { for: id }, label),
+      inp,
+      hint ? el("div", { class: "hint", style: "margin:4px 0 0" }, hint) : null,
+    );
+  };
+  const fLangMon = numFld(
+    "set_langMon",
+    "Language — Monitor at (missed skills ≥)",
+    sc.langMonitor,
+  );
+  const fLangCon = numFld(
+    "set_langCon",
+    "Language — Concern at (missed skills ≥)",
+    sc.langConcern,
+  );
+  const fHfvCon = numFld(
+    "set_hfvCon",
+    "Fluency / Voice — Concern at (missed indicators ≥)",
+    sc.hfvConcern,
+    "Monitor is always flagged at 1 missed indicator.",
+  );
+  body.appendChild(
+    el(
+      "div",
+      { class: "card section-head", style: "margin:16px 0 0;box-shadow:none" },
+      el("h3", { style: "font-size:15px" }, "Scoring cut points"),
+      el(
+        "p",
+        { class: "hint", style: "margin:0 0 10px" },
+        "Align to district policy. Defaults reproduce the published rules (language 0–1 within limits · 2 monitor · 3+ concern). Applies to every screening.",
+      ),
+      el("div", { class: "grid2" }, fLangMon, fLangCon),
+      el("div", { class: "grid2" }, fHfvCon, el("div", {})),
+    ),
+  );
   showModal({
     title: "Settings",
     body,
     actions: [
       { label: "Cancel" },
       {
+        label: "Reset scoring to defaults",
+        onclick: () => {
+          setSettings(
+            Object.assign(getSettings(), {
+              scoring: Object.assign({}, SCORING_DEFAULTS),
+            }),
+          );
+          toast("Scoring reset to published defaults");
+          renderNav();
+          updatePreview();
+        },
+      },
+      {
         label: "Save settings",
         primary: true,
         onclick: () => {
-          setSettings({
-            org: f1.value.trim(),
-            defaultScreener: f2.value.trim(),
-          });
+          const num = (el2, d) => {
+            const v = Math.round(Number(el2.value));
+            return Number.isFinite(v) && v > 0 ? v : d;
+          };
+          setSettings(
+            Object.assign(getSettings(), {
+              org: f1.value.trim(),
+              defaultScreener: f2.value.trim(),
+              lang: langSel.value || "en",
+              scoring: {
+                langMonitor: num(
+                  fLangMon.querySelector("input"),
+                  SCORING_DEFAULTS.langMonitor,
+                ),
+                langConcern: num(
+                  fLangCon.querySelector("input"),
+                  SCORING_DEFAULTS.langConcern,
+                ),
+                hfvConcern: num(
+                  fHfvCon.querySelector("input"),
+                  SCORING_DEFAULTS.hfvConcern,
+                ),
+              },
+            }),
+          );
           toast("Settings saved");
+          applyChrome();
+          renderNav();
           updatePreview();
         },
       },
@@ -4361,8 +6339,37 @@ document.addEventListener("keydown", (e) => {
     toast("Screening saved");
   }
 });
+/* ================= PWA: installable + offline (https only) ================= */
+(function registerSW() {
+  if (
+    typeof navigator !== "undefined" &&
+    "serviceWorker" in navigator &&
+    location.protocol === "https:"
+  ) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("sw.js", { scope: "./" })
+        .catch(() => {});
+    });
+  }
+})();
+/* Localise the static app chrome (app bar + top buttons) and set <html lang>. */
+function applyChrome() {
+  document.documentElement.lang = appLang();
+  const set = (sel, val, html) => {
+    const e = $(sel);
+    if (!e) return;
+    if (html) e.innerHTML = val;
+    else e.textContent = val;
+  };
+  set(".appbar .bname", t("appTitle"));
+  set(".appbar .sub", t("appSub"));
+  set("#screeningsBtn", t("navScreenings"));
+  set("#newBtn", t("navNew"));
+}
 /* ================= boot ================= */
 (function init() {
+  applyChrome();
   const last = store.get(LAST, null);
   const idx = store.get(INDEX, []);
   if (last && store.get(PREFIX + last, null)) loadScreening(last);

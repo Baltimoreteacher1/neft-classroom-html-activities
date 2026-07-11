@@ -20,7 +20,13 @@
   # or sensitive one-click actions, so this is low clickjacking risk. This is
   # what lets a SCORM-embedded lesson render inside Canvas and report its grade.
   Content-Security-Policy: frame-ancestors 'self' https:
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  # microphone=(self): the Speech-Language Screening tool records speech samples
+  # via getUserMedia. A per-path override can't loosen this — browsers enforce
+  # the INTERSECTION of all matching Permissions-Policy headers (like the CSP
+  # note above), so microphone=() globally would still block it. (self) permits
+  # ONLY same-origin pages to REQUEST the mic; the browser still prompts the user
+  # for permission. camera/geolocation/payment/usb stay fully blocked.
+  Permissions-Policy: camera=(), microphone=(self), geolocation=(), payment=(), usb=()
   Cache-Control: public, max-age=0, must-revalidate
 
 # /assets/ holds BOTH Vite content-hashed bundles (e.g. lesson-renderer-<hash>.js,
