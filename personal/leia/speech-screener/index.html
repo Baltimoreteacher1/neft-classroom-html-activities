@@ -1826,7 +1826,7 @@ const PREFIX = "slscreen_",
   INDEX = PREFIX + "index",
   LAST = PREFIX + "last",
   SETTINGS = PREFIX + "settings";
-const APP_VERSION = "2.2";
+const APP_VERSION = "2.3";
 /* ---- i18n scaffold: t(key) resolves against the active language pack, falling
    back to English then the key. Only English ships today; a Spanish (or other)
    pack drops in as I18N.es = {...} and is selectable in Settings. Applied to the
@@ -4572,6 +4572,18 @@ function viewReport() {
     ),
   );
   acts.appendChild(
+    el(
+      "button",
+      {
+        class: "btn",
+        title:
+          "Draft an editable clinical narrative with AI — sends DE-IDENTIFIED results only (opt-in)",
+        onclick: openAIDraftModal,
+      },
+      "✨ Draft with AI",
+    ),
+  );
+  acts.appendChild(
     locked
       ? el(
           "button",
@@ -4866,6 +4878,193 @@ function downloadReferralWord() {
     reportFilename("doc").replace(".doc", "_Referral.doc"),
   );
   toast("Referral form downloaded");
+}
+/* ---- #2 AI narrative assist (opt-in; sends DE-IDENTIFIED results only) ---- */
+function deidentifiedPayload() {
+  const g = gradeByKey(S.gradeKey);
+  const tier = DATA.tiers[finalTierIndex()];
+  const domains = [];
+  const aErr = ART_STIMULI.map((s, j) => ({ s, j }))
+    .filter(({ j }) => S.artic.cards[j] === "E")
+    .map(({ s }) => s.word + " " + s.sound);
+  const aPat = DATA.artic.patterns
+    .filter((p, j) => S.artic.pat[j])
+    .map((p) => p.text);
+  domains.push({
+    name: "Articulation / Phonology",
+    result: articStatus().label,
+    detail: [...aErr, ...aPat].join(", "),
+  });
+  ["FLU", "VOICE"].forEach((k) => {
+    const s = hfvStatus(k),
+      n = DATA.hfvItems[k].length,
+      obs = count(S.hfv[k].c);
+    domains.push({
+      name: DATA.universalTasks[k].name,
+      result: s.label,
+      detail: obs + "/" + n + " indicators within limits",
+    });
+  });
+  if (g)
+    LANG.forEach((d) => {
+      const s = langStatus(d.k),
+        n = g.domains[d.k].length,
+        obs = count(S.lang[d.k].c);
+      domains.push({
+        name: DATA.domainNames[d.k],
+        result: s.label,
+        detail: obs + " of " + n + " expected skills observed",
+      });
+    });
+  // NO student name, DOB, initials, teacher, screener, or free-text notes.
+  return {
+    grade: g ? g.label : "",
+    homeLanguage: (S.intake.home || "").trim(),
+    tier: tier.name,
+    domains,
+  };
+}
+function openAIDraftModal() {
+  const payload = deidentifiedPayload();
+  const body = el("div", {});
+  body.appendChild(
+    el(
+      "div",
+      {
+        class: "rulebox",
+        style:
+          "margin:2px 0 12px;border-color:var(--amber-line);background:var(--amber-bg)",
+      },
+      el(
+        "div",
+        { style: "font-weight:700;color:var(--navy);margin-bottom:4px" },
+        "This is the only feature that leaves the device",
+      ),
+      el(
+        "div",
+        { style: "font-size:13px" },
+        "It sends the DE-IDENTIFIED results below to an AI service to draft an editable narrative — no student name, date of birth, initials, teacher, or notes are included. Nothing is stored. Review and edit anything it drafts; you are responsible for the final clinical wording.",
+      ),
+    ),
+  );
+  body.appendChild(
+    el("div", {
+      class: "rulebox",
+      style: "margin:0 0 12px",
+      html:
+        "<b>Sent:</b> Grade " +
+        esc(payload.grade || "—") +
+        (payload.homeLanguage
+          ? " · Home language " + esc(payload.homeLanguage)
+          : "") +
+        " · Tier " +
+        esc(payload.tier) +
+        "<br>" +
+        payload.domains
+          .map((d) => esc(d.name) + ": " + esc(d.result))
+          .join(" · "),
+    }),
+  );
+  const out = el("div", { id: "aiOut" });
+  body.appendChild(out);
+  let close = null;
+  const doDraft = async () => {
+    out.innerHTML =
+      '<div class="hint" style="margin:8px 0">Drafting… contacting the AI service.</div>';
+    let res;
+    try {
+      const r = await fetch("/api/screener-assist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      res = await r.json().catch(() => null);
+      if (!r.ok || !res || !res.ok) {
+        out.innerHTML =
+          '<div class="rulebox" style="border-color:var(--red-line);background:var(--red-bg)">' +
+          (res && res.error === "not-configured"
+            ? "AI drafting isn’t configured on the server yet (ANTHROPIC_API_KEY). Everything else works offline."
+            : "AI drafting isn’t available right now. Please try again shortly, or write the narrative manually.") +
+          "</div>";
+        return;
+      }
+    } catch {
+      out.innerHTML =
+        '<div class="rulebox" style="border-color:var(--red-line);background:var(--red-bg)">Could not reach the AI service (offline?). Write the narrative manually.</div>';
+      return;
+    }
+    out.innerHTML = "";
+    const impTa = el("textarea", { rows: "6", style: "width:100%" });
+    impTa.value = res.impression || "";
+    const parTa = el("textarea", { rows: "4", style: "width:100%" });
+    parTa.value = res.parent || "";
+    out.appendChild(
+      el(
+        "div",
+        { class: "notes-wrap" },
+        el("label", {}, "Clinical impression (editable draft)"),
+        impTa,
+      ),
+    );
+    out.appendChild(
+      el(
+        "div",
+        { class: "report-actions", style: "margin:8px 0 4px" },
+        el(
+          "button",
+          {
+            class: "btn sm primary",
+            onclick: () => {
+              S.report.comments =
+                (S.report.comments ? S.report.comments.trim() + "\n\n" : "") +
+                impTa.value.trim();
+              logEvent(
+                "AI-drafted clinical impression inserted into comments (clinician-editable)",
+              );
+              change();
+              if (close) close();
+              render();
+              toast("Draft inserted into clinician comments");
+            },
+          },
+          "Insert into comments",
+        ),
+        el(
+          "button",
+          {
+            class: "btn sm",
+            onclick: () =>
+              fallbackCopy(impTa.value, () => toast("Impression copied")),
+          },
+          "Copy",
+        ),
+      ),
+    );
+    if (parTa.value)
+      out.appendChild(
+        el(
+          "div",
+          { class: "notes-wrap" },
+          el("label", {}, "Parent-friendly explanation (editable draft)"),
+          parTa,
+        ),
+      );
+  };
+  close = showModal({
+    title: "Draft narrative with AI",
+    body,
+    actions: [
+      { label: "Close" },
+      {
+        label: "Draft narrative",
+        primary: true,
+        onclick: () => {
+          doDraft();
+          return false;
+        },
+      },
+    ],
+  });
 }
 function finalTierIndex() {
   return S.report.finalTier !== "" && S.report.finalTier != null
@@ -5203,6 +5402,13 @@ function viewGuide() {
       "p",
       { style: "margin:8px 0 0;font-size:14px" },
       "Audio recordings are kept on this device only (in the browser’s local database) — they are never uploaded and are not included in the JSON backup, which keeps voice samples of minors device-local by design. Use each recorder’s Download to save a clip to the student file, and Delete to remove it.",
+    ),
+  );
+  priv.appendChild(
+    el(
+      "p",
+      { style: "margin:8px 0 0;font-size:14px" },
+      "“Draft with AI” (on the Report page) is the one optional feature that sends data off the device. It transmits only de-identified results — grade, home language, tier, and per-domain results, with no student name, date of birth, initials, or notes — to draft an editable narrative. Nothing is stored by the service, and the clinician is responsible for the final wording. Skip it to keep the tool fully offline.",
     ),
   );
   w.appendChild(priv);

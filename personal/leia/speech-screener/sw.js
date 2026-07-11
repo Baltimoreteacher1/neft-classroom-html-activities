@@ -2,7 +2,7 @@
    The page is fully self-contained (no external assets), so caching the
    document itself is enough for offline use. Network-first for navigations so
    a new deploy appears immediately online; cache fallback when offline. */
-const CACHE = "sls-v2_2";
+const CACHE = "sls-v2_3";
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));
