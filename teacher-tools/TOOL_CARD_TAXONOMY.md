@@ -8,29 +8,35 @@ The page is primarily a teacher productivity hub. It can include internal toolin
 
 ## Approved task families
 
-Use one or more of these task families in `data-category`:
+Use exactly one primary task family in `data-category` (extra keywords may follow
+it to improve search — e.g. `data dashboard mastery standards`). The primary
+family MUST match one of the five directory filters and its group section.
 
-| Family | Use when the card helps with... | Example CTA pattern |
-|---|---|---|
-| `command` | Planning, prioritizing, capturing tasks, QA, or shipping work | Launch command center |
-| `data` | Reviewing evidence, dashboards, grouping, summaries, analysis | Review learning evidence |
-| `instruction` | Classroom activities, student-facing practice, teaching supports | Browse resources |
-| `curriculum` | Unit sections, content collections, ESOL/math/reading hubs | Browse math resources |
-| `deployment` | GitHub, Cloudflare, build checks, publishing workflow | Check deployment |
+| Family       | Group heading         | Use when the card helps with...                                      | Example CTA           |
+| ------------ | --------------------- | -------------------------------------------------------------------- | --------------------- |
+| `plan`       | Plan & create         | Planning, prioritizing, generating lessons / Do Nows / playlists, QA | Generate a lesson     |
+| `teach`      | Teach live            | Projecting, pacing, and facilitating the class in the moment         | Open the Class Board  |
+| `data`       | Data & evidence       | Dashboards, mastery, growth, standards, gradebook, analysis          | Review evidence       |
+| `canvas`     | Canvas & publishing   | SCORM, cartridges, deploy-to-Canvas, roster links, Google Forms      | Open Canvas Console   |
+| `curriculum` | Curriculum & sections | Student-facing unit sections and activity collections                | Browse math resources |
 
 ## Required card slots
 
-Each card should include:
+Each card is a full-card anchor with exactly these parts, in order (kept minimal
+on purpose — no badge pills, no metadata chip rows):
 
-1. **Badge** — category/status such as `Core`, `New`, `Data tool`, `Curriculum`, or `Reading`.
-2. **Tool kind** — what type of destination it is, such as `Dashboard`, `Local-first`, `Student-facing`, or `Instruction`.
-3. **Title** — plain name of the tool or section.
-4. **Description** — one short paragraph using this structure:
-   - What it is
-   - What it helps with
-   - Who should use it
-5. **Metadata chips** — role and use case.
-6. **Unique CTA** — must identify the destination or action clearly.
+1. **Kind label** — one quiet uppercase `.tool-kind` line naming the destination
+   type, optionally with a qualifier: `Dashboard`, `Command · Local-first`,
+   `Live · Projector-ready`, `Canvas · Setup`, `Section · Math`.
+2. **Title** (`h4`) — plain, searchable name of the tool or section.
+3. **Description** — one short paragraph: what it is and the job it does. Keep
+   descriptions parallel in length across a group.
+4. **Unique CTA** (`.tool-cta`) — a specific verb + object that names the
+   destination (`Open Canvas Console`, `Make a Do Now`), never generic “Open”.
+
+A hidden `[data-local-use]` span and rich `data-category`/`data-audience`
+keywords stay on the card to power local-usage counts and search — they are not
+shown as chips.
 
 ## Copy rules
 

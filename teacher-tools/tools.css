@@ -1,38 +1,64 @@
-:root {
-  --tools-ink: #17202a;
-  --tools-muted: #53616f;
-  --tools-teal: #0f766e;
-  --tools-teal-dark: #115e59;
-  --tools-cream: #fffaf0;
-  --tools-sage: #eef4f3;
-  --tools-gold: #b7791f;
-  --tools-coral: #c2410c;
-  --tools-line: #d8dfdc;
-  --tools-shadow: 0 16px 38px rgba(23, 32, 42, 0.11);
-  --tools-radius: 18px;
+/* Teacher Tools — Professional Hub
+   Refined, calm, publisher-grade layout scoped entirely to `.tools-page`.
+   Warm ivory canvas, serif display headings, hairline flat cards, a single
+   clay accent. No nested boxes, no chip clutter, responsive grids that never
+   overflow. Search/filter contract (data-tool-*) is preserved for tools.js. */
+
+.tools-page {
+  --tt-ivory: #f7f5ef;
+  --tt-paper: #fffdf8;
+  --tt-ink: #201d17;
+  --tt-muted: #6b6455;
+  --tt-faint: #928b7a;
+  --tt-line: #e7e2d4;
+  --tt-line-soft: #efebdf;
+  --tt-clay: #b1543a;
+  --tt-clay-dark: #96442d;
+  --tt-clay-soft: #f4e9e2;
+  --tt-sage: #4a7a6f;
+  --tt-radius: 16px;
+  --tt-serif:
+    "Tiempos Text", "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+}
+
+/* Calm the busy global gradient down to a warm ivory wash for this page only. */
+body.tools-page {
+  background: var(--tt-ivory);
 }
 
 .tools-page .page-shell {
-  width: min(100% - 32px, 1220px);
+  width: min(100% - 40px, 1180px);
+  gap: clamp(38px, 6vw, 64px);
+  padding-block: clamp(28px, 5vw, 52px) 40px;
+  color: var(--tt-ink);
 }
 
+.tools-page h1,
+.tools-page h2,
+.tools-page h3 {
+  font-family: var(--tt-serif);
+  letter-spacing: -0.01em;
+  color: var(--tt-ink);
+}
+
+/* ---------- Skip link ---------- */
 .skip-link {
   position: absolute;
   inset-block-start: 12px;
   inset-inline-start: -999px;
   z-index: 30;
-  padding: 10px 14px;
-  background: var(--tools-ink);
+  padding: 10px 16px;
+  background: var(--tt-ink);
   color: #fff;
   border-radius: 999px;
-  font-weight: 850;
+  font-weight: 700;
   text-decoration: none;
 }
-
 .skip-link:focus {
   inset-inline-start: 12px;
 }
 
+/* ---------- Breadcrumb ---------- */
 .tools-breadcrumb ol {
   display: flex;
   flex-wrap: wrap;
@@ -41,349 +67,353 @@
   margin: 0;
   padding: 0;
   list-style: none;
+  font-size: 0.86rem;
+  color: var(--tt-faint);
 }
-
+.tools-breadcrumb a {
+  text-decoration: none;
+  color: var(--tt-muted);
+}
+.tools-breadcrumb a:hover {
+  color: var(--tt-clay);
+}
 .tools-breadcrumb li + li::before {
   content: "/";
   margin-inline-end: 8px;
-  color: var(--tools-muted);
+  color: var(--tt-line);
 }
-
 .tools-breadcrumb [aria-current="page"] {
-  color: var(--tools-ink);
-  font-weight: 850;
+  color: var(--tt-ink);
+  font-weight: 600;
 }
 
-.tools-hero {
+/* ---------- Hero ---------- */
+.tools-page .tools-hero {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(280px, .55fr);
-  gap: clamp(18px, 3vw, 32px);
-  align-items: stretch;
+  gap: 22px;
+  max-width: 940px;
 }
-
-.tools-hero .hero-copy {
-  max-width: 820px;
+.tools-page .tools-hero .eyebrow {
+  color: var(--tt-clay);
+  font-size: 0.76rem;
+  letter-spacing: 0.14em;
 }
-
-.hero-support {
-  max-width: 780px;
+.tools-page .tools-hero h1 {
   margin: 0;
-  color: var(--tools-muted);
-  font-size: 1rem;
+  font-size: clamp(2.6rem, 6.4vw, 4.4rem);
+  line-height: 1.02;
+  font-weight: 500;
+}
+.tools-hero .hero-copy {
+  max-width: 660px;
+  margin: 0;
+  color: var(--tt-muted);
+  font-size: clamp(1.05rem, 1.6vw, 1.28rem);
+  line-height: 1.5;
 }
 
-.hero-callouts {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin: 14px 0 0;
+/* Plan → Teach → Review workflow ribbon (replaces the old duplicate card wall) */
+.workflow-ribbon {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 12px;
+  margin: 6px 0 0;
   padding: 0;
   list-style: none;
 }
-
-.hero-callouts li,
-.summary-card,
-.tool-filter-panel,
-.start-card,
-.tool-card,
-.tool-group,
-.content-standard-card,
-.empty-state {
-  background: rgba(255, 255, 255, 0.88);
-  border: 1px solid var(--tools-line);
-  border-radius: var(--tools-radius);
-  box-shadow: 0 10px 26px rgba(23, 32, 42, 0.07);
-}
-
-.hero-callouts li {
-  padding: 12px;
-  color: var(--tools-muted);
-  font-size: .92rem;
-}
-
-.hero-callouts strong {
-  display: block;
-  color: var(--tools-ink);
-  font-size: .95rem;
-}
-
-.summary-card {
+.workflow-ribbon li {
+  flex: 1 1 200px;
   display: grid;
-  gap: 12px;
-  padding: 22px;
-  background: linear-gradient(145deg, rgba(238,244,243,.95), rgba(255,250,240,.95));
-}
-
-.summary-card h2 {
-  margin: 0;
-  font-size: 1.35rem;
-}
-
-.summary-list {
-  display: grid;
-  gap: 10px;
-  margin: 0;
-}
-
-.summary-list div {
-  display: grid;
-  gap: 2px;
-  padding: 12px;
-  background: rgba(255,255,255,.82);
-  border: 1px solid rgba(216,223,220,.88);
+  gap: 4px;
+  padding: 16px 18px;
+  background: var(--tt-paper);
+  border: 1px solid var(--tt-line);
   border-radius: 14px;
 }
-
-.summary-list dt {
-  color: var(--tools-muted);
-  font-size: .76rem;
-  font-weight: 850;
-  letter-spacing: .05em;
+.workflow-ribbon .step {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  color: var(--tt-faint);
 }
-
-.summary-list dd {
-  margin: 0;
-  color: var(--tools-ink);
-  font-weight: 850;
-}
-
-.tools-section-intro {
-  max-width: 780px;
-  color: var(--tools-muted);
-}
-
-.start-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) repeat(2, minmax(250px, .7fr));
-  gap: 16px;
-}
-
-.start-card,
-.tool-card {
-  position: relative;
-  display: grid;
-  gap: 12px;
-  min-height: 100%;
-  padding: 20px;
-  color: inherit;
+.workflow-ribbon a {
+  font-family: var(--tt-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--tt-ink);
   text-decoration: none;
-  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+.workflow-ribbon a:hover,
+.workflow-ribbon a:focus-visible {
+  color: var(--tt-clay);
+}
+.workflow-ribbon small {
+  color: var(--tt-muted);
+  font-size: 0.86rem;
 }
 
-.start-card.primary-start {
-  border-block-start: 7px solid var(--tools-teal);
+/* ---------- Search + filter bar ---------- */
+.section-heading h2 {
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  font-weight: 500;
 }
-
-.start-card:hover,
-.start-card:focus-visible,
-.tool-card:hover,
-.tool-card:focus-visible {
-  transform: translateY(-3px);
-  border-color: var(--tools-teal);
-  box-shadow: var(--tools-shadow);
+.tools-page .eyebrow {
+  color: var(--tt-clay);
 }
-
-.start-card:focus-visible,
-.tool-card:focus-visible,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: 4px solid rgba(15,118,110,.35);
-  outline-offset: 4px;
-}
-
-.card-topline,
-.tool-meta,
-.card-footer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-.card-topline {
-  justify-content: space-between;
-}
-
-.badge,
-.tool-kind,
-.local-use {
-  width: fit-content;
-  padding: 5px 9px;
-  border-radius: 999px;
-  font-size: .75rem;
-  font-weight: 850;
-  letter-spacing: .02em;
-}
-
-.badge {
-  background: var(--tools-sage);
-  color: var(--tools-teal-dark);
-  border: 1px solid rgba(15,118,110,.18);
-}
-
-.badge.new {
-  background: #fef3c7;
-  color: #7c4a03;
-  border-color: rgba(183,121,31,.24);
-}
-
-.badge.core {
-  background: #e0f2fe;
-  color: #075985;
-  border-color: rgba(7,89,133,.18);
-}
-
-.tool-kind {
-  background: #f8fafc;
-  color: var(--tools-muted);
-  border: 1px solid var(--tools-line);
-}
-
-.local-use {
-  background: #ecfdf5;
-  color: #166534;
-  border: 1px solid rgba(22,101,52,.18);
-}
-
-.start-card h3,
-.tool-card h4,
-.tool-group h3,
-.content-standard-card h3 {
-  margin: 0;
-  color: var(--tools-ink);
-}
-
-.start-card p,
-.tool-card p,
-.content-standard-card p,
-.empty-state p {
-  margin: 0;
-  color: var(--tools-muted);
-}
-
-.tool-card strong,
-.start-card strong {
-  color: var(--tools-ink);
-}
-
-.tool-cta {
-  margin-top: auto;
-  color: var(--tools-teal-dark);
-  font-weight: 900;
+.tools-section-intro {
+  max-width: 640px;
+  margin: 8px 0 0;
+  color: var(--tt-muted);
 }
 
 .tool-filter-panel {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) auto;
-  gap: 16px;
+  grid-template-columns: minmax(240px, 1fr) auto;
+  gap: 16px 24px;
   align-items: end;
-  padding: 18px;
-  margin-bottom: 18px;
+  margin: 22px 0 4px;
+  padding: 16px 0;
+  background: var(--tt-ivory);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  border-bottom: 1px solid var(--tt-line);
 }
-
 .tool-search label {
   display: grid;
-  gap: 7px;
-  color: var(--tools-muted);
-  font-size: .82rem;
-  font-weight: 850;
-  letter-spacing: .04em;
+  gap: 6px;
+  color: var(--tt-faint);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
-
 .tool-search input {
   width: 100%;
-  padding: 12px 14px;
-  border: 1px solid var(--tools-line);
-  border-radius: 14px;
-  color: var(--tools-ink);
+  padding: 12px 15px;
+  background: var(--tt-paper);
+  border: 1px solid var(--tt-line);
+  border-radius: 12px;
+  color: var(--tt-ink);
   font: inherit;
 }
-
-.tool-shortcut {
-  margin: 6px 0 0;
-  color: var(--tools-muted);
-  font-size: .82rem;
+.tool-search input::placeholder {
+  color: var(--tt-faint);
 }
-
+.tool-shortcut {
+  margin: 7px 0 0;
+  color: var(--tt-faint);
+  font-size: 0.8rem;
+}
 .filter-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   justify-content: flex-end;
 }
-
 .filter-chips button {
-  padding: 9px 12px;
-  border: 1px solid var(--tools-line);
+  padding: 8px 15px;
+  border: 1px solid var(--tt-line);
   border-radius: 999px;
-  background: #fff;
-  color: var(--tools-teal-dark);
+  background: var(--tt-paper);
+  color: var(--tt-muted);
   font: inherit;
-  font-size: .88rem;
-  font-weight: 850;
+  font-size: 0.88rem;
+  font-weight: 600;
   cursor: pointer;
+  transition:
+    color 140ms ease,
+    background 140ms ease,
+    border-color 140ms ease;
 }
-
+.filter-chips button:hover {
+  border-color: var(--tt-clay);
+  color: var(--tt-clay);
+}
 .filter-chips button[aria-pressed="true"] {
-  background: var(--tools-teal);
+  background: var(--tt-ink);
   color: #fff;
-  border-color: var(--tools-teal);
+  border-color: var(--tt-ink);
 }
 
 .result-status {
-  margin: 0 0 16px;
-  color: var(--tools-muted);
-  font-weight: 750;
+  margin: 14px 0 0;
+  color: var(--tt-faint);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.empty-state {
+  padding: 26px;
+  margin-top: 18px;
+  background: var(--tt-paper);
+  border: 1px dashed var(--tt-line);
+  border-radius: var(--tt-radius);
+}
+.empty-state h3 {
+  margin: 0 0 6px;
+}
+.empty-state p {
+  margin: 0;
+  color: var(--tt-muted);
 }
 
+/* ---------- Tool groups (flat on the page — no nested boxes) ---------- */
 .tool-group {
   display: grid;
-  gap: 16px;
-  margin-top: 16px;
-  padding: 18px;
+  gap: 18px;
+  margin-top: clamp(32px, 5vw, 52px);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
   box-shadow: none;
 }
-
 .tool-group-header {
   display: grid;
-  gap: 4px;
+  gap: 6px;
+  max-width: 720px;
 }
-
-.tool-group-header p {
-  max-width: 780px;
+.tool-group-header .eyebrow {
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+}
+.tool-group-header h3 {
   margin: 0;
-  color: var(--tools-muted);
+  font-size: clamp(1.35rem, 2.4vw, 1.85rem);
+  font-weight: 500;
+}
+.tool-group-header p {
+  margin: 0;
+  color: var(--tt-muted);
 }
 
 .tool-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 288px), 1fr));
   gap: 16px;
 }
 
+/* ---------- Cards ---------- */
 .tool-card {
-  min-height: 285px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 100%;
+  padding: 22px 22px 20px;
+  background: var(--tt-paper);
+  border: 1px solid var(--tt-line);
+  border-radius: var(--tt-radius);
+  color: inherit;
+  text-decoration: none;
   box-shadow: none;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+.tool-card:hover,
+.tool-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--tt-clay);
+  box-shadow: 0 18px 40px rgba(32, 29, 23, 0.1);
+}
+.tool-kind {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tt-faint);
+}
+.tool-card h4 {
+  margin: 0;
+  font-family: var(--tt-serif);
+  font-size: 1.28rem;
+  font-weight: 600;
+  line-height: 1.18;
+  color: var(--tt-ink);
+}
+.tool-card p {
+  margin: 0;
+  color: var(--tt-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.tool-card p strong {
+  color: var(--tt-ink);
+  font-weight: 650;
+}
+.tool-cta {
+  margin-top: auto;
+  padding-top: 6px;
+  color: var(--tt-clay-dark);
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+.tool-cta::after {
+  content: " →";
+}
+.tool-card:hover .tool-cta,
+.tool-card:focus-visible .tool-cta {
+  color: var(--tt-clay);
+}
+/* Deploy card holds inner links, so it isn't a full-card anchor. */
+.tool-card--rich {
+  gap: 12px;
+}
+.tool-card--rich a.tool-cta {
+  text-decoration: none;
+}
+.tool-card--rich .inline-note {
+  font-size: 0.85rem;
+  color: var(--tt-faint);
+}
+.tool-card--rich .inline-note a {
+  color: var(--tt-clay-dark);
+  font-weight: 600;
 }
 
-.content-standard-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+.local-use {
+  width: fit-content;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #eef4f1;
+  color: var(--tt-sage);
+  border: 1px solid rgba(74, 122, 111, 0.2);
 }
 
-.content-standard-card {
-  padding: 18px;
-  box-shadow: none;
+/* ---------- Focus + footer ---------- */
+.tool-card:focus-visible,
+.filter-chips button:focus-visible,
+.tool-search input:focus-visible,
+.workflow-ribbon a:focus-visible,
+.tools-breadcrumb a:focus-visible {
+  outline: 3px solid rgba(177, 84, 58, 0.4);
+  outline-offset: 3px;
 }
 
-.empty-state {
-  padding: 20px;
-  border-style: dashed;
-  box-shadow: none;
+.tools-page .site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: clamp(40px, 6vw, 64px);
+  padding-top: 22px;
+  border-top: 1px solid var(--tt-line);
+  color: var(--tt-faint);
+  font-size: 0.86rem;
 }
 
 .visually-hidden {
@@ -398,48 +428,21 @@ select:focus-visible {
   border: 0;
 }
 
-@media (max-width: 1080px) {
-  .tools-hero,
-  .tool-filter-panel,
-  .start-grid {
+/* ---------- Responsive ---------- */
+@media (max-width: 780px) {
+  .tool-filter-panel {
+    position: static;
     grid-template-columns: 1fr;
   }
-
   .filter-chips {
     justify-content: flex-start;
-  }
-
-  .tool-grid,
-  .content-standard-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 720px) {
-  .hero-callouts,
-  .tool-grid,
-  .content-standard-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .filter-chips button {
-    flex: 1 1 auto;
-  }
-
-  .start-card,
-  .tool-card,
-  .tool-group,
-  .summary-card,
-  .tool-filter-panel {
-    border-radius: 14px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
+  .tools-page *,
+  .tools-page *::before,
+  .tools-page *::after {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }
