@@ -110,10 +110,19 @@ function validateIntegrations(ids) {
   assert.deepEqual(errors, [], `Learning Supports integration failures:\n${errors.join("\n")}`);
 }
 
+function validateHubEntry() {
+  const html = readFileSync(join(ROOT, "curriculum", "index.html"), "utf8");
+  assert.ok(html.includes('id="learning-supports-feature-title"'), "curriculum hub missing Learning Supports entry");
+  assert.match(html, /access without lowering the learning target/i);
+  assert.match(html, /no IEP data is stored/i);
+  assert.match(html, /\/lessons\/1-1\/#ewl-supports=/);
+}
+
 const ids = canonicalLessonIds();
 assert.equal(ids.length, 64, `expected 64 canonical lessons, found ${ids.length}`);
 assert.ok(existsSync(MANIFEST_PATH), "assets/learning-supports/manifest.json does not exist");
 const manifest = JSON.parse(readFileSync(MANIFEST_PATH, "utf8"));
 validateManifest(manifest, ids);
 validateIntegrations(ids);
+validateHubEntry();
 console.log(`Learning Supports validation PASS — ${ids.length}/${ids.length} canonical lessons covered`);
