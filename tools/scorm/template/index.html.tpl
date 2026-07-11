@@ -43,19 +43,30 @@
         // ---- locate the SCORM 1.2 API (walk parents, then opener) ----
         function findAPI(win) {
           var tries = 0;
-          while (
-            win &&
-            win.API == null &&
-            win.parent &&
-            win.parent !== win &&
-            tries++ < 12
-          ) {
-            win = win.parent;
+          while (win && tries++ < 12) {
+            try {
+              if (win.API != null) return win.API;
+            } catch (e) {
+              break;
+            }
+            try {
+              if (!win.parent || win.parent === win) break;
+              win = win.parent;
+            } catch (e) {
+              break;
+            }
           }
-          return win ? win.API : null;
+          return null;
         }
-        var API =
-          findAPI(window) || (window.opener ? findAPI(window.opener) : null);
+        var API = null;
+        try {
+          API = findAPI(window);
+        } catch (e) {}
+        if (!API) {
+          try {
+            if (window.opener) API = findAPI(window.opener);
+          } catch (e) {}
+        }
         var started = false;
         var finished = false;
 
