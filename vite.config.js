@@ -183,12 +183,20 @@ function copyStandaloneHtml() {
               cpSync(supportDir, destDir, { recursive: true });
             }
           }
-          // CardForge lesson bundles (interactive.html, activity-pack.html, sub-packet.html)
+          // CardForge lesson bundles (interactive.html, activity-pack.html, sub-packet.html).
+          // Teacher/internal markdown (answer-key.md, teacher-guide.md,
+          // exit-ticket.md, reports) must NOT ship — any student with the URL
+          // could read the answer key. student-practice.md is the one .md
+          // students are actually linked to (bundle card-buttons.json), so it
+          // stays.
           const bundleDir = resolve(lessonsDir, dir.name, "bundle");
           if (existsSync(bundleDir)) {
             const destDir = resolve(__dirname, "dist", "lessons", dir.name, "bundle");
             mkdirSync(destDir, { recursive: true });
-            cpSync(bundleDir, destDir, { recursive: true });
+            cpSync(bundleDir, destDir, {
+              recursive: true,
+              filter: (src) => !/\.md$/i.test(src) || /student-practice\.md$/i.test(src),
+            });
           }
         }
       }
