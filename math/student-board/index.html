@@ -941,6 +941,80 @@
         resize: vertical;
         box-sizing: border-box;
       }
+      /* ---- today's-lesson picker ---- */
+      .lesson-chip {
+        margin: 0 0 8px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--teal);
+        background: #eef7f8;
+        border: 1px solid #cde6e9;
+        border-radius: 999px;
+        padding: 5px 12px;
+        display: inline-block;
+      }
+      .lesson-chip[hidden] {
+        display: none;
+      }
+      #lessonSearch {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+      }
+      .lesson-list {
+        display: grid;
+        gap: 6px;
+        max-height: 46vh;
+        overflow: auto;
+        margin-bottom: 14px;
+      }
+      .lesson-row {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        width: 100%;
+        text-align: left;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 9px 12px;
+        background: #fff;
+        cursor: pointer;
+        font: inherit;
+      }
+      .lesson-row:hover {
+        background: #f4faf6;
+        border-color: #cfe6d8;
+      }
+      .lesson-row.is-current {
+        border-color: var(--teal);
+        background: #eef7f8;
+      }
+      .lesson-row .lr-id {
+        font-weight: 800;
+        color: var(--navy);
+        font-family: "Nunito", sans-serif;
+        white-space: nowrap;
+      }
+      .lesson-row .lr-title {
+        flex: 1;
+        min-width: 0;
+        color: var(--ink);
+      }
+      .lesson-row .lr-std {
+        font-size: 12px;
+        color: var(--ink-soft);
+        white-space: nowrap;
+      }
+      .lesson-empty {
+        text-align: center;
+        color: var(--ink-soft);
+        font-size: 14px;
+        padding: 18px 0;
+      }
       /* ---- overlays (picker + timer) ---- */
       .overlay {
         position: fixed;
@@ -1726,9 +1800,17 @@
               📚 Canvas linked: <a id="canvasSetLink" href="#" target="_blank" rel="noopener"></a>
             </div>
             <p class="sync-chip" id="lessonSync" hidden></p>
+            <p class="lesson-chip edit-only" id="lessonChip" hidden></p>
             <div class="assigns" id="assigns"></div>
             <div class="row-tools">
               <button class="mini" id="myCodesBtn">🎒 My saved codes</button>
+              <button
+                class="mini edit-only"
+                id="setLessonBtn"
+                title="Pick today's lesson — fills the assignment + Today's Target from the curriculum"
+              >
+                📘 Set today's lesson
+              </button>
               <button class="mini edit-only" id="addAssignBtn">+ Assignment</button>
               <button class="mini edit-only" id="setCanvasBtn">🔗 Set Canvas link</button>
               <button
@@ -1950,6 +2032,35 @@
       </div>
     </div>
 
+    <!-- Today's-lesson picker (teacher only) — pulls from the curriculum manifest -->
+    <div class="modal-backdrop" id="lessonPickerModal" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="lessonPickerTitle">
+        <h3 id="lessonPickerTitle">📘 Set today's lesson</h3>
+        <p class="modal-help">
+          Pick the lesson your class is on. It adds (or updates) the lesson assignment and fills
+          <b>🎯 Today's Target</b> from the curriculum — you can still edit anything before you
+          Publish. It won't overwrite a Target you've already written.
+        </p>
+        <input
+          type="text"
+          id="lessonSearch"
+          placeholder="Search by lesson number, title, or standard…"
+          aria-label="Search lessons"
+        />
+        <div class="lesson-list" id="lessonList" aria-live="polite"></div>
+        <div class="modal-actions">
+          <button class="btn ghost" id="lessonPickerClose">Close</button>
+          <button
+            class="btn"
+            id="lessonClearBtn"
+            title="Remove the current-lesson link (leaves your text as-is)"
+          >
+            Clear current lesson
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script>
       "use strict";
       // ===================================================================
@@ -2109,6 +2220,7 @@
       };
       let state = seed();
       let boardId = "main";
+      let lessonCatalog = null; // lazy-loaded curriculum list (edit mode only)
       let serverUpdatedAt = 0;
       let dirty = false;
       let editing = false;
@@ -2329,6 +2441,140 @@
         renderAleks();
         renderNotes();
         renderShouts();
+        renderLessonChip();
+      }
+
+      // ---- today's lesson (curriculum pointer) ------------------------
+      // Teacher picks the current lesson from the curriculum manifest; it
+      // fills the lesson assignment + Today's Target (non-destructively) so
+      // My Work and the Canvas deep-links light up from one tap. Per section,
+      // stored in state.currentLesson and published with the board.
+      function renderLessonChip() {
+        const chip = $("#lessonChip");
+        if (!chip) return;
+        const cur = state.currentLesson;
+        if (!editing || !cur || !cur.id) {
+          chip.hidden = true;
+          return;
+        }
+        chip.hidden = false;
+        chip.textContent = "📘 Today's lesson: " + cur.id + " · " + (cur.title || "");
+      }
+      async function loadLessons() {
+        if (lessonCatalog) return lessonCatalog;
+        const r = await fetch("/data/curriculum-manifest.json", { cache: "no-store" });
+        if (!r.ok) throw new Error("manifest " + r.status);
+        const m = await r.json();
+        const rows = (m && m.lessons) || [];
+        lessonCatalog = rows.map((l) => ({
+          id: String(l.id || ""),
+          unit: l.unit,
+          title: String(l.title || ""),
+          path: String(l.lessonPath || (l.id ? "/lessons/" + l.id + "/" : "")),
+          objective: String(l.objective || ""),
+          languageObjective: String(l.languageObjective || ""),
+          standard: String(l.standard || ""),
+        }));
+        return lessonCatalog;
+      }
+      function renderLessonRows(filter) {
+        const host = $("#lessonList");
+        if (!host) return;
+        const q = String(filter || "")
+          .trim()
+          .toLowerCase();
+        const curId = state.currentLesson && state.currentLesson.id;
+        const rows = (lessonCatalog || []).filter((l) => {
+          if (!q) return true;
+          return (
+            l.id.toLowerCase().includes(q) ||
+            l.title.toLowerCase().includes(q) ||
+            l.standard.toLowerCase().includes(q) ||
+            ("unit " + l.unit).includes(q)
+          );
+        });
+        if (!rows.length) {
+          host.innerHTML = `<p class="lesson-empty">No lessons match “${esc(filter)}”.</p>`;
+          return;
+        }
+        host.innerHTML = rows
+          .map(
+            (
+              l,
+              i,
+            ) => `<button type="button" class="lesson-row${l.id === curId ? " is-current" : ""}" data-lrow="${i}" data-lid="${esc(l.id)}">
+                <span class="lr-id">${esc(l.id)}</span>
+                <span class="lr-title">${esc(l.title)}</span>
+                <span class="lr-std">${esc(l.standard)}</span>
+              </button>`,
+          )
+          .join("");
+        $$("#lessonList [data-lrow]").forEach((b) => {
+          b.onclick = () => {
+            const lesson = (lessonCatalog || []).find((x) => x.id === b.dataset.lid);
+            if (lesson) applyCurrentLesson(lesson);
+          };
+        });
+      }
+      async function openLessonPicker() {
+        const modal = $("#lessonPickerModal");
+        const host = $("#lessonList");
+        modal.hidden = false;
+        if (!lessonCatalog) {
+          host.innerHTML = `<p class="lesson-empty">Loading lessons…</p>`;
+          try {
+            await loadLessons();
+          } catch {
+            host.innerHTML = `<p class="lesson-empty">Couldn't load the curriculum list. Check your connection and try again.</p>`;
+            return;
+          }
+        }
+        $("#lessonSearch").value = "";
+        renderLessonRows("");
+        $("#lessonSearch").focus();
+      }
+      // Non-destructive apply: always (add|update) the lesson-linked assignment;
+      // fill Today's Target only when it's currently empty.
+      function applyCurrentLesson(lesson) {
+        state.currentLesson = {
+          id: lesson.id,
+          title: lesson.title,
+          path: lesson.path,
+          objective: lesson.objective,
+          languageObjective: lesson.languageObjective,
+          standard: lesson.standard,
+        };
+        state.assignments = state.assignments || { items: [] };
+        state.assignments.items = state.assignments.items || [];
+        const items = state.assignments.items;
+        const existing = items.find((a) => a.fromLesson);
+        const name = "Lesson " + lesson.id + " — " + lesson.title;
+        if (existing) {
+          existing.name = name;
+          existing.link = lesson.path;
+          existing.fromLesson = lesson.id;
+        } else {
+          items.unshift({ name, link: lesson.path, due: "", fromLesson: lesson.id });
+        }
+        state.focus = state.focus || {};
+        if (!String(state.focus.target || "").trim()) state.focus.target = lesson.objective;
+        if (!String(state.focus.targetSub || "").trim())
+          state.focus.targetSub = lesson.languageObjective;
+        markDirty();
+        render();
+        $("#lessonPickerModal").hidden = true;
+        setSaveState("Filled from Lesson " + lesson.id + " — review, then Publish to students");
+      }
+      function clearCurrentLesson() {
+        const cur = state.currentLesson;
+        if (cur && cur.id && state.assignments && state.assignments.items) {
+          state.assignments.items = state.assignments.items.filter((a) => !a.fromLesson);
+        }
+        state.currentLesson = null;
+        markDirty();
+        render();
+        $("#lessonPickerModal").hidden = true;
+        setSaveState("Current lesson cleared — your Target text was kept. Publish to update.");
       }
 
       // ---- voice level ------------------------------------------------
@@ -3600,6 +3846,10 @@
         markDirty();
         renderAssignments();
       };
+      $("#setLessonBtn").onclick = openLessonPicker;
+      $("#lessonPickerClose").onclick = () => ($("#lessonPickerModal").hidden = true);
+      $("#lessonClearBtn").onclick = clearCurrentLesson;
+      $("#lessonSearch").oninput = (e) => renderLessonRows(e.target.value);
       $("#setCanvasBtn").onclick = () => {
         state.canvas = state.canvas || {};
         const cur = state.canvas.url || "";
