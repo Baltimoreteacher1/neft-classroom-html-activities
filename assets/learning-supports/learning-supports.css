@@ -511,6 +511,98 @@ body.ewl-supports-focus-active [data-ewl-supports-root] {
   }
 }
 
+/* Reading Ruler (Executive Function / ADHD tracking support) */
+.ewl-supports-ruler {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 48px;
+  background: rgba(253, 224, 71, 0.18);
+  border-top: 2px dashed #ca8a04;
+  border-bottom: 2px dashed #ca8a04;
+  pointer-events: none;
+  z-index: 9997;
+  transform: translateY(-50%);
+  display: none;
+  transition: opacity 0.15s;
+}
+
+.ewl-supports-ruler.is-active {
+  display: block;
+}
+
+/* Confidence Check-in Widget */
+.ewl-supports-checkin-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #f8fafc;
+  border: 1px solid var(--ewl-color-border);
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 14px;
+}
+
+.ewl-supports-checkin-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ewl-color-primary);
+  margin: 0;
+  text-align: center;
+}
+
+.ewl-supports-checkin-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ewl-supports-checkin-btn {
+  width: 100%;
+  min-height: 56px;
+  border-radius: 12px;
+  border: 1px solid var(--ewl-color-border);
+  background: var(--ewl-color-white);
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
+  color: var(--ewl-color-text);
+  text-align: left;
+}
+
+.ewl-supports-checkin-btn:hover {
+  background-color: #f1f5f9;
+  transform: translateY(-2px);
+  border-color: var(--ewl-color-focus);
+}
+
+.ewl-supports-checkin-btn.is-selected {
+  background-color: #e0f2fe;
+  border-color: #0284c7;
+  color: #0369a1;
+}
+
+.ewl-supports-checkin-btn span.emoji {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.ewl-supports-checkin-feedback {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #0369a1;
+  background-color: #e0f2fe;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
 /* 8. Print Suppression stylesheet */
 @media print {
   body:not(.ewl-supports-print-enabled) [data-ewl-supports-root] {

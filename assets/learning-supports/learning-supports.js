@@ -50,6 +50,7 @@
   let activeProfiles = {};
   let activeLanguage = "en";
   let activeSpeechRate = 1.0;
+  let rulerActive = false;
   let rootEl = null;
   let activeSpeechUtterance = null;
 
@@ -205,6 +206,12 @@
     rootEl.setAttribute("data-ewl-supports-root", "1");
     rootEl.className = "ewl-supports-root";
 
+    // 0. Visual Focus Reading Ruler
+    const ruler = document.createElement("div");
+    ruler.id = "ewl-supports-ruler";
+    ruler.className = "ewl-supports-ruler";
+    rootEl.appendChild(ruler);
+
     // 1. Prepare Supports Trigger (Teacher Panel Entry)
     const teacherPanel = document.createElement("div");
     teacherPanel.setAttribute("data-ewl-supports-teacher", "1");
@@ -293,7 +300,6 @@
       topRow.appendChild(label);
       row.appendChild(topRow);
 
-      // Upgrade: Lang selection drop-down inline for language support
       if (key === "language-support") {
         const langContainer = document.createElement("div");
         langContainer.id = "ewl-lang-select-container";
@@ -441,6 +447,22 @@
     focusBtn.addEventListener("click", toggleFocusMode);
     toolsInner.appendChild(focusBtn);
 
+    // Reading Ruler Trigger (ADHD Focus Aid)
+    const rulerBtn = document.createElement("button");
+    rulerBtn.className = "ewl-supports-tool-btn";
+    rulerBtn.setAttribute("data-tool", "ruler");
+    rulerBtn.textContent = "📏 Ruler";
+    rulerBtn.addEventListener("click", toggleRulerMode);
+    toolsInner.appendChild(rulerBtn);
+
+    // Formative Confidence Check-In Trigger
+    const checkinBtn = document.createElement("button");
+    checkinBtn.className = "ewl-supports-tool-btn";
+    checkinBtn.setAttribute("data-tool", "checkin");
+    checkinBtn.textContent = "❤️ Check-in";
+    checkinBtn.addEventListener("click", () => togglePanel("checkin"));
+    toolsInner.appendChild(checkinBtn);
+
     // Listen TTS Trigger
     const listenBtn = document.createElement("button");
     listenBtn.className = "ewl-supports-tool-btn";
@@ -449,7 +471,7 @@
     listenBtn.addEventListener("click", toggleListenMode);
     toolsInner.appendChild(listenBtn);
 
-    // Upgrade: Rate cycling trigger button inside tools dock
+    // Rate cycling trigger button inside tools dock
     const rateBtn = document.createElement("button");
     rateBtn.className = "ewl-supports-tool-btn";
     rateBtn.setAttribute("data-tool", "rate");
@@ -550,6 +572,11 @@
 
     PROFILE_KEYS.forEach((key) => {
       const checkbox = document.getElementById(`ewl-profile-${key}`);
+      if (checkbox) checkbox.checked = false;
+    });
+    // Restore states
+    PROFILE_KEYS.forEach((key) => {
+      const checkbox = document.getElementById(`ewl-profile-${key}`);
       if (checkbox) checkbox.checked = activeProfiles[key];
     });
 
@@ -575,6 +602,8 @@
       const modelBtn = toolsDock.querySelector('[data-tool="model"]');
       const explainBtn = toolsDock.querySelector('[data-tool="explain"]');
       const focusBtn = toolsDock.querySelector('[data-tool="focus"]');
+      const rulerBtn = toolsDock.querySelector('[data-tool="ruler"]');
+      const checkinBtn = toolsDock.querySelector('[data-tool="checkin"]');
       const listenBtn = toolsDock.querySelector('[data-tool="listen"]');
 
       if (wordsBtn)
@@ -589,6 +618,9 @@
         explainBtn.style.display = activeProfiles["express-thinking"] ? "inline-flex" : "none";
       if (focusBtn)
         focusBtn.style.display = activeProfiles["focus-organize"] ? "inline-flex" : "none";
+      if (rulerBtn)
+        rulerBtn.style.display = activeProfiles["focus-organize"] ? "inline-flex" : "none";
+      if (checkinBtn) checkinBtn.style.display = "inline-flex"; // always display check-in for self-regulation
       if (listenBtn)
         listenBtn.style.display =
           activeProfiles["read-understand"] || activeProfiles["language-support"]
@@ -605,6 +637,16 @@
       document.body.classList.remove("ewl-supports-focus-active");
       const focusBtn = toolsDock.querySelector('[data-tool="focus"]');
       if (focusBtn) focusBtn.classList.remove("is-active");
+
+      // Stop ruler
+      rulerActive = false;
+      const ruler = document.getElementById("ewl-supports-ruler");
+      if (ruler) ruler.classList.remove("is-active");
+      const rulerBtn = toolsDock.querySelector('[data-tool="ruler"]');
+      if (rulerBtn) rulerBtn.classList.remove("is-active");
+      window.removeEventListener("mousemove", updateRulerPosition);
+      window.removeEventListener("touchmove", updateRulerTouchPosition);
+
       stopSpeaking();
     }
   }
@@ -741,6 +783,105 @@
         });
         bodyEl.appendChild(bankContainer);
       }
+    } else if (tab === "checkin") {
+      titleEl.textContent = "My Learning Check-in";
+
+      const container = document.createElement("div");
+      container.className = "ewl-supports-checkin-container";
+
+      const prompt = document.createElement("p");
+      prompt.className = "ewl-supports-checkin-title";
+      prompt.textContent = "How is today's math feeling for you?";
+      container.appendChild(prompt);
+
+      const options = document.createElement("div");
+      options.className = "ewl-supports-checkin-options";
+
+      const choices = [
+        {
+          id: "got-it",
+          emoji: "😊",
+          text: "I understand this!",
+          feedback: "Awesome! You are making great progress. Keep pushing your thinking!",
+        },
+        {
+          id: "need-practice",
+          emoji: "🤔",
+          text: "I need more practice",
+          feedback:
+            "That's a normal part of learning! Try looking at the Worked Example tab, or try a few more practice questions.",
+        },
+        {
+          id: "help",
+          emoji: "🆘",
+          text: "I need help / I'm stuck",
+          feedback:
+            "It is great that you recognize you need help! Read through the Sentence Frames tab to express your thinking, or ask your teacher for guidance.",
+        },
+      ];
+
+      const feedbackDiv = document.createElement("div");
+      feedbackDiv.className = "ewl-supports-checkin-feedback";
+      feedbackDiv.style.display = "none";
+
+      let currentCheckin = null;
+      try {
+        const savedFeedback = localStorage.getItem("ewl-supports:v1:feedback");
+        if (savedFeedback) {
+          const parsed = JSON.parse(savedFeedback);
+          if (parsed && parsed.lessonId === activeLessonId) {
+            currentCheckin = parsed.choice;
+          }
+        }
+      } catch (_e) {}
+
+      choices.forEach((choice) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "ewl-supports-checkin-btn";
+        if (choice.id === currentCheckin) {
+          btn.classList.add("is-selected");
+          feedbackDiv.textContent = choice.feedback;
+          feedbackDiv.style.display = "block";
+        }
+
+        const emojiSpan = document.createElement("span");
+        emojiSpan.className = "emoji";
+        emojiSpan.textContent = choice.emoji;
+
+        const textSpan = document.createElement("span");
+        textSpan.textContent = choice.text;
+
+        btn.appendChild(emojiSpan);
+        btn.appendChild(textSpan);
+
+        btn.addEventListener("click", () => {
+          container
+            .querySelectorAll(".ewl-supports-checkin-btn")
+            .forEach((b) => b.classList.remove("is-selected"));
+          btn.classList.add("is-selected");
+
+          try {
+            localStorage.setItem(
+              "ewl-supports:v1:feedback",
+              JSON.stringify({
+                lessonId: activeLessonId,
+                choice: choice.id,
+                timestamp: Date.now(),
+              }),
+            );
+          } catch (_e) {}
+
+          feedbackDiv.textContent = choice.feedback;
+          feedbackDiv.style.display = "block";
+        });
+
+        options.appendChild(btn);
+      });
+
+      container.appendChild(options);
+      container.appendChild(feedbackDiv);
+      bodyEl.appendChild(container);
     }
 
     const toolsDock = document.querySelector("[data-ewl-supports-tools]");
@@ -772,7 +913,7 @@
     if (toolsDock) {
       toolsDock.querySelectorAll(".ewl-supports-tool-btn").forEach((btn) => {
         const tool = btn.getAttribute("data-tool");
-        if (tool !== "focus" && tool !== "listen" && tool !== "rate") {
+        if (tool !== "focus" && tool !== "listen" && tool !== "rate" && tool !== "ruler") {
           btn.setAttribute("aria-pressed", "false");
         }
       });
@@ -788,6 +929,45 @@
       btn.classList.add("is-active");
     } else {
       btn.classList.remove("is-active");
+    }
+  }
+
+  // Executive Function Reading Ruler
+  function toggleRulerMode(e) {
+    rulerActive = !rulerActive;
+    const btn = e.target;
+    btn.setAttribute("aria-pressed", String(rulerActive));
+    const ruler = document.getElementById("ewl-supports-ruler");
+    if (ruler) {
+      if (rulerActive) {
+        ruler.classList.add("is-active");
+        btn.classList.add("is-active");
+        window.addEventListener("mousemove", updateRulerPosition);
+        window.addEventListener("touchmove", updateRulerTouchPosition, {
+          passive: true,
+        });
+      } else {
+        ruler.classList.remove("is-active");
+        btn.classList.remove("is-active");
+        window.removeEventListener("mousemove", updateRulerPosition);
+        window.removeEventListener("touchmove", updateRulerTouchPosition);
+      }
+    }
+  }
+
+  function updateRulerPosition(e) {
+    const ruler = document.getElementById("ewl-supports-ruler");
+    if (ruler) {
+      ruler.style.top = `${e.clientY}px`;
+    }
+  }
+
+  function updateRulerTouchPosition(e) {
+    if (e.touches && e.touches.length > 0) {
+      const ruler = document.getElementById("ewl-supports-ruler");
+      if (ruler) {
+        ruler.style.top = `${e.touches[0].clientY}px`;
+      }
     }
   }
 
@@ -956,6 +1136,13 @@
 
     document.body.classList.remove("ewl-supports-focus-active");
 
+    // Reset ruler
+    rulerActive = false;
+    const ruler = document.getElementById("ewl-supports-ruler");
+    if (ruler) ruler.classList.remove("is-active");
+    window.removeEventListener("mousemove", updateRulerPosition);
+    window.removeEventListener("touchmove", updateRulerTouchPosition);
+
     stopSpeaking();
 
     PROFILE_KEYS.forEach((key) => {
@@ -975,6 +1162,13 @@
 
     document.body.classList.remove("ewl-supports-focus-active");
 
+    // Reset ruler
+    rulerActive = false;
+    const ruler = document.getElementById("ewl-supports-ruler");
+    if (ruler) ruler.classList.remove("is-active");
+    window.removeEventListener("mousemove", updateRulerPosition);
+    window.removeEventListener("touchmove", updateRulerTouchPosition);
+
     stopSpeaking();
 
     document.removeEventListener("keydown", handleKeydown);
@@ -990,7 +1184,7 @@
   }
 
   const EWLLearningSupports = {
-    version: "1.1.0",
+    version: "1.2.0",
     init,
     destroy,
     parseSettings,

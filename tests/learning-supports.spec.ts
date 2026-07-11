@@ -149,4 +149,52 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
     await rateBtn.click();
     await expect(rateBtn).toContainText("1x");
   });
+
+  test("ADHD reading ruler overlay activates on click", async ({ page }) => {
+    await page.goto(`${TEST_LESSON_PATH}#supports=focus-organize`, { waitUntil: "networkidle" });
+
+    const rulerBtn = page.locator('[data-tool="ruler"]');
+    await expect(rulerBtn).toBeVisible();
+
+    const ruler = page.locator("#ewl-supports-ruler");
+    await expect(ruler).toBeHidden();
+
+    // Toggle ruler
+    await rulerBtn.click();
+    await expect(ruler).toBeVisible();
+    await expect(rulerBtn).toHaveClass(/is-active/);
+
+    // Toggle off
+    await rulerBtn.click();
+    await expect(ruler).toBeHidden();
+    await expect(rulerBtn).not.toHaveClass(/is-active/);
+  });
+
+  test("confidence check-in tab records choices in storage", async ({ page }) => {
+    await page.goto(`${TEST_LESSON_PATH}#supports=read-understand`, { waitUntil: "networkidle" });
+
+    const checkinBtn = page.locator('[data-tool="checkin"]');
+    await expect(checkinBtn).toBeVisible();
+    await checkinBtn.click();
+
+    // Verify check-in tab opens in panel
+    const panel = page.locator("[data-ewl-supports-panel]");
+    await expect(panel).toBeVisible();
+    await expect(panel.locator(".ewl-supports-panel-title")).toContainText("My Learning Check-in");
+
+    // Click "Got it!" selection
+    const gotItBtn = page.locator(".ewl-supports-checkin-btn").first();
+    await expect(gotItBtn).toContainText("I understand this!");
+    await gotItBtn.click();
+
+    // Feedback should display
+    const feedback = page.locator(".ewl-supports-checkin-feedback");
+    await expect(feedback).toBeVisible();
+    await expect(feedback).toContainText("Awesome! You are making great progress.");
+
+    // Storage is populated
+    const saved = await page.evaluate(() => localStorage.getItem("ewl-supports:v1:feedback"));
+    expect(saved).not.toBeNull();
+    expect(JSON.parse(saved!).choice).toBe("got-it");
+  });
 });
