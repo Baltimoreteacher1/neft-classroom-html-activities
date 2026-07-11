@@ -6,6 +6,30 @@
 
   const STORAGE_KEY = "ewl-supports:v1:preferences";
 
+  // Resolve the manifest relative to THIS script so the layer works when the
+  // lesson is served from a non-root base — SCORM packages, Canvas embeds, or a
+  // sub-path deploy — where the absolute "/assets/..." path would 404.
+  const SCRIPT_URL =
+    (document.currentScript && document.currentScript.src) ||
+    (function () {
+      const el = document.querySelector('script[src*="learning-supports.js"]');
+      return el ? el.src : "";
+    })();
+
+  const MANIFEST_URLS = (function () {
+    const urls = [];
+    if (SCRIPT_URL) {
+      try {
+        urls.push(new URL("manifest.json", SCRIPT_URL).href);
+      } catch (_e) {
+        /* ignore malformed script URL */
+      }
+    }
+    // Absolute-root fallback (normal same-origin deploy).
+    urls.push("/assets/learning-supports/manifest.json");
+    return urls;
+  })();
+
   const PROFILE_KEYS = [
     "read-understand",
     "focus-organize",
@@ -13,6 +37,37 @@
     "express-thinking",
     "language-support",
     "challenge-extend",
+  ];
+
+  // One-click accommodation combinations for common needs. Labels are
+  // age-respectful and describe access, never a student deficit or level.
+  const PRESETS = [
+    {
+      label: "📖 Read-Aloud & Words",
+      description: "Text-to-speech, worked examples, and vocabulary previews.",
+      keys: ["read-understand"],
+    },
+    {
+      label: "🎯 Focus & Organize",
+      description: "Focus mode, reading ruler, and comfort spacing to reduce distraction.",
+      keys: ["focus-organize"],
+    },
+    {
+      label: "🧱 Build Foundations",
+      description: "Prerequisite readiness plus read-aloud and examples.",
+      keys: ["build-math", "read-understand"],
+    },
+    {
+      label: "🗣️ Language Support",
+      description:
+        "Bilingual vocabulary, sentence frames, and read-aloud for multilingual learners.",
+      keys: ["language-support", "read-understand", "express-thinking"],
+    },
+    {
+      label: "🚀 Challenge",
+      description: "Deeper reasoning and extension prompts.",
+      keys: ["challenge-extend"],
+    },
   ];
 
   function getProfileDisplayName(key) {
@@ -52,8 +107,13 @@
   let activeSpeechRate = 1.0;
   let rulerActive = false;
   let comfortActive = false;
+  let textScale = 0; // 0 = normal, 1 = large, 2 = extra large
   let rootEl = null;
   let activeSpeechUtterance = null;
+  let dialogTrigger = null;
+  let liveRegion = null;
+
+  const TEXT_SCALE_LABELS = ["Text Size", "Large Text", "X-Large Text"];
 
   // Initialize profiles to false
   PROFILE_KEYS.forEach((k) => {
@@ -85,9 +145,21 @@
     }
   }
 
-  function saveStoredPreferences(pref) {
+  // Persist the full current preference state. The `pref` argument is accepted
+  // for backward compatibility but ignored: module state is the single source of
+  // truth, so no call site can accidentally drop a field (e.g. textScale).
+  function saveStoredPreferences(_pref) {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(pref));
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          profiles: activeProfiles,
+          language: activeLanguage,
+          speechRate: activeSpeechRate,
+          comfortMode: comfortActive,
+          textScale: textScale,
+        }),
+      );
     } catch (_e) {
       console.warn("Learning supports: Failed to save preferences to LocalStorage.");
     }
@@ -144,17 +216,25 @@
       return;
     }
 
-    try {
-      const res = await fetch("/assets/learning-supports/manifest.json");
-      if (!res.ok) throw new Error(`Status ${res.status}`);
-      const data = await res.json();
-      manifestData = data[activeLessonId];
-      if (!manifestData) {
-        console.warn(`Learning supports: No manifest data for lesson ${activeLessonId}. Skipping.`);
-        return;
+    let data = null;
+    let lastErr = null;
+    for (const manifestUrl of MANIFEST_URLS) {
+      try {
+        const res = await fetch(manifestUrl);
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        data = await res.json();
+        break;
+      } catch (e) {
+        lastErr = e;
       }
-    } catch (e) {
-      console.error("Learning supports: Failed to load manifest.", e);
+    }
+    if (!data) {
+      console.error("Learning supports: Failed to load manifest.", lastErr);
+      return;
+    }
+    manifestData = data[activeLessonId];
+    if (!manifestData) {
+      console.warn(`Learning supports: No manifest data for lesson ${activeLessonId}. Skipping.`);
       return;
     }
 
@@ -200,12 +280,35 @@
             document.body.classList.add("ewl-supports-comfort-active");
           }
         }
+        if (
+          typeof stored.textScale === "number" &&
+          stored.textScale >= 0 &&
+          stored.textScale <= 2
+        ) {
+          textScale = Math.round(stored.textScale);
+        }
       }
     }
 
     // Render components
     renderInterface();
+    applyTextScale();
     updateUIStates();
+  }
+
+  // Apply the current text-size accommodation to the lesson content root.
+  // Reversible: removing the class restores the lesson's native sizing.
+  function applyTextScale() {
+    const body = document.body;
+    body.classList.remove("ewl-supports-text-lg", "ewl-supports-text-xl");
+    if (textScale === 1) body.classList.add("ewl-supports-text-lg");
+    else if (textScale === 2) body.classList.add("ewl-supports-text-xl");
+
+    const btn = document.querySelector('[data-ewl-supports-tools] [data-tool="textsize"]');
+    if (btn) {
+      btn.textContent = `🔠 ${TEXT_SCALE_LABELS[textScale]}`;
+      btn.setAttribute("aria-pressed", String(textScale > 0));
+    }
   }
 
   function renderInterface() {
@@ -214,6 +317,22 @@
     rootEl = document.createElement("div");
     rootEl.setAttribute("data-ewl-supports-root", "1");
     rootEl.className = "ewl-supports-root";
+
+    // Screen-reader announcement region (polite live status)
+    liveRegion = document.createElement("div");
+    liveRegion.className = "ewl-supports-sr-only";
+    liveRegion.setAttribute("role", "status");
+    liveRegion.setAttribute("aria-live", "polite");
+    liveRegion.setAttribute("aria-atomic", "true");
+    rootEl.appendChild(liveRegion);
+
+    // Modal backdrop (dims lesson behind the teacher configuration dialog)
+    const backdrop = document.createElement("div");
+    backdrop.setAttribute("data-ewl-supports-backdrop", "1");
+    backdrop.className = "ewl-supports-backdrop";
+    backdrop.hidden = true;
+    backdrop.addEventListener("click", () => showDialog(false));
+    rootEl.appendChild(backdrop);
 
     // 0. Visual Focus Reading Ruler
     const ruler = document.createElement("div");
@@ -241,7 +360,8 @@
     dialog.setAttribute("data-ewl-supports-dialog", "1");
     dialog.setAttribute("role", "dialog");
     dialog.setAttribute("aria-modal", "true");
-    dialog.setAttribute("aria-label", "Prepare Supports Configuration");
+    dialog.setAttribute("aria-labelledby", "ewl-supports-dialog-title");
+    dialog.setAttribute("aria-describedby", "ewl-supports-dialog-intro");
     dialog.className = "ewl-supports-dialog";
     dialog.hidden = true;
 
@@ -249,6 +369,7 @@
     const dialogHeader = document.createElement("div");
     dialogHeader.className = "ewl-supports-dialog-header";
     const dialogTitle = document.createElement("h2");
+    dialogTitle.id = "ewl-supports-dialog-title";
     dialogTitle.textContent = "Prepare Learning Supports";
     const closeBtn = document.createElement("button");
     closeBtn.className = "ewl-supports-dialog-close";
@@ -264,10 +385,34 @@
     dialogBody.className = "ewl-supports-dialog-body";
 
     const explainer = document.createElement("p");
+    explainer.id = "ewl-supports-dialog-intro";
     explainer.className = "ewl-supports-dialog-intro";
     explainer.textContent =
       "Activate accessibility profiles to support student learning without lowering standards. No student data or IEP details are stored.";
     dialogBody.appendChild(explainer);
+
+    // Quick-setup presets: one-click combinations for common accommodation needs.
+    const presetSection = document.createElement("div");
+    presetSection.className = "ewl-supports-presets";
+    const presetLabel = document.createElement("p");
+    presetLabel.className = "ewl-supports-presets-label";
+    presetLabel.textContent = "Quick setups";
+    presetSection.appendChild(presetLabel);
+
+    const presetRow = document.createElement("div");
+    presetRow.className = "ewl-supports-presets-row";
+    PRESETS.forEach((preset) => {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "ewl-supports-preset-chip";
+      chip.textContent = preset.label;
+      chip.title = preset.description;
+      chip.setAttribute("aria-label", `Quick setup: ${preset.label}. ${preset.description}`);
+      chip.addEventListener("click", () => applyPreset(preset));
+      presetRow.appendChild(chip);
+    });
+    presetSection.appendChild(presetRow);
+    dialogBody.appendChild(presetSection);
 
     // Checkbox list
     const form = document.createElement("form");
@@ -413,6 +558,8 @@
     const studentTools = document.createElement("div");
     studentTools.setAttribute("data-ewl-supports-tools", "1");
     studentTools.className = "ewl-supports-tools-dock";
+    studentTools.setAttribute("role", "group");
+    studentTools.setAttribute("aria-label", "Learning tools");
     studentTools.hidden = true;
 
     const toolsInner = document.createElement("div");
@@ -473,6 +620,15 @@
     comfortBtn.textContent = "👓 Comfort";
     comfortBtn.addEventListener("click", toggleComfortMode);
     toolsInner.appendChild(comfortBtn);
+
+    // Text-Size Accommodation Trigger (cycles Normal → Large → X-Large)
+    const textSizeBtn = document.createElement("button");
+    textSizeBtn.className = "ewl-supports-tool-btn";
+    textSizeBtn.setAttribute("data-tool", "textsize");
+    textSizeBtn.textContent = `🔠 ${TEXT_SCALE_LABELS[textScale]}`;
+    textSizeBtn.title = "Make the lesson text larger";
+    textSizeBtn.addEventListener("click", cycleTextScale);
+    toolsInner.appendChild(textSizeBtn);
 
     // Student Notepad tab Trigger
     const notepadBtn = document.createElement("button");
@@ -539,11 +695,14 @@
     const contentPanel = document.createElement("div");
     contentPanel.setAttribute("data-ewl-supports-panel", "1");
     contentPanel.className = "ewl-supports-content-panel";
+    contentPanel.setAttribute("role", "region");
+    contentPanel.setAttribute("aria-labelledby", "ewl-supports-panel-title");
     contentPanel.hidden = true;
 
     const panelHeader = document.createElement("div");
     panelHeader.className = "ewl-supports-panel-header";
     const panelTitle = document.createElement("h3");
+    panelTitle.id = "ewl-supports-panel-title";
     panelTitle.className = "ewl-supports-panel-title";
     const panelClose = document.createElement("button");
     panelClose.className = "ewl-supports-panel-close";
@@ -562,34 +721,105 @@
     document.body.appendChild(rootEl);
 
     document.addEventListener("keydown", handleKeydown);
+    window.addEventListener("pagehide", stopSpeaking);
+    document.addEventListener("visibilitychange", handleVisibility);
+  }
+
+  // Announce a short message to assistive technology via the polite live region.
+  function announce(message) {
+    if (!liveRegion) return;
+    liveRegion.textContent = "";
+    // Force the AT to re-read even if the text repeats.
+    setTimeout(() => {
+      if (liveRegion) liveRegion.textContent = message;
+    }, 60);
+  }
+
+  // Stop any active narration when the tab is hidden (prevents runaway TTS).
+  function handleVisibility() {
+    if (document.hidden) stopSpeaking();
+  }
+
+  // Collect the visible, focusable elements inside a container (for focus trapping).
+  function getFocusable(container) {
+    if (!container) return [];
+    const selector =
+      "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), " +
+      'textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    return Array.prototype.slice
+      .call(container.querySelectorAll(selector))
+      .filter((el) => el.offsetParent !== null || el.getClientRects().length > 0);
+  }
+
+  // Keep Tab focus cycling within a modal container.
+  function trapFocus(container, e) {
+    const focusables = getFocusable(container);
+    if (focusables.length === 0) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   }
 
   function handleKeydown(e) {
+    const dialog = document.querySelector("[data-ewl-supports-dialog]");
+    const dialogOpen = dialog && !dialog.hidden;
+
     if (e.key === "Escape") {
-      const dialog = document.querySelector("[data-ewl-supports-dialog]");
-      if (dialog && !dialog.hidden) {
+      if (dialogOpen) {
         showDialog(false);
-        const trigger = document.querySelector(".ewl-supports-btn-teacher");
-        if (trigger) trigger.focus();
         return;
       }
       const panel = document.querySelector("[data-ewl-supports-panel]");
       if (panel && !panel.hidden) {
         closePanel();
       }
+      return;
+    }
+
+    if (e.key === "Tab" && dialogOpen) {
+      trapFocus(dialog, e);
     }
   }
 
   function showDialog(show) {
     const dialog = document.querySelector("[data-ewl-supports-dialog]");
     if (!dialog) return;
+    const backdrop = document.querySelector("[data-ewl-supports-backdrop]");
     dialog.hidden = !show;
+    if (backdrop) backdrop.hidden = !show;
+
     if (show) {
+      dialogTrigger =
+        document.activeElement && typeof document.activeElement.focus === "function"
+          ? document.activeElement
+          : null;
       dialog.classList.add("is-visible");
-      const firstCheck = dialog.querySelector("input");
-      if (firstCheck) firstCheck.focus();
+      if (backdrop) backdrop.classList.add("is-visible");
+      const focusables = getFocusable(dialog);
+      if (focusables.length > 0) focusables[0].focus();
     } else {
       dialog.classList.remove("is-visible");
+      if (backdrop) backdrop.classList.remove("is-visible");
+      // Restore focus to whatever opened the dialog (keyboard/SR users). Fall
+      // back to the teacher button when the trigger was <body> or is gone.
+      const validTrigger =
+        dialogTrigger &&
+        dialogTrigger !== document.body &&
+        document.contains(dialogTrigger) &&
+        typeof dialogTrigger.focus === "function";
+      if (validTrigger) {
+        dialogTrigger.focus();
+      } else {
+        const trigger = document.querySelector(".ewl-supports-btn-teacher");
+        if (trigger) trigger.focus();
+      }
+      dialogTrigger = null;
     }
   }
 
@@ -641,6 +871,7 @@
       const notepadBtn = toolsDock.querySelector('[data-tool="notepad"]');
       const checkinBtn = toolsDock.querySelector('[data-tool="checkin"]');
       const listenBtn = toolsDock.querySelector('[data-tool="listen"]');
+      const textSizeBtn = toolsDock.querySelector('[data-tool="textsize"]');
 
       if (wordsBtn)
         wordsBtn.style.display =
@@ -660,6 +891,10 @@
         comfortBtn.style.display = activeProfiles["focus-organize"] ? "inline-flex" : "none";
       if (notepadBtn) notepadBtn.style.display = "inline-flex"; // universally helpful
       if (checkinBtn) checkinBtn.style.display = "inline-flex"; // universally helpful
+      if (textSizeBtn) {
+        textSizeBtn.style.display = "inline-flex"; // universally helpful
+        applyTextScale(); // reflect stored size + sync label/state
+      }
       if (listenBtn)
         listenBtn.style.display =
           activeProfiles["read-understand"] || activeProfiles["language-support"]
@@ -675,6 +910,7 @@
       closePanel();
       document.body.classList.remove("ewl-supports-focus-active");
       document.body.classList.remove("ewl-supports-comfort-active");
+      document.body.classList.remove("ewl-supports-text-lg", "ewl-supports-text-xl");
 
       const focusBtn = toolsDock.querySelector('[data-tool="focus"]');
       if (focusBtn) focusBtn.classList.remove("is-active");
@@ -703,6 +939,10 @@
       closePanel();
       return;
     }
+
+    // Remember which tool button opened the panel so focus can return on close.
+    const openingBtn = document.querySelector(`[data-ewl-supports-tools] [data-tool="${tab}"]`);
+    if (openingBtn) panel.__ewlTrigger = openingBtn;
 
     activePanelTab = tab;
     panel.hidden = false;
@@ -800,6 +1040,10 @@
       readinessLink.href = manifestData.readinessHref || `/lessons/${activeLessonId}/readiness/`;
       readinessLink.className = "ewl-supports-link-model";
       readinessLink.textContent = "📚 Open Readiness pre-lesson";
+      // Open in a new tab so an embedded (Canvas/SCORM) lesson frame is never
+      // navigated away from; rel guards against reverse-tabnabbing.
+      readinessLink.target = "_blank";
+      readinessLink.rel = "noopener noreferrer";
       bodyEl.appendChild(readinessLink);
     } else if (tab === "explain") {
       titleEl.textContent = "Sentence Frames & Stems";
@@ -977,6 +1221,12 @@
         btn.setAttribute("aria-pressed", String(tool === tab));
       });
     }
+
+    if (titleEl && titleEl.textContent) announce(`${titleEl.textContent} opened.`);
+
+    // Move keyboard focus into the newly opened panel for immediate access.
+    const panelFocus = getFocusable(panel);
+    if (panelFocus.length > 0) panelFocus[0].focus();
   }
 
   function updatePanelContent() {
@@ -989,11 +1239,19 @@
 
   function closePanel() {
     const panel = document.querySelector("[data-ewl-supports-panel]");
+    let trigger = null;
     if (panel) {
       panel.hidden = true;
       panel.classList.remove("is-visible");
+      trigger = panel.__ewlTrigger || null;
+      panel.__ewlTrigger = null;
     }
     activePanelTab = null;
+
+    // Return focus to the tool button that opened the panel.
+    if (trigger && document.contains(trigger) && trigger.offsetParent !== null) {
+      trigger.focus();
+    }
 
     const toolsDock = document.querySelector("[data-ewl-supports-tools]");
     if (toolsDock) {
@@ -1004,7 +1262,8 @@
           tool !== "listen" &&
           tool !== "rate" &&
           tool !== "ruler" &&
-          tool !== "comfort"
+          tool !== "comfort" &&
+          tool !== "textsize"
         ) {
           btn.setAttribute("aria-pressed", "false");
         }
@@ -1015,7 +1274,7 @@
   // Reversible Focus Mode
   function toggleFocusMode(e) {
     const active = document.body.classList.toggle("ewl-supports-focus-active");
-    const btn = e.target;
+    const btn = e.currentTarget;
     btn.setAttribute("aria-pressed", String(active));
     if (active) {
       btn.classList.add("is-active");
@@ -1027,7 +1286,7 @@
   // Executive Function Reading Ruler
   function toggleRulerMode(e) {
     rulerActive = !rulerActive;
-    const btn = e.target;
+    const btn = e.currentTarget;
     btn.setAttribute("aria-pressed", String(rulerActive));
     const ruler = document.getElementById("ewl-supports-ruler");
     if (ruler) {
@@ -1066,7 +1325,7 @@
   // Dyslexia / Comfort Typography Active Styles
   function toggleComfortMode(e) {
     comfortActive = !comfortActive;
-    const btn = e.target;
+    const btn = e.currentTarget;
     btn.setAttribute("aria-pressed", String(comfortActive));
     if (comfortActive) {
       document.body.classList.add("ewl-supports-comfort-active");
@@ -1076,17 +1335,23 @@
       btn.classList.remove("is-active");
     }
 
-    saveStoredPreferences({
-      profiles: activeProfiles,
-      language: activeLanguage,
-      speechRate: activeSpeechRate,
-      comfortMode: comfortActive,
-    });
+    saveStoredPreferences();
+    announce(comfortActive ? "Comfort spacing on." : "Comfort spacing off.");
+  }
+
+  // Text-Size Accommodation: cycle Normal → Large → X-Large and back.
+  function cycleTextScale(e) {
+    textScale = (textScale + 1) % 3;
+    applyTextScale();
+    saveStoredPreferences();
+    const btn = e.currentTarget;
+    if (btn) btn.classList.toggle("is-active", textScale > 0);
+    announce(`${TEXT_SCALE_LABELS[textScale]} applied.`);
   }
 
   // Listen (Text to speech) mode
   function toggleListenMode(e) {
-    const btn = e.target;
+    const btn = e.currentTarget;
     const isSpeaking = btn.classList.contains("is-active");
 
     if (isSpeaking) {
@@ -1251,18 +1516,58 @@
       return;
     }
 
-    navigator.clipboard
-      .writeText(url.href)
-      .then(() => {
-        const origText = btn.textContent;
-        btn.textContent = "✓ Copied!";
-        setTimeout(() => {
-          btn.textContent = origText;
-        }, 1500);
-      })
-      .catch((e) => {
-        console.error("Failed to copy link.", e);
-      });
+    const showCopied = () => {
+      const origText = btn.textContent;
+      btn.textContent = "✓ Copied!";
+      announce("Personalized support link copied to the clipboard.");
+      setTimeout(() => {
+        btn.textContent = origText;
+      }, 1500);
+    };
+
+    const fallbackCopy = () => {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = url.href;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showCopied();
+      } catch (err) {
+        console.error("Failed to copy link.", err);
+        announce("Could not copy the link automatically.");
+      }
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url.href).then(showCopied).catch(fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+  }
+
+  // Apply a one-click quick-setup preset: enable exactly its profiles.
+  function applyPreset(preset) {
+    PROFILE_KEYS.forEach((k) => {
+      activeProfiles[k] = preset.keys.indexOf(k) !== -1;
+    });
+    // Reflect in dialog checkboxes.
+    PROFILE_KEYS.forEach((key) => {
+      const checkbox = document.getElementById(`ewl-profile-${key}`);
+      if (checkbox) checkbox.checked = activeProfiles[key];
+    });
+    const langContainer = document.getElementById("ewl-lang-select-container");
+    if (langContainer) {
+      langContainer.style.display = activeProfiles["language-support"] ? "block" : "none";
+    }
+    saveStoredPreferences();
+    updateUIStates();
+    updatePanelContent();
+    announce(`${preset.label.replace(/^[^\w]+/, "").trim()} supports turned on.`);
   }
 
   // Reset supports
@@ -1273,6 +1578,7 @@
     activeLanguage = "en";
     activeSpeechRate = 1.0;
     comfortActive = false;
+    textScale = 0;
 
     saveStoredPreferences({
       profiles: activeProfiles,
@@ -1283,6 +1589,7 @@
 
     document.body.classList.remove("ewl-supports-focus-active");
     document.body.classList.remove("ewl-supports-comfort-active");
+    document.body.classList.remove("ewl-supports-text-lg", "ewl-supports-text-xl");
 
     // Reset ruler
     rulerActive = false;
@@ -1302,6 +1609,7 @@
     if (langSelect) langSelect.value = "en";
 
     updateUIStates();
+    announce("All learning supports have been reset.");
   }
 
   // Reversible clean up
@@ -1310,6 +1618,7 @@
 
     document.body.classList.remove("ewl-supports-focus-active");
     document.body.classList.remove("ewl-supports-comfort-active");
+    document.body.classList.remove("ewl-supports-text-lg", "ewl-supports-text-xl");
 
     // Reset ruler
     rulerActive = false;
@@ -1321,11 +1630,15 @@
     stopSpeaking();
 
     document.removeEventListener("keydown", handleKeydown);
+    window.removeEventListener("pagehide", stopSpeaking);
+    document.removeEventListener("visibilitychange", handleVisibility);
 
     if (rootEl && rootEl.parentNode) {
       rootEl.parentNode.removeChild(rootEl);
     }
     rootEl = null;
+    liveRegion = null;
+    dialogTrigger = null;
 
     initialized = false;
     manifestData = null;
@@ -1333,7 +1646,7 @@
   }
 
   const EWLLearningSupports = {
-    version: "1.3.0",
+    version: "1.4.0",
     init,
     destroy,
     parseSettings,

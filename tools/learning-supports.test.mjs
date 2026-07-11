@@ -127,7 +127,18 @@ async function runTests() {
   const dialog = document.getElementById("ewl-supports-dialog");
   assert.equal(dialog.getAttribute("role"), "dialog");
   assert.equal(dialog.getAttribute("aria-modal"), "true");
-  assert.ok(dialog.getAttribute("aria-label"), "Dialog must have an aria-label");
+  // Accessible name may come from aria-label OR aria-labelledby (both valid).
+  const labelledbyId = dialog.getAttribute("aria-labelledby");
+  const dialogHasName =
+    dialog.getAttribute("aria-label") ||
+    (labelledbyId && document.getElementById(labelledbyId));
+  assert.ok(dialogHasName, "Dialog must have an accessible name (aria-label or aria-labelledby)");
+
+  // Modal backdrop must exist for a true modal dialog.
+  assert.ok(
+    document.querySelector("[data-ewl-supports-backdrop]"),
+    "Modal backdrop element must be present",
+  );
 
   // No positive tabindex
   const positiveTab = Array.from(document.querySelectorAll("[tabindex]")).some(el => {

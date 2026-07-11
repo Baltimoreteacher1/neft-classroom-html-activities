@@ -17,7 +17,11 @@
 
 /* Base Namespaced Reset & Typography */
 [data-ewl-supports-root] {
-  font-family: 'Atkinson Hyperlegible', system-ui, -apple-system, sans-serif;
+  font-family:
+    "Atkinson Hyperlegible",
+    system-ui,
+    -apple-system,
+    sans-serif;
   font-size: 16px;
   line-height: 1.5;
   color: var(--ewl-color-text);
@@ -58,7 +62,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: transform 0.2s, background-color 0.2s;
+  transition:
+    transform 0.2s,
+    background-color 0.2s;
 }
 
 .ewl-supports-btn-teacher:hover {
@@ -88,7 +94,9 @@
   flex-direction: column;
   overflow: hidden;
   opacity: 0;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s;
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.2s;
 }
 
 .ewl-supports-dialog.is-visible {
@@ -165,7 +173,9 @@
   border: 1px solid var(--ewl-color-border);
   border-radius: 12px;
   cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
   min-height: 56px;
 }
 
@@ -216,7 +226,9 @@
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
+  transition:
+    background-color 0.2s,
+    transform 0.1s;
   border: none;
 }
 
@@ -283,7 +295,9 @@
   justify-content: center;
   gap: 6px;
   white-space: nowrap;
-  transition: background-color 0.2s, color 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
 }
 
 .ewl-supports-tool-btn:hover {
@@ -570,7 +584,10 @@ body.ewl-supports-focus-active [data-ewl-supports-root] {
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
+  transition:
+    transform 0.2s,
+    background-color 0.2s,
+    border-color 0.2s;
   color: var(--ewl-color-text);
   text-align: left;
 }
@@ -617,7 +634,9 @@ body.ewl-supports-focus-active [data-ewl-supports-root] {
   margin-left: 8px;
   font-size: 14px;
   vertical-align: middle;
-  transition: background-color 0.2s, transform 0.1s;
+  transition:
+    background-color 0.2s,
+    transform 0.1s;
 }
 
 .ewl-supports-vocab-speak-btn:hover {
@@ -642,7 +661,7 @@ body.ewl-supports-focus-active [data-ewl-supports-root] {
   color: var(--ewl-color-text);
   background: #fff;
   resize: vertical;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .ewl-supports-notepad-textarea:focus {
@@ -660,7 +679,7 @@ body.ewl-supports-focus-active [data-ewl-supports-root] {
 /* Dyslexia / Comfort Typography Active Styles */
 body.ewl-supports-comfort-active,
 body.ewl-supports-comfort-active [data-ewl-supports-root] {
-  letter-spacing: 0.10em !important;
+  letter-spacing: 0.1em !important;
   word-spacing: 0.14em !important;
   line-height: 1.8 !important;
 }
@@ -701,5 +720,107 @@ body.ewl-supports-comfort-active [data-ewl-supports-root] {
   .ewl-supports-tool-btn {
     padding: 0 8px;
     font-size: 12px;
+  }
+}
+
+/* 9. Screen-reader-only live region (announcements) */
+.ewl-supports-sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 10. Modal backdrop behind the teacher configuration dialog */
+.ewl-supports-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 10000; /* below dialog (10001), above dock/teacher button */
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.ewl-supports-backdrop.is-visible {
+  opacity: 1;
+}
+
+.ewl-supports-backdrop[hidden] {
+  display: none !important;
+}
+
+/* 11. Text-size accommodation — reversible zoom of the lesson content root.
+ * Overlays live outside #app so they are unaffected. Removing the class
+ * restores the lesson's native sizing. */
+body.ewl-supports-text-lg #app {
+  zoom: 1.12;
+}
+
+body.ewl-supports-text-xl #app {
+  zoom: 1.25;
+}
+
+/* 12. Teacher quick-setup preset chips */
+.ewl-supports-presets {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ewl-supports-presets-label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ewl-color-text-muted);
+}
+
+.ewl-supports-presets-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ewl-supports-preset-chip {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--ewl-color-border);
+  border-radius: 99px;
+  background: #f8fafc;
+  color: var(--ewl-color-primary);
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    transform 0.1s;
+}
+
+.ewl-supports-preset-chip:hover {
+  background: #eef2ff;
+  border-color: var(--ewl-color-accent);
+}
+
+.ewl-supports-preset-chip:active {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ewl-supports-backdrop,
+  .ewl-supports-preset-chip {
+    transition: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .ewl-supports-backdrop {
+    background: rgba(0, 0, 0, 0.5);
   }
 }
