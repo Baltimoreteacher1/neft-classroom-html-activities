@@ -2618,7 +2618,8 @@ ${deck.thumbnailsHtml}
       });
       contentHtml += '</ul>';
       
-      document.getElementById('concept-tab-content').innerHTML = contentHtml;
+      const conceptTabContent = document.getElementById('concept-tab-content');
+      if (conceptTabContent) conceptTabContent.innerHTML = contentHtml;
       activeConceptTab = tabId;
       saveWork();
     }
