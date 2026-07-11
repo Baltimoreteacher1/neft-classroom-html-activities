@@ -1809,6 +1809,7 @@ vsoRender();
 
     document.getElementById("resetProgressBtn").addEventListener("click", function () {
       if (confirm("Reset your scores for this activity? This reloads the page and clears your current progress.")) {
+        try { localStorage.removeItem(PERSIST_KEY); } catch (e) {}
         location.reload();
       }
     });
@@ -1906,6 +1907,64 @@ vsoRender();
       updateBossBoard();
       updateDashboard();
       savePersistedState();
+    }
+
+    const PERSIST_KEY = "decimal_operations_review_state";
+
+    function savePersistedState() {
+      try {
+        localStorage.setItem(PERSIST_KEY, JSON.stringify({
+          supportOn: state.supportOn,
+          correct: state.correct,
+          checked: state.checked,
+          countMap: state.countMap,
+          trackIndex: state.trackIndex,
+          trackPosition: state.trackPosition,
+          trackStars: state.trackStars,
+          trackStreak: state.trackStreak,
+          bossIndex: state.bossIndex,
+          bossHealth: state.bossHealth,
+          bossCombo: state.bossCombo,
+          bossWins: state.bossWins,
+          bossHits: state.bossHits
+        }));
+      } catch (e) {
+        console.error("Error saving persisted state:", e);
+      }
+    }
+
+    function loadPersistedState() {
+      try {
+        const raw = localStorage.getItem(PERSIST_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        ["correct", "checked", "trackIndex", "trackPosition", "trackStars", "trackStreak", "bossIndex", "bossHealth", "bossCombo", "bossWins", "bossHits"].forEach((key) => {
+          if (typeof data[key] === "number" && isFinite(data[key])) state[key] = data[key];
+        });
+        state.trackIndex = Math.min(Math.max(0, state.trackIndex), CONFIG.trackQuestions.length - 1);
+        state.bossIndex = Math.min(Math.max(0, state.bossIndex), CONFIG.bossQuestions.length - 1);
+        state.bossHealth = Math.min(100, Math.max(0, state.bossHealth));
+        if (data.countMap && typeof data.countMap === "object") state.countMap = data.countMap;
+        if (typeof data.supportOn === "boolean") {
+          state.supportOn = data.supportOn;
+          if (supp) supp.textContent = "Extra Support: " + (state.supportOn ? "ON" : "OFF");
+          document.querySelectorAll("[data-support]").forEach((el) => {
+            el.classList.toggle("hidden", !state.supportOn);
+          });
+        }
+      } catch (e) {
+        console.error("Error loading persisted state:", e);
+      }
+    }
+
+    function speakMath(text) {
+      if (!state.supportOn || !text || !("speechSynthesis" in window)) return;
+      try {
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(new SpeechSynthesisUtterance(String(text)));
+      } catch (e) {
+        /* read-aloud unavailable; feedback text is still shown */
+      }
     }
 
     loadPersistedState();
