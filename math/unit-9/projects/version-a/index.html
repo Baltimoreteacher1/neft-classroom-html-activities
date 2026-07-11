@@ -828,6 +828,8 @@
       #teacher-console .prefill-btn:hover {
         background: #0369a1;
       }
+          .lvl0-only { display: none; }
+      body.level-0 .lvl0-only { display: block; }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -884,6 +886,10 @@
         </span>
       </div>
       <div class="level-bar">
+        <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+          <span class="en-text">🟠 Level 0 — Extra Support</span>
+          <span class="es-text">🟠 Nivel 0 — Apoyo Extra</span>
+        </button>
         <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
           🟢 Level 1 — With Support
         </button>
@@ -1226,6 +1232,10 @@
           </div>
 
           <!-- Level 1 Hint -->
+          <div class="instruct lvl0-only">
+            <span class="en-text">🟠 <strong>Level 0:</strong> Growth adds the same amount each week. Step 1: start value + (rate × weeks). Tiny example: start 0, +10 a week → after 3 weeks = 30. Starter: “After ___ weeks I have ___ subscribers.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> El crecimiento suma la misma cantidad cada semana. Paso 1: valor inicial + (tasa × semanas). Ejemplo: inicio 0, +10 por semana → después de 3 semanas = 30. Empieza: “Después de ___ semanas tengo ___ suscriptores.”</span>
+          </div>
           <div class="instruct lvl1-only" style="margin-top: 14px">
             <span class="en-text"
               >🟢 <strong>Level 1 Tip:</strong> Try picking a friendly growth rate like 15 or 25
@@ -2347,8 +2357,9 @@
       // ---- Level toggle ----
       function setLevel(n) {
         const bodyEl = document.getElementById("body");
-        bodyEl.classList.remove("level-1", "level-2");
+        bodyEl.classList.remove("level-0", "level-1", "level-2");
         bodyEl.classList.add("level-" + n);
+        document.getElementById("btn-lv0").classList.toggle("active", n === 0);
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
         updateTablePlaceholders();

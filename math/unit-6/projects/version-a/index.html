@@ -327,6 +327,8 @@
       #teacher-console .prefill-btn { width: 100%; margin-top: 12px; background: #0284c7; border: none; border-radius: 6px; padding: 8px; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s; }
       #teacher-console .prefill-btn:hover { background: #0369a1; }
 
+          .lvl0-only { display: none; }
+      body.level-0 .lvl0-only { display: block; }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -365,6 +367,10 @@
         <span class="tag"><span class="en-text">Version A</span><span class="es-text">Versión A</span></span>
       </div>
       <div class="level-bar">
+        <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+          <span class="en-text">🟠 Level 0 — Extra Support</span>
+          <span class="es-text">🟠 Nivel 0 — Apoyo Extra</span>
+        </button>
         <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)"><span class="en-text">🟢 Level 1 — With Support</span><span class="es-text">🟢 Nivel 1 — Con apoyo</span></button>
         <button class="level-btn" id="btn-lv2" onclick="setLevel(2)"><span class="en-text">🔵 Level 2 — Challenge</span><span class="es-text">🔵 Nivel 2 — Desafío</span></button>
       </div>
@@ -599,6 +605,10 @@
             </select>
           </div>
 
+          <div class="instruct lvl0-only">
+            <span class="en-text">🟠 <strong>Level 0:</strong> Exponents mean repeated ×. Step 1: 2ⁿ means multiply 2 by itself n times. Tiny example: 2³ = 2×2×2 = 8. Try 2². Starter: “At level ___ the score is ___.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> Los exponentes son multiplicación repetida. Paso 1: 2ⁿ significa multiplicar 2 por sí mismo n veces. Ejemplo: 2³ = 2×2×2 = 8. Prueba 2². Empieza: “En el nivel ___ el puntaje es ___.”</span>
+          </div>
           <div class="instruct lvl1-only">
             <span class="en-text">🟢 <strong>Level 1 Multiplier:</strong> Your multiplier base is fixed at <strong>2</strong>. Your multiplier is <strong>2<sup>n</sup></strong> where <em>n</em> represents the level.</span><span class="es-text">🟢 <strong>Multiplicador del Nivel 1:</strong> La base del multiplicador está fija en <strong>2</strong>. Tu multiplicador es <strong>2<sup>n</sup></strong> donde <em>n</em> representa el nivel.</span>
           </div>
@@ -1094,9 +1104,10 @@
       function setLevel(n) {
         level = n;
         const bodyEl = document.getElementById('body') || document.body;
-        bodyEl.classList.remove('level-1', 'level-2');
+        bodyEl.classList.remove('level-0', 'level-1', 'level-2');
         bodyEl.classList.add('level-' + n);
         handleLevelPreset(n);
+        document.getElementById('btn-lv0').classList.toggle('active', n === 0);
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
         
