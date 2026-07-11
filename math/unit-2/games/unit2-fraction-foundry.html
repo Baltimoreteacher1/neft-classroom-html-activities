@@ -148,7 +148,7 @@
   </head>
   <body>
     <!-- nt-game-topbar-injected:begin (tools/inject-game-topbar.js) -->
-    <header class="nt-game-topbar" role="banner"><a class="ngt-back" href="../index.html" aria-label="Back to Unit 2 hub">← Unit 2</a><span class="ngt-title">Fraction Foundry — Divide Fractions</span><a class="ngt-all" href="/math/games/" aria-label="All lesson games">All games →</a></header>
+    <header class="nt-game-topbar" role="banner"><span class="ngt-title">Fraction Foundry — Divide Fractions</span></header>
     <!-- nt-game-topbar-injected:end -->
     <!-- Decorative animated foundry-ember field (behind the Phaser canvas).
          Decorative only: aria-hidden, pointer-events:none, reduced-motion safe. -->
@@ -581,8 +581,6 @@
               },
             )
             .setOrigin(0.5);
-
-          this.makeLink(cx, 580, "← Back to Unit 2 hub");
           this.setSR(
             "Fraction Foundry. Slice bar models yourself to divide fractions, standard 6.NOS.1. Press start to play.",
           );
@@ -612,23 +610,6 @@
           b.on("pointerout", () => b.setScale(1));
           b.on("pointerdown", cb);
           return b;
-        }
-        makeLink(x, y, label) {
-          const t = this.add
-            .text(x, y, label, {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "15px",
-              fontStyle: "bold",
-              color: "#e0b487",
-            })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true });
-          t.on("pointerover", () => t.setColor("#ffb347"));
-          t.on("pointerout", () => t.setColor("#e0b487"));
-          t.on("pointerdown", () => {
-            window.location.href = "/math/unit-2/";
-          });
-          return t;
         }
         setSR(msg) {
           const el = document.getElementById("ff-sr");

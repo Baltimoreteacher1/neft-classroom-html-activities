@@ -54,9 +54,7 @@ function header(file, html) {
   return (
     `\n    <!-- nt-game-topbar-injected:begin (tools/inject-game-topbar.js) -->` +
     `\n    <header class="nt-game-topbar" role="banner">` +
-    `<a class="ngt-back" href="../index.html" aria-label="Back to Unit ${n} hub">← Unit ${n}</a>` +
     `<span class="ngt-title">${title}</span>` +
-    `<a class="ngt-all" href="/math/games/" aria-label="All lesson games">All games →</a>` +
     `</header>` +
     `\n    <!-- nt-game-topbar-injected:end -->`
   );

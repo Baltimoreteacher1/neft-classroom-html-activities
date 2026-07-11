@@ -142,7 +142,7 @@
   </head>
   <body>
     <!-- nt-game-topbar-injected:begin (tools/inject-game-topbar.js) -->
-    <header class="nt-game-topbar" role="banner"><a class="ngt-back" href="../index.html" aria-label="Back to Unit 9 hub">← Unit 9</a><span class="ngt-title">Variable Velocity — Rover Relay</span><a class="ngt-all" href="/math/games/" aria-label="All lesson games">All games →</a></header>
+    <header class="nt-game-topbar" role="banner"><span class="ngt-title">Variable Velocity — Rover Relay</span></header>
     <!-- nt-game-topbar-injected:end -->
     <!-- Decorative animated star-field (behind the Phaser canvas).
          Decorative only: aria-hidden, pointer-events:none, reduced-motion safe. -->
@@ -440,7 +440,7 @@
             .text(
               cx,
               548,
-              "Tap an answer, or use keys 1 – 4.   Back to Unit 9 hub from the menu.",
+              "Tap an answer, or use keys 1 – 4.",
               {
                 fontFamily: "Segoe UI, sans-serif",
                 fontSize: "14px",
@@ -450,7 +450,6 @@
             .setOrigin(0.5);
 
           // back-to-hub link (HTML anchor overlay via DOM is avoided; use text + redirect)
-          this.makeLink(cx, 586, "← Back to Unit 9 hub");
           this.setSR(
             "Variable Velocity, Rover Relay. A coordinate-plane game for two-variable relationships, standard 6.AT.11. Press start to play.",
           );
@@ -472,23 +471,6 @@
           b.on("pointerout", () => b.setScale(1));
           b.on("pointerdown", cb);
           return { b, t };
-        }
-        makeLink(x, y, label) {
-          const t = this.add
-            .text(x, y, label, {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "15px",
-              fontStyle: "bold",
-              color: "#9fc1de",
-            })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true });
-          t.on("pointerover", () => t.setColor("#5ad1ff"));
-          t.on("pointerout", () => t.setColor("#9fc1de"));
-          t.on("pointerdown", () => {
-            window.location.href = "/math/unit-9/";
-          });
-          return t;
         }
         setSR(msg) {
           const el = document.getElementById("vv-sr");
