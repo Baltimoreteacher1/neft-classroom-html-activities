@@ -1535,6 +1535,59 @@ kbd {
     display: none !important;
   }
 }
+/* ---------- Audio recorder (speech samples) ---------- */
+.audio-rec {
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-m);
+  padding: 12px 14px;
+  margin-top: 14px;
+  background: #faf8f2;
+}
+.audio-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin-bottom: 9px;
+}
+.audio-head .audio-ic {
+  font-size: 14px;
+}
+.audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.audio-controls .audio-record {
+  color: var(--red);
+  border-color: var(--red-line);
+}
+.audio-controls .audio-record:hover {
+  background: var(--red-bg);
+  border-color: var(--red);
+  color: var(--red);
+}
+.audio-status {
+  font-size: 12.5px;
+  color: var(--mute);
+  font-variant-numeric: tabular-nums;
+  margin-left: 2px;
+}
+.audio-player {
+  width: 100%;
+  margin-top: 10px;
+  height: 34px;
+}
+@media print {
+  .audio-rec {
+    display: none !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -1627,15 +1680,43 @@ const PREFIX = "slscreen_",
   INDEX = PREFIX + "index",
   LAST = PREFIX + "last",
   SETTINGS = PREFIX + "settings";
-const APP_VERSION = "2.0";
+const APP_VERSION = "2.1";
+/* Default scoring cut points (missed skills/indicators). Editable in Settings so
+   the tool can be aligned to district policy. Defaults reproduce the published
+   rules exactly: language 0-1 WNL / 2 Monitor / 3+ Concern; fluency & voice
+   0 WNL / 1 Monitor / 2+ Concern. */
+const SCORING_DEFAULTS = {
+  langMonitor: 2, // missed language skills (>=) → Monitor
+  langConcern: 3, // missed language skills (>=) → Concern
+  hfvConcern: 2, // missed fluency/voice indicators (>=) → Concern (Monitor at 1)
+};
 function getSettings() {
-  return Object.assign(
-    { org: "", defaultScreener: "" },
+  const s = Object.assign(
+    { org: "", defaultScreener: "", scoring: {} },
     store.get(SETTINGS, {}),
   );
+  s.scoring = Object.assign({}, SCORING_DEFAULTS, s.scoring || {});
+  return s;
 }
 function setSettings(s) {
   store.set(SETTINGS, s);
+}
+/* Sanitised, monotonic thresholds (concern is always ≥ monitor ≥ 1). */
+function scoringCfg() {
+  const c = getSettings().scoring;
+  const langMonitor = Math.max(
+    1,
+    Math.round(Number(c.langMonitor) || SCORING_DEFAULTS.langMonitor),
+  );
+  const langConcern = Math.max(
+    langMonitor + 1,
+    Math.round(Number(c.langConcern) || SCORING_DEFAULTS.langConcern),
+  );
+  const hfvConcern = Math.max(
+    2,
+    Math.round(Number(c.hfvConcern) || SCORING_DEFAULTS.hfvConcern),
+  );
+  return { langMonitor, langConcern, hfvConcern };
 }
 /* ================= domain registry ================= */
 const SPEECH = [
@@ -1753,6 +1834,7 @@ function blankState() {
       EXP: false,
       PRAG: false,
     },
+    audio: {}, // {ARTIC|FLU|VOICE: {ms, mime}} — blobs live in IndexedDB
     report: { comments: "", finalTier: "" },
     view: "intake",
   };
@@ -1778,6 +1860,7 @@ function ensureArrays() {
   S.lang = S.lang || {};
   S.report = Object.assign({ comments: "", finalTier: "" }, S.report || {});
   S.reviewed = S.reviewed || {};
+  S.audio = S.audio || {};
   S.artic.cards = fitStr(S.artic.cards, ART_STIMULI.length);
   S.artic.pat = fit(S.artic.pat, DATA.artic.patterns.length);
   S.artic.types = fitStr(S.artic.types, ART_STIMULI.length);
@@ -1811,14 +1894,20 @@ const count = (a) => a.reduce((s, v) => s + (v ? 1 : 0), 0);
 function langStatus(dk) {
   const g = gradeByKey(S.gradeKey);
   if (!g) return null;
-  const n = g.domains[dk].length,
+  const cfg = scoringCfg(),
+    n = g.domains[dk].length,
     miss = n - count(S.lang[dk].c);
-  return miss <= 1 ? st("WNL") : miss === 2 ? st("MON") : st("CON");
+  return miss >= cfg.langConcern
+    ? st("CON")
+    : miss >= cfg.langMonitor
+      ? st("MON")
+      : st("WNL");
 }
 function hfvStatus(k) {
-  const n = DATA.hfvItems[k].length,
+  const cfg = scoringCfg(),
+    n = DATA.hfvItems[k].length,
     miss = n - count(S.hfv[k].c);
-  return miss === 0 ? st("WNL") : miss === 1 ? st("MON") : st("CON");
+  return miss >= cfg.hfvConcern ? st("CON") : miss >= 1 ? st("MON") : st("WNL");
 }
 function articStatus() {
   const e = S.artic.cards.filter((v) => v === "E").length + count(S.artic.pat);
@@ -2574,6 +2663,286 @@ function progressPanel(compact = false) {
   card.appendChild(list);
   return card;
 }
+/* ================= audio capture (speech samples) =================
+   Blobs are stored in IndexedDB (not localStorage) so large recordings never
+   threaten the text data or hit the ~5MB quota. State keeps only small metadata
+   ({ms, mime}) per speech domain. An in-memory fallback keeps playback working
+   in the session if IndexedDB is unavailable (private mode). */
+const AUDIO_OK =
+  typeof navigator !== "undefined" &&
+  navigator.mediaDevices &&
+  navigator.mediaDevices.getUserMedia &&
+  typeof window !== "undefined" &&
+  window.MediaRecorder;
+const _audioMem = {}; // key -> Blob (fallback + live cache)
+const audioKey = (domain) => S.id + ":" + domain;
+let _adbPromise = null;
+function adb() {
+  if (_adbPromise) return _adbPromise;
+  _adbPromise = new Promise((resolve, reject) => {
+    if (!window.indexedDB) {
+      reject(new Error("no-idb"));
+      return;
+    }
+    const req = indexedDB.open("slscreen_audio", 1);
+    req.onupgradeneeded = () => {
+      if (!req.result.objectStoreNames.contains("clips"))
+        req.result.createObjectStore("clips");
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error || new Error("idb-open"));
+  }).catch((e) => {
+    _adbPromise = null;
+    throw e;
+  });
+  return _adbPromise;
+}
+function adbTx(mode, fn) {
+  return adb().then(
+    (db) =>
+      new Promise((resolve, reject) => {
+        const tx = db.transaction("clips", mode);
+        const store = tx.objectStore("clips");
+        const r = fn(store);
+        tx.oncomplete = () => resolve(r && r.result);
+        tx.onerror = () => reject(tx.error);
+      }),
+  );
+}
+function audioPut(key, blob) {
+  _audioMem[key] = blob;
+  return adbTx("readwrite", (s) => s.put(blob, key)).catch(() => {}); // mem fallback already set
+}
+function audioGet(key) {
+  if (_audioMem[key]) return Promise.resolve(_audioMem[key]);
+  return adbTx("readonly", (s) => s.get(key))
+    .then((b) => {
+      if (b) _audioMem[key] = b;
+      return b || null;
+    })
+    .catch(() => null);
+}
+function audioDel(key) {
+  delete _audioMem[key];
+  return adbTx("readwrite", (s) => s.delete(key)).catch(() => {});
+}
+function audioDelAll(id) {
+  Object.keys(_audioMem).forEach((k) => {
+    if (k.indexOf(id + ":") === 0) delete _audioMem[k];
+  });
+  ["ARTIC", "FLU", "VOICE"].forEach((d) => audioDel(id + ":" + d));
+}
+function fmtClock(ms) {
+  const t = Math.round((ms || 0) / 1000),
+    m = Math.floor(t / 60);
+  return m + ":" + String(t % 60).padStart(2, "0");
+}
+function audioRecordLine(domain) {
+  const a = S.audio && S.audio[domain];
+  return a && a.ms
+    ? "<p><b>Audio sample:</b> " +
+        fmtClock(a.ms) +
+        " recorded (retained on the administering device).</p>"
+    : "";
+}
+/* Compact one-liner for the summary report listing any recorded samples. */
+function audioReportParagraph() {
+  const names = { ARTIC: "connected speech", FLU: "fluency", VOICE: "voice" };
+  const got = ["ARTIC", "FLU", "VOICE"]
+    .filter((k) => S.audio && S.audio[k] && S.audio[k].ms)
+    .map((k) => names[k] + " (" + fmtClock(S.audio[k].ms) + ")");
+  return got.length
+    ? "<p><b>Audio samples on file (device-local):</b> " +
+        esc(got.join(", ")) +
+        ".</p>"
+    : "";
+}
+/* Recorder UI for one speech domain (ARTIC/FLU/VOICE). */
+function audioRecorder(domain, label) {
+  const wrap = el("div", { class: "audio-rec" });
+  wrap.appendChild(
+    el(
+      "div",
+      { class: "audio-head" },
+      el("span", { class: "audio-ic", "aria-hidden": "true" }, "🎙"),
+      el("span", {}, label),
+    ),
+  );
+  if (!AUDIO_OK) {
+    wrap.appendChild(
+      el(
+        "div",
+        { class: "hint", style: "margin:0" },
+        "Audio recording isn’t available in this browser.",
+      ),
+    );
+    return wrap;
+  }
+  const controls = el("div", { class: "audio-controls" });
+  const status = el(
+    "span",
+    { class: "audio-status", "aria-live": "polite" },
+    "",
+  );
+  const player = el("audio", {
+    controls: "",
+    class: "audio-player",
+    style: "display:none",
+  });
+  let mediaRec = null,
+    chunks = [],
+    startedAt = 0,
+    timer = null,
+    stream = null,
+    curUrl = null;
+  const key = audioKey(domain);
+  const setUrl = (blob) => {
+    if (curUrl) URL.revokeObjectURL(curUrl);
+    curUrl = URL.createObjectURL(blob);
+    player.src = curUrl;
+    player.style.display = "";
+  };
+  const meta = () => (S.audio[domain] = S.audio[domain] || null);
+  const refresh = () => {
+    const has = !!(S.audio[domain] && S.audio[domain].ms);
+    recBtn.style.display = mediaRec ? "none" : "";
+    stopBtn.style.display = mediaRec ? "" : "none";
+    delBtn.style.display = has && !mediaRec ? "" : "none";
+    dlBtn.style.display = has && !mediaRec ? "" : "none";
+    recBtn.textContent = has ? "● Re-record" : "● Record";
+    status.textContent = mediaRec
+      ? "Recording… " + fmtClock(Date.now() - startedAt)
+      : has
+        ? fmtClock(S.audio[domain].ms) + " sample"
+        : "No sample yet";
+  };
+  const stopTracks = () => {
+    if (stream) stream.getTracks().forEach((t) => t.stop());
+    stream = null;
+  };
+  const recBtn = el(
+    "button",
+    {
+      class: "btn sm audio-record",
+      onclick: async () => {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (e) {
+          status.textContent = "Microphone permission denied.";
+          return;
+        }
+        chunks = [];
+        const mime = MediaRecorder.isTypeSupported("audio/webm")
+          ? "audio/webm"
+          : "";
+        mediaRec = mime
+          ? new MediaRecorder(stream, { mimeType: mime })
+          : new MediaRecorder(stream);
+        mediaRec.ondataavailable = (ev) => {
+          if (ev.data && ev.data.size) chunks.push(ev.data);
+        };
+        mediaRec.onstop = () => {
+          const blob = new Blob(chunks, {
+            type: mediaRec.mimeType || "audio/webm",
+          });
+          const ms = Date.now() - startedAt;
+          mediaRec = null;
+          stopTracks();
+          if (timer) {
+            clearInterval(timer);
+            timer = null;
+          }
+          if (blob.size > 0) {
+            S.audio[domain] = { ms, mime: blob.type };
+            audioPut(key, blob);
+            setUrl(blob);
+            change();
+            renderNav();
+          }
+          refresh();
+        };
+        startedAt = Date.now();
+        mediaRec.start();
+        timer = setInterval(refresh, 250);
+        refresh();
+      },
+    },
+    "● Record",
+  );
+  const stopBtn = el(
+    "button",
+    {
+      class: "btn sm",
+      style: "display:none",
+      onclick: () => {
+        if (mediaRec && mediaRec.state !== "inactive") mediaRec.stop();
+      },
+    },
+    "■ Stop",
+  );
+  const delBtn = el(
+    "button",
+    {
+      class: "btn sm danger",
+      style: "display:none",
+      onclick: async () => {
+        const ok = await confirmDialog(
+          "Delete the recorded " + label.toLowerCase() + "?",
+          {
+            title: "Delete recording",
+            okLabel: "Delete",
+            danger: true,
+          },
+        );
+        if (!ok) return;
+        S.audio[domain] = null;
+        audioDel(key);
+        if (curUrl) {
+          URL.revokeObjectURL(curUrl);
+          curUrl = null;
+        }
+        player.style.display = "none";
+        player.removeAttribute("src");
+        change();
+        renderNav();
+        refresh();
+      },
+    },
+    "Delete",
+  );
+  const dlBtn = el(
+    "button",
+    {
+      class: "btn sm",
+      style: "display:none",
+      onclick: async () => {
+        const blob = await audioGet(key);
+        if (blob)
+          triggerDownload(
+            blob,
+            reportFilename("webm").replace(".webm", "_" + domain + ".webm"),
+          );
+      },
+    },
+    "⬇ Download",
+  );
+  controls.appendChild(recBtn);
+  controls.appendChild(stopBtn);
+  controls.appendChild(delBtn);
+  controls.appendChild(dlBtn);
+  controls.appendChild(status);
+  wrap.appendChild(controls);
+  wrap.appendChild(player);
+  meta();
+  // Load an existing clip for playback.
+  if (S.audio[domain] && S.audio[domain].ms) {
+    audioGet(key).then((b) => {
+      if (b) setUrl(b);
+    });
+  }
+  refresh();
+  return wrap;
+}
 /* ================= stimulus cards & presentation mode ================= */
 const ERROR_TYPES = ["substitution", "omission", "distortion", "unsure"];
 function stimStateClass(i) {
@@ -2883,6 +3252,7 @@ function viewArtic() {
       html: "<b>Scoring rule.</b> " + esc(DATA.speechRules[0]),
     }),
   );
+  pc.appendChild(audioRecorder("ARTIC", "Connected-speech sample"));
   pc.appendChild(
     notesField(
       () => S.artic.notes,
@@ -3160,6 +3530,223 @@ function downloadHandoutWord() {
   );
   toast("Strategies handout downloaded");
 }
+/* ================= full screening record ================= */
+function frSection(title, status, reviewed) {
+  return (
+    "<h2>" +
+    esc(title) +
+    (status
+      ? ' <span class="res-' +
+        status.k +
+        '">(' +
+        esc(status.label.toLowerCase()) +
+        ")</span>"
+      : "") +
+    (reviewed
+      ? ' <span style="color:#20714f;font-weight:400">· reviewed</span>'
+      : "") +
+    "</h2>"
+  );
+}
+function frNote(text) {
+  return text && text.trim() ? "<p><b>Notes:</b> " + esc(text) + "</p>" : "";
+}
+function frItemRows(items, checks) {
+  return items
+    .map(
+      (it, j) =>
+        "<tr><td>" +
+        (checks[j] ? "☑" : "☐") +
+        "</td><td>" +
+        esc(it.text) +
+        (it.eg
+          ? ' <span style="color:#68788a">— ' + esc(it.eg) + "</span>"
+          : "") +
+        "</td></tr>",
+    )
+    .join("");
+}
+function buildFullRecordInner() {
+  const i = S.intake,
+    g = gradeByKey(S.gradeKey),
+    set = getSettings();
+  const meta =
+    '<table class="meta">' +
+    '<tr><td class="k">Student</td><td>' +
+    esc(i.student || "—") +
+    '</td><td class="k">Date of birth</td><td>' +
+    (i.dob ? fmtDate(i.dob) : "—") +
+    "</td></tr>" +
+    '<tr><td class="k">Grade</td><td>' +
+    (g ? esc(g.label) : "—") +
+    '</td><td class="k">Date screened</td><td>' +
+    fmtDate(i.date) +
+    "</td></tr>" +
+    '<tr><td class="k">Teacher</td><td>' +
+    esc(i.teacher || "—") +
+    '</td><td class="k">Home language(s)</td><td>' +
+    esc(i.home || "—") +
+    "</td></tr>" +
+    '<tr><td class="k">Screener / SLP</td><td colspan="3">' +
+    esc(i.screener || "—") +
+    "</td></tr></table>";
+  let h =
+    '<div class="rdoc">' +
+    '<div class="rhead"><h1>Complete Screening Record</h1>' +
+    (set.org ? '<div class="org">' + esc(set.org) + "</div>" : "") +
+    "</div>" +
+    '<div class="rsub">Task-by-task record · companion to the summary report</div>' +
+    meta;
+  // Articulation
+  h += frSection("Articulation / Phonology", articStatus(), S.reviewed.ARTIC);
+  h +=
+    '<table class="results"><tr><th scope="col">Production</th><th scope="col">Target</th><th scope="col">Result</th></tr>';
+  ART_STIMULI.forEach((s, j) => {
+    const v = S.artic.cards[j];
+    const res =
+      v === "C"
+        ? '<span class="res-WNL">Correct</span>'
+        : v === "E"
+          ? '<span class="res-CON">Error</span>' +
+            (S.artic.types[j] ? " (" + esc(S.artic.types[j]) + ")" : "")
+          : "—";
+    h +=
+      "<tr><td>" +
+      esc(s.word) +
+      "</td><td>" +
+      esc(s.sound + " · " + s.pos) +
+      "</td><td>" +
+      res +
+      "</td></tr>";
+  });
+  h += "</table>";
+  const pats = DATA.artic.patterns
+    .filter((p, j) => S.artic.pat[j])
+    .map((p) => p.text);
+  if (pats.length)
+    h +=
+      "<p><b>Phonological patterns present:</b> " +
+      esc(pats.join(", ")) +
+      "</p>";
+  h += audioRecordLine("ARTIC");
+  h += frNote(S.artic.notes);
+  // Fluency & Voice
+  ["FLU", "VOICE"].forEach((k) => {
+    h += frSection(DATA.universalTasks[k].name, hfvStatus(k), S.reviewed[k]);
+    h +=
+      '<table class="results"><tr><th scope="col">✓</th><th scope="col">Indicator (within limits)</th></tr>' +
+      frItemRows(DATA.hfvItems[k], S.hfv[k].c) +
+      "</table>";
+    h += audioRecordLine(k);
+    h += frNote(S.hfv[k].notes);
+  });
+  // Language
+  if (g)
+    LANG.forEach((d) => {
+      const k = d.k;
+      h += frSection(DATA.domainNames[k], langStatus(k), S.reviewed[k]);
+      h +=
+        '<table class="results"><tr><th scope="col">✓</th><th scope="col">Expected skill</th></tr>' +
+        frItemRows(g.domains[k], S.lang[k].c) +
+        "</table>";
+      h += frNote(S.lang[k].notes);
+    });
+  // Conclusion
+  const tier = DATA.tiers[finalTierIndex()];
+  h +=
+    "<h2>Conclusion</h2><p><b>" +
+    esc(tier.name) +
+    ".</b> " +
+    esc(tier.action) +
+    "</p>";
+  if (S.report.comments)
+    h += "<p><b>Clinician comments:</b> " + esc(S.report.comments) + "</p>";
+  h += '<p class="disc">' + DATA.disclaimers.map(esc).join(" ") + "</p>";
+  h +=
+    '<div class="sig"><span>Screener signature</span><span>Credentials</span><span>Date</span></div>';
+  h +=
+    '<div class="rfoot">Generated ' +
+    fmtDate(todayISO()) +
+    " · " +
+    esc(DATA.meta.title) +
+    " v" +
+    APP_VERSION +
+    " · Complete task-level record.</div>";
+  h += "</div>";
+  return h;
+}
+function openFullRecordModal() {
+  const body = el("div", {});
+  body.appendChild(
+    el(
+      "p",
+      { class: "hint", style: "margin:4px 0 12px" },
+      "Every task response, error type, and note — for the cumulative student file. The summary report is the referral document; this is the underlying record.",
+    ),
+  );
+  body.appendChild(
+    el("div", { class: "handout-preview", html: buildFullRecordInner() }),
+  );
+  showModal({
+    title: "Complete screening record",
+    body,
+    actions: [
+      { label: "Close" },
+      {
+        label: "Word (.doc)",
+        onclick: () => {
+          downloadFullRecordWord();
+          return false;
+        },
+      },
+      {
+        label: "Print / Save PDF",
+        primary: true,
+        onclick: () => {
+          $("#printArea").innerHTML = buildFullRecordInner();
+          const prevTitle = document.title;
+          document.title = reportFilename("pdf").replace(".pdf", "_Record");
+          const restore = () => {
+            document.title = prevTitle;
+            window.removeEventListener("afterprint", restore);
+          };
+          window.addEventListener("afterprint", restore);
+          window.print();
+          setTimeout(restore, 2000);
+          return false;
+        },
+      },
+    ],
+  });
+}
+function downloadFullRecordWord() {
+  const styles =
+    "<style>" +
+    "body{font-family:Calibri,Arial,sans-serif;color:#1c2a38;font-size:11pt}" +
+    "h1{font-size:16pt;color:#142c44;border-bottom:2px solid #127d79;padding-bottom:4pt;font-family:Cambria,Georgia,serif}" +
+    "h2{font-size:12pt;color:#0f6663;margin-top:14pt;font-family:Cambria,Georgia,serif}" +
+    "table{border-collapse:collapse;width:100%;font-size:10pt;margin:4pt 0}" +
+    "table.results th,table.results td{border:1px solid #cccccc;padding:3pt 6pt;text-align:left;vertical-align:top}" +
+    "table.results th{background:#142c44;color:#fff}" +
+    "table.meta td{padding:2pt 5pt} table.meta td.k{font-weight:bold;color:#142c44;width:120px}" +
+    ".res-WNL{color:#20714f;font-weight:bold}.res-MON{color:#a8700a;font-weight:bold}.res-CON{color:#a63324;font-weight:bold}" +
+    ".rsub{color:#68788a;font-size:9.5pt}.org{color:#68788a;font-size:9.5pt;text-align:right}" +
+    ".disc{font-size:8.5pt;color:#68788a;border-top:1px solid #ccc;padding-top:6pt;margin-top:12pt}" +
+    ".sig span{display:inline-block;border-top:1px solid #1c2a38;padding-top:3pt;margin-right:24pt;min-width:150pt;font-size:9pt;color:#68788a}" +
+    ".rfoot{font-size:8pt;color:#93a1b0;margin-top:10pt}" +
+    "</style>";
+  const html =
+    '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">' +
+    styles +
+    "</head><body>" +
+    buildFullRecordInner() +
+    "</body></html>";
+  triggerDownload(
+    new Blob(["﻿", html], { type: "application/msword" }),
+    reportFilename("doc").replace(".doc", "_Record.doc"),
+  );
+  toast("Complete record downloaded");
+}
 /* ================= prior-screening comparison ================= */
 function statusesFor(record) {
   const prev = S;
@@ -3364,6 +3951,9 @@ function viewHFV(key) {
     }),
   );
   sc.appendChild(
+    audioRecorder(key, key === "FLU" ? "Fluency sample" : "Voice sample"),
+  );
+  sc.appendChild(
     notesField(
       () => S.hfv[key].notes,
       (v) => (S.hfv[key].notes = v),
@@ -3564,6 +4154,18 @@ function viewReport() {
       "🧩 Teacher & family strategies",
     ),
   );
+  acts.appendChild(
+    el(
+      "button",
+      {
+        class: "btn",
+        title:
+          "Full screening record — every task response, notes, and error type — for the student file",
+        onclick: openFullRecordModal,
+      },
+      "📋 Complete record",
+    ),
+  );
   w.appendChild(acts);
   w.appendChild(el("div", { id: "reportPreview", html: buildReportInner() }));
   w.appendChild(pager("report"));
@@ -3747,6 +4349,7 @@ function buildReportInner() {
     "<p>" +
     nar.lines.map(esc).join(" ") +
     "</p>" +
+    audioReportParagraph() +
     comparisonHTML() +
     "<h2>Recommendation</h2>" +
     "<p><b>" +
@@ -3812,6 +4415,31 @@ function viewGuide() {
         "</ul>",
     }),
   );
+  (() => {
+    const cfg = scoringCfg(),
+      custom =
+        cfg.langMonitor !== SCORING_DEFAULTS.langMonitor ||
+        cfg.langConcern !== SCORING_DEFAULTS.langConcern ||
+        cfg.hfvConcern !== SCORING_DEFAULTS.hfvConcern;
+    dom.appendChild(
+      el("div", {
+        class: "rulebox",
+        style: custom
+          ? "border-color:var(--amber-line);background:var(--amber-bg)"
+          : "",
+        html:
+          "<b>Active cut points" +
+          (custom ? " (customised for this site)" : " (published defaults)") +
+          ":</b> Language — Monitor at " +
+          cfg.langMonitor +
+          " missed, Concern at " +
+          cfg.langConcern +
+          " missed. Fluency &amp; Voice — Monitor at 1, Concern at " +
+          cfg.hfvConcern +
+          ". Edit under <b>Screenings → Settings</b>.",
+      }),
+    );
+  })();
   dom.appendChild(el("h3", { style: "margin-top:16px" }, "Speech rules"));
   dom.appendChild(
     el("div", {
@@ -3864,6 +4492,13 @@ function viewGuide() {
       "p",
       { style: "margin:0;font-size:14px" },
       "All screening data is stored locally in this browser — nothing is transmitted anywhere. Use “Screenings → Back up all” to export a JSON file before clearing the browser or moving devices, and “Import backup” to restore it. Prefer student IDs or initials over full names.",
+    ),
+  );
+  priv.appendChild(
+    el(
+      "p",
+      { style: "margin:8px 0 0;font-size:14px" },
+      "Audio recordings are kept on this device only (in the browser’s local database) — they are never uploaded and are not included in the JSON backup, which keeps voice samples of minors device-local by design. Use each recorder’s Download to save a clip to the student file, and Delete to remove it.",
     ),
   );
   w.appendChild(priv);
@@ -4211,6 +4846,7 @@ function openScreeningsModal() {
                   return;
                 }
                 store.del(PREFIX + x.id);
+                audioDelAll(x.id);
                 const rest = store.get(INDEX, []).filter((r) => r.id !== x.id);
                 store.set(INDEX, rest);
                 if (S && S.id === x.id) {
@@ -4303,20 +4939,104 @@ function openSettingsModal() {
       f2,
     ),
   );
+  // Scoring cut points (district policy alignment).
+  const sc = set.scoring;
+  const numFld = (id, label, val, hint) => {
+    const inp = el("input", {
+      type: "number",
+      id,
+      min: "1",
+      max: "12",
+      step: "1",
+      value: String(val),
+      style: "max-width:90px",
+    });
+    return el(
+      "div",
+      { class: "field" },
+      el("label", { for: id }, label),
+      inp,
+      hint ? el("div", { class: "hint", style: "margin:4px 0 0" }, hint) : null,
+    );
+  };
+  const fLangMon = numFld(
+    "set_langMon",
+    "Language — Monitor at (missed skills ≥)",
+    sc.langMonitor,
+  );
+  const fLangCon = numFld(
+    "set_langCon",
+    "Language — Concern at (missed skills ≥)",
+    sc.langConcern,
+  );
+  const fHfvCon = numFld(
+    "set_hfvCon",
+    "Fluency / Voice — Concern at (missed indicators ≥)",
+    sc.hfvConcern,
+    "Monitor is always flagged at 1 missed indicator.",
+  );
+  body.appendChild(
+    el(
+      "div",
+      { class: "card section-head", style: "margin:16px 0 0;box-shadow:none" },
+      el("h3", { style: "font-size:15px" }, "Scoring cut points"),
+      el(
+        "p",
+        { class: "hint", style: "margin:0 0 10px" },
+        "Align to district policy. Defaults reproduce the published rules (language 0–1 within limits · 2 monitor · 3+ concern). Applies to every screening.",
+      ),
+      el("div", { class: "grid2" }, fLangMon, fLangCon),
+      el("div", { class: "grid2" }, fHfvCon, el("div", {})),
+    ),
+  );
   showModal({
     title: "Settings",
     body,
     actions: [
       { label: "Cancel" },
       {
+        label: "Reset scoring to defaults",
+        onclick: () => {
+          setSettings(
+            Object.assign(getSettings(), {
+              scoring: Object.assign({}, SCORING_DEFAULTS),
+            }),
+          );
+          toast("Scoring reset to published defaults");
+          renderNav();
+          updatePreview();
+        },
+      },
+      {
         label: "Save settings",
         primary: true,
         onclick: () => {
-          setSettings({
-            org: f1.value.trim(),
-            defaultScreener: f2.value.trim(),
-          });
+          const num = (el2, d) => {
+            const v = Math.round(Number(el2.value));
+            return Number.isFinite(v) && v > 0 ? v : d;
+          };
+          setSettings(
+            Object.assign(getSettings(), {
+              org: f1.value.trim(),
+              defaultScreener: f2.value.trim(),
+              scoring: {
+                langMonitor: num(
+                  fLangMon.querySelector("input"),
+                  SCORING_DEFAULTS.langMonitor,
+                ),
+                langConcern: num(
+                  fLangCon.querySelector("input"),
+                  SCORING_DEFAULTS.langConcern,
+                ),
+                hfvConcern: num(
+                  fHfvCon.querySelector("input"),
+                  SCORING_DEFAULTS.hfvConcern,
+                ),
+              },
+            }),
+          );
           toast("Settings saved");
+          renderNav();
           updatePreview();
         },
       },
