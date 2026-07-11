@@ -257,6 +257,54 @@ function runValidation() {
     }
   }
 
+  // 6. Lesson integration checks (Task 4 Step 1)
+  console.log("Checking integration in 64 canonical lesson launchers...");
+  for (const lessonId of canonicalLessonIds) {
+    const indexPath = join(LESSONS_DIR, lessonId, "index.html");
+    if (!existsSync(indexPath)) {
+      console.error(`FAIL: Missing index.html in canonical lesson folder: ${lessonId}`);
+      process.exit(1);
+    }
+    const html = readFileSync(indexPath, "utf8");
+
+    // Check sentinels
+    const beginCount = (html.split("ewl-supports-injected:begin").length - 1);
+    const endCount = (html.split("ewl-supports-injected:end").length - 1);
+    if (beginCount !== 2 || endCount !== 2) {
+      console.error(`FAIL: ${lessonId}/index.html must contain exactly two learning-support sentinel blocks. Found begin=${beginCount}, end=${endCount}`);
+      process.exit(1);
+    }
+
+    // Check html tag data attribute
+    const hasLessonAttr = html.includes(`data-ewl-supports-lesson="${lessonId}"`);
+    if (!hasLessonAttr) {
+      console.error(`FAIL: ${lessonId}/index.html missing data-ewl-supports-lesson="${lessonId}" attribute`);
+      process.exit(1);
+    }
+
+    // Check stylesheet reference inside sentinels
+    const hasCss = html.includes('/assets/learning-supports/learning-supports.css');
+    if (!hasCss) {
+      console.error(`FAIL: ${lessonId}/index.html missing learning-supports.css link reference`);
+      process.exit(1);
+    }
+
+    // Check script reference inside sentinels
+    const hasJs = html.includes('/assets/learning-supports/learning-supports.js');
+    if (!hasJs) {
+      console.error(`FAIL: ${lessonId}/index.html missing learning-supports.js script reference`);
+      process.exit(1);
+    }
+
+    // Idempotency: verify no other occurrence of data-ewl-supports-lesson outside html element
+    const attrOccurrences = html.split('data-ewl-supports-lesson=').length - 1;
+    if (attrOccurrences !== 1) {
+      console.error(`FAIL: ${lessonId}/index.html contains duplicate data-ewl-supports-lesson attributes`);
+      process.exit(1);
+    }
+  }
+  console.log("PASS: All 64 canonical lesson launchers have correct supports injected.");
+
   console.log(`PASS: 64/64 canonical lessons covered, schema, route, and privacy checks passed.`);
   process.exit(0);
 }

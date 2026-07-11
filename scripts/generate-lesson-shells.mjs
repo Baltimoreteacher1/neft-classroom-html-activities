@@ -40,15 +40,20 @@ function readTitle(lessonDir) {
 }
 
 function buildShell(lessonId, title) {
+  const isCanonical = /^\d+-\d+$/.test(lessonId);
+  const htmlTag = isCanonical ? `<html lang="en" data-ewl-supports-lesson="${lessonId}">` : `<html lang="en">`;
+  const supportHead = isCanonical ? `\n<!-- ewl-supports-injected:begin -->\n  <link rel="stylesheet" href="/assets/learning-supports/learning-supports.css" />\n<!-- ewl-supports-injected:end -->` : "";
+  const supportBody = isCanonical ? `\n<!-- ewl-supports-injected:begin -->\n  <script src="/assets/learning-supports/learning-supports.js" defer></script>\n<!-- ewl-supports-injected:end -->` : "";
+
   return `<!doctype html>
-<html lang="en">
+${htmlTag}
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Grade 6 Reveal Math interactive lesson activity — ${title.replace(/ — Neft Teacher$/, "")}" />
     <title>${title}</title>
 ${FONT_LINK}
-${SAVE_RESUME_HEAD}
+${SAVE_RESUME_HEAD}${supportHead}
 </head>
   <body>
     <div id="app"></div>
@@ -57,7 +62,7 @@ ${SAVE_RESUME_HEAD}
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js" defer></script>
     <script src="/assets/edupulse-bridge.js" defer></script>
-${SAVE_RESUME_BODY}
+${SAVE_RESUME_BODY}${supportBody}
 </body>
 </html>
 `;
