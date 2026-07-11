@@ -827,6 +827,8 @@
       #teacher-console .prefill-btn:hover {
         background: #0369a1;
       }
+          .lvl0-only { display: none; }
+      body.level-0 .lvl0-only { display: block; }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -850,6 +852,7 @@
     <!-- projects-publisher-injected:end -->
     <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-visuals.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-zoom.css" />
     <!-- projects-visuals-injected:end -->
 </head>
   <body class="level-1 pro-projects" id="body">
@@ -882,6 +885,10 @@
         </span>
       </div>
       <div class="level-bar">
+        <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+          <span class="en-text">🟠 Level 0 — Extra Support</span>
+          <span class="es-text">🟠 Nivel 0 — Apoyo Extra</span>
+        </button>
         <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
           <span class="en-text">🟢 Level 1 — With Support</span>
           <span class="es-text">🟢 Nivel 1 — Con Soporte</span>
@@ -1205,6 +1212,10 @@
           ></svg>
 
           <!-- Level 1 instructions -->
+          <div class="instruct lvl0-only">
+            <span class="en-text">🟠 <strong>Level 0:</strong> Volume = L × W × H. Step 1: multiply all three. Tiny example: 2×3×4 = 24 cubic in. Starter: “My tank holds ___ cubic inches.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> Volumen = L × A × H. Paso 1: multiplica los tres. Ejemplo: 2×3×4 = 24 in³. Empieza: “Mi tanque contiene ___ in³.”</span>
+          </div>
           <div class="instruct lvl1-only">
             <span class="en-text"
               >🟢 <strong>Level 1 tip:</strong> Try friendly whole numbers like
@@ -1604,6 +1615,10 @@
             "
           ></svg>
 
+          <div class="instruct lvl0-only">
+            <span class="en-text">🟠 <strong>Level 0:</strong> Cost = area × price. Step 1: multiply glass area by the price. Tiny example: 10 sq in × $0.10 = $1.00. Starter: “Glass costs $___.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> Costo = área × precio. Paso 1: multiplica el área del vidrio por el precio. Ejemplo: 10 in² × $0.10 = $1.00. Empieza: “El vidrio cuesta $___.”</span>
+          </div>
           <div class="lvl1-only instruct gold">
             <span class="en-text"
               >🟢 <strong>Level 1 default settings:</strong> Glass material
@@ -2519,9 +2534,10 @@
       function setLevel(n) {
         const body = document.getElementById("body");
         const isEs = body.classList.contains("es");
-        body.classList.remove("level-1", "level-2");
+        body.classList.remove("level-0", "level-1", "level-2");
         body.classList.add("level-" + n);
 
+        document.getElementById("btn-lv0").classList.toggle("active", n === 0);
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
 
@@ -3755,6 +3771,7 @@
   <!-- projects-publisher-injected:end -->
   <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
   <script src="/shared/projects/projects-visuals.js" defer></script>
+  <script src="/shared/projects/projects-zoom.js" defer></script>
   <!-- projects-visuals-injected:end -->
   <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
   <script src="/assets/canvas-bridge.js" defer></script>

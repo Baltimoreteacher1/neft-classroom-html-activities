@@ -655,8 +655,14 @@
       .lvl1-only {
         display: none;
       }
+      .lvl0-only {
+        display: none;
+      }
       .lvl2-only {
         display: none;
+      }
+      body.level-0 .lvl0-only {
+        display: block;
       }
       body.level-1 .lvl1-only {
         display: block;
@@ -849,6 +855,7 @@
     <!-- projects-publisher-injected:end -->
     <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-visuals.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-zoom.css" />
     <!-- projects-visuals-injected:end -->
 </head>
   <body class="level-1 pro-projects" id="body">
@@ -881,6 +888,10 @@
         >
       </div>
       <div class="level-bar">
+        <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+          <span class="en-text">🟠 Level 0 — Extra Support</span>
+          <span class="es-text">🟠 Nivel 0 — Apoyo Extra</span>
+        </button>
         <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
           <span class="en-text">🟢 Level 1 — With Support</span
           ><span class="es-text">🟢 Nivel 1 — Con apoyo</span>
@@ -1275,6 +1286,10 @@
           </svg>
 
           <!-- Level 1 support hints -->
+          <div class="instruct lvl0-only">
+            <span class="en-text">🟠 <strong>Level 0:</strong> One step at a time. Step 1: Pick one product. Step 2: Give it an easy price like $10. Tiny example (other numbers): a $5 sticker is simple to add. Starter: “I sell ___ for $___.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> Un paso a la vez. Paso 1: Elige un producto. Paso 2: Ponle un precio fácil como $10. Ejemplo pequeño (otros números): un adhesivo de $5 es fácil de sumar. Empieza: “Vendo ___ por $___.”</span>
+          </div>
           <div class="instruct lvl1-only">
             <span class="en-text"
               >🟢 <strong>Level 1 support:</strong> Use round values (like $10.00, $20.00, or
@@ -1586,6 +1601,10 @@
           </svg>
 
           <!-- Level 1 support hint -->
+          <div class="instruct lvl0-only">
+            <span class="en-text">🟠 <strong>Level 0:</strong> Find the price for ONE. Step 1: Total price ÷ number of items. Tiny example: $4 for 2 pens = $2 each. Try $6 for 3. Starter: “One ___ costs $___.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> Encuentra el precio de UNO. Paso 1: Precio total ÷ número de artículos. Ejemplo: $4 por 2 plumas = $2 cada una. Prueba $6 por 3. Empieza: “Un ___ cuesta $___.”</span>
+          </div>
           <div class="instruct lvl1-only teal">
             <span class="en-text"
               >🟢 <strong>Level 1 support:</strong> Try clean division combinations like 3 for $6.00
@@ -1985,6 +2004,10 @@
           </svg>
 
           <!-- Level 1 support hint -->
+          <div class="instruct lvl0-only">
+            <span class="en-text">🟠 <strong>Level 0:</strong> Tax is a small extra. Step 1: For every $1, add about 6 cents. Tiny example: $10 → about $0.60 tax. Starter: “My tax is about $___.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> El impuesto es un poco extra. Paso 1: Por cada $1, agrega unos 6 centavos. Ejemplo: $10 → unos $0.60 de impuesto. Empieza: “Mi impuesto es de unos $___.”</span>
+          </div>
           <div class="instruct lvl1-only gold">
             <span class="en-text"
               >🟢 <strong>Level 1 support:</strong> A 6% tax rate means you add $0.06 of tax for
@@ -2920,7 +2943,7 @@
       function updateBodyClasses() {
         // Surgical class swap — preserve injected classes like `pro-projects`.
         const body = document.getElementById("body");
-        body.classList.remove("level-1", "level-2");
+        body.classList.remove("level-0", "level-1", "level-2");
         body.classList.add("level-" + levelNum);
         body.classList.toggle("es", lang === "es");
       }
@@ -2928,6 +2951,7 @@
       // ---- Level toggle ----
       function setLevel(n) {
         levelNum = n;
+        document.getElementById("btn-lv0").classList.toggle("active", n === 0);
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
         updateBodyClasses();
@@ -4298,6 +4322,7 @@
   <!-- projects-publisher-injected:end -->
   <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
   <script src="/shared/projects/projects-visuals.js" defer></script>
+  <script src="/shared/projects/projects-zoom.js" defer></script>
   <!-- projects-visuals-injected:end -->
   <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
   <script src="/assets/canvas-bridge.js" defer></script>

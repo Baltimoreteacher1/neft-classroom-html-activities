@@ -304,6 +304,8 @@
       #teacher-console .prefill-btn { width: 100%; margin-top: 12px; background: #0284c7; border: none; border-radius: 6px; padding: 8px; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s; }
       #teacher-console .prefill-btn:hover { background: #0369a1; }
 
+          .lvl0-only { display: none; }
+      body.level-0 .lvl0-only { display: block; }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -324,6 +326,7 @@
     <!-- projects-publisher-injected:end -->
     <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-visuals.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-zoom.css" />
     <!-- projects-visuals-injected:end -->
 </head>
   <body class="level-1 pro-projects" id="body">
@@ -354,6 +357,10 @@
         </span>
       </div>
       <div class="level-bar">
+        <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+          <span class="en-text">🟠 Level 0 — Extra Support</span>
+          <span class="es-text">🟠 Nivel 0 — Apoyo Extra</span>
+        </button>
         <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
           <span class="en-text">🟢 Level 1 — With Support</span>
           <span class="es-text">🟢 Nivel 1 — Con apoyo</span>
@@ -560,6 +567,10 @@
           </svg>
 
           <!-- Level 1 hint -->
+          <div class="instruct lvl0-only">
+            <span class="en-text">🟠 <strong>Level 0:</strong> Money in = price × how many. Step 1: multiply. Tiny example: $2 × 10 buyers = $20. Starter: “I earn $___.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> Dinero = precio × cantidad. Paso 1: multiplica. Ejemplo: $2 × 10 compradores = $20. Empieza: “Gano $___.”</span>
+          </div>
           <div class="instruct lvl1-only">
             <span class="en-text">🟢 <strong>Level 1 tip:</strong> Try standard price $3.00, premium price $8.00. For subscribers, use 100 standard and 50 premium.</span>
             <span class="es-text">🟢 <strong>Consejo del Nivel 1:</strong> Prueba con un precio estándar de $3.00, y premium de $8.00. Para suscriptores, usa 100 estándar y 50 premium.</span>
@@ -690,6 +701,10 @@
           </svg>
 
           <!-- Level 1 hint -->
+          <div class="instruct lvl0-only">
+            <span class="en-text">🟠 <strong>Level 0:</strong> Exponents = repeated ×. Step 1: 2³ = 2×2×2 = 8. Tiny example: 3² = 3×3 = 9. Starter: “The value is $___.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> Exponentes = multiplicación repetida. Paso 1: 2³ = 2×2×2 = 8. Ejemplo: 3² = 3×3 = 9. Empieza: “El valor es $___.”</span>
+          </div>
           <div class="instruct lvl1-only">
             <span class="en-text">🟢 <strong>Level 1 tip:</strong> Keep the base multiplier at $1.00. Exponents mean repeated multiplication: 2^3 = 2 &times; 2 &times; 2 = $8.00.</span>
             <span class="es-text">🟢 <strong>Consejo del Nivel 1:</strong> Mantén el multiplicador base en $1.00. Los exponentes significan multiplicación repetida: 2^3 = 2 &times; 2 &times; 2 = $8.00.</span>
@@ -1354,8 +1369,9 @@
       // ---- Level toggle ----
       function setLevel(n) {
         const bodyEl = document.getElementById('body');
-        bodyEl.classList.remove('level-1', 'level-2');
+        bodyEl.classList.remove('level-0', 'level-1', 'level-2');
         bodyEl.classList.add('level-' + n);
+        document.getElementById('btn-lv0').classList.toggle('active', n === 0);
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
         handleLevelPreset(n);
@@ -2222,6 +2238,7 @@
   <!-- projects-publisher-injected:end -->
   <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
   <script src="/shared/projects/projects-visuals.js" defer></script>
+  <script src="/shared/projects/projects-zoom.js" defer></script>
   <!-- projects-visuals-injected:end -->
   <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
   <script src="/assets/canvas-bridge.js" defer></script>
