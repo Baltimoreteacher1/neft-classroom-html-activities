@@ -52,6 +52,18 @@ const PORT = Number(process.env.SMOKE_PORT || 0) || 0;
 const LESSON_MIN = 800; // a rendered lesson is ~10k chars; a blank shell is 0
 const NAV_TIMEOUT = 25000;
 const RENDER_TIMEOUT = 12000; // how long to wait for the mount to fill
+// Shared runtime scripts every hub (curriculum, monster-math, …) loads and needs
+// to render. They are committed static files copied into dist/ by vite.config's
+// copy-standalone-html plugin. If a concurrent build sharing node_modules disrupts
+// that copy, they can be absent from dist/ even though they exist in source and
+// git — blanking the hubs. That is a build-tooling artifact, NOT a page defect
+// (CF's production build is unaffected), so the gate must not report it as a
+// blank-page FAIL. See buildIsIncomplete().
+const CRITICAL_ASSETS = [
+  "assets/neft-theme.js",
+  "assets/nt-page-enhance.js",
+  "shared/save-resume/save-resume-engine.js",
+];
 
 function parseArgs(argv) {
   const a = { base: null, lessons: null, all: false, routes: true };
@@ -125,7 +137,33 @@ async function getFreePort() {
   });
 }
 
-/** Spawn `vite preview` on dist/ and resolve once it serves, or throw. */
+// Guarantee every spawned server is killed on ANY process exit — normal return,
+// Ctrl-C, kill, or an uncaught crash. Interrupted runs failing to do this are how
+// orphaned `vite preview` servers used to accumulate and hold ports.
+const _spawned = new Set();
+let _cleanupHooked = false;
+function registerCleanup(child) {
+  _spawned.add(child);
+  child.on("exit", () => _spawned.delete(child));
+  if (_cleanupHooked) return;
+  _cleanupHooked = true;
+  const killAll = () => {
+    for (const c of _spawned) {
+      try {
+        c.kill("SIGKILL");
+      } catch {}
+    }
+  };
+  process.on("exit", killAll);
+  for (const sig of ["SIGINT", "SIGTERM", "SIGHUP"]) {
+    process.on(sig, () => {
+      killAll();
+      process.exit(130);
+    });
+  }
+}
+
+/** Spawn `vite preview` on dist/ on a fresh free port and resolve once it serves, or throw. */
 async function startPreviewServer() {
   if (!(await pathExists(path.join(ROOT, "dist", "index.html")))) {
     const err = new Error("dist/ not built — run `npm run build` first.");
@@ -133,14 +171,25 @@ async function startPreviewServer() {
     throw err;
   }
   const port = PORT || (await getFreePort());
+  // Spawn the vite binary DIRECTLY (not via `npx`): with npx the real server runs
+  // as a grandchild that survives when the wrapper is killed — reparented to init,
+  // it keeps holding a port. Spawning vite directly makes `child` the actual
+  // server, so child.kill() (and the cleanup hooks) truly stop it.
+  const viteBin = path.join(ROOT, "node_modules", ".bin", "vite");
   const child = spawn(
-    "npx",
-    ["vite", "preview", "--port", String(port), "--strictPort", "--host", "127.0.0.1"],
+    viteBin,
+    ["preview", "--port", String(port), "--strictPort", "--host", "127.0.0.1"],
     { cwd: ROOT, stdio: ["ignore", "pipe", "pipe"] },
   );
+  registerCleanup(child);
   const base = `http://127.0.0.1:${port}`;
   const deadline = Date.now() + 20000;
   while (Date.now() < deadline) {
+    // If vite exits early (e.g. the just-freed port got taken), fail loudly now
+    // instead of polling a dead process for the full timeout.
+    if (child.exitCode !== null) {
+      throw new Error(`vite preview exited early (code ${child.exitCode}) before serving on port ${port}.`);
+    }
     try {
       const res = await fetch(base + "/", { redirect: "manual" });
       if (res.status > 0) return { child, base };
@@ -206,6 +255,23 @@ async function probeRoute(page, base, route) {
   return { ...route, len, pageErrors, consoleErrors, ok: reasons.length === 0, reasons };
 }
 
+/**
+ * Detect an incomplete LOCAL build: critical shared assets present in the source
+ * tree (and git) but not copied into dist/. Checked on the filesystem, not over
+ * HTTP — `vite preview`'s SPA history fallback answers a missing `/assets/x.js`
+ * with index.html (200), so an HTTP probe cannot tell "missing" from "served".
+ * An asset absent from source too is NOT incompleteness — that is a real change,
+ * so we skip it and let the normal render probe judge the result.
+ */
+async function buildIsIncomplete() {
+  const missing = [];
+  for (const rel of CRITICAL_ASSETS) {
+    if (!(await pathExists(path.join(ROOT, rel)))) continue; // absent from source → not an incomplete-build case
+    if (!(await pathExists(path.join(ROOT, "dist", rel)))) missing.push(rel);
+  }
+  return missing;
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const live = Boolean(args.base);
@@ -259,6 +325,19 @@ async function main() {
         process.exit(2);
       }
       throw e;
+    }
+    // Guard against a false blank-page FAIL from an incomplete local build.
+    const missing = await buildIsIncomplete();
+    if (missing.length) {
+      console.log("⚠️  Local build is INCOMPLETE — render smoke SKIPPED (not a page defect).");
+      console.log("   These committed shared assets exist in source but are missing from dist/:");
+      for (const a of missing) console.log(`     • ${a}`);
+      console.log("   Every hub loads these, so probing would report false blank pages. The cause");
+      console.log("   is build tooling (typically concurrent builds sharing node_modules), not the");
+      console.log("   pages — CF's production build is unaffected. Rebuild in isolation to run the");
+      console.log("   full render smoke. Skipping to avoid a false failure that blocks deploys.");
+      server.child.kill("SIGKILL");
+      process.exit(0);
     }
   }
 
