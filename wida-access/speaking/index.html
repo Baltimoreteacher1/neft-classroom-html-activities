@@ -41,10 +41,8 @@
 
         /* Depth & Shadows */
         --shadow-premium:
-          0 10px 30px -10px rgba(15, 118, 110, 0.12),
-          0 20px 40px -15px rgba(11, 31, 51, 0.08);
-        --shadow-card:
-          0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+          0 10px 30px -10px rgba(15, 118, 110, 0.12), 0 20px 40px -15px rgba(11, 31, 51, 0.08);
+        --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
         --shadow-gaze: 0 0 20px rgba(15, 118, 110, 0.2);
         --radius-premium: 16px;
         --radius-field: 8px;
@@ -64,12 +62,18 @@
       /* ── Publishing layout shell ── */
       .studio-shell {
         display: grid;
-        grid-template-columns: 320px 1fr;
+        grid-template-columns: 320px minmax(0, 1fr);
         gap: 28px;
         max-width: 1440px;
+        width: 100%;
+        min-width: 0;
         margin: 0 auto;
         padding: 0 24px 60px;
         align-items: start;
+      }
+
+      .studio-shell > * {
+        min-width: 0;
       }
 
       /* ── Sidebar Component ── */
@@ -188,9 +192,13 @@
       /* ── Main Canvas Layout ── */
       .canvas-layout {
         display: grid;
-        grid-template-columns: 1fr 1.15fr;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
         gap: 28px;
         align-items: start;
+      }
+
+      .canvas-layout > * {
+        min-width: 0;
       }
 
       .glass-panel {
@@ -558,7 +566,7 @@
 
       .rubric-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 12px;
       }
 
@@ -609,7 +617,7 @@
 
       .checklist-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px;
       }
 
@@ -823,14 +831,14 @@
 
       @media (max-width: 1080px) {
         .studio-shell {
-          grid-template-columns: 1fr;
+          grid-template-columns: minmax(0, 1fr);
         }
         .sidebar-wrapper {
           position: static;
           max-height: 220px;
         }
         .canvas-layout {
-          grid-template-columns: 1fr;
+          grid-template-columns: minmax(0, 1fr);
         }
       }
 
@@ -934,12 +942,12 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <main class="page-shell">
       <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -951,10 +959,7 @@
       </nav>
 
       <!-- Header Section -->
-      <section
-        class="hero compact-hero"
-        style="border-top: 6px solid var(--primary)"
-      >
+      <section class="hero compact-hero" style="border-top: 6px solid var(--primary)">
         <div
           style="
             display: flex;
@@ -965,9 +970,7 @@
           "
         >
           <div>
-            <p class="eyebrow" style="color: var(--primary)">
-              WIDA ACCESS Prep Suite
-            </p>
+            <p class="eyebrow" style="color: var(--primary)">WIDA ACCESS Prep Suite</p>
             <h1
               style="
                 font-family: var(--font-space);
@@ -979,11 +982,10 @@
               ACCESS Speaking Prep Studio
             </h1>
             <p class="hero-copy" style="max-width: 800px; margin-bottom: 12px">
-              Modeled on the ACCESS Speaking test for grades 6-8: themed folders
-              of tasks that build from Proficiency Level 1 to 5 (name → describe
-              → compare → explain → discuss). Hear a model student first, then
-              respond aloud with a local voice recorder, visual support, and
-              fading scaffolds.
+              Modeled on the ACCESS Speaking test for grades 6-8: themed folders of tasks that build
+              from Proficiency Level 1 to 5 (name → describe → compare → explain → discuss). Hear a
+              model student first, then respond aloud with a local voice recorder, visual support,
+              and fading scaffolds.
             </p>
 
             <!-- Gamification Streak & XP stats -->
@@ -1053,11 +1055,7 @@
             role="group"
             aria-label="Support level for prompts and scaffolds"
           >
-            <button
-              class="tier-btn active"
-              id="btnTierA"
-              onclick="setELPTier('A')"
-            >
+            <button class="tier-btn active" id="btnTierA" onclick="setELPTier('A')">
               Level 1 · More Support
             </button>
             <button class="tier-btn" id="btnTierB" onclick="setELPTier('B')">
@@ -1074,9 +1072,8 @@
               line-height: 1.4;
             "
           >
-            Each folder is a theme. Tasks below it grow in complexity from
-            Proficiency Level 1 to 5. Hear the model first, then record your own
-            answer.
+            Each folder is a theme. Tasks below it grow in complexity from Proficiency Level 1 to 5.
+            Hear the model first, then record your own answer.
           </p>
 
           <nav class="concept-catalog" id="sidebarNav"></nav>
@@ -1122,9 +1119,7 @@
                 box-shadow: var(--shadow-card);
               "
             >
-              <span id="questText"
-                >Quest: Click any object on the diagram to begin.</span
-              >
+              <span id="questText">Quest: Click any object on the diagram to begin.</span>
               <span
                 id="questStatusBadge"
                 style="
@@ -1142,14 +1137,10 @@
             <!-- Multilingual Interactive Dictionary and Highlight Tracker -->
             <div class="scaffold-card">
               <div class="vocab-lang-selector" id="langTabs">
-                <button class="lang-chip active" data-lang="en">
-                  EN Definition
-                </button>
+                <button class="lang-chip active" data-lang="en">EN Definition</button>
                 <button class="lang-chip" data-lang="es">Español (ES)</button>
                 <button class="lang-chip" data-lang="ar">العربية (AR)</button>
-                <button class="lang-chip" data-lang="vi">
-                  Tiếng Việt (VI)
-                </button>
+                <button class="lang-chip" data-lang="vi">Tiếng Việt (VI)</button>
               </div>
 
               <!-- Click details panel -->
@@ -1167,13 +1158,7 @@
                   color: var(--primary-dark);
                 "
               >
-                <div
-                  style="
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                  "
-                >
+                <div style="display: flex; justify-content: space-between; align-items: center">
                   <strong
                     id="vocabDetailWord"
                     style="font-size: 1rem; font-family: var(--font-space)"
@@ -1206,8 +1191,7 @@
                   text-transform: uppercase;
                 "
               >
-                Multilingual Vocab Word Wall &middot; Click to inspect
-                translation & pronunciation!
+                Multilingual Vocab Word Wall &middot; Click to inspect translation & pronunciation!
               </p>
 
               <div class="chip-container" id="wordWallContainer">
@@ -1220,9 +1204,7 @@
           <section class="glass-panel" aria-labelledby="recorder-heading">
             <div class="panel-meta">
               <h3 id="recorder-heading">🎙️ Virtual Speaking Test</h3>
-              <span
-                class="card-kicker"
-                style="background: var(--amber-light); color: var(--amber)"
+              <span class="card-kicker" style="background: var(--amber-light); color: var(--amber)"
                 >Speaking Lab</span
               >
             </div>
@@ -1238,9 +1220,7 @@
                   gap: 8px;
                 "
               >
-                <span class="checklist-title"
-                  >🎯 Pre-Speaking Prep Checklist</span
-                >
+                <span class="checklist-title">🎯 Pre-Speaking Prep Checklist</span>
                 <div class="rate-controls">
                   <span
                     style="
@@ -1251,18 +1231,10 @@
                     "
                     >Rate:</span
                   >
-                  <button
-                    class="rate-btn"
-                    id="btnRateSlow"
-                    onclick="setPeerPlaybackRate(0.6)"
-                  >
+                  <button class="rate-btn" id="btnRateSlow" onclick="setPeerPlaybackRate(0.6)">
                     🐢 0.6x
                   </button>
-                  <button
-                    class="rate-btn"
-                    id="btnRateMedium"
-                    onclick="setPeerPlaybackRate(0.8)"
-                  >
+                  <button class="rate-btn" id="btnRateMedium" onclick="setPeerPlaybackRate(0.8)">
                     🚶 0.8x
                   </button>
                   <button
@@ -1425,10 +1397,7 @@
                   class="rate-btn"
                   id="btnCer_vocab"
                   onclick="toggleCERHighlight('vocab')"
-                  style="
-                    border-color: var(--green-success);
-                    color: var(--green-success);
-                  "
+                  style="border-color: var(--green-success); color: var(--green-success)"
                 >
                   Vocab Terms
                 </button>
@@ -1466,11 +1435,7 @@
               </div>
               <canvas class="visualizer-canvas" id="voiceCanvas"></canvas>
               <div class="record-controls">
-                <button
-                  class="action-btn btn-red"
-                  id="recordBtn"
-                  onclick="toggleAudioRecording()"
-                >
+                <button class="action-btn btn-red" id="recordBtn" onclick="toggleAudioRecording()">
                   🎙️ Record Response
                 </button>
                 <button
@@ -1488,26 +1453,14 @@
 
             <!-- Rehearsal Draft Box -->
             <div class="rehearsal-card">
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                "
-              >
-                <span class="scaffold-title"
-                  >📝 Speech Rehearsal Draft Box</span
-                >
+              <div style="display: flex; justify-content: space-between; align-items: center">
+                <span class="scaffold-title">📝 Speech Rehearsal Draft Box</span>
                 <!-- Speak to type button -->
                 <button
                   class="rate-btn"
                   id="dictateBtn"
                   onclick="toggleSpeechRecognition()"
-                  style="
-                    border-color: var(--coral);
-                    color: var(--coral);
-                    font-weight: 800;
-                  "
+                  style="border-color: var(--coral); color: var(--coral); font-weight: 800"
                 >
                   🎙️ Speak to Type
                 </button>
@@ -1526,28 +1479,17 @@
               >
               <div
                 id="sentenceStartersWrap"
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  gap: 8px;
-                  margin-bottom: 12px;
-                "
+                style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px"
               >
                 <!-- Dynamically populated frames -->
               </div>
 
               <span class="scaffold-title" style="margin-top: 12px"
-                >🔗 Cohesive Conjunctions (Connect thoughts to score Level
-                3-4!)</span
+                >🔗 Cohesive Conjunctions (Connect thoughts to score Level 3-4!)</span
               >
               <div
                 id="conjunctionsWrap"
-                style="
-                  display: flex;
-                  flex-wrap: wrap;
-                  gap: 8px;
-                  margin-top: 6px;
-                "
+                style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px"
               >
                 <button
                   class="frame-chip"
@@ -1644,56 +1586,32 @@
             <div class="rubric-box">
               <div class="rubric-header">
                 <h4>🏆 Speaking Rubric Evaluator</h4>
-                <span class="rubric-badge" id="liveELPBadge"
-                  >ELP 1.0 (Entering)</span
-                >
+                <span class="rubric-badge" id="liveELPBadge">ELP 1.0 (Entering)</span>
               </div>
               <div class="rubric-grid">
                 <div class="rubric-criterion">
                   <label for="rubricLinguistic">Linguistic Complexity</label>
                   <select id="rubricLinguistic" onchange="calculateELPRating()">
-                    <option value="1">
-                      Entering: Single words/phrases (1 pt)
-                    </option>
-                    <option value="2">
-                      Emerging: Simple sentence structures (2 pts)
-                    </option>
-                    <option value="3">
-                      Developing: Compound sentences (3 pts)
-                    </option>
-                    <option value="4">
-                      Expanding: Complex sentences & connectors (4 pts)
-                    </option>
+                    <option value="1">Entering: Single words/phrases (1 pt)</option>
+                    <option value="2">Emerging: Simple sentence structures (2 pts)</option>
+                    <option value="3">Developing: Compound sentences (3 pts)</option>
+                    <option value="4">Expanding: Complex sentences & connectors (4 pts)</option>
                   </select>
                 </div>
                 <div class="rubric-criterion">
                   <label for="rubricVocabulary">Vocabulary Usage</label>
                   <select id="rubricVocabulary" onchange="calculateELPRating()">
-                    <option value="1">
-                      Entering: General vocabulary (1 pt)
-                    </option>
-                    <option value="2">
-                      Emerging: High-frequency academic terms (2 pts)
-                    </option>
-                    <option value="3">
-                      Developing: Mapped domain terms (3 pts)
-                    </option>
-                    <option value="4">
-                      Expanding: Highly technical expressions (4 pts)
-                    </option>
+                    <option value="1">Entering: General vocabulary (1 pt)</option>
+                    <option value="2">Emerging: High-frequency academic terms (2 pts)</option>
+                    <option value="3">Developing: Mapped domain terms (3 pts)</option>
+                    <option value="4">Expanding: Highly technical expressions (4 pts)</option>
                   </select>
                 </div>
                 <div class="rubric-criterion">
-                  <label for="rubricControl"
-                    >Language Forms &amp; Conventions</label
-                  >
+                  <label for="rubricControl">Language Forms &amp; Conventions</label>
                   <select id="rubricControl" onchange="calculateELPRating()">
-                    <option value="1">
-                      Entering: Words/phrases, frequent pauses (1 pt)
-                    </option>
-                    <option value="2">
-                      Emerging: Simple grammar, some errors (2 pts)
-                    </option>
+                    <option value="1">Entering: Words/phrases, frequent pauses (1 pt)</option>
+                    <option value="2">Emerging: Simple grammar, some errors (2 pts)</option>
                     <option value="3">
                       Developing: Mostly controlled sentence grammar (3 pts)
                     </option>
@@ -1721,12 +1639,8 @@
                 >
                   💡 WIDA Speaking Coach Advice
                 </div>
-                <div
-                  id="widaCoachContent"
-                  style="font-size: 0.84rem; font-weight: 500"
-                >
-                  Select scores to receive personalized academic speaking
-                  developmental feedback...
+                <div id="widaCoachContent" style="font-size: 0.84rem; font-weight: 500">
+                  Select scores to receive personalized academic speaking developmental feedback...
                 </div>
               </div>
 
@@ -1766,13 +1680,7 @@
         <span>⚙️ SPEAKING DIAGNOSTICS MATRIX</span>
         <button
           onclick="toggleDiagnostics()"
-          style="
-            background: none;
-            border: none;
-            color: #00ff66;
-            cursor: pointer;
-            font-weight: 900;
-          "
+          style="background: none; border: none; color: #00ff66; cursor: pointer; font-weight: 900"
         >
           [X]
         </button>
@@ -2012,8 +1920,7 @@
           domain: "Language of Social Studies",
           model: "grid",
           terms: ["location", "direction", "distance", "neighbor"],
-          promptA:
-            "Look at the map. Find the dot. Tell me where the dot is on the map.",
+          promptA: "Look at the map. Find the dot. Tell me where the dot is on the map.",
           promptB:
             "Use the map to give clear directions from the center to the marked location. Describe the direction and the distance you would travel.",
           framesA: ["The dot is...", "It is near...", "To get there, I go..."],
@@ -2033,15 +1940,10 @@
           domain: "Language of Science",
           model: "scale",
           terms: ["compare", "heavier", "lighter", "balance"],
-          promptA:
-            "Look at the balance. Which side goes down? Tell me which object is heavier.",
+          promptA: "Look at the balance. Which side goes down? Tell me which object is heavier.",
           promptB:
             "Use the balance to compare the two objects. Explain which one is heavier and which one is lighter, and how the balance shows this.",
-          framesA: [
-            "This side is...",
-            "The heavier object is...",
-            "The lighter object is...",
-          ],
+          framesA: ["This side is...", "The heavier object is...", "The lighter object is..."],
           framesB: [
             "When I compare the two objects, I notice that...",
             "The object that is heavier makes the balance...",
@@ -2062,11 +1964,7 @@
             "Look at the survey chart. Each dot is one student's answer. Which choice has the most dots?",
           promptB:
             "Describe what this class survey chart shows. Explain which choice is the most popular and which one the fewest students chose.",
-          framesA: [
-            "The most dots are on...",
-            "This choice is the...",
-            "Few students chose...",
-          ],
+          framesA: ["The most dots are on...", "This choice is the...", "Few students chose..."],
           framesB: [
             "According to this survey, the favorite choice is...",
             "The choice with the most votes is...",
@@ -2083,15 +1981,10 @@
           domain: "Language of Language Arts",
           model: "geometry",
           terms: ["shape", "rectangle", "triangle", "describe"],
-          promptA:
-            "Look at the picture. Name the shapes that you see in the picture.",
+          promptA: "Look at the picture. Name the shapes that you see in the picture.",
           promptB:
             "Describe this picture in detail. Tell about the shapes, where they are, and what the whole picture could be.",
-          framesA: [
-            "I see a...",
-            "The picture has...",
-            "Next to it there is a...",
-          ],
+          framesA: ["I see a...", "The picture has...", "Next to it there is a..."],
           framesB: [
             "In this picture, I can describe...",
             "On the left side, there is...",
@@ -2154,8 +2047,7 @@
           domain: "Social & Instructional",
           model: "ratio-table",
           terms: ["recipe", "ingredient", "step", "mix"],
-          promptA:
-            "Look at the recipe steps. Tell me one ingredient you need to make this snack.",
+          promptA: "Look at the recipe steps. Tell me one ingredient you need to make this snack.",
           promptB:
             "Use the chart to explain how to make this snack. Describe each step in order using your own words.",
           framesA: ["First you need...", "You add the...", "Then you mix..."],
@@ -2175,15 +2067,10 @@
           domain: "Language of Science",
           model: "plant",
           terms: ["leaf", "sunlight", "water", "oxygen"],
-          promptA:
-            "Look at the leaf diagram. Name two things a plant needs to grow.",
+          promptA: "Look at the leaf diagram. Name two things a plant needs to grow.",
           promptB:
             "Explain how a plant grows and makes food. Describe what the plant takes in and what it gives out.",
-          framesA: [
-            "The plant needs...",
-            "The leaf takes in...",
-            "Sunlight comes from...",
-          ],
+          framesA: ["The plant needs...", "The leaf takes in...", "Sunlight comes from..."],
           framesB: [
             "In order to grow, a plant first takes in...",
             "Using sunlight, the leaf changes these into...",
@@ -2200,15 +2087,10 @@
           domain: "Language of Social Studies",
           model: "timeline",
           terms: ["timeline", "event", "before", "after"],
-          promptA:
-            "Look at the timeline. Which event happened first on the timeline?",
+          promptA: "Look at the timeline. Which event happened first on the timeline?",
           promptB:
             "Use the timeline to retell the events in order. Describe what happened first, next, and last.",
-          framesA: [
-            "The first event is...",
-            "This happened in...",
-            "The timeline begins...",
-          ],
+          framesA: ["The first event is...", "This happened in...", "The timeline begins..."],
           framesB: [
             "On this timeline, the first event was...",
             "After that, the next event happened when...",
@@ -2225,8 +2107,7 @@
           domain: "Language of Science",
           model: "volume",
           terms: ["box", "length", "width", "height"],
-          promptA:
-            "Look at the box. Tell me about the shape. Is it tall or wide?",
+          promptA: "Look at the box. Tell me about the shape. Is it tall or wide?",
           promptB:
             "Describe this box in detail. Talk about its length, its width, and its height, and what it could hold.",
           framesA: ["The box is...", "It looks...", "I think it holds..."],
@@ -2235,8 +2116,7 @@
             "Its length and width are...",
             "Because it is this size, it could hold...",
           ],
-          modelA:
-            "This is a <span class='cer-vocab'>box</span>. It is wide and not very tall.",
+          modelA: "This is a <span class='cer-vocab'>box</span>. It is wide and not very tall.",
           modelB:
             "<span class='cer-topic'>I will describe this three-dimensional object, which looks like a box.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>it has a long length and a shorter width</span>, <span class='cer-connector'>and</span> <span class='cer-evidence'>its height is medium, about the size of a shoebox</span>, <span class='cer-connector'>so</span> it could hold books or toys.",
         },
@@ -2246,15 +2126,10 @@
           domain: "Language of Science",
           model: "ecosystem",
           terms: ["producer", "consumer", "predator", "energy"],
-          promptA:
-            "Look at the food web arrows. Which animal eats the grasshopper?",
+          promptA: "Look at the food web arrows. Which animal eats the grasshopper?",
           promptB:
             "Explain how the food web works. Describe how energy moves from the plants to the animals.",
-          framesA: [
-            "The frog eats...",
-            "The arrow points to...",
-            "Grass is eaten by...",
-          ],
+          framesA: ["The frog eats...", "The arrow points to...", "Grass is eaten by..."],
           framesB: [
             "In this food web, the energy starts with the producer, which is...",
             "Next, the energy moves to the consumer when...",
@@ -2302,8 +2177,7 @@
             "I would like to suggest that...",
             "This would help students because...",
           ],
-          modelA:
-            "The activity I enjoy most is reading books in the school library.",
+          modelA: "The activity I enjoy most is reading books in the school library.",
           modelB:
             "<span class='cer-topic'>If I could talk to the principal, I would politely give my opinion about our school.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>I would suggest more time for reading clubs after school</span>. <span class='cer-connector'>I believe</span> <span class='cer-evidence'>this would help students who want to practice English and make new friends</span>, <span class='cer-connector'>and</span> I would listen with respect to her answer.",
         },
@@ -2313,15 +2187,10 @@
           domain: "Language of Social Studies",
           model: "map-scale",
           terms: ["map", "legend", "distance", "route"],
-          promptA:
-            "Look at the map and the legend. Which two places are shown on the map?",
+          promptA: "Look at the map and the legend. Which two places are shown on the map?",
           promptB:
             "Use the map and its legend to explain the route from the school to the library. Describe the direction and how far it is.",
-          framesA: [
-            "The map shows...",
-            "The legend tells me...",
-            "The two places are...",
-          ],
+          framesA: ["The map shows...", "The legend tells me...", "The two places are..."],
           framesB: [
             "On this map, the legend helps me understand...",
             "To travel from the school to the library, I follow the route...",
@@ -2338,8 +2207,7 @@
           domain: "Language of Science",
           model: "ramp-physics",
           terms: ["force", "push", "slope", "move"],
-          promptA:
-            "Look at the toy car on the ramp. What makes the car move down the ramp?",
+          promptA: "Look at the toy car on the ramp. What makes the car move down the ramp?",
           promptB:
             "Describe what you observe with the car on the ramp. Explain what force makes it move and what would happen on a steeper slope.",
           framesA: ["The car...", "It moves because...", "Gravity pulls..."],
@@ -2359,15 +2227,10 @@
           domain: "Language of Social Studies",
           model: "branches-flow",
           terms: ["government", "leader", "law", "rule"],
-          promptA:
-            "Look at the government diagram. Name the three parts of the government shown.",
+          promptA: "Look at the government diagram. Name the three parts of the government shown.",
           promptB:
             "Describe the three branches of government in the diagram. Explain what each branch does in your own words.",
-          framesA: [
-            "The three branches are...",
-            "I see the...",
-            "One branch makes...",
-          ],
+          framesA: ["The three branches are...", "I see the...", "One branch makes..."],
           framesB: [
             "The government is divided into three branches, which are...",
             "One branch is responsible for...",
@@ -2384,15 +2247,10 @@
           domain: "Social & Instructional",
           model: "spinner-prob",
           terms: ["color", "chance", "likely", "spinner"],
-          promptA:
-            "Look at the spinner. Which color has the most space on the spinner?",
+          promptA: "Look at the spinner. Which color has the most space on the spinner?",
           promptB:
             "Describe the spinner and its colors. Explain which color you are most likely to land on and which one is least likely, and why.",
-          framesA: [
-            "The spinner has...",
-            "The biggest color is...",
-            "I might land on...",
-          ],
+          framesA: ["The spinner has...", "The biggest color is...", "I might land on..."],
           framesB: [
             "On this spinner, I can see the colors...",
             "I am most likely to land on... because...",
@@ -2455,8 +2313,7 @@
           kind: "Give an Opinion",
           model: "community",
           terms: ["opinion", "suggest", "improve", "respect"],
-          promptA:
-            "Look at the school picture. What is one thing you like about your school?",
+          promptA: "Look at the school picture. What is one thing you like about your school?",
           promptB:
             "Give your opinion about one way to make your school better. Explain what you would change and give two reasons why.",
           framesA: ["I like...", "My favorite part is...", "I think..."],
@@ -2481,11 +2338,7 @@
             "Look at the two animals. Tell me one way the cat and the elephant are different.",
           promptB:
             "Compare the cat and the elephant. Explain how they are alike and how they are different in size, body, and home.",
-          framesA: [
-            "The cat is...",
-            "The elephant is...",
-            "They are different because...",
-          ],
+          framesA: ["The cat is...", "The elephant is...", "They are different because..."],
           framesB: [
             "When I compare the cat and the elephant, they are alike because...",
             "However, they are different because the cat is...",
@@ -2529,11 +2382,7 @@
             "Press 'Hear Peer Model' and listen. Then press Record and say the same sentence the same way.",
           promptB:
             "Listen carefully to the model answer. Then record yourself saying it with the same words, pace, and clear ending sounds.",
-          framesA: [
-            "I will listen...",
-            "Now I will say it...",
-            "I can copy...",
-          ],
+          framesA: ["I will listen...", "Now I will say it...", "I can copy..."],
           framesB: [
             "First, I will listen to the model carefully...",
             "Next, I will repeat it with the same pace...",
@@ -2551,8 +2400,7 @@
           kind: "Describe a Scene",
           model: "picture-scene",
           terms: ["describe", "location", "color", "shape"],
-          promptA:
-            "Look at the park picture. Name three things that you see in the park.",
+          promptA: "Look at the park picture. Name three things that you see in the park.",
           promptB:
             "Describe this whole park scene in detail. Tell what you see, where things are, and what the weather is like.",
           framesA: ["I see a...", "There is a...", "I also see..."],
@@ -2577,11 +2425,7 @@
             "Imagine you are meeting a new classmate. Ask them one question about what they like.",
           promptB:
             "Imagine an interview with a new classmate. Ask two questions and then answer them yourself, the way your partner might.",
-          framesA: [
-            "What is your favorite...?",
-            "Do you like...?",
-            "My answer is...",
-          ],
+          framesA: ["What is your favorite...?", "Do you like...?", "My answer is..."],
           framesB: [
             "First I would ask: what do you enjoy doing after school, and why?",
             "Then I would ask: what is your favorite subject?",
@@ -2599,8 +2443,7 @@
           kind: "Describe a Picture",
           model: "weather",
           terms: ["describe", "cloud", "water", "color"],
-          promptA:
-            "Look at the weather picture. Tell me what the weather is like today.",
+          promptA: "Look at the weather picture. Tell me what the weather is like today.",
           promptB:
             "Give a full weather report from the picture. Describe the sky, the clouds, and the wind, and say what someone should wear.",
           framesA: ["The weather is...", "I see...", "It is..."],
@@ -2643,15 +2486,10 @@
           kind: "Explain a Process",
           model: "recycle",
           terms: ["order", "describe", "improve", "compare"],
-          promptA:
-            "Look at the three bins. Which bin do you put a plastic bottle in?",
+          promptA: "Look at the three bins. Which bin do you put a plastic bottle in?",
           promptB:
             "Explain how to sort trash into the three bins, and tell why recycling helps our community.",
-          framesA: [
-            "The plastic goes in...",
-            "Paper goes in...",
-            "Food goes in...",
-          ],
+          framesA: ["The plastic goes in...", "Paper goes in...", "Food goes in..."],
           framesB: [
             "To sort correctly, first I look at the object and then I...",
             "For example, plastic bottles go in..., while paper goes in...",
@@ -2669,15 +2507,10 @@
           kind: "Picture-Prompt Response",
           model: "lunch",
           terms: ["describe", "story", "beginning", "ending"],
-          promptA:
-            "Look at the picture. Tell me one thing that is happening in it.",
+          promptA: "Look at the picture. Tell me one thing that is happening in it.",
           promptB:
             "Look at the picture and make up a short story about it. Tell what is happening, who is there, and what might happen next.",
-          framesA: [
-            "In the picture I see...",
-            "I think this is...",
-            "Maybe they will...",
-          ],
+          framesA: ["In the picture I see...", "I think this is...", "Maybe they will..."],
           framesB: [
             "In this picture, I can see...",
             "I imagine that the people are... because...",
@@ -2695,8 +2528,7 @@
           kind: "Pronunciation",
           model: "pronounce",
           terms: ["practice", "listen", "describe", "sequence"],
-          promptA:
-            "Say the word 'jumping' slowly. Make the '-ing' sound clear at the end.",
+          promptA: "Say the word 'jumping' slowly. Make the '-ing' sound clear at the end.",
           promptB:
             "Practice saying words that end in '-ing' and '-ed'. Say each one clearly, then use it in a sentence.",
           framesA: ["jump... ing", "I say it slow...", "Now fast..."],
@@ -2717,8 +2549,7 @@
           kind: "Retell a Story",
           model: "story-seq",
           terms: ["story", "beginning", "middle", "ending", "before"],
-          promptA:
-            "Use the story cards. Tell me what happens at the beginning of this story.",
+          promptA: "Use the story cards. Tell me what happens at the beginning of this story.",
           promptB:
             "Retell the story of a lost backpack in order. Describe the problem at the beginning, the middle, and how it is solved at the ending.",
           framesA: ["At the beginning...", "Then...", "The story ends when..."],
@@ -2739,15 +2570,10 @@
           kind: "Give an Opinion",
           model: "weather",
           terms: ["opinion", "favorite", "compare", "describe"],
-          promptA:
-            "What is your favorite season? Tell me one reason why you like it.",
+          promptA: "What is your favorite season? Tell me one reason why you like it.",
           promptB:
             "Give your opinion about the best season of the year. Explain your choice with two reasons and compare it to another season.",
-          framesA: [
-            "My favorite season is...",
-            "I like it because...",
-            "In this season I can...",
-          ],
+          framesA: ["My favorite season is...", "I like it because...", "In this season I can..."],
           framesB: [
             "In my opinion, the best season is... because...",
             "One reason is that..., and another reason is that...",
@@ -2768,11 +2594,7 @@
           promptA: "Look at the plant. Name two things a plant needs to grow.",
           promptB:
             "Explain the steps of how a plant grows, in order. Describe what it takes in and what it gives out, using sequence words.",
-          framesA: [
-            "A plant needs...",
-            "The leaf takes in...",
-            "Then the plant...",
-          ],
+          framesA: ["A plant needs...", "The leaf takes in...", "Then the plant..."],
           framesB: [
             "First, to grow a plant takes in...",
             "Next, the leaf uses sunlight to...",
@@ -2790,8 +2612,7 @@
           kind: "Ask & Answer",
           model: "interview",
           terms: ["describe", "listen", "compare", "opinion"],
-          promptA:
-            "Imagine you meet a scientist. Ask one question about animals or plants.",
+          promptA: "Imagine you meet a scientist. Ask one question about animals or plants.",
           promptB:
             "Imagine you interview a scientist. Ask two thoughtful questions about nature, and answer one of them the way a scientist might.",
           framesA: ["Why do...?", "How do...?", "I want to know..."],
@@ -2800,8 +2621,7 @@
             "Then I would ask: how does...?",
             "A scientist might answer that... because...",
           ],
-          modelA:
-            "I would ask: <span class='cer-evidence'>Why do leaves change color?</span>",
+          modelA: "I would ask: <span class='cer-evidence'>Why do leaves change color?</span>",
           modelB:
             "<span class='cer-topic'>In this interview, I will ask a scientist thoughtful questions and listen carefully.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>I would ask why leaves change color in the fall</span>. <span class='cer-connector'>Then</span>, <span class='cer-evidence'>I would ask how plants drink water through their roots</span>, <span class='cer-connector'>and a scientist might answer that</span> <span class='cer-evidence'>leaves change color because the green fades when the days get shorter</span>.",
         },
@@ -2816,18 +2636,13 @@
             "Press 'Hear Peer Model' to hear a friendly greeting. Then record yourself saying it the same way.",
           promptB:
             "Listen to the model greeting and introduction. Then record yourself introducing yourself the same clear, polite way.",
-          framesA: [
-            "Hello, my name is...",
-            "I am in grade...",
-            "Nice to meet you.",
-          ],
+          framesA: ["Hello, my name is...", "I am in grade...", "Nice to meet you."],
           framesB: [
             "First I will listen to how the model greets people...",
             "Then I will introduce myself politely: hello, my name is...",
             "Finally I will check that my voice is clear and friendly...",
           ],
-          modelA:
-            "<span class='cer-evidence'>Hello, my name is Sam.</span> Nice to meet you.",
+          modelA: "<span class='cer-evidence'>Hello, my name is Sam.</span> Nice to meet you.",
           modelB:
             "<span class='cer-topic'>I will copy the model greeting so my introduction sounds clear and polite.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>I listen to how the model says hello and gives their name slowly</span>. <span class='cer-connector'>Then</span>, <span class='cer-evidence'>I record myself: hello, my name is Sam, and I am in seventh grade</span>, <span class='cer-connector'>and I finish by saying</span> <span class='cer-evidence'>it is nice to meet you</span>.",
         },
@@ -2873,13 +2688,7 @@
           domain: "Language of Mathematics",
           kind: "Explain a Relationship",
           model: "scatter-plot",
-          terms: [
-            "relationship",
-            "correlation",
-            "variable",
-            "trend line",
-            "predict",
-          ],
+          terms: ["relationship", "correlation", "variable", "trend line", "predict"],
           promptA:
             "Look at the scatter plot of study time and test scores. As study time goes up, what happens to the scores?",
           promptB:
@@ -2936,11 +2745,7 @@
             "Read the short passage on the card. What does the character, Maya, do in the story?",
           promptB:
             "Make a claim about Maya's character trait. Defend your claim using two pieces of textual evidence from the passage, and explain how each detail proves your point.",
-          framesA: [
-            "In the passage, Maya...",
-            "One thing she does is...",
-            "The text says...",
-          ],
+          framesA: ["In the passage, Maya...", "One thing she does is...", "The text says..."],
           framesB: [
             "I claim that Maya is... ",
             "One piece of evidence is when the text says... which shows...",
@@ -2957,22 +2762,12 @@
           domain: "Language of Science",
           kind: "Draw a Conclusion",
           model: "data-table",
-          terms: [
-            "variable",
-            "results",
-            "conclusion",
-            "controlled",
-            "evidence",
-          ],
+          terms: ["variable", "results", "conclusion", "controlled", "evidence"],
           promptA:
             "Look at the data table from the plant experiment. Which plant grew the tallest?",
           promptB:
             "Using the results in this data table, draw a conclusion about how sunlight affected plant growth. Cite the specific data that supports your conclusion and explain the cause.",
-          framesA: [
-            "The tallest plant was...",
-            "Plant A grew... cm",
-            "The shortest plant was...",
-          ],
+          framesA: ["The tallest plant was...", "Plant A grew... cm", "The shortest plant was..."],
           framesB: [
             "Based on the results in the table, I conclude that...",
             "The data that supports this is... compared to...",
@@ -3217,24 +3012,19 @@
         STORE.checklistQuest = true;
         playChime("success");
         document.getElementById("questStatusBadge").textContent = "✓ UNLOCKED";
-        document.getElementById("questStatusBadge").style.background =
-          "var(--green-success)";
+        document.getElementById("questStatusBadge").style.background = "var(--green-success)";
         updateChecklistUI();
       }
 
       // Web Speech API dictation
       let recognition = null;
       function toggleSpeechRecognition() {
-        if (
-          !("webkitSpeechRecognition" in window) &&
-          !("SpeechRecognition" in window)
-        ) {
+        if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
           showMinimalToast("🎙️ Speech-to-Text unsupported in this browser.");
           return;
         }
 
-        const SpeechRec =
-          window.SpeechRecognition || window.webkitSpeechRecognition;
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!recognition) {
           recognition = new SpeechRec();
           recognition.continuous = true;
@@ -3243,34 +3033,25 @@
 
           recognition.onstart = () => {
             document.getElementById("dictateBtn").innerHTML = "⏹️ Stop Typing";
-            document
-              .getElementById("dictateBtn")
-              .classList.add("btn-solid-gold");
+            document.getElementById("dictateBtn").classList.add("btn-solid-gold");
             showMinimalToast("🎙️ Listening! Speak your draft...");
           };
 
           recognition.onresult = (event) => {
-            const resultText =
-              event.results[event.results.length - 1][0].transcript;
+            const resultText = event.results[event.results.length - 1][0].transcript;
             const draftBox = document.getElementById("rehearsalDraftBox");
             draftBox.value += " " + resultText;
             updateChecklistUI();
           };
 
           recognition.onend = () => {
-            document.getElementById("dictateBtn").innerHTML =
-              "🎙️ Speak to Type";
-            document
-              .getElementById("dictateBtn")
-              .classList.remove("btn-solid-gold");
+            document.getElementById("dictateBtn").innerHTML = "🎙️ Speak to Type";
+            document.getElementById("dictateBtn").classList.remove("btn-solid-gold");
           };
 
           recognition.onerror = () => {
-            document.getElementById("dictateBtn").innerHTML =
-              "🎙️ Speak to Type";
-            document
-              .getElementById("dictateBtn")
-              .classList.remove("btn-solid-gold");
+            document.getElementById("dictateBtn").innerHTML = "🎙️ Speak to Type";
+            document.getElementById("dictateBtn").classList.remove("btn-solid-gold");
           };
         }
 
@@ -3287,33 +3068,24 @@
       function triggerSparkCelebration() {
         playChime("success");
         STORE.sparkPoints = (STORE.sparkPoints || 1200) + 100;
-        document.getElementById("sparkXPCounter").textContent =
-          `✨ ${STORE.sparkPoints} SPARK XP`;
+        document.getElementById("sparkXPCounter").textContent = `✨ ${STORE.sparkPoints} SPARK XP`;
         localStorage.setItem("widaXP", STORE.sparkPoints);
 
         let streak = parseInt(localStorage.getItem("widaStreak") || 0);
         streak++;
         localStorage.setItem("widaStreak", streak);
         if (document.getElementById("streakBadge")) {
-          document.getElementById("streakBadge").textContent =
-            `🔥 ${streak} Day Streak`;
+          document.getElementById("streakBadge").textContent = `🔥 ${streak} Day Streak`;
         }
 
-        const completedList = JSON.parse(
-          localStorage.getItem("widaCompletedSpeaking") || "[]",
-        );
+        const completedList = JSON.parse(localStorage.getItem("widaCompletedSpeaking") || "[]");
         const taskId = `T${STORE.activeTaskIdx + 1}`;
         if (!completedList.includes(taskId)) {
           completedList.push(taskId);
-          localStorage.setItem(
-            "widaCompletedSpeaking",
-            JSON.stringify(completedList),
-          );
+          localStorage.setItem("widaCompletedSpeaking", JSON.stringify(completedList));
         }
 
-        showMinimalToast(
-          "🎉 Masterpiece Completed! +100 SPARK XP! Day Streak +1!",
-        );
+        showMinimalToast("🎉 Masterpiece Completed! +100 SPARK XP! Day Streak +1!");
 
         // Honor reduced-motion: skip the falling-confetti animation entirely
         if (prefersReducedMotion()) return;
@@ -3325,16 +3097,8 @@
           p.style.left = Math.random() * window.innerWidth + "px";
           p.style.width = Math.random() * 8 + 6 + "px";
           p.style.height = Math.random() * 12 + 8 + "px";
-          const colors = [
-            "#0f766e",
-            "#d97706",
-            "#ea580c",
-            "#3b82f6",
-            "#22c55e",
-            "#a855f7",
-          ];
-          p.style.background =
-            colors[Math.floor(Math.random() * colors.length)];
+          const colors = ["#0f766e", "#d97706", "#ea580c", "#3b82f6", "#22c55e", "#a855f7"];
+          p.style.background = colors[Math.floor(Math.random() * colors.length)];
           p.style.zIndex = "99999";
           p.style.transform = `rotate(${Math.random() * 360}deg)`;
           p.style.borderRadius = "2px";
@@ -3609,10 +3373,7 @@
           let median = 0;
           if (points.length > 0) {
             const mid = Math.floor(points.length / 2);
-            median =
-              points.length % 2 !== 0
-                ? points[mid]
-                : (points[mid - 1] + points[mid]) / 2;
+            median = points.length % 2 !== 0 ? points[mid] : (points[mid - 1] + points[mid]) / 2;
           }
 
           const meanX = 80 + mean * 48;
@@ -4433,15 +4194,9 @@
 
       function setPeerPlaybackRate(rate) {
         STORE.peerPlaybackRate = rate;
-        document
-          .getElementById("btnRateSlow")
-          .classList.toggle("active", rate === 0.6);
-        document
-          .getElementById("btnRateMedium")
-          .classList.toggle("active", rate === 0.8);
-        document
-          .getElementById("btnRateNormal")
-          .classList.toggle("active", rate === 1.0);
+        document.getElementById("btnRateSlow").classList.toggle("active", rate === 0.6);
+        document.getElementById("btnRateMedium").classList.toggle("active", rate === 0.8);
+        document.getElementById("btnRateNormal").classList.toggle("active", rate === 1.0);
         logToTerminal(`Peer model playback speed set to: ${rate}x`);
       }
 
@@ -4451,8 +4206,7 @@
         if (STORE.isSpeakingModel) {
           if ("speechSynthesis" in window) window.speechSynthesis.cancel();
           STORE.isSpeakingModel = false;
-          document.getElementById("modelSpeechBtn").innerHTML =
-            "🎧 Step 1 · Hear the Model";
+          document.getElementById("modelSpeechBtn").innerHTML = "🎧 Step 1 · Hear the Model";
         }
 
         document.getElementById("modelDisplayTextCard").style.display = "none";
@@ -4485,14 +4239,12 @@
           levelChip.textContent = `Proficiency Level ${meta.n} · ${meta.label} · ${task.cogFn || ""}`;
 
         // Update prompt box text based on active support level
-        const promptText =
-          STORE.activeTier === "A" ? task.promptA : task.promptB;
+        const promptText = STORE.activeTier === "A" ? task.promptA : task.promptB;
         document.getElementById("promptTextBox").textContent = promptText;
 
         // Draw SVG and Word Wall
         const container = document.getElementById("modelCanvas");
-        const drawer =
-          SVG_SPEAKING_DRAWER[task.model] || SVG_SPEAKING_DRAWER["lunch"];
+        const drawer = SVG_SPEAKING_DRAWER[task.model] || SVG_SPEAKING_DRAWER["lunch"];
         container.innerHTML = drawer();
 
         populateWordWall(task.terms);
@@ -4509,48 +4261,35 @@
         // Establish Quest challenge message
         let questMsg = "Quest: Click any object on the diagram to begin.";
         if (task.model === "bar")
-          questMsg =
-            "Quest: Tap parts of the story bar to plan your retelling.";
+          questMsg = "Quest: Tap parts of the story bar to plan your retelling.";
         else if (task.model === "grid")
-          questMsg =
-            "Quest: Click anywhere on the map to move the marked place.";
+          questMsg = "Quest: Click anywhere on the map to move the marked place.";
         else if (task.model === "scale")
-          questMsg =
-            "Quest: Click each side to compare which object is heavier.";
+          questMsg = "Quest: Click each side to compare which object is heavier.";
         else if (task.model === "data")
           questMsg = "Quest: Click a number to add a vote to the survey chart.";
         else if (task.model === "spinner-prob")
-          questMsg =
-            "Quest: Click the needle in the center to spin and see the color!";
+          questMsg = "Quest: Click the needle in the center to spin and see the color!";
         else if (task.model === "map-scale")
-          questMsg =
-            "Quest: Click the map legend at the bottom to read the symbols.";
+          questMsg = "Quest: Click the map legend at the bottom to read the symbols.";
         else if (task.model === "ramp-physics")
-          questMsg =
-            "Quest: Click the orange arrow to see what slows the car down.";
+          questMsg = "Quest: Click the orange arrow to see what slows the car down.";
         else if (task.model === "branches-flow")
-          questMsg =
-            "Quest: Click the lawmaking branch (top left box) to begin.";
+          questMsg = "Quest: Click the lawmaking branch (top left box) to begin.";
         else if (task.model === "story-seq")
-          questMsg =
-            "Quest: Tap each picture card to plan your beginning, middle, and ending.";
+          questMsg = "Quest: Tap each picture card to plan your beginning, middle, and ending.";
         else if (task.model === "routine")
           questMsg = "Quest: Tap each part of your day to plan the order.";
         else if (task.model === "community")
-          questMsg =
-            "Quest: Tap a place at school to plan your opinion and a reason.";
+          questMsg = "Quest: Tap a place at school to plan your opinion and a reason.";
         else if (task.model === "compare-animals")
-          questMsg =
-            "Quest: Tap each animal to plan how they are alike and different.";
+          questMsg = "Quest: Tap each animal to plan how they are alike and different.";
         else if (task.model === "pronounce")
-          questMsg =
-            "Quest: Tap the word to hear it slowly, then clap each syllable.";
+          questMsg = "Quest: Tap the word to hear it slowly, then clap each syllable.";
         else if (task.model === "model-echo")
-          questMsg =
-            "Quest: Tap the headphones, hear the model, then record yourself.";
+          questMsg = "Quest: Tap the headphones, hear the model, then record yourself.";
         else if (task.model === "picture-scene")
-          questMsg =
-            "Quest: Tap things in the park to plan your full description.";
+          questMsg = "Quest: Tap things in the park to plan your full description.";
         else if (task.model === "weather")
           questMsg = "Quest: Tap the sky to plan your weather report.";
         else if (task.model === "senses")
@@ -4558,18 +4297,14 @@
         else if (task.model === "recycle")
           questMsg = "Quest: Tap a bin to plan how to sort and why it helps.";
 
-        document.getElementById("questText").innerHTML =
-          `🎯 <strong>${questMsg}</strong>`;
+        document.getElementById("questText").innerHTML = `🎯 <strong>${questMsg}</strong>`;
 
         if (STORE.questCompleted) {
-          document.getElementById("questStatusBadge").textContent =
-            "✓ UNLOCKED";
-          document.getElementById("questStatusBadge").style.background =
-            "var(--green-success)";
+          document.getElementById("questStatusBadge").textContent = "✓ UNLOCKED";
+          document.getElementById("questStatusBadge").style.background = "var(--green-success)";
         } else {
           document.getElementById("questStatusBadge").textContent = "ACTIVE";
-          document.getElementById("questStatusBadge").style.background =
-            "var(--primary)";
+          document.getElementById("questStatusBadge").style.background = "var(--primary)";
         }
 
         updateChecklistUI();
@@ -4587,8 +4322,7 @@
         const textbox = document.getElementById("rehearsalDraftBox");
         const cursor = textbox.selectionStart;
         const text = textbox.value;
-        textbox.value =
-          text.slice(0, cursor) + " " + word + " " + text.slice(cursor);
+        textbox.value = text.slice(0, cursor) + " " + word + " " + text.slice(cursor);
         textbox.focus();
         updateChecklistUI();
       }
@@ -4603,8 +4337,7 @@
           chip.innerHTML = `${word} <span role="button" aria-label="Hear ${word} pronounced slowly" style="margin-left:4px; opacity:0.65; cursor:pointer;" onclick="event.stopPropagation(); speakWordSlowly('${word}')">🔊</span>`;
 
           const translatedText =
-            VOCAB_LOOKUP_EXTENDED[word] &&
-            VOCAB_LOOKUP_EXTENDED[word][STORE.activeDictionaryLang]
+            VOCAB_LOOKUP_EXTENDED[word] && VOCAB_LOOKUP_EXTENDED[word][STORE.activeDictionaryLang]
               ? VOCAB_LOOKUP_EXTENDED[word][STORE.activeDictionaryLang]
               : word;
 
@@ -4614,20 +4347,11 @@
             // Show Syllables breakdown & pronounce slow button
             const detailCard = document.getElementById("vocabDetailCard");
             const detailWord = document.getElementById("vocabDetailWord");
-            const detailSyllables = document.getElementById(
-              "vocabDetailSyllables",
-            );
-            const detailTranslation = document.getElementById(
-              "vocabDetailTranslation",
-            );
+            const detailSyllables = document.getElementById("vocabDetailSyllables");
+            const detailTranslation = document.getElementById("vocabDetailTranslation");
             const speakBtn = document.getElementById("vocabSpeakBtn");
 
-            if (
-              detailCard &&
-              detailWord &&
-              detailSyllables &&
-              detailTranslation
-            ) {
+            if (detailCard && detailWord && detailSyllables && detailTranslation) {
               detailCard.style.display = "block";
               detailWord.textContent = word;
               detailSyllables.textContent = SYLLABLE_MAP[word] || word;
@@ -4642,8 +4366,7 @@
             const textbox = document.getElementById("rehearsalDraftBox");
             const cursor = textbox.selectionStart;
             const text = textbox.value;
-            textbox.value =
-              text.slice(0, cursor) + " " + word + " " + text.slice(cursor);
+            textbox.value = text.slice(0, cursor) + " " + word + " " + text.slice(cursor);
             textbox.focus();
             updateChecklistUI();
           };
@@ -4675,8 +4398,7 @@
             const textbox = document.getElementById("rehearsalDraftBox");
             const cursor = textbox.selectionStart;
             const text = textbox.value;
-            textbox.value =
-              text.slice(0, cursor) + " " + frame + " " + text.slice(cursor);
+            textbox.value = text.slice(0, cursor) + " " + frame + " " + text.slice(cursor);
             textbox.focus();
             updateChecklistUI();
           };
@@ -4694,8 +4416,7 @@
         if (STORE.isSpeaking) {
           window.speechSynthesis.cancel();
           STORE.isSpeaking = false;
-          document.getElementById("speakPromptBtn").innerHTML =
-            "🔊 Read Prompt";
+          document.getElementById("speakPromptBtn").innerHTML = "🔊 Read Prompt";
           return;
         }
 
@@ -4720,21 +4441,18 @@
 
         utterance.onstart = () => {
           STORE.isSpeaking = true;
-          document.getElementById("speakPromptBtn").innerHTML =
-            "⏹️ Stop Prompt";
+          document.getElementById("speakPromptBtn").innerHTML = "⏹️ Stop Prompt";
         };
 
         utterance.onend = () => {
           STORE.isSpeaking = false;
-          document.getElementById("speakPromptBtn").innerHTML =
-            "🔊 Read Prompt";
+          document.getElementById("speakPromptBtn").innerHTML = "🔊 Read Prompt";
           document.getElementById("promptTextBox").innerHTML = text;
         };
 
         utterance.onerror = () => {
           STORE.isSpeaking = false;
-          document.getElementById("speakPromptBtn").innerHTML =
-            "🔊 Read Prompt";
+          document.getElementById("speakPromptBtn").innerHTML = "🔊 Read Prompt";
         };
 
         window.speechSynthesis.speak(utterance);
@@ -4747,12 +4465,9 @@
         if (STORE.isSpeakingModel) {
           window.speechSynthesis.cancel();
           STORE.isSpeakingModel = false;
-          document.getElementById("modelSpeechBtn").innerHTML =
-            "🎧 Step 1 · Hear the Model";
-          document.getElementById("modelDisplayTextCard").style.display =
-            "none";
-          document.getElementById("cerHighlightControls").style.display =
-            "none";
+          document.getElementById("modelSpeechBtn").innerHTML = "🎧 Step 1 · Hear the Model";
+          document.getElementById("modelDisplayTextCard").style.display = "none";
+          document.getElementById("cerHighlightControls").style.display = "none";
           return;
         }
 
@@ -4761,8 +4476,7 @@
 
         // Clean highlight buttons state
         document.querySelectorAll(".rate-btn").forEach((btn) => {
-          if (btn.id && btn.id.startsWith("btnCer_"))
-            btn.classList.remove("active");
+          if (btn.id && btn.id.startsWith("btnCer_")) btn.classList.remove("active");
         });
 
         // Renders text block so students can follow and deconstruct
@@ -4779,21 +4493,17 @@
         utterance.onstart = () => {
           STORE.isSpeakingModel = true;
           document.getElementById("modelSpeechBtn").innerHTML = "⏹️ Stop Model";
-          logToTerminal(
-            `Playing exemplary WIDA Speaking model standard answer.`,
-          );
+          logToTerminal(`Playing exemplary WIDA Speaking model standard answer.`);
         };
 
         utterance.onend = () => {
           STORE.isSpeakingModel = false;
-          document.getElementById("modelSpeechBtn").innerHTML =
-            "🎧 Step 1 · Hear the Model";
+          document.getElementById("modelSpeechBtn").innerHTML = "🎧 Step 1 · Hear the Model";
         };
 
         utterance.onerror = () => {
           STORE.isSpeakingModel = false;
-          document.getElementById("modelSpeechBtn").innerHTML =
-            "🎧 Step 1 · Hear the Model";
+          document.getElementById("modelSpeechBtn").innerHTML = "🎧 Step 1 · Hear the Model";
         };
 
         window.speechSynthesis.speak(utterance);
@@ -4801,10 +4511,8 @@
 
       function setELPTier(tier) {
         STORE.activeTier = tier;
-        document.getElementById("btnTierA").className =
-          `tier-btn ${tier === "A" ? "active" : ""}`;
-        document.getElementById("btnTierB").className =
-          `tier-btn ${tier === "B" ? "active" : ""}`;
+        document.getElementById("btnTierA").className = `tier-btn ${tier === "A" ? "active" : ""}`;
+        document.getElementById("btnTierB").className = `tier-btn ${tier === "B" ? "active" : ""}`;
 
         logToTerminal(`WIDA ELP Tier selected: Tier ${tier}`);
         loadSpeakingTaskWorkspace(STORE.activeTaskIdx);
@@ -4831,10 +4539,8 @@
             STORE.audioChunks = [];
             STORE.isRecording = true;
 
-            document.getElementById("recordBtn").innerHTML =
-              "⏹️ Stop Recording";
-            document.getElementById("recordBtn").className =
-              "action-btn btn-solid-gold";
+            document.getElementById("recordBtn").innerHTML = "⏹️ Stop Recording";
+            document.getElementById("recordBtn").className = "action-btn btn-solid-gold";
             document.getElementById("playbackBtn").disabled = true;
 
             STORE.mediaRecorder = new MediaRecorder(stream);
@@ -4867,9 +4573,7 @@
       function stopMicrophoneRecording() {
         if (STORE.mediaRecorder && STORE.isRecording) {
           STORE.mediaRecorder.stop();
-          STORE.mediaRecorder.stream
-            .getTracks()
-            .forEach((track) => track.stop());
+          STORE.mediaRecorder.stream.getTracks().forEach((track) => track.stop());
         }
 
         STORE.isRecording = false;
@@ -4882,16 +4586,13 @@
 
       function startSpeakingCountdown() {
         STORE.speakSecondsRemaining = STORE.activeTier === "A" ? 30 : 60;
-        document.getElementById("timerRing").textContent =
-          `00:${STORE.speakSecondsRemaining}`;
+        document.getElementById("timerRing").textContent = `00:${STORE.speakSecondsRemaining}`;
         document.getElementById("timerRing").style.color = "var(--white)";
 
         clearInterval(STORE.speakingTimerInterval);
         STORE.speakingTimerInterval = setInterval(() => {
           STORE.speakSecondsRemaining--;
-          const paddedSec = STORE.speakSecondsRemaining
-            .toString()
-            .padStart(2, "0");
+          const paddedSec = STORE.speakSecondsRemaining.toString().padStart(2, "0");
           document.getElementById("timerRing").textContent = `00:${paddedSec}`;
 
           if (STORE.speakSecondsRemaining <= 5) {
@@ -4920,9 +4621,7 @@
         canvas.height = canvas.offsetHeight;
 
         if (!STORE.audioContext) {
-          STORE.audioContext = new (
-            window.AudioContext || window.webkitAudioContext
-          )();
+          STORE.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         }
 
         STORE.analyser = STORE.audioContext.createAnalyser();
@@ -4984,14 +4683,8 @@
               osc.type = "sine";
               osc.frequency.value = freq;
               gain.gain.setValueAtTime(0, ctx.currentTime);
-              gain.gain.linearRampToValueAtTime(
-                0.12,
-                ctx.currentTime + idx * 0.08,
-              );
-              gain.gain.exponentialRampToValueAtTime(
-                0.0001,
-                ctx.currentTime + idx * 0.08 + 0.4,
-              );
+              gain.gain.linearRampToValueAtTime(0.12, ctx.currentTime + idx * 0.08);
+              gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + idx * 0.08 + 0.4);
 
               osc.connect(gain);
               gain.connect(ctx.destination);
@@ -5004,12 +4697,9 @@
 
       // Calculate ELP Rating and trigger diagnostic feedback
       function calculateELPRating() {
-        const ling =
-          parseInt(document.getElementById("rubricLinguistic").value) || 1;
-        const vocab =
-          parseInt(document.getElementById("rubricVocabulary").value) || 1;
-        const ctrl =
-          parseInt(document.getElementById("rubricControl").value) || 1;
+        const ling = parseInt(document.getElementById("rubricLinguistic").value) || 1;
+        const vocab = parseInt(document.getElementById("rubricVocabulary").value) || 1;
+        const ctrl = parseInt(document.getElementById("rubricControl").value) || 1;
 
         const sum = ling + vocab + ctrl;
         let rating = "1.0 (Entering)";
@@ -5102,8 +4792,7 @@
         var rubricCtrlText = rubricCtrl.options[rubricCtrl.selectedIndex].text;
         var overallRating = document.getElementById("liveELPBadge").textContent;
 
-        var coachContent =
-          document.getElementById("widaCoachContent").innerHTML;
+        var coachContent = document.getElementById("widaCoachContent").innerHTML;
 
         // Audio recording status
         var audioStatus = STORE.audioBlobUrl
@@ -5125,8 +4814,7 @@
         var usedTermsStr = usedTerms.length > 0 ? usedTerms.join(", ") : "None";
 
         var today = new Date();
-        var dateString =
-          today.toLocaleDateString() + " " + today.toLocaleTimeString();
+        var dateString = today.toLocaleDateString() + " " + today.toLocaleTimeString();
 
         // Building high-fidelity MHTML/XML content
         var htmlContent =
@@ -5360,8 +5048,7 @@
         // Local Storage Streak restoration
         if (localStorage.getItem("widaStreak")) {
           const streak = localStorage.getItem("widaStreak");
-          document.getElementById("streakBadge").textContent =
-            `🔥 ${streak} Day Streak`;
+          document.getElementById("streakBadge").textContent = `🔥 ${streak} Day Streak`;
         }
         if (localStorage.getItem("widaXP")) {
           STORE.sparkPoints = parseInt(localStorage.getItem("widaXP"));
@@ -5434,16 +5121,12 @@
       // Diagnostics commands
       function toggleDiagnostics() {
         const term = document.getElementById("diagTerminal");
-        const hidden =
-          term.style.display === "none" || term.style.display === "";
+        const hidden = term.style.display === "none" || term.style.display === "";
         term.style.display = hidden ? "flex" : "none";
         if (hidden) {
           const consoleNode = document.getElementById("diagConsole");
           consoleNode.innerHTML = "";
-          logConsole(
-            "WIDA ACCESS Speaking Practice Studio initialized...",
-            "#fbbf24",
-          );
+          logConsole("WIDA ACCESS Speaking Practice Studio initialized...", "#fbbf24");
           logConsole(
             `CENTRAL STATE check: Total mapped tasks [${WIDA_SPEAKING_TASKS.length} loaded]`,
           );
@@ -5479,10 +5162,7 @@
       }
 
       function prefersReducedMotion() {
-        return (
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        );
+        return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       }
 
       function showMinimalToast(msg) {
@@ -5505,12 +5185,12 @@
         }, 2500);
       }
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

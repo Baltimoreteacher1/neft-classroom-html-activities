@@ -41,10 +41,8 @@
 
         /* Depth & Shadows */
         --shadow-premium:
-          0 10px 30px -10px rgba(15, 118, 110, 0.12),
-          0 20px 40px -15px rgba(11, 31, 51, 0.08);
-        --shadow-card:
-          0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+          0 10px 30px -10px rgba(15, 118, 110, 0.12), 0 20px 40px -15px rgba(11, 31, 51, 0.08);
+        --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
         --shadow-gaze: 0 0 20px rgba(15, 118, 110, 0.2);
         --radius-premium: 16px;
         --radius-field: 8px;
@@ -64,12 +62,18 @@
       /* ── Publishing layout shell ── */
       .studio-shell {
         display: grid;
-        grid-template-columns: 320px 1fr;
+        grid-template-columns: 320px minmax(0, 1fr);
         gap: 28px;
         max-width: 1440px;
+        width: 100%;
+        min-width: 0;
         margin: 0 auto;
         padding: 0 24px 60px;
         align-items: start;
+      }
+
+      .studio-shell > * {
+        min-width: 0;
       }
 
       /* ── Sidebar Component ── */
@@ -188,9 +192,13 @@
       /* ── Main Canvas Layout ── */
       .canvas-layout {
         display: grid;
-        grid-template-columns: 1fr 1.15fr;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
         gap: 28px;
         align-items: start;
+      }
+
+      .canvas-layout > * {
+        min-width: 0;
       }
 
       .glass-panel {
@@ -528,7 +536,7 @@
 
       .rubric-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 12px;
       }
 
@@ -579,7 +587,7 @@
 
       .checklist-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px;
       }
 
@@ -1362,12 +1370,12 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <main class="page-shell">
       <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -1379,10 +1387,7 @@
       </nav>
 
       <!-- Header Section -->
-      <section
-        class="hero compact-hero"
-        style="border-top: 6px solid var(--primary)"
-      >
+      <section class="hero compact-hero" style="border-top: 6px solid var(--primary)">
         <div
           style="
             display: flex;
@@ -1393,9 +1398,7 @@
           "
         >
           <div>
-            <p class="eyebrow" style="color: var(--primary)">
-              WIDA ACCESS Prep Suite
-            </p>
+            <p class="eyebrow" style="color: var(--primary)">WIDA ACCESS Prep Suite</p>
             <h1
               style="
                 font-family: var(--font-space);
@@ -1407,9 +1410,9 @@
               ACCESS Writing Prep Studio
             </h1>
             <p class="hero-copy" style="max-width: 800px">
-              Comprehensive 20-task interactive writing workbook. Built for dual
-              levels: Tiers A (1.0-2.7) and B (2.7-5.0) with dynamic SVGs,
-              typewriter-simulated model typing, and live vocab matching.
+              Comprehensive 20-task interactive writing workbook. Built for dual levels: Tiers A
+              (1.0-2.7) and B (2.7-5.0) with dynamic SVGs, typewriter-simulated model typing, and
+              live vocab matching.
             </p>
           </div>
           <div style="display: flex; gap: 8px">
@@ -1471,11 +1474,7 @@
           </div>
 
           <div class="tier-switcher">
-            <button
-              class="tier-btn active"
-              id="btnTierA"
-              onclick="setELPTier('A')"
-            >
+            <button class="tier-btn active" id="btnTierA" onclick="setELPTier('A')">
               Tier A (1.0-2.7)
             </button>
             <button class="tier-btn" id="btnTierB" onclick="setELPTier('B')">
@@ -1526,9 +1525,7 @@
                 box-shadow: var(--shadow-card);
               "
             >
-              <span id="questText"
-                >Quest: Click any object on the diagram to begin.</span
-              >
+              <span id="questText">Quest: Click any object on the diagram to begin.</span>
               <span
                 id="questStatusBadge"
                 style="
@@ -1546,14 +1543,10 @@
             <!-- Multilingual Interactive Dictionary and Highlight Tracker -->
             <div class="scaffold-card">
               <div class="vocab-lang-selector" id="langTabs">
-                <button class="lang-chip active" data-lang="en">
-                  EN Definition
-                </button>
+                <button class="lang-chip active" data-lang="en">EN Definition</button>
                 <button class="lang-chip" data-lang="es">Español (ES)</button>
                 <button class="lang-chip" data-lang="ar">العربية (AR)</button>
-                <button class="lang-chip" data-lang="vi">
-                  Tiếng Việt (VI)
-                </button>
+                <button class="lang-chip" data-lang="vi">Tiếng Việt (VI)</button>
               </div>
 
               <p
@@ -1565,8 +1558,7 @@
                   text-transform: uppercase;
                 "
               >
-                Multilingual Vocab Word Wall &middot; Click to insert & watch
-                checklist check off!
+                Multilingual Vocab Word Wall &middot; Click to insert & watch checklist check off!
               </p>
 
               <div class="chip-container" id="wordWallContainer">
@@ -1579,9 +1571,7 @@
           <section class="glass-panel" aria-labelledby="recorder-heading">
             <div class="panel-meta">
               <h3 id="recorder-heading">✍️ Virtual Writing Test</h3>
-              <span
-                class="card-kicker"
-                style="background: var(--amber-light); color: var(--amber)"
+              <span class="card-kicker" style="background: var(--amber-light); color: var(--amber)"
                 >Writing Lab</span
               >
             </div>
@@ -1597,9 +1587,7 @@
                   gap: 8px;
                 "
               >
-                <span class="checklist-title"
-                  >🎯 Pre-Writing Prep Checklist</span
-                >
+                <span class="checklist-title">🎯 Pre-Writing Prep Checklist</span>
                 <div class="rate-controls">
                   <span
                     style="
@@ -1610,18 +1598,10 @@
                     "
                     >TTS Rate:</span
                   >
-                  <button
-                    class="rate-btn"
-                    id="btnRateSlow"
-                    onclick="setPeerPlaybackRate(0.6)"
-                  >
+                  <button class="rate-btn" id="btnRateSlow" onclick="setPeerPlaybackRate(0.6)">
                     🐢 0.6x
                   </button>
-                  <button
-                    class="rate-btn"
-                    id="btnRateMedium"
-                    onclick="setPeerPlaybackRate(0.8)"
-                  >
+                  <button class="rate-btn" id="btnRateMedium" onclick="setPeerPlaybackRate(0.8)">
                     🚶 0.8x
                   </button>
                   <button
@@ -1707,18 +1687,9 @@
             <!-- Paragraph Editor Canvas -->
             <div
               class="rehearsal-card"
-              style="
-                border: 2px solid var(--primary);
-                box-shadow: var(--shadow-gaze);
-              "
+              style="border: 2px solid var(--primary); box-shadow: var(--shadow-gaze)"
             >
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                "
-              >
+              <div style="display: flex; justify-content: space-between; align-items: center">
                 <span class="scaffold-title" style="color: var(--primary)"
                   >📝 Academic Paragraph Editor Canvas</span
                 >
@@ -1766,14 +1737,7 @@
               ></textarea>
 
               <!-- Academic Connectors Row -->
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  gap: 6px;
-                  margin-top: 4px;
-                "
-              >
+              <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 4px">
                 <span
                   style="
                     font-size: 0.7rem;
@@ -1784,34 +1748,20 @@
                   >Academic Connectors (Click to insert):</span
                 >
                 <div class="chip-container">
-                  <span
-                    class="vocab-card"
-                    onclick="insertConnector('Consequently,')"
+                  <span class="vocab-card" onclick="insertConnector('Consequently,')"
                     >Consequently,</span
                   >
-                  <span
-                    class="vocab-card"
-                    onclick="insertConnector('Therefore,')"
-                    >Therefore,</span
-                  >
-                  <span
-                    class="vocab-card"
-                    onclick="insertConnector('In comparison,')"
+                  <span class="vocab-card" onclick="insertConnector('Therefore,')">Therefore,</span>
+                  <span class="vocab-card" onclick="insertConnector('In comparison,')"
                     >In comparison,</span
                   >
-                  <span
-                    class="vocab-card"
-                    onclick="insertConnector('Subsequently,')"
+                  <span class="vocab-card" onclick="insertConnector('Subsequently,')"
                     >Subsequently,</span
                   >
-                  <span
-                    class="vocab-card"
-                    onclick="insertConnector('Specifically,')"
+                  <span class="vocab-card" onclick="insertConnector('Specifically,')"
                     >Specifically,</span
                   >
-                  <span
-                    class="vocab-card"
-                    onclick="insertConnector('On the other hand,')"
+                  <span class="vocab-card" onclick="insertConnector('On the other hand,')"
                     >On the other hand,</span
                   >
                 </div>
@@ -1861,56 +1811,34 @@
             <div class="rubric-box">
               <div class="rubric-header">
                 <h4>🏆 Writing Rubric Evaluator</h4>
-                <span class="rubric-badge" id="liveELPBadge"
-                  >ELP 1.0 (Entering)</span
-                >
+                <span class="rubric-badge" id="liveELPBadge">ELP 1.0 (Entering)</span>
               </div>
               <div class="rubric-grid">
                 <div class="rubric-criterion">
                   <label for="rubricLinguistic">Linguistic Complexity</label>
                   <select id="rubricLinguistic" onchange="calculateELPRating()">
                     <option value="1">Entering: Single phrases (1 pt)</option>
-                    <option value="2">
-                      Emerging: Simple sentences (2 pts)
-                    </option>
-                    <option value="3">
-                      Developing: Connected compound sentences (3 pts)
-                    </option>
-                    <option value="4">
-                      Expanding: Structured complex paragraph (4 pts)
-                    </option>
+                    <option value="2">Emerging: Simple sentences (2 pts)</option>
+                    <option value="3">Developing: Connected compound sentences (3 pts)</option>
+                    <option value="4">Expanding: Structured complex paragraph (4 pts)</option>
                   </select>
                 </div>
                 <div class="rubric-criterion">
                   <label for="rubricVocabulary">Vocabulary Usage</label>
                   <select id="rubricVocabulary" onchange="calculateELPRating()">
                     <option value="1">Entering: General words (1 pt)</option>
-                    <option value="2">
-                      Emerging: High-frequency terms (2 pts)
-                    </option>
-                    <option value="3">
-                      Developing: Mapped domain words (3 pts)
-                    </option>
-                    <option value="4">
-                      Expanding: Highly precise lexicon (4 pts)
-                    </option>
+                    <option value="2">Emerging: High-frequency terms (2 pts)</option>
+                    <option value="3">Developing: Mapped domain words (3 pts)</option>
+                    <option value="4">Expanding: Highly precise lexicon (4 pts)</option>
                   </select>
                 </div>
                 <div class="rubric-criterion">
                   <label for="rubricControl">Language Control</label>
                   <select id="rubricControl" onchange="calculateELPRating()">
-                    <option value="1">
-                      Entering: Frequent mechanics pauses (1 pt)
-                    </option>
-                    <option value="2">
-                      Emerging: Minor phonetic spelling (2 pts)
-                    </option>
-                    <option value="3">
-                      Developing: Good grammar & spelling (3 pts)
-                    </option>
-                    <option value="4">
-                      Expanding: Flawless publication structure (4 pts)
-                    </option>
+                    <option value="1">Entering: Frequent mechanics pauses (1 pt)</option>
+                    <option value="2">Emerging: Minor phonetic spelling (2 pts)</option>
+                    <option value="3">Developing: Good grammar & spelling (3 pts)</option>
+                    <option value="4">Expanding: Flawless publication structure (4 pts)</option>
                   </select>
                 </div>
               </div>
@@ -1932,12 +1860,8 @@
                 >
                   💡 WIDA Writing Coach Advice
                 </div>
-                <div
-                  id="widaCoachContent"
-                  style="font-size: 0.84rem; font-weight: 500"
-                >
-                  Select scores to receive personalized academic writing
-                  developmental feedback...
+                <div id="widaCoachContent" style="font-size: 0.84rem; font-weight: 500">
+                  Select scores to receive personalized academic writing developmental feedback...
                 </div>
               </div>
             </div>
@@ -1963,18 +1887,14 @@
         </p>
         <h2 id="ps-suite-heading">✏️ Writing Practice Suite</h2>
         <p>
-          Build writing skills one step at a time. Choose a writing type and
-          level, then practice with friendly, guided tasks — unscramble
-          sentences, add details, fix mistakes, organize paragraphs, and check
-          your work against a model.
+          Build writing skills one step at a time. Choose a writing type and level, then practice
+          with friendly, guided tasks — unscramble sentences, add details, fix mistakes, organize
+          paragraphs, and check your work against a model.
         </p>
         <div class="ps-statbar">
           <div class="ps-stat">
             ✅
-            <span
-              ><b id="psDoneCount">0</b> of
-              <span id="psTotalCount">0</span> done</span
-            >
+            <span><b id="psDoneCount">0</b> of <span id="psTotalCount">0</span> done</span>
           </div>
           <div class="ps-stat">
             ⭐ <span><b id="psPoints">0</b> points</span>
@@ -1991,26 +1911,11 @@
       <div class="ps-toolbar" role="region" aria-label="Filter activities">
         <div class="ps-filter-group">
           <span id="psTypeLbl">Writing Type</span>
-          <div
-            class="ps-chips"
-            role="group"
-            aria-labelledby="psTypeLbl"
-            id="psTypeFilters"
-          >
-            <button
-              class="ps-pill"
-              data-filter="type"
-              data-value="all"
-              aria-pressed="true"
-            >
+          <div class="ps-chips" role="group" aria-labelledby="psTypeLbl" id="psTypeFilters">
+            <button class="ps-pill" data-filter="type" data-value="all" aria-pressed="true">
               All
             </button>
-            <button
-              class="ps-pill"
-              data-filter="type"
-              data-value="narrative"
-              aria-pressed="false"
-            >
+            <button class="ps-pill" data-filter="type" data-value="narrative" aria-pressed="false">
               📖 Narrative
             </button>
             <button
@@ -2021,24 +1926,14 @@
             >
               🔬 Informational
             </button>
-            <button
-              class="ps-pill"
-              data-filter="type"
-              data-value="opinion"
-              aria-pressed="false"
-            >
+            <button class="ps-pill" data-filter="type" data-value="opinion" aria-pressed="false">
               💬 Opinion
             </button>
           </div>
         </div>
         <div class="ps-filter-group">
           <span id="psLvlLbl">Level</span>
-          <div
-            class="ps-chips"
-            role="group"
-            aria-labelledby="psLvlLbl"
-            id="psLevelFilters"
-          >
+          <div class="ps-chips" role="group" aria-labelledby="psLvlLbl" id="psLevelFilters">
             <button
               class="ps-pill ps-pill--lvl"
               data-filter="level"
@@ -2067,22 +1962,12 @@
         </div>
         <div class="ps-filter-group">
           <span id="psKindLbl">Activity</span>
-          <div
-            class="ps-chips"
-            role="group"
-            aria-labelledby="psKindLbl"
-            id="psKindFilters"
-          ></div>
+          <div class="ps-chips" role="group" aria-labelledby="psKindLbl" id="psKindFilters"></div>
         </div>
       </div>
 
       <div class="ps-grid" id="psGrid"></div>
-      <p
-        class="ps-sr-only"
-        role="status"
-        aria-live="polite"
-        id="psLiveRegion"
-      ></p>
+      <p class="ps-sr-only" role="status" aria-live="polite" id="psLiveRegion"></p>
     </section>
 
     <div class="diag-overlay" id="diagTerminal">
@@ -2090,13 +1975,7 @@
         <span>⚙️ WRITING DIAGNOSTICS MATRIX</span>
         <button
           onclick="toggleDiagnostics()"
-          style="
-            background: none;
-            border: none;
-            color: #00ff66;
-            cursor: pointer;
-            font-weight: 900;
-          "
+          style="background: none; border: none; color: #00ff66; cursor: pointer; font-weight: 900"
         >
           [X]
         </button>
@@ -2186,11 +2065,7 @@
             "Look at the lunch tray. What food do you see? Name three foods and tell which one is your favorite.",
           promptB:
             "Write a narrative paragraph about your favorite meal. Describe what the food looks, smells, and tastes like, and explain why you enjoy it.",
-          framesA: [
-            "I see a...",
-            "My favorite food is...",
-            "I like it because...",
-          ],
+          framesA: ["I see a...", "My favorite food is...", "I like it because..."],
           framesB: [
             "My favorite meal is... because...",
             "For example, when I eat it I...",
@@ -2211,11 +2086,7 @@
             "Look at the paragraph bar. How many parts does a strong paragraph have? Name the parts you see.",
           promptB:
             "Explain how a good paragraph is built. Describe the topic sentence, the supporting details, and the conclusion, and why each part matters.",
-          framesA: [
-            "A paragraph has...",
-            "The first part is...",
-            "The last part is...",
-          ],
+          framesA: ["A paragraph has...", "The first part is...", "The last part is..."],
           framesB: [
             "A strong paragraph begins with a topic sentence that...",
             "Next, the supporting details explain...",
@@ -2236,11 +2107,7 @@
             "Point to the sun and the cloud. Tell me what the weather is like in the picture.",
           promptB:
             "Write an informational paragraph that describes a kind of weather you know well. Explain what causes it and how it makes people feel.",
-          framesA: [
-            "The weather is...",
-            "The sun makes...",
-            "The cloud brings...",
-          ],
+          framesA: ["The weather is...", "The sun makes...", "The cloud brings..."],
           framesB: [
             "On a rainy day, the sky becomes...",
             "This happens because the clouds...",
@@ -2261,18 +2128,13 @@
             "Find the dot on the map grid. Tell me what place is there and which direction it is from your home.",
           promptB:
             "Write an informational paragraph describing your neighborhood. Explain where important places are located and how someone could find them.",
-          framesA: [
-            "The place is...",
-            "It is near...",
-            "You go this way to...",
-          ],
+          framesA: ["The place is...", "It is near...", "You go this way to..."],
           framesB: [
             "In my neighborhood, the most important place is...",
             "To get there, you walk... and then turn...",
             "This location is special because...",
           ],
-          modelA:
-            "The dot shows the park. The park is near my home. You go straight to reach it.",
+          modelA: "The dot shows the park. The park is near my home. You go straight to reach it.",
           modelB:
             "In my neighborhood, the most important place is the library on the corner of Maple Street. To get there, you walk past the bakery and then turn left at the playground. This location is special because many families meet there to read and study together.",
         },
@@ -2286,11 +2148,7 @@
             "Look at the balance. Two choices are being compared. Which one do you prefer and why?",
           promptB:
             "Write an opinion paragraph comparing two choices, such as summer or winter. State which you prefer and give clear reasons to support your opinion.",
-          framesA: [
-            "I prefer...",
-            "I like it because...",
-            "It is better than...",
-          ],
+          framesA: ["I prefer...", "I like it because...", "It is better than..."],
           framesB: [
             "In my opinion, ... is better than ... because...",
             "One strong reason is that...",
@@ -2307,15 +2165,10 @@
           domain: "Language of Social Studies",
           model: "data",
           terms: ["survey", "result", "compare", "explain"],
-          promptA:
-            "Look at the survey dots. Which answer did the most students choose?",
+          promptA: "Look at the survey dots. Which answer did the most students choose?",
           promptB:
             "Write an informational paragraph that explains the results of a class survey. Compare the answers and explain what the results show about your class.",
-          framesA: [
-            "Most students chose...",
-            "The fewest chose...",
-            "The survey shows...",
-          ],
+          framesA: ["Most students chose...", "The fewest chose...", "The survey shows..."],
           framesB: [
             "According to the survey results...",
             "When I compare the answers, I notice...",
@@ -2336,11 +2189,7 @@
             "Look at the picture with two spaces. Name the two spaces and tell what you might find in each one.",
           promptB:
             "Write a descriptive paragraph about a place with two parts, such as a home or a school. Describe each part with clear details so the reader can picture it.",
-          framesA: [
-            "I see a...",
-            "In the first space there is...",
-            "The other space has...",
-          ],
+          framesA: ["I see a...", "In the first space there is...", "The other space has..."],
           framesB: [
             "This place has two parts: ... and...",
             "In the first part, you can find...",
@@ -2357,8 +2206,7 @@
           domain: "Social & Instructional",
           model: "reflect",
           terms: ["academic", "strategy", "explain", "important"],
-          promptA:
-            "Look at the steps. What is one thing you got better at in school this year?",
+          promptA: "Look at the steps. What is one thing you got better at in school this year?",
           promptB:
             "Write a reflective narrative about how your English writing grew this year. Describe a strategy you used and explain why it helped you.",
           framesA: ["My goal was...", "I learned how to...", "This year, I..."],
@@ -2378,15 +2226,10 @@
           domain: "Social & Instructional",
           model: "bar-chart",
           terms: ["favorite", "survey", "result", "compare"],
-          promptA:
-            "Look at the sports bar chart. Which sport is the most popular among students?",
+          promptA: "Look at the sports bar chart. Which sport is the most popular among students?",
           promptB:
             "Write an informational paragraph about a survey of favorite sports. Compare the results and explain what they tell you about students' choices.",
-          framesA: [
-            "Soccer is the...",
-            "The tallest bar is...",
-            "More students like...",
-          ],
+          framesA: ["Soccer is the...", "The tallest bar is...", "More students like..."],
           framesB: [
             "According to the survey, the favorite sport is...",
             "When I compare the results, I see that...",
@@ -2403,8 +2246,7 @@
           domain: "Language of Language Arts",
           model: "ratio-table",
           terms: ["explain", "example", "detail", "conclusion"],
-          promptA:
-            "Look at the recipe steps. What is the first step you do to bake cookies?",
+          promptA: "Look at the recipe steps. What is the first step you do to bake cookies?",
           promptB:
             "Write an informational how-to paragraph that explains the steps to make a simple food. Put the steps in order and add helpful details.",
           framesA: ["First, you...", "Next, you...", "Then, you..."],
@@ -2413,8 +2255,7 @@
             "Next, mix everything together and...",
             "Finally, the cookies are ready when...",
           ],
-          modelA:
-            "First, you get the flour. Next, you mix it. Then, you bake the cookies.",
+          modelA: "First, you get the flour. Next, you mix it. Then, you bake the cookies.",
           modelB:
             "First, gather the ingredients such as flour, sugar, butter, and eggs. Next, mix everything together in a large bowl until the dough is smooth and soft. Finally, the cookies are ready when they turn golden brown and fill the kitchen with a sweet smell.",
         },
@@ -2427,11 +2268,7 @@
           promptA: "Look at the leaf. Name two things a plant needs to grow.",
           promptB:
             "Write an informational paragraph that explains how a plant grows. Describe what it needs and why each thing is important.",
-          framesA: [
-            "The plant needs...",
-            "Sunlight comes from...",
-            "Water helps the plant...",
-          ],
+          framesA: ["The plant needs...", "Sunlight comes from...", "Water helps the plant..."],
           framesB: [
             "A plant needs three important things:...",
             "For example, sunlight gives the plant...",
@@ -2448,8 +2285,7 @@
           domain: "Language of Language Arts",
           model: "timeline",
           terms: ["detail", "conclusion", "explain", "example"],
-          promptA:
-            "Look at the timeline. Which event happened first in the story?",
+          promptA: "Look at the timeline. Which event happened first in the story?",
           promptB:
             "Write a narrative paragraph that tells a short story in order. Use the timeline to describe the beginning, middle, and end of what happened.",
           framesA: ["First,...", "Then,...", "At the end,..."],
@@ -2479,8 +2315,7 @@
             "It is shaped like... and feels...",
             "I treasure this object because...",
           ],
-          modelA:
-            "The object is a box. It is the color blue. It feels smooth and hard.",
+          modelA: "The object is a box. It is the color blue. It feels smooth and hard.",
           modelB:
             "One object that is special to me is the wooden music box my mother gave me. It is shaped like a small chest and feels smooth and cool to the touch. I treasure this object because it plays a soft song that reminds me of home.",
         },
@@ -2490,15 +2325,10 @@
           domain: "Language of Science",
           model: "ecosystem",
           terms: ["explain", "describe", "example", "important"],
-          promptA:
-            "Look at the food web arrows. Which animal eats the grasshopper?",
+          promptA: "Look at the food web arrows. Which animal eats the grasshopper?",
           promptB:
             "Write an informational paragraph that explains how animals depend on one another for food. Use the diagram to give clear examples.",
-          framesA: [
-            "The frog eats...",
-            "The arrow points to...",
-            "Grass is food for...",
-          ],
+          framesA: ["The frog eats...", "The arrow points to...", "Grass is food for..."],
           framesB: [
             "In nature, animals depend on one another because...",
             "For example, the grasshopper eats grass, and then...",
@@ -2519,11 +2349,7 @@
             "Look at the line. It shows more on one side and less on the other. Tell me one thing you wish you had more of.",
           promptB:
             "Write an opinion paragraph about something students should have more of at school, such as recess or reading time. Give reasons to explain your view.",
-          framesA: [
-            "I want more...",
-            "I want less...",
-            "More ... is better because...",
-          ],
+          framesA: ["I want more...", "I want less...", "More ... is better because..."],
           framesB: [
             "I believe students should have more...",
             "One important reason is that...",
@@ -2544,11 +2370,7 @@
             "Imagine you are writing to your school principal. What is one activity at school you enjoy most?",
           promptB:
             "Write a persuasive letter to your principal suggesting a change that would help students. State your opinion clearly and support it with strong reasons.",
-          framesA: [
-            "I enjoy...",
-            "My favorite activity is...",
-            "I like it because...",
-          ],
+          framesA: ["I enjoy...", "My favorite activity is...", "I like it because..."],
           framesB: [
             "Dear Principal, I am writing to suggest that...",
             "This change is important because...",
@@ -2569,11 +2391,7 @@
             "Look at the map. Find the school and the library. Which place is on the left, and which is on the right?",
           promptB:
             "Write an informational paragraph that explains how to use a map to travel from one place to another. Use directions and clear details.",
-          framesA: [
-            "The school is...",
-            "The library is...",
-            "You go from ... to...",
-          ],
+          framesA: ["The school is...", "The library is...", "You go from ... to..."],
           framesB: [
             "To travel from the school to the library, you first go...",
             "Along the way, you will pass...",
@@ -2590,22 +2408,16 @@
           domain: "Language of Science",
           model: "ramp-physics",
           terms: ["explain", "describe", "example", "detail"],
-          promptA:
-            "Look at the toy on the ramp. What happens when you let the toy go at the top?",
+          promptA: "Look at the toy on the ramp. What happens when you let the toy go at the top?",
           promptB:
             "Write an informational paragraph that explains how objects move down a ramp. Describe what you observe and give an example from real life.",
-          framesA: [
-            "The toy goes...",
-            "It moves because...",
-            "At the bottom it...",
-          ],
+          framesA: ["The toy goes...", "It moves because...", "At the bottom it..."],
           framesB: [
             "When an object is placed at the top of a ramp, it...",
             "For example, a ball will roll faster when...",
             "This shows that the shape of the ramp affects how...",
           ],
-          modelA:
-            "The toy goes down. It moves because the ramp is tilted. At the bottom it stops.",
+          modelA: "The toy goes down. It moves because the ramp is tilted. At the bottom it stops.",
           modelB:
             "When an object is placed at the top of a ramp, it begins to slide or roll downward toward the ground. For example, a ball will roll faster when the ramp is steeper and tilted more sharply. This shows that the shape of the ramp affects how quickly an object moves down it.",
         },
@@ -2619,11 +2431,7 @@
             "Look at the diagram of community helpers. Name three people or groups that help your community.",
           promptB:
             "Write an informational paragraph that explains how different people work together to help a community stay safe and healthy.",
-          framesA: [
-            "The helpers are...",
-            "One helper is...",
-            "They help by...",
-          ],
+          framesA: ["The helpers are...", "One helper is...", "They help by..."],
           framesB: [
             "In a community, many people work together to...",
             "For example, teachers help by... while doctors...",
@@ -2640,15 +2448,10 @@
           domain: "Social & Instructional",
           model: "spinner-prob",
           terms: ["describe", "explain", "example", "favorite"],
-          promptA:
-            "Look at the spinner game. Describe how you think this game is played.",
+          promptA: "Look at the spinner game. Describe how you think this game is played.",
           promptB:
             "Write a narrative paragraph about your favorite game to play with friends. Describe the rules and explain why it is so much fun.",
-          framesA: [
-            "The game has...",
-            "You play by...",
-            "It is fun because...",
-          ],
+          framesA: ["The game has...", "You play by...", "It is fun because..."],
           framesB: [
             "My favorite game to play with friends is...",
             "The rules are simple: first you... and then...",
@@ -2701,8 +2504,7 @@
         STORE.checklistQuest = true;
         playChime("success");
         document.getElementById("questStatusBadge").textContent = "✓ UNLOCKED";
-        document.getElementById("questStatusBadge").style.background =
-          "var(--green-success)";
+        document.getElementById("questStatusBadge").style.background = "var(--green-success)";
         updateChecklistUI();
       }
 
@@ -2946,10 +2748,7 @@
           let median = 0;
           if (points.length > 0) {
             const mid = Math.floor(points.length / 2);
-            median =
-              points.length % 2 !== 0
-                ? points[mid]
-                : (points[mid - 1] + points[mid]) / 2;
+            median = points.length % 2 !== 0 ? points[mid] : (points[mid - 1] + points[mid]) / 2;
           }
 
           const meanX = 80 + mean * 48;
@@ -3447,15 +3246,9 @@
 
       function setPeerPlaybackRate(rate) {
         STORE.peerPlaybackRate = rate;
-        document
-          .getElementById("btnRateSlow")
-          .classList.toggle("active", rate === 0.6);
-        document
-          .getElementById("btnRateMedium")
-          .classList.toggle("active", rate === 0.8);
-        document
-          .getElementById("btnRateNormal")
-          .classList.toggle("active", rate === 1.0);
+        document.getElementById("btnRateSlow").classList.toggle("active", rate === 0.6);
+        document.getElementById("btnRateMedium").classList.toggle("active", rate === 0.8);
+        document.getElementById("btnRateNormal").classList.toggle("active", rate === 1.0);
         logToTerminal(`Peer model playback speed set to: ${rate}x`);
       }
 
@@ -3466,8 +3259,7 @@
           clearInterval(STORE.typewriterInterval);
           if ("speechSynthesis" in window) window.speechSynthesis.cancel();
           STORE.isSpeakingModel = false;
-          document.getElementById("modelSpeechBtn").innerHTML =
-            "📝 Animate Peer Model";
+          document.getElementById("modelSpeechBtn").innerHTML = "📝 Animate Peer Model";
         }
         document.getElementById("modelDisplayTextCard").style.display = "none";
         document.getElementById("warmupBubble").style.display = "none";
@@ -3487,57 +3279,43 @@
         document.getElementById("domainTag").textContent = task.domain;
 
         // Update prompt box text based on active Tier
-        const promptText =
-          STORE.activeTier === "A" ? task.promptA : task.promptB;
+        const promptText = STORE.activeTier === "A" ? task.promptA : task.promptB;
         document.getElementById("promptTextBox").textContent = promptText;
 
         // Draw SVG and Word Wall
         const container = document.getElementById("modelCanvas");
-        const drawer =
-          SVG_SPEAKING_DRAWER[task.model] || SVG_SPEAKING_DRAWER["lunch"];
+        const drawer = SVG_SPEAKING_DRAWER[task.model] || SVG_SPEAKING_DRAWER["lunch"];
         container.innerHTML = drawer();
 
         populateWordWall(task.terms);
-        populateSentenceStarters(
-          STORE.activeTier === "A" ? task.framesA : task.framesB,
-        );
+        populateSentenceStarters(STORE.activeTier === "A" ? task.framesA : task.framesB);
 
         // Establish Quest challenge message
         let questMsg = "Quest: Click any object on the diagram to begin.";
-        if (task.model === "bar")
-          questMsg = "Quest: Tap 3 cells to plan your supporting details.";
+        if (task.model === "bar") questMsg = "Quest: Tap 3 cells to plan your supporting details.";
         else if (task.model === "grid")
-          questMsg =
-            "Quest: Click anywhere on the map to move the place marker.";
+          questMsg = "Quest: Click anywhere on the map to move the place marker.";
         else if (task.model === "scale")
           questMsg = "Quest: Click each side to compare your two choices.";
         else if (task.model === "data")
-          questMsg =
-            "Quest: Click a number on the chart to add a student's vote.";
+          questMsg = "Quest: Click a number on the chart to add a student's vote.";
         else if (task.model === "spinner-prob")
-          questMsg =
-            "Quest: Click the pointer in the center to spin the wheel!";
+          questMsg = "Quest: Click the pointer in the center to spin the wheel!";
         else if (task.model === "map-scale")
-          questMsg =
-            "Quest: Click the map key at the bottom to read the symbols.";
+          questMsg = "Quest: Click the map key at the bottom to read the symbols.";
         else if (task.model === "ramp-physics")
-          questMsg =
-            "Quest: Click the orange arrow to see what slows the toy down.";
+          questMsg = "Quest: Click the orange arrow to see what slows the toy down.";
         else if (task.model === "branches-flow")
           questMsg = "Quest: Click Teachers (top left box) to begin writing.";
 
-        document.getElementById("questText").innerHTML =
-          `🎯 <strong>${questMsg}</strong>`;
+        document.getElementById("questText").innerHTML = `🎯 <strong>${questMsg}</strong>`;
 
         if (STORE.questCompleted) {
-          document.getElementById("questStatusBadge").textContent =
-            "✓ UNLOCKED";
-          document.getElementById("questStatusBadge").style.background =
-            "var(--green-success)";
+          document.getElementById("questStatusBadge").textContent = "✓ UNLOCKED";
+          document.getElementById("questStatusBadge").style.background = "var(--green-success)";
         } else {
           document.getElementById("questStatusBadge").textContent = "ACTIVE";
-          document.getElementById("questStatusBadge").style.background =
-            "var(--primary)";
+          document.getElementById("questStatusBadge").style.background = "var(--primary)";
         }
 
         updateChecklistUI();
@@ -3605,8 +3383,7 @@
           chip.innerHTML = `${word} <small style="font-size:0.65rem; opacity:0.6;">(${pos})</small>`;
 
           const translatedText =
-            VOCAB_LOOKUP_EXTENDED[word] &&
-            VOCAB_LOOKUP_EXTENDED[word][STORE.activeDictionaryLang]
+            VOCAB_LOOKUP_EXTENDED[word] && VOCAB_LOOKUP_EXTENDED[word][STORE.activeDictionaryLang]
               ? VOCAB_LOOKUP_EXTENDED[word][STORE.activeDictionaryLang]
               : word;
 
@@ -3616,8 +3393,7 @@
             const textbox = document.getElementById("rehearsalDraftBox");
             const cursor = textbox.selectionStart;
             const text = textbox.value;
-            textbox.value =
-              text.slice(0, cursor) + " " + word + " " + text.slice(cursor);
+            textbox.value = text.slice(0, cursor) + " " + word + " " + text.slice(cursor);
             textbox.focus();
             checkVocabUseInDraft();
           };
@@ -3638,8 +3414,7 @@
             const textbox = document.getElementById("rehearsalDraftBox");
             const cursor = textbox.selectionStart;
             const text = textbox.value;
-            textbox.value =
-              text.slice(0, cursor) + " " + frame + " " + text.slice(cursor);
+            textbox.value = text.slice(0, cursor) + " " + frame + " " + text.slice(cursor);
             textbox.focus();
             checkVocabUseInDraft();
           };
@@ -3651,8 +3426,7 @@
         const textbox = document.getElementById("rehearsalDraftBox");
         const cursor = textbox.selectionStart;
         const text = textbox.value;
-        textbox.value =
-          text.slice(0, cursor) + " " + connector + " " + text.slice(cursor);
+        textbox.value = text.slice(0, cursor) + " " + connector + " " + text.slice(cursor);
         textbox.focus();
         checkVocabUseInDraft();
       }
@@ -3671,14 +3445,7 @@
           "in comparison",
           "on the other hand",
         ];
-        const level3Keywords = [
-          "because",
-          "since",
-          "while",
-          "unless",
-          "in order to",
-          "so that",
-        ];
+        const level3Keywords = ["because", "since", "while", "unless", "in order to", "so that"];
         const level2Keywords = ["and", "but", "or", "so"];
 
         const words = draft.split(/\s+/).filter((w) => w.length > 0);
@@ -3693,9 +3460,7 @@
         );
         const hasL3 =
           lowerDraft.indexOf("because") !== -1 ||
-          level3Keywords.some((kw) =>
-            new RegExp("\\b" + kw + "\\b", "i").test(lowerDraft),
-          );
+          level3Keywords.some((kw) => new RegExp("\\b" + kw + "\\b", "i").test(lowerDraft));
         const hasL2 = level2Keywords.some((kw) =>
           new RegExp("\\b" + kw + "\\b", "i").test(lowerDraft),
         );
@@ -3819,8 +3584,7 @@
         if (STORE.isSpeaking) {
           window.speechSynthesis.cancel();
           STORE.isSpeaking = false;
-          document.getElementById("speakPromptBtn").innerHTML =
-            "🔊 Read Prompt";
+          document.getElementById("speakPromptBtn").innerHTML = "🔊 Read Prompt";
           return;
         }
 
@@ -3845,21 +3609,18 @@
 
         utterance.onstart = () => {
           STORE.isSpeaking = true;
-          document.getElementById("speakPromptBtn").innerHTML =
-            "⏹️ Stop Prompt";
+          document.getElementById("speakPromptBtn").innerHTML = "⏹️ Stop Prompt";
         };
 
         utterance.onend = () => {
           STORE.isSpeaking = false;
-          document.getElementById("speakPromptBtn").innerHTML =
-            "🔊 Read Prompt";
+          document.getElementById("speakPromptBtn").innerHTML = "🔊 Read Prompt";
           document.getElementById("promptTextBox").innerHTML = text;
         };
 
         utterance.onerror = () => {
           STORE.isSpeaking = false;
-          document.getElementById("speakPromptBtn").innerHTML =
-            "🔊 Read Prompt";
+          document.getElementById("speakPromptBtn").innerHTML = "🔊 Read Prompt";
         };
 
         window.speechSynthesis.speak(utterance);
@@ -3871,8 +3632,7 @@
           clearInterval(STORE.typewriterInterval);
           if ("speechSynthesis" in window) window.speechSynthesis.cancel();
           STORE.isSpeakingModel = false;
-          document.getElementById("modelSpeechBtn").innerHTML =
-            "📝 Animate Peer Model";
+          document.getElementById("modelSpeechBtn").innerHTML = "📝 Animate Peer Model";
           return;
         }
 
@@ -3901,21 +3661,18 @@
           utterance.rate = STORE.peerPlaybackRate || 0.8;
           utterance.onend = () => {
             STORE.isSpeakingModel = false;
-            document.getElementById("modelSpeechBtn").innerHTML =
-              "📝 Animate Peer Model";
+            document.getElementById("modelSpeechBtn").innerHTML = "📝 Animate Peer Model";
           };
           utterance.onerror = () => {
             STORE.isSpeakingModel = false;
-            document.getElementById("modelSpeechBtn").innerHTML =
-              "📝 Animate Peer Model";
+            document.getElementById("modelSpeechBtn").innerHTML = "📝 Animate Peer Model";
           };
           window.speechSynthesis.speak(utterance);
         } else {
           setTimeout(
             () => {
               STORE.isSpeakingModel = false;
-              document.getElementById("modelSpeechBtn").innerHTML =
-                "📝 Animate Peer Model";
+              document.getElementById("modelSpeechBtn").innerHTML = "📝 Animate Peer Model";
             },
             text.length * 35 + 500,
           );
@@ -3924,10 +3681,8 @@
 
       function setELPTier(tier) {
         STORE.activeTier = tier;
-        document.getElementById("btnTierA").className =
-          `tier-btn ${tier === "A" ? "active" : ""}`;
-        document.getElementById("btnTierB").className =
-          `tier-btn ${tier === "B" ? "active" : ""}`;
+        document.getElementById("btnTierA").className = `tier-btn ${tier === "A" ? "active" : ""}`;
+        document.getElementById("btnTierB").className = `tier-btn ${tier === "B" ? "active" : ""}`;
 
         logToTerminal(`WIDA ELP Tier selected: Tier ${tier}`);
         loadSpeakingTaskWorkspace(STORE.activeTaskIdx);
@@ -3946,14 +3701,8 @@
               osc.type = "sine";
               osc.frequency.value = freq;
               gain.gain.setValueAtTime(0, ctx.currentTime);
-              gain.gain.linearRampToValueAtTime(
-                0.12,
-                ctx.currentTime + idx * 0.08,
-              );
-              gain.gain.exponentialRampToValueAtTime(
-                0.0001,
-                ctx.currentTime + idx * 0.08 + 0.4,
-              );
+              gain.gain.linearRampToValueAtTime(0.12, ctx.currentTime + idx * 0.08);
+              gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + idx * 0.08 + 0.4);
 
               osc.connect(gain);
               gain.connect(ctx.destination);
@@ -3966,12 +3715,9 @@
 
       // Calculate ELP Rating and trigger diagnostic feedback
       function calculateELPRating() {
-        const ling =
-          parseInt(document.getElementById("rubricLinguistic").value) || 1;
-        const vocab =
-          parseInt(document.getElementById("rubricVocabulary").value) || 1;
-        const ctrl =
-          parseInt(document.getElementById("rubricControl").value) || 1;
+        const ling = parseInt(document.getElementById("rubricLinguistic").value) || 1;
+        const vocab = parseInt(document.getElementById("rubricVocabulary").value) || 1;
+        const ctrl = parseInt(document.getElementById("rubricControl").value) || 1;
 
         const sum = ling + vocab + ctrl;
         let rating = "1.0 (Entering)";
@@ -4042,9 +3788,7 @@
       function downloadWritingPortfolio() {
         var draft = document.getElementById("rehearsalDraftBox").value.trim();
         if (!draft) {
-          showMinimalToast(
-            "Please write a draft before downloading your portfolio.",
-          );
+          showMinimalToast("Please write a draft before downloading your portfolio.");
           return;
         }
 
@@ -4068,8 +3812,7 @@
         var rubricCtrlText = rubricCtrl.options[rubricCtrl.selectedIndex].text;
         var overallRating = document.getElementById("liveELPBadge").textContent;
 
-        var coachContent =
-          document.getElementById("widaCoachContent").innerHTML;
+        var coachContent = document.getElementById("widaCoachContent").innerHTML;
 
         // Vocabulary word wall usage check
         var usedTerms = [];
@@ -4082,8 +3825,7 @@
         var usedTermsStr = usedTerms.length > 0 ? usedTerms.join(", ") : "None";
 
         var today = new Date();
-        var dateString =
-          today.toLocaleDateString() + " " + today.toLocaleTimeString();
+        var dateString = today.toLocaleDateString() + " " + today.toLocaleTimeString();
 
         // Building high-fidelity MHTML/XML content
         var htmlContent =
@@ -4253,14 +3995,8 @@
               const gain = ctx.createGain();
               osc.frequency.value = freq;
               gain.gain.setValueAtTime(0, ctx.currentTime);
-              gain.gain.linearRampToValueAtTime(
-                0.1,
-                ctx.currentTime + idx * 0.08,
-              );
-              gain.gain.exponentialRampToValueAtTime(
-                0.0001,
-                ctx.currentTime + idx * 0.08 + 0.4,
-              );
+              gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + idx * 0.08);
+              gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + idx * 0.08 + 0.4);
               osc.connect(gain);
               gain.connect(ctx.destination);
               osc.start(ctx.currentTime + idx * 0.08);
@@ -4273,33 +4009,24 @@
       function triggerSparkCelebration() {
         playChime("success");
         STORE.sparkPoints = (STORE.sparkPoints || 1200) + 100;
-        document.getElementById("sparkXPCounter").textContent =
-          `✨ ${STORE.sparkPoints} SPARK XP`;
+        document.getElementById("sparkXPCounter").textContent = `✨ ${STORE.sparkPoints} SPARK XP`;
         localStorage.setItem("widaXP", STORE.sparkPoints);
 
         let streak = parseInt(localStorage.getItem("widaStreak") || 0);
         streak++;
         localStorage.setItem("widaStreak", streak);
         if (document.getElementById("streakBadge")) {
-          document.getElementById("streakBadge").textContent =
-            `🔥 ${streak} Day Streak`;
+          document.getElementById("streakBadge").textContent = `🔥 ${streak} Day Streak`;
         }
 
-        const completedList = JSON.parse(
-          localStorage.getItem("widaCompletedWriting") || "[]",
-        );
+        const completedList = JSON.parse(localStorage.getItem("widaCompletedWriting") || "[]");
         const taskId = `T${STORE.activeTaskIdx + 1}`;
         if (!completedList.includes(taskId)) {
           completedList.push(taskId);
-          localStorage.setItem(
-            "widaCompletedWriting",
-            JSON.stringify(completedList),
-          );
+          localStorage.setItem("widaCompletedWriting", JSON.stringify(completedList));
         }
 
-        showMinimalToast(
-          "🎉 Masterpiece Completed! +100 SPARK XP! Day Streak +1!",
-        );
+        showMinimalToast("🎉 Masterpiece Completed! +100 SPARK XP! Day Streak +1!");
 
         for (let i = 0; i < 40; i++) {
           const p = document.createElement("div");
@@ -4308,16 +4035,8 @@
           p.style.left = Math.random() * window.innerWidth + "px";
           p.style.width = Math.random() * 8 + 6 + "px";
           p.style.height = Math.random() * 12 + 8 + "px";
-          const colors = [
-            "#0f766e",
-            "#d97706",
-            "#ea580c",
-            "#3b82f6",
-            "#22c55e",
-            "#a855f7",
-          ];
-          p.style.background =
-            colors[Math.floor(Math.random() * colors.length)];
+          const colors = ["#0f766e", "#d97706", "#ea580c", "#3b82f6", "#22c55e", "#a855f7"];
+          p.style.background = colors[Math.floor(Math.random() * colors.length)];
           p.style.zIndex = "99999";
           p.style.transform = `rotate(${Math.random() * 360}deg)`;
           p.style.borderRadius = "2px";
@@ -4360,9 +4079,7 @@
         const chkDraft = document.getElementById("chkDraft");
         const chkDraftIcon = document.getElementById("chkDraftIcon");
         const draft = document.getElementById("rehearsalDraftBox").value.trim();
-        const wordsCount = draft
-          .split(/\s+/)
-          .filter((w) => w.length > 0).length;
+        const wordsCount = draft.split(/\s+/).filter((w) => w.length > 0).length;
         const targetCount = STORE.activeTier === "A" ? 30 : 60;
         STORE.checklistDraft = wordsCount >= targetCount;
 
@@ -4378,10 +4095,8 @@
           chkRubricIcon.textContent = STORE.checklistRubric ? "🟢" : "⚪";
         }
 
-        document.getElementById("wordsCounter").textContent =
-          `${wordsCount} words`;
-        document.getElementById("charsCounter").textContent =
-          `${draft.length} chars`;
+        document.getElementById("wordsCounter").textContent = `${wordsCount} words`;
+        document.getElementById("charsCounter").textContent = `${draft.length} chars`;
 
         if (
           STORE.checklistQuest &&
@@ -4425,8 +4140,7 @@
         // Local Storage Streak restoration
         if (localStorage.getItem("widaStreak")) {
           const streak = localStorage.getItem("widaStreak");
-          document.getElementById("streakBadge").textContent =
-            `🔥 ${streak} Day Streak`;
+          document.getElementById("streakBadge").textContent = `🔥 ${streak} Day Streak`;
         }
         if (localStorage.getItem("widaXP")) {
           STORE.sparkPoints = parseInt(localStorage.getItem("widaXP"));
@@ -4459,19 +4173,13 @@
       // Diagnostics commands
       function toggleDiagnostics() {
         const term = document.getElementById("diagTerminal");
-        const hidden =
-          term.style.display === "none" || term.style.display === "";
+        const hidden = term.style.display === "none" || term.style.display === "";
         term.style.display = hidden ? "flex" : "none";
         if (hidden) {
           const consoleNode = document.getElementById("diagConsole");
           consoleNode.innerHTML = "";
-          logConsole(
-            "WIDA 20-Task Writing Prep Workbook initialized...",
-            "#fbbf24",
-          );
-          logConsole(
-            `CENTRAL STATE check: Total mapped tasks [${WIDA_SPEAKING_TASKS.length}/20]`,
-          );
+          logConsole("WIDA 20-Task Writing Prep Workbook initialized...", "#fbbf24");
+          logConsole(`CENTRAL STATE check: Total mapped tasks [${WIDA_SPEAKING_TASKS.length}/20]`);
           logConsole("Active vocabulary match listener active.");
         }
       }
@@ -4545,8 +4253,7 @@
             type: "narrative",
             level: 1,
             title: "Build a Story Opener",
-            prompt:
-              "Unscramble the words to make a sentence about the start of a day.",
+            prompt: "Unscramble the words to make a sentence about the start of a day.",
             scramble: ["Yesterday", "morning", "I", "woke", "up", "early"],
             answer: ["Yesterday", "morning", "I", "woke", "up", "early"],
             hint: "Start with the time word. End with a period when you write it!",
@@ -4580,26 +4287,8 @@
             level: 2,
             title: "Build a Cause-and-Effect Sentence",
             prompt: "Arrange the words into a complex sentence about weather.",
-            scramble: [
-              "Because",
-              "the",
-              "clouds",
-              "filled",
-              "with",
-              "water,",
-              "rain",
-              "fell",
-            ],
-            answer: [
-              "Because",
-              "the",
-              "clouds",
-              "filled",
-              "with",
-              "water,",
-              "rain",
-              "fell",
-            ],
+            scramble: ["Because", "the", "clouds", "filled", "with", "water,", "rain", "fell"],
+            answer: ["Because", "the", "clouds", "filled", "with", "water,", "rain", "fell"],
             hint: "Cause-and-effect sentences can begin with 'Because…'.",
           },
           {
@@ -4609,24 +4298,8 @@
             level: 2,
             title: "Build a Vivid Action Sentence",
             prompt: "Order the words to make a descriptive narrative sentence.",
-            scramble: [
-              "The",
-              "frightened",
-              "rabbit",
-              "darted",
-              "across",
-              "the",
-              "field",
-            ],
-            answer: [
-              "The",
-              "frightened",
-              "rabbit",
-              "darted",
-              "across",
-              "the",
-              "field",
-            ],
+            scramble: ["The", "frightened", "rabbit", "darted", "across", "the", "field"],
+            answer: ["The", "frightened", "rabbit", "darted", "across", "the", "field"],
             hint: "Adjectives (frightened) come right before the noun they describe (rabbit).",
           },
 
@@ -4637,8 +4310,7 @@
             type: "narrative",
             level: 1,
             title: "Grow the Sentence: The Dog Ran",
-            prompt:
-              "Start with “The dog ran.” Add details to answer each question.",
+            prompt: "Start with “The dog ran.” Add details to answer each question.",
             base: "The dog ran",
             slots: [
               { q: "Who/What kind of dog?", placeholder: "a big brown dog" },
@@ -4668,8 +4340,7 @@
             type: "opinion",
             level: 2,
             title: "Grow the Sentence: Reading Is Best",
-            prompt:
-              "Begin with “Reading is the best hobby.” Expand it with a reason and example.",
+            prompt: "Begin with “Reading is the best hobby.” Expand it with a reason and example.",
             base: "Reading is the best hobby",
             slots: [
               {
@@ -4694,8 +4365,7 @@
             type: "informational",
             level: 2,
             title: "Grow the Sentence: The Volcano Erupted",
-            prompt:
-              "Expand “The volcano erupted.” with precise, academic details.",
+            prompt: "Expand “The volcano erupted.” with precise, academic details.",
             base: "The volcano erupted",
             slots: [
               { q: "When?", placeholder: "after weeks of warning tremors" },
@@ -4802,8 +4472,7 @@
             type: "informational",
             level: 1,
             title: "Order the Paragraph: How to Plant a Seed",
-            prompt:
-              "Drag or use the arrows to put the paragraph in the best order.",
+            prompt: "Drag or use the arrows to put the paragraph in the best order.",
             items: [
               {
                 role: "Topic",
@@ -4917,8 +4586,7 @@
             type: "opinion",
             level: 2,
             title: "Fix the Run-On Sentence",
-            prompt:
-              "Tap the spot where two sentences are joined incorrectly. Find the run-on.",
+            prompt: "Tap the spot where two sentences are joined incorrectly. Find the run-on.",
             tokens: [
               { t: "Soccer", err: null },
               { t: "is", err: null },
@@ -4936,8 +4604,7 @@
             type: "informational",
             level: 2,
             title: "Revise for Mechanics",
-            prompt:
-              "Tap every error: capitals, spelling, and punctuation. Find 4.",
+            prompt: "Tap every error: capitals, spelling, and punctuation. Find 4.",
             tokens: [
               { t: "water", err: "cap", fix: "Water" },
               { t: "covers", err: null },
@@ -4959,9 +4626,7 @@
             level: 1,
             title: "Pick the Sequence Word",
             prompt: "Choose the best word for each step in order.",
-            sentence: [
-              "___ you wake up. ___ you eat breakfast. ___ you go to school.",
-            ],
+            sentence: ["___ you wake up. ___ you eat breakfast. ___ you go to school."],
             blanks: [
               { options: ["First", "Finally"], answer: "First" },
               { options: ["Next", "First"], answer: "Next" },
@@ -4976,9 +4641,7 @@
             title: "Add a Reason Connector",
             prompt: "Pick the word that adds a reason.",
             sentence: ["I like winter ___ I can build snowmen."],
-            blanks: [
-              { options: ["because", "but", "before"], answer: "because" },
-            ],
+            blanks: [{ options: ["because", "but", "before"], answer: "because" }],
           },
           {
             id: "t3",
@@ -5042,8 +4705,7 @@
             title: "Use Feeling Words",
             prompt: "Write a sentence about a character using both words.",
             words: ["nervous", "finally"],
-            model:
-              "I felt nervous before the race, but I finally crossed the finish line.",
+            model: "I felt nervous before the race, but I finally crossed the finish line.",
           },
           {
             id: "v3",
@@ -5051,8 +4713,7 @@
             type: "opinion",
             level: 2,
             title: "Use Persuasive Words",
-            prompt:
-              "Write a strong opinion sentence using both academic words.",
+            prompt: "Write a strong opinion sentence using both academic words.",
             words: ["essential", "furthermore"],
             model:
               "Clean parks are essential for a healthy community; furthermore, they give families a safe place to play.",
@@ -5063,8 +4724,7 @@
             type: "informational",
             level: 2,
             title: "Use Social Studies Words",
-            prompt:
-              "Write a complete sentence that includes both terms accurately.",
+            prompt: "Write a complete sentence that includes both terms accurately.",
             words: ["citizen", "responsibility"],
             model:
               "Every citizen has the responsibility to follow the laws that keep the community safe.",
@@ -5094,8 +4754,7 @@
             type: "opinion",
             level: 2,
             title: "Chart → Paragraph: A Better Lunch",
-            prompt:
-              "Plan your opinion in the chart, then assemble the paragraph.",
+            prompt: "Plan your opinion in the chart, then assemble the paragraph.",
             center: "Schools should serve healthier lunches",
             nodes: [
               {
@@ -5137,8 +4796,7 @@
             type: "narrative",
             level: 1,
             title: "Self-Check a Story Model",
-            prompt:
-              "Read the model. Rate it on each part, then reveal the coach's score.",
+            prompt: "Read the model. Rate it on each part, then reveal the coach's score.",
             model:
               "Last summer my family went camping. We set up our tent near a lake. At night we told stories by the fire. It was the best trip ever.",
             criteria: [
@@ -5172,8 +4830,7 @@
             type: "informational",
             level: 2,
             title: "Self-Check an Informational Model",
-            prompt:
-              "Score this informational paragraph, then compare with the coach.",
+            prompt: "Score this informational paragraph, then compare with the coach.",
             model:
               "The water cycle moves water around our planet. First, the sun heats the ocean and water evaporates into the air. Next, the water vapor cools and condenses into clouds. Finally, the water falls back to Earth as rain, and the cycle begins again.",
             criteria: [
@@ -5211,16 +4868,12 @@
         function esc(s) {
           return String(s).replace(
             /[&<>"]/g,
-            (c) =>
-              ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+            (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
           );
         }
         function persist() {
           try {
-            localStorage.setItem(
-              STORE_KEY,
-              JSON.stringify({ done, points, streak }),
-            );
+            localStorage.setItem(STORE_KEY, JSON.stringify({ done, points, streak }));
           } catch (e) {}
         }
 
@@ -5254,8 +4907,7 @@
           $("psTotalCount").textContent = total;
           $("psPoints").textContent = points;
           $("psStreak").textContent = streak;
-          $("psProgressFill").style.width =
-            (total ? Math.round((count / total) * 100) : 0) + "%";
+          $("psProgressFill").style.width = (total ? Math.round((count / total) * 100) : 0) + "%";
         }
 
         function celebrate(card, msg, first) {
@@ -5322,9 +4974,7 @@
                 ${done[a.id] ? '<span class="ps-done-flag">✓ Done</span>' : ""}
               </div>
               <div class="ps-work" hidden></div>`;
-            card
-              .querySelector(".ps-listen")
-              .addEventListener("click", () => readAloud(a.prompt));
+            card.querySelector(".ps-listen").addEventListener("click", () => readAloud(a.prompt));
             card.querySelector(".ps-start").addEventListener("click", (ev) => {
               const work = card.querySelector(".ps-work");
               const open = work.hasAttribute("hidden");
@@ -5367,8 +5017,7 @@
         }
         function showFeedback(el, ok, msg) {
           el.style.display = "block";
-          el.className =
-            "ps-feedback " + (ok ? "ps-feedback--ok" : "ps-feedback--try");
+          el.className = "ps-feedback " + (ok ? "ps-feedback--ok" : "ps-feedback--try");
           el.textContent = msg;
           announce(msg);
         }
@@ -5387,9 +5036,7 @@
           const fb = feedbackEl();
           work.appendChild(fb);
 
-          const pool = a.scramble
-            .map((w, i) => ({ w, i }))
-            .sort(() => Math.random() - 0.5);
+          const pool = a.scramble.map((w, i) => ({ w, i })).sort(() => Math.random() - 0.5);
           pool.forEach(({ w, i }) => {
             const tok = document.createElement("button");
             tok.className = "ps-token";
@@ -5426,17 +5073,9 @@
               const first = awardComplete(a.id);
               const cardEl = work.closest(".ps-card");
               celebrate(cardEl, "Correct! Sentence built perfectly. ⭐", first);
-              showFeedback(
-                fb,
-                true,
-                "🎉 Perfect! That sentence is in the right order.",
-              );
+              showFeedback(fb, true, "🎉 Perfect! That sentence is in the right order.");
             } else {
-              showFeedback(
-                fb,
-                false,
-                "Almost! Tap a word to remove it and try a new order.",
-              );
+              showFeedback(fb, false, "Almost! Tap a word to remove it and try a new order.");
             }
           }
         }
@@ -5466,9 +5105,7 @@
           });
           work.querySelector(".ps-check").addEventListener("click", () => {
             const inputs = [...work.querySelectorAll(".ps-exp")];
-            const filled = inputs.filter(
-              (i) => i.value.trim().length >= 2,
-            ).length;
+            const filled = inputs.filter((i) => i.value.trim().length >= 2).length;
             if (filled >= a.slots.length) {
               const first = awardComplete(a.id);
               celebrate(work.closest(".ps-card"), "Great expansion! ⭐", first);
@@ -5517,20 +5154,14 @@
               celebrate(work.closest(".ps-card"), "Frame complete! ⭐", first);
               showFeedback(fb, true, "🎉 You completed the sentence frame!");
             } else {
-              showFeedback(
-                fb,
-                false,
-                "Fill in every blank to finish the sentence.",
-              );
+              showFeedback(fb, false, "Fill in every blank to finish the sentence.");
             }
           });
         }
 
         // PARAGRAPH ORDER
         function wsParagraph(a, work) {
-          const order = a.items
-            .map((_, i) => i)
-            .sort(() => Math.random() - 0.5);
+          const order = a.items.map((_, i) => i).sort(() => Math.random() - 0.5);
           work.innerHTML = `
             <div class="ps-hint">Put the parts in the best order. Use ▲ / ▼ or drag.</div>
             <div class="ps-sortlist" role="list"></div>
@@ -5569,9 +5200,7 @@
                 row.setAttribute("aria-grabbed", "true");
                 e.dataTransfer.setData("text/plain", String(pos));
               });
-              row.addEventListener("dragend", () =>
-                row.removeAttribute("aria-grabbed"),
-              );
+              row.addEventListener("dragend", () => row.removeAttribute("aria-grabbed"));
               row.addEventListener("dragover", (e) => e.preventDefault());
               row.addEventListener("drop", (e) => {
                 e.preventDefault();
@@ -5591,21 +5220,11 @@
           work.querySelector(".ps-check").addEventListener("click", () => {
             const ok = order.every((origIdx, pos) => origIdx === pos);
             const rows = [...list.children];
-            rows.forEach((r, pos) =>
-              r.classList.toggle("is-correct", order[pos] === pos),
-            );
+            rows.forEach((r, pos) => r.classList.toggle("is-correct", order[pos] === pos));
             if (ok) {
               const first = awardComplete(a.id);
-              celebrate(
-                work.closest(".ps-card"),
-                "Paragraph in order! ⭐",
-                first,
-              );
-              showFeedback(
-                fb,
-                true,
-                "🎉 Perfect order! Topic, details, then closing all line up.",
-              );
+              celebrate(work.closest(".ps-card"), "Paragraph in order! ⭐", first);
+              showFeedback(fb, true, "🎉 Perfect order! Topic, details, then closing all line up.");
             } else {
               showFeedback(
                 fb,
@@ -5636,10 +5255,7 @@
             span.textContent = tk.t;
             span.tabIndex = 0;
             span.setAttribute("role", "button");
-            span.setAttribute(
-              "aria-label",
-              "Word: " + tk.t + ". Tap if it has a mistake.",
-            );
+            span.setAttribute("aria-label", "Word: " + tk.t + ". Tap if it has a mistake.");
             const toggle = () => {
               if (flagged.has(i)) {
                 flagged.delete(i);
@@ -5678,11 +5294,7 @@
             });
             if (correct === targetErrors && wrong === 0) {
               const first = awardComplete(a.id);
-              celebrate(
-                work.closest(".ps-card"),
-                "All errors fixed! ⭐",
-                first,
-              );
+              celebrate(work.closest(".ps-card"), "All errors fixed! ⭐", first);
               showFeedback(
                 fb,
                 true,
@@ -5717,8 +5329,7 @@
           });
           html += "</div>";
           work.innerHTML =
-            html +
-            '<button class="ps-btn ps-btn--primary ps-btn--sm ps-check">Check</button>';
+            html + '<button class="ps-btn ps-btn--primary ps-btn--sm ps-check">Check</button>';
           const fb = feedbackEl();
           work.appendChild(fb);
           work.querySelector(".ps-check").addEventListener("click", () => {
@@ -5726,16 +5337,8 @@
             const ok = sels.every((s, i) => s.value === a.blanks[i].answer);
             if (ok) {
               const first = awardComplete(a.id);
-              celebrate(
-                work.closest(".ps-card"),
-                "Connectors correct! ⭐",
-                first,
-              );
-              showFeedback(
-                fb,
-                true,
-                "🎉 Great choices! Your transitions link the ideas smoothly.",
-              );
+              celebrate(work.closest(".ps-card"), "Connectors correct! ⭐", first);
+              showFeedback(fb, true, "🎉 Great choices! Your transitions link the ideas smoothly.");
             } else {
               showFeedback(
                 fb,
@@ -5776,11 +5379,7 @@
             if (used.length === a.words.length && hasEnd && longEnough) {
               const first = awardComplete(a.id);
               celebrate(work.closest(".ps-card"), "Both words used! ⭐", first);
-              showFeedback(
-                fb,
-                true,
-                "🎉 You used both target words in a complete sentence!",
-              );
+              showFeedback(fb, true, "🎉 You used both target words in a complete sentence!");
             } else if (used.length < a.words.length) {
               showFeedback(
                 fb,
@@ -5830,20 +5429,12 @@
           });
           work.querySelector(".ps-check").addEventListener("click", () => {
             const nodes = [...work.querySelectorAll(".ps-org")];
-            const filled = nodes.filter(
-              (n) => n.value.trim().length >= 2,
-            ).length;
+            const filled = nodes.filter((n) => n.value.trim().length >= 2).length;
             const para = work.querySelector(".ps-org-para").value.trim();
-            const sentences = para
-              .split(/[.!?]+/)
-              .filter((s) => s.trim().length > 3).length;
+            const sentences = para.split(/[.!?]+/).filter((s) => s.trim().length > 3).length;
             if (filled === a.nodes.length && sentences >= 3) {
               const first = awardComplete(a.id);
-              celebrate(
-                work.closest(".ps-card"),
-                "Organizer assembled! ⭐",
-                first,
-              );
+              celebrate(work.closest(".ps-card"), "Organizer assembled! ⭐", first);
               showFeedback(
                 fb,
                 true,
@@ -5889,9 +5480,7 @@
             <div>${rows}</div>
             <button class="ps-btn ps-btn--primary ps-btn--sm ps-check">Reveal coach's score</button>
             <div class="ps-feedback ps-coach" style="display:none"></div>`;
-          work
-            .querySelector(".ps-listen2")
-            .addEventListener("click", () => readAloud(a.model));
+          work.querySelector(".ps-listen2").addEventListener("click", () => readAloud(a.model));
           const ratings = new Array(a.criteria.length).fill(0);
           work.querySelectorAll(".ps-stars").forEach((group) => {
             const gi = parseInt(group.dataset.i, 10);
@@ -5913,19 +5502,14 @@
             if (ratings.some((r) => r === 0)) {
               coach.style.display = "block";
               coach.className = "ps-feedback ps-feedback--try ps-coach";
-              coach.textContent =
-                "Rate every row (1–3 stars) before revealing the coach's score.";
+              coach.textContent = "Rate every row (1–3 stars) before revealing the coach's score.";
               announce("Please rate every row first.");
               return;
             }
             const myTotal = ratings.reduce((x, y) => x + y, 0);
             const idealTotal = a.criteria.reduce((x, c) => x + c.ideal, 0);
             const first = awardComplete(a.id);
-            celebrate(
-              work.closest(".ps-card"),
-              "Self-check complete! ⭐",
-              first,
-            );
+            celebrate(work.closest(".ps-card"), "Self-check complete! ⭐", first);
             coach.style.display = "block";
             coach.className = "ps-feedback ps-feedback--ok ps-coach";
             coach.innerHTML = `<b>Your score: ${myTotal}/${idealTotal} · Coach's score: ${idealTotal}/${idealTotal}</b><br>${esc(a.coach)}`;
@@ -5935,9 +5519,7 @@
 
         // ── Filter wiring ──
         function wireFilters() {
-          document
-            .querySelectorAll(".ps-toolbar .ps-pill")
-            .forEach((pill) => attachPill(pill));
+          document.querySelectorAll(".ps-toolbar .ps-pill").forEach((pill) => attachPill(pill));
         }
         function attachPill(pill) {
           pill.addEventListener("click", () => {
@@ -5965,12 +5547,12 @@
         }
       })();
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

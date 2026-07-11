@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <meta
       name="description"
       content="Misconception Lab: Interactive Grade 6 Math Mythbusters debugging studio for refuting common fractions, decimals, and order of operations mistakes."
@@ -351,11 +351,7 @@
 
       /* ESOL sentence helper card */
       .sentence-hub {
-        background: linear-gradient(
-          135deg,
-          rgba(6, 182, 212, 0.08),
-          rgba(16, 185, 129, 0.04)
-        );
+        background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(16, 185, 129, 0.04));
         border: 1px solid rgba(6, 182, 212, 0.18);
       }
 
@@ -520,6 +516,9 @@
       /* Parallax decorative layers behind the workbench SVG */
       .ml-parallax-host {
         position: relative;
+        /* Keep decorative glow layers (.ml-deco d1/d2, offset beyond the card
+           edges + parallax transforms) from creating page-level h-scroll. */
+        overflow-x: clip;
       }
       .ml-deco {
         position: absolute;
@@ -533,22 +532,14 @@
         left: -20px;
         width: 160px;
         height: 160px;
-        background: radial-gradient(
-          circle at 30% 30%,
-          rgba(6, 182, 212, 0.18),
-          transparent 70%
-        );
+        background: radial-gradient(circle at 30% 30%, rgba(6, 182, 212, 0.18), transparent 70%);
       }
       .ml-deco.d2 {
         bottom: -40px;
         right: -30px;
         width: 200px;
         height: 200px;
-        background: radial-gradient(
-          circle at 60% 60%,
-          rgba(16, 185, 129, 0.14),
-          transparent 70%
-        );
+        background: radial-gradient(circle at 60% 60%, rgba(16, 185, 129, 0.14), transparent 70%);
       }
 
       @media (prefers-reduced-motion: reduce) {
@@ -676,12 +667,12 @@
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <link rel="stylesheet" href="/assets/game-access.css">
-  <!-- gacc-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+  </head>
   <body>
     <header>
       <div class="brand">
@@ -689,12 +680,8 @@
         <h1>Misconception Lab</h1>
       </div>
       <div class="header-controls">
-        <button class="btn btn-lang" id="btn-lang" onclick="toggleLanguage()">
-          🌐 EN | ES
-        </button>
-        <button class="btn btn-secondary" onclick="triggerSelfTest()">
-          ⚡ Run Self-Test
-        </button>
+        <button class="btn btn-lang" id="btn-lang" onclick="toggleLanguage()">🌐 EN | ES</button>
+        <button class="btn btn-secondary" onclick="triggerSelfTest()">⚡ Run Self-Test</button>
       </div>
     </header>
 
@@ -706,12 +693,8 @@
           <h2 id="lbl-errbot-terminal">🤖 Error-Bot Terminal</h2>
           <div class="terminal-panel">
             <div class="terminal-head">⚠️ SYSTEM EXCEPTION IN WORKBOOK</div>
-            <div class="terminal-text" id="terminal-description">
-              Loading Error-Bot claim...
-            </div>
-            <div class="terminal-equation" id="terminal-eqn">
-              1/2 + 1/4 = 2/6
-            </div>
+            <div class="terminal-text" id="terminal-description">Loading Error-Bot claim...</div>
+            <div class="terminal-equation" id="terminal-eqn">1/2 + 1/4 = 2/6</div>
           </div>
 
           <div class="bug-list" id="err-bug-list">
@@ -723,25 +706,11 @@
       <!-- Dissection Workbench -->
       <div class="workspace">
         <div class="work-card ml-parallax-host" data-parallax>
-          <div
-            class="ml-deco deco d1"
-            data-parallax-layer
-            aria-hidden="true"
-          ></div>
-          <div
-            class="ml-deco deco d2"
-            data-parallax-layer
-            aria-hidden="true"
-          ></div>
+          <div class="ml-deco deco d1" data-parallax-layer aria-hidden="true"></div>
+          <div class="ml-deco deco d2" data-parallax-layer aria-hidden="true"></div>
           <canvas id="ml-particle-canvas" aria-hidden="true"></canvas>
           <div class="work-card-title">
-            <svg
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -773,18 +742,12 @@
         <!-- ESOL Bilingual Helper -->
         <div class="card sentence-hub">
           <strong
-            style="
-              font-size: 0.85rem;
-              color: var(--primary);
-              text-transform: uppercase;
-            "
+            style="font-size: 0.85rem; color: var(--primary); text-transform: uppercase"
             id="lbl-esol-title"
             >Spanish Sentence Help</strong
           >
           <div class="bubble-msg">
-            <span id="esol-starter"
-              >Hover over or drag pieces to start disproving the bot!</span
-            >
+            <span id="esol-starter">Hover over or drag pieces to start disproving the bot!</span>
             <div class="translation-sub" id="esol-starter-trans">
               ¡Pase el cursor o arrastre las piezas para comenzar!
             </div>
@@ -830,9 +793,8 @@
 
     <footer>
       <p>
-        &copy; 2026 Neft Learning Systems. Built locally, completely private.
-        Designed to support Grade 6 Math myth-busting standards expected score
-        ranges.
+        &copy; 2026 Neft Learning Systems. Built locally, completely private. Designed to support
+        Grade 6 Math myth-busting standards expected score ranges.
       </p>
     </footer>
 
@@ -869,8 +831,7 @@
             title: "Decimal Scaling Error",
             titleEs: "Error en Escala Decimal",
             desc: "Error-Bot claims multiplying decimals results in a larger scalar!",
-            descEs:
-              "¡El robot afirma que multiplicar decimales da un valor mayor!",
+            descEs: "¡El robot afirma que multiplicar decimales da un valor mayor!",
             equation: "0.3 x 0.2 = 0.6",
             tiles: [{ id: "t3", label: "0.06 Tile", value: 0.06 }],
           },
@@ -879,8 +840,7 @@
             title: "Order of Operations Bug",
             titleEs: "Error en Orden de Operaciones",
             desc: "Error-Bot computed left-to-right, completely ignoring the multiplication precedence!",
-            descEs:
-              "¡El robot calculó de izquierda a derecha, ignorando la multiplicación!",
+            descEs: "¡El robot calculó de izquierda a derecha, ignorando la multiplicación!",
             equation: "2 + 3 x 4 = 20",
             tiles: [{ id: "t4", label: "Order Block (14)", value: 14 }],
           },
@@ -1073,10 +1033,8 @@
 
       function renderStaticLabels() {
         const t = TRANSLATIONS[STATE.language];
-        document.getElementById("lbl-errbot-terminal").innerText =
-          t["errbot-terminal"];
-        document.getElementById("lbl-card-workbench").innerText =
-          t["card-workbench"];
+        document.getElementById("lbl-errbot-terminal").innerText = t["errbot-terminal"];
+        document.getElementById("lbl-card-workbench").innerText = t["card-workbench"];
         document.getElementById("lbl-esol-title").innerText = t["esol-title"];
       }
 
@@ -1121,8 +1079,7 @@
 
         // Update terminal text based on active bug
         const currentBug = CONFIG.bugs.find((b) => b.id === STATE.currentBugId);
-        const descText =
-          STATE.language === "en" ? currentBug.desc : currentBug.descEs;
+        const descText = STATE.language === "en" ? currentBug.desc : currentBug.descEs;
         document.getElementById("terminal-description").innerText = descText;
         document.getElementById("terminal-eqn").innerText = currentBug.equation;
       }
@@ -1167,9 +1124,7 @@
 
           // Draw True Sum Target Drop Zone (3/4 visual blocks)
           const isSolved = STATE.solvedBugs.includes("fraction_addition");
-          const targetFillColor = isSolved
-            ? "rgba(16, 185, 129, 0.2)"
-            : "rgba(6, 182, 212, 0.05)";
+          const targetFillColor = isSolved ? "rgba(16, 185, 129, 0.2)" : "rgba(6, 182, 212, 0.05)";
           const strokeColor = isSolved ? "var(--secondary)" : "var(--primary)";
 
           svg.innerHTML += `
@@ -1291,10 +1246,8 @@
         const t = TRANSLATIONS[lang];
 
         const activeBugKey = STATE.currentBugId;
-        starter.innerText =
-          t[`${activeBugKey}-starter`] || t["starter-default"];
-        trans.innerText =
-          t[`${activeBugKey}-trans`] || t["starter-default-trans"];
+        starter.innerText = t[`${activeBugKey}-starter`] || t["starter-default"];
+        trans.innerText = t[`${activeBugKey}-trans`] || t["starter-default-trans"];
       }
 
       // ==========================================
@@ -1318,26 +1271,18 @@
 
           // Assert 2: Changing state select bugs
           selectBug("decimal_multiplication");
-          logDiag(
-            `✓ Selected decimal multiplication bug. Active Bug: ${STATE.currentBugId}`,
-          );
+          logDiag(`✓ Selected decimal multiplication bug. Active Bug: ${STATE.currentBugId}`);
           if (STATE.currentBugId !== "decimal_multiplication") {
-            throw new Error(
-              "Assertion failed: State transition did not bind correctly.",
-            );
+            throw new Error("Assertion failed: State transition did not bind correctly.");
           }
 
           // Assert 3: Math verification for Fraction Sums
           const fraction1 = 0.5; // 1/2
           const fraction2 = 0.25; // 1/4
           const sum = fraction1 + fraction2;
-          logDiag(
-            `✓ Validating true fractions addition: 1/2 + 1/4 yields ${sum}`,
-          );
+          logDiag(`✓ Validating true fractions addition: 1/2 + 1/4 yields ${sum}`);
           if (sum !== 0.75) {
-            throw new Error(
-              "Assertion failed: Fractions sum calculation is inaccurate.",
-            );
+            throw new Error("Assertion failed: Fractions sum calculation is inaccurate.");
           }
 
           // Assert 4: Decimal multiplication scale checking
@@ -1346,20 +1291,14 @@
           const prod = Math.round(d1 * d2 * 100) / 100;
           logDiag(`✓ Validating decimal product mapping: 0.3 x 0.2 = ${prod}`);
           if (prod !== 0.06) {
-            throw new Error(
-              "Assertion failed: Decimal multiplication scale reduction failed.",
-            );
+            throw new Error("Assertion failed: Decimal multiplication scale reduction failed.");
           }
 
           // Assert 5: Order of Operations validation
           const calculated = 2 + 3 * 4;
-          logDiag(
-            `✓ Validating math precedence constraints: 2 + 3 x 4 = ${calculated}`,
-          );
+          logDiag(`✓ Validating math precedence constraints: 2 + 3 x 4 = ${calculated}`);
           if (calculated !== 14) {
-            throw new Error(
-              "Assertion failed: Multiplication precedence is breached.",
-            );
+            throw new Error("Assertion failed: Multiplication precedence is breached.");
           }
 
           // Reset back to original
@@ -1377,10 +1316,8 @@
       // ==========================================
       const ML_FX = (() => {
         const reduce =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        const isFinePointer =
-          !window.matchMedia || !window.matchMedia("(pointer: coarse)").matches;
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const isFinePointer = !window.matchMedia || !window.matchMedia("(pointer: coarse)").matches;
 
         // ---- Particle burst on a solved bug (green particles fade out) ----
         let canvas,
@@ -1510,9 +1447,7 @@
             const r = svg.getBoundingClientRect();
             ML_FX.burstAt(r.left + r.width / 2, r.top + r.height / 2);
           }
-          const item = document.querySelector(
-            `.bug-item[data-bug-id="${bugId}"]`,
-          );
+          const item = document.querySelector(`.bug-item[data-bug-id="${bugId}"]`);
           if (window.GameFX) {
             if (item && typeof window.GameFX.celebrate === "function") {
               window.GameFX.celebrate(item);
@@ -1587,14 +1522,14 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-  <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
-  <script src="/assets/canvas-bridge.js" defer></script>
-  <!-- canvas-bridge-injected:end -->
-  <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <script src="/assets/game-access.js" defer></script>
-  <!-- gacc-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+    <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+    <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+  </body>
 </html>
