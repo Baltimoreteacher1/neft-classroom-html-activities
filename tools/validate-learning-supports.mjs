@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -85,7 +85,10 @@ function validateManifest(manifest, ids) {
   }
 
   walk(manifest, (value, path) => {
-    const key = path.split(".").at(-1)?.replace(/\[\d+\]$/, "");
+    const key = path
+      .split(".")
+      .at(-1)
+      ?.replace(/\[\d+\]$/, "");
     assert.ok(!FORBIDDEN_KEYS.has(key), `forbidden key at ${path}`);
     if (typeof value !== "string") return;
     assert.ok(!/<\/?[a-z][^>]*>/i.test(value), `raw HTML at ${path}`);
@@ -100,10 +103,16 @@ function validateIntegrations(ids) {
     const path = join(LESSONS, id, "index.html");
     const html = readFileSync(path, "utf8");
     const attr = `data-ewl-supports-lesson="${id}"`;
-    if ((html.match(new RegExp(attr, "g")) || []).length !== 1) errors.push(`${id}: lesson ID integration`);
-    if ((html.match(/learning-supports\.css/g) || []).length !== 1) errors.push(`${id}: stylesheet integration`);
-    if ((html.match(/learning-supports\.js/g) || []).length !== 1) errors.push(`${id}: script integration`);
-    if (!html.includes("ewl-supports-injected:begin") || !html.includes("ewl-supports-injected:end")) {
+    if ((html.match(new RegExp(attr, "g")) || []).length !== 1)
+      errors.push(`${id}: lesson ID integration`);
+    if ((html.match(/learning-supports\.css/g) || []).length !== 1)
+      errors.push(`${id}: stylesheet integration`);
+    if ((html.match(/learning-supports\.js/g) || []).length !== 1)
+      errors.push(`${id}: script integration`);
+    if (
+      !html.includes("ewl-supports-injected:begin") ||
+      !html.includes("ewl-supports-injected:end")
+    ) {
       errors.push(`${id}: integration markers`);
     }
   }
@@ -112,7 +121,10 @@ function validateIntegrations(ids) {
 
 function validateHubEntry() {
   const html = readFileSync(join(ROOT, "curriculum", "index.html"), "utf8");
-  assert.ok(html.includes('id="learning-supports-feature-title"'), "curriculum hub missing Learning Supports entry");
+  assert.ok(
+    html.includes('id="learning-supports-feature-title"'),
+    "curriculum hub missing Learning Supports entry",
+  );
   assert.match(html, /access without lowering the learning target/i);
   assert.match(html, /no IEP data is stored/i);
   assert.match(html, /\/lessons\/1-1\/#ewl-supports=/);
@@ -125,4 +137,6 @@ const manifest = JSON.parse(readFileSync(MANIFEST_PATH, "utf8"));
 validateManifest(manifest, ids);
 validateIntegrations(ids);
 validateHubEntry();
-console.log(`Learning Supports validation PASS — ${ids.length}/${ids.length} canonical lessons covered`);
+console.log(
+  `Learning Supports validation PASS — ${ids.length}/${ids.length} canonical lessons covered`,
+);

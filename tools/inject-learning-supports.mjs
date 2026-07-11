@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -20,14 +20,19 @@ function ids() {
 
 function removeIntegration(html) {
   return html
-    .replace(/\s*<!-- ewl-supports-injected:begin -->[\s\S]*?<!-- ewl-supports-injected:end -->/g, "")
+    .replace(
+      /\s*<!-- ewl-supports-injected:begin -->[\s\S]*?<!-- ewl-supports-injected:end -->/g,
+      "",
+    )
     .replace(/\sdata-ewl-supports-lesson="\d+-\d+"/, "");
 }
 
 function integrated(html, id) {
-  return html.includes(`data-ewl-supports-lesson="${id}"`) &&
+  return (
+    html.includes(`data-ewl-supports-lesson="${id}"`) &&
     html.includes("/assets/learning-supports/learning-supports.css") &&
-    html.includes("/assets/learning-supports/learning-supports.js");
+    html.includes("/assets/learning-supports/learning-supports.js")
+  );
 }
 
 let changed = 0;
@@ -63,4 +68,6 @@ if (args.has("--check") && missing) {
   console.error(`Learning Supports integration check FAIL — ${missing} canonical lessons missing`);
   process.exit(1);
 }
-console.log(`Learning Supports ${args.has("--check") ? "check" : args.has("--revert") ? "revert" : "injection"} PASS — ${changed || 64} canonical lessons`);
+console.log(
+  `Learning Supports ${args.has("--check") ? "check" : args.has("--revert") ? "revert" : "injection"} PASS — ${changed || 64} canonical lessons`,
+);

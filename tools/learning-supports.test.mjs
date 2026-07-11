@@ -67,11 +67,17 @@ function click(element, window) {
   const dom = makeDom();
   const { document, localStorage } = dom.window;
   assert.equal(document.querySelectorAll("[data-ewl-supports-root]").length, 1);
-  assert.match(document.querySelector("[data-ewl-supports-teacher]").textContent, /Prepare Supports/);
+  assert.match(
+    document.querySelector("[data-ewl-supports-teacher]").textContent,
+    /Prepare Supports/,
+  );
   assert.equal(document.querySelector("[data-ewl-supports-tools]").hidden, true);
   assert.equal(document.querySelector("#original").value, "student work");
   assert.equal(localStorage.getItem("existing-lesson-key"), "keep-me");
-  assert.equal(document.querySelector("[role=dialog]").getAttribute("aria-labelledby"), "ewl-supports-title");
+  assert.equal(
+    document.querySelector("[role=dialog]").getAttribute("aria-labelledby"),
+    "ewl-supports-title",
+  );
 
   click(document.querySelector("[data-ewl-supports-teacher]"), dom.window);
   const dialog = document.querySelector("[role=dialog]");
@@ -97,7 +103,11 @@ function click(element, window) {
   assert.equal(localStorage.getItem("existing-lesson-key"), "keep-me");
   assert.equal(localStorage.getItem("ewl-supports:v1:preferences"), null);
   dom.window.EWLLearningSupports.init();
-  assert.equal(document.querySelectorAll("[data-ewl-supports-root]").length, 1, "boot must be idempotent");
+  assert.equal(
+    document.querySelectorAll("[data-ewl-supports-root]").length,
+    1,
+    "boot must be idempotent",
+  );
 }
 
 {
@@ -113,9 +123,14 @@ function click(element, window) {
 
 {
   const dom = makeDom();
-  const parsed = dom.window.EWLLearningSupports.parseSettings("#ewl-supports=read-understand,unknown,<script>");
+  const parsed = dom.window.EWLLearningSupports.parseSettings(
+    "#ewl-supports=read-understand,unknown,<script>",
+  );
   assert.deepEqual(Array.from(parsed), ["read-understand"]);
-  assert.equal(dom.window.EWLLearningSupports.parseSettings(`#ewl-supports=${"x".repeat(3000)}`).length, 0);
+  assert.equal(
+    dom.window.EWLLearningSupports.parseSettings(`#ewl-supports=${"x".repeat(3000)}`).length,
+    0,
+  );
   const encoded = dom.window.EWLLearningSupports.serializeSettings(["focus-organize", "unknown"]);
   assert.equal(encoded, "#ewl-supports=focus-organize");
 }
