@@ -688,8 +688,6 @@
         btn.on("pointerdown", start);
         this.input.keyboard.on("keydown-SPACE", start);
         this.input.keyboard.on("keydown-ENTER", start);
-
-        makeHubLink(this, cx, 522);
         srSay(
           "Volume Blast, Unit-Cube Stacker. A build-it game for the volume of " +
             "rectangular prisms, standard 6.GR.2. Press start to choose a level.",
@@ -771,8 +769,6 @@
         this.input.keyboard.on("keydown-ONE", () => pick(1));
         this.input.keyboard.on("keydown-TWO", () => pick(2));
         this.input.keyboard.on("keydown-THREE", () => pick(3));
-
-        makeHubLink(this, cx, 556);
         srSay(
           "Choose your level. Level 1, build it: I give you the size. " +
             "Level 2, challenge: match a volume or find a missing side. " +
@@ -1576,11 +1572,11 @@
         );
 
         const again = this.add
-          .rectangle(cx - 150, 430, 270, 54, 0x1f7a52)
+          .rectangle(cx, 430, 270, 54, 0x1f7a52)
           .setStrokeStyle(3, 0xffffff, 0.85)
           .setInteractive({ useHandCursor: true });
         this.add
-          .text(cx - 150, 430, "↻  PLAY AGAIN", {
+          .text(cx, 430, "↻  PLAY AGAIN", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "20px",
             fontStyle: "bold",
@@ -1593,22 +1589,6 @@
         again.on("pointerdown", replay);
         this.input.keyboard.on("keydown-SPACE", replay);
         this.input.keyboard.on("keydown-ENTER", replay);
-
-        const home = this.add
-          .rectangle(cx + 150, 430, 270, 54, 0x2a6f9d)
-          .setStrokeStyle(3, 0xffffff, 0.85)
-          .setInteractive({ useHandCursor: true });
-        this.add
-          .text(cx + 150, 430, "🏠  ALL GAMES", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "20px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
-        home.on("pointerover", () => home.setFillStyle(0x3585b8));
-        home.on("pointerout", () => home.setFillStyle(0x2a6f9d));
-        home.on("pointerdown", () => (window.location.href = "/math/games/"));
       };
 
       // ── Shared helpers ──────────────────────────────────────────────────
@@ -1694,22 +1674,6 @@
         g.fillPath();
         g.lineStyle(1, C.cubeEdge, 0.85);
         g.strokePath();
-      }
-
-      function makeHubLink(scene, x, y) {
-        const t = scene.add
-          .text(x, y, "← Back to Math Games", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "15px",
-            fontStyle: "bold",
-            color: "#a8d8c4",
-          })
-          .setOrigin(0.5)
-          .setInteractive({ useHandCursor: true });
-        t.on("pointerover", () => t.setColor("#4fd18b"));
-        t.on("pointerout", () => t.setColor("#a8d8c4"));
-        t.on("pointerdown", () => (window.location.href = "/math/games/"));
-        return t;
       }
 
       // ── Launch ──
