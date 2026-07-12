@@ -1,0 +1,201 @@
+/* ==========================================================================
+   Projects 3D — styles for the build-in-3D + WebXR AR buildables layer.
+   Companion to projects-3d.js. Scoped under .p3d-card so nothing leaks to the
+   host page. Print-safe: canvas hidden, static hero shown, on @media print.
+   ========================================================================== */
+.p3d-card {
+  border: 2px solid var(--tp-line, #e4ebf2);
+  border-radius: 18px;
+  background: #fff;
+  padding: 18px;
+  margin: 16px 0;
+  box-shadow: var(--tp-shadow-sm, 0 2px 6px rgba(12, 27, 42, 0.08));
+}
+.p3d-card h4 {
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+}
+.p3d-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(135deg, var(--tp-accent, #1763c7), var(--tp-accent2, #0e9a8c));
+  border-radius: 999px;
+  padding: 3px 10px;
+  margin-bottom: 8px;
+}
+.p3d-why {
+  margin: 0 0 14px;
+  color: var(--tp-muted, #54677c);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.p3d-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: flex-start;
+}
+.p3d-stage {
+  flex: 1 1 320px;
+  min-width: 260px;
+  max-width: 520px;
+  position: relative;
+}
+.p3d-canvas-holder {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 30%, #f4f9ff, #e7eef7);
+  border: 1px solid var(--tp-line, #e4ebf2);
+  touch-action: none;
+}
+.p3d-canvas-holder canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+.p3d-hero {
+  display: none;
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--tp-line, #e4ebf2);
+}
+.p3d-side {
+  flex: 1 1 220px;
+  min-width: 200px;
+}
+.p3d-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.p3d-field {
+  flex: 1 1 84px;
+}
+.p3d-field label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: var(--tp-muted, #54677c);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+.p3d-step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.p3d-step input {
+  width: 48px;
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 800;
+  padding: 0.35em;
+  border: 2px solid var(--tp-line, #e4ebf2);
+  border-radius: 10px;
+}
+.p3d-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 2px solid var(--tp-line, #e4ebf2);
+  background: #fff;
+  color: var(--tp-accent, #1763c7);
+  font-size: 1.35rem;
+  font-weight: 800;
+  cursor: pointer;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.p3d-btn:active {
+  transform: scale(0.9);
+}
+.p3d-btn[disabled] {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.p3d-readout {
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 1.02rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, var(--tp-accent, #1763c7), var(--tp-accent2, #0e9a8c));
+  color: #fff;
+  box-shadow: 0 8px 20px -10px rgba(12, 27, 42, 0.4);
+}
+.p3d-readout b {
+  font-size: 1.16rem;
+}
+.p3d-note {
+  border-radius: 12px;
+  padding: 10px 13px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  background: #f4f8ff;
+  border: 1px solid var(--tp-line, #e4ebf2);
+  color: var(--tp-ink, #172033);
+}
+.p3d-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+.p3d-action {
+  border: 2px solid var(--tp-accent, #1763c7);
+  background: var(--tp-accent, #1763c7);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.92rem;
+  border-radius: 10px;
+  padding: 0.5em 0.9em;
+  cursor: pointer;
+}
+.p3d-action.ghost {
+  background: #fff;
+  color: var(--tp-accent, #1763c7);
+}
+.p3d-action:focus-visible {
+  outline: 3px solid var(--tp-accent2, #0e9a8c);
+  outline-offset: 2px;
+}
+.p3d-hint {
+  font-size: 0.8rem;
+  color: var(--tp-muted, #54677c);
+  margin-top: 8px;
+}
+.p3d-fallback {
+  padding: 18px;
+  border-radius: 12px;
+  background: #fff8f0;
+  border: 1px solid #ffd9a8;
+  color: #8a5300;
+  font-size: 0.92rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .p3d-btn:active {
+    transform: none;
+  }
+}
+@media print {
+  .p3d-canvas-holder,
+  .p3d-actions,
+  .p3d-fields {
+    display: none !important;
+  }
+  .p3d-hero {
+    display: block !important;
+  }
+}
