@@ -390,4 +390,9 @@
       document.querySelectorAll('.pki-manip[data-manip="balance"]').forEach(init);
     }, 900);
   });
+
+  if (typeof window !== "undefined") {
+    window.NeftManips = window.NeftManips || {};
+    window.NeftManips["balance"] = init;
+  }
 })();

@@ -246,4 +246,9 @@
       document.querySelectorAll('.pki-manip[data-manip="gcf-bags"]').forEach(init);
     }, 900);
   });
+
+  if (typeof window !== "undefined") {
+    window.NeftManips = window.NeftManips || {};
+    window.NeftManips["gcf-bags"] = init;
+  }
 })();
