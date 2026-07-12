@@ -413,6 +413,14 @@ export function renderShape3D(container, { shape = "cube", label, taskDriven = f
   let autoOn = !prefersReduced;
   let lastTs = 0;
   function tick(ts) {
+    // Self-teardown: if the stage has been removed from the DOM (e.g. a lesson
+    // phase swapped its container via innerHTML = ""), stop the loop instead of
+    // rescheduling forever against a detached node.
+    if (!stage.isConnected) {
+      autoOn = false;
+      rafId = null;
+      return;
+    }
     if (!autoOn) {
       rafId = null;
       return;
@@ -437,7 +445,6 @@ export function renderShape3D(container, { shape = "cube", label, taskDriven = f
     if (rafId) cancelAnimationFrame(rafId);
     rafId = null;
   }
-  startAuto();
 
   // ── Pointer drag ──
   let dragging = false;
@@ -452,10 +459,20 @@ export function renderShape3D(container, { shape = "cube", label, taskDriven = f
     if (inertiaId) cancelAnimationFrame(inertiaId);
     inertiaId = null;
   }
+  // Start the auto-rotate loop now that every binding it touches (including
+  // `inertiaId`, read via stopInertia) is initialized. Calling startAuto()
+  // before this point tripped a temporal-dead-zone ReferenceError on any device
+  // without prefers-reduced-motion, which left the 3D explorer blank.
+  startAuto();
   function runInertia() {
     if (prefersReduced) return;
     stopInertia();
     const step = () => {
+      // Self-teardown if the stage was detached mid-flick.
+      if (!stage.isConnected) {
+        inertiaId = null;
+        return;
+      }
       // If anything else takes over (drag, net, auto-spin), bail out cleanly.
       if (dragging || netT >= 0.5) {
         inertiaId = null;

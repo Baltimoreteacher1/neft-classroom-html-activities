@@ -31,6 +31,7 @@ import { deriveWorkedSteps } from "./worked-steps.js";
 import { isTeacherMode } from "./teacher-mode.js";
 import { mountStuckSupport } from "./stuck-support.js";
 import { mountReadingProgress } from "./reading-progress.js";
+import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import {
   buildPhaseTransitionMeta,
   buildPrintableSummary,
@@ -582,6 +583,16 @@ function buildVisual(v) {
       return coordPlaneSVG(v);
     case "factor-tree":
       return factorTreeSVG(v);
+    case "solid-3d": {
+      // Interactive 3D solid explorer (drag/keyboard rotate, tap faces, unfold
+      // net). Emits a mount host that mountInteractiveVisuals() hydrates.
+      const shapeName = String(v.shape || "cube").replace(/-/g, " ");
+      const labelText = v.label ? ` — ${v.label}` : "";
+      return interactiveVisualHost(v, {
+        ariaLabel: `Interactive 3D ${shapeName} model${labelText}. Drag or use arrow keys to rotate; unfold its net to see the flat faces.`,
+        fallback: `3D ${shapeName} model${labelText}. Turn on JavaScript to rotate it and unfold its net.`,
+      });
+    }
     default:
       return "";
   }
@@ -615,6 +626,7 @@ function renderLaunchVisual(host, visual) {
       card.className = "card";
       card.innerHTML = html;
       host.append(card);
+      mountInteractiveVisuals(card);
     }
   }
 }
@@ -2021,6 +2033,7 @@ function renderExplorePhase(el, state, ctx, config) {
     figCard.className = "card";
     figCard.innerHTML = cfg.diagram ? buildVisual(cfg.diagram) : histogramSVG(cfg.histogram);
     el.append(figCard);
+    mountInteractiveVisuals(figCard);
   }
 
   // Surface a Turn & Talk discussion moment after the Explore interaction.
@@ -2461,6 +2474,7 @@ function renderConnectPhase(el, state, ctx, config) {
   if (cfg.diagram) card.innerHTML += buildVisual(cfg.diagram);
   else if (cfg.histogram) card.innerHTML += histogramSVG(cfg.histogram);
   el.append(card);
+  mountInteractiveVisuals(card);
 
   // Turn & Talk primes the written response below. Non-graded; does not gate
   // the Connect submit, so phase completion/scoring are unaffected.
