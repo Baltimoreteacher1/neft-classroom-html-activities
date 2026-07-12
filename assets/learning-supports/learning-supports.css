@@ -40,23 +40,33 @@
   outline-offset: 2px !important;
 }
 
-/* 1. Prepare Supports Button (Teacher Control) */
+/* 1. Prepare Supports Button (Teacher Control) — docked as a vertical tab on the
+   right edge of the lesson, vertically centered, so it reads as a persistent
+   side control (mirrors the hub's "Prepare Learning Supports") instead of a
+   bottom-corner FAB. The middle-right edge is clear of the bottom docks
+   (student tools dock + Save/Resume launcher live along the bottom). */
 .ewl-supports-teacher-btn-container {
   position: fixed;
-  bottom: 80px;
-  right: 20px;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
   z-index: 9999;
 }
 
 .ewl-supports-btn-teacher {
+  writing-mode: vertical-rl;
   min-height: 44px;
-  padding: 10px 20px;
+  min-width: 44px;
+  padding: 16px 10px;
   background: var(--ewl-color-primary);
   color: var(--ewl-color-white);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-right: none;
+  /* Rounded on the left only — the right side is flush against the viewport. */
+  border-radius: 14px 0 0 14px;
   font-weight: 700;
   font-size: 15px;
+  letter-spacing: 0.01em;
   cursor: pointer;
   box-shadow: var(--ewl-shadow);
   display: flex;
@@ -69,11 +79,12 @@
 
 .ewl-supports-btn-teacher:hover {
   background-color: #334155;
-  transform: translateY(-2px);
+  /* Nudge out from the edge on hover instead of up. */
+  transform: translateX(-3px);
 }
 
 .ewl-supports-btn-teacher:active {
-  transform: translateY(0);
+  transform: translateX(0);
 }
 
 /* 2. Accessible Configuration Dialog */
