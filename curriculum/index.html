@@ -1897,14 +1897,10 @@
               color: #4f46e5;
               background: rgba(79, 70, 229, 0.1);
             }
-            /* Personalized support-link builder: a collapsed disclosure so the
-               hub card stays clean until a teacher opens it. When a teacher
-               does open it, break the card out of its narrow tools-grid cell to
-               the full row so the accommodation options lay out in a readable
-               multi-column grid instead of a cramped 250px strip. */
-            .supports-feature:has(details.ewl-linkgen[open]) {
-              grid-column: 1 / -1;
-            }
+            /* Personalized support-link builder. Docked as a right-edge side
+               tab (see the .hub-supports-dock block near end of file), so this
+               disclosure is always-open inside the panel and its summary is
+               hidden — the tab itself is the open/close control. */
             .ewl-linkgen {
               margin-top: 14px;
               background: rgba(20, 34, 58, 0.04);
@@ -8881,6 +8877,178 @@
         var tries = 0;
         var iv = setInterval(function () {
           if (reorder() || ++tries > 40) clearInterval(iv);
+        }, 150);
+      })();
+    </script>
+    <style>
+      /* ================================================================
+         Prepare Learning Supports — right-edge side tab (teacher-only).
+         Relocates the existing IEP support-link builder (.supports-feature)
+         out of the tools grid and docks it behind a vertical pull tab on the
+         right edge, mirroring the lesson pages' "Prepare Supports" side tab.
+         Teachers toggle it on/off; the builder assigns accommodations to one
+         student via a link that follows them into every lesson. Gated by
+         `hub-teacher-only` (hidden unless body.teacher-mode).
+         ================================================================ */
+      .hub-supports-dock {
+        position: fixed;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        z-index: 9998;
+      }
+      .hub-supports-tab {
+        position: relative;
+        z-index: 2;
+        writing-mode: vertical-rl;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 16px 11px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-right: none;
+        border-radius: 14px 0 0 14px;
+        background: var(--teal, #2c7d6b);
+        color: #fff;
+        font: inherit;
+        font-weight: 800;
+        font-size: 14.5px;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        box-shadow: -2px 2px 12px rgba(20, 34, 58, 0.22);
+        transition:
+          transform 0.18s,
+          background-color 0.18s;
+      }
+      .hub-supports-tab:hover {
+        transform: translateX(-3px);
+      }
+      .hub-supports-tab:focus-visible {
+        outline: 3px solid var(--teal, #2c7d6b);
+        outline-offset: 2px;
+      }
+      .hub-supports-tab .hst-icon {
+        font-size: 17px;
+      }
+      .hub-supports-panel {
+        position: absolute;
+        top: 50%;
+        right: 46px;
+        transform: translate(0, -50%);
+        width: min(420px, 92vw);
+        max-height: 86vh;
+        overflow: auto;
+        background: var(--card, #fff);
+        border: 1px solid var(--line, #e2e8f0);
+        border-radius: 16px;
+        box-shadow: -6px 8px 30px rgba(20, 34, 58, 0.24);
+        padding: 20px;
+        opacity: 1;
+        transition:
+          transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1),
+          opacity 0.2s;
+      }
+      .hub-supports-dock[data-open="false"] .hub-supports-panel {
+        transform: translate(120%, -50%);
+        opacity: 0;
+        pointer-events: none;
+      }
+      /* The side tab is the open/close control, so the moved card renders its
+         builder directly — hide the now-redundant inner disclosure summary and
+         let the card flow full-width inside the panel. */
+      .hub-supports-panel .supports-feature {
+        display: block;
+        padding: 0;
+        margin: 0;
+        border: none;
+        box-shadow: none;
+        background: transparent;
+      }
+      .hub-supports-panel .supports-feature .mf-icon {
+        display: none;
+      }
+      .hub-supports-panel .ewl-linkgen-summary {
+        display: none;
+      }
+      .hub-supports-panel .ewl-linkgen {
+        margin-top: 12px;
+        border: none;
+        background: transparent;
+      }
+      .hub-supports-panel .ewl-linkgen-body {
+        padding: 0;
+      }
+      @media (max-width: 640px) {
+        .hub-supports-panel {
+          right: 44px;
+          max-height: 80vh;
+        }
+      }
+      @media print {
+        .hub-supports-dock {
+          display: none !important;
+        }
+      }
+    </style>
+    <script>
+      // Dock the "Prepare Learning Supports" builder as a right-edge side tab.
+      // Additive + fail-safe: if this never runs, the card keeps its original
+      // place. Idempotent (guarded), and it moves the SAME wired builder node so
+      // the existing option-render / copy-link logic keeps working untouched.
+      (function () {
+        function boot() {
+          var sup = document.querySelector(".supports-feature");
+          if (!sup) return false;
+          if (document.querySelector(".hub-supports-dock")) return true;
+
+          var dock = document.createElement("aside");
+          dock.className = "hub-supports-dock hub-teacher-only";
+          dock.setAttribute("data-open", "false");
+          dock.setAttribute("aria-label", "Prepare learning supports");
+
+          var tab = document.createElement("button");
+          tab.type = "button";
+          tab.className = "hub-supports-tab";
+          tab.setAttribute("aria-expanded", "false");
+          tab.innerHTML =
+            '<span class="hst-icon" aria-hidden="true">🛠️</span><span class="hst-label">Prepare Supports</span>';
+
+          var panel = document.createElement("div");
+          panel.className = "hub-supports-panel";
+          panel.appendChild(sup); // move the fully-wired builder in
+          var det = sup.querySelector("details.ewl-linkgen");
+          if (det) det.setAttribute("open", ""); // tab is the control now
+
+          dock.appendChild(panel);
+          dock.appendChild(tab);
+          document.body.appendChild(dock);
+
+          function setOpen(open) {
+            dock.setAttribute("data-open", open ? "true" : "false");
+            tab.setAttribute("aria-expanded", open ? "true" : "false");
+            try {
+              localStorage.setItem("nt-hub-supports-open", open ? "1" : "0");
+            } catch (e) {}
+          }
+          tab.addEventListener("click", function () {
+            setOpen(dock.getAttribute("data-open") !== "true");
+          });
+          document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape" && dock.getAttribute("data-open") === "true") setOpen(false);
+          });
+
+          var saved = null;
+          try {
+            saved = localStorage.getItem("nt-hub-supports-open");
+          } catch (e) {}
+          setOpen(saved === "1");
+          return true;
+        }
+        if (boot()) return;
+        var tries = 0;
+        var iv = setInterval(function () {
+          if (boot() || ++tries > 40) clearInterval(iv);
         }, 150);
       })();
     </script>
