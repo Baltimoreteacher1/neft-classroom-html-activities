@@ -66,6 +66,7 @@ export const SKIP_TOPLEVEL = new Set([
   "futures", // concept/demo/roadmap pages — not student activities
   "access-teacher", // teacher-facing surface
   "work-coach", // stateless AI photo-coaching tool — no progress to save/resume
+  "math-sims", // stateless physics sandboxes (slope/probability) — nothing to save
 ]);
 
 // Filename patterns that are not student-facing activities.

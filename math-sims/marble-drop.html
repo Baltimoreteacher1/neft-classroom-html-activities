@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Marble Drop — Probability · Neft Teacher</title>
+    <meta
+      name="description"
+      content="Drop marbles through a peg board and watch experimental probability build up bin by bin — a calm, self-paced probability sandbox."
+    />
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #1fa6a2;
+        --amber: #f2c15b;
+        --coral: #d9795d;
+        --cream: #f7f4ec;
+        --line: #e4ebf2;
+        --ink: #1a2b3c;
+        --muted: #54677c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        color: var(--ink);
+        background: var(--cream);
+      }
+      .bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        background: var(--navy);
+        color: #fff;
+      }
+      .bar a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+      }
+      .bar h1 {
+        font-size: 1.1rem;
+        margin: 0;
+      }
+      .stage-wrap {
+        max-width: 760px;
+        margin: 16px auto;
+        padding: 0 14px 48px;
+      }
+      #game {
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 6px 24px rgba(12, 27, 42, 0.12);
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+      .row button {
+        flex: 1;
+        min-width: 130px;
+        min-height: 52px;
+        border: 0;
+        border-radius: 14px;
+        font-size: 1.1rem;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .drop1 {
+        background: var(--teal);
+        color: #fff;
+      }
+      .drop25 {
+        background: var(--amber);
+        color: var(--navy);
+      }
+      .reset {
+        background: #fff;
+        color: var(--navy);
+        border: 2px solid var(--line) !important;
+      }
+      button:focus-visible {
+        outline: 3px solid var(--navy);
+        outline-offset: 2px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 18px;
+        font-size: 1.05rem;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        text-align: center;
+      }
+      th {
+        background: #f0faf9;
+        color: var(--navy);
+      }
+      .barcell {
+        position: relative;
+        background: linear-gradient(to right, #cdeeeb var(--w, 0%), transparent 0);
+      }
+      .total {
+        margin-top: 12px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bar">
+      <a href="/math-sims/" aria-label="Back to Math Sims">←</a>
+      <h1>🔮 Marble Drop</h1>
+    </div>
+
+    <div class="stage-wrap">
+      <div
+        id="game"
+        role="img"
+        aria-label="A peg board where marbles fall and land in numbered bins."
+      ></div>
+
+      <div class="row">
+        <button class="drop1" id="drop1">Drop 1 marble</button>
+        <button class="drop25" id="drop25">Drop 25 marbles</button>
+        <button class="reset" id="reset">Reset</button>
+      </div>
+
+      <table aria-live="polite">
+        <thead>
+          <tr>
+            <th>Bin</th>
+            <th>Marbles</th>
+            <th>Experimental probability</th>
+          </tr>
+        </thead>
+        <tbody id="binRows"></tbody>
+      </table>
+      <div class="total" id="total">Total dropped: 0</div>
+      <p class="hint">
+        Each marble flips a fair left-or-right coin at every peg — pure chance. The middle bins fill
+        fastest because there are more paths to reach them. The more marbles you drop, the closer
+        the experimental probabilities settle toward that bell shape. No score, no timer — just
+        watch the pattern grow.
+      </p>
+    </div>
+
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+    </script>
+    <script>
+      (function () {
+        "use strict";
+        var W = 700,
+          H = 460;
+        var ROWS = 5; // peg rows -> ROWS+1 bins
+        var BINS = ROWS + 1;
+        var counts = new Array(BINS).fill(0);
+        var total = 0;
+        var scene = null;
+
+        var TOP = 70;
+        var BOTTOM = H - 70;
+        var binY = BOTTOM;
+        var binW = W / BINS;
+        var vGap = (BOTTOM - TOP) / (ROWS + 1);
+
+        var config = {
+          type: Phaser.AUTO,
+          width: W,
+          height: H,
+          parent: "game",
+          backgroundColor: "#0f2942",
+          scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_HORIZONTALLY },
+          scene: { create: create },
+        };
+
+        // Peg centre for row r (0..ROWS-1), column c (0..r): one bin-width apart,
+        // centred, so column c corresponds to c "rights" so far.
+        function pegX(r, c) {
+          return W / 2 + (c - r / 2) * binW;
+        }
+
+        function create() {
+          scene = this;
+          var g = this.add.graphics();
+
+          // Bin dividers + numbers
+          g.lineStyle(2, 0x2a4d6e, 1);
+          for (var b = 0; b <= BINS; b++) {
+            g.lineBetween(b * binW, binY, b * binW, H);
+          }
+          for (var bl = 0; bl < BINS; bl++) {
+            this.add
+              .text(bl * binW + binW / 2, H - 22, String(bl + 1), {
+                fontFamily: "system-ui",
+                fontSize: "16px",
+                color: "#8fb4d6",
+              })
+              .setOrigin(0.5);
+          }
+
+          // Pegs (visual)
+          for (var r = 0; r < ROWS; r++) {
+            for (var c = 0; c <= r; c++) {
+              this.add.circle(pegX(r, c), TOP + vGap * (r + 1), 6, 0x1fa6a2);
+            }
+          }
+        }
+
+        function binIndex(x) {
+          return Math.max(0, Math.min(BINS - 1, Math.floor(x / binW)));
+        }
+
+        function settle(x) {
+          counts[binIndex(x)]++;
+          total++;
+          refresh();
+        }
+
+        // Drop one marble: a genuine per-peg coin flip (50/50) at each of the ROWS
+        // rows. The number of "rights" is the landing bin, so the landings follow
+        // a binomial distribution — the bell shape — exactly as the math predicts.
+        function dropOne() {
+          if (!scene) return;
+          var col = 0; // "rights" so far
+          var marble = scene.add.circle(W / 2, TOP - 20, 8, 0xf2c15b).setDepth(5);
+
+          // Build the waypoint chain: a fair coin flip at each row moves the
+          // marble to the next peg (right => col+1), then it drops into the bin.
+          var points = [];
+          for (var r = 0; r < ROWS; r++) {
+            if (Math.random() < 0.5) col += 1;
+            points.push({ x: pegX(r, col), y: TOP + vGap * (r + 1) });
+          }
+          var landX = binW * (col + 0.5);
+          points.push({ x: landX, y: binY - 12 });
+
+          var i = 0;
+          function next() {
+            if (i >= points.length) {
+              settle(landX);
+              scene.tweens.add({
+                targets: marble,
+                y: H - 30,
+                alpha: 0.85,
+                duration: 180,
+                onComplete: function () {
+                  marble.destroy();
+                },
+              });
+              return;
+            }
+            var p = points[i++];
+            scene.tweens.add({
+              targets: marble,
+              x: p.x,
+              y: p.y,
+              duration: 150,
+              ease: "Sine.easeIn",
+              onComplete: next,
+            });
+          }
+          next();
+        }
+
+        function dropMany(n) {
+          var i = 0;
+          var timer = setInterval(function () {
+            dropOne();
+            if (++i >= n) clearInterval(timer);
+          }, 120);
+        }
+
+        function refresh() {
+          var maxc = Math.max(1, Math.max.apply(null, counts));
+          var rows = "";
+          for (var b = 0; b < BINS; b++) {
+            var pct = total ? Math.round((counts[b] / total) * 1000) / 10 : 0;
+            var w = Math.round((counts[b] / maxc) * 100);
+            rows +=
+              "<tr><td>" +
+              (b + 1) +
+              '</td><td class="barcell" style="--w:' +
+              w +
+              '%">' +
+              counts[b] +
+              "</td><td>" +
+              (total ? counts[b] + "/" + total + " = " + pct + "%" : "—") +
+              "</td></tr>";
+          }
+          document.getElementById("binRows").innerHTML = rows;
+          document.getElementById("total").textContent = "Total dropped: " + total;
+        }
+
+        document.getElementById("drop1").addEventListener("click", dropOne);
+        document.getElementById("drop25").addEventListener("click", function () {
+          dropMany(25);
+        });
+        document.getElementById("reset").addEventListener("click", function () {
+          counts = new Array(BINS).fill(0);
+          total = 0;
+          refresh();
+        });
+
+        function boot() {
+          if (typeof Phaser === "undefined") {
+            setTimeout(boot, 120);
+            return;
+          }
+          window.__marbleGame = new Phaser.Game(config);
+          refresh();
+        }
+        boot();
+      })();
+    </script>
+    <script src="/assets/game-fx.js" defer></script>
+  </body>
+</html>

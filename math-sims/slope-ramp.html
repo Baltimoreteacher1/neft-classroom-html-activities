@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Slope Ramp — Rate &amp; Steepness · Neft Teacher</title>
+    <meta
+      name="description"
+      content="A calm physics sandbox: change the rise and run of a ramp, watch a ball roll, and see how slope and unit rate describe steepness."
+    />
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #1fa6a2;
+        --amber: #f2c15b;
+        --cream: #f7f4ec;
+        --line: #e4ebf2;
+        --ink: #1a2b3c;
+        --muted: #54677c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        color: var(--ink);
+        background: var(--cream);
+      }
+      .bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        background: var(--navy);
+        color: #fff;
+      }
+      .bar a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+        opacity: 0.9;
+      }
+      .bar h1 {
+        font-size: 1.1rem;
+        margin: 0;
+      }
+      .stage-wrap {
+        max-width: 900px;
+        margin: 16px auto;
+        padding: 0 14px 48px;
+      }
+      #game {
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 6px 24px rgba(12, 27, 42, 0.12);
+      }
+      .panel {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
+        margin-top: 16px;
+      }
+      .ctrl {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+      }
+      .ctrl h2 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+        color: var(--navy);
+      }
+      .stepper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .stepper button {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        border: 2px solid var(--line);
+        background: #fff;
+        color: var(--teal);
+        font-size: 1.6rem;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .stepper button:focus-visible {
+        outline: 3px solid var(--teal);
+        outline-offset: 2px;
+      }
+      .stepper .val {
+        font-size: 1.5rem;
+        font-weight: 800;
+        min-width: 42px;
+        text-align: center;
+        color: var(--navy);
+      }
+      .readout {
+        background: #f0faf9;
+        border: 1px solid #cdeeeb;
+        border-radius: 14px;
+        padding: 16px;
+        margin-top: 16px;
+        font-size: 1.15rem;
+      }
+      .readout b {
+        color: var(--navy);
+      }
+      .big-eq {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--teal);
+      }
+      .roll {
+        margin-top: 16px;
+        min-height: 52px;
+        width: 100%;
+        border: 0;
+        border-radius: 14px;
+        background: var(--amber);
+        color: var(--navy);
+        font-size: 1.15rem;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bar">
+      <a href="/math-sims/" aria-label="Back to Math Sims">←</a>
+      <h1>📐 Slope Ramp</h1>
+    </div>
+
+    <div class="stage-wrap">
+      <div
+        id="game"
+        role="img"
+        aria-label="A ramp whose steepness you control, with a ball that rolls down it."
+      ></div>
+
+      <div class="panel">
+        <div class="ctrl">
+          <h2>Rise (how high)</h2>
+          <div class="stepper">
+            <button type="button" id="riseDown" aria-label="Decrease rise">−</button>
+            <span class="val" id="riseVal">3</span>
+            <button type="button" id="riseUp" aria-label="Increase rise">+</button>
+          </div>
+        </div>
+        <div class="ctrl">
+          <h2>Run (how far across)</h2>
+          <div class="stepper">
+            <button type="button" id="runDown" aria-label="Decrease run">−</button>
+            <span class="val" id="runVal">4</span>
+            <button type="button" id="runUp" aria-label="Increase run">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="readout" aria-live="polite">
+        <div>Slope = rise / run = <b id="rSlopeFrac">3/4</b></div>
+        <div class="big-eq" id="rUnitRate">For every 1 across, the ramp rises 0.75.</div>
+        <div id="rSteep" style="margin-top: 6px; color: var(--muted)">
+          A gentle ramp — the ball rolls slowly.
+        </div>
+      </div>
+
+      <button class="roll" id="rollBtn">▶ Roll the ball</button>
+      <p class="hint">
+        Change the rise and run to make the ramp steeper or gentler. Steeper ramps have a bigger
+        slope — and the ball speeds up faster. Nothing to win or lose; just explore.
+      </p>
+    </div>
+
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      // Graceful CDN fallback if the vendored copy is unavailable.
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+    </script>
+    <script>
+      (function () {
+        "use strict";
+        var W = 860,
+          H = 380;
+        var UNIT = 44; // px per grid unit
+        var ORIGIN = { x: 90, y: H - 70 };
+        var rise = 3,
+          run = 4,
+          MAXR = 8,
+          MINR = 1;
+
+        function gcd(a, b) {
+          return b ? gcd(b, a % b) : a;
+        }
+        function fracStr(a, b) {
+          var g = gcd(a, b) || 1;
+          return a / g + "/" + b / g;
+        }
+
+        var scene = null;
+        var config = {
+          type: Phaser.AUTO,
+          width: W,
+          height: H,
+          parent: "game",
+          backgroundColor: "#eaf4fb",
+          scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_HORIZONTALLY },
+          physics: { default: "arcade", arcade: { gravity: { y: 0 }, debug: false } },
+          scene: { create: create, update: update },
+        };
+
+        var ball,
+          gfx,
+          ramp,
+          rolling = false;
+
+        function rampTop() {
+          // top of ramp (where the ball starts)
+          return { x: ORIGIN.x, y: ORIGIN.y - rise * UNIT };
+        }
+        function rampBottom() {
+          return { x: ORIGIN.x + run * UNIT, y: ORIGIN.y };
+        }
+
+        function drawStatic() {
+          gfx.clear();
+          // grid
+          gfx.lineStyle(1, 0xcfe3f2, 1);
+          for (var gx = ORIGIN.x; gx <= ORIGIN.x + MAXR * UNIT; gx += UNIT) {
+            gfx.lineBetween(gx, 30, gx, ORIGIN.y);
+          }
+          for (var gy = ORIGIN.y; gy >= ORIGIN.y - MAXR * UNIT; gy -= UNIT) {
+            gfx.lineBetween(ORIGIN.x, gy, ORIGIN.x + MAXR * UNIT, gy);
+          }
+          // ground + wall axes
+          gfx.lineStyle(4, 0x12355b, 1);
+          gfx.lineBetween(ORIGIN.x, ORIGIN.y, ORIGIN.x + MAXR * UNIT, ORIGIN.y);
+          gfx.lineBetween(ORIGIN.x, ORIGIN.y, ORIGIN.x, ORIGIN.y - MAXR * UNIT);
+          // the ramp
+          var t = rampTop(),
+            b = rampBottom();
+          gfx.lineStyle(8, 0x1fa6a2, 1);
+          gfx.lineBetween(t.x, t.y, b.x, b.y);
+          // rise/run guide
+          gfx.lineStyle(3, 0xf2c15b, 1);
+          gfx.lineBetween(t.x, t.y, t.x, b.y); // rise (vertical)
+          gfx.lineBetween(t.x, b.y, b.x, b.y); // run (horizontal)
+        }
+
+        function resetBall() {
+          rolling = false;
+          var t = rampTop();
+          ball.body.setVelocity(0, 0);
+          ball.body.setAllowGravity(false);
+          ball.setPosition(t.x, t.y - 12);
+        }
+
+        function create() {
+          scene = this;
+          gfx = this.add.graphics();
+          ball = this.add.circle(ORIGIN.x, ORIGIN.y, 14, 0xd9795d).setStrokeStyle(3, 0x9c4a34);
+          this.physics.add.existing(ball);
+          ball.body.setCircle(14);
+          drawStatic();
+          resetBall();
+        }
+
+        function update() {
+          if (!rolling) return;
+          var b = rampBottom();
+          // Stop when the ball reaches the bottom of the ramp.
+          if (ball.x >= b.x - 4 || ball.y >= ORIGIN.y - 2) {
+            ball.body.setVelocity(0, 0);
+            ball.body.setAllowGravity(false);
+            ball.setPosition(b.x, b.y - 14);
+            rolling = false;
+          }
+        }
+
+        function roll() {
+          if (!scene) return;
+          resetBall();
+          rolling = true;
+          ball.body.setAllowGravity(true);
+          // Direction along the ramp; steeper ramp -> more of gravity accelerates it.
+          var t = rampTop(),
+            b = rampBottom();
+          var dx = b.x - t.x,
+            dy = b.y - t.y;
+          var len = Math.hypot(dx, dy);
+          // Constrain motion to the ramp line by giving gravity's ramp-parallel
+          // component as velocity; a bigger slope -> steeper -> faster.
+          var g = 900;
+          var along = (g * dy) / len; // parallel accel magnitude proxy
+          ball.body.setVelocity(((along * dx) / len) * 0.9, ((along * dy) / len) * 0.9);
+          ball.body.setAllowGravity(false); // we drive velocity directly for a clean ramp slide
+        }
+
+        function refresh() {
+          document.getElementById("riseVal").textContent = rise;
+          document.getElementById("runVal").textContent = run;
+          document.getElementById("rSlopeFrac").textContent = fracStr(rise, run);
+          var ur = Math.round((rise / run) * 100) / 100;
+          document.getElementById("rUnitRate").textContent =
+            "For every 1 across, the ramp rises " + ur + ".";
+          var steepMsg =
+            rise / run >= 1.5
+              ? "A steep ramp — the ball speeds up quickly."
+              : rise / run <= 0.5
+                ? "A gentle ramp — the ball rolls slowly."
+                : "A medium ramp.";
+          document.getElementById("rSteep").textContent = steepMsg;
+          if (scene) {
+            drawStatic();
+            resetBall();
+          }
+        }
+
+        function step(which, delta) {
+          if (which === "rise") rise = Math.max(MINR, Math.min(MAXR, rise + delta));
+          else run = Math.max(MINR, Math.min(MAXR, run + delta));
+          refresh();
+        }
+
+        document.getElementById("riseUp").addEventListener("click", function () {
+          step("rise", 1);
+        });
+        document.getElementById("riseDown").addEventListener("click", function () {
+          step("rise", -1);
+        });
+        document.getElementById("runUp").addEventListener("click", function () {
+          step("run", 1);
+        });
+        document.getElementById("runDown").addEventListener("click", function () {
+          step("run", -1);
+        });
+        document.getElementById("rollBtn").addEventListener("click", roll);
+
+        function boot() {
+          if (typeof Phaser === "undefined") {
+            setTimeout(boot, 120);
+            return;
+          }
+          window.__slopeGame = new Phaser.Game(config);
+          refresh();
+        }
+        boot();
+      })();
+    </script>
+    <script src="/assets/game-fx.js" defer></script>
+  </body>
+</html>
