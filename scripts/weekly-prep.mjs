@@ -104,14 +104,18 @@ const STEPS = [
   { key: "printables", label: "Printable integration", script: "scripts/integrate-lesson-printables.mjs", default: false },
 ];
 
-/* Global aggregates — always rebuilt once after any lesson change. */
+/* Global aggregates — always rebuilt once after any lesson change.
+ * NOTE: we deliberately do NOT run `generate-curriculum.mjs --force` here.
+ * curriculum/index.html is hand-maintained (Teacher Tools panel, Top1 layer,
+ * featured cards); --force would strip that work. The hub is a shell that reads
+ * these data files at runtime, so refreshing the manifests is what actually
+ * surfaces new/edited lessons. */
 const AGGREGATES = [
   ["Curriculum manifest", "scripts/generate-curriculum-manifest.mjs"],
   ["Registry", "scripts/generate-registry.mjs"],
   ["Launch manifest", "scripts/generate-launch-manifest.mjs"],
   ["Curriculum search index", "scripts/generate-curriculum-search-index.mjs"],
   ["Curriculum launch manifest", "scripts/generate-curriculum-launch-manifest.mjs"],
-  ["Curriculum hub", "scripts/generate-curriculum.mjs", ["--force"]],
 ];
 
 /* ---------------- runner ---------------- */
