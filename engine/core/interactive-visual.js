@@ -89,6 +89,10 @@ const REGISTRY = {
     window.NeftLineGrapher?.init?.(el);
     return null; // stateless widget; listeners are node-local and GC on detach
   },
+  "dist-explorer": async (host, cfg) => {
+    const { renderDistExplorer } = await import("../components/dist-explorer.js");
+    return renderDistExplorer(host, { max: cfg.max, unit: cfg.unit, label: cfg.label });
+  },
   "cross-section": async (host, cfg) => {
     const { renderCrossSection } = await import("../components/cross-section.js");
     return renderCrossSection(host, {

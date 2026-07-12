@@ -602,6 +602,14 @@ function buildVisual(v) {
         fallback: `Interactive grapher for ${yN} versus ${xN}. Turn on JavaScript to drag the line and read values.`,
       });
     }
+    case "dist-explorer": {
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Interactive distribution explorer. Tap the number line to add data points and watch the mean, median, and mode update.",
+        fallback:
+          "Interactive distribution explorer. Turn on JavaScript to build a data set and see the mean, median, and mode.",
+      });
+    }
     case "cross-section": {
       const shapeName = String(v.shape || "rectangular-prism").replace(/-/g, " ");
       return interactiveVisualHost(v, {
