@@ -33,19 +33,13 @@
   const MANIFEST_URL = "./lessons-manifest.json";
   // Bank lives at repo root /spiral-review/bank.json. Root-absolute works on
   // the deployed site; the ../../ relative is a fallback for local file opens.
-  const BANK_URLS = [
-    "/spiral-review/bank.json",
-    "../../spiral-review/bank.json",
-  ];
+  const BANK_URLS = ["/spiral-review/bank.json", "../../spiral-review/bank.json"];
 
   // CDN libs used ONLY for slide upload parsing. Guarded: if offline / blocked,
   // the affected file type degrades gracefully and the rest of the tool works.
-  const PDFJS_URL =
-    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
-  const PDFJS_WORKER =
-    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-  const JSZIP_URL =
-    "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+  const PDFJS_URL = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+  const PDFJS_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  const JSZIP_URL = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
 
   /** @typedef {{type:string,prompt:string,choices?:string[],correctIndex?:number,answer?:string,standard?:string,explanation?:string}} Question */
 
@@ -129,27 +123,16 @@
   /* ------------------------------ navigation ----------------------------- */
   const TITLES = {
     start: ["Start Here", "Build a ready-to-use Do Now, warm-up, or quiz."],
-    build: [
-      "1. Build Questions",
-      "Pull real items, pick a lesson, or type a request.",
-    ],
+    build: ["1. Build Questions", "Pull real items, pick a lesson, or type a request."],
     edit: ["2. Review & Edit", "Tune questions, types, and correct answers."],
     present: ["3. Present & Export", "Project, print, or export your set."],
-    slides: [
-      "Upload Slides",
-      "Turn images / PDF / PPTX into a Do Now slideshow.",
-    ],
-    about: [
-      "How Outputs Work",
-      "What each output is, and why no login is needed.",
-    ],
+    slides: ["Upload Slides", "Turn images / PDF / PPTX into a Do Now slideshow."],
+    about: ["How Outputs Work", "What each output is, and why no login is needed."],
   };
 
   function showTab(tab) {
     $$(".screen").forEach((s) => s.classList.toggle("active", s.id === tab));
-    $$(".nav button").forEach((b) =>
-      b.classList.toggle("active", b.dataset.tab === tab),
-    );
+    $$(".nav button").forEach((b) => b.classList.toggle("active", b.dataset.tab === tab));
     const [t, sub] = TITLES[tab] || ["", ""];
     $("#pageTitle").textContent = t;
     $("#pageSubtitle").textContent = sub;
@@ -167,8 +150,7 @@
       manifest = await res.json();
     } catch (err) {
       if (select) {
-        select.innerHTML =
-          '<option value="">Could not load lessons-manifest.json</option>';
+        select.innerHTML = '<option value="">Could not load lessons-manifest.json</option>';
       }
       const hint = $("#lessonHint");
       if (hint)
@@ -229,23 +211,17 @@
       return;
     }
     const items = bankItems();
-    const units = [
-      ...new Set(items.map((q) => q.unit).filter((u) => u != null)),
-    ].sort((a, b) => a - b);
-    const stds = [
-      ...new Set(items.map((q) => q.standard).filter(Boolean)),
-    ].sort();
+    const units = [...new Set(items.map((q) => q.unit).filter((u) => u != null))].sort(
+      (a, b) => a - b,
+    );
+    const stds = [...new Set(items.map((q) => q.standard).filter(Boolean))].sort();
 
     unitSel.innerHTML =
       '<option value="">All units</option>' +
       units.map((u) => `<option value="${u}">Unit ${u}</option>`).join("");
     stdSel.innerHTML =
       '<option value="">All standards</option>' +
-      stds
-        .map(
-          (s) => `<option value="${escapeAttr(s)}">${escapeHtml(s)}</option>`,
-        )
-        .join("");
+      stds.map((s) => `<option value="${escapeAttr(s)}">${escapeHtml(s)}</option>`).join("");
     $("#bankStatus").textContent =
       `${items.length} real Grade 6 items loaded (every item has a verified answer key).`;
     updateBankAvail();
@@ -261,8 +237,7 @@
       if (q.type !== "multiple-choice") return false;
       if (!Number.isInteger(q.correctIndex)) return false;
       if (!Array.isArray(q.choices) || q.choices.length < 2) return false;
-      if (q.correctIndex < 0 || q.correctIndex >= q.choices.length)
-        return false;
+      if (q.correctIndex < 0 || q.correctIndex >= q.choices.length) return false;
       if (unit && String(q.unit) !== unit) return false;
       if (std && q.standard !== std) return false;
       if (tier && tier !== "any" && q.tier !== tier) return false;
@@ -310,18 +285,12 @@
 
   function buildAssessment() {
     if (!bankLoaded) {
-      toast(
-        "Question bank not available. Try Pick-a-lesson or Type-a-request.",
-      );
+      toast("Question bank not available. Try Pick-a-lesson or Type-a-request.");
       return;
     }
     const presetKey = $("#bankPreset").value;
     const preset = PRESETS[presetKey] || PRESETS["do-now"];
-    const count = clamp(
-      parseInt($("#bankCount").value, 10) || preset.count,
-      1,
-      25,
-    );
+    const count = clamp(parseInt($("#bankCount").value, 10) || preset.count, 1, 25);
 
     let pool = filterBank();
     if (preset.spiral) {
@@ -403,9 +372,7 @@
       return;
     }
     const count = parseInt($("#lessonCount").value, 10) || 5;
-    const seeded = (lesson.questions || [])
-      .slice(0, count)
-      .map((q) => normalizeQuestion(q));
+    const seeded = (lesson.questions || []).slice(0, count).map((q) => normalizeQuestion(q));
     state.questions = seeded;
     state.formTitle = `Do Now — ${lesson.title}`;
     if (lesson.standard) state.formTitle += ` (${lesson.standard})`;
@@ -447,9 +414,7 @@
       });
       if (!res.ok) return null;
       const data = await res.json();
-      return Array.isArray(data.questions) && data.questions.length
-        ? data.questions
-        : null;
+      return Array.isArray(data.questions) && data.questions.length ? data.questions : null;
     } catch {
       return null;
     }
@@ -532,9 +497,7 @@
 
   function normalizeQuestion(q) {
     const type =
-      q.type === "multiple-choice" ||
-      q.type === "short-answer" ||
-      q.type === "paragraph"
+      q.type === "multiple-choice" || q.type === "short-answer" || q.type === "paragraph"
         ? q.type
         : "short-answer";
     const out = { type, prompt: String(q.prompt || "").trim() || "Question" };
@@ -570,9 +533,7 @@
         '<p class="q-empty">No questions yet. Build some on step 1, or add them above.</p>';
       return;
     }
-    list.innerHTML = state.questions
-      .map((q, i) => questionCardHtml(q, i))
-      .join("");
+    list.innerHTML = state.questions.map((q, i) => questionCardHtml(q, i)).join("");
   }
 
   function questionCardHtml(q, i) {
@@ -777,8 +738,7 @@
 
   function setTitle() {
     return (
-      (state.formTitle || "Do Now") +
-      (state.formDate ? " — " + prettyDate(state.formDate) : "")
+      (state.formTitle || "Do Now") + (state.formDate ? " — " + prettyDate(state.formDate) : "")
     );
   }
 
@@ -788,8 +748,7 @@
     const wrap = $("#studentView");
     if (!wrap) return;
     if (!state.questions.length) {
-      wrap.innerHTML =
-        '<p class="q-empty">Build some questions first (step 1).</p>';
+      wrap.innerHTML = '<p class="q-empty">Build some questions first (step 1).</p>';
       return;
     }
     const head = `<header class="sheet-head"><h2>${escapeHtml(setTitle())}</h2>
@@ -806,10 +765,8 @@
         (q.choices || [])
           .map((c, ci) => {
             const correct = ci === q.correctIndex;
-            const cls =
-              "sheet-choice" + (revealAll && correct ? " is-correct" : "");
-            const mark =
-              revealAll && correct ? ' <span class="ck">✓</span>' : "";
+            const cls = "sheet-choice" + (revealAll && correct ? " is-correct" : "");
+            const mark = revealAll && correct ? ' <span class="ck">✓</span>' : "";
             return `<li class="${cls}"><span class="ch-let">${letter(
               ci,
             )}.</span> ${escapeHtml(c)}${mark}</li>`;
@@ -829,9 +786,7 @@
       ? ` <span class="badge neutral q-std">${escapeHtml(q.standard)}</span>`
       : "";
     return `<article class="sheet-q">
-      <p class="sheet-prompt"><strong>${i + 1}.</strong> ${escapeHtml(
-        q.prompt,
-      )}${std}</p>
+      <p class="sheet-prompt"><strong>${i + 1}.</strong> ${escapeHtml(q.prompt)}${std}</p>
       ${body}
       <div class="proj-actions no-print">
         <button class="btn small" type="button" data-reveal="${i}">Reveal answer</button>
@@ -848,9 +803,7 @@
       if (!btn) return;
       const i = +btn.dataset.reveal;
       const art = btn.closest(".sheet-q");
-      const existing = art.querySelector(
-        ".sheet-reveal, .sheet-choice.is-correct, .ck",
-      );
+      const existing = art.querySelector(".sheet-reveal, .sheet-choice.is-correct, .ck");
       const q = state.questions[i];
       // Toggle: if any reveal showing, re-render this item closed; else open.
       if (art.dataset.open === "1") {
@@ -883,8 +836,7 @@
         "</ol>";
     } else if (q.type === "short-answer") {
       body = '<div class="sheet-line"></div>';
-      if (open && q.answer)
-        body += `<p class="sheet-reveal">Answer: ${escapeHtml(q.answer)}</p>`;
+      if (open && q.answer) body += `<p class="sheet-reveal">Answer: ${escapeHtml(q.answer)}</p>`;
     } else {
       body = '<div class="sheet-line"></div><div class="sheet-line"></div>';
     }
@@ -892,9 +844,7 @@
       ? ` <span class="badge neutral q-std">${escapeHtml(q.standard)}</span>`
       : "";
     return `<article class="sheet-q" data-qi="${i}" data-open="${open ? 1 : 0}">
-      <p class="sheet-prompt"><strong>${i + 1}.</strong> ${escapeHtml(
-        q.prompt,
-      )}${std}</p>
+      <p class="sheet-prompt"><strong>${i + 1}.</strong> ${escapeHtml(q.prompt)}${std}</p>
       ${body}
       <div class="proj-actions no-print">
         <button class="btn small" type="button" data-reveal="${i}">${
@@ -910,8 +860,7 @@
     if (!wrap) return;
     const mc = state.questions.filter((q) => q.type === "multiple-choice");
     if (!state.questions.length) {
-      wrap.innerHTML =
-        '<p class="q-empty">Build some questions first (step 1).</p>';
+      wrap.innerHTML = '<p class="q-empty">Build some questions first (step 1).</p>';
       return;
     }
     const head = `<header class="sheet-head"><h2>Answer Key — ${escapeHtml(
@@ -925,17 +874,13 @@
         if (q.type === "multiple-choice") {
           const ci = q.correctIndex;
           const ans = `${letter(ci)}. ${escapeHtml(q.choices[ci] || "")}`;
-          const exp = q.explanation
-            ? `<p class="key-exp">${escapeHtml(q.explanation)}</p>`
-            : "";
+          const exp = q.explanation ? `<p class="key-exp">${escapeHtml(q.explanation)}</p>` : "";
           return `<article class="key-q"><p><strong>${i + 1}.</strong> ${escapeHtml(
             q.prompt,
           )}${std}</p><p class="key-ans"><strong>Answer:</strong> ${ans}</p>${exp}</article>`;
         }
         if (q.type === "short-answer") {
-          const a = q.answer
-            ? escapeHtml(q.answer)
-            : "<em>open response (no fixed key)</em>";
+          const a = q.answer ? escapeHtml(q.answer) : "<em>open response (no fixed key)</em>";
           return `<article class="key-q"><p><strong>${i + 1}.</strong> ${escapeHtml(
             q.prompt,
           )}${std}</p><p class="key-ans"><strong>Sample answer:</strong> ${a}</p></article>`;
@@ -953,9 +898,7 @@
     $$(".view-tab").forEach((b) =>
       b.setAttribute("aria-selected", String(b.dataset.view === view)),
     );
-    $$(".view-panel").forEach((p) =>
-      p.classList.toggle("active", p.dataset.viewpanel === view),
-    );
+    $$(".view-panel").forEach((p) => p.classList.toggle("active", p.dataset.viewpanel === view));
   }
 
   /* -------------------------------- EXPORTS ----------------------------- */
@@ -1001,9 +944,7 @@
     lines.push("Google Forms / quiz import — question list");
     lines.push("");
     state.questions.forEach((q, i) => {
-      lines.push(
-        `${i + 1}. ${q.prompt}${q.standard ? " [" + q.standard + "]" : ""}`,
-      );
+      lines.push(`${i + 1}. ${q.prompt}${q.standard ? " [" + q.standard + "]" : ""}`);
       if (q.type === "multiple-choice") {
         (q.choices || []).forEach((c, ci) => {
           const mark = ci === q.correctIndex ? "  *CORRECT*" : "";
@@ -1037,8 +978,7 @@
   // CSV: question, optionA..optionD (+ more if needed), correctAnswer.
   function buildCsv() {
     const maxChoices = state.questions.reduce(
-      (m, q) =>
-        q.type === "multiple-choice" ? Math.max(m, q.choices.length) : m,
+      (m, q) => (q.type === "multiple-choice" ? Math.max(m, q.choices.length) : m),
       4,
     );
     const header = ["question", "type", "standard"];
@@ -1123,14 +1063,8 @@
     lines.push("/**");
     lines.push(" * Auto-generated by Neft Teacher Do Now / Warm-up Generator.");
     lines.push(" * Self-contained: the question data is embedded below.");
-    lines.push(
-      " * Open script.google.com (New project), paste this, then Run.",
-    );
-    lines.push(
-      " * Authorize the first time (" +
-        kind +
-        " + Drive access in YOUR account).",
-    );
+    lines.push(" * Open script.google.com (New project), paste this, then Run.");
+    lines.push(" * Authorize the first time (" + kind + " + Drive access in YOUR account).");
     lines.push(" */");
     lines.push("");
     lines.push("var DO_NOW_TITLE = " + gsStr(title.trim()) + ";");
@@ -1219,9 +1153,7 @@
       "    body.appendParagraph('ANSWER KEY').setHeading(DocumentApp.ParagraphHeading.HEADING2);",
     );
     L.push("  } else {");
-    L.push(
-      "    body.appendParagraph('Name: ____________________      Date: ____________');",
-    );
+    L.push("    body.appendParagraph('Name: ____________________      Date: ____________');");
     L.push("  }");
     L.push("  body.appendParagraph('');");
     L.push("");
@@ -1232,34 +1164,22 @@
     L.push("    if (q.type === 'multiple-choice') {");
     L.push("      q.choices.forEach(function (c, ci) {");
     L.push("        var mark = '';");
-    L.push(
-      "        if (SHOW_ANSWERS && ci === q.correctIndex) mark = '   <-- correct';",
-    );
-    L.push(
-      "        body.appendParagraph('    ' + LETTERS.charAt(ci) + '. ' + c + mark);",
-    );
+    L.push("        if (SHOW_ANSWERS && ci === q.correctIndex) mark = '   <-- correct';");
+    L.push("        body.appendParagraph('    ' + LETTERS.charAt(ci) + '. ' + c + mark);");
     L.push("      });");
     L.push(
       "      if (SHOW_ANSWERS && q.explanation) body.appendParagraph('    Why: ' + q.explanation);",
     );
     L.push("    } else if (q.type === 'short-answer') {");
     L.push("      if (SHOW_ANSWERS) {");
-    L.push(
-      "        body.appendParagraph('    Answer: ' + (q.answer || '(open response)'));",
-    );
+    L.push("        body.appendParagraph('    Answer: ' + (q.answer || '(open response)'));");
     L.push("      } else {");
-    L.push(
-      "        body.appendParagraph('    _______________________________');",
-    );
+    L.push("        body.appendParagraph('    _______________________________');");
     L.push("      }");
     L.push("    } else {");
     L.push("      if (!SHOW_ANSWERS) {");
-    L.push(
-      "        body.appendParagraph('    _______________________________');",
-    );
-    L.push(
-      "        body.appendParagraph('    _______________________________');",
-    );
+    L.push("        body.appendParagraph('    _______________________________');");
+    L.push("        body.appendParagraph('    _______________________________');");
     L.push("      } else {");
     L.push("        body.appendParagraph('    (paragraph — teacher-scored)');");
     L.push("      }");
@@ -1296,35 +1216,23 @@
     L.push("  });");
     L.push("");
     L.push("  DO_NOW_QUESTIONS.forEach(function (q, idx) {");
-    L.push(
-      "    var slide = deck.appendSlide(SlidesApp.PredefinedLayout.TITLE_AND_BODY);",
-    );
+    L.push("    var slide = deck.appendSlide(SlidesApp.PredefinedLayout.TITLE_AND_BODY);");
     L.push("    var ph = slide.getPlaceholders();");
-    L.push(
-      "    setPlaceholder(slide, SlidesApp.PlaceholderType.TITLE, 'Question ' + (idx + 1));",
-    );
+    L.push("    setPlaceholder(slide, SlidesApp.PlaceholderType.TITLE, 'Question ' + (idx + 1));");
     L.push("    var lines = [q.prompt];");
     L.push("    if (q.type === 'multiple-choice') {");
     L.push("      q.choices.forEach(function (c, ci) {");
     L.push("        lines.push(LETTERS.charAt(ci) + '. ' + c);");
     L.push("      });");
     L.push("    }");
-    L.push(
-      "    setPlaceholder(slide, SlidesApp.PlaceholderType.BODY, lines.join('\\n'));",
-    );
+    L.push("    setPlaceholder(slide, SlidesApp.PlaceholderType.BODY, lines.join('\\n'));");
     L.push("");
     L.push("    // Answer slide");
-    L.push(
-      "    var ans = deck.appendSlide(SlidesApp.PredefinedLayout.TITLE_AND_BODY);",
-    );
-    L.push(
-      "    setPlaceholder(ans, SlidesApp.PlaceholderType.TITLE, 'Answer ' + (idx + 1));",
-    );
+    L.push("    var ans = deck.appendSlide(SlidesApp.PredefinedLayout.TITLE_AND_BODY);");
+    L.push("    setPlaceholder(ans, SlidesApp.PlaceholderType.TITLE, 'Answer ' + (idx + 1));");
     L.push("    var atext = '';");
     L.push("    if (q.type === 'multiple-choice') {");
-    L.push(
-      "      atext = LETTERS.charAt(q.correctIndex) + '. ' + q.choices[q.correctIndex];",
-    );
+    L.push("      atext = LETTERS.charAt(q.correctIndex) + '. ' + q.choices[q.correctIndex];");
     L.push("      if (q.explanation) atext += '\\n\\n' + q.explanation;");
     L.push("    } else if (q.type === 'short-answer') {");
     L.push("      atext = q.answer || '(open response)';");
@@ -1413,8 +1321,7 @@
           await addPdfSlides(file);
         } else if (
           name.endsWith(".pptx") ||
-          file.type ===
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+          file.type === "application/vnd.openxmlformats-officedocument.presentationml.presentation"
         ) {
           status.textContent = `Reading PowerPoint “${file.name}”…`;
           await addPptxSlides(file);
@@ -1538,12 +1445,7 @@
       try {
         const b64 = await zip.file(m2).async("base64");
         const ext = m2.split(".").pop().toLowerCase();
-        const mime =
-          ext === "png"
-            ? "image/png"
-            : ext === "gif"
-              ? "image/gif"
-              : "image/jpeg";
+        const mime = ext === "png" ? "image/png" : ext === "gif" ? "image/gif" : "image/jpeg";
         slides.push({
           kind: "image",
           src: `data:${mime};base64,${b64}`,
@@ -1580,9 +1482,7 @@
     const s = slides[slideIdx];
     let html = "";
     if (s.kind === "image") {
-      html = `<img class="slide-img" src="${s.src}" alt="${escapeAttr(
-        s.label,
-      )}" />`;
+      html = `<img class="slide-img" src="${s.src}" alt="${escapeAttr(s.label)}" />`;
     } else if (s.kind === "pdfembed") {
       html = `<embed class="slide-embed" src="${s.src}" type="application/pdf" />`;
     } else {
@@ -1657,10 +1557,7 @@
 
   /* --------------------------------- escape ------------------------------ */
   function escapeHtml(s) {
-    return String(s)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
   function escapeAttr(s) {
     return escapeHtml(s).replace(/"/g, "&quot;");
@@ -1671,17 +1568,10 @@
     const saved = localStorage.getItem(THEME_KEY);
     if (saved === "dark") setTheme(true);
     else if (saved === "light") setTheme(false);
-    else
-      setTheme(
-        window.matchMedia &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches,
-      );
+    else setTheme(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
   }
   function setTheme(dark) {
-    document.documentElement.setAttribute(
-      "data-theme",
-      dark ? "dark" : "light",
-    );
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
     const btn = $("#themeBtn");
     if (btn) btn.setAttribute("aria-pressed", String(dark));
   }
@@ -1705,6 +1595,86 @@
     $("#modeType").hidden = mode !== "type";
   }
 
+  /* --------------------- Post to Class Board ----------------------------
+   * Push the built set to the live board's "Right Now" panel. The board
+   * REPLACES its whole state on load, so we GET the current board and merge
+   * only `focus` (+ extra questions as notes), never blanking other panels.
+   * Shares the board API + teacher-key storage with /math/student-board/. */
+  const DONOW_MARK = "🧠 Do-Now";
+
+  function letteredChoices(q) {
+    return (q.choices || []).map((c, i) => `${letter(i)}) ${c}`).join("   ");
+  }
+
+  function boardFocusFromQuestions(qs) {
+    const q1 = qs[0];
+    if (qs.length === 1) return { now: `🔥 Do Now: ${q1.prompt}`, nowSub: letteredChoices(q1) };
+    return {
+      now: `🔥 Do Now — ${state.formTitle || "Warm-up"} (${qs.length} questions)`,
+      nowSub: "Solve all on your warm-up sheet — we'll review together.",
+    };
+  }
+
+  async function postToBoard() {
+    const mc = state.questions.filter((q) => Array.isArray(q.choices) && q.choices.length);
+    if (!mc.length) return toast("Add at least one multiple-choice question first.");
+    const section = ($("#boardTarget") && $("#boardTarget").value) || "main";
+
+    toast(`Fetching board “${section}”…`);
+    let board;
+    try {
+      const r = await fetch("/api/board/get?board=" + encodeURIComponent(section), {
+        cache: "no-store",
+      });
+      board = await r.json();
+    } catch {
+      return toast("Could not reach the Class Board. Try again.");
+    }
+    if (!board || !board.state) {
+      return toast(
+        `Board “${section}” isn't set up yet — open the Class Board and Publish once first.`,
+      );
+    }
+
+    const st = board.state;
+    st.focus = { ...(st.focus || {}), ...boardFocusFromQuestions(mc) };
+    const notes = mc.slice(1).map((q, i) => ({
+      emoji: "🧠",
+      text: `${DONOW_MARK} Q${i + 2}. ${q.prompt}  —  ${letteredChoices(q)}`,
+    }));
+    const kept = (st.notes || []).filter(
+      (n) => !(n && typeof n.text === "string" && n.text.startsWith(DONOW_MARK)),
+    );
+    st.notes = [...notes, ...kept];
+
+    let key = localStorage.getItem("nt-board-teacher-key") || "";
+    if (!key) {
+      key = prompt("Enter the teacher key to post to the Class Board:") || "";
+      if (!key) return toast("Post cancelled — teacher key required.");
+      localStorage.setItem("nt-board-teacher-key", key);
+    }
+    toast("Posting to the board…");
+    try {
+      const r = await fetch("/api/board/save?board=" + encodeURIComponent(section), {
+        method: "PUT",
+        headers: { "content-type": "application/json", "x-teacher-key": key },
+        body: JSON.stringify({ state: st, updatedAt: Date.now(), updatedBy: "do-now" }),
+      });
+      if (r.status === 401) {
+        localStorage.removeItem("nt-board-teacher-key");
+        return toast("Wrong teacher key — press Post to try again.");
+      }
+      const d = await r.json().catch(() => ({}));
+      if (r.ok && d.ok && d.kept === "client")
+        toast(`✓ Posted to board “${section}” — students see it now.`);
+      else if (d.kept === "server")
+        toast("A newer board copy already exists; nothing overwritten.");
+      else toast("Could not post (" + (d.error || r.status) + ").");
+    } catch {
+      toast("Network error while posting.");
+    }
+  }
+
   function init() {
     load();
     initTheme();
@@ -1712,17 +1682,11 @@
     loadBank();
 
     // nav
-    $$(".nav button").forEach((b) =>
-      b.addEventListener("click", () => showTab(b.dataset.tab)),
-    );
-    $$("[data-go]").forEach((b) =>
-      b.addEventListener("click", () => showTab(b.dataset.go)),
-    );
+    $$(".nav button").forEach((b) => b.addEventListener("click", () => showTab(b.dataset.tab)));
+    $$("[data-go]").forEach((b) => b.addEventListener("click", () => showTab(b.dataset.go)));
 
     // build mode tabs
-    $$(".mode-tab").forEach((t) =>
-      t.addEventListener("click", () => selectMode(t.dataset.mode)),
-    );
+    $$(".mode-tab").forEach((t) => t.addEventListener("click", () => selectMode(t.dataset.mode)));
 
     // assessment builder
     ["bankUnit", "bankStandard", "bankTier"].forEach((id) => {
@@ -1740,12 +1704,8 @@
     $("#genFromText")?.addEventListener("click", generateFromText);
 
     // edit actions
-    $("#addMc")?.addEventListener("click", () =>
-      addQuestion("multiple-choice"),
-    );
-    $("#addShort")?.addEventListener("click", () =>
-      addQuestion("short-answer"),
-    );
+    $("#addMc")?.addEventListener("click", () => addQuestion("multiple-choice"));
+    $("#addShort")?.addEventListener("click", () => addQuestion("short-answer"));
     $("#addPara")?.addEventListener("click", () => addQuestion("paragraph"));
     $("#clearAll")?.addEventListener("click", () => {
       if (!state.questions.length) return;
@@ -1772,55 +1732,36 @@
     bindStudentView();
 
     // present view tabs
-    $$(".view-tab").forEach((b) =>
-      b.addEventListener("click", () => showView(b.dataset.view)),
-    );
+    $$(".view-tab").forEach((b) => b.addEventListener("click", () => showView(b.dataset.view)));
     $("#revealAllBtn")?.addEventListener("click", () => {
       revealAll = !revealAll;
       $("#revealAllBtn").setAttribute("aria-pressed", String(revealAll));
-      $("#revealAllBtn").textContent = revealAll
-        ? "Hide all answers"
-        : "Reveal all answers";
+      $("#revealAllBtn").textContent = revealAll ? "Hide all answers" : "Reveal all answers";
       renderStudentView();
     });
 
     // exports
     $("#printStudent")?.addEventListener("click", () => printView("student"));
+    $("#postBoard")?.addEventListener("click", postToBoard);
     $("#printKey")?.addEventListener("click", () => printView("key"));
     $("#copyFormsList")?.addEventListener("click", () =>
-      copyText(
-        formsListText(),
-        "Question list copied for Google Forms import.",
-      ),
+      copyText(formsListText(), "Question list copied for Google Forms import."),
     );
     $("#downloadFormsList")?.addEventListener("click", () => {
       if (!state.questions.length) return toast("Build some questions first.");
-      downloadBlob(
-        formsListText(),
-        `${slugTitle()}-forms-import.txt`,
-        "text/plain",
-      );
+      downloadBlob(formsListText(), `${slugTitle()}-forms-import.txt`, "text/plain");
     });
     $("#downloadCsv")?.addEventListener("click", () => {
       if (!state.questions.length) return toast("Build some questions first.");
       downloadBlob(buildCsv(), `${slugTitle()}-quiz.csv`, "text/csv");
     });
     $("#copyCode")?.addEventListener("click", () => {
-      if (!state.questions.length)
-        return toast("Build some questions first (step 1).");
-      copyText(
-        buildAppsScript(),
-        `Apps Script (${gsTargetLabel()}) copied to clipboard.`,
-      );
+      if (!state.questions.length) return toast("Build some questions first (step 1).");
+      copyText(buildAppsScript(), `Apps Script (${gsTargetLabel()}) copied to clipboard.`);
     });
     $("#downloadCode")?.addEventListener("click", () => {
-      if (!state.questions.length)
-        return toast("Build some questions first (step 1).");
-      downloadBlob(
-        buildAppsScript(),
-        `${slugTitle()}-${gsTarget}.gs`,
-        "text/plain",
-      );
+      if (!state.questions.length) return toast("Build some questions first (step 1).");
+      downloadBlob(buildAppsScript(), `${slugTitle()}-${gsTarget}.gs`, "text/plain");
     });
 
     // Apps Script target selector (Form / Doc / Slides)
@@ -1835,9 +1776,7 @@
     // export sub-tabs (forms / csv / gs render-on-show via renderPresent)
     $$(".export-tab").forEach((b) =>
       b.addEventListener("click", () => {
-        $$(".export-tab").forEach((x) =>
-          x.setAttribute("aria-selected", String(x === b)),
-        );
+        $$(".export-tab").forEach((x) => x.setAttribute("aria-selected", String(x === b)));
         $$(".export-panel").forEach((p) =>
           p.classList.toggle("active", p.dataset.exp === b.dataset.exp),
         );
@@ -1849,9 +1788,7 @@
     // slides
     const drop = $("#slideDrop");
     const fileInput = $("#slideFile");
-    fileInput?.addEventListener("change", (e) =>
-      handleSlideFiles(e.target.files),
-    );
+    fileInput?.addEventListener("change", (e) => handleSlideFiles(e.target.files));
     if (drop) {
       ["dragover", "dragenter"].forEach((ev) =>
         drop.addEventListener(ev, (e) => {
@@ -1865,9 +1802,7 @@
           drop.classList.remove("drag");
         }),
       );
-      drop.addEventListener("drop", (e) =>
-        handleSlideFiles(e.dataTransfer.files),
-      );
+      drop.addEventListener("drop", (e) => handleSlideFiles(e.dataTransfer.files));
     }
     $("#slidePrev")?.addEventListener("click", () => gotoSlide(-1));
     $("#slideNext")?.addEventListener("click", () => gotoSlide(1));
