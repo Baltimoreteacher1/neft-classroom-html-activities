@@ -56,6 +56,7 @@ const MODES = new Set([
   "photo",
   "solve",
   "translate",
+  "recognize",
 ]);
 
 // Media types Claude's vision API accepts.
@@ -122,12 +123,14 @@ function parseBody(body) {
   // Optional photo of the student's handwritten work (data URL). Required for
   // "photo" mode; ignored elsewhere.
   const image = body.image != null ? parseDataUrl(body.image) : null;
-  if (mode === "photo" && !image) return { ok: false, error: "missing-image" };
+  if ((mode === "photo" || mode === "recognize") && !image)
+    return { ok: false, error: "missing-image" };
 
   const itemText = clampStr(body.itemText, CAP.itemText);
-  // For photo coaching the picture carries the work, so a typed problem is
-  // optional; every other mode still needs the problem text.
-  if (!itemText && mode !== "photo") return { ok: false, error: "missing-item" };
+  // For photo/handwriting modes the picture carries the work, so a typed problem
+  // is optional; every other mode still needs the problem text.
+  if (!itemText && mode !== "photo" && mode !== "recognize")
+    return { ok: false, error: "missing-item" };
 
   const standard = clampStr(body.standard, CAP.standard);
   const studentWork = clampStr(body.studentWork, CAP.studentWork);
@@ -198,6 +201,16 @@ function systemPrompt(mode, standard, lang) {
       `(4) End with ONE tiny next step to self-check. Keep it to 2-4 short, warm sentences.`
     );
   }
+  if (mode === "recognize") {
+    return (
+      base +
+      ` The student wrote math by hand and sent a picture of it. Read the handwriting. Reply in ` +
+      `2-3 short lines: (1) "I see you wrote: ..." transcribing it as plain-text math (use / for ` +
+      `division, ^ for exponents); if it's unreadable, kindly ask them to write more clearly. ` +
+      `(2) If it's a complete problem, solve it; if it's an expression or an answer, evaluate or ` +
+      `simplify it and say whether it looks right. Keep it warm and brief.`
+    );
+  }
   if (mode === "solve") {
     return (
       base +
@@ -246,6 +259,8 @@ function systemPrompt(mode, standard, lang) {
 
 function userPrompt(v) {
   if (v.mode === "translate") return v.itemText;
+  if (v.mode === "recognize")
+    return "Read the math I wrote by hand in this image, then solve or check it.";
   const lines = [];
   if (v.itemText) lines.push(`Problem the student is working on:\n${v.itemText}`);
   if (v.studentWork) lines.push(`\nWhat the student has tried so far:\n${v.studentWork}`);

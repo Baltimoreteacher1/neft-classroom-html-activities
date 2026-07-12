@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Write Math · Neft Teacher</title>
+    <meta
+      name="description"
+      content="Write a math expression or answer by hand and have it read, solved, and checked for you."
+    />
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #1fa6a2;
+        --teal-dark: #17807d;
+        --amber: #f2c15b;
+        --coral: #d9795d;
+        --cream: #f7f4ec;
+        --line: #e4ebf2;
+        --ink: #1a2b3c;
+        --muted: #54677c;
+        --radius: 18px;
+        --shadow: 0 6px 24px rgba(12, 27, 42, 0.1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        color: var(--ink);
+        background: radial-gradient(ellipse at 50% -10%, #fff 0%, var(--cream) 60%);
+        min-height: 100vh;
+        line-height: 1.5;
+      }
+      .wrap {
+        max-width: 660px;
+        margin: 0 auto;
+        padding: 26px 18px 64px;
+      }
+      header {
+        text-align: center;
+        margin-bottom: 18px;
+      }
+      h1 {
+        font-size: clamp(1.6rem, 5vw, 2.1rem);
+        margin: 4px 0 6px;
+        color: var(--navy);
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0;
+      }
+      .padcard {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 14px;
+        margin-bottom: 16px;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        height: 260px;
+        border: 2px dashed var(--teal);
+        border-radius: 12px;
+        background: #fff;
+        touch-action: none;
+        cursor: crosshair;
+      }
+      .tools {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 52px;
+        flex: 1;
+        padding: 12px 18px;
+        border: 0;
+        border-radius: 14px;
+        background: var(--navy);
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .btn.secondary {
+        background: #fff;
+        color: var(--navy);
+        border: 2px solid var(--line);
+        flex: 0 0 auto;
+      }
+      .btn:disabled {
+        opacity: 0.55;
+        cursor: default;
+      }
+      .reply {
+        background: #f0faf9;
+        border-left: 6px solid var(--teal);
+        border-radius: 12px;
+        padding: 16px;
+        font-size: 1.15rem;
+        white-space: pre-wrap;
+      }
+      .reply h2 {
+        margin: 0 0 8px;
+        font-size: 1.1rem;
+        color: var(--teal-dark);
+      }
+      .reply.error {
+        border-left-color: var(--coral);
+        background: #fdf1ee;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .spinner {
+        width: 22px;
+        height: 22px;
+        border: 3px solid rgba(255, 255, 255, 0.4);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .spinner {
+          animation: none;
+        }
+      }
+      .note {
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header>
+        <div style="font-size: 2.6rem">✍️</div>
+        <h1>Write Math</h1>
+        <p class="sub">
+          Write a problem, an expression, or your answer by hand. I'll read it and check it.
+        </p>
+      </header>
+
+      <div class="padcard">
+        <canvas id="pad" aria-label="Handwriting area — write your math here"></canvas>
+        <div class="tools">
+          <button class="btn secondary" id="clearBtn" aria-label="Clear the writing">
+            🧽 Clear
+          </button>
+          <button class="btn" id="readBtn">🔍 Read my writing</button>
+        </div>
+      </div>
+
+      <div class="reply hidden" id="replyCard" aria-live="polite">
+        <h2 id="replyHead">🤖 Here's what I read</h2>
+        <div id="replyText"></div>
+      </div>
+
+      <p class="note">
+        🔒 Your writing is read once to help you and is never saved. Write dark and large for the
+        best read.
+      </p>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var canvas = document.getElementById("pad");
+        var ctx = canvas.getContext("2d");
+        var readBtn = document.getElementById("readBtn");
+        var clearBtn = document.getElementById("clearBtn");
+        var replyCard = document.getElementById("replyCard");
+        var replyText = document.getElementById("replyText");
+        var replyHead = document.getElementById("replyHead");
+        var drawn = false;
+
+        // Size the canvas backing store to its displayed size (with DPR) and paint
+        // a white background so the AI sees dark ink on white.
+        function fit() {
+          var dpr = window.devicePixelRatio || 1;
+          var rect = canvas.getBoundingClientRect();
+          canvas.width = Math.round(rect.width * dpr);
+          canvas.height = Math.round(rect.height * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, rect.width, rect.height);
+          ctx.strokeStyle = "#12355b";
+          ctx.lineWidth = 3.5;
+          ctx.lineJoin = "round";
+          ctx.lineCap = "round";
+        }
+        // Refit on resize but preserve nothing (simple pad).
+        window.addEventListener("resize", function () {
+          var img = canvas.toDataURL();
+          fit();
+          var i = new Image();
+          i.onload = function () {
+            ctx.drawImage(
+              i,
+              0,
+              0,
+              canvas.getBoundingClientRect().width,
+              canvas.getBoundingClientRect().height,
+            );
+          };
+          i.src = img;
+        });
+        fit();
+
+        var drawing = false,
+          lastX = 0,
+          lastY = 0;
+        function pos(e) {
+          var rect = canvas.getBoundingClientRect();
+          var cx = e.clientX != null ? e.clientX : e.touches[0].clientX;
+          var cy = e.clientY != null ? e.clientY : e.touches[0].clientY;
+          return { x: cx - rect.left, y: cy - rect.top };
+        }
+        function down(e) {
+          drawing = true;
+          var p = pos(e);
+          lastX = p.x;
+          lastY = p.y;
+          e.preventDefault();
+        }
+        function move(e) {
+          if (!drawing) return;
+          var p = pos(e);
+          ctx.beginPath();
+          ctx.moveTo(lastX, lastY);
+          ctx.lineTo(p.x, p.y);
+          ctx.stroke();
+          lastX = p.x;
+          lastY = p.y;
+          drawn = true;
+          e.preventDefault();
+        }
+        function up() {
+          drawing = false;
+        }
+        canvas.addEventListener("pointerdown", down);
+        canvas.addEventListener("pointermove", move);
+        window.addEventListener("pointerup", up);
+
+        clearBtn.addEventListener("click", function () {
+          fit();
+          drawn = false;
+          replyCard.classList.add("hidden");
+        });
+
+        function showReply(text, isError) {
+          replyText.textContent = text;
+          replyHead.textContent = isError ? "😕 Let's try again" : "🤖 Here's what I read";
+          replyCard.classList.toggle("error", !!isError);
+          replyCard.classList.remove("hidden");
+          replyCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+
+        readBtn.addEventListener("click", function () {
+          if (!drawn) {
+            showReply("Write something first, then tap Read my writing.", true);
+            return;
+          }
+          var original = readBtn.innerHTML;
+          readBtn.disabled = true;
+          readBtn.innerHTML = '<span class="spinner"></span> Reading…';
+          replyCard.classList.add("hidden");
+          var image = canvas.toDataURL("image/png");
+          fetch("/api/tutor", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mode: "recognize", image: image }),
+          })
+            .then(function (r) {
+              return r.json().catch(function () {
+                return null;
+              });
+            })
+            .then(function (data) {
+              if (data && data.ok && data.reply) showReply(data.reply.trim(), false);
+              else if (data && data.offline)
+                showReply("The reader is resting right now. Please try again later.", true);
+              else showReply("I couldn't read that — try writing bigger and darker.", true);
+            })
+            .catch(function () {
+              showReply("Something went wrong. Please try again.", true);
+            })
+            .finally(function () {
+              readBtn.disabled = false;
+              readBtn.innerHTML = original;
+            });
+        });
+      })();
+    </script>
+  </body>
+</html>
