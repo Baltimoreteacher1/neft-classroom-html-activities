@@ -1976,7 +1976,7 @@
               background: rgba(44, 125, 107, 0.06);
             }
             .ewl-linkgen-opt input {
-              grid-row: 1 / span 2;
+              grid-row: 1 / span 3;
               width: 18px;
               height: 18px;
               margin-top: 1px;
@@ -1988,10 +1988,46 @@
               font-size: 13.5px;
               color: var(--ink);
             }
-            .ewl-linkgen-opt-desc {
-              font-size: 12px;
-              line-height: 1.4;
-              color: var(--muted);
+            .ewl-linkgen-opt-note {
+              font-size: 11px;
+              font-weight: 600;
+              letter-spacing: 0.02em;
+              text-transform: uppercase;
+              color: var(--teal);
+            }
+            .ewl-linkgen-opt-chips {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 4px;
+              margin-top: 3px;
+            }
+            .ewl-linkgen-chip {
+              font-size: 11px;
+              line-height: 1.3;
+              color: var(--ink);
+              background: var(--wash, rgba(44, 125, 107, 0.08));
+              border: 1px solid var(--line);
+              border-radius: 999px;
+              padding: 2px 8px;
+            }
+            .ewl-linkgen-bulk {
+              display: flex;
+              gap: 8px;
+            }
+            .ewl-linkgen-bulk-btn {
+              font: inherit;
+              font-size: 12.5px;
+              font-weight: 600;
+              color: var(--teal);
+              background: transparent;
+              border: 1px solid var(--line);
+              border-radius: 8px;
+              padding: 5px 12px;
+              cursor: pointer;
+            }
+            .ewl-linkgen-bulk-btn:hover {
+              border-color: var(--teal);
+              background: rgba(44, 125, 107, 0.06);
             }
             .ewl-linkgen-footer {
               display: flex;
@@ -2065,40 +2101,29 @@
           >
             <span class="mf-icon" aria-hidden="true">🛠️</span>
             <div class="mf-body">
-              <span class="mf-tag">Accessibility · Learning Supports</span>
-              <h2 id="supports-feature-title">Layered Learning Supports</h2>
+              <span class="mf-tag">Accessibility · IEP Accommodations</span>
+              <h2 id="supports-feature-title">Prepare Learning Supports</h2>
               <p class="mf-sub">
-                Personalized accommodations: access without lowering the learning target.
+                Personalized IEP accommodations — access without lowering the learning target.
               </p>
-              <p class="mf-text">
-                Deploy student-safe learning accommodations like text-to-speech, bilingual ESOL
-                aids, visual models, and structured sentence frames. This system provides access
-                without lowering the learning target. To respect student privacy, no IEP data is
-                stored.
-              </p>
-              <div class="mf-actions">
-                <a
-                  class="mf-btn solid"
-                  href="/lessons/1-1/#supports=read-understand,focus-organize,build-math,express-thinking,language-support"
-                  >See supports in action (1-1)</a
-                >
-              </div>
+              <!-- prettier-ignore -->
+              <p class="mf-text">Build one student's supports into a link. To respect student privacy, no IEP data is stored. <a href="/lessons/1-1/">Preview the supports on Lesson 1-1 →</a></p>
 
-              <details class="ewl-linkgen hub-teacher-only">
+              <details class="ewl-linkgen hub-teacher-only" open>
                 <summary class="ewl-linkgen-summary">
-                  <span class="ewl-linkgen-summary-icon" aria-hidden="true">🔗</span>
+                  <span class="ewl-linkgen-summary-icon" aria-hidden="true">🧩</span>
                   <span>
-                    <span class="ewl-linkgen-summary-title"
-                      >Make a support link for one student</span
-                    >
+                    <span class="ewl-linkgen-summary-title">Prepare Learning Supports (IEP)</span>
                     <span class="ewl-linkgen-summary-sub"
-                      >Pick the supports a student needs, copy the link, and send it to them.</span
+                      >Select accommodations by category, copy the link, and send it to the
+                      student.</span
                     >
                   </span>
                 </summary>
                 <div class="ewl-linkgen-body">
                   <p class="ewl-linkgen-how">
-                    They open the link <strong>once</strong> — the supports then follow them into
+                    Check every accommodation the student needs. They open the link
+                    <strong>once</strong> — the supports then follow them into
                     <strong>every</strong> lesson on that device. No names or IEP data are stored.
                   </p>
                   <div
@@ -2108,6 +2133,14 @@
                     aria-label="Supports to include"
                   >
                     <!-- Options are rendered here from the shared support definitions. -->
+                  </div>
+                  <div class="ewl-linkgen-bulk">
+                    <button type="button" class="ewl-linkgen-bulk-btn" id="ewl-linkgen-all">
+                      Select all
+                    </button>
+                    <button type="button" class="ewl-linkgen-bulk-btn" id="ewl-linkgen-clear">
+                      Clear
+                    </button>
                   </div>
                   <div class="ewl-linkgen-footer">
                     <label class="ewl-linkgen-start">
@@ -2140,48 +2173,90 @@
               const empty = document.getElementById("ewl-linkgen-empty");
               if (!optionsRoot || !select || !copyBtn) return;
 
-              // Plain-English names + descriptions, kept in sync with the six
-              // support profiles in assets/learning-supports/learning-supports.js.
-              const OPTIONS = [
+              // IEP accommodation categories. Each selectable box maps to one
+              // real support profile applied by the lesson engine
+              // (assets/learning-supports/learning-supports.js). The chips list
+              // every accommodation that box turns on, so "everything an IEP can
+              // contain" is grouped by category yet stays wired to what the
+              // engine actually delivers — no decorative toggles.
+              const CATEGORIES = [
                 {
                   key: "read-understand",
-                  name: "📖 Read & Understand",
-                  desc: "Read-aloud, vocabulary, worked examples, bigger text, color tint, high contrast.",
+                  name: "📖 Presentation & Access",
+                  note: "How content is presented",
+                  chips: [
+                    "Text-to-speech read-aloud",
+                    "Vocabulary previews",
+                    "Worked examples",
+                    "Enlarged text",
+                    "Color overlay / tint",
+                    "High contrast",
+                  ],
                 },
                 {
                   key: "focus-organize",
-                  name: "🎯 Focus & Organize",
-                  desc: "Focus mode, reading ruler, comfort spacing, a task checklist, and a calm break.",
+                  name: "🎯 Focus & Self-Regulation",
+                  note: "Attention, setting & behavior",
+                  chips: [
+                    "Focus / distraction-reduced mode",
+                    "Reading ruler guide",
+                    "Comfort line spacing",
+                    "Step-by-step task checklist",
+                    "Calm-down break timer",
+                  ],
                 },
                 {
                   key: "build-math",
-                  name: "🧱 Build Math Models",
-                  desc: "Readiness review plus tools: multiplication chart, number line, place-value chart, calculator.",
+                  name: "🧱 Math Tools & Foundations",
+                  note: "Manipulatives & scaffolds",
+                  chips: [
+                    "Prerequisite readiness review",
+                    "Multiplication chart",
+                    "Number line",
+                    "Place-value chart",
+                    "On-screen calculator",
+                  ],
                 },
                 {
                   key: "express-thinking",
-                  name: "🗣️ Express Thinking",
-                  desc: "Sentence frames, response stems, word banks, and speak-to-write dictation.",
+                  name: "🗣️ Response & Expression",
+                  note: "How the student answers",
+                  chips: [
+                    "Sentence frames",
+                    "Response stems",
+                    "Word banks",
+                    "Speech-to-text dictation",
+                  ],
                 },
                 {
                   key: "language-support",
-                  name: "🌎 Language Support (ESOL)",
-                  desc: "Bilingual math terms, translations, and multilingual read-aloud and visuals.",
+                  name: "🌎 Language / ESOL",
+                  note: "Multilingual learners",
+                  chips: [
+                    "Bilingual math terminology",
+                    "Translations",
+                    "Multilingual read-aloud",
+                    "Visual aids",
+                  ],
                 },
                 {
                   key: "challenge-extend",
-                  name: "🚀 Challenge & Extend",
-                  desc: "Advanced concepts, error-analysis challenges, and extension tasks.",
+                  name: "🚀 Enrichment & Extension",
+                  note: "Gifted / advanced goals",
+                  chips: ["Advanced concepts", "Error-analysis challenges", "Extension tasks"],
                 },
               ];
 
-              // Render the checkable option cards.
-              optionsRoot.innerHTML = OPTIONS.map(
-                (o) => `
+              // Render each category as a checkable box with its accommodation chips.
+              optionsRoot.innerHTML = CATEGORIES.map(
+                (c) => `
                   <label class="ewl-linkgen-opt">
-                    <input type="checkbox" data-profile="${o.key}" />
-                    <span class="ewl-linkgen-opt-name">${o.name}</span>
-                    <span class="ewl-linkgen-opt-desc">${o.desc}</span>
+                    <input type="checkbox" data-profile="${c.key}" />
+                    <span class="ewl-linkgen-opt-name">${c.name}</span>
+                    <span class="ewl-linkgen-opt-note">${c.note}</span>
+                    <span class="ewl-linkgen-opt-chips">${c.chips
+                      .map((chip) => `<span class="ewl-linkgen-chip">${chip}</span>`)
+                      .join("")}</span>
                   </label>`,
               ).join("");
 
@@ -2203,7 +2278,7 @@
                 );
 
               const buildUrl = (profiles) =>
-                `${window.location.origin}/lessons/${select.value}/#supports=${profiles.join(",")}`;
+                `${window.location.origin}/lessons/${select.value}/#supports=${[...new Set(profiles)].join(",")}`;
 
               // Keep the button, empty hint, and live preview in sync with the
               // current selection. Copy is disabled until a support is checked so
@@ -2219,6 +2294,20 @@
 
               optionsRoot.addEventListener("change", refresh);
               select.addEventListener("change", refresh);
+
+              const setAll = (checked) => {
+                optionsRoot.querySelectorAll("input[type=checkbox]").forEach((cb) => {
+                  cb.checked = checked;
+                });
+                refresh();
+              };
+              document
+                .getElementById("ewl-linkgen-all")
+                ?.addEventListener("click", () => setAll(true));
+              document
+                .getElementById("ewl-linkgen-clear")
+                ?.addEventListener("click", () => setAll(false));
+
               refresh();
 
               copyBtn.addEventListener("click", () => {
@@ -8751,12 +8840,16 @@
       // tools-above-lessons layout. ?hubui=lessons-first re-enables the default.
       (function () {
         try {
+          // Default is now TOOLS/SUPPORTS ON TOP (Teacher Tools & Featured
+          // Resources lead the page). The old "lessons-first" ordering (tools
+          // below the units) is opt-in via ?hubui=lessons-first and persists.
           var mode = new URLSearchParams(location.search).get("hubui");
-          if (mode === "classic") localStorage.setItem("nt-hub-classic", "1");
-          if (mode === "lessons-first") localStorage.removeItem("nt-hub-classic");
-          if (localStorage.getItem("nt-hub-classic") === "1") return; // opted out
+          if (mode === "lessons-first") localStorage.setItem("nt-hub-lessons-first", "1");
+          if (mode === "classic" || mode === "tools-first")
+            localStorage.removeItem("nt-hub-lessons-first");
+          if (localStorage.getItem("nt-hub-lessons-first") !== "1") return; // default: tools on top
         } catch (e) {
-          /* localStorage blocked — proceed with default (lessons-first) */
+          /* localStorage blocked — proceed with default (tools on top) */
         }
         function reorder() {
           var hub = document.getElementById("interactive-hub");
