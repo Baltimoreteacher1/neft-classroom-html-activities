@@ -342,23 +342,23 @@ function barChartSVG(cfg) {
 function factorTreeSVG(cfg) {
   const W = 360;
   const H = 220;
-  
+
   function getDepth(node) {
     if (!node) return 0;
     return 1 + Math.max(getDepth(node.left), getDepth(node.right));
   }
-  
+
   const maxDepth = getDepth(cfg);
   let elements = [];
-  
+
   function traverse(node, x, y, dx, depth) {
     if (!node) return;
-    
+
     const isPrime = !node.left && !node.right;
     const fill = isPrime ? "#e2f9f5" : "#fbf4e6";
     const stroke = isPrime ? "#0d7a76" : "#d4952a";
     const textColor = isPrime ? "#095350" : "#8a5800";
-    
+
     elements.push({
       type: "node",
       x,
@@ -366,9 +366,9 @@ function factorTreeSVG(cfg) {
       value: node.value,
       fill,
       stroke,
-      textColor
+      textColor,
     });
-    
+
     if (node.left) {
       const lx = x - dx;
       const ly = y + 52;
@@ -377,11 +377,11 @@ function factorTreeSVG(cfg) {
         x1: x,
         y1: y + 16,
         x2: lx,
-        y2: ly - 16
+        y2: ly - 16,
       });
       traverse(node.left, lx, ly, dx * 0.5, depth + 1);
     }
-    
+
     if (node.right) {
       const rx = x + dx;
       const ry = y + 52;
@@ -390,17 +390,17 @@ function factorTreeSVG(cfg) {
         x1: x,
         y1: y + 16,
         x2: rx,
-        y2: ry - 16
+        y2: ry - 16,
       });
       traverse(node.right, rx, ry, dx * 0.5, depth + 1);
     }
   }
-  
+
   traverse(cfg, W / 2, 28, W / 4, 1);
-  
+
   let linesSvg = "";
   let nodesSvg = "";
-  
+
   elements.forEach((el) => {
     if (el.type === "line") {
       linesSvg += `<line x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="#d7e2ed" stroke-width="2.5" />`;
@@ -413,7 +413,7 @@ function factorTreeSVG(cfg) {
       `;
     }
   });
-  
+
   return `
     <div class="factor-tree-figure" style="margin:var(--sp-3) 0; display:flex; flex-direction:column; align-items:center;">
       ${cfg.title ? `<div style="font-weight:700; color:var(--navy,#12355b); margin-bottom:var(--sp-1); font-size:0.95rem;">${esc(cfg.title)}</div>` : ""}
@@ -1696,6 +1696,9 @@ export function wireObjectiveTermPopups(block, vocab) {
   block.addEventListener("click", (e) => {
     const btn = e.target.closest(".obj-term");
     if (!btn || !block.contains(btn)) return;
+    // Prevent the click from bubbling to an enclosing <label> (e.g. the
+    // "Did I get it?" review rows) and toggling its checkbox.
+    e.preventDefault();
     const idx = Number(btn.dataset.termIdx);
     if (Number.isInteger(idx)) openObjectiveTermPopup(vocab[idx]);
   });
@@ -2825,17 +2828,19 @@ function renderObjectiveReview(state, config) {
   card.setAttribute("aria-labelledby", "obj-review-title");
   card.style.cssText = "text-align:left; margin-top:var(--sp-6);";
 
+  // Same treatment as the Launch header and Objectives page: key vocabulary is
+  // underlined + tap-to-open the glossary popup (wired on the card below).
+  const vocab = Array.isArray(config.vocabulary) ? config.vocabulary : [];
   const items = [
     {
       key: "review_content",
       label: t("contentObjective"),
-      // resolveContentObjective returns HTML-escaped text; show as text node.
-      html: resolveContentObjective(config),
+      html: linkifyObjectiveTerms(resolveContentObjective(config), vocab),
     },
     {
       key: "review_language",
       label: t("languageObjective"),
-      html: resolveLanguageObjective(config),
+      html: linkifyObjectiveTerms(resolveLanguageObjective(config), vocab),
     },
   ];
 
@@ -2877,6 +2882,7 @@ function renderObjectiveReview(state, config) {
     card.append(row);
   });
 
+  wireObjectiveTermPopups(card, vocab);
   return card;
 }
 

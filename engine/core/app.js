@@ -257,15 +257,21 @@ function lessonTimeEstimate(config) {
 }
 
 function objectivesBlockHtml(config) {
+  // Same treatment as the Launch header and Objectives page: key vocabulary
+  // words are underlined + tap-to-open the glossary popup, and the goal text is
+  // bold. wireObjectiveTermPopups(screen, …) is called after the cover mounts.
+  const vocab = config.vocabulary || [];
+  const content = linkifyObjectiveTerms(resolveContentObjective(config), vocab);
+  const language = linkifyObjectiveTerms(resolveLanguageObjective(config), vocab);
   return `
     <div class="identity-objectives">
       <div class="identity-objective-row">
         <span class="identity-objective-badge">${t("target")}</span>
-        <span>${resolveContentObjective(config)}</span>
+        <span style="font-weight:600;">${content}</span>
       </div>
       <div class="identity-objective-row">
         <span class="identity-objective-badge">${t("discuss")}</span>
-        <span>${resolveLanguageObjective(config)}</span>
+        <span style="font-weight:600;">${language}</span>
       </div>
     </div>`;
 }
@@ -403,6 +409,10 @@ function showIdentityScreen(root, config) {
     </div>
   `;
   root.append(screen);
+
+  // Cover objectives share the Launch/Objectives glossary popups: tapping an
+  // underlined vocab word opens the same EN/ES explanation card.
+  wireObjectiveTermPopups(screen, config.vocabulary || []);
 
   mountWelcomeGoogleSlidesLink(
     config.lessonId,
