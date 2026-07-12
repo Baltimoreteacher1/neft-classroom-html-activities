@@ -27,6 +27,18 @@ const JSON_HEADERS = {
   "Cache-Control": "no-store",
 };
 
+// Study Pack shares its prompt/schema with the classroom site via the synced
+// contract (kept in lockstep by tools/sync-study-pack.mjs). This is the SAME
+// source of truth used by eduwonderlab.com's /api/study-pack — one pack shape,
+// one pedagogy, two AI providers.
+import {
+  CAPS as SP_CAPS,
+  buildStudyPackPrompt,
+  buildAskPrompt,
+  coerceStudyPack,
+  extractJsonObject,
+} from "../../shared/study-pack/contract.mjs";
+
 const DEFAULT_MODEL = "gemini-pro-latest"; // full-tier Gemini Pro (alias -> current stable Pro; avoids deprecation 404s)
 const WORKERS_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct";
 
@@ -106,6 +118,13 @@ export async function onRequestPost({ request, env }) {
   }
 
   const mode = clampStr(body && body.mode, 20) || "hint";
+
+  // Study Pack: build an interactive study pack (or answer a grounded question)
+  // from the student's own pasted notes. Same contract as eduwonderlab.com.
+  if (mode === "study-pack" || mode === "study-ask") {
+    return handleStudyPack(env, body, mode);
+  }
+
   const systemPrompt = mode === "solve" ? SYSTEM_PROMPT_SOLVE : SYSTEM_PROMPT_HINT;
 
   const messages = sanitizeMessages(body && body.messages);
@@ -221,4 +240,68 @@ export async function onRequestPost({ request, env }) {
     },
     503,
   );
+}
+
+// ---- Study Pack ------------------------------------------------------------
+
+// One-shot Gemini text call (no chat history). Returns the joined text, or
+// null on any failure. `jsonOut` asks Gemini for a raw JSON object.
+async function geminiText(env, systemPrompt, userText, maxTokens, jsonOut) {
+  if (!env.GEMINI_API_KEY) return null;
+  try {
+    const model = clampStr(env.GEMINI_MODEL, 60) || DEFAULT_MODEL;
+    const url =
+      "https://generativelanguage.googleapis.com/v1beta/models/" +
+      encodeURIComponent(model) +
+      ":generateContent?key=" +
+      encodeURIComponent(env.GEMINI_API_KEY);
+    const generationConfig = { maxOutputTokens: maxTokens, temperature: jsonOut ? 0.4 : 0.7 };
+    if (jsonOut) generationConfig.responseMimeType = "application/json";
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        contents: [{ role: "user", parts: [{ text: userText }] }],
+        generationConfig,
+        safetySettings: [
+          "HARM_CATEGORY_HARASSMENT",
+          "HARM_CATEGORY_HATE_SPEECH",
+          "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          "HARM_CATEGORY_DANGEROUS_CONTENT",
+        ].map((category) => ({ category, threshold: "BLOCK_MEDIUM_AND_ABOVE" })),
+      }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data.candidates?.[0]?.content?.parts || [])
+      .map((p) => p.text || "")
+      .join("")
+      .trim();
+  } catch {
+    return null;
+  }
+}
+
+async function handleStudyPack(env, body, mode) {
+  const notes = clampStr(body && body.notes, SP_CAPS.notes);
+
+  if (mode === "study-ask") {
+    const question = clampStr(body && body.question, SP_CAPS.question);
+    if (!notes || !question) return json({ error: "Missing notes or question." }, 400);
+    const { system, user } = buildAskPrompt(notes, question);
+    const reply = await geminiText(env, system, user, 600, false);
+    if (!reply) return json({ offline: true, error: "study-unavailable" }, 503);
+    return json({ ok: true, reply });
+  }
+
+  // generate
+  if (notes.length < 20) return json({ error: "Please paste a little more of your notes." }, 400);
+  const subjectHint = clampStr(body && body.subjectHint, 120);
+  const { system, user } = buildStudyPackPrompt(notes, { subjectHint });
+  const text = await geminiText(env, system, user, 4000, true);
+  if (!text) return json({ offline: true, error: "study-unavailable" }, 503);
+  const pack = coerceStudyPack(extractJsonObject(text));
+  if (!pack) return json({ error: "bad-generation" }, 502);
+  return json({ ok: true, pack });
 }

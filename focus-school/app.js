@@ -3712,6 +3712,82 @@
   // ---------------------------------------------------------------------------
   // Views
   // ---------------------------------------------------------------------------
+  // ===== Study Pack — paste notes -> interactive multi-tab study pack =========
+  // Reuses the SAME engine that powers eduwonderlab.com's Study Pack Maker
+  // (shared/study-pack, kept in lockstep by tools/sync-study-pack.mjs). The
+  // engine + CSS are lazy-loaded on first open so they never slow initial boot,
+  // and it is mounted into a full-screen overlay (no new tab/route to wire).
+  let _studyPackLoading = null;
+  function loadStudyPackAssets() {
+    if (window.StudyPack) return Promise.resolve();
+    if (_studyPackLoading) return _studyPackLoading;
+    _studyPackLoading = new Promise((resolve, reject) => {
+      if (!document.querySelector("link[data-study-pack]")) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = "/shared/study-pack/study-pack.css";
+        link.setAttribute("data-study-pack", "1");
+        document.head.appendChild(link);
+      }
+      const s = document.createElement("script");
+      s.src = "/shared/study-pack/study-pack.js";
+      s.onload = () => resolve();
+      s.onerror = () => reject(new Error("load-failed"));
+      document.head.appendChild(s);
+    });
+    return _studyPackLoading;
+  }
+
+  async function studyApi(payload) {
+    const res = await fetch("/api/ai", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data || data.ok !== true) throw new Error((data && data.error) || "failed");
+    return data;
+  }
+
+  function openStudyPack() {
+    const overlay = document.createElement("div");
+    overlay.className = "study-pack-overlay";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-label", "Study Pack Maker");
+    overlay.innerHTML =
+      '<div class="spo-bar"><strong>📝 Study Pack</strong>' +
+      '<button class="spo-close" type="button" aria-label="Close">✕ Close</button></div>' +
+      '<div class="spo-body"><p style="text-align:center;padding:40px">Loading…</p></div>';
+    document.body.appendChild(overlay);
+    document.body.style.overflow = "hidden";
+    const close = () => {
+      document.body.style.overflow = "";
+      overlay.remove();
+    };
+    overlay.querySelector(".spo-close").addEventListener("click", close);
+    overlay.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") close();
+    });
+
+    loadStudyPackAssets()
+      .then(() => {
+        const body = overlay.querySelector(".spo-body");
+        body.innerHTML = "";
+        window.StudyPack.mount(body, {
+          brand: "noam",
+          storageKey: "noam-study-packs",
+          generate: (notes, subjectHint) =>
+            studyApi({ mode: "study-pack", notes, subjectHint }).then((d) => d.pack),
+          ask: (notes, question) =>
+            studyApi({ mode: "study-ask", notes, question }).then((d) => d.reply),
+        });
+      })
+      .catch(() => {
+        overlay.querySelector(".spo-body").innerHTML =
+          '<p style="text-align:center;padding:40px">Couldn\'t load the Study Pack tool. Please check your connection and try again.</p>';
+      });
+  }
+
   // ===== Helpers for Homework Plan, Calming, AI Support, goals, routines =====
   function routineDaysLabel(r) {
     if (!r.days || !r.days.length || r.days.length === 7) return "Every day";
@@ -4651,6 +4727,7 @@
         (AI_CHAT.length ? '<button class="btn sm" data-act="ai-clear">Clear</button>' : "") +
         "</div>" +
         '<p class="view-intro">A friendly helper for homework. Tap a button, type a question, or add a picture of your work.</p>' +
+        '<button class="btn navy block" data-act="study-pack">📝 Turn my notes into a study pack</button>' +
         '<a class="btn navy block" href="/curriculum/math-workbench/" target="_blank" rel="noopener">📐 Open Math Workbench</a>' +
         // Ask first (chips + input), then the conversation grows below it.
         '<div class="ai-chips">' +
@@ -9212,6 +9289,9 @@ Due May 31"></textarea>
     "ai-mode": (_, arg) => {
       window._aiMode = arg;
       render();
+    },
+    "study-pack": () => {
+      openStudyPack();
     },
     "toggle-reading-expand": (id) => {
       state.expandedReadingDay = state.expandedReadingDay === id ? null : id;

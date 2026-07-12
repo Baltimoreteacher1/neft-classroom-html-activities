@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Study Pack Maker — paste your class notes and get an instant, interactive study pack: summary, vocabulary, worked examples, practice with hints, a game, a quiz, listen, and ask."
+    />
+    <title>Study Pack Maker — Mr. Neft's Math Class</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap"
+    />
+    <link rel="stylesheet" href="./study-pack.css" />
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      body {
+        margin: 0;
+        font-family: "Atkinson Hyperlegible", "Nunito", system-ui, sans-serif;
+        background: #eef2f8;
+        color: #1a2b3c;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #0b1119;
+          color: #eaf1f8;
+        }
+      }
+      .page-head {
+        background: linear-gradient(135deg, #205fa6, #2c7d6b);
+        color: #fff;
+        padding: 22px clamp(16px, 4vw, 40px);
+      }
+      .page-head a.back {
+        color: #dbe9ff;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.95rem;
+      }
+      .page-head h1 {
+        margin: 10px 0 4px;
+        font-size: clamp(1.5rem, 4vw, 2.2rem);
+      }
+      .page-head p {
+        margin: 0;
+        opacity: 0.92;
+        max-width: 60ch;
+      }
+      main {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: clamp(16px, 4vw, 32px);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="page-head">
+      <a class="back" href="/curriculum/">← Back to the Curriculum Hub</a>
+      <h1>📝 Study Pack Maker</h1>
+      <p>
+        Paste any notes — a lesson, a chapter, vocabulary — and get an interactive study pack built
+        just from what you paste.
+      </p>
+    </header>
+    <main>
+      <div id="study-pack-app">
+        <noscript>This tool needs JavaScript turned on.</noscript>
+      </div>
+    </main>
+
+    <script src="./study-pack.js"></script>
+    <script>
+      (function () {
+        "use strict";
+        var ENDPOINT = "/api/study-pack";
+
+        async function post(body) {
+          var res = await fetch(ENDPOINT, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+          var data = await res.json().catch(function () {
+            return null;
+          });
+          if (!res.ok || !data || data.ok !== true) {
+            var err = new Error((data && data.error) || "request-failed");
+            err.offline = !!(data && data.offline);
+            throw err;
+          }
+          return data;
+        }
+
+        var host = document.getElementById("study-pack-app");
+        window.StudyPack.mount(host, {
+          brand: "curriculum",
+          storageKey: "nt-study-packs",
+          generate: function (notes, subjectHint) {
+            return post({ mode: "generate", notes: notes, subjectHint: subjectHint }).then(
+              function (d) {
+                return d.pack;
+              },
+            );
+          },
+          ask: function (notes, question) {
+            return post({ mode: "ask", notes: notes, question: question }).then(function (d) {
+              return d.reply;
+            });
+          },
+        });
+      })();
+    </script>
+  </body>
+</html>
