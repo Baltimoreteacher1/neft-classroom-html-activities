@@ -31,15 +31,16 @@ export async function onRequest(context) {
   // automation (e.g. the Apps Script slide generator). Never gate them here.
   if (p.startsWith("/api/") || p.endsWith("/config.json")) return next();
 
-  // Static bundles under /assets/ are shared CSS/JS code, not teacher pages.
-  // Some are named for the feature they enhance (e.g.
-  // curriculum-teacher-workflow.js) and are loaded unconditionally by the
-  // PUBLIC curriculum hub as progressive enhancement — the teacher features
-  // they enable are separately PIN-gated client-side, and any sensitive data
-  // lives behind /api/ (exempted above). Gating them by filename substring
-  // 401s every student on /curriculum/ and breaks the hub, so never gate
-  // /assets/ here. Sensitive surfaces are teacher *pages*, matched below.
-  if (p.startsWith("/assets/")) return next();
+  // Static bundles under /assets/ and curriculum data under /data/ are shared
+  // code/content, not teacher pages. Some are named for the feature they serve
+  // (e.g. curriculum-teacher-workflow.{js,json}) and are loaded/fetched
+  // unconditionally by the PUBLIC curriculum hub as progressive enhancement —
+  // the teacher features they enable are separately PIN-gated client-side, and
+  // any sensitive data lives behind /api/ (exempted above). Gating them by
+  // filename substring 401s every student on /curriculum/ and breaks the hub,
+  // so never gate these dirs here. Sensitive surfaces are teacher *pages*,
+  // matched below.
+  if (p.startsWith("/assets/") || p.startsWith("/data/")) return next();
 
   // Teacher-only surfaces that STAY behind the password. These substrings cover
   // every teacher directory in the repo:
