@@ -22,8 +22,11 @@ import {
   CAPS,
   buildStudyPackPrompt,
   buildAskPrompt,
+  buildAudioPrompt,
   coerceStudyPack,
+  coerceAudioScript,
   extractJsonObject,
+  extractJsonArray,
 } from "../../../shared/study-pack/contract.mjs";
 
 const JSON_HEADERS = {
@@ -39,8 +42,10 @@ const CLAUDE_URL = "https://api.anthropic.com/v1/messages";
 const CLAUDE_VERSION = "2023-06-01";
 
 // Generation needs headroom for a full pack; Ask replies stay short.
-const OUT = { generate: 4000, ask: 600 };
+const OUT = { generate: 4000, ask: 600, audio: 1600 };
 const RATE = { windowMs: 60_000, max: 12, hits: new Map() };
+const IMG_CAP = 5_000_000; // base64 chars (~3.7MB image); Claude vision input
+const IMG_MIME = /^image\/(png|jpe?g|webp|gif)$/i;
 
 function json(obj, status = 200) {
   return new Response(JSON.stringify(obj), { status, headers: JSON_HEADERS });
@@ -83,7 +88,14 @@ function claudeText(data) {
     : "";
 }
 
-async function callClaude(env, { system, user, maxTokens }) {
+// `image` (optional) is a validated {mime, data} base64 block for Claude vision.
+async function callClaude(env, { system, user, maxTokens, image }) {
+  const content = image
+    ? [
+        { type: "image", source: { type: "base64", media_type: image.mime, data: image.data } },
+        { type: "text", text: user },
+      ]
+    : user;
   const resp = await fetch(CLAUDE_URL, {
     method: "POST",
     headers: {
@@ -95,7 +107,7 @@ async function callClaude(env, { system, user, maxTokens }) {
       model: CLAUDE_MODEL,
       max_tokens: maxTokens,
       system,
-      messages: [{ role: "user", content: user }],
+      messages: [{ role: "user", content }],
     }),
   });
   if (!resp.ok) return { ok: false, status: resp.status === 429 ? 429 : 502 };
@@ -105,18 +117,42 @@ async function callClaude(env, { system, user, maxTokens }) {
   return { ok: true, text };
 }
 
+// Pull a validated Claude-vision image out of the request body, or null.
+function parseImage(body) {
+  const img = body && body.image;
+  if (!img || typeof img.data !== "string" || !img.data) return null;
+  const mime = IMG_MIME.test(clampStr(img.mime, 40)) ? clampStr(img.mime, 40) : "image/jpeg";
+  return { mime, data: img.data.slice(0, IMG_CAP) };
+}
+
 async function handleGenerate(env, body) {
   const notes = clampStr(body.notes, CAPS.notes);
-  if (notes.length < 20) return json({ ok: false, error: "notes-too-short" }, 400);
+  const image = parseImage(body);
+  // Notes OR a photo is required — a photo alone is a valid source.
+  if (!image && notes.length < 20) return json({ ok: false, error: "notes-too-short" }, 400);
   const subjectHint = clampStr(body.subjectHint, 120);
-  const { system, user } = buildStudyPackPrompt(notes, { subjectHint });
-  const out = await callClaude(env, { system, user, maxTokens: OUT.generate });
+  const { system, user } = buildStudyPackPrompt(notes, { subjectHint, hasImage: !!image });
+  const out = await callClaude(env, { system, user, maxTokens: OUT.generate, image });
   if (!out.ok) {
     return json({ ok: false, offline: true, error: "unavailable" }, out.status === 429 ? 429 : 503);
   }
   const pack = coerceStudyPack(extractJsonObject(out.text));
   if (!pack) return json({ ok: false, error: "bad-generation" }, 502);
   return json({ ok: true, pack });
+}
+
+async function handleAudio(env, body) {
+  const notes = clampStr(body.notes, CAPS.notes);
+  if (notes.length < 20) return json({ ok: false, error: "notes-too-short" }, 400);
+  const subjectHint = clampStr(body.subjectHint, 120);
+  const { system, user } = buildAudioPrompt(notes, { subjectHint });
+  const out = await callClaude(env, { system, user, maxTokens: OUT.audio });
+  if (!out.ok) {
+    return json({ ok: false, offline: true, error: "unavailable" }, out.status === 429 ? 429 : 503);
+  }
+  const script = coerceAudioScript(extractJsonArray(out.text));
+  if (!script) return json({ ok: false, error: "bad-generation" }, 502);
+  return json({ ok: true, script });
 }
 
 async function handleAsk(env, body) {
@@ -160,6 +196,7 @@ export async function onRequest(context) {
   try {
     if (mode === "generate") return await handleGenerate(env, body);
     if (mode === "ask") return await handleAsk(env, body);
+    if (mode === "audio") return await handleAudio(env, body);
     return json({ ok: false, error: "bad-mode" }, 400);
   } catch {
     return json({ ok: false, offline: true, error: "server-error" }, 503);

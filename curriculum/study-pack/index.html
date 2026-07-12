@@ -100,16 +100,24 @@
         window.StudyPack.mount(host, {
           brand: "curriculum",
           storageKey: "nt-study-packs",
-          generate: function (notes, subjectHint) {
-            return post({ mode: "generate", notes: notes, subjectHint: subjectHint }).then(
-              function (d) {
-                return d.pack;
-              },
-            );
+          generate: function (notes, subjectHint, image) {
+            return post({
+              mode: "generate",
+              notes: notes,
+              subjectHint: subjectHint,
+              image: image || undefined,
+            }).then(function (d) {
+              return d.pack;
+            });
           },
           ask: function (notes, question) {
             return post({ mode: "ask", notes: notes, question: question }).then(function (d) {
               return d.reply;
+            });
+          },
+          audio: function (notes) {
+            return post({ mode: "audio", notes: notes }).then(function (d) {
+              return d.script;
             });
           },
         });

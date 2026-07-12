@@ -93,13 +93,22 @@ const SYSTEM_LINES = [
  * (Anthropic system+messages, or Gemini contents).
  *
  * @param {string} notes  Raw student notes (already length-capped by caller).
- * @param {{subjectHint?:string}} [opts]
+ * @param {{subjectHint?:string, hasImage?:boolean}} [opts]
  */
 export function buildStudyPackPrompt(notes, opts = {}) {
   const subjectHint = typeof opts.subjectHint === "string" ? opts.subjectHint.trim() : "";
+  const hasImage = !!opts.hasImage;
   const system = SYSTEM_LINES.join(" ");
+  const source = hasImage
+    ? [
+        "The student's notes are in the ATTACHED IMAGE (a photo of handwritten or printed notes).",
+        "Read the image carefully and base the entire pack on what it contains.",
+        notes ? "The student also typed this extra context:" : "",
+        notes ? "<<<NOTES\n" + String(notes).slice(0, CAPS.notes) + "\nNOTES" : "",
+      ]
+    : ["CLASS NOTES:", "<<<NOTES", String(notes || "").slice(0, CAPS.notes), "NOTES"];
   const user = [
-    "Create a study pack from the class notes below.",
+    hasImage ? "Create a study pack from the attached photo of notes." : "Create a study pack from the class notes below.",
     subjectHint ? `The student says this is about: ${subjectHint}` : "",
     "",
     "Return ONLY a single JSON object — no markdown, no code fence, no commentary before or after.",
@@ -114,7 +123,33 @@ export function buildStudyPackPrompt(notes, opts = {}) {
     "- game: choose 'match' (fill pairs, 4–8) OR 'sort' (fill buckets with items). Provide only the chosen one's data.",
     "- quiz: 4–6 multiple-choice items; each answer MUST exactly equal one of its choices.",
     "",
-    "CLASS NOTES:",
+    ...source,
+  ]
+    .filter(Boolean)
+    .join("\n");
+  return { system, user };
+}
+
+/**
+ * Build the prompt for a 2-host, podcast-style audio overview of the notes.
+ * The model returns a JSON array of short conversational turns alternating
+ * between two friendly hosts, so the client can voice them with two TTS voices.
+ */
+export function buildAudioPrompt(notes, opts = {}) {
+  const subjectHint = typeof opts.subjectHint === "string" ? opts.subjectHint.trim() : "";
+  const system = [
+    "You are a scriptwriter for a short, upbeat 'explain it to me' study podcast for a middle-school student.",
+    "Two friendly hosts — Host A (curious, asks questions) and Host B (warm, explains simply) — chat about the notes.",
+    "Keep it accurate to the notes, plain-language, encouraging, and about 10–16 short turns total.",
+    "Spell out any math in words (say 'three to two', 'one half') — do NOT use symbols or LaTeX, since this is spoken aloud.",
+  ].join(" ");
+  const user = [
+    "Write the podcast script from the notes below.",
+    subjectHint ? `Topic: ${subjectHint}` : "",
+    "",
+    'Return ONLY a JSON array, each item {"speaker":"A" or "B","text":"..."}. No prose, no code fence.',
+    "",
+    "NOTES:",
     "<<<NOTES",
     String(notes || "").slice(0, CAPS.notes),
     "NOTES",
@@ -122,6 +157,19 @@ export function buildStudyPackPrompt(notes, opts = {}) {
     .filter(Boolean)
     .join("\n");
   return { system, user };
+}
+
+/** Normalise a parsed audio-script response into [{speaker:'A'|'B', text}]. */
+export function coerceAudioScript(raw) {
+  const arr = Array.isArray(raw) ? raw : Array.isArray(raw && raw.script) ? raw.script : [];
+  const turns = arr
+    .map((t) => ({
+      speaker: asStr(t && t.speaker).toUpperCase() === "B" ? "B" : "A",
+      text: asStr(t && t.text).slice(0, 500),
+    }))
+    .filter((t) => t.text)
+    .slice(0, 24);
+  return turns.length ? turns : null;
 }
 
 /**
@@ -239,15 +287,13 @@ export function coerceStudyPack(raw) {
   return hasContent ? pack : null;
 }
 
-/**
- * Extract the first balanced JSON object from a model's text response. Handles
- * accidental prose or ```json fences around the object.
- */
-export function extractJsonObject(text) {
+// Extract the first balanced JSON value delimited by `open`/`close` from a
+// model's text, tolerating prose or a ```json fence around it.
+function extractBalanced(text, open, close) {
   const s = asStr(text);
   const fenced = s.match(/```(?:json)?\s*([\s\S]*?)```/i);
   const body = fenced ? fenced[1] : s;
-  const start = body.indexOf("{");
+  const start = body.indexOf(open);
   if (start === -1) return null;
   let depth = 0;
   let inStr = false;
@@ -261,8 +307,8 @@ export function extractJsonObject(text) {
       continue;
     }
     if (ch === '"') inStr = true;
-    else if (ch === "{") depth++;
-    else if (ch === "}") {
+    else if (ch === open) depth++;
+    else if (ch === close) {
       depth--;
       if (depth === 0) {
         try {
@@ -274,4 +320,14 @@ export function extractJsonObject(text) {
     }
   }
   return null;
+}
+
+/** Extract the first balanced JSON object from a model's text response. */
+export function extractJsonObject(text) {
+  return extractBalanced(text, "{", "}");
+}
+
+/** Extract the first balanced JSON array from a model's text response. */
+export function extractJsonArray(text) {
+  return extractBalanced(text, "[", "]");
 }

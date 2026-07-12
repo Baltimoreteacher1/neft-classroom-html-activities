@@ -63,16 +63,62 @@
       .replace(/\s+/g, " ");
   }
 
-  // Render text that may contain LaTeX. If MathJax v3 is on the host page we
-  // typeset; otherwise the raw text is shown (tolerant — never blocks render).
-  function mathify(node) {
-    if (global.MathJax && global.MathJax.typesetPromise) {
+  // Lazy-load KaTeX (same CDN Noam already uses) once, then resolve. If the
+  // host already provides renderMathInElement, reuse it. Never blocks render —
+  // on failure the raw LaTeX simply stays as text.
+  var KATEX = "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/";
+  var _katexLoading = null;
+  function ensureKatex() {
+    if (global.renderMathInElement) return Promise.resolve(true);
+    if (_katexLoading) return _katexLoading;
+    _katexLoading = new Promise(function (resolve) {
       try {
-        global.MathJax.typesetPromise([node]);
+        if (!document.querySelector('link[href*="katex"]')) {
+          var link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = KATEX + "katex.min.css";
+          document.head.appendChild(link);
+        }
+        var s1 = document.createElement("script");
+        s1.src = KATEX + "katex.min.js";
+        s1.onload = function () {
+          var s2 = document.createElement("script");
+          s2.src = KATEX + "contrib/auto-render.min.js";
+          s2.onload = function () {
+            resolve(!!global.renderMathInElement);
+          };
+          s2.onerror = function () {
+            resolve(false);
+          };
+          document.head.appendChild(s2);
+        };
+        s1.onerror = function () {
+          resolve(false);
+        };
+        document.head.appendChild(s1);
+      } catch (e) {
+        resolve(false);
+      }
+    });
+    return _katexLoading;
+  }
+  // Render any LaTeX inside `node` with KaTeX (tolerant, non-blocking).
+  function mathify(node) {
+    ensureKatex().then(function (ok) {
+      if (!ok || !global.renderMathInElement) return;
+      try {
+        global.renderMathInElement(node, {
+          delimiters: [
+            { left: "\\(", right: "\\)", display: false },
+            { left: "\\[", right: "\\]", display: true },
+            { left: "$$", right: "$$", display: true },
+          ],
+          throwOnError: false,
+        });
       } catch (e) {
         /* ignore */
       }
-    }
+    });
   }
 
   // ---- persistence ---------------------------------------------------------
@@ -100,6 +146,8 @@
     opts = opts || {};
     var storageKey = opts.storageKey || "nt-study-packs";
     var canAsk = typeof opts.ask === "function";
+    var canAudio = typeof opts.audio === "function";
+    var canPhoto = opts.photo !== false; // host opts out only if its backend has no vision
 
     var root = el("div", { class: "stp-root", "data-brand": opts.brand || "curriculum" });
     clear(container);
@@ -134,20 +182,90 @@
         count.textContent = ta.value.length + " / 12000";
       });
       var errBox = el("div", { class: "stp-error", hidden: "hidden" });
+
+      // Optional photo of notes (Claude vision). Stored as base64 until submit.
+      var photoData = null; // { mime, data }
+      var photoRow = el("div", { class: "stp-photo-row" });
+      var fileInput = el("input", {
+        type: "file",
+        accept: "image/png,image/jpeg,image/webp,image/gif",
+        hidden: "hidden",
+        "aria-hidden": "true",
+      });
+      function renderPhotoRow() {
+        clear(photoRow);
+        if (photoData) {
+          photoRow.appendChild(
+            el("div", { class: "stp-photo-chip" }, [
+              el("img", {
+                src: "data:" + photoData.mime + ";base64," + photoData.data,
+                alt: "photo of notes",
+              }),
+              el("span", { text: "Photo added" }),
+              el("button", {
+                class: "stp-btn ghost",
+                type: "button",
+                text: "✕ Remove",
+                onclick: function () {
+                  photoData = null;
+                  fileInput.value = "";
+                  renderPhotoRow();
+                },
+              }),
+            ]),
+          );
+        } else if (canPhoto) {
+          photoRow.appendChild(
+            el("button", {
+              class: "stp-btn ghost",
+              type: "button",
+              text: "📷 Add a photo of my notes",
+              onclick: function () {
+                fileInput.click();
+              },
+            }),
+          );
+        }
+      }
+      fileInput.addEventListener("change", function () {
+        var f = fileInput.files && fileInput.files[0];
+        if (!f) return;
+        if (f.size > 4_500_000) {
+          errBox.hidden = false;
+          errBox.textContent =
+            "That photo is a bit large — try a smaller or clearer picture (under ~4MB).";
+          fileInput.value = "";
+          return;
+        }
+        var reader = new FileReader();
+        reader.onload = function () {
+          var res = String(reader.result || "");
+          var comma = res.indexOf(",");
+          photoData = {
+            mime: f.type || "image/jpeg",
+            data: comma >= 0 ? res.slice(comma + 1) : res,
+          };
+          errBox.hidden = true;
+          renderPhotoRow();
+        };
+        reader.readAsDataURL(f);
+      });
+      renderPhotoRow();
+
       var goBtn = el("button", {
         class: "stp-btn solid",
         type: "button",
         text: "✨ Make my study pack",
         onclick: function () {
           var notes = ta.value.trim();
-          if (notes.length < 20) {
+          if (notes.length < 20 && !photoData) {
             errBox.hidden = false;
             errBox.textContent =
-              "Please paste a little more (at least a sentence or two) so I can build a good pack.";
+              "Add a photo of your notes, or paste at least a sentence or two, so I can build a good pack.";
             return;
           }
           errBox.hidden = true;
-          generate(notes, subj.value.trim());
+          generate(notes, subj.value.trim(), photoData);
         },
       });
 
@@ -155,11 +273,13 @@
         el("h2", { text: "📝 Turn your notes into a study pack" }),
         el("p", {
           class: "stp-lead",
-          text: "Paste your notes and get a summary, worked examples, practice with hints, a game, and a quiz — built just from what you paste.",
+          text: "Paste your notes or add a photo, and get a summary, worked examples, practice with hints, a game, a quiz, and a listen-along — built just from what you give me.",
         }),
         el("label", { class: "stp-field-label", for: "" }, ["Your notes"]),
         ta,
         count,
+        fileInput,
+        photoRow,
         el("label", { class: "stp-field-label" }, ["Topic (optional)"]),
         subj,
         errBox,
@@ -210,19 +330,23 @@
     }
 
     // ---- Generation --------------------------------------------------------
-    function generate(notes, subjectHint) {
+    function generate(notes, subjectHint, image) {
       clear(root);
       root.appendChild(live);
       root.appendChild(
         el("div", { class: "stp-status" }, [
           el("div", { class: "stp-spinner", "aria-hidden": "true" }),
-          el("p", { text: "Building your study pack… this takes a few seconds." }),
+          el("p", {
+            text: image
+              ? "Reading your photo and building your study pack… this takes a few seconds."
+              : "Building your study pack… this takes a few seconds.",
+          }),
         ]),
       );
       announce("Building your study pack.");
       Promise.resolve()
         .then(function () {
-          return opts.generate(notes, subjectHint);
+          return opts.generate(notes, subjectHint, image);
         })
         .then(function (pack) {
           if (!pack || typeof pack !== "object") throw new Error("empty");
@@ -733,7 +857,64 @@
         .replace(/\\[a-zA-Z]+/g, " ")
         .replace(/[{}$]/g, " ");
     }
-    function renderListen(panel, pack) {
+    // Pick two distinct voices for the two podcast hosts (best-effort).
+    function pickVoices() {
+      var vs = [];
+      try {
+        vs = global.speechSynthesis.getVoices() || [];
+      } catch (e) {
+        vs = [];
+      }
+      var en = vs.filter(function (v) {
+        return /^en/i.test(v.lang || "");
+      });
+      var pool = en.length ? en : vs;
+      return [pool[0] || null, pool[1] || pool[0] || null];
+    }
+
+    // Generic sequential player. items -> {text, voice}; highlights paras[i].
+    function playSequence(items, paras, onDone, btns) {
+      if (!global.speechSynthesis) return;
+      stopSpeech();
+      speaking = true;
+      btns.forEach(function (b) {
+        b.disabled = true;
+      });
+      var i = 0;
+      function highlight(k) {
+        paras.forEach(function (p, j) {
+          p.className = j === k ? "speaking" : "";
+        });
+        if (paras[k]) paras[k].scrollIntoView({ block: "nearest" });
+      }
+      function next() {
+        if (!speaking || i >= items.length) {
+          highlight(-1);
+          btns.forEach(function (b) {
+            b.disabled = false;
+          });
+          speaking = false;
+          if (onDone) onDone();
+          return;
+        }
+        highlight(i);
+        var u = new global.SpeechSynthesisUtterance(speakable(items[i].text));
+        u.rate = 0.98;
+        if (items[i].voice) u.voice = items[i].voice;
+        u.onend = function () {
+          i++;
+          next();
+        };
+        u.onerror = function () {
+          i++;
+          next();
+        };
+        global.speechSynthesis.speak(u);
+      }
+      next();
+    }
+
+    function renderListen(panel, pack, notes) {
       panel.appendChild(el("h3", { text: "🎧 Listen to your notes" }));
       if (!global.speechSynthesis) {
         panel.appendChild(
@@ -742,6 +923,20 @@
           }),
         );
       }
+      var stopBtn = el("button", {
+        class: "stp-btn ghost",
+        type: "button",
+        text: "■ Stop",
+        disabled: "disabled",
+      });
+      var overviewBtn = el("button", {
+        class: "stp-btn solid",
+        type: "button",
+        text: "▶ Play overview",
+      });
+      var controls = [overviewBtn];
+
+      // Simple single-voice overview of the pack.
       var lines = buildTranscript(pack);
       var transcript = el("div", { class: "stp-listen-transcript" });
       var paras = lines.map(function (t) {
@@ -749,64 +944,77 @@
         transcript.appendChild(p);
         return p;
       });
+      overviewBtn.addEventListener("click", function () {
+        var items = lines.map(function (t) {
+          return { text: t, voice: null };
+        });
+        playSequence(items, paras, null, [overviewBtn, podcastBtn, stopBtn]);
+      });
 
-      var playBtn = el("button", {
+      // 2-host podcast overview (lazy-generated once, then cached on the pack).
+      var podcastBtn = el("button", {
         class: "stp-btn solid",
         type: "button",
-        text: "▶ Play overview",
+        text: "🎙️ Podcast (2 hosts)",
+        hidden: canAudio ? null : "hidden",
       });
-      var stopBtn = el("button", {
-        class: "stp-btn ghost",
-        type: "button",
-        text: "■ Stop",
-        disabled: "disabled",
+      if (canAudio) controls.push(podcastBtn);
+      controls.push(stopBtn);
+
+      function playPodcast(script) {
+        clear(transcript);
+        var voices = pickVoices();
+        var pParas = script.map(function (turn) {
+          var name = turn.speaker === "B" ? "Maya" : "Leo";
+          var p = el("p", {}, [
+            el("strong", { text: name + ": " }),
+            document.createTextNode(turn.text),
+          ]);
+          transcript.appendChild(p);
+          return p;
+        });
+        var items = script.map(function (turn) {
+          return { text: turn.text, voice: turn.speaker === "B" ? voices[1] : voices[0] };
+        });
+        playSequence(items, pParas, null, [overviewBtn, podcastBtn, stopBtn]);
+      }
+      podcastBtn.addEventListener("click", function () {
+        if (pack.__audioScript) {
+          playPodcast(pack.__audioScript);
+          return;
+        }
+        stopSpeech();
+        podcastBtn.disabled = true;
+        podcastBtn.textContent = "🎙️ Writing the episode…";
+        Promise.resolve()
+          .then(function () {
+            return opts.audio(notes);
+          })
+          .then(function (script) {
+            podcastBtn.disabled = false;
+            podcastBtn.textContent = "🎙️ Podcast (2 hosts)";
+            if (!script || !script.length) throw new Error("empty");
+            pack.__audioScript = script;
+            playPodcast(script);
+          })
+          .catch(function () {
+            podcastBtn.disabled = false;
+            podcastBtn.textContent = "🎙️ Podcast (2 hosts)";
+            announce("Couldn't make the podcast right now.");
+          });
       });
 
-      function highlight(i) {
-        paras.forEach(function (p, j) {
-          p.className = j === i ? "speaking" : "";
-        });
-        if (paras[i]) paras[i].scrollIntoView({ block: "nearest" });
-      }
-      function play() {
-        if (!global.speechSynthesis) return;
-        stopSpeech();
-        speaking = true;
-        playBtn.disabled = true;
-        stopBtn.disabled = false;
-        var i = 0;
-        function next() {
-          if (!speaking || i >= lines.length) {
-            highlight(-1);
-            playBtn.disabled = false;
-            stopBtn.disabled = true;
-            speaking = false;
-            return;
-          }
-          highlight(i);
-          var u = new global.SpeechSynthesisUtterance(speakable(lines[i]));
-          u.rate = 0.95;
-          u.onend = function () {
-            i++;
-            next();
-          };
-          u.onerror = function () {
-            i++;
-            next();
-          };
-          global.speechSynthesis.speak(u);
-        }
-        next();
-      }
-      playBtn.addEventListener("click", play);
       stopBtn.addEventListener("click", function () {
         stopSpeech();
-        highlight(-1);
-        playBtn.disabled = false;
-        stopBtn.disabled = true;
+        paras.forEach(function (p) {
+          p.className = "";
+        });
+        [overviewBtn, podcastBtn].forEach(function (b) {
+          b.disabled = false;
+        });
       });
 
-      panel.appendChild(el("div", { class: "stp-listen-controls" }, [playBtn, stopBtn]));
+      panel.appendChild(el("div", { class: "stp-listen-controls" }, controls));
       panel.appendChild(transcript);
     }
 

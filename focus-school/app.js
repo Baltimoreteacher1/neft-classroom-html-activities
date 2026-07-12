@@ -3782,9 +3782,12 @@
         window.StudyPack.mount(body, {
           brand: "noam",
           storageKey: "noam-study-packs",
-          generate: (notes, subjectHint) =>
-            studyApi({ mode: "generate", notes, subjectHint }).then((d) => d.pack),
+          generate: (notes, subjectHint, image) =>
+            studyApi({ mode: "generate", notes, subjectHint, image: image || undefined }).then(
+              (d) => d.pack,
+            ),
           ask: (notes, question) => studyApi({ mode: "ask", notes, question }).then((d) => d.reply),
+          audio: (notes) => studyApi({ mode: "audio", notes }).then((d) => d.script),
         });
       })
       .catch(() => {
