@@ -22,6 +22,7 @@ import {
 } from "docx";
 import { Resvg } from "@resvg/resvg-js";
 import { resolveVocabImage } from "../engine/core/vocab-images.js";
+import { lessonScope, inScope } from "./lib/lesson-scope.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -70,8 +71,10 @@ function vocabPng(term) {
 // ---------- config loading ----------
 function lessonConfigs() {
   const out = [];
+  const scope = lessonScope();
   for (const dir of readdirSync(lessonsDir, { withFileTypes: true })) {
     if (!dir.isDirectory() || dir.name.startsWith("_")) continue;
+    if (!inScope(dir.name, scope)) continue;
     const cfgPath = join(lessonsDir, dir.name, "config.json");
     if (!existsSync(cfgPath)) continue;
     try {

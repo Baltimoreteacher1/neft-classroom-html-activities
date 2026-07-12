@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { deriveTWR } from "../engine/core/twr.js";
 import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
 import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
+import { lessonScope, inScope } from "./lib/lesson-scope.mjs";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -2926,9 +2927,14 @@ a:hover{text-decoration:underline;}
 
 function main() {
   const lessons = lessonConfigs();
+  // Scope only the per-lesson writes; the global index is always rebuilt from
+  // the full lesson set so a scoped run never drops lessons from notes-index.
+  const scope = lessonScope();
+  const targets = lessons.filter(({ id }) => inScope(id, scope));
+  if (scope) console.log(`Scoped notes to ${targets.length} lesson(s): ${targets.map((l) => l.id).join(", ")}`);
   let count = 0;
   let flagshipCount = 0;
-  for (const { id, cfg, isFlagship } of lessons) {
+  for (const { id, cfg, isFlagship } of targets) {
     // Student copy — no answer key.
     writeFileSync(join(lessonsDir, id, "notes.html"), buildPacket(id, cfg, isFlagship, false));
     // Teacher copy — same packet + Answer Key & Teacher Guide.

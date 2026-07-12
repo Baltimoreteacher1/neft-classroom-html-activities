@@ -15,6 +15,7 @@ const SLIDES_EDITORIAL = `
   letter-spacing:-0.01em;
 }`;
 import { getUnitPalette, paletteToCssVars } from "./lib/slide-theme-palettes.mjs";
+import { lessonScope, inScope } from "./lib/lesson-scope.mjs";
 import { REFERENCE_CSS, tokensToCssVars } from "./lib/slide-reference-theme.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -3834,10 +3835,13 @@ ${deck.thumbnailsHtml}
 // Main execution block
 function main() {
   console.log("Generating high-fidelity slides.html files...");
+  const scope = lessonScope();
   const lessons = fs
     .readdirSync(lessonsDir)
     .filter((d) => /^(\d+)-(\d+)(-flagship)?$/.test(d))
-    .filter((d) => fs.existsSync(path.join(lessonsDir, d, "config.json")));
+    .filter((d) => fs.existsSync(path.join(lessonsDir, d, "config.json")))
+    .filter((d) => inScope(d, scope));
+  if (scope) console.log(`Scoped to ${lessons.length} lesson(s): ${lessons.join(", ")}`);
 
   let urlMap = {};
   const urlsPath = path.join(root, "data", "google-slides-urls.json");
