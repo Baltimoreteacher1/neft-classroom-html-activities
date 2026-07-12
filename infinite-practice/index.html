@@ -181,6 +181,12 @@
         <select id="topic"></select>
         <div style="height: 12px"></div>
         <button class="btn" id="newBtn">✨ Give me a problem</button>
+        <div
+          id="levelBadge"
+          style="margin-top: 12px; text-align: center; color: var(--muted); font-weight: 700"
+        >
+          Level: on-level
+        </div>
       </div>
 
       <div class="card hidden" id="problemCard">
@@ -200,6 +206,10 @@
       <div class="card solution hidden" id="solutionCard" aria-live="polite">
         <h2>✏️ How to solve it</h2>
         <div id="solutionText"></div>
+        <div class="row" id="reportRow" style="margin-top: 16px; display: none">
+          <button class="btn secondary" id="gotIt">✓ I got it</button>
+          <button class="btn secondary" id="missedIt">✗ I missed it</button>
+        </div>
       </div>
 
       <p class="note">🔒 Problems are made just for you and are not saved.</p>
@@ -265,7 +275,49 @@
         var anotherBtn = document.getElementById("anotherBtn");
         var solutionCard = document.getElementById("solutionCard");
         var solutionText = document.getElementById("solutionText");
+        var levelBadge = document.getElementById("levelBadge");
+        var reportRow = document.getElementById("reportRow");
         var currentProblem = "";
+
+        // Adaptive difficulty: the student self-reports right/missed after each
+        // solution; two in a row correct levels up, one miss eases back down. The
+        // level tunes the generator prompt so problems auto-fit the student.
+        var level = 0,
+          streak = 0;
+        var LEVEL_NAME = {
+          "-2": "extra support",
+          "-1": "support",
+          0: "on-level",
+          1: "challenge",
+          2: "hard challenge",
+        };
+        function difficultyNote() {
+          if (level <= -2)
+            return " Use very small, friendly whole numbers; make it one simple step.";
+          if (level === -1) return " Use small whole numbers and keep it straightforward.";
+          if (level === 1)
+            return " Make this a bit harder — larger or less-friendly numbers, or one extra step.";
+          if (level >= 2) return " Make this a real multi-step challenge (still Grade 6).";
+          return "";
+        }
+        function updateBadge() {
+          levelBadge.textContent = "Level: " + LEVEL_NAME[String(level)];
+        }
+        function report(correct) {
+          if (correct) {
+            streak = streak > 0 ? streak + 1 : 1;
+            if (streak >= 2 && level < 2) {
+              level++;
+              streak = 0;
+            }
+          } else {
+            streak = 0;
+            if (level > -2) level--;
+          }
+          updateBadge();
+          reportRow.style.display = "none";
+        }
+        updateBadge();
 
         function api(body) {
           return fetch("/api/tutor", {
@@ -302,7 +354,8 @@
           answerEl.value = "";
           busy(newBtn, true, "Thinking…");
           busy(anotherBtn, true, "…");
-          api({ mode: "another", standard: t.std, itemText: t.ex })
+          reportRow.style.display = "none";
+          api({ mode: "another", standard: t.std, itemText: t.ex + difficultyNote() })
             .then(function (data) {
               if (data && data.ok && data.reply) {
                 currentProblem = data.reply.trim();
@@ -336,6 +389,7 @@
                   ? data.reply.trim()
                   : "Couldn't reach the solver right now — try again in a moment.";
               solutionCard.classList.remove("hidden");
+              reportRow.style.display = "flex";
               solutionCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
             })
             .catch(function () {
@@ -350,6 +404,12 @@
         newBtn.addEventListener("click", generate);
         anotherBtn.addEventListener("click", generate);
         checkBtn.addEventListener("click", check);
+        document.getElementById("gotIt").addEventListener("click", function () {
+          report(true);
+        });
+        document.getElementById("missedIt").addEventListener("click", function () {
+          report(false);
+        });
       })();
     </script>
   </body>
