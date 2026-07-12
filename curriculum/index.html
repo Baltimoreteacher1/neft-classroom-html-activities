@@ -2076,6 +2076,29 @@
               opacity: 0.5;
               cursor: not-allowed;
             }
+            /* Secondary action next to Copy link: same lesson + supports, built
+               as a downloadable SCORM package for Canvas. */
+            .ewl-linkgen-scorm {
+              min-height: 40px;
+              padding: 0 16px;
+              font-size: 13.5px;
+              background: #fff;
+              color: var(--teal);
+              border: 1px solid var(--teal);
+              border-radius: 8px;
+              font-weight: 800;
+              cursor: pointer;
+              transition:
+                background-color 0.2s,
+                opacity 0.2s;
+            }
+            .ewl-linkgen-scorm:hover:not(:disabled) {
+              background: rgba(44, 125, 107, 0.08);
+            }
+            .ewl-linkgen-scorm:disabled {
+              opacity: 0.5;
+              cursor: not-allowed;
+            }
             .ewl-linkgen-preview {
               margin: 0;
               font-size: 12px;
@@ -2151,6 +2174,9 @@
                     </label>
                     <button type="button" class="ewl-linkgen-copy" id="ewl-linkgen-copy" disabled>
                       Copy link
+                    </button>
+                    <button type="button" class="ewl-linkgen-scorm" id="ewl-linkgen-scorm" disabled>
+                      🎓 Download SCORM
                     </button>
                   </div>
                   <p class="ewl-linkgen-preview" id="ewl-linkgen-preview" hidden>
@@ -2285,10 +2311,12 @@
               // Keep the button, empty hint, and live preview in sync with the
               // current selection. Copy is disabled until a support is checked so
               // teachers never hand out a link that turns nothing on.
+              const scormBtn = document.getElementById("ewl-linkgen-scorm");
               const refresh = () => {
                 const profiles = selectedProfiles();
                 const has = profiles.length > 0;
                 copyBtn.disabled = !has;
+                if (scormBtn) scormBtn.disabled = !has;
                 empty.hidden = has;
                 preview.hidden = !has;
                 if (has) previewUrl.textContent = buildUrl(profiles);
@@ -2325,6 +2353,29 @@
                     }, 1500);
                   })
                   .catch((err) => console.error("Clipboard copy failed:", err));
+              });
+
+              // Download the chosen lesson as a personalized SCORM package with
+              // the selected supports baked into its launch query. Reuses the
+              // site's on-demand builder (/api/scorm) — same endpoint the lesson
+              // dock's "Download SCORM for these students" uses.
+              scormBtn?.addEventListener("click", () => {
+                const profiles = selectedProfiles();
+                if (!profiles.length) return;
+                const params = new URLSearchParams();
+                params.set("activity", select.value);
+                params.set("supports", [...new Set(profiles)].join(","));
+                const a = document.createElement("a");
+                a.href = `/api/scorm?${params.toString()}`;
+                a.rel = "noopener";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                const orig = scormBtn.textContent;
+                scormBtn.textContent = "⬇️ Building package…";
+                setTimeout(() => {
+                  scormBtn.textContent = orig;
+                }, 2500);
               });
             });
           </script>
