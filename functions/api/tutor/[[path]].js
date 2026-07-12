@@ -42,9 +42,25 @@ const CAP = {
   historyTurns: 8,
   historyText: 1200,
   output: 700,
+  // Base64 payload for a photo of handwritten work. ~4 MB of base64 ≈ a 3 MB
+  // image, which comfortably covers a phone snapshot after client downscaling.
+  imageB64: 4_000_000,
 };
 
-const MODES = new Set(["hint", "explain", "another", "diagnose", "teach"]);
+const MODES = new Set(["hint", "explain", "another", "diagnose", "teach", "photo"]);
+
+// Media types Claude's vision API accepts.
+const IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
+
+// Parse a `data:image/...;base64,....` URL into { media_type, data } or null.
+function parseDataUrl(v) {
+  if (typeof v !== "string" || v.length > CAP.imageB64) return null;
+  const m = /^data:(image\/[a-z+]+);base64,([A-Za-z0-9+/=]+)$/.exec(v.trim());
+  if (!m) return null;
+  const mediaType = m[1] === "image/jpg" ? "image/jpeg" : m[1];
+  if (!IMAGE_TYPES.has(mediaType)) return null;
+  return { media_type: mediaType, data: m[2] };
+}
 
 // Best-effort in-memory rate limiter (per isolate). Not a hard guarantee
 // across the edge, but it blunts accidental loops / abuse.
@@ -94,8 +110,15 @@ function parseBody(body) {
   const mode = clampStr(body.mode, 16) || "hint";
   if (!MODES.has(mode)) return { ok: false, error: "bad-mode" };
 
+  // Optional photo of the student's handwritten work (data URL). Required for
+  // "photo" mode; ignored elsewhere.
+  const image = body.image != null ? parseDataUrl(body.image) : null;
+  if (mode === "photo" && !image) return { ok: false, error: "missing-image" };
+
   const itemText = clampStr(body.itemText, CAP.itemText);
-  if (!itemText) return { ok: false, error: "missing-item" };
+  // For photo coaching the picture carries the work, so a typed problem is
+  // optional; every other mode still needs the problem text.
+  if (!itemText && mode !== "photo") return { ok: false, error: "missing-item" };
 
   const standard = clampStr(body.standard, CAP.standard);
   const studentWork = clampStr(body.studentWork, CAP.studentWork);
@@ -114,7 +137,7 @@ function parseBody(body) {
 
   return {
     ok: true,
-    value: { mode, standard, itemText, studentWork, history },
+    value: { mode, standard, itemText, studentWork, history, image },
   };
 }
 
@@ -155,6 +178,20 @@ function systemPrompt(mode, standard) {
       `(4) End with ONE tiny next step to self-check. Keep it to 2-4 short, warm sentences.`
     );
   }
+  if (mode === "photo") {
+    return (
+      base +
+      ` The student sent a PHOTO of their handwritten work. Read the photo carefully. ` +
+      `Rules you MUST follow: ` +
+      `(1) First, in one short sentence, say back what problem/steps you can see so they know ` +
+      `you read it (if the photo is blurry or unreadable, kindly ask them to retake it). ` +
+      `(2) Do NOT give the final answer or redo the whole problem. ` +
+      `(3) Find the ONE misconception (the thinking-error), not just the slip, and name it in ` +
+      `kid-friendly words. If the work is correct, say clearly what they did well. ` +
+      `(4) End with ONE tiny next step they can try to fix or check it themselves. ` +
+      `Keep the whole reply to 2-4 short, warm sentences.`
+    );
+  }
   if (mode === "teach") {
     return (
       base +
@@ -178,8 +215,17 @@ function systemPrompt(mode, standard) {
 }
 
 function userPrompt(v) {
-  const lines = [`Problem the student is working on:\n${v.itemText}`];
+  const lines = [];
+  if (v.itemText) lines.push(`Problem the student is working on:\n${v.itemText}`);
   if (v.studentWork) lines.push(`\nWhat the student has tried so far:\n${v.studentWork}`);
+  if (v.mode === "photo") {
+    lines.push(
+      lines.length
+        ? `\nHere is a photo of my handwritten work. Read it and coach me on my thinking (do not give the answer).`
+        : `Here is a photo of my handwritten math work. Read it and coach me on my thinking (do not give the answer).`,
+    );
+    return lines.join("\n");
+  }
   if (v.mode === "hint") lines.push(`\nGive me a hint for the next step (not the answer).`);
   else if (v.mode === "explain") lines.push(`\nExplain why / how this works.`);
   else if (v.mode === "diagnose")
@@ -199,7 +245,22 @@ async function callClaude(env, v) {
   for (const t of v.history) {
     messages.push({ role: t.role, content: t.text });
   }
-  messages.push({ role: "user", content: userPrompt(v) });
+  // When a photo is attached, the final user turn becomes a content array with
+  // the image first, then the text prompt (Claude vision format).
+  if (v.image) {
+    messages.push({
+      role: "user",
+      content: [
+        {
+          type: "image",
+          source: { type: "base64", media_type: v.image.media_type, data: v.image.data },
+        },
+        { type: "text", text: userPrompt(v) },
+      ],
+    });
+  } else {
+    messages.push({ role: "user", content: userPrompt(v) });
+  }
 
   const resp = await fetch(CLAUDE_URL, {
     method: "POST",

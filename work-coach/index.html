@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Show Your Work Coach · Neft Teacher</title>
+    <meta
+      name="description"
+      content="Snap a photo of your math work and get warm, private coaching on your thinking — no answers given away."
+    />
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #1fa6a2;
+        --teal-dark: #17807d;
+        --cream: #f7f4ec;
+        --line: #e4ebf2;
+        --amber: #f2c15b;
+        --coral: #d9795d;
+        --ink: #1a2b3c;
+        --muted: #54677c;
+        --radius: 18px;
+        --shadow: 0 6px 24px rgba(12, 27, 42, 0.1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        color: var(--ink);
+        background: radial-gradient(ellipse at 50% -10%, #fff 0%, var(--cream) 60%);
+        min-height: 100vh;
+        line-height: 1.5;
+      }
+      .wrap {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 24px 18px 64px;
+      }
+      header {
+        text-align: center;
+        margin-bottom: 22px;
+      }
+      h1 {
+        font-size: clamp(1.5rem, 5vw, 2.1rem);
+        margin: 4px 0 6px;
+        color: var(--navy);
+      }
+      .sub {
+        color: var(--muted);
+        font-size: 1.05rem;
+        margin: 0;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+        margin-bottom: 18px;
+      }
+      label.field {
+        display: block;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 8px;
+        font-size: 1.05rem;
+      }
+      textarea {
+        width: 100%;
+        min-height: 74px;
+        border: 2px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        font: inherit;
+        resize: vertical;
+      }
+      textarea:focus,
+      button:focus-visible,
+      .photo-btn:focus-within {
+        outline: 3px solid var(--teal);
+        outline-offset: 2px;
+      }
+      .photo-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 26px 16px;
+        border: 2px dashed var(--teal);
+        border-radius: 14px;
+        background: #f0faf9;
+        color: var(--teal-dark);
+        font-weight: 700;
+        font-size: 1.15rem;
+        cursor: pointer;
+        text-align: center;
+      }
+      .photo-btn .big {
+        font-size: 2.4rem;
+        line-height: 1;
+      }
+      .photo-btn input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        overflow: hidden;
+      }
+      .preview {
+        margin-top: 14px;
+        text-align: center;
+      }
+      .preview img {
+        max-width: 100%;
+        max-height: 320px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 52px;
+        width: 100%;
+        padding: 14px 20px;
+        border: 0;
+        border-radius: 14px;
+        background: var(--navy);
+        color: #fff;
+        font-size: 1.15rem;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .btn:disabled {
+        opacity: 0.55;
+        cursor: default;
+      }
+      .btn.secondary {
+        background: #fff;
+        color: var(--navy);
+        border: 2px solid var(--line);
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .row .btn {
+        width: auto;
+        flex: 1;
+      }
+      .reply {
+        border-left: 6px solid var(--teal);
+        background: #f0faf9;
+      }
+      .reply h2 {
+        margin: 0 0 8px;
+        font-size: 1.15rem;
+        color: var(--teal-dark);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .reply p {
+        margin: 0;
+        font-size: 1.15rem;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-align: center;
+        margin: 6px 0 0;
+      }
+      .spinner {
+        width: 26px;
+        height: 26px;
+        border: 3px solid rgba(255, 255, 255, 0.4);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .spinner {
+          animation: none;
+        }
+      }
+      .hidden {
+        display: none !important;
+      }
+      .error {
+        border-left-color: var(--coral);
+        background: #fdf1ee;
+      }
+      .error h2 {
+        color: var(--coral);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header>
+        <div style="font-size: 2.6rem">📷</div>
+        <h1>Show Your Work Coach</h1>
+        <p class="sub">
+          Take a photo of your math work. I'll help you find your own thinking — I won't just give
+          the answer.
+        </p>
+      </header>
+
+      <div class="card">
+        <label class="field" for="problem"
+          >What problem are you working on?
+          <span style="font-weight: 400; color: var(--muted)">(optional)</span></label
+        >
+        <textarea
+          id="problem"
+          placeholder="Example: Find the volume of a box that is 4 by 3 by 5."
+        ></textarea>
+      </div>
+
+      <div class="card">
+        <label class="photo-btn" id="photoLabel">
+          <span class="big" aria-hidden="true">📸</span>
+          <span id="photoText">Take a photo of your work</span>
+          <input id="file" type="file" accept="image/*" capture="environment" />
+        </label>
+        <div class="preview hidden" id="preview"></div>
+      </div>
+
+      <button class="btn" id="coach" disabled>Coach my work</button>
+      <p class="note">🔒 Your photo is read once to give you feedback. It is never saved.</p>
+
+      <section class="card reply hidden" id="replyCard" aria-live="polite">
+        <h2 id="replyHead">🤖 Your coach says</h2>
+        <p id="replyText"></p>
+        <div class="row">
+          <button class="btn secondary" id="again">Try another photo</button>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var fileInput = document.getElementById("file");
+        var photoText = document.getElementById("photoText");
+        var preview = document.getElementById("preview");
+        var coachBtn = document.getElementById("coach");
+        var problemEl = document.getElementById("problem");
+        var replyCard = document.getElementById("replyCard");
+        var replyText = document.getElementById("replyText");
+        var replyHead = document.getElementById("replyHead");
+        var againBtn = document.getElementById("again");
+        var imageDataUrl = null;
+
+        // Downscale a picked image to <= MAX px on the long edge and re-encode as
+        // JPEG so the upload stays small (phone photos are often 4-12 MB).
+        var MAX = 1280;
+        function processFile(file) {
+          return new Promise(function (resolve, reject) {
+            var reader = new FileReader();
+            reader.onerror = function () {
+              reject(new Error("read-failed"));
+            };
+            reader.onload = function () {
+              var img = new Image();
+              img.onerror = function () {
+                reject(new Error("decode-failed"));
+              };
+              img.onload = function () {
+                var scale = Math.min(1, MAX / Math.max(img.width, img.height));
+                var w = Math.round(img.width * scale);
+                var h = Math.round(img.height * scale);
+                var canvas = document.createElement("canvas");
+                canvas.width = w;
+                canvas.height = h;
+                canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+                resolve(canvas.toDataURL("image/jpeg", 0.82));
+              };
+              img.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+
+        fileInput.addEventListener("change", function () {
+          var file = fileInput.files && fileInput.files[0];
+          if (!file) return;
+          photoText.textContent = "Reading your photo…";
+          processFile(file)
+            .then(function (dataUrl) {
+              imageDataUrl = dataUrl;
+              preview.innerHTML = '<img alt="Your work" src="' + dataUrl + '" />';
+              preview.classList.remove("hidden");
+              photoText.textContent = "Retake photo";
+              coachBtn.disabled = false;
+            })
+            .catch(function () {
+              photoText.textContent = "Take a photo of your work";
+              showReply(
+                "Hmm, I couldn't open that picture. Please try taking the photo again.",
+                true,
+              );
+            });
+        });
+
+        function showReply(text, isError) {
+          replyText.textContent = text;
+          replyHead.textContent = isError ? "😕 Let's try again" : "🤖 Your coach says";
+          replyCard.classList.toggle("error", !!isError);
+          replyCard.classList.remove("hidden");
+          replyCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+
+        coachBtn.addEventListener("click", function () {
+          if (!imageDataUrl) return;
+          var original = coachBtn.textContent;
+          coachBtn.disabled = true;
+          coachBtn.innerHTML = '<span class="spinner"></span> Thinking…';
+          replyCard.classList.add("hidden");
+
+          fetch("/api/tutor", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              mode: "photo",
+              itemText: (problemEl.value || "").slice(0, 2000),
+              image: imageDataUrl,
+            }),
+          })
+            .then(function (r) {
+              return r.json().catch(function () {
+                return null;
+              });
+            })
+            .then(function (data) {
+              if (data && data.ok && data.reply) {
+                showReply(data.reply, false);
+              } else if (data && data.offline) {
+                showReply(
+                  "Your coach is resting right now. Ask your teacher, or try again in a little while.",
+                  true,
+                );
+              } else {
+                showReply(
+                  "I couldn't read that one. Make sure your writing is clear and the photo is bright, then try again.",
+                  true,
+                );
+              }
+            })
+            .catch(function () {
+              showReply("Something went wrong reaching your coach. Please try again.", true);
+            })
+            .finally(function () {
+              coachBtn.disabled = false;
+              coachBtn.textContent = original;
+            });
+        });
+
+        againBtn.addEventListener("click", function () {
+          imageDataUrl = null;
+          fileInput.value = "";
+          preview.innerHTML = "";
+          preview.classList.add("hidden");
+          photoText.textContent = "Take a photo of your work";
+          coachBtn.disabled = true;
+          replyCard.classList.add("hidden");
+          fileInput.focus();
+        });
+      })();
+    </script>
+  </body>
+</html>

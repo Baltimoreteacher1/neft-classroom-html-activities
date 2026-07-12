@@ -65,6 +65,7 @@ export const SKIP_TOPLEVEL = new Set([
   "personal", // private (event planning, family pages) — not classroom activities
   "futures", // concept/demo/roadmap pages — not student activities
   "access-teacher", // teacher-facing surface
+  "work-coach", // stateless AI photo-coaching tool — no progress to save/resume
 ]);
 
 // Filename patterns that are not student-facing activities.
