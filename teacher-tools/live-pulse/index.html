@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Live Class Pulse · Neft Teacher</title>
+    <meta
+      name="description"
+      content="A real-time view of the class as students work: mastery by standard, common misconceptions, and a live activity feed."
+    />
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #1fa6a2;
+        --amber: #f2c15b;
+        --coral: #d9795d;
+        --green: #19a35a;
+        --cream: #f7f4ec;
+        --line: #e4ebf2;
+        --ink: #1a2b3c;
+        --muted: #54677c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        color: var(--ink);
+        background: var(--cream);
+        line-height: 1.5;
+      }
+      .top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px 20px;
+        background: var(--navy);
+        color: #fff;
+      }
+      .top h1 {
+        font-size: 1.2rem;
+        margin: 0;
+      }
+      .live-dot {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .live-dot .d {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: pulse 1.4s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .live-dot .d {
+          animation: none;
+        }
+      }
+      .top button {
+        min-height: 40px;
+        padding: 0 16px;
+        border: 0;
+        border-radius: 10px;
+        background: #fff;
+        color: var(--navy);
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 18px;
+      }
+      @media (max-width: 780px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: 0 2px 10px rgba(12, 27, 42, 0.06);
+        padding: 18px;
+        margin-bottom: 18px;
+      }
+      .card h2 {
+        margin: 0 0 12px;
+        font-size: 1.1rem;
+        color: var(--navy);
+      }
+      .stat-row {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+      }
+      .stat {
+        flex: 1;
+        min-width: 130px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+        text-align: center;
+      }
+      .stat b {
+        display: block;
+        font-size: 1.8rem;
+        color: var(--navy);
+      }
+      .stat span {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .bar-row {
+        margin-bottom: 10px;
+      }
+      .bar-row .lab {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.92rem;
+        margin-bottom: 3px;
+      }
+      .bar {
+        height: 14px;
+        border-radius: 8px;
+        background: #eef3f8;
+        overflow: hidden;
+      }
+      .bar > span {
+        display: block;
+        height: 100%;
+        border-radius: 8px;
+      }
+      .feed {
+        max-height: 420px;
+        overflow: auto;
+      }
+      .ev {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 0.95rem;
+      }
+      .pill {
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 999px;
+      }
+      .ok {
+        background: #e7f6ee;
+        color: var(--green);
+      }
+      .no {
+        background: #fdece7;
+        color: var(--coral);
+      }
+      .tag {
+        display: inline-flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .empty {
+        color: var(--muted);
+        text-align: center;
+        padding: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top">
+      <h1>📡 Live Class Pulse</h1>
+      <div style="display: flex; align-items: center; gap: 14px">
+        <span class="live-dot"><span class="d"></span> <span id="liveLabel">Live</span></span>
+        <button id="pauseBtn" type="button">⏸ Pause</button>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="stat-row">
+        <div class="stat"><b id="sEvents">–</b><span>answers (last 200)</span></div>
+        <div class="stat"><b id="sAccuracy">–</b><span>class accuracy</span></div>
+        <div class="stat"><b id="sStandards">–</b><span>standards active</span></div>
+        <div class="stat"><b id="sRecent">–</b><span>in the last 5 min</span></div>
+      </div>
+
+      <div class="grid">
+        <div>
+          <div class="card">
+            <h2>Mastery by standard</h2>
+            <div id="standards">
+              <div class="empty">Waiting for the class to start working…</div>
+            </div>
+          </div>
+          <div class="card">
+            <h2>⚠️ Common misconceptions right now</h2>
+            <div id="misconceptions"><div class="empty">None flagged yet.</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Live activity</h2>
+          <div class="feed" id="feed"><div class="empty">No answers yet.</div></div>
+        </div>
+      </div>
+      <p class="muted" style="text-align: center; margin-top: 12px">
+        Class-wide, live from the interactive games. Refreshes every few seconds.
+      </p>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+        var running = true;
+        var timer = null;
+
+        function pct(a, b) {
+          return b ? Math.round((a / b) * 100) : 0;
+        }
+        function esc(s) {
+          return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+          });
+        }
+        function ago(iso) {
+          var t = Date.parse(iso);
+          if (isNaN(t)) return "";
+          var s = Math.max(0, (Date.now() - t) / 1000);
+          if (s < 60) return Math.floor(s) + "s ago";
+          if (s < 3600) return Math.floor(s / 60) + "m ago";
+          return Math.floor(s / 3600) + "h ago";
+        }
+        function barColor(p) {
+          return p >= 80 ? "#19a35a" : p >= 55 ? "#f2c15b" : "#d9795d";
+        }
+
+        function render(events) {
+          var n = events.length;
+          document.getElementById("sEvents").textContent = n;
+          if (!n) return;
+          var correct = 0,
+            byStd = {},
+            misc = {},
+            recent = 0;
+          var fiveMin = Date.now() - 5 * 60 * 1000;
+          events.forEach(function (e) {
+            if (e.correct) correct++;
+            var s = e.standard || "—";
+            byStd[s] = byStd[s] || { c: 0, t: 0 };
+            byStd[s].c += e.correct ? 1 : 0;
+            byStd[s].t += 1;
+            if (e.misconceptionTag) misc[e.misconceptionTag] = (misc[e.misconceptionTag] || 0) + 1;
+            if (Date.parse(e.createdAt) >= fiveMin) recent++;
+          });
+          document.getElementById("sAccuracy").textContent = pct(correct, n) + "%";
+          document.getElementById("sStandards").textContent = Object.keys(byStd).filter(
+            function (k) {
+              return k !== "—";
+            },
+          ).length;
+          document.getElementById("sRecent").textContent = recent;
+
+          // Standards bars (sorted by most attempts)
+          var std = Object.keys(byStd).sort(function (a, b) {
+            return byStd[b].t - byStd[a].t;
+          });
+          document.getElementById("standards").innerHTML =
+            std
+              .map(function (k) {
+                var d = byStd[k],
+                  p = pct(d.c, d.t);
+                return (
+                  '<div class="bar-row"><div class="lab"><b>' +
+                  esc(k) +
+                  "</b><span>" +
+                  p +
+                  "% · " +
+                  d.t +
+                  " tries</span></div>" +
+                  '<div class="bar"><span style="width:' +
+                  p +
+                  "%;background:" +
+                  barColor(p) +
+                  '"></span></div></div>'
+                );
+              })
+              .join("") || '<div class="empty">Waiting…</div>';
+
+          // Misconceptions (sorted by count)
+          var mk = Object.keys(misc).sort(function (a, b) {
+            return misc[b] - misc[a];
+          });
+          document.getElementById("misconceptions").innerHTML = mk.length
+            ? mk
+                .map(function (k) {
+                  return (
+                    '<div class="tag"><span>' +
+                    esc(k) +
+                    '</span><b class="muted">×' +
+                    misc[k] +
+                    "</b></div>"
+                  );
+                })
+                .join("")
+            : '<div class="empty">None flagged yet.</div>';
+
+          // Feed (most recent first — events already DESC)
+          document.getElementById("feed").innerHTML = events
+            .slice(0, 60)
+            .map(function (e) {
+              return (
+                '<div class="ev"><span class="pill ' +
+                (e.correct ? "ok" : "no") +
+                '">' +
+                (e.correct ? "✓" : "✗") +
+                "</span>" +
+                "<span><b>" +
+                esc(e.gameId || "activity") +
+                "</b> " +
+                (e.standard ? '<span class="muted">· ' + esc(e.standard) + "</span>" : "") +
+                "</span><span class='muted' style='margin-left:auto'>" +
+                esc(ago(e.createdAt)) +
+                "</span></div>"
+              );
+            })
+            .join("");
+        }
+
+        function poll() {
+          fetch("/api/scores")
+            .then(function (r) {
+              return r.json().catch(function () {
+                return null;
+              });
+            })
+            .then(function (data) {
+              document.getElementById("liveLabel").textContent = "Live";
+              if (data && data.ok && Array.isArray(data.events)) render(data.events);
+            })
+            .catch(function () {
+              document.getElementById("liveLabel").textContent = "Reconnecting…";
+            });
+        }
+
+        function schedule() {
+          if (timer) clearTimeout(timer);
+          if (!running) return;
+          poll();
+          timer = setTimeout(schedule, 6000);
+        }
+
+        document.getElementById("pauseBtn").addEventListener("click", function () {
+          running = !running;
+          this.textContent = running ? "⏸ Pause" : "▶ Resume";
+          document.getElementById("liveLabel").textContent = running ? "Live" : "Paused";
+          if (running) schedule();
+          else if (timer) clearTimeout(timer);
+        });
+
+        schedule();
+      })();
+    </script>
+  </body>
+</html>
