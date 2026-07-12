@@ -47,7 +47,16 @@ const CAP = {
   imageB64: 4_000_000,
 };
 
-const MODES = new Set(["hint", "explain", "another", "diagnose", "teach", "photo", "solve"]);
+const MODES = new Set([
+  "hint",
+  "explain",
+  "another",
+  "diagnose",
+  "teach",
+  "photo",
+  "solve",
+  "translate",
+]);
 
 // Media types Claude's vision API accepts.
 const IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
@@ -122,6 +131,9 @@ function parseBody(body) {
 
   const standard = clampStr(body.standard, CAP.standard);
   const studentWork = clampStr(body.studentWork, CAP.studentWork);
+  // Target language for translate mode (plain language name, e.g. "Spanish").
+  const lang = clampStr(body.lang, 40);
+  if (mode === "translate" && !lang) return { ok: false, error: "missing-lang" };
 
   let history = [];
   if (Array.isArray(body.history)) {
@@ -137,11 +149,19 @@ function parseBody(body) {
 
   return {
     ok: true,
-    value: { mode, standard, itemText, studentWork, history, image },
+    value: { mode, standard, itemText, studentWork, history, image, lang },
   };
 }
 
-function systemPrompt(mode, standard) {
+function systemPrompt(mode, standard, lang) {
+  if (mode === "translate") {
+    return (
+      `You are a translator for a Grade 6 math class. Translate the text the student sends into ` +
+      `${lang}. Keep all numbers, math symbols, and math notation exactly as they are. Use simple, ` +
+      `natural, grade-appropriate wording. Output ONLY the translation — no preface, no explanation, ` +
+      `no romanization.`
+    );
+  }
   const stdLine = standard ? `The problem targets math standard ${standard}. ` : "";
   const base =
     `You are a warm, patient Grade 6 math tutor for a multilingual classroom. ${stdLine}` +
@@ -225,6 +245,7 @@ function systemPrompt(mode, standard) {
 }
 
 function userPrompt(v) {
+  if (v.mode === "translate") return v.itemText;
   const lines = [];
   if (v.itemText) lines.push(`Problem the student is working on:\n${v.itemText}`);
   if (v.studentWork) lines.push(`\nWhat the student has tried so far:\n${v.studentWork}`);
@@ -286,8 +307,8 @@ async function callClaude(env, v) {
     },
     body: JSON.stringify({
       model: CLAUDE_MODEL,
-      max_tokens: CAP.output,
-      system: systemPrompt(v.mode, v.standard),
+      max_tokens: v.mode === "translate" ? 1500 : CAP.output,
+      system: systemPrompt(v.mode, v.standard, v.lang),
       messages,
     }),
   });
