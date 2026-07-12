@@ -89,6 +89,15 @@ const REGISTRY = {
     window.NeftLineGrapher?.init?.(el);
     return null; // stateless widget; listeners are node-local and GC on detach
   },
+  "cross-section": async (host, cfg) => {
+    const { renderCrossSection } = await import("../components/cross-section.js");
+    return renderCrossSection(host, {
+      shape: cfg.shape || "rectangular-prism",
+      w: cfg.w,
+      d: cfg.d,
+      h: cfg.h,
+    });
+  },
   // Generic bridge for any shared/projects "manip-<name>.js" widget that
   // registers window.NeftManips["<name>"] = init. Config:
   //   { kind: "manip", manip: "number-line", attrs: { range: 120, unit: "m" } }

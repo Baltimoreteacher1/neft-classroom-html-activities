@@ -602,6 +602,13 @@ function buildVisual(v) {
         fallback: `Interactive grapher for ${yN} versus ${xN}. Turn on JavaScript to drag the line and read values.`,
       });
     }
+    case "cross-section": {
+      const shapeName = String(v.shape || "rectangular-prism").replace(/-/g, " ");
+      return interactiveVisualHost(v, {
+        ariaLabel: `Interactive cross-section explorer for a ${shapeName}. Move the slice plane up and down to see the 2D shape each slice makes.`,
+        fallback: `Cross-section explorer for a ${shapeName}. Turn on JavaScript to slice it and see the 2D cross-sections.`,
+      });
+    }
     case "manip": {
       // Any shared/projects manipulative (number-line, fraction-bar,
       // algebra-tiles, …) surfaced via the interactive-visual bridge.
