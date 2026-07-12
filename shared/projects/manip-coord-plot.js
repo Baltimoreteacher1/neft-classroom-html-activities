@@ -247,4 +247,9 @@
       document.querySelectorAll('.pki-manip[data-manip="coord-plot"]').forEach(init);
     }, 900);
   });
+
+  if (typeof window !== "undefined") {
+    window.NeftManips = window.NeftManips || {};
+    window.NeftManips["coord-plot"] = init;
+  }
 })();

@@ -286,4 +286,9 @@
       document.querySelectorAll('.pki-manip[data-manip="frac-divide"]').forEach(init);
     }, 900);
   });
+
+  if (typeof window !== "undefined") {
+    window.NeftManips = window.NeftManips || {};
+    window.NeftManips["frac-divide"] = init;
+  }
 })();

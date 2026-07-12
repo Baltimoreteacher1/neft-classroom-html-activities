@@ -253,4 +253,9 @@
       document.querySelectorAll('.pki-manip[data-manip="dot-plot"]').forEach(init);
     }, 900);
   });
+
+  if (typeof window !== "undefined") {
+    window.NeftManips = window.NeftManips || {};
+    window.NeftManips["dot-plot"] = init;
+  }
 })();
