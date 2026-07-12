@@ -125,6 +125,28 @@ function classify(route, forbidMarkers, r) {
   const label = route.label || route.path;
   if (!r.ok) return { level: "fail", note: `unreachable — ${r.error}` };
 
+  // Explicit status expectation — lets a route assert a NEGATIVE/runtime path,
+  // e.g. /api/scorm on a bogus target must 404 (proves the target-exists
+  // validation runs in production, not just in the source guard). Still checks
+  // forbidden + required markers so a 404 page must be OUR error page.
+  if (route.expectStatus) {
+    if (r.status !== route.expectStatus)
+      return { level: "fail", note: `status ${r.status} (expected ${route.expectStatus})` };
+    const forbid = presentMarkers(r.body, forbidMarkers);
+    if (forbid.length)
+      return { level: "fail", note: `foreign-app marker present: "${forbid[0]}"` };
+    const miss = missingMarkers(r.body, route.requireMarkers);
+    if (miss.length)
+      return {
+        level: "fail",
+        note: `${r.status} but missing marker(s): ${miss.map((m) => `"${m}"`).join(", ")}`,
+      };
+    return {
+      level: "ok",
+      note: `${r.status} as expected${route.requireMarkers?.length ? ", content verified" : ""}`,
+    };
+  }
+
   const expect = route.expect || "public";
   const forbidHit = presentMarkers(r.body, forbidMarkers);
 
