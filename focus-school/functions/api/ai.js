@@ -244,12 +244,18 @@ export async function onRequestPost({ request, env }) {
 
 // ---- Study Pack ------------------------------------------------------------
 
+// Study Pack generation must finish inside Cloudflare's request budget. The
+// full Pro model emitting a 4k-token JSON pack can take 25s+ and trip a 502, so
+// the pack build uses fast Flash; short Ask replies can stay on the default.
+const STUDY_MODEL = "gemini-flash-latest";
+
 // One-shot Gemini text call (no chat history). Returns the joined text, or
 // null on any failure. `jsonOut` asks Gemini for a raw JSON object.
-async function geminiText(env, systemPrompt, userText, maxTokens, jsonOut) {
+// `modelOverride` forces a specific model (e.g. Flash for speed).
+async function geminiText(env, systemPrompt, userText, maxTokens, jsonOut, modelOverride) {
   if (!env.GEMINI_API_KEY) return null;
   try {
-    const model = clampStr(env.GEMINI_MODEL, 60) || DEFAULT_MODEL;
+    const model = modelOverride || clampStr(env.GEMINI_MODEL, 60) || DEFAULT_MODEL;
     const url =
       "https://generativelanguage.googleapis.com/v1beta/models/" +
       encodeURIComponent(model) +
@@ -257,21 +263,31 @@ async function geminiText(env, systemPrompt, userText, maxTokens, jsonOut) {
       encodeURIComponent(env.GEMINI_API_KEY);
     const generationConfig = { maxOutputTokens: maxTokens, temperature: jsonOut ? 0.4 : 0.7 };
     if (jsonOut) generationConfig.responseMimeType = "application/json";
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: systemPrompt }] },
-        contents: [{ role: "user", parts: [{ text: userText }] }],
-        generationConfig,
-        safetySettings: [
-          "HARM_CATEGORY_HARASSMENT",
-          "HARM_CATEGORY_HATE_SPEECH",
-          "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-          "HARM_CATEGORY_DANGEROUS_CONTENT",
-        ].map((category) => ({ category, threshold: "BLOCK_MEDIUM_AND_ABOVE" })),
-      }),
-    });
+    // Bound the upstream call so a slow model returns a clean 503 from our
+    // handler instead of the platform killing the request with a raw 502.
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 22_000);
+    let res;
+    try {
+      res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: ctrl.signal,
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          contents: [{ role: "user", parts: [{ text: userText }] }],
+          generationConfig,
+          safetySettings: [
+            "HARM_CATEGORY_HARASSMENT",
+            "HARM_CATEGORY_HATE_SPEECH",
+            "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            "HARM_CATEGORY_DANGEROUS_CONTENT",
+          ].map((category) => ({ category, threshold: "BLOCK_MEDIUM_AND_ABOVE" })),
+        }),
+      });
+    } finally {
+      clearTimeout(timer);
+    }
     if (!res.ok) return null;
     const data = await res.json();
     return (data.candidates?.[0]?.content?.parts || [])
@@ -299,7 +315,7 @@ async function handleStudyPack(env, body, mode) {
   if (notes.length < 20) return json({ error: "Please paste a little more of your notes." }, 400);
   const subjectHint = clampStr(body && body.subjectHint, 120);
   const { system, user } = buildStudyPackPrompt(notes, { subjectHint });
-  const text = await geminiText(env, system, user, 4000, true);
+  const text = await geminiText(env, system, user, 4000, true, STUDY_MODEL);
   if (!text) return json({ offline: true, error: "study-unavailable" }, 503);
   const pack = coerceStudyPack(extractJsonObject(text));
   if (!pack) return json({ error: "bad-generation" }, 502);
