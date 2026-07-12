@@ -67,10 +67,14 @@
   var musicTimer = null;
 
   var lastPointer = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-  window.addEventListener("pointerdown", function (e) {
-    lastPointer.x = e.clientX;
-    lastPointer.y = e.clientY;
-  }, true);
+  window.addEventListener(
+    "pointerdown",
+    function (e) {
+      lastPointer.x = e.clientX;
+      lastPointer.y = e.clientY;
+    },
+    true,
+  );
 
   function spawnFloatingScore(text, x, y) {
     if (reduce) return;
@@ -80,7 +84,7 @@
     bubble.style.top = y + "px";
     bubble.textContent = text;
     document.body.appendChild(bubble);
-    setTimeout(function() {
+    setTimeout(function () {
       bubble.remove();
     }, 800);
   }
@@ -92,7 +96,7 @@
     shock.style.left = x + "px";
     shock.style.top = y + "px";
     document.body.appendChild(shock);
-    setTimeout(function() {
+    setTimeout(function () {
       shock.remove();
     }, 600);
   }
@@ -107,34 +111,19 @@
     flash.style.zIndex = "100002";
     document.body.appendChild(flash);
     try {
-      var anim = flash.animate([
-        { opacity: 1 },
-        { opacity: 0 }
-      ], { duration: 300 });
-      anim.onfinish = function() { flash.remove(); };
-    } catch(e) { flash.remove(); }
-  }
-
-  function triggerScreenGlitch(duration) {
-    if (reduce) return;
-    document.body.classList.add("crt-glitch");
-    setTimeout(function() {
-      document.body.classList.remove("crt-glitch");
-    }, duration || 250);
-  }
-
-  // Hook into Phaser GameJuice wrong audio to trigger CRT glitch
-  try {
-    if (window.GameJuice && window.GameJuice.audio) {
-      var origWrong = window.GameJuice.audio.wrong;
-      if (typeof origWrong === "function") {
-        window.GameJuice.audio.wrong = function() {
-          origWrong.apply(this, arguments);
-          triggerScreenGlitch(300);
-        };
-      }
+      var anim = flash.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300 });
+      anim.onfinish = function () {
+        flash.remove();
+      };
+    } catch (e) {
+      flash.remove();
     }
-  } catch(e) {}
+  }
+
+  // Screen-warp glitch removed — it distorted the game and hurt readability.
+  // Kept as a no-op so the GameFX.glitch API and existing callers stay valid;
+  // wrong-answer audio/flash feedback is unaffected.
+  function triggerScreenGlitch() {}
 
   function drawBezelEqualizer() {
     var canvas = document.getElementById("gfx-equalizer");
@@ -147,115 +136,33 @@
       setTimeout(drawBezelEqualizer, 100);
       return;
     }
-    
+
     var w = canvas.width;
     var h = canvas.height;
-    
+
     function draw() {
       requestAnimationFrame(draw);
       ctx2d.clearRect(0, 0, w, h);
-      
+
       var data = null;
       if (AudioSynth.analyser && AudioSynth.analyserData) {
         AudioSynth.analyser.getByteFrequencyData(AudioSynth.analyserData);
         data = AudioSynth.analyserData;
       }
-      
+
       var barW = w / 8;
       ctx2d.fillStyle = "#38bdf8"; // Neon Sky Blue
-      
+
       for (var i = 0; i < 8; i++) {
         var val = data ? data[i] : 0;
         var barH = (val / 255) * h * 0.85 + 2; // scale and add baseline height
         var x = i * barW + 1;
         var y = h - barH;
-        
+
         ctx2d.fillRect(x, y, barW - 2, barH);
       }
     }
     draw();
-  }
-
-  function triggerBiosBoot() {
-    AudioSynth.muffle();
-    if (reduce) {
-      document.body.classList.add("crt-active");
-      var scan = document.createElement("div");
-      scan.className = "gfx-scanlines";
-      document.body.appendChild(scan);
-      AudioSynth.unmuffle();
-      return;
-    }
-    
-    var bios = document.createElement("div");
-    bios.id = "gfx-bios-screen";
-    bios.innerHTML = '<div class="bios-line bios-orange">EDU WONDER LAB ARCADE CORE SYSTEM v2.5</div>' +
-                     '<div class="bios-line">SYSTEM MEMORY: 640KB OK</div>' +
-                     '<div id="bios-lines-container"></div>' +
-                     '<div class="bios-line" style="margin-top:10px;"><span id="bios-curr-line"></span><span class="bios-cursor"></span></div>';
-    document.body.appendChild(bios);
-    
-    var container = document.getElementById("bios-lines-container");
-    var curr = document.getElementById("bios-curr-line");
-    
-    var lines = [
-      { text: "INITIALIZING RETRO SYNTHESIZER MELODY ENGINE...", color: "" },
-      { text: "AUDIO CHANNEL 1: SQUARE WAVE ACTIVE [OK]", color: "bios-green" },
-      { text: "AUDIO CHANNEL 2: TRIANGLE BASS WAVE ACTIVE [OK]", color: "bios-green" },
-      { text: "AUDIO CHANNEL 3: WHITE NOISE DRUM ENVELOPE ACTIVE [OK]", color: "bios-green" },
-      { text: "DETECTING CORE COMPONENT: PHASER ENGINE CONTROLLER...", color: "" },
-      { text: "EMULATION SHADER LAYER CURVATURE ENGINE ACTIVE [OK]", color: "bios-green" },
-      { text: "MATH INTERACTION GRADING CO-PROCESSOR ONLINE [OK]", color: "bios-green" },
-      { text: "CRT BARREL DISTORTION INTERFERENCE SCREEN ONLINE [OK]", color: "bios-green" },
-      { text: "LOADING GRAPHICS MEMORY FLUSH RESUME CACHE...", color: "bios-orange" },
-      { text: "BOOT COMPLETED SUCCESS. ENJOY CLASSROOM PLAY!", color: "bios-green" }
-    ];
-    
-    var lineIdx = 0;
-    var charIdx = 0;
-    
-    function typeChar() {
-      if (lineIdx >= lines.length) {
-        setTimeout(function() {
-          bios.animate([
-            { opacity: 1, filter: "blur(0px)" },
-            { opacity: 0, filter: "blur(8px)" }
-          ], { duration: 300, fill: "forwards" }).onfinish = function() {
-            bios.remove();
-            document.body.classList.add("crt-active");
-            var scan = document.createElement("div");
-            scan.className = "gfx-scanlines";
-            document.body.appendChild(scan);
-            AudioSynth.unmuffle();
-          };
-        }, 400);
-        return;
-      }
-      
-      var l = lines[lineIdx];
-      if (charIdx === 0) {
-        AudioSynth.playTone(600 + Math.random() * 400, "sine", 0.02, 0.005);
-      }
-      
-      curr.textContent += l.text[charIdx];
-      charIdx++;
-      
-      if (charIdx >= l.text.length) {
-        var div = document.createElement("div");
-        div.className = "bios-line " + l.color;
-        div.textContent = curr.textContent;
-        container.appendChild(div);
-        
-        curr.textContent = "";
-        charIdx = 0;
-        lineIdx++;
-        setTimeout(typeChar, 80 + Math.random() * 50);
-      } else {
-        setTimeout(typeChar, 10 + Math.random() * 15);
-      }
-    }
-    
-    setTimeout(typeChar, 150);
   }
 
   function translateDOM(isEs) {
@@ -320,7 +227,7 @@
         vy: Math.sin(angle) * speed - 2,
         alpha: 1,
         decay: 0.02 + Math.random() * 0.02,
-        scale: 1.2 + Math.random() * 0.6
+        scale: 1.2 + Math.random() * 0.6,
       });
     }
 
@@ -339,7 +246,8 @@
         p.el.style.left = p.x + "px";
         p.el.style.top = p.y + "px";
         p.el.style.opacity = p.alpha;
-        p.el.style.transform = "translate(-50%, -50%) scale(" + p.scale + ") rotate(" + (p.alpha * 360) + "deg)";
+        p.el.style.transform =
+          "translate(-50%, -50%) scale(" + p.scale + ") rotate(" + p.alpha * 360 + "deg)";
         if (p.alpha > 0) {
           active = true;
         } else {
@@ -395,63 +303,65 @@
       try {
         var AudioContextClass = window.AudioContext || window.webkitAudioContext;
         this.ctx = new AudioContextClass();
-        
+
         // 1. Main LPF Filter Node
         this.filter = this.ctx.createBiquadFilter();
         this.filter.type = "lowpass";
         this.filter.frequency.setValueAtTime(2000, this.ctx.currentTime);
         this.filter.connect(this.ctx.destination);
-        
+
         // 2. Feedback Delay Echo unit (Reverb emulation)
         this.delay = this.ctx.createDelay(1.0);
         this.delay.delayTime.setValueAtTime(0.18, this.ctx.currentTime); // 180ms delay
-        
+
         this.delayGain = this.ctx.createGain();
         this.delayGain.gain.setValueAtTime(0.35, this.ctx.currentTime); // 35% feedback loop volume
-        
+
         this.delay.connect(this.delayGain);
         this.delayGain.connect(this.delay);
-        
+
         this.delay.connect(this.filter);
 
         // 3. Audio-Reactive AnalyserNode
         this.analyser = this.ctx.createAnalyser();
         this.analyser.fftSize = 32;
         this.filter.connect(this.analyser);
-        
+
         this.analyserData = new Uint8Array(this.analyser.frequencyBinCount);
       } catch (e) {}
     },
-    startHum: function() {
+    startHum: function () {
       this.init();
       if (!this.ctx || this.humOsc) return;
       try {
         this.humOsc = this.ctx.createOscillator();
         this.humGain = this.ctx.createGain();
-        
+
         this.humOsc.frequency.setValueAtTime(55, this.ctx.currentTime); // 55Hz cabinet power hum
         this.humOsc.type = "sine";
         this.humGain.gain.setValueAtTime(0.003, this.ctx.currentTime); // very subtle
-        
+
         this.humOsc.connect(this.humGain);
         this.humGain.connect(this.filter || this.ctx.destination);
         this.humOsc.start();
-      } catch(e) {}
+      } catch (e) {}
     },
-    stopHum: function() {
+    stopHum: function () {
       if (this.humOsc) {
-        try { this.humOsc.stop(); } catch(e) {}
+        try {
+          this.humOsc.stop();
+        } catch (e) {}
         this.humOsc = null;
         this.humGain = null;
       }
     },
-    muffle: function() {
+    muffle: function () {
       this.init();
       if (this.filter && this.ctx) {
         this.filter.frequency.exponentialRampToValueAtTime(350, this.ctx.currentTime + 0.3);
       }
     },
-    unmuffle: function() {
+    unmuffle: function () {
       this.init();
       if (this.filter && this.ctx) {
         this.filter.frequency.exponentialRampToValueAtTime(2000, this.ctx.currentTime + 0.3);
@@ -475,11 +385,11 @@
         // Gold-Standard FM Synthesis: Modulator voice
         var modulator = this.ctx.createOscillator();
         var modGain = this.ctx.createGain();
-        
+
         // Metallic FM ratio (2:1 frequency ratio, modulation depth indexing on carrier frequency)
         modulator.frequency.setValueAtTime(freq * 2, t);
         modGain.gain.setValueAtTime(freq * 0.35, t);
-        
+
         modulator.connect(modGain);
         modGain.connect(carrier.frequency);
 
@@ -488,7 +398,7 @@
 
         carrier.start(t);
         modulator.start(t);
-        
+
         carrier.stop(t + duration);
         modulator.stop(t + duration);
       } catch (e) {}
@@ -506,15 +416,15 @@
         }
         var noiseSource = this.ctx.createBufferSource();
         noiseSource.buffer = buffer;
-        
+
         var gain = this.ctx.createGain();
         gain.gain.setValueAtTime(vol || 0.05, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-        
+
         noiseSource.connect(gain);
         gain.connect(this.filter || this.ctx.destination);
         if (this.delay) gain.connect(this.delay);
-        
+
         noiseSource.start();
         noiseSource.stop(this.ctx.currentTime + duration);
       } catch (e) {}
@@ -529,7 +439,7 @@
         self.playTone(783.99, "triangle", 0.12, 0.1);
       }, 120);
       setTimeout(function () {
-        self.playTone(1046.50, "sine", 0.18, 0.1);
+        self.playTone(1046.5, "sine", 0.18, 0.1);
       }, 180);
     },
     playError: function () {
@@ -551,10 +461,10 @@
 
       // Pentatonic retro melody progression
       var melody = [
-        329.63, 392.00, 440.00, 523.25, 587.33, 523.25, 440.00, 392.00,
-        329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 587.33, 523.25
+        329.63, 392.0, 440.0, 523.25, 587.33, 523.25, 440.0, 392.0, 329.63, 392.0, 440.0, 523.25,
+        587.33, 659.25, 587.33, 523.25,
       ];
-      var bassProgression = [130.81, 97.99, 110.00, 87.31];
+      var bassProgression = [130.81, 97.99, 110.0, 87.31];
 
       function playBeat() {
         if (!self.playingMusic) return;
@@ -683,7 +593,7 @@
         fill.style.width = "100%";
         if (comboDrainTimer) clearInterval(comboDrainTimer);
         var width = 100;
-        comboDrainTimer = setInterval(function() {
+        comboDrainTimer = setInterval(function () {
           width -= 2.5;
           fill.style.width = width + "%";
           if (width <= 0) {
@@ -977,20 +887,7 @@
     comboInjected: true,
   };
 
-  window.toggleCabinetCRT = function() {
-    var active = document.body.classList.toggle("crt-active");
-    var btn = document.getElementById("sw-crt");
-    if (btn) btn.classList.toggle("active", active);
-  };
-  window.toggleCabinetLines = function() {
-    var el = document.querySelector(".gfx-scanlines");
-    if (el) {
-      var active = el.classList.toggle("scanlines-off");
-      var btn = document.getElementById("sw-lines");
-      if (btn) btn.classList.toggle("active", !active);
-    }
-  };
-  window.toggleCabinetFilter = function() {
+  window.toggleCabinetFilter = function () {
     var btn = document.getElementById("sw-filter");
     if (btn) {
       var active = btn.classList.toggle("active");
@@ -1060,8 +957,7 @@
     // Start background retro music loop (motion-safe users only, one loop max)
     if (!reduce && !hasJuice) AudioSynth.startMusic();
 
-    // Trigger bios boot sequence!
-    triggerBiosBoot();
+    // Games load straight into play — no BIOS boot splash, no CRT screen warp.
 
     // 1. Inject Floating Bilingual, Sound, Contrast, Controls & TTS Toolbar
     var toolbar = document.createElement("div");
@@ -1104,8 +1000,6 @@
     cabinet.id = "gfx-arcade-controls";
     cabinet.className = "no-print";
     cabinet.innerHTML = `
-      <button class="arcade-switch active" id="sw-crt" onclick="toggleCabinetCRT()">📺 CRT</button>
-      <button class="arcade-switch active" id="sw-lines" onclick="toggleCabinetLines()">💈 Scanlines</button>
       <button class="arcade-switch" id="sw-filter" onclick="toggleCabinetFilter()">🎛️ Audio LPF</button>
       <canvas id="gfx-equalizer" width="70" height="24"></canvas>
     `;
@@ -1270,7 +1164,7 @@
 
               var scoreMsg = "+100";
               if (comboStreak >= 3) {
-                scoreMsg = "+" + (100 * comboStreak) + " COMBO!";
+                scoreMsg = "+" + 100 * comboStreak + " COMBO!";
               }
               spawnFloatingScore(scoreMsg, lastPointer.x, lastPointer.y);
 
