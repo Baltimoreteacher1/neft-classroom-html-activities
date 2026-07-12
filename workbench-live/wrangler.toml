@@ -1,0 +1,29 @@
+# Math Workbench — live board sync Worker.
+#
+# Defines the BoardRoom Durable Object that powers "Live Board": a teacher
+# broadcasts their workbench to the class and every student's screen follows
+# along in real time. A Durable Object cannot be defined inside the Cloudflare
+# Pages project (eduwonderlab.com), so it lives here as its own Worker and the
+# frontend connects to it directly over WebSocket at its workers.dev URL.
+#
+# Deploy:  cd workbench-live && ALLOW_DEPLOY=1 npx wrangler deploy
+#
+# Privacy: the room only ever carries the TEACHER's board. No student data is
+# sent anywhere — students are view-only followers. State is ephemeral (kept in
+# the Durable Object; no KV, no database, no persistence beyond the live lesson).
+
+name = "workbench-live"
+main = "src/board-room.js"
+compatibility_date = "2026-05-25"
+workers_dev = true
+
+# The Durable Object this Worker defines and coordinates through — one instance
+# per class code (idFromName(code)), so every device on a code shares one actor.
+[[durable_objects.bindings]]
+name = "BOARD_ROOM"
+class_name = "BoardRoom"
+
+# SQLite-backed Durable Object (free-tier eligible, recommended default).
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["BoardRoom"]

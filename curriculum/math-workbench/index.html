@@ -2671,6 +2671,14 @@
           >
             <span class="i">💡</span><span class="txt">Math Coach</span>
           </button>
+          <button
+            class="tbtn premium"
+            id="liveBtn"
+            title="Broadcast your board to the class, or follow your teacher live"
+            aria-pressed="false"
+          >
+            <span class="i">📡</span><span class="txt">Live Board</span>
+          </button>
           <button class="tbtn" id="undoBtn" title="Undo (Ctrl+Z)" disabled>
             <span class="i">↶</span><span class="txt">Undo</span>
           </button>
@@ -3173,6 +3181,11 @@
       /* ----------------------- Persistence ----------------------- */
       const LS_KEY = "neft.mathWorkbench.v1";
       let saveTimer = null;
+      // Live Board hooks: set while broadcasting / following (see the Live Board
+      // module below). liveFollowing gates the localStorage write so a student
+      // mirroring the teacher never overwrites their own saved pages.
+      let liveTeacherOnChange = null;
+      let liveFollowing = false;
       function boardData(b) {
         return {
           strokes: b.strokes,
@@ -3223,6 +3236,9 @@
       }
       let saveFailNotified = false;
       function writeNow() {
+        // While following a live broadcast the on-screen board is the teacher's,
+        // not the student's own work — never persist it over their saved pages.
+        if (liveFollowing) return false;
         const pill = $("#savePill");
         try {
           localStorage.setItem(LS_KEY, notebookSnapshot());
@@ -3248,6 +3264,8 @@
         if (pill) pill.textContent = "Saving…";
         clearTimeout(saveTimer);
         saveTimer = setTimeout(writeNow, 350);
+        // If broadcasting live, let the Live Board module push this change out.
+        if (liveTeacherOnChange) liveTeacherOnChange();
       }
       // Commit any debounced save immediately on exit so the last strokes are
       // never lost when a student closes the tab or switches apps.
@@ -8838,6 +8856,309 @@
           }
         } catch (e) {}
       }
+      /* ===================== Live Board =====================
+         A teacher broadcasts this board to a class code; every student on that
+         code follows along live and view-only. Reuses snapshot()/applySnap();
+         the only data that ever leaves a device is the teacher's own board. */
+      (function liveBoard() {
+        const WS_URL = "wss://workbench-live.neftjd.workers.dev/live";
+        const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no O/0/I/1
+        const liveBtn = document.getElementById("liveBtn");
+        if (!liveBtn || !("WebSocket" in window)) return;
+
+        const style = document.createElement("style");
+        style.textContent =
+          ".live-panel{position:fixed;top:92px;right:24px;z-index:9999;width:320px;max-width:94vw;" +
+          "background:#fff;border:1px solid #cdd8e3;border-radius:14px;box-shadow:0 18px 50px rgba(18,53,91,.28);" +
+          'overflow:hidden;font-family:"Atkinson Hyperlegible","Nunito",sans-serif}' +
+          ".live-panel[hidden]{display:none}" +
+          ".live-head{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;" +
+          "background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff}" +
+          ".live-title{font-weight:900}" +
+          ".live-x{border:none;background:rgba(255,255,255,.2);color:#fff;border-radius:7px;width:26px;height:26px;cursor:pointer;font-size:.85rem}" +
+          ".live-body{padding:12px 14px 14px}" +
+          ".live-lead{margin:0 0 10px;font-size:.86rem;color:#14223a;line-height:1.4}" +
+          ".live-btn{width:100%;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:10px;" +
+          "font:inherit;font-weight:800;font-size:.86rem;color:var(--indigo);cursor:pointer;margin-top:6px}" +
+          ".live-btn.primary{color:#fff;border-color:transparent;background:linear-gradient(135deg,#7c3aed,#2563eb)}" +
+          ".live-btn.danger{color:#b91c1c;border-color:#fecaca;background:#fef2f2}" +
+          ".live-or{text-align:center;color:var(--muted);font-size:.74rem;font-weight:800;margin:10px 0 6px}" +
+          ".live-lbl{display:block;font-size:.76rem;font-weight:800;color:var(--muted);margin-bottom:4px}" +
+          ".live-join{display:flex;gap:6px}" +
+          ".live-input{flex:1;border:1.5px solid var(--line);border-radius:9px;padding:8px;font:inherit;font-weight:800;" +
+          "font-size:.95rem;text-transform:uppercase;letter-spacing:.08em;text-align:center}" +
+          ".live-input:focus{outline:none;border-color:var(--teal)}" +
+          ".live-join .live-btn{width:auto;margin-top:0;padding:8px 14px}" +
+          ".live-code{font-family:ui-monospace,Menlo,monospace;font-weight:900;font-size:2rem;letter-spacing:.12em;" +
+          "text-align:center;color:#14223a;background:#f1f5fb;border-radius:10px;padding:10px;margin:4px 0 8px}" +
+          ".live-count{margin:0 0 8px;font-weight:800;font-size:.82rem;color:var(--teal-d,#0f766e);text-align:center}" +
+          ".live-note{margin:8px 0 0;font-size:.72rem;color:var(--muted);line-height:1.35}" +
+          ".live-banner{position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:10000;" +
+          "background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;padding:7px 14px;border-radius:0 0 12px 12px;" +
+          "font-weight:800;font-size:.82rem;box-shadow:0 8px 24px rgba(18,53,91,.3);display:flex;align-items:center;gap:10px}" +
+          ".live-banner button{border:none;background:rgba(255,255,255,.25);color:#fff;border-radius:7px;padding:3px 10px;font-weight:800;cursor:pointer}" +
+          "#liveBtn.live-on{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff}" +
+          "body.wb-following #workspace{pointer-events:none}" +
+          "body.wb-following #rail{pointer-events:none;opacity:.5}" +
+          "body.wb-following .topbar .tbtn:not(#liveBtn){pointer-events:none;opacity:.45}";
+        document.head.appendChild(style);
+
+        const panel = document.createElement("div");
+        panel.className = "live-panel";
+        panel.hidden = true;
+        panel.setAttribute("role", "dialog");
+        panel.setAttribute("aria-label", "Live Board");
+        panel.innerHTML =
+          '<div class="live-head"><span class="live-title">📡 Live Board</span>' +
+          '<button type="button" class="live-x" id="liveClose" aria-label="Close Live Board">✕</button></div>' +
+          '<div class="live-body" id="liveBody"></div>';
+        document.body.appendChild(panel);
+        const body = panel.querySelector("#liveBody");
+
+        let ws = null,
+          role = null,
+          code = null,
+          sendTimer = null,
+          dirty = false,
+          stash = null,
+          manualClose = false,
+          reconnectT = null,
+          tries = 0;
+
+        function genCode() {
+          let s = "";
+          const a = new Uint32Array(4);
+          if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(a);
+          for (let i = 0; i < 4; i++) s += ALPHABET[a[i] % ALPHABET.length];
+          return s;
+        }
+        function normCode(v) {
+          return String(v || "")
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9-]/g, "")
+            .slice(0, 24);
+        }
+        function setActive(on) {
+          liveBtn.setAttribute("aria-pressed", on ? "true" : "false");
+          liveBtn.classList.toggle("live-on", on);
+        }
+        function note(msg) {
+          const n = body.querySelector("#liveNote");
+          if (n) n.textContent = msg || "";
+        }
+        function status(msg) {
+          const s = body.querySelector("#liveStatus") || body.querySelector("#liveCount");
+          if (s) s.textContent = msg;
+        }
+
+        function renderIdle() {
+          setActive(false);
+          body.innerHTML =
+            '<p class="live-lead">Share your board with the class, or follow your teacher.</p>' +
+            '<button type="button" class="live-btn primary" id="liveGoTeacher">👩‍🏫 I’m teaching — Go Live</button>' +
+            '<div class="live-or">— or —</div>' +
+            '<label class="live-lbl" for="liveJoinCode">Follow your teacher’s board</label>' +
+            '<div class="live-join"><input id="liveJoinCode" class="live-input" maxlength="12" placeholder="Code" autocomplete="off" autocapitalize="characters" />' +
+            '<button type="button" class="live-btn" id="liveJoinBtn">Join</button></div>' +
+            '<p class="live-note" id="liveNote"></p>';
+          body.querySelector("#liveGoTeacher").onclick = startTeaching;
+          const inp = body.querySelector("#liveJoinCode");
+          body.querySelector("#liveJoinBtn").onclick = () => startFollowing(inp.value);
+          inp.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              startFollowing(inp.value);
+            }
+          });
+        }
+        function renderTeaching() {
+          setActive(true);
+          body.innerHTML =
+            '<p class="live-lead">Your board is <b>live</b>. Give your class this code:</p>' +
+            '<div class="live-code">' +
+            code.toUpperCase() +
+            "</div>" +
+            '<p class="live-count" id="liveCount">Waiting for students to join…</p>' +
+            '<button type="button" class="live-btn danger" id="liveStop">⏹ Stop broadcasting</button>' +
+            '<p class="live-note">Only your board is shared. Students follow along and can’t change your work.</p>';
+          body.querySelector("#liveStop").onclick = () => stopAll();
+        }
+        function renderFollowing() {
+          setActive(true);
+          body.innerHTML =
+            '<p class="live-lead">You’re following your teacher’s board — <b>view only</b>.</p>' +
+            '<div class="live-code">' +
+            code.toUpperCase() +
+            "</div>" +
+            '<p class="live-count" id="liveStatus">Connecting…</p>' +
+            '<button type="button" class="live-btn" id="liveLeave">🚪 Leave &amp; get my board back</button>';
+          body.querySelector("#liveLeave").onclick = () => stopAll();
+        }
+
+        function startTeaching() {
+          code = genCode().toLowerCase();
+          role = "teacher";
+          renderTeaching();
+          connect();
+        }
+        function scheduleSend() {
+          dirty = true;
+          if (!sendTimer) sendTimer = setTimeout(flushSend, 500);
+        }
+        function flushSend() {
+          sendTimer = null;
+          if (!dirty || !ws || ws.readyState !== 1 || role !== "teacher") return;
+          dirty = false;
+          try {
+            ws.send(JSON.stringify({ type: "board", snap: snapshot() }));
+          } catch (e) {}
+        }
+
+        function startFollowing(raw) {
+          const c = normCode(raw);
+          if (c.length < 3) {
+            note("Type the class code your teacher shows.");
+            return;
+          }
+          code = c;
+          role = "student";
+          renderFollowing();
+          connect();
+        }
+        function ensureBanner(show) {
+          let b = document.getElementById("liveFollowBanner");
+          if (show) {
+            if (!b) {
+              b = document.createElement("div");
+              b.id = "liveFollowBanner";
+              b.className = "live-banner";
+              b.innerHTML =
+                '📡 Following your teacher — <b>view only</b> <button type="button" id="liveBannerLeave">Leave</button>';
+              document.body.appendChild(b);
+              b.querySelector("#liveBannerLeave").onclick = () => stopAll();
+            }
+          } else if (b) {
+            b.remove();
+          }
+        }
+        function enterFollow() {
+          if (liveFollowing) return;
+          liveFollowing = true;
+          stash = snapshot(); // keep the student's own work safe
+          document.body.classList.add("wb-following");
+          ensureBanner(true);
+        }
+        function restoreOwn() {
+          document.body.classList.remove("wb-following");
+          ensureBanner(false);
+          if (liveFollowing) {
+            liveFollowing = false;
+            if (stash) {
+              applySnap(stash);
+              stash = null;
+              pushHistory();
+            }
+          }
+        }
+
+        function connect() {
+          manualClose = false;
+          try {
+            ws = new WebSocket(WS_URL + "?code=" + encodeURIComponent(code) + "&role=" + role);
+          } catch (e) {
+            status("Couldn’t connect.");
+            return;
+          }
+          ws.onopen = () => {
+            tries = 0;
+            if (role === "teacher") {
+              liveTeacherOnChange = scheduleSend;
+              dirty = true;
+              flushSend();
+            } else {
+              status("Connected.");
+            }
+          };
+          ws.onmessage = (ev) => {
+            let m;
+            try {
+              m = JSON.parse(ev.data);
+            } catch (e) {
+              return;
+            }
+            if (m.type === "board" && role === "student" && typeof m.snap === "string") {
+              if (!liveFollowing) enterFollow();
+              applySnap(m.snap);
+            } else if (m.type === "count" && role === "teacher") {
+              const c = body.querySelector("#liveCount");
+              if (c)
+                c.textContent =
+                  m.students > 0
+                    ? m.students + " student" + (m.students === 1 ? "" : "s") + " following"
+                    : "Waiting for students to join…";
+            } else if (m.type === "end" && role === "student") {
+              showToast("Your teacher ended the broadcast — your board is back");
+              stopAll();
+            }
+          };
+          ws.onclose = () => {
+            if (manualClose) return;
+            if (tries < 5) {
+              tries++;
+              status("Reconnecting…");
+              reconnectT = setTimeout(connect, Math.min(4000, 500 * Math.pow(2, tries)));
+            } else {
+              status("Disconnected. Tap to try again.");
+            }
+          };
+          ws.onerror = () => {}; // onclose drives reconnect
+        }
+
+        function stopAll() {
+          manualClose = true;
+          tries = 0;
+          if (reconnectT) {
+            clearTimeout(reconnectT);
+            reconnectT = null;
+          }
+          if (sendTimer) {
+            clearTimeout(sendTimer);
+            sendTimer = null;
+          }
+          liveTeacherOnChange = null;
+          if (ws) {
+            try {
+              ws.close();
+            } catch (e) {}
+            ws = null;
+          }
+          if (role === "student") restoreOwn();
+          role = null;
+          code = null;
+          dirty = false;
+          renderIdle();
+        }
+
+        function openPanel() {
+          panel.hidden = false;
+          if (!role) renderIdle();
+        }
+        liveBtn.addEventListener("click", () =>
+          panel.hidden ? openPanel() : (panel.hidden = true),
+        );
+        panel.querySelector("#liveClose").addEventListener("click", () => (panel.hidden = true));
+        window.addEventListener("pagehide", () => {
+          if (ws) {
+            manualClose = true;
+            try {
+              ws.close();
+            } catch (e) {}
+          }
+        });
+        renderIdle();
+      })();
+
       init();
     </script>
 

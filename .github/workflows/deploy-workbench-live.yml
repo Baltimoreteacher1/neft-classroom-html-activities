@@ -1,0 +1,48 @@
+name: Deploy Workbench Live Worker
+# The Math Workbench "Live Board" real-time Worker (BoardRoom Durable Object)
+# CANNOT live in the Cloudflare Pages project (Pages can't define a Durable
+# Object), so it is not covered by the site's push-to-main Pages auto-deploy.
+# This workflow gives it the equivalent: on any push to main that touches the
+# Worker, deploy it via wrangler.
+#
+# One-time enablement: add repo secret CLOUDFLARE_API_TOKEN (Workers Scripts:Edit
+# + Durable Objects). CLOUDFLARE_ACCOUNT_ID is optional if the token is
+# account-scoped. Until the token exists, this job SKIPS (green, with a warning)
+# rather than failing every push. Manual fallback stays:
+#   cd workbench-live && ALLOW_DEPLOY=1 npx wrangler deploy
+on:
+  push:
+    branches: [main]
+    paths:
+      - "workbench-live/**"
+      - ".github/workflows/deploy-workbench-live.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: deploy-workbench-live
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for Cloudflare API token
+        id: creds
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -n "$CF_TOKEN" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Workbench Live Worker not deployed::CLOUDFLARE_API_TOKEN is not set — skipping. Add it in Settings → Secrets and variables → Actions to enable auto-deploy of workbench-live."
+          fi
+      - name: Deploy BoardRoom Worker
+        if: steps.creds.outputs.ready == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: workbench-live
+          command: deploy
