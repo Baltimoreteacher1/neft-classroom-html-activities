@@ -8711,6 +8711,48 @@
         }, 150);
       })();
     </script>
+    <script>
+      // Lessons-first ordering. The classroom tools bar (and teacher-tools
+      // group) otherwise sit ABOVE the unit lessons, so every teacher and
+      // student scrolls past ~14 tool cards to reach the actual curriculum.
+      // Move the tools cluster to sit just BELOW the interactive units grid,
+      // keeping the header, search, and mode toggle on top. Purely additive +
+      // fail-safe: if this never runs, the page keeps its original order.
+      //
+      // Reversible with no redeploy: add ?hubui=classic to the URL (persists),
+      // or run localStorage.setItem('nt-hub-classic','1'), to keep the original
+      // tools-above-lessons layout. ?hubui=lessons-first re-enables the default.
+      (function () {
+        try {
+          var mode = new URLSearchParams(location.search).get("hubui");
+          if (mode === "classic") localStorage.setItem("nt-hub-classic", "1");
+          if (mode === "lessons-first") localStorage.removeItem("nt-hub-classic");
+          if (localStorage.getItem("nt-hub-classic") === "1") return; // opted out
+        } catch (e) {
+          /* localStorage blocked — proceed with default (lessons-first) */
+        }
+        function reorder() {
+          var hub = document.getElementById("interactive-hub");
+          var toolsBar = document.querySelector(".curriculum-tools-bar");
+          if (!hub || !toolsBar) return false;
+          if (toolsBar.dataset.lessonsFirst) return true;
+          toolsBar.dataset.lessonsFirst = "1";
+          // Insert the tools bar (then the teacher-tools group, if present)
+          // immediately after the units grid, preserving their relative order.
+          if (hub.parentNode) hub.parentNode.insertBefore(toolsBar, hub.nextSibling);
+          var teacherTools = document.querySelector("details.teacher-tools");
+          if (teacherTools && toolsBar.parentNode)
+            toolsBar.parentNode.insertBefore(teacherTools, toolsBar.nextSibling);
+          return true;
+        }
+        if (reorder()) return;
+        // The units grid is rendered asynchronously; retry briefly until it exists.
+        var tries = 0;
+        var iv = setInterval(function () {
+          if (reorder() || ++tries > 40) clearInterval(iv);
+        }, 150);
+      })();
+    </script>
     <script src="/assets/class-board-strip.js" defer></script>
   </body>
 </html>
