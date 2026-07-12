@@ -85,15 +85,16 @@
   function getProfileDescription(key) {
     const descs = {
       "read-understand":
-        "Provides vocabulary, worked examples, and text-to-speech to support comprehension.",
-      "focus-organize": "Reduces visual clutter and enables focus tools to support concentration.",
+        "Read-aloud, vocabulary, worked examples, text size, color tint, and high contrast.",
+      "focus-organize":
+        "Focus mode, reading ruler, comfort spacing, color tint, a task checklist, and a calm break.",
       "build-math":
-        "Links to prerequisite foundations and readiness checks for background knowledge.",
-      "express-thinking": "Provides discourse sentence frames, response stems, and word banks.",
+        "Prerequisite readiness plus math tools: multiplication chart, number line, place-value chart, and calculator.",
+      "express-thinking":
+        "Discourse sentence frames, response stems, word banks, and speech-to-text dictation.",
       "language-support":
-        "Provides bilingual terminology, translations, and multilingual visual aids.",
-      "challenge-extend":
-        "Provides advanced concepts, error analysis challenges, and extension tasks.",
+        "Bilingual terminology, translations, and multilingual read-aloud and visual aids.",
+      "challenge-extend": "Advanced concepts, error analysis challenges, and extension tasks.",
     };
     return descs[key] || "";
   }
@@ -108,12 +109,25 @@
   let rulerActive = false;
   let comfortActive = false;
   let textScale = 0; // 0 = normal, 1 = large, 2 = extra large
+  let colorTint = 0; // 0 = none, then TINTS index
+  let highContrast = false;
+  let breakTimerId = null;
   let rootEl = null;
   let activeSpeechUtterance = null;
   let dialogTrigger = null;
   let liveRegion = null;
+  let dictation = null; // active SpeechRecognition instance
 
   const TEXT_SCALE_LABELS = ["Text Size", "Large Text", "X-Large Text"];
+
+  // Color tint overlay for visual stress / Irlen-style comfort. Index 0 = none.
+  const TINTS = [
+    { name: "No Tint", color: "" },
+    { name: "Cream", color: "rgba(255, 248, 220, 0.30)" },
+    { name: "Rose", color: "rgba(255, 228, 235, 0.32)" },
+    { name: "Blue", color: "rgba(214, 234, 248, 0.34)" },
+    { name: "Green", color: "rgba(220, 245, 224, 0.32)" },
+  ];
 
   // Initialize profiles to false
   PROFILE_KEYS.forEach((k) => {
@@ -158,6 +172,8 @@
           speechRate: activeSpeechRate,
           comfortMode: comfortActive,
           textScale: textScale,
+          colorTint: colorTint,
+          highContrast: highContrast,
         }),
       );
     } catch (_e) {
@@ -287,13 +303,40 @@
         ) {
           textScale = Math.round(stored.textScale);
         }
+        if (
+          typeof stored.colorTint === "number" &&
+          stored.colorTint >= 0 &&
+          stored.colorTint < TINTS.length
+        ) {
+          colorTint = Math.round(stored.colorTint);
+        }
+        if (typeof stored.highContrast === "boolean") {
+          highContrast = stored.highContrast;
+          if (highContrast) document.body.classList.add("ewl-supports-contrast-active");
+        }
       }
     }
 
     // Render components
     renderInterface();
     applyTextScale();
+    applyColorTint();
     updateUIStates();
+  }
+
+  // Apply the color tint overlay (visual-stress comfort). Reversible.
+  function applyColorTint() {
+    const overlay = document.getElementById("ewl-supports-tint");
+    if (overlay) {
+      overlay.style.background = TINTS[colorTint].color;
+      overlay.style.display = colorTint > 0 ? "block" : "none";
+    }
+    const btn = document.querySelector('[data-ewl-supports-tools] [data-tool="tint"]');
+    if (btn) {
+      btn.textContent = `🎨 ${TINTS[colorTint].name}`;
+      btn.setAttribute("aria-pressed", String(colorTint > 0));
+      btn.classList.toggle("is-active", colorTint > 0);
+    }
   }
 
   // Apply the current text-size accommodation to the lesson content root.
@@ -339,6 +382,12 @@
     ruler.id = "ewl-supports-ruler";
     ruler.className = "ewl-supports-ruler";
     rootEl.appendChild(ruler);
+
+    // 0b. Color tint overlay (visual-stress comfort; non-interactive).
+    const tint = document.createElement("div");
+    tint.id = "ewl-supports-tint";
+    tint.className = "ewl-supports-tint";
+    rootEl.appendChild(tint);
 
     // 1. Prepare Supports Trigger (Teacher Panel Entry)
     const teacherPanel = document.createElement("div");
@@ -547,9 +596,24 @@
       showDialog(false);
     });
 
+    const printBtn = document.createElement("button");
+    printBtn.type = "button";
+    printBtn.className = "ewl-supports-btn-action ewl-supports-btn-print";
+    printBtn.textContent = "🖨️ Print with Supports";
+    printBtn.title = "Print a clean reference sheet of vocabulary, examples, and sentence frames";
+    printBtn.addEventListener("click", () => {
+      showDialog(false);
+      printWithSupports();
+    });
+
     actionsPanel.appendChild(copyBtn);
     actionsPanel.appendChild(resetBtn);
     dialogBody.appendChild(actionsPanel);
+
+    const printRow = document.createElement("div");
+    printRow.className = "ewl-supports-dialog-actions";
+    printRow.appendChild(printBtn);
+    dialogBody.appendChild(printRow);
 
     dialog.appendChild(dialogBody);
     rootEl.appendChild(dialog);
@@ -629,6 +693,35 @@
     textSizeBtn.title = "Make the lesson text larger";
     textSizeBtn.addEventListener("click", cycleTextScale);
     toolsInner.appendChild(textSizeBtn);
+
+    // Additional comprehensive IEP-style accommodation tools.
+    const addTool = (tool, label, handler, title) => {
+      const b = document.createElement("button");
+      b.className = "ewl-supports-tool-btn";
+      b.setAttribute("data-tool", tool);
+      b.textContent = label;
+      if (title) b.title = title;
+      b.addEventListener("click", handler);
+      toolsInner.appendChild(b);
+      return b;
+    };
+
+    // Presentation / sensory
+    addTool(
+      "tint",
+      `🎨 ${TINTS[colorTint].name}`,
+      cycleColorTint,
+      "Add a calming color tint to reduce glare",
+    );
+    addTool("contrast", "◐ Contrast", toggleHighContrast, "Boost text contrast");
+    // Math manipulatives & reference
+    addTool("multchart", "✖️ Times Table", () => togglePanel("multchart"), "Multiplication chart");
+    addTool("numberline", "🔟 Number Line", () => togglePanel("numberline"), "Number line");
+    addTool("placevalue", "🔢 Place Value", () => togglePanel("placevalue"), "Place-value chart");
+    addTool("calculator", "🧮 Calculator", () => togglePanel("calculator"), "On-screen calculator");
+    // Executive function / self-regulation
+    addTool("checklist", "✅ Checklist", () => togglePanel("checklist"), "My task checklist");
+    addTool("break", "🌿 Take a Break", () => togglePanel("break"), "Calm breathing break");
 
     // Student Notepad tab Trigger
     const notepadBtn = document.createElement("button");
@@ -905,12 +998,36 @@
           activeProfiles["read-understand"] || activeProfiles["language-support"]
             ? "inline-flex"
             : "none";
+
+      // Additional accommodation tools, gated by the relevant profile.
+      const show = (tool, on) => {
+        const b = toolsDock.querySelector(`[data-tool="${tool}"]`);
+        if (b) b.style.display = on ? "inline-flex" : "none";
+      };
+      const presentation = activeProfiles["read-understand"] || activeProfiles["focus-organize"];
+      show("tint", presentation);
+      show("contrast", presentation);
+      show("multchart", activeProfiles["build-math"]);
+      show("numberline", activeProfiles["build-math"]);
+      show("placevalue", activeProfiles["build-math"]);
+      show("calculator", activeProfiles["build-math"]);
+      show("checklist", activeProfiles["focus-organize"]);
+      show("break", true); // self-regulation is universally available
+      applyColorTint(); // reflect stored tint + sync label/state
+      const contrastBtn = toolsDock.querySelector('[data-tool="contrast"]');
+      if (contrastBtn) {
+        contrastBtn.classList.toggle("is-active", highContrast);
+        contrastBtn.setAttribute("aria-pressed", String(highContrast));
+      }
     } else {
       toolsDock.hidden = true;
       closePanel();
       document.body.classList.remove("ewl-supports-focus-active");
       document.body.classList.remove("ewl-supports-comfort-active");
       document.body.classList.remove("ewl-supports-text-lg", "ewl-supports-text-xl");
+      document.body.classList.remove("ewl-supports-contrast-active");
+      const tintOverlay = document.getElementById("ewl-supports-tint");
+      if (tintOverlay) tintOverlay.style.display = "none";
 
       const focusBtn = toolsDock.querySelector('[data-tool="focus"]');
       if (focusBtn) focusBtn.classList.remove("is-active");
@@ -1108,6 +1225,63 @@
 
       bodyEl.appendChild(textarea);
 
+      // Dictation (speech-to-text) as a response accommodation, where supported.
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+      if (SR) {
+        const dictateBtn = document.createElement("button");
+        dictateBtn.type = "button";
+        dictateBtn.className = "ewl-supports-chip-btn ewl-supports-dictate-btn";
+        dictateBtn.textContent = "🎙️ Dictate";
+        dictateBtn.setAttribute("aria-pressed", "false");
+        dictateBtn.addEventListener("click", () => {
+          if (dictation) {
+            stopDictation();
+            dictateBtn.textContent = "🎙️ Dictate";
+            dictateBtn.classList.remove("is-active");
+            dictateBtn.setAttribute("aria-pressed", "false");
+            return;
+          }
+          try {
+            dictation = new SR();
+            dictation.lang =
+              activeProfiles["language-support"] && activeLanguage !== "en"
+                ? { es: "es-ES", vi: "vi-VN", ar: "ar-SA" }[activeLanguage] || "en-US"
+                : "en-US";
+            dictation.interimResults = false;
+            dictation.continuous = true;
+            dictation.onresult = (ev) => {
+              let text = "";
+              for (let i = ev.resultIndex; i < ev.results.length; i++) {
+                if (ev.results[i].isFinal) text += ev.results[i][0].transcript;
+              }
+              if (text) {
+                const sep = textarea.value && !/\s$/.test(textarea.value) ? " " : "";
+                textarea.value += sep + text.trim();
+                try {
+                  localStorage.setItem(noteKey, textarea.value);
+                } catch (_e) {}
+              }
+            };
+            dictation.onend = () => {
+              dictation = null;
+              dictateBtn.textContent = "🎙️ Dictate";
+              dictateBtn.classList.remove("is-active");
+              dictateBtn.setAttribute("aria-pressed", "false");
+            };
+            dictation.onerror = () => stopDictation();
+            dictation.start();
+            dictateBtn.textContent = "⏹️ Stop dictation";
+            dictateBtn.classList.add("is-active");
+            dictateBtn.setAttribute("aria-pressed", "true");
+            announce("Dictation started. Speak your answer.");
+          } catch (_e) {
+            stopDictation();
+            announce("Dictation is not available right now.");
+          }
+        });
+        bodyEl.appendChild(dictateBtn);
+      }
+
       const hint = document.createElement("p");
       hint.className = "ewl-supports-notepad-hint";
       hint.textContent =
@@ -1212,6 +1386,24 @@
       container.appendChild(options);
       container.appendChild(feedbackDiv);
       bodyEl.appendChild(container);
+    } else if (tab === "multchart") {
+      titleEl.textContent = "Multiplication Chart";
+      buildMultiplicationChart(bodyEl);
+    } else if (tab === "numberline") {
+      titleEl.textContent = "Number Line";
+      buildNumberLine(bodyEl);
+    } else if (tab === "placevalue") {
+      titleEl.textContent = "Place-Value Chart";
+      buildPlaceValueChart(bodyEl);
+    } else if (tab === "calculator") {
+      titleEl.textContent = "Calculator";
+      buildCalculator(bodyEl);
+    } else if (tab === "checklist") {
+      titleEl.textContent = "My Checklist";
+      buildChecklist(bodyEl);
+    } else if (tab === "break") {
+      titleEl.textContent = "Take a Break";
+      buildBreak(bodyEl);
     }
 
     const toolsDock = document.querySelector("[data-ewl-supports-tools]");
@@ -1238,6 +1430,8 @@
   }
 
   function closePanel() {
+    stopBreakTimer();
+    stopDictation();
     const panel = document.querySelector("[data-ewl-supports-panel]");
     let trigger = null;
     if (panel) {
@@ -1263,7 +1457,9 @@
           tool !== "rate" &&
           tool !== "ruler" &&
           tool !== "comfort" &&
-          tool !== "textsize"
+          tool !== "textsize" &&
+          tool !== "tint" &&
+          tool !== "contrast"
         ) {
           btn.setAttribute("aria-pressed", "false");
         }
@@ -1347,6 +1543,27 @@
     const btn = e.currentTarget;
     if (btn) btn.classList.toggle("is-active", textScale > 0);
     announce(`${TEXT_SCALE_LABELS[textScale]} applied.`);
+  }
+
+  // Color-tint overlay: cycle through calming tints for visual-stress comfort.
+  function cycleColorTint() {
+    colorTint = (colorTint + 1) % TINTS.length;
+    applyColorTint();
+    saveStoredPreferences();
+    announce(`${TINTS[colorTint].name} tint.`);
+  }
+
+  // High-contrast mode: boost text/background contrast on the lesson content.
+  function toggleHighContrast(e) {
+    highContrast = !highContrast;
+    document.body.classList.toggle("ewl-supports-contrast-active", highContrast);
+    const btn = e.currentTarget;
+    if (btn) {
+      btn.classList.toggle("is-active", highContrast);
+      btn.setAttribute("aria-pressed", String(highContrast));
+    }
+    saveStoredPreferences();
+    announce(highContrast ? "High contrast on." : "High contrast off.");
   }
 
   // Listen (Text to speech) mode
@@ -1570,6 +1787,505 @@
     announce(`${preset.label.replace(/^[^\w]+/, "").trim()} supports turned on.`);
   }
 
+  // ---- Math manipulatives & reference tools -------------------------------
+
+  function buildMultiplicationChart(bodyEl) {
+    const desc = document.createElement("p");
+    desc.textContent = "A multiplication chart to check facts as you work.";
+    bodyEl.appendChild(desc);
+
+    const table = document.createElement("table");
+    table.className = "ewl-supports-mult-table";
+    const caption = document.createElement("caption");
+    caption.className = "ewl-supports-sr-only";
+    caption.textContent = "Multiplication chart, 1 to 12";
+    table.appendChild(caption);
+
+    for (let r = 0; r <= 12; r++) {
+      const tr = document.createElement("tr");
+      for (let c = 0; c <= 12; c++) {
+        const cell = document.createElement(r === 0 || c === 0 ? "th" : "td");
+        if (r === 0 && c === 0) {
+          cell.textContent = "×";
+          cell.className = "ewl-supports-mult-corner";
+        } else if (r === 0) {
+          cell.textContent = String(c);
+          cell.scope = "col";
+        } else if (c === 0) {
+          cell.textContent = String(r);
+          cell.scope = "row";
+        } else {
+          cell.textContent = String(r * c);
+        }
+        tr.appendChild(cell);
+      }
+      table.appendChild(tr);
+    }
+    const wrap = document.createElement("div");
+    wrap.className = "ewl-supports-table-scroll";
+    wrap.appendChild(table);
+    bodyEl.appendChild(wrap);
+  }
+
+  function buildNumberLine(bodyEl) {
+    const desc = document.createElement("p");
+    desc.textContent = "Count up or down along the number line.";
+    bodyEl.appendChild(desc);
+
+    const controls = document.createElement("div");
+    controls.className = "ewl-supports-nl-controls";
+    const ranges = [
+      { label: "0–20", min: 0, max: 20 },
+      { label: "0–100 (10s)", min: 0, max: 100, step: 10 },
+      { label: "−10–10", min: -10, max: 10 },
+    ];
+    const line = document.createElement("div");
+    line.className = "ewl-supports-numberline ewl-supports-table-scroll";
+
+    const render = (min, max, step) => {
+      line.textContent = "";
+      const inner = document.createElement("div");
+      inner.className = "ewl-supports-numberline-inner";
+      for (let n = min; n <= max; n += step || 1) {
+        const tick = document.createElement("div");
+        tick.className = "ewl-supports-nl-tick";
+        const mark = document.createElement("span");
+        mark.className = "ewl-supports-nl-mark";
+        const num = document.createElement("span");
+        num.className = "ewl-supports-nl-num";
+        num.textContent = String(n);
+        tick.appendChild(mark);
+        tick.appendChild(num);
+        inner.appendChild(tick);
+      }
+      line.appendChild(inner);
+    };
+
+    ranges.forEach((r, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "ewl-supports-chip-btn";
+      b.textContent = r.label;
+      b.addEventListener("click", () => {
+        controls.querySelectorAll("button").forEach((x) => x.classList.remove("is-active"));
+        b.classList.add("is-active");
+        render(r.min, r.max, r.step);
+      });
+      if (i === 0) b.classList.add("is-active");
+      controls.appendChild(b);
+    });
+    bodyEl.appendChild(controls);
+    bodyEl.appendChild(line);
+    render(ranges[0].min, ranges[0].max, ranges[0].step);
+  }
+
+  function buildPlaceValueChart(bodyEl) {
+    const desc = document.createElement("p");
+    desc.textContent = "Line up digits by their place value.";
+    bodyEl.appendChild(desc);
+
+    const cols = [
+      "Thousands",
+      "Hundreds",
+      "Tens",
+      "Ones",
+      ".",
+      "Tenths",
+      "Hundredths",
+      "Thousandths",
+    ];
+    const table = document.createElement("table");
+    table.className = "ewl-supports-pv-table";
+    const thead = document.createElement("tr");
+    cols.forEach((c) => {
+      const th = document.createElement("th");
+      th.textContent = c;
+      if (c === ".") th.className = "ewl-supports-pv-dot";
+      thead.appendChild(th);
+    });
+    table.appendChild(thead);
+    // Two empty rows for students to visualize/write with.
+    for (let r = 0; r < 2; r++) {
+      const tr = document.createElement("tr");
+      cols.forEach((c) => {
+        const td = document.createElement("td");
+        if (c === ".") {
+          td.textContent = ".";
+          td.className = "ewl-supports-pv-dot";
+        }
+        tr.appendChild(td);
+      });
+      table.appendChild(tr);
+    }
+    const wrap = document.createElement("div");
+    wrap.className = "ewl-supports-table-scroll";
+    wrap.appendChild(table);
+    bodyEl.appendChild(wrap);
+  }
+
+  function buildCalculator(bodyEl) {
+    const note = document.createElement("p");
+    note.textContent = "Use the calculator if it is allowed for this task.";
+    bodyEl.appendChild(note);
+
+    const calc = document.createElement("div");
+    calc.className = "ewl-supports-calc";
+    const display = document.createElement("output");
+    display.className = "ewl-supports-calc-display";
+    display.textContent = "0";
+    calc.appendChild(display);
+
+    // Simple, eval-free calculator state machine.
+    let entry = "0";
+    let stored = null;
+    let op = null;
+    let justEvaluated = false;
+
+    const compute = (a, operator, b) => {
+      switch (operator) {
+        case "+":
+          return a + b;
+        case "−":
+          return a - b;
+        case "×":
+          return a * b;
+        case "÷":
+          return b === 0 ? NaN : a / b;
+        default:
+          return b;
+      }
+    };
+    const show = () => {
+      display.textContent = entry === "" ? "0" : entry;
+    };
+    const inputDigit = (d) => {
+      if (justEvaluated) {
+        entry = "0";
+        justEvaluated = false;
+      }
+      entry = entry === "0" ? d : entry + d;
+      show();
+    };
+    const inputDot = () => {
+      if (justEvaluated) {
+        entry = "0";
+        justEvaluated = false;
+      }
+      if (!entry.includes(".")) entry += ".";
+      show();
+    };
+    const chooseOp = (nextOp) => {
+      const val = parseFloat(entry);
+      if (stored === null) stored = val;
+      else if (op) stored = compute(stored, op, val);
+      op = nextOp;
+      entry = "";
+      justEvaluated = false;
+      display.textContent = String(stored);
+    };
+    const evaluate = () => {
+      if (op === null) return;
+      const val = entry === "" ? stored : parseFloat(entry);
+      const result = compute(stored, op, val);
+      display.textContent = Number.isFinite(result) ? String(result) : "Error";
+      entry = Number.isFinite(result) ? String(result) : "0";
+      stored = null;
+      op = null;
+      justEvaluated = true;
+    };
+    const clearAll = () => {
+      entry = "0";
+      stored = null;
+      op = null;
+      justEvaluated = false;
+      show();
+    };
+
+    const keys = [
+      ["7", () => inputDigit("7")],
+      ["8", () => inputDigit("8")],
+      ["9", () => inputDigit("9")],
+      ["÷", () => chooseOp("÷")],
+      ["4", () => inputDigit("4")],
+      ["5", () => inputDigit("5")],
+      ["6", () => inputDigit("6")],
+      ["×", () => chooseOp("×")],
+      ["1", () => inputDigit("1")],
+      ["2", () => inputDigit("2")],
+      ["3", () => inputDigit("3")],
+      ["−", () => chooseOp("−")],
+      ["0", () => inputDigit("0")],
+      [".", inputDot],
+      ["=", evaluate],
+      ["+", () => chooseOp("+")],
+      ["C", clearAll],
+    ];
+    const grid = document.createElement("div");
+    grid.className = "ewl-supports-calc-grid";
+    keys.forEach(([label, handler]) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "ewl-supports-calc-key";
+      b.textContent = label;
+      if (/[+\-−×÷=]/.test(label)) b.classList.add("ewl-supports-calc-op");
+      if (label === "C") b.classList.add("ewl-supports-calc-clear");
+      b.addEventListener("click", handler);
+      grid.appendChild(b);
+    });
+    calc.appendChild(grid);
+    bodyEl.appendChild(calc);
+  }
+
+  // ---- Executive function & self-regulation -------------------------------
+
+  function buildChecklist(bodyEl) {
+    const desc = document.createElement("p");
+    desc.textContent = "Break your work into steps. Check each one off as you finish.";
+    bodyEl.appendChild(desc);
+
+    const key = `ewl-supports:v1:checklist:${activeLessonId}`;
+    let items = [];
+    try {
+      const saved = localStorage.getItem(key);
+      if (saved) items = JSON.parse(saved) || [];
+    } catch (_e) {}
+
+    const list = document.createElement("ul");
+    list.className = "ewl-supports-checklist";
+
+    const persist = () => {
+      try {
+        localStorage.setItem(key, JSON.stringify(items));
+      } catch (_e) {}
+    };
+
+    const renderList = () => {
+      list.textContent = "";
+      items.forEach((item, idx) => {
+        const li = document.createElement("li");
+        li.className = "ewl-supports-checklist-item";
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = !!item.done;
+        cb.id = `ewl-check-${idx}`;
+        cb.addEventListener("change", () => {
+          items[idx].done = cb.checked;
+          label.classList.toggle("is-done", cb.checked);
+          persist();
+        });
+        const label = document.createElement("label");
+        label.setAttribute("for", cb.id);
+        label.textContent = item.text;
+        if (item.done) label.classList.add("is-done");
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "ewl-supports-checklist-del";
+        del.textContent = "✕";
+        del.setAttribute("aria-label", `Remove step: ${item.text}`);
+        del.addEventListener("click", () => {
+          items.splice(idx, 1);
+          persist();
+          renderList();
+        });
+        li.appendChild(cb);
+        li.appendChild(label);
+        li.appendChild(del);
+        list.appendChild(li);
+      });
+    };
+
+    const form = document.createElement("form");
+    form.className = "ewl-supports-checklist-add";
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "Add a step…";
+    input.className = "ewl-supports-checklist-input";
+    input.setAttribute("aria-label", "Add a checklist step");
+    const addBtn = document.createElement("button");
+    addBtn.type = "submit";
+    addBtn.className = "ewl-supports-chip-btn";
+    addBtn.textContent = "Add";
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+      items.push({ text, done: false });
+      input.value = "";
+      persist();
+      renderList();
+    });
+    form.appendChild(input);
+    form.appendChild(addBtn);
+
+    bodyEl.appendChild(form);
+    bodyEl.appendChild(list);
+    renderList();
+  }
+
+  function buildBreak(bodyEl) {
+    const desc = document.createElement("p");
+    desc.textContent = "Take a calm minute. Breathe in as the circle grows, out as it shrinks.";
+    bodyEl.appendChild(desc);
+
+    const circle = document.createElement("div");
+    circle.className = "ewl-supports-break-circle";
+    circle.setAttribute("aria-hidden", "true");
+    const cue = document.createElement("div");
+    cue.className = "ewl-supports-break-cue";
+    cue.textContent = "Breathe in…";
+    circle.appendChild(cue);
+    bodyEl.appendChild(circle);
+
+    const timerLabel = document.createElement("p");
+    timerLabel.className = "ewl-supports-break-timer";
+    bodyEl.appendChild(timerLabel);
+
+    let remaining = 60;
+    const tick = () => {
+      timerLabel.textContent = `${remaining}s`;
+      cue.textContent = Math.floor(remaining / 4) % 2 === 0 ? "Breathe in…" : "Breathe out…";
+      remaining -= 1;
+      if (remaining < 0) {
+        stopBreakTimer();
+        timerLabel.textContent = "Nice work. Ready when you are.";
+        announce("Break finished. Ready to continue.");
+      }
+    };
+    stopBreakTimer();
+    tick();
+    breakTimerId = setInterval(tick, 1000);
+
+    const done = document.createElement("button");
+    done.type = "button";
+    done.className = "ewl-supports-chip-btn ewl-supports-break-done";
+    done.textContent = "I'm ready to continue";
+    done.addEventListener("click", () => {
+      stopBreakTimer();
+      closePanel();
+    });
+    bodyEl.appendChild(done);
+  }
+
+  function stopBreakTimer() {
+    if (breakTimerId) {
+      clearInterval(breakTimerId);
+      breakTimerId = null;
+    }
+  }
+
+  function stopDictation() {
+    if (dictation) {
+      try {
+        dictation.onend = null;
+        dictation.stop();
+      } catch (_e) {}
+      dictation = null;
+    }
+  }
+
+  // Build and print a clean, student-safe reference sheet from authored manifest
+  // content only. Never includes answers, interactive controls, or config data.
+  function printWithSupports() {
+    if (!manifestData) return;
+
+    // Remove any prior sheet.
+    const prior = document.querySelector("[data-ewl-supports-print-sheet]");
+    if (prior) prior.remove();
+
+    const isLang = activeProfiles["language-support"] && activeLanguage !== "en";
+    const sheet = document.createElement("section");
+    sheet.setAttribute("data-ewl-supports-print-sheet", "1");
+    sheet.className = "ewl-supports-print-sheet";
+
+    const h1 = document.createElement("h1");
+    h1.textContent = `${manifestData.title || "Lesson"} — Learning Supports`;
+    sheet.appendChild(h1);
+
+    const addSection = (heading, builder) => {
+      const h = document.createElement("h2");
+      h.textContent = heading;
+      sheet.appendChild(h);
+      builder();
+    };
+
+    if (manifestData.contentObjective) {
+      addSection("Objective", () => {
+        const p = document.createElement("p");
+        p.textContent = manifestData.contentObjective;
+        sheet.appendChild(p);
+      });
+    }
+
+    if (manifestData.vocabulary && manifestData.vocabulary.length) {
+      addSection("Vocabulary", () => {
+        const dl = document.createElement("dl");
+        manifestData.vocabulary.forEach((v) => {
+          let term = v.term;
+          let def = v.definition;
+          if (isLang) {
+            const t = v[`term${activeLanguage[0].toUpperCase()}${activeLanguage[1]}`];
+            const d = v[`definition${activeLanguage[0].toUpperCase()}${activeLanguage[1]}`];
+            if (t) term = `${v.term} (${t})`;
+            if (d) def = d;
+          }
+          const dt = document.createElement("dt");
+          dt.textContent = term;
+          const dd = document.createElement("dd");
+          dd.textContent = def;
+          dl.appendChild(dt);
+          dl.appendChild(dd);
+        });
+        sheet.appendChild(dl);
+      });
+    }
+
+    if (manifestData.workedExample) {
+      addSection("Worked Example", () => {
+        const pre = document.createElement("pre");
+        pre.textContent = manifestData.workedExample;
+        sheet.appendChild(pre);
+      });
+    }
+
+    if (manifestData.sentenceFrames && manifestData.sentenceFrames.length) {
+      addSection("Sentence Frames", () => {
+        const ul = document.createElement("ul");
+        manifestData.sentenceFrames.forEach((f) => {
+          const li = document.createElement("li");
+          li.textContent = f;
+          ul.appendChild(li);
+        });
+        sheet.appendChild(ul);
+      });
+    }
+
+    if (manifestData.wordBank && manifestData.wordBank.length) {
+      addSection("Word Bank", () => {
+        const p = document.createElement("p");
+        p.textContent = manifestData.wordBank.join("  •  ");
+        sheet.appendChild(p);
+      });
+    }
+
+    document.body.appendChild(sheet);
+    document.body.classList.add("ewl-supports-printing");
+
+    const cleanup = () => {
+      document.body.classList.remove("ewl-supports-printing");
+      const s = document.querySelector("[data-ewl-supports-print-sheet]");
+      if (s) s.remove();
+      window.removeEventListener("afterprint", cleanup);
+    };
+    window.addEventListener("afterprint", cleanup);
+
+    // Give the sheet a tick to render, then print. Fallback cleanup if the
+    // browser never fires afterprint (some environments).
+    setTimeout(() => {
+      window.print();
+      setTimeout(cleanup, 1000);
+    }, 50);
+  }
+
   // Reset supports
   function resetAllSupports() {
     PROFILE_KEYS.forEach((k) => {
@@ -1579,17 +2295,18 @@
     activeSpeechRate = 1.0;
     comfortActive = false;
     textScale = 0;
+    colorTint = 0;
+    highContrast = false;
 
-    saveStoredPreferences({
-      profiles: activeProfiles,
-      language: activeLanguage,
-      speechRate: activeSpeechRate,
-      comfortMode: comfortActive,
-    });
+    saveStoredPreferences();
 
     document.body.classList.remove("ewl-supports-focus-active");
     document.body.classList.remove("ewl-supports-comfort-active");
     document.body.classList.remove("ewl-supports-text-lg", "ewl-supports-text-xl");
+    document.body.classList.remove("ewl-supports-contrast-active");
+    applyColorTint();
+    stopBreakTimer();
+    stopDictation();
 
     // Reset ruler
     rulerActive = false;
@@ -1619,6 +2336,9 @@
     document.body.classList.remove("ewl-supports-focus-active");
     document.body.classList.remove("ewl-supports-comfort-active");
     document.body.classList.remove("ewl-supports-text-lg", "ewl-supports-text-xl");
+    document.body.classList.remove("ewl-supports-contrast-active");
+    stopBreakTimer();
+    stopDictation();
 
     // Reset ruler
     rulerActive = false;
@@ -1646,7 +2366,7 @@
   }
 
   const EWLLearningSupports = {
-    version: "1.4.0",
+    version: "1.5.0",
     init,
     destroy,
     parseSettings,

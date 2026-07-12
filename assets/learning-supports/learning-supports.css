@@ -824,3 +824,398 @@ body.ewl-supports-text-xl #app {
     background: rgba(0, 0, 0, 0.5);
   }
 }
+
+/* 13. Print with Supports — clean authored reference sheet */
+.ewl-supports-btn-print {
+  width: 100%;
+  background: var(--ewl-color-teal, #0f766e);
+  color: var(--ewl-color-white);
+}
+
+.ewl-supports-btn-print:hover {
+  background: #0d5c56;
+}
+
+.ewl-supports-print-sheet {
+  display: none;
+}
+
+@media print {
+  /* When printing with supports, show ONLY the authored reference sheet. */
+  body.ewl-supports-printing > *:not([data-ewl-supports-print-sheet]) {
+    display: none !important;
+  }
+
+  body.ewl-supports-printing .ewl-supports-print-sheet {
+    display: block !important;
+    position: static;
+    color: #000;
+    background: #fff;
+    font-family: Georgia, "Times New Roman", serif;
+    padding: 0;
+    margin: 0;
+  }
+
+  .ewl-supports-print-sheet h1 {
+    font-size: 20pt;
+    margin: 0 0 8pt;
+  }
+
+  .ewl-supports-print-sheet h2 {
+    font-size: 13pt;
+    margin: 14pt 0 4pt;
+    padding-bottom: 2pt;
+    border-bottom: 1px solid #000;
+  }
+
+  .ewl-supports-print-sheet dt {
+    font-weight: bold;
+    margin-top: 6pt;
+  }
+
+  .ewl-supports-print-sheet dd {
+    margin: 0 0 4pt 0;
+  }
+
+  .ewl-supports-print-sheet pre {
+    white-space: pre-wrap;
+    font-family: inherit;
+    font-size: 11pt;
+    margin: 0;
+  }
+
+  .ewl-supports-print-sheet ul {
+    margin: 0;
+    padding-left: 18pt;
+  }
+
+  .ewl-supports-print-sheet li {
+    margin-bottom: 4pt;
+  }
+
+  .ewl-supports-print-sheet p {
+    font-size: 11pt;
+  }
+}
+
+/* 14. Comprehensive accommodation toolkit ================================== */
+
+/* Color tint overlay (visual-stress comfort) */
+.ewl-supports-tint {
+  position: fixed;
+  inset: 0;
+  z-index: 9996;
+  pointer-events: none;
+  display: none;
+  mix-blend-mode: multiply;
+}
+
+/* High-contrast mode on the lesson content root */
+body.ewl-supports-contrast-active #app {
+  filter: contrast(1.35) saturate(1.1);
+}
+
+/* Shared small "chip" button used by several tools */
+.ewl-supports-chip-btn {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--ewl-color-border);
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: var(--ewl-color-primary);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.ewl-supports-chip-btn:hover {
+  background: #e2e8f0;
+  border-color: var(--ewl-color-accent);
+}
+
+.ewl-supports-chip-btn.is-active {
+  background: var(--ewl-color-primary);
+  color: var(--ewl-color-white);
+  border-color: var(--ewl-color-primary);
+}
+
+/* Horizontal scroll container for wide reference tables */
+.ewl-supports-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 8px 0 16px;
+}
+
+/* Multiplication chart */
+.ewl-supports-mult-table {
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 100%;
+}
+
+.ewl-supports-mult-table th,
+.ewl-supports-mult-table td {
+  border: 1px solid var(--ewl-color-border);
+  padding: 6px 8px;
+  text-align: center;
+  min-width: 34px;
+}
+
+.ewl-supports-mult-table th {
+  background: #eef2ff;
+  color: var(--ewl-color-primary);
+  font-weight: 800;
+}
+
+.ewl-supports-mult-corner {
+  background: var(--ewl-color-primary) !important;
+  color: #fff !important;
+}
+
+/* Number line */
+.ewl-supports-numberline {
+  border: 1px solid var(--ewl-color-border);
+  border-radius: 12px;
+  padding: 16px 8px 8px;
+  background: #f8fafc;
+}
+
+.ewl-supports-numberline-inner {
+  display: flex;
+  align-items: flex-start;
+  min-width: max-content;
+  border-top: 3px solid var(--ewl-color-primary);
+}
+
+.ewl-supports-nl-tick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 42px;
+}
+
+.ewl-supports-nl-mark {
+  width: 2px;
+  height: 12px;
+  background: var(--ewl-color-primary);
+}
+
+.ewl-supports-nl-num {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ewl-color-text);
+}
+
+.ewl-supports-nl-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* Place-value chart */
+.ewl-supports-pv-table {
+  border-collapse: collapse;
+  font-size: 12.5px;
+  min-width: 100%;
+}
+
+.ewl-supports-pv-table th,
+.ewl-supports-pv-table td {
+  border: 1px solid var(--ewl-color-border);
+  padding: 8px 10px;
+  text-align: center;
+  min-width: 64px;
+  height: 40px;
+}
+
+.ewl-supports-pv-table th {
+  background: #eef2ff;
+  color: var(--ewl-color-primary);
+  font-weight: 800;
+}
+
+.ewl-supports-pv-dot {
+  min-width: 20px !important;
+  background: var(--ewl-color-primary) !important;
+  color: #fff !important;
+  font-weight: 800;
+}
+
+/* Calculator */
+.ewl-supports-calc {
+  max-width: 280px;
+}
+
+.ewl-supports-calc-display {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  border: 1px solid var(--ewl-color-border);
+  border-radius: 10px;
+  background: #0f172a;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  overflow-x: auto;
+}
+
+.ewl-supports-calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.ewl-supports-calc-key {
+  min-height: 48px;
+  border: 1px solid var(--ewl-color-border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ewl-color-text);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.ewl-supports-calc-key:hover {
+  background: #f1f5f9;
+}
+
+.ewl-supports-calc-op {
+  background: #eef2ff;
+  color: var(--ewl-color-accent);
+}
+
+.ewl-supports-calc-clear {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* Checklist */
+.ewl-supports-checklist-add {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ewl-supports-checklist-input {
+  flex: 1;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--ewl-color-border);
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+.ewl-supports-checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ewl-supports-checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--ewl-color-border);
+}
+
+.ewl-supports-checklist-item input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.ewl-supports-checklist-item label {
+  flex: 1;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.ewl-supports-checklist-item label.is-done {
+  text-decoration: line-through;
+  color: var(--ewl-color-text-muted);
+}
+
+.ewl-supports-checklist-del {
+  min-width: 32px;
+  min-height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--ewl-color-text-muted);
+  font-size: 15px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.ewl-supports-checklist-del:hover {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* Take-a-break breathing */
+.ewl-supports-break-circle {
+  width: 120px;
+  height: 120px;
+  margin: 24px auto 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #bae6fd 0%, #7dd3fc 70%, #38bdf8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #075985;
+  font-weight: 700;
+  animation: ewl-supports-breathe 8s ease-in-out infinite;
+}
+
+.ewl-supports-break-cue {
+  font-size: 14px;
+}
+
+.ewl-supports-break-timer {
+  text-align: center;
+  font-weight: 800;
+  color: var(--ewl-color-primary);
+  font-size: 18px;
+}
+
+.ewl-supports-break-done {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+}
+
+@keyframes ewl-supports-breathe {
+  0%,
+  100% {
+    transform: scale(0.7);
+  }
+  50% {
+    transform: scale(1);
+  }
+}
+
+/* Dictation button */
+.ewl-supports-dictate-btn {
+  margin-top: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ewl-supports-break-circle {
+    animation: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .ewl-supports-tint {
+    display: none !important;
+  }
+}
