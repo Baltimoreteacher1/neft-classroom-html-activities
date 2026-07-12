@@ -3171,8 +3171,9 @@
       view === "home" && state.assignments.length === 0 && !state.settings.welcomeDismissed;
     $("#fab")?.classList.toggle("onboarding-hide", showingWelcome);
     $("#syncFab")?.classList.toggle("onboarding-hide", showingWelcome);
-    $("#fab")?.classList.toggle("academic-help-hide", view === "ai");
-    $("#syncFab")?.classList.toggle("academic-help-hide", view === "ai");
+    const hideFloatingControls = view === "ai" || view === "insights";
+    $("#fab")?.classList.toggle("academic-help-hide", hideFloatingControls);
+    $("#syncFab")?.classList.toggle("academic-help-hide", hideFloatingControls);
     if (view === "ai") {
       ensureKaTeX(function () {
         const scrollEl = $("#aiScroll");

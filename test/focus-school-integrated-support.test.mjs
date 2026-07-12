@@ -109,5 +109,10 @@ assert.match(insights.support, /finished work/i);
 assert.match(appJs, /data-act="academic-help"/, "assignment cards expose direct Academic Help");
 assert.match(appJs, /support-preview-steps/, "AI advice includes preview-before-save actions");
 assert.match(appJs, /catch-up-mode/, "catch-up mode is reachable in the UI");
+assert.match(
+  appJs,
+  /view === "ai" \|\| view === "insights"/,
+  "floating controls step aside in Academic Help and Insights",
+);
 
-console.log("focus-school-integrated-support: 12/12 checks passed");
+console.log("focus-school-integrated-support: 13/13 checks passed");
