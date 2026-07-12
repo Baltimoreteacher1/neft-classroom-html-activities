@@ -8992,6 +8992,17 @@
           placeholder="Type your problem or question… e.g. How do I add 3/4 + 1/6?"
           aria-label="Ask the Math Coach"
         ></textarea>
+        <button
+          type="button"
+          id="coachMic"
+          class="coach-mic"
+          title="Ask by voice"
+          aria-label="Ask the Math Coach by voice"
+          aria-pressed="false"
+          hidden
+        >
+          🎤
+        </button>
       </div>
       <div class="coach-modes" id="coachModes">
         <button type="button" class="coach-mode" data-mode="hint">🧭 Hint</button>
@@ -9129,6 +9140,7 @@
         padding: 6px 12px;
       }
       .coach-input {
+        position: relative;
         padding: 8px 10px 0;
       }
       .coach-input textarea {
@@ -9137,13 +9149,57 @@
         resize: none;
         border: 1.5px solid var(--line);
         border-radius: 10px;
-        padding: 8px 10px;
+        padding: 8px 40px 8px 10px;
         font: inherit;
         font-size: 0.92rem;
       }
       .coach-input textarea:focus {
         outline: none;
         border-color: var(--teal);
+      }
+      .coach-mic {
+        position: absolute;
+        right: 18px;
+        bottom: 8px;
+        width: 28px;
+        height: 28px;
+        border: 1.5px solid var(--line);
+        background: #fff;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        line-height: 1;
+        cursor: pointer;
+        transition:
+          background 0.12s,
+          border-color 0.12s,
+          box-shadow 0.12s;
+      }
+      .coach-mic[hidden] {
+        display: none;
+      }
+      .coach-mic:hover {
+        background: rgba(31, 166, 162, 0.1);
+        border-color: var(--teal);
+      }
+      .coach-mic.is-live {
+        background: #e23b57;
+        border-color: #e23b57;
+        color: #fff;
+        box-shadow: 0 0 0 0 rgba(226, 59, 87, 0.55);
+        animation: coach-mic-pulse 1.3s ease-out infinite;
+      }
+      @keyframes coach-mic-pulse {
+        70% {
+          box-shadow: 0 0 0 8px rgba(226, 59, 87, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(226, 59, 87, 0);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .coach-mic.is-live {
+          animation: none;
+        }
       }
       .coach-modes {
         display: flex;
@@ -9389,6 +9445,79 @@
             send("hint");
           }
         });
+
+        // -------- Ask by voice (speech-to-text) --------
+        // Completes the voice loop: the coach already reads answers aloud; this
+        // lets students dictate their question hands-free. Web Speech API only —
+        // no keys, no extra network calls beyond the browser's own service, and
+        // the button stays hidden entirely on browsers that don't support it.
+        (function voiceInput() {
+          var micBtn = document.getElementById("coachMic");
+          if (!micBtn) return;
+          var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+          if (!SR) return; // unsupported → leave the mic hidden
+          var rec = null,
+            listening = false,
+            baseText = "";
+          function setLive(on) {
+            listening = on;
+            micBtn.classList.toggle("is-live", on);
+            micBtn.setAttribute("aria-pressed", on ? "true" : "false");
+            micBtn.title = on ? "Stop listening" : "Ask by voice";
+          }
+          function stop() {
+            if (rec)
+              try {
+                rec.stop();
+              } catch (e) {}
+          }
+          function start() {
+            if (canSpeak)
+              try {
+                window.speechSynthesis.cancel();
+              } catch (e) {}
+            baseText = input.value.replace(/\s+$/, "");
+            try {
+              rec = new SR();
+            } catch (e) {
+              return;
+            }
+            rec.lang = "en-US";
+            rec.interimResults = true;
+            rec.continuous = false;
+            rec.onresult = function (ev) {
+              var said = "";
+              for (var i = ev.resultIndex; i < ev.results.length; i++) {
+                said += ev.results[i][0].transcript;
+              }
+              input.value = (baseText ? baseText + " " : "") + said.replace(/^\s+/, "");
+            };
+            rec.onerror = function () {
+              setLive(false);
+            };
+            rec.onend = function () {
+              setLive(false);
+              rec = null;
+              input.focus();
+            };
+            try {
+              rec.start();
+              setLive(true);
+            } catch (e) {
+              setLive(false);
+            }
+          }
+          micBtn.hidden = false;
+          micBtn.addEventListener("click", function () {
+            if (busy) return;
+            listening ? stop() : start();
+          });
+          // Stop listening if the panel closes underneath us.
+          if (closeBtn)
+            closeBtn.addEventListener("click", function () {
+              if (listening) stop();
+            });
+        })();
 
         // Drag by the header (mirrors the calculator panel).
         var drag = false,
