@@ -1898,7 +1898,13 @@
               background: rgba(79, 70, 229, 0.1);
             }
             /* Personalized support-link builder: a collapsed disclosure so the
-               hub card stays clean until a teacher opens it. */
+               hub card stays clean until a teacher opens it. When a teacher
+               does open it, break the card out of its narrow tools-grid cell to
+               the full row so the accommodation options lay out in a readable
+               multi-column grid instead of a cramped 250px strip. */
+            .supports-feature:has(details.ewl-linkgen[open]) {
+              grid-column: 1 / -1;
+            }
             .ewl-linkgen {
               margin-top: 14px;
               background: rgba(20, 34, 58, 0.04);
@@ -2109,7 +2115,7 @@
               <!-- prettier-ignore -->
               <p class="mf-text">Build one student's supports into a link. To respect student privacy, no IEP data is stored. <a href="/lessons/1-1/">Preview the supports on Lesson 1-1 →</a></p>
 
-              <details class="ewl-linkgen hub-teacher-only" open>
+              <details class="ewl-linkgen hub-teacher-only">
                 <summary class="ewl-linkgen-summary">
                   <span class="ewl-linkgen-summary-icon" aria-hidden="true">🧩</span>
                   <span>
