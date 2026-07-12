@@ -10467,16 +10467,39 @@
             echo: q || "Read what I wrote by hand.",
           });
         }
+        // Seeds so "New problem" always has a concrete example to riff on when
+        // the page is blank — otherwise the model asks the student what topic
+        // they want instead of producing one.
+        var PROBLEM_SEEDS = [
+          "Example: 3/4 + 1/6. Give me a NEW Grade 6 fraction problem like this.",
+          "Example: A recipe uses 2 cups of flour for 3 batches. Give me a NEW Grade 6 ratio / unit-rate word problem like this.",
+          "Example: -6 + 9. Give me a NEW Grade 6 integer problem like this.",
+          "Example: 0.45 × 3.2. Give me a NEW Grade 6 decimal problem like this.",
+          "Example: What is 20% of 60? Give me a NEW Grade 6 percent problem like this.",
+          "Example: Evaluate 3x + 5 when x = 4. Give me a NEW Grade 6 expression problem like this.",
+          "Example: Find the mean of 4, 8, 6, 10. Give me a NEW Grade 6 statistics problem like this.",
+          "Example: Area of a triangle with base 8 and height 5. Give me a NEW Grade 6 area problem like this.",
+        ];
         // Ask for a fresh practice problem and stamp it onto the board.
         function sendProblem() {
           if (busy) return;
           var q = (input.value || "").trim();
           var board = gatherBoardText();
+          var seed = q || board || PROBLEM_SEEDS[Math.floor(Math.random() * PROBLEM_SEEDS.length)];
           send("another", {
-            itemFallback: q || board || "a Grade 6 math problem for practice",
+            itemFallback: seed,
             echo: q ? "Give me a problem like: " + q : "Give me a new problem to practice.",
             onReply: function (reply) {
-              // Hand the generated problem to the board as an editable text tile.
+              // Guard: if the model asked for input instead of giving a problem
+              // (can happen with a vague request), don't stamp that onto the board.
+              if (
+                /\b(don'?t|do not) see|can you (please )?(share|type|tell|give)|what (topic|kind)/i.test(
+                  reply,
+                )
+              ) {
+                lead("Tell me a topic (like “fractions” or “percent”) and I’ll make one.");
+                return;
+              }
               window.dispatchEvent(new CustomEvent("mwb:add-text", { detail: { text: reply } }));
               lead("↑ Added to your page — solve it right there!");
             },
