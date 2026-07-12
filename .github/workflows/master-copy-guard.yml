@@ -13,6 +13,11 @@ on:
   pull_request:
     branches: [main]
 
+# Cancel a superseded run when the frequent auto-commit automation pushes again.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   master-copy-guard:
     runs-on: ubuntu-latest

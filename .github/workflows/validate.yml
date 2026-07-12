@@ -6,6 +6,12 @@ on:
   pull_request:
   push:
     branches: [main]
+
+# Cancel a superseded run when the frequent auto-commit automation pushes again.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 jobs:

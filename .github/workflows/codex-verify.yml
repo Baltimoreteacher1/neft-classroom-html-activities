@@ -2,11 +2,13 @@ name: Codex Verify
 
 on:
   pull_request:
-  push:
-    branches:
-      - main
-      - master
-      - "codex/**"
+  # Push to main is intentionally NOT a trigger: the local pre-push hook already
+  # runs the full QA loop before any push reaches main, so re-running here on
+  # every (often bursty) auto-commit just burns Actions minutes. PR-only.
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read

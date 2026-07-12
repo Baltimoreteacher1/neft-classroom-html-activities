@@ -25,8 +25,10 @@ name: Pre-Deploy Gate
 on:
   pull_request:
     branches: [main]
-  push:
-    branches: [main]
+  # Push to main is intentionally NOT a trigger: the pre-push hook runs this same
+  # QA loop locally before every push, and Cloudflare rebuilds on deploy — so
+  # gating here on each push duplicated that work. Runs on PRs + manual dispatch.
+  workflow_dispatch:
 
 # Default to read-only for the whole workflow; individual jobs widen only as needed.
 permissions:
