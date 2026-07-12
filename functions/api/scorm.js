@@ -96,6 +96,11 @@ export async function onRequest(context) {
   const target = url.searchParams.get("activity") || url.searchParams.get("url") || "";
   const title = url.searchParams.get("title") || "";
   const codes = url.searchParams.get("mode") === "codes" || url.searchParams.get("codes") === "1";
+  // Optional: bake selected learning supports (+ language) into the package so a
+  // teacher can post a personalized version for specific students. Values are
+  // whitelisted in _lib/scorm.js, so unknown keys are silently dropped.
+  const supports = url.searchParams.get("supports") || "";
+  const lang = url.searchParams.get("lang") || "";
 
   if (!target) {
     return errorPage("The link is missing its ?activity= parameter.");
@@ -103,7 +108,7 @@ export async function onRequest(context) {
 
   let pkg;
   try {
-    pkg = buildScormFiles({ target, title, codes });
+    pkg = buildScormFiles({ target, title, codes, supports, lang });
   } catch (e) {
     return errorPage("Could not build package: " + (e.message || e));
   }

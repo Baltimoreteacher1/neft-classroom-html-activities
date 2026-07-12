@@ -20,6 +20,35 @@ const SITE_DEFAULT = "https://eduwonderlab.com";
 // package arbitrary third-party origins as SCORM.
 const ALLOWED_HOSTS = ["eduwonderlab.com", "www.eduwonderlab.com"];
 
+// Learning-supports profile keys that may be baked into a personalized package.
+// Whitelisted so the launch query can only ever carry known, safe support keys.
+const SUPPORT_KEYS = [
+  "read-understand",
+  "focus-organize",
+  "build-math",
+  "express-thinking",
+  "language-support",
+  "challenge-extend",
+];
+const SUPPORT_LANGS = ["en", "es", "vi", "ar"];
+
+/** Keep only recognized support keys from a comma list; returns "" if none. */
+function sanitizeSupports(raw) {
+  if (!raw) return "";
+  return String(raw)
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => SUPPORT_KEYS.includes(s))
+    .join(",");
+}
+
+function sanitizeLang(raw) {
+  const c = String(raw || "")
+    .trim()
+    .toLowerCase();
+  return SUPPORT_LANGS.includes(c) && c !== "en" ? c : "";
+}
+
 function xmlEsc(s) {
   return String(s == null ? "" : s)
     .replace(/&/g, "&amp;")
@@ -223,19 +252,33 @@ function sco(lessonUrl, launchQuery, origin, title) {
 }
 
 /** Build the two package files. Returns { id, lessonUrl, files }. */
-export function buildScormFiles({ target, title, codes }, site = SITE_DEFAULT) {
+export function buildScormFiles({ target, title, codes, supports, lang }, site = SITE_DEFAULT) {
   const { lessonUrl, id, origin } = resolveTarget(target, site);
   const t = xmlEsc(title && String(title).trim() ? title.trim() : `Activity ${id}`);
   // Joined with "&" when the target already carries a query (?unit=3 etc.) —
   // mirrors tools/scorm/build-scorm.mjs so both builders stay in lockstep.
-  const launchQuery =
+  let launchQuery =
     (lessonUrl.includes("?") ? "&" : "?") + (codes ? "embed=1" : "lms=scorm&embed=1");
+
+  // Personalized package: bake the selected learning supports (and optional
+  // language) into the launch query so they activate for the student on load.
+  const safeSupports = sanitizeSupports(supports);
+  const safeLang = sanitizeLang(lang);
+  let personalId = id;
+  if (safeSupports) {
+    launchQuery += `&supports=${safeSupports}`;
+    if (safeLang) launchQuery += `&lang=${safeLang}`;
+    // Distinct id/filename so a personalized package doesn't collide with the
+    // standard one (e.g. neft-1-1-supports-... .zip).
+    personalId = slug(`${id}-supports-${safeSupports}${safeLang ? "-" + safeLang : ""}`);
+  }
+
   return {
-    id,
+    id: personalId,
     lessonUrl,
     codes: !!codes,
     files: {
-      "imsmanifest.xml": manifest(id, t),
+      "imsmanifest.xml": manifest(personalId, t),
       "index.html": sco(lessonUrl, launchQuery, origin, t),
     },
   };

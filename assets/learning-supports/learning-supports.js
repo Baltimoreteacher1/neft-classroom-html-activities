@@ -181,6 +181,18 @@
     }
   }
 
+  // Parse a preferred-language code from a hash/query string (personalized
+  // links / SCORM packages carry lang=es|vi|ar). Returns null if absent/invalid.
+  function parseLang(str) {
+    if (!str) return null;
+    const m = String(str)
+      .replace(/^[#?]/, "")
+      .match(/(?:^|&)lang=([a-z]{2})(?:&|$)/i);
+    if (!m) return null;
+    const code = m[1].toLowerCase();
+    return ["en", "es", "vi", "ar"].includes(code) ? code : null;
+  }
+
   // Parse hash/query parameter
   function parseSettings(str) {
     const settings = {};
@@ -265,15 +277,14 @@
       settings = parseSettings(window.location.search);
     }
 
+    // A personalized link / SCORM package may also preset the language.
+    const urlLang = parseLang(window.location.hash) || parseLang(window.location.search);
+
     const hasUrlActive = settings && Object.values(settings).some(Boolean);
     if (hasUrlActive) {
       activeProfiles = settings;
-      saveStoredPreferences({
-        profiles: activeProfiles,
-        language: activeLanguage,
-        speechRate: activeSpeechRate,
-        comfortMode: comfortActive,
-      });
+      if (urlLang) activeLanguage = urlLang;
+      saveStoredPreferences();
     } else {
       const stored = getStoredPreferences();
       if (stored) {
@@ -610,10 +621,29 @@
     actionsPanel.appendChild(resetBtn);
     dialogBody.appendChild(actionsPanel);
 
+    const scormBtn = document.createElement("button");
+    scormBtn.type = "button";
+    scormBtn.className = "ewl-supports-btn-action ewl-supports-btn-scorm";
+    scormBtn.textContent = "🎓 Download SCORM for these students";
+    scormBtn.title =
+      "Download a Canvas-ready SCORM package of this lesson with the selected supports built in";
+    scormBtn.addEventListener("click", () => downloadPersonalizedScorm(scormBtn));
+
     const printRow = document.createElement("div");
     printRow.className = "ewl-supports-dialog-actions";
     printRow.appendChild(printBtn);
     dialogBody.appendChild(printRow);
+
+    const scormRow = document.createElement("div");
+    scormRow.className = "ewl-supports-dialog-actions";
+    scormRow.appendChild(scormBtn);
+    dialogBody.appendChild(scormRow);
+
+    const scormNote = document.createElement("p");
+    scormNote.className = "ewl-supports-scorm-note";
+    scormNote.textContent =
+      "Posts a personalized version to Canvas for specific students. The supports you selected above turn on automatically for them.";
+    dialogBody.appendChild(scormNote);
 
     dialog.appendChild(dialogBody);
     rootEl.appendChild(dialog);
@@ -706,6 +736,13 @@
       return b;
     };
 
+    // Lesson-specific common mistakes / "watch out" guidance
+    addTool(
+      "misconceptions",
+      "⚠️ Watch Out",
+      () => togglePanel("misconceptions"),
+      "Common mistakes to avoid in this lesson",
+    );
     // Presentation / sensory
     addTool(
       "tint",
@@ -1007,6 +1044,12 @@
       const presentation = activeProfiles["read-understand"] || activeProfiles["focus-organize"];
       show("tint", presentation);
       show("contrast", presentation);
+      show(
+        "misconceptions",
+        (activeProfiles["read-understand"] || activeProfiles["build-math"]) &&
+          Array.isArray(manifestData.misconceptions) &&
+          manifestData.misconceptions.length > 0,
+      );
       show("multchart", activeProfiles["build-math"]);
       show("numberline", activeProfiles["build-math"]);
       show("placevalue", activeProfiles["build-math"]);
@@ -1386,6 +1429,9 @@
       container.appendChild(options);
       container.appendChild(feedbackDiv);
       bodyEl.appendChild(container);
+    } else if (tab === "misconceptions") {
+      titleEl.textContent = "Watch Out — Common Mistakes";
+      buildMisconceptions(bodyEl);
     } else if (tab === "multchart") {
       titleEl.textContent = "Multiplication Chart";
       buildMultiplicationChart(bodyEl);
@@ -1715,6 +1761,48 @@
   }
 
   // Copy Personalized Link
+  // Download a Canvas-ready SCORM package of this lesson with the selected
+  // supports baked into the launch URL, so a teacher can post a personalized
+  // version for specific students. Uses the site's on-demand /api/scorm builder.
+  function downloadPersonalizedScorm(btn) {
+    const activeList = serializeSettings(activeProfiles);
+    if (!activeList) {
+      announce("Choose at least one support before downloading a SCORM package.");
+      const orig = btn.textContent;
+      btn.textContent = "Select a support first";
+      setTimeout(() => {
+        btn.textContent = orig;
+      }, 1800);
+      return;
+    }
+
+    const params = new URLSearchParams();
+    params.set("activity", activeLessonId);
+    if (manifestData && manifestData.title) params.set("title", manifestData.title);
+    // The builder folds these into the lesson launch query so the supports
+    // controller activates them on load (query, not fragment — the SCO appends
+    // the Canvas student identity to the query at launch).
+    params.set("supports", activeList);
+    if (activeProfiles["language-support"] && activeLanguage !== "en") {
+      params.set("lang", activeLanguage);
+    }
+
+    const href = `/api/scorm?${params.toString()}`;
+    const a = document.createElement("a");
+    a.href = href;
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    const orig = btn.textContent;
+    btn.textContent = "⬇️ Building package…";
+    announce("Building a personalized SCORM package for download.");
+    setTimeout(() => {
+      btn.textContent = orig;
+    }, 2500);
+  }
+
   function copyPersonalizedLink(btn) {
     const activeList = serializeSettings(activeProfiles);
     const url = new URL(window.location.href);
@@ -1785,6 +1873,44 @@
     updateUIStates();
     updatePanelContent();
     announce(`${preset.label.replace(/^[^\w]+/, "").trim()} supports turned on.`);
+  }
+
+  // ---- Lesson-specific guidance -------------------------------------------
+
+  function buildMisconceptions(bodyEl) {
+    const list = manifestData.misconceptions;
+    if (!Array.isArray(list) || list.length === 0) {
+      const p = document.createElement("p");
+      p.textContent = "No common-mistake tips are available for this lesson yet.";
+      bodyEl.appendChild(p);
+      return;
+    }
+    const intro = document.createElement("p");
+    intro.textContent = "Watch for these common mistakes as you work this lesson.";
+    bodyEl.appendChild(intro);
+
+    const ul = document.createElement("ul");
+    ul.className = "ewl-supports-miscon-list";
+    list.forEach((item) => {
+      // Accept either { mistake, tip } objects or plain strings.
+      const mistake = typeof item === "string" ? item : item.mistake;
+      const tip = typeof item === "string" ? "" : item.tip;
+      if (!mistake) return;
+      const li = document.createElement("li");
+      li.className = "ewl-supports-miscon-item";
+      const m = document.createElement("p");
+      m.className = "ewl-supports-miscon-mistake";
+      m.textContent = `🚧 ${mistake}`;
+      li.appendChild(m);
+      if (tip) {
+        const t = document.createElement("p");
+        t.className = "ewl-supports-miscon-tip";
+        t.textContent = `✅ ${tip}`;
+        li.appendChild(t);
+      }
+      ul.appendChild(li);
+    });
+    bodyEl.appendChild(ul);
   }
 
   // ---- Math manipulatives & reference tools -------------------------------
@@ -2044,11 +2170,34 @@
     bodyEl.appendChild(desc);
 
     const key = `ewl-supports:v1:checklist:${activeLessonId}`;
+    const seededKey = `ewl-supports:v1:checklist-seeded:${activeLessonId}`;
     let items = [];
     try {
       const saved = localStorage.getItem(key);
       if (saved) items = JSON.parse(saved) || [];
     } catch (_e) {}
+
+    // Seed lesson-specific starter steps the first time (only once, so a student
+    // who clears their own steps doesn't get them re-added).
+    if (
+      items.length === 0 &&
+      Array.isArray(manifestData.checklistSteps) &&
+      manifestData.checklistSteps.length
+    ) {
+      let alreadySeeded = false;
+      try {
+        alreadySeeded = localStorage.getItem(seededKey) === "1";
+      } catch (_e) {}
+      if (!alreadySeeded) {
+        items = manifestData.checklistSteps
+          .filter((s) => typeof s === "string" && s.trim())
+          .map((s) => ({ text: s, done: false }));
+        try {
+          localStorage.setItem(key, JSON.stringify(items));
+          localStorage.setItem(seededKey, "1");
+        } catch (_e) {}
+      }
+    }
 
     const list = document.createElement("ul");
     list.className = "ewl-supports-checklist";
@@ -2366,7 +2515,7 @@
   }
 
   const EWLLearningSupports = {
-    version: "1.5.0",
+    version: "1.6.0",
     init,
     destroy,
     parseSettings,

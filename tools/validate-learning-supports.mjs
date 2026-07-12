@@ -252,6 +252,44 @@ function runValidation() {
       }
     }
 
+    // Optional lesson-specific fields: validate shape when present.
+    if (entry.misconceptions !== undefined) {
+      if (!Array.isArray(entry.misconceptions)) {
+        console.error(`FAIL: "misconceptions" must be an array in ${path}`);
+        process.exit(1);
+      }
+      for (let i = 0; i < entry.misconceptions.length; i++) {
+        const mc = entry.misconceptions[i];
+        const ok =
+          typeof mc === "string"
+            ? mc.trim().length > 0
+            : mc &&
+              typeof mc === "object" &&
+              typeof mc.mistake === "string" &&
+              mc.mistake.trim().length > 0 &&
+              (mc.tip === undefined || typeof mc.tip === "string");
+        if (!ok) {
+          console.error(
+            `FAIL: misconceptions[${i}] must be a non-empty string or { mistake, tip } in ${path}`,
+          );
+          process.exit(1);
+        }
+      }
+    }
+
+    if (entry.checklistSteps !== undefined) {
+      if (!Array.isArray(entry.checklistSteps)) {
+        console.error(`FAIL: "checklistSteps" must be an array in ${path}`);
+        process.exit(1);
+      }
+      for (let i = 0; i < entry.checklistSteps.length; i++) {
+        if (typeof entry.checklistSteps[i] !== "string" || !entry.checklistSteps[i].trim()) {
+          console.error(`FAIL: checklistSteps[${i}] must be a non-empty string in ${path}`);
+          process.exit(1);
+        }
+      }
+    }
+
     // 5. Scan entry for safety, PII, external URLs, HTML, and answer leakage
     try {
       scanObject(entry, path);
