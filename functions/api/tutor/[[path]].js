@@ -47,7 +47,7 @@ const CAP = {
   imageB64: 4_000_000,
 };
 
-const MODES = new Set(["hint", "explain", "another", "diagnose", "teach", "photo"]);
+const MODES = new Set(["hint", "explain", "another", "diagnose", "teach", "photo", "solve"]);
 
 // Media types Claude's vision API accepts.
 const IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
@@ -178,6 +178,16 @@ function systemPrompt(mode, standard) {
       `(4) End with ONE tiny next step to self-check. Keep it to 2-4 short, warm sentences.`
     );
   }
+  if (mode === "solve") {
+    return (
+      base +
+      ` Fully SOLVE this problem so the student can check their work. Rules: ` +
+      `(1) If the student included an answer, FIRST say clearly whether it is correct, and give the ` +
+      `correct final answer. ` +
+      `(2) Then show the solution in 2-5 short numbered steps. ` +
+      `(3) Be warm and brief; plain-text math (use / for division, ^ for exponents).`
+    );
+  }
   if (mode === "photo") {
     return (
       base +
@@ -226,7 +236,12 @@ function userPrompt(v) {
     );
     return lines.join("\n");
   }
-  if (v.mode === "hint") lines.push(`\nGive me a hint for the next step (not the answer).`);
+  if (v.mode === "solve")
+    lines.push(
+      "\nSolve this step by step so I can check my work." +
+        (v.studentWork ? " First tell me if my answer above is right." : ""),
+    );
+  else if (v.mode === "hint") lines.push(`\nGive me a hint for the next step (not the answer).`);
   else if (v.mode === "explain") lines.push(`\nExplain why / how this works.`);
   else if (v.mode === "diagnose")
     lines.push(

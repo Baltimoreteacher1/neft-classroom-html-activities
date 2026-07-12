@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Infinite Practice · Neft Teacher</title>
+    <meta
+      name="description"
+      content="Pick a Grade 6 skill and get an endless supply of fresh practice problems, with step-by-step solutions to check your work."
+    />
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #1fa6a2;
+        --teal-dark: #17807d;
+        --amber: #f2c15b;
+        --cream: #f7f4ec;
+        --line: #e4ebf2;
+        --ink: #1a2b3c;
+        --muted: #54677c;
+        --radius: 18px;
+        --shadow: 0 6px 24px rgba(12, 27, 42, 0.1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        color: var(--ink);
+        background: radial-gradient(ellipse at 50% -10%, #fff 0%, var(--cream) 60%);
+        min-height: 100vh;
+        line-height: 1.5;
+      }
+      .wrap {
+        max-width: 660px;
+        margin: 0 auto;
+        padding: 28px 18px 64px;
+      }
+      header {
+        text-align: center;
+        margin-bottom: 22px;
+      }
+      h1 {
+        font-size: clamp(1.6rem, 5vw, 2.2rem);
+        margin: 4px 0 6px;
+        color: var(--navy);
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+        margin-bottom: 18px;
+      }
+      label.field {
+        display: block;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 8px;
+      }
+      select,
+      input[type="text"] {
+        width: 100%;
+        min-height: 48px;
+        border: 2px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font: inherit;
+        background: #fff;
+      }
+      select:focus,
+      input:focus,
+      button:focus-visible {
+        outline: 3px solid var(--teal);
+        outline-offset: 2px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 52px;
+        width: 100%;
+        padding: 14px 20px;
+        border: 0;
+        border-radius: 14px;
+        background: var(--navy);
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .btn.secondary {
+        background: #fff;
+        color: var(--navy);
+        border: 2px solid var(--line);
+      }
+      .btn:disabled {
+        opacity: 0.55;
+        cursor: default;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+      }
+      .row .btn {
+        flex: 1;
+      }
+      .problem {
+        font-size: 1.25rem;
+        color: var(--navy);
+        font-weight: 600;
+        border-left: 6px solid var(--amber);
+        background: #fffaf0;
+        padding: 16px;
+        border-radius: 12px;
+      }
+      .solution {
+        border-left: 6px solid var(--teal);
+        background: #f0faf9;
+        white-space: pre-wrap;
+        font-size: 1.1rem;
+      }
+      .solution h2 {
+        margin: 0 0 8px;
+        font-size: 1.1rem;
+        color: var(--teal-dark);
+      }
+      .hidden {
+        display: none !important;
+      }
+      .spinner {
+        width: 22px;
+        height: 22px;
+        border: 3px solid rgba(255, 255, 255, 0.4);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .spinner {
+          animation: none;
+        }
+      }
+      .note {
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header>
+        <div style="font-size: 2.6rem">🎲</div>
+        <h1>Infinite Practice</h1>
+        <p class="sub">
+          Pick a skill and get a never-ending supply of fresh problems. Try each one, then check
+          your work.
+        </p>
+      </header>
+
+      <div class="card">
+        <label class="field" for="topic">Choose a skill</label>
+        <select id="topic"></select>
+        <div style="height: 12px"></div>
+        <button class="btn" id="newBtn">✨ Give me a problem</button>
+      </div>
+
+      <div class="card hidden" id="problemCard">
+        <div class="problem" id="problemText"></div>
+        <div style="height: 14px"></div>
+        <label class="field" for="answer"
+          >Your answer <span style="font-weight: 400; color: var(--muted)">(optional)</span></label
+        >
+        <input type="text" id="answer" placeholder="Type your answer, then check it" />
+        <div style="height: 12px"></div>
+        <div class="row">
+          <button class="btn" id="checkBtn">✅ Check my work</button>
+          <button class="btn secondary" id="anotherBtn">🔄 Another</button>
+        </div>
+      </div>
+
+      <div class="card solution hidden" id="solutionCard" aria-live="polite">
+        <h2>✏️ How to solve it</h2>
+        <div id="solutionText"></div>
+      </div>
+
+      <p class="note">🔒 Problems are made just for you and are not saved.</p>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        // Each topic carries a short example so the AI generates a *similar* fresh
+        // problem (mode "another"), plus its standard for grade-level targeting.
+        var TOPICS = [
+          {
+            label: "Ratios & rates",
+            std: "6.AT.3",
+            ex: "A recipe uses 2 cups of flour for every 3 eggs. How many eggs for 8 cups of flour?",
+          },
+          {
+            label: "Unit rate",
+            std: "6.AT.2",
+            ex: "A car goes 150 miles on 5 gallons of gas. What is the unit rate in miles per gallon?",
+          },
+          { label: "Percent of a number", std: "6.AT.4", ex: "What is 35% of 80?" },
+          { label: "Dividing fractions", std: "6.NOS.1", ex: "What is 3/4 divided by 1/2?" },
+          { label: "Decimal operations", std: "6.NOS.3", ex: "Multiply 2.4 by 1.5." },
+          {
+            label: "GCF and LCM",
+            std: "6.NOS.4",
+            ex: "Find the greatest common factor of 24 and 36.",
+          },
+          { label: "Evaluate expressions", std: "6.AT.6c", ex: "Evaluate 3x + 5 when x = 4." },
+          { label: "One-step equations", std: "6.AT.8", ex: "Solve for x: x + 7 = 15." },
+          {
+            label: "Area of triangles",
+            std: "6.GR.1",
+            ex: "Find the area of a triangle with base 10 cm and height 6 cm.",
+          },
+          {
+            label: "Volume of prisms",
+            std: "6.GR.2",
+            ex: "Find the volume of a box 4 by 3 by 5 inches.",
+          },
+          {
+            label: "Integers & absolute value",
+            std: "6.NOS.8",
+            ex: "Which is greater, -5 or -8? What is |-8|?",
+          },
+          { label: "Mean, median, mode", std: "6.DS.2", ex: "Find the mean of 4, 8, 6, 10, 7." },
+        ];
+
+        var topicSel = document.getElementById("topic");
+        TOPICS.forEach(function (t, i) {
+          var o = document.createElement("option");
+          o.value = String(i);
+          o.textContent = t.label;
+          topicSel.appendChild(o);
+        });
+
+        var newBtn = document.getElementById("newBtn");
+        var problemCard = document.getElementById("problemCard");
+        var problemText = document.getElementById("problemText");
+        var answerEl = document.getElementById("answer");
+        var checkBtn = document.getElementById("checkBtn");
+        var anotherBtn = document.getElementById("anotherBtn");
+        var solutionCard = document.getElementById("solutionCard");
+        var solutionText = document.getElementById("solutionText");
+        var currentProblem = "";
+
+        function api(body) {
+          return fetch("/api/tutor", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          }).then(function (r) {
+            return r.json().catch(function () {
+              return null;
+            });
+          });
+        }
+
+        function busy(btn, on, label) {
+          if (on) {
+            btn.dataset.label = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> ' + label;
+          } else {
+            btn.disabled = false;
+            btn.innerHTML = btn.dataset.label || btn.innerHTML;
+          }
+        }
+
+        function offline() {
+          problemCard.classList.remove("hidden");
+          problemText.textContent =
+            "The problem generator is resting right now. Please try again in a little while, or ask your teacher.";
+        }
+
+        function generate() {
+          var t = TOPICS[parseInt(topicSel.value, 10) || 0];
+          solutionCard.classList.add("hidden");
+          answerEl.value = "";
+          busy(newBtn, true, "Thinking…");
+          busy(anotherBtn, true, "…");
+          api({ mode: "another", standard: t.std, itemText: t.ex })
+            .then(function (data) {
+              if (data && data.ok && data.reply) {
+                currentProblem = data.reply.trim();
+                problemText.textContent = currentProblem;
+                problemCard.classList.remove("hidden");
+                problemCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+              } else {
+                offline();
+              }
+            })
+            .catch(offline)
+            .finally(function () {
+              busy(newBtn, false);
+              busy(anotherBtn, false);
+            });
+        }
+
+        function check() {
+          if (!currentProblem) return;
+          var t = TOPICS[parseInt(topicSel.value, 10) || 0];
+          busy(checkBtn, true, "Checking…");
+          api({
+            mode: "solve",
+            standard: t.std,
+            itemText: currentProblem,
+            studentWork: answerEl.value.slice(0, 200),
+          })
+            .then(function (data) {
+              solutionText.textContent =
+                data && data.ok && data.reply
+                  ? data.reply.trim()
+                  : "Couldn't reach the solver right now — try again in a moment.";
+              solutionCard.classList.remove("hidden");
+              solutionCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            })
+            .catch(function () {
+              solutionText.textContent = "Something went wrong. Please try again.";
+              solutionCard.classList.remove("hidden");
+            })
+            .finally(function () {
+              busy(checkBtn, false);
+            });
+        }
+
+        newBtn.addEventListener("click", generate);
+        anotherBtn.addEventListener("click", generate);
+        checkBtn.addEventListener("click", check);
+      })();
+    </script>
+  </body>
+</html>
