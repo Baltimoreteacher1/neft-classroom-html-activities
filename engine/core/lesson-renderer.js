@@ -593,6 +593,15 @@ function buildVisual(v) {
         fallback: `3D ${shapeName} model${labelText}. Turn on JavaScript to rotate it and unfold its net.`,
       });
     }
+    case "line-grapher": {
+      // Draggable y = kx grapher for proportional relationships / linear equations.
+      const yN = v.yName || "y";
+      const xN = v.xName || "x";
+      return interactiveVisualHost(v, {
+        ariaLabel: `Interactive y = kx grapher relating ${yN} to ${xN}. Adjust the constant to see the line, table, and points update.`,
+        fallback: `Interactive grapher for ${yN} versus ${xN}. Turn on JavaScript to drag the line and read values.`,
+      });
+    }
     default:
       return "";
   }

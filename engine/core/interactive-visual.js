@@ -17,10 +17,56 @@
 //     returned handle on the host as `__ivHandle` so a caller can `destroy()`
 //     eagerly if it wants to.
 
+// Load a classic (non-module) script once and resolve when it has executed.
+// Memoized by src so repeated grapher mounts share one network fetch/parse.
+const _scriptPromises = new Map();
+function loadClassicScript(src) {
+  if (_scriptPromises.has(src)) return _scriptPromises.get(src);
+  const p = new Promise((resolve, reject) => {
+    const existing = document.querySelector(`script[data-iv-src="${src}"]`);
+    if (existing) {
+      resolve();
+      return;
+    }
+    const s = document.createElement("script");
+    s.src = src;
+    s.dataset.ivSrc = src;
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error(`failed to load ${src}`));
+    document.head.appendChild(s);
+  });
+  _scriptPromises.set(src, p);
+  return p;
+}
+
 const REGISTRY = {
   "solid-3d": async (host, cfg) => {
     const { renderShape3D } = await import("../components/shape-3d.js");
     return renderShape3D(host, { shape: cfg.shape || "cube", label: cfg.label });
+  },
+  // Draggable y = kx grapher (shared/projects/manip-line-grapher.js). Config maps
+  // straight onto the widget's data-* attributes so lessons author it declaratively.
+  "line-grapher": async (host, cfg) => {
+    await loadClassicScript("/shared/projects/manip-line-grapher.js");
+    const el = document.createElement("div");
+    el.className = "pki-manip";
+    el.dataset.manip = "line-grapher";
+    const attr = {
+      "x-name": cfg.xName,
+      "y-name": cfg.yName,
+      "k-name": cfg.kName,
+      "y-prefix": cfg.yPrefix,
+      "k-min": cfg.kMin,
+      "k-max": cfg.kMax,
+      "k-step": cfg.kStep,
+      "k-default": cfg.kDefault,
+    };
+    for (const [k, v] of Object.entries(attr)) {
+      if (v != null && v !== "") el.setAttribute(`data-${k}`, String(v));
+    }
+    host.appendChild(el);
+    window.NeftLineGrapher?.init?.(el);
+    return null; // stateless widget; listeners are node-local and GC on detach
   },
 };
 

@@ -440,4 +440,11 @@
       document.querySelectorAll('.pki-manip[data-manip="line-grapher"]').forEach(init);
     }, 900);
   });
+
+  // Expose init() so on-demand mounts (e.g. the lesson interactive-visual bridge)
+  // can hydrate a grapher element added after initial page load, instead of
+  // relying on the ready()/timeout auto-scan. `init` is idempotent per element.
+  if (typeof window !== "undefined") {
+    window.NeftLineGrapher = { init: init };
+  }
 })();
