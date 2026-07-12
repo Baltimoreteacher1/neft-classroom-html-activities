@@ -3738,8 +3738,14 @@
     return _studyPackLoading;
   }
 
+  // Study Pack uses the classroom Study Pack service (Claude Haiku) as the
+  // single canonical generator for BOTH sites — it produces higher-quality,
+  // reliably-shaped packs, and the endpoint sends open CORS so this cross-origin
+  // POST is allowed. (Noam's own /api/ai — Gemini — stays the homework chat
+  // helper; it was timing out on the larger pack-generation JSON.)
+  const STUDY_PACK_ENDPOINT = "https://eduwonderlab.com/api/study-pack";
   async function studyApi(payload) {
-    const res = await fetch("/api/ai", {
+    const res = await fetch(STUDY_PACK_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -3777,9 +3783,8 @@
           brand: "noam",
           storageKey: "noam-study-packs",
           generate: (notes, subjectHint) =>
-            studyApi({ mode: "study-pack", notes, subjectHint }).then((d) => d.pack),
-          ask: (notes, question) =>
-            studyApi({ mode: "study-ask", notes, question }).then((d) => d.reply),
+            studyApi({ mode: "generate", notes, subjectHint }).then((d) => d.pack),
+          ask: (notes, question) => studyApi({ mode: "ask", notes, question }).then((d) => d.reply),
         });
       })
       .catch(() => {

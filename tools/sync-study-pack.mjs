@@ -7,10 +7,12 @@
  *   - eduwonderlab.com  ->  curriculum/study-pack/      (git auto-deploy)
  *   - noam.eduwonderlab.com -> focus-school/shared/study-pack/ (direct upload)
  *
- * This copies the client engine (study-pack.js/.css) into both consumer roots
- * and the contract (contract.mjs) into focus-school so Noam's Pages Function can
- * import it from within its own project root. Run in `npm run build` and commit
- * the outputs so both deploy paths (which read committed files) stay in lockstep.
+ * This copies the client engine (study-pack.js/.css) into both consumer roots.
+ * The contract (contract.mjs) is only needed server-side by the classroom
+ * Pages Function, which imports it directly from shared/ — Noam calls that same
+ * classroom endpoint cross-origin for generation, so it needs only the client
+ * engine. Run in `npm run build` and commit the outputs so both deploy paths
+ * (which read committed files) stay in lockstep.
  * ========================================================================== */
 import { cpSync, mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -23,7 +25,6 @@ const SRC = resolve(ROOT, "shared/study-pack");
 const JOBS = [
   ["study-pack.js", ["curriculum/study-pack", "focus-school/shared/study-pack"]],
   ["study-pack.css", ["curriculum/study-pack", "focus-school/shared/study-pack"]],
-  ["contract.mjs", ["focus-school/shared/study-pack"]],
 ];
 
 let copied = 0;
