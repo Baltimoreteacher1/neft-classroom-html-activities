@@ -45,7 +45,7 @@ const assignment = {
 
 assert.equal(
   api.academicHelpPrompt(assignment, "Math"),
-  "I need help with my Math assignment, “Compare ratios worksheet.” My next step is “Solve problems 1 through 5.” Please help me understand what to do without giving away the answer.",
+  "I need help with my Math assignment, “Compare ratios worksheet.” My next step is “Solve problems 1 through 5.” It is due Jul 13. Please help me understand what to do without giving away the answer.",
   "Academic Help should turn a planner assignment into a specific, hint-first request",
 );
 

@@ -45,7 +45,7 @@ const assignment = {
 
 assert.equal(
   api.buildGuidedHelpPrompt(assignment, "Math", "I do not understand the directions", "example"),
-  "I need help with my Math assignment, “Compare ratios worksheet.” I do not understand the directions. Please show me one similar example, then let me try mine.",
+  "I need help with my Math assignment, “Compare ratios worksheet.” I do not understand the directions. It is due Jul 11. It is estimated to take 30 minutes. The unfinished steps are: Solve problems 1 through 5. Please show me one similar example, then let me try mine.",
   "guided help combines assignment context, stuck point, and support style",
 );
 

@@ -910,6 +910,9 @@
         : [],
       notes: a.notes || "",
       source: a.source || "Manual",
+      sourceUrl: safeSourceUrl(a.sourceUrl),
+      teacher: String(a.teacher || "").slice(0, 120),
+      assignmentType: String(a.assignmentType || "").slice(0, 40),
       created: a.created || todayKey(),
       completedAt: a.completedAt || "",
       updatedAt: a.updatedAt || Date.now(),
@@ -939,6 +942,112 @@
     return [title, classId, due].join("|");
   }
 
+  function safeSourceUrl(value) {
+    const raw = String(value || "").trim().slice(0, 1000);
+    if (!raw) return "";
+    try {
+      const url = new URL(raw);
+      return url.protocol === "https:" ? url.href : "";
+    } catch {
+      return "";
+    }
+  }
+
+  function matchImportClass(line, classes) {
+    const text = String(line || "").trim().toLowerCase();
+    if (!text) return "";
+    const aliases = {
+      ela: ["ela", "english", "language arts"],
+      math: ["math", "mathematics", "algebra", "geometry"],
+      science: ["science", "biology", "chemistry", "physics"],
+      social: ["social studies", "history", "civics", "geography"],
+    };
+    const tokens = text.split(/\s*[-–—|:]\s*/);
+    for (const item of classes || []) {
+      const values = [item.name, item.subject, item.teacher]
+        .filter(Boolean)
+        .map((value) => String(value).trim().toLowerCase());
+      const joined = values.join(" ");
+      const group = Object.entries(aliases).find(([, words]) =>
+        words.some((word) => joined.includes(word)),
+      );
+      const candidates = group ? [...values, ...group[1]] : values;
+      if (candidates.some((value) => tokens.includes(value) || text === value)) return item.id;
+      if (item.teacher && text.includes(String(item.teacher).toLowerCase())) return item.id;
+    }
+    return "";
+  }
+
+  function parseImportDue(line, todayIso) {
+    const text = String(line || "").toLowerCase();
+    const base = parseLocal(DATE_RE.test(todayIso) ? todayIso : todayKey());
+    if (text.includes("tomorrow")) base.setDate(base.getDate() + 1);
+    else if (!text.includes("today")) {
+      const parsed = parseDue(line);
+      return parsed;
+    }
+    return ymd(base);
+  }
+
+  function parseImportTime(line) {
+    const match = String(line || "").match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i);
+    if (!match) return "";
+    let hour = Number(match[1]) % 12;
+    if (match[3].toLowerCase() === "pm") hour += 12;
+    return `${String(hour).padStart(2, "0")}:${match[2] || "00"}`;
+  }
+
+  function inferAssignmentType(title) {
+    const text = String(title || "").toLowerCase();
+    for (const type of ["essay", "quiz", "test", "worksheet", "project", "reading", "lab"])
+      if (text.includes(type)) return type;
+    return "assignment";
+  }
+
+  function parseImportText(text, classes, todayIso = todayKey()) {
+    const lines = String(text || "")
+      .split(/\r?\n+/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+    let classId = (classes || [])[0]?.id || "";
+    const results = [];
+    let current = null;
+    for (const line of lines) {
+      if (/^(teacher|from)\s*:/i.test(line)) {
+        if (current) current.teacher = line.replace(/^[^:]+:\s*/, "").slice(0, 120);
+        continue;
+      }
+      const matchedClass = matchImportClass(line, classes);
+      if (matchedClass && line.length < 80) {
+        classId = matchedClass;
+        continue;
+      }
+      if (/^https?:\/\//i.test(line)) {
+        if (current) current.sourceUrl = safeSourceUrl(line);
+        continue;
+      }
+      if (/^due\b/i.test(line)) {
+        if (current) {
+          current.due = parseImportDue(line, todayIso);
+          current.dueTime = parseImportTime(line);
+        }
+        continue;
+      }
+      if (/^(assigned|missing|done|to-?do|turned in|graded|no due date)$/i.test(line)) continue;
+      current = {
+        title: line.replace(/^[-•*]\s*/, "").slice(0, 200),
+        classId,
+        due: "",
+        dueTime: "",
+        teacher: "",
+        sourceUrl: "",
+        assignmentType: inferAssignmentType(line),
+      };
+      results.push(current);
+    }
+    return results.filter((item) => item.title.length > 2).slice(0, 40);
+  }
+
   function normalizeImportCandidate(item) {
     item = item || {};
     const allowed = ["pending", "imported", "dismissed"];
@@ -947,8 +1056,12 @@
       title: String(item.title || "Untitled assignment").slice(0, 200),
       classId: String(item.classId || "").slice(0, 80),
       due: DATE_RE.test(item.due) ? item.due : "",
+      dueTime: TIME_RE.test(item.dueTime) ? item.dueTime : "",
       notes: String(item.notes || "").slice(0, 1000),
       origin: String(item.origin || "Paste").slice(0, 60),
+      sourceUrl: safeSourceUrl(item.sourceUrl),
+      teacher: String(item.teacher || "").slice(0, 120),
+      assignmentType: String(item.assignmentType || "").slice(0, 40),
       status: allowed.includes(item.status) ? item.status : "pending",
       duplicate: Boolean(item.duplicate),
       createdAt: Number(item.createdAt) || Date.now(),
@@ -1023,6 +1136,70 @@
       todos: (data.todos || []).filter((item) => !item.done && item.date <= todayIso).length,
       recent: recent.length ? recent[0].label : "Nothing has changed yet.",
     };
+  }
+
+  function estimateDailyCapacity(activity) {
+    const minutes = Object.values(activity || {})
+      .map((day) => Number(day && day.focusMin) || 0)
+      .filter((value) => value > 0)
+      .slice(-14)
+      .sort((a, b) => a - b);
+    if (minutes.length < 3) return 60;
+    const middle = Math.floor(minutes.length / 2);
+    const median =
+      minutes.length % 2 ? minutes[middle] : (minutes[middle - 1] + minutes[middle]) / 2;
+    return clamp(Math.round(median / 5) * 5, 45, 90);
+  }
+
+  function addIsoDays(iso, amount) {
+    const date = parseLocal(iso);
+    date.setDate(date.getDate() + amount);
+    return ymd(date);
+  }
+
+  function buildWorkloadForecast(assignments, activity, todayIso = todayKey()) {
+    const capacity = estimateDailyCapacity(activity);
+    const days = Array.from({ length: 7 }, (_, index) => ({
+      date: addIsoDays(todayIso, index),
+      minutes: 0,
+      overloaded: false,
+    }));
+    const byDate = new Map(days.map((day) => [day.date, day]));
+    const open = (assignments || []).filter(
+      (item) => item.status !== "done" && byDate.has(item.due),
+    );
+    open.forEach((item) => {
+      byDate.get(item.due).minutes += Math.max(5, Number(item.estimateMin) || 15);
+    });
+    days.forEach((day) => {
+      day.overloaded = day.minutes > capacity;
+    });
+    const suggestions = [];
+    const projected = new Map(days.map((day) => [day.date, day.minutes]));
+    for (const day of days.filter((entry) => entry.overloaded)) {
+      let excess = day.minutes - capacity;
+      const flexible = open
+        .filter((item) => item.due === day.date && item.priority !== "high")
+        .sort((a, b) =>
+          a.priority === b.priority
+            ? (Number(a.estimateMin) || 15) - (Number(b.estimateMin) || 15)
+            : a.priority === "low"
+              ? -1
+              : 1,
+        );
+      for (const item of flexible) {
+        const minutes = Math.max(5, Number(item.estimateMin) || 15);
+        const target = days.find(
+          (entry) => entry.date < day.date && projected.get(entry.date) + minutes <= capacity,
+        );
+        if (!target) continue;
+        suggestions.push({ assignmentId: item.id, title: item.title, moveTo: target.date, minutes });
+        projected.set(target.date, projected.get(target.date) + minutes);
+        excess -= minutes;
+        if (excess <= 0) break;
+      }
+    }
+    return { capacity, days, suggestions };
   }
 
   // Reminders were folded into the to-do list; convert an old reminder into a
@@ -3427,6 +3604,13 @@
     return s === "done" ? "Done" : s === "doing" ? "In progress" : "Not started";
   }
 
+  function sourceLinkHTML(item, className = "btn sm") {
+    const url = safeSourceUrl(item?.sourceUrl);
+    return url
+      ? `<a class="${className}" href="${esc(url)}" target="_blank" rel="noopener">↗ Open source</a>`
+      : "";
+  }
+
   function taskItem(a, { showClass = true } = {}) {
     const c = cls(a.classId);
     const n = daysUntil(a.due);
@@ -3466,6 +3650,7 @@
           <button class="btn sm" data-act="breakdown" data-id="${a.id}">🧩 Steps</button>
           <button class="btn sm" data-act="academic-help" data-id="${a.id}">🤖 Get help</button>
           <button class="btn sm" data-act="ask-help" data-id="${a.id}">🙋 Ask for help</button>
+          ${sourceLinkHTML(a)}
           <button class="btn sm" data-act="open-task" data-id="${a.id}">✏️ Edit</button>
           ${a.status === "done" ? `<button class="btn sm" data-act="reopen" data-id="${a.id}">↩ Reopen</button>` : `<button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button>`}
           <button class="btn danger sm" data-act="delete-task" data-id="${a.id}">Delete</button>
@@ -4175,14 +4360,47 @@
     ["Feelings", ["I feel overwhelmed", "Help me focus"]],
   ];
 
+  function assignmentHelpContext(assignment, { includeSteps = true } = {}) {
+    const parts = [];
+    if (DATE_RE.test(assignment?.due || "")) {
+      let due = parseLocal(assignment.due).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+      if (TIME_RE.test(assignment.dueTime || "")) {
+        const [hour, minute] = assignment.dueTime.split(":").map(Number);
+        const at = new Date(2000, 0, 1, hour, minute).toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+        });
+        due += ` at ${at}`;
+      }
+      parts.push(`It is due ${due}.`);
+    }
+    if (Number(assignment?.estimateMin) > 0)
+      parts.push(`It is estimated to take ${Number(assignment.estimateMin)} minutes.`);
+    const notes = String(assignment?.notes || "").trim().slice(0, 500);
+    if (notes) parts.push(`The directions or notes say: “${notes}”`);
+    const steps = includeSteps
+      ? (assignment?.steps || [])
+      .filter((step) => !step.done && step.text)
+      .slice(0, 4)
+      .map((step) => String(step.text).trim().slice(0, 120))
+      : [];
+    if (steps.length) parts.push(`The unfinished steps are: ${steps.join("; ")}.`);
+    return parts.join(" ");
+  }
+
   function academicHelpPrompt(assignment, className = "") {
     const title = String(assignment?.title || "").trim();
     if (!title) return "";
     const subject = className ? `my ${className} assignment, “${title}.”` : `“${title}.”`;
     const nextStep = (assignment.steps || []).find((step) => !step.done)?.text?.trim();
+    const context = assignmentHelpContext(assignment, { includeSteps: false });
     return (
       `I need help with ${subject}` +
       (nextStep ? ` My next step is “${nextStep}.”` : "") +
+      (context ? ` ${context}` : "") +
       " Please help me understand what to do without giving away the answer."
     );
   }
@@ -4198,7 +4416,8 @@
     const subject = className ? `my ${className} assignment, “${title}.”` : `“${title}.”`;
     const rawStuck = String(stuckPoint || "I’m not sure what to do next.").trim();
     const stuck = /[.!?]$/.test(rawStuck) ? rawStuck : `${rawStuck}.`;
-    return `I need help with ${subject} ${stuck} ${SUPPORT_STYLE_PROMPTS[style] || SUPPORT_STYLE_PROMPTS.hint}`;
+    const context = assignmentHelpContext(assignment);
+    return `I need help with ${subject} ${stuck}${context ? ` ${context}` : ""} ${SUPPORT_STYLE_PROMPTS[style] || SUPPORT_STYLE_PROMPTS.hint}`;
   }
 
   function extractActionSteps(reply) {
@@ -5244,7 +5463,7 @@ Due May 31"></textarea>
         `<p class="view-intro">Review work captured from Classroom or School Mail before it reaches your assignment list.</p>
         ${pending.length ? `<div class="row"><button class="btn primary" data-act="inbox-import-all">Import all new</button><span class="pill">${pending.length} waiting</span></div>${pending
           .map(
-            (item) => `<section class="card import-candidate"><div class="head"><div><h3>${esc(item.title)}</h3><p class="meta">${esc(item.origin)} · ${esc(cls(item.classId).name)} · ${esc(dueLabel(item.due))}</p></div>${item.duplicate ? '<span class="pill amber">Possible duplicate</span>' : '<span class="pill green">Ready</span>'}</div><div class="row"><button class="btn primary sm" data-act="inbox-import" data-id="${esc(item.id)}" ${item.duplicate ? "disabled" : ""}>Add assignment</button><button class="btn sm" data-act="inbox-edit" data-id="${esc(item.id)}">Edit</button><button class="btn sm" data-act="inbox-dismiss" data-id="${esc(item.id)}">Dismiss</button></div></section>`,
+            (item) => `<section class="card import-candidate"><div class="head"><div><h3>${esc(item.title)}</h3><p class="meta">${esc(item.origin)} · ${esc(cls(item.classId).name)} · ${esc(dueLabel(item.due, item.dueTime))}</p>${item.teacher || item.assignmentType ? `<p class="import-details">${item.assignmentType ? esc(item.assignmentType) : "Assignment"}${item.teacher ? ` · ${esc(item.teacher)}` : ""}</p>` : ""}</div>${item.duplicate ? '<span class="pill amber">Possible duplicate</span>' : '<span class="pill green">Ready</span>'}</div><div class="row"><button class="btn primary sm" data-act="inbox-import" data-id="${esc(item.id)}" ${item.duplicate ? "disabled" : ""}>Add assignment</button><button class="btn sm" data-act="inbox-edit" data-id="${esc(item.id)}">Edit</button>${sourceLinkHTML(item)}<button class="btn sm" data-act="inbox-dismiss" data-id="${esc(item.id)}">Dismiss</button></div></section>`,
           )
           .join("")}` : emptyState("📥", "Import Inbox is clear. Paste Classroom work or capture a School Mail message to review it here.")}`
       );
@@ -5258,6 +5477,7 @@ Due May 31"></textarea>
         `<div class="seg briefing-switch"><button data-act="set-briefing-phase" data-arg="morning" aria-pressed="${phase === "morning"}">Morning</button><button data-act="set-briefing-phase" data-arg="afterSchool" aria-pressed="${phase === "afterSchool"}">After school</button></div>
         <section class="card briefing-card"><span class="eyebrow">${phase === "morning" ? "START CALM" : "LAND THE DAY"}</span><h2>${esc(brief.headline)}</h2><p class="sub">${brief.todos} to-do${brief.todos === 1 ? "" : "s"} also need attention.</p></section>
         <div class="section-title">Best next moves</div>${brief.items.length ? brief.items.map((item) => `<div class="item"><div class="head"><div><h4>${esc(item.title)}</h4><p class="meta">${esc(cls(item.classId).name)} · ${esc(dueLabel(item.due))}</p></div><button class="btn primary sm" data-act="focus-start" data-id="${esc(item.id)}">Start</button></div></div>`).join("") : emptyState("✨", "Nothing urgent. You're caught up.")}
+        ${workloadForecastHTML()}
         <section class="card"><h3>What changed?</h3><p class="sub">${esc(brief.recent)}</p><button class="btn sm" data-act="nav" data-arg="changes">See Recently Changed</button></section>`
       );
     },
@@ -6532,6 +6752,24 @@ Due May 31"></textarea>
           `<div class="item"><h4>${esc(event.label)}</h4><p class="meta">${esc(event.device)} · ${esc(timeAgo(event.ts))}</p></div>`,
       )
       .join("")}</div>`;
+  }
+
+  function workloadForecastHTML() {
+    const forecast = buildWorkloadForecast(state.assignments, state.activity);
+    const dayCards = forecast.days
+      .map((day) => {
+        const label = parseLocal(day.date).toLocaleDateString(undefined, { weekday: "short" });
+        return `<div class="forecast-day ${day.overloaded ? "overloaded" : ""}"><b>${esc(label)}</b><span>${day.minutes}m</span><small>${day.overloaded ? "Heavy" : "OK"}</small></div>`;
+      })
+      .join("");
+    const suggestions = forecast.suggestions.length
+      ? `<div class="forecast-suggestions">${forecast.suggestions
+          .map(
+            (item) => `<div class="item"><div><h4>Move ${esc(item.title)} earlier?</h4><p class="meta">Try ${esc(niceDate(item.moveTo))} to balance the week.</p></div><button class="btn sm" data-act="forecast-move" data-id="${esc(item.assignmentId)}" data-arg="${esc(item.moveTo)}">Move earlier</button></div>`,
+          )
+          .join("")}</div>`
+      : '<p class="sub">Your next seven days fit your current pace.</p>';
+    return `<section class="card workload-card"><div class="head"><div><h3>Workload forecast</h3><p class="sub">A balanced target is about ${forecast.capacity} focused minutes per day.</p></div></div><div class="forecast-week">${dayCards}</div>${suggestions}</section>`;
   }
 
   // ---------------------------------------------------------------------------
@@ -8941,39 +9179,14 @@ Due May 31"></textarea>
     return "";
   }
   function parsePaste(text) {
-    const lines = text
-      .split(/\n+/)
-      .map((x) => x.trim())
-      .filter(Boolean);
-    let cur = state.classes[0]?.id || "";
-    const out = [];
-    for (let i = 0; i < lines.length; i++) {
-      const l = lines[i],
-        low = l.toLowerCase();
-      const hit = state.classes.find(
-        (c) => low === c.name.toLowerCase() || (c.name && low.includes(c.name.toLowerCase())),
-      );
-      if (hit && l.length < 55) {
-        cur = hit.id;
-        continue;
-      }
-      if (/^due\b/i.test(l) && out.length) {
-        out[out.length - 1].due = parseDue(l);
-        continue;
-      }
-      if (/^(assigned|missing|done|to-?do|turned in|graded|no due date)$/i.test(l)) continue;
-      out.push(
-        normalizeTask({
-          title: l.replace(/^[-•*]\s*/, ""),
-          classId: cur,
-          due: /^due\b/i.test(lines[i + 1] || "") ? parseDue(lines[i + 1]) : "",
-          priority: /missing|late/i.test(text) ? "high" : "med",
-          notes: "Added from Google Classroom paste.",
-          source: "Classroom Paste",
-        }),
-      );
-    }
-    return out.filter((a) => a.title.length > 2 && !/^due\b/i.test(a.title)).slice(0, 40);
+    return parseImportText(text, state.classes).map((item) =>
+      normalizeTask({
+        ...item,
+        priority: /missing|late/i.test(text) ? "high" : "med",
+        notes: "Added from Google Classroom paste.",
+        source: "Classroom Paste",
+      }),
+    );
   }
   let parsedCache = [];
   let briefingPhase = "";
@@ -8997,8 +9210,12 @@ Due May 31"></textarea>
       title: item.title,
       classId: item.classId,
       due: item.due,
+      dueTime: item.dueTime,
       notes: item.notes,
       source: item.origin,
+      sourceUrl: item.sourceUrl,
+      teacher: item.teacher,
+      assignmentType: item.assignmentType,
     });
     item.status = "imported";
     item.updatedAt = Date.now();
@@ -9075,6 +9292,11 @@ Due May 31"></textarea>
     "set-briefing-phase": (_, phase) => {
       briefingPhase = phase === "afterSchool" ? "afterSchool" : "morning";
       render();
+    },
+    "forecast-move": (id, date) => {
+      ACTIONS["open-task"](id);
+      const due = $("#tDue");
+      if (due && DATE_RE.test(date || "")) due.value = date;
     },
     "inbox-import": (id) => importInboxCandidate(id),
     "inbox-import-all": () => {
@@ -10600,6 +10822,8 @@ ${name}`;
       const obj = {
         title: ("Email: " + (m.subject || "(no subject)")).slice(0, 120),
         notes: m.from ? `From: ${m.from}` : "",
+        teacher: m.from || "",
+        sourceUrl: `https://mail.google.com/mail/u/0/#inbox/${encodeURIComponent(m.id)}`,
       };
       queueImportCandidates([obj], "School Mail");
       toast("Sent to Import Inbox for review 📥");
@@ -11651,6 +11875,7 @@ ${name}`;
   if (window.__FOCUS_SCHOOL_TEST__) {
     Object.assign(window.__FOCUS_SCHOOL_TEST__, {
       academicHelpPrompt,
+      buildWorkloadForecast,
       buildDailyBriefing,
       buildImportCandidates,
       buildCatchUpPlan,
@@ -11668,8 +11893,12 @@ ${name}`;
       normalize,
       normalizeChangeEvent,
       importCandidateKey,
+      estimateDailyCapacity,
+      matchImportClass,
+      parseImportText,
       pickRoutineForNow,
       rankNavigation,
+      safeSourceUrl,
       routineForHome,
       seed,
       teacherHelpDraft,
