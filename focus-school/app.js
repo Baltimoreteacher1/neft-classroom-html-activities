@@ -522,6 +522,8 @@
         rememberText: "",
       },
       health: { log: {} },
+      importInbox: [],
+      changeLog: [],
       supportStats: {
         hint: 0,
         example: 0,
@@ -631,6 +633,10 @@
             },
       rewards: normalizeRewards(x.rewards),
       health: normalizeHealth(x.health),
+      importInbox: Array.isArray(x.importInbox)
+        ? x.importInbox.map(normalizeImportCandidate).slice(-100)
+        : [],
+      changeLog: mergeChangeLog(x.changeLog, [], 80),
       supportStats: {
         hint: Math.max(0, Number(x.supportStats?.hint) || 0),
         example: Math.max(0, Number(x.supportStats?.example) || 0),
@@ -923,6 +929,99 @@
       time: t.time || "",
       lastShown: t.lastShown || "",
       updatedAt: t.updatedAt || t.createdAt || Date.now(),
+    };
+  }
+
+  function importCandidateKey(item) {
+    const title = String((item && item.title) || "").trim().replace(/\s+/g, " ").toLowerCase();
+    const classId = String((item && item.classId) || "").trim().toLowerCase();
+    const due = DATE_RE.test((item && item.due) || "") ? item.due : "";
+    return [title, classId, due].join("|");
+  }
+
+  function normalizeImportCandidate(item) {
+    item = item || {};
+    const allowed = ["pending", "imported", "dismissed"];
+    return {
+      id: item.id || uid("in"),
+      title: String(item.title || "Untitled assignment").slice(0, 200),
+      classId: String(item.classId || "").slice(0, 80),
+      due: DATE_RE.test(item.due) ? item.due : "",
+      notes: String(item.notes || "").slice(0, 1000),
+      origin: String(item.origin || "Paste").slice(0, 60),
+      status: allowed.includes(item.status) ? item.status : "pending",
+      duplicate: Boolean(item.duplicate),
+      createdAt: Number(item.createdAt) || Date.now(),
+      updatedAt: Number(item.updatedAt) || Date.now(),
+    };
+  }
+
+  function buildImportCandidates(items, assignments, inbox) {
+    const known = new Set();
+    (assignments || []).forEach((item) => known.add(importCandidateKey(item)));
+    (inbox || []).forEach((item) => {
+      if (item.status === "pending") known.add(importCandidateKey(item));
+    });
+    return (items || []).map((item) => {
+      const candidate = normalizeImportCandidate(item);
+      const key = importCandidateKey(candidate);
+      candidate.duplicate = known.has(key);
+      known.add(key);
+      return candidate;
+    });
+  }
+
+  const CHANGE_KINDS = new Set([
+    "assignment",
+    "import",
+    "reminder",
+    "sync",
+    "schedule",
+    "other",
+  ]);
+
+  function normalizeChangeEvent(event) {
+    event = event || {};
+    return {
+      id: event.id || uid("chg"),
+      ts: Number(event.ts) || Date.now(),
+      kind: CHANGE_KINDS.has(event.kind) ? event.kind : "other",
+      label: String(event.label || "Updated Focus School").slice(0, 120),
+      device: String(event.device || "This device").slice(0, 60),
+      itemId: String(event.itemId || "").slice(0, 120),
+    };
+  }
+
+  function mergeChangeLog(local, remote, limit = 80) {
+    const events = new Map();
+    [...(local || []), ...(remote || [])].forEach((raw) => {
+      const event = normalizeChangeEvent(raw);
+      const prior = events.get(event.id);
+      if (!prior || event.ts >= prior.ts) events.set(event.id, event);
+    });
+    return [...events.values()]
+      .sort((a, b) => b.ts - a.ts || a.id.localeCompare(b.id))
+      .slice(0, limit);
+  }
+
+  function buildDailyBriefing(data, phase = "morning", todayIso = todayKey()) {
+    const priorities = (data.assignments || [])
+      .filter((item) => item.status !== "done" && item.due && item.due <= todayIso)
+      .sort((a, b) => a.due.localeCompare(b.due) || a.title.localeCompare(b.title));
+    const totalMinutes = priorities.reduce(
+      (sum, item) => sum + Math.max(5, Number(item.estimateMin) || 15),
+      0,
+    );
+    const recent = mergeChangeLog(data.changeLog, [], 1);
+    return {
+      phase,
+      headline:
+        phase === "afterSchool"
+          ? `${totalMinutes} minutes of priority work before you're caught up.`
+          : `${priorities.length} ${priorities.length === 1 ? "priority" : "priorities"} need attention today.`,
+      items: priorities.slice(0, 3),
+      todos: (data.todos || []).filter((item) => !item.done && item.date <= todayIso).length,
+      recent: recent.length ? recent[0].label : "Nothing has changed yet.",
     };
   }
 
@@ -4666,6 +4765,27 @@
             sub: "Add work fast, no login",
           },
           {
+            act: "nav",
+            arg: "inbox",
+            ic: "📥",
+            title: "Import Inbox",
+            sub: `${state.importInbox.filter((item) => item.status === "pending").length} waiting for review`,
+          },
+          {
+            act: "nav",
+            arg: "briefing",
+            ic: "🌤️",
+            title: "Daily Briefing",
+            sub: "A calm start and after-school reset",
+          },
+          {
+            act: "nav",
+            arg: "changes",
+            ic: "🕘",
+            title: "Recently Changed",
+            sub: "See updates from every synced device",
+          },
+          {
             act: "view-wins",
             ic: "🏆",
             title: "My wins",
@@ -5117,6 +5237,35 @@ Due May 31"></textarea>
       );
     },
 
+    inbox() {
+      const pending = state.importInbox.filter((item) => item.status === "pending");
+      return (
+        backHeader("Import Inbox", "more") +
+        `<p class="view-intro">Review work captured from Classroom or School Mail before it reaches your assignment list.</p>
+        ${pending.length ? `<div class="row"><button class="btn primary" data-act="inbox-import-all">Import all new</button><span class="pill">${pending.length} waiting</span></div>${pending
+          .map(
+            (item) => `<section class="card import-candidate"><div class="head"><div><h3>${esc(item.title)}</h3><p class="meta">${esc(item.origin)} · ${esc(cls(item.classId).name)} · ${esc(dueLabel(item.due))}</p></div>${item.duplicate ? '<span class="pill amber">Possible duplicate</span>' : '<span class="pill green">Ready</span>'}</div><div class="row"><button class="btn primary sm" data-act="inbox-import" data-id="${esc(item.id)}" ${item.duplicate ? "disabled" : ""}>Add assignment</button><button class="btn sm" data-act="inbox-edit" data-id="${esc(item.id)}">Edit</button><button class="btn sm" data-act="inbox-dismiss" data-id="${esc(item.id)}">Dismiss</button></div></section>`,
+          )
+          .join("")}` : emptyState("📥", "Import Inbox is clear. Paste Classroom work or capture a School Mail message to review it here.")}`
+      );
+    },
+
+    briefing() {
+      const phase = briefingPhase || (new Date().getHours() < 12 ? "morning" : "afterSchool");
+      const brief = buildDailyBriefing(state, phase);
+      return (
+        backHeader("Daily Briefing", "more") +
+        `<div class="seg briefing-switch"><button data-act="set-briefing-phase" data-arg="morning" aria-pressed="${phase === "morning"}">Morning</button><button data-act="set-briefing-phase" data-arg="afterSchool" aria-pressed="${phase === "afterSchool"}">After school</button></div>
+        <section class="card briefing-card"><span class="eyebrow">${phase === "morning" ? "START CALM" : "LAND THE DAY"}</span><h2>${esc(brief.headline)}</h2><p class="sub">${brief.todos} to-do${brief.todos === 1 ? "" : "s"} also need attention.</p></section>
+        <div class="section-title">Best next moves</div>${brief.items.length ? brief.items.map((item) => `<div class="item"><div class="head"><div><h4>${esc(item.title)}</h4><p class="meta">${esc(cls(item.classId).name)} · ${esc(dueLabel(item.due))}</p></div><button class="btn primary sm" data-act="focus-start" data-id="${esc(item.id)}">Start</button></div></div>`).join("") : emptyState("✨", "Nothing urgent. You're caught up.")}
+        <section class="card"><h3>What changed?</h3><p class="sub">${esc(brief.recent)}</p><button class="btn sm" data-act="nav" data-arg="changes">See Recently Changed</button></section>`
+      );
+    },
+
+    changes() {
+      return backHeader("Recently Changed", "more") + changeHistoryHTML(30);
+    },
+
     wins() {
       const recent = [...state.wins].slice(-30).reverse();
       return (
@@ -5397,6 +5546,7 @@ Due May 31"></textarea>
           </div>
           `,
         ) +
+        `<section class="card"><div class="head"><div><h3>What changed?</h3><p class="sub">Recent activity from this and other synced devices.</p></div><button class="btn sm" data-act="nav" data-arg="changes">See all</button></div>${changeHistoryHTML(5)}</section>` +
         `<div class="note">Your data is stored privately on this device. It only leaves when <b>you</b> download a backup or turn on cloud sync.</div>`
       );
     },
@@ -6346,12 +6496,42 @@ Due May 31"></textarea>
   // Toast + celebration
   // ---------------------------------------------------------------------------
   let toastTimer = null;
-  function toast(msg) {
+  let undoRecord = null;
+  function toast(msg, undo) {
     const el = $("#toast");
-    el.textContent = msg;
+    if (typeof undo === "function") {
+      undoRecord = { run: undo, expiresAt: Date.now() + 10000 };
+      el.innerHTML = `${esc(msg)} <button type="button" class="toast-undo" data-act="undo-last">Undo</button>`;
+    } else {
+      el.textContent = msg;
+    }
     el.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+    toastTimer = setTimeout(() => {
+      el.classList.remove("show");
+      undoRecord = null;
+    }, typeof undo === "function" ? 10000 : 2200);
+  }
+
+  function logChange(kind, label, itemId = "") {
+    const event = normalizeChangeEvent({
+      kind,
+      label,
+      itemId,
+      device: getDeviceName(),
+    });
+    state.changeLog = mergeChangeLog([event], state.changeLog, 80);
+  }
+
+  function changeHistoryHTML(limit = 8) {
+    const events = mergeChangeLog(state.changeLog, [], limit);
+    if (!events.length) return emptyState("🕘", "No recent changes yet.");
+    return `<div class="change-history">${events
+      .map(
+        (event) =>
+          `<div class="item"><h4>${esc(event.label)}</h4><p class="meta">${esc(event.device)} · ${esc(timeAgo(event.ts))}</p></div>`,
+      )
+      .join("")}</div>`;
   }
 
   // ---------------------------------------------------------------------------
@@ -7655,6 +7835,16 @@ Due May 31"></textarea>
       }
     }
 
+    const inboxById = new Map();
+    [...(local.importInbox || []), ...(remote.importInbox || [])].forEach((raw) => {
+      const item = normalizeImportCandidate(raw);
+      const prior = inboxById.get(item.id);
+      if (!prior || item.updatedAt >= prior.updatedAt) inboxById.set(item.id, item);
+    });
+    merged.importInbox = [...inboxById.values()]
+      .sort((a, b) => b.updatedAt - a.updatedAt)
+      .slice(0, 100);
+    merged.changeLog = mergeChangeLog(local.changeLog, remote.changeLog, 80);
     merged.updatedAt = Date.now();
     return merged;
   }
@@ -8786,6 +8976,45 @@ Due May 31"></textarea>
     return out.filter((a) => a.title.length > 2 && !/^due\b/i.test(a.title)).slice(0, 40);
   }
   let parsedCache = [];
+  let briefingPhase = "";
+
+  function queueImportCandidates(items, origin) {
+    const candidates = buildImportCandidates(
+      (items || []).map((item) => ({ ...item, origin })),
+      state.assignments,
+      state.importInbox,
+    );
+    state.importInbox.push(...candidates);
+    logChange("import", `Queued ${candidates.length} item${candidates.length === 1 ? "" : "s"} for review`);
+    save();
+    setView("inbox");
+  }
+
+  function importInboxCandidate(id) {
+    const item = state.importInbox.find((candidate) => candidate.id === id);
+    if (!item || item.status !== "pending" || item.duplicate) return;
+    const assignment = normalizeTask({
+      title: item.title,
+      classId: item.classId,
+      due: item.due,
+      notes: item.notes,
+      source: item.origin,
+    });
+    item.status = "imported";
+    item.updatedAt = Date.now();
+    state.assignments.push(assignment);
+    logChange("assignment", `Imported ${assignment.title}`, assignment.id);
+    save();
+    render();
+    toast("Assignment imported", () => {
+      state.assignments = state.assignments.filter((entry) => entry.id !== assignment.id);
+      item.status = "pending";
+      item.updatedAt = Date.now();
+      logChange("assignment", `Undid import of ${assignment.title}`, assignment.id);
+      save();
+      render();
+    });
+  }
 
   // ---------------------------------------------------------------------------
   // Actions (delegated)
@@ -8807,6 +9036,7 @@ Due May 31"></textarea>
   function completeTask(id) {
     const a = state.assignments.find((x) => x.id === id);
     if (!a || a.status === "done") return;
+    const previous = { status: a.status, completedAt: a.completedAt, updatedAt: a.updatedAt };
     a.status = "done";
     a.completedAt = new Date().toISOString();
     if (a.supportStyle && !a.supportCredited) {
@@ -8820,15 +9050,75 @@ Due May 31"></textarea>
       text: "Finished: " + a.title,
       date: new Date().toLocaleString(),
     });
+    logChange("assignment", `Completed ${a.title}`, a.id);
     save();
     const note = estimateNote(a);
-    toast("Done! +10 points 🎉" + (note ? " · " + note : ""));
+    toast("Done! +10 points 🎉" + (note ? " · " + note : ""), () => {
+      Object.assign(a, previous, { updatedAt: Date.now() });
+      logChange("assignment", `Reopened ${a.title}`, a.id);
+      save();
+      render();
+    });
     triggerConfetti();
     if (focus.taskId === id) focus.stop();
     else render();
   }
 
   const ACTIONS = {
+    "undo-last": () => {
+      if (!undoRecord || Date.now() > undoRecord.expiresAt) return;
+      const run = undoRecord.run;
+      undoRecord = null;
+      run();
+      toast("Undone");
+    },
+    "set-briefing-phase": (_, phase) => {
+      briefingPhase = phase === "afterSchool" ? "afterSchool" : "morning";
+      render();
+    },
+    "inbox-import": (id) => importInboxCandidate(id),
+    "inbox-import-all": () => {
+      state.importInbox
+        .filter((item) => item.status === "pending" && !item.duplicate)
+        .map((item) => item.id)
+        .forEach(importInboxCandidate);
+    },
+    "inbox-dismiss": (id) => {
+      const item = state.importInbox.find((candidate) => candidate.id === id);
+      if (!item) return;
+      item.status = "dismissed";
+      item.updatedAt = Date.now();
+      logChange("import", `Dismissed ${item.title}`, item.id);
+      save();
+      render();
+      toast("Removed from inbox", () => {
+        item.status = "pending";
+        item.updatedAt = Date.now();
+        save();
+        render();
+      });
+    },
+    "inbox-edit": (id) => {
+      const item = state.importInbox.find((candidate) => candidate.id === id);
+      if (!item) return;
+      openModal(
+        "Edit import",
+        `<div class="field"><label>Assignment</label><input id="inboxTitle" value="${esc(item.title)}"></div><div class="field"><label>Due date</label><input id="inboxDue" type="date" value="${esc(item.due)}"></div><button class="btn primary" data-act="inbox-save" data-id="${esc(item.id)}">Save</button>`,
+      );
+    },
+    "inbox-save": (id) => {
+      const item = state.importInbox.find((candidate) => candidate.id === id);
+      if (!item) return;
+      item.title = String($("#inboxTitle")?.value || item.title).trim().slice(0, 200);
+      item.due = DATE_RE.test($("#inboxDue")?.value || "") ? $("#inboxDue").value : "";
+      item.updatedAt = Date.now();
+      item.duplicate = state.assignments.some(
+        (assignment) => importCandidateKey(assignment) === importCandidateKey(item),
+      );
+      save();
+      closeModal();
+      render();
+    },
     "catch-up-mode": () => {
       const plan = buildCatchUpPlan(openTasks(), todayKey(), state.settings.defaultFocusMin);
       if (!plan.length) return toast("Nothing needs catching up right now 🎉");
@@ -8854,13 +9144,22 @@ Due May 31"></textarea>
       const assignment = state.assignments.find((item) => item.id === id);
       if (!assignment) return;
       const text = `Continue: ${assignment.title}`;
+      let added = null;
       if (!state.todos.some((todo) => todo.text === text && todo.date === isoForOffset(1))) {
-        state.todos.push(normalizeTodo({ text, date: isoForOffset(1) }));
+        added = normalizeTodo({ text, date: isoForOffset(1) });
+        state.todos.push(added);
+        logChange("schedule", `Planned ${assignment.title} for tomorrow`, assignment.id);
       }
       save();
       closeModal();
       render();
-      toast("Planned for tomorrow 📅");
+      toast("Planned for tomorrow 📅", added
+        ? () => {
+            state.todos = state.todos.filter((todo) => todo.id !== added.id);
+            save();
+            render();
+          }
+        : undefined);
     },
     "water-plant": () => {
       if (state.garden && state.garden.waterReservoir > 0) {
@@ -9121,6 +9420,7 @@ Due May 31"></textarea>
         source: "Quick add",
       });
       state.assignments.push(obj);
+      logChange("assignment", `Added ${obj.title}`, obj.id);
       save();
       closeModal();
       render();
@@ -9143,6 +9443,7 @@ Due May 31"></textarea>
       obj.estimateMin = Number($("#tEst").value) || 0;
       obj.notes = $("#tNotes").value;
       if (!id) state.assignments.push(obj);
+      logChange("assignment", `${id ? "Updated" : "Added"} ${obj.title}`, obj.id);
       save();
       closeModal();
       render();
@@ -9166,6 +9467,8 @@ Due May 31"></textarea>
       if (a) {
         a.status = "todo";
         a.completedAt = "";
+        a.updatedAt = Date.now();
+        logChange("assignment", `Reopened ${a.title}`, a.id);
         save();
         render();
       }
@@ -9177,12 +9480,22 @@ Due May 31"></textarea>
       );
     },
     "confirm-delete-task": (id) => {
+      const index = state.assignments.findIndex((a) => a.id === id);
+      const removed = state.assignments[index];
       state.assignments = state.assignments.filter((a) => a.id !== id);
       state.deletedIds[id] = Date.now();
+      if (removed) logChange("assignment", `Deleted ${removed.title}`, removed.id);
       save();
       closeModal();
       render();
-      toast("Deleted");
+      toast("Deleted", () => {
+        if (!removed) return;
+        state.assignments.splice(Math.max(0, index), 0, removed);
+        delete state.deletedIds[id];
+        logChange("assignment", `Restored ${removed.title}`, removed.id);
+        save();
+        render();
+      });
     },
 
     breakdown: (id) =>
@@ -10016,7 +10329,7 @@ ${name}`;
                 `<div class="item"><h4>${esc(a.title)}</h4><p class="meta">${esc(cls(a.classId).name)} · ${esc(dueLabel(a.due, a.dueTime))}</p></div>`,
             )
             .join("") +
-          `<button class="btn primary block" data-act="add-parsed" style="margin-top:8px">Add ${parsedCache.length} assignment${parsedCache.length === 1 ? "" : "s"}</button>`
+          `<button class="btn primary block" data-act="add-parsed" style="margin-top:8px">Review ${parsedCache.length} in Import Inbox</button>`
         : "No assignments found. Try pasting one class at a time.";
     },
     "clear-paste": () => {
@@ -10024,11 +10337,10 @@ ${name}`;
       $("#parsePreview").textContent = "Nothing yet — paste and press Preview.";
     },
     "add-parsed": () => {
-      state.assignments.push(...parsedCache);
-      save();
-      toast(`Added ${parsedCache.length} assignments`);
+      const queued = parsedCache.length;
+      queueImportCandidates(parsedCache, "Classroom paste");
       parsedCache = [];
-      setView("tasks");
+      toast(`Queued ${queued} for review`);
     },
 
     install: () => doInstall(),
@@ -10285,15 +10597,12 @@ ${name}`;
     "gmail-make-task": (id) => {
       const m = (state.gmail?.messages || []).find((x) => x.id === id);
       if (!m) return;
-      const obj = normalizeTask({
+      const obj = {
         title: ("Email: " + (m.subject || "(no subject)")).slice(0, 120),
-        source: "School Mail",
         notes: m.from ? `From: ${m.from}` : "",
-      });
-      state.assignments.push(obj);
-      save();
-      render();
-      toast("Made a task from this email 📝");
+      };
+      queueImportCandidates([obj], "School Mail");
+      toast("Sent to Import Inbox for review 📥");
     },
     // Turn a Gmail message into a reminder — prefilled from its subject.
     "gmail-make-reminder": (id) => {
@@ -11342,6 +11651,8 @@ ${name}`;
   if (window.__FOCUS_SCHOOL_TEST__) {
     Object.assign(window.__FOCUS_SCHOOL_TEST__, {
       academicHelpPrompt,
+      buildDailyBriefing,
+      buildImportCandidates,
       buildCatchUpPlan,
       buildGuidedHelpPrompt,
       buildSupportInsights,
@@ -11350,10 +11661,13 @@ ${name}`;
       live,
       ledgerDayKey,
       mergeAssignmentSteps,
+      mergeChangeLog,
       mergeRoutineLogs,
       mergeStates,
       nextRoutineWindow,
       normalize,
+      normalizeChangeEvent,
+      importCandidateKey,
       pickRoutineForNow,
       rankNavigation,
       routineForHome,
