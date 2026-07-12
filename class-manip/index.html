@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Class Dot Plot · Neft Teacher</title>
+    <meta
+      name="description"
+      content="Build one dot plot together as a class — everyone taps in their data and watches the whole-class distribution grow live."
+    />
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #1fa6a2;
+        --cream: #f7f4ec;
+        --line: #e4ebf2;
+        --ink: #1a2b3c;
+        --muted: #54677c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        color: var(--ink);
+        background: radial-gradient(ellipse at 50% -10%, #fff, var(--cream) 60%);
+        min-height: 100vh;
+        line-height: 1.5;
+      }
+      .wrap {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 24px 16px 60px;
+      }
+      header {
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      h1 {
+        font-size: clamp(1.5rem, 5vw, 2.1rem);
+        color: var(--navy);
+        margin: 6px 0;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(12, 27, 42, 0.08);
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      label {
+        font-weight: 700;
+        color: var(--navy);
+      }
+      input[type="text"] {
+        min-height: 44px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 12px;
+        font: inherit;
+        width: 130px;
+      }
+      .swatch {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 2px var(--line);
+        cursor: pointer;
+      }
+      .swatch.sel {
+        box-shadow: 0 0 0 3px var(--navy);
+      }
+      svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+      .count {
+        text-align: center;
+        font-weight: 700;
+        color: var(--navy);
+        margin-top: 8px;
+      }
+      .btn {
+        min-height: 44px;
+        padding: 0 16px;
+        border: 0;
+        border-radius: 10px;
+        background: #fff;
+        border: 2px solid var(--line);
+        color: var(--navy);
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .live {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        color: var(--teal);
+        font-weight: 700;
+      }
+      .live .d {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--teal);
+        animation: p 1.4s infinite;
+      }
+      @keyframes p {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .live .d {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header>
+        <div style="font-size: 2.4rem">👥📊</div>
+        <h1>Class Dot Plot</h1>
+        <p class="sub">Tap in your data. Watch the whole class's distribution build together.</p>
+      </header>
+
+      <div class="card">
+        <div class="row" style="justify-content: space-between">
+          <div class="row">
+            <label for="room">Class code</label>
+            <input type="text" id="room" maxlength="24" />
+          </div>
+          <span class="live"><span class="d"></span> live</span>
+        </div>
+        <div class="row" style="margin-top: 12px">
+          <label>Your color</label>
+          <span id="swatches" class="row" style="gap: 8px"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <svg id="plot" viewBox="0 0 600 300" role="img" aria-label="Shared class dot plot"></svg>
+        <div class="count" id="count">0 dots</div>
+      </div>
+
+      <div class="row" style="justify-content: space-between">
+        <span class="muted">Everyone with the same class code shares this plot.</span>
+        <button class="btn" id="clearBtn">🧹 Clear plot</button>
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var COLORS = ["#1fa6a2", "#e8663c", "#6d4ad6", "#f2a516", "#19a35a", "#c0399f"];
+        var MAX = 20,
+          W = 600,
+          H = 300,
+          PADL = 24,
+          PADR = 24,
+          AXIS_Y = H - 46,
+          R = 7,
+          GAP = 2.5;
+        var plotW = W - PADL - PADR;
+        var svg = document.getElementById("plot");
+        var roomEl = document.getElementById("room");
+        var countEl = document.getElementById("count");
+        var myColor = COLORS[0];
+        var points = [];
+        var pollTimer = null;
+
+        var params = new URLSearchParams(location.search);
+        roomEl.value =
+          (params.get("room") || localStorage.getItem("nt-classmanip-room") || "class-1")
+            .toLowerCase()
+            .replace(/[^a-z0-9-]/g, "")
+            .slice(0, 24) || "class-1";
+
+        // Color swatches
+        var sw = document.getElementById("swatches");
+        COLORS.forEach(function (c, i) {
+          var b = document.createElement("button");
+          b.className = "swatch" + (i === 0 ? " sel" : "");
+          b.style.background = c;
+          b.setAttribute("aria-label", "Pick color");
+          b.addEventListener("click", function () {
+            myColor = c;
+            [].forEach.call(sw.children, function (x) {
+              x.classList.remove("sel");
+            });
+            b.classList.add("sel");
+          });
+          sw.appendChild(b);
+        });
+
+        var xFor = function (v) {
+          return PADL + (v / MAX) * plotW;
+        };
+
+        function draw() {
+          var body =
+            '<line x1="' +
+            PADL +
+            '" y1="' +
+            AXIS_Y +
+            '" x2="' +
+            (W - PADR) +
+            '" y2="' +
+            AXIS_Y +
+            '" stroke="#12355b" stroke-width="2.5"/>';
+          for (var v = 0; v <= MAX; v += 2) {
+            var x = xFor(v);
+            body +=
+              '<line x1="' +
+              x +
+              '" y1="' +
+              AXIS_Y +
+              '" x2="' +
+              x +
+              '" y2="' +
+              (AXIS_Y + 6) +
+              '" stroke="#12355b" stroke-width="1.5"/>' +
+              '<text x="' +
+              x +
+              '" y="' +
+              (AXIS_Y + 20) +
+              '" text-anchor="middle" font-size="12" font-family="system-ui" fill="#54677c">' +
+              v +
+              "</text>";
+          }
+          var stacks = {};
+          points.forEach(function (p) {
+            var key = Math.round(p.x);
+            stacks[key] = stacks[key] || 0;
+            var cy = AXIS_Y - R - 2 - stacks[key] * (R * 2 + GAP);
+            stacks[key]++;
+            body +=
+              '<circle cx="' +
+              xFor(key) +
+              '" cy="' +
+              Math.max(R + 2, cy) +
+              '" r="' +
+              R +
+              '" fill="' +
+              (p.color || "#1fa6a2") +
+              '" stroke="#fff" stroke-width="1.5"/>';
+          });
+          svg.innerHTML = body;
+          countEl.textContent = points.length + (points.length === 1 ? " dot" : " dots");
+        }
+
+        function room() {
+          return (
+            roomEl.value
+              .toLowerCase()
+              .replace(/[^a-z0-9-]/g, "")
+              .slice(0, 24) || "class-1"
+          );
+        }
+
+        function poll() {
+          fetch("/api/manip-room/get?room=" + encodeURIComponent(room()))
+            .then(function (r) {
+              return r.json().catch(function () {
+                return null;
+              });
+            })
+            .then(function (d) {
+              if (d && d.ok && Array.isArray(d.points)) {
+                points = d.points;
+                draw();
+              }
+            })
+            .catch(function () {});
+        }
+        function schedule() {
+          if (pollTimer) clearTimeout(pollTimer);
+          poll();
+          pollTimer = setTimeout(schedule, 2000);
+        }
+
+        function addPoint(v) {
+          // Optimistic local add, then persist to the shared room.
+          points.unshift({ x: v, color: myColor });
+          draw();
+          fetch("/api/manip-room/put?room=" + encodeURIComponent(room()), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ x: v, color: myColor }),
+          }).catch(function () {});
+        }
+
+        svg.addEventListener("click", function (e) {
+          var rect = svg.getBoundingClientRect();
+          var px = (e.clientX - rect.left) * (W / rect.width);
+          var v = Math.max(0, Math.min(MAX, Math.round(((px - PADL) / plotW) * MAX)));
+          addPoint(v);
+        });
+
+        roomEl.addEventListener("change", function () {
+          localStorage.setItem("nt-classmanip-room", room());
+          schedule();
+        });
+        document.getElementById("clearBtn").addEventListener("click", function () {
+          if (!confirm("Clear the whole class plot for code “" + room() + "”?")) return;
+          fetch("/api/manip-room/clear?room=" + encodeURIComponent(room()), {
+            method: "POST",
+          }).then(function () {
+            points = [];
+            draw();
+          });
+        });
+
+        localStorage.setItem("nt-classmanip-room", room());
+        draw();
+        schedule();
+      })();
+    </script>
+  </body>
+</html>

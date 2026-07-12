@@ -70,6 +70,7 @@ export const SKIP_TOPLEVEL = new Set([
   "infinite-practice", // stateless AI practice generator — nothing to save
   "write-math", // stateless handwriting-recognition pad — nothing to save
   "ar-measure", // stateless WebXR AR measuring tool — nothing to save
+  "class-manip", // shared class dot plot — state lives in the room, not save/resume
 ]);
 
 // Filename patterns that are not student-facing activities.
