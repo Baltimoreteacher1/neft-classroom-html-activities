@@ -3128,6 +3128,8 @@
       view === "home" && state.assignments.length === 0 && !state.settings.welcomeDismissed;
     $("#fab")?.classList.toggle("onboarding-hide", showingWelcome);
     $("#syncFab")?.classList.toggle("onboarding-hide", showingWelcome);
+    $("#fab")?.classList.toggle("academic-help-hide", view === "ai");
+    $("#syncFab")?.classList.toggle("academic-help-hide", view === "ai");
     if (view === "ai") {
       ensureKaTeX(function () {
         const scrollEl = $("#aiScroll");
@@ -4021,6 +4023,18 @@
     ["Feelings", ["I feel overwhelmed", "Help me focus"]],
   ];
 
+  function academicHelpPrompt(assignment, className = "") {
+    const title = String(assignment?.title || "").trim();
+    if (!title) return "";
+    const subject = className ? `my ${className} assignment, “${title}.”` : `“${title}.”`;
+    const nextStep = (assignment.steps || []).find((step) => !step.done)?.text?.trim();
+    return (
+      `I need help with ${subject}` +
+      (nextStep ? ` My next step is “${nextStep}.”` : "") +
+      " Please help me understand what to do without giving away the answer."
+    );
+  }
+
   const VIEWS = {
     home() {
       const open = openTasks();
@@ -4695,6 +4709,7 @@
 
     ai() {
       const mode = (window._aiMode = window._aiMode || "hint");
+      const helpAssignments = sortByUrgency(openTasks()).slice(0, 6);
       const msgs = AI_CHAT.length
         ? AI_CHAT.map(
             (m) =>
@@ -4735,6 +4750,24 @@
         (AI_CHAT.length ? '<button class="btn sm" data-act="ai-clear">Clear</button>' : "") +
         "</div>" +
         '<p class="view-intro">A friendly helper for homework. Tap a button, type a question, or add a picture of your work.</p>' +
+        (helpAssignments.length
+          ? '<section class="ai-assignment-picker" aria-labelledby="aiAssignmentTitle"><h3 id="aiAssignmentTitle">Get help with an assignment</h3><p>Choose one and I’ll add the details you already planned.</p><div class="ai-assignment-list">' +
+            helpAssignments
+              .map((a) => {
+                const c = cls(a.classId);
+                return '<button class="btn" data-act="ai-assignment" data-id="' +
+                  esc(a.id) +
+                  '"><span aria-hidden="true">' +
+                  esc(c?.emoji || "📚") +
+                  '</span><span><b>' +
+                  esc(a.title) +
+                  '</b><small>' +
+                  esc(c?.name || "Assignment") +
+                  '</small></span></button>';
+              })
+              .join("") +
+            "</div></section>"
+          : "") +
         '<button class="btn navy block" data-act="study-pack">📝 Turn my notes into a study pack</button>' +
         '<a class="btn navy block" href="/curriculum/math-workbench/" target="_blank" rel="noopener">📐 Open Math Workbench</a>' +
         // Ask first (chips + input), then the conversation grows below it.
@@ -9281,6 +9314,14 @@ Due May 31"></textarea>
         i.focus();
       }
     },
+    "ai-assignment": (id) => {
+      const assignment = state.assignments.find((item) => item.id === id);
+      const input = $("#aiInput");
+      if (!assignment || !input) return;
+      input.value = academicHelpPrompt(assignment, cls(assignment.classId)?.name || "");
+      input.focus();
+      input.scrollIntoView({ block: "center" });
+    },
     "ai-clear": () => {
       AI_CHAT = [];
       aiImage = null;
@@ -10857,6 +10898,7 @@ ${name}`;
 
   if (window.__FOCUS_SCHOOL_TEST__) {
     Object.assign(window.__FOCUS_SCHOOL_TEST__, {
+      academicHelpPrompt,
       cloud,
       live,
       ledgerDayKey,
