@@ -39,6 +39,14 @@
     "challenge-extend",
   ];
 
+  // À-la-carte tool keys: individual math tools a teacher can turn on for one
+  // student WITHOUT the whole "build-math" bundle. Each maps 1:1 to an
+  // independent dock tool (data-tool). Additive + backward-compatible — a link
+  // may carry any mix of PROFILE_KEYS and TOOL_KEYS. A tool is shown when its
+  // parent profile is active OR the tool itself is selected.
+  const TOOL_KEYS = ["model", "multchart", "numberline", "placevalue", "calculator"];
+  const ALL_SUPPORT_KEYS = [...PROFILE_KEYS, ...TOOL_KEYS];
+
   // One-click accommodation combinations for common needs. Labels are
   // age-respectful and describe access, never a student deficit or level.
   const PRESETS = [
@@ -146,8 +154,8 @@
     { name: "Green", color: "rgba(220, 245, 224, 0.32)" },
   ];
 
-  // Initialize profiles to false
-  PROFILE_KEYS.forEach((k) => {
+  // Initialize profiles + à-la-carte tools to false
+  ALL_SUPPORT_KEYS.forEach((k) => {
     activeProfiles[k] = false;
   });
 
@@ -213,7 +221,7 @@
   // Parse hash/query parameter
   function parseSettings(str) {
     const settings = {};
-    PROFILE_KEYS.forEach((k) => {
+    ALL_SUPPORT_KEYS.forEach((k) => {
       settings[k] = false;
     });
     if (!str) return settings;
@@ -237,7 +245,7 @@
     if (listStr) {
       listStr.split(",").forEach((item) => {
         const trimmed = item.trim();
-        if (PROFILE_KEYS.includes(trimmed)) {
+        if (ALL_SUPPORT_KEYS.includes(trimmed)) {
           settings[trimmed] = true;
         }
       });
@@ -247,7 +255,7 @@
   }
 
   function serializeSettings(settings) {
-    return PROFILE_KEYS.filter((k) => settings[k]).join(",");
+    return ALL_SUPPORT_KEYS.filter((k) => settings[k]).join(",");
   }
 
   // Idempotent initialization
@@ -306,7 +314,7 @@
       const stored = getStoredPreferences();
       if (stored) {
         if (stored.profiles) {
-          PROFILE_KEYS.forEach((k) => {
+          ALL_SUPPORT_KEYS.forEach((k) => {
             if (typeof stored.profiles[k] === "boolean") {
               activeProfiles[k] = stored.profiles[k];
             }
@@ -1080,7 +1088,9 @@
             : "none";
       if (exampleBtn)
         exampleBtn.style.display = activeProfiles["read-understand"] ? "inline-flex" : "none";
-      if (modelBtn) modelBtn.style.display = activeProfiles["build-math"] ? "inline-flex" : "none";
+      if (modelBtn)
+        modelBtn.style.display =
+          activeProfiles["build-math"] || activeProfiles["model"] ? "inline-flex" : "none";
       if (explainBtn)
         explainBtn.style.display = activeProfiles["express-thinking"] ? "inline-flex" : "none";
       if (focusBtn)
@@ -1120,10 +1130,10 @@
           Array.isArray(manifestData.misconceptions) &&
           manifestData.misconceptions.length > 0,
       );
-      show("multchart", activeProfiles["build-math"]);
-      show("numberline", activeProfiles["build-math"]);
-      show("placevalue", activeProfiles["build-math"]);
-      show("calculator", activeProfiles["build-math"]);
+      show("multchart", activeProfiles["build-math"] || activeProfiles["multchart"]);
+      show("numberline", activeProfiles["build-math"] || activeProfiles["numberline"]);
+      show("placevalue", activeProfiles["build-math"] || activeProfiles["placevalue"]);
+      show("calculator", activeProfiles["build-math"] || activeProfiles["calculator"]);
       show("checklist", activeProfiles["focus-organize"]);
       show("break", true); // self-regulation is universally available
       applyColorTint(); // reflect stored tint + sync label/state

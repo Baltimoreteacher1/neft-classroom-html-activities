@@ -1985,6 +1985,45 @@
               cursor: pointer;
               accent-color: var(--teal);
             }
+            /* À-la-carte tool group: individually-checkable boxes under a header. */
+            .ewl-linkgen-group {
+              grid-column: 1 / -1;
+              border: 1px solid var(--line);
+              border-radius: 10px;
+              padding: 11px 13px;
+              background: #fff;
+            }
+            .ewl-linkgen-group-head {
+              margin: 0 0 8px;
+              display: flex;
+              flex-direction: column;
+              gap: 2px;
+            }
+            .ewl-linkgen-group-items {
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+              gap: 6px 14px;
+            }
+            .ewl-linkgen-item {
+              display: flex;
+              align-items: center;
+              gap: 9px;
+              padding: 4px 2px;
+              font-size: 13px;
+              color: var(--ink);
+              cursor: pointer;
+              border-radius: 6px;
+            }
+            .ewl-linkgen-item:hover {
+              background: rgba(44, 125, 107, 0.06);
+            }
+            .ewl-linkgen-item input {
+              width: 17px;
+              height: 17px;
+              flex: 0 0 auto;
+              cursor: pointer;
+              accent-color: var(--teal);
+            }
             .ewl-linkgen-opt-name {
               font-weight: 700;
               font-size: 13.5px;
@@ -2236,13 +2275,13 @@
                 {
                   key: "build-math",
                   name: "🧱 Math Tools & Foundations",
-                  note: "Manipulatives & scaffolds",
-                  chips: [
-                    "Prerequisite readiness review",
-                    "Multiplication chart",
-                    "Number line",
-                    "Place-value chart",
-                    "On-screen calculator",
+                  note: "Manipulatives & scaffolds — check the whole set or pick individual tools",
+                  tools: [
+                    { key: "model", label: "Prerequisite readiness review" },
+                    { key: "multchart", label: "Multiplication chart" },
+                    { key: "numberline", label: "Number line" },
+                    { key: "placevalue", label: "Place-value chart" },
+                    { key: "calculator", label: "On-screen calculator" },
                   ],
                 },
                 {
@@ -2275,18 +2314,41 @@
                 },
               ];
 
-              // Render each category as a checkable box with its accommodation chips.
-              optionsRoot.innerHTML = CATEGORIES.map(
-                (c) => `
+              // Render each category. A category with `tools` becomes a group of
+              // individually-checkable boxes (each a real à-la-carte support key);
+              // a category with `chips` stays a single bundle box. Both carry the
+              // support key on `data-support` (profile OR tool).
+              optionsRoot.innerHTML = CATEGORIES.map((c) => {
+                if (c.tools) {
+                  return `
+                  <div class="ewl-linkgen-group">
+                    <p class="ewl-linkgen-group-head">
+                      <span class="ewl-linkgen-opt-name">${c.name}</span>
+                      <span class="ewl-linkgen-opt-note">${c.note}</span>
+                    </p>
+                    <div class="ewl-linkgen-group-items">
+                      ${c.tools
+                        .map(
+                          (t) => `
+                        <label class="ewl-linkgen-item">
+                          <input type="checkbox" data-support="${t.key}" />
+                          <span class="ewl-linkgen-item-label">${t.label}</span>
+                        </label>`,
+                        )
+                        .join("")}
+                    </div>
+                  </div>`;
+                }
+                return `
                   <label class="ewl-linkgen-opt">
-                    <input type="checkbox" data-profile="${c.key}" />
+                    <input type="checkbox" data-support="${c.key}" />
                     <span class="ewl-linkgen-opt-name">${c.name}</span>
                     <span class="ewl-linkgen-opt-note">${c.note}</span>
                     <span class="ewl-linkgen-opt-chips">${c.chips
                       .map((chip) => `<span class="ewl-linkgen-chip">${chip}</span>`)
                       .join("")}</span>
-                  </label>`,
-              ).join("");
+                  </label>`;
+              }).join("");
 
               // Populate the "start on" lesson menu from the per-unit counts.
               const lessonsCount = { 1: 7, 2: 5, 3: 7, 4: 7, 5: 5, 6: 7, 7: 7, 8: 7, 9: 7, 10: 5 };
@@ -2302,7 +2364,7 @@
 
               const selectedProfiles = () =>
                 Array.from(optionsRoot.querySelectorAll("input:checked")).map((cb) =>
-                  cb.getAttribute("data-profile"),
+                  cb.getAttribute("data-support"),
                 );
 
               const buildUrl = (profiles) =>

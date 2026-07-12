@@ -29,6 +29,13 @@ const SUPPORT_KEYS = [
   "express-thinking",
   "language-support",
   "challenge-extend",
+  // À-la-carte math tools (mirror TOOL_KEYS in learning-supports.js): a
+  // personalized package may bake in individual tools without the full bundle.
+  "model",
+  "multchart",
+  "numberline",
+  "placevalue",
+  "calculator",
 ];
 const SUPPORT_LANGS = ["en", "es", "vi", "ar"];
 
