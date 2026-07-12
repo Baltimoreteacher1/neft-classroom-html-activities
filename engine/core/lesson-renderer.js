@@ -1206,6 +1206,7 @@ function renderRevealSlides(host, config, placements) {
     const pageNum = Number.isFinite(slide.page) ? slide.page : i + 1;
     img.alt = slide.caption ? String(slide.caption) : `Reveal Math slide ${pageNum}`;
     fig.append(img);
+    attachImageZoom(img);
 
     if (slide.caption) {
       const cap = document.createElement("figcaption");
@@ -1218,6 +1219,82 @@ function renderRevealSlides(host, config, placements) {
   });
 
   host.append(section);
+}
+
+// ── Click-to-zoom for lesson content images ─────────────────────────────────
+// Photo figures (Notice & Wonder, Reveal Math slides, word-problem images) open
+// in a shared, accessible full-screen lightbox on click / Enter / Space. The
+// overlay is created lazily on first use, so this does nothing until a student
+// actually enlarges an image.
+let _lessonLightbox = null;
+function ensureLessonLightbox() {
+  if (_lessonLightbox) return _lessonLightbox;
+  const lb = document.createElement("div");
+  lb.className = "lesson-lightbox";
+  lb.hidden = true;
+  lb.setAttribute("role", "dialog");
+  lb.setAttribute("aria-modal", "true");
+  lb.setAttribute("aria-label", "Enlarged image");
+  const big = document.createElement("img");
+  big.className = "lesson-lightbox-img";
+  big.alt = "";
+  const close = document.createElement("button");
+  close.type = "button";
+  close.className = "lesson-lightbox-close";
+  close.setAttribute("aria-label", "Close enlarged image");
+  close.textContent = "✕";
+  lb.append(big, close);
+  document.body.append(lb);
+  let lastFocus = null;
+  const hide = () => {
+    lb.hidden = true;
+    document.body.classList.remove("lesson-lightbox-open");
+    big.removeAttribute("src");
+    if (lastFocus && lastFocus.focus) {
+      try {
+        lastFocus.focus();
+      } catch (e) {}
+    }
+  };
+  close.addEventListener("click", hide);
+  big.addEventListener("click", hide); // clicking the enlarged image closes it
+  lb.addEventListener("click", (e) => {
+    if (e.target === lb) hide(); // backdrop click
+  });
+  document.addEventListener("keydown", (e) => {
+    if (!lb.hidden && e.key === "Escape") hide();
+  });
+  _lessonLightbox = {
+    open(src, alt, opener) {
+      lastFocus = opener || null;
+      big.src = src;
+      big.alt = alt || "";
+      lb.hidden = false;
+      document.body.classList.add("lesson-lightbox-open");
+      setTimeout(() => {
+        try {
+          close.focus();
+        } catch (e) {}
+      }, 0);
+    },
+  };
+  return _lessonLightbox;
+}
+function attachImageZoom(img) {
+  if (!img || img.dataset.zoomable === "1") return;
+  img.dataset.zoomable = "1";
+  img.classList.add("is-zoomable");
+  img.setAttribute("role", "button");
+  img.setAttribute("tabindex", "0");
+  if (!img.getAttribute("title")) img.setAttribute("title", "Click to enlarge");
+  const open = () => ensureLessonLightbox().open(img.currentSrc || img.src, img.alt, img);
+  img.addEventListener("click", open);
+  img.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      open();
+    }
+  });
 }
 
 // ── Notice & Wonder (Reveal data-context) ───────────────────────────────────
@@ -1274,6 +1351,7 @@ function renderNoticeAndWonder(host, config, state) {
     img.src = String(nw.image);
     img.alt = nw.context ? String(nw.context) : "Notice and Wonder data display";
     fig.append(img);
+    attachImageZoom(img);
     layout.append(fig);
   } else {
     layout.classList.add("nw-layout-noimg");
@@ -1416,6 +1494,7 @@ function renderShowYourWork(host, config, state) {
     img.src = String(wp.image);
     img.alt = wp.title ? String(wp.title) : "Word problem image";
     fig.append(img);
+    attachImageZoom(img);
     card.append(fig);
   }
 
