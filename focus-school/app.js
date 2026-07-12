@@ -522,6 +522,14 @@
         rememberText: "",
       },
       health: { log: {} },
+      supportStats: {
+        hint: 0,
+        example: 0,
+        check: 0,
+        appliedSteps: 0,
+        reminders: 0,
+        completedAfter: { hint: 0, example: 0, check: 0 },
+      },
       updatedAt: Date.now(),
     };
   }
@@ -623,6 +631,18 @@
             },
       rewards: normalizeRewards(x.rewards),
       health: normalizeHealth(x.health),
+      supportStats: {
+        hint: Math.max(0, Number(x.supportStats?.hint) || 0),
+        example: Math.max(0, Number(x.supportStats?.example) || 0),
+        check: Math.max(0, Number(x.supportStats?.check) || 0),
+        appliedSteps: Math.max(0, Number(x.supportStats?.appliedSteps) || 0),
+        reminders: Math.max(0, Number(x.supportStats?.reminders) || 0),
+        completedAfter: {
+          hint: Math.max(0, Number(x.supportStats?.completedAfter?.hint) || 0),
+          example: Math.max(0, Number(x.supportStats?.completedAfter?.example) || 0),
+          check: Math.max(0, Number(x.supportStats?.completedAfter?.check) || 0),
+        },
+      },
     };
   }
 
@@ -866,6 +886,11 @@
       // Actual focus minutes logged against this assignment (summed as focus
       // sessions run). Powers the estimate-vs-actual "time guess" feedback.
       actualMin: Number(a.actualMin) || 0,
+      supportStyle: ["hint", "example", "check"].includes(a.supportStyle)
+        ? a.supportStyle
+        : "",
+      supportAt: Number(a.supportAt) || 0,
+      supportCredited: !!a.supportCredited,
       steps: Array.isArray(a.steps)
         ? a.steps.map((st) => ({
             id: st.id || uid("s"),
@@ -1432,6 +1457,23 @@
     ["more", "More", "⋯"],
   ];
   let view = "home";
+  const NAV_USAGE_KEY = "focus-school:nav-usage";
+  function readNavUsage() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(NAV_USAGE_KEY) || "{}");
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+  function recordNavUse(id) {
+    if (!TABS.some((tab) => tab[0] === id) || ["home", "more"].includes(id)) return;
+    const usage = readNavUsage();
+    usage[id] = Math.min(10000, (Number(usage[id]) || 0) + 1);
+    try {
+      localStorage.setItem(NAV_USAGE_KEY, JSON.stringify(usage));
+    } catch {}
+  }
   // "Arrange" mode turns the Now screen into an easy drag-to-rearrange board:
   // every card becomes grabbable (not just the small ⋮⋮ handle) and gently
   // wobbles so kids can clearly see what to move. Runtime-only (not saved).
@@ -1441,6 +1483,7 @@
   function setView(v) {
     // Leaving the Now screen always exits arrange mode so it can't get "stuck".
     if (v !== "home") arrangeMode = false;
+    recordNavUse(v);
     view = v;
     const url = new URL(location.href);
     url.searchParams.set("view", v);
@@ -3150,10 +3193,16 @@
   }
 
   function renderTabbar() {
-    $("#tabbar").innerHTML = TABS.map(
-      ([id, label, ic]) =>
-        `<button data-act="nav" data-arg="${id}" ${view === id ? 'aria-current="page"' : ""}><span class="ic" aria-hidden="true">${ic}</span>${label}</button>`,
-    ).join("");
+    const compact =
+      typeof matchMedia !== "undefined" && matchMedia("(max-width: 700px)").matches;
+    const visibleTabs = compact ? rankNavigation(readNavUsage()) : TABS;
+    $("#tabbar").innerHTML = visibleTabs
+      .map(([id, label, ic]) => {
+        const compactLabel = compact && id === "ai" ? "Help" : label;
+        return `<button data-act="nav" data-arg="${id}" aria-label="${esc(label)}" ${view === id ? 'aria-current="page"' : ""}><span class="ic" aria-hidden="true">${ic}</span>${compactLabel}</button>`;
+      })
+      .join("");
+    $("#tabbar").classList.toggle("personalized", compact);
     updateTabbarFade();
   }
 
@@ -3315,6 +3364,7 @@
         <div class="row" style="margin-top:10px">
           <button class="btn primary sm" data-act="focus-start" data-id="${a.id}">▶ Start focus</button>
           <button class="btn sm" data-act="breakdown" data-id="${a.id}">🧩 Steps</button>
+          <button class="btn sm" data-act="academic-help" data-id="${a.id}">🤖 Get help</button>
           <button class="btn sm" data-act="ask-help" data-id="${a.id}">🙋 Ask for help</button>
           <button class="btn sm" data-act="open-task" data-id="${a.id}">✏️ Edit</button>
           ${a.status === "done" ? `<button class="btn sm" data-act="reopen" data-id="${a.id}">↩ Reopen</button>` : `<button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button>`}
@@ -4006,6 +4056,8 @@
   let AI_CHAT = [];
   let aiBusy = false;
   let aiImage = null; // { dataUrl, mime, base64, name }
+  let selectedAcademicAssignmentId = "";
+  let aiOffline = false;
   const AI_PROMPT_GROUPS = [
     [
       "I'm stuck",
@@ -4035,9 +4087,143 @@
     );
   }
 
+  const SUPPORT_STYLE_PROMPTS = {
+    hint: "Please give me one hint at a time without giving away the answer.",
+    example: "Please show me one similar example, then let me try mine.",
+    check: "Please check my thinking, point out the first place it goes off track, and let me fix it.",
+  };
+
+  function buildGuidedHelpPrompt(assignment, className, stuckPoint, style = "hint") {
+    const title = String(assignment?.title || "this assignment").trim();
+    const subject = className ? `my ${className} assignment, “${title}.”` : `“${title}.”`;
+    const rawStuck = String(stuckPoint || "I’m not sure what to do next.").trim();
+    const stuck = /[.!?]$/.test(rawStuck) ? rawStuck : `${rawStuck}.`;
+    return `I need help with ${subject} ${stuck} ${SUPPORT_STYLE_PROMPTS[style] || SUPPORT_STYLE_PROMPTS.hint}`;
+  }
+
+  function extractActionSteps(reply) {
+    return String(reply || "")
+      .split(/\r?\n/)
+      .map((line) => {
+        const match = line.match(/^\s*(?:[-*•]|\d+[.)])\s+(.+)$/);
+        return match ? match[1].trim() : "";
+      })
+      .filter((line) => line.length >= 3 && line.length <= 120)
+      .slice(0, 7);
+  }
+
+  function teacherHelpDraft(assignment, classInfo = {}) {
+    const greeting = classInfo.teacher ? `Hi ${classInfo.teacher},` : "Hi,";
+    const classText = classInfo.name ? ` in ${classInfo.name}` : "";
+    return `${greeting}\n\nI’m working on “${String(assignment?.title || "my assignment").trim()}”${classText}. I’m still confused after trying the directions and asking for a hint. Could you help me understand what to do next?\n\nThank you,`;
+  }
+
+  function offlineStrategies(assignment) {
+    const next = (assignment?.steps || []).find((step) => !step.done)?.text;
+    return [
+      { title: "Read the directions once more", prompt: "Read the directions slowly and underline the action words." },
+      { title: "Name what you know", prompt: "Write down the facts, numbers, or clues you already understand." },
+      { title: next ? "Try the next small step" : "Try one small example", prompt: next || "Work one simple example before returning to the full problem." },
+      { title: "Take a two-minute reset", prompt: "Stand up, breathe, get water, and return to only the first step." },
+    ];
+  }
+
+  function buildCatchUpPlan(assignments, todayIso = todayKey(), defaultMinutes = 15) {
+    const dayNumber = (iso) => {
+      if (!DATE_RE.test(iso || "")) return Number.POSITIVE_INFINITY;
+      const [year, month, day] = iso.split("-").map(Number);
+      return Date.UTC(year, month - 1, day) / 86400000;
+    };
+    const todayNumber = dayNumber(todayIso);
+    return (assignments || [])
+      .filter((item) => item && item.status !== "done" && dayNumber(item.due) <= todayNumber)
+      .sort((a, b) => dayNumber(a.due) - dayNumber(b.due) || String(a.title).localeCompare(String(b.title)))
+      .slice(0, 3)
+      .map((item) => ({
+        id: item.id,
+        title: item.title,
+        minutes: clamp(Number(item.estimateMin) || Number(defaultMinutes) || 15, 5, 90),
+        due: item.due,
+      }));
+  }
+
+  function rankNavigation(usage = {}) {
+    const pinned = TABS.filter((tab) => ["home", "homework"].includes(tab[0]));
+    const candidates = TABS.filter((tab) => !["home", "homework", "more"].includes(tab[0]))
+      .sort((a, b) => (Number(usage[b[0]]) || 0) - (Number(usage[a[0]]) || 0) || TABS.indexOf(a) - TABS.indexOf(b))
+      .slice(0, 3);
+    return [...pinned, ...candidates, TABS.find((tab) => tab[0] === "more")];
+  }
+
+  function buildSupportInsights(source) {
+    const assignments = Array.isArray(source?.assignments) ? source.assignments : [];
+    const classes = Array.isArray(source?.classes) ? source.classes : [];
+    const finished = assignments.filter(
+      (item) => item.status === "done" && Number(item.estimateMin) > 0 && Number(item.actualMin) > 0,
+    );
+    const ratio = finished.length
+      ? finished.reduce((sum, item) => sum + item.actualMin / item.estimateMin, 0) / finished.length
+      : 0;
+    const estimate = !finished.length
+      ? "Finish a few timed assignments to learn your planning pattern."
+      : ratio > 1.2
+        ? "Your work often takes longer than the first estimate. Add a little buffer."
+        : ratio < 0.8
+          ? "You often finish faster than expected."
+          : "Your time estimates are usually close to the actual work time.";
+    const overdueByClass = {};
+    assignments
+      .filter((item) => item.status !== "done" && DATE_RE.test(item.due || "") && item.due < todayKey())
+      .forEach((item) => {
+        overdueByClass[item.classId] = (overdueByClass[item.classId] || 0) + 1;
+      });
+    const delayedId = Object.keys(overdueByClass).sort(
+      (a, b) => overdueByClass[b] - overdueByClass[a] || a.localeCompare(b),
+    )[0];
+    const delayedClass = classes.find((item) => item.id === delayedId)?.name || "—";
+    const stats = source?.supportStats || {};
+    const styles = [
+      ["hint", "Hints"],
+      ["example", "Examples"],
+      ["check", "Checking work"],
+    ];
+    const completedAfter = stats.completedAfter || {};
+    const completedTotal = styles.reduce(
+      (sum, [key]) => sum + (Number(completedAfter[key]) || 0),
+      0,
+    );
+    const bestStyle = styles.sort((a, b) => {
+      const sourceStats = completedTotal ? completedAfter : stats;
+      return (Number(sourceStats[b[0]]) || 0) - (Number(sourceStats[a[0]]) || 0);
+    })[0];
+    const support = completedTotal
+      ? `${bestStyle[1]} most often lead to finished work.`
+      : Number(stats[bestStyle[0]])
+        ? `${bestStyle[1]} are your most-used support strategy.`
+        : "Try hints, examples, and check-my-work to learn what helps most.";
+    const periods = ["morning", "afternoon", "evening"];
+    const focusByPeriod = periods.map((period) => [
+      period,
+      Object.values(source?.activity || {}).reduce(
+        (sum, day) => sum + (Number(day?.focusByPeriod?.[period]) || 0),
+        0,
+      ),
+    ]);
+    focusByPeriod.sort((a, b) => b[1] - a[1]);
+    return {
+      estimate,
+      delayedClass,
+      support,
+      bestFocusPeriod: focusByPeriod[0][1]
+        ? focusByPeriod[0][0][0].toUpperCase() + focusByPeriod[0][0].slice(1)
+        : "Not enough data yet",
+    };
+  }
+
   const VIEWS = {
     home() {
       const open = openTasks();
+      const recoveryPlan = buildCatchUpPlan(open, todayKey(), state.settings.defaultFocusMin);
       const next = sortByUrgency(
         open.filter((a) => daysUntil(a.due) > 0 && daysUntil(a.due) <= 7),
       ).slice(0, 3);
@@ -4100,7 +4286,10 @@
               ${arrangeMode ? `<span class="arrange-hint" role="status">Drag any card to move it, then tap <b>Done</b>.</span>` : ""}
             </div>`
           : "";
-      return `${welcomeBanner}${checkinBanner()}${captureBanner()}${arrangeBar}<div class="home-grid${arrangeMode ? " arranging" : ""}">${order.map((k) => map[k] || "").join("")}${arrangeMode ? "" : customizeTile}</div>`;
+      const catchUpBanner = recoveryPlan.some((item) => item.due < todayKey())
+        ? `<section class="catch-up-banner" aria-label="Catch-up mode"><div><span class="eyebrow">CALM RECOVERY PLAN</span><h3>Only three things—not the whole backlog</h3><p>Start with one small block. The rest can wait.</p></div><button class="btn primary" data-act="catch-up-mode">Open catch-up mode</button></section>`
+        : "";
+      return `${welcomeBanner}${checkinBanner()}${captureBanner()}${catchUpBanner}${arrangeBar}<div class="home-grid${arrangeMode ? " arranging" : ""}">${order.map((k) => map[k] || "").join("")}${arrangeMode ? "" : customizeTile}</div>`;
     },
 
     calendar() {
@@ -4394,8 +4583,23 @@
               <span class="menu-ic" aria-hidden="true">${i.ic}</span><span><b>${i.title}</b><small>${i.sub}</small></span></button>`,
           )
           .join("")}</div>`;
+      const compactIds = new Set(rankNavigation(readNavUsage()).map((tab) => tab[0]));
+      const alreadyListed = new Set(["reading", "health", "ai", "rewards"]);
+      const otherSections = TABS.filter(
+        (tab) =>
+          !compactIds.has(tab[0]) &&
+          !alreadyListed.has(tab[0]) &&
+          !["home", "homework", "more"].includes(tab[0]),
+      ).map(([arg, title, ic]) => ({
+        act: "nav",
+        arg,
+        title,
+        ic,
+        sub: "Open this planner section",
+      }));
       return `
         <div class="view-head"><h2 class="view-title">More</h2></div>
+        ${otherSections.length ? `<div class="section-title">Your other sections</div>${grid(otherSections)}` : ""}
         <div class="section-title">Daily</div>
         ${grid([
           {
@@ -4710,6 +4914,12 @@
     ai() {
       const mode = (window._aiMode = window._aiMode || "hint");
       const helpAssignments = sortByUrgency(openTasks()).slice(0, 6);
+      const selectedAssignment =
+        state.assignments.find((item) => item.id === selectedAcademicAssignmentId) ||
+        helpAssignments[0] ||
+        null;
+      const selectedClass = selectedAssignment ? cls(selectedAssignment.classId) : null;
+      const guideStuck = window._aiGuideStuck || "";
       const msgs = AI_CHAT.length
         ? AI_CHAT.map(
             (m) =>
@@ -4768,6 +4978,48 @@
               .join("") +
             "</div></section>"
           : "") +
+        (selectedAssignment
+          ? '<section class="ai-guide" aria-labelledby="aiGuideTitle"><h3 id="aiGuideTitle">Let’s figure out where you’re stuck</h3><p><b>' +
+            esc(selectedAssignment.title) +
+            '</b> · ' +
+            esc(selectedClass?.name || "Assignment") +
+            '</p><div class="ai-guide-options" role="group" aria-label="Where are you stuck?">' +
+            [
+              "I do not understand the directions",
+              "I do not know how to start",
+              "I got an answer but I am not sure it is right",
+              "The work feels too big",
+            ]
+              .map(
+                (label) =>
+                  '<button class="btn sm" data-act="ai-guide-stuck" data-arg="' +
+                  esc(label) +
+                  '" aria-pressed="' +
+                  (guideStuck === label) +
+                  '">' +
+                  esc(label) +
+                  "</button>",
+              )
+              .join("") +
+            '</div><div class="ai-guide-options support-style" role="group" aria-label="How should the helper respond?">' +
+            [
+              ["hint", "🧭 One hint"],
+              ["example", "🧪 Similar example"],
+              ["check", "✅ Check my thinking"],
+            ]
+              .map(
+                ([style, label]) =>
+                  '<button class="btn sm" data-act="ai-guide-style" data-arg="' +
+                  style +
+                  '" ' +
+                  (guideStuck ? "" : "disabled") +
+                  '">' +
+                  label +
+                  "</button>",
+              )
+              .join("") +
+            "</div></section>"
+          : "") +
         '<button class="btn navy block" data-act="study-pack">📝 Turn my notes into a study pack</button>' +
         '<a class="btn navy block" href="/curriculum/math-workbench/" target="_blank" rel="noopener">📐 Open Math Workbench</a>' +
         // Ask first (chips + input), then the conversation grows below it.
@@ -4798,6 +5050,25 @@
           ? '<div class="ai-msg bot"><span class="ai-ic">🤖</span><span class="ai-bubble typing">Thinking…</span></div>'
           : "") +
         "</div>" +
+        (AI_CHAT.at(-1)?.role === "model"
+          ? '<section class="ai-next-actions" aria-label="Use this help"><h3>Turn help into a next step</h3><div class="row"><button class="btn sm" data-act="support-preview-steps">🧩 Preview steps</button><button class="btn sm" data-act="support-preview-focus">▶ Start a focus block</button><button class="btn sm" data-act="support-preview-reminder">🔔 Make a reminder</button><button class="btn sm" data-act="support-teacher">✉️ Ask my teacher</button></div></section>'
+          : "") +
+        (aiOffline || (typeof navigator !== "undefined" && navigator.onLine === false)
+          ? '<section class="ai-offline" aria-labelledby="offlineHelpTitle"><h3 id="offlineHelpTitle">You can keep moving offline</h3><p>Pick one small strategy while the helper reconnects.</p><div class="ai-offline-grid">' +
+            offlineStrategies(selectedAssignment)
+              .map(
+                (strategy) =>
+                  '<button class="btn" data-act="offline-strategy" data-arg="' +
+                  esc(strategy.prompt) +
+                  '"><b>' +
+                  esc(strategy.title) +
+                  '</b><small>' +
+                  esc(strategy.prompt) +
+                  "</small></button>",
+              )
+              .join("") +
+            "</div></section>"
+          : "") +
         '<input type="file" id="aiImageInput" accept="image/*" hidden>'
       );
     },
@@ -5156,6 +5427,7 @@ Due May 31"></textarea>
     },
 
     insights() {
+      const supportInsights = buildSupportInsights(state);
       // Last 7 days of focus minutes, as a simple bar chart.
       const days = [];
       for (let i = -6; i <= 0; i++) {
@@ -5278,6 +5550,12 @@ Due May 31"></textarea>
                 }</p>`
               : `<p class="sub" style="margin-top:8px">Finish a few assignments and your on-time rate shows up here.</p>`
           }${estLine}`,
+        ) +
+        card(
+          "ins-support",
+          "What helps me",
+          "Private patterns from planner activity—not conversation text.",
+          `<div class="support-insight-grid"><div><span>⏱️ Planning</span><p>${esc(supportInsights.estimate)}</p></div><div><span>🕰️ Best focus period</span><p>${esc(supportInsights.bestFocusPeriod)}</p></div><div><span>📚 Most delayed class</span><p>${esc(supportInsights.delayedClass)}</p></div><div><span>🤖 Support pattern</span><p>${esc(supportInsights.support)}</p></div></div>`,
         ) +
         reflectionInsight()
       );
@@ -6536,6 +6814,11 @@ Due May 31"></textarea>
       if (this.phase !== "focus" || this.phaseAwarded || m <= 0) return 0;
       this.phaseAwarded = true;
       bumpActivity("focusMin", m);
+      const hour = new Date().getHours();
+      const period = hour < 12 ? "morning" : hour < 17 ? "afternoon" : "evening";
+      const dayActivity = state.activity[todayKey()];
+      dayActivity.focusByPeriod = dayActivity.focusByPeriod || {};
+      dayActivity.focusByPeriod[period] = (Number(dayActivity.focusByPeriod[period]) || 0) + m;
       // Log the minutes against the assignment being focused, so completing it
       // can compare the student's time guess to what it actually took.
       if (this.taskId) {
@@ -8525,6 +8808,10 @@ Due May 31"></textarea>
     if (!a || a.status === "done") return;
     a.status = "done";
     a.completedAt = new Date().toISOString();
+    if (a.supportStyle && !a.supportCredited) {
+      state.supportStats.completedAfter[a.supportStyle] += 1;
+      a.supportCredited = true;
+    }
     addPoints(10);
     bumpActivity("tasks");
     earnReward("task", "Finished: " + a.title);
@@ -8541,6 +8828,39 @@ Due May 31"></textarea>
   }
 
   const ACTIONS = {
+    "catch-up-mode": () => {
+      const plan = buildCatchUpPlan(openTasks(), todayKey(), state.settings.defaultFocusMin);
+      if (!plan.length) return toast("Nothing needs catching up right now 🎉");
+      openModal(
+        "Calm catch-up mode",
+        `<p class="sub">You only need to choose one. These are the three best recovery moves right now.</p><div class="catch-up-list">${plan
+          .map(
+            (item, index) =>
+              `<section class="catch-up-item"><span class="catch-up-number">${index + 1}</span><div><h3>${esc(item.title)}</h3><p>About ${item.minutes} minutes</p><div class="row"><button class="btn primary sm" data-act="catch-up-start" data-id="${esc(item.id)}">▶ Start</button><button class="btn sm" data-act="catch-up-help" data-id="${esc(item.id)}">🤖 Get help</button><button class="btn sm" data-act="catch-up-later" data-id="${esc(item.id)}">Tomorrow</button></div></div></section>`,
+          )
+          .join("")}</div><button class="btn block" data-act="close-modal">Close</button>`,
+      );
+    },
+    "catch-up-start": (id) => {
+      closeModal();
+      focus.start(id);
+    },
+    "catch-up-help": (id) => {
+      closeModal();
+      ACTIONS["academic-help"](id);
+    },
+    "catch-up-later": (id) => {
+      const assignment = state.assignments.find((item) => item.id === id);
+      if (!assignment) return;
+      const text = `Continue: ${assignment.title}`;
+      if (!state.todos.some((todo) => todo.text === text && todo.date === isoForOffset(1))) {
+        state.todos.push(normalizeTodo({ text, date: isoForOffset(1) }));
+      }
+      save();
+      closeModal();
+      render();
+      toast("Planned for tomorrow 📅");
+    },
     "water-plant": () => {
       if (state.garden && state.garden.waterReservoir > 0) {
         state.garden.waterReservoir--;
@@ -9314,13 +9634,117 @@ Due May 31"></textarea>
         i.focus();
       }
     },
+    "academic-help": (id) => {
+      const assignment = state.assignments.find((item) => item.id === id);
+      if (!assignment) return;
+      selectedAcademicAssignmentId = id;
+      window._aiGuideStuck = "";
+      setView("ai");
+      const input = $("#aiInput");
+      if (input) input.value = academicHelpPrompt(assignment, cls(assignment.classId)?.name || "");
+    },
     "ai-assignment": (id) => {
       const assignment = state.assignments.find((item) => item.id === id);
       const input = $("#aiInput");
       if (!assignment || !input) return;
+      selectedAcademicAssignmentId = id;
       input.value = academicHelpPrompt(assignment, cls(assignment.classId)?.name || "");
       input.focus();
       input.scrollIntoView({ block: "center" });
+    },
+    "ai-guide-stuck": (_, arg) => {
+      window._aiGuideStuck = arg || "";
+      render();
+    },
+    "ai-guide-style": (_, arg) => {
+      const assignment = state.assignments.find((item) => item.id === selectedAcademicAssignmentId);
+      const input = $("#aiInput");
+      if (!assignment || !input || !window._aiGuideStuck) return;
+      const style = SUPPORT_STYLE_PROMPTS[arg] ? arg : "hint";
+      window._aiMode = style === "hint" ? "hint" : "solve";
+      window._aiGuideStyle = style;
+      input.value = buildGuidedHelpPrompt(
+        assignment,
+        cls(assignment.classId)?.name || "",
+        window._aiGuideStuck,
+        style,
+      );
+      input.focus();
+      input.scrollIntoView({ block: "center" });
+    },
+    "offline-strategy": (_, arg) => {
+      const input = $("#aiInput");
+      if (!input) return;
+      input.value = arg || "";
+      input.focus();
+    },
+    "support-preview-steps": () => {
+      const assignment = state.assignments.find((item) => item.id === selectedAcademicAssignmentId);
+      const steps = extractActionSteps(AI_CHAT.at(-1)?.text || "");
+      if (!assignment) return toast("Choose an assignment first.");
+      if (!steps.length) return toast("No short checklist was found in that reply.");
+      window._supportPreviewSteps = steps;
+      openModal(
+        "Preview planner steps",
+        `<p class="sub">Nothing is saved yet. Add these steps to <b>${esc(assignment.title)}</b>?</p><ol class="preview-list">${steps.map((step) => `<li>${esc(step)}</li>`).join("")}</ol><div class="row"><button class="btn primary" data-act="support-confirm-steps" data-id="${esc(assignment.id)}">Add these steps</button><button class="btn" data-act="close-modal">Cancel</button></div>`,
+      );
+    },
+    "support-confirm-steps": (id) => {
+      const assignment = state.assignments.find((item) => item.id === id);
+      const steps = Array.isArray(window._supportPreviewSteps) ? window._supportPreviewSteps : [];
+      if (!assignment || !steps.length) return;
+      const existing = new Set(assignment.steps.map((step) => step.text.toLowerCase()));
+      steps.forEach((text) => {
+        if (!existing.has(text.toLowerCase())) assignment.steps.push({ id: uid("s"), text, done: false });
+      });
+      state.supportStats.appliedSteps += 1;
+      assignment.updatedAt = Date.now();
+      save();
+      closeModal();
+      render();
+      toast("Steps added to the assignment ✓");
+    },
+    "support-preview-focus": () => {
+      const assignment = state.assignments.find((item) => item.id === selectedAcademicAssignmentId);
+      if (!assignment) return toast("Choose an assignment first.");
+      const minutes = clamp(Number(assignment.estimateMin) || state.settings.defaultFocusMin, 5, 45);
+      openModal(
+        "Start a focus block?",
+        `<p class="sub">Start <b>${minutes} focused minutes</b> on “${esc(assignment.title)}.” Nothing changes until you confirm.</p><div class="row"><button class="btn primary" data-act="support-confirm-focus" data-id="${esc(assignment.id)}">Start focus</button><button class="btn" data-act="close-modal">Cancel</button></div>`,
+      );
+    },
+    "support-confirm-focus": (id) => {
+      closeModal();
+      focus.start(id);
+    },
+    "support-preview-reminder": () => {
+      const assignment = state.assignments.find((item) => item.id === selectedAcademicAssignmentId);
+      if (!assignment) return toast("Choose an assignment first.");
+      openModal(
+        "Make a reminder?",
+        `<p class="sub">Add this reminder for today?</p><div class="note">Continue: ${esc(assignment.title)}</div><div class="row" style="margin-top:12px"><button class="btn primary" data-act="support-confirm-reminder" data-id="${esc(assignment.id)}">Add reminder</button><button class="btn" data-act="close-modal">Cancel</button></div>`,
+      );
+    },
+    "support-confirm-reminder": (id) => {
+      const assignment = state.assignments.find((item) => item.id === id);
+      if (!assignment) return;
+      state.todos.push(normalizeTodo({ text: `Continue: ${assignment.title}`, date: todayKey() }));
+      state.supportStats.reminders += 1;
+      save();
+      closeModal();
+      render();
+      toast("Reminder added 🔔");
+    },
+    "support-teacher": () => {
+      const assignment = state.assignments.find((item) => item.id === selectedAcademicAssignmentId);
+      if (!assignment) return toast("Choose an assignment first.");
+      const classInfo = cls(assignment.classId);
+      const draft = teacherHelpDraft(assignment, classInfo);
+      const email = classInfo.email || "";
+      openModal(
+        "Ask my teacher",
+        `<p class="sub">Here’s a concise draft. Review it before opening Gmail.</p><div class="field"><label>Message</label><textarea id="supportTeacherDraft">${esc(draft)}</textarea></div>${email ? `<a class="btn primary" target="_blank" rel="noopener" href="${gmailCompose(email, `Help with ${assignment.title}`, draft)}">Open draft in Gmail</a>` : `<p class="note">No teacher email is saved for ${esc(classInfo.name)} yet. Add it under More → My classes.</p>`}<button class="btn" data-act="close-modal">Close</button>`,
+      );
     },
     "ai-clear": () => {
       AI_CHAT = [];
@@ -9384,6 +9808,21 @@ Due May 31"></textarea>
         image: sentImg ? sentImg.dataUrl : "",
       });
       aiBusy = true;
+      const guideStyle = window._aiGuideStyle;
+      if (["hint", "example", "check"].includes(guideStyle)) {
+        state.supportStats[guideStyle] += 1;
+        const supportedAssignment = state.assignments.find(
+          (item) => item.id === selectedAcademicAssignmentId,
+        );
+        if (supportedAssignment) {
+          supportedAssignment.supportStyle = guideStyle;
+          supportedAssignment.supportAt = Date.now();
+          supportedAssignment.supportCredited = false;
+          supportedAssignment.updatedAt = Date.now();
+        }
+        window._aiGuideStyle = "";
+        save();
+      }
       aiImage = null;
       if (inp) inp.value = "";
       render();
@@ -9402,6 +9841,7 @@ Due May 31"></textarea>
           }),
         });
         if (!res.ok) {
+          aiOffline = true;
           const j = await res.json().catch(() => ({}));
           AI_CHAT.push({
             role: "model",
@@ -9410,6 +9850,7 @@ Due May 31"></textarea>
               : "Sorry, I couldn't answer right now. Try again in a moment.",
           });
         } else {
+          aiOffline = false;
           const j = await res.json();
           AI_CHAT.push({
             role: "model",
@@ -9417,6 +9858,7 @@ Due May 31"></textarea>
           });
         }
       } catch {
+        aiOffline = true;
         AI_CHAT.push({
           role: "model",
           text: "I can't reach the internet right now. Check your connection and try again. 📶",
@@ -10899,7 +11341,11 @@ ${name}`;
   if (window.__FOCUS_SCHOOL_TEST__) {
     Object.assign(window.__FOCUS_SCHOOL_TEST__, {
       academicHelpPrompt,
+      buildCatchUpPlan,
+      buildGuidedHelpPrompt,
+      buildSupportInsights,
       cloud,
+      extractActionSteps,
       live,
       ledgerDayKey,
       mergeAssignmentSteps,
@@ -10908,8 +11354,11 @@ ${name}`;
       nextRoutineWindow,
       normalize,
       pickRoutineForNow,
+      rankNavigation,
       routineForHome,
       seed,
+      teacherHelpDraft,
+      offlineStrategies,
       setState: (s) => {
         state = s;
       },
