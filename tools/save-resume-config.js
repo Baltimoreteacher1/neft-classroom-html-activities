@@ -69,6 +69,7 @@ export const SKIP_TOPLEVEL = new Set([
   "math-sims", // stateless physics sandboxes (slope/probability) — nothing to save
   "infinite-practice", // stateless AI practice generator — nothing to save
   "write-math", // stateless handwriting-recognition pad — nothing to save
+  "ar-measure", // stateless WebXR AR measuring tool — nothing to save
 ]);
 
 // Filename patterns that are not student-facing activities.

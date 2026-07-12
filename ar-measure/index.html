@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AR Tape Measure · Neft Teacher</title>
+    <meta
+      name="description"
+      content="Use your phone's camera to measure real objects in augmented reality, then use the length in area and volume problems."
+    />
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #1fa6a2;
+        --cream: #f7f4ec;
+        --line: #e4ebf2;
+        --muted: #54677c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        color: #1a2b3c;
+        background: radial-gradient(ellipse at 50% -10%, #fff, var(--cream) 60%);
+        min-height: 100vh;
+        line-height: 1.5;
+      }
+      .wrap {
+        max-width: 620px;
+        margin: 0 auto;
+        padding: 32px 18px 64px;
+        text-align: center;
+      }
+      h1 {
+        font-size: clamp(1.6rem, 5vw, 2.2rem);
+        color: var(--navy);
+        margin: 8px 0;
+      }
+      .sub {
+        color: var(--muted);
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        box-shadow: 0 6px 24px rgba(12, 27, 42, 0.1);
+        padding: 22px;
+        margin: 20px 0;
+        text-align: left;
+      }
+      .card ol {
+        margin: 8px 0 0;
+        padding-left: 22px;
+      }
+      .card li {
+        margin: 6px 0;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 54px;
+        padding: 14px 26px;
+        border: 0;
+        border-radius: 14px;
+        background: var(--navy);
+        color: #fff;
+        font-size: 1.15rem;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .btn:disabled {
+        opacity: 0.55;
+      }
+      .unsupported {
+        color: var(--muted);
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <div style="font-size: 2.8rem">📏</div>
+      <h1>AR Tape Measure</h1>
+      <p class="sub">Measure real things with your camera, then use the length in your math.</p>
+
+      <div class="card">
+        <b>How it works</b>
+        <ol>
+          <li>Tap <b>Start measuring</b> and point your phone at a flat surface.</li>
+          <li>Tap once where you want to start.</li>
+          <li>Tap again where you want to end — the distance appears.</li>
+          <li>Tap <b>Reset</b> (⟲, top-left) to measure something new.</li>
+        </ol>
+      </div>
+
+      <div id="launch"></div>
+      <p class="sub" id="hint"></p>
+    </main>
+
+    <script type="module">
+      const THREE_URL = "/assets/vendor/three-0.160.0/build/three.module.js";
+      const launch = document.getElementById("launch");
+      const hint = document.getElementById("hint");
+
+      async function supported() {
+        if (!navigator.xr?.isSessionSupported) return false;
+        try {
+          return await navigator.xr.isSessionSupported("immersive-ar");
+        } catch {
+          return false;
+        }
+      }
+
+      (async () => {
+        if (!(await supported())) {
+          launch.innerHTML =
+            '<div class="unsupported">📱 AR needs a phone or tablet that supports WebXR (most modern Android devices in Chrome). Open this page on your device to measure. On a computer you can still use the on-screen manipulatives in the geometry lessons.</div>';
+          return;
+        }
+        const btn = document.createElement("button");
+        btn.className = "btn";
+        btn.textContent = "📷 Start measuring";
+        btn.addEventListener("click", () => startAR(btn));
+        launch.appendChild(btn);
+      })();
+
+      async function startAR(btn) {
+        btn.disabled = true;
+        btn.textContent = "Starting AR…";
+        const THREE = await import(THREE_URL);
+
+        const overlay = document.createElement("div");
+        overlay.style.cssText =
+          "position:fixed; inset:0; z-index:2147483000; pointer-events:none; font-family:system-ui;";
+        overlay.innerHTML =
+          '<div id="ar-readout" style="position:absolute; top:12px; left:50%; transform:translateX(-50%); background:rgba(18,53,91,.85); color:#fff; padding:10px 18px; border-radius:999px; font-size:1rem; font-weight:700;">Tap a starting point</div>' +
+          '<button id="ar-reset" style="position:absolute; top:12px; left:12px; pointer-events:auto; background:#fff; color:#12355b; border:0; border-radius:999px; width:44px; height:44px; font-size:1.2rem; font-weight:800;">⟲</button>' +
+          '<button id="ar-exit" style="position:absolute; top:12px; right:12px; pointer-events:auto; background:#fff; color:#12355b; border:0; border-radius:999px; width:44px; height:44px; font-size:1.1rem; font-weight:800;">✕</button>';
+        document.body.appendChild(overlay);
+        const readout = overlay.querySelector("#ar-readout");
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.xr.enabled = true;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(
+          70,
+          window.innerWidth / window.innerHeight,
+          0.01,
+          20,
+        );
+        scene.add(new THREE.HemisphereLight(0xffffff, 0xbbbbbb, 1.1));
+
+        const reticle = new THREE.Mesh(
+          new THREE.RingGeometry(0.05, 0.065, 32).rotateX(-Math.PI / 2),
+          new THREE.MeshBasicMaterial({ color: 0x1fa6a2 }),
+        );
+        reticle.matrixAutoUpdate = false;
+        reticle.visible = false;
+        scene.add(reticle);
+
+        const dots = [];
+        let line = null;
+        const points = [];
+
+        function makeDot(pos) {
+          const dot = new THREE.Mesh(
+            new THREE.SphereGeometry(0.012, 16, 16),
+            new THREE.MeshBasicMaterial({ color: 0xf2913b }),
+          );
+          dot.position.copy(pos);
+          scene.add(dot);
+          dots.push(dot);
+        }
+        function clearMeasure() {
+          points.length = 0;
+          dots.forEach((d) => scene.remove(d));
+          dots.length = 0;
+          if (line) {
+            scene.remove(line);
+            line = null;
+          }
+          readout.textContent = "Tap a starting point";
+        }
+
+        function onSelect() {
+          if (!reticle.visible) return;
+          const p = new THREE.Vector3().setFromMatrixPosition(reticle.matrix);
+          if (points.length >= 2) clearMeasure();
+          points.push(p);
+          makeDot(p);
+          if (points.length === 1) {
+            readout.textContent = "Tap the ending point";
+          } else if (points.length === 2) {
+            const meters = points[0].distanceTo(points[1]);
+            const cm = meters * 100;
+            const inches = meters * 39.3701;
+            const geom = new THREE.BufferGeometry().setFromPoints(points);
+            line = new THREE.Line(
+              geom,
+              new THREE.LineBasicMaterial({ color: 0xf2913b, linewidth: 3 }),
+            );
+            scene.add(line);
+            readout.textContent = `${cm.toFixed(1)} cm  (${inches.toFixed(1)} in)`;
+          }
+        }
+
+        let session, hitTestSource, refSpace;
+        try {
+          session = await navigator.xr.requestSession("immersive-ar", {
+            requiredFeatures: ["hit-test"],
+            optionalFeatures: ["dom-overlay"],
+            domOverlay: { root: overlay },
+          });
+        } catch (e) {
+          overlay.remove();
+          btn.disabled = false;
+          btn.textContent = "📷 Start measuring";
+          hint.textContent = "Couldn't start AR. Check camera permission and try again.";
+          return;
+        }
+
+        function cleanup() {
+          try {
+            renderer.setAnimationLoop(null);
+            renderer.dispose();
+          } catch {}
+          overlay.remove();
+          btn.disabled = false;
+          btn.textContent = "📷 Start measuring";
+        }
+        overlay.querySelector("#ar-exit").addEventListener("click", () => session.end());
+        overlay.querySelector("#ar-reset").addEventListener("click", clearMeasure);
+        session.addEventListener("select", onSelect);
+        session.addEventListener("end", cleanup);
+
+        await renderer.xr.setSession(session);
+        refSpace = await session.requestReferenceSpace("local");
+        const viewerSpace = await session.requestReferenceSpace("viewer");
+        hitTestSource = await session.requestHitTestSource({ space: viewerSpace });
+
+        renderer.setAnimationLoop((_, frame) => {
+          if (frame && hitTestSource) {
+            const hits = frame.getHitTestResults(hitTestSource);
+            if (hits.length) {
+              const pose = hits[0].getPose(refSpace);
+              if (pose) {
+                reticle.visible = true;
+                reticle.matrix.fromArray(pose.transform.matrix);
+              }
+            } else reticle.visible = false;
+          }
+          renderer.render(scene, camera);
+        });
+      }
+    </script>
+  </body>
+</html>
