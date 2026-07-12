@@ -39,7 +39,7 @@
 
   /* Whitelist — only these builders may mount. Builder files register into the
      same registry; a kind not listed here is ignored even if a file registers. */
-  var KINDS = { "net-box": 1, "data-bars": 1, "floor-plan": 1, "coord-map": 1 };
+  var KINDS = { "net-box": 1, "data-bars": 1, "floor-plan": 1, "coord-map": 1, "tile-extrude": 1 };
 
   var COPY = {
     badge: { en: "Build it in 3D — no grade", es: "Constrúyelo en 3D — sin nota" },
@@ -235,14 +235,17 @@
         return false;
       });
   }
-  /* startAR(THREE, buildModelFn): buildModelFn() returns a fresh Object3D sized
-     in metres. Places it via hit-test reticle (tap to drop), else 0.6 m ahead. */
+  /* startAR(THREE, buildModel): buildModel() returns a fresh Object3D sized in
+     metres. Richer AR — surface hit-test with a reticle: aim the phone at a real
+     surface and a green ring snaps to it; tap to place the model there; tap again
+     to move it, or nudge-rotate once it's placed. Falls back to a fixed 0.6 m
+     drop when hit-test is unavailable. Fully guarded; any failure ends silently. */
   function startAR(THREE, buildModel) {
     if (!navigator.xr) return;
     navigator.xr
       .requestSession("immersive-ar", {
         requiredFeatures: ["local"],
-        optionalFeatures: ["hit-test", "dom-overlay"],
+        optionalFeatures: ["hit-test", "dom-overlay", "local-floor"],
       })
       .then(function (session) {
         var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -250,24 +253,86 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.xr.setReferenceSpaceType("local");
         renderer.xr.setSession(session);
+
         var scene = new THREE.Scene();
-        scene.add(new THREE.HemisphereLight(0xffffff, 0x666688, 1.1));
-        var dir = new THREE.DirectionalLight(0xffffff, 0.8);
+        scene.add(new THREE.HemisphereLight(0xffffff, 0x666688, 1.15));
+        var dir = new THREE.DirectionalLight(0xffffff, 0.85);
         dir.position.set(1, 2, 1);
         scene.add(dir);
         var camera = new THREE.PerspectiveCamera();
+
         var model = buildModel();
-        model.position.set(0, 0, -0.6);
+        model.visible = false;
         scene.add(model);
+
+        // reticle — a flat ring that snaps to detected surfaces
+        var reticle = new THREE.Mesh(
+          new THREE.RingGeometry(0.055, 0.075, 28).rotateX(-Math.PI / 2),
+          new THREE.MeshBasicMaterial({ color: 0x2ecc71 }),
+        );
+        reticle.matrixAutoUpdate = false;
+        reticle.visible = false;
+        scene.add(reticle);
+
+        var hitSource = null,
+          placed = false,
+          fellBack = false;
+        try {
+          session
+            .requestReferenceSpace("viewer")
+            .then(function (viewerSpace) {
+              if (session.requestHitTestSource) {
+                var p = session.requestHitTestSource({ space: viewerSpace });
+                if (p && p.then)
+                  p.then(function (src) {
+                    hitSource = src;
+                  }).catch(function () {});
+              }
+            })
+            .catch(function () {});
+        } catch (e) {}
+
         session.addEventListener("select", function () {
-          model.rotation.y += Math.PI / 6;
+          if (reticle.visible) {
+            model.position.setFromMatrixPosition(reticle.matrix); // place / move
+            model.visible = true;
+            placed = true;
+          } else if (placed) {
+            model.rotation.y += Math.PI / 8; // nudge-rotate once placed
+          }
         });
+
         renderer.setAnimationLoop(function (_, frame) {
-          if (frame) renderer.render(scene, camera);
+          if (!frame) return;
+          if (hitSource) {
+            var refSpace = renderer.xr.getReferenceSpace();
+            var hits = frame.getHitTestResults(hitSource);
+            if (hits.length) {
+              var pose = hits[0].getPose(refSpace);
+              if (pose) {
+                reticle.visible = true;
+                reticle.matrix.fromArray(pose.transform.matrix);
+              }
+            } else {
+              reticle.visible = false;
+            }
+          } else if (!fellBack && !placed) {
+            fellBack = true; // no hit-test available — drop ahead so AR still works
+            model.position.set(0, 0, -0.6);
+            model.visible = true;
+            placed = true;
+          }
+          renderer.render(scene, camera);
         });
+
         session.addEventListener("end", function () {
           renderer.setAnimationLoop(null);
-          renderer.dispose();
+          try {
+            if (hitSource && hitSource.cancel) hitSource.cancel();
+          } catch (e) {}
+          try {
+            renderer.dispose();
+          } catch (e) {}
         });
       })
       .catch(function () {
@@ -284,14 +349,50 @@
       preserveDrawingBuffer: true,
     });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    if ("outputColorSpace" in renderer && THREE.SRGBColorSpace)
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+    if (THREE.ACESFilmicToneMapping) {
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.08;
+    }
+    renderer.shadowMap.enabled = true;
+    if (THREE.PCFSoftShadowMap) renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     holder.appendChild(renderer.domElement);
+
     var scene = new THREE.Scene();
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x8090a8, 1.15));
-    var dir = new THREE.DirectionalLight(0xffffff, 0.85);
-    dir.position.set(4, 8, 6);
-    scene.add(dir);
-    var camera = new THREE.PerspectiveCamera(45, 4 / 3, 0.1, 200);
-    var ctrl = orbit(camera, holder, { radius: o.radius || 10, target: o.target });
+    // studio lighting: soft hemisphere ambient + shadow-casting key + fill + rim
+    scene.add(new THREE.HemisphereLight(0xf3f7ff, 0x8794a8, 0.95));
+    var key = new THREE.DirectionalLight(0xffffff, 1.2);
+    key.position.set(6, 15, 8);
+    key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024);
+    key.shadow.radius = 4;
+    key.shadow.bias = -0.0004;
+    var sc = key.shadow.camera;
+    sc.near = 0.5;
+    sc.far = 90;
+    sc.left = sc.bottom = -26;
+    sc.right = sc.top = 26;
+    scene.add(key);
+    var fill = new THREE.DirectionalLight(0xdfe8ff, 0.45);
+    fill.position.set(-9, 7, -4);
+    scene.add(fill);
+    var rim = new THREE.DirectionalLight(0xffffff, 0.35);
+    rim.position.set(-3, 5, -11);
+    scene.add(rim);
+
+    // soft contact ground — ShadowMaterial shows only where shadows fall, so the
+    // CSS backdrop shows through everywhere else. Builders align it via setGroundY.
+    var ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(600, 600),
+      new THREE.ShadowMaterial({ opacity: 0.24 }),
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    var camera = new THREE.PerspectiveCamera(42, 4 / 3, 0.1, 200);
+    var ctrl = orbit(camera, holder, { radius: o.radius || 10, target: o.target, phi: o.phi });
     var raf = 0;
     function size() {
       var w = holder.clientWidth || 320,
@@ -319,6 +420,16 @@
       camera: camera,
       controls: ctrl,
       resize: size,
+      ground: ground,
+      setGroundY: function (y) {
+        ground.position.y = y;
+      },
+      castShadows: function (obj) {
+        if (obj && obj.traverse)
+          obj.traverse(function (n) {
+            if (n.isMesh) n.castShadow = true;
+          });
+      },
       snapshot: function () {
         try {
           renderer.render(scene, camera);
@@ -411,31 +522,59 @@
     observe(mount, build);
   }
 
-  var io = null;
+  function isVisible(node) {
+    return !!(node && (node.offsetWidth || node.offsetHeight || node.getClientRects().length));
+  }
+  /* Mount the builder once the card actually has layout. In the project pages
+     each wizard step is display:none until the student navigates to it, so an
+     IntersectionObserver alone never fires (a hidden step is never "intersecting")
+     and the card would sit blank. We therefore mount on the FIRST of: the step
+     becoming visible (MutationObserver on the step's style/class), the card
+     scrolling into view (IntersectionObserver), or a short visibility poll — and
+     only when the mount has real size, so the WebGL canvas is sized correctly. */
   function observe(mount, build) {
-    var fire = function () {
+    mount.__p3dBuild = build;
+    var localIO = null,
+      mo = null,
+      poll = 0,
+      done = false;
+    function fire() {
+      if (done || !isVisible(mount)) return;
+      done = true;
+      if (localIO) localIO.disconnect();
+      if (mo) mo.disconnect();
+      if (poll) {
+        clearInterval(poll);
+        poll = 0;
+      }
       mountBuilder(mount, build);
-    };
-    if (!("IntersectionObserver" in window)) {
-      fire();
-      return;
     }
-    if (!io) {
-      io = new IntersectionObserver(
-        function (entries) {
-          entries.forEach(function (en) {
-            if (en.isIntersecting) {
-              io.unobserve(en.target);
-              var b = en.target.__p3dBuild;
-              if (b) mountBuilder(en.target, b);
+    if ("IntersectionObserver" in window) {
+      localIO = new IntersectionObserver(
+        function (es) {
+          for (var i = 0; i < es.length; i++)
+            if (es[i].isIntersecting) {
+              fire();
+              break;
             }
-          });
         },
         { rootMargin: "200px" },
       );
+      localIO.observe(mount);
     }
-    mount.__p3dBuild = build;
-    io.observe(mount);
+    var step = document.getElementById(build.step);
+    if (step && "MutationObserver" in window) {
+      mo = new MutationObserver(fire);
+      mo.observe(step, { attributes: true, attributeFilter: ["style", "class", "hidden"] });
+    }
+    poll = setInterval(fire, 300);
+    setTimeout(function () {
+      if (poll && !done) {
+        clearInterval(poll);
+        poll = 0;
+      }
+    }, 20000);
+    fire();
   }
 
   function mountBuilder(mount, build) {

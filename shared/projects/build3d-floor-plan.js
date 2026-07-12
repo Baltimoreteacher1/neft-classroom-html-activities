@@ -92,7 +92,7 @@
     mount.appendChild(wrap);
 
     var inited = false;
-    var stage = P3D.makeStage(THREE, holder, { radius: 26 });
+    var stage = P3D.makeStage(THREE, holder, { radius: 26, phi: 0.78 });
     var group = new THREE.Group();
     stage.scene.add(group);
 
@@ -173,6 +173,8 @@
       }
 
       group.position.set(0, -1, 0);
+      stage.castShadows(group);
+      stage.setGroundY(-1);
       stage.controls.setTarget(0, 0, 0);
       stage.controls.setRadius(Math.max(16, Math.max(L, W) * 1.9));
 

@@ -169,6 +169,8 @@
       // connector A—B along the grid (dashed feel via straight line)
       group.add(line(toWorld(A[0], A[1]).setY(0.03), toWorld(B[0], B[1]).setY(0.03), 0x18324f));
 
+      stage.castShadows(group);
+      stage.setGroundY(0);
       stage.controls.setTarget(0, 0, 0);
       stage.controls.setRadius(R * 2.4);
 

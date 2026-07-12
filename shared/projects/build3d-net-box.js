@@ -107,7 +107,11 @@
     mount.appendChild(wrap);
 
     /* ---- three.js stage ------------------------------------------------- */
-    var stage = P3D.makeStage(THREE, holder, { radius: 22, target: { x: 0, y: 0, z: 0 } });
+    var stage = P3D.makeStage(THREE, holder, {
+      radius: 22,
+      target: { x: 0, y: 0, z: 0 },
+      phi: 0.9,
+    });
     var group = new THREE.Group();
     stage.scene.add(group);
 
@@ -179,6 +183,8 @@
       lidPivot = makeWall(l, w, new THREE.Vector3(0, 0, -h), 0, 5, back);
 
       applyFold(parseFloat(fold.value));
+      stage.castShadows(group);
+      stage.setGroundY(-H / 2);
     }
 
     function applyFold(tf) {

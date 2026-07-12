@@ -64,7 +64,7 @@
     mount.appendChild(wrap);
 
     /* ---- three.js stage ------------------------------------------------- */
-    var stage = P3D.makeStage(THREE, holder, { radius: 18 });
+    var stage = P3D.makeStage(THREE, holder, { radius: 18, phi: 0.86 });
     var group = new THREE.Group();
     stage.scene.add(group);
 
@@ -125,13 +125,14 @@
       grid.position.y = 0;
       group.add(grid);
 
-      // bars — median bars glow green, others graded blue→amber by height
+      // bars — median bars glow green; the rest share one clean blue that
+      // lightens with height (a single hue avoids muddy grey mid-tones)
       vals.forEach(function (v, i) {
         var h = Math.max(v, 0.001);
         var isMedian =
           v === st.median ||
           (n % 2 === 0 && (v === st.sorted[n / 2 - 1] || v === st.sorted[n / 2]));
-        var col = isMedian ? 0x2ecc71 : mix(0x2f6fe0, 0xffb020, v / MAXVAL);
+        var col = isMedian ? 0x2ecc71 : mix(0x1f4fb0, 0x6fa8ff, v / MAXVAL);
         var mat = new THREE.MeshStandardMaterial({ color: col, roughness: 0.5, metalness: 0.05 });
         var box = new THREE.Mesh(new THREE.BoxGeometry(barW, h, barW), mat);
         box.position.set(x0 + i * pitch, h / 2, 0);
@@ -160,6 +161,8 @@
 
       // centre + frame
       group.position.set(0, -MAXVAL / 2, 0);
+      stage.castShadows(group);
+      stage.setGroundY(-MAXVAL / 2);
       stage.controls.setTarget(0, 0, 0);
       stage.controls.setRadius(Math.max(12, totalW * 1.4 + 6));
 
