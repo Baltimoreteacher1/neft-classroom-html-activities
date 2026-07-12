@@ -42,7 +42,28 @@ function loadClassicScript(src) {
 const REGISTRY = {
   "solid-3d": async (host, cfg) => {
     const { renderShape3D } = await import("../components/shape-3d.js");
-    return renderShape3D(host, { shape: cfg.shape || "cube", label: cfg.label });
+    const handle = renderShape3D(host, { shape: cfg.shape || "cube", label: cfg.label });
+    // Progressive AR enhancement: adds a "View in your space" button only on
+    // devices that support immersive-ar (Android Chrome / headsets); a no-op
+    // everywhere else. Never let its absence/failure affect the 3D explorer.
+    let arHandle = null;
+    const arLabel = `the ${String(cfg.shape || "cube").replace(/-/g, " ")}`;
+    import("../components/ar-solid.js")
+      .then((m) => m.mountARButton(host, { shape: cfg.shape || "cube", label: arLabel }))
+      .then((h) => {
+        arHandle = h;
+      })
+      .catch((err) => console.warn("ar-solid: mount skipped", err));
+    return {
+      destroy() {
+        try {
+          handle?.destroy?.();
+        } catch {}
+        try {
+          arHandle?.destroy?.();
+        } catch {}
+      },
+    };
   },
   // Draggable y = kx grapher (shared/projects/manip-line-grapher.js). Config maps
   // straight onto the widget's data-* attributes so lessons author it declaratively.
