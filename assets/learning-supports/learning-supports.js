@@ -776,6 +776,14 @@
       "Add a calming color tint to reduce glare",
     );
     addTool("contrast", "◐ Contrast", toggleHighContrast, "Boost text contrast");
+    // Language access (ESOL): translate the current part into a home language.
+    // The translation UI is provided by engine/core/translate.js, triggered here.
+    addTool(
+      "translate",
+      "🌐 Translate",
+      () => document.dispatchEvent(new CustomEvent("nt:translate")),
+      "Read this part in another language",
+    );
     // Math manipulatives & reference
     addTool("multchart", "✖️ Times Table", () => togglePanel("multchart"), "Multiplication chart");
     addTool("numberline", "🔟 Number Line", () => togglePanel("numberline"), "Number line");
