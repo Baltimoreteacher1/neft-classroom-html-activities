@@ -195,6 +195,7 @@
         node.id !== "teacher-cheat-console" &&
         node.id !== "game-controls-dialog" &&
         node.id !== "game-combo-hud" &&
+        node.id !== "game-visual-helper" &&
         node.tagName !== "SCRIPT" &&
         node.tagName !== "STYLE"
       ) {
@@ -958,6 +959,14 @@
     if (!reduce && !hasJuice) AudioSynth.startMusic();
 
     // Games load straight into play — no BIOS boot splash, no CRT screen warp.
+
+    // Lazy-load the "See It" math visual helper (self-guards to mapped games).
+    if (!document.querySelector('script[src*="game-visuals.js"]')) {
+      var gv = document.createElement("script");
+      gv.src = "/assets/game-visuals.js";
+      gv.defer = true;
+      document.head.appendChild(gv);
+    }
 
     // 1. Inject Floating Bilingual, Sound, Contrast, Controls & TTS Toolbar
     var toolbar = document.createElement("div");
