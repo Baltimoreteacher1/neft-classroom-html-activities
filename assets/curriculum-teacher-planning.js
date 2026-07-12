@@ -243,11 +243,22 @@
     if (!tools || tools.closest(".ctw-tools-drawer")) return;
     var details = document.createElement("details");
     details.className = "ctw-tools-drawer";
+    // Expanded by default so all featured resource + teacher-tool cards are
+    // visible at the top (their long-standing home) rather than hidden behind a
+    // collapsed summary. The summary still lets anyone collapse the row.
+    details.open = true;
     var summary = document.createElement("summary");
     summary.textContent = "Teacher Tools & Featured Resources";
     tools.parentNode.insertBefore(details, tools);
     details.appendChild(summary);
     details.appendChild(tools);
+    // Lift the drawer to the very top of the page, above the main grid (.wrap).
+    // As a direct grid item it is pinned to a single 400px column and buried
+    // under the sticky sidebar (renders bottom-left); in normal block flow above
+    // .wrap its own max-width:1180px + margin:auto center it as a full-width
+    // section at the top. Fail-safe: if .wrap is absent it stays where wrapped.
+    var wrap = document.querySelector(".wrap");
+    if (wrap && wrap.parentNode) wrap.parentNode.insertBefore(details, wrap);
   }
 
   function render(view, stage, context) {

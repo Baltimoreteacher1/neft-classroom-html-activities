@@ -8762,6 +8762,11 @@
           var hub = document.getElementById("interactive-hub");
           var toolsBar = document.querySelector(".curriculum-tools-bar");
           if (!hub || !toolsBar) return false;
+          // If the tools bar has already been wrapped into the collapsed
+          // "Teacher Tools & Featured Resources" drawer (organizeTools lifts it
+          // to the top of the page), leave it alone — the drawer owns its
+          // placement and extracting the bar here would empty it.
+          if (toolsBar.closest(".ctw-tools-drawer")) return true;
           if (toolsBar.dataset.lessonsFirst) return true;
           toolsBar.dataset.lessonsFirst = "1";
           // Insert the tools bar (then the teacher-tools group, if present)

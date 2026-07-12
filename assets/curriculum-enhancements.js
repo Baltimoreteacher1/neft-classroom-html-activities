@@ -806,6 +806,103 @@
     });
   }
 
+  // Activities that make sense to print: document downloads and any
+  // paper-friendly resource (notes, worksheets, handouts, homework, slides,
+  // study guides, answer keys). Interactive games/arcades are excluded.
+  function isPrintableActivity(text, href) {
+    var s = ((text || "") + " " + (href || "")).toLowerCase();
+    if (/\.(pdf|docx?|pptx?|xlsx?)([?#]|$)/.test(href || "")) return true;
+    if (/\b(game|arcade|interactive game)\b/.test(s)) return false;
+    return /(worksheet|notes|handout|homework|printable|packet|family|study guide|answer key|slides|pre-?test|post-?test|exit ticket)/.test(
+      s,
+    );
+  }
+
+  // Open a single activity/resource for printing. Same-origin printable pages
+  // are auto-sent to the print dialog once loaded; anything else (cross-origin,
+  // PDF viewer, popup-blocked) simply opens so the teacher can Cmd/Ctrl+P.
+  function printActivity(href) {
+    if (!href || href === "#") return;
+    var w = window.open(href, "_blank");
+    if (!w) return;
+    try {
+      w.addEventListener("load", function () {
+        try {
+          w.focus();
+          w.print();
+        } catch (e) {
+          /* cross-origin or blocked — manual print */
+        }
+      });
+    } catch (e) {
+      /* window handle not scriptable — manual print */
+    }
+  }
+
+  // Print a clean one-page sheet for the currently-selected lesson: objective,
+  // standard, real-world hook, and the full grouped activity list. Built from a
+  // clone of the live .lesson-info so it always reflects the current lesson;
+  // interactive controls (buttons, selectors, checkboxes) are stripped.
+  function printLessonSheet(card, unit) {
+    var info = card.querySelector(".lesson-info");
+    if (!info) return;
+    var sel = card.querySelector(".lesson-select");
+    var lessonTitle =
+      sel && sel.options[sel.selectedIndex]
+        ? sel.options[sel.selectedIndex].textContent.trim()
+        : "Lesson";
+    var clone = info.cloneNode(true);
+    clone
+      .querySelectorAll(
+        "button, .lesson-copy-link, .lesson-print-lesson, .lesson-print-activity, .progress-check, .selector-group, select, .btn-launch, .scorm-dl, .scorm-lesson-btn, script",
+      )
+      .forEach(function (n) {
+        n.remove();
+      });
+    var w = window.open("", "_blank");
+    if (!w) return;
+    var title = escapeHtml((unit && unit.num ? unit.num + " · " : "") + lessonTitle);
+    var doc =
+      '<!doctype html><html><head><meta charset="utf-8"><title>' +
+      title +
+      '</title><base href="' +
+      CANONICAL_ORIGIN +
+      '/"><style>' +
+      'body{font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#111;max-width:760px;margin:26px auto;padding:0 22px}' +
+      "h1{font-size:22px;margin:0 0 2px}.print-sub{color:#555;margin:0 0 18px;font-size:13px}" +
+      "a{color:#0645ad;text-decoration:none}ul{padding-left:20px;margin:6px 0}li{margin:5px 0}" +
+      ".lesson-outline-group-title{display:block;font-weight:700;margin:14px 0 4px}" +
+      ".lesson-outline-list{list-style:none;padding-left:0}" +
+      ".badge,.lesson-info-obj,.lesson-real-world{display:block;margin:8px 0}" +
+      "@media print{a{color:#111}}" +
+      "</style></head><body><h1>" +
+      title +
+      '</h1><p class="print-sub">Neft Teacher · Grade 6 Math · eduwonderlab.com/curriculum</p>' +
+      clone.innerHTML +
+      "<scr" +
+      "ipt>window.onload=function(){setTimeout(function(){window.focus();window.print();},250);};</scr" +
+      "ipt></body></html>";
+    w.document.open();
+    w.document.write(doc);
+    w.document.close();
+  }
+
+  function injectPrintLesson(card, unit) {
+    var infoBlock = card.querySelector(".lesson-info");
+    if (!infoBlock || infoBlock.querySelector(".lesson-print-lesson")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "lesson-print-lesson";
+    btn.innerHTML = "🖨 Print lesson";
+    btn.title = "Print this lesson — objective, standard, and its full activity list";
+    btn.addEventListener("click", function () {
+      printLessonSheet(card, unit);
+    });
+    var copy = infoBlock.querySelector(".lesson-copy-link");
+    if (copy && copy.parentNode) copy.parentNode.insertBefore(btn, copy.nextSibling);
+    else infoBlock.appendChild(btn);
+  }
+
   function injectCopyLink(card, unit) {
     var infoBlock = card.querySelector(".lesson-info");
     if (!infoBlock || infoBlock.querySelector(".lesson-copy-link")) return;
@@ -948,6 +1045,7 @@
       var lessonId = lessonIdFromTitle(lesson.title);
       injectStandardBadge(infoBlock, lesson.lessonId || lessonId);
       injectCopyLink(card, u);
+      injectPrintLesson(card, u);
       var rw = realWorldMap[lessonId] || realWorldMap[lessonId.replace("-flagship", "")];
       var existingRw = infoBlock.querySelector(".lesson-real-world");
       if (rw && !existingRw) {
@@ -1005,6 +1103,20 @@
           enhanceUnitCards();
         });
         li.insertBefore(check, link);
+
+        if (isPrintableActivity(text, href)) {
+          var printBtn = document.createElement("button");
+          printBtn.type = "button";
+          printBtn.className = "lesson-print-activity";
+          printBtn.textContent = "🖨";
+          printBtn.title = "Print “" + text + "”";
+          printBtn.setAttribute("aria-label", "Print: " + text);
+          printBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            printActivity(href);
+          });
+          li.appendChild(printBtn);
+        }
       });
 
       card.querySelectorAll(".activity-select").forEach(function (actSelect) {

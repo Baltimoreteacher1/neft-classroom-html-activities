@@ -757,6 +757,65 @@ body.light-theme .lesson-real-world {
   }
 }
 
+/* --- Per-lesson "Print lesson" button (mirrors .lesson-copy-link) --- */
+.lesson-print-lesson {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  margin-left: 10px;
+  padding: 0 14px;
+  border: 1px solid #d8e3f1;
+  background: #fff;
+  color: #15487f;
+  border-radius: 10px;
+  font-family: "Nunito", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+.lesson-print-lesson:hover,
+.lesson-print-lesson:focus-visible {
+  border-color: #205fa6;
+  background: #f4f8fd;
+  outline: none;
+}
+.lesson-print-lesson:focus-visible {
+  outline: 3px solid #2c7d6b;
+  outline-offset: 2px;
+}
+
+/* --- Per-activity "Print" pill inside the lesson outline (mirrors .scorm-dl) --- */
+.lesson-outline-item .lesson-print-activity {
+  flex: 0 0 auto;
+  padding: 6px 8px;
+  font-size: 12px;
+  line-height: 1;
+  color: #5a6b82;
+  background: transparent;
+  border: 1px dashed #cdd8e6;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.lesson-outline-item .lesson-print-activity:hover,
+.lesson-outline-item .lesson-print-activity:focus-visible {
+  color: #176153;
+  border-style: solid;
+  border-color: #2c7d6b;
+  outline: none;
+}
+
+@media print {
+  .lesson-print-lesson,
+  .lesson-print-activity {
+    display: none !important;
+  }
+}
+
 /* --- Per-unit "Print unit" button --- */
 .unit-print-btn {
   font-family: "Nunito", system-ui, sans-serif;
