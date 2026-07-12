@@ -403,6 +403,7 @@ function showIdentityScreen(root, config) {
           · <a href="${slidesHref}" target="_blank" rel="noopener" style="color:#155fa0; font-weight:700;">📊 ${stackHtml(t("lessonSlides", "en"), t("lessonSlides", "es"))}</a>
           <span id="welcome-google-slides-slot"></span>
           · <a href="${handoutHref}" target="_blank" rel="noopener" style="color:var(--amber-ink); font-weight:700;">📄 ${stackHtml(t("studentHandout", "en"), t("studentHandout", "es"))}</a>
+          · <a href="/lessons/${encodeURIComponent(config.lessonId)}/printable.html" target="_blank" rel="noopener" style="color:var(--navy); font-weight:700;">🖨️ ${stackHtml(t("printableLesson", "en"), t("printableLesson", "es"))}</a>
         </p>
         ${saved.length ? `<div class="identity-saved" id="id-saved-list"></div>` : ""}
       </div>

@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Teaching Evidence · BCPS Rubric — Neft Teacher</title>
+    <style>
+      :root {
+        --navy: #153f53;
+        --teal: #0e7c86;
+        --ink: #143;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+        max-width: 1040px;
+        margin: 2rem auto;
+        padding: 0 1rem 4rem;
+        color: var(--ink);
+      }
+      h1 {
+        color: var(--navy);
+        margin-bottom: 0.25rem;
+      }
+      h2 {
+        color: var(--navy);
+        margin-top: 2rem;
+      }
+      p.note {
+        color: #555;
+        line-height: 1.5;
+      }
+      .pill {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 999px;
+      }
+      .pill-direct {
+        background: rgba(14, 124, 134, 0.14);
+        color: #0b6068;
+      }
+      .pill-fac {
+        background: rgba(233, 196, 106, 0.28);
+        color: #8a6d1f;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 0.75rem;
+        font-size: 0.86rem;
+      }
+      th,
+      td {
+        border: 1px solid #cbd5e1;
+        padding: 0.4rem 0.55rem;
+        text-align: left;
+      }
+      th {
+        background: var(--navy);
+        color: #fff;
+        position: sticky;
+        top: 0;
+      }
+      td.c,
+      th.c {
+        text-align: center;
+      }
+      tr:nth-child(even) td {
+        background: #f1f5f9;
+      }
+      .legend li {
+        margin: 0.3rem 0;
+        line-height: 1.4;
+      }
+      .summary {
+        background: #f0f9fa;
+        border: 1px solid #b6e3e8;
+        border-radius: 10px;
+        padding: 0.9rem 1.1rem;
+        margin: 1rem 0;
+      }
+      .toolbar {
+        margin: 1rem 0;
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+      button {
+        font: inherit;
+        font-weight: 600;
+        padding: 0.5rem 0.9rem;
+        border-radius: 8px;
+        border: 1px solid var(--teal);
+        background: var(--teal);
+        color: #fff;
+        cursor: pointer;
+      }
+      button.secondary {
+        background: #fff;
+        color: var(--teal);
+      }
+      /* PIN gate */
+      #gate {
+        max-width: 420px;
+        margin: 5rem auto;
+        text-align: center;
+      }
+      #gate input {
+        font: inherit;
+        padding: 0.55rem 0.7rem;
+        border: 1px solid #94a3b8;
+        border-radius: 8px;
+        width: 100%;
+        margin: 0.6rem 0;
+      }
+      #gate .err {
+        color: #b91c1c;
+        font-size: 0.85rem;
+        min-height: 1.2em;
+      }
+      #app {
+        display: none;
+      }
+      @media print {
+        .toolbar,
+        #gate {
+          display: none !important;
+        }
+        body {
+          margin: 0;
+          max-width: none;
+        }
+        th {
+          position: static;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- PIN gate: students must never read rubric language. Same key/PIN as the
+         lesson Teacher Mode; client-side deterrent, matching the rest of the site. -->
+    <section id="gate">
+      <h1>👩‍🏫 Teaching Evidence</h1>
+      <p class="note">
+        This page is for teachers, coaches, and observers. Enter the teacher password.
+      </p>
+      <form id="gate-form">
+        <input
+          type="password"
+          id="pin"
+          placeholder="Teacher password"
+          autocomplete="off"
+          aria-label="Teacher password"
+        />
+        <div class="err" id="gate-err" role="alert"></div>
+        <button type="submit">Enter</button>
+      </form>
+    </section>
+
+    <main id="app">
+      <h1>Teaching Evidence</h1>
+      <p class="note">
+        How every Reveal Math lesson and interactive activity aligns to the
+        <strong>Baltimore City Public Schools Instructional Framework Rubric</strong> (June 2020),
+        <strong>TEACH</strong> domain, at <strong>Level 4 — "Highly Effective."</strong> Materials
+        create the <em>conditions</em> for a Level 4 rating; the actual rating depends on observed
+        student practice. <strong>Teacher use only — students never see this.</strong>
+      </p>
+
+      <div class="toolbar">
+        <button onclick="window.print()">🖨️ Print / Save PDF</button>
+        <button class="secondary" id="exit">Exit</button>
+        <span id="stamp" class="note" style="align-self: center"></span>
+      </div>
+
+      <div class="summary" id="summary"></div>
+
+      <h2>What Level 4 looks like</h2>
+      <ul class="legend" id="legend"></ul>
+
+      <h2>Lessons</h2>
+      <div id="lessons"></div>
+
+      <h2>Standalone activities</h2>
+      <p class="note">
+        Activities are not engine-driven, so only the indicators an interactive practice task
+        <em>structurally supports</em> are listed (a conservative "supports" claim, not a rating).
+      </p>
+      <div id="activities"></div>
+    </main>
+
+    <script>
+      const KEY = "nt-teacher-mode";
+      const PIN = "TeacherNeft"; // keep in sync with engine/core/teacher-mode.js
+      const gate = document.getElementById("gate");
+      const app = document.getElementById("app");
+
+      function unlock() {
+        gate.style.display = "none";
+        app.style.display = "block";
+        load();
+      }
+      if (localStorage.getItem(KEY) === "1") unlock();
+
+      document.getElementById("gate-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const v = document.getElementById("pin").value.trim();
+        if (v === PIN) {
+          try {
+            localStorage.setItem(KEY, "1");
+          } catch {}
+          unlock();
+        } else {
+          document.getElementById("gate-err").textContent = "Incorrect password";
+        }
+      });
+      document.getElementById("exit").addEventListener("click", () => {
+        try {
+          localStorage.removeItem(KEY);
+        } catch {}
+        location.reload();
+      });
+
+      const esc = (s) =>
+        String(s ?? "").replace(
+          /[&<>"]/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+        );
+
+      async function load() {
+        let data;
+        try {
+          data = await (await fetch("./coverage.json", { cache: "no-store" })).json();
+        } catch {
+          document.getElementById("summary").textContent =
+            "Could not load coverage data. Run: npm run generate:uifr";
+          return;
+        }
+        const codes = data.indicators.map((i) => i.code);
+        document.getElementById("stamp").textContent = "Generated " + data.generated;
+
+        const fullDirect = data.lessons.filter((L) => L.direct.met === L.direct.total).length;
+        document.getElementById("summary").innerHTML =
+          `<strong>${fullDirect}/${data.lessons.length}</strong> lessons meet the Level 4 conditions on every direct indicator (T1–T5) ` +
+          `and support the facilitated indicators (T6–T7). <strong>${data.activityCount}</strong> standalone activities classified.`;
+
+        document.getElementById("legend").innerHTML = data.indicators
+          .map(
+            (i) =>
+              `<li><span class="pill ${i.applicability === "direct" ? "pill-direct" : "pill-fac"}">${esc(i.code)} · ${i.applicability}</span> ` +
+              `<strong>${esc(i.title)}</strong> — ${esc(i.l4)}</li>`,
+          )
+          .join("");
+
+        // Lessons table
+        const head = `<tr><th>Lesson</th><th>Standard</th>${codes.map((c) => `<th class="c">${c}</th>`).join("")}<th class="c">Direct</th><th class="c">Facilitated</th></tr>`;
+        const rows = data.lessons
+          .map((L) => {
+            const cells = codes
+              .map((c) => {
+                const ind = L.indicators.find((x) => x.code === c);
+                return `<td class="c">${ind && ind.covered ? "✅" : "—"}</td>`;
+              })
+              .join("");
+            return `<tr><td>${esc(L.id)}</td><td>${esc(L.standard || "—")}</td>${cells}<td class="c">${L.direct.met}/${L.direct.total}</td><td class="c">${L.facilitated.supported}/${L.facilitated.total}</td></tr>`;
+          })
+          .join("");
+        document.getElementById("lessons").innerHTML = `<table>${head}${rows}</table>`;
+
+        // Activities table
+        const aHead = `<tr><th>Activity</th><th>Kind</th><th>Supports</th></tr>`;
+        const aRows = data.activities
+          .map(
+            (a) =>
+              `<tr><td>${esc(a.title)}</td><td>${esc(a.kind)}</td><td>${esc(a.supports.join(", "))}</td></tr>`,
+          )
+          .join("");
+        document.getElementById("activities").innerHTML = `<table>${aHead}${aRows}</table>`;
+      }
+    </script>
+  </body>
+</html>

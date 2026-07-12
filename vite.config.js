@@ -143,6 +143,15 @@ function copyStandaloneHtml() {
             mkdirSync(destDir, { recursive: true });
             cpSync(worksheet, resolve(destDir, "worksheet.html"));
           }
+          // Per-lesson full-lesson printable packet (paper fallback for
+          // students without a device) — npm run generate-printable-lessons.
+          // Linked from the lesson cover resource row.
+          const printable = resolve(lessonsDir, dir.name, "printable.html");
+          if (existsSync(printable)) {
+            const destDir = resolve(__dirname, "dist", "lessons", dir.name);
+            mkdirSync(destDir, { recursive: true });
+            cpSync(printable, resolve(destDir, "printable.html"));
+          }
           const configJson = resolve(lessonsDir, dir.name, "config.json");
           if (existsSync(configJson)) {
             const destDir = resolve(__dirname, "dist", "lessons", dir.name);

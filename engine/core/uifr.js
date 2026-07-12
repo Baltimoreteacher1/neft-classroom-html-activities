@@ -194,6 +194,26 @@ export function teachL4Payload(config) {
   };
 }
 
+// ── Activity-level (non-lesson) TEACH support ───────────────────────────────
+// The 200 standalone activities/games are not engine-driven, so they cannot
+// carry the full lesson scaffold. We make only the claims that are structurally
+// TRUE of an interactive practice activity, and label them "supports" (not
+// "Level 4 met"). Base: T2 (students choose their approach) + T4 (immediate,
+// no-fail feedback with retry). T5/T3 are added only when the activity's nature
+// clearly involves talk/writing (T5) or exploration/building (T3). We never
+// assert T1/T6/T7 generically — those depend on the teacher framing the task.
+export const ACTIVITY_TEACH_BASE = ["T2", "T4"];
+
+export function classifyActivityTeachSupport(pathOrTitle) {
+  const s = String(pathOrTitle || "").toLowerCase();
+  const codes = new Set(ACTIVITY_TEACH_BASE);
+  if (/(discuss|talk|debate|write|journal|explain|story|novel|read|vocab|word)/.test(s))
+    codes.add("T5");
+  if (/(explore|investigat|discover|build|design|create|sim|lab|model|graph|plot)/.test(s))
+    codes.add("T3");
+  return [...codes].sort();
+}
+
 // ── Runtime: hidden, student-invisible stamp ────────────────────────────────
 // Adds a <meta> + <script type="application/json"> to <head>. Neither renders
 // on screen, so students never see any rubric language; a teacher, observer, or

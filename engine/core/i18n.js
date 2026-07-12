@@ -19,6 +19,10 @@ const STRINGS = {
   familyHomework: { en: "Family homework", es: "Tarea familiar" },
   guidedNotes: { en: "Guided notes", es: "Notas guiadas" },
   studentHandout: { en: "Printable handout", es: "Hoja imprimible" },
+  printableLesson: {
+    en: "Full lesson (print)",
+    es: "Lección completa (imprimir)",
+  },
   lessonSlides: { en: "Lesson slides", es: "Diapositivas de la lección" },
   googleSlides: { en: "Google Slides", es: "Google Slides" },
   teacherNotes: { en: "Teacher notes", es: "Notas del maestro" },
