@@ -9008,10 +9008,13 @@
         <button type="button" class="coach-mode" data-mode="hint">🧭 Hint</button>
         <button type="button" class="coach-mode" data-mode="explain">📘 Explain why</button>
         <button type="button" class="coach-mode" data-mode="teach">🎓 Teach me</button>
+        <button type="button" class="coach-mode coach-mode-check" data-mode="check">
+          📸 Check my work
+        </button>
       </div>
       <p class="coach-foot">
         The coach gives hints and explanations — not the final answer. It can read what's on your
-        page.
+        page, and “Check my work” lets it look at what you drew or wrote by hand.
       </p>
     </div>
     <style>
@@ -9230,6 +9233,17 @@
         opacity: 0.45;
         cursor: not-allowed;
       }
+      .coach-mode-check {
+        flex: 1 1 100%;
+        margin-top: 2px;
+        color: #fff;
+        border-color: transparent;
+        background: linear-gradient(135deg, var(--indigo), var(--teal));
+      }
+      .coach-mode-check:hover {
+        background: linear-gradient(135deg, #372e8f, var(--teal-d));
+        border-color: transparent;
+      }
       .coach-foot {
         margin: 4px 12px 12px;
         font-size: 0.72rem;
@@ -9335,17 +9349,98 @@
             })
             .catch(function () {});
         }
-        function send(mode) {
+        // -------- Check my work (vision) --------
+        // Snapshot the handwritten ink on the current page, downscaled onto a
+        // white background as JPEG, so the coach can actually SEE what the student
+        // drew (the text stamps already travel as studentWork). Returns
+        // { dataUrl, hasInk } — dataUrl is null when the page has no ink.
+        function snapshotInk() {
+          var b = document.getElementById("board");
+          if (!b || !b.width || !b.height) return null;
+          var scale = Math.min(1, 1400 / Math.max(b.width, b.height));
+          var w = Math.max(1, Math.round(b.width * scale));
+          var h = Math.max(1, Math.round(b.height * scale));
+          var tmp = document.createElement("canvas");
+          tmp.width = w;
+          tmp.height = h;
+          var tctx = tmp.getContext("2d");
+          if (!tctx) return null;
+          try {
+            tctx.drawImage(b, 0, 0, w, h);
+          } catch (e) {
+            return null;
+          }
+          var hasInk = false;
+          try {
+            var d = tctx.getImageData(0, 0, w, h).data;
+            for (var i = 3; i < d.length; i += 4) {
+              if (d[i] > 12) {
+                hasInk = true;
+                break;
+              }
+            }
+          } catch (e) {
+            hasInk = true; // if the pixels can't be read, assume there is work
+          }
+          if (!hasInk) return { dataUrl: null, hasInk: false };
+          var out = document.createElement("canvas");
+          out.width = w;
+          out.height = h;
+          var octx = out.getContext("2d");
+          octx.fillStyle = "#ffffff";
+          octx.fillRect(0, 0, w, h);
+          try {
+            octx.drawImage(b, 0, 0, w, h);
+          } catch (e) {
+            return { dataUrl: null, hasInk: true };
+          }
+          var url = null;
+          try {
+            url = out.toDataURL("image/jpeg", 0.82);
+          } catch (e) {
+            url = null;
+          }
+          return { dataUrl: url, hasInk: true };
+        }
+        function sendCheck() {
           if (busy) return;
+          var snap = snapshotInk();
+          var hasImage = !!(snap && snap.dataUrl);
+          var board = gatherBoardText();
+          var q = (input.value || "").trim();
+          if (!hasImage && !board && !q) {
+            lead("Draw or write some work on the page first, then tap “Check my work.”");
+            input.focus();
+            return;
+          }
+          if (hasImage) {
+            // The coach reads the handwritten photo directly.
+            send("photo", {
+              image: snap.dataUrl,
+              itemFallback: "Please check the work in my photo.",
+              echo: q || "Can you check what I drew?",
+            });
+          } else {
+            // No ink to photograph — coach the typed/stamped work as text.
+            send("diagnose", {
+              itemFallback: "Please check the work on my page.",
+              echo: q || "Can you check my work?",
+            });
+          }
+        }
+        function send(mode, opts) {
+          if (busy) return;
+          opts = opts || {};
           var q = (input.value || "").trim();
           var board = gatherBoardText();
-          if (!q && !board) {
+          if (!q && !board && !opts.image) {
             lead("Type your problem above, or add some work to the page first.");
             input.focus();
             return;
           }
           var echo =
             q ||
+            opts.echo ||
             (mode === "hint"
               ? "Hint for my work, please."
               : mode === "explain"
@@ -9356,7 +9451,7 @@
           setBusy(true);
           var typing = document.createElement("div");
           typing.className = "coach-typing";
-          typing.textContent = "Coach is thinking…";
+          typing.textContent = opts.image ? "Coach is reading your work…" : "Coach is thinking…";
           log.appendChild(typing);
           scrollDown();
 
@@ -9366,8 +9461,9 @@
             body: JSON.stringify({
               mode: mode,
               standard: "",
-              itemText: q,
+              itemText: q || opts.itemFallback || "",
               studentWork: board,
+              image: opts.image || undefined,
               history: history.slice(-MAX_HISTORY),
             }),
           })
@@ -9408,7 +9504,9 @@
           btn && btn.setAttribute("aria-pressed", "true");
           ensureHealth();
           if (!log.children.length) {
-            lead("Hi! Write your problem above, then pick Hint, Explain why, or Teach me.");
+            lead(
+              "Hi! Write your problem above, then pick Hint, Explain why, Teach me — or tap “Check my work” and I’ll look at what you drew.",
+            );
           }
           setTimeout(function () {
             input.focus();
@@ -9436,7 +9534,9 @@
           });
         for (var i = 0; i < modeBtns.length; i++) {
           modeBtns[i].addEventListener("click", function () {
-            send(this.getAttribute("data-mode"));
+            var m = this.getAttribute("data-mode");
+            if (m === "check") sendCheck();
+            else send(m);
           });
         }
         input.addEventListener("keydown", function (e) {
