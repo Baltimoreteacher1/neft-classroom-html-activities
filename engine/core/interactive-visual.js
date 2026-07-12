@@ -89,6 +89,26 @@ const REGISTRY = {
     window.NeftLineGrapher?.init?.(el);
     return null; // stateless widget; listeners are node-local and GC on detach
   },
+  // Generic bridge for any shared/projects "manip-<name>.js" widget that
+  // registers window.NeftManips["<name>"] = init. Config:
+  //   { kind: "manip", manip: "number-line", attrs: { range: 120, unit: "m" } }
+  // attrs map to the widget's data-* attributes. New manipulatives need NO
+  // change here — they just register themselves.
+  manip: async (host, cfg) => {
+    const name = cfg.manip;
+    if (!name || !/^[a-z0-9-]+$/.test(name)) return null;
+    await loadClassicScript(`/shared/projects/manip-${name}.js`);
+    const el = document.createElement("div");
+    el.className = "pki-manip";
+    el.dataset.manip = name;
+    const attrs = cfg.attrs || {};
+    for (const [k, v] of Object.entries(attrs)) {
+      if (v != null && v !== "") el.setAttribute(`data-${k}`, String(v));
+    }
+    host.appendChild(el);
+    window.NeftManips?.[name]?.(el);
+    return null; // stateless widget; node-local listeners GC on detach
+  },
 };
 
 /**

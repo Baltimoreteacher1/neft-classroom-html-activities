@@ -602,6 +602,15 @@ function buildVisual(v) {
         fallback: `Interactive grapher for ${yN} versus ${xN}. Turn on JavaScript to drag the line and read values.`,
       });
     }
+    case "manip": {
+      // Any shared/projects manipulative (number-line, fraction-bar,
+      // algebra-tiles, …) surfaced via the interactive-visual bridge.
+      const name = String(v.manip || "").replace(/-/g, " ");
+      return interactiveVisualHost(v, {
+        ariaLabel: `Interactive ${name} manipulative. Explore it to build and check your thinking.`,
+        fallback: `Interactive ${name} manipulative. Turn on JavaScript to use it.`,
+      });
+    }
     default:
       return "";
   }

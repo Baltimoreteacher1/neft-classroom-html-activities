@@ -337,4 +337,11 @@
       document.querySelectorAll('.pki-manip[data-manip="number-line"]').forEach(init);
     }, 900);
   });
+
+  // Register with the shared manip registry so the lesson interactive-visual
+  // bridge can hydrate a number-line added after initial page load.
+  if (typeof window !== "undefined") {
+    window.NeftManips = window.NeftManips || {};
+    window.NeftManips["number-line"] = init;
+  }
 })();
