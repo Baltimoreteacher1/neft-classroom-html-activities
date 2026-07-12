@@ -1,5 +1,14 @@
 import { PHASE_TIME_ESTIMATES, countPracticeProblems } from "./content-enrichment.js";
 import { t, stackHtml, phaseName } from "./i18n.js";
+// Objective vocab popups + highlight, shared with the student-facing Launch
+// header / Objectives page so teacher-mode objectives read identically.
+// Runtime-only use, so the teacher-mode ↔ lesson-renderer import cycle is safe.
+import {
+  resolveContentObjective,
+  resolveLanguageObjective,
+  linkifyObjectiveTerms,
+  wireObjectiveTermPopups,
+} from "./lesson-renderer.js";
 
 function esc(s) {
   const d = document.createElement("div");
@@ -195,8 +204,8 @@ export function mountTeacherPanel(root, config, state) {
       <div class="teacher-panel-section">
         <h4>${stackHtml(t("standardsObjectives", "en"), t("standardsObjectives", "es"))}</h4>
         <p><strong>${esc(config.standard)}</strong></p>
-        <p class="teacher-obj">${esc(config.contentObjective || config.objective || "")}</p>
-        <p class="teacher-obj">${esc(config.languageObjective || "")}</p>
+        <p class="teacher-obj">${linkifyObjectiveTerms(resolveContentObjective(config), config.vocabulary || [])}</p>
+        <p class="teacher-obj">${linkifyObjectiveTerms(resolveLanguageObjective(config), config.vocabulary || [])}</p>
       </div>
       <div class="teacher-panel-section" data-bind="listen-fors"></div>
       <div class="teacher-panel-section" data-bind="answer-key"></div>
@@ -320,6 +329,9 @@ export function mountTeacherPanel(root, config, state) {
   panel.querySelector(".teacher-print-packet")?.addEventListener("click", () => {
     window.print();
   });
+
+  // Underlined vocab in the objectives opens the same EN/ES glossary popup.
+  wireObjectiveTermPopups(panel, config.vocabulary || []);
 
   root.append(panel);
   return panel;
