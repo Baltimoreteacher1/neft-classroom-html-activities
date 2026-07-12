@@ -1568,41 +1568,6 @@
           </section>
 
           <style>
-            .learning-supports-feature .mf-icon {
-              background: linear-gradient(135deg, #1769aa, #087f77);
-              color: #fff;
-            }
-            .learning-supports-feature .mf-tag {
-              color: #087f77;
-              background: rgba(8, 127, 119, 0.12);
-            }
-          </style>
-          <section
-            class="mailbox-feature learning-supports-feature hub-teacher-only"
-            aria-labelledby="learning-supports-feature-title"
-          >
-            <span class="mf-icon" aria-hidden="true">🧩</span>
-            <div class="mf-body">
-              <span class="mf-tag">Teacher Tool · All 64 Lessons</span>
-              <h2 id="learning-supports-feature-title">Layered Learning Supports</h2>
-              <p class="mf-sub">Access without lowering the learning target.</p>
-              <p class="mf-text">
-                Prepare discreet read-aloud, focus, vocabulary, worked-example, readiness, language,
-                and explain-your-thinking tools inside every core Reveal Math lesson. Supports are
-                optional and reversible, the original lesson stays intact, and no IEP data is
-                stored.
-              </p>
-              <div class="mf-actions">
-                <a
-                  class="mf-btn solid"
-                  href="/lessons/1-1/#ewl-supports=read-understand,focus-organize,build-math,express-thinking,language-support"
-                  >Preview Learning Supports</a
-                >
-              </div>
-            </div>
-          </section>
-
-          <style>
             .board-feature .mf-icon {
               background: linear-gradient(135deg, #205fa6, #15487f);
               color: #fff;
@@ -1905,47 +1870,118 @@
               color: #4f46e5;
               background: rgba(79, 70, 229, 0.1);
             }
-            .ewl-hub-link-generator {
+            /* Personalized support-link builder: a collapsed disclosure so the
+               hub card stays clean until a teacher opens it. */
+            .ewl-linkgen {
               margin-top: 14px;
               background: rgba(20, 34, 58, 0.04);
               border: 1px solid var(--line);
               border-radius: 12px;
-              padding: 14px;
+              overflow: hidden;
+            }
+            .ewl-linkgen-summary {
+              list-style: none;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              padding: 13px 16px;
+            }
+            .ewl-linkgen-summary::-webkit-details-marker {
+              display: none;
+            }
+            .ewl-linkgen-summary-icon {
+              font-size: 20px;
+              flex: 0 0 auto;
+            }
+            .ewl-linkgen-summary-title {
+              display: block;
+              font-weight: 800;
+              color: var(--ink);
+              font-size: 14.5px;
+            }
+            .ewl-linkgen-summary-sub {
+              display: block;
+              font-size: 12.5px;
+              color: var(--muted);
+              margin-top: 1px;
+            }
+            .ewl-linkgen[open] .ewl-linkgen-summary {
+              border-bottom: 1px solid var(--line);
+            }
+            .ewl-linkgen-body {
+              padding: 14px 16px 16px;
               display: flex;
               flex-direction: column;
-              gap: 10px;
+              gap: 12px;
             }
-            .ewl-hub-gen-title {
-              font-size: 13px;
-              font-weight: 700;
-              text-transform: uppercase;
-              color: var(--muted);
+            .ewl-linkgen-how {
               margin: 0;
-            }
-            .ewl-hub-profile-checkboxes {
-              display: grid;
-              grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-              gap: 8px;
-            }
-            .ewl-hub-checkbox-item {
-              display: flex;
-              align-items: center;
-              gap: 8px;
               font-size: 13px;
-              cursor: pointer;
+              line-height: 1.5;
               color: var(--ink);
             }
-            .ewl-hub-checkbox-item input {
-              cursor: pointer;
+            .ewl-linkgen-options {
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+              gap: 8px;
             }
-            .ewl-hub-selector-row {
+            .ewl-linkgen-opt {
+              display: grid;
+              grid-template-columns: auto 1fr;
+              gap: 3px 10px;
+              align-items: start;
+              padding: 10px 12px;
+              border: 1px solid var(--line);
+              border-radius: 10px;
+              background: #fff;
+              cursor: pointer;
+              transition:
+                border-color 0.15s,
+                box-shadow 0.15s;
+            }
+            .ewl-linkgen-opt:hover {
+              border-color: var(--teal);
+            }
+            .ewl-linkgen-opt:has(input:checked) {
+              border-color: var(--teal);
+              box-shadow: inset 0 0 0 1px var(--teal);
+              background: rgba(44, 125, 107, 0.06);
+            }
+            .ewl-linkgen-opt input {
+              grid-row: 1 / span 2;
+              width: 18px;
+              height: 18px;
+              margin-top: 1px;
+              cursor: pointer;
+              accent-color: var(--teal);
+            }
+            .ewl-linkgen-opt-name {
+              font-weight: 700;
+              font-size: 13.5px;
+              color: var(--ink);
+            }
+            .ewl-linkgen-opt-desc {
+              font-size: 12px;
+              line-height: 1.4;
+              color: var(--muted);
+            }
+            .ewl-linkgen-footer {
               display: flex;
+              flex-wrap: wrap;
               gap: 10px;
               align-items: center;
             }
-            .ewl-hub-select {
-              flex: 1;
-              min-height: 38px;
+            .ewl-linkgen-start {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              font-size: 13px;
+              font-weight: 600;
+              color: var(--ink);
+            }
+            .ewl-linkgen-select {
+              min-height: 40px;
               padding: 0 10px;
               border: 1px solid var(--line);
               border-radius: 8px;
@@ -1953,20 +1989,47 @@
               background: #fff;
               color: var(--ink);
             }
-            .ewl-hub-btn-copy {
-              min-height: 38px;
-              padding: 0 14px;
-              font-size: 13px;
+            .ewl-linkgen-copy {
+              margin-left: auto;
+              min-height: 40px;
+              padding: 0 18px;
+              font-size: 13.5px;
               background: var(--teal);
               color: #fff;
               border: none;
               border-radius: 8px;
-              font-weight: 700;
+              font-weight: 800;
               cursor: pointer;
-              transition: background-color 0.2s;
+              transition:
+                background-color 0.2s,
+                opacity 0.2s;
             }
-            .ewl-hub-btn-copy:hover {
-              background: var(--amber);
+            .ewl-linkgen-copy:hover:not(:disabled) {
+              background: #24685a;
+            }
+            .ewl-linkgen-copy:disabled {
+              opacity: 0.5;
+              cursor: not-allowed;
+            }
+            .ewl-linkgen-preview {
+              margin: 0;
+              font-size: 12px;
+              color: var(--muted);
+              word-break: break-all;
+            }
+            .ewl-linkgen-preview-label {
+              font-weight: 700;
+              margin-right: 4px;
+            }
+            .ewl-linkgen-preview code {
+              font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+              color: var(--ink);
+            }
+            .ewl-linkgen-empty {
+              margin: 0;
+              font-size: 12.5px;
+              color: var(--muted);
+              font-style: italic;
             }
           </style>
           <section
@@ -1987,96 +2050,163 @@
                 stored.
               </p>
               <div class="mf-actions">
-                <a class="mf-btn solid" href="/lessons/1-1/">Preview Supports (1-1)</a>
+                <a
+                  class="mf-btn solid"
+                  href="/lessons/1-1/#supports=read-understand,focus-organize,build-math,express-thinking,language-support"
+                  >See supports in action (1-1)</a
+                >
               </div>
 
-              <div class="ewl-hub-link-generator">
-                <h3 class="ewl-hub-gen-title">Link Generator for Individual Students</h3>
-                <div class="ewl-hub-profile-checkboxes">
-                  <label class="ewl-hub-checkbox-item">
-                    <input type="checkbox" data-profile="read-understand" /> Read &amp; Understand
-                  </label>
-                  <label class="ewl-hub-checkbox-item">
-                    <input type="checkbox" data-profile="focus-organize" /> Focus &amp; Organize
-                  </label>
-                  <label class="ewl-hub-checkbox-item">
-                    <input type="checkbox" data-profile="build-math" /> Build Math Models
-                  </label>
-                  <label class="ewl-hub-checkbox-item">
-                    <input type="checkbox" data-profile="express-thinking" /> Express Thinking
-                  </label>
-                  <label class="ewl-hub-checkbox-item">
-                    <input type="checkbox" data-profile="language-support" /> Language Support
-                  </label>
-                  <label class="ewl-hub-checkbox-item">
-                    <input type="checkbox" data-profile="challenge-extend" /> Challenge &amp; Extend
-                  </label>
+              <details class="ewl-linkgen">
+                <summary class="ewl-linkgen-summary">
+                  <span class="ewl-linkgen-summary-icon" aria-hidden="true">🔗</span>
+                  <span>
+                    <span class="ewl-linkgen-summary-title"
+                      >Make a support link for one student</span
+                    >
+                    <span class="ewl-linkgen-summary-sub"
+                      >Pick the supports a student needs, copy the link, and send it to them.</span
+                    >
+                  </span>
+                </summary>
+                <div class="ewl-linkgen-body">
+                  <p class="ewl-linkgen-how">
+                    They open the link <strong>once</strong> — the supports then follow them into
+                    <strong>every</strong> lesson on that device. No names or IEP data are stored.
+                  </p>
+                  <div
+                    class="ewl-linkgen-options"
+                    id="ewl-linkgen-options"
+                    role="group"
+                    aria-label="Supports to include"
+                  >
+                    <!-- Options are rendered here from the shared support definitions. -->
+                  </div>
+                  <div class="ewl-linkgen-footer">
+                    <label class="ewl-linkgen-start">
+                      Start on
+                      <select class="ewl-linkgen-select" id="ewl-linkgen-lesson"></select>
+                    </label>
+                    <button type="button" class="ewl-linkgen-copy" id="ewl-linkgen-copy" disabled>
+                      Copy link
+                    </button>
+                  </div>
+                  <p class="ewl-linkgen-preview" id="ewl-linkgen-preview" hidden>
+                    <span class="ewl-linkgen-preview-label">Link:</span>
+                    <code id="ewl-linkgen-preview-url"></code>
+                  </p>
+                  <p class="ewl-linkgen-empty" id="ewl-linkgen-empty">
+                    Check at least one support to build a link.
+                  </p>
                 </div>
-                <div class="ewl-hub-selector-row">
-                  <select class="ewl-hub-select" id="ewl-hub-lesson-select">
-                    <option value="1-1">Lesson 1.1</option>
-                  </select>
-                  <button type="button" class="ewl-hub-btn-copy" id="ewl-hub-btn-generate">
-                    Copy Student Link
-                  </button>
-                </div>
-              </div>
+              </details>
             </div>
           </section>
 
           <script>
             document.addEventListener("DOMContentLoaded", () => {
-              const select = document.getElementById("ewl-hub-lesson-select");
-              if (!select) return;
-              const lessonsCount = {
-                1: 7,
-                2: 5,
-                3: 7,
-                4: 7,
-                5: 5,
-                6: 7,
-                7: 7,
-                8: 7,
-                9: 7,
-                10: 5,
-              };
+              const optionsRoot = document.getElementById("ewl-linkgen-options");
+              const select = document.getElementById("ewl-linkgen-lesson");
+              const copyBtn = document.getElementById("ewl-linkgen-copy");
+              const preview = document.getElementById("ewl-linkgen-preview");
+              const previewUrl = document.getElementById("ewl-linkgen-preview-url");
+              const empty = document.getElementById("ewl-linkgen-empty");
+              if (!optionsRoot || !select || !copyBtn) return;
+
+              // Plain-English names + descriptions, kept in sync with the six
+              // support profiles in assets/learning-supports/learning-supports.js.
+              const OPTIONS = [
+                {
+                  key: "read-understand",
+                  name: "📖 Read & Understand",
+                  desc: "Read-aloud, vocabulary, worked examples, bigger text, color tint, high contrast.",
+                },
+                {
+                  key: "focus-organize",
+                  name: "🎯 Focus & Organize",
+                  desc: "Focus mode, reading ruler, comfort spacing, a task checklist, and a calm break.",
+                },
+                {
+                  key: "build-math",
+                  name: "🧱 Build Math Models",
+                  desc: "Readiness review plus tools: multiplication chart, number line, place-value chart, calculator.",
+                },
+                {
+                  key: "express-thinking",
+                  name: "🗣️ Express Thinking",
+                  desc: "Sentence frames, response stems, word banks, and speak-to-write dictation.",
+                },
+                {
+                  key: "language-support",
+                  name: "🌎 Language Support (ESOL)",
+                  desc: "Bilingual math terms, translations, and multilingual read-aloud and visuals.",
+                },
+                {
+                  key: "challenge-extend",
+                  name: "🚀 Challenge & Extend",
+                  desc: "Advanced concepts, error-analysis challenges, and extension tasks.",
+                },
+              ];
+
+              // Render the checkable option cards.
+              optionsRoot.innerHTML = OPTIONS.map(
+                (o) => `
+                  <label class="ewl-linkgen-opt">
+                    <input type="checkbox" data-profile="${o.key}" />
+                    <span class="ewl-linkgen-opt-name">${o.name}</span>
+                    <span class="ewl-linkgen-opt-desc">${o.desc}</span>
+                  </label>`,
+              ).join("");
+
+              // Populate the "start on" lesson menu from the per-unit counts.
+              const lessonsCount = { 1: 7, 2: 5, 3: 7, 4: 7, 5: 5, 6: 7, 7: 7, 8: 7, 9: 7, 10: 5 };
               select.innerHTML = "";
               for (let u = 1; u <= 10; u++) {
-                const count = lessonsCount[u];
-                for (let l = 1; l <= count; l++) {
-                  const id = `${u}-${l}`;
+                for (let l = 1; l <= lessonsCount[u]; l++) {
                   const opt = document.createElement("option");
-                  opt.value = id;
+                  opt.value = `${u}-${l}`;
                   opt.textContent = `Lesson ${u}.${l}`;
                   select.appendChild(opt);
                 }
               }
 
-              const btn = document.getElementById("ewl-hub-btn-generate");
-              btn.addEventListener("click", () => {
-                const selectedLesson = select.value;
-                const checkboxes = document.querySelectorAll(".ewl-hub-profile-checkboxes input");
-                const profiles = [];
-                checkboxes.forEach((cb) => {
-                  if (cb.checked) profiles.push(cb.getAttribute("data-profile"));
-                });
+              const selectedProfiles = () =>
+                Array.from(optionsRoot.querySelectorAll("input:checked")).map((cb) =>
+                  cb.getAttribute("data-profile"),
+                );
 
-                const base = window.location.origin;
-                const hash = profiles.length > 0 ? `#supports=${profiles.join(",")}` : "";
-                const url = `${base}/lessons/${selectedLesson}/${hash}`;
+              const buildUrl = (profiles) =>
+                `${window.location.origin}/lessons/${select.value}/#supports=${profiles.join(",")}`;
 
+              // Keep the button, empty hint, and live preview in sync with the
+              // current selection. Copy is disabled until a support is checked so
+              // teachers never hand out a link that turns nothing on.
+              const refresh = () => {
+                const profiles = selectedProfiles();
+                const has = profiles.length > 0;
+                copyBtn.disabled = !has;
+                empty.hidden = has;
+                preview.hidden = !has;
+                if (has) previewUrl.textContent = buildUrl(profiles);
+              };
+
+              optionsRoot.addEventListener("change", refresh);
+              select.addEventListener("change", refresh);
+              refresh();
+
+              copyBtn.addEventListener("click", () => {
+                const profiles = selectedProfiles();
+                if (!profiles.length) return;
                 navigator.clipboard
-                  .writeText(url)
+                  .writeText(buildUrl(profiles))
                   .then(() => {
-                    const origText = btn.textContent;
-                    btn.textContent = "✓ Copied!";
+                    const orig = copyBtn.textContent;
+                    copyBtn.textContent = "✓ Copied!";
                     setTimeout(() => {
-                      btn.textContent = origText;
+                      copyBtn.textContent = orig;
                     }, 1500);
                   })
-                  .catch((err) => {
-                    console.error("Clipboard copy failed:", err);
-                  });
+                  .catch((err) => console.error("Clipboard copy failed:", err));
               });
             });
           </script>
