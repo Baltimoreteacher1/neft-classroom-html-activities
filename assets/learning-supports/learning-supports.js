@@ -118,6 +118,23 @@
   let liveRegion = null;
   let dictation = null; // active SpeechRecognition instance
 
+  // Shared teacher-mode contract (mirrors engine/core/teacher-mode.js and
+  // assets/curriculum-enhancements.js). The "Prepare Supports" config button is
+  // a teacher-only control, so it renders only when Teacher Mode is on — students
+  // never see it. Applied support profiles are unaffected and stay active for the
+  // student after a teacher configures them and hands back the device.
+  const TEACHER_MODE_KEY = "nt-teacher-mode";
+  function isTeacherMode() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      // Force-student always wins; there is no URL backdoor INTO teacher mode.
+      if (params.get("student") === "1" || params.get("teacher") === "0") return false;
+      return localStorage.getItem(TEACHER_MODE_KEY) === "1";
+    } catch (e) {
+      return false;
+    }
+  }
+
   const TEXT_SCALE_LABELS = ["Text Size", "Large Text", "X-Large Text"];
 
   // Color tint overlay for visual stress / Irlen-style comfort. Index 0 = none.
@@ -412,7 +429,15 @@
     configBtn.setAttribute("aria-controls", "ewl-supports-dialog");
     configBtn.addEventListener("click", () => showDialog(true));
     teacherPanel.appendChild(configBtn);
+    // Teacher-only: hidden in Student Mode; students never see the config entry.
+    teacherPanel.hidden = !isTeacherMode();
     rootEl.appendChild(teacherPanel);
+
+    // React live if Teacher Mode is toggled in another tab/page (in-page toggles
+    // reload the lesson, so this covers the cross-tab case).
+    window.addEventListener("storage", (e) => {
+      if (e.key === TEACHER_MODE_KEY) teacherPanel.hidden = !isTeacherMode();
+    });
 
     // 2. Prepare Supports Configuration Dialog
     const dialog = document.createElement("div");

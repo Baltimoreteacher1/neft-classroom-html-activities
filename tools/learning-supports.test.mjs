@@ -87,6 +87,8 @@ async function runTests() {
     clear() { Object.keys(store).forEach(k => delete store[k]); }
   };
   localStorage.setItem("existing-lesson-key", "keep-me");
+  // "Prepare Supports" is teacher-only; enable Teacher Mode so it renders.
+  localStorage.setItem("nt-teacher-mode", "1");
 
   // Mock fetch to return our mock manifest
   const originalGlobalFetch = globalThis.fetch;
@@ -115,6 +117,7 @@ async function runTests() {
   // Assertions from Step 1
   assert.equal(document.querySelectorAll("[data-ewl-supports-root]").length, 1);
   assert.equal(document.querySelector("[data-ewl-supports-teacher]").textContent.includes("Prepare Supports"), true);
+  assert.equal(document.querySelector("[data-ewl-supports-teacher]").hidden, false, "Teacher panel must be visible in Teacher Mode");
   assert.equal(document.querySelector("[data-ewl-supports-tools]").hidden, true);
 
   const originalInput = document.getElementById("original-input");

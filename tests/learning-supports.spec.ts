@@ -4,6 +4,18 @@ import AxeBuilder from "@axe-core/playwright";
 const TEST_LESSON_PATH = "/lessons/1-1/";
 
 test.describe("Learning Supports E2E & Accessibility QA", () => {
+  // "Prepare Supports" is a teacher-only control. Enable Teacher Mode before every
+  // navigation so the config-button tests below see it. Runs before page scripts.
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem("nt-teacher-mode", "1"));
+  });
+
+  test("prepare supports button is hidden for students (no teacher mode)", async ({ page }) => {
+    await page.addInitScript(() => localStorage.removeItem("nt-teacher-mode"));
+    await page.goto(TEST_LESSON_PATH, { waitUntil: "networkidle" });
+    await expect(page.locator(".ewl-supports-btn-teacher")).toBeHidden();
+  });
+
   test("learning supports teacher panel trigger and dialog are functional", async ({ page }) => {
     // 1. Navigate to canonical lesson
     await page.goto(TEST_LESSON_PATH, { waitUntil: "networkidle" });
@@ -28,7 +40,7 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
       "build-math",
       "express-thinking",
       "language-support",
-      "challenge-extend"
+      "challenge-extend",
     ];
     for (const key of profiles) {
       await expect(page.locator(`#ewl-profile-${key}`)).toBeAttached();
@@ -41,25 +53,29 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
     const toolsDock = page.locator("[data-ewl-supports-tools]");
     await expect(toolsDock).toBeVisible();
 
-    // Check vocabulary/Words is visible
+    // 7. Close the (modal) dialog first — the student tools dock is meant to be
+    // used with the config dialog dismissed, mirroring real classroom flow.
+    const closeDialogBtn = page.locator(".ewl-supports-dialog-close");
+    await closeDialogBtn.click();
+    await expect(dialog).toBeHidden();
+
+    // 8. Now the Words tool is reachable — click it and confirm its panel opens.
     const wordsBtn = page.locator('[data-tool="words"]');
     await expect(wordsBtn).toBeVisible();
     await wordsBtn.click();
 
-    // Verify slide-out panel opens
     const contentPanel = page.locator("[data-ewl-supports-panel]");
     await expect(contentPanel).toBeVisible();
-    await expect(contentPanel.locator(".ewl-supports-panel-title")).toContainText("Vocabulary Helper");
-
-    // Close dialog
-    const closeDialogBtn = page.locator(".ewl-supports-dialog-close");
-    await closeDialogBtn.click();
-    await expect(dialog).toBeHidden();
+    await expect(contentPanel.locator(".ewl-supports-panel-title")).toContainText(
+      "Vocabulary Helper",
+    );
   });
 
   test("URL hash activation pre-selects supports", async ({ page }) => {
     // Navigate with hash activation
-    await page.goto(`${TEST_LESSON_PATH}#supports=read-understand,focus-organize`, { waitUntil: "networkidle" });
+    await page.goto(`${TEST_LESSON_PATH}#supports=read-understand,focus-organize`, {
+      waitUntil: "networkidle",
+    });
 
     // Student tools dock should be visible instantly
     const toolsDock = page.locator("[data-ewl-supports-tools]");
@@ -91,7 +107,9 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
     await expect(page.locator("body")).not.toHaveClass(/ewl-supports-focus-active/);
   });
 
-  test("supports dialog and panels have zero serious or critical WCAG violations", async ({ page }) => {
+  test("supports dialog and panels have zero serious or critical WCAG violations", async ({
+    page,
+  }) => {
     await page.goto(TEST_LESSON_PATH, { waitUntil: "networkidle" });
 
     // Open dialog to expose its DOM elements
@@ -106,9 +124,12 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
       .analyze();
 
     const blocking = results.violations.filter(
-      (v) => v.impact === "serious" || v.impact === "critical"
+      (v) => v.impact === "serious" || v.impact === "critical",
     );
-    expect(blocking, `serious/critical WCAG violations found: ${JSON.stringify(blocking, null, 2)}`).toEqual([]);
+    expect(
+      blocking,
+      `serious/critical WCAG violations found: ${JSON.stringify(blocking, null, 2)}`,
+    ).toEqual([]);
   });
 
   test("multilingual ESOL language selection translates content", async ({ page }) => {

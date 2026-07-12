@@ -259,11 +259,17 @@
 .ewl-supports-tools-dock {
   position: fixed;
   bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  /* Span the viewport but reserve the bottom-right lane for the Save/Resume
+     launcher (#nsr-root, right:16px, ~160px wide, z-index ~max) so the dock's
+     right-hand tools never sit under it and become unclickable. */
+  left: 16px;
+  right: 200px;
   z-index: 9998;
-  width: auto;
-  max-width: 90%;
+  display: flex;
+  justify-content: center;
+  /* The wrapper's empty gutters must not eat clicks aimed at the lesson behind
+     them; only the pill itself is interactive. */
+  pointer-events: none;
 }
 
 .ewl-supports-tools-inner {
@@ -277,6 +283,10 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   overflow-x: auto;
+  /* Only the pill is clickable (wrapper is pointer-events:none); cap it to the
+     reserved lane so it scrolls internally instead of sliding under the launcher. */
+  pointer-events: auto;
+  max-width: 100%;
 }
 
 .ewl-supports-tool-btn {
@@ -704,7 +714,10 @@ body.ewl-supports-comfort-active [data-ewl-supports-root] {
     max-width: 100%;
   }
   .ewl-supports-tools-dock {
-    width: 95%;
+    /* Phones: reclaim the reserved lane (launcher is a small corner FAB); the
+       pill spans nearly full width and scrolls internally. */
+    left: 12px;
+    right: 12px;
   }
   .ewl-supports-tools-inner {
     justify-content: flex-start;
@@ -926,7 +939,9 @@ body.ewl-supports-contrast-active #app {
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
 }
 
 .ewl-supports-chip-btn:hover {
