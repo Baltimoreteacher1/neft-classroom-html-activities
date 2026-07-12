@@ -9462,6 +9462,13 @@
         renderIdle();
       })();
 
+      // Bridge: the Math Coach (a decoupled module) asks the board to stamp a
+      // generated practice problem onto the page as an editable text tile.
+      window.addEventListener("mwb:add-text", function (e) {
+        var t = e && e.detail && e.detail.text;
+        if (t) makeObject("text", { text: String(t) });
+      });
+
       init();
     </script>
 
@@ -10020,6 +10027,10 @@
         <button type="button" class="coach-mode" data-mode="hint">🧭 Hint</button>
         <button type="button" class="coach-mode" data-mode="explain">📘 Explain why</button>
         <button type="button" class="coach-mode" data-mode="teach">🎓 Teach me</button>
+        <button type="button" class="coach-mode" data-mode="problem">🧩 New problem</button>
+        <button type="button" class="coach-mode coach-mode-check" data-mode="recognize">
+          ✍️ Read my writing
+        </button>
         <button type="button" class="coach-mode coach-mode-check" data-mode="check">
           📸 Check my work
         </button>
@@ -10440,12 +10451,43 @@
             });
           }
         }
+        // Read the student's handwriting: OCR the ink and transcribe + solve it.
+        function sendRecognize() {
+          if (busy) return;
+          var snap = snapshotInk();
+          if (!snap || !snap.dataUrl) {
+            lead("Write some math by hand on the page first, then tap “Read my writing.”");
+            input.focus();
+            return;
+          }
+          var q = (input.value || "").trim();
+          send("recognize", {
+            image: snap.dataUrl,
+            itemFallback: "Read the math I wrote by hand, then solve or check it.",
+            echo: q || "Read what I wrote by hand.",
+          });
+        }
+        // Ask for a fresh practice problem and stamp it onto the board.
+        function sendProblem() {
+          if (busy) return;
+          var q = (input.value || "").trim();
+          var board = gatherBoardText();
+          send("another", {
+            itemFallback: q || board || "a Grade 6 math problem for practice",
+            echo: q ? "Give me a problem like: " + q : "Give me a new problem to practice.",
+            onReply: function (reply) {
+              // Hand the generated problem to the board as an editable text tile.
+              window.dispatchEvent(new CustomEvent("mwb:add-text", { detail: { text: reply } }));
+              lead("↑ Added to your page — solve it right there!");
+            },
+          });
+        }
         function send(mode, opts) {
           if (busy) return;
           opts = opts || {};
           var q = (input.value || "").trim();
           var board = gatherBoardText();
-          if (!q && !board && !opts.image) {
+          if (!q && !board && !opts.image && !opts.itemFallback) {
             lead("Type your problem above, or add some work to the page first.");
             input.focus();
             return;
@@ -10494,6 +10536,10 @@
               if (res.ok && res.data && res.data.reply) {
                 var reply = String(res.data.reply);
                 addMsg("coach", reply);
+                if (opts.onReply)
+                  try {
+                    opts.onReply(reply);
+                  } catch (e) {}
                 history.push({ role: "user", text: echo });
                 history.push({ role: "assistant", text: reply });
                 if (history.length > MAX_HISTORY * 2) history = history.slice(-MAX_HISTORY * 2);
@@ -10548,6 +10594,8 @@
           modeBtns[i].addEventListener("click", function () {
             var m = this.getAttribute("data-mode");
             if (m === "check") sendCheck();
+            else if (m === "recognize") sendRecognize();
+            else if (m === "problem") sendProblem();
             else send(m);
           });
         }
