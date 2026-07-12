@@ -19,7 +19,7 @@
 
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { computeTeachL4Evidence, classifyActivityTeachSupport } from "../engine/core/uifr.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -56,19 +56,23 @@ function activityComment(path, supports) {
 
 function apply(file, inner, mode) {
   if (!existsSync(file)) return false;
-  let html = readFileSync(file, "utf8");
-  const had = BLOCK_RE.test(html);
-  html = html.replace(BLOCK_RE, ""); // always strip first (idempotent refresh)
-  let changed = had;
+  const orig = readFileSync(file, "utf8");
+  const present = orig.includes(BEGIN);
 
-  if (mode !== "revert") {
-    const at = html.toLowerCase().lastIndexOf("</head>");
-    if (at === -1) return false;
-    html = html.slice(0, at) + block(inner) + "\n  " + html.slice(at);
-    changed = true;
+  if (mode === "revert") {
+    if (!present) return false;
+    // Fresh regex each call so the /g lastIndex can never leak between files.
+    writeFileSync(file, orig.replace(new RegExp(BLOCK_RE.source, "gi"), ""), "utf8");
+    return true;
   }
-  if (changed) writeFileSync(file, html, "utf8");
-  return changed;
+
+  // Inject is IDEMPOTENT: if a stamp is already present, leave it untouched (no
+  // git churn on re-runs). To refresh stale comment text, run `--revert` first.
+  if (present) return false;
+  const at = orig.toLowerCase().lastIndexOf("</head>");
+  if (at === -1) return false;
+  writeFileSync(file, orig.slice(0, at) + block(inner) + "\n  " + orig.slice(at), "utf8");
+  return true;
 }
 
 function checkFile(file) {
@@ -78,7 +82,7 @@ function checkFile(file) {
   return b === e && b <= 1;
 }
 
-function targets() {
+export function targets() {
   const list = [];
   // Lessons: every dir with a config.json + index.html.
   for (const id of readdirSync(LESSONS_DIR).sort()) {
@@ -144,4 +148,8 @@ function main() {
   );
 }
 
-main();
+// Only run the CLI when executed directly — not when imported (e.g. by
+// tools/validate-uifr.mjs, which reuses targets() to assert stamp coverage).
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main();
+}

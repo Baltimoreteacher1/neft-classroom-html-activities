@@ -12,6 +12,7 @@ import { readdirSync, readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { computeTeachL4Evidence } from "../engine/core/uifr.js";
+import { targets } from "./inject-uifr.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const lessonsDir = join(root, "lessons");
@@ -42,6 +43,36 @@ if (failures.length) {
   process.exit(1);
 }
 
+// ── Stamp-coverage gate ──────────────────────────────────────────────────────
+// Assert every page the injector targets actually carries a balanced raw-source
+// uifr stamp. This is the guard that would have caught the missed-commit where
+// 82 non-index.html activities were stamped locally but never committed: reuse
+// the injector's OWN target list (single source of truth), so the two can't drift.
+const stampMisses = [];
+let stampTotal = 0;
+for (const t of targets()) {
+  stampTotal += 1;
+  let html;
+  try {
+    html = readFileSync(t.file, "utf8");
+  } catch {
+    stampMisses.push(`${t.label}: unreadable`);
+    continue;
+  }
+  const b = html.split("uifr-injected:begin").length - 1;
+  const e = html.split("uifr-injected:end").length - 1;
+  if (b !== 1 || e !== 1) stampMisses.push(`${t.label}: expected 1 balanced stamp, found begin=${b} end=${e}`);
+}
+
+if (stampMisses.length) {
+  console.error(
+    "validate-uifr: FAIL — pages missing / with an unbalanced raw-source UIFR stamp (run: npm run inject:uifr, then commit ALL changed files):",
+  );
+  for (const m of stampMisses) console.error(`  ${m}`);
+  process.exit(1);
+}
+
 console.log(
-  `validate-uifr: PASS — all ${total} lessons create the conditions for TEACH Level 4 on every direct indicator (T1–T5).`,
+  `validate-uifr: PASS — all ${total} lessons meet TEACH Level 4 on every direct indicator (T1–T5); ` +
+    `all ${stampTotal} injector targets carry a balanced raw-source stamp.`,
 );
