@@ -1294,6 +1294,49 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     }, 0);
   }
 
+  // Floating "Next" button (bottom-right) so students always have a clear way to
+  // continue to the next part of the lesson. It mirrors clicking the next phase
+  // in the sidebar rail, but as a prominent, always-reachable control. Sits above
+  // the Save/Resume launcher; hidden on the final phase and while a full-page
+  // pre-lesson tab (Vocab / Learn It / Notes) is open.
+  (function mountNextButton() {
+    const nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.className = "nt-next-phase-btn";
+    nextBtn.setAttribute("aria-label", "Go to the next part of the lesson");
+    nextBtn.style.cssText =
+      "position:fixed; right:16px; bottom:84px; z-index:9997; display:inline-flex; " +
+      "align-items:center; gap:8px; min-height:48px; padding:0 22px; border:0; " +
+      "border-radius:99px; background:#12355b; color:#fff; font-weight:800; " +
+      "font-size:1rem; cursor:pointer; box-shadow:0 4px 14px rgba(12,27,42,.28);";
+    document.body.appendChild(nextBtn);
+
+    function refresh() {
+      const st = state.get();
+      const cur = st.currentPhase ?? 0;
+      const total = config.phases.length;
+      const onExtra = document.documentElement.classList.contains("nt-extra-fullpage-open");
+      const nextName = phaseConfigs[cur + 1]?.name || "Next";
+      nextBtn.innerHTML = `Next: ${nextName} <span aria-hidden="true">→</span>`;
+      nextBtn.hidden = cur >= total - 1 || onExtra;
+    }
+    nextBtn.addEventListener("click", () => {
+      const cur = state.get().currentPhase ?? 0;
+      if (cur < config.phases.length - 1) {
+        app.navigateTo(cur + 1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    });
+    state.subscribe(refresh);
+    // A full-page extra toggles a documentElement class outside the state store,
+    // so watch that too.
+    new MutationObserver(refresh).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    refresh();
+  })();
+
   return app;
 }
 

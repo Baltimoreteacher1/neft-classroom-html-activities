@@ -844,6 +844,43 @@
     toolsInner.appendChild(rateBtn);
 
     studentTools.appendChild(toolsInner);
+
+    // Collapse / reopen so the tools bar can be turned off when it's in the way.
+    // Collapsed state persists per device. Both controls live inside the dock, so
+    // the reopen pill only appears while the dock itself is active.
+    const DOCK_COLLAPSE_KEY = "nt-supports-dock-collapsed";
+    const collapseBtn = document.createElement("button");
+    collapseBtn.type = "button";
+    collapseBtn.className = "ewl-supports-dock-collapse";
+    collapseBtn.setAttribute("aria-label", "Hide the learning tools bar");
+    collapseBtn.title = "Hide tools bar";
+    collapseBtn.textContent = "✕";
+    studentTools.appendChild(collapseBtn);
+
+    const reopenBtn = document.createElement("button");
+    reopenBtn.type = "button";
+    reopenBtn.className = "ewl-supports-dock-reopen";
+    reopenBtn.setAttribute("aria-label", "Show the learning tools bar");
+    reopenBtn.textContent = "🧰 Tools";
+    studentTools.appendChild(reopenBtn);
+
+    function setDockCollapsed(collapsed) {
+      studentTools.classList.toggle("is-collapsed", collapsed);
+      try {
+        localStorage.setItem(DOCK_COLLAPSE_KEY, collapsed ? "1" : "0");
+      } catch (e) {
+        /* private mode — non-fatal */
+      }
+    }
+    collapseBtn.addEventListener("click", () => setDockCollapsed(true));
+    reopenBtn.addEventListener("click", () => setDockCollapsed(false));
+    try {
+      if (localStorage.getItem(DOCK_COLLAPSE_KEY) === "1")
+        studentTools.classList.add("is-collapsed");
+    } catch (e) {
+      /* ignore */
+    }
+
     rootEl.appendChild(studentTools);
 
     // 4. Slide-out Content Panel

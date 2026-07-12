@@ -289,6 +289,56 @@
   max-width: 100%;
 }
 
+/* Collapse (hide) button — small circle riding just right of the tools pill. */
+.ewl-supports-dock-collapse {
+  pointer-events: auto;
+  align-self: center;
+  margin-left: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--ewl-color-border);
+  background: var(--ewl-color-bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--ewl-color-text);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--ewl-shadow);
+}
+.ewl-supports-dock-collapse:hover {
+  background: var(--ewl-color-border);
+}
+
+/* Reopen pill — shown only when the dock is collapsed. */
+.ewl-supports-dock-reopen {
+  pointer-events: auto;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 18px;
+  border-radius: 99px;
+  border: 1px solid var(--ewl-color-border);
+  background: var(--ewl-color-bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--ewl-color-text);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: var(--ewl-shadow);
+}
+
+.ewl-supports-tools-dock.is-collapsed .ewl-supports-tools-inner,
+.ewl-supports-tools-dock.is-collapsed .ewl-supports-dock-collapse {
+  display: none;
+}
+.ewl-supports-tools-dock.is-collapsed .ewl-supports-dock-reopen {
+  display: inline-flex;
+}
+
 .ewl-supports-tool-btn {
   min-height: 44px;
   min-width: 44px;
