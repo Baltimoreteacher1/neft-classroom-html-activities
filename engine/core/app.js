@@ -1,6 +1,7 @@
 import { createState, normalizeStudentId, findSavedStudents } from "./state.js";
 import { createEngagement } from "../engagement/engagement.js";
 import { mountExportToolbar } from "./export.js";
+import { mountVoiceNav } from "./voice-nav.js";
 import { reportScore } from "./score-reporter.js";
 import { completeLesson } from "./grade-emit.js";
 import { runComponentList } from "../components/activity-chooser.js";
@@ -1336,6 +1337,18 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     });
     refresh();
   })();
+
+  // Hands-free voice control (only appears where the browser supports it).
+  mountVoiceNav({
+    getCurrentPhase: () => state.get().currentPhase ?? 0,
+    phaseCount: config.phases.length,
+    phaseNames: phaseConfigs.map((p) => p?.name || ""),
+    navigateTo: (i) => {
+      app.navigateTo(i);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    getPhaseEl: () => phaseContainer.querySelector(".phase"),
+  });
 
   return app;
 }
