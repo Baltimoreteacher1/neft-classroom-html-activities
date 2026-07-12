@@ -47,6 +47,9 @@ function inject(rel) {
     console.warn(`  ! missing: ${rel}`);
     return false;
   }
+  // Self-scoping: only inject pages that actually ship a build3d.json sibling,
+  // so the 3D loader is never added to project pages that don't use it.
+  if (!fs.existsSync(path.join(path.dirname(file), "build3d.json"))) return false;
   const before = fs.readFileSync(file, "utf8");
   if (before.includes("projects-3d.css")) return false; // already injected
   let after = spliceBefore(before, "</head>", HEAD);

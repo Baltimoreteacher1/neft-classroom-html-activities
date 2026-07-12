@@ -39,7 +39,7 @@
 
   /* Whitelist — only these builders may mount. Builder files register into the
      same registry; a kind not listed here is ignored even if a file registers. */
-  var KINDS = { "net-box": 1 };
+  var KINDS = { "net-box": 1, "data-bars": 1, "floor-plan": 1, "coord-map": 1 };
 
   var COPY = {
     badge: { en: "Build it in 3D — no grade", es: "Constrúyelo en 3D — sin nota" },
