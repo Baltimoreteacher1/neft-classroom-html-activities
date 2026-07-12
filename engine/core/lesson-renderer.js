@@ -43,8 +43,13 @@ import { renderMathText } from "./math-typography.js";
 import { t, stackHtml, phaseName, badgeName } from "./i18n.js";
 import { mountCertificateDownload } from "./certificate-export.js";
 import resolveVocabImage, { vocabImageAlt } from "./vocab-images.js";
+import { stampTeachL4Meta } from "./uifr.js";
 
 export function bootLesson(config) {
+  // Hidden, student-invisible BCPS UIFR (TEACH · Level 4) evidence stamp in
+  // <head> — never rendered on screen; discoverable via View Source / DevTools
+  // and mirrored in the Teacher Mode panel + reports/uifr-teach-l4-coverage.*.
+  stampTeachL4Meta(config);
   createApp({
     ...config,
     // Vocabulary lives only in the Vocab tab now (the Vocab Explorer), so it is

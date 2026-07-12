@@ -1,5 +1,6 @@
 import { PHASE_TIME_ESTIMATES, countPracticeProblems } from "./content-enrichment.js";
 import { t, stackHtml, phaseName } from "./i18n.js";
+import { teachEvidencePanelHtml } from "./uifr.js";
 // Objective vocab popups + highlight, shared with the student-facing Launch
 // header / Objectives page so teacher-mode objectives read identically.
 // Runtime-only use, so the teacher-mode ↔ lesson-renderer import cycle is safe.
@@ -208,6 +209,7 @@ export function mountTeacherPanel(root, config, state) {
         <p class="teacher-obj">${linkifyObjectiveTerms(resolveLanguageObjective(config), config.vocabulary || [])}</p>
       </div>
       <div class="teacher-panel-section" data-bind="listen-fors"></div>
+      <div class="teacher-panel-section teacher-uifr" data-bind="uifr"></div>
       <div class="teacher-panel-section" data-bind="answer-key"></div>
       <div class="teacher-panel-section">
         <h4>${stackHtml(t("differentiationTips", "en"), t("differentiationTips", "es"))}</h4>
@@ -314,6 +316,12 @@ export function mountTeacherPanel(root, config, state) {
   } else {
     listenSlot.remove();
   }
+
+  // Teaching Evidence — BCPS UIFR (TEACH · Level 4). Teacher-only surface; the
+  // same evidence is stamped invisibly in <head> and recorded in the coverage
+  // report. Students never see this (the whole panel is teacher-gated).
+  const uifrSlot = panel.querySelector('[data-bind="uifr"]');
+  if (uifrSlot) uifrSlot.innerHTML = teachEvidencePanelHtml(config, esc);
 
   // Answer key summary from practice items
   const keySlot = panel.querySelector('[data-bind="answer-key"]');
