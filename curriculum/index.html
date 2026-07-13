@@ -2024,6 +2024,22 @@
               cursor: pointer;
               accent-color: var(--teal);
             }
+            /* In-person accommodations (extended time, seating, grading…):
+               real IEP items with no digital switch — tagged so it's clear
+               they ship in the copyable list, not the lesson link. */
+            .ewl-linkgen-item-tag {
+              display: inline-block;
+              font-size: 10.5px;
+              font-weight: 700;
+              letter-spacing: 0.02em;
+              color: var(--muted);
+              background: var(--wash, rgba(44, 125, 107, 0.08));
+              border: 1px solid var(--line);
+              border-radius: 999px;
+              padding: 1px 7px;
+              margin-left: 4px;
+              white-space: nowrap;
+            }
             .ewl-linkgen-opt-name {
               font-weight: 700;
               font-size: 13.5px;
@@ -2179,16 +2195,19 @@
                   <span>
                     <span class="ewl-linkgen-summary-title">Prepare Learning Supports (IEP)</span>
                     <span class="ewl-linkgen-summary-sub"
-                      >Select accommodations by category, copy the link, and send it to the
-                      student.</span
+                      >Check the IEP accommodations and modifications the student needs, then copy
+                      the link or the list.</span
                     >
                   </span>
                 </summary>
                 <div class="ewl-linkgen-body">
                   <p class="ewl-linkgen-how">
-                    Check every accommodation the student needs. They open the link
-                    <strong>once</strong> — the supports then follow them into
-                    <strong>every</strong> lesson on that device. No names or IEP data are stored.
+                    Check every accommodation and modification from the student's IEP. Digital ones
+                    build the link — the student opens it <strong>once</strong> and the supports
+                    follow them into <strong>every</strong> lesson on that device. Items tagged
+                    <strong>🤝 in-person</strong> are teacher-provided; use
+                    <strong>📋 Copy list</strong> to paste the full set into a plan or sub note. No
+                    names or IEP data are stored.
                   </p>
                   <div
                     class="ewl-linkgen-options"
@@ -2217,6 +2236,9 @@
                     <button type="button" class="ewl-linkgen-scorm" id="ewl-linkgen-scorm" disabled>
                       🎓 Download SCORM
                     </button>
+                    <button type="button" class="ewl-linkgen-scorm" id="ewl-linkgen-list" disabled>
+                      📋 Copy list
+                    </button>
                   </div>
                   <p class="ewl-linkgen-preview" id="ewl-linkgen-preview" hidden>
                     <span class="ewl-linkgen-preview-label">Link:</span>
@@ -2240,115 +2262,112 @@
               const empty = document.getElementById("ewl-linkgen-empty");
               if (!optionsRoot || !select || !copyBtn) return;
 
-              // IEP accommodation categories. Each selectable box maps to one
-              // real support profile applied by the lesson engine
-              // (assets/learning-supports/learning-supports.js). The chips list
-              // every accommodation that box turns on, so "everything an IEP can
-              // contain" is grouped by category yet stays wired to what the
-              // engine actually delivers — no decorative toggles.
-              const CATEGORIES = [
+              // IEP accommodations & modifications, worded the way they appear
+              // in an IEP, grouped by the standard IEP categories. Each checkbox
+              // is one accommodation. Digital ones carry `keys` — the engine
+              // profile/tool keys (assets/learning-supports/learning-supports.js)
+              // that deliver them in the lesson. In-person ones (extended time,
+              // seating, grading…) carry `inPerson: true`: they can't be switched
+              // on digitally, so they go into the copyable accommodations list
+              // instead of the link.
+              const IEP_GROUPS = [
                 {
-                  key: "read-understand",
-                  name: "📖 Presentation & Access",
+                  name: "📖 Presentation",
                   note: "How content is presented",
-                  chips: [
-                    "Text-to-speech read-aloud",
-                    "Vocabulary previews",
-                    "Worked examples",
-                    "Enlarged text",
-                    "Color overlay / tint",
-                    "High contrast",
+                  items: [
+                    { label: "Text read aloud (text-to-speech)", keys: ["read-understand"] },
+                    { label: "Enlarged print / high contrast", keys: ["read-understand"] },
+                    { label: "Key vocabulary previewed and defined", keys: ["read-understand"] },
+                    { label: "Worked example modeled first", keys: ["read-understand"] },
+                    { label: "One problem at a time (chunked)", keys: ["focus-organize"] },
+                    { label: "Reading guide / tracking ruler", keys: ["focus-organize"] },
+                    { label: "Directions repeated and rephrased", inPerson: true },
                   ],
                 },
                 {
-                  key: "focus-organize",
-                  name: "🎯 Focus & Self-Regulation",
-                  note: "Attention, setting & behavior",
-                  chips: [
-                    "Focus / distraction-reduced mode",
-                    "Reading ruler guide",
-                    "Comfort line spacing",
-                    "Step-by-step task checklist",
-                    "Calm-down break timer",
-                  ],
-                },
-                {
-                  key: "build-math",
-                  name: "🧱 Math Tools & Foundations",
-                  note: "Manipulatives & scaffolds — check the whole set or pick individual tools",
-                  tools: [
-                    { key: "model", label: "Prerequisite readiness review" },
-                    { key: "multchart", label: "Multiplication chart" },
-                    { key: "numberline", label: "Number line" },
-                    { key: "placevalue", label: "Place-value chart" },
-                    { key: "calculator", label: "On-screen calculator" },
-                  ],
-                },
-                {
-                  key: "express-thinking",
-                  name: "🗣️ Response & Expression",
+                  name: "✍️ Response",
                   note: "How the student answers",
-                  chips: [
-                    "Sentence frames",
-                    "Response stems",
-                    "Word banks",
-                    "Speech-to-text dictation",
+                  items: [
+                    { label: "Use of calculator", keys: ["calculator"] },
+                    { label: "Multiplication chart", keys: ["multchart"] },
+                    { label: "Number line", keys: ["numberline"] },
+                    { label: "Place-value chart", keys: ["placevalue"] },
+                    { label: "Visual models / manipulatives", keys: ["build-math"] },
+                    { label: "Speech-to-text dictation (scribe)", keys: ["express-thinking"] },
+                    { label: "Sentence frames and word banks", keys: ["express-thinking"] },
                   ],
                 },
                 {
-                  key: "language-support",
-                  name: "🌎 Language / ESOL",
+                  name: "⏱️ Timing & Scheduling",
+                  note: "When and how long",
+                  items: [
+                    { label: "Extended time (1.5× / 2×)", inPerson: true },
+                    { label: "Frequent breaks (calm-break timer)", keys: ["focus-organize"] },
+                    { label: "Task checklist to pace steps", keys: ["focus-organize"] },
+                  ],
+                },
+                {
+                  name: "🪑 Setting",
+                  note: "Where the student works",
+                  items: [
+                    { label: "Reduced distractions (focus mode)", keys: ["focus-organize"] },
+                    { label: "Preferential seating", inPerson: true },
+                    { label: "Small group / separate location", inPerson: true },
+                  ],
+                },
+                {
+                  name: "🌎 Language (ESOL / WIDA)",
                   note: "Multilingual learners",
-                  chips: [
-                    "Bilingual math terminology",
-                    "Translations",
-                    "Multilingual read-aloud",
-                    "Visual aids",
+                  items: [
+                    {
+                      label: "Translated directions / bilingual glossary",
+                      keys: ["language-support"],
+                    },
+                    { label: "Read-aloud in home language", keys: ["language-support"] },
                   ],
                 },
                 {
-                  key: "challenge-extend",
-                  name: "🚀 Enrichment & Extension",
-                  note: "Gifted / advanced goals",
-                  chips: ["Advanced concepts", "Error-analysis challenges", "Extension tasks"],
+                  name: "📝 Modifications",
+                  note: "Changes to what is required",
+                  items: [
+                    { label: "Reduced number of problems", inPerson: true },
+                    { label: "Prerequisite / readiness review first", keys: ["model"] },
+                    { label: "Alternate way to show mastery", inPerson: true },
+                    { label: "Modified grading", inPerson: true },
+                  ],
                 },
               ];
 
-              // Render each category. A category with `tools` becomes a group of
-              // individually-checkable boxes (each a real à-la-carte support key);
-              // a category with `chips` stays a single bundle box. Both carry the
-              // support key on `data-support` (profile OR tool).
-              optionsRoot.innerHTML = CATEGORIES.map((c) => {
-                if (c.tools) {
-                  return `
+              // Render every group as individually-checkable accommodations.
+              // Digital items carry data-keys (comma-joined engine keys);
+              // in-person items carry data-inperson and a 🤝 tag.
+              optionsRoot.innerHTML = IEP_GROUPS.map(
+                (g) => `
                   <div class="ewl-linkgen-group">
                     <p class="ewl-linkgen-group-head">
-                      <span class="ewl-linkgen-opt-name">${c.name}</span>
-                      <span class="ewl-linkgen-opt-note">${c.note}</span>
+                      <span class="ewl-linkgen-opt-name">${g.name}</span>
+                      <span class="ewl-linkgen-opt-note">${g.note}</span>
                     </p>
                     <div class="ewl-linkgen-group-items">
-                      ${c.tools
+                      ${g.items
                         .map(
-                          (t) => `
+                          (it) => `
                         <label class="ewl-linkgen-item">
-                          <input type="checkbox" data-support="${t.key}" />
-                          <span class="ewl-linkgen-item-label">${t.label}</span>
+                          <input type="checkbox"
+                            data-label="${it.label.replace(/"/g, "&quot;")}"
+                            ${it.keys ? `data-keys="${it.keys.join(",")}"` : ""}
+                            ${it.inPerson ? 'data-inperson="1"' : ""} />
+                          <span class="ewl-linkgen-item-label">${it.label}${
+                            it.inPerson
+                              ? ' <span class="ewl-linkgen-item-tag">🤝 in-person</span>'
+                              : ""
+                          }</span>
                         </label>`,
                         )
                         .join("")}
                     </div>
-                  </div>`;
-                }
-                return `
-                  <label class="ewl-linkgen-opt">
-                    <input type="checkbox" data-support="${c.key}" />
-                    <span class="ewl-linkgen-opt-name">${c.name}</span>
-                    <span class="ewl-linkgen-opt-note">${c.note}</span>
-                    <span class="ewl-linkgen-opt-chips">${c.chips
-                      .map((chip) => `<span class="ewl-linkgen-chip">${chip}</span>`)
-                      .join("")}</span>
-                  </label>`;
-              }).join("");
+                  </div>`,
+              ).join("");
 
               // Populate the "start on" lesson menu from the per-unit counts.
               const lessonsCount = { 1: 7, 2: 5, 3: 7, 4: 7, 5: 5, 6: 7, 7: 7, 8: 7, 9: 7, 10: 5 };
@@ -2362,26 +2381,35 @@
                 }
               }
 
-              const selectedProfiles = () =>
-                Array.from(optionsRoot.querySelectorAll("input:checked")).map((cb) =>
-                  cb.getAttribute("data-support"),
-                );
+              // Checked accommodations, split into the engine keys that go in
+              // the link and the in-person items that go in the copyable list.
+              const selectedItems = () =>
+                Array.from(optionsRoot.querySelectorAll("input:checked")).map((cb) => ({
+                  label: cb.getAttribute("data-label") || "",
+                  keys: (cb.getAttribute("data-keys") || "").split(",").filter(Boolean),
+                  inPerson: cb.getAttribute("data-inperson") === "1",
+                }));
+              const selectedProfiles = () => [...new Set(selectedItems().flatMap((it) => it.keys))];
 
               const buildUrl = (profiles) =>
                 `${window.location.origin}/lessons/${select.value}/#supports=${[...new Set(profiles)].join(",")}`;
 
-              // Keep the button, empty hint, and live preview in sync with the
-              // current selection. Copy is disabled until a support is checked so
-              // teachers never hand out a link that turns nothing on.
+              // Keep the buttons, empty hint, and live preview in sync with the
+              // current selection. Copy link / SCORM are disabled until a
+              // DIGITAL accommodation is checked so teachers never hand out a
+              // link that turns nothing on; Copy list works for any selection.
               const scormBtn = document.getElementById("ewl-linkgen-scorm");
+              const listBtn = document.getElementById("ewl-linkgen-list");
               const refresh = () => {
+                const items = selectedItems();
                 const profiles = selectedProfiles();
-                const has = profiles.length > 0;
-                copyBtn.disabled = !has;
-                if (scormBtn) scormBtn.disabled = !has;
-                empty.hidden = has;
-                preview.hidden = !has;
-                if (has) previewUrl.textContent = buildUrl(profiles);
+                const hasDigital = profiles.length > 0;
+                copyBtn.disabled = !hasDigital;
+                if (scormBtn) scormBtn.disabled = !hasDigital;
+                if (listBtn) listBtn.disabled = items.length === 0;
+                empty.hidden = items.length > 0;
+                preview.hidden = !hasDigital;
+                if (hasDigital) previewUrl.textContent = buildUrl(profiles);
               };
 
               optionsRoot.addEventListener("change", refresh);
@@ -2438,6 +2466,35 @@
                 setTimeout(() => {
                   scormBtn.textContent = orig;
                 }, 2500);
+              });
+
+              // Copy the checked accommodations as a plain-text IEP-style list
+              // (digital + in-person) for sub plans, emails, or documentation.
+              listBtn?.addEventListener("click", () => {
+                const items = selectedItems();
+                if (!items.length) return;
+                const digital = items.filter((it) => !it.inPerson).map((it) => it.label);
+                const inPerson = items.filter((it) => it.inPerson).map((it) => it.label);
+                const lines = [`IEP accommodations — Lesson ${select.value}`];
+                if (digital.length) {
+                  lines.push("In the lesson link:", ...digital.map((l) => `• ${l}`));
+                }
+                if (inPerson.length) {
+                  lines.push("Teacher-provided (in person):", ...inPerson.map((l) => `• ${l}`));
+                }
+                if (digital.length) {
+                  lines.push(`Link: ${buildUrl(selectedProfiles())}`);
+                }
+                navigator.clipboard
+                  .writeText(lines.join("\n"))
+                  .then(() => {
+                    const orig = listBtn.textContent;
+                    listBtn.textContent = "✓ Copied!";
+                    setTimeout(() => {
+                      listBtn.textContent = orig;
+                    }, 1500);
+                  })
+                  .catch((err) => console.error("Clipboard copy failed:", err));
               });
             });
           </script>
