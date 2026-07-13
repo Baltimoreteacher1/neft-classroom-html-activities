@@ -401,4 +401,8 @@
       document.querySelectorAll('.pki-manip[data-manip="cube-builder"]').forEach(init);
     }, 900);
   });
+  if (typeof window !== "undefined") {
+    window.NeftManips = window.NeftManips || {};
+    window.NeftManips["cube-builder"] = init;
+  }
 })();

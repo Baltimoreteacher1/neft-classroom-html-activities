@@ -89,6 +89,22 @@ const REGISTRY = {
     window.NeftLineGrapher?.init?.(el);
     return null; // stateless widget; listeners are node-local and GC on detach
   },
+  // Animated area-transformation explorer (shear / rotate-copy / decompose)
+  // that derives the Unit 5 area formulas visually.
+  "area-morph": async (host, cfg) => {
+    const { renderAreaMorph } = await import("../components/area-morph.js");
+    return renderAreaMorph(host, cfg);
+  },
+  // 3D data towers: mean as "level the towers", MAD as distance from the line.
+  "stat-towers": async (host, cfg) => {
+    const { renderStatTowers } = await import("../components/stat-towers.js");
+    return renderStatTowers(host, {
+      values: cfg.values,
+      unit: cfg.unit,
+      label: cfg.label,
+      mode: cfg.mode,
+    });
+  },
   "dist-explorer": async (host, cfg) => {
     const { renderDistExplorer } = await import("../components/dist-explorer.js");
     return renderDistExplorer(host, { max: cfg.max, unit: cfg.unit, label: cfg.label });

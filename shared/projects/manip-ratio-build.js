@@ -226,4 +226,8 @@
       document.querySelectorAll('.pki-manip[data-manip="ratio-build"]').forEach(init);
     }, 900);
   });
+  if (typeof window !== "undefined") {
+    window.NeftManips = window.NeftManips || {};
+    window.NeftManips["ratio-build"] = init;
+  }
 })();

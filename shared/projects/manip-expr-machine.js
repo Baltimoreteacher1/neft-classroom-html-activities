@@ -238,4 +238,8 @@
       document.querySelectorAll('.pki-manip[data-manip="expr-machine"]').forEach(init);
     }, 900);
   });
+  if (typeof window !== "undefined") {
+    window.NeftManips = window.NeftManips || {};
+    window.NeftManips["expr-machine"] = init;
+  }
 })();

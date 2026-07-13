@@ -440,4 +440,8 @@
     scan();
     setTimeout(scan, 900);
   });
+  if (typeof window !== "undefined") {
+    window.NeftManips = window.NeftManips || {};
+    window.NeftManips["percent-bar"] = init;
+  }
 })();

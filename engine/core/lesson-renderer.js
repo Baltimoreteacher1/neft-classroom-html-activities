@@ -602,6 +602,24 @@ function buildVisual(v) {
         fallback: `Interactive grapher for ${yN} versus ${xN}. Turn on JavaScript to drag the line and read values.`,
       });
     }
+    case "area-morph": {
+      // Animated area-transformation explorer: drag the slider to shear,
+      // rotate-copy, or decompose the figure into one whose area is known.
+      const figName = String(v.figure || "parallelogram").replace(/-/g, " ");
+      return interactiveVisualHost(v, {
+        ariaLabel: `Interactive area transformation for a ${figName}. Drag the Transform slider to rearrange it into a shape whose area formula you know.`,
+        fallback: `Area transformation explorer for a ${figName}. Turn on JavaScript to animate the figure into a known shape.`,
+      });
+    }
+    case "stat-towers": {
+      // 3D data towers: tap to change values; "Level them" animates the mean.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Interactive 3D data towers. Tap a tower to change its value, then level the towers to see the mean as the fair-share height.",
+        fallback:
+          "Interactive 3D data towers. Turn on JavaScript to build data and level the towers to find the mean.",
+      });
+    }
     case "dist-explorer": {
       return interactiveVisualHost(v, {
         ariaLabel:
