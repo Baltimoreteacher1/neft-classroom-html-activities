@@ -755,6 +755,25 @@
                 ),
               );
             }
+            // One-click print — same affordance as the hub outline.
+            if (isPrintableActivity(act.text, act.href)) {
+              var printBtn = document.createElement("button");
+              printBtn.type = "button";
+              printBtn.className = "lesson-print-activity";
+              printBtn.textContent = "🖨";
+              printBtn.title = "Print “" + act.text + "”";
+              printBtn.setAttribute("aria-label", "Print: " + act.text);
+              printBtn.addEventListener(
+                "click",
+                (function (href) {
+                  return function (e) {
+                    e.preventDefault();
+                    printActivity(href);
+                  };
+                })(act.href),
+              );
+              li.appendChild(printBtn);
+            }
             outlineList.appendChild(li);
           });
           item.appendChild(outlineList);
