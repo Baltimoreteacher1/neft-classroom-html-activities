@@ -773,6 +773,27 @@
                 })(act.href),
               );
               li.appendChild(printBtn);
+            } else {
+              // Interactive-lesson row → print the full lesson packet.
+              var packet = lessonPacketHref(act.href);
+              if (packet) {
+                var pktBtn = document.createElement("button");
+                pktBtn.type = "button";
+                pktBtn.className = "lesson-print-activity lesson-print-packet";
+                pktBtn.textContent = "🖨";
+                pktBtn.title = "Print full lesson packet";
+                pktBtn.setAttribute("aria-label", "Print full lesson packet");
+                pktBtn.addEventListener(
+                  "click",
+                  (function (url) {
+                    return function (e) {
+                      e.preventDefault();
+                      printActivity(url);
+                    };
+                  })(packet),
+                );
+                li.appendChild(pktBtn);
+              }
             }
             outlineList.appendChild(li);
           });
@@ -837,6 +858,18 @@
     );
   }
 
+  // Given an INTERACTIVE-LESSON link (/lessons/<id>/ or /lessons/<id>/index.html),
+  // return its full printable packet URL (/lessons/<id>/printable.html) — the
+  // paper version of the whole lesson. Returns "" for anything else, including
+  // deep-links into the lesson (e.g. /lessons/<id>/?extra=activity), the
+  // readiness page, and per-resource pages (notes.html, worksheet.html, …) which
+  // already carry their own print button via isPrintableActivity(). Single source
+  // of truth for the packet URL, reused by every row builder + curriculum-top1.js.
+  function lessonPacketHref(href) {
+    var m = String(href || "").match(/^(.*\/lessons\/[^/?#]+)\/?(?:index\.html)?$/);
+    return m ? m[1] + "/printable.html" : "";
+  }
+
   // Open a single activity/resource for printing. Same-origin printable pages
   // are auto-sent to the print dialog once loaded; anything else (cross-origin,
   // PDF viewer, popup-blocked) simply opens so the teacher can Cmd/Ctrl+P.
@@ -857,6 +890,15 @@
       /* window handle not scriptable — manual print */
     }
   }
+
+  // Expose the print helpers so OTHER hub layers (e.g. the top1 "Start here"
+  // command center in curriculum-top1.js) reuse this exact same classifier +
+  // print action instead of re-implementing it. Mirrors window.NeftScorm.
+  window.NeftPrint = {
+    canPrint: isPrintableActivity,
+    print: printActivity,
+    packetHref: lessonPacketHref,
+  };
 
   // Print a clean one-page sheet for the currently-selected lesson: objective,
   // standard, real-world hook, and the full grouped activity list. Built from a
@@ -1135,6 +1177,29 @@
             printActivity(href);
           });
           li.appendChild(printBtn);
+        } else {
+          // The interactive-lesson row itself is not a "paper" resource, so it
+          // never got a print affordance — but a full printable packet exists.
+          // Offer it here so the lesson can be printed straight from the hub.
+          var packet = lessonPacketHref(href);
+          if (packet) {
+            var pktBtn = document.createElement("button");
+            pktBtn.type = "button";
+            pktBtn.className = "lesson-print-activity lesson-print-packet";
+            pktBtn.textContent = "🖨";
+            pktBtn.title = "Print full lesson packet";
+            pktBtn.setAttribute("aria-label", "Print full lesson packet");
+            pktBtn.addEventListener(
+              "click",
+              (function (url) {
+                return function (e) {
+                  e.preventDefault();
+                  printActivity(url);
+                };
+              })(packet),
+            );
+            li.appendChild(pktBtn);
+          }
         }
       });
 

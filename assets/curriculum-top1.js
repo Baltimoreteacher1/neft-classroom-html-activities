@@ -326,6 +326,36 @@
         row.appendChild(badge(bd, kind));
       });
       if (info.time) row.appendChild(el("span", "top1-meta", esc(info.time)));
+      // 🖨 print — same affordance and classifier as the unit-card outline,
+      // reused via window.NeftPrint (exposed by curriculum-enhancements.js) so
+      // paper resources listed here can be printed without opening the lesson.
+      if (window.NeftPrint && window.NeftPrint.canPrint(a.text, a.href)) {
+        var printBtn = el("button", "top1-link-print", "🖨");
+        printBtn.type = "button";
+        printBtn.title = "Print “" + a.text + "”";
+        printBtn.setAttribute("aria-label", "Print: " + a.text);
+        printBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          window.NeftPrint.print(a.href);
+        });
+        row.appendChild(printBtn);
+      } else if (window.NeftPrint && window.NeftPrint.packetHref) {
+        // The interactive-lesson row itself is not a paper resource, so canPrint
+        // is false — but a full printable packet (printable.html) exists. Offer a
+        // 🖨 that prints the whole lesson straight from the hub.
+        var packet = window.NeftPrint.packetHref(a.href);
+        if (packet) {
+          var pktBtn = el("button", "top1-link-print", "🖨");
+          pktBtn.type = "button";
+          pktBtn.title = "Print full lesson packet";
+          pktBtn.setAttribute("aria-label", "Print full lesson packet");
+          pktBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            window.NeftPrint.print(packet);
+          });
+          row.appendChild(pktBtn);
+        }
+      }
       wrap.appendChild(row);
     });
     return wrap;
