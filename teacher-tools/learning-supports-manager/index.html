@@ -215,10 +215,6 @@
         color: var(--wida);
         margin-left: 6px;
       }
-      .tag.seed {
-        background: #fef9c3;
-        color: #854d0e;
-      }
       .empty {
         color: var(--faint);
         font-size: 14px;
@@ -250,7 +246,8 @@
         font: 600 13px system-ui;
       }
       .chip.dup {
-        opacity: 0.5;
+        background: #fef3c7;
+        border-color: #fcd34d;
       }
       /* Modal editor */
       .overlay {
@@ -429,7 +426,7 @@
         } catch (e) {
           key = "";
         }
-        // In-memory roster keyed by section|INITIALS -> {section, initials, widaLevel, iepItems, seed}
+        // In-memory roster keyed by section|INITIALS -> {section, initials, widaLevel, iepItems}
         var roster = {};
         var editing = null; // record currently open in the editor
 
@@ -485,6 +482,7 @@
           if (body) opts.body = JSON.stringify(body);
           return fetch(API + "/roster", opts).then(function (r) {
             if (r.status === 401) throw new Error("BADKEY");
+            if (r.status === 429) throw new Error("RATELIMIT");
             return r.json().then(
               function (j) {
                 if (r.status === 503 || (j && j.error === "not-configured"))
@@ -504,6 +502,8 @@
             $("keyState").textContent = "";
           } else if (e && e.message === "NOTCONFIGURED") {
             showNotice("Teacher key not set up on the server yet.", "warn");
+          } else if (e && e.message === "RATELIMIT") {
+            showNotice("Too many requests — wait a minute and reload.", "warn");
           } else {
             showNotice(
               "Could not reach the supports server. The roster below may be incomplete and changes will not save until the connection returns.",
@@ -513,19 +513,16 @@
         }
 
         // ---- load -----------------------------------------------------------
-        function ingest(list, seed) {
+        function ingest(list) {
           (list || []).forEach(function (r) {
             var ini = clampInitials(r.initials);
             var sec = String(r.section);
             if (!ini || S.sections.indexOf(sec) < 0) return;
-            var k = keyOf(sec, ini);
-            if (seed && roster[k]) return; // don't overwrite real records
-            roster[k] = {
+            roster[keyOf(sec, ini)] = {
               section: sec,
               initials: ini,
               widaLevel: Number(r.widaLevel) || 0,
               iepItems: Array.isArray(r.iepItems) ? r.iepItems.slice() : [],
-              seed: !!seed,
             };
           });
         }
@@ -539,36 +536,32 @@
           req("GET")
             .then(function (j) {
               roster = {};
-              ingest(j.roster, false);
+              ingest(j.roster);
               $("keyState").textContent = "Loaded ✓";
               try {
                 localStorage.setItem(LS_KEY, key);
               } catch (e) {}
-              // If empty, seed initials from the public sections endpoint.
-              if (!Object.keys(roster).length) return seedFromSections();
             })
             .catch(function (e) {
+              $("keyState").textContent = "";
               handleErr(e);
             })
             .then(function () {
               renderSections();
             });
         }
-        function seedFromSections() {
-          return fetch(API + "/sections")
-            .then(function (r) {
-              return r.json();
-            })
+        // Re-sync the local roster from the server (used after renames or when
+        // a partial mutation may have left the UI out of step with the store).
+        function refreshRoster() {
+          if (!key) return Promise.resolve();
+          return req("GET")
             .then(function (j) {
-              if (!j || !j.ok || !j.sections) return;
-              Object.keys(j.sections).forEach(function (sec) {
-                (j.sections[sec] || []).forEach(function (ini) {
-                  ingest([{ section: sec, initials: ini, widaLevel: 0, iepItems: [] }], true);
-                });
-              });
+              roster = {};
+              ingest(j.roster);
             })
-            .catch(function () {
-              /* seeding is best-effort */
+            .catch(handleErr)
+            .then(function () {
+              renderSections();
             });
         }
 
@@ -610,7 +603,7 @@
             if (!list.length) {
               var em = document.createElement("li");
               em.className = "empty";
-              em.textContent = "No students yet. Add one or import a class list.";
+              em.textContent = "No students yet — import or add below.";
               ul.appendChild(em);
             }
             list.forEach(function (r) {
@@ -633,12 +626,7 @@
             widaName(r.widaLevel) + " · " + cnt + " IEP support" + (cnt === 1 ? "" : "s");
           var who = document.createElement("button");
           who.className = "who";
-          who.innerHTML =
-            esc(r.initials) +
-            (r.seed ? ' <span class="tag seed">new</span>' : "") +
-            "<small>" +
-            esc(summary) +
-            "</small>";
+          who.innerHTML = esc(r.initials) + "<small>" + esc(summary) + "</small>";
           who.addEventListener("click", function () {
             openEditor(r);
           });
@@ -722,29 +710,39 @@
           row.appendChild(add);
           d.appendChild(row);
 
+          // Parse pasted lines into unique initials. Collisions (with the
+          // existing roster OR an earlier pasted line) are auto-suffixed with a
+          // numeral (JD -> JD2 -> JD3, max 6 chars) instead of being dropped.
           function parsed() {
-            var seen = {};
-            return ta.value
-              .split("\n")
-              .map(initialsFromLine)
-              .filter(function (x) {
-                if (!x || seen[x]) return false;
-                seen[x] = true;
-                return true;
-              });
+            var taken = {};
+            Object.keys(roster).forEach(function (k) {
+              if (roster[k].section === section) taken[roster[k].initials] = true;
+            });
+            var out = [];
+            ta.value.split("\n").forEach(function (line) {
+              var base = initialsFromLine(line);
+              if (!base) return;
+              var ini = base;
+              var n = 2;
+              while (taken[ini] && n < 100) {
+                var sfx = String(n);
+                ini = base.slice(0, 6 - sfx.length) + sfx;
+                n++;
+              }
+              if (taken[ini]) return; // give up past 99 duplicates
+              taken[ini] = true;
+              out.push({ initials: ini, base: base, suffixed: ini !== base });
+            });
+            return out;
           }
           function drawPreview() {
             preview.textContent = "";
             var items = parsed();
-            if (!items.length) {
-              preview.textContent = "";
-              return items;
-            }
-            items.forEach(function (ini) {
+            items.forEach(function (it) {
               var c = document.createElement("span");
-              var dup = !!roster[keyOf(section, ini)];
-              c.className = "chip" + (dup ? " dup" : "");
-              c.textContent = ini + (dup ? " (already added)" : "");
+              c.className = "chip" + (it.suffixed ? " dup" : "");
+              c.textContent =
+                it.initials + (it.suffixed ? " (duplicate of " + it.base + " — auto-renamed)" : "");
               preview.appendChild(c);
             });
             return items;
@@ -768,42 +766,67 @@
           return true;
         }
         function upsertLocal(rec) {
-          rec.seed = false;
           roster[keyOf(rec.section, rec.initials)] = rec;
         }
-        function saveEntries(entries) {
-          // optimistic local, then persist
-          entries.forEach(upsertLocal);
+        // Roster maintenance (add/import): POST bare {section, initials} only.
+        // The API's field-presence-aware upsert then preserves any existing
+        // widaLevel/iepItems for that (section, initials) — a maintenance post
+        // can never clobber an assignment. Resolves true on server success.
+        function saveRosterEntries(records) {
+          records.forEach(upsertLocal); // optimistic local (defaults for render)
           renderSections();
-          if (!requireKey()) return Promise.resolve();
+          if (!requireKey()) return Promise.resolve(false);
+          var entries = records.map(function (r) {
+            return { section: r.section, initials: r.initials };
+          });
           return req("POST", { entries: entries })
             .then(function () {
               clearNotice();
+              return true;
             })
-            .catch(handleErr);
+            .catch(function (e) {
+              handleErr(e);
+              return false;
+            });
         }
         function addStudent(section, raw) {
           var ini = clampInitials(raw);
           if (!ini) return;
-          if (roster[keyOf(section, ini)]) {
-            showNotice(ini + " is already in section " + section + ".", "warn");
+          var existing = roster[keyOf(section, ini)];
+          if (existing) {
+            showNotice(ini + " already exists — opened their assignment.", "warn");
+            openEditor(existing);
             return;
           }
-          saveEntries([{ section: section, initials: ini, widaLevel: 0, iepItems: [] }]);
+          saveRosterEntries([{ section: section, initials: ini, widaLevel: 0, iepItems: [] }]);
         }
         function importStudents(section, items) {
-          var fresh = items.filter(function (ini) {
-            return ini && !roster[keyOf(section, ini)];
-          });
-          if (!fresh.length) {
-            showNotice("Nothing new to add — all initials already exist.", "warn");
+          if (!items.length) {
+            showNotice("Nothing to add — paste names or initials first.", "warn");
             return;
           }
-          saveEntries(
-            fresh.map(function (ini) {
-              return { section: section, initials: ini, widaLevel: 0, iepItems: [] };
+          var renamed = items.filter(function (it) {
+            return it.suffixed;
+          });
+          saveRosterEntries(
+            items.map(function (it) {
+              return { section: section, initials: it.initials, widaLevel: 0, iepItems: [] };
             }),
-          );
+          ).then(function (ok) {
+            if (ok && renamed.length) {
+              showNotice(
+                renamed.length +
+                  " duplicate initial" +
+                  (renamed.length === 1 ? " was" : "s were") +
+                  " auto-renamed (e.g. " +
+                  renamed[0].base +
+                  " → " +
+                  renamed[0].initials +
+                  "). Delete any you don't need.",
+                "warn",
+              );
+            }
+          });
         }
         function renameStudent(r) {
           var next = clampInitials(window.prompt("New initials for " + r.initials, r.initials));
@@ -812,33 +835,55 @@
             showNotice(next + " already exists in section " + r.section + ".", "warn");
             return;
           }
+          if (!requireKey()) return;
+          // A rename must carry the assignment: POST the new initials WITH the
+          // student's current widaLevel/iepItems (intentional full write), and
+          // only delete the old row once the new one is confirmed saved.
           var moved = {
             section: r.section,
             initials: next,
-            widaLevel: r.widaLevel,
+            widaLevel: Number(r.widaLevel) || 0,
             iepItems: (r.iepItems || []).slice(),
           };
-          var wasSeed = r.seed;
+          var old = { section: r.section, initials: r.initials };
           delete roster[keyOf(r.section, r.initials)];
           upsertLocal(moved);
           renderSections();
-          if (!requireKey()) return;
-          // create the new key; drop the old one only if it was persisted
           req("POST", { entries: [moved] })
             .then(function () {
-              if (!wasSeed) return req("DELETE", { section: r.section, initials: r.initials });
+              return req("DELETE", old).then(
+                function () {
+                  clearNotice();
+                  return refreshRoster();
+                },
+                function () {
+                  // New row saved but old row remains on the server: re-sync so
+                  // the UI shows the true state (both rows), then explain.
+                  return refreshRoster().then(function () {
+                    showNotice(
+                      "Renamed to " +
+                        next +
+                        ", but the old entry " +
+                        old.initials +
+                        " could not be removed. Both are shown — delete " +
+                        old.initials +
+                        " manually.",
+                      "err",
+                    );
+                  });
+                },
+              );
             })
-            .then(function () {
-              clearNotice();
-            })
-            .catch(handleErr);
+            .catch(function (e) {
+              // The new row never saved — re-sync so the UI reverts to reality.
+              handleErr(e);
+              refreshRoster();
+            });
         }
         function deleteStudent(r) {
           if (!window.confirm("Remove " + r.initials + " from section " + r.section + "?")) return;
-          var wasSeed = r.seed;
           delete roster[keyOf(r.section, r.initials)];
           renderSections();
-          if (wasSeed) return; // never persisted
           if (!requireKey()) return;
           req("DELETE", { section: r.section, initials: r.initials })
             .then(function () {

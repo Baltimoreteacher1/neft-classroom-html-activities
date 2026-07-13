@@ -382,6 +382,38 @@ function runValidation() {
   }
   console.log("PASS: Curriculum Hub learning supports explainer validated.");
 
+  // 8. v2 lockstep: every item key in supports-schema.js must be accepted by
+  // the API allow-list in functions/api/supports/[[path]].js. A schema key the
+  // API silently drops would let a teacher "assign" a support that never
+  // reaches students.
+  console.log("Checking supports-schema ⊆ API allow-list lockstep...");
+  const schemaSrc = readFileSync(
+    join(ROOT, "assets", "learning-supports", "supports-schema.js"),
+    "utf8",
+  );
+  const apiSrc = readFileSync(join(ROOT, "functions", "api", "supports", "[[path]].js"), "utf8");
+  const schemaKeys = [...schemaSrc.matchAll(/\{\s*key:\s*"([a-z0-9-]+)"/g)].map((m) => m[1]);
+  const allowMatch = apiSrc.match(/const ALLOW_LIST = \[([^\]]+)\]/);
+  const allowKeys = allowMatch
+    ? [...allowMatch[1].matchAll(/"([a-z0-9-]+)"/g)].map((m) => m[1])
+    : [];
+  if (!schemaKeys.length || !allowKeys.length) {
+    console.error(
+      `FAIL: could not parse schema keys (${schemaKeys.length}) or API ALLOW_LIST (${allowKeys.length}).`,
+    );
+    process.exit(1);
+  }
+  const missingKeys = schemaKeys.filter((k) => !allowKeys.includes(k));
+  if (missingKeys.length) {
+    console.error(
+      `FAIL: supports-schema.js keys missing from API ALLOW_LIST: ${missingKeys.join(", ")}`,
+    );
+    process.exit(1);
+  }
+  console.log(
+    `PASS: v2 lockstep — all ${schemaKeys.length} schema keys accepted by the API allow-list.`,
+  );
+
   console.log(`PASS: 64/64 canonical lessons covered, schema, route, and privacy checks passed.`);
   process.exit(0);
 }

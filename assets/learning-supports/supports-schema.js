@@ -63,6 +63,16 @@
       ],
     },
     {
+      id: "self-management",
+      label: "Self-Management",
+      icon: "🧭",
+      items: [
+        { key: "checklist", label: "Task checklist", apply: "interactive", tool: "checklist" },
+        { key: "break", label: "Calm break", apply: "interactive", tool: "break" },
+        { key: "checkin", label: "Feelings check-in", apply: "interactive", tool: "checkin" },
+      ],
+    },
+    {
       id: "language",
       label: "Language (ESOL / WIDA)",
       icon: "🌐",

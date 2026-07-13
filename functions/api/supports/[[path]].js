@@ -9,13 +9,22 @@
  *
  * Routes (catch-all under /api/supports):
  *   GET    /api/supports/health                       -> { ok, d1 }               PUBLIC
- *   GET    /api/supports/sections                     -> { ok, sections }         PUBLIC
- *   GET    /api/supports/for?section=&initials=       -> { ok, widaLevel, iepItems }  PUBLIC
+ *   GET    /api/supports/sections                     -> { ok, sections }         PUBLIC*
+ *   GET    /api/supports/for?section=&initials=       -> { ok, items }            PUBLIC*
  *   GET    /api/supports/roster[?section=]            -> { ok, roster }           TEACHER
  *   POST   /api/supports/roster { entries:[...] }      -> { ok, count }            TEACHER
  *   DELETE /api/supports/roster { section, initials }  -> { ok }                   TEACHER
  *
  * Storage: Cloudflare D1, bound as `env.DB`.
+ *
+ * PRIVACY (release-blocking invariant):
+ *   Public reads never expose WIDA proficiency levels or any IEP framing.
+ *   `/for` resolves the student's WIDA bundle SERVER-SIDE and returns only a
+ *   flat list of generic tool keys (e.g. "calculator", "vocab") — the same
+ *   vocabulary any UDL toolbar uses. The full (widaLevel, iepItems) record is
+ *   only readable through the TEACHER-gated /roster. Public reads are also
+ *   per-IP rate-limited (mirroring /api/progress/load) so the roster cannot be
+ *   bulk-enumerated.
  *
  * SAFETY / GRACEFUL DEGRADATION (mirrors functions/api/progress/[[path]].js):
  *   - No D1 binding on a PUBLIC read -> return the empty shape with ok:true so
@@ -23,13 +32,13 @@
  *   - TEACHER routes: no TEACHER_KEY env -> 503 not-configured; wrong/missing
  *     key -> 401 unauthorized; no D1 -> 503 backend-not-configured.
  *   - Bad input is sanitized and skipped, never a 500.
- *
- * No timestamps are minted server-side (the runtime may forbid Date): updated_at
- * stores whatever ISO string the client sends, else stays null.
  * ========================================================================== */
 
 const JSON_HEADERS = {
   "Content-Type": "application/json",
+  // Assignments must reach student devices promptly — never let a browser or
+  // intermediary cache a stale roster/assignment read.
+  "Cache-Control": "no-store",
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, x-teacher-key",
@@ -62,8 +71,80 @@ const ALLOW_LIST = [
   "translate",
   "fewer",
   "time",
+  "checklist",
+  "break",
+  "checkin",
 ];
 const ALLOW_SET = new Set(ALLOW_LIST);
+
+// WIDA level -> pre-checked tool bundle. MUST stay in lockstep with
+// assets/learning-supports/supports-schema.js widaLevels (enforced by
+// tools/validate-learning-supports.mjs). Resolved server-side so the public
+// /for response carries only generic tool keys, never the level itself.
+const WIDA_BUNDLES = {
+  1: ["translate", "vocab", "frames", "tts"],
+  2: ["frames", "vocab", "tts"],
+  3: ["frames", "vocab", "notepad"],
+  4: ["vocab", "frames"],
+  5: ["vocab"],
+  6: [],
+};
+
+function resolveItemsServer(widaLevel, iepItems) {
+  const seen = new Set(WIDA_BUNDLES[Number(widaLevel)] || []);
+  for (const k of iepItems || []) if (ALLOW_SET.has(k)) seen.add(k);
+  return [...seen];
+}
+
+// --- public-read rate limiting (mirrors /api/progress load_miss guard) ------
+// Students authenticate with nothing, so enumeration is throttled per IP:
+// lookups of NON-EXISTENT (section, initials) rows count as misses; every
+// /sections read counts lightly. Real classes (one NAT) stay far under caps.
+const GUARD_WINDOW_SEC = 300; // 5-minute window
+const GUARD_MAX_HITS = 60; // throttled events per IP per window before 429
+
+function clientIp(request) {
+  return request.headers.get("CF-Connecting-IP") || request.headers.get("x-forwarded-for") || "?";
+}
+function guardBucket() {
+  return Math.floor(Date.now() / 1000 / GUARD_WINDOW_SEC);
+}
+async function ensureGuardSchema(db) {
+  await db
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS supports_guard (
+        ip     TEXT NOT NULL,
+        bucket INTEGER NOT NULL,
+        hits   INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (ip, bucket)
+      )`,
+    )
+    .run();
+}
+async function guardCount(db, ip, bucket) {
+  const row = await db
+    .prepare("SELECT hits FROM supports_guard WHERE ip = ? AND bucket = ?")
+    .bind(ip, bucket)
+    .first();
+  return row ? Number(row.hits) || 0 : 0;
+}
+async function noteGuardHit(db, ip, bucket) {
+  await db
+    .prepare(
+      `INSERT INTO supports_guard (ip, bucket, hits) VALUES (?, ?, 1)
+         ON CONFLICT(ip, bucket) DO UPDATE SET hits = hits + 1`,
+    )
+    .bind(ip, bucket)
+    .run();
+  try {
+    await db
+      .prepare("DELETE FROM supports_guard WHERE bucket < ?")
+      .bind(bucket - 1)
+      .run();
+  } catch (e) {
+    /* prune is best-effort */
+  }
+}
 
 // --- sanitizers (never throw) ----------------------------------------------
 function cleanSection(v) {
@@ -98,9 +179,11 @@ function parseIepItems(s) {
     return [];
   }
 }
-// Accept an ISO string from the body if present, else null. Never mint one.
+// Accept an ISO string from the body if present, else mint one server-side so
+// every write carries an audit timestamp even from older clients.
 function cleanUpdatedAt(v) {
-  return typeof v === "string" && v ? v.slice(0, 30) : null;
+  if (typeof v === "string" && v) return v.slice(0, 30);
+  return new Date().toISOString();
 }
 
 async function ensureSchema(db) {
@@ -158,6 +241,14 @@ export async function onRequest(context) {
     if (!env.DB) return json({ ok: true, sections: {} });
     try {
       await ensureSchema(env.DB);
+      await ensureGuardSchema(env.DB);
+      // Every /sections read counts against the window (it enumerates initials).
+      const ip = clientIp(request);
+      const bucket = guardBucket();
+      if ((await guardCount(env.DB, ip, bucket)) >= GUARD_MAX_HITS) {
+        return json({ ok: false, error: "rate-limited" }, 429);
+      }
+      await noteGuardHit(env.DB, ip, bucket);
       const res = await env.DB.prepare(
         "SELECT section, initials FROM supports_roster ORDER BY section, initials",
       ).all();
@@ -175,24 +266,37 @@ export async function onRequest(context) {
   if (seg === "for" && method === "GET") {
     const section = cleanSection(url.searchParams.get("section"));
     const initials = cleanInitials(url.searchParams.get("initials"));
+    // PRIVACY: public response is a flat generic tool list only — the WIDA
+    // level and the IEP item split never leave the teacher-gated /roster.
+    // items:null = "backend can't answer" (client keeps current state);
+    // items:[]  = confirmed "nothing assigned" (client may clear).
     if (!env.DB || !section || !initials) {
-      return json({ ok: true, widaLevel: 0, iepItems: [] });
+      return json({ ok: true, items: null });
     }
     try {
       await ensureSchema(env.DB);
+      await ensureGuardSchema(env.DB);
+      const ip = clientIp(request);
+      const bucket = guardBucket();
+      if ((await guardCount(env.DB, ip, bucket)) >= GUARD_MAX_HITS) {
+        return json({ ok: false, error: "rate-limited" }, 429);
+      }
       const row = await env.DB.prepare(
         "SELECT wida_level, iep_items FROM supports_roster WHERE section = ? AND initials = ?",
       )
         .bind(section, initials)
         .first();
-      if (!row) return json({ ok: true, widaLevel: 0, iepItems: [] });
+      if (!row) {
+        // Unknown (section, initials) — count the miss to throttle enumeration.
+        await noteGuardHit(env.DB, ip, bucket);
+        return json({ ok: true, items: [] });
+      }
       return json({
         ok: true,
-        widaLevel: Number(row.wida_level) || 0,
-        iepItems: parseIepItems(row.iep_items),
+        items: resolveItemsServer(row.wida_level, parseIepItems(row.iep_items)),
       });
     } catch (e) {
-      return json({ ok: true, widaLevel: 0, iepItems: [] });
+      return json({ ok: true, items: null });
     }
   }
 
@@ -227,15 +331,22 @@ export async function onRequest(context) {
       }
 
       if (method === "POST") {
+        // Reject absurd payloads before parsing (CPU/memory guard).
+        const len = Number(request.headers.get("content-length") || 0);
+        if (len > 512 * 1024) return json({ ok: false, error: "payload-too-large" }, 413);
         const body = await request.json().catch(() => null);
         const entries = (body && Array.isArray(body.entries) && body.entries) || [];
+        // Field-presence-aware upsert: an entry that OMITS widaLevel/iepItems
+        // (roster maintenance — import, rename, add-initials) must NOT clobber
+        // an existing assignment back to defaults. Only fields explicitly sent
+        // overwrite; flags 6/7 mark presence.
         const stmt = env.DB.prepare(
           `INSERT INTO supports_roster (section, initials, wida_level, iep_items, updated_at)
-             VALUES (?, ?, ?, ?, ?)
+             VALUES (?1, ?2, ?3, ?4, ?5)
            ON CONFLICT(section, initials) DO UPDATE SET
-             wida_level = excluded.wida_level,
-             iep_items  = excluded.iep_items,
-             updated_at = excluded.updated_at`,
+             wida_level = CASE WHEN ?6 = 1 THEN excluded.wida_level ELSE supports_roster.wida_level END,
+             iep_items  = CASE WHEN ?7 = 1 THEN excluded.iep_items  ELSE supports_roster.iep_items  END,
+             updated_at = COALESCE(excluded.updated_at, supports_roster.updated_at)`,
         );
         const batch = [];
         for (const e of entries.slice(0, 2000)) {
@@ -243,6 +354,8 @@ export async function onRequest(context) {
           const section = cleanSection(e.section);
           const initials = cleanInitials(e.initials);
           if (!section || !initials) continue; // skip entries missing either key
+          const hasWida = e.widaLevel !== undefined && e.widaLevel !== null;
+          const hasIep = Array.isArray(e.iepItems);
           batch.push(
             stmt.bind(
               section,
@@ -250,6 +363,8 @@ export async function onRequest(context) {
               cleanWida(e.widaLevel),
               cleanIepItemsJson(e.iepItems),
               cleanUpdatedAt(e.updatedAt),
+              hasWida ? 1 : 0,
+              hasIep ? 1 : 0,
             ),
           );
         }

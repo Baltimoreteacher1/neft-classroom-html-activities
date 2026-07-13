@@ -293,13 +293,16 @@
 
     initialized = true;
 
-    // Parse configuration: check URL first, then LocalStorage
+    // Parse configuration: check URL first, then LocalStorage.
+    // parseSettings always returns an object (all-false when nothing matched),
+    // so pick whichever transport actually carries active keys — an inert
+    // #anchor must not shadow a ?supports= query (the transport SCORM uses).
     let settings = null;
-    if (window.location.hash) {
-      settings = parseSettings(window.location.hash);
-    }
-    if (!settings && window.location.search) {
-      settings = parseSettings(window.location.search);
+    {
+      const fromHash = window.location.hash ? parseSettings(window.location.hash) : null;
+      const fromSearch = window.location.search ? parseSettings(window.location.search) : null;
+      const active = (s) => s && Object.values(s).some(Boolean);
+      settings = active(fromHash) ? fromHash : active(fromSearch) ? fromSearch : null;
     }
 
     // A personalized link / SCORM package may also preset the language.
@@ -1088,6 +1091,9 @@
 
     if (hasAnyActive) {
       toolsDock.hidden = false;
+      // Same collision guard as applyAssignedItems: in teacher mode the
+      // "Prepare Supports" side tab owns right:0 — shift the dock inward.
+      toolsDock.style.right = isTeacherMode() ? "52px" : "";
       const wordsBtn = toolsDock.querySelector('[data-tool="words"]');
       const exampleBtn = toolsDock.querySelector('[data-tool="example"]');
       const modelBtn = toolsDock.querySelector('[data-tool="model"]');
@@ -2640,6 +2646,10 @@
     multchart: "build-math",
     placevalue: "build-math",
     frames: "express-thinking",
+    notepad: "express-thinking",
+    checklist: "focus-organize",
+    break: "focus-organize",
+    checkin: "focus-organize",
     translate: "language-support",
   };
 
@@ -2662,7 +2672,11 @@
 
   function v2TeacherKey() {
     try {
-      return localStorage.getItem(V2_TEACHER_KEY_LS) || "";
+      // Fall back to the gradebook's key slot so a teacher who already
+      // authenticated there doesn't have to paste the key twice.
+      return (
+        localStorage.getItem(V2_TEACHER_KEY_LS) || localStorage.getItem("neft.teacher.key") || ""
+      );
     } catch (_e) {
       return "";
     }
@@ -2714,7 +2728,10 @@
 
   // Apply a resolved item-key set: passive items take effect immediately;
   // interactive items become the ONLY buttons visible in the side dock.
-  function applyAssignedItems(keys) {
+  // No-ops when the taxonomy failed to load — never strip access on a fault.
+  function applyAssignedItems(keys, meLabel) {
+    const schema = window.EWLSupportsSchema;
+    if (!schema) return;
     const set = Object.create(null);
     (keys || []).forEach((k) => {
       set[k] = true;
@@ -2732,20 +2749,58 @@
     if (!dock) return;
     const btns = dock.querySelectorAll(".ewl-supports-tool-btn");
     for (let i = 0; i < btns.length; i++) btns[i].style.display = "none";
-    const schema = window.EWLSupportsSchema;
     let anyInteractive = false;
-    if (schema) {
-      schema.allItems.forEach((it) => {
-        if (it.apply === "interactive" && it.tool && set[it.key]) {
-          const b = dock.querySelector('[data-tool="' + it.tool + '"]');
-          if (b) {
-            b.style.display = "inline-flex";
-            anyInteractive = true;
-          }
+    schema.allItems.forEach((it) => {
+      if (it.apply === "interactive" && it.tool && set[it.key]) {
+        const b = dock.querySelector('[data-tool="' + it.tool + '"]');
+        if (b) {
+          b.style.display = "inline-flex";
+          anyInteractive = true;
         }
-      });
+      }
+    });
+    // Read-aloud speed control rides along with read-aloud itself.
+    if (set.tts) {
+      const rateBtn = dock.querySelector('[data-tool="rate"]');
+      if (rateBtn) rateBtn.style.display = "inline-flex";
     }
-    dock.hidden = !anyInteractive;
+    // In teacher mode the "Prepare Supports" side tab shares the mid-right
+    // edge; shift the preview rail inward so the two never overlap.
+    dock.style.right = isTeacherMode() ? "52px" : "";
+    v2EnsureIdentityChip(dock, meLabel);
+    // Keep the rail visible whenever an identity is applied — even a
+    // passive-only (or empty) assignment must leave the "👤" switch chip
+    // reachable, or a shared-device student inherits the wrong identity with
+    // no way out.
+    dock.hidden = !anyInteractive && !meLabel;
+  }
+
+  // Small "who am I" chip at the top of the student rail: shows the picked
+  // initials and lets a student on a shared Chromebook switch identity.
+  function v2EnsureIdentityChip(dock, meLabel) {
+    const inner = dock.querySelector(".ewl-supports-tools-inner");
+    if (!inner) return;
+    let chip = inner.querySelector(".ewl-supports-me-chip");
+    if (!meLabel) {
+      if (chip) chip.remove();
+      return;
+    }
+    if (!chip) {
+      chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "ewl-supports-me-chip";
+      chip.title = "Not you? Tap to switch student.";
+      chip.addEventListener("click", () => {
+        try {
+          localStorage.removeItem(V2_ME_KEY);
+        } catch (_e) {
+          /* ignore */
+        }
+        v2StudentBoot(window.EWLSupportsSchema);
+      });
+      inner.insertBefore(chip, inner.firstChild);
+    }
+    chip.textContent = "👤 " + meLabel;
   }
 
   // Reflect a resolved item set into the hidden legacy profile checkboxes so
@@ -2764,12 +2819,34 @@
   }
 
   // ---- Student self-identification (one-time per device) -------------------
-  async function v2PromptSelfPick() {
-    const data = await v2FetchJSON("/sections");
-    const sections = (data && data.sections) || {};
-    const hasAny = Object.keys(sections).some((s) => (sections[s] || []).length);
-    if (!hasAny) return null; // teacher hasn't built a roster — don't nag students
+  const V2_SKIP_TTL_MS = 7 * 24 * 60 * 60 * 1000; // re-ask a "skipped" device weekly
+  let v2DismissedThisView = false; // Escape on the self-pick modal — page-view scoped
 
+  // Derive initials from a Canvas roster launch name (?sn=First Last -> "FL").
+  function v2InitialsFromName(name) {
+    const parts = String(name || "")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    if (parts.length < 2) return "";
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  // Canvas launches carry ?sn=<roster name>. If those initials exist in exactly
+  // ONE section, auto-identify — no modal for LMS-launched students.
+  function v2IdentityFromCanvas(sections) {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const ini = v2InitialsFromName(params.get("sn"));
+      if (!ini) return null;
+      const hits = Object.keys(sections).filter((s) => (sections[s] || []).indexOf(ini) !== -1);
+      return hits.length === 1 ? { section: hits[0], initials: ini, source: "canvas" } : null;
+    } catch (_e) {
+      return null;
+    }
+  }
+
+  async function v2PromptSelfPick(sections) {
     return new Promise((resolve) => {
       const back = document.createElement("div");
       back.className = "ewl-supports-selfpick-backdrop";
@@ -2777,6 +2854,7 @@
       card.className = "ewl-supports-selfpick-card";
       card.setAttribute("role", "dialog");
       card.setAttribute("aria-modal", "true");
+      card.setAttribute("aria-label", "Who are you?");
       const h = document.createElement("h2");
       h.textContent = "Who are you?";
       const p = document.createElement("p");
@@ -2791,13 +2869,41 @@
       card.appendChild(listWrap);
 
       function done(me) {
+        document.removeEventListener("keydown", onKey, true);
         back.remove();
         resolve(me);
       }
-      (window.EWLSupportsSchema
+      // Escape dismisses for THIS page view only (in-memory flag), so a student
+      // who panics out of the modal gets re-asked on the next page load — never
+      // silently locked out of their supports for a whole session. Tab is
+      // trapped inside the card (role=dialog aria-modal) for keyboard/SR users.
+      function onKey(e) {
+        if (e.key === "Escape") {
+          v2DismissedThisView = true;
+          done(null);
+          return;
+        }
+        if (e.key === "Tab") {
+          const focusables = card.querySelectorAll("button");
+          if (!focusables.length) return;
+          const first = focusables[0];
+          const last = focusables[focusables.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+      document.addEventListener("keydown", onKey, true);
+
+      const secList = window.EWLSupportsSchema
         ? window.EWLSupportsSchema.sections
-        : Object.keys(sections)
-      ).forEach((sec) => {
+        : Object.keys(sections);
+      let firstBtn = null;
+      secList.forEach((sec) => {
         const b = document.createElement("button");
         b.type = "button";
         b.className = "ewl-supports-selfpick-sec";
@@ -2816,34 +2922,66 @@
           });
         });
         secWrap.appendChild(b);
+        if (!firstBtn) firstBtn = b;
       });
 
       const skip = document.createElement("button");
       skip.type = "button";
       skip.className = "ewl-supports-selfpick-skip";
       skip.textContent = "I'm not on the list — skip";
-      skip.addEventListener("click", () => done({ skipped: true }));
+      skip.addEventListener("click", () => done({ skipped: true, at: Date.now() }));
       card.appendChild(skip);
 
       back.appendChild(card);
       document.body.appendChild(back);
+      if (firstBtn) firstBtn.focus();
     });
   }
 
   // ---- Student boot: resolve identity -> fetch assignment -> apply ---------
+  // INVARIANT: this must never leave a student with LESS access than the
+  // legacy (v1) behavior. On any fault (no identity, API down, schema missing)
+  // it leaves the existing state untouched rather than applying an empty set.
   async function v2StudentBoot(schema) {
+    if (!schema) return;
     let me = v2GetMe();
+    // A stale "skipped" expires weekly so newly-rostered students get re-asked.
+    if (me && me.skipped && (!me.at || Date.now() - me.at > V2_SKIP_TTL_MS)) me = null;
     if (!me) {
-      me = await v2PromptSelfPick();
+      if (v2DismissedThisView) return;
+      const data = await v2FetchJSON("/sections");
+      const sections = (data && data.sections) || {};
+      const hasAny = Object.keys(sections).some((s) => (sections[s] || []).length);
+      if (!hasAny) return; // teacher hasn't built a roster — don't nag students
+      me = v2IdentityFromCanvas(sections);
+      // Inside an LMS iframe, never interrupt the lesson with a modal — only
+      // auto-identity (above) applies there.
+      if (!me) {
+        let embedded = false;
+        try {
+          embedded = window.top !== window.self;
+        } catch (_e) {
+          embedded = true;
+        }
+        if (embedded) return;
+        me = await v2PromptSelfPick(sections);
+      }
       if (me) v2SetMe(me);
     }
-    if (!me || me.skipped) {
-      applyAssignedItems([]);
-      return;
-    }
-    const cached = v2GetCached(me.section, me.initials);
-    if (cached && schema) {
-      applyAssignedItems(schema.resolveItems(cached.widaLevel, cached.iepItems));
+    if (!me || me.skipped) return;
+
+    const label = me.initials + " · " + me.section;
+    // /for returns a RESOLVED flat item list (WIDA bundle folded in server-side
+    // for privacy). Older caches stored {widaLevel, iepItems} — resolve those
+    // locally for back-compat.
+    const cachedItems = (function () {
+      const c = v2GetCached(me.section, me.initials);
+      if (!c) return null;
+      if (Array.isArray(c.items)) return c.items;
+      return schema.resolveItems(c.widaLevel, c.iepItems);
+    })();
+    if (cachedItems) {
+      applyAssignedItems(cachedItems, label);
     }
     const fresh = await v2FetchJSON(
       "/for?section=" +
@@ -2851,20 +2989,25 @@
         "&initials=" +
         encodeURIComponent(me.initials),
     );
-    if (fresh && fresh.ok) {
-      v2SetCached(me.section, me.initials, {
-        widaLevel: fresh.widaLevel,
-        iepItems: fresh.iepItems,
-      });
-      applyAssignedItems(schema ? schema.resolveItems(fresh.widaLevel, fresh.iepItems) : []);
-    } else if (!cached) {
-      applyAssignedItems([]);
+    if (fresh && fresh.ok && Array.isArray(fresh.items)) {
+      v2SetCached(me.section, me.initials, { items: fresh.items });
+      applyAssignedItems(fresh.items, label);
     }
+    // fetch failed + no cache -> leave the lesson exactly as v1 rendered it.
   }
 
   async function bootSupportsV2() {
     const schema = await loadSupportsSchema();
     if (isTeacherMode()) return; // teachers assign via the dialog, below
+    // A personalized link / SCORM launch (?supports= / #supports=) is an
+    // explicit instruction for THIS launch — it always wins over the roster.
+    // Check BOTH transports: parseSettings returns an all-false object (never
+    // null), so `hash || search` would silently ignore the query string.
+    const anyUrlSupports = [
+      parseSettings(window.location.hash),
+      parseSettings(window.location.search),
+    ].some((s) => s && Object.values(s).some(Boolean));
+    if (anyUrlSupports) return;
     await v2StudentBoot(schema);
   }
 
@@ -2972,10 +3115,48 @@
       v2AssignState.roster[e.initials] = e;
     });
 
+    // Surface auth problems instead of a silently-empty roster.
+    if (roster && roster.ok === false) {
+      const warn = document.createElement("p");
+      warn.className = "ewl-supports-assign-warn";
+      warn.textContent =
+        roster.status === 401
+          ? "Teacher key missing or incorrect — enter it above to load your classes."
+          : "Roster service isn't set up yet (TEACHER_KEY not configured on the server).";
+      root.appendChild(warn);
+    }
+
+    // Shared-device helper: show which student THIS device is remembered as,
+    // with a one-tap reset (fixes a wrong self-pick without touching DevTools).
+    const deviceMe = v2GetMe();
+    if (deviceMe && !deviceMe.skipped) {
+      const devRow = document.createElement("div");
+      devRow.className = "ewl-supports-assign-device";
+      const devTxt = document.createElement("span");
+      devTxt.textContent =
+        "This device is remembered as " + deviceMe.initials + " (" + deviceMe.section + "). ";
+      const devClear = document.createElement("button");
+      devClear.type = "button";
+      devClear.className = "ewl-supports-btn-action ewl-supports-btn-reset";
+      devClear.textContent = "Reset device student";
+      devClear.addEventListener("click", () => {
+        try {
+          localStorage.removeItem(V2_ME_KEY);
+        } catch (_e) {
+          /* ignore */
+        }
+        buildAssignmentUI(root, schema);
+      });
+      devRow.appendChild(devTxt);
+      devRow.appendChild(devClear);
+      root.appendChild(devRow);
+    }
+
     const stuRow = document.createElement("div");
     stuRow.className = "ewl-supports-assign-sturow";
     const sel = document.createElement("select");
     sel.className = "ewl-supports-assign-student";
+    sel.setAttribute("aria-label", "Choose a student");
     const ph = document.createElement("option");
     ph.value = "";
     ph.textContent = entries.length ? "Choose a student…" : "No students yet — add one →";
@@ -2997,6 +3178,7 @@
     addInput.type = "text";
     addInput.maxLength = 6;
     addInput.placeholder = "Add initials";
+    addInput.setAttribute("aria-label", "New student initials");
     addInput.className = "ewl-supports-assign-add";
     const addBtn = document.createElement("button");
     addBtn.type = "button";
@@ -3005,7 +3187,17 @@
     addBtn.addEventListener("click", async () => {
       const ini = (addInput.value || "").trim().toUpperCase().slice(0, 6);
       if (!ini) return;
-      await v2SaveEntry(v2AssignState.section, ini, 0, []);
+      // Roster-maintenance upsert: OMIT widaLevel/iepItems so re-adding
+      // existing initials never clobbers that student's assignment.
+      await v2FetchJSON("/roster", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-teacher-key": v2TeacherKey() },
+        body: JSON.stringify({
+          entries: [
+            { section: v2AssignState.section, initials: ini, updatedAt: new Date().toISOString() },
+          ],
+        }),
+      });
       v2AssignState.initials = ini;
       buildAssignmentUI(root, schema);
     });
@@ -3143,6 +3335,9 @@
           widaLevel: c.level,
           iepItems: c.iep,
         };
+        // Keep the hidden bridge form in lockstep so Copy Personalized Link /
+        // Download SCORM (below) export what was just saved, not stale state.
+        v2SyncBridgeProfiles(c.resolved);
       }
     });
 
@@ -3157,7 +3352,7 @@
       method: "POST",
       headers: { "Content-Type": "application/json", "x-teacher-key": v2TeacherKey() },
       body: JSON.stringify({
-        entries: [{ section, initials, widaLevel, iepItems }],
+        entries: [{ section, initials, widaLevel, iepItems, updatedAt: new Date().toISOString() }],
       }),
     });
     return !!(res && res.ok);
