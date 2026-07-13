@@ -33,7 +33,8 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
     await teacherBtn.click();
     await expect(dialog).toBeVisible();
 
-    // 5. Verify the 6 profile checkboxes are present
+    // 5. The 6 legacy profile checkboxes remain as a hidden bridge that keeps
+    //    Copy-Link / SCORM export working; teachers no longer interact with them.
     const profiles = [
       "read-understand",
       "focus-organize",
@@ -46,29 +47,15 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
       await expect(page.locator(`#ewl-profile-${key}`)).toBeAttached();
     }
 
-    // 6. Check a profile (e.g. Read & Understand) and verify student tools show up
-    const readUnderstandCb = page.locator("#ewl-profile-read-understand");
-    await readUnderstandCb.check();
+    // 6. The per-student IEP/WIDA assignment surface is the teacher-facing UI.
+    const assignRoot = page.locator("#ewl-supports-assign-root");
+    await expect(assignRoot).toBeVisible();
+    await expect(assignRoot.locator(".ewl-supports-assign-sec", { hasText: "601" })).toBeVisible();
 
-    const toolsDock = page.locator("[data-ewl-supports-tools]");
-    await expect(toolsDock).toBeVisible();
-
-    // 7. Close the (modal) dialog first — the student tools dock is meant to be
-    // used with the config dialog dismissed, mirroring real classroom flow.
+    // 7. Close the (modal) dialog.
     const closeDialogBtn = page.locator(".ewl-supports-dialog-close");
     await closeDialogBtn.click();
     await expect(dialog).toBeHidden();
-
-    // 8. Now the Words tool is reachable — click it and confirm its panel opens.
-    const wordsBtn = page.locator('[data-tool="words"]');
-    await expect(wordsBtn).toBeVisible();
-    await wordsBtn.click();
-
-    const contentPanel = page.locator("[data-ewl-supports-panel]");
-    await expect(contentPanel).toBeVisible();
-    await expect(contentPanel.locator(".ewl-supports-panel-title")).toContainText(
-      "Vocabulary Helper",
-    );
   });
 
   test("URL hash activation pre-selects supports", async ({ page }) => {
@@ -135,9 +122,9 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
   test("multilingual ESOL language selection translates content", async ({ page }) => {
     await page.goto(`${TEST_LESSON_PATH}#supports=language-support`, { waitUntil: "networkidle" });
 
-    // Open dialog
+    // Open dialog — the ESOL home-language selector lives in the assignment surface.
     await page.locator(".ewl-supports-btn-teacher").click();
-    await expect(page.locator("#ewl-lang-select-container")).toBeVisible();
+    await expect(page.locator("#ewl-lang-select")).toBeVisible();
 
     // Select Spanish
     await page.locator("#ewl-lang-select").selectOption("es");

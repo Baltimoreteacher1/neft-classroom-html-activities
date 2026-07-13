@@ -19,8 +19,8 @@ const LESSONS_DIR = join(ROOT, "lessons");
 const BEGIN_MARK = "<!-- ewl-supports-injected:begin -->";
 const END_MARK = "<!-- ewl-supports-injected:end -->";
 
-const CSS_BLOCK = `\n${BEGIN_MARK}\n    <link rel="stylesheet" href="/assets/learning-supports/learning-supports.css?v=20260712-tools" />\n${END_MARK}`;
-const JS_BLOCK = `\n${BEGIN_MARK}\n    <script src="/assets/learning-supports/learning-supports.js?v=20260712-tools" defer></script>\n${END_MARK}`;
+const CSS_BLOCK = `\n${BEGIN_MARK}\n    <link rel="stylesheet" href="/assets/learning-supports/learning-supports.css?v=20260713-supports-v2" />\n${END_MARK}`;
+const JS_BLOCK = `\n${BEGIN_MARK}\n    <script src="/assets/learning-supports/learning-supports.js?v=20260713-supports-v2" defer></script>\n${END_MARK}`;
 
 function getCanonicalLessons() {
   if (!existsSync(LESSONS_DIR)) {
@@ -81,7 +81,7 @@ function injectFile(file, lessonId) {
   }
 
   // 2. Inject CSS Link before </head>
-  if (!html.includes("learning-supports.css?v=20260712-tools")) {
+  if (!html.includes("learning-supports.css?v=20260713-supports-v2")) {
     const headAt = realCloseIndex(html, "</head>");
     if (headAt !== -1) {
       html = html.slice(0, headAt) + CSS_BLOCK + "\n" + html.slice(headAt);
@@ -90,7 +90,7 @@ function injectFile(file, lessonId) {
   }
 
   // 3. Inject JS script before </body>
-  if (!html.includes("learning-supports.js?v=20260712-tools")) {
+  if (!html.includes("learning-supports.js?v=20260713-supports-v2")) {
     const bodyAt = realCloseIndex(html, "</body>");
     if (bodyAt !== -1) {
       html = html.slice(0, bodyAt) + JS_BLOCK + "\n" + html.slice(bodyAt);
@@ -111,8 +111,8 @@ function checkFile(file, lessonId) {
   const beginCount = html.split("ewl-supports-injected:begin").length - 1;
   const endCount = html.split("ewl-supports-injected:end").length - 1;
   const hasAttr = html.includes(`data-ewl-supports-lesson="${lessonId}"`);
-  const hasCss = html.includes("/assets/learning-supports/learning-supports.css?v=20260712-tools");
-  const hasJs = html.includes("/assets/learning-supports/learning-supports.js?v=20260712-tools");
+  const hasCss = html.includes("/assets/learning-supports/learning-supports.css?v=20260713-supports-v2");
+  const hasJs = html.includes("/assets/learning-supports/learning-supports.js?v=20260713-supports-v2");
 
   return beginCount === 2 && endCount === 2 && hasAttr && hasCss && hasJs;
 }

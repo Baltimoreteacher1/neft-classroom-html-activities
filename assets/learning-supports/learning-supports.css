@@ -266,38 +266,40 @@
   background-color: #e2e8f0;
 }
 
-/* 3. Student Tools Dock */
+/* 3. Student "My Tools" Dock — a right-edge VERTICAL rail (never a bottom bar).
+   Each student only ever sees the tools assigned to them (see learning-supports.js
+   applyAssignedItems). Anchored mid-right so it clears the Save/Resume launcher
+   (#nsr-root, bottom-right) and the mode-toggle pill (bottom-left). */
 .ewl-supports-tools-dock {
   position: fixed;
-  bottom: 20px;
-  /* Span the viewport but reserve the bottom-right lane for the Save/Resume
-     launcher (#nsr-root, right:16px, ~160px wide, z-index ~max) so the dock's
-     right-hand tools never sit under it and become unclickable. */
-  left: 16px;
-  right: 200px;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
   z-index: 9998;
   display: flex;
-  justify-content: center;
-  /* The wrapper's empty gutters must not eat clicks aimed at the lesson behind
-     them; only the pill itself is interactive. */
+  justify-content: flex-end;
+  /* The wrapper must not eat clicks aimed at the lesson behind it; only the
+     rail itself is interactive. */
   pointer-events: none;
+  max-height: 86vh;
 }
 
 .ewl-supports-tools-inner {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
   background: var(--ewl-color-bg-glass);
   border: 1px solid var(--ewl-color-border);
-  padding: 8px 12px;
-  border-radius: 99px;
+  border-right: none;
+  padding: 10px 8px;
+  border-radius: 16px 0 0 16px;
   box-shadow: var(--ewl-shadow);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  overflow-x: auto;
-  /* Only the pill is clickable (wrapper is pointer-events:none); cap it to the
-     reserved lane so it scrolls internally instead of sliding under the launcher. */
+  overflow-y: auto;
+  /* Only the rail is clickable (wrapper is pointer-events:none). */
   pointer-events: auto;
-  max-width: 100%;
+  max-height: 86vh;
 }
 
 /* Collapse (hide) button — small circle riding just right of the tools pill. */
@@ -1345,4 +1347,165 @@ body.ewl-supports-contrast-active #app {
   font-size: 12.5px;
   color: var(--ewl-color-text-muted);
   line-height: 1.5;
+}
+
+/* ============================================================
+   v2 — per-student assignment surface (teacher dialog) + self-pick modal.
+   ============================================================ */
+.ewl-supports-assign-root {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 8px 0 16px;
+}
+.ewl-supports-assign-keyrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  font-weight: 700;
+}
+.ewl-supports-assign-key {
+  padding: 6px 10px;
+  border: 1px solid var(--ewl-color-border);
+  border-radius: 8px;
+  font-size: 14px;
+  margin-left: 6px;
+}
+.ewl-supports-assign-consolelink {
+  color: var(--ewl-color-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+.ewl-supports-assign-consolelink:hover { text-decoration: underline; }
+.ewl-supports-assign-secrow,
+.ewl-supports-assign-sturow,
+.ewl-supports-assign-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.ewl-supports-assign-sec {
+  min-height: 40px;
+  min-width: 64px;
+  padding: 0 16px;
+  border: 1px solid var(--ewl-color-border);
+  border-radius: 10px;
+  background: #f1f5f9;
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+}
+.ewl-supports-assign-sec.is-active {
+  background: var(--ewl-color-primary);
+  color: var(--ewl-color-white);
+  border-color: var(--ewl-color-primary);
+}
+.ewl-supports-assign-student,
+.ewl-supports-assign-add,
+.ewl-supports-assign-wida select {
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid var(--ewl-color-border);
+  border-radius: 8px;
+  font-size: 15px;
+}
+.ewl-supports-assign-wida {
+  font-weight: 700;
+  font-size: 14px;
+}
+.ewl-supports-assign-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+.ewl-supports-assign-group {
+  border: 1px solid var(--ewl-color-border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin: 0;
+}
+.ewl-supports-assign-group legend {
+  font-weight: 800;
+  font-size: 13px;
+  padding: 0 6px;
+}
+.ewl-supports-assign-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.ewl-supports-assign-item input { width: 18px; height: 18px; }
+.ewl-supports-assign-status {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ewl-color-primary);
+}
+
+/* Student self-pick modal */
+.ewl-supports-selfpick-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.ewl-supports-selfpick-card {
+  background: var(--ewl-color-white);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: var(--ewl-shadow);
+}
+.ewl-supports-selfpick-card h2 { margin: 0 0 6px; font-size: 22px; }
+.ewl-supports-selfpick-card p { margin: 0 0 14px; font-size: 15px; color: #475569; }
+.ewl-supports-selfpick-row { display: flex; gap: 10px; margin-bottom: 12px; }
+.ewl-supports-selfpick-sec {
+  flex: 1;
+  min-height: 52px;
+  border: 2px solid var(--ewl-color-border);
+  border-radius: 12px;
+  background: #f1f5f9;
+  font-weight: 800;
+  font-size: 18px;
+  cursor: pointer;
+}
+.ewl-supports-selfpick-sec.is-active {
+  border-color: var(--ewl-color-primary);
+  background: var(--ewl-color-primary);
+  color: var(--ewl-color-white);
+}
+.ewl-supports-selfpick-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.ewl-supports-selfpick-ini {
+  min-height: 48px;
+  border: 1px solid var(--ewl-color-border);
+  border-radius: 10px;
+  background: #fff;
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+}
+.ewl-supports-selfpick-ini:hover { background: #eef2ff; }
+.ewl-supports-selfpick-skip {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
 }

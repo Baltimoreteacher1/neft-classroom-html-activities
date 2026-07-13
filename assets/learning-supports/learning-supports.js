@@ -358,6 +358,10 @@
     applyTextScale();
     applyColorTint();
     updateUIStates();
+
+    // v2: per-student IEP/WIDA supports that follow the student across lessons.
+    // Fire-and-forget; loads the shared taxonomy + this device's assignment.
+    bootSupportsV2();
   }
 
   // Apply the color tint overlay (visual-stress comfort). Reversible.
@@ -481,8 +485,14 @@
     explainer.id = "ewl-supports-dialog-intro";
     explainer.className = "ewl-supports-dialog-intro";
     explainer.textContent =
-      "Activate accessibility profiles to support student learning without lowering standards. No student data or IEP details are stored.";
+      "Assign IEP accommodations and WIDA/ESOL supports to individual students. Assignments follow each student into every lesson automatically.";
     dialogBody.appendChild(explainer);
+
+    // v2 per-student assignment surface — built lazily on open (ensureAssignmentUI).
+    const assignRoot = document.createElement("div");
+    assignRoot.id = "ewl-supports-assign-root";
+    assignRoot.className = "ewl-supports-assign-root";
+    dialogBody.appendChild(assignRoot);
 
     // Quick-setup presets: one-click combinations for common accommodation needs.
     const presetSection = document.createElement("div");
@@ -505,11 +515,17 @@
       presetRow.appendChild(chip);
     });
     presetSection.appendChild(presetRow);
+    // Legacy coarse presets kept in the DOM (bridge for Copy-Link/SCORM) but
+    // hidden — the per-student IEP/WIDA surface above replaces them for teachers.
+    presetSection.style.display = "none";
     dialogBody.appendChild(presetSection);
 
-    // Checkbox list
+    // Legacy profile checkbox list — hidden bridge (see presetSection note).
+    // The assignment UI above drives these checkboxes so Copy-Link/SCORM keep
+    // working; students never see this form.
     const form = document.createElement("form");
     form.className = "ewl-supports-dialog-form";
+    form.style.display = "none";
     form.addEventListener("submit", (e) => e.preventDefault());
 
     PROFILE_KEYS.forEach((key) => {
@@ -563,7 +579,7 @@
         langLabel.style.marginRight = "8px";
 
         const langSelect = document.createElement("select");
-        langSelect.id = "ewl-lang-select";
+        langSelect.id = "ewl-lang-select-legacy";
         langSelect.style.padding = "4px 8px";
         langSelect.style.fontSize = "13px";
         langSelect.style.borderRadius = "6px";
@@ -1009,6 +1025,8 @@
           : null;
       dialog.classList.add("is-visible");
       if (backdrop) backdrop.classList.add("is-visible");
+      // Build/refresh the per-student assignment surface each open.
+      ensureAssignmentUI();
       const focusables = getFocusable(dialog);
       if (focusables.length > 0) focusables[0].focus();
     } else {
@@ -2594,12 +2612,564 @@
     activeLessonId = null;
   }
 
+  // =========================================================================
+  // Learning Supports v2 — per-student IEP/WIDA assignment, synced across
+  // lessons via D1 (functions/api/supports), cached in localStorage.
+  // Taxonomy: assets/learning-supports/supports-schema.js (window.EWLSupportsSchema).
+  // =========================================================================
+  const V2_ME_KEY = "ewl-supports:v2:me";
+  const V2_TEACHER_KEY_LS = "nt-teacher-key";
+  const V2_API = "/api/supports";
+
+  // Item key -> one of the 6 legacy profiles, so the hidden bridge form (and
+  // therefore Copy-Link / SCORM) stays in sync with the fine-grained selection.
+  const ITEM_TO_PROFILE = {
+    tts: "read-understand",
+    vocab: "read-understand",
+    example: "read-understand",
+    misconceptions: "read-understand",
+    "text-large": "read-understand",
+    contrast: "read-understand",
+    focus: "focus-organize",
+    ruler: "focus-organize",
+    comfort: "focus-organize",
+    tint: "focus-organize",
+    model: "build-math",
+    calculator: "build-math",
+    numberline: "build-math",
+    multchart: "build-math",
+    placevalue: "build-math",
+    frames: "express-thinking",
+    translate: "language-support",
+  };
+
+  function loadSupportsSchema() {
+    return new Promise((resolve) => {
+      if (window.EWLSupportsSchema) return resolve(window.EWLSupportsSchema);
+      let url;
+      try {
+        url = new URL("supports-schema.js", SCRIPT_URL).href;
+      } catch (_e) {
+        url = "/assets/learning-supports/supports-schema.js";
+      }
+      const s = document.createElement("script");
+      s.src = url;
+      s.onload = () => resolve(window.EWLSupportsSchema || null);
+      s.onerror = () => resolve(null);
+      document.head.appendChild(s);
+    });
+  }
+
+  function v2TeacherKey() {
+    try {
+      return localStorage.getItem(V2_TEACHER_KEY_LS) || "";
+    } catch (_e) {
+      return "";
+    }
+  }
+
+  async function v2FetchJSON(path, opts) {
+    try {
+      const res = await fetch(V2_API + path, opts);
+      if (!res.ok) return { ok: false, status: res.status };
+      return await res.json();
+    } catch (_e) {
+      return null;
+    }
+  }
+
+  function v2GetMe() {
+    try {
+      const raw = localStorage.getItem(V2_ME_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (_e) {
+      return null;
+    }
+  }
+  function v2SetMe(me) {
+    try {
+      localStorage.setItem(V2_ME_KEY, JSON.stringify(me));
+    } catch (_e) {
+      /* ignore */
+    }
+  }
+  function v2CacheKey(section, initials) {
+    return "ewl-supports:v2:assigned:" + section + ":" + initials;
+  }
+  function v2GetCached(section, initials) {
+    try {
+      const raw = localStorage.getItem(v2CacheKey(section, initials));
+      return raw ? JSON.parse(raw) : null;
+    } catch (_e) {
+      return null;
+    }
+  }
+  function v2SetCached(section, initials, val) {
+    try {
+      localStorage.setItem(v2CacheKey(section, initials), JSON.stringify(val));
+    } catch (_e) {
+      /* ignore */
+    }
+  }
+
+  // Apply a resolved item-key set: passive items take effect immediately;
+  // interactive items become the ONLY buttons visible in the side dock.
+  function applyAssignedItems(keys) {
+    const set = Object.create(null);
+    (keys || []).forEach((k) => {
+      set[k] = true;
+    });
+    textScale = set["text-large"] ? 1 : 0;
+    colorTint = set.tint ? 1 : 0;
+    highContrast = !!set.contrast;
+    comfortActive = !!set.comfort;
+    document.body.classList.toggle("ewl-supports-comfort-active", comfortActive);
+    document.body.classList.toggle("ewl-supports-contrast-active", highContrast);
+    applyTextScale();
+    applyColorTint();
+
+    const dock = document.querySelector("[data-ewl-supports-tools]");
+    if (!dock) return;
+    const btns = dock.querySelectorAll(".ewl-supports-tool-btn");
+    for (let i = 0; i < btns.length; i++) btns[i].style.display = "none";
+    const schema = window.EWLSupportsSchema;
+    let anyInteractive = false;
+    if (schema) {
+      schema.allItems.forEach((it) => {
+        if (it.apply === "interactive" && it.tool && set[it.key]) {
+          const b = dock.querySelector('[data-tool="' + it.tool + '"]');
+          if (b) {
+            b.style.display = "inline-flex";
+            anyInteractive = true;
+          }
+        }
+      });
+    }
+    dock.hidden = !anyInteractive;
+  }
+
+  // Reflect a resolved item set into the hidden legacy profile checkboxes so
+  // Copy-Link / SCORM export the equivalent coarse profiles.
+  function v2SyncBridgeProfiles(keys) {
+    const on = Object.create(null);
+    (keys || []).forEach((k) => {
+      const p = ITEM_TO_PROFILE[k];
+      if (p) on[p] = true;
+    });
+    PROFILE_KEYS.forEach((p) => {
+      activeProfiles[p] = !!on[p];
+      const cb = document.getElementById("ewl-profile-" + p);
+      if (cb) cb.checked = !!on[p];
+    });
+  }
+
+  // ---- Student self-identification (one-time per device) -------------------
+  async function v2PromptSelfPick() {
+    const data = await v2FetchJSON("/sections");
+    const sections = (data && data.sections) || {};
+    const hasAny = Object.keys(sections).some((s) => (sections[s] || []).length);
+    if (!hasAny) return null; // teacher hasn't built a roster — don't nag students
+
+    return new Promise((resolve) => {
+      const back = document.createElement("div");
+      back.className = "ewl-supports-selfpick-backdrop";
+      const card = document.createElement("div");
+      card.className = "ewl-supports-selfpick-card";
+      card.setAttribute("role", "dialog");
+      card.setAttribute("aria-modal", "true");
+      const h = document.createElement("h2");
+      h.textContent = "Who are you?";
+      const p = document.createElement("p");
+      p.textContent = "Pick your class, then your initials. We remember it on this device.";
+      const secWrap = document.createElement("div");
+      secWrap.className = "ewl-supports-selfpick-row";
+      const listWrap = document.createElement("div");
+      listWrap.className = "ewl-supports-selfpick-list";
+      card.appendChild(h);
+      card.appendChild(p);
+      card.appendChild(secWrap);
+      card.appendChild(listWrap);
+
+      function done(me) {
+        back.remove();
+        resolve(me);
+      }
+      (window.EWLSupportsSchema
+        ? window.EWLSupportsSchema.sections
+        : Object.keys(sections)
+      ).forEach((sec) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "ewl-supports-selfpick-sec";
+        b.textContent = sec;
+        b.addEventListener("click", () => {
+          Array.from(secWrap.children).forEach((c) => c.classList.remove("is-active"));
+          b.classList.add("is-active");
+          listWrap.innerHTML = "";
+          (sections[sec] || []).forEach((ini) => {
+            const ib = document.createElement("button");
+            ib.type = "button";
+            ib.className = "ewl-supports-selfpick-ini";
+            ib.textContent = ini;
+            ib.addEventListener("click", () => done({ section: sec, initials: ini }));
+            listWrap.appendChild(ib);
+          });
+        });
+        secWrap.appendChild(b);
+      });
+
+      const skip = document.createElement("button");
+      skip.type = "button";
+      skip.className = "ewl-supports-selfpick-skip";
+      skip.textContent = "I'm not on the list — skip";
+      skip.addEventListener("click", () => done({ skipped: true }));
+      card.appendChild(skip);
+
+      back.appendChild(card);
+      document.body.appendChild(back);
+    });
+  }
+
+  // ---- Student boot: resolve identity -> fetch assignment -> apply ---------
+  async function v2StudentBoot(schema) {
+    let me = v2GetMe();
+    if (!me) {
+      me = await v2PromptSelfPick();
+      if (me) v2SetMe(me);
+    }
+    if (!me || me.skipped) {
+      applyAssignedItems([]);
+      return;
+    }
+    const cached = v2GetCached(me.section, me.initials);
+    if (cached && schema) {
+      applyAssignedItems(schema.resolveItems(cached.widaLevel, cached.iepItems));
+    }
+    const fresh = await v2FetchJSON(
+      "/for?section=" +
+        encodeURIComponent(me.section) +
+        "&initials=" +
+        encodeURIComponent(me.initials),
+    );
+    if (fresh && fresh.ok) {
+      v2SetCached(me.section, me.initials, {
+        widaLevel: fresh.widaLevel,
+        iepItems: fresh.iepItems,
+      });
+      applyAssignedItems(schema ? schema.resolveItems(fresh.widaLevel, fresh.iepItems) : []);
+    } else if (!cached) {
+      applyAssignedItems([]);
+    }
+  }
+
+  async function bootSupportsV2() {
+    const schema = await loadSupportsSchema();
+    if (isTeacherMode()) return; // teachers assign via the dialog, below
+    await v2StudentBoot(schema);
+  }
+
+  // ---- Teacher assignment surface (built into the dialog on open) ----------
+  let v2AssignState = { section: "601", initials: "", roster: {} };
+
+  function ensureAssignmentUI() {
+    if (!isTeacherMode()) return;
+    const root = document.getElementById("ewl-supports-assign-root");
+    if (!root) return;
+    loadSupportsSchema().then((schema) => buildAssignmentUI(root, schema));
+  }
+
+  async function buildAssignmentUI(root, schema) {
+    if (!schema) {
+      root.textContent = "Learning supports taxonomy failed to load. Reload the page.";
+      return;
+    }
+    root.innerHTML = "";
+
+    // Teacher key (needed to save). Prefill from localStorage.
+    const keyRow = document.createElement("div");
+    keyRow.className = "ewl-supports-assign-keyrow";
+    const keyLabel = document.createElement("label");
+    keyLabel.textContent = "Teacher key ";
+    const keyInput = document.createElement("input");
+    keyInput.type = "password";
+    keyInput.className = "ewl-supports-assign-key";
+    keyInput.value = v2TeacherKey();
+    keyInput.placeholder = "required to save";
+    keyInput.addEventListener("change", () => {
+      try {
+        localStorage.setItem(V2_TEACHER_KEY_LS, keyInput.value.trim());
+      } catch (_e) {
+        /* ignore */
+      }
+    });
+    keyLabel.appendChild(keyInput);
+    keyRow.appendChild(keyLabel);
+    const consoleLink = document.createElement("a");
+    consoleLink.href = "/teacher-tools/learning-supports-manager/";
+    consoleLink.target = "_blank";
+    consoleLink.rel = "noopener";
+    consoleLink.className = "ewl-supports-assign-consolelink";
+    consoleLink.textContent = "Open full Supports Manager →";
+    keyRow.appendChild(consoleLink);
+    root.appendChild(keyRow);
+
+    // Home-language selector for the bilingual Words panel / read-aloud (device
+    // level, mirrors the legacy dialog select so ESOL display language survives).
+    const langRow = document.createElement("div");
+    langRow.className = "ewl-supports-assign-wida";
+    const langLabel = document.createElement("label");
+    langLabel.textContent = "Home language (ESOL) ";
+    const langSel = document.createElement("select");
+    langSel.id = "ewl-lang-select";
+    [
+      { code: "en", name: "English" },
+      { code: "es", name: "Español (Spanish)" },
+      { code: "vi", name: "Tiếng Việt (Vietnamese)" },
+      { code: "ar", name: "العربية (Arabic)" },
+    ].forEach((l) => {
+      const o = document.createElement("option");
+      o.value = l.code;
+      o.textContent = l.name;
+      if (l.code === activeLanguage) o.selected = true;
+      langSel.appendChild(o);
+    });
+    langSel.addEventListener("change", (e) => {
+      activeLanguage = e.target.value;
+      saveStoredPreferences();
+      updatePanelContent();
+    });
+    langLabel.appendChild(langSel);
+    langRow.appendChild(langLabel);
+    root.appendChild(langRow);
+
+    // Section tabs (601/602/603).
+    const secRow = document.createElement("div");
+    secRow.className = "ewl-supports-assign-secrow";
+    schema.sections.forEach((sec) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "ewl-supports-assign-sec" + (sec === v2AssignState.section ? " is-active" : "");
+      b.textContent = sec;
+      b.addEventListener("click", () => {
+        v2AssignState.section = sec;
+        v2AssignState.initials = "";
+        buildAssignmentUI(root, schema);
+      });
+      secRow.appendChild(b);
+    });
+    root.appendChild(secRow);
+
+    // Student row: initials select + add + remove.
+    const roster = await v2FetchJSON(
+      "/roster?section=" + encodeURIComponent(v2AssignState.section),
+      {
+        headers: { "x-teacher-key": v2TeacherKey() },
+      },
+    );
+    const entries = (roster && roster.roster) || [];
+    v2AssignState.roster = {};
+    entries.forEach((e) => {
+      v2AssignState.roster[e.initials] = e;
+    });
+
+    const stuRow = document.createElement("div");
+    stuRow.className = "ewl-supports-assign-sturow";
+    const sel = document.createElement("select");
+    sel.className = "ewl-supports-assign-student";
+    const ph = document.createElement("option");
+    ph.value = "";
+    ph.textContent = entries.length ? "Choose a student…" : "No students yet — add one →";
+    sel.appendChild(ph);
+    entries.forEach((e) => {
+      const o = document.createElement("option");
+      o.value = e.initials;
+      o.textContent = e.initials;
+      if (e.initials === v2AssignState.initials) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.addEventListener("change", () => {
+      v2AssignState.initials = sel.value;
+      buildAssignmentUI(root, schema);
+    });
+    stuRow.appendChild(sel);
+
+    const addInput = document.createElement("input");
+    addInput.type = "text";
+    addInput.maxLength = 6;
+    addInput.placeholder = "Add initials";
+    addInput.className = "ewl-supports-assign-add";
+    const addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.className = "ewl-supports-btn-action";
+    addBtn.textContent = "＋ Add";
+    addBtn.addEventListener("click", async () => {
+      const ini = (addInput.value || "").trim().toUpperCase().slice(0, 6);
+      if (!ini) return;
+      await v2SaveEntry(v2AssignState.section, ini, 0, []);
+      v2AssignState.initials = ini;
+      buildAssignmentUI(root, schema);
+    });
+    stuRow.appendChild(addInput);
+    stuRow.appendChild(addBtn);
+
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "ewl-supports-btn-action ewl-supports-btn-reset";
+    delBtn.textContent = "🗑 Remove";
+    delBtn.addEventListener("click", async () => {
+      if (!v2AssignState.initials) return;
+      await v2FetchJSON("/roster", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", "x-teacher-key": v2TeacherKey() },
+        body: JSON.stringify({ section: v2AssignState.section, initials: v2AssignState.initials }),
+      });
+      v2AssignState.initials = "";
+      buildAssignmentUI(root, schema);
+    });
+    stuRow.appendChild(delBtn);
+    root.appendChild(stuRow);
+
+    if (!v2AssignState.initials) return; // nothing selected — stop here
+
+    const current = v2AssignState.roster[v2AssignState.initials] || {
+      widaLevel: 0,
+      iepItems: [],
+    };
+
+    // WIDA level select.
+    const widaRow = document.createElement("div");
+    widaRow.className = "ewl-supports-assign-wida";
+    const widaLabel = document.createElement("label");
+    widaLabel.textContent = "WIDA / ESOL level ";
+    const widaSel = document.createElement("select");
+    const noneOpt = document.createElement("option");
+    noneOpt.value = "0";
+    noneOpt.textContent = "0 — None";
+    widaSel.appendChild(noneOpt);
+    schema.widaLevels.forEach((w) => {
+      const o = document.createElement("option");
+      o.value = String(w.level);
+      o.textContent = w.level + " — " + w.name;
+      widaSel.appendChild(o);
+    });
+    widaSel.value = String(current.widaLevel || 0);
+    widaLabel.appendChild(widaSel);
+    widaRow.appendChild(widaLabel);
+    root.appendChild(widaRow);
+
+    // IEP grouped checkboxes.
+    const groupsWrap = document.createElement("div");
+    groupsWrap.className = "ewl-supports-assign-groups";
+    const checkboxes = {};
+    function renderGroups() {
+      groupsWrap.innerHTML = "";
+      const widaSet = Object.create(null);
+      schema.widaItems(Number(widaSel.value)).forEach((k) => {
+        widaSet[k] = true;
+      });
+      schema.groups.forEach((g) => {
+        const fs = document.createElement("fieldset");
+        fs.className = "ewl-supports-assign-group";
+        const lg = document.createElement("legend");
+        lg.textContent = (g.icon ? g.icon + " " : "") + g.label;
+        fs.appendChild(lg);
+        g.items.forEach((it) => {
+          const lbl = document.createElement("label");
+          lbl.className = "ewl-supports-assign-item";
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.value = it.key;
+          const fromWida = !!widaSet[it.key];
+          const checkedExplicit = (current.iepItems || []).indexOf(it.key) !== -1;
+          cb.checked = fromWida || checkedExplicit;
+          cb.disabled = fromWida; // WIDA bundle is locked on; extra IEP items on top
+          checkboxes[it.key] = cb;
+          lbl.appendChild(cb);
+          const txt = document.createElement("span");
+          txt.textContent = " " + it.label + (fromWida ? " (WIDA)" : "");
+          lbl.appendChild(txt);
+          fs.appendChild(lbl);
+        });
+        groupsWrap.appendChild(fs);
+      });
+    }
+    widaSel.addEventListener("change", renderGroups);
+    renderGroups();
+    root.appendChild(groupsWrap);
+
+    // Actions.
+    function collect() {
+      const level = Number(widaSel.value) || 0;
+      const widaSet = Object.create(null);
+      schema.widaItems(level).forEach((k) => {
+        widaSet[k] = true;
+      });
+      const iep = [];
+      Object.keys(checkboxes).forEach((k) => {
+        if (checkboxes[k].checked && !widaSet[k] && schema.isValidKey(k)) iep.push(k);
+      });
+      return { level, iep, resolved: schema.resolveItems(level, iep) };
+    }
+
+    const actions = document.createElement("div");
+    actions.className = "ewl-supports-assign-actions";
+    const status = document.createElement("span");
+    status.className = "ewl-supports-assign-status";
+
+    const previewBtn = document.createElement("button");
+    previewBtn.type = "button";
+    previewBtn.className = "ewl-supports-btn-action";
+    previewBtn.textContent = "👁 Preview on screen";
+    previewBtn.addEventListener("click", () => {
+      const c = collect();
+      applyAssignedItems(c.resolved);
+      v2SyncBridgeProfiles(c.resolved);
+      status.textContent = "Previewing " + v2AssignState.initials;
+    });
+
+    const saveBtn = document.createElement("button");
+    saveBtn.type = "button";
+    saveBtn.className = "ewl-supports-btn-action ewl-supports-btn-copy";
+    saveBtn.textContent = "💾 Save for " + v2AssignState.initials;
+    saveBtn.addEventListener("click", async () => {
+      const c = collect();
+      const ok = await v2SaveEntry(v2AssignState.section, v2AssignState.initials, c.level, c.iep);
+      status.textContent = ok
+        ? "Saved ✓ — syncs to every lesson"
+        : "Save failed — check the teacher key";
+      if (ok) {
+        v2AssignState.roster[v2AssignState.initials] = {
+          initials: v2AssignState.initials,
+          widaLevel: c.level,
+          iepItems: c.iep,
+        };
+      }
+    });
+
+    actions.appendChild(previewBtn);
+    actions.appendChild(saveBtn);
+    actions.appendChild(status);
+    root.appendChild(actions);
+  }
+
+  async function v2SaveEntry(section, initials, widaLevel, iepItems) {
+    const res = await v2FetchJSON("/roster", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-teacher-key": v2TeacherKey() },
+      body: JSON.stringify({
+        entries: [{ section, initials, widaLevel, iepItems }],
+      }),
+    });
+    return !!(res && res.ok);
+  }
+
   const EWLLearningSupports = {
-    version: "1.6.0",
+    version: "2.0.0",
     init,
     destroy,
     parseSettings,
     serializeSettings,
+    applyAssignedItems,
   };
 
   window.EWLLearningSupports = EWLLearningSupports;

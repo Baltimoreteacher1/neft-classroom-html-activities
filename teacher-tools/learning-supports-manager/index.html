@@ -1,0 +1,1008 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learning Supports Manager · Neft Teacher</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #387f84;
+        --amber: #f2a93b;
+        --ink: #0f172a;
+        --muted: #64748b;
+        --faint: #94a3b8;
+        --line: #e2e8f0;
+        --bg: #f1f5f9;
+        --ok: #15803d;
+        --bad: #b91c1c;
+        --wida: #7c3aed;
+        --wida-bg: #f3e8ff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.5;
+      }
+      header {
+        background: var(--navy);
+        color: #fff;
+        padding: 20px 24px;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 22px;
+      }
+      header p {
+        margin: 6px 0 0;
+        opacity: 0.85;
+        font-size: 14px;
+        max-width: 720px;
+      }
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px 24px 72px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px;
+        margin-bottom: 18px;
+      }
+      .card h2 {
+        margin: 0 0 6px;
+        font-size: 17px;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 14px;
+        margin: 4px 0 12px;
+      }
+      label {
+        font-weight: 600;
+        font-size: 14px;
+      }
+      input,
+      select,
+      textarea {
+        font: 15px system-ui;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+        color: var(--ink);
+      }
+      textarea {
+        width: 100%;
+        min-height: 120px;
+        font:
+          14px ui-monospace,
+          Menlo,
+          monospace;
+      }
+      button {
+        font: 700 15px system-ui;
+        border: 0;
+        border-radius: 10px;
+        padding: 11px 16px;
+        min-height: 44px;
+        cursor: pointer;
+        background: var(--amber);
+        color: var(--navy);
+      }
+      button.ghost {
+        background: #eef2f7;
+        color: var(--navy);
+        border: 1px solid var(--line);
+      }
+      button.danger {
+        background: #fee2e2;
+        color: var(--bad);
+      }
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible,
+      .student:focus-visible {
+        outline: 3px solid var(--teal);
+        outline-offset: 2px;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .note {
+        background: #ecfeff;
+        border: 1px solid #a5f3fc;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-size: 14px;
+        color: #155e63;
+        margin-bottom: 16px;
+      }
+      .note.warn {
+        background: #fef3c7;
+        border-color: #fcd34d;
+        color: #92400e;
+      }
+      .note.err {
+        background: #fee2e2;
+        border-color: #fca5a5;
+        color: var(--bad);
+      }
+      .ok {
+        color: var(--ok);
+        font-weight: 700;
+      }
+      .sections {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 18px;
+      }
+      .section h2 {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .section h2 .count {
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .students {
+        list-style: none;
+        margin: 4px 0 12px;
+        padding: 0;
+      }
+      .student {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        margin-bottom: 8px;
+        background: #fbfdff;
+      }
+      .student .who {
+        flex: 1;
+        text-align: left;
+        background: none;
+        border: 0;
+        padding: 6px 4px;
+        min-height: 44px;
+        color: var(--ink);
+        font: 700 15px system-ui;
+        cursor: pointer;
+      }
+      .student .who small {
+        display: block;
+        color: var(--muted);
+        font-weight: 500;
+        font-size: 12px;
+      }
+      .student .iconbtn {
+        background: #eef2f7;
+        color: var(--navy);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        min-height: 40px;
+        padding: 6px 10px;
+        font-size: 14px;
+      }
+      .student .iconbtn.danger {
+        background: #fee2e2;
+        color: var(--bad);
+      }
+      .tag {
+        display: inline-block;
+        font: 700 11px system-ui;
+        border-radius: 999px;
+        padding: 2px 8px;
+        background: var(--wida-bg);
+        color: var(--wida);
+        margin-left: 6px;
+      }
+      .tag.seed {
+        background: #fef9c3;
+        color: #854d0e;
+      }
+      .empty {
+        color: var(--faint);
+        font-size: 14px;
+        padding: 8px 2px 12px;
+      }
+      details.import {
+        margin-top: 6px;
+      }
+      details.import summary {
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--teal);
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+      }
+      .preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 8px 0;
+      }
+      .chip {
+        background: #eef2f7;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 4px 10px;
+        font: 600 13px system-ui;
+      }
+      .chip.dup {
+        opacity: 0.5;
+      }
+      /* Modal editor */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        z-index: 50;
+      }
+      .overlay.open {
+        display: flex;
+      }
+      .editor {
+        background: #fff;
+        border-radius: 16px;
+        width: min(640px, 100%);
+        max-height: 90vh;
+        overflow: auto;
+        padding: 22px;
+      }
+      .editor h3 {
+        margin: 0 0 4px;
+        font-size: 19px;
+      }
+      .group {
+        margin: 14px 0 4px;
+      }
+      .group > .glabel {
+        font-weight: 700;
+        font-size: 15px;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .opt {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 44px;
+        padding: 4px 6px;
+        border-radius: 8px;
+      }
+      .opt:hover {
+        background: #f8fafc;
+      }
+      .opt input {
+        width: 22px;
+        height: 22px;
+        flex: none;
+      }
+      .opt.fromwida {
+        background: var(--wida-bg);
+      }
+      .editor .actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 18px;
+        position: sticky;
+        bottom: -22px;
+        background: #fff;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+      }
+      .spacer {
+        flex: 1;
+      }
+      .hidden {
+        display: none !important;
+      }
+      @media (max-width: 560px) {
+        main {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Learning Supports Manager</h1>
+      <p>
+        Build class rosters and assign each student their IEP supports and WIDA language level.
+        Teacher-only. Changes save to the class supports store.
+      </p>
+    </header>
+    <main>
+      <div class="card">
+        <h2>Teacher key</h2>
+        <p class="hint">Required to load and save supports. Kept on this device only.</p>
+        <div class="row">
+          <label for="key">Teacher key</label>
+          <input
+            id="key"
+            type="password"
+            autocomplete="off"
+            style="min-width: 220px"
+            placeholder="Enter teacher key"
+          />
+          <button id="keyGo">Load roster</button>
+          <span id="keyState" class="ok" aria-live="polite"></span>
+        </div>
+      </div>
+
+      <div id="notice" class="note hidden" role="status"></div>
+
+      <div class="card">
+        <h2>Class rosters</h2>
+        <p class="hint">One column per section. Click a student to assign supports.</p>
+        <div class="sections" id="sections"></div>
+      </div>
+    </main>
+
+    <!-- Assignment editor -->
+    <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="edTitle">
+      <div class="editor">
+        <h3 id="edTitle">Assign supports</h3>
+        <p class="hint" id="edSub"></p>
+        <div class="row" style="margin-bottom: 6px">
+          <label for="wida">WIDA language level</label>
+          <select id="wida" style="min-width: 220px"></select>
+        </div>
+        <p class="hint">
+          Choosing a WIDA level auto-turns-on a starter set (marked
+          <span class="tag">WIDA</span>). Add extra IEP supports below.
+        </p>
+        <div id="groups"></div>
+        <div class="actions">
+          <span id="edMsg" class="ok" aria-live="polite"></span>
+          <span class="spacer"></span>
+          <button class="ghost" id="edCancel">Close</button>
+          <button id="edSave">Save supports</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/assets/learning-supports/supports-schema.js"></script>
+    <script>
+      (function () {
+        "use strict";
+        var LS_KEY = "nt-teacher-key";
+        var API = "/api/supports";
+        var S = window.EWLSupportsSchema;
+        var $ = function (id) {
+          return document.getElementById(id);
+        };
+
+        // --- Fallback if the shared schema failed to load --------------------
+        if (!S) {
+          S = {
+            sections: ["601", "602", "603"],
+            groups: [],
+            widaLevels: [],
+            widaItems: function () {
+              return [];
+            },
+            resolveItems: function (l, i) {
+              return (i || []).slice();
+            },
+            isValidKey: function () {
+              return true;
+            },
+          };
+          showNotice(
+            "Could not load the supports list (supports-schema.js). You can still edit the roster, but support checkboxes are unavailable.",
+            "warn",
+          );
+        }
+
+        var key = "";
+        try {
+          key = localStorage.getItem(LS_KEY) || "";
+        } catch (e) {
+          key = "";
+        }
+        // In-memory roster keyed by section|INITIALS -> {section, initials, widaLevel, iepItems, seed}
+        var roster = {};
+        var editing = null; // record currently open in the editor
+
+        // ---- helpers --------------------------------------------------------
+        function keyOf(section, initials) {
+          return section + "|" + initials;
+        }
+        function clampInitials(s) {
+          return String(s || "")
+            .trim()
+            .toUpperCase()
+            .slice(0, 6);
+        }
+        function widaName(level) {
+          var w = (S.widaLevels || []).filter(function (x) {
+            return x.level === Number(level);
+          })[0];
+          return w ? w.name : "No WIDA support";
+        }
+        function esc(s) {
+          return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+          });
+        }
+        function showNotice(msg, kind) {
+          var n = $("notice");
+          n.className = "note" + (kind ? " " + kind : "");
+          n.textContent = msg;
+          n.classList.remove("hidden");
+        }
+        function clearNotice() {
+          $("notice").classList.add("hidden");
+        }
+
+        // Derive initials from a pasted line (name or CSV or raw initials).
+        function initialsFromLine(line) {
+          var first = String(line).split(",")[0].trim();
+          if (!first) return "";
+          var parts = first.split(/\s+/).filter(Boolean);
+          if (parts.length >= 2) {
+            return clampInitials(parts[0][0] + parts[parts.length - 1][0]);
+          }
+          // single token: treat as initials as-is
+          return clampInitials(first);
+        }
+
+        // ---- API ------------------------------------------------------------
+        function authHeaders() {
+          return { "x-teacher-key": key, "Content-Type": "application/json" };
+        }
+        function req(method, body) {
+          var opts = { method: method, headers: authHeaders() };
+          if (body) opts.body = JSON.stringify(body);
+          return fetch(API + "/roster", opts).then(function (r) {
+            if (r.status === 401) throw new Error("BADKEY");
+            return r.json().then(
+              function (j) {
+                if (r.status === 503 || (j && j.error === "not-configured"))
+                  throw new Error("NOTCONFIGURED");
+                if (!j || !j.ok) throw new Error("BADRESP");
+                return j;
+              },
+              function () {
+                throw new Error("BADRESP");
+              },
+            );
+          });
+        }
+        function handleErr(e) {
+          if (e && e.message === "BADKEY") {
+            showNotice("Teacher key incorrect.", "err");
+            $("keyState").textContent = "";
+          } else if (e && e.message === "NOTCONFIGURED") {
+            showNotice("Teacher key not set up on the server yet.", "warn");
+          } else {
+            showNotice(
+              "Could not reach the supports server. The roster below may be incomplete and changes will not save until the connection returns.",
+              "warn",
+            );
+          }
+        }
+
+        // ---- load -----------------------------------------------------------
+        function ingest(list, seed) {
+          (list || []).forEach(function (r) {
+            var ini = clampInitials(r.initials);
+            var sec = String(r.section);
+            if (!ini || S.sections.indexOf(sec) < 0) return;
+            var k = keyOf(sec, ini);
+            if (seed && roster[k]) return; // don't overwrite real records
+            roster[k] = {
+              section: sec,
+              initials: ini,
+              widaLevel: Number(r.widaLevel) || 0,
+              iepItems: Array.isArray(r.iepItems) ? r.iepItems.slice() : [],
+              seed: !!seed,
+            };
+          });
+        }
+        function load() {
+          if (!key) {
+            renderSections();
+            return;
+          }
+          clearNotice();
+          $("keyState").textContent = "Loading…";
+          req("GET")
+            .then(function (j) {
+              roster = {};
+              ingest(j.roster, false);
+              $("keyState").textContent = "Loaded ✓";
+              try {
+                localStorage.setItem(LS_KEY, key);
+              } catch (e) {}
+              // If empty, seed initials from the public sections endpoint.
+              if (!Object.keys(roster).length) return seedFromSections();
+            })
+            .catch(function (e) {
+              handleErr(e);
+            })
+            .then(function () {
+              renderSections();
+            });
+        }
+        function seedFromSections() {
+          return fetch(API + "/sections")
+            .then(function (r) {
+              return r.json();
+            })
+            .then(function (j) {
+              if (!j || !j.ok || !j.sections) return;
+              Object.keys(j.sections).forEach(function (sec) {
+                (j.sections[sec] || []).forEach(function (ini) {
+                  ingest([{ section: sec, initials: ini, widaLevel: 0, iepItems: [] }], true);
+                });
+              });
+            })
+            .catch(function () {
+              /* seeding is best-effort */
+            });
+        }
+
+        // ---- render sections ------------------------------------------------
+        function recordsFor(section) {
+          return Object.keys(roster)
+            .map(function (k) {
+              return roster[k];
+            })
+            .filter(function (r) {
+              return r.section === section;
+            })
+            .sort(function (a, b) {
+              return a.initials.localeCompare(b.initials);
+            });
+        }
+        function renderSections() {
+          var wrap = $("sections");
+          wrap.textContent = "";
+          S.sections.forEach(function (section) {
+            var list = recordsFor(section);
+            var col = document.createElement("div");
+            col.className = "section card";
+            col.style.background = "#f8fafc";
+
+            var h = document.createElement("h2");
+            h.innerHTML =
+              "Section " +
+              esc(section) +
+              ' <span class="count">' +
+              list.length +
+              " student" +
+              (list.length === 1 ? "" : "s") +
+              "</span>";
+            col.appendChild(h);
+
+            var ul = document.createElement("ul");
+            ul.className = "students";
+            if (!list.length) {
+              var em = document.createElement("li");
+              em.className = "empty";
+              em.textContent = "No students yet. Add one or import a class list.";
+              ul.appendChild(em);
+            }
+            list.forEach(function (r) {
+              ul.appendChild(studentRow(r));
+            });
+            col.appendChild(ul);
+
+            // add student
+            col.appendChild(addRow(section));
+            // import
+            col.appendChild(importBlock(section));
+            wrap.appendChild(col);
+          });
+        }
+        function studentRow(r) {
+          var li = document.createElement("li");
+          li.className = "student";
+          var cnt = (r.iepItems || []).length;
+          var summary =
+            widaName(r.widaLevel) + " · " + cnt + " IEP support" + (cnt === 1 ? "" : "s");
+          var who = document.createElement("button");
+          who.className = "who";
+          who.innerHTML =
+            esc(r.initials) +
+            (r.seed ? ' <span class="tag seed">new</span>' : "") +
+            "<small>" +
+            esc(summary) +
+            "</small>";
+          who.addEventListener("click", function () {
+            openEditor(r);
+          });
+          li.appendChild(who);
+
+          var ren = document.createElement("button");
+          ren.className = "iconbtn";
+          ren.type = "button";
+          ren.title = "Rename";
+          ren.setAttribute("aria-label", "Rename " + r.initials);
+          ren.textContent = "Rename";
+          ren.addEventListener("click", function () {
+            renameStudent(r);
+          });
+          li.appendChild(ren);
+
+          var del = document.createElement("button");
+          del.className = "iconbtn danger";
+          del.type = "button";
+          del.title = "Delete";
+          del.setAttribute("aria-label", "Delete " + r.initials);
+          del.textContent = "Delete";
+          del.addEventListener("click", function () {
+            deleteStudent(r);
+          });
+          li.appendChild(del);
+          return li;
+        }
+        function addRow(section) {
+          var box = document.createElement("div");
+          box.className = "row";
+          box.style.marginBottom = "10px";
+          var inp = document.createElement("input");
+          inp.type = "text";
+          inp.maxLength = 6;
+          inp.placeholder = "Initials";
+          inp.setAttribute("aria-label", "New student initials for section " + section);
+          inp.style.width = "120px";
+          var btn = document.createElement("button");
+          btn.className = "ghost";
+          btn.type = "button";
+          btn.textContent = "Add student";
+          function go() {
+            addStudent(section, inp.value);
+            inp.value = "";
+          }
+          btn.addEventListener("click", go);
+          inp.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") go();
+          });
+          box.appendChild(inp);
+          box.appendChild(btn);
+          return box;
+        }
+        function importBlock(section) {
+          var d = document.createElement("details");
+          d.className = "import";
+          var sum = document.createElement("summary");
+          sum.textContent = "Import class list";
+          d.appendChild(sum);
+
+          var ta = document.createElement("textarea");
+          ta.placeholder = "Paste names or initials, one per line.\nJane Doe\nMarcus Lee\nAS";
+          ta.setAttribute("aria-label", "Paste class list for section " + section);
+          d.appendChild(ta);
+
+          var preview = document.createElement("div");
+          preview.className = "preview";
+          d.appendChild(preview);
+
+          var row = document.createElement("div");
+          row.className = "row";
+          var pv = document.createElement("button");
+          pv.className = "ghost";
+          pv.type = "button";
+          pv.textContent = "Preview";
+          var add = document.createElement("button");
+          add.type = "button";
+          add.textContent = "Add to " + section;
+          row.appendChild(pv);
+          row.appendChild(add);
+          d.appendChild(row);
+
+          function parsed() {
+            var seen = {};
+            return ta.value
+              .split("\n")
+              .map(initialsFromLine)
+              .filter(function (x) {
+                if (!x || seen[x]) return false;
+                seen[x] = true;
+                return true;
+              });
+          }
+          function drawPreview() {
+            preview.textContent = "";
+            var items = parsed();
+            if (!items.length) {
+              preview.textContent = "";
+              return items;
+            }
+            items.forEach(function (ini) {
+              var c = document.createElement("span");
+              var dup = !!roster[keyOf(section, ini)];
+              c.className = "chip" + (dup ? " dup" : "");
+              c.textContent = ini + (dup ? " (already added)" : "");
+              preview.appendChild(c);
+            });
+            return items;
+          }
+          pv.addEventListener("click", drawPreview);
+          add.addEventListener("click", function () {
+            var items = drawPreview();
+            importStudents(section, items);
+            ta.value = "";
+            preview.textContent = "";
+          });
+          return d;
+        }
+
+        // ---- mutations ------------------------------------------------------
+        function requireKey() {
+          if (!key) {
+            showNotice("Enter your teacher key first.", "warn");
+            return false;
+          }
+          return true;
+        }
+        function upsertLocal(rec) {
+          rec.seed = false;
+          roster[keyOf(rec.section, rec.initials)] = rec;
+        }
+        function saveEntries(entries) {
+          // optimistic local, then persist
+          entries.forEach(upsertLocal);
+          renderSections();
+          if (!requireKey()) return Promise.resolve();
+          return req("POST", { entries: entries })
+            .then(function () {
+              clearNotice();
+            })
+            .catch(handleErr);
+        }
+        function addStudent(section, raw) {
+          var ini = clampInitials(raw);
+          if (!ini) return;
+          if (roster[keyOf(section, ini)]) {
+            showNotice(ini + " is already in section " + section + ".", "warn");
+            return;
+          }
+          saveEntries([{ section: section, initials: ini, widaLevel: 0, iepItems: [] }]);
+        }
+        function importStudents(section, items) {
+          var fresh = items.filter(function (ini) {
+            return ini && !roster[keyOf(section, ini)];
+          });
+          if (!fresh.length) {
+            showNotice("Nothing new to add — all initials already exist.", "warn");
+            return;
+          }
+          saveEntries(
+            fresh.map(function (ini) {
+              return { section: section, initials: ini, widaLevel: 0, iepItems: [] };
+            }),
+          );
+        }
+        function renameStudent(r) {
+          var next = clampInitials(window.prompt("New initials for " + r.initials, r.initials));
+          if (!next || next === r.initials) return;
+          if (roster[keyOf(r.section, next)]) {
+            showNotice(next + " already exists in section " + r.section + ".", "warn");
+            return;
+          }
+          var moved = {
+            section: r.section,
+            initials: next,
+            widaLevel: r.widaLevel,
+            iepItems: (r.iepItems || []).slice(),
+          };
+          var wasSeed = r.seed;
+          delete roster[keyOf(r.section, r.initials)];
+          upsertLocal(moved);
+          renderSections();
+          if (!requireKey()) return;
+          // create the new key; drop the old one only if it was persisted
+          req("POST", { entries: [moved] })
+            .then(function () {
+              if (!wasSeed) return req("DELETE", { section: r.section, initials: r.initials });
+            })
+            .then(function () {
+              clearNotice();
+            })
+            .catch(handleErr);
+        }
+        function deleteStudent(r) {
+          if (!window.confirm("Remove " + r.initials + " from section " + r.section + "?")) return;
+          var wasSeed = r.seed;
+          delete roster[keyOf(r.section, r.initials)];
+          renderSections();
+          if (wasSeed) return; // never persisted
+          if (!requireKey()) return;
+          req("DELETE", { section: r.section, initials: r.initials })
+            .then(function () {
+              clearNotice();
+            })
+            .catch(handleErr);
+        }
+
+        // ---- editor ---------------------------------------------------------
+        function buildWidaSelect() {
+          var sel = $("wida");
+          sel.textContent = "";
+          var none = document.createElement("option");
+          none.value = "0";
+          none.textContent = "0 — No WIDA support";
+          sel.appendChild(none);
+          (S.widaLevels || []).forEach(function (w) {
+            var o = document.createElement("option");
+            o.value = String(w.level);
+            o.textContent = w.level + " — " + w.name;
+            sel.appendChild(o);
+          });
+        }
+        function buildGroups() {
+          var wrap = $("groups");
+          wrap.textContent = "";
+          (S.groups || []).forEach(function (g) {
+            var gd = document.createElement("div");
+            gd.className = "group";
+            var gl = document.createElement("div");
+            gl.className = "glabel";
+            gl.textContent = (g.icon ? g.icon + " " : "") + g.label;
+            gd.appendChild(gl);
+            g.items.forEach(function (it) {
+              var lab = document.createElement("label");
+              lab.className = "opt";
+              lab.setAttribute("data-key", it.key);
+              var cb = document.createElement("input");
+              cb.type = "checkbox";
+              cb.value = it.key;
+              cb.className = "iepcb";
+              var span = document.createElement("span");
+              span.textContent = it.label;
+              var badge = document.createElement("span");
+              badge.className = "tag hidden";
+              badge.textContent = "WIDA";
+              lab.appendChild(cb);
+              lab.appendChild(span);
+              lab.appendChild(badge);
+              gd.appendChild(lab);
+            });
+            wrap.appendChild(gd);
+          });
+        }
+        function applyWidaState() {
+          var level = Number($("wida").value);
+          var bundle = {};
+          (S.widaItems(level) || []).forEach(function (k) {
+            bundle[k] = true;
+          });
+          var opts = document.querySelectorAll("#groups .opt");
+          Array.prototype.forEach.call(opts, function (lab) {
+            var k = lab.getAttribute("data-key");
+            var cb = lab.querySelector("input");
+            var badge = lab.querySelector(".tag");
+            if (bundle[k]) {
+              cb.checked = true;
+              cb.disabled = true;
+              lab.classList.add("fromwida");
+              badge.classList.remove("hidden");
+            } else {
+              cb.disabled = false;
+              lab.classList.remove("fromwida");
+              badge.classList.add("hidden");
+            }
+          });
+        }
+        function openEditor(r) {
+          editing = r;
+          $("edTitle").textContent = "Assign supports — " + r.section + " · " + r.initials;
+          $("edSub").textContent =
+            "Turn on the supports " + r.initials + " should see in every lesson.";
+          $("edMsg").textContent = "";
+          $("wida").value = String(r.widaLevel || 0);
+          // reset checkboxes then apply this student's explicit IEP items
+          var cbs = document.querySelectorAll("#groups .iepcb");
+          Array.prototype.forEach.call(cbs, function (cb) {
+            cb.checked = (r.iepItems || []).indexOf(cb.value) >= 0;
+          });
+          applyWidaState();
+          var ov = $("overlay");
+          ov.classList.add("open");
+          $("wida").focus();
+        }
+        function closeEditor() {
+          $("overlay").classList.remove("open");
+          editing = null;
+        }
+        function saveEditor() {
+          if (!editing) return;
+          var level = Number($("wida").value);
+          var bundle = {};
+          (S.widaItems(level) || []).forEach(function (k) {
+            bundle[k] = true;
+          });
+          // iepItems = explicitly checked items that are NOT already in the WIDA bundle
+          var iep = [];
+          var cbs = document.querySelectorAll("#groups .iepcb");
+          Array.prototype.forEach.call(cbs, function (cb) {
+            if (cb.checked && !bundle[cb.value] && S.isValidKey(cb.value)) iep.push(cb.value);
+          });
+          var rec = {
+            section: editing.section,
+            initials: editing.initials,
+            widaLevel: level,
+            iepItems: iep,
+          };
+          upsertLocal(rec);
+          renderSections();
+          $("edMsg").textContent = "Saving…";
+          if (!key) {
+            $("edMsg").textContent = "";
+            showNotice("Enter your teacher key to save.", "warn");
+            closeEditor();
+            return;
+          }
+          req("POST", { entries: [rec] })
+            .then(function () {
+              $("edMsg").textContent = "Saved ✓";
+              clearNotice();
+              setTimeout(closeEditor, 700);
+            })
+            .catch(function (e) {
+              $("edMsg").textContent = "";
+              handleErr(e);
+              closeEditor();
+            });
+        }
+
+        // ---- wire up --------------------------------------------------------
+        buildWidaSelect();
+        buildGroups();
+        $("wida").addEventListener("change", applyWidaState);
+        $("edSave").addEventListener("click", saveEditor);
+        $("edCancel").addEventListener("click", closeEditor);
+        $("overlay").addEventListener("click", function (e) {
+          if (e.target === $("overlay")) closeEditor();
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && $("overlay").classList.contains("open")) closeEditor();
+        });
+        $("keyGo").addEventListener("click", function () {
+          key = $("key").value.trim();
+          load();
+        });
+        $("key").addEventListener("keydown", function (e) {
+          if (e.key === "Enter") $("keyGo").click();
+        });
+
+        // ---- boot -----------------------------------------------------------
+        $("key").value = key;
+        renderSections(); // always render the shell first (never blank)
+        if (key) load();
+      })();
+    </script>
+  </body>
+</html>
