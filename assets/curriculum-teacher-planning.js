@@ -390,13 +390,16 @@
     // instead of being stranded at the bottom below the units grid.
     var teacherTools = document.querySelector("details.teacher-tools");
     if (teacherTools) details.appendChild(teacherTools);
-    // Lift the drawer to the very top of the page, above the main grid (.wrap).
-    // As a direct grid item it is pinned to a single 400px column and buried
-    // under the sticky sidebar (renders bottom-left); in normal block flow above
-    // .wrap its own max-width:1180px + margin:auto center it as a full-width
-    // section at the top. Fail-safe: if .wrap is absent it stays where wrapped.
-    var wrap = document.querySelector(".wrap");
-    if (wrap && wrap.parentNode) wrap.parentNode.insertBefore(details, wrap);
+    // Lift the drawer to the very TOP of the page — above the Teacher Command
+    // Center panel (#curriculum-teacher-workflow) when it's present, otherwise
+    // above the main units grid (.wrap). organizeTools() runs right after that
+    // panel is inserted (curriculum-teacher-workflow.js), so it already exists
+    // here; the .wrap fail-safe keeps working if the panel is ever absent. In
+    // normal block flow its own max-width:1180px + margin:auto center it as a
+    // full-width section at the top.
+    var topAnchor =
+      document.getElementById("curriculum-teacher-workflow") || document.querySelector(".wrap");
+    if (topAnchor && topAnchor.parentNode) topAnchor.parentNode.insertBefore(details, topAnchor);
   }
 
   function render(view, stage, context) {
