@@ -41,6 +41,17 @@
  *     The current question lives in DO storage ("play") so reconnecting
  *     students land mid-round. No answers are persisted — the tally is a live
  *     teacher-screen affordance, not a gradebook.
+ *
+ *   TWO-WAY INK (v4)  teacher → class
+ *     A monitoring teacher annotates a watched student's board, and a teacher
+ *     (monitor or broadcaster) pushes a page to the whole class. Both are
+ *     ephemeral one-shot deliveries — nothing is stored.
+ *     monitor → server               { type:"annotate", sid, strokes:[{tool,color,size,pts:[{x,y}]}] }
+ *     server  → that sharer only     { type:"annotate", strokes }
+ *     monitor → server               { type:"annotate-clear", sid }
+ *     server  → that sharer only     { type:"annotate-clear" }
+ *     monitor|teacher → server       { type:"push", snap }
+ *     server  → sharers + students   { type:"push", snap }
  */
 
 import { DurableObject } from "cloudflare:workers";
@@ -48,6 +59,7 @@ import { DurableObject } from "cloudflare:workers";
 const MAX_SNAP = 3_000_000; // serialized multi-page board
 const MAX_THUMB = 400_000; // small downscaled JPEG data URL
 const MAX_PLAY = 8_000; // serialized Class Play question (text only)
+const MAX_ANNOTATE = 150_000; // serialized teacher annotation strokes
 const ROLES = new Set(["teacher", "student", "monitor", "sharer"]);
 
 function normCode(code) {
@@ -235,6 +247,28 @@ export class BoardRoom extends DurableObject {
       return;
     }
 
+    // ---- TWO-WAY INK: teacher pushes a page to the whole class (one-shot) ----
+    if ((role === "teacher" || role === "monitor") && msg.type === "push") {
+      if (typeof msg.snap !== "string" || !msg.snap || msg.snap.length > MAX_SNAP) return;
+      const out = JSON.stringify({ type: "push", snap: msg.snap });
+      for (const tag of ["sharer", "student"]) {
+        let socks = [];
+        try {
+          socks = this.ctx.getWebSockets(tag);
+        } catch {
+          socks = [];
+        }
+        for (const s of socks) {
+          try {
+            s.send(out);
+          } catch {
+            /* dead socket */
+          }
+        }
+      }
+      return;
+    }
+
     // ---- BROADCAST: teacher pushes their board to followers ----
     if (role === "teacher") {
       if (msg.type !== "board" || typeof msg.snap !== "string" || msg.snap.length > MAX_SNAP)
@@ -314,6 +348,19 @@ export class BoardRoom extends DurableObject {
       } else if (msg.type === "unwatch") {
         a.watching = null;
         ws.serializeAttachment(a);
+      } else if (msg.type === "annotate" && typeof msg.sid === "string" && msg.sid.length <= 16) {
+        // TWO-WAY INK: forward sanitized teacher strokes to that sharer only.
+        const strokes = this.cleanStrokes(msg.strokes);
+        if (!strokes) return;
+        const target = this.sharerBySid(msg.sid);
+        if (target) this.safeSend(target, { type: "annotate", strokes });
+      } else if (
+        msg.type === "annotate-clear" &&
+        typeof msg.sid === "string" &&
+        msg.sid.length <= 16
+      ) {
+        const target = this.sharerBySid(msg.sid);
+        if (target) this.safeSend(target, { type: "annotate-clear" });
       }
       return;
     }
@@ -357,6 +404,52 @@ export class BoardRoom extends DurableObject {
       of: Number(q.of) || 0,
     };
     return JSON.stringify(clean).length > MAX_PLAY ? null : clean;
+  }
+
+  /** Validate + rebuild teacher annotation strokes to a safe shape (never forwards raw fields). */
+  cleanStrokes(strokes) {
+    if (!Array.isArray(strokes) || strokes.length === 0 || strokes.length > 60) return null;
+    const clean = [];
+    for (const s of strokes) {
+      if (!s || typeof s !== "object" || !Array.isArray(s.pts) || s.pts.length > 3000) continue;
+      const pts = [];
+      for (const p of s.pts) {
+        const x = Number(p && p.x);
+        const y = Number(p && p.y);
+        if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+        pts.push({ x: Math.round(x), y: Math.round(y) });
+      }
+      if (pts.length === 0) continue;
+      const size = Number(s.size);
+      clean.push({
+        tool: s.tool === "highlighter" ? "highlighter" : "pen",
+        color: String(s.color || "").slice(0, 24),
+        size: Math.min(40, Math.max(1, Number.isFinite(size) ? size : 3)),
+        pts,
+      });
+    }
+    if (clean.length === 0) return null;
+    return JSON.stringify(clean).length > MAX_ANNOTATE ? null : clean;
+  }
+
+  /** Find the sharer socket whose attachment sid matches, or null. */
+  sharerBySid(sid) {
+    let sharers = [];
+    try {
+      sharers = this.ctx.getWebSockets("sharer");
+    } catch {
+      return null;
+    }
+    for (const w of sharers) {
+      let a = {};
+      try {
+        a = w.deserializeAttachment() || {};
+      } catch {
+        a = {};
+      }
+      if (a.sid === sid) return w;
+    }
+    return null;
   }
 
   async webSocketClose(ws, code, reason) {
