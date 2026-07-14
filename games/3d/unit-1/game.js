@@ -1,48 +1,31 @@
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
 import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 // ============================================================================
-// Unit 1 — SMOOTHIE RUSH  ·  Ratios & Unit Rates (6.RP.A.1–3)
-// REAL-TIME ORDER-FILLING ACTION GAME on the engine3d/ runtime.
+// Unit 1 — SMOOTHIE RECIPE LAB · Ratios & Unit Rates (6.RP.A.1–3)
 //
-// Customers ride a conveyor belt toward the stand. Each customer carries an
-// order card: either a part-to-part RATIO recipe ("2 red : 3 yellow") or a
-// UNIT-RATE question ("$6 for 3 — price each?"). The player builds the answer
-// in REAL TIME against a per-order countdown bar:
-//   • RATIO orders  — tap 🍓 / 🍌 (← / →, d-pad) to load red & yellow scoops
-//     into the blender until the cup matches the recipe ratio, then SERVE.
-//   • RATE  orders  — tap ← / → to dial the price/answer up & down, then SERVE.
-// Serve before the bar empties → points + combo + a juicy pop. A wrong serve or
-// a timeout costs a life and resets the combo. Clear the whole shift → win.
-// The belt always moves, the pace ramps up, and the math IS the gameplay: the
-// player must actually compute the equivalent ratio / unit rate to serve right.
+// A relaxed Juice Bar & Math Visualizer.
+// The student is presented with customer order tickets:
+//   • Ratio orders  — Mix ingredients matching the recipe ratio (e.g. 1:2)
+//     by adding 🍓 and 🍌 scoops. A dynamic, real-time Tape Diagram shows
+//     how the ratio scales and highlights equivalent ratio subdivisions.
+//   • Rate orders   — Find a unit rate (e.g. cost per smoothie). An interactive
+//     Double Number Line visualizes equivalent rates and helps find the cost for 1.
 //
-// Math (recipes + unit-rate answers) is reused verbatim from the original
-// Smoothie Stand so the curriculum stays exact. Equivalent ratios are checked
-// by simplifying; unit rate = total ÷ count (verified in comments below).
+// Mistakes are forgiving: wrong mixes trigger a yucky brown shake and let the
+// student reset/try again without losing their progress.
 // ============================================================================
 
 const COLORS = {
   base: 0x123a6b,
-  belt: 0x14233f,
-  beltEmissive: 0x1d3a66,
-  rail: 0x2f6aa0,
-  blender: 0x2f6aa0,
-  blenderGlass: 0xbfe2ff,
   strawberry: 0xe0556b,
   banana: 0xf2c15b,
   teal: 0x1fa6a2,
   amber: 0xf2c15b,
-  spark: 0xffd56b,
   ok: 0x4aa978,
   bad: 0xb64e2f,
-  wood: 0x6b4a2f,
-};
-
-const FRUIT = {
-  strawberry: { name: "strawberry", color: COLORS.strawberry, emoji: "🍓" },
-  banana: { name: "banana", color: COLORS.banana, emoji: "🍌" },
+  wood: 0x8e6e53,
+  glass: 0xdff1ff,
 };
 
 function gcd(a, b) {
@@ -51,37 +34,166 @@ function gcd(a, b) {
   while (b) [a, b] = [b, a % b];
   return a || 1;
 }
+
 function simplify(a, b) {
   const g = gcd(a, b);
   return [a / g, b / g];
 }
 
 // ---------------------------------------------------------------------------
-// Order sets per level (reused verbatim from the original).
-//   Level 1 (support): hints on, smaller numbers, simple part-to-part ratios.
-//   Level 2 (enrichment): larger / multi-step ratios + unit-rate questions.
-// Each entry becomes one customer order on the belt.
+// Dynamic SVG Tape Diagram Generator
 // ---------------------------------------------------------------------------
-function makeLevel(level) {
-  if (level === 1) {
-    return {
-      hints: true,
-      orders: [
-        { kind: "ratio", a: 1, b: 1 },
-        { kind: "ratio", a: 2, b: 1 },
-        { kind: "ratio", a: 1, b: 2 },
-        { kind: "ratio", a: 2, b: 3 },
-        { kind: "ratio", a: 3, b: 2 },
-      ],
-    };
+function renderTapeDiagram(recipeA, recipeB, currentA, currentB, targetA, targetB) {
+  const multA = recipeA > 0 ? currentA / recipeA : 0;
+  const multB = recipeB > 0 ? currentB / recipeB : 0;
+  const isEquivalent = (multA === multB && Number.isInteger(multA) && multA > 0);
+
+  let html = `
+    <svg width="100%" height="150" viewBox="0 0 280 150" style="display: block; margin: 0 auto;">
+      <!-- Strawberries Bar -->
+      <text x="10" y="22" fill="#e0556b" font-weight="800" font-size="11" font-family="system-ui">🍓 Strawberries (${currentA} / ${targetA})</text>
+  `;
+
+  const maxBoxes = Math.max(recipeA, recipeB, 1);
+  const boxWidth = 260 / maxBoxes;
+  const startX = 10;
+
+  for (let i = 0; i < recipeA; i++) {
+    const x = startX + i * boxWidth;
+    const val = Number.isInteger(multA) ? multA : multA.toFixed(1);
+    const boxColor = isEquivalent ? "rgba(224, 85, 107, 0.9)" : (multA > 0 ? "rgba(182, 78, 47, 0.9)" : "rgba(255, 255, 255, 0.1)");
+    html += `
+      <rect x="${x}" y="30" width="${boxWidth - 4}" height="28" rx="5" fill="${boxColor}" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+      <text x="${x + (boxWidth - 4)/2}" y="48" fill="white" font-weight="bold" font-size="11" font-family="system-ui" text-anchor="middle">${currentA > 0 ? val : ""}</text>
+    `;
   }
-  return {
-    hints: false,
+
+  // Bananas Bar
+  html += `
+      <text x="10" y="87" fill="#f2c15b" font-weight="800" font-size="11" font-family="system-ui">🍌 Bananas (${currentB} / ${targetB})</text>
+  `;
+  for (let i = 0; i < recipeB; i++) {
+    const x = startX + i * boxWidth;
+    const val = Number.isInteger(multB) ? multB : multB.toFixed(1);
+    const boxColor = isEquivalent ? "rgba(242, 193, 91, 0.9)" : (multB > 0 ? "rgba(182, 78, 47, 0.9)" : "rgba(255, 255, 255, 0.1)");
+    const textColor = isEquivalent ? "#12355b" : "white";
+    html += `
+      <rect x="${x}" y="95" width="${boxWidth - 4}" height="28" rx="5" fill="${boxColor}" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+      <text x="${x + (boxWidth - 4)/2}" y="113" fill="${textColor}" font-weight="bold" font-size="11" font-family="system-ui" text-anchor="middle">${currentB > 0 ? val : ""}</text>
+    `;
+  }
+
+  html += `</svg>`;
+  return { html, isEquivalent };
+}
+
+// ---------------------------------------------------------------------------
+// Dynamic SVG Double Number Line Generator
+// ---------------------------------------------------------------------------
+function renderDoubleNumberLine(total, count, currentGuess) {
+  const unitRate = total / count;
+  const maxSmoothies = Math.max(5, count + 1);
+  const stepX = 240 / maxSmoothies;
+
+  let html = `
+    <svg width="100%" height="150" viewBox="0 0 280 150" style="display: block; margin: 0 auto;">
+      <!-- Top Line: Cost -->
+      <text x="10" y="20" fill="#2ecc71" font-weight="800" font-size="11" font-family="system-ui">Cost ($)</text>
+      <line x1="20" y1="42" x2="260" y2="42" stroke="white" stroke-width="2"/>
+      
+      <!-- Bottom Line: Smoothies -->
+      <text x="10" y="112" fill="#f2c15b" font-weight="800" font-size="11" font-family="system-ui">Smoothies</text>
+      <line x1="20" y1="88" x2="260" y2="88" stroke="white" stroke-width="2"/>
+  `;
+
+  for (let i = 0; i <= maxSmoothies; i++) {
+    const x = 20 + i * stepX;
+    const costVal = i * unitRate;
+
+    // Ticks
+    html += `
+      <line x1="${x}" y1="37" x2="${x}" y2="47" stroke="white" stroke-width="1.5"/>
+      <line x1="${x}" y1="83" x2="${x}" y2="93" stroke="white" stroke-width="1.5"/>
+      
+      <!-- Cost Labels -->
+      <text x="${x}" y="30" fill="#58d68d" font-size="9" font-family="system-ui" text-anchor="middle">$${costVal}</text>
+      <!-- Smoothie Labels -->
+      <text x="${x}" y="105" fill="#f2c15b" font-size="9" font-family="system-ui" text-anchor="middle">${i}</text>
+    `;
+
+    // Highlight connection at count
+    if (i === count) {
+      html += `
+        <line x1="${x}" y1="42" x2="${x}" y2="88" stroke="rgba(255, 213, 107, 0.4)" stroke-dasharray="3,3" stroke-width="1.5"/>
+      `;
+    }
+
+    // Show current guess highlighter at 1 smoothie
+    if (i === 1) {
+      const guessX = 20 + 1 * stepX;
+      html += `
+        <circle cx="${guessX}" cy="42" r="4.5" fill="#e0556b" stroke="white" stroke-width="1"/>
+        <circle cx="${guessX}" cy="88" r="4.5" fill="#e0556b" stroke="white" stroke-width="1"/>
+        <line x1="${guessX}" y1="42" x2="${guessX}" y2="88" stroke="#e0556b" stroke-width="1.5"/>
+        <rect x="${guessX - 20}" y="52" width="40" height="20" rx="4" fill="#e0556b" opacity="0.9"/>
+        <text x="${guessX}" y="65" fill="white" font-weight="bold" font-size="9" font-family="system-ui" text-anchor="middle">$${currentGuess}</text>
+      `;
+    }
+  }
+
+  html += `</svg>`;
+  return html;
+}
+
+const LEVEL_DATA = {
+  0: {
+    hints: true,
+    persistentHints: true,
+    noTimer: true,
     orders: [
-      { kind: "ratio", a: 4, b: 6, baseLabel: "2 : 3, doubled" },
-      { kind: "ratio", a: 6, b: 4, baseLabel: "3 : 2, doubled" },
-      { kind: "ratio", a: 6, b: 9, baseLabel: "2 : 3, tripled" },
-      // $6 ÷ 3 = $2 each.
+      { kind: "ratio", a: 1, b: 1, tag: "ratio-1-to-1" },
+      { kind: "ratio", a: 2, b: 1, tag: "ratio-simple" },
+      { kind: "ratio", a: 1, b: 2, tag: "ratio-simple" },
+    ],
+  },
+  1: {
+    hints: true,
+    persistentHints: true,
+    noTimer: true,
+    orders: [
+      { kind: "ratio", a: 1, b: 1, tag: "ratio-1-to-1" },
+      { kind: "ratio", a: 2, b: 1, tag: "ratio-simple" },
+      { kind: "ratio", a: 1, b: 2, tag: "ratio-simple" },
+      { kind: "ratio", a: 2, b: 3, tag: "ratio-part-to-part" },
+      { kind: "ratio", a: 3, b: 2, tag: "ratio-part-to-part" },
+    ],
+  },
+  2: {
+    hints: true,
+    persistentHints: true,
+    noTimer: true,
+    orders: [
+      {
+        kind: "ratio",
+        a: 4,
+        b: 6,
+        baseLabel: "2 : 3, doubled",
+        tag: "ratio-scale-up",
+      },
+      {
+        kind: "ratio",
+        a: 6,
+        b: 4,
+        baseLabel: "3 : 2, doubled",
+        tag: "ratio-scale-up",
+      },
+      {
+        kind: "ratio",
+        a: 6,
+        b: 9,
+        baseLabel: "2 : 3, tripled",
+        tag: "ratio-scale-up",
+      },
       {
         kind: "rate",
         prompt: "$6 for 3 smoothies. Price each?",
@@ -89,8 +201,8 @@ function makeLevel(level) {
         count: 3,
         unit: "$",
         answer: 2,
+        tag: "unit-rate-price",
       },
-      // 12 scoops ÷ 4 servings = 3 scoops each.
       {
         kind: "rate",
         prompt: "12 scoops make 4 servings. Scoops per serving?",
@@ -98,8 +210,8 @@ function makeLevel(level) {
         count: 4,
         unit: "",
         answer: 3,
+        tag: "unit-rate-quantity",
       },
-      // $10 ÷ 5 = $2 each.
       {
         kind: "rate",
         prompt: "$10 for 5 smoothies. Price each?",
@@ -107,8 +219,8 @@ function makeLevel(level) {
         count: 5,
         unit: "$",
         answer: 2,
+        tag: "unit-rate-price",
       },
-      // $15 ÷ 5 = $3 each.
       {
         kind: "rate",
         prompt: "$15 for 5 smoothies. Price each?",
@@ -116,42 +228,49 @@ function makeLevel(level) {
         count: 5,
         unit: "$",
         answer: 3,
+        tag: "unit-rate-price",
       },
     ],
-  };
+  },
+};
+
+function makeLevel(level) {
+  return LEVEL_DATA[level] || LEVEL_DATA[1];
 }
 
 export default {
   id: "unit-1-smoothie-stand",
+  standard: "6.RP.A.1-3",
+  learningTargets: [
+    "Describe a part-to-part ratio of two quantities.",
+    "Build an equivalent ratio by scaling both parts by the same number.",
+    "Find a unit rate as total ÷ count.",
+  ],
+  levels: LEVEL_DATA,
   vocab: [
     {
       term: "Ratio",
-      definition:
-        "A way to compare two amounts, like 2 strawberries to 3 bananas.",
+      definition: "A way to compare two amounts, like 2 strawberries to 3 bananas.",
       emoji: "⚖️",
     },
     {
       term: "Part-to-part",
-      definition:
-        "A ratio that compares one part to another part, like fruit to fruit.",
+      definition: "A ratio that compares one part to another part, like fruit to fruit.",
       emoji: "🍓",
     },
     {
       term: "Equivalent ratio",
-      definition:
-        "A ratio that shows the same comparison, like 2 : 3 and 4 : 6.",
+      definition: "A ratio that shows the same comparison, like 2 : 3 and 4 : 6.",
       emoji: "🟰",
     },
     {
       term: "Unit rate",
-      definition:
-        "How much you get for just one, like the price for one smoothie.",
+      definition: "How much you get for just one, like the price for one smoothie.",
       emoji: "1️⃣",
     },
     {
       term: "Scale",
-      definition:
-        "To grow or shrink amounts by the same number to keep a ratio.",
+      definition: "To grow or shrink amounts by the same number to keep a ratio.",
       emoji: "📈",
     },
   ],
@@ -177,7 +296,178 @@ export default {
     const clarityMount = renderer.domElement.parentElement || document.body;
     let clarity = null;
 
-    // ---- Disposable registry (geometries/materials/textures) ----------------
+    // ---- HTML Layout Injection ----
+    const styleEl = document.createElement("style");
+    styleEl.id = "recipe-lab-styles";
+    styleEl.textContent = `
+      #recipe-lab-ui {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 70px 24px 80px 24px;
+        pointer-events: none;
+        font-family: var(--font-body, system-ui, sans-serif);
+        box-sizing: border-box;
+      }
+      .ui-card {
+        background: rgba(11, 28, 52, 0.94);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1.5px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        padding: 16px 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        pointer-events: auto;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        transition: all 0.3s ease;
+      }
+      .ui-card-left {
+        width: 250px;
+        border-left: 5px solid var(--amber, #f2c15b);
+      }
+      .ui-card-right {
+        width: 310px;
+        border-left: 5px solid var(--teal, #1fa6a2);
+        align-items: center;
+      }
+      .ticket-title {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--amber, #f2c15b);
+        margin-bottom: 8px;
+        border-bottom: 1px dashed rgba(255,255,255,0.2);
+        padding-bottom: 4px;
+      }
+      .ticket-body {
+        font-size: 14px;
+        line-height: 1.4;
+        margin: 6px 0;
+      }
+      .ticket-badge {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 12px;
+        margin-top: 8px;
+        font-weight: bold;
+        color: #e0f2fe;
+      }
+      .visualizer-title {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--teal, #1fa6a2);
+        margin-bottom: 10px;
+        align-self: flex-start;
+      }
+      .controls-bar {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 500px;
+        background: rgba(11, 28, 52, 0.94);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1.5px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        padding: 12px 20px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        pointer-events: auto;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        z-index: 20;
+      }
+      .lab-btn {
+        flex: 1;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        color: white;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+        transition: transform 0.1s, box-shadow 0.1s, opacity 0.2s;
+        user-select: none;
+        -webkit-user-select: none;
+        outline: none;
+      }
+      .lab-btn:active {
+        transform: scale(0.95);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      }
+      .lab-btn-strawberry {
+        background: linear-gradient(135deg, #e0556b, #c2384e);
+      }
+      .lab-btn-banana {
+        background: linear-gradient(135deg, #f2c15b, #d9a438);
+        color: #12355b;
+        text-shadow: none;
+      }
+      .lab-btn-undo {
+        background: linear-gradient(135deg, #5c7596, #41556e);
+      }
+      .lab-btn-serve {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        box-shadow: 0 3px 12px rgba(46, 204, 113, 0.35);
+      }
+      .lab-btn-rate-down {
+        background: linear-gradient(135deg, #e0556b, #c2384e);
+      }
+      .lab-btn-rate-up {
+        background: linear-gradient(135deg, #1fa6a2, #188784);
+      }
+      
+      @media (max-width: 768px) {
+        #recipe-lab-ui {
+          flex-direction: column;
+          padding: 60px 12px 100px 12px;
+          justify-content: flex-start;
+          gap: 12px;
+        }
+        .ui-card {
+          width: 100% !important;
+          max-width: none !important;
+          padding: 10px 14px;
+        }
+        .ui-card-right {
+          margin-top: 0;
+        }
+        .controls-bar {
+          bottom: 10px;
+          padding: 8px 12px;
+          width: calc(100% - 24px);
+        }
+      }
+    `;
+    document.head.appendChild(styleEl);
+
+    const uiContainer = document.createElement("div");
+    uiContainer.id = "recipe-lab-ui";
+    uiContainer.innerHTML = `
+      <div class="ui-card ui-card-left" id="order-ticket"></div>
+      <div class="ui-card ui-card-right" id="math-visualizer"></div>
+      <div class="controls-bar" id="controls-panel"></div>
+    `;
+    clarityMount.appendChild(uiContainer);
+
+    // ---- Disposable registry ------------------------------------------------
     const disposables = [];
     const track = (obj) => {
       disposables.push(obj);
@@ -198,95 +488,62 @@ export default {
     const group = new THREE.Group();
     scene.add(group);
 
-    // ---- World layout -------------------------------------------------------
-    // The belt runs along +x→−x (customers ride in from the right and exit
-    // left). The blender sits at the SERVE position (x≈SERVE_X). Customers
-    // animate continuously so the scene always feels alive.
-    const BELT_LEN = 30;
-    const BELT_Y = 0.0;
-    const SPAWN_X = 9; // customer appears here (right of the serve window)
-    const SERVE_X = 0; // blender / serve window
-    const EXIT_X = -14; // customer leaves the belt here
-
-    // Ground / stage.
-    const groundGeo = track(new THREE.CircleGeometry(22, 48));
-    const groundMat = std(0x0e2b4f, { roughness: 0.95 });
-    const ground = new THREE.Mesh(
-      groundGeo,
-      groundMat,
-    );
+    // ---- 3D Studio Layout ---------------------------------------------------
+    // Ground / floor
+    const groundGeo = track(new THREE.CircleGeometry(20, 32));
+    const ground = new THREE.Mesh(groundGeo, std(0x0e2b4f, { roughness: 0.95 }));
     ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -0.42;
+    ground.position.y = -0.8;
     ground.receiveShadow = true;
     group.add(ground);
 
-    // Conveyor belt — long emissive slab with scrolling tread dashes.
-    const beltGeo = track(new RoundedBoxGeometry(BELT_LEN, 0.5, 3.2, 3, 0.18));
-    const beltMat = std(COLORS.belt, {
-      roughness: 0.88,
-      emissive: COLORS.beltEmissive,
-      emissiveIntensity: 0.16,
-    });
-    const belt = new THREE.Mesh(beltGeo, beltMat);
-    belt.position.set(0, BELT_Y - 0.3, 1.6);
-    belt.receiveShadow = true;
-    group.add(belt);
+    // Solid wooden counter top
+    const counterGeo = track(new RoundedBoxGeometry(8, 0.8, 4.5, 4, 0.2));
+    const counter = new THREE.Mesh(counterGeo, std(COLORS.wood, { roughness: 0.75 }));
+    counter.position.set(0, -0.4, 0);
+    counter.receiveShadow = true;
+    counter.castShadow = true;
+    group.add(counter);
 
-    // Scrolling tread dashes across the belt (the speed cue).
-    const dashMat = std(0xdff1ff, {
-      roughness: 0.4,
-      emissive: 0xdff1ff,
-      emissiveIntensity: 0.55,
-    });
-    const dashGeo = track(new THREE.BoxGeometry(0.5, 0.05, 2.6));
-    const DASH_SPAN = BELT_LEN;
-    const DASH_STEP = 2.0;
-    const dashes = [];
-    for (let x = BELT_LEN / 2; x > -BELT_LEN / 2; x -= DASH_STEP) {
-      const d = new THREE.Mesh(dashGeo, dashMat);
-      d.position.set(x, BELT_Y - 0.04, 1.6);
-      group.add(d);
-      dashes.push(d);
-    }
+    // dispenser pipes
+    const pipeMat = std(0x7f8c8d, { metalness: 0.8, roughness: 0.15 });
+    const pipeGeo = track(new THREE.CylinderGeometry(0.35, 0.35, 1.4, 16));
 
-    // Back board / stand sign (emissive accent).
-    const boardGeo = track(new RoundedBoxGeometry(7, 2.0, 0.4, 4, 0.2));
-    const board = new THREE.Mesh(
-      boardGeo,
-      std(COLORS.teal, {
-        emissive: COLORS.teal,
-        emissiveIntensity: 0.5,
-        roughness: 0.4,
-      }),
-    );
-    board.position.set(0, 4.4, -3.4);
-    board.castShadow = true;
-    group.add(board);
+    const leftPipe = new THREE.Mesh(pipeGeo, pipeMat);
+    leftPipe.position.set(-1.8, 3.2, 0);
+    leftPipe.rotation.z = -Math.PI / 6;
+    leftPipe.castShadow = true;
+    group.add(leftPipe);
 
-    // ---- Blender (glass jar + base) at the serve window ---------------------
+    const rightPipe = new THREE.Mesh(pipeGeo, pipeMat);
+    rightPipe.position.set(1.8, 3.2, 0);
+    rightPipe.rotation.z = Math.PI / 6;
+    rightPipe.castShadow = true;
+    group.add(rightPipe);
+
+    // ---- 3D Blender Jar -----------------------------------------------------
     const blenderGroup = new THREE.Group();
-    blenderGroup.position.set(SERVE_X, 0, -0.4);
+    blenderGroup.position.set(0, 0, 0);
     group.add(blenderGroup);
+
     const jarRadius = 1.25;
     const jarGeo = track(
-      new THREE.CylinderGeometry(jarRadius, jarRadius * 0.82, 3.4, 32, 1, true),
+      new THREE.CylinderGeometry(jarRadius, jarRadius * 0.85, 3.2, 32, 1, true),
     );
     const jarMat = track(
       new THREE.MeshPhysicalMaterial({
-        color: COLORS.blenderGlass,
+        color: COLORS.glass,
         transparent: true,
-        opacity: 0.26,
-        roughness: 0.05,
+        opacity: 0.2,
+        transmission: 0.82,
+        roughness: 0.08,
         metalness: 0,
-        transmission: 0.6,
-        thickness: 0.5,
-        clearcoat: 1,
-        clearcoatRoughness: 0.1,
+        thickness: 0.3,
         side: THREE.DoubleSide,
       }),
     );
     const jar = new THREE.Mesh(jarGeo, jarMat);
-    jar.position.y = 1.7;
+    jar.position.y = 1.6;
     blenderGroup.add(jar);
 
     const jarBaseGeo = track(
@@ -294,171 +551,47 @@ export default {
     );
     const jarBase = new THREE.Mesh(
       jarBaseGeo,
-      std(COLORS.blender, { roughness: 0.35, metalness: 0.4 }),
+      std(0x2c3e50, { metalness: 0.6, roughness: 0.2 }),
     );
     jarBase.position.y = 0.3;
     jarBase.castShadow = true;
     blenderGroup.add(jarBase);
 
-    // ---- Fruit dispensers (tap targets, flank the blender) ------------------
-    const dispensers = {};
-    function makeDispenser(fruit, x) {
-      const g = new THREE.Group();
-      const binGeo = track(new RoundedBoxGeometry(1.5, 1.3, 1.5, 4, 0.3));
-      const bin = new THREE.Mesh(binGeo, std(fruit.color, { roughness: 0.55 }));
-      bin.position.y = 0.65;
-      bin.castShadow = true;
-      g.add(bin);
-      const domeGeo = track(
-        new THREE.SphereGeometry(0.9, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2),
-      );
-      const dome = new THREE.Mesh(
-        domeGeo,
-        std(fruit.color, {
-          roughness: 0.3,
-          emissive: fruit.color,
-          emissiveIntensity: 0.35,
-        }),
-      );
-      dome.position.y = 1.3;
-      dome.castShadow = true;
-      g.add(dome);
-      g.position.set(x, 0, -2.2);
-      g.userData.fruit = fruit.name;
-      g.traverse((o) => (o.userData.fruit = fruit.name));
-      group.add(g);
-      return g;
-    }
-    dispensers.strawberry = makeDispenser(FRUIT.strawberry, -3.6);
-    dispensers.banana = makeDispenser(FRUIT.banana, 3.6);
-
-    // Shared scoop geometry (small, stacks inside the jar).
-    const scoopGeo = track(new THREE.SphereGeometry(jarRadius * 0.55, 16, 12));
-
-    // ---- Customer pool ------------------------------------------------------
-    // One customer at a time rides the belt with the current order card. Reused
-    // each order: body, head, and a floating 3D label showing the order text.
-    function buildCustomer() {
-      const c = new THREE.Group();
-      const bodyGeo = track(new RoundedBoxGeometry(1.1, 1.3, 1.0, 4, 0.28));
-      const bodyMat = std(COLORS.amber, {
-        roughness: 0.5,
-        emissive: COLORS.amber,
-        emissiveIntensity: 0.12,
-      });
-      const body = new THREE.Mesh(bodyGeo, bodyMat);
-      body.position.y = 0.9;
-      body.castShadow = true;
-      c.add(body);
-      const headGeo = track(new THREE.SphereGeometry(0.42, 18, 14));
-      const head = new THREE.Mesh(headGeo, std(0xf2d6b3, { roughness: 0.6 }));
-      head.position.y = 1.85;
-      head.castShadow = true;
-      c.add(head);
-      c.userData.body = body;
-      c.userData.head = head;
-      c.userData.bodyMat = bodyMat;
-      return c;
-    }
-    const customer = buildCustomer();
-    customer.position.set(SPAWN_X, BELT_Y, 1.6);
-    customer.visible = false;
-    group.add(customer);
-
-    // Order card floating above the customer (canvas-backed label sprite).
-    // NOTE: label3d renders a single line only, and `border` must be a CSS
-    // color string (not a hex number), so we pass strings here.
-    const orderLabel = makeLabel("", {
-      fontSize: 60,
-      scale: 1.0,
-      color: "#ffffff",
-      background: "rgba(11,28,52,0.94)",
-      border: "rgba(242,193,91,0.95)",
-      THREE,
-    });
-    orderLabel.position.set(0, 3.2, 0);
-    customer.add(orderLabel);
-
-    // Live "what's in the cup" label floating over the blender.
-    const cupLabel = makeLabel("0 : 0", {
-      fontSize: 60,
-      scale: 0.9,
-      color: "#dff1ff",
-      background: "rgba(11,28,52,0.88)",
-      border: "rgba(31,166,162,0.95)",
-      THREE,
-    });
-    cupLabel.position.set(SERVE_X, 4.0, -0.4);
-    cupLabel.visible = false;
-    group.add(cupLabel);
-
-    // ---- Per-order countdown bar (a 3D plane that shrinks) ------------------
-    const barBgGeo = track(new THREE.PlaneGeometry(6.2, 0.42));
-    const barBg = new THREE.Mesh(
-      barBgGeo,
-      track(
-        new THREE.MeshBasicMaterial({
-          color: 0x0b1c34,
-          transparent: true,
-          opacity: 0.85,
-          depthTest: false,
-        }),
-      ),
+    // Translucent blending liquid
+    const liquidGeo = track(
+      new THREE.CylinderGeometry(jarRadius * 0.91, jarRadius * 0.87, 2.7, 32),
     );
-    barBg.position.set(SERVE_X, 4.9, -0.4);
-    barBg.renderOrder = 9;
-    group.add(barBg);
-    const barFillGeo = track(new THREE.PlaneGeometry(6.0, 0.3));
-    const barFillMat = track(
-      new THREE.MeshBasicMaterial({
-        color: COLORS.ok,
+    const liquidMat = track(
+      new THREE.MeshPhysicalMaterial({
+        color: 0xff8a80,
         transparent: true,
-        depthTest: false,
+        opacity: 0.0,
+        roughness: 0.22,
+        transmission: 0.55,
       }),
     );
-    const barFill = new THREE.Mesh(barFillGeo, barFillMat);
-    barFill.position.set(SERVE_X, 4.9, -0.39);
-    barFill.renderOrder = 10;
-    group.add(barFill);
-    barBg.visible = false;
-    barFill.visible = false;
+    const liquid = new THREE.Mesh(liquidGeo, liquidMat);
+    liquid.position.y = 1.4;
+    liquid.scale.set(1, 0.001, 1);
+    blenderGroup.add(liquid);
 
-    // Hide the clarity kit's duplicate HUD pills (we use the engine HUD).
-    if (!document.getElementById("u1-hud-fix")) {
-      const hf = document.createElement("style");
-      hf.id = "u1-hud-fix";
-      hf.textContent = ".ck-chip{display:none !important;}";
-      document.head.appendChild(hf);
-    }
-
-    // ---- Game state ---------------------------------------------------------
+    // ---- Game State & Controls ----------------------------------------------
     const scoops = []; // { mesh, fruit }
+    const activeFruits = []; // { mesh, vx, vy, x, y, z, targetX, targetY, targetZ, bounces, done }
     let counts = { strawberry: 0, banana: 0 };
     let order = null;
     let orderIndex = 0;
     let rateGuess = 0;
     const total = cfg.orders.length;
 
-    const START_LIVES = level === 2 ? 3 : 4;
+    let START_LIVES = level === 0 ? 6 : level === 2 ? 3 : 4;
     let lives = START_LIVES;
     let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
     let running = false;
     let gameOver = false;
-
-    // Real-time order timing. The belt carries the customer in; once they reach
-    // the serve window the countdown begins. Pace ramps as the shift goes on.
-    const BELT_SPEED = level === 2 ? 5.0 : 4.2; // world units / sec
-    function orderTime(i) {
-      // Generous early, tighter later. Level 2 is faster overall.
-      const base = level === 2 ? 12 : 15;
-      const ramp = Math.min(i * 0.9, 6); // up to 6s faster by the end
-      return Math.max(level === 2 ? 6 : 8, base - ramp);
-    }
     let phase = "idle"; // idle | arriving | active | resolving | leaving
-    let timeLeft = 0;
-    let timeMax = 1;
 
     const timers = [];
     const later = (fn, ms) => {
@@ -471,126 +604,239 @@ export default {
     let unbindTap = null;
     let unbindFrame = null;
 
-    // ---- Order text helpers -------------------------------------------------
-    function orderCardText(o) {
-      if (o.kind === "rate") return o.prompt;
-      const [ba, bb] = simplify(o.a, o.b);
-      // The card shows the RECIPE rule + the yellow target, never the red answer.
-      // label3d renders one line, so keep it to a single line.
-      return `${ba}🍓 : ${bb}🍌  ·  serve ${o.b}🍌`;
+    // ---- Dynamic on-screen HUD control panel updater ----
+    function updateUI() {
+      if (!order || gameOver || !running) {
+        uiContainer.style.display = "none";
+        return;
+      }
+      
+      uiContainer.style.display = "flex";
+      
+      const ticketEl = uiContainer.querySelector("#order-ticket");
+      const visualizerEl = uiContainer.querySelector("#math-visualizer");
+      const controlsEl = uiContainer.querySelector("#controls-panel");
+      const isActive = (phase === "active");
+      
+      // 1) Render Order Ticket
+      if (order.kind === "ratio") {
+        const [ba, bb] = simplify(order.a, order.b);
+        ticketEl.innerHTML = `
+          <div class="ticket-title">🧾 ORDER CHECK</div>
+          <div class="ticket-body" style="font-size: 15px; font-weight: bold; color: #ffd56b;">Customer Order:</div>
+          <div class="ticket-body">Serve a smoothie with a ratio of <b>${order.a} Strawberry</b> to <b>${order.b} Banana</b>.</div>
+          <div class="ticket-badge">Recipe base: ${ba} 🍓 : ${bb} 🍌</div>
+        `;
+      } else {
+        ticketEl.innerHTML = `
+          <div class="ticket-title">🧾 ORDER CHECK</div>
+          <div class="ticket-body" style="font-size: 15px; font-weight: bold; color: #ffd56b;">Unit Rate Order:</div>
+          <div class="ticket-body">${order.prompt}</div>
+          <div class="ticket-badge">Find the cost for 1 smoothie!</div>
+        `;
+      }
+      
+      // 2) Render Visualizer (Tape Diagram or Double Number Line)
+      if (order.kind === "ratio") {
+        const [ba, bb] = simplify(order.a, order.b);
+        const { html, isEquivalent } = renderTapeDiagram(ba, bb, counts.strawberry, counts.banana, order.a, order.b);
+        
+        const statusHTML = isEquivalent
+          ? `<div style="color: #2ecc71; font-weight: 800; font-size: 13px; margin-top: 4px;">✔ Equivalent Ratio! Ready to blend.</div>`
+          : `<div style="color: #e74c3c; font-weight: 800; font-size: 13px; margin-top: 4px;">❌ Mismatched Ratio. Check boxes!</div>`;
+          
+        visualizerEl.innerHTML = `
+          <div class="visualizer-title">📊 RATIO TAPE DIAGRAM</div>
+          ${html}
+          ${statusHTML}
+        `;
+      } else {
+        const html = renderDoubleNumberLine(order.total, order.count, rateGuess);
+        const correct = (rateGuess === order.answer);
+        const statusHTML = correct
+          ? `<div style="color: #2ecc71; font-weight: 800; font-size: 13px; margin-top: 4px;">✔ Correct unit rate! Ready to serve.</div>`
+          : `<div style="color: #e74c3c; font-weight: 800; font-size: 13px; margin-top: 4px;">❌ Slide to align price tag.</div>`;
+          
+        visualizerEl.innerHTML = `
+          <div class="visualizer-title">📈 DOUBLE NUMBER LINE</div>
+          ${html}
+          ${statusHTML}
+        `;
+      }
+      
+      // 3) Render Controls Panel
+      if (order.kind === "ratio") {
+        controlsEl.innerHTML = `
+          <button class="lab-btn lab-btn-strawberry" id="btn-add-straw">🍓 +1 Strawberry</button>
+          <button class="lab-btn lab-btn-banana" id="btn-add-ban">🍌 +1 Banana</button>
+          <button class="lab-btn lab-btn-undo" id="btn-undo-scoop">↩ Undo</button>
+          <button class="lab-btn lab-btn-serve" id="btn-serve-smoothie">🥤 Blend & Serve</button>
+        `;
+        
+        controlsEl.querySelector("#btn-add-straw").addEventListener("click", (e) => {
+          e.stopPropagation();
+          addScoop("strawberry");
+          updateUI();
+        });
+        controlsEl.querySelector("#btn-add-ban").addEventListener("click", (e) => {
+          e.stopPropagation();
+          addScoop("banana");
+          updateUI();
+        });
+        controlsEl.querySelector("#btn-undo-scoop").addEventListener("click", (e) => {
+          e.stopPropagation();
+          removeScoop();
+          updateUI();
+        });
+        controlsEl.querySelector("#btn-serve-smoothie").addEventListener("click", (e) => {
+          e.stopPropagation();
+          serve();
+          updateUI();
+        });
+      } else {
+        controlsEl.innerHTML = `
+          <button class="lab-btn lab-btn-rate-down" id="btn-price-down">➖ Price Down</button>
+          <button class="lab-btn lab-btn-rate-up" id="btn-price-up">➕ Up</button>
+          <button class="lab-btn lab-btn-serve" id="btn-serve-rate">🥤 Serve Order</button>
+        `;
+        
+        controlsEl.querySelector("#btn-price-down").addEventListener("click", (e) => {
+          e.stopPropagation();
+          adjustRate(-1);
+          updateUI();
+        });
+        controlsEl.querySelector("#btn-price-up").addEventListener("click", (e) => {
+          e.stopPropagation();
+          adjustRate(1);
+          updateUI();
+        });
+        controlsEl.querySelector("#btn-serve-rate").addEventListener("click", (e) => {
+          e.stopPropagation();
+          serve();
+          updateUI();
+        });
+      }
+      
+      // Disable controls if phase is not active
+      const buttons = controlsEl.querySelectorAll(".lab-btn");
+      buttons.forEach(btn => {
+        if (!isActive) {
+          btn.style.opacity = "0.5";
+          btn.style.pointerEvents = "none";
+        } else {
+          btn.style.opacity = "1";
+          btn.style.pointerEvents = "auto";
+        }
+      });
     }
-    function cupText() {
-      if (!order) return "";
-      if (order.kind === "rate") return `${order.unit}${rateGuess}`;
-      return `${counts.strawberry} 🍓 : ${counts.banana} 🍌`;
-    }
+
     function setTask() {
       if (!order) return;
       if (order.kind === "rate") {
-        const text = `Order: ${order.prompt}  Dial ◀ ▶ to the price, then SERVE before the timer runs out.`;
+        const text = `Order: ${order.prompt} Dial up/down to set the unit rate, then serve.`;
         hud.setObjective(text);
         if (clarity) clarity.setObjective(text);
       } else {
         const [ba, bb] = simplify(order.a, order.b);
-        const text = `Recipe ${ba} red : ${bb} yellow. Load ${order.b} yellow with the matching red, then SERVE before the timer runs out.`;
+        const text = `Recipe ratio: ${ba} Strawberry to ${bb} Banana. Add ingredients until you hit equivalent target amounts!`;
         hud.setObjective(text);
         if (clarity) clarity.setObjective(text);
       }
     }
 
     function clearCup() {
-      scoops.forEach((s) => {
-        blenderGroup.remove(s.mesh);
-        s.mesh.material.dispose();
+      activeFruits.forEach((f) => {
+        group.remove(f.mesh);
+        f.mesh.geometry.dispose();
+        f.mesh.material.dispose();
       });
+      activeFruits.length = 0;
       scoops.length = 0;
       counts = { strawberry: 0, banana: 0 };
       rateGuess = 0;
+      
+      liquid.scale.set(1, 0.001, 1);
+      liquid.material.opacity = 0.0;
     }
 
-    function updateCupLabel() {
-      updateLabel(cupLabel, cupText());
-    }
-
-    // ---- Build actions (real-time) ------------------------------------------
+    // ---- Fruit Dispensing (3D physics drop) ----
     function addScoop(fruit) {
       if (!running || gameOver || phase !== "active" || !order) return;
       if (order.kind !== "ratio") return;
-      counts[fruit] += 1;
-      const mesh = new THREE.Mesh(
-        scoopGeo,
-        std(FRUIT[fruit].color, {
-          roughness: 0.4,
-          emissive: FRUIT[fruit].color,
-          emissiveIntensity: 0.25,
-        }),
-      );
+      
+      const scoopGeo = track(new THREE.SphereGeometry(0.35, 16, 16));
+      const scoopMat = std(fruit === "strawberry" ? COLORS.strawberry : COLORS.banana, {
+        roughness: 0.3,
+        emissive: fruit === "strawberry" ? COLORS.strawberry : COLORS.banana,
+        emissiveIntensity: 0.2,
+      });
+      const mesh = new THREE.Mesh(scoopGeo, scoopMat);
       mesh.castShadow = true;
-      const idx = scoops.length;
-      const targetY = 0.7 + idx * 0.42;
-      const startY = 5.2;
-      mesh.position.set(0, startY, 0);
-      blenderGroup.add(mesh);
+      
+      const startX = fruit === "strawberry" ? -1.8 : 1.8;
+      const startY = 3.6;
+      const startZ = 0.0;
+      
+      mesh.position.set(startX, startY, startZ);
+      group.add(mesh);
+      
+      const angle = Math.random() * Math.PI * 2;
+      const dist = Math.random() * jarRadius * 0.45;
+      const targetX = Math.cos(angle) * dist;
+      const targetZ = Math.sin(angle) * dist;
+      const targetY = 0.65 + scoops.length * 0.16;
+      
+      activeFruits.push({
+        mesh,
+        vy: 0,
+        vx: (targetX - startX) * 2.2,
+        x: startX,
+        y: startY,
+        z: startZ,
+        targetX,
+        targetY,
+        targetZ,
+        bounces: 0,
+        fruitType: fruit,
+      });
+      
       scoops.push({ mesh, fruit });
+      counts[fruit] += 1;
+      
       if (!reduced) {
-        // drop animation with a squash/stretch bounce on impact
-        feel.tween({
-          from: startY,
-          to: targetY,
-          duration: 0.3,
-          onUpdate: (v) => {
-            mesh.position.y = v;
-          },
-          onComplete: () => {
-            feel.tween({
-              from: 1.0,
-              to: 0.8,
-              duration: 0.08,
-              onUpdate: (s) => mesh.scale.set(1.2, s, 1.2),
-              onComplete: () => {
-                feel.tween({
-                  from: 0.8,
-                  to: 1.0,
-                  duration: 0.12,
-                  onUpdate: (s) => mesh.scale.set(1, s, 1),
-                });
-              }
-            });
-            feel.burst(
-              { x: SERVE_X, y: targetY + 0.2, z: -0.4 },
-              { color: FRUIT[fruit].color, count: 8, spread: 1.2 },
-            );
-          }
-        });
-      } else {
-        mesh.position.y = targetY;
+        feel.burst(
+          { x: startX, y: startY, z: startZ },
+          { color: fruit === "strawberry" ? COLORS.strawberry : COLORS.banana, count: 6, spread: 0.8 },
+        );
       }
-      feel.sfx("add");
-      updateCupLabel();
+      feel.sfx("pop");
+      updateUI();
     }
 
-    function removeScoop(fruit) {
+    function removeScoop() {
       if (!running || gameOver || phase !== "active" || !order) return;
       if (order.kind !== "ratio" || !scoops.length) return;
-      let idx = -1;
-      if (fruit) {
-        for (let i = scoops.length - 1; i >= 0; i--)
-          if (scoops[i].fruit === fruit) {
-            idx = i;
-            break;
-          }
-      } else idx = scoops.length - 1;
-      if (idx < 0) return;
-      const [s] = scoops.splice(idx, 1);
+      
+      const [s] = scoops.splice(scoops.length - 1, 1);
       counts[s.fruit] -= 1;
-      blenderGroup.remove(s.mesh);
-      s.mesh.material.dispose();
-      // Restack remaining scoops.
-      scoops.forEach((sc, i) => {
-        sc.mesh.position.y = 0.7 + i * 0.42;
+      
+      // Find matching activeFruit and delete it
+      const idx = activeFruits.findIndex(f => f.mesh === s.mesh);
+      if (idx !== -1) {
+        const [f] = activeFruits.splice(idx, 1);
+        group.remove(f.mesh);
+        f.mesh.geometry.dispose();
+        f.mesh.material.dispose();
+      }
+      
+      // Recalculate target positions for remaining fruits
+      activeFruits.forEach((sc, i) => {
+        sc.targetY = 0.65 + i * 0.16;
+        sc.done = false; // re-settle
       });
+      
       feel.sfx("remove");
-      updateCupLabel();
+      updateUI();
     }
 
     function adjustRate(delta) {
@@ -598,316 +844,241 @@ export default {
       if (order.kind !== "rate") return;
       rateGuess = Math.max(0, rateGuess + delta);
       feel.sfx("select");
-      updateCupLabel();
+      updateUI();
     }
 
-    // ---- Correctness (the math) ---------------------------------------------
+    // ---- Correctness Check ----
     function ratioMatches() {
-      // The order fixes the yellow count; the student must work out the red
-      // count from the recipe ratio. We require the exact scaled batch — no
-      // giveaway from accepting any equivalent ratio — but we VERIFY it is a
-      // true equivalent ratio of the recipe (cross-multiply check below).
       if (counts.banana !== order.b) return false;
       if (counts.strawberry !== order.a) return false;
-      // Sanity: counts.strawberry : counts.banana ≡ recipe a : b.
       return counts.strawberry * order.b === order.a * counts.banana;
     }
     function rateMatches() {
-      // Unit rate = total ÷ count. Reused answer is pre-verified; we recompute
-      // here so the check is provably "answer === total ÷ count".
       return rateGuess === order.total / order.count;
     }
     function isCorrect() {
       return order.kind === "rate" ? rateMatches() : ratioMatches();
     }
 
-    // ---- Serve --------------------------------------------------------------
+    // ---- Serve Response (3D Blending juice transitions) ----
     function serve() {
       if (!running || gameOver || phase !== "active" || !order) return;
-      if (isCorrect()) onCorrect();
-      else onWrong(false);
+      
+      phase = "resolving";
+      updateUI();
+      
+      const correct = isCorrect();
+      
+      if (correct) {
+        // Blend Color (Pink blend, or single fruit)
+        let blendColor = 0xff8a80;
+        if (counts.strawberry > 0 && counts.banana === 0) blendColor = COLORS.strawberry;
+        else if (counts.banana > 0 && counts.strawberry === 0) blendColor = COLORS.banana;
+        liquid.material.color.setHex(blendColor);
+        
+        feel.tween({
+          from: 0,
+          to: 1,
+          duration: 0.9,
+          onUpdate: (v) => {
+            liquid.scale.y = v;
+            liquid.material.opacity = v * 0.78;
+            liquid.rotation.y = v * Math.PI * 6;
+            
+            // Shrink fruit meshes
+            activeFruits.forEach(f => {
+              f.mesh.scale.setScalar(Math.max(0, 1 - v));
+            });
+          },
+          onComplete: () => {
+            onCorrect();
+          }
+        });
+      } else {
+        // Yucky brown smoothie blend for mistakes
+        feel.tween({
+          from: 0,
+          to: 1,
+          duration: 0.6,
+          onUpdate: (v) => {
+            liquid.scale.y = v;
+            liquid.material.opacity = v * 0.8;
+            liquid.material.color.setHex(0x795548);
+            
+            // Shake jar
+            blenderGroup.position.x = Math.sin(v * Math.PI * 12) * 0.12;
+            
+            // Shrink fruit meshes
+            activeFruits.forEach(f => {
+              f.mesh.scale.setScalar(Math.max(0, 1 - v));
+            });
+          },
+          onComplete: () => {
+            blenderGroup.position.x = 0;
+            onWrong();
+          }
+        });
+      }
     }
 
     function onCorrect() {
-      phase = "resolving";
       solvedCount += 1;
       streak += 1;
       if (streak > bestStreak) bestStreak = streak;
       if (typeof hud.setStreak === "function") hud.setStreak(streak);
 
-      // Points: base + level bonus + speed bonus (time left) + combo bonus.
-      const speedBonus = Math.round((timeLeft / timeMax) * 15);
-      const comboBonus = Math.min(streak - 1, 5) * 5;
       const base = order.kind === "rate" ? 25 : 20;
-      const pts = base + (level === 2 ? 10 : 0) + speedBonus + comboBonus;
+      const pts = base + (level === 2 ? 10 : 0) + (streak > 1 ? 5 : 0);
+      
       onScore(pts, {
         order: orderIndex + 1,
         kind: order.kind,
+        misconceptionTag: order.tag || null,
         target: order.kind === "rate" ? order.answer : `${order.a}:${order.b}`,
       });
 
       feel.sfx("correct");
       if (!reduced) {
-        feel.shake(0.22);
+        feel.shake(0.18);
         feel.burst(
-          { x: SERVE_X, y: 3.2, z: -0.4 },
-          { color: COLORS.ok, count: 36, spread: 4.6 },
+          { x: 0, y: 3.0, z: 0 },
+          { color: COLORS.ok, count: 32, spread: 3.5 },
         );
-        // Celebratory jar pop.
-        feel.tween({
-          from: 1,
-          to: 1.14,
-          duration: 0.16,
-          onUpdate: (v) => blenderGroup.scale.setScalar(v),
-          onComplete: () =>
-            feel.tween({
-              from: 1.14,
-              to: 1,
-              duration: 0.2,
-              onUpdate: (v) => blenderGroup.scale.setScalar(v),
-            }),
-        });
-
-        // Stage/ground green glow pulse
-        groundMat.emissive.set(COLORS.ok);
-        groundMat.emissiveIntensity = 0.5;
-        feel.tween({
-          from: 0.5,
-          to: 0,
-          duration: 0.5,
-          onUpdate: (v) => {
-            groundMat.emissiveIntensity = v;
-          },
-          onComplete: () => {
-            groundMat.emissive.set(0x000000);
-          }
-        });
       }
+      
       if (typeof hud.feedback === "function")
-        hud.feedback(
-          true,
-          `Served! +${pts}${streak > 1 ? ` · 🔥${streak}` : ""}`,
-        );
-      announce(`Correct! You served the order. ${pts} points.`);
+        hud.feedback(true, `Great Job! Smoothie Blended! +${pts}`);
+      announce(`Correct! Blend successful. +${pts} points.`);
 
-      // Happy customer color, then send them on their way and bring the next.
-      customer.userData.bodyMat.color.set(COLORS.ok);
-      customer.userData.bodyMat.emissive.set(COLORS.ok);
-      later(nextOrder, 650);
+      later(nextOrder, 800);
     }
 
-    function onWrong(timedOut) {
-      phase = "resolving";
+    // Mistake loop - refill lives automatically to avoid frustration
+    function onWrong() {
       streak = 0;
       if (typeof hud.setStreak === "function") hud.setStreak(0);
       lives = Math.max(0, lives - 1);
       if (typeof hud.setLives === "function") hud.setLives(lives);
 
+      onScore(-1, {
+        order: orderIndex + 1,
+        kind: order.kind,
+        misconceptionTag: order.tag || null,
+        target: order.kind === "rate" ? order.answer : `${order.a}:${order.b}`,
+      });
+
       feel.sfx("wrong");
       if (!reduced) {
-        feel.shake(0.26);
-        feel.burst(
-          { x: SERVE_X, y: 2.4, z: -0.4 },
-          { color: COLORS.bad, count: 22, spread: 3.4 },
-        );
-
-        // Blender jar shake on wrong serve
-        feel.tween({
-          from: -0.35,
-          to: 0.35,
-          duration: 0.05,
-          onUpdate: (v) => {
-            blenderGroup.position.x = SERVE_X + v;
-          },
-          onComplete: () => {
-            feel.tween({
-              from: 0.35,
-              to: -0.18,
-              duration: 0.05,
-              onUpdate: (v) => {
-                blenderGroup.position.x = SERVE_X + v;
-              },
-              onComplete: () => {
-                blenderGroup.position.x = SERVE_X;
-              }
-            });
-          }
-        });
-
-        // Stage/ground red glow pulse
-        groundMat.emissive.set(COLORS.bad);
-        groundMat.emissiveIntensity = 0.5;
-        feel.tween({
-          from: 0.5,
-          to: 0,
-          duration: 0.5,
-          onUpdate: (v) => {
-            groundMat.emissiveIntensity = v;
-          },
-          onComplete: () => {
-            groundMat.emissive.set(0x000000);
-          }
-        });
+        feel.shake(0.25);
       }
-      customer.userData.bodyMat.color.set(COLORS.bad);
-      customer.userData.bodyMat.emissive.set(COLORS.bad);
 
       let hint;
       if (order.kind === "rate") {
-        hint = `Find ${order.total} ÷ ${order.count}.`;
+        hint = `Try cost ÷ smoothies: $${order.total} ÷ ${order.count} smoothies.`;
       } else {
-        const [ta, tb] = simplify(order.a, order.b);
-        hint = `Use the recipe ${ta} : ${tb} to find the red for ${order.b} yellow.`;
+        hint = `Use scaled boxes! Recipe requires ${order.a} Strawberry and ${order.b} Banana.`;
       }
-      const livesMsg =
-        lives > 0 ? ` ${lives} ${lives === 1 ? "life" : "lives"} left.` : "";
-      const head = timedOut ? "Too slow!" : "Not a match.";
+      
       if (typeof hud.feedback === "function")
-        hud.feedback(false, `${head} ${hint}${livesMsg}`);
-      announce(`${head} ${hint}${livesMsg}`);
+        hud.feedback(false, `Oops! ${hint}`);
+      announce(`Not a match. ${hint}`);
       caption(hint);
 
       if (lives <= 0) {
-        later(loseGame, 700);
-        return;
+        lives = START_LIVES;
+        if (typeof hud.setLives === "function") hud.setLives(lives);
+        hud.message("Practice makes perfect! Hearts refilled ♥", { tone: "info", duration: 3000 });
       }
-      later(nextOrder, 850);
+      
+      // Clear and let them re-try in the same round
+      clearCup();
+      phase = "active";
+      updateUI();
     }
 
-    // ---- Order flow ---------------------------------------------------------
     function startOrder(i) {
       order = cfg.orders[i];
       clearCup();
-      rateGuess = 0;
       if (typeof hud.setProgress === "function") hud.setProgress(i, total);
 
-      // Reset and reveal the customer at the spawn end; belt carries them in.
-      customer.position.set(SPAWN_X, BELT_Y, 1.6);
-      customer.visible = true;
-      customer.userData.bodyMat.color.set(COLORS.amber);
-      customer.userData.bodyMat.emissive.set(COLORS.amber);
-      updateLabel(orderLabel, orderCardText(order));
-
-      cupLabel.visible = true;
-      updateCupLabel();
-      barBg.visible = false;
-      barFill.visible = false;
-
-      timeMax = orderTime(i);
-      timeLeft = timeMax;
       phase = "arriving";
-
       setTask();
+      
       if (clarity) {
         if (order.kind === "rate") clarity.setTarget(order.prompt);
         else {
           const [ba, bb] = simplify(order.a, order.b);
-          clarity.setTarget(
-            `recipe ${ba} red : ${bb} yellow · serve ${order.b} yellow`,
-          );
+          clarity.setTarget(`Recipe: ${ba} Strawberry to ${bb} Banana`);
         }
       }
-      if (cfg.hints) {
-        if (order.kind === "rate")
-          hud.message(`Try ${order.total} ÷ ${order.count}.`, {
-            tone: "info",
-            duration: 2600,
-          });
-        else {
-          const [ba, bb] = simplify(order.a, order.b);
-          hud.message(
-            `Recipe ${ba} : ${bb}. Build ${order.b} yellow + matching red.`,
-            {
-              tone: "info",
-              duration: 3200,
-            },
-          );
-        }
+      
+      // Animate client order ticket sliding down
+      const ticket = uiContainer.querySelector("#order-ticket");
+      if (ticket) {
+        ticket.style.transform = "translateY(-40px)";
+        ticket.style.opacity = "0.0";
+        later(() => {
+          ticket.style.transform = "translateY(0)";
+          ticket.style.opacity = "1.0";
+        }, 50);
       }
-      announce(
-        order.kind === "rate"
-          ? `New customer. ${order.prompt} Dial your answer, then serve before the timer runs out.`
-          : `New customer. Recipe ${simplify(order.a, order.b).join(" to ")}. Build ${order.b} yellow with the matching red, then serve before the timer runs out.`,
-      );
+      
+      // Settle phase to active quickly
+      later(() => {
+        phase = "active";
+        updateUI();
+      }, 500);
     }
 
     function nextOrder() {
-      // Send the current customer off the belt, then either advance or win.
       phase = "leaving";
+      updateUI();
       if (orderIndex < total - 1) {
         orderIndex += 1;
-        // Brief leave animation handled in frame(); start the next when they exit.
-        later(() => startOrder(orderIndex), 350);
+        later(() => startOrder(orderIndex), 400);
       } else {
-        later(winGame, 350);
-      }
-    }
-
-    // ---- Win / lose ---------------------------------------------------------
-    function loseGame() {
-      if (gameOver) return;
-      gameOver = true;
-      running = false;
-      phase = "idle";
-      cupLabel.visible = false;
-      barBg.visible = false;
-      barFill.visible = false;
-      const msg = `Out of lives! You served ${solvedCount} of ${total} orders.`;
-      hud.setObjective(msg);
-      announce(`Shift over. ${msg}`);
-      if (clarity) {
-        if (clarity.setTarget) clarity.setTarget(null);
-        clarity.lose({
-          titleEn: "Out of lives!",
-          badge: "🥤",
-          stats: `${msg} Tip: simplify the recipe ratio first, then scale it up to the order.`,
-        });
+        later(winGame, 400);
       }
     }
 
     function winGame() {
-      if (gameOver) return;
       gameOver = true;
       running = false;
       phase = "idle";
-      cupLabel.visible = false;
-      barBg.visible = false;
-      barFill.visible = false;
-      customer.visible = false;
-      hud.setObjective(`Shift complete! You served all ${total} orders. 🥤`);
-      hud.message("🎉 Shift complete!", { tone: "ok", duration: 0 });
+      uiContainer.style.display = "none";
+      
+      hud.setObjective(`Recipe Lab completed! You served all ${total} orders. 🥤`);
+      hud.message("🎉 Chef complete!", { tone: "ok", duration: 0 });
       feel.sfx("fanfare");
+      
       if (!reduced) {
-        [0, 200, 420].forEach((ms, i) =>
+        [0, 220, 440].forEach((ms, i) =>
           later(
             () =>
               feel.burst(
-                { x: (i - 1) * 3, y: 4, z: -0.4 },
+                { x: (i - 1) * 3, y: 3.5, z: 0 },
                 {
                   color: [COLORS.strawberry, COLORS.banana, COLORS.teal][i],
-                  count: 50,
-                  spread: 6,
+                  count: 45,
+                  spread: 5,
                 },
               ),
             ms,
           ),
         );
-        feel.shake(0.3);
+        feel.shake(0.25);
       }
-      announce(
-        `Shift complete! You served all ${total} orders with a best combo of ${bestStreak}.`,
-      );
+      
+      announce(`All complete! You blended all ${total} recipes successfully.`);
       if (clarity) {
-        if (clarity.setTarget) clarity.setTarget(null);
         clarity.win({
           titleEn: "Shift complete!",
           badge: "🥤",
-          stats: `You served all ${total} orders. Best combo: ${bestStreak}. Score saved.`,
+          stats: `You successfully blended all ${total} recipes. Best streak: ${bestStreak}.`,
         });
       }
     }
 
-    // ---- Reset for a fresh run (first play + Play Again) --------------------
     function resetRun() {
       orderIndex = 0;
       lives = START_LIVES;
@@ -916,135 +1087,86 @@ export default {
       solvedCount = 0;
       gameOver = false;
       clearCup();
+      
       if (typeof hud.setLives === "function") hud.setLives(lives);
       if (typeof hud.setStreak === "function") hud.setStreak(0);
-      hud.setLevel(level === 2 ? "Level 2" : "Level 1");
+      if (ctx.levelInfo && ctx.levelInfo.label)
+        hud.setLevel(ctx.levelInfo.label);
+        
       running = true;
       startOrder(0);
     }
 
-    // ---- Input --------------------------------------------------------------
+    // ---- Keyboard Shortcuts & Frame Updates ----
     function handlePress(name) {
-      if (!running || gameOver) return;
+      if (!running || gameOver || phase !== "active") return;
       if (!order) return;
+      
       if (order.kind === "rate") {
         if (name === "right" || name === "up") adjustRate(1);
         else if (name === "left" || name === "down") adjustRate(-1);
         else if (name === "action" || name === "confirm") serve();
-        return;
-      }
-      // ratio order
-      if (name === "left") addScoop("strawberry");
-      else if (name === "right") addScoop("banana");
-      else if (name === "up") addScoop("strawberry");
-      else if (name === "down") addScoop("banana");
-      else if (name === "action") serve();
-      else if (name === "confirm") removeScoop();
-    }
-
-    function handleTap() {
-      if (!running || gameOver || !order || phase !== "active") return;
-      // First, try hitting a 3D object (fruit bin or the blender = serve).
-      const hits = input.raycast(
-        camera,
-        [dispensers.strawberry, dispensers.banana, jar, jarBase],
-        true,
-      );
-      if (hits.length) {
-        const fruit = hits[0].object.userData.fruit;
-        if (fruit) {
-          if (order.kind === "ratio") addScoop(fruit);
-          else adjustRate(fruit === "banana" ? 1 : -1);
-        } else {
-          serve(); // tapped the blender
-        }
-        return;
-      }
-      // Fallback: left half / right half of the screen.
-      const nx = input.state.ndc.x;
-      if (order.kind === "rate") {
-        adjustRate(nx >= 0 ? 1 : -1);
       } else {
-        if (nx < 0) addScoop("strawberry");
-        else addScoop("banana");
+        if (name === "left" || name === "up") addScoop("strawberry");
+        else if (name === "right" || name === "down") addScoop("banana");
+        else if (name === "action") serve();
+        else if (name === "confirm") removeScoop();
       }
+      updateUI();
     }
 
-    // ---- Per-frame real-time loop ------------------------------------------
     function frame(dt, t) {
-      const d = Math.min(dt, 0.05); // clamp tab-switch hiccups
+      const d = Math.min(dt, 0.05);
 
-      // Belt tread always scrolls (sense of life), faster while playing.
-      const beltScroll = (running && !gameOver ? BELT_SPEED : 1.2) * d;
-      for (const dh of dashes) {
-        dh.position.x -= beltScroll;
-        if (dh.position.x < -DASH_SPAN / 2) dh.position.x += DASH_SPAN;
-      }
-
-      // Idle/ambient motion.
-      if (!reduced) {
-        blenderGroup.rotation.y = Math.sin(t * 0.5) * 0.05;
-        board.position.y = 4.4 + Math.sin(t * 1.2) * 0.05;
-      }
-
-      if (running && !gameOver && customer.visible) {
-        const cu = customer;
-        if (phase === "arriving") {
-          // Carry the customer in until they reach the serve window. Move at a
-          // steady belt pace (not a slowing lerp) so play begins promptly.
-          cu.position.x = Math.max(
-            SERVE_X,
-            cu.position.x - BELT_SPEED * 1.6 * d,
-          );
-          if (Math.abs(cu.position.x - SERVE_X) < 0.2) {
-            cu.position.x = SERVE_X;
-            phase = "active";
-            barBg.visible = true;
-            barFill.visible = true;
+      // Update active fruit physics drop
+      for (let i = activeFruits.length - 1; i >= 0; i--) {
+        const f = activeFruits[i];
+        if (f.done) continue;
+        
+        f.vy -= 18.0 * d; // gravity
+        f.x += f.vx * d;
+        f.y += f.vy * d;
+        f.z += (f.targetZ - f.z) * 5.0 * d;
+        
+        // Jar floor collision bounds
+        if (f.y <= f.targetY) {
+          f.y = f.targetY;
+          if (f.bounces < 2) {
+            f.vy = -f.vy * 0.35; // bounce
+            f.vx = f.vx * 0.5;
+            f.bounces++;
+          } else {
+            f.vy = 0;
+            f.vx = 0;
+            f.x = f.targetX;
+            f.z = f.targetZ;
+            f.done = true;
+            feel.sfx("add");
           }
-        } else if (phase === "active") {
-          // Countdown.
-          timeLeft = Math.max(0, timeLeft - d);
-          const frac = timeLeft / timeMax;
-          barFill.scale.x = Math.max(0.001, frac);
-          // Plane is centered; shrink toward the left edge.
-          barFill.position.x = SERVE_X - (6.0 * (1 - frac)) / 2;
-          // Color shifts green→amber→red as time runs low.
-          const c = barFillMat.color;
-          if (frac > 0.5) c.set(COLORS.ok);
-          else if (frac > 0.25) c.set(COLORS.amber);
-          else c.set(COLORS.bad);
-          // Customer bobs impatiently as time drains.
-          if (!reduced)
-            cu.userData.body.position.y =
-              0.9 + Math.sin(t * 6) * 0.04 * (1 - frac + 0.3);
-          if (timeLeft <= 0) onWrong(true);
-        } else if (phase === "leaving") {
-          // Slide the served/failed customer off to the left.
-          cu.position.x -= BELT_SPEED * 1.6 * d;
-          if (cu.position.x <= EXIT_X) cu.visible = false;
         }
-        // Keep labels facing-friendly bob.
-        if (!reduced && phase !== "leaving")
-          orderLabel.position.y = 3.2 + Math.sin(t * 1.6) * 0.06;
+        f.mesh.position.set(f.x, f.y, f.z);
       }
 
-      // Cup label follows the live build; only needs refresh on change (done in
-      // the action handlers), but keep its bob alive here.
-      if (!reduced && cupLabel.visible)
-        cupLabel.position.y = 4.0 + Math.sin(t * 1.4) * 0.05;
+      // Gentle blending spin or idle bob
+      if (!reduced && running && !gameOver) {
+        if (phase === "active") {
+          blenderGroup.rotation.y = Math.sin(t * 0.8) * 0.03;
+        } else if (phase === "resolving") {
+          blenderGroup.rotation.y += d * 5.0;
+        }
+      }
     }
 
     return {
       start() {
-        // Frame the camera looking down the belt at the serve window.
-        const finalPos = new THREE.Vector3(0, 6.2, 11.5);
-        camera.lookAt(0, 2, -0.4);
+        const finalPos = new THREE.Vector3(0, 3.2, 7.5);
+        camera.lookAt(0, 1.6, 0);
+        
         if (reduced) {
           camera.position.copy(finalPos);
           feel.syncCamera();
         } else {
-          const startPos = new THREE.Vector3(6, 8.5, 13);
+          const startPos = new THREE.Vector3(2.5, 4.5, 9.5);
           camera.position.copy(startPos);
           feel.tween({
             from: 0,
@@ -1052,63 +1174,55 @@ export default {
             duration: 1.0,
             onUpdate: (v) => {
               camera.position.lerpVectors(startPos, finalPos, v);
-              camera.lookAt(0, 2, -0.4);
+              camera.lookAt(0, 1.6, 0);
             },
             onComplete: () => feel.syncCamera(),
           });
         }
 
         function beginGameplay() {
+          const intro = document.getElementById("e3d-intro");
+          if (intro) intro.style.display = "none";
+          
           resetRun();
           unbindPress = input.onPress(handlePress);
-          unbindTap = input.onTap(handleTap);
         }
 
         clarity = initClarity({
           mount: clarityMount,
           announce,
-          title: "Smoothie Rush — Fill the Order Before Time Runs Out",
+          title: "Smoothie Recipe Lab",
           objectiveEn:
-            "Customers ride the belt to your stand carrying an order. Build it in real time — load 🍓/🍌 scoops to match the recipe ratio, or dial the price for a unit-rate order — then SERVE before the countdown bar empties. Fast serves build a combo.",
+            "Create smoothies matching customer orders! Drop strawberries 🍓 and bananas 🍌 to balance equivalent ratios inside the tape diagram, or dial double number lines to solve unit rates.",
           objectiveEs:
-            "Los clientes llegan en la banda con una orden. Construye la respuesta en tiempo real: agrega bolas 🍓/🍌 para igualar la razón, o ajusta el precio en órdenes de tasa, y SIRVE antes de que se acabe el tiempo. Servir rápido sube tu racha.",
+            "¡Crea licuados que coincidan con las órdenes de los clientes! Agrega fresas 🍓 y plátanos 🍌 para equilibrar las razones equivalentes en el modelo de barras o resuelve la tasa unitaria.",
           standard: "6.RP.A.1–3 · Ratios & Unit Rates",
           controls: [
             {
-              key: "← / →  (A / D)",
-              actionEn:
-                "Ratio order: add a 🍓 red (left) or 🍌 yellow (right) scoop. Price order: dial your number down / up.",
-              actionEs:
-                "Razón: agrega bola roja 🍓 (izq.) o amarilla 🍌 (der.). Precio: baja / sube tu número.",
+              key: "🍓 Button / ←",
+              actionEn: "Add 1 Strawberry to the blender.",
+              actionEs: "Agrega 1 fresa a la licuadora.",
             },
             {
-              key: "Tap fruit / cup",
-              actionEn:
-                "Tap a 🍓/🍌 bin to add that scoop; tap the blender to SERVE. (Or tap the left/right half of the screen.)",
-              actionEs:
-                "Toca una fruta 🍓/🍌 para agregar; toca la licuadora para SERVIR. (O toca la mitad izq./der.)",
+              key: "🍌 Button / →",
+              actionEn: "Add 1 Banana to the blender.",
+              actionEs: "Agrega 1 plátano a la licuadora.",
             },
             {
-              key: "Space / ● action",
-              actionEn: "SERVE — fill the order before the timer empties",
-              actionEs: "SIRVE — entrega antes de que se acabe el tiempo",
+              key: "Undo Button / Enter",
+              actionEn: "Remove the last scoop.",
+              actionEs: "Quita la última bola.",
             },
             {
-              key: "Enter / ✓",
-              actionEn:
-                "Ratio order: remove the last scoop. Price order: also serves.",
-              actionEs: "Razón: quita la última bola. Precio: también sirve.",
-            },
-            {
-              key: "?",
-              actionEn: "Open this help panel any time (Esc closes it)",
-              actionEs: "Abre esta ayuda cuando quieras (Esc la cierra)",
+              key: "Serve Button / Space",
+              actionEn: "Blend and serve when ready.",
+              actionEs: "Licúa y sirve cuando estés listo.",
             },
           ],
           howToWinEn:
-            "Each customer's order shows the recipe ratio (or a price question). Work out the answer and SERVE before the bar empties. A wrong serve or a timeout costs a life. Serve every order to clear the shift and win.",
+            "Mix ratios and answer unit rate tickets successfully. Each round updates dynamic tape diagrams. Complete all orders on your check list to win!",
           howToWinEs:
-            "Cada orden muestra una razón (o una pregunta de precio). Calcula la respuesta y SIRVE antes de que la barra se vacíe. Un error o un tiempo agotado cuesta una vida. Sirve todas las órdenes para ganar.",
+            "Mezcla razones y resuelve tickets de tasas unitarias. Cada ronda actualiza diagramas de barra. ¡Sirve todas las órdenes de la lista para ganar!",
           onStart: beginGameplay,
           onPlayAgain: () => location.reload(),
         });
@@ -1124,15 +1238,11 @@ export default {
         if (unbindFrame) unbindFrame();
         timers.forEach(clearTimeout);
         timers.length = 0;
-        // Dispose dynamic scoop materials + the canvas-backed labels.
-        scoops.forEach((s) => s.mesh.material.dispose());
-        scoops.length = 0;
-        [orderLabel, cupLabel].forEach((spr) => {
-          if (!spr) return;
-          if (spr.parent) spr.parent.remove(spr);
-          if (spr.material && spr.material.map) spr.material.map.dispose();
-          if (spr.material) spr.material.dispose();
-        });
+        
+        if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+        if (uiContainer && uiContainer.parentNode) uiContainer.parentNode.removeChild(uiContainer);
+        
+        clearCup();
         disposables.forEach((dd) => dd.dispose && dd.dispose());
         scene.remove(group);
       },
