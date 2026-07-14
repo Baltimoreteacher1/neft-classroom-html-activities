@@ -1,5 +1,18 @@
 import { resolveVocabImage, vocabImageAlt } from "../core/vocab-images.js";
 import { exploreLabel, openExplorer } from "./vocab-explore.js";
+import { buildSayItRow, speechSupported } from "./vocab-explore-tasks.js";
+
+// Compact tap-to-hear row for a flip-card face. Reuses the shared bilingual
+// "Say it" control (en-US + es-US voices via pickVoice) and swallows the click
+// so pressing 🔊 never flips the card underneath it.
+function sayItFor(en, es, face) {
+  if (!speechSupported()) return;
+  const row = buildSayItRow({ en, es });
+  row.classList.add("vocab-say-row");
+  row.addEventListener("click", (e) => e.stopPropagation());
+  row.addEventListener("keydown", (e) => e.stopPropagation());
+  face.append(row);
+}
 
 function esc(s) {
   const d = document.createElement("div");
@@ -153,6 +166,9 @@ export function renderVocabIntro(container, { terms, onComplete }) {
       front.append(es);
     }
 
+    // Tap-to-hear: term in English + Spanish on the front of the card.
+    sayItFor(t.term, termEs, front);
+
     const flipPrompt = document.createElement("span");
     flipPrompt.className = "flip-prompt";
     flipPrompt.textContent = "Tap to flip →";
@@ -176,6 +192,9 @@ export function renderVocabIntro(container, { terms, onComplete }) {
       defEsEl.textContent = defEs;
       back.append(defEsEl);
     }
+
+    // Tap-to-hear: definition in English + Spanish on the back of the card.
+    sayItFor(t.definition, defEs, back);
 
     // The worked example ("A box 3 × 2 × 4 holds 24 unit cubes…") belongs with
     // the definition on the back, not on the front where it pre-empts the flip.

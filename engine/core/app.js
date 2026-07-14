@@ -31,6 +31,23 @@ export function createApp(config) {
   const root = document.getElementById("app");
   root.innerHTML = "";
   root.className = "app";
+
+  // Device-local learning signals (assets/nt-signal.js → window.NTSignal).
+  // Lazy-loaded so lesson launchers need no HTML change; every consumer
+  // guards on window.NTSignal so a failed load is a silent no-op. The tiny
+  // meta global gives deep engine components (misconception capture) the
+  // lesson's standard without threading config through every call.
+  try {
+    window.__ntLessonMeta = { standard: config.standard || "", lesson: config.lessonId || "" };
+    if (!window.NTSignal && !document.querySelector('script[src^="/assets/nt-signal.js"]')) {
+      const sig = document.createElement("script");
+      sig.src = "/assets/nt-signal.js";
+      sig.defer = true;
+      document.head.append(sig);
+    }
+  } catch {
+    /* signals are optional */
+  }
   // a11y: the rendered lesson is the page's primary content (landmark-one-main).
   root.setAttribute("role", "main");
   // Publisher-grade editorial design layer (engine/styles/editorial.css) — the

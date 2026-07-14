@@ -332,7 +332,9 @@ export function renderMultipleChoice(
     feedbackSlot.setAttribute("role", "alert");
     feedbackSlot.innerHTML = `<span class="feedback-icon">${isCorrect ? "✓" : "💡"}</span><span>${esc(fbMsg)}</span>`;
 
-    if (onAnswer) onAnswer(isCorrect);
+    // Second arg is additive: existing single-arg callers are unaffected, and
+    // misconception-aware callers can see WHICH distractor was chosen.
+    if (onAnswer) onAnswer(isCorrect, selected);
   });
 
   tryAgainBtn.addEventListener("click", () => {

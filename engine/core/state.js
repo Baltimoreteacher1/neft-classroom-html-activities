@@ -80,6 +80,7 @@ export function createState(lessonId, studentId) {
     badges: [],
     phases: [],
     responses: {},
+    misconceptions: {},
     startedAt: null,
     lastSavedAt: null,
   };
@@ -263,6 +264,17 @@ export function createState(lessonId, studentId) {
 
     recordHintUsed() {
       state.hintsUsed = (state.hintsUsed || 0) + 1;
+      save();
+      notify();
+    },
+
+    // Per-lesson misconception counts, keyed by the authored tag. Persists with
+    // the rest of the lesson state so the stuck-support "Fix the mix-up" chip
+    // and teacher mode can see what this student keeps tripping on.
+    recordMisconception(tag) {
+      if (!tag) return;
+      if (!state.misconceptions) state.misconceptions = {};
+      state.misconceptions[tag] = (state.misconceptions[tag] || 0) + 1;
       save();
       notify();
     },

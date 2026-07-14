@@ -76,9 +76,63 @@ function tryLtiEmit(state, config) {
  */
 export function completeLesson(state, config) {
   try {
+    recordSignals(state, config);
+  } catch {
+    /* signals are optional */
+  }
+  try {
     if (tryLtiEmit(state, config)) return;
   } catch {
     /* fall through to the always-safe default */
   }
   showCanvasCode(state, config);
+}
+
+/**
+ * Feed the device-local signal store (window.NTSignal) at completion so the
+ * hub's "pick up where you left off" strip and the Practice Arcade's
+ * skill-aware difficulty can see this lesson's outcome. No network, no PII.
+ */
+function recordSignals(state, config) {
+  const sig = typeof window !== "undefined" && window.NTSignal;
+  if (!sig) return;
+  const { scoreGiven, scoreMaximum } = scoreFrom(state);
+  const standard = config.standard || "";
+  // One summary record per attempt bucket keeps weakStandards() honest
+  // without flooding the store: correct records then wrong records.
+  const wrong = Math.max(0, scoreMaximum - scoreGiven);
+  for (let i = 0; i < Math.min(scoreGiven, 20); i++)
+    sig.record({ standard, correct: true, lesson: config.lessonId });
+  for (let i = 0; i < Math.min(wrong, 20); i++)
+    sig.record({ standard, correct: false, lesson: config.lessonId });
+  if (sig.setLastLesson && config.lessonId) sig.setLastLesson(config.lessonId);
+}
+
+/**
+ * "Recommended next" card data for the final summary: a targeted arcade
+ * practice link at the right difficulty plus this lesson's family page.
+ * Pure + null-safe so the renderer can use it inline.
+ */
+export function recommendedNext(config) {
+  try {
+    const sig = typeof window !== "undefined" && window.NTSignal;
+    const tier = sig && sig.suggestTier ? sig.suggestTier() : "both";
+    const lessonId = config.lessonId || "";
+    if (!lessonId) return null;
+    return {
+      tier,
+      arcadeHref: `/math/games/practice-arcade/?lesson=${encodeURIComponent(lessonId)}${
+        tier === "both" ? "" : `&tier=${tier === "l1" ? "1" : "2"}`
+      }`,
+      arcadeLabel:
+        tier === "l1"
+          ? "Practice Arcade — warm-up level"
+          : tier === "l2"
+            ? "Practice Arcade — challenge level"
+            : "Practice Arcade",
+      familyHref: `/lessons/${encodeURIComponent(lessonId)}/family/`,
+    };
+  } catch {
+    return null;
+  }
 }

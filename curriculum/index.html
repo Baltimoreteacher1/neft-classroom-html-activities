@@ -1503,6 +1503,95 @@
 
         <div class="features-grid">
           <style>
+            .resume-strip {
+              display: none;
+              align-items: center;
+              gap: 12px;
+              flex-wrap: wrap;
+              background: linear-gradient(135deg, #eef7ff, #f2fbf7);
+              border: 1px solid #d7e7f5;
+              border-radius: 14px;
+              padding: 12px 16px;
+              margin: 0 0 16px;
+            }
+            .resume-strip.on {
+              display: flex;
+            }
+            .resume-strip b {
+              color: #12355b;
+            }
+            .resume-strip a {
+              display: inline-flex;
+              align-items: center;
+              min-height: 40px;
+              padding: 0 14px;
+              border-radius: 10px;
+              background: #12355b;
+              color: #fff;
+              font-weight: 700;
+              text-decoration: none;
+            }
+            .resume-strip a.alt {
+              background: #fff;
+              color: #12355b;
+              border: 1px solid #c8d8e8;
+            }
+          </style>
+          <div class="resume-strip" id="resume-strip" aria-label="Pick up where you left off">
+            <span aria-hidden="true" style="font-size: 1.4rem">🧭</span>
+            <b>Pick up where you left off · Continúa donde lo dejaste</b>
+            <span
+              id="resume-strip-links"
+              style="display: inline-flex; gap: 8px; flex-wrap: wrap"
+            ></span>
+          </div>
+          <script src="/assets/nt-signal.js" defer></script>
+          <script>
+            // "Pick up where you left off" — device-local only (window.NTSignal).
+            // Hidden unless this device has lesson signals; no network, no PII.
+            (function () {
+              function boot() {
+                try {
+                  var sig = window.NTSignal;
+                  if (!sig || !sig.profile) return;
+                  var last = sig.profile().lastLesson;
+                  if (!last || !/^\d{1,2}-\d{1,2}$/.test(last)) return;
+                  var tier = sig.suggestTier ? sig.suggestTier() : "both";
+                  var links = document.getElementById("resume-strip-links");
+                  var strip = document.getElementById("resume-strip");
+                  if (!links || !strip) return;
+                  var a = document.createElement("a");
+                  a.href = "/lessons/" + last + "/";
+                  a.textContent = "▶ Continue Lesson " + last;
+                  links.appendChild(a);
+                  var g = document.createElement("a");
+                  g.className = "alt";
+                  g.href =
+                    "/math/games/practice-arcade/?lesson=" +
+                    last +
+                    (tier === "l1" ? "&tier=1" : tier === "l2" ? "&tier=2" : "");
+                  g.textContent =
+                    tier === "l1"
+                      ? "🕹️ Warm-up practice"
+                      : tier === "l2"
+                        ? "🕹️ Challenge practice"
+                        : "🕹️ Practice game";
+                  links.appendChild(g);
+                  strip.classList.add("on");
+                } catch (e) {
+                  /* strip simply stays hidden */
+                }
+              }
+              if (document.readyState === "loading") {
+                window.addEventListener("DOMContentLoaded", function () {
+                  setTimeout(boot, 0);
+                });
+              } else {
+                setTimeout(boot, 0);
+              }
+            })();
+          </script>
+          <style>
             .gradebook-feature .mf-icon {
               background: linear-gradient(135deg, #2fbf71, #2c7d6b);
               color: #fff;
@@ -2256,7 +2345,7 @@
                the Prepare Learning Supports panel below, so the hub always
                shows the same district menus as the lesson dock + Teacher Tools
                console. Served no-cache (see _headers) so edits go live at once. -->
-          <script src="/assets/learning-supports/supports-schema.js?v=20260713-supports-v23"></script>
+          <script src="/assets/learning-supports/supports-schema.js?v=20260714-supports-v24"></script>
           <script>
             document.addEventListener("DOMContentLoaded", () => {
               const optionsRoot = document.getElementById("ewl-linkgen-options");

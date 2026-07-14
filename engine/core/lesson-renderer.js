@@ -43,6 +43,7 @@ import { mountHintLadder } from "./hint-ladder.js";
 import { renderMathText } from "./math-typography.js";
 import { t, stackHtml, phaseName, badgeName } from "./i18n.js";
 import { mountCertificateDownload } from "./certificate-export.js";
+import { recommendedNext } from "./grade-emit.js";
 import resolveVocabImage, { vocabImageAlt } from "./vocab-images.js";
 import { stampTeachL4Meta } from "./uifr.js";
 
@@ -959,6 +960,39 @@ async function completePhase(el, ctx, state, phaseIdx, name, correct, total, opt
   ctx.navigateTo(phaseIdx + 1);
 }
 
+/**
+ * Misconception capture on wrong answers. The tag comes from optional config
+ * authoring — `misconceptionTags[i]` (one per choice) or a single
+ * `misconceptionTag` on the item. Untagged wrong answers are simply not
+ * reported here (recordAnswer already counts them). All sinks are optional:
+ * lesson state (persists per student), NTtelemetry (teacher radar/mastery),
+ * and NTSignal (device-local, drives arcade difficulty + hub suggestions).
+ */
+function reportMisconception(problemDef, selected, state) {
+  try {
+    const tag =
+      (Array.isArray(problemDef.misconceptionTags) &&
+        selected != null &&
+        problemDef.misconceptionTags[selected]) ||
+      problemDef.misconceptionTag ||
+      null;
+    const meta = (typeof window !== "undefined" && window.__ntLessonMeta) || {};
+    if (window.NTSignal)
+      window.NTSignal.record({
+        standard: meta.standard || "",
+        correct: false,
+        misconceptionTag: tag || undefined,
+        lesson: meta.lesson,
+      });
+    if (!tag) return;
+    if (state && state.recordMisconception) state.recordMisconception(tag);
+    if (window.NTtelemetry)
+      window.NTtelemetry.track("misconception", { tag, standard: meta.standard || "" });
+  } catch {
+    /* signals must never break a lesson */
+  }
+}
+
 export function renderComponent(container, problemDef, onAnswer, shellOpts) {
   const useShell = shellOpts && shellOpts.number != null;
   let body = container;
@@ -988,8 +1022,9 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
     }
   }
 
-  const wrappedOnAnswer = (isCorrect) => {
+  const wrappedOnAnswer = (isCorrect, selected) => {
     if (useShell) setResult(isCorrect ? "correct" : "incorrect");
+    if (!isCorrect) reportMisconception(problemDef, selected, shellOpts && shellOpts.state);
     onAnswer?.(isCorrect);
   };
 
@@ -3117,6 +3152,27 @@ function showFinalSummary(el, state, config) {
     el.append(buildGradeCard(state, config));
   } catch (_) {
     /* grading/export must never break the completion screen */
+  }
+
+  // "Recommended next" — a targeted next step from the device-local signal
+  // store: arcade practice at the right difficulty plus the family page.
+  // Pure client-side; renders nothing when signals are unavailable.
+  try {
+    const rec = recommendedNext(config);
+    if (rec) {
+      const next = document.createElement("div");
+      next.className = "completion-next card";
+      next.style.cssText = "margin-top:var(--sp-6); padding:var(--sp-5);";
+      next.innerHTML = `
+        <h3 style="margin:0 0 var(--sp-2);">🧭 ${stackHtml("Recommended next", "Siguiente paso recomendado")}</h3>
+        <div style="display:flex; gap:var(--sp-3); flex-wrap:wrap;">
+          <a class="btn btn-primary" href="${rec.arcadeHref}">🕹️ ${esc(rec.arcadeLabel)}</a>
+          <a class="btn btn-secondary" href="${rec.familyHref}">🏠 ${stackHtml("Family page", "Página familiar")}</a>
+        </div>`;
+      el.append(next);
+    }
+  } catch (_) {
+    /* recommendations must never break the completion screen */
   }
 
   // Optional "Choose an Activity" menu — surfaced at completion on every

@@ -83,9 +83,42 @@ function buildSimpler(item) {
  * @param {HTMLElement} host
  * @param {object} opts { config, state, item }  item is optional (per-problem).
  */
+/**
+ * "Fix the mix-up" — a two-step, config-driven micro-check built from the
+ * lesson's authored commonMistake (no AI, no network). Step 1: spot why the
+ * classic wrong move fails; step 2: redo the problem avoiding it.
+ */
+function buildFixIt(item, config, state) {
+  const mistake =
+    item?.commonMistake || config?.commonMistake || config?.reflect?.commonMistake || null;
+  if (!mistake) return "";
+  const text = typeof mistake === "string" ? mistake : mistake.text || mistake.description || "";
+  if (!text) return "";
+  // If this student has a recorded repeat trip-up, name the pattern gently.
+  let seen = 0;
+  try {
+    const m = state?.get?.("misconceptions") || {};
+    seen = Object.values(m).reduce((t, n) => t + n, 0);
+  } catch {
+    seen = 0;
+  }
+  return `
+    <div class="stuck-fixit">
+      <p><strong>Step 1 — Spot it:</strong> A very common mix-up on this kind of problem is:</p>
+      <blockquote class="stuck-fixit-mistake">${esc(text)}</blockquote>
+      <p>Ask yourself: <em>why</em> does that move give the wrong answer?</p>
+      <p><strong>Step 2 — Fix it:</strong> Try your problem again, and say (or write) the step
+      where you will NOT make that mix-up.${
+        seen >= 2
+          ? " You've bumped into this one a couple of times — naming it out loud is how you beat it."
+          : ""
+      }</p>
+    </div>`;
+}
+
 export function mountStuckSupport(host, opts = {}) {
   if (!host) return null;
-  const { config = {}, item = null } = opts;
+  const { config = {}, item = null, state = null } = opts;
 
   const options = [
     {
@@ -117,6 +150,12 @@ export function mountStuckSupport(host, opts = {}) {
       icon: "✍️",
       label: "Sentence starter",
       html: buildSentenceStarter(item, config),
+    },
+    {
+      key: "fixit",
+      icon: "🧰",
+      label: "Fix the mix-up",
+      html: buildFixIt(item, config, state),
     },
     {
       key: "simpler",
@@ -167,6 +206,42 @@ export function mountStuckSupport(host, opts = {}) {
       panel.hidden = false;
     });
   });
+
+  // Worked-example fade-in: after two wrong answers in a row on this card's
+  // problem set, quietly open the bar to the "See an example" panel once —
+  // the I-do model resurfaces exactly when the student needs it. Watches the
+  // existing state stream; no new tracking, and never re-fires.
+  if (state && typeof state.subscribe === "function") {
+    let lastAttempts = null;
+    let lastCorrect = null;
+    let wrongStreak = 0;
+    let fired = false;
+    const unsub = state.subscribe(() => {
+      try {
+        const attempts = state.get("totalAttempts") || 0;
+        const correct = state.get("totalCorrect") || 0;
+        if (lastAttempts === null) {
+          lastAttempts = attempts;
+          lastCorrect = correct;
+          return;
+        }
+        if (attempts > lastAttempts) {
+          wrongStreak = correct > lastCorrect ? 0 : wrongStreak + 1;
+          lastAttempts = attempts;
+          lastCorrect = correct;
+          if (wrongStreak >= 2 && !fired) {
+            fired = true;
+            if (typeof unsub === "function") unsub();
+            if (body.hidden) toggle.click();
+            const exampleChip = wrap.querySelector('.stuck-chip[data-help="example"]');
+            if (exampleChip && !exampleChip.classList.contains("is-active")) exampleChip.click();
+          }
+        }
+      } catch {
+        /* never break practice */
+      }
+    });
+  }
 
   host.append(wrap);
   return wrap;
