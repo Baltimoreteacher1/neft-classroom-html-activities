@@ -246,15 +246,18 @@ say "✓ Pushed. Cloudflare Pages is building..."
 # --- Verify it actually went live ---------------------------------------------------------
 poll_stamp "$NEW_SHA" || exit 1
 
-# Known gotcha: a Cloudflare zone rule serves /assets/* with max-age=14400 (4 h)
-# despite _headers saying max-age=0, so STABLE-NAMED files under assets/ can keep
-# serving the old bytes at the edge for up to 4 hours after a fresh deploy.
+# /assets/* freshness: RESOLVED 2026-07-14 — the zone "Browser Cache TTL = 4 h"
+# override was switched to "Respect Existing Headers", so _headers' max-age=0,
+# must-revalidate is honored and stable-named assets propagate instantly (the
+# edge revalidates per request). ?v= bumps are no longer needed for freshness.
+# Spot-check a shipped asset if paranoid: curl -sI <url> → cf-cache-status
+# REVALIDATED + max-age=0. If a 4 h max-age ever reappears, the zone setting
+# regressed (Caching → Configuration).
 if [ "$MODE" = "ship" ]; then
   ASSET_TOUCHED="$(git log --no-walk --name-only --format= "${RESOLVED[@]}" | grep -c '^assets/' || true)"
   if [ "${ASSET_TOUCHED:-0}" -gt 0 ]; then
     say ""
-    say "⚠ $ASSET_TOUCHED file(s) under assets/ shipped. The CF edge caches /assets/*"
-    say "  for up to 4 h regardless of _headers. If a change must be visible NOW,"
-    say "  reference it with a cache-busting query (?v=...) or verify with ?cb=."
+    say "ℹ $ASSET_TOUCHED file(s) under assets/ shipped — live immediately (zone"
+    say "  respects _headers max-age=0 since 2026-07-14; edge revalidates per request)."
   fi
 fi

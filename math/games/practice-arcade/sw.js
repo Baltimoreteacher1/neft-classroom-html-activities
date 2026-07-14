@@ -3,10 +3,10 @@
    Offline-first for the per-lesson practice arcade: once the arcade is
    visited it keeps working without wifi (including the vendored Phaser
    runtime and per-lesson config fetches). Scope: /math/games/practice-arcade/
-   only. Bump CACHE to ship new asset versions.
+   only. Content updates flow through automatically (network-first); bump CACHE only when this worker itself changes.
    Modeled on math/intervention/sw.js.
    ========================================================================== */
-const CACHE = "pa-off-v1";
+const CACHE = "pa-off-v2";
 const SCOPE = "/math/games/practice-arcade/";
 // Shared multi-day Save/Resume widget injected on the arcade page. It lives
 // outside SCOPE (at /shared/), so it must be explicitly precached +
@@ -96,11 +96,14 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // Assets: cache-first, then network (and cache a copy for next time).
+  // Assets & subresources: NETWORK-FIRST, cache fallback. The site's caching
+  // model is instant updates (max-age=0, must-revalidate), so a conditional
+  // GET is a cheap 304 — online this costs exactly what the page cost before
+  // the SW existed. Cache-first here would pin stable-named scripts and
+  // lesson content (lesson.js, config.json, /assets/*.js) to whatever version
+  // the student saw first, forever — deploys would never reach them.
   e.respondWith(
     (async () => {
-      const cached = await caches.match(req);
-      if (cached) return cached;
       try {
         const fresh = await fetch(req);
         if (fresh && fresh.status === 200 && fresh.type === "basic") {
@@ -109,7 +112,7 @@ self.addEventListener("fetch", (e) => {
         }
         return fresh;
       } catch (err) {
-        return Response.error();
+        return (await caches.match(req)) || Response.error();
       }
     })(),
   );
