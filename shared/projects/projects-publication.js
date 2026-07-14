@@ -83,6 +83,7 @@
       if (explicit) return explicit.textContent.trim();
     }
     var wrapped = field.closest("label");
+    if (wrapped && field.type === "checkbox") return wrapped.textContent.trim();
     if (wrapped) return wrapped.textContent.replace(field.value || "", "").trim();
     return (
       field.getAttribute("aria-label") ||
