@@ -15,7 +15,6 @@ import {
 } from "./lesson-renderer.js";
 import { buildLessonCoverExtras, mountCoverArt, applyPhaseAccent } from "./premium.js";
 import {
-  mountTeacherPanel,
   buildWelcomeTeacherNotes,
   isTeacherMode,
   initTeacherAccess,
@@ -588,7 +587,6 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       "display:flex; gap:8px; padding:8px 12px; margin-bottom:12px; flex-wrap:wrap; justify-content:center; border-bottom:1px solid rgba(255,255,255,0.1);";
     a11yBar.innerHTML = `
       <button class="pub-btn" id="btn-lesson-read" type="button" style="padding:4px 8px; font-size:11px; flex:1; min-width:80px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:6px; cursor:pointer;">🔊 Read Aloud</button>
-      <button class="pub-btn" id="btn-lesson-contrast" type="button" style="padding:4px 8px; font-size:11px; flex:1; min-width:80px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:6px; cursor:pointer;">🌓 Contrast: NORM</button>
       <button class="pub-btn" id="btn-lesson-draw" type="button" style="padding:4px 8px; font-size:11px; flex:1; min-width:80px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:6px; cursor:pointer;">✏️ Draw: OFF</button>
     `;
 
@@ -601,16 +599,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       sidebar.append(a11yBar);
     }
 
-    // 2. High Contrast toggle handler
-    const contrastBtn = a11yBar.querySelector("#btn-lesson-contrast");
-    contrastBtn.addEventListener("click", () => {
-      const hc = document.body.classList.toggle("high-contrast");
-      contrastBtn.textContent = hc ? "🌓 Contrast: HIGH" : "🌓 Contrast: NORM";
-      contrastBtn.style.background = hc ? "#f59e0b" : "rgba(255,255,255,0.1)";
-      contrastBtn.style.color = hc ? "#000" : "#fff";
-    });
-
-    // 3. Read Aloud toggle handler
+    // Read Aloud toggle handler
     const readBtn = a11yBar.querySelector("#btn-lesson-read");
     readBtn.addEventListener("click", () => {
       if (window.speechSynthesis && window.speechSynthesis.speaking) {
@@ -734,7 +723,11 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     });
   })();
 
-  mountTeacherPanel(root, config, state);
+  // Floating in-lesson Teacher View panel removed per teacher request — it popped
+  // out over the left sidebar and covered lesson content. Teacher pacing/answers
+  // remain available on the lesson start screen ("Show teacher pacing & tips")
+  // and in the teacher notes. Prepare Supports (right dock) is unaffected.
+  // mountTeacherPanel(root, config, state);
 
   const lessonHero = buildLessonHero(config, state, phaseConfigs);
   main.append(lessonHero);

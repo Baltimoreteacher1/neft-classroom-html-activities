@@ -140,11 +140,11 @@
       // Compact by default: a 48px icon circle that stays clear of the lesson
       // content, expanding to reveal its label on hover/focus so it no longer
       // blocks navigation as a wide pill.
-      "#mwb-launcher{position:fixed;right:max(16px,env(safe-area-inset-right));" +
-      "bottom:max(72px,env(safe-area-inset-bottom));z-index:2147483000;" +
+      "#mwb-launcher{position:fixed;right:max(6px,env(safe-area-inset-right));" +
+      "bottom:max(64px,env(safe-area-inset-bottom));z-index:2147483000;" +
       "display:inline-flex;align-items:center;justify-content:center;gap:0;text-decoration:none;" +
-      "width:48px;height:48px;padding:0;overflow:hidden;white-space:nowrap;" +
-      "border-radius:999px;font:700 14px/1 system-ui,-apple-system,Segoe UI,sans-serif;" +
+      "width:38px;height:38px;padding:0;overflow:hidden;white-space:nowrap;" +
+      "border-radius:999px;font:700 12px/1 system-ui,-apple-system,Segoe UI,sans-serif;" +
       "color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);" +
       "box-shadow:0 4px 16px rgba(0,0,0,.28);border:2px solid rgba(255,255,255,.85);" +
       "cursor:pointer;box-sizing:border-box;" +
@@ -152,7 +152,7 @@
       "#mwb-launcher:hover,#mwb-launcher:focus-visible{width:auto;gap:8px;padding:0 16px;" +
       "transform:translateY(-2px);box-shadow:0 7px 22px rgba(0,0,0,.34);}" +
       "#mwb-launcher:focus-visible{outline:3px solid #ffd54a;outline-offset:3px;}" +
-      "#mwb-launcher .mwb-star{font-size:16px;line-height:1;}" +
+      "#mwb-launcher .mwb-star{font-size:13px;line-height:1;}" +
       "#mwb-launcher .mwb-label{max-width:0;opacity:0;overflow:hidden;white-space:nowrap;" +
       "transition:max-width .18s ease,opacity .18s ease;}" +
       "#mwb-launcher:hover .mwb-label,#mwb-launcher:focus-visible .mwb-label{max-width:180px;opacity:1;}" +
