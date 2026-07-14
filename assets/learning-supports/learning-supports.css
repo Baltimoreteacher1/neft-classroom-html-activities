@@ -1903,3 +1903,107 @@ mark.ewl-adapt-mark {
   gap: 8px;
   font-weight: 600;
 }
+
+/* ── "🧮 Math supports" — teacher-gated tool checklist (Teacher Mode only) ────
+   Replaces the always-open floating tools box. A vertical side tab (mirrors the
+   "Prepare Supports" tab, sitting just below it) opens a slide-out checklist;
+   each checkbox drives the matching learning tool. Students never see this. */
+.ewl-supports-tools-dock--teacher-hidden {
+  display: none !important;
+}
+
+.ewl-supports-math-dock {
+  position: fixed;
+  top: calc(50% + 104px);
+  right: 0;
+  z-index: 9999;
+}
+
+.ewl-supports-math-tab {
+  writing-mode: vertical-rl;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 16px 10px;
+  background: #0f766e;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-right: none;
+  border-radius: 14px 0 0 14px;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: var(--ewl-shadow);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition:
+    transform 0.2s,
+    background-color 0.2s;
+}
+.ewl-supports-math-tab:hover {
+  background-color: #115e57;
+  transform: translateX(-3px);
+}
+
+.ewl-supports-math-panel {
+  position: absolute;
+  right: 46px;
+  top: 0;
+  width: 250px;
+  max-height: 70vh;
+  overflow-y: auto;
+  background: var(--ewl-color-white);
+  border: 1px solid var(--ewl-color-border);
+  border-radius: 14px;
+  box-shadow: var(--ewl-shadow);
+  padding: 14px 16px;
+}
+.ewl-supports-math-panel[hidden] {
+  display: none !important;
+}
+
+.ewl-supports-math-title {
+  margin: 0 0 2px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f766e;
+}
+.ewl-supports-math-sub {
+  margin: 0 0 10px;
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.ewl-supports-math-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ewl-supports-math-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ewl-color-primary);
+  cursor: pointer;
+}
+.ewl-supports-math-item:hover {
+  background: #f0fdfa;
+}
+.ewl-supports-math-check {
+  width: 18px;
+  height: 18px;
+  accent-color: #0f766e;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .ewl-supports-math-panel {
+    width: min(250px, 80vw);
+  }
+}

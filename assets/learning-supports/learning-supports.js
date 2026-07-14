@@ -958,6 +958,86 @@
 
     rootEl.appendChild(studentTools);
 
+    // ── "🧮 Math supports" — teacher-gated checklist of the learning tools ────
+    // Per Joel: replace the always-open floating tools box with a tidy tab.
+    // TEACHER MODE ONLY: hide the floating dock and offer the same tools as
+    // checkboxes; checking one drives the matching dock tool via its existing
+    // handler (so it turns on for the class). Student tool delivery (v2 roster /
+    // v1 profiles) is completely untouched — those paths never run in Teacher
+    // Mode (bootSupportsV2 returns early), so students still get the floating
+    // dock with only their assigned tools.
+    try {
+      if (isTeacherMode()) {
+        studentTools.classList.add("ewl-supports-tools-dock--teacher-hidden");
+
+        const msDock = document.createElement("aside");
+        msDock.className = "ewl-supports-math-dock";
+        msDock.setAttribute("aria-label", "Math supports");
+
+        const msTab = document.createElement("button");
+        msTab.type = "button";
+        msTab.className = "ewl-supports-math-tab";
+        msTab.setAttribute("aria-expanded", "false");
+        msTab.innerHTML = '<span aria-hidden="true">🧮</span> Math supports';
+
+        const msPanel = document.createElement("div");
+        msPanel.className = "ewl-supports-math-panel";
+        msPanel.hidden = true;
+        const msTitle = document.createElement("p");
+        msTitle.className = "ewl-supports-math-title";
+        msTitle.textContent = "🧮 Math supports";
+        const msSub = document.createElement("p");
+        msSub.className = "ewl-supports-math-sub";
+        msSub.textContent = "Check a tool to turn it on for this lesson.";
+        msPanel.appendChild(msTitle);
+        msPanel.appendChild(msSub);
+
+        const msList = document.createElement("div");
+        msList.className = "ewl-supports-math-list";
+        // Build one checkbox per dock tool button (skip the TTS-rate button — it
+        // rides along with Listen). Checking drives the real tool's handler.
+        Array.prototype.forEach.call(
+          studentTools.querySelectorAll(".ewl-supports-tool-btn"),
+          (btn) => {
+            const key = btn.getAttribute("data-tool");
+            if (!key || key === "rate") return;
+            const item = document.createElement("label");
+            item.className = "ewl-supports-math-item";
+            const cb = document.createElement("input");
+            cb.type = "checkbox";
+            cb.className = "ewl-supports-math-check";
+            cb.setAttribute("data-tool", key);
+            cb.addEventListener("change", () => {
+              // Toggle the underlying tool via its existing handler. The dock is
+              // hidden in Teacher Mode but the button still fires its click.
+              btn.click();
+            });
+            const txt = document.createElement("span");
+            txt.textContent = btn.textContent.trim();
+            item.appendChild(cb);
+            item.appendChild(txt);
+            msList.appendChild(item);
+          },
+        );
+        msPanel.appendChild(msList);
+
+        msTab.addEventListener("click", () => {
+          const open = msPanel.hidden;
+          msPanel.hidden = !open;
+          msTab.setAttribute("aria-expanded", String(open));
+          msDock.classList.toggle("is-open", open);
+        });
+
+        msDock.appendChild(msTab);
+        msDock.appendChild(msPanel);
+        rootEl.appendChild(msDock);
+      }
+    } catch (e) {
+      // Never let the teacher-only checklist break lesson boot — degrade to the
+      // plain lesson (students are unaffected: this block is Teacher-Mode only).
+      console.warn("Math supports tab failed to mount:", e);
+    }
+
     // 4. Slide-out Content Panel
     const contentPanel = document.createElement("div");
     contentPanel.setAttribute("data-ewl-supports-panel", "1");
