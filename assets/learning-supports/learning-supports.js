@@ -2669,6 +2669,11 @@
       let url;
       try {
         url = new URL("supports-schema.js", SCRIPT_URL).href;
+        // Carry the parent script's ?v= cache token (new URL() drops the base
+        // query) so bumping the version busts the schema too — /assets/* is
+        // edge-cached up to 4h and this file loads without its own token.
+        const token = new URL(SCRIPT_URL).search;
+        if (token) url += token;
       } catch (_e) {
         url = "/assets/learning-supports/supports-schema.js";
       }
