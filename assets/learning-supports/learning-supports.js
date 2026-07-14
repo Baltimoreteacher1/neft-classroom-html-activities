@@ -2651,6 +2651,16 @@
     break: "focus-organize",
     checkin: "focus-organize",
     translate: "language-support",
+    // IEP/ESOL document lines that duplicate a tool (lockstep with schema).
+    "iep-tts": "read-understand",
+    "iep-word-bank": "read-understand",
+    "iep-preteach-vocab": "read-understand",
+    "esol-word-bank": "read-understand",
+    "iep-sentence-starters": "express-thinking",
+    "iep-writing-frame": "express-thinking",
+    "iep-visual-aids": "build-math",
+    "iep-manipulatives": "build-math",
+    "iep-calc-noncalc": "build-math",
   };
 
   function loadSupportsSchema() {

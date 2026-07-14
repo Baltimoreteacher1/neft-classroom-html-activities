@@ -18,80 +18,244 @@
   "use strict";
   if (window.EWLSupportsSchema) return;
 
+  // The two official district accommodation menus (verbatim from the IEP/ESOL
+  // modifications document). Each line is one checkbox. Where a line maps to a
+  // real student tool it is `interactive` (+ `tool` = the dock control it turns
+  // on for the student). Everything else is a `flag`: a teacher planning note
+  // that persists on the roster but is never surfaced to the student. Keys are
+  // stable slugs — the five WIDA-bundled keys (translate/vocab/frames/tts/
+  // notepad) live under ESOL so a WIDA level pre-checks them in place.
   var GROUPS = [
     {
-      id: "presentation",
-      label: "Presentation",
-      icon: "🖥️",
+      id: "iep",
+      label: "IEP Modifications/Accommodations",
+      icon: "📋",
       items: [
-        { key: "tts", label: "Read aloud", apply: "interactive", tool: "listen" },
-        { key: "text-large", label: "Larger text", apply: "passive" },
-        { key: "contrast", label: "High contrast", apply: "passive" },
-        { key: "tint", label: "Calm color tint", apply: "passive" },
-        { key: "ruler", label: "Reading ruler", apply: "interactive", tool: "ruler" },
-        { key: "focus", label: "One-problem focus", apply: "interactive", tool: "focus" },
-        { key: "comfort", label: "Comfort spacing", apply: "passive" },
-      ],
-    },
-    {
-      id: "understanding",
-      label: "Understanding",
-      icon: "💡",
-      items: [
-        { key: "vocab", label: "Vocabulary / words", apply: "interactive", tool: "words" },
-        { key: "example", label: "Worked example", apply: "interactive", tool: "example" },
-        { key: "model", label: "Visual model", apply: "interactive", tool: "model" },
+        { key: "iep-redirect", label: "Redirect student", apply: "flag" },
+        { key: "iep-graphic-organizer", label: "Graphic organizer", apply: "flag" },
+        { key: "iep-small-group", label: "Small group", apply: "flag" },
+        { key: "break", label: "Frequent breaks", apply: "interactive", tool: "break" },
         {
-          key: "misconceptions",
-          label: "Watch-out tips",
+          key: "iep-reduce-distract-self",
+          label: "Reduce distractions to self",
+          apply: "flag",
+        },
+        {
+          key: "iep-reduce-distract-others",
+          label: "Reduce distractions to others",
+          apply: "flag",
+        },
+        {
+          key: "iep-tts",
+          label:
+            "Text to Speech for the ELA/Literacy Assessments (items, response options, and passages)",
           apply: "interactive",
-          tool: "misconceptions",
+          tool: "listen",
+        },
+        {
+          key: "calculator",
+          label:
+            "Calculation device and mathematics tools (on Calculation Sections of the Mathematics Assessments)",
+          apply: "interactive",
+          tool: "calculator",
+        },
+        {
+          key: "iep-calc-noncalc",
+          label:
+            "Calculation device and mathematics tools (on NON-Calculation Sections of the Mathematics Assessments)",
+          apply: "interactive",
+          tool: "calculator",
+        },
+        { key: "iep-monitor-test", label: "Monitor test response", apply: "flag" },
+        { key: "time", label: "Extended time", apply: "flag" },
+        {
+          key: "iep-word-bank",
+          label:
+            "Use of word bank to reinforce vocabulary and/or when extended writing is required",
+          apply: "interactive",
+          tool: "words",
+        },
+        {
+          key: "iep-sentence-starters",
+          label: "Sentence starters",
+          apply: "interactive",
+          tool: "explain",
+        },
+        { key: "iep-chunk-text", label: "Chunking of information and text", apply: "flag" },
+        { key: "iep-repeat-directions", label: "Repetition of directions", apply: "flag" },
+        { key: "iep-check-understanding", label: "Check for understanding", apply: "flag" },
+        {
+          key: "iep-chunk-repeat-verbal",
+          label: "Chunk and repeat all verbally presented information",
+          apply: "flag",
+        },
+        {
+          key: "iep-verbal-visual-choices",
+          label: "Use of verbal and visual choices to answer question",
+          apply: "flag",
+        },
+        {
+          key: "iep-alt-demonstrate",
+          label: "Provide alternative ways to demonstrate learning",
+          apply: "flag",
+        },
+        { key: "iep-monitor-independent", label: "Monitor independent work", apply: "flag" },
+        {
+          key: "iep-pictures-support",
+          label: "Use pictures to support reading passages / comprehension",
+          apply: "flag",
+        },
+        {
+          key: "iep-paraphrase",
+          label: "Paraphrase questions and instructions",
+          apply: "flag",
+        },
+        {
+          key: "iep-visual-aids",
+          label: "Use of visual aids",
+          apply: "interactive",
+          tool: "model",
+        },
+        { key: "iep-preferential-seating", label: "Preferential seating", apply: "flag" },
+        {
+          key: "iep-preteach-vocab",
+          label: "Pre-teach vocabulary",
+          apply: "interactive",
+          tool: "words",
+        },
+        { key: "iep-highlighter", label: "Use of highlighter", apply: "flag" },
+        {
+          key: "iep-manipulatives",
+          label: "Use of manipulatives",
+          apply: "interactive",
+          tool: "model",
+        },
+        { key: "iep-ask-assistance", label: "Ask assistance when needed", apply: "flag" },
+        { key: "iep-cues", label: "Verbal and non-verbal cues", apply: "flag" },
+        { key: "fewer", label: "Adjusted workload", apply: "flag" },
+        { key: "iep-reminder-rules", label: "Frequent reminder of rules", apply: "flag" },
+        { key: "iep-positive-praise", label: "Frequent positive praise", apply: "flag" },
+        {
+          key: "iep-movement",
+          label: "Opportunities for movement / changes in activity",
+          apply: "flag",
+        },
+        {
+          key: "iep-multisensory",
+          label: "Multisensory presentation of information",
+          apply: "flag",
+        },
+        {
+          key: "iep-extra-time",
+          label: "Extra response / processing time",
+          apply: "flag",
+        },
+        {
+          key: "iep-immediate-feedback",
+          label: "Frequent and/or immediate feedback",
+          apply: "flag",
+        },
+        {
+          key: "checklist",
+          label: "Use of organizational aids",
+          apply: "interactive",
+          tool: "checklist",
+        },
+        {
+          key: "iep-writing-frame",
+          label: "Writing frame",
+          apply: "interactive",
+          tool: "notepad",
         },
       ],
     },
     {
-      id: "response",
-      label: "Response",
-      icon: "✍️",
-      items: [
-        { key: "frames", label: "Sentence frames", apply: "interactive", tool: "explain" },
-        { key: "notepad", label: "Notepad", apply: "interactive", tool: "notepad" },
-        { key: "calculator", label: "Calculator", apply: "interactive", tool: "calculator" },
-        { key: "numberline", label: "Number line", apply: "interactive", tool: "numberline" },
-        { key: "multchart", label: "Times table", apply: "interactive", tool: "multchart" },
-        { key: "placevalue", label: "Place-value chart", apply: "interactive", tool: "placevalue" },
-      ],
-    },
-    {
-      id: "self-management",
-      label: "Self-Management",
-      icon: "🧭",
-      items: [
-        { key: "checklist", label: "Task checklist", apply: "interactive", tool: "checklist" },
-        { key: "break", label: "Calm break", apply: "interactive", tool: "break" },
-        { key: "checkin", label: "Feelings check-in", apply: "interactive", tool: "checkin" },
-      ],
-    },
-    {
-      id: "language",
-      label: "Language (ESOL / WIDA)",
+      id: "esol",
+      label: "ESOL Modifications",
       icon: "🌐",
       items: [
         {
+          key: "esol-extended-time",
+          label: "Extended time (assignments, assessments)",
+          apply: "flag",
+        },
+        {
           key: "translate",
-          label: "Home-language translation",
+          label: "Use of published word-to-word bilingual dictionary",
           apply: "interactive",
           tool: "translate",
         },
-      ],
-    },
-    {
-      id: "pacing",
-      label: "Pacing (teacher note)",
-      icon: "⏱️",
-      items: [
-        { key: "fewer", label: "Fewer problems", apply: "flag" },
-        { key: "time", label: "Extended time / breaks", apply: "flag" },
+        {
+          key: "esol-repeated-readings",
+          label: "Repeated readings of passage / text by student",
+          apply: "flag",
+        },
+        { key: "esol-leveled-text", label: "Leveled text", apply: "flag" },
+        {
+          key: "esol-selected-portion",
+          label: "Selected portion of grade-level test or task",
+          apply: "flag",
+        },
+        {
+          key: "esol-read-aloud-selected",
+          label: "Read aloud selected parts of the passage / text",
+          apply: "flag",
+        },
+        {
+          key: "tts",
+          label: "Read aloud entire passage / text",
+          apply: "interactive",
+          tool: "listen",
+        },
+        { key: "esol-graphic-organizers", label: "Graphic organizers", apply: "flag" },
+        {
+          key: "model",
+          label: "Visual cues / aides and realia",
+          apply: "interactive",
+          tool: "model",
+        },
+        {
+          key: "esol-frequent-checks",
+          label: "Frequent checks for understanding",
+          apply: "flag",
+        },
+        { key: "esol-reduced-noise", label: "Reduced background noise", apply: "flag" },
+        {
+          key: "vocab",
+          label: "Pre-teach new vocabulary",
+          apply: "interactive",
+          tool: "words",
+        },
+        { key: "esol-word-bank", label: "Word bank", apply: "interactive", tool: "words" },
+        {
+          key: "frames",
+          label: "Sentence frames (orally and/or written)",
+          apply: "interactive",
+          tool: "explain",
+        },
+        {
+          key: "esol-allow-home-language",
+          label: "Allow home language for assignments / projects / discussion",
+          apply: "flag",
+        },
+        { key: "esol-preferential-seating", label: "Preferential seating", apply: "flag" },
+        {
+          key: "esol-simplify-language",
+          label: "Adapt / simplify teacher's language",
+          apply: "flag",
+        },
+        { key: "esol-model-directions", label: "Model directions", apply: "flag" },
+        {
+          key: "esol-reword-directions",
+          label: "Repeat / reword multiple-step directions",
+          apply: "flag",
+        },
+        {
+          key: "notepad",
+          label: "Scribe at student's request",
+          apply: "interactive",
+          tool: "notepad",
+        },
       ],
     },
   ];
