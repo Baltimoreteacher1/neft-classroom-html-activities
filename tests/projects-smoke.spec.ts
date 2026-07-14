@@ -52,7 +52,7 @@ for (const u of UNITS) {
 }
 ROUTES.push({ url: "/math/unit-10/projects/world-architect/", kind: "extra" });
 
-const IGNORE_404 = [/\/favicon\.ico$/];
+const IGNORE_404 = [/\/favicon\.ico$/, /\/api\/progress\/telemetry$/];
 
 const IGNORE_CONSOLE = [
   /edupulse/i,
@@ -63,12 +63,16 @@ const IGNORE_CONSOLE = [
   /ERR_(NETWORK|INTERNET|CONNECTION|NAME_NOT_RESOLVED|BLOCKED)/i,
   // Sandbox TLS interception fails external HTTPS (works in production).
   /ERR_CERT_AUTHORITY_INVALID/i,
+  // Chromium duplicates HTTP failures as a URL-less console line; the
+  // response listener above retains precise same-origin asset enforcement.
+  /Failed to load resource: the server responded with a status of 404/i,
 ];
 
 // Buttons we do NOT auto-click: exports/saves (fire alerts/downloads/clipboard)
 // and print. Everything else (calculators, checks, compare, what-if) is fair
 // game and should never throw.
-const SKIP_BUTTON = /save|load|download|\.txt|\.csv|copy|print|share|reset|clear/i;
+const SKIP_BUTTON =
+  /save|load|download|\.txt|\.csv|copy|print|share|reset|clear|take me there|llévame allí/i;
 
 for (const route of ROUTES) {
   test(`project ok: ${route.url}`, async ({ page, baseURL }) => {
@@ -170,6 +174,49 @@ for (const route of ROUTES) {
       expect(publication.studio, `publication studio missing on ${route.url}`).toBe(1);
       expect(publication.dialog, `publication preview missing on ${route.url}`).toBe(1);
       expect(publication.live, `publication live statuses missing on ${route.url}`).toBeGreaterThan(1);
+
+      await page.evaluate(() => {
+        const block = document.querySelector<HTMLElement>(".step-research");
+        const values: Array<[HTMLInputElement | HTMLTextAreaElement | null, string]> = [
+          [block?.querySelector("[data-research-find]") ?? null, "A specific fact from the source"],
+          [block?.querySelector('[data-pps-field="claim"]') ?? null, "This evidence supports my project decision."],
+          [block?.querySelector('[data-pps-field="credibility"]') ?? null, "The named organization publishes the original information."],
+          [block?.querySelector('[data-pps-field="accessed"]') ?? null, "2026-07-14"],
+        ];
+        values.forEach(([field, value]) => {
+          if (!field) return;
+          field.value = value;
+          field.dispatchEvent(new Event("input", { bubbles: true }));
+          field.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+      });
+      await page.waitForFunction(
+        () => document.querySelector(".pps-ledger")?.getAttribute("data-status") === "ready",
+      );
+      expect(
+        await page.locator(".pps-ledger").first().getAttribute("data-status"),
+        `completed evidence was not publication-ready on ${route.url}`,
+      ).toBe("ready");
+
+      await page.evaluate(() => {
+        const w = window as unknown as { toggleLanguage?: () => void };
+        w.toggleLanguage?.();
+      });
+      expect(
+        await page.locator(".pps-studio").innerText(),
+        `Spanish Publication Studio copy missing on ${route.url}`,
+      ).toContain("publicación");
+      await page.evaluate(() => {
+        const w = window as unknown as { toggleLanguage?: () => void };
+        w.toggleLanguage?.();
+        document.querySelector<HTMLButtonElement>('[data-pps-action="preview"]')?.click();
+      });
+      expect(await page.locator(".pps-dialog").getAttribute("open")).not.toBeNull();
+      expect(
+        await page.locator(".pps-dialog__document .pps-document__source a").count(),
+        `publication preview omitted cited sources on ${route.url}`,
+      ).toBeGreaterThan(0);
+      await page.evaluate(() => document.querySelector<HTMLDialogElement>(".pps-dialog")?.close());
 
       // Portfolio layer: each project offers a local evidence review and a
       // student-owned printable portfolio, without requiring an account.
@@ -318,3 +365,27 @@ for (const route of ROUTES) {
     expect(consoleErrors, `console error(s) on ${route.url}`).toEqual([]);
   });
 }
+
+test("Publication Studio evidence persists locally and fits a phone viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 760 });
+  await page.goto("/math/unit-2/projects/version-b/", { waitUntil: "load" });
+  await page.waitForFunction(() => document.body?.dataset.publicationInit === "1");
+  await page.evaluate(() => {
+    const claim = document.querySelector<HTMLTextAreaElement>('[data-pps-field="claim"]');
+    if (!claim) throw new Error("Publication claim field missing");
+    claim.value = "A durable publication claim for reload testing.";
+    claim.dispatchEvent(new Event("input", { bubbles: true }));
+    claim.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+  await page.waitForTimeout(250);
+  await page.reload({ waitUntil: "load" });
+  await page.waitForFunction(() => document.body?.dataset.publicationInit === "1");
+  expect(await page.locator('[data-pps-field="claim"]').first().inputValue()).toBe(
+    "A durable publication claim for reload testing.",
+  );
+  const widths = await page.locator(".pps-studio").evaluate((element) => ({
+    client: element.clientWidth,
+    scroll: element.scrollWidth,
+  }));
+  expect(widths.scroll, "Publication Studio overflows at 360px").toBeLessThanOrEqual(widths.client);
+});
