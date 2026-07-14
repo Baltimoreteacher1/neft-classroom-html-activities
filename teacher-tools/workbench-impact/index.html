@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Workbench Impact · Neft Teacher</title>
+    <meta
+      name="description"
+      content="An efficacy dashboard for the Math Workbench — hand-ins, unique students, per-section usage, recent turn-ins, and who to check on, straight from the live progress data."
+    />
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #1fa6a2;
+        --amber: #f2c15b;
+        --coral: #d9795d;
+        --green: #19a35a;
+        --cream: #f7f4ec;
+        --line: #e4ebf2;
+        --ink: #1a2b3c;
+        --muted: #54677c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        color: var(--ink);
+        background: var(--cream);
+        line-height: 1.5;
+      }
+      .top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px 20px;
+        background: var(--navy);
+        color: #fff;
+      }
+      .top h1 {
+        font-size: 1.2rem;
+        margin: 0;
+      }
+      .top button,
+      .top a.btn {
+        min-height: 40px;
+        padding: 8px 16px;
+        border: 0;
+        border-radius: 10px;
+        background: #fff;
+        color: var(--navy);
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 0.92rem;
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: 0 2px 10px rgba(12, 27, 42, 0.06);
+        padding: 18px;
+        margin-bottom: 18px;
+      }
+      .card h2 {
+        margin: 0 0 12px;
+        font-size: 1.1rem;
+        color: var(--navy);
+      }
+      .card .sub {
+        margin: -8px 0 12px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .gate {
+        max-width: 460px;
+        margin: 40px auto;
+        text-align: center;
+      }
+      .gate .lock {
+        font-size: 2rem;
+      }
+      .gate .row {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .gate input {
+        flex: 1;
+        min-height: 44px;
+        padding: 0 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        font-size: 1rem;
+      }
+      .gate .err {
+        color: var(--coral);
+        font-weight: 600;
+        min-height: 1.4em;
+      }
+      button.primary {
+        min-height: 44px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 10px;
+        background: var(--navy);
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+      .controls {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .controls label {
+        font-weight: 600;
+        font-size: 0.92rem;
+        color: var(--muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .controls select {
+        min-height: 40px;
+        padding: 0 10px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+        font-size: 0.95rem;
+        color: var(--ink);
+      }
+      .stat-row {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+      }
+      .stat {
+        flex: 1;
+        min-width: 150px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+        text-align: center;
+      }
+      .stat b {
+        display: block;
+        font-size: 1.8rem;
+        color: var(--navy);
+      }
+      .stat span {
+        color: var(--muted);
+        font-size: 0.9rem;
+        display: block;
+      }
+      .stat .ctx {
+        font-size: 0.78rem;
+        margin-top: 2px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.94rem;
+      }
+      caption {
+        text-align: left;
+        color: var(--muted);
+        font-size: 0.88rem;
+        padding-bottom: 8px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 8px;
+        border-bottom: 1px solid var(--line);
+      }
+      th {
+        color: var(--muted);
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      tbody th[scope="row"] {
+        color: var(--ink);
+        font-size: 0.94rem;
+        text-transform: none;
+        letter-spacing: 0;
+        font-weight: 700;
+      }
+      tbody tr:last-child th,
+      tbody tr:last-child td {
+        border-bottom: 0;
+      }
+      .num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      th.num {
+        text-align: right;
+      }
+      .pill {
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .pill.today {
+        background: #e3f6ec;
+        color: #14713f;
+      }
+      .pill.week {
+        background: #e8f0fb;
+        color: #2b5ea8;
+      }
+      .pill.month {
+        background: #fdf3df;
+        color: #9a6a12;
+      }
+      .pill.older {
+        background: #f2f5f9;
+        color: var(--muted);
+      }
+      .pill.struggle {
+        background: #fdf3df;
+        color: #9a6a12;
+      }
+      .pill.misconception {
+        background: #fdece7;
+        color: var(--coral);
+      }
+      .pill.hint-exhausted {
+        background: #f3e9fd;
+        color: #7a3fb8;
+      }
+      .pill.low-score {
+        background: #e8f0fb;
+        color: #2b5ea8;
+      }
+      ol.rows {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      ol.rows li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 12px 4px;
+        border-bottom: 1px solid var(--line);
+      }
+      ol.rows li:last-child {
+        border-bottom: 0;
+      }
+      ol.rows li.wb {
+        background: #f0faf9;
+        border-left: 4px solid var(--teal);
+        border-radius: 8px;
+        padding-left: 10px;
+      }
+      .who {
+        min-width: 170px;
+      }
+      .who b {
+        font-size: 1.02rem;
+      }
+      .who .sec {
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin-left: 6px;
+      }
+      .what {
+        flex: 1;
+        min-width: 200px;
+        font-size: 0.94rem;
+      }
+      .what .std {
+        color: var(--muted);
+      }
+      .when {
+        color: var(--muted);
+        font-size: 0.85rem;
+        white-space: nowrap;
+      }
+      .wbtag {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--teal);
+        white-space: nowrap;
+      }
+      .empty {
+        color: var(--muted);
+        text-align: center;
+        padding: 26px 12px;
+        display: block;
+      }
+      .status {
+        color: var(--muted);
+        text-align: center;
+        margin: 12px 0;
+        min-height: 1.4em;
+      }
+      .note {
+        background: #fdf6e8;
+        border: 1px solid #f0dfb6;
+        border-radius: 12px;
+        padding: 12px 14px;
+        color: #7a5a13;
+        font-size: 0.94rem;
+      }
+      .hidden {
+        display: none !important;
+      }
+      a {
+        color: var(--navy);
+      }
+      a:focus-visible,
+      button:focus-visible,
+      select:focus-visible,
+      input:focus-visible {
+        outline: 3px solid var(--teal);
+        outline-offset: 2px;
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        .top button,
+        .controls,
+        .gate,
+        .status {
+          display: none !important;
+        }
+        .card,
+        .stat {
+          box-shadow: none;
+          border-color: #bbb;
+          break-inside: avoid;
+        }
+        ol.rows li.wb {
+          background: #fff;
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+  </head>
+  <body>
+    <header class="top">
+      <h1>🧮 Workbench Impact</h1>
+      <div style="display: flex; align-items: center; gap: 10px">
+        <button id="refreshBtn" type="button" class="hidden">↻ Refresh</button>
+        <button id="printBtn" type="button" class="hidden">🖨 Print</button>
+        <button id="signout" type="button" class="hidden">Sign out</button>
+      </div>
+    </header>
+
+    <!-- Teacher key gate (same key the Gradebook & Intervention Radar store on this device) -->
+    <section class="gate card" id="gate">
+      <div class="lock">🔑</div>
+      <h2>Teacher access</h2>
+      <p>
+        Enter your teacher key to see Math Workbench usage and hand-ins. It's the
+        <code>TEACHER_KEY</code> on the Cloudflare Pages project — the same key the
+        <a href="/teacher-tools/gradebook/">Gradebook</a> and
+        <a href="/teacher-tools/intervention-radar/">Intervention Radar</a> use, remembered on this
+        device only.
+      </p>
+      <div class="row">
+        <label for="keyInput" class="hidden">Teacher key</label>
+        <input id="keyInput" type="password" placeholder="Teacher key" autocomplete="off" />
+        <button class="primary" id="keyGo" type="button">Open</button>
+      </div>
+      <p class="err" id="gateMsg" role="alert"></p>
+    </section>
+
+    <main class="wrap hidden" id="app">
+      <div class="controls">
+        <label
+          >Class
+          <select id="secSel" aria-label="Filter by class section">
+            <option value="">All sections</option>
+            <option value="601">601</option>
+            <option value="602">602</option>
+            <option value="603">603</option>
+          </select>
+        </label>
+        <span style="flex: 1"></span>
+        <a href="/curriculum/math-workbench/" target="_blank" rel="noopener"
+          >Open the Math Workbench ↗</a
+        >
+      </div>
+
+      <p class="status" id="status" role="status" aria-live="polite">Loading…</p>
+      <div class="note hidden" id="degraded" role="alert"></div>
+
+      <section aria-labelledby="tiles-title">
+        <h2 class="hidden" id="tiles-title">Key Workbench numbers</h2>
+        <div class="stat-row">
+          <div class="stat">
+            <b id="sTotal">–</b><span>Workbench hand-ins</span>
+            <span class="ctx" id="sTotalCtx"></span>
+          </div>
+          <div class="stat">
+            <b id="sStudents">–</b><span>unique students</span>
+            <span class="ctx" id="sStudentsCtx"></span>
+          </div>
+          <div class="stat"><b id="sWeek">–</b><span>hand-ins in last 7 days</span></div>
+          <div class="stat"><b id="sSections">–</b><span>sections using it</span></div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="bySection-title">
+        <h2 id="bySection-title">Usage by section</h2>
+        <table>
+          <caption>
+            Workbench hand-ins grouped by class section, with each section's most recent activity.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Section</th>
+              <th scope="col" class="num">Students</th>
+              <th scope="col" class="num">Hand-ins</th>
+              <th scope="col">Last activity</th>
+            </tr>
+          </thead>
+          <tbody id="secBody">
+            <tr>
+              <td colspan="4"><span class="empty">Loading…</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card" aria-labelledby="recent-title">
+        <h2 id="recent-title">Recent hand-ins</h2>
+        <p class="sub">Newest first — a coarse recency window per student is shown under When.</p>
+        <table>
+          <caption>
+            Each row is one student's turned-in Workbench board.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Student</th>
+              <th scope="col">Section</th>
+              <th scope="col">When</th>
+              <th scope="col" class="num">Progress</th>
+              <th scope="col">Link</th>
+            </tr>
+          </thead>
+          <tbody id="recentBody">
+            <tr>
+              <td colspan="5"><span class="empty">Loading…</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card" aria-labelledby="checkon-title">
+        <h2 id="checkon-title">Students to check on</h2>
+        <p class="sub">
+          Struggle, misconception, hint-exhausted, and low-score signals from the last 24 hours.
+          Rows that happened inside the Workbench are highlighted.
+        </p>
+        <ol class="rows" id="riskRows">
+          <li><span class="empty">Loading…</span></li>
+        </ol>
+      </section>
+
+      <p class="status" id="footNote">
+        Data source: the live save/progress backend (<code>/api/progress</code>). Hand-ins are
+        progress records whose activity is the Math Workbench.
+      </p>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        // Same localStorage key the Gradebook and Intervention Radar use — one
+        // sign-in per device, sent as the x-teacher-key header on every call.
+        var LS_KEY = "neft.teacher.key";
+        var DIGEST = "/api/progress/digest";
+        var STRUGGLES = "/api/progress/struggles";
+        var DAY = 86400000;
+        var key = "";
+        try {
+          key = localStorage.getItem(LS_KEY) || "";
+        } catch (e) {
+          key = "";
+        }
+
+        function $(id) {
+          return document.getElementById(id);
+        }
+        function esc(s) {
+          return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+          });
+        }
+        function ago(iso) {
+          var t = Date.parse(iso);
+          if (isNaN(t)) return "";
+          var s = Math.max(0, (Date.now() - t) / 1000);
+          if (s < 60) return Math.floor(s) + "s ago";
+          if (s < 3600) return Math.floor(s / 60) + "m ago";
+          return Math.floor(s / 3600) + "h ago";
+        }
+
+        // The Workbench matcher: activity id is "math-workbench", or the saved
+        // activity title mentions "Workbench" (covers page-specific titles).
+        function isWorkbench(activity) {
+          return (
+            activity.activityId === "math-workbench" ||
+            /workbench/i.test(activity.activityTitle || "")
+          );
+        }
+        function isWorkbenchSignal(row) {
+          return /workbench/i.test(
+            (row.lessonSlug || "") + " " + (row.lessonTitle || "") + " " + (row.gameId || ""),
+          );
+        }
+        // Only render hand-in links that are clearly safe (same-site path or
+        // http(s) URL). The digest doesn't carry links today; this future-proofs
+        // the column without ever injecting arbitrary strings as hrefs.
+        function safeLink(entry) {
+          var l = entry.link || entry.url || entry.href || "";
+          return /^(\/[^\s]*|https?:\/\/[^\s]+)$/.test(l) ? l : "";
+        }
+        function pct(v) {
+          return v == null || isNaN(Number(v)) ? "—" : Math.round(Number(v)) + "%";
+        }
+
+        // Recency buckets. The digest API filters by `since` but does not expose
+        // per-record timestamps, so we ask for four windows and place each
+        // hand-in in the narrowest window it appears in.
+        var WINDOWS = [
+          { id: "today", label: "Today", cls: "today", ms: DAY },
+          { id: "week", label: "This week", cls: "week", ms: 7 * DAY },
+          { id: "month", label: "This month", cls: "month", ms: 30 * DAY },
+          { id: "older", label: "Earlier", cls: "older", ms: null }, // all-time
+        ];
+        var BUCKET_RANK = { today: 0, week: 1, month: 2, older: 3 };
+
+        function digestUrl(win, section) {
+          var since =
+            win.ms == null
+              ? "2000-01-01T00:00:00.000Z"
+              : new Date(Date.now() - win.ms).toISOString();
+          var qs = "?since=" + encodeURIComponent(since);
+          if (section) qs += "&section=" + encodeURIComponent(section);
+          return DIGEST + qs;
+        }
+        function fetchJson(url) {
+          return fetch(url, { headers: { "x-teacher-key": key } }).then(function (r) {
+            return r
+              .json()
+              .catch(function () {
+                return null;
+              })
+              .then(function (data) {
+                return { status: r.status, data: data };
+              });
+          });
+        }
+
+        // Flatten one digest response into hand-in entries, keyed for dedupe.
+        function handIns(digest, workbenchOnly) {
+          var out = [];
+          var students = (digest && digest.students) || [];
+          for (var i = 0; i < students.length; i++) {
+            var s = students[i];
+            var acts = s.activities || [];
+            for (var j = 0; j < acts.length; j++) {
+              var a = acts[j];
+              if (workbenchOnly && !isWorkbench(a)) continue;
+              out.push({
+                key: (s.section || "") + "|" + (s.studentName || "") + "|" + (a.activityId || ""),
+                studentName: s.studentName || "Unnamed student",
+                section: s.section || "",
+                progressPercent: a.progressPercent,
+                scorePct: a.scorePct,
+                activityId: a.activityId || "",
+                activityTitle: a.activityTitle || "",
+                link: safeLink(a),
+              });
+            }
+          }
+          return out;
+        }
+
+        // --- Renderers -------------------------------------------------------
+        function bucketPill(bucketId) {
+          var w = WINDOWS.filter(function (x) {
+            return x.id === bucketId;
+          })[0];
+          return "<span class='pill " + w.cls + "'>" + esc(w.label) + "</span>";
+        }
+
+        function renderTiles(wb, all, wbWeekCount) {
+          var students = {};
+          var sections = {};
+          wb.forEach(function (r) {
+            students[r.section + "|" + r.studentName] = 1;
+            if (r.section) sections[r.section] = 1;
+          });
+          var allStudents = {};
+          all.forEach(function (r) {
+            allStudents[r.section + "|" + r.studentName] = 1;
+          });
+          $("sTotal").textContent = wb.length;
+          $("sTotalCtx").textContent = "of " + all.length + " hand-ins across all activities";
+          $("sStudents").textContent = Object.keys(students).length;
+          $("sStudentsCtx").textContent =
+            "of " + Object.keys(allStudents).length + " students with any hand-in";
+          $("sWeek").textContent = wbWeekCount;
+          $("sSections").textContent = Object.keys(sections).length;
+        }
+
+        function renderSections(wb, buckets) {
+          var body = $("secBody");
+          if (!wb.length) {
+            body.innerHTML =
+              "<tr><td colspan='4'><span class='empty'>No hand-ins yet — students tap " +
+              "<b>Turn In</b> in the Math Workbench.</span></td></tr>";
+            return;
+          }
+          var bySec = {};
+          wb.forEach(function (r) {
+            var sec = r.section || "(no section)";
+            if (!bySec[sec]) bySec[sec] = { students: {}, count: 0, best: "older" };
+            bySec[sec].count++;
+            bySec[sec].students[r.studentName] = 1;
+            var b = buckets[r.key] || "older";
+            if (BUCKET_RANK[b] < BUCKET_RANK[bySec[sec].best]) bySec[sec].best = b;
+          });
+          body.innerHTML = Object.keys(bySec)
+            .sort()
+            .map(function (sec) {
+              var g = bySec[sec];
+              return (
+                "<tr><th scope='row'>" +
+                esc(sec) +
+                "</th><td class='num'>" +
+                Object.keys(g.students).length +
+                "</td><td class='num'>" +
+                g.count +
+                "</td><td>" +
+                bucketPill(g.best) +
+                "</td></tr>"
+              );
+            })
+            .join("");
+        }
+
+        function renderRecent(wb, buckets) {
+          var body = $("recentBody");
+          if (!wb.length) {
+            body.innerHTML =
+              "<tr><td colspan='5'><span class='empty'>No hand-ins yet — students tap " +
+              "<b>Turn In</b> in the Math Workbench.</span></td></tr>";
+            return;
+          }
+          var rows = wb
+            .slice()
+            .sort(function (a, b) {
+              var d =
+                BUCKET_RANK[buckets[a.key] || "older"] - BUCKET_RANK[buckets[b.key] || "older"];
+              return d !== 0 ? d : a.studentName.localeCompare(b.studentName);
+            })
+            .slice(0, 40);
+          body.innerHTML = rows
+            .map(function (r) {
+              var link = r.link
+                ? "<a href='" +
+                  esc(r.link) +
+                  "' target='_blank' rel='noopener' aria-label='Open " +
+                  esc(r.studentName) +
+                  "&#39;s handed-in board'>Open ↗</a>"
+                : "<span class='std'>none</span>";
+              return (
+                "<tr><th scope='row'>" +
+                esc(r.studentName) +
+                "</th><td>" +
+                esc(r.section || "—") +
+                "</td><td>" +
+                bucketPill(buckets[r.key] || "older") +
+                "</td><td class='num'>" +
+                esc(pct(r.progressPercent)) +
+                "</td><td>" +
+                link +
+                "</td></tr>"
+              );
+            })
+            .join("");
+        }
+
+        var SIGNAL_TEXT = {
+          struggle: "Struggling",
+          misconception: "Misconception",
+          "hint-exhausted": "Hints exhausted",
+          "low-score": "Low score",
+        };
+        function renderRisk(rows) {
+          var host = $("riskRows");
+          if (!rows.length) {
+            host.innerHTML =
+              "<li><span class='empty'>No risk signals in the last 24 hours — the class is cruising. 🎉</span></li>";
+            return;
+          }
+          host.innerHTML = rows
+            .slice(0, 40)
+            .map(function (r) {
+              var wb = isWorkbenchSignal(r);
+              var what =
+                r.source === "lesson"
+                  ? "<b>" + esc(r.lessonTitle || r.lessonSlug || "lesson") + "</b>"
+                  : "<b>" +
+                    esc(r.gameId || "game") +
+                    "</b>" +
+                    (r.correctRate != null
+                      ? " <span class='std'>· " +
+                        Math.round(r.correctRate * 100) +
+                        "% correct</span>"
+                      : "");
+              if (r.standard) what += " <span class='std'>· " + esc(r.standard) + "</span>";
+              if (r.tag) what += " <span class='std'>· ⚠ " + esc(r.tag) + "</span>";
+              return (
+                "<li" +
+                (wb ? " class='wb'" : "") +
+                "><span class='pill " +
+                esc(r.signal) +
+                "'>" +
+                esc(SIGNAL_TEXT[r.signal] || r.signal) +
+                "</span><span class='who'><b>" +
+                esc(r.studentName || "Unnamed student") +
+                "</b>" +
+                (r.section ? "<span class='sec'>· " + esc(r.section) + "</span>" : "") +
+                "</span><span class='what'>" +
+                what +
+                "</span>" +
+                (wb ? "<span class='wbtag'>🧮 Workbench</span>" : "") +
+                "<span class='when'>" +
+                esc(ago(r.at)) +
+                "</span></li>"
+              );
+            })
+            .join("");
+        }
+
+        function setEmptyAll(msg) {
+          $("secBody").innerHTML =
+            "<tr><td colspan='4'><span class='empty'>" + msg + "</span></td></tr>";
+          $("recentBody").innerHTML =
+            "<tr><td colspan='5'><span class='empty'>" + msg + "</span></td></tr>";
+          $("riskRows").innerHTML = "<li><span class='empty'>" + msg + "</span></li>";
+          ["sTotal", "sStudents", "sWeek", "sSections"].forEach(function (id) {
+            $(id).textContent = "–";
+          });
+          $("sTotalCtx").textContent = "";
+          $("sStudentsCtx").textContent = "";
+        }
+
+        // --- Gate ------------------------------------------------------------
+        function showApp() {
+          $("gate").classList.add("hidden");
+          $("app").classList.remove("hidden");
+          $("signout").classList.remove("hidden");
+          $("refreshBtn").classList.remove("hidden");
+          $("printBtn").classList.remove("hidden");
+        }
+        function showGate(msg) {
+          $("gate").classList.remove("hidden");
+          $("app").classList.add("hidden");
+          $("signout").classList.add("hidden");
+          $("refreshBtn").classList.add("hidden");
+          $("printBtn").classList.add("hidden");
+          $("gateMsg").textContent = msg || "";
+        }
+        $("keyGo").addEventListener("click", function () {
+          var v = $("keyInput").value.trim();
+          if (!v) return;
+          key = v;
+          try {
+            localStorage.setItem(LS_KEY, key);
+          } catch (e) {
+            /* private mode: key lives for this page view only */
+          }
+          showApp();
+          load();
+        });
+        $("keyInput").addEventListener("keydown", function (e) {
+          if (e.key === "Enter") $("keyGo").click();
+        });
+        $("signout").addEventListener("click", function () {
+          try {
+            localStorage.removeItem(LS_KEY);
+          } catch (e) {
+            /* ignore */
+          }
+          key = "";
+          showGate("");
+        });
+
+        // --- Load ----------------------------------------------------------------
+        var loading = false;
+        function load() {
+          if (!key || loading) return;
+          loading = true;
+          var section = $("secSel").value;
+          $("status").textContent = "Loading Workbench data…";
+          $("degraded").classList.add("hidden");
+          var calls = WINDOWS.map(function (w) {
+            return fetchJson(digestUrl(w, section));
+          });
+          calls.push(
+            fetchJson(
+              STRUGGLES +
+                "?minutes=1440" +
+                (section ? "&section=" + encodeURIComponent(section) : ""),
+            ),
+          );
+          Promise.all(calls)
+            .then(function (res) {
+              loading = false;
+              if (
+                res.some(function (r) {
+                  return r.status === 401;
+                })
+              ) {
+                showGate("That teacher key was not accepted. Check it and try again.");
+                return;
+              }
+              if (
+                res.some(function (r) {
+                  return r.status === 503;
+                })
+              ) {
+                $("degraded").textContent =
+                  "The progress backend is not enabled on the server yet (TEACHER_KEY / D1 not " +
+                  "configured on the Pages project). Nothing is wrong with your key — this page " +
+                  "will light up once the backend is on.";
+                $("degraded").classList.remove("hidden");
+                setEmptyAll("Backend not enabled yet.");
+                $("status").textContent = "Offline — backend not enabled.";
+                return;
+              }
+              var bad = res.filter(function (r) {
+                return !(r.data && r.data.ok);
+              });
+              if (bad.length) {
+                setEmptyAll("Could not load data. Try Refresh in a moment.");
+                $("status").textContent = "Something went wrong loading the data.";
+                return;
+              }
+              // res[0..3] = today / week / month / all-time digests; res[4] = struggles.
+              var allTime = res[3].data;
+              var wbAll = handIns(allTime, true);
+              var allActs = handIns(allTime, false);
+              var wbWeek = handIns(res[1].data, true);
+              // Narrowest window each hand-in appears in → recency bucket.
+              var buckets = {};
+              for (var i = WINDOWS.length - 1; i >= 0; i--) {
+                handIns(res[i].data, true).forEach(function (r) {
+                  buckets[r.key] = WINDOWS[i].id;
+                });
+              }
+              renderTiles(wbAll, allActs, wbWeek.length);
+              renderSections(wbAll, buckets);
+              renderRecent(wbAll, buckets);
+              renderRisk((res[4].data && res[4].data.rows) || []);
+              $("status").textContent =
+                "Updated " +
+                new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) +
+                (section ? " · section " + section : " · all sections");
+            })
+            .catch(function () {
+              loading = false;
+              setEmptyAll("Couldn't reach the server. Check your connection and Refresh.");
+              $("status").textContent = "Connection problem — data not loaded.";
+            });
+        }
+
+        $("refreshBtn").addEventListener("click", load);
+        $("printBtn").addEventListener("click", function () {
+          window.print();
+        });
+        $("secSel").addEventListener("change", load);
+
+        if (key) {
+          showApp();
+          load();
+        } else {
+          showGate("");
+        }
+      })();
+    </script>
+  </body>
+</html>
