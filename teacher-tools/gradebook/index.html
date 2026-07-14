@@ -44,11 +44,7 @@
           Roboto,
           sans-serif;
         background:
-          radial-gradient(
-            1200px 600px at 80% -10%,
-            rgba(91, 149, 255, 0.12),
-            transparent 60%
-          ),
+          radial-gradient(1200px 600px at 80% -10%, rgba(91, 149, 255, 0.12), transparent 60%),
           var(--bg);
         background-attachment: fixed;
         color: var(--ink);
@@ -502,6 +498,19 @@
         color: #ff8a82;
         background: transparent;
       }
+      button.star {
+        border: none;
+        background: transparent;
+        padding: 0 4px;
+        font-size: 14px;
+        cursor: pointer;
+        vertical-align: middle;
+        opacity: 0.55;
+      }
+      button.star:hover,
+      button.star.on {
+        opacity: 1;
+      }
       /* Modal */
       .modal {
         position: fixed;
@@ -581,16 +590,11 @@
       <h2>Teacher access</h2>
       <p>
         Enter your teacher key to view live save codes and grades. It's the
-        <code>TEACHER_KEY</code> on the Cloudflare Pages project, and it's
-        remembered on this device only.
+        <code>TEACHER_KEY</code> on the Cloudflare Pages project, and it's remembered on this device
+        only.
       </p>
       <div class="row">
-        <input
-          id="keyInput"
-          type="password"
-          placeholder="Teacher key"
-          autocomplete="off"
-        />
+        <input id="keyInput" type="password" placeholder="Teacher key" autocomplete="off" />
         <button class="primary" id="keyGo">Open</button>
       </div>
       <p class="err" id="gateMsg"></p>
@@ -603,12 +607,11 @@
         <summary>💡 How this works <span class="chev">▾</span></summary>
         <div class="help-body">
           Every save code a student creates appears here automatically with the
-          <strong>name</strong> and <strong>class</strong> they typed. You can
-          also <strong>＋ Add student</strong> by hand (for students who have
-          not started yet) and <strong>＋ Add class</strong> to set up your
-          sections. Edits save instantly online and feed the Grades section. Use
-          <strong>Import names</strong> to bulk-fill from a CSV/Excel file, or
-          the per-section <strong>Excel / CSV</strong> buttons to download.
+          <strong>name</strong> and <strong>class</strong> they typed. You can also
+          <strong>＋ Add student</strong> by hand (for students who have not started yet) and
+          <strong>＋ Add class</strong> to set up your sections. Edits save instantly online and
+          feed the Grades section. Use <strong>Import names</strong> to bulk-fill from a CSV/Excel
+          file, or the per-section <strong>Excel / CSV</strong> buttons to download.
         </div>
       </details>
 
@@ -635,9 +638,7 @@
         </summary>
         <div class="section-body">
           <div class="toolbar" style="margin: 14px 0">
-            <span class="muted"
-              >Grouped by class · names &amp; grades autosave</span
-            >
+            <span class="muted">Grouped by class · names &amp; grades autosave</span>
             <span class="spacer"></span>
             <a
               class="btn sheet-link"
@@ -679,8 +680,7 @@
         <div class="section-body">
           <div class="toolbar" style="margin: 14px 0">
             <span class="muted"
-              >Manual grade ▸ activity score ▸ progress · average ignores
-              blanks</span
+              >Manual grade ▸ activity score ▸ progress · average ignores blanks</span
             >
             <span class="spacer"></span>
             <a
@@ -734,8 +734,7 @@
         var CC_KEY = "neft.teacher.classes";
         var customClasses = [];
         try {
-          customClasses =
-            JSON.parse(localStorage.getItem(CC_KEY) || "[]") || [];
+          customClasses = JSON.parse(localStorage.getItem(CC_KEY) || "[]") || [];
         } catch (e) {
           customClasses = [];
         }
@@ -800,9 +799,7 @@
             .then(function (r) {
               if (r.status === 401) throw new Error("Wrong teacher key.");
               if (r.status === 503)
-                throw new Error(
-                  "Gradebook not enabled on the server (TEACHER_KEY / D1 not set).",
-                );
+                throw new Error("Gradebook not enabled on the server (TEACHER_KEY / D1 not set).");
               return r.json();
             })
             .then(function (data) {
@@ -836,8 +833,7 @@
               progSum += r.progress;
               progN++;
             }
-            if (r.updatedAt && r.updatedAt.slice(0, 10) === today)
-              activeToday++;
+            if (r.updatedAt && r.updatedAt.slice(0, 10) === today) activeToday++;
           });
           var avg = progN ? Math.round(progSum / progN) : 0;
           var html = [
@@ -962,9 +958,7 @@
               esc(r.section) +
               "' placeholder='Class…'></td>" +
               "<td>" +
-              (isManual(r)
-                ? "<span class='muted'>not started</span>"
-                : esc(r.activity)) +
+              (isManual(r) ? "<span class='muted'>not started</span>" : esc(r.activity)) +
               "</td>" +
               "<td><span class='bar'><i style='width:" +
               prog +
@@ -982,6 +976,17 @@
               "' placeholder='…'></td>" +
               "<td class='muted'>" +
               (r.updatedAt ? r.updatedAt.replace("T", " ").slice(0, 16) : "") +
+              (isManual(r)
+                ? ""
+                : " <button class='star" +
+                  (r.exemplarApproved ? " on" : "") +
+                  "' title='" +
+                  (r.exemplarApproved
+                    ? "In the peer exemplar gallery — click to remove"
+                    : "Approve this work for the peer exemplar gallery") +
+                  "'>" +
+                  (r.exemplarApproved ? "⭐" : "☆") +
+                  "</button>") +
               "</td>" +
               "</tr>";
           });
@@ -1008,6 +1013,31 @@
           });
           if (rec) rec[field] = inp.value;
           queueSave();
+        });
+
+        // ⭐ Peer-exemplar gallery approval toggle. Approving publishes a
+        // REDACTED excerpt of this row's work (first-name initial + short
+        // quotes) on the matching project page; removing un-publishes it.
+        $("rosterBody").addEventListener("click", function (e) {
+          var star = e.target.closest && e.target.closest(".star");
+          if (!star) return;
+          var tr = star.closest("tr");
+          var code = tr.getAttribute("data-code");
+          var rec = records.find(function (x) {
+            return x.code === code;
+          });
+          if (!rec) return;
+          var turningOn = !rec.exemplarApproved;
+          var row = { saveCode: code, exemplarApproved: turningOn ? 1 : 0 };
+          if (turningOn) {
+            var note = prompt(
+              "Optional teacher note shown with this exemplar (leave blank for none):",
+              rec.exemplarNote || "",
+            );
+            if (note === null) return; // cancelled
+            row.exemplarNote = note.trim();
+          }
+          postRoster([row], turningOn ? "Added to gallery ⭐" : "Removed from gallery");
         });
 
         // Remove a manually-added student (✕ button). Never offered for real
@@ -1105,8 +1135,7 @@
             })
             .then(function (d) {
               if (!d || !d.ok) {
-                $("gradesBody").innerHTML =
-                  "<tr><td class='muted'>No grades yet.</td></tr>";
+                $("gradesBody").innerHTML = "<tr><td class='muted'>No grades yet.</td></tr>";
                 return;
               }
               var cls = $("classFilter").value;
@@ -1122,10 +1151,7 @@
                 return !cls || row[1] === cls;
               });
               $("gradesMeta").textContent =
-                rows.length +
-                " students · " +
-                (d.activities || []).length +
-                " assignments";
+                rows.length + " students · " + (d.activities || []).length + " assignments";
               $("gradesBody").innerHTML =
                 rows
                   .map(function (row) {
@@ -1168,13 +1194,7 @@
 
         function download(seg, format) {
           window.location.href =
-            API +
-            "/" +
-            seg +
-            "?key=" +
-            encodeURIComponent(key) +
-            "&format=" +
-            format;
+            API + "/" + seg + "?key=" + encodeURIComponent(key) + "&format=" + format;
         }
         $("dlXls").addEventListener("click", function () {
           download("roster", "xls");
@@ -1219,8 +1239,7 @@
           var s = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
           for (var t = 0; t < 50; t++) {
             var c = "MAN-";
-            for (var i = 0; i < 4; i++)
-              c += s.charAt(Math.floor(Math.random() * s.length));
+            for (var i = 0; i < 4; i++) c += s.charAt(Math.floor(Math.random() * s.length));
             var taken = records.some(function (r) {
               return r.code === c;
             });
@@ -1328,8 +1347,7 @@
           h = h.toLowerCase();
           if (h.indexOf("code") !== -1) return "saveCode";
           if (h.indexOf("name") !== -1) return "studentName";
-          if (h.indexOf("class") !== -1 || h.indexOf("section") !== -1)
-            return "section";
+          if (h.indexOf("class") !== -1 || h.indexOf("section") !== -1) return "section";
           if (h.indexOf("grade") !== -1) return "grade";
           if (h.indexOf("note") !== -1) return "note";
           return null;
@@ -1337,9 +1355,7 @@
 
         function parseImport(text) {
           // Excel 2003 XML (the .xls we export) → extract per-row cells.
-          if (
-            text.indexOf("urn:schemas-microsoft-com:office:spreadsheet") !== -1
-          )
+          if (text.indexOf("urn:schemas-microsoft-com:office:spreadsheet") !== -1)
             return parseXmlSheet(text);
           return parseCsv(text);
         }
@@ -1425,8 +1441,7 @@
             $("secRoster").open = true;
             target = $("secRoster");
           }
-          if (target)
-            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
         }
         window.addEventListener("hashchange", applyHashFocus);
 
@@ -1437,11 +1452,7 @@
           if (key && !$("app").classList.contains("hidden")) {
             // Silent-refresh only when there are no pending edits and no modal
             // open, so we never clobber what the teacher is typing.
-            if (
-              !Object.keys(dirty).length &&
-              $("modal").classList.contains("hidden")
-            )
-              load();
+            if (!Object.keys(dirty).length && $("modal").classList.contains("hidden")) load();
           }
         }, 30000);
       })();

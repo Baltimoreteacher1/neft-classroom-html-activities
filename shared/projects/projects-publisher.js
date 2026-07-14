@@ -23,6 +23,14 @@
         persisted per page in localStorage, with a live summary and a
         "my next improvement" goal box. buildReport() is wrapped so the
         student's self-assessment is appended to the printed/copied report.
+     4. Peer exemplar gallery: approved classmate work fetched from the
+        public GET /api/progress/exemplars route (teacher approves rows in
+        the gradebook ⭐). Server-side redacted (first-name initial +
+        excerpts); silently renders nothing when the API or data is absent.
+     5. Milestone reporting: watches .step-panel navigation and sends a
+        fire-and-forget "milestone" telemetry event per step reached, plus
+        NeftCanvasBridge.reportScore(stepPct) on forward transitions so
+        SCORM-wrapped projects grade progressively.
 
    Injected by tools/inject-projects-publisher.mjs
    (sentinel: projects-publisher).
@@ -91,6 +99,12 @@
       } catch (e) {}
       try {
         stepCoherence();
+      } catch (e) {}
+      try {
+        buildPeerGallery();
+      } catch (e) {}
+      try {
+        watchMilestones();
       } catch (e) {}
     };
 
@@ -309,7 +323,7 @@
       el(
         "p",
         "pub-selfassess-hint",
-        "You get to grade your work first. Rate each row of the rubric honestly — then pick one thing to level up.",
+        "You get to grade your work first. Rate each row of the rubric honestly — then pick one thing to level up. Finished work you save can appear in the class gallery once your teacher approves it.",
       ),
     );
 
@@ -389,6 +403,174 @@
     updateSummary();
 
     host.parentNode.insertBefore(panel, host.nextSibling);
+  }
+
+  /* --- 5. Peer exemplar gallery ---------------------------------------------
+     Approved classmate work from the public exemplars route. The server
+     redacts to first-name initial + short excerpts and only ever returns
+     teacher-approved rows, so this is classroom-safe by construction. Any
+     failure (offline, 429/503, empty) renders nothing. */
+  function activitySlug() {
+    // Mirrors NeftSaveResume._resolveConfig autoId so we query the same
+    // activity_id that save/resume writes into student_progress.
+    var path = "/";
+    try {
+      path = location.pathname || "/";
+    } catch (e) {}
+    return (
+      String(path.replace(/index\.html?$/i, "").replace(/\/+$/, "") || "home")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 80) || "home"
+    );
+  }
+
+  function buildPeerGallery() {
+    if (typeof fetch !== "function") return;
+    if (document.querySelector(".pub-peer-gallery")) return;
+
+    fetch("/api/progress/exemplars?activity=" + encodeURIComponent(activitySlug()))
+      .then(function (res) {
+        return res && res.ok ? res.json() : null;
+      })
+      .then(function (d) {
+        if (!d || !d.ok || !Array.isArray(d.exemplars) || !d.exemplars.length) return;
+        if (document.querySelector(".pub-peer-gallery")) return;
+
+        // Sit right after the static exemplar when present, else before rubric.
+        var anchor = document.querySelector(".pub-exemplar");
+        var host = anchor;
+        if (!host) {
+          var rubric = document.querySelector("table.rubric");
+          host = rubric ? rubric.closest(".gold-scroll") || rubric : null;
+        }
+        if (!host || !host.parentNode) return;
+
+        var details = el("details", "pub-exemplar pub-peer-gallery");
+        var summary = el("summary", "pub-exemplar-summary");
+        summary.appendChild(el("span", "pub-exemplar-badge", "🌟"));
+        summary.appendChild(el("span", null, "From students like you · De estudiantes como tú"));
+        details.appendChild(summary);
+
+        var inner = el("div", "pub-exemplar-body");
+        inner.appendChild(
+          el(
+            "p",
+            "pub-exemplar-intro",
+            "Real work from classmates, approved by your teacher. Borrow the moves, not the words.",
+          ),
+        );
+        d.exemplars.slice(0, 6).forEach(function (x) {
+          if (!x) return;
+          var card = el("div", "pub-trait");
+          card.appendChild(
+            el(
+              "div",
+              "pub-trait-name",
+              (x.firstNameInitial || "A classmate") + (x.section ? " · " + x.section : ""),
+            ),
+          );
+          (Array.isArray(x.excerpts) ? x.excerpts : []).slice(0, 3).forEach(function (t) {
+            if (!t) return;
+            var q = el("blockquote", "pub-trait-sample");
+            q.textContent = "“" + String(t) + "”";
+            card.appendChild(q);
+          });
+          if (x.note) card.appendChild(el("div", "pub-trait-why", "Teacher's note: " + x.note));
+          inner.appendChild(card);
+        });
+        details.appendChild(inner);
+        host.parentNode.insertBefore(details, anchor ? anchor.nextSibling : host);
+      })
+      .catch(function () {});
+  }
+
+  /* --- 6. Milestone reporting ------------------------------------------------
+     One fire-and-forget "milestone" telemetry event per step reached (teachers
+     see mid-project stalls in the mastery/radar tools), plus a progressive
+     SCORM score on new-furthest steps. Navigation alone is capped at 65 — below
+     the SCO's 70 mastery line — so status can never become "passed" without
+     real work; the canvas-bridge auto-watch still reports the true final
+     score from save/resume percentComplete. */
+  function watchMilestones() {
+    var panels = Array.prototype.slice.call(document.querySelectorAll(".step-panel"));
+    if (panels.length < 2) return;
+    var body = document.body;
+    if (body.dataset.pubMilestones === "1") return;
+    body.dataset.pubMilestones = "1";
+
+    var total = panels.length;
+    var seen = {};
+    var maxStep = 0;
+
+    function sendMilestone(step) {
+      if (typeof fetch !== "function") return;
+      try {
+        var now = new Date().toISOString();
+        var payload = {
+          activityId: activitySlug(),
+          activityTitle: (document.title || "").slice(0, 200),
+          standard: "",
+          kind: "telemetry",
+          events: [
+            {
+              id: Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8),
+              event: "milestone",
+              lessonSlug: activitySlug(),
+              standard: "",
+              ts: now,
+              props: { step: step, of: total },
+            },
+          ],
+          createdAt: now,
+        };
+        try {
+          var stu = JSON.parse(localStorage.getItem("nt_student") || "{}");
+          if (stu && typeof stu === "object") {
+            if (stu.name) payload.studentName = String(stu.name).slice(0, 60);
+            if (stu.section) payload.section = String(stu.section).slice(0, 40);
+          }
+        } catch (e) {}
+        fetch("/api/progress/telemetry", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          keepalive: true,
+          credentials: "omit",
+        }).catch(function () {});
+      } catch (e) {}
+    }
+
+    function check() {
+      var active = document.querySelector(".step-panel.active");
+      var idx = panels.indexOf(active);
+      if (idx < 0 || seen[idx]) return;
+      seen[idx] = true;
+      var step = idx + 1;
+      sendMilestone(step);
+      if (step > maxStep) {
+        maxStep = step;
+        try {
+          if (
+            window.NeftCanvasBridge &&
+            typeof window.NeftCanvasBridge.reportScore === "function"
+          ) {
+            window.NeftCanvasBridge.reportScore(Math.min(65, Math.round((100 * maxStep) / total)));
+          }
+        } catch (e) {}
+      }
+    }
+
+    check();
+    var mo = new MutationObserver(function () {
+      try {
+        check();
+      } catch (e) {}
+    });
+    panels.forEach(function (p) {
+      mo.observe(p, { attributes: true, attributeFilter: ["class"] });
+    });
   }
 
   /* --- 4. Fold self-assessment into the student report --------------------- */
