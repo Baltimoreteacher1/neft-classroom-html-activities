@@ -503,13 +503,12 @@
         }
       }
     </style>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
-    <link rel="stylesheet" href="/assets/brain/brain.css" />
-    <!-- nsr-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
 </head>
   <body>
     <a class="skip" href="#paths">Skip to my lessons</a>
@@ -1409,28 +1408,8 @@
           }
         });
     </script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <script src="/assets/brain/mastery-engine.js"></script>
-    <script src="/assets/brain/recommend-engine.js"></script>
-    <script src="/assets/brain/brain.js"></script>
-    <script>
-      // Populate the results-driven recommendations door; hide the card if no data/graph.
-      document.addEventListener("DOMContentLoaded", function () {
-        if (!window.NeftBrain || !NeftBrain.renderWhatsNext) return;
-        NeftBrain.renderWhatsNext("#brainWhatsNext", { limit: 6 })
-          .then(function (data) {
-            if (!data || !data.recommendations.length) {
-              var c = document.getElementById("brainCard");
-              if (c) c.style.display = "none";
-            }
-          })
-          .catch(function () {
-            var c = document.getElementById("brainCard");
-            if (c) c.style.display = "none";
-          });
-      });
-    </script>
-    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-    <!-- nsr-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
   </body>
 </html>

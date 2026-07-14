@@ -119,7 +119,7 @@
   function ensureCss(file) {
     if (!file) return;
     try {
-      var href = BASE + file;
+      var href = BASE + file + "?v=20260714-v2";
       if (hasLink(file)) return;
       var head = document.head || document.getElementsByTagName("head")[0];
       if (!head) return;
@@ -142,7 +142,7 @@
   function ensureJs(file) {
     return new Promise(function (resolve) {
       try {
-        var src = BASE + file;
+        var src = BASE + file + "?v=20260714-v2";
         if (hasScript(file) || (window.__ntlpScriptsAdded && window.__ntlpScriptsAdded[file])) {
           resolve(true);
           return;

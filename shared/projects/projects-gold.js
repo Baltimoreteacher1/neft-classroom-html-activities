@@ -77,6 +77,9 @@
     try {
       gateTeacherConsole();
     } catch (e) {}
+    try {
+      showLevelSelectorOverlay();
+    } catch (e) {}
   }
 
   /* --- 1. Announce calculator feedback to screen readers ------------------ */
@@ -221,6 +224,61 @@
       }
       return orig.apply(this, arguments);
     };
+  }
+
+  /* --- 8. Show Level Selector welcome overlay on first page load ----------- */
+  function showLevelSelectorOverlay() {
+    if (document.getElementById("gold-level-overlay")) return;
+
+    var h1 = document.querySelector(".hero h1");
+    var sub = document.querySelector(".hero-sub");
+    var titleHtml = h1 ? h1.innerHTML : "Culminating Project";
+    var subHtml = sub ? sub.innerHTML : "Complete the activities step by step.";
+
+    var overlay = document.createElement("div");
+    overlay.id = "gold-level-overlay";
+    overlay.innerHTML =
+      '<div class="gold-level-card">' +
+      '  <div class="gold-level-emoji">🎉</div>' +
+      '  <h1 class="gold-level-title">' + titleHtml + '</h1>' +
+      '  <p class="gold-level-sub">' + subHtml + '</p>' +
+      '  <h3 class="gold-level-heading">' +
+      '    <span class="en-text">Choose your support level to begin:</span>' +
+      '    <span class="es-text">Elige tu nivel de apoyo para comenzar:</span>' +
+      '  </h3>' +
+      '  <button class="gold-level-option opt-lv0" type="button" data-level="0">' +
+      '    <span class="en-text">🟠 Level 0 · Extra Support</span>' +
+      '    <span class="es-text">🟠 Nivel 0 · Apoyo Extra</span>' +
+      '  </button>' +
+      '  <button class="gold-level-option opt-lv1" type="button" data-level="1">' +
+      '    <span class="en-text">🟢 Level 1 — With Support</span>' +
+      '    <span class="es-text">🟢 Nivel 1 — Con apoyo</span>' +
+      '  </button>' +
+      '  <button class="gold-level-option opt-lv2" type="button" data-level="2">' +
+      '    <span class="en-text">🔵 Level 2 — Challenge</span>' +
+      '    <span class="es-text">🔵 Nivel 2 — Desafío</span>' +
+      '  </button>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+    overlay.querySelectorAll(".gold-level-option").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var lvl = parseInt(btn.dataset.level, 10);
+        if (typeof window.setLevel === "function") {
+          window.setLevel(lvl);
+        } else {
+          var body = document.body;
+          body.classList.remove("level-0", "level-1", "level-2");
+          body.classList.add("level-" + lvl);
+        }
+        
+        overlay.classList.add("fade-out");
+        setTimeout(function () {
+          overlay.remove();
+        }, 250);
+      });
+    });
   }
 
   if (document.readyState === "loading") {

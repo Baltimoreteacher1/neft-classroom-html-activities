@@ -22,8 +22,8 @@ export const CSS_REF = "/shared/save-resume/save-resume-styles.css";
 export const JS_REF = "/shared/save-resume/save-resume-engine.js";
 
 // The exact tags the injector writes (and the audit counts).
-export const LINK_TAG = `<link rel="stylesheet" href="${CSS_REF}">`;
-export const SCRIPT_TAG = `<script src="${JS_REF}" defer></script>`;
+export const LINK_TAG = `<link rel="stylesheet" href="${CSS_REF}?v=20260714-v2">`;
+export const SCRIPT_TAG = `<script src="${JS_REF}?v=20260714-v2" defer></script>`;
 export const BEGIN = `<!-- ${MARK}:begin (multi-day save/resume — tools/inject-save-resume.js) -->`;
 export const END = `<!-- ${MARK}:end -->`;
 

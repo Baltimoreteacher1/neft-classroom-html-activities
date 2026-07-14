@@ -76,7 +76,7 @@ function realCloseIndex(html, closeTag) {
   while (i !== -1) {
     const before = lower.slice(0, i);
     const opens = (before.match(/<script\b/g) || []).length;
-    const closes = (before.match(/<\/script>/g) || []).length;
+    const closes = (before.match(/<\\?\/script>/g) || []).length;
     if (opens === closes) candidates.push(i);
     i = lower.indexOf(closeTag, i + 1);
   }

@@ -321,12 +321,12 @@
       .cbt-legend-dot.answered { background: #eff6ff; border: 1px solid #bfdbfe; }
       .cbt-legend-dot.flagged { background: #fef3c7; border: 1px solid #fde68a; }
 </style>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
 </head>
   <body>
     <div class="container">
@@ -599,217 +599,11 @@
       loadProgress();
       updateProgress();
     </script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer>
-      // CBT Simulator Extension
-      let flaggedQuestions = {};
-      let timerSeconds = 3600; // 60 mins
-      let timerInterval = null;
-      let timerPaused = false;
-      
-      const SIMULATOR_STORAGE_KEY = STORAGE_KEY + "_sim";
-
-      function toggleFlag(id) {
-        flaggedQuestions[id] = !flaggedQuestions[id];
-        const btn = document.getElementById("flag-" + id);
-        if (btn) {
-          btn.classList.toggle("flagged", flaggedQuestions[id]);
-          btn.textContent = flaggedQuestions[id] ? "⚑ Flagged" : "⚑";
-        }
-        saveSimulatorProgress();
-        updateReviewPanel();
-      }
-
-      function saveSimulatorProgress() {
-        try {
-          localStorage.setItem(SIMULATOR_STORAGE_KEY, JSON.stringify({
-            flagged: flaggedQuestions,
-            timeRemaining: timerSeconds
-          }));
-        } catch(e) {}
-      }
-
-      function loadSimulatorProgress() {
-        try {
-          const data = JSON.parse(localStorage.getItem(SIMULATOR_STORAGE_KEY) || "{}");
-          flaggedQuestions = data.flagged || {};
-          if (typeof data.timeRemaining === "number") {
-            timerSeconds = data.timeRemaining;
-          }
-          // Apply flagged classes to buttons
-          for (let id in flaggedQuestions) {
-            if (flaggedQuestions[id]) {
-              const btn = document.getElementById("flag-" + id);
-              if (btn) {
-                btn.classList.add("flagged");
-                btn.textContent = "⚑ Flagged";
-              }
-            }
-          }
-        } catch(e) {}
-      }
-
-      function initSimulator() {
-        // Create HTML elements for timer and review panel
-        const timerHtml = `
-          <div class="cbt-timer-overlay" id="cbt-timer">
-            <span id="cbt-timer-clock">60:00</span>
-            <button type="button" class="cbt-timer-btn" id="cbt-timer-play" onclick="toggleTimerPause()" title="Pause/Play timer">⏸</button>
-            <button type="button" class="cbt-timer-btn" onclick="toggleTimerVisibility()" title="Hide/Show timer">👁</button>
-          </div>
-        `;
-        
-        let reviewCellsHtml = "";
-        for (let i = 1; i <= QUESTIONS.length; i++) {
-          reviewCellsHtml += `<div class="cbt-review-cell" id="rev-cell-${i}" onclick="jumpToQuestion(${i})">${i}</div>`;
-        }
-
-        const reviewHtml = `
-          <button type="button" class="cbt-review-toggle no-print" onclick="toggleReviewPanel()" title="Review Panel" aria-label="Toggle review panel">📋</button>
-          <div class="cbt-review-panel collapsed no-print" id="cbt-review">
-            <div class="cbt-review-header">
-              <span>Review Panel</span>
-              <button type="button" class="cbt-timer-btn" onclick="toggleReviewPanel()">✕</button>
-            </div>
-            <div class="cbt-review-grid">
-              ${reviewCellsHtml}
-            </div>
-            <div class="cbt-review-legend">
-              <div class="cbt-legend-item"><span class="cbt-legend-dot unanswered"></span><span>Unanswered</span></div>
-              <div class="cbt-legend-item"><span class="cbt-legend-dot answered"></span><span>Answered</span></div>
-              <div class="cbt-legend-item"><span class="cbt-legend-dot flagged"></span><span>Flagged</span></div>
-            </div>
-          </div>
-        `;
-
-        document.body.insertAdjacentHTML("beforeend", timerHtml + reviewHtml);
-
-        loadSimulatorProgress();
-        updateReviewPanel();
-        startTimer();
-
-        // Hook into original onAnswer
-        const originalOnAnswer = window.onAnswer;
-        window.onAnswer = function(id) {
-          originalOnAnswer(id);
-          updateReviewPanel();
-          saveSimulatorProgress();
-        };
-
-        // Hook into original resetTest
-        const originalResetTest = window.resetTest;
-        window.resetTest = function() {
-          originalResetTest();
-          flaggedQuestions = {};
-          timerSeconds = 3600;
-          try { localStorage.removeItem(SIMULATOR_STORAGE_KEY); } catch(e) {}
-          // reset UI
-          QUESTIONS.forEach(q => {
-            const btn = document.getElementById("flag-" + q.id);
-            if (btn) {
-              btn.classList.remove("flagged");
-              btn.textContent = "⚑";
-            }
-          });
-          updateReviewPanel();
-          if (timerInterval) clearInterval(timerInterval);
-          startTimer();
-        };
-      }
-
-      function startTimer() {
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-          if (timerPaused || graded) return;
-          if (timerSeconds <= 0) {
-            clearInterval(timerInterval);
-            alert("Time is up! Your test will be submitted automatically.");
-            gradeTest();
-            return;
-          }
-          timerSeconds--;
-          updateTimerUI();
-          if (timerSeconds % 10 === 0) {
-            saveSimulatorProgress();
-          }
-        }, 1000);
-        updateTimerUI();
-      }
-
-      function updateTimerUI() {
-        const clock = document.getElementById("cbt-timer-clock");
-        if (!clock) return;
-        const mins = Math.floor(timerSeconds / 60);
-        const secs = timerSeconds % 60;
-        clock.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        
-        // Color coding timer for warning
-        const timerBox = document.getElementById("cbt-timer");
-        if (timerSeconds < 300) { // less than 5 minutes
-          timerBox.style.borderColor = "var(--incorrect)";
-          timerBox.style.color = "var(--incorrect)";
-        } else {
-          timerBox.style.borderColor = "var(--primary)";
-          timerBox.style.color = "var(--primary-dark)";
-        }
-      }
-
-      function toggleTimerPause() {
-        timerPaused = !timerPaused;
-        const btn = document.getElementById("cbt-timer-play");
-        if (btn) {
-          btn.textContent = timerPaused ? "▶" : "⏸";
-          btn.title = timerPaused ? "Resume timer" : "Pause timer";
-        }
-      }
-
-      function toggleTimerVisibility() {
-        const clock = document.getElementById("cbt-timer-clock");
-        if (clock) {
-          clock.style.display = clock.style.display === "none" ? "inline" : "none";
-        }
-      }
-
-      function toggleReviewPanel() {
-        const panel = document.getElementById("cbt-review");
-        if (panel) {
-          panel.classList.toggle("collapsed");
-        }
-      }
-
-      function jumpToQuestion(id) {
-        const qcard = document.getElementById("qcard-" + id);
-        if (qcard) {
-          qcard.scrollIntoView({ behavior: "smooth", block: "center" });
-          toggleReviewPanel();
-        }
-      }
-
-      function updateReviewPanel() {
-        for (let i = 1; i <= QUESTIONS.length; i++) {
-          const q = QUESTIONS[i - 1];
-          const cell = document.getElementById("rev-cell-" + i);
-          if (!cell) continue;
-
-          const isAnswered = getResponse(q) !== null;
-          const isFlagged = flaggedQuestions[i];
-
-          cell.className = "cbt-review-cell";
-          if (isAnswered) cell.classList.add("answered");
-          if (isFlagged) cell.classList.add("flagged");
-        }
-      }
-
-      // Start the simulator on DOMContentLoaded or directly
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initSimulator);
-      } else {
-        initSimulator();
-      }
-</script>
-  <!-- nsr-injected:end -->
   <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <!-- mwb-injected:end -->
-</body>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
 </html>

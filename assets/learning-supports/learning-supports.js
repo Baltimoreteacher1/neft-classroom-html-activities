@@ -3139,29 +3139,7 @@
   // Small "who am I" chip at the top of the student rail: shows the picked
   // initials and lets a student on a shared Chromebook switch identity.
   function v2EnsureIdentityChip(dock, meLabel) {
-    const inner = dock.querySelector(".ewl-supports-tools-inner");
-    if (!inner) return;
-    let chip = inner.querySelector(".ewl-supports-me-chip");
-    if (!meLabel) {
-      if (chip) chip.remove();
-      return;
-    }
-    if (!chip) {
-      chip = document.createElement("button");
-      chip.type = "button";
-      chip.className = "ewl-supports-me-chip";
-      chip.title = "Not you? Tap to switch student.";
-      chip.addEventListener("click", () => {
-        try {
-          localStorage.removeItem(V2_ME_KEY);
-        } catch (_e) {
-          /* ignore */
-        }
-        v2StudentBoot(window.EWLSupportsSchema);
-      });
-      inner.insertBefore(chip, inner.firstChild);
-    }
-    chip.textContent = "👤 " + meLabel;
+    return; // Completely disabled face restart chip
   }
 
   // Reflect a resolved item set into the hidden legacy profile checkboxes so

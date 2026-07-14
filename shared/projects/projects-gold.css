@@ -119,3 +119,111 @@ body.pro-projects .step-panel:focus {
     overflow: visible;
   }
 }
+
+/* --- 5. Level Selection Overlay (Gold welcome screen) --- */
+#gold-level-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: rgba(15, 43, 60, 0.95);
+  backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 1;
+  transition: opacity 0.25s ease-out;
+}
+#gold-level-overlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+.gold-level-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: clamp(24px, 5vw, 40px);
+  max-width: 580px;
+  width: 100%;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  text-align: center;
+  box-sizing: border-box;
+  animation: gold-scale-up 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes gold-scale-up {
+  from {
+    transform: scale(0.9) translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+.gold-level-emoji {
+  font-size: 48px;
+  margin-bottom: 12px;
+  line-height: 1;
+}
+.gold-level-title {
+  font-size: clamp(20px, 4vw, 28px);
+  font-weight: 800;
+  color: #0f2b3c;
+  margin-bottom: 8px;
+  line-height: 1.25;
+}
+.gold-level-sub {
+  color: #525f6e;
+  font-size: 15px;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.gold-level-heading {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #0b6f65;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e2e7ec;
+  padding-bottom: 8px;
+}
+.gold-level-option {
+  display: block;
+  width: 100%;
+  padding: 16px 20px;
+  margin: 10px 0;
+  background: #ffffff;
+  border: 2px solid #e2e7ec;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f2b3c;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+.gold-level-option:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+.gold-level-option:active {
+  transform: translateY(0);
+}
+.gold-level-option.opt-lv0:hover {
+  border-color: #f59e0b;
+  background: #fffdf5;
+}
+.gold-level-option.opt-lv1:hover {
+  border-color: #10b981;
+  background: #f6fdf9;
+}
+.gold-level-option.opt-lv2:hover {
+  border-color: #3b82f6;
+  background: #f5f9ff;
+}
+.gold-level-option:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 2px;
+}
