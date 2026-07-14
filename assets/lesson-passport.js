@@ -267,11 +267,11 @@
     return "";
   }
   function initials(name) {
-    if (!name) return "🙂";
+    if (!name) return "👤";
     var parts = String(name).trim().split(/\s+/);
     var a = parts[0] ? parts[0][0] : "";
     var b = parts[1] ? parts[1][0] : "";
-    return (a + b).toUpperCase() || "🙂";
+    return (a + b).toUpperCase() || "👤";
   }
 
   /* ── Core mutation: award XP + recompute ───────────────────────────────── */

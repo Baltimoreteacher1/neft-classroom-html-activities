@@ -2846,7 +2846,7 @@ function renderReflectPhase(el, state, ctx, config) {
   });
   el.append(confCard);
 
-  el.append(buildPrintableSummary(state, config));
+  // el.append(buildPrintableSummary(state, config));
 
   // Inline Reveal Math slides for the closing/reflect section.
   renderRevealSlides(el, config, "closure");

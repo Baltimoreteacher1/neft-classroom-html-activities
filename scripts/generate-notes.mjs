@@ -2024,7 +2024,6 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   }
 }
 ${EDITORIAL_OVERRIDES}
-</style>
 </style>`;
 }
 

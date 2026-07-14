@@ -17,6 +17,12 @@ body{margin:0;background:var(--cream);color:var(--ink);
 .topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
   justify-content:space-between;align-items:center;padding:12px 18px;}
 .topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+@media (max-width:760px){
+  .topbar{flex-wrap:wrap;row-gap:8px;}
+  .topbar .level-selector{flex-wrap:wrap;row-gap:4px;}
+  .topbar .pill-group{flex-wrap:wrap;}
+  main.sheet{padding:28px 18px;}
+}
 .print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
   padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
 header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
@@ -373,6 +379,32 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 .twr-exp-lines{min-width:0;}
 .twr-hint{margin:0 0 4px;font-size:13px;color:var(--muted);}
 .twr-stems{margin:0 0 8px;}
+.twr-guide-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:10px;
+  padding:14px 16px;margin:0 0 14px;break-inside:avoid;page-break-inside:avoid;}
+.twr-guide-step>h3{margin:0 0 9px;color:var(--navy);font-size:17px;}
+.twr-focus-question{background:var(--teal-light);border-radius:8px;padding:11px 13px;margin:0 0 8px;
+  font-size:16px;font-weight:800;line-height:1.45;}
+.twr-job{margin:7px 0;line-height:1.5;}
+.twr-action{display:inline-block;background:#fef0d8;border:1px solid var(--amber);border-radius:999px;
+  padding:2px 9px;font-size:12px;font-weight:800;text-transform:uppercase;color:var(--navy);}
+.twr-word-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin:8px 0 12px;}
+.twr-word{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:9px;
+  min-height:48px;font-size:13.5px;line-height:1.4;}
+.twr-word input,.twr-check input{width:18px;height:18px;flex:0 0 auto;margin-top:2px;}
+.twr-rehearse{border:1px dashed var(--teal);border-radius:8px;padding:10px 12px;margin:8px 0;background:#f7fffd;}
+.twr-model-parts{background:#f7fafc;border-radius:8px;padding:10px 13px;margin:8px 0 12px;}
+.twr-model-parts p{margin:4px 0;font-size:13.5px;line-height:1.45;}
+.twr-level-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.twr-level-card{border:1px solid var(--line);border-top:4px solid var(--teal);border-radius:8px;padding:10px;min-width:0;}
+.twr-level-card h4{margin:0 0 3px;color:var(--navy);font-size:15px;}
+.twr-level-support{margin:0 0 7px;color:var(--muted);font-size:12px;font-weight:700;}
+.twr-level-card ul{margin:7px 0;padding-left:18px;font-size:13px;line-height:1.45;}
+.twr-level-card .writeline-area{min-height:78px;}
+.twr-checklist{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+.twr-check{display:flex;gap:8px;align-items:flex-start;min-height:44px;padding:7px 9px;border:1px solid var(--line);
+  border-radius:8px;font-size:13.5px;line-height:1.4;}
+.twr-es-support{display:block;color:var(--muted);font-style:italic;font-size:12.5px;margin-top:2px;}
+@media(max-width:760px){.twr-level-grid{grid-template-columns:1fr}.twr-checklist{grid-template-columns:1fr}}
 /* Turn & Talk — Discussion Points */
 .section.turn-and-talk>h2{border-left-color:var(--teal);}
 .tt-card{border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:8px;
@@ -559,6 +591,13 @@ html.level-l3 .l1-only, html.level-l3 .l2-only, html.level-l3 .l2-only-block { d
 .pill-btn input[type="radio"]:checked:hover span {
   color: var(--navy);
 }
+@media(max-width:640px){.topbar{position:static;display:grid;grid-template-columns:1fr;gap:10px;padding:12px;}
+  .topbar .brand{text-align:center;}.level-selector{width:100%;justify-content:center;flex-wrap:wrap;}
+  .selector-label{width:100%;text-align:center;}.pill-group{display:grid;grid-template-columns:repeat(3,1fr);width:100%;}
+  .pill-btn span{display:block;padding:8px 6px;text-align:center;white-space:nowrap;}
+  .topbar-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;}
+  .topbar-actions>*{min-width:0;}.topbar-actions .print-btn{width:100%;height:100%;padding:10px 6px;font-size:13px;}
+  .sheet{padding:28px 18px;}.name-line{gap:12px;}}
 
 /* Leveled component details */
 .vocab-def-prompt, .notes-step-prompt {
@@ -734,7 +773,6 @@ header.packet h1::after{
 @media print{ body{ background:#fff !important; } }
 
 </style>
-</style>
 <style>
 html.nt-embed .topbar{display:none!important;}
 html.nt-embed body{background:var(--card,#fff)!important;}
@@ -906,9 +944,6 @@ html.nt-embed .li-stage{padding:clamp(12px,1.4vw,18px)!important;}
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">

@@ -1269,6 +1269,16 @@
       else openPanel(self);
     });
 
+    // Floating Math Workbench button.
+    var workbench = el("a", {
+      id: "nsr-workbench",
+      href: "/curriculum/math-workbench/",
+      target: "_blank",
+      rel: "noopener",
+      title: "Math Workbench",
+      html: '<span class="nsr-workbench-ico" aria-hidden="true">🧮</span><span class="nsr-workbench-label">Math Workbench</span>'
+    });
+
     // Panel.
     var panel = el("div", {
       id: "nsr-panel",
@@ -1277,6 +1287,7 @@
       "aria-hidden": "true",
     });
     panel.innerHTML = panelHTML();
+    root.appendChild(workbench);
     root.appendChild(launcher);
     root.appendChild(panel);
     document.body.appendChild(root);

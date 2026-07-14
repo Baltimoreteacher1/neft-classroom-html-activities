@@ -1357,6 +1357,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   })();
 
   // Hands-free voice control (only appears where the browser supports it).
+  /*
   mountVoiceNav({
     getCurrentPhase: () => state.get().currentPhase ?? 0,
     phaseCount: config.phases.length,
@@ -1367,6 +1368,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     },
     getPhaseEl: () => phaseContainer.querySelector(".phase"),
   });
+  */
 
   // One-tap ESOL translation of the current part.
   mountTranslate({ getPhaseEl: () => phaseContainer.querySelector(".phase") });
