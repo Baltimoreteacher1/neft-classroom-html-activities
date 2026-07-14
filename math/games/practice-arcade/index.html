@@ -92,6 +92,10 @@
     <link rel="stylesheet" href="/assets/lesson-passport.css" />
     <!-- Shared "game feel" layer (juice, audio, theme, progression) -->
     <script src="/assets/game-juice.js"></script>
+    <!-- Device-local learning signals: restores saved difficulty, suggests a
+         starting tier from recent lesson work, and records per-round results
+         so lessons/hub can adapt. Optional — everything guards on window.NTSignal. -->
+    <script src="/assets/nt-signal.js"></script>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
@@ -343,6 +347,17 @@
         // Difficulty tier the student chose on the Title screen. Level 1 = support,
         // Level 2 = enrichment; "both" plays everything. Persisted per device.
         let tier = "both";
+        // Restore the player's last difficulty pick (mirrors the pa-lang block
+        // below). Precedence: URL ?tier= (applied later in loadLessonConfig)
+        // beats this stored choice, which beats the NTSignal suggestion.
+        let tierSource = "default";
+        try {
+          const st = localStorage.getItem("pa-tier");
+          if (st === "l1" || st === "l2" || st === "both") {
+            tier = st;
+            tierSource = "stored";
+          }
+        } catch (e) {}
         // Language for the engine's own UI + read-aloud voice. Math prompts stay in
         // English until a config supplies `_es` fields (then they localize too).
         let lang = "en";
@@ -559,6 +574,7 @@
                 // Attach difficulty tier + any authored Spanish translations, then
                 // opportunistically upgrade a plain choose item into a mechanic.
                 r.tier = tierOf(it);
+                r.standard = data.standard || "";
                 r.promptEs = it.stem_es || it.instructions_es || it.label_es || it.title_es || "";
                 r.whyEs = it.explanation_es || it.correctWork_es || "";
                 r = synthesizeMechanic(r, idx);
@@ -593,7 +609,37 @@
           if (allRounds.length === 0) allRounds = fallbackRounds().map((r) => ((r.tier = 1), r));
           // A URL ?tier=1|2 preselects difficulty (e.g. teacher-assigned links).
           const tp = params.get("tier");
-          if (tp === "1" || tp === "2") tier = "l" + tp;
+          if (tp === "1" || tp === "2") {
+            tier = "l" + tp;
+            tierSource = "url";
+          }
+          // No stored pick and no teacher link: open at the level this device's
+          // recent lesson work suggests (NTSignal; "both" when data is thin).
+          if (tierSource === "default" && window.NTSignal && window.NTSignal.suggestTier) {
+            try {
+              const sg = window.NTSignal.suggestTier();
+              if (sg === "l1" || sg === "l2") tier = sg;
+            } catch (e) {}
+          }
+          // Misconception-aware ordering: rounds that target this device's
+          // recent trip-ups come first (stable partition — nothing is dropped,
+          // the full pool still plays).
+          try {
+            if (window.NTSignal && window.NTSignal.topMisconceptions) {
+              const hot = window.NTSignal.topMisconceptions(5).map((m) => m.tag);
+              if (hot.length) {
+                const hits = [];
+                const rest = [];
+                allRounds.forEach((r) => {
+                  const tags = Array.isArray(r.misconceptionTags)
+                    ? r.misconceptionTags.filter(Boolean)
+                    : [];
+                  (tags.some((tg) => hot.indexOf(tg) !== -1) ? hits : rest).push(r);
+                });
+                if (hits.length) allRounds = hits.concat(rest);
+              }
+            }
+          } catch (e) {}
           buildPlayList();
 
           document.getElementById("loader").style.display = "none";
@@ -627,6 +673,43 @@
           });
         }
 
+        // Per-attempt learning signal: device-local NTSignal record (drives
+        // adaptive difficulty + hub suggestions) plus one fire-and-forget row
+        // to /api/scores (feeds the teacher radar/heatmap; correct is 0/1 per
+        // row, matching the engine3d reportScore convention). Never throws.
+        function paSignal(round, correct, tag) {
+          if (!round) return;
+          try {
+            if (window.NTSignal && window.NTSignal.record) {
+              window.NTSignal.record({
+                standard: round.standard || "",
+                correct: !!correct,
+                misconceptionTag: tag || undefined,
+                lesson: activeLesson,
+              });
+            }
+          } catch (e) {}
+          try {
+            if (typeof fetch === "function") {
+              fetch("/api/scores", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  gameId: "practice-arcade",
+                  standard: round.standard || "",
+                  level: round.tier || 1,
+                  points: correct ? 10 : 0,
+                  correct: correct ? 1 : 0,
+                  total: 1,
+                  misconceptionTag: tag || "",
+                }),
+                keepalive: true,
+                credentials: "omit",
+              }).catch(() => {});
+            }
+          } catch (e) {}
+        }
+
         // Normalize a config practice item into a round descriptor the engine
         // can render. Returns null for unsupported / malformed items.
         function buildRound(it) {
@@ -644,11 +727,16 @@
             const tagged = it.choices.map((text, idx) => ({ text, idx }));
             const shuffled = shuffle(tagged);
             const newIndex = shuffled.findIndex((t) => t.idx === ci);
+            // Optional per-distractor misconception tags (config authoring:
+            // misconceptionTags[i] names the wrong idea choice i represents).
+            // Tracked through the shuffle by original index.
+            const srcTags = Array.isArray(it.misconceptionTags) ? it.misconceptionTags : null;
             return {
               kind: "choose",
               prompt: it.stem,
               choices: shuffled.map((t) => t.text),
               correctIndex: newIndex < 0 ? 0 : newIndex,
+              misconceptionTags: srcTags ? shuffled.map((t) => srcTags[t.idx] || null) : null,
               why: it.explanation || "",
             };
           }
@@ -1709,6 +1797,7 @@
               // Item-level telemetry: one record per solved round (attempts capture
               // struggle). Feeds the end-of-run EduPulse payload + a local log.
               this.logItem(rounds[this.idx], this.tries);
+              paSignal(rounds[this.idx], true, null);
               this.updateHUD();
               this.advanceJourney();
               this.time.delayedCall(1100, () => {
@@ -1719,6 +1808,7 @@
               // Wrong: encourage + hint, keep the round open for another attempt.
               this.tries++;
               this.streak = 0;
+              paSignal(rounds[this.idx], false, this.lastWrongTag || null);
               JUICE.audio.wrong();
               JUICE.shake(this, 0.006);
               this.mascotReact(false);
@@ -1740,10 +1830,15 @@
               index: this.idx,
               kind: round.kind,
               tier: round.tier || 1,
+              standard: round.standard || "",
+              // The last wrong distractor's authored misconception tag (if any) —
+              // lets the teacher report say WHICH wrong idea needed the retries.
+              tag: tries > 0 ? this.lastWrongTag || null : null,
               tries,
               firstTry: tries === 0,
               ts: Date.now(),
             };
+            this.lastWrongTag = null;
             (this.itemLog = this.itemLog || []).push(rec);
             try {
               const key = "pa-itemlog";
@@ -1832,10 +1927,15 @@
             const ok = i === r.correctIndex;
             t.bg.setFillStyle(ok ? PALETTE.good : PALETTE.bad);
             // Wrong pick: flash red, then reset so the student can try again.
-            if (!ok)
+            // Remember WHICH distractor was chosen — its authored misconception
+            // tag flows into the item log, EduPulse, and the signal store.
+            if (!ok) {
+              this.lastWrongTag =
+                (Array.isArray(r.misconceptionTags) && r.misconceptionTags[i]) || null;
               this.time.delayedCall(620, () => {
                 if (!this.locked) t.bg.setFillStyle(PALETTE.tile);
               });
+            }
             this.resolve(ok, r.why);
           }
 
@@ -3120,16 +3220,18 @@
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
     <script src="/assets/canvas-bridge.js" defer></script>
     <!-- canvas-bridge-injected:end -->
-  <!-- offline-sw-injected:begin (offline service worker — tools/inject-offline-sw.mjs) -->
-<script>
-  if ("serviceWorker" in navigator) {
-    addEventListener("load", function () {
-      navigator.serviceWorker
-        .register("/math/games/practice-arcade/sw.js", { scope: "/math/games/practice-arcade/" })
-        .catch(function () {});
-    });
-  }
-</script>
-<!-- offline-sw-injected:end -->
-</body>
+    <!-- offline-sw-injected:begin (offline service worker — tools/inject-offline-sw.mjs) -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        addEventListener("load", function () {
+          navigator.serviceWorker
+            .register("/math/games/practice-arcade/sw.js", {
+              scope: "/math/games/practice-arcade/",
+            })
+            .catch(function () {});
+        });
+      }
+    </script>
+    <!-- offline-sw-injected:end -->
+  </body>
 </html>

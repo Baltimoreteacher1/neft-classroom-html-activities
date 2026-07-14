@@ -31,12 +31,23 @@
  *     server  → monitors            { type:"gone",  sid }
  *     monitor → server              { type:"watch", sid } | { type:"unwatch" }
  *     server  → watching monitor    { type:"board", sid, snap }
+ *
+ *   CLASS PLAY (v3)  teacher-hosted quiz round over the same room
+ *     teacher → server → students   { type:"play-start", q:{qid,prompt,choices,index,of} }
+ *     teacher → server → students   { type:"play-stop" }        (students get q:null)
+ *     server  → students            { type:"play-state", q }    (also hydrates late joiners)
+ *     student → server → teachers   { type:"play-answer", qid, choice, name }
+ *     server  → teachers            { type:"play-score", qid, choice, name, at }
+ *     The current question lives in DO storage ("play") so reconnecting
+ *     students land mid-round. No answers are persisted — the tally is a live
+ *     teacher-screen affordance, not a gradebook.
  */
 
 import { DurableObject } from "cloudflare:workers";
 
 const MAX_SNAP = 3_000_000; // serialized multi-page board
 const MAX_THUMB = 400_000; // small downscaled JPEG data URL
+const MAX_PLAY = 8_000; // serialized Class Play question (text only)
 const ROLES = new Set(["teacher", "student", "monitor", "sharer"]);
 
 function normCode(code) {
@@ -88,6 +99,13 @@ export class BoardRoom extends DurableObject {
         this.latest = latest || null;
       }
       if (this.latest) this.safeSend(server, { type: "board", snap: this.latest });
+      // Class Play hydration: a reconnecting/late student lands mid-round.
+      try {
+        const play = await this.ctx.storage.get("play");
+        if (play) this.safeSend(server, { type: "play-state", q: JSON.parse(play) });
+      } catch {
+        /* no active round */
+      }
       this.broadcastCount();
     } else if (role === "teacher") {
       this.broadcastCount();
@@ -193,6 +211,30 @@ export class BoardRoom extends DurableObject {
     }
     if (!msg || typeof msg !== "object") return;
 
+    // ---- CLASS PLAY: teacher hosts a question round over the same room ----
+    if (role === "teacher" && (msg.type === "play-start" || msg.type === "play-stop")) {
+      let q = null;
+      if (msg.type === "play-start") {
+        q = this.cleanPlayQuestion(msg.q);
+        if (!q) return;
+      }
+      try {
+        if (q) await this.ctx.storage.put("play", JSON.stringify(q));
+        else await this.ctx.storage.delete("play");
+      } catch {
+        /* still fans out below */
+      }
+      const out = JSON.stringify({ type: "play-state", q });
+      for (const s of this.ctx.getWebSockets("student")) {
+        try {
+          s.send(out);
+        } catch {
+          /* dead socket */
+        }
+      }
+      return;
+    }
+
     // ---- BROADCAST: teacher pushes their board to followers ----
     if (role === "teacher") {
       if (msg.type !== "board" || typeof msg.snap !== "string" || msg.snap.length > MAX_SNAP)
@@ -275,7 +317,46 @@ export class BoardRoom extends DurableObject {
       }
       return;
     }
-    // students (broadcast followers) are view-only; ignore their frames
+    // ---- CLASS PLAY: a student answers the current question ----
+    if (role === "student" && msg.type === "play-answer") {
+      const qid = String(msg.qid || "").slice(0, 40);
+      const choice = Number(msg.choice);
+      if (!qid || !Number.isInteger(choice) || choice < 0 || choice > 11) return;
+      const out = JSON.stringify({
+        type: "play-score",
+        qid,
+        choice,
+        name: cleanName(msg.name) || "Student",
+        at: Date.now(),
+      });
+      for (const t of this.teachers()) {
+        try {
+          t.send(out);
+        } catch {
+          /* dead socket */
+        }
+      }
+      return;
+    }
+    // students (broadcast followers) are otherwise view-only; ignore their frames
+  }
+
+  /** Validate + clamp a Class Play question to a safe text-only shape. */
+  cleanPlayQuestion(q) {
+    if (!q || typeof q !== "object") return null;
+    const prompt = String(q.prompt || "").slice(0, 500);
+    const choices = Array.isArray(q.choices)
+      ? q.choices.slice(0, 8).map((c) => String(c).slice(0, 200))
+      : [];
+    if (!prompt || choices.length < 2) return null;
+    const clean = {
+      qid: String(q.qid || "").slice(0, 40) || crypto.randomUUID().slice(0, 12),
+      prompt,
+      choices,
+      index: Number(q.index) || 0,
+      of: Number(q.of) || 0,
+    };
+    return JSON.stringify(clean).length > MAX_PLAY ? null : clean;
   }
 
   async webSocketClose(ws, code, reason) {

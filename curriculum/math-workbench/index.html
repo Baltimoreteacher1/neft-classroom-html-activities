@@ -9082,8 +9082,216 @@
             "</div>" +
             '<p class="live-count" id="liveCount">Waiting for students to join…</p>' +
             '<button type="button" class="live-btn danger" id="liveStop">⏹ Stop broadcasting</button>' +
-            '<p class="live-note">Only your board is shared. Students follow along and can’t change your work.</p>';
+            '<p class="live-note">Only your board is shared. Students follow along and can’t change your work.</p>' +
+            '<div class="live-sec"><div class="live-sec-t">🎲 Class Play</div>' +
+            '<p class="live-note">Run a lesson’s practice questions on every student screen — one at a time, live tally here.</p>' +
+            '<input id="playLesson" class="live-input" maxlength="8" placeholder="Lesson (e.g. 4-2)" autocomplete="off" />' +
+            '<div class="live-join"><button type="button" class="live-btn primary" id="playStart">▶ Start</button></div>' +
+            '<div id="playHost"></div></div>';
           body.querySelector("#liveStop").onclick = () => stopAll();
+          body.querySelector("#playStart").onclick = () =>
+            playStartFromLesson(body.querySelector("#playLesson").value);
+        }
+
+        // ---------- Class Play (teacher-hosted quiz over the same room) ----------
+        var playState = null; // {list, i, tally:{choiceIdx:count}, names:{name:choice}}
+        function playStartFromLesson(raw) {
+          var id = String(raw || "").trim();
+          if (!/^\d{1,2}-\d{1,2}$/.test(id)) {
+            var host = body.querySelector("#playHost");
+            if (host) host.innerHTML = '<p class="live-note">Type a lesson id like 4-2.</p>';
+            return;
+          }
+          fetch("/lessons/" + id + "/config.json")
+            .then(function (r) {
+              return r.ok ? r.json() : null;
+            })
+            .then(function (data) {
+              var opt = (data && data.practice && data.practice.optional) || [];
+              var list = opt
+                .filter(function (it) {
+                  return (
+                    it &&
+                    it.type === "multiple-choice" &&
+                    it.stem &&
+                    Array.isArray(it.choices) &&
+                    it.choices.length >= 2
+                  );
+                })
+                .map(function (it, i) {
+                  return {
+                    qid: id + "-q" + i,
+                    prompt: String(it.stem).slice(0, 500),
+                    choices: it.choices.slice(0, 8).map(String),
+                    correctIndex: it.correctIndex || 0,
+                  };
+                });
+              var host = body.querySelector("#playHost");
+              if (!list.length) {
+                if (host)
+                  host.innerHTML =
+                    '<p class="live-note">No multiple-choice questions in that lesson.</p>';
+                return;
+              }
+              playState = { list: list, i: 0, tally: {}, names: {} };
+              playShow();
+            })
+            .catch(function () {
+              var host = body.querySelector("#playHost");
+              if (host) host.innerHTML = '<p class="live-note">Couldn’t load that lesson.</p>';
+            });
+        }
+        function playSend(q) {
+          if (!ws || ws.readyState !== 1) return;
+          try {
+            ws.send(JSON.stringify(q ? { type: "play-start", q: q } : { type: "play-stop" }));
+          } catch (e) {}
+        }
+        function playShow() {
+          if (!playState) return;
+          var q = playState.list[playState.i];
+          playState.tally = {};
+          playState.names = {};
+          playSend({
+            qid: q.qid,
+            prompt: q.prompt,
+            choices: q.choices,
+            index: playState.i + 1,
+            of: playState.list.length,
+          });
+          playRenderTeacher();
+        }
+        function playRenderTeacher() {
+          var host = body.querySelector("#playHost");
+          if (!host || !playState) return;
+          var q = playState.list[playState.i];
+          var html =
+            '<p class="live-count">Q' +
+            (playState.i + 1) +
+            " / " +
+            playState.list.length +
+            " · <b>" +
+            escHtml(q.prompt) +
+            "</b></p>";
+          html += '<div id="playTally">';
+          q.choices.forEach(function (c, i) {
+            var n = playState.tally[i] || 0;
+            html +=
+              '<div class="live-note">' +
+              (i === q.correctIndex ? "✅ " : "▫️ ") +
+              escHtml(String(c)) +
+              " — <b id='playT" +
+              i +
+              "'>" +
+              n +
+              "</b></div>";
+          });
+          html += "</div>";
+          html +=
+            '<div class="live-join">' +
+            (playState.i + 1 < playState.list.length
+              ? '<button type="button" class="live-btn primary" id="playNext">Next ▸</button>'
+              : "") +
+            '<button type="button" class="live-btn danger" id="playStop">⏹ End Class Play</button></div>';
+          host.innerHTML = html;
+          var nx = host.querySelector("#playNext");
+          if (nx)
+            nx.onclick = function () {
+              playState.i++;
+              playShow();
+            };
+          host.querySelector("#playStop").onclick = playStopAll;
+        }
+        function playTally(m) {
+          if (!playState) return;
+          var q = playState.list[playState.i];
+          if (!q || m.qid !== q.qid) return;
+          var nm = String(m.name || "Student");
+          // Latest answer per student name counts (students can change their mind).
+          if (playState.names[nm] != null) {
+            var prev = playState.names[nm];
+            playState.tally[prev] = Math.max(0, (playState.tally[prev] || 0) - 1);
+          }
+          playState.names[nm] = m.choice;
+          playState.tally[m.choice] = (playState.tally[m.choice] || 0) + 1;
+          var el = body.querySelector("#playT" + m.choice);
+          if (el) el.textContent = playState.tally[m.choice];
+          Object.keys(playState.tally).forEach(function (k) {
+            var e2 = body.querySelector("#playT" + k);
+            if (e2) e2.textContent = playState.tally[k] || 0;
+          });
+        }
+        function playStopAll() {
+          playSend(null);
+          playState = null;
+          var host = body.querySelector("#playHost");
+          if (host) host.innerHTML = '<p class="live-note">Class Play ended.</p>';
+        }
+        function escHtml(s) {
+          return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+          });
+        }
+
+        // Student side: full-screen question overlay (big touch targets, no timer).
+        var playOverlay = null;
+        var playAnswered = null;
+        function playRenderStudent(q) {
+          if (!q) {
+            if (playOverlay) {
+              playOverlay.remove();
+              playOverlay = null;
+            }
+            playAnswered = null;
+            return;
+          }
+          if (!playOverlay) {
+            playOverlay = document.createElement("div");
+            playOverlay.id = "livePlayOverlay";
+            playOverlay.setAttribute("role", "dialog");
+            playOverlay.setAttribute("aria-label", "Class Play question");
+            playOverlay.style.cssText =
+              "position:fixed;inset:0;z-index:99998;background:#0f1c2e;color:#fff;" +
+              "display:flex;flex-direction:column;align-items:center;justify-content:center;" +
+              "padding:24px;gap:16px;overflow:auto;";
+            document.body.appendChild(playOverlay);
+          }
+          playAnswered = null;
+          var html =
+            '<div style="font-size:0.9rem;opacity:0.8">Question ' +
+            (Number(q.index) || 1) +
+            (q.of ? " of " + q.of : "") +
+            "</div>" +
+            '<div style="font-size:1.4rem;font-weight:800;max-width:720px;text-align:center">' +
+            escHtml(q.prompt) +
+            "</div>" +
+            '<div id="playChoices" style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:520px"></div>' +
+            '<div id="playDone" style="min-height:28px;font-weight:700"></div>';
+          playOverlay.innerHTML = html;
+          var wrap = playOverlay.querySelector("#playChoices");
+          q.choices.forEach(function (c, i) {
+            var b = document.createElement("button");
+            b.type = "button";
+            b.textContent = String.fromCharCode(65 + i) + ".  " + c;
+            b.style.cssText =
+              "min-height:56px;border:0;border-radius:14px;background:#1e3a5f;color:#fff;" +
+              "font-size:1.1rem;font-weight:700;cursor:pointer;padding:10px 16px;text-align:left;";
+            b.onclick = function () {
+              playAnswered = i;
+              wrap.querySelectorAll("button").forEach(function (x) {
+                x.style.background = "#1e3a5f";
+              });
+              b.style.background = "#1fa6a2";
+              playOverlay.querySelector("#playDone").textContent =
+                "Answer sent ✓ (you can change it)";
+              try {
+                ws.send(
+                  JSON.stringify({ type: "play-answer", qid: q.qid, choice: i, name: name || "" }),
+                );
+              } catch (e) {}
+            };
+            wrap.appendChild(b);
+          });
         }
         function scheduleSend() {
           dirty = true;
@@ -9105,6 +9313,12 @@
             note("Type the class code your teacher shows.");
             return;
           }
+          // Remember the first name (if typed) so Class Play answers are named
+          // on the teacher's tally. Optional — blank stays "Student".
+          try {
+            const nEl = document.getElementById("liveName");
+            if (nEl && nEl.value.trim()) name = nEl.value.trim().slice(0, 24);
+          } catch (e) {}
           code = c;
           role = "student";
           renderFollow();
@@ -9349,12 +9563,16 @@
                   ensureBanner(true);
                 }
                 applySnap(m.snap);
+              } else if (m.type === "play-state") {
+                playRenderStudent(m.q || null);
               } else if (m.type === "end") {
                 showToast("Your teacher ended the broadcast — your board is back");
                 stopAll();
               }
             } else if (role === "teacher") {
-              if (m.type === "count") {
+              if (m.type === "play-score") {
+                playTally(m);
+              } else if (m.type === "count") {
                 const c = body.querySelector("#liveCount");
                 if (c)
                   c.textContent =
@@ -9403,6 +9621,11 @@
         function stopAll() {
           manualClose = true;
           tries = 0;
+          // Clear any Class Play state on either side of the room.
+          try {
+            playRenderStudent(null);
+          } catch (e) {}
+          playState = null;
           if (reconnectT) {
             clearTimeout(reconnectT);
             reconnectT = null;
