@@ -414,6 +414,50 @@ function runValidation() {
     `PASS: v2 lockstep — all ${schemaKeys.length} schema keys accepted by the API allow-list.`,
   );
 
+  // 9. v2.3 lockstep: every `tool:` a schema item points at must exist as a
+  // real dock button in learning-supports.js, and every `apply:"adaptive"` key
+  // must be handled by supports-adaptations.js — otherwise a checked box would
+  // silently do nothing for the student.
+  console.log("Checking schema tools ⊆ dock buttons and adaptive keys ⊆ adaptations...");
+  const supportsSrc = readFileSync(
+    join(ROOT, "assets", "learning-supports", "learning-supports.js"),
+    "utf8",
+  );
+  const adaptationsPath = join(ROOT, "assets", "learning-supports", "supports-adaptations.js");
+  if (!existsSync(adaptationsPath)) {
+    console.error("FAIL: assets/learning-supports/supports-adaptations.js is missing.");
+    process.exit(1);
+  }
+  const adaptationsSrc = readFileSync(adaptationsPath, "utf8");
+
+  const dockTools = new Set(
+    [...supportsSrc.matchAll(/data-tool",\s*"([a-z-]+)"|addTool\(\s*\n?\s*"([a-z-]+)"/g)].map(
+      (m) => m[1] || m[2],
+    ),
+  );
+  const schemaTools = [...schemaSrc.matchAll(/tool:\s*"([a-z-]+)"/g)].map((m) => m[1]);
+  const missingTools = [...new Set(schemaTools)].filter((t) => !dockTools.has(t));
+  if (missingTools.length) {
+    console.error(
+      `FAIL: supports-schema.js points at dock tools with no button in learning-supports.js: ${missingTools.join(", ")}`,
+    );
+    process.exit(1);
+  }
+
+  const adaptiveKeys = [
+    ...schemaSrc.matchAll(/key:\s*"([a-z0-9-]+)"[^}]*?apply:\s*"adaptive"/gs),
+  ].map((m) => m[1]);
+  const unhandled = [...new Set(adaptiveKeys)].filter((k) => !adaptationsSrc.includes(`"${k}"`));
+  if (unhandled.length) {
+    console.error(
+      `FAIL: schema keys marked apply:"adaptive" not handled by supports-adaptations.js: ${unhandled.join(", ")}`,
+    );
+    process.exit(1);
+  }
+  console.log(
+    `PASS: v2.3 lockstep — ${new Set(schemaTools).size} tools have dock buttons, ${new Set(adaptiveKeys).size} adaptive keys handled.`,
+  );
+
   console.log(`PASS: 64/64 canonical lessons covered, schema, route, and privacy checks passed.`);
   process.exit(0);
 }

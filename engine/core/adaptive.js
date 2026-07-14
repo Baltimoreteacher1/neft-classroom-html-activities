@@ -101,8 +101,13 @@ export function createAdaptiveSequence(config, state, opts = {}) {
 
   const cursors = { level1: 0, core: 0, level2: 0 };
   // Cap total served items so a struggling student isn't trapped forever.
-  const maxItems =
-    opts.maxItems || buckets.level1.length + buckets.core.length + buckets.level2.length;
+  // An assigned "Adjusted workload" accommodation (Learning Supports layer,
+  // window.EWLAdapt.reducedWorkload) shortens the set further — never below 3 —
+  // without changing the problems themselves.
+  const fullCount = buckets.level1.length + buckets.core.length + buckets.level2.length;
+  const reduced =
+    typeof window !== "undefined" && window.EWLAdapt && window.EWLAdapt.reducedWorkload;
+  const maxItems = opts.maxItems || (reduced ? Math.max(3, Math.ceil(fullCount * 0.6)) : fullCount);
   let served = 0;
 
   function pickFrom(tier) {

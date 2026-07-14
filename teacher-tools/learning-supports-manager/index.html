@@ -327,6 +327,88 @@
           padding: 16px;
         }
       }
+      /* v2.3 — assigned lessons picker + toolbar + print plans */
+      .lessons-h {
+        margin: 14px 0 2px;
+        font-size: 15px;
+      }
+      .lessonpick {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 4px 12px;
+        max-height: 240px;
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px;
+        background: #f8fafc;
+      }
+      .lessonpick label {
+        display: flex;
+        gap: 6px;
+        align-items: baseline;
+        font-weight: 400;
+        font-size: 13.5px;
+      }
+      .lessonpick .lid {
+        font-weight: 700;
+        color: var(--teal);
+        white-space: nowrap;
+      }
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 0 0 12px;
+      }
+      .bulk {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+      .bulk select {
+        max-width: 260px;
+      }
+      .student small.when {
+        display: block;
+        color: var(--faint);
+        font-size: 11px;
+      }
+      #printRoot {
+        display: none;
+      }
+      @media print {
+        body > header,
+        body > main,
+        .overlay {
+          display: none !important;
+        }
+        #printRoot {
+          display: block;
+          font: 13px/1.45 system-ui;
+          color: #000;
+        }
+        #printRoot .plan {
+          page-break-after: always;
+          padding: 24px;
+        }
+        #printRoot h2 {
+          margin: 0 0 2px;
+        }
+        #printRoot h3 {
+          margin: 14px 0 4px;
+        }
+        #printRoot ul {
+          margin: 4px 0;
+          padding-left: 18px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -359,10 +441,17 @@
 
       <div class="card">
         <h2>Class rosters</h2>
-        <p class="hint">One column per section. Click a student to assign supports.</p>
+        <p class="hint">One column per section. Click a student to assign supports and lessons.</p>
+        <div class="toolbar">
+          <button class="ghost" id="exportCsv" type="button">⬇ Export roster CSV</button>
+          <button class="ghost" id="printPlans" type="button">🖨 Print support plans</button>
+        </div>
         <div class="sections" id="sections"></div>
       </div>
     </main>
+
+    <!-- Print-only support plans (built on demand) -->
+    <div id="printRoot" aria-hidden="true"></div>
 
     <!-- Assignment editor -->
     <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="edTitle">
@@ -378,6 +467,12 @@
           <span class="tag">WIDA</span>). Add extra IEP supports below.
         </p>
         <div id="groups"></div>
+        <h4 class="lessons-h">📚 Assigned lessons</h4>
+        <p class="hint">
+          Checked lessons show up in this student's “My Lessons” list on every lesson page — with
+          their supports already applied.
+        </p>
+        <div id="lessonPick" class="lessonpick"></div>
         <div class="actions">
           <span id="edMsg" class="ok" aria-live="polite"></span>
           <span class="spacer"></span>
@@ -523,6 +618,8 @@
               initials: ini,
               widaLevel: Number(r.widaLevel) || 0,
               iepItems: Array.isArray(r.iepItems) ? r.iepItems.slice() : [],
+              lessons: Array.isArray(r.lessons) ? r.lessons.slice() : [],
+              updatedAt: r.updatedAt || null,
             };
           });
         }
@@ -613,6 +710,8 @@
 
             // add student
             col.appendChild(addRow(section));
+            // bulk lesson assignment for the whole section
+            col.appendChild(bulkLessonBlock(section));
             // import
             col.appendChild(importBlock(section));
             wrap.appendChild(col);
@@ -622,11 +721,23 @@
           var li = document.createElement("li");
           li.className = "student";
           var cnt = (r.iepItems || []).length;
+          var lcnt = (r.lessons || []).length;
           var summary =
-            widaName(r.widaLevel) + " · " + cnt + " IEP support" + (cnt === 1 ? "" : "s");
+            widaName(r.widaLevel) +
+            " · " +
+            cnt +
+            " support" +
+            (cnt === 1 ? "" : "s") +
+            " · " +
+            lcnt +
+            " lesson" +
+            (lcnt === 1 ? "" : "s");
+          var when = r.updatedAt
+            ? '<small class="when">updated ' + esc(String(r.updatedAt).slice(0, 10)) + "</small>"
+            : "";
           var who = document.createElement("button");
           who.className = "who";
-          who.innerHTML = esc(r.initials) + "<small>" + esc(summary) + "</small>";
+          who.innerHTML = esc(r.initials) + "<small>" + esc(summary) + "</small>" + when;
           who.addEventListener("click", function () {
             openEditor(r);
           });
@@ -757,6 +868,256 @@
           return d;
         }
 
+        // ---- lesson index (id + title for all 64 canonical lessons) ---------
+        // Sourced from the supports manifest so the picker never drifts from
+        // what actually exists. Fail-soft: picker shows ids-only if titles fail.
+        var lessonIndex = []; // [{id, title}]
+        function loadLessonIndex() {
+          return fetch("/assets/learning-supports/manifest.json")
+            .then(function (r) {
+              return r.ok ? r.json() : {};
+            })
+            .then(function (m) {
+              lessonIndex = Object.keys(m)
+                .filter(function (id) {
+                  return /^\d+-\d+$/.test(id);
+                })
+                .sort(function (a, b) {
+                  var pa = a.split("-").map(Number);
+                  var pb = b.split("-").map(Number);
+                  return pa[0] !== pb[0] ? pa[0] - pb[0] : pa[1] - pb[1];
+                })
+                .map(function (id) {
+                  return { id: id, title: (m[id] && m[id].title) || "" };
+                });
+            })
+            .catch(function () {
+              lessonIndex = [];
+            });
+        }
+        function lessonTitle(id) {
+          for (var i = 0; i < lessonIndex.length; i++) {
+            if (lessonIndex[i].id === id) return lessonIndex[i].title;
+          }
+          return "";
+        }
+        function buildLessonPick() {
+          var wrap = $("lessonPick");
+          wrap.textContent = "";
+          if (!lessonIndex.length) {
+            var p = document.createElement("p");
+            p.className = "hint";
+            p.textContent = "Lesson list unavailable right now — reload to try again.";
+            wrap.appendChild(p);
+            return;
+          }
+          lessonIndex.forEach(function (l) {
+            var lab = document.createElement("label");
+            var cb = document.createElement("input");
+            cb.type = "checkbox";
+            cb.value = l.id;
+            cb.className = "lessoncb";
+            var lid = document.createElement("span");
+            lid.className = "lid";
+            lid.textContent = l.id;
+            var t = document.createElement("span");
+            t.textContent = l.title;
+            lab.appendChild(cb);
+            lab.appendChild(lid);
+            lab.appendChild(t);
+            wrap.appendChild(lab);
+          });
+        }
+
+        // ---- bulk lesson assignment (whole section at once) ------------------
+        function bulkLessonBlock(section) {
+          var box = document.createElement("div");
+          box.className = "bulk";
+          var lbl = document.createElement("span");
+          lbl.textContent = "📚 Whole class:";
+          lbl.style.fontWeight = "700";
+          var sel = document.createElement("select");
+          sel.setAttribute("aria-label", "Lesson to assign to every student in " + section);
+          var ph = document.createElement("option");
+          ph.value = "";
+          ph.textContent = lessonIndex.length ? "Choose a lesson…" : "Lesson list unavailable";
+          sel.appendChild(ph);
+          lessonIndex.forEach(function (l) {
+            var o = document.createElement("option");
+            o.value = l.id;
+            o.textContent = l.id + (l.title ? " · " + l.title : "");
+            sel.appendChild(o);
+          });
+          var addB = document.createElement("button");
+          addB.type = "button";
+          addB.className = "ghost";
+          addB.textContent = "Assign to all";
+          var rmB = document.createElement("button");
+          rmB.type = "button";
+          rmB.className = "ghost";
+          rmB.textContent = "Remove from all";
+          function bulk(add) {
+            var id = sel.value;
+            if (!id) return;
+            if (!requireKey()) return;
+            var recs = recordsFor(section);
+            if (!recs.length) {
+              showNotice("No students in section " + section + " yet.", "warn");
+              return;
+            }
+            var entries = recs.map(function (r) {
+              var lessons = (r.lessons || []).slice();
+              var i = lessons.indexOf(id);
+              if (add && i === -1) lessons.push(id);
+              if (!add && i !== -1) lessons.splice(i, 1);
+              // Lessons-only write: widaLevel/iepItems omitted on purpose so the
+              // presence-aware upsert can never clobber a support assignment.
+              return { section: r.section, initials: r.initials, lessons: lessons };
+            });
+            req("POST", { entries: entries })
+              .then(function () {
+                entries.forEach(function (e) {
+                  var rec = roster[keyOf(e.section, e.initials)];
+                  if (rec) rec.lessons = e.lessons;
+                });
+                renderSections();
+                showNotice(
+                  (add ? "Assigned " : "Removed ") +
+                    id +
+                    (add ? " to " : " from ") +
+                    entries.length +
+                    " student" +
+                    (entries.length === 1 ? "" : "s") +
+                    " in " +
+                    section +
+                    ".",
+                );
+              })
+              .catch(handleErr);
+          }
+          addB.addEventListener("click", function () {
+            bulk(true);
+          });
+          rmB.addEventListener("click", function () {
+            bulk(false);
+          });
+          box.appendChild(lbl);
+          box.appendChild(sel);
+          box.appendChild(addB);
+          box.appendChild(rmB);
+          return box;
+        }
+
+        // ---- CSV export -------------------------------------------------------
+        function itemLabel(k) {
+          var it = S.groups
+            ? S.groups.reduce(function (found, g) {
+                if (found) return found;
+                return g.items.filter(function (i) {
+                  return i.key === k;
+                })[0];
+              }, null)
+            : null;
+          return it ? it.label : k;
+        }
+        function csvCell(s) {
+          s = String(s == null ? "" : s);
+          return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+        }
+        function exportCsv() {
+          var rows = [
+            ["section", "initials", "widaLevel", "widaName", "lessons", "supports", "updatedAt"],
+          ];
+          S.sections.forEach(function (sec) {
+            recordsFor(sec).forEach(function (r) {
+              rows.push([
+                r.section,
+                r.initials,
+                r.widaLevel || 0,
+                widaName(r.widaLevel),
+                (r.lessons || []).join(" "),
+                (r.iepItems || []).map(itemLabel).join("; "),
+                r.updatedAt || "",
+              ]);
+            });
+          });
+          var csv = rows
+            .map(function (row) {
+              return row.map(csvCell).join(",");
+            })
+            .join("\n");
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+          a.download = "learning-supports-roster.csv";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }
+
+        // ---- printable support plans (one page per student) --------------------
+        function printPlans() {
+          var root = $("printRoot");
+          root.textContent = "";
+          var any = false;
+          S.sections.forEach(function (sec) {
+            recordsFor(sec).forEach(function (r) {
+              any = true;
+              var d = document.createElement("div");
+              d.className = "plan";
+              var h = document.createElement("h2");
+              h.textContent =
+                "Learning Support Plan — " + r.initials + " (Section " + r.section + ")";
+              d.appendChild(h);
+              var meta = document.createElement("p");
+              meta.textContent =
+                "WIDA level: " +
+                (r.widaLevel || 0) +
+                " — " +
+                widaName(r.widaLevel) +
+                (r.updatedAt ? " · Last updated " + String(r.updatedAt).slice(0, 10) : "");
+              d.appendChild(meta);
+              var resolved = S.resolveItems(r.widaLevel, r.iepItems || []);
+              var h3a = document.createElement("h3");
+              h3a.textContent = "Active accommodations (" + resolved.length + ")";
+              d.appendChild(h3a);
+              var ul = document.createElement("ul");
+              resolved.forEach(function (k) {
+                var li = document.createElement("li");
+                li.textContent = itemLabel(k);
+                ul.appendChild(li);
+              });
+              if (!resolved.length) {
+                var none = document.createElement("li");
+                none.textContent = "None assigned";
+                ul.appendChild(none);
+              }
+              d.appendChild(ul);
+              var h3b = document.createElement("h3");
+              h3b.textContent = "Assigned lessons (" + (r.lessons || []).length + ")";
+              d.appendChild(h3b);
+              var ul2 = document.createElement("ul");
+              (r.lessons || []).forEach(function (id) {
+                var li = document.createElement("li");
+                var t = lessonTitle(id);
+                li.textContent = id + (t ? " · " + t : "");
+                ul2.appendChild(li);
+              });
+              if (!(r.lessons || []).length) {
+                var none2 = document.createElement("li");
+                none2.textContent = "None assigned";
+                ul2.appendChild(none2);
+              }
+              d.appendChild(ul2);
+              root.appendChild(d);
+            });
+          });
+          if (!any) {
+            showNotice("Nothing to print yet — load a roster first.", "warn");
+            return;
+          }
+          window.print();
+        }
+
         // ---- mutations ------------------------------------------------------
         function requireKey() {
           if (!key) {
@@ -844,6 +1205,7 @@
             initials: next,
             widaLevel: Number(r.widaLevel) || 0,
             iepItems: (r.iepItems || []).slice(),
+            lessons: (r.lessons || []).slice(),
           };
           var old = { section: r.section, initials: r.initials };
           delete roster[keyOf(r.section, r.initials)];
@@ -973,6 +1335,10 @@
           Array.prototype.forEach.call(cbs, function (cb) {
             cb.checked = (r.iepItems || []).indexOf(cb.value) >= 0;
           });
+          var lcbs = document.querySelectorAll("#lessonPick .lessoncb");
+          Array.prototype.forEach.call(lcbs, function (cb) {
+            cb.checked = (r.lessons || []).indexOf(cb.value) >= 0;
+          });
           applyWidaState();
           var ov = $("overlay");
           ov.classList.add("open");
@@ -995,11 +1361,17 @@
           Array.prototype.forEach.call(cbs, function (cb) {
             if (cb.checked && !bundle[cb.value] && S.isValidKey(cb.value)) iep.push(cb.value);
           });
+          var lessons = [];
+          var lcbs = document.querySelectorAll("#lessonPick .lessoncb");
+          Array.prototype.forEach.call(lcbs, function (cb) {
+            if (cb.checked) lessons.push(cb.value);
+          });
           var rec = {
             section: editing.section,
             initials: editing.initials,
             widaLevel: level,
             iepItems: iep,
+            lessons: lessons,
           };
           upsertLocal(rec);
           renderSections();
@@ -1043,9 +1415,16 @@
           if (e.key === "Enter") $("keyGo").click();
         });
 
+        $("exportCsv").addEventListener("click", exportCsv);
+        $("printPlans").addEventListener("click", printPlans);
+
         // ---- boot -----------------------------------------------------------
         $("key").value = key;
         renderSections(); // always render the shell first (never blank)
+        loadLessonIndex().then(function () {
+          buildLessonPick();
+          renderSections(); // re-render so bulk pickers have the lesson list
+        });
         if (key) load();
       })();
     </script>

@@ -315,7 +315,10 @@ test.describe("Learning Supports v2 — student roster path", () => {
   test("passive-only assignment keeps the identity chip reachable", async ({ page }) => {
     await stubApi(page, { ok: true, items: ["text-large", "tint"] });
     await page.addInitScript(() =>
-      localStorage.setItem("ewl-supports:v2:me", JSON.stringify({ section: "601", initials: "MR" })),
+      localStorage.setItem(
+        "ewl-supports:v2:me",
+        JSON.stringify({ section: "601", initials: "MR" }),
+      ),
     );
     await page.goto(TEST_LESSON_PATH, { waitUntil: "networkidle" });
 
@@ -348,7 +351,10 @@ test.describe("Learning Supports v2 — student roster path", () => {
     await page.route("**/api/supports/**", (route) => route.abort());
     // Device remembers a student AND has legacy v1 prefs granting calculator.
     await page.addInitScript(() => {
-      localStorage.setItem("ewl-supports:v2:me", JSON.stringify({ section: "601", initials: "JN" }));
+      localStorage.setItem(
+        "ewl-supports:v2:me",
+        JSON.stringify({ section: "601", initials: "JN" }),
+      );
       localStorage.setItem(
         "ewl-supports:v1:preferences",
         JSON.stringify({ profiles: { calculator: true }, language: "en", speechRate: 1 }),
@@ -360,6 +366,89 @@ test.describe("Learning Supports v2 — student roster path", () => {
     const dock = page.locator("[data-ewl-supports-tools]");
     await expect(dock).toBeVisible();
     await expect(dock.locator('[data-tool="calculator"]')).toBeVisible();
+  });
+
+  test("adaptive accommodations change lesson behavior automatically (v2.3)", async ({ page }) => {
+    await stubApi(page, {
+      ok: true,
+      items: ["time", "fewer", "iep-chunk-text", "iep-positive-praise"],
+      lessons: ["1-1", "1-2"],
+    });
+    await page.addInitScript(() =>
+      localStorage.setItem(
+        "ewl-supports:v2:me",
+        JSON.stringify({ section: "601", initials: "JN" }),
+      ),
+    );
+    await page.goto(TEST_LESSON_PATH, { waitUntil: "networkidle" });
+
+    // Behavior modes applied with no student action.
+    await expect(page.locator("body")).toHaveClass(/ewl-adapt-extended-time/);
+    await expect(page.locator("body")).toHaveClass(/ewl-adapt-chunk/);
+    await expect(page.locator("body")).toHaveClass(/ewl-adapt-reduced-workload/);
+    await expect(page.locator(".ewl-adapt-time-pill")).toBeVisible();
+    await expect(page.locator(".ewl-adapt-workload-pill")).toBeVisible();
+
+    // Engine handshake flag for adjusted workload.
+    const adapt = await page.evaluate(() => (window as any).EWLAdapt);
+    expect(adapt.reducedWorkload).toBe(true);
+    expect(adapt.extendedTime).toBe(true);
+
+    // "My Lessons" chip follows the student; current lesson is marked.
+    const chip = page.locator(".ewl-supports-mylessons-chip");
+    await expect(chip).toBeVisible();
+    await expect(chip).toContainText("My Lessons (2)");
+    await expect(chip).toHaveClass(/is-here/);
+    await chip.click();
+    const pop = page.locator(".ewl-supports-mylessons-pop");
+    await expect(pop).toBeVisible();
+    await expect(pop.locator("strong")).toContainText("you are here");
+    await expect(pop.locator('a[href="/lessons/1-2/"]')).toBeVisible();
+  });
+
+  test("accommodation dock tools: highlighter, organizer, directions (v2.3)", async ({ page }) => {
+    await stubApi(page, {
+      ok: true,
+      items: ["iep-highlighter", "iep-graphic-organizer", "iep-repeat-directions"],
+      lessons: [],
+    });
+    await page.addInitScript(() =>
+      localStorage.setItem(
+        "ewl-supports:v2:me",
+        JSON.stringify({ section: "601", initials: "JN" }),
+      ),
+    );
+    await page.goto(TEST_LESSON_PATH, { waitUntil: "networkidle" });
+
+    const dock = page.locator("[data-ewl-supports-tools]");
+    await expect(dock.locator('[data-tool="highlighter"]')).toBeVisible();
+    await expect(dock.locator('[data-tool="organizer"]')).toBeVisible();
+    await expect(dock.locator('[data-tool="directions"]')).toBeVisible();
+    await expect(dock.locator('[data-tool="calculator"]')).toBeHidden();
+
+    // Organizer opens its four-square panel and persists to this device.
+    await dock.locator('[data-tool="organizer"]').click();
+    const panel = page.locator(".ewl-adapt-panel");
+    await expect(panel).toBeVisible();
+    await expect(panel.locator("textarea")).toHaveCount(4);
+    await panel.locator("textarea").first().fill("36 and 48");
+    const saved = await page.evaluate(() => localStorage.getItem("ewl-adapt-organizer:1-1"));
+    expect(JSON.parse(saved!).know).toBe("36 and 48");
+    await panel.locator(".ewl-adapt-panel-close").click();
+    await expect(panel).toBeHidden();
+
+    // Highlighter toggles active state on its dock button.
+    const hl = dock.locator('[data-tool="highlighter"]');
+    await hl.click();
+    await expect(hl).toHaveClass(/is-active/);
+    await expect(page.locator("body")).toHaveClass(/ewl-adapt-highlighting/);
+    await hl.click();
+    await expect(hl).not.toHaveClass(/is-active/);
+
+    // Directions helper opens with a read-aloud control.
+    await dock.locator('[data-tool="directions"]').click();
+    await expect(page.locator(".ewl-adapt-panel")).toBeVisible();
+    await expect(page.locator(".ewl-adapt-dir-row")).toBeVisible();
   });
 
   test("self-pick modal has zero serious/critical WCAG violations", async ({ page }) => {

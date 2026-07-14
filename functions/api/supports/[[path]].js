@@ -239,8 +239,35 @@ function cleanUpdatedAt(v) {
   return new Date().toISOString();
 }
 
+// Assigned lessons: canonical lesson ids only (e.g. "3-2"), de-duped, capped.
+// Lesson ids carry no accommodation information, so they may ride the public
+// /for read alongside the generic tool keys.
+const LESSON_ID_RE = /^\d+-\d+$/;
+function cleanLessonsJson(v) {
+  if (!Array.isArray(v)) return "[]";
+  const seen = new Set();
+  for (const item of v.slice(0, 96)) {
+    const id = typeof item === "string" ? item.trim() : "";
+    if (LESSON_ID_RE.test(id)) seen.add(id);
+  }
+  return JSON.stringify([...seen]);
+}
+function parseLessons(s) {
+  try {
+    const arr = JSON.parse(s || "[]");
+    return Array.isArray(arr)
+      ? arr.filter((x) => typeof x === "string" && LESSON_ID_RE.test(x))
+      : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+// Once per isolate: CREATE covers fresh databases; the ALTER migrates a
+// pre-v2.3 table (duplicate-column error is expected and swallowed).
+let schemaEnsured = false;
 async function ensureSchema(db) {
-  // Idempotent: safe to call on every request.
+  if (schemaEnsured) return;
   await db
     .prepare(
       `CREATE TABLE IF NOT EXISTS supports_roster (
@@ -248,11 +275,18 @@ async function ensureSchema(db) {
         initials   TEXT NOT NULL,
         wida_level INTEGER DEFAULT 0,
         iep_items  TEXT DEFAULT '[]',
+        lessons    TEXT DEFAULT '[]',
         updated_at TEXT,
         PRIMARY KEY (section, initials)
       )`,
     )
     .run();
+  try {
+    await db.prepare("ALTER TABLE supports_roster ADD COLUMN lessons TEXT DEFAULT '[]'").run();
+  } catch (e) {
+    /* column already exists */
+  }
+  schemaEnsured = true;
 }
 
 // Gating mirrors progress: no key configured -> not-configured; else compare.
@@ -268,6 +302,8 @@ function rowToEntry(r) {
     initials: r.initials,
     widaLevel: Number(r.wida_level) || 0,
     iepItems: parseIepItems(r.iep_items),
+    lessons: parseLessons(r.lessons),
+    updatedAt: r.updated_at || null,
   };
 }
 
@@ -324,7 +360,7 @@ export async function onRequest(context) {
     // items:null = "backend can't answer" (client keeps current state);
     // items:[]  = confirmed "nothing assigned" (client may clear).
     if (!env.DB || !section || !initials) {
-      return json({ ok: true, items: null });
+      return json({ ok: true, items: null, lessons: null });
     }
     try {
       await ensureSchema(env.DB);
@@ -335,21 +371,23 @@ export async function onRequest(context) {
         return json({ ok: false, error: "rate-limited" }, 429);
       }
       const row = await env.DB.prepare(
-        "SELECT wida_level, iep_items FROM supports_roster WHERE section = ? AND initials = ?",
+        "SELECT wida_level, iep_items, lessons FROM supports_roster WHERE section = ? AND initials = ?",
       )
         .bind(section, initials)
         .first();
       if (!row) {
         // Unknown (section, initials) — count the miss to throttle enumeration.
         await noteGuardHit(env.DB, ip, bucket);
-        return json({ ok: true, items: [] });
+        return json({ ok: true, items: [], lessons: [] });
       }
       return json({
         ok: true,
         items: resolveItemsServer(row.wida_level, parseIepItems(row.iep_items)),
+        // Lesson ids only — generic navigation data, no accommodation info.
+        lessons: parseLessons(row.lessons),
       });
     } catch (e) {
-      return json({ ok: true, items: null });
+      return json({ ok: true, items: null, lessons: null });
     }
   }
 
@@ -389,16 +427,17 @@ export async function onRequest(context) {
         if (len > 512 * 1024) return json({ ok: false, error: "payload-too-large" }, 413);
         const body = await request.json().catch(() => null);
         const entries = (body && Array.isArray(body.entries) && body.entries) || [];
-        // Field-presence-aware upsert: an entry that OMITS widaLevel/iepItems
-        // (roster maintenance — import, rename, add-initials) must NOT clobber
-        // an existing assignment back to defaults. Only fields explicitly sent
-        // overwrite; flags 6/7 mark presence.
+        // Field-presence-aware upsert: an entry that OMITS widaLevel/iepItems/
+        // lessons (roster maintenance — import, rename, add-initials) must NOT
+        // clobber an existing assignment back to defaults. Only fields
+        // explicitly sent overwrite; flags 6/7/9 mark presence.
         const stmt = env.DB.prepare(
-          `INSERT INTO supports_roster (section, initials, wida_level, iep_items, updated_at)
-             VALUES (?1, ?2, ?3, ?4, ?5)
+          `INSERT INTO supports_roster (section, initials, wida_level, iep_items, updated_at, lessons)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?8)
            ON CONFLICT(section, initials) DO UPDATE SET
              wida_level = CASE WHEN ?6 = 1 THEN excluded.wida_level ELSE supports_roster.wida_level END,
              iep_items  = CASE WHEN ?7 = 1 THEN excluded.iep_items  ELSE supports_roster.iep_items  END,
+             lessons    = CASE WHEN ?9 = 1 THEN excluded.lessons    ELSE supports_roster.lessons    END,
              updated_at = COALESCE(excluded.updated_at, supports_roster.updated_at)`,
         );
         const batch = [];
@@ -409,6 +448,7 @@ export async function onRequest(context) {
           if (!section || !initials) continue; // skip entries missing either key
           const hasWida = e.widaLevel !== undefined && e.widaLevel !== null;
           const hasIep = Array.isArray(e.iepItems);
+          const hasLessons = Array.isArray(e.lessons);
           batch.push(
             stmt.bind(
               section,
@@ -418,6 +458,8 @@ export async function onRequest(context) {
               cleanUpdatedAt(e.updatedAt),
               hasWida ? 1 : 0,
               hasIep ? 1 : 0,
+              cleanLessonsJson(e.lessons),
+              hasLessons ? 1 : 0,
             ),
           );
         }

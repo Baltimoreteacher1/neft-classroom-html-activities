@@ -111,6 +111,7 @@
   let initialized = false;
   let activeLessonId = null;
   let manifestData = null;
+  let fullManifestData = null; // whole manifest — titles for assigned-lesson lists
   let activeProfiles = {};
   let activeLanguage = "en";
   let activeSpeechRate = 1.0;
@@ -285,6 +286,7 @@
       console.error("Learning supports: Failed to load manifest.", lastErr);
       return;
     }
+    fullManifestData = data; // kept for "My Lessons" titles (assigned lessons)
     manifestData = data[activeLessonId];
     if (!manifestData) {
       console.warn(`Learning supports: No manifest data for lesson ${activeLessonId}. Skipping.`);
@@ -819,6 +821,32 @@
     // Executive function / self-regulation
     addTool("checklist", "✅ Checklist", () => togglePanel("checklist"), "My task checklist");
     addTool("break", "🌿 Take a Break", () => togglePanel("break"), "Calm breathing break");
+    // v2.3 accommodation tools — behavior lives in supports-adaptations.js,
+    // lazy-loaded on first use so students without them never pay the bytes.
+    const adaptToolClick = (tool) => (e) => {
+      const btn = e.currentTarget || e.target; // capture before the async hop
+      loadAdaptations().then((mod) => {
+        if (mod) mod.toggleTool(tool, btn);
+      });
+    };
+    addTool(
+      "directions",
+      "🧭 Directions",
+      adaptToolClick("directions"),
+      "See and hear the directions again, step by step",
+    );
+    addTool(
+      "highlighter",
+      "🖍 Highlight",
+      adaptToolClick("highlighter"),
+      "Highlight important words — tap a highlight to remove it",
+    );
+    addTool(
+      "organizer",
+      "🗂 Organizer",
+      adaptToolClick("organizer"),
+      "Four-square problem-solving organizer",
+    );
 
     // Student Notepad tab Trigger
     const notepadBtn = document.createElement("button");
@@ -2615,6 +2643,7 @@
 
     initialized = false;
     manifestData = null;
+    fullManifestData = null;
     activeLessonId = null;
   }
 
@@ -2651,6 +2680,21 @@
     break: "focus-organize",
     checkin: "focus-organize",
     translate: "language-support",
+    // v2.3 accommodation tools / adaptive lines (lockstep with schema) so the
+    // Copy-Link / SCORM bridge exports the closest coarse profile.
+    "iep-repeat-directions": "read-understand",
+    "iep-paraphrase": "read-understand",
+    "esol-simplify-language": "read-understand",
+    "esol-model-directions": "read-understand",
+    "esol-reword-directions": "read-understand",
+    "esol-read-aloud-selected": "read-understand",
+    "iep-pictures-support": "build-math",
+    "iep-highlighter": "focus-organize",
+    "iep-graphic-organizer": "express-thinking",
+    "esol-graphic-organizers": "express-thinking",
+    "iep-check-understanding": "focus-organize",
+    "esol-frequent-checks": "focus-organize",
+    "iep-movement": "focus-organize",
     // IEP/ESOL document lines that duplicate a tool (lockstep with schema).
     "iep-tts": "read-understand",
     "iep-word-bank": "read-understand",
@@ -2682,6 +2726,64 @@
       s.onload = () => resolve(window.EWLSupportsSchema || null);
       s.onerror = () => resolve(null);
       document.head.appendChild(s);
+    });
+  }
+
+  // Behavior-changing accommodations (extended time, chunking, adjusted
+  // workload, praise, check-in/movement nudges) + the directions/highlighter/
+  // organizer tools live in supports-adaptations.js — lazy-loaded with the same
+  // cache-token trick as the schema, only when a student actually needs it.
+  const ADAPT_TOOLS = { directions: 1, highlighter: 1, organizer: 1 };
+  let adaptationsLoading = null;
+  function loadAdaptations() {
+    if (window.EWLSupportsAdaptations) return Promise.resolve(window.EWLSupportsAdaptations);
+    if (adaptationsLoading) return adaptationsLoading;
+    adaptationsLoading = new Promise((resolve) => {
+      let url;
+      try {
+        url = new URL("supports-adaptations.js", SCRIPT_URL).href;
+        const token = new URL(SCRIPT_URL).search;
+        if (token) url += token;
+      } catch (_e) {
+        url = "/assets/learning-supports/supports-adaptations.js";
+      }
+      const s = document.createElement("script");
+      s.src = url;
+      s.onload = () => resolve(window.EWLSupportsAdaptations || null);
+      s.onerror = () => resolve(null);
+      document.head.appendChild(s);
+    });
+    return adaptationsLoading;
+  }
+
+  // Apply/refresh the behavior adaptations for an active key set. Loads the
+  // module on first need; once loaded it is always re-applied (so clearing an
+  // assignment also clears its adaptations). Fail-soft: no module, no change.
+  function v2ApplyAdaptations(set) {
+    const keys = Object.keys(set).filter((k) => set[k]);
+    if (window.EWLSupportsAdaptations) {
+      window.EWLSupportsAdaptations.apply(keys);
+      return;
+    }
+    const schema = window.EWLSupportsSchema;
+    if (!schema) return;
+    // Nudge keys are `interactive` (they surface a dock tool) but ALSO schedule
+    // gentle reminders, so they too require the module.
+    const NUDGE_KEYS = {
+      "iep-check-understanding": 1,
+      "esol-frequent-checks": 1,
+      "iep-movement": 1,
+    };
+    const needed = schema.allItems.some(
+      (it) =>
+        set[it.key] &&
+        (it.apply === "adaptive" ||
+          NUDGE_KEYS[it.key] ||
+          (it.apply === "interactive" && ADAPT_TOOLS[it.tool])),
+    );
+    if (!needed) return;
+    loadAdaptations().then((mod) => {
+      if (mod) mod.apply(keys);
     });
   }
 
@@ -2744,7 +2846,7 @@
   // Apply a resolved item-key set: passive items take effect immediately;
   // interactive items become the ONLY buttons visible in the side dock.
   // No-ops when the taxonomy failed to load — never strip access on a fault.
-  function applyAssignedItems(keys, meLabel) {
+  function applyAssignedItems(keys, meLabel, lessons) {
     const schema = window.EWLSupportsSchema;
     if (!schema) return;
     const set = Object.create(null);
@@ -2779,15 +2881,100 @@
       const rateBtn = dock.querySelector('[data-tool="rate"]');
       if (rateBtn) rateBtn.style.display = "inline-flex";
     }
+    // Behavior adaptations (extended time, chunking, adjusted workload, praise,
+    // nudges) apply automatically from the same key set — no student action.
+    v2ApplyAdaptations(set);
     // In teacher mode the "Prepare Supports" side tab shares the mid-right
     // edge; shift the preview rail inward so the two never overlap.
     dock.style.right = isTeacherMode() ? "52px" : "";
     v2EnsureIdentityChip(dock, meLabel);
+    v2EnsureMyLessonsChip(dock, lessons);
     // Keep the rail visible whenever an identity is applied — even a
     // passive-only (or empty) assignment must leave the "👤" switch chip
     // reachable, or a shared-device student inherits the wrong identity with
     // no way out.
     dock.hidden = !anyInteractive && !meLabel;
+  }
+
+  // "📚 My Lessons" chip: the teacher-assigned lesson list follows the student
+  // into every lesson. Chip shows the count; tapping it opens a small list of
+  // links (current lesson marked). Lesson ids are generic — no plan wording.
+  let myLessonsPop = null;
+  function v2LessonTitle(id) {
+    const entry = fullManifestData && fullManifestData[id];
+    return entry && entry.title ? id + " · " + entry.title : "Lesson " + id;
+  }
+  function v2EnsureMyLessonsChip(dock, lessons) {
+    const inner = dock.querySelector(".ewl-supports-tools-inner");
+    if (!inner) return;
+    let chip = inner.querySelector(".ewl-supports-mylessons-chip");
+    const list = Array.isArray(lessons) ? lessons.filter((id) => /^\d+-\d+$/.test(id)) : [];
+    if (!list.length) {
+      if (chip) chip.remove();
+      if (myLessonsPop) {
+        myLessonsPop.remove();
+        myLessonsPop = null;
+      }
+      return;
+    }
+    if (!chip) {
+      chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "ewl-supports-mylessons-chip";
+      chip.title = "Lessons your teacher picked for you";
+      chip.addEventListener("click", () => v2ToggleMyLessons(chip));
+      const me = inner.querySelector(".ewl-supports-me-chip");
+      inner.insertBefore(chip, me ? me.nextSibling : inner.firstChild);
+    }
+    chip.textContent = "📚 My Lessons (" + list.length + ")";
+    chip.dataset.lessons = JSON.stringify(list);
+    const here = activeLessonId;
+    chip.classList.toggle("is-here", !!here && list.indexOf(here) !== -1);
+  }
+  function v2ToggleMyLessons(chip) {
+    if (myLessonsPop) {
+      myLessonsPop.remove();
+      myLessonsPop = null;
+      chip.setAttribute("aria-expanded", "false");
+      return;
+    }
+    let list = [];
+    try {
+      list = JSON.parse(chip.dataset.lessons || "[]");
+    } catch (_e) {
+      list = [];
+    }
+    myLessonsPop = document.createElement("div");
+    myLessonsPop.className = "ewl-supports-mylessons-pop";
+    myLessonsPop.setAttribute("role", "dialog");
+    myLessonsPop.setAttribute("aria-label", "My lessons");
+    const h = document.createElement("h3");
+    h.textContent = "📚 My Lessons";
+    myLessonsPop.appendChild(h);
+    const ul = document.createElement("ul");
+    list.forEach((id) => {
+      const li = document.createElement("li");
+      if (id === activeLessonId) {
+        const strong = document.createElement("strong");
+        strong.textContent = v2LessonTitle(id) + " — you are here";
+        li.appendChild(strong);
+      } else {
+        const a = document.createElement("a");
+        a.href = "/lessons/" + encodeURIComponent(id) + "/";
+        a.textContent = v2LessonTitle(id);
+        li.appendChild(a);
+      }
+      ul.appendChild(li);
+    });
+    myLessonsPop.appendChild(ul);
+    const close = document.createElement("button");
+    close.type = "button";
+    close.className = "ewl-supports-btn-action";
+    close.textContent = "Close";
+    close.addEventListener("click", () => v2ToggleMyLessons(chip));
+    myLessonsPop.appendChild(close);
+    document.body.appendChild(myLessonsPop);
+    chip.setAttribute("aria-expanded", "true");
   }
 
   // Small "who am I" chip at the top of the student rail: shows the picked
@@ -2989,14 +3176,14 @@
     // /for returns a RESOLVED flat item list (WIDA bundle folded in server-side
     // for privacy). Older caches stored {widaLevel, iepItems} — resolve those
     // locally for back-compat.
+    const cached = v2GetCached(me.section, me.initials);
     const cachedItems = (function () {
-      const c = v2GetCached(me.section, me.initials);
-      if (!c) return null;
-      if (Array.isArray(c.items)) return c.items;
-      return schema.resolveItems(c.widaLevel, c.iepItems);
+      if (!cached) return null;
+      if (Array.isArray(cached.items)) return cached.items;
+      return schema.resolveItems(cached.widaLevel, cached.iepItems);
     })();
     if (cachedItems) {
-      applyAssignedItems(cachedItems, label);
+      applyAssignedItems(cachedItems, label, cached && cached.lessons);
     }
     const fresh = await v2FetchJSON(
       "/for?section=" +
@@ -3005,8 +3192,9 @@
         encodeURIComponent(me.initials),
     );
     if (fresh && fresh.ok && Array.isArray(fresh.items)) {
-      v2SetCached(me.section, me.initials, { items: fresh.items });
-      applyAssignedItems(fresh.items, label);
+      const lessons = Array.isArray(fresh.lessons) ? fresh.lessons : [];
+      v2SetCached(me.section, me.initials, { items: fresh.items, lessons });
+      applyAssignedItems(fresh.items, label, lessons);
     }
     // fetch failed + no cache -> leave the lesson exactly as v1 rendered it.
   }
@@ -3241,7 +3429,40 @@
     const current = v2AssignState.roster[v2AssignState.initials] || {
       widaLevel: 0,
       iepItems: [],
+      lessons: [],
     };
+    // Working copy of the student's assigned-lesson list; the checkbox below
+    // toggles THIS lesson in/out. The full 64-lesson picker lives in the
+    // Supports Manager console.
+    const curLessons = Array.isArray(current.lessons)
+      ? current.lessons.filter((id) => /^\d+-\d+$/.test(id))
+      : [];
+
+    if (activeLessonId) {
+      const lessonsRow = document.createElement("div");
+      lessonsRow.className = "ewl-supports-assign-wida ewl-supports-assign-lessonrow";
+      const lessonLbl = document.createElement("label");
+      const lessonCb = document.createElement("input");
+      lessonCb.type = "checkbox";
+      lessonCb.id = "ewl-assign-this-lesson";
+      lessonCb.checked = curLessons.indexOf(activeLessonId) !== -1;
+      lessonCb.addEventListener("change", () => {
+        const i = curLessons.indexOf(activeLessonId);
+        if (lessonCb.checked && i === -1) curLessons.push(activeLessonId);
+        else if (!lessonCb.checked && i !== -1) curLessons.splice(i, 1);
+      });
+      lessonLbl.appendChild(lessonCb);
+      const lessonTxt = document.createElement("span");
+      lessonTxt.textContent =
+        " 📚 Assign THIS lesson (" +
+        activeLessonId +
+        ") to " +
+        v2AssignState.initials +
+        (curLessons.length ? " — " + curLessons.length + " lesson(s) assigned so far" : "");
+      lessonLbl.appendChild(lessonTxt);
+      lessonsRow.appendChild(lessonLbl);
+      root.appendChild(lessonsRow);
+    }
 
     // WIDA level select.
     const widaRow = document.createElement("div");
@@ -3340,7 +3561,13 @@
     saveBtn.textContent = "💾 Save for " + v2AssignState.initials;
     saveBtn.addEventListener("click", async () => {
       const c = collect();
-      const ok = await v2SaveEntry(v2AssignState.section, v2AssignState.initials, c.level, c.iep);
+      const ok = await v2SaveEntry(
+        v2AssignState.section,
+        v2AssignState.initials,
+        c.level,
+        c.iep,
+        curLessons,
+      );
       status.textContent = ok
         ? "Saved ✓ — syncs to every lesson"
         : "Save failed — check the teacher key";
@@ -3349,6 +3576,7 @@
           initials: v2AssignState.initials,
           widaLevel: c.level,
           iepItems: c.iep,
+          lessons: curLessons.slice(),
         };
         // Keep the hidden bridge form in lockstep so Copy Personalized Link /
         // Download SCORM (below) export what was just saved, not stale state.
@@ -3362,19 +3590,21 @@
     root.appendChild(actions);
   }
 
-  async function v2SaveEntry(section, initials, widaLevel, iepItems) {
+  async function v2SaveEntry(section, initials, widaLevel, iepItems, lessons) {
+    const entry = { section, initials, widaLevel, iepItems, updatedAt: new Date().toISOString() };
+    // Presence-aware: only send `lessons` when the caller manages them, so a
+    // supports-only save can never clobber a lesson list written elsewhere.
+    if (Array.isArray(lessons)) entry.lessons = lessons;
     const res = await v2FetchJSON("/roster", {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-teacher-key": v2TeacherKey() },
-      body: JSON.stringify({
-        entries: [{ section, initials, widaLevel, iepItems, updatedAt: new Date().toISOString() }],
-      }),
+      body: JSON.stringify({ entries: [entry] }),
     });
     return !!(res && res.ok);
   }
 
   const EWLLearningSupports = {
-    version: "2.0.0",
+    version: "2.3.0",
     init,
     destroy,
     parseSettings,
