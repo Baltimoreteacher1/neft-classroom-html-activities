@@ -577,6 +577,38 @@
     panel = el("section", "ctw-panel");
     panel.id = "curriculum-teacher-workflow";
     panel.setAttribute("aria-label", "Teacher curriculum command center");
+
+    // Quick-links row — the FIRST thing a teacher sees on the hub: the full
+    // Teacher Tools hub and the selected lesson's printable packet. The
+    // printables button resolves state.selected at click time so it always
+    // opens the packet for whatever lesson is currently chosen.
+    var quick = el("div", "ctw-quicklinks");
+    quick.setAttribute("aria-label", "Teacher quick links");
+    var toolsCard = link("", "/teacher-tools/", "ctw-ql-card");
+    toolsCard.appendChild(el("span", "ctw-ql-icon", "🧰"));
+    var toolsBody = el("span", "ctw-ql-body");
+    toolsBody.appendChild(el("strong", null, "Teacher Tools Hub"));
+    toolsBody.appendChild(el("span", null, "Every teacher tool — plan, teach live, data, Canvas"));
+    toolsCard.appendChild(toolsBody);
+    quick.appendChild(toolsCard);
+    var printCard = button(
+      "",
+      function () {
+        var id = state.selected || (lessons[0] && lessons[0].id);
+        if (id) window.open("/lessons/" + id + "/printable.html", "_blank");
+      },
+      "ctw-ql-card",
+    );
+    printCard.appendChild(el("span", "ctw-ql-icon", "🖨️"));
+    var printBody = el("span", "ctw-ql-body");
+    printBody.appendChild(el("strong", null, "Printable Resources"));
+    printBody.appendChild(
+      el("span", "ctw-ql-sub", "Print the full packet for the selected lesson"),
+    );
+    printCard.appendChild(printBody);
+    quick.appendChild(printCard);
+    panel.appendChild(quick);
+
     var hero = el("header", "ctw-header");
     hero.appendChild(el("p", "ctw-kicker", "Teacher Command Center · Local & private"));
     hero.appendChild(el("h2", null, "Plan it. Teach it. Launch it."));
