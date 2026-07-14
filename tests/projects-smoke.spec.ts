@@ -23,6 +23,7 @@
  * they are not project defects.
  */
 import { test, expect } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 
 const UNITS = [
   "unit-1",
@@ -117,7 +118,8 @@ for (const route of ROUTES) {
           document.body?.dataset.goldInit === "1" &&
           document.body?.dataset.pubInit === "1" &&
           document.body?.dataset.vizInit === "1" &&
-          document.body?.dataset.publicationInit === "1",
+          document.body?.dataset.publicationInit === "1" &&
+          document.body?.dataset.awardInit === "1",
         { timeout: 10_000 },
       );
 
@@ -245,6 +247,36 @@ for (const route of ROUTES) {
       expect(workspace.cards, `math workspaces missing on ${route.url}`).toBeGreaterThan(0);
       expect(workspace.inputs, `math workspace inputs missing on ${route.url}`).toBeGreaterThan(4);
 
+      // Community modeling contract: every project names the mathematics and
+      // language target and collects real-client, two-model, critique,
+      // revision, defense, and transfer evidence.
+      const award = await page.evaluate(() => ({
+        goals: document.querySelectorAll(".cms-goals").length,
+        studio: document.querySelectorAll(".cms-studio").length,
+        languageTarget: document.querySelectorAll(".cms-goals__grid article")[1]?.textContent || "",
+        fields: document.querySelectorAll("[data-award-field]").length,
+        stages: document.querySelectorAll(".cms-stage").length,
+      }));
+      expect(award.goals, `community modeling goals missing on ${route.url}`).toBe(1);
+      expect(award.studio, `community modeling studio missing on ${route.url}`).toBe(1);
+      expect(award.languageTarget, `language target missing on ${route.url}`).toContain(
+        "Language target",
+      );
+      expect(award.fields, `award evidence fields missing on ${route.url}`).toBeGreaterThanOrEqual(
+        18,
+      );
+      expect(award.stages, `modeling stages missing on ${route.url}`).toBe(7);
+
+      const awardAccessibility = await new AxeBuilder({ page })
+        .include(".cms-goals")
+        .include(".cms-studio")
+        .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+        .analyze();
+      expect(
+        awardAccessibility.violations,
+        `Community Math Studio accessibility violations on ${route.url}`,
+      ).toEqual([]);
+
       // The submission flow must follow the page's existing EN/ES toggle,
       // rather than leaving Spanish-speaking students at an English-only end.
       await page.evaluate(() => {
@@ -301,32 +333,11 @@ for (const route of ROUTES) {
     }
 
     if (route.kind === "key") {
-      // Answer keys are teacher-gated (fail-closed): solutions stay hidden
-      // until the teacher PIN unlocks them, and the gate card must show.
-      const gateVisible = await page.locator(".akg-card").isVisible();
-      expect(gateVisible, `answer-key gate card missing on ${route.url}`).toBe(true);
-      const solutionsHidden = await page.evaluate(() => {
-        // Structure-agnostic: keys use <main class="page-shell"> or <div class="wrap">.
-        const el = Array.from(document.body.children).find(
-          (c) => !c.classList.contains("akg-card") && !["SCRIPT", "LINK"].includes(c.tagName),
-        );
-        return el ? getComputedStyle(el).visibility === "hidden" : false;
-      });
-      expect(solutionsHidden, `solutions visible without PIN on ${route.url}`).toBe(true);
-
-      // Wrong PIN stays locked.
-      await page.fill("#akg-pin", "wrong-pin");
-      await page.click("#akg-go");
-      expect(
-        await page.evaluate(() => document.documentElement.classList.contains("akg-unlocked")),
-        `wrong PIN unlocked the answer key on ${route.url}`,
-      ).toBe(false);
-
-      // Correct PIN unlocks. (Client-side casual gate; the PIN also lives in
-      // assets/curriculum-enhancements.js — keep in sync.)
-      await page.fill("#akg-pin", "TeacherNeft");
-      await page.click("#akg-go");
+      // Production authorization is enforced by Cloudflare middleware before
+      // this HTML is served. Browser code contains no PIN or credential; once
+      // a local preview loads the page, the presentation layer reveals it.
       await page.waitForFunction(() => document.documentElement.classList.contains("akg-unlocked"));
+      await expect(page.locator("#akg-pin, .akg-card")).toHaveCount(0);
     }
 
     // Exercise interactivity: fire input/change on every field and click every
@@ -397,6 +408,34 @@ test("Publication Studio evidence persists locally and fits a phone viewport", a
     scroll: element.scrollWidth,
   }));
   expect(widths.scroll, "Publication Studio overflows at 360px").toBeLessThanOrEqual(widths.client);
+});
+
+test("Community Math Studio evidence persists and transfers without phone overflow", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 360, height: 760 });
+  const route = "/math/unit-5/projects/version-a/";
+  await page.goto(route, { waitUntil: "load" });
+  await page.waitForFunction(() => document.body?.dataset.awardInit === "1");
+  await page.locator('.gold-level-option[data-level="1"]').click();
+  await page.evaluate(() => {
+    const field = document.querySelector<HTMLTextAreaElement>('[data-award-field="assumptions"]');
+    if (!field) throw new Error("assumptions evidence field missing");
+    field.value = "The design assumes the measured lengths are accurate to the nearest inch.";
+    field.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await page.reload({ waitUntil: "load" });
+  await page.waitForFunction(() => document.body?.dataset.awardInit === "1");
+  expect(await page.locator('[data-award-field="assumptions"]').inputValue()).toContain(
+    "nearest inch",
+  );
+  const widths = await page.locator(".cms-studio").evaluate((element) => ({
+    client: element.clientWidth,
+    scroll: element.scrollWidth,
+  }));
+  expect(widths.scroll, "Community Math Studio overflows at 360px").toBeLessThanOrEqual(
+    widths.client,
+  );
 });
 
 test("project level is selected once, hidden, and locked across reloads", async ({ page }) => {

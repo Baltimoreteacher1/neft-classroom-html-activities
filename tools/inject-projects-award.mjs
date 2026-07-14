@@ -1,0 +1,55 @@
+#!/usr/bin/env node
+
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const DRY_RUN = process.argv.includes("--dry-run");
+const units = [...Array.from({ length: 10 }, (_, index) => `unit-${index + 1}`), "statistics"];
+const versions = ["version-a", "version-b"];
+const head = [
+  "    <!-- projects-award-head:begin (Community Math Studio — tools/inject-projects-award.mjs) -->",
+  '    <link rel="stylesheet" href="/shared/projects/projects-award.css?v=20260714" />',
+  "    <!-- projects-award-head:end -->",
+].join("\n");
+const body = [
+  "  <!-- projects-award-body:begin (Community Math Studio — tools/inject-projects-award.mjs) -->",
+  '  <script src="/shared/projects/projects-award.js?v=20260714" defer></script>',
+  "  <!-- projects-award-body:end -->",
+].join("\n");
+const startMarkers = ["projects-award-head:begin", "projects-award-body:begin"];
+
+function stripExisting(html) {
+  return html
+    .replace(/\s*<!-- projects-award-head:begin[\s\S]*?<!-- projects-award-head:end -->\s*/g, "\n")
+    .replace(/\s*<!-- projects-award-body:begin[\s\S]*?<!-- projects-award-body:end -->\s*/g, "\n");
+}
+
+function inject(relativePath) {
+  const file = path.join(ROOT, relativePath);
+  if (!fs.existsSync(file)) throw new Error(`Missing project page: ${relativePath}`);
+  const before = fs.readFileSync(file, "utf8");
+  let after = stripExisting(before);
+  const headIndex = after.lastIndexOf("</head>");
+  const bodyIndex = after.lastIndexOf("</body>");
+  if (headIndex === -1 || bodyIndex === -1) throw new Error(`Missing HTML closer: ${relativePath}`);
+  after = `${after.slice(0, headIndex)}${head}\n${after.slice(headIndex)}`;
+  const updatedBodyIndex = after.lastIndexOf("</body>");
+  after = `${after.slice(0, updatedBodyIndex)}${body}\n${after.slice(updatedBodyIndex)}`;
+  for (const marker of startMarkers)
+    if (after.split(marker).length - 1 !== 1)
+      throw new Error(`Duplicate marker ${marker}: ${relativePath}`);
+  if (after === before) return false;
+  if (!DRY_RUN) fs.writeFileSync(file, after);
+  return true;
+}
+
+let changed = 0;
+for (const unit of units)
+  for (const version of versions)
+    if (inject(`math/${unit}/projects/${version}/index.html`)) changed += 1;
+
+console.log(
+  `Community Math Studio injection ${DRY_RUN ? "would update" : "updated"} ${changed} of 22 project pages.`,
+);

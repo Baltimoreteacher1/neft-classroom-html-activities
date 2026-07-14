@@ -230,6 +230,10 @@
     var checked = checks.filter(function (box) {
       return box.checked;
     });
+    var awardEvidence =
+      window.NeftAwardStudio && typeof window.NeftAwardStudio.getEvidence === "function"
+        ? window.NeftAwardStudio.getEvidence()
+        : null;
     // biome-ignore format: compact policy table keeps this focused browser file under the project line cap.
     return [
       { key: "work", ready: substantive.length >= 3, count: substantive.length, en: "Project work", es: "Trabajo del proyecto", detailEn: substantive.length + " completed responses", detailEs: substantive.length + " respuestas completas", target: work.find(function (field) { return !(field.value || "").trim(); }) },
@@ -237,6 +241,7 @@
       { key: "research", ready: records.length === 0 || readyResearch.length === records.length, optional: records.length === 0, count: readyResearch.length, en: "Cited research", es: "Investigación citada", detailEn: records.length ? readyResearch.length + " of " + records.length + " sources ready" : "Not used in this project", detailEs: records.length ? readyResearch.length + " de " + records.length + " fuentes listas" : "No se usa en este proyecto", target: records.find(function (record) { return researchStatus(record).level !== "ready"; }) },
       { key: "rubric", ready: rubricRows === 0 || ratings >= rubricRows, optional: rubricRows === 0, count: ratings, en: "Rubric self-check", es: "Autoevaluación", detailEn: rubricRows ? ratings + " of " + rubricRows + " criteria rated" : "Not used in this project", detailEs: rubricRows ? ratings + " de " + rubricRows + " criterios evaluados" : "No se usa en este proyecto", target: document.querySelector(".pub-selfassess") },
       { key: "checklist", ready: checks.length === 0 || checked.length === checks.length, optional: checks.length === 0, count: checked.length, en: "Project checklist", es: "Lista del proyecto", detailEn: checks.length ? checked.length + " of " + checks.length + " items checked" : "Not used in this project", detailEs: checks.length ? checked.length + " de " + checks.length + " elementos marcados" : "No se usa en este proyecto", target: checks.find(function (box) { return !box.checked; }) },
+      { key: "modeling", ready: Boolean(awardEvidence && awardEvidence.completion.ready), optional: !awardEvidence, count: awardEvidence ? awardEvidence.completion.completed : 0, en: "Modeling + revision evidence", es: "Evidencia de modelación + revisión", detailEn: awardEvidence ? awardEvidence.completion.completed + " of " + awardEvidence.completion.total + " evidence parts ready" : "Not used in this project", detailEs: awardEvidence ? awardEvidence.completion.completed + " de " + awardEvidence.completion.total + " partes listas" : "No se usa en este proyecto", target: document.querySelector(".cms-studio") },
     ];
   }
 

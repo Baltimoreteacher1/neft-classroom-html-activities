@@ -47,6 +47,11 @@
     "My strategy was to ___ so that ___.",
     "This shows ___ , which means ___.",
   ];
+  var GENERIC_STARTERS_ES = [
+    "Noté que ___ porque ___.",
+    "Mi estrategia fue ___ para que ___.",
+    "La evidencia ___ muestra ___, lo cual significa ___.",
+  ];
 
   function storeKey(suffix) {
     var path = "";
@@ -74,6 +79,13 @@
     var node = document.createElement(tag);
     if (className) node.className = className;
     if (text != null) node.textContent = text;
+    return node;
+  }
+
+  function biEl(tag, className, en, es) {
+    var node = el(tag, className);
+    node.appendChild(el("span", "en-text", en));
+    node.appendChild(el("span", "es-text", es));
     return node;
   }
 
@@ -107,6 +119,12 @@
         watchMilestones();
       } catch (e) {}
     };
+
+    document.addEventListener("neft:award-studio-mounted", function () {
+      try {
+        buildStarters(content);
+      } catch (e) {}
+    });
 
     // publisher.json lives next to each page; a 404 / file:// failure just
     // means generic starters and no exemplar — never an error.
@@ -209,18 +227,28 @@
       area.dataset.pubStarters = "1";
 
       var list = (area.id && frames[area.id]) || frames._default || GENERIC_STARTERS;
+      var listEs = GENERIC_STARTERS_ES;
       if (!list || !list.length) return;
 
       var wrap = el("div", "pub-starters no-print");
-      var label = el("span", "pub-starters-label", "Need a starter?");
+      var label = biEl("span", "pub-starters-label", "Need a starter?", "¿Necesitas un comienzo?");
       wrap.appendChild(label);
 
-      list.slice(0, 3).forEach(function (frame) {
-        var chip = el("button", "pub-chip", frame.replace(/___/g, "…"));
+      list.slice(0, 3).forEach(function (frame, index) {
+        var spanishFrame = listEs[index] || listEs[0];
+        var chip = biEl(
+          "button",
+          "pub-chip",
+          frame.replace(/___/g, "…"),
+          spanishFrame.replace(/___/g, "…"),
+        );
         chip.type = "button";
-        chip.setAttribute("aria-label", "Insert sentence starter: " + frame);
+        chip.setAttribute(
+          "aria-label",
+          "Insert sentence starter / Insertar comienzo de oración: " + frame + " / " + spanishFrame,
+        );
         chip.addEventListener("click", function () {
-          var starter = frame; // keep ___ blanks visible so students see where to write
+          var starter = document.body.classList.contains("es") ? spanishFrame : frame;
           var current = area.value;
           area.value = current ? current.replace(/\s*$/, "\n") + starter : starter;
           area.focus();
@@ -253,30 +281,71 @@
     var details = el("details", "pub-exemplar");
     var summary = el("summary", "pub-exemplar-summary");
     summary.appendChild(el("span", "pub-exemplar-badge", "★"));
-    summary.appendChild(el("span", null, ex.title || "What strong work looks like"));
+    summary.appendChild(
+      biEl("span", null, ex.title || "What strong work looks like", "Cómo se ve un trabajo sólido"),
+    );
     details.appendChild(summary);
 
     var inner = el("div", "pub-exemplar-body");
-    if (ex.intro) inner.appendChild(el("p", "pub-exemplar-intro", ex.intro));
+    if (ex.intro)
+      inner.appendChild(
+        biEl(
+          "p",
+          "pub-exemplar-intro",
+          ex.intro,
+          "Un trabajo sólido muestra las cantidades, conecta representaciones, justifica una decisión y reconoce límites.",
+        ),
+      );
 
-    ex.traits.forEach(function (t) {
+    var spanishTraits = [
+      [
+        "Muestra cantidades y unidades",
+        "Escribe la operación, sustituye los valores y etiqueta las unidades.",
+        "El lector puede verificar el razonamiento.",
+      ],
+      [
+        "Conecta dos representaciones",
+        "Usa una ecuación y también una tabla, gráfica, diagrama o modelo.",
+        "Las representaciones muestran la misma relación de dos maneras.",
+      ],
+      [
+        "Justifica con evidencia",
+        "Mi recomendación es ___ porque las cantidades ___ muestran ___.",
+        "La decisión depende de evidencia matemática, no solo de una preferencia.",
+      ],
+      [
+        "Reconoce límites y revisa",
+        "Una limitación es ___. Después de recibir comentarios, revisé ___.",
+        "La revisión muestra aprendizaje y mejora el modelo.",
+      ],
+    ];
+    ex.traits.forEach(function (t, index) {
       if (!t || !t.trait) return;
+      var spanish = spanishTraits[index] || spanishTraits[0];
       var card = el("div", "pub-trait");
-      card.appendChild(el("div", "pub-trait-name", t.trait));
+      card.appendChild(biEl("div", "pub-trait-name", t.trait, spanish[0]));
       if (t.sample) {
-        var q = el("blockquote", "pub-trait-sample");
-        q.textContent = "“" + t.sample + "”";
+        var q = biEl(
+          "blockquote",
+          "pub-trait-sample",
+          "“" + t.sample + "”",
+          "“" + spanish[1] + "”",
+        );
         card.appendChild(q);
       }
-      if (t.why) card.appendChild(el("div", "pub-trait-why", "Why it works: " + t.why));
+      if (t.why)
+        card.appendChild(
+          biEl("div", "pub-trait-why", "Why it works: " + t.why, "Por qué funciona: " + spanish[2]),
+        );
       inner.appendChild(card);
     });
 
     inner.appendChild(
-      el(
+      biEl(
         "p",
         "pub-exemplar-note",
         "These samples come from a different project — borrow the moves, not the numbers.",
+        "Estos ejemplos vienen de otro proyecto: usa las estrategias, no los números.",
       ),
     );
     details.appendChild(inner);
@@ -596,6 +665,13 @@
             var block = "\n\nSELF-ASSESSMENT (Rate My Work)\n" + lines.join("\n");
             if (goal.trim()) block += "\n  My improvement goal: " + goal.trim();
             box.textContent += block;
+          }
+          if (
+            window.NeftAwardStudio &&
+            typeof window.NeftAwardStudio.getSummary === "function" &&
+            box.textContent.indexOf("COMMUNITY MATH STUDIO EVIDENCE") === -1
+          ) {
+            box.textContent += "\n\n" + window.NeftAwardStudio.getSummary();
           }
         }
       } catch (e) {}
