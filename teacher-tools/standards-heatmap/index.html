@@ -68,46 +68,42 @@
       }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <h1>🧠 Standards Heatmap <span class="badge">Teacher</span></h1>
     <p class="lead">
-      Per-standard (2025 MCAP) mastery from real activity results (the Math Brain
-      content graph). Complements the telemetry
+      Per-standard (2025 MCAP) mastery from real activity results (the Math Brain content graph).
+      Complements the telemetry
       <a href="/teacher-tools/mastery/">Mastery Dashboard</a>.
     </p>
     <div class="key">
-      <span
-        ><i class="sw" style="background: #bfe6c9"></i> Proficient (≥80%)</span
-      >
-      <span
-        ><i class="sw" style="background: #fde9b0"></i> Developing
-        (50–79%)</span
-      >
-      <span
-        ><i class="sw" style="background: #f8c9c5"></i> Struggling
-        (&lt;50%)</span
-      >
-      <span
-        ><i class="sw" style="background: #ececec"></i> Not yet assessed</span
-      >
+      <span><i class="sw" style="background: #bfe6c9"></i> Proficient (≥80%)</span>
+      <span><i class="sw" style="background: #fde9b0"></i> Developing (50–79%)</span>
+      <span><i class="sw" style="background: #f8c9c5"></i> Struggling (&lt;50%)</span>
+      <span><i class="sw" style="background: #ececec"></i> Not yet assessed</span>
     </div>
     <div class="panel">
+      <div
+        style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px"
+      >
+        <button id="viewDevice" type="button" aria-pressed="true">This device</button>
+        <button id="viewClass" type="button" aria-pressed="false">Class view (teacher key)</button>
+        <span id="viewMsg" class="note" style="margin: 0"></span>
+      </div>
       <div id="heatmap"></div>
     </div>
-    <p class="note">
-      Shows this device's mastery today. A class roster lights up automatically
-      once a results backend is wired — the renderer already accepts a roster.
-      Hover any cell for the standard and score.
+    <p class="note" id="heatmapNote">
+      Shows this device's mastery today. Switch to <strong>Class view</strong> with your teacher key
+      to see one row per class, rolled up live from lesson telemetry and game scores. Hover any cell
+      for the standard and score.
     </p>
 
     <h2 style="margin-top: 2rem">🎯 Assign the next step</h2>
     <p class="lead">
-      For each standard: the current mastery band and a one-click link to the
-      right activity to assign — <strong>struggling → on-ramp</strong>,
-      <strong>developing → core practice</strong>,
+      For each standard: the current mastery band and a one-click link to the right activity to
+      assign — <strong>struggling → on-ramp</strong>, <strong>developing → core practice</strong>,
       <strong>proficient → enrichment</strong>. Turns the heatmap into action.
     </p>
     <div class="panel">
@@ -119,12 +115,98 @@
     <script src="/assets/brain/brain.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        if (window.NeftBrain && NeftBrain.renderHeatmap) {
+        var LS_KEY = "neft.teacher.key";
+
+        function renderDevice() {
+          if (!(window.NeftBrain && NeftBrain.renderHeatmap)) return;
           NeftBrain.renderHeatmap("#heatmap").catch(function () {
             document.getElementById("heatmap").innerHTML =
               "<p class='note'>Mastery data unavailable (content graph not built).</p>";
           });
         }
+
+        // Bands come from the engine's own thresholds — never duplicated here.
+        function bandOf(m) {
+          var B = (window.NeftBrain && NeftBrain.Mastery && NeftBrain.Mastery.BANDS) || {
+            PROFICIENT: 0.8,
+            DEVELOPING: 0.5,
+          };
+          return m >= B.PROFICIENT ? "proficient" : m >= B.DEVELOPING ? "developing" : "struggling";
+        }
+
+        // Class view: GET /api/progress/mastery-rollup → one heatmap row per class.
+        // correctRate (games) is the primary signal; a standard with mastery
+        // events but no game attempts shows at the proficient threshold; a
+        // standard with neither stays "not yet assessed".
+        function rosterFromRollup(d) {
+          var B = (window.NeftBrain && NeftBrain.Mastery && NeftBrain.Mastery.BANDS) || {
+            PROFICIENT: 0.8,
+          };
+          return (d.sections || []).map(function (sec) {
+            var standards = {};
+            (sec.standards || []).forEach(function (s) {
+              var m = null;
+              if (s.correctRate != null) m = Number(s.correctRate);
+              else if (s.masteryCount > 0) m = B.PROFICIENT;
+              if (m == null) return;
+              standards[s.standard] = { mastery: m, band: bandOf(m) };
+            });
+            return {
+              student_key: "Class " + (sec.section || "?"),
+              mastery: { standards: standards },
+            };
+          });
+        }
+
+        function setPressed(mode) {
+          document.getElementById("viewDevice").setAttribute("aria-pressed", mode === "device");
+          document.getElementById("viewClass").setAttribute("aria-pressed", mode === "class");
+        }
+
+        function renderClass() {
+          var msg = document.getElementById("viewMsg");
+          var key = localStorage.getItem(LS_KEY);
+          if (!key) {
+            key = prompt("Teacher key:");
+            if (!key) return;
+            localStorage.setItem(LS_KEY, key.trim());
+            key = key.trim();
+          }
+          msg.textContent = "Loading class rollup…";
+          fetch("/api/progress/mastery-rollup", { headers: { "x-teacher-key": key } })
+            .then(function (r) {
+              if (r.status === 401) {
+                localStorage.removeItem(LS_KEY);
+                throw new Error("That key was rejected — try Class view again.");
+              }
+              if (r.status === 503)
+                throw new Error("Class rollup isn't configured on the server yet.");
+              return r.json();
+            })
+            .then(function (d) {
+              if (!d || !d.ok) throw new Error("Could not load the rollup.");
+              var roster = rosterFromRollup(d);
+              if (!roster.length)
+                throw new Error("No class data yet — it appears as students work.");
+              setPressed("class");
+              msg.textContent = "";
+              return NeftBrain.renderHeatmap("#heatmap", { roster: roster });
+            })
+            .catch(function (e) {
+              msg.textContent = e.message || "Class view unavailable.";
+              renderDevice();
+              setPressed("device");
+            });
+        }
+
+        document.getElementById("viewDevice").addEventListener("click", function () {
+          setPressed("device");
+          document.getElementById("viewMsg").textContent = "";
+          renderDevice();
+        });
+        document.getElementById("viewClass").addEventListener("click", renderClass);
+
+        renderDevice();
         if (window.NeftBrain && NeftBrain.renderDifferentiation) {
           NeftBrain.renderDifferentiation("#differentiation").catch(function () {
             document.getElementById("differentiation").innerHTML =

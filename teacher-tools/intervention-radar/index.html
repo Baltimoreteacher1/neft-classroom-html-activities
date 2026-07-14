@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Intervention Radar · Neft Teacher</title>
+    <meta
+      name="description"
+      content="A live, ranked watchlist of students who need help right now — struggle flags, misconceptions, and low scores from lessons and games, each with a one-click next step."
+    />
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #1fa6a2;
+        --amber: #f2c15b;
+        --coral: #d9795d;
+        --green: #19a35a;
+        --cream: #f7f4ec;
+        --line: #e4ebf2;
+        --ink: #1a2b3c;
+        --muted: #54677c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        color: var(--ink);
+        background: var(--cream);
+        line-height: 1.5;
+      }
+      .top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px 20px;
+        background: var(--navy);
+        color: #fff;
+      }
+      .top h1 {
+        font-size: 1.2rem;
+        margin: 0;
+      }
+      .live-dot {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .live-dot .d {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: pulse 1.4s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .live-dot .d {
+          animation: none;
+        }
+      }
+      .top button,
+      .top a.btn {
+        min-height: 40px;
+        padding: 8px 16px;
+        border: 0;
+        border-radius: 10px;
+        background: #fff;
+        color: var(--navy);
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 0.92rem;
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: 0 2px 10px rgba(12, 27, 42, 0.06);
+        padding: 18px;
+        margin-bottom: 18px;
+      }
+      .card h2 {
+        margin: 0 0 12px;
+        font-size: 1.1rem;
+        color: var(--navy);
+      }
+      .gate {
+        max-width: 460px;
+        margin: 40px auto;
+        text-align: center;
+      }
+      .gate .lock {
+        font-size: 2rem;
+      }
+      .gate .row {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .gate input {
+        flex: 1;
+        min-height: 44px;
+        padding: 0 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        font-size: 1rem;
+      }
+      .gate .err {
+        color: var(--coral);
+        font-weight: 600;
+        min-height: 1.4em;
+      }
+      button.primary {
+        min-height: 44px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 10px;
+        background: var(--navy);
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+      .controls {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .controls label {
+        font-weight: 600;
+        font-size: 0.92rem;
+        color: var(--muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .controls select {
+        min-height: 40px;
+        padding: 0 10px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+        font-size: 0.95rem;
+        color: var(--ink);
+      }
+      .stat-row {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+      }
+      .stat {
+        flex: 1;
+        min-width: 130px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+        text-align: center;
+      }
+      .stat b {
+        display: block;
+        font-size: 1.8rem;
+        color: var(--navy);
+      }
+      .stat span {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      ol.rows {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      ol.rows li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 12px 4px;
+        border-bottom: 1px solid var(--line);
+      }
+      ol.rows li:last-child {
+        border-bottom: 0;
+      }
+      .who {
+        min-width: 180px;
+      }
+      .who b {
+        font-size: 1.02rem;
+      }
+      .who .sec {
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin-left: 6px;
+      }
+      .what {
+        flex: 1;
+        min-width: 220px;
+        font-size: 0.94rem;
+      }
+      .what .std {
+        color: var(--muted);
+      }
+      .pill {
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .pill.struggle {
+        background: #fdf3df;
+        color: #9a6a12;
+      }
+      .pill.misconception {
+        background: #fdece7;
+        color: var(--coral);
+      }
+      .pill.hint-exhausted {
+        background: #f3e9fd;
+        color: #7a3fb8;
+      }
+      .pill.low-score {
+        background: #e8f0fb;
+        color: #2b5ea8;
+      }
+      .tagchip {
+        font-size: 0.8rem;
+        background: #f2f5f9;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 2px 9px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .when {
+        color: var(--muted);
+        font-size: 0.85rem;
+        white-space: nowrap;
+      }
+      .acts {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-left: auto;
+      }
+      .acts a,
+      .acts button {
+        font-size: 0.85rem;
+        font-weight: 700;
+        min-height: 34px;
+        padding: 4px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--navy);
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+      }
+      .acts a:hover,
+      .acts button:hover {
+        border-color: var(--teal);
+      }
+      .empty {
+        color: var(--muted);
+        text-align: center;
+        padding: 30px;
+      }
+      .status {
+        color: var(--muted);
+        text-align: center;
+        margin-top: 12px;
+        min-height: 1.4em;
+      }
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 24px;
+        transform: translateX(-50%) translateY(20px);
+        background: var(--navy);
+        color: #fff;
+        font-weight: 700;
+        padding: 10px 18px;
+        border-radius: 12px;
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          opacity 0.2s,
+          transform 0.2s;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .hidden {
+        display: none !important;
+      }
+      a:focus-visible,
+      button:focus-visible,
+      select:focus-visible,
+      input:focus-visible {
+        outline: 3px solid var(--teal);
+        outline-offset: 2px;
+      }
+    </style>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+  </head>
+  <body>
+    <div class="top">
+      <h1>🛟 Intervention Radar</h1>
+      <div style="display: flex; align-items: center; gap: 14px">
+        <span class="live-dot"
+          ><span class="d" id="liveDot"></span> <span id="liveLabel">Live</span></span
+        >
+        <button id="pauseBtn" type="button" aria-pressed="true">⏸ Pause auto-refresh</button>
+        <button id="signout" type="button" class="hidden">Sign out</button>
+      </div>
+    </div>
+
+    <!-- Teacher key gate (same key the Gradebook stores on this device) -->
+    <section class="gate card" id="gate">
+      <div class="lock">🔑</div>
+      <h2>Teacher access</h2>
+      <p>
+        Enter your teacher key to see live struggle signals. It's the
+        <code>TEACHER_KEY</code> on the Cloudflare Pages project — the same key the
+        <a href="/teacher-tools/gradebook/">Gradebook</a> uses, remembered on this device only.
+      </p>
+      <div class="row">
+        <label for="keyInput" class="hidden">Teacher key</label>
+        <input id="keyInput" type="password" placeholder="Teacher key" autocomplete="off" />
+        <button class="primary" id="keyGo" type="button">Open</button>
+      </div>
+      <p class="err" id="gateMsg" role="alert"></p>
+    </section>
+
+    <main class="wrap hidden" id="app">
+      <div class="controls">
+        <label
+          >Class
+          <select id="secSel" aria-label="Filter by class section">
+            <option value="">All sections</option>
+            <option value="601">601</option>
+            <option value="602">602</option>
+            <option value="603">603</option>
+          </select>
+        </label>
+        <label
+          >Window
+          <select id="minSel" aria-label="Time window in minutes">
+            <option value="15">Last 15 min</option>
+            <option value="30" selected>Last 30 min</option>
+            <option value="60">Last 60 min</option>
+          </select>
+        </label>
+        <span style="flex: 1"></span>
+        <a class="tagchip" href="/teacher-tools/learning-supports-manager/"
+          >🧰 Learning Supports manager ↗</a
+        >
+      </div>
+
+      <div class="stat-row">
+        <div class="stat"><b id="sRows">–</b><span>signals in window</span></div>
+        <div class="stat"><b id="sStudents">–</b><span>students flagged</span></div>
+        <div class="stat"><b id="sMisc">–</b><span>misconception events</span></div>
+        <div class="stat"><b id="sTop">–</b><span>top mix-up</span></div>
+      </div>
+
+      <div class="card">
+        <h2>Who needs help right now</h2>
+        <ol class="rows" id="rows">
+          <li class="empty" style="display: block">Loading…</li>
+        </ol>
+      </div>
+      <p class="status" id="status" role="status" aria-live="polite">
+        Live struggle, misconception, hint-exhausted, and low-score signals from lessons and games.
+        Newest and most serious first · refreshes every 10 seconds.
+      </p>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      (function () {
+        "use strict";
+        // Same localStorage key the Gradebook uses — one sign-in per device.
+        var LS_KEY = "neft.teacher.key";
+        var API = "/api/progress/struggles";
+        var POLL_MS = 10000;
+        var key = "";
+        try {
+          key = localStorage.getItem(LS_KEY) || "";
+        } catch (e) {
+          key = "";
+        }
+        var running = true;
+        var timer = null;
+        var ccss = null; // /data/ccss-standards.json registry (standard -> shortLabel)
+
+        function $(id) {
+          return document.getElementById(id);
+        }
+        function esc(s) {
+          return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+          });
+        }
+        function ago(iso) {
+          var t = Date.parse(iso);
+          if (isNaN(t)) return "";
+          var s = Math.max(0, (Date.now() - t) / 1000);
+          if (s < 60) return Math.floor(s) + "s ago";
+          if (s < 3600) return Math.floor(s / 60) + "m ago";
+          return Math.floor(s / 3600) + "h ago";
+        }
+        function toast(msg) {
+          var t = $("toast");
+          t.textContent = msg;
+          t.classList.add("show");
+          clearTimeout(t._t);
+          t._t = setTimeout(function () {
+            t.classList.remove("show");
+          }, 1800);
+        }
+
+        // --- Standard labels (data/ccss-standards.json shortLabel) ------------
+        function loadCcss() {
+          fetch("/data/ccss-standards.json")
+            .then(function (r) {
+              return r.ok ? r.json() : null;
+            })
+            .then(function (data) {
+              if (data && data.standards) ccss = data.standards;
+            })
+            .catch(function () {
+              /* labels stay as raw codes */
+            });
+        }
+        function stdLabel(code) {
+          if (!code) return "";
+          var entry = ccss && ccss[code];
+          return entry && entry.shortLabel ? code + " · " + entry.shortLabel : code;
+        }
+
+        // --- Ranking: newest first, with severity boosting a row upward -------
+        // Each severity point counts the row as two minutes "fresher", so a
+        // misconception from 4 minutes ago outranks a struggle from 2 minutes ago.
+        var SEVERITY = { misconception: 3, "hint-exhausted": 3, "low-score": 2, struggle: 1 };
+        function rankScore(row) {
+          var t = Date.parse(row.at);
+          if (isNaN(t)) t = 0;
+          return t + (SEVERITY[row.signal] || 0) * 120000;
+        }
+
+        var SIGNAL_TEXT = {
+          struggle: "Struggling",
+          misconception: "Misconception",
+          "hint-exhausted": "Hints exhausted",
+          "low-score": "Low score",
+        };
+
+        // Practice link needs a lesson slug: lesson rows carry one; for game
+        // rows, pull a "unit-lesson" token (e.g. 4-1) out of the game id if present.
+        function lessonSlugOf(row) {
+          if (row.lessonSlug) return row.lessonSlug;
+          var m = /(\d{1,2}-\d{1,2})/.exec(row.gameId || "");
+          return m ? m[1] : "";
+        }
+        function practiceLink(slug) {
+          return "/math/games/practice-arcade/?lesson=" + encodeURIComponent(slug) + "&tier=1";
+        }
+
+        function rowHtml(row, i) {
+          var slug = lessonSlugOf(row);
+          var what = "";
+          if (row.source === "lesson") {
+            what = "<b>" + esc(row.lessonTitle || row.lessonSlug || "lesson") + "</b>";
+          } else {
+            what =
+              "<b>" +
+              esc(row.gameId || "game") +
+              "</b> <span class='std'>" +
+              (row.attempts ? esc(row.attempts) + " tries" : "") +
+              (row.correctRate != null
+                ? " · " + Math.round(row.correctRate * 100) + "% correct"
+                : "") +
+              "</span>";
+          }
+          if (row.standard)
+            what += " <span class='std'>· " + esc(stdLabel(row.standard)) + "</span>";
+          var acts = "";
+          if (slug)
+            acts +=
+              "<a href='/lessons/" +
+              encodeURIComponent(slug) +
+              "/' target='_blank' rel='noopener' aria-label='Open lesson " +
+              esc(slug) +
+              " in a new tab'>📖 Lesson ↗</a>";
+          acts +=
+            "<a href='/teacher-tools/learning-supports-manager/' target='_blank' rel='noopener' aria-label='Open the Learning Supports manager for " +
+            esc(row.studentName || "this student") +
+            "'>🧰 Supports ↗</a>";
+          if (slug)
+            acts +=
+              "<button type='button' data-copy='" +
+              esc(practiceLink(slug)) +
+              "' aria-label='Copy targeted practice link for lesson " +
+              esc(slug) +
+              "'>🎯 Copy practice link</button>";
+          return (
+            "<li>" +
+            "<span class='pill " +
+            esc(row.signal) +
+            "'>" +
+            esc(SIGNAL_TEXT[row.signal] || row.signal) +
+            "</span>" +
+            "<span class='who'><b>" +
+            esc(row.studentName || "Unnamed student") +
+            "</b>" +
+            (row.section ? "<span class='sec'>· " + esc(row.section) + "</span>" : "") +
+            "</span>" +
+            "<span class='what'>" +
+            what +
+            (row.tag ? " <span class='tagchip'>⚠ " + esc(row.tag) + "</span>" : "") +
+            "</span>" +
+            "<span class='when'>" +
+            esc(ago(row.at)) +
+            "</span>" +
+            "<span class='acts'>" +
+            acts +
+            "</span>" +
+            "</li>"
+          );
+        }
+
+        function render(rows, minutes) {
+          var host = $("rows");
+          $("sRows").textContent = rows.length;
+          var students = {};
+          var misc = 0;
+          var tags = {};
+          rows.forEach(function (r) {
+            if (r.studentName) students[(r.section || "") + "|" + r.studentName] = 1;
+            if (r.signal === "misconception") misc++;
+            if (r.tag) tags[r.tag] = (tags[r.tag] || 0) + 1;
+          });
+          $("sStudents").textContent = Object.keys(students).length;
+          $("sMisc").textContent = misc;
+          var topTag = Object.keys(tags).sort(function (a, b) {
+            return tags[b] - tags[a];
+          })[0];
+          $("sTop").textContent = topTag || "–";
+          if (!rows.length) {
+            host.innerHTML =
+              "<li class='empty' style='display:block'>No struggle signals in the last " +
+              minutes +
+              " minutes — the class is cruising. 🎉</li>";
+            return;
+          }
+          var sorted = rows.slice().sort(function (a, b) {
+            return rankScore(b) - rankScore(a);
+          });
+          host.innerHTML = sorted.map(rowHtml).join("");
+        }
+
+        // --- Gate --------------------------------------------------------------
+        function showApp() {
+          $("gate").classList.add("hidden");
+          $("app").classList.remove("hidden");
+          $("signout").classList.remove("hidden");
+        }
+        function showGate(msg) {
+          $("gate").classList.remove("hidden");
+          $("app").classList.add("hidden");
+          $("signout").classList.add("hidden");
+          $("gateMsg").textContent = msg || "";
+        }
+        $("keyGo").addEventListener("click", function () {
+          var v = $("keyInput").value.trim();
+          if (!v) return;
+          key = v;
+          try {
+            localStorage.setItem(LS_KEY, key);
+          } catch (e) {
+            /* private mode: key lives for this page view only */
+          }
+          showApp();
+          poll();
+        });
+        $("keyInput").addEventListener("keydown", function (e) {
+          if (e.key === "Enter") $("keyGo").click();
+        });
+        $("signout").addEventListener("click", function () {
+          try {
+            localStorage.removeItem(LS_KEY);
+          } catch (e) {
+            /* ignore */
+          }
+          key = "";
+          showGate("");
+        });
+
+        // --- Poll ----------------------------------------------------------------
+        function poll() {
+          if (!key) return;
+          var minutes = $("minSel").value;
+          var section = $("secSel").value;
+          var qs = "?minutes=" + encodeURIComponent(minutes);
+          if (section) qs += "&section=" + encodeURIComponent(section);
+          fetch(API + qs, { headers: { "x-teacher-key": key } })
+            .then(function (r) {
+              if (r.status === 401) {
+                showGate("That teacher key was not accepted. Check it and try again.");
+                return null;
+              }
+              if (r.status === 503) {
+                $("rows").innerHTML =
+                  "<li class='empty' style='display:block'>The radar is not enabled on the server yet " +
+                  "(TEACHER_KEY / D1 not configured on the Pages project). Nothing is wrong with your key.</li>";
+                $("liveLabel").textContent = "Offline";
+                return null;
+              }
+              return r.json().catch(function () {
+                return null;
+              });
+            })
+            .then(function (data) {
+              if (!data) return;
+              if (data.ok && Array.isArray(data.rows)) {
+                $("liveLabel").textContent = running ? "Live" : "Paused";
+                render(data.rows, data.minutes || minutes);
+              }
+            })
+            .catch(function () {
+              $("liveLabel").textContent = "Reconnecting…";
+            });
+        }
+
+        function schedule() {
+          if (timer) clearTimeout(timer);
+          if (!running) return;
+          poll();
+          timer = setTimeout(schedule, POLL_MS);
+        }
+
+        $("pauseBtn").addEventListener("click", function () {
+          running = !running;
+          this.textContent = running ? "⏸ Pause auto-refresh" : "▶ Resume auto-refresh";
+          this.setAttribute("aria-pressed", running ? "true" : "false");
+          $("liveLabel").textContent = running ? "Live" : "Paused";
+          $("liveDot").style.animationPlayState = running ? "running" : "paused";
+          if (running) schedule();
+          else if (timer) clearTimeout(timer);
+        });
+        $("minSel").addEventListener("change", poll);
+        $("secSel").addEventListener("change", poll);
+
+        // Copy-practice-link buttons (delegated).
+        $("rows").addEventListener("click", function (e) {
+          var btn = e.target.closest ? e.target.closest("button[data-copy]") : null;
+          if (!btn) return;
+          var link = location.origin + btn.getAttribute("data-copy");
+          function done() {
+            toast("Practice link copied — paste it anywhere.");
+          }
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(link).then(done, function () {
+              window.prompt("Copy this practice link:", link);
+            });
+          } else {
+            window.prompt("Copy this practice link:", link);
+          }
+        });
+
+        loadCcss();
+        if (key) {
+          showApp();
+          schedule();
+        } else {
+          showGate("");
+        }
+      })();
+    </script>
+  </body>
+</html>
