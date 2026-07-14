@@ -2252,6 +2252,11 @@
             </div>
           </section>
 
+          <!-- Shared IEP/ESOL taxonomy (single source of truth) used to render
+               the Prepare Learning Supports panel below, so the hub always
+               shows the same district menus as the lesson dock + Teacher Tools
+               console. Served no-cache (see _headers) so edits go live at once. -->
+          <script src="/assets/learning-supports/supports-schema.js?v=20260713-supports-v23"></script>
           <script>
             document.addEventListener("DOMContentLoaded", () => {
               const optionsRoot = document.getElementById("ewl-linkgen-options");
@@ -2262,81 +2267,60 @@
               const empty = document.getElementById("ewl-linkgen-empty");
               if (!optionsRoot || !select || !copyBtn) return;
 
-              // IEP accommodations & modifications, worded the way they appear
-              // in an IEP, grouped by the standard IEP categories. Each checkbox
-              // is one accommodation. Digital ones carry `keys` — the engine
-              // profile/tool keys (assets/learning-supports/learning-supports.js)
-              // that deliver them in the lesson. In-person ones (extended time,
-              // seating, grading…) carry `inPerson: true`: they can't be switched
-              // on digitally, so they go into the copyable accommodations list
-              // instead of the link.
-              const IEP_GROUPS = [
-                {
-                  name: "📖 Presentation",
-                  note: "How content is presented",
-                  items: [
-                    { label: "Text read aloud (text-to-speech)", keys: ["read-understand"] },
-                    { label: "Enlarged print / high contrast", keys: ["read-understand"] },
-                    { label: "Key vocabulary previewed and defined", keys: ["read-understand"] },
-                    { label: "Worked example modeled first", keys: ["read-understand"] },
-                    { label: "One problem at a time (chunked)", keys: ["focus-organize"] },
-                    { label: "Reading guide / tracking ruler", keys: ["focus-organize"] },
-                    { label: "Directions repeated and rephrased", inPerson: true },
-                  ],
-                },
-                {
-                  name: "✍️ Response",
-                  note: "How the student answers",
-                  items: [
-                    { label: "Use of calculator", keys: ["calculator"] },
-                    { label: "Multiplication chart", keys: ["multchart"] },
-                    { label: "Number line", keys: ["numberline"] },
-                    { label: "Place-value chart", keys: ["placevalue"] },
-                    { label: "Visual models / manipulatives", keys: ["build-math"] },
-                    { label: "Speech-to-text dictation (scribe)", keys: ["express-thinking"] },
-                    { label: "Sentence frames and word banks", keys: ["express-thinking"] },
-                  ],
-                },
-                {
-                  name: "⏱️ Timing & Scheduling",
-                  note: "When and how long",
-                  items: [
-                    { label: "Extended time (1.5× / 2×)", inPerson: true },
-                    { label: "Frequent breaks (calm-break timer)", keys: ["focus-organize"] },
-                    { label: "Task checklist to pace steps", keys: ["focus-organize"] },
-                  ],
-                },
-                {
-                  name: "🪑 Setting",
-                  note: "Where the student works",
-                  items: [
-                    { label: "Reduced distractions (focus mode)", keys: ["focus-organize"] },
-                    { label: "Preferential seating", inPerson: true },
-                    { label: "Small group / separate location", inPerson: true },
-                  ],
-                },
-                {
-                  name: "🌎 Language (ESOL / WIDA)",
-                  note: "Multilingual learners",
-                  items: [
-                    {
-                      label: "Translated directions / bilingual glossary",
-                      keys: ["language-support"],
-                    },
-                    { label: "Read-aloud in home language", keys: ["language-support"] },
-                  ],
-                },
-                {
-                  name: "📝 Modifications",
-                  note: "Changes to what is required",
-                  items: [
-                    { label: "Reduced number of problems", inPerson: true },
-                    { label: "Prerequisite / readiness review first", keys: ["model"] },
-                    { label: "Alternate way to show mastery", inPerson: true },
-                    { label: "Modified grading", inPerson: true },
-                  ],
-                },
-              ];
+              // Prepare Learning Supports — rendered from the SHARED taxonomy
+              // (assets/learning-supports/supports-schema.js →
+              // window.EWLSupportsSchema), the SAME district IEP/ESOL menus the
+              // lesson dock and Teacher Tools console use. Single source of
+              // truth: editing the schema updates this panel automatically, so
+              // the hub can never drift from the official accommodation lists.
+              //
+              // The copy-LINK transport (#supports=) only carries the engine's
+              // coarse profile/tool keys, so each schema item is mapped to the
+              // profile (or tool) that delivers it. `interactive` items with a
+              // known tool become DIGITAL (they ride the link); `flag`/`adaptive`
+              // items (extended time, workload, teacher moves) can't be switched
+              // on by a link, so they go to the 🤝 in-person copyable list.
+              const TOOL_TO_LINK_KEY = {
+                calculator: "calculator",
+                model: "model",
+                multchart: "multchart",
+                numberline: "numberline",
+                placevalue: "placevalue",
+                listen: "read-understand",
+                words: "read-understand",
+                directions: "read-understand",
+                explain: "express-thinking",
+                notepad: "express-thinking",
+                organizer: "express-thinking",
+                highlighter: "focus-organize",
+                checkin: "focus-organize",
+                checklist: "focus-organize",
+                break: "focus-organize",
+                translate: "language-support",
+              };
+              const GROUP_NOTES = {
+                iep: "District IEP accommodations & modifications",
+                esol: "District ESOL modifications (WIDA)",
+              };
+              const schema = window.EWLSupportsSchema;
+              const IEP_GROUPS = (schema && Array.isArray(schema.groups) ? schema.groups : []).map(
+                (g) => ({
+                  name: `${g.icon ? g.icon + " " : ""}${g.label}`,
+                  note: GROUP_NOTES[g.id] || "",
+                  items: (g.items || []).map((it) => {
+                    const linkKey =
+                      it.apply === "interactive" && it.tool ? TOOL_TO_LINK_KEY[it.tool] : null;
+                    return linkKey
+                      ? { label: it.label, keys: [linkKey] }
+                      : { label: it.label, inPerson: true };
+                  }),
+                }),
+              );
+              if (!IEP_GROUPS.length) {
+                optionsRoot.innerHTML =
+                  '<p class="ewl-linkgen-empty" style="display:block">Supports list failed to load. Reload the page to try again.</p>';
+                return;
+              }
 
               // Render every group as individually-checkable accommodations.
               // Digital items carry data-keys (comma-joined engine keys);
