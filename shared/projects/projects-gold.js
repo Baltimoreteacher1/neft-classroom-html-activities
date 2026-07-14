@@ -36,6 +36,9 @@
   // and engine/core/teacher-mode.js (client-side gate against casual access).
   var TEACHER_PIN = "TeacherNeft";
   var SESSION_KEY = "nt-answer-console-ok";
+  var LEVEL_KEY_PREFIX = "nt-project-level:";
+  var lockedLevel = null;
+  var pageSetLevel = null;
 
   function isTeacherMode() {
     try {
@@ -78,7 +81,7 @@
       gateTeacherConsole();
     } catch (e) {}
     try {
-      showLevelSelectorOverlay();
+      initLevelLock();
     } catch (e) {}
   }
 
@@ -226,8 +229,82 @@
     };
   }
 
-  /* --- 8. Show Level Selector welcome overlay on first page load ----------- */
+  /* --- 8. Make the welcome-screen level choice permanent per project ------- */
+  function levelStorageKey() {
+    return LEVEL_KEY_PREFIX + window.location.pathname.replace(/\/+$/, "/");
+  }
+
+  function savedLevel() {
+    try {
+      var value = parseInt(localStorage.getItem(levelStorageKey()), 10);
+      return value === 0 || value === 1 || value === 2 ? value : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function hideLevelControls() {
+    var firstButton = document.getElementById("btn-lv0");
+    var levelBar = firstButton && firstButton.closest ? firstButton.closest(".level-bar") : null;
+    if (levelBar) {
+      levelBar.hidden = true;
+      levelBar.style.display = "none";
+      levelBar.setAttribute("aria-hidden", "true");
+    }
+    ["btn-lv0", "btn-lv1", "btn-lv2"].forEach(function (id) {
+      var button = document.getElementById(id);
+      if (!button) return;
+      button.disabled = true;
+      button.tabIndex = -1;
+    });
+  }
+
+  function markLevelLocked(level) {
+    lockedLevel = level;
+    document.body.dataset.levelLocked = String(level);
+    hideLevelControls();
+  }
+
+  function persistLevel(level) {
+    try {
+      localStorage.setItem(levelStorageKey(), String(level));
+    } catch (e) {}
+  }
+
+  function applyLevel(level) {
+    if (pageSetLevel) return pageSetLevel.call(window, level);
+    document.body.classList.remove("level-0", "level-1", "level-2");
+    document.body.classList.add("level-" + level);
+  }
+
+  function lockLevel(level) {
+    if (lockedLevel !== null) return;
+    applyLevel(level);
+    persistLevel(level);
+    markLevelLocked(level);
+  }
+
+  function initLevelLock() {
+    pageSetLevel = typeof window.setLevel === "function" ? window.setLevel : null;
+    window.setLevel = function (level) {
+      var requested = parseInt(level, 10);
+      if (requested !== 0 && requested !== 1 && requested !== 2) return;
+      if (lockedLevel !== null && requested !== lockedLevel) return;
+      return applyLevel(requested);
+    };
+
+    var restored = savedLevel();
+    if (restored !== null) {
+      markLevelLocked(restored);
+      applyLevel(restored);
+      return;
+    }
+    showLevelSelectorOverlay();
+  }
+
+  /* --- 9. Show Level Selector welcome overlay until the first choice ------- */
   function showLevelSelectorOverlay() {
+    if (lockedLevel !== null) return;
     if (document.getElementById("gold-level-overlay")) return;
 
     var h1 = document.querySelector(".hero h1");
@@ -265,13 +342,7 @@
     overlay.querySelectorAll(".gold-level-option").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var lvl = parseInt(btn.dataset.level, 10);
-        if (typeof window.setLevel === "function") {
-          window.setLevel(lvl);
-        } else {
-          var body = document.body;
-          body.classList.remove("level-0", "level-1", "level-2");
-          body.classList.add("level-" + lvl);
-        }
+        lockLevel(lvl);
         
         overlay.classList.add("fade-out");
         setTimeout(function () {

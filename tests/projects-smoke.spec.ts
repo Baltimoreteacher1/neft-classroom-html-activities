@@ -121,6 +121,15 @@ for (const route of ROUTES) {
         { timeout: 10_000 },
       );
 
+      // Level is a one-time launch choice. Once the student begins, the
+      // welcome overlay and header controls disappear and the chosen tier is
+      // locked for this project.
+      await expect(page.locator("#gold-level-overlay")).toBeVisible();
+      await page.locator('.gold-level-option[data-level="1"]').click();
+      await expect(page.locator("#gold-level-overlay")).toHaveCount(0);
+      await expect(page.locator("#btn-lv0").locator("xpath=..")).toBeHidden();
+      await expect(page.locator("body")).toHaveAttribute("data-level-locked", "1");
+
       // VISUALS layer invariants: every version page ships a ./visuals.json,
       // so at least one interactive math-tool card must mount inside a step
       // panel and its manip widget must actually render (async fetch + lazy
@@ -388,4 +397,28 @@ test("Publication Studio evidence persists locally and fits a phone viewport", a
     scroll: element.scrollWidth,
   }));
   expect(widths.scroll, "Publication Studio overflows at 360px").toBeLessThanOrEqual(widths.client);
+});
+
+test("project level is selected once, hidden, and locked across reloads", async ({ page }) => {
+  const route = "/math/unit-2/projects/version-b/";
+  await page.goto(route, { waitUntil: "load" });
+  await page.waitForFunction(() => document.body?.dataset.goldInit === "1");
+
+  await expect(page.locator("#gold-level-overlay")).toBeVisible();
+  await page.locator('.gold-level-option[data-level="2"]').click();
+  await expect(page.locator("#gold-level-overlay")).toHaveCount(0);
+  await expect(page.locator("#btn-lv0").locator("xpath=..")).toBeHidden();
+  await expect(page.locator("body")).toHaveClass(/level-2/);
+
+  await page.evaluate(() => {
+    const controls = window as unknown as { setLevel?: (level: number) => void };
+    controls.setLevel?.(0);
+  });
+  await expect(page.locator("body")).toHaveClass(/level-2/);
+
+  await page.reload({ waitUntil: "load" });
+  await page.waitForFunction(() => document.body?.dataset.goldInit === "1");
+  await expect(page.locator("#gold-level-overlay")).toHaveCount(0);
+  await expect(page.locator("#btn-lv0").locator("xpath=..")).toBeHidden();
+  await expect(page.locator("body")).toHaveClass(/level-2/);
 });
