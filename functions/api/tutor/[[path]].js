@@ -2,8 +2,20 @@
  * AI Tutor proxy — Cloudflare Pages Function (optional, opt-in)
  * -----------------------------------------------------------------------------
  * Route (catch-all under /api/tutor):
- *   POST /api/tutor          { mode, standard, itemText, studentWork, history }
+ *   POST /api/tutor          { mode, standard, itemText, studentWork, history,
+ *                              hintLevel?, replyLang? }
  *   GET  /api/tutor/health   -> { ok, backend, live }
+ *
+ * Optional fields:
+ *   - hintLevel (mode "hint" only): integer 1-3, default 1; anything invalid
+ *     falls back to 1. Ladder: 1 = one guiding question / next small step;
+ *     2 = name the exact next operation or model and why it helps (still no
+ *     answer); 3 = fully worked PARALLEL example (same skill, different
+ *     numbers) then "try the same steps" — never the student's actual answer.
+ *   - replyLang (any mode except "translate"): plain language name, e.g.
+ *     "Spanish". The tutor replies entirely in that language with simple
+ *     grade-6 wording; math notation and numbers stay unchanged. Empty or
+ *     absent = English (current behavior).
  *
  * Strategy (Claude Haiku only, graceful degradation):
  *   1. If env.ANTHROPIC_API_KEY is set -> call the Claude Messages API
@@ -138,6 +150,16 @@ function parseBody(body) {
   const lang = clampStr(body.lang, 40);
   if (mode === "translate" && !lang) return { ok: false, error: "missing-lang" };
 
+  // Optional hint-ladder level (integer 1-3). Only meaningful for "hint" mode;
+  // anything missing or invalid falls back to level 1 (the classic nudge).
+  const rawHintLevel = Number(body.hintLevel);
+  const hintLevel =
+    Number.isInteger(rawHintLevel) && rawHintLevel >= 1 && rawHintLevel <= 3 ? rawHintLevel : 1;
+
+  // Optional reply language for every mode except "translate" (plain language
+  // name, e.g. "Spanish"). Empty = reply in English (current behavior).
+  const replyLang = clampStr(body.replyLang, 40);
+
   let history = [];
   if (Array.isArray(body.history)) {
     history = body.history
@@ -152,11 +174,24 @@ function parseBody(body) {
 
   return {
     ok: true,
-    value: { mode, standard, itemText, studentWork, history, image, lang },
+    value: { mode, standard, itemText, studentWork, history, image, lang, hintLevel, replyLang },
   };
 }
 
-function systemPrompt(mode, standard, lang) {
+function systemPrompt(mode, standard, lang, hintLevel = 1, replyLang = "") {
+  const core = modeSystemPrompt(mode, standard, lang, hintLevel);
+  // Firm reply-language directive for every mode except "translate" (which
+  // already targets `lang`). Math notation and numbers stay exactly as written.
+  if (!replyLang || mode === "translate") return core;
+  return (
+    core +
+    ` IMPORTANT: Write your ENTIRE reply in ${replyLang}. Use simple, grade-6-appropriate ` +
+    `${replyLang} wording. Keep every number, math symbol, and piece of math notation exactly ` +
+    `as it is — do not translate or alter the math.`
+  );
+}
+
+function modeSystemPrompt(mode, standard, lang, hintLevel) {
   if (mode === "translate") {
     return (
       `You are a translator for a Grade 6 math class. Translate the text the student sends into ` +
@@ -172,6 +207,31 @@ function systemPrompt(mode, standard, lang) {
     `Format math as plain text (use / for division and ^ for exponents); no LaTeX.`;
 
   if (mode === "hint") {
+    if (hintLevel === 3) {
+      return (
+        base +
+        ` The student wants a HINT, not the answer. This is a LEVEL 3 hint: two earlier hints ` +
+        `did not unstick them, so show a fully WORKED PARALLEL EXAMPLE. Rules you MUST follow: ` +
+        `(1) Invent a similar problem — the SAME skill but DIFFERENT numbers and context — and ` +
+        `solve THAT one step by step. ` +
+        `(2) End by telling them to now try the same steps on their own problem. ` +
+        `(3) NEVER solve or state the answer to the student's actual problem. ` +
+        `(4) Keep the whole reply to 3-6 short sentences.`
+      );
+    }
+    if (hintLevel === 2) {
+      return (
+        base +
+        ` The student wants a HINT, not the answer. This is a LEVEL 2 hint: the student already ` +
+        `got a Level 1 nudge and is still stuck, so be more specific. Rules you MUST follow: ` +
+        `(1) Name the specific next step AND say WHY it helps, pointing to the exact operation ` +
+        `or model to use (e.g. "find a common denominator so the pieces are the same size"). ` +
+        `(2) Do NOT state the final numeric or final answer. ` +
+        `(3) Do NOT do the final calculation for them. ` +
+        `(4) Build on what the student already tried, in 2-3 short sentences.`
+      );
+    }
+    // Level 1 — the classic single nudge.
     return (
       base +
       ` The student wants a HINT, not the answer. Rules you MUST follow: ` +
@@ -323,7 +383,7 @@ async function callClaude(env, v) {
     body: JSON.stringify({
       model: CLAUDE_MODEL,
       max_tokens: v.mode === "translate" ? 1500 : CAP.output,
-      system: systemPrompt(v.mode, v.standard, v.lang),
+      system: systemPrompt(v.mode, v.standard, v.lang, v.hintLevel, v.replyLang),
       messages,
     }),
   });
