@@ -6,6 +6,10 @@
  *   POST /api/progress/save     { saveCode, ... , state }
  *   GET  /api/progress/load?code=XXXX   -> { ok, record }
  *   GET  /api/progress/health           -> { ok, backend, d1 }
+ *   GET  /api/progress/exemplars?activity=ID        -> { ok, exemplars } (public, redacted)
+ *   GET  /api/progress/digest?since=ISO&section=    -> per-student rollup (TEACHER_KEY)
+ *   GET  /api/progress/mastery-rollup?section=      -> standards rollup   (TEACHER_KEY)
+ *   GET  /api/progress/struggles?minutes=N&section= -> recent risk rows   (TEACHER_KEY)
  *
  * Storage: Cloudflare D1, bound as `env.DB`.
  *
@@ -47,6 +51,10 @@ function validCode(code) {
 // tiny. See the /load route for the rationale.
 const LOAD_WINDOW_SEC = 300; // 5-minute window
 const LOAD_MAX_MISSES = 50; // misses per IP per window before 429
+// Public exemplar-gallery reads share the same window/table. Every hit counts
+// (there is no "valid guess" to exempt), so the cap is generous enough for a
+// whole class on one NAT loading a project page, yet stops id enumeration.
+const EXEMPLAR_MAX_HITS = 120; // gallery reads per IP per window before 429
 
 function clientIp(request) {
   return request.headers.get("CF-Connecting-IP") || request.headers.get("x-forwarded-for") || "?";
@@ -187,6 +195,8 @@ async function ensureAdminColumns(db) {
   for (const ddl of [
     "ALTER TABLE student_progress ADD COLUMN manual_grade TEXT",
     "ALTER TABLE student_progress ADD COLUMN teacher_note TEXT",
+    "ALTER TABLE student_progress ADD COLUMN exemplar_approved INTEGER DEFAULT 0",
+    "ALTER TABLE student_progress ADD COLUMN exemplar_note TEXT",
   ]) {
     try {
       await db.prepare(ddl).run();
@@ -209,6 +219,54 @@ function scoreFromState(state) {
     return Math.round((Number(state.correct) / Number(state.total)) * 100);
   }
   return null;
+}
+
+// --- Public exemplar redaction ----------------------------------------------
+// The exemplars route is the ONLY unauthenticated read of student work, so it
+// exposes strictly redacted data: a first name + last initial (never the full
+// name) and a whitelisted excerpt of free-text responses/self-assessment only.
+// Nothing else in state_json (scores, codes, timestamps, ids) ever leaves.
+
+function firstNameInitial(name) {
+  const parts = String(name || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  if (!parts.length) return "A student";
+  const last = parts.length > 1 ? " " + parts[parts.length - 1].charAt(0).toUpperCase() + "." : "";
+  return parts[0] + last;
+}
+
+const EXCERPT_MAX_CHARS = 400;
+const EXCERPT_MAX_COUNT = 3;
+
+function collectExcerptText(value, out) {
+  if (out.length >= EXCERPT_MAX_COUNT) return;
+  if (typeof value === "string") {
+    const t = value.trim();
+    // Skip trivial fragments ("3", "true") — only real written work qualifies.
+    if (t.length >= 20) out.push(t.slice(0, EXCERPT_MAX_CHARS));
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const v of value) collectExcerptText(v, out);
+    return;
+  }
+  if (value && typeof value === "object") {
+    for (const k of ["text", "answer", "response", "value"]) {
+      if (typeof value[k] === "string") collectExcerptText(value[k], out);
+    }
+  }
+}
+
+function exemplarExcerpts(state) {
+  const out = [];
+  if (!state || typeof state !== "object") return out;
+  // Whitelist: student free-text responses + self-assessment. Nothing else.
+  collectExcerptText(state.responses, out);
+  collectExcerptText(state.selfAssessment, out);
+  collectExcerptText(state.selfassess, out);
+  return out.slice(0, EXCERPT_MAX_COUNT);
 }
 
 function csvCell(v) {
@@ -287,6 +345,9 @@ function rosterRowValues(r) {
     score: scoreFromState(state),
     grade: r.manual_grade || "",
     note: r.teacher_note || "",
+    // Exemplar gallery approval (JSON consumers only; CSV/XLS columns unchanged).
+    exemplarApproved: r.exemplar_approved ? 1 : 0,
+    exemplarNote: r.exemplar_note || "",
     updatedAt: r.updated_at || "",
   };
 }
@@ -446,6 +507,60 @@ export async function onRequest(context) {
     return new Response(null, { status: 204, headers: JSON_HEADERS });
   }
 
+  // --- Public exemplar gallery ----------------------------------------------
+  // Approved-only, heavily redacted student work for the "From students like
+  // you" cards on project pages. Rows appear here ONLY after a teacher flips
+  // exemplar_approved via the gated roster POST below. Anti-abuse: reuses the
+  // /load per-IP throttle table (prefixed key, own generous cap) so a scraper
+  // enumerating activity ids gets 429'd while a class loading one page never is.
+  if (seg === "exemplars") {
+    if (method !== "GET") return json({ ok: false, error: "not-found", route: seg }, 404);
+    if (!env.DB) return json({ ok: false, error: "backend-not-configured" }, 503);
+    const activity = clamp(url.searchParams.get("activity") || "", 200);
+    if (!activity) return json({ ok: false, error: "bad-activity" }, 400);
+    try {
+      const ip = "ex:" + clientIp(request);
+      const bucket = loadBucket();
+      await ensureLoadGuardSchema(env.DB);
+      if ((await loadMissCount(env.DB, ip, bucket)) > EXEMPLAR_MAX_HITS) {
+        return json({ ok: false, error: "rate-limited" }, 429, {
+          "Retry-After": String(LOAD_WINDOW_SEC),
+        });
+      }
+      await noteLoadMiss(env.DB, ip, bucket);
+      await ensureSchema(env.DB);
+      await ensureAdminColumns(env.DB);
+      // Same shape whether the activity exists or has no approvals: an empty
+      // list. Never confirms/denies activity ids (anti-enumeration).
+      const rows = await env.DB.prepare(
+        `SELECT student_name, section, state_json, exemplar_note, updated_at
+           FROM student_progress
+          WHERE activity_id = ? AND exemplar_approved = 1
+          ORDER BY updated_at DESC LIMIT 12`,
+      )
+        .bind(activity)
+        .all();
+      const exemplars = (rows.results || []).map((r) => {
+        let state = {};
+        try {
+          state = JSON.parse(r.state_json || "{}");
+        } catch (e) {
+          state = {};
+        }
+        return {
+          firstNameInitial: firstNameInitial(r.student_name),
+          section: r.section || "",
+          excerpts: exemplarExcerpts(state),
+          note: r.exemplar_note || "",
+          updatedAt: r.updated_at || "",
+        };
+      });
+      return json({ ok: true, activity, count: exemplars.length, exemplars });
+    } catch (err) {
+      return json({ ok: false, error: "server-error", message: String(err) }, 500);
+    }
+  }
+
   // --- Teacher admin routes (roster + grades export/import) ----------------
   // Gated by TEACHER_KEY. Closed by default so student data is never exposed.
   if (seg === "roster" || seg === "grades") {
@@ -506,14 +621,17 @@ export async function onRequest(context) {
           `INSERT INTO student_progress
              (save_code, activity_id, activity_title, student_name, section,
               state_json, progress_percent, manual_grade, teacher_note,
+              exemplar_approved, exemplar_note,
               created_at, updated_at)
            VALUES (?, 'manual', 'Manual entry', NULLIF(?, ' '), NULLIF(?, ' '),
-                   '{}', 0, NULLIF(?, ' '), NULLIF(?, ' '), ?, ?)
+                   '{}', 0, NULLIF(?, ' '), NULLIF(?, ' '), ?, NULLIF(?, ' '), ?, ?)
            ON CONFLICT(save_code) DO UPDATE SET
              student_name = COALESCE(excluded.student_name, student_name),
              section      = COALESCE(excluded.section, section),
              manual_grade = COALESCE(excluded.manual_grade, manual_grade),
-             teacher_note = COALESCE(excluded.teacher_note, teacher_note)`,
+             teacher_note = COALESCE(excluded.teacher_note, teacher_note),
+             exemplar_approved = COALESCE(excluded.exemplar_approved, exemplar_approved),
+             exemplar_note     = COALESCE(excluded.exemplar_note, exemplar_note)`,
         );
         const batch = [];
         for (const r of rows.slice(0, 2000)) {
@@ -523,8 +641,22 @@ export async function onRequest(context) {
           // empty string overwrites (clears) the field. NULLIF maps the
           // sentinel to NULL so COALESCE on conflict keeps the old value.
           const f = (v) => (v === undefined ? " " : clamp(v, 300));
+          // exemplar_approved is an INTEGER: omitted → NULL (COALESCE keeps the
+          // old value on conflict); provided → strict 0/1.
+          const approved =
+            r.exemplarApproved === undefined ? null : Number(r.exemplarApproved) ? 1 : 0;
           batch.push(
-            stmt.bind(code, f(r.studentName), f(r.section), f(r.grade), f(r.note), nowIso, nowIso),
+            stmt.bind(
+              code,
+              f(r.studentName),
+              f(r.section),
+              f(r.grade),
+              f(r.note),
+              approved,
+              f(r.exemplarNote),
+              nowIso,
+              nowIso,
+            ),
           );
           updated++;
         }
@@ -649,6 +781,302 @@ export async function onRequest(context) {
         headers: gradeHeaders,
         rows: gradeRows,
       });
+    } catch (err) {
+      return json({ ok: false, error: "server-error", message: String(err) }, 500);
+    }
+  }
+
+  // --- Teacher analytics (digest / mastery-rollup / struggles) --------------
+  // Read-only rollups powering the weekly family digest, the class standards
+  // heatmap, and the intervention radar. Same TEACHER_KEY gate as roster:
+  // no key configured → 503, wrong key → 401, no DB → 503. game_scores is
+  // owned by functions/api/scores and created lazily there, so its queries are
+  // individually guarded — if the table does not exist yet, the rollups simply
+  // carry no game data instead of erroring.
+  if (seg === "digest" || seg === "mastery-rollup" || seg === "struggles") {
+    const auth = teacherAuthorized(env, request, url);
+    if (auth === "not-configured")
+      return json(
+        {
+          ok: false,
+          error: "not-configured",
+          message: "Set the TEACHER_KEY env var on the Pages project to enable teacher analytics.",
+        },
+        503,
+      );
+    if (auth === "unauthorized") return json({ ok: false, error: "unauthorized" }, 401);
+    if (!env.DB) return json({ ok: false, error: "backend-not-configured" }, 503);
+    if (method !== "GET") return json({ ok: false, error: "not-found", route: seg }, 404);
+
+    try {
+      await ensureSchema(env.DB);
+      await ensureAdminColumns(env.DB);
+      await ensureTelemetrySchema(env.DB);
+      const section = clamp(url.searchParams.get("section") || "", 40);
+
+      // Shared: pull a misconception tag out of a telemetry payload blob.
+      const payloadTag = (payloadJson) => {
+        try {
+          const p = JSON.parse(payloadJson || "{}");
+          return clamp(p.tag || p.misconceptionTag || "", 60);
+        } catch (e) {
+          return "";
+        }
+      };
+      const isMastery = (t) => t === "mastery_reached" || t === "mastery-reached";
+      const rate2 = (correct, attempts) =>
+        attempts > 0 ? Math.round((correct / attempts) * 100) / 100 : null;
+
+      // GET digest?since=ISO&section= — per-student "what happened" rollup.
+      if (seg === "digest") {
+        const sinceMs = Date.parse(url.searchParams.get("since") || "");
+        const since = Number.isFinite(sinceMs)
+          ? new Date(sinceMs).toISOString()
+          : new Date(Date.now() - 7 * 86400000).toISOString(); // default: last 7 days
+        const prog = await (section
+          ? env.DB.prepare(
+              `SELECT * FROM student_progress WHERE updated_at >= ? AND section = ?
+                ORDER BY section, student_name`,
+            ).bind(since, section)
+          : env.DB.prepare(
+              `SELECT * FROM student_progress WHERE updated_at >= ?
+                ORDER BY section, student_name`,
+            ).bind(since)
+        ).all();
+        const tel = await (section
+          ? env.DB.prepare(
+              `SELECT standard, student_name, section, event_type FROM lesson_telemetry
+                WHERE created_at >= ? AND section = ? ORDER BY id DESC LIMIT 5000`,
+            ).bind(since, section)
+          : env.DB.prepare(
+              `SELECT standard, student_name, section, event_type FROM lesson_telemetry
+                WHERE created_at >= ? ORDER BY id DESC LIMIT 5000`,
+            ).bind(since)
+        ).all();
+
+        const students = new Map();
+        const entry = (name, sec) => {
+          const k = (sec || "") + "|" + name;
+          if (!students.has(k))
+            students.set(k, {
+              studentName: name,
+              section: sec || "",
+              activities: [],
+              telemetryCounts: {},
+              masteryReached: [],
+            });
+          return students.get(k);
+        };
+        for (const r of prog.results || []) {
+          if (r.activity_id === "manual") continue; // roster placeholders aren't activity
+          const s = entry(r.student_name || r.save_code, r.section);
+          let state = {};
+          try {
+            state = JSON.parse(r.state_json || "{}");
+          } catch (e) {
+            state = {};
+          }
+          s.activities.push({
+            activityId: r.activity_id,
+            activityTitle: r.activity_title || r.activity_id,
+            progressPercent: r.progress_percent == null ? null : Number(r.progress_percent),
+            scorePct: scoreFromState(state),
+          });
+        }
+        for (const r of tel.results || []) {
+          if (!r.student_name) continue; // unattributed events can't join a per-student digest
+          const s = entry(r.student_name, r.section);
+          const type = r.event_type || "unknown";
+          s.telemetryCounts[type] = (s.telemetryCounts[type] || 0) + 1;
+          if (isMastery(type) && r.standard && !s.masteryReached.includes(r.standard))
+            s.masteryReached.push(r.standard);
+        }
+        const list = [...students.values()].sort(
+          (a, b) =>
+            a.section.localeCompare(b.section) || a.studentName.localeCompare(b.studentName),
+        );
+        return json({ ok: true, since, section, count: list.length, students: list });
+      }
+
+      // GET mastery-rollup?section= — (section, standard) grid for the heatmap.
+      if (seg === "mastery-rollup") {
+        const groups = new Map();
+        const agg = (sec, std) => {
+          const k = (sec || "") + "|" + std;
+          if (!groups.has(k))
+            groups.set(k, {
+              section: sec || "",
+              standard: std,
+              attempts: 0,
+              correct: 0,
+              masteryCount: 0,
+              struggleCount: 0,
+              misconceptionCount: 0,
+              tags: {},
+            });
+          return groups.get(k);
+        };
+        const tel = await (section
+          ? env.DB.prepare(
+              `SELECT standard, section, event_type, payload_json FROM lesson_telemetry
+                WHERE section = ? ORDER BY id DESC LIMIT 10000`,
+            ).bind(section)
+          : env.DB.prepare(
+              `SELECT standard, section, event_type, payload_json FROM lesson_telemetry
+                ORDER BY id DESC LIMIT 10000`,
+            )
+        ).all();
+        for (const r of tel.results || []) {
+          if (!r.standard) continue;
+          const g = agg(r.section, r.standard);
+          const type = r.event_type || "";
+          if (isMastery(type)) g.masteryCount += 1;
+          else if (type === "struggle" || type === "hint-exhausted") g.struggleCount += 1;
+          else if (type === "misconception") {
+            g.misconceptionCount += 1;
+            const tag = payloadTag(r.payload_json);
+            if (tag) g.tags[tag] = (g.tags[tag] || 0) + 1;
+          }
+        }
+        try {
+          const scores = await (section
+            ? env.DB.prepare(
+                `SELECT gs.standard AS standard, gs.correct AS correct,
+                        gs.misconception_tag AS tag, sp.section AS section
+                   FROM game_scores gs
+                   LEFT JOIN student_progress sp ON sp.save_code = gs.save_code
+                  WHERE sp.section = ? ORDER BY gs.id DESC LIMIT 10000`,
+              ).bind(section)
+            : env.DB.prepare(
+                `SELECT gs.standard AS standard, gs.correct AS correct,
+                        gs.misconception_tag AS tag, sp.section AS section
+                   FROM game_scores gs
+                   LEFT JOIN student_progress sp ON sp.save_code = gs.save_code
+                  ORDER BY gs.id DESC LIMIT 10000`,
+              )
+          ).all();
+          for (const r of scores.results || []) {
+            if (!r.standard) continue;
+            const g = agg(r.section, r.standard);
+            g.attempts += 1;
+            if (r.correct) g.correct += 1;
+            if (r.tag) g.tags[r.tag] = (g.tags[r.tag] || 0) + 1;
+          }
+        } catch (e) {
+          /* game_scores not created yet — rollup carries telemetry only */
+        }
+        const bySection = new Map();
+        for (const g of groups.values()) {
+          if (!bySection.has(g.section)) bySection.set(g.section, []);
+          bySection.get(g.section).push({
+            standard: g.standard,
+            attempts: g.attempts,
+            correctRate: rate2(g.correct, g.attempts),
+            masteryCount: g.masteryCount,
+            struggleCount: g.struggleCount,
+            misconceptionCount: g.misconceptionCount,
+            topMisconceptions: Object.entries(g.tags)
+              .map(([tag, count]) => ({ tag, count }))
+              .sort((a, b) => b.count - a.count)
+              .slice(0, 5),
+          });
+        }
+        const sections = [...bySection.entries()]
+          .sort((a, b) => a[0].localeCompare(b[0]))
+          .map(([sec, standards]) => ({
+            section: sec,
+            standards: standards.sort((a, b) => a.standard.localeCompare(b.standard)),
+          }));
+        return json({ ok: true, section, sections });
+      }
+
+      // GET struggles?minutes=N&section= — newest-first risk rows for the radar.
+      const minutes = Math.min(Math.max(Number(url.searchParams.get("minutes")) || 30, 5), 1440);
+      const since = new Date(Date.now() - minutes * 60000).toISOString();
+      const rows = [];
+      const tel = await (section
+        ? env.DB.prepare(
+            `SELECT lesson_slug, lesson_title, standard, student_name, section,
+                    event_type, payload_json, created_at
+               FROM lesson_telemetry
+              WHERE created_at >= ? AND section = ?
+                AND event_type IN ('struggle', 'misconception', 'hint-exhausted')
+              ORDER BY id DESC LIMIT 200`,
+          ).bind(since, section)
+        : env.DB.prepare(
+            `SELECT lesson_slug, lesson_title, standard, student_name, section,
+                    event_type, payload_json, created_at
+               FROM lesson_telemetry
+              WHERE created_at >= ?
+                AND event_type IN ('struggle', 'misconception', 'hint-exhausted')
+              ORDER BY id DESC LIMIT 200`,
+          ).bind(since)
+      ).all();
+      for (const r of tel.results || []) {
+        rows.push({
+          at: r.created_at,
+          signal: r.event_type,
+          studentName: r.student_name || "",
+          section: r.section || "",
+          lessonSlug: r.lesson_slug || "",
+          lessonTitle: r.lesson_title || "",
+          standard: r.standard || "",
+          tag: payloadTag(r.payload_json),
+          source: "lesson",
+        });
+      }
+      try {
+        // Recent low performance: per (game, save code, standard) within the
+        // window, ≥2 attempts with under 60% correct. Named via the roster join.
+        const low = await (section
+          ? env.DB.prepare(
+              `SELECT gs.game_id AS game_id, gs.standard AS standard,
+                      gs.save_code AS save_code,
+                      COUNT(*) AS attempts, SUM(gs.correct) AS correct_sum,
+                      MAX(gs.created_at) AS last_at, MAX(gs.misconception_tag) AS tag,
+                      MAX(sp.student_name) AS student_name, MAX(sp.section) AS section
+                 FROM game_scores gs
+                 LEFT JOIN student_progress sp ON sp.save_code = gs.save_code
+                WHERE gs.created_at >= ? AND sp.section = ?
+                GROUP BY gs.game_id, gs.save_code, gs.standard
+               HAVING COUNT(*) >= 2 AND (SUM(gs.correct) * 1.0) / COUNT(*) < 0.6
+                ORDER BY last_at DESC LIMIT 100`,
+            ).bind(since, section)
+          : env.DB.prepare(
+              `SELECT gs.game_id AS game_id, gs.standard AS standard,
+                      gs.save_code AS save_code,
+                      COUNT(*) AS attempts, SUM(gs.correct) AS correct_sum,
+                      MAX(gs.created_at) AS last_at, MAX(gs.misconception_tag) AS tag,
+                      MAX(sp.student_name) AS student_name, MAX(sp.section) AS section
+                 FROM game_scores gs
+                 LEFT JOIN student_progress sp ON sp.save_code = gs.save_code
+                WHERE gs.created_at >= ?
+                GROUP BY gs.game_id, gs.save_code, gs.standard
+               HAVING COUNT(*) >= 2 AND (SUM(gs.correct) * 1.0) / COUNT(*) < 0.6
+                ORDER BY last_at DESC LIMIT 100`,
+            ).bind(since)
+        ).all();
+        for (const r of low.results || []) {
+          rows.push({
+            at: r.last_at,
+            signal: "low-score",
+            studentName: r.student_name || "",
+            section: r.section || "",
+            gameId: r.game_id || "",
+            standard: r.standard || "",
+            tag: r.tag || "",
+            saveCode: r.save_code || "",
+            attempts: Number(r.attempts) || 0,
+            correctRate: rate2(Number(r.correct_sum) || 0, Number(r.attempts) || 0),
+            source: "game",
+          });
+        }
+      } catch (e) {
+        /* game_scores not created yet — radar shows lesson signals only */
+      }
+      rows.sort((a, b) => String(b.at).localeCompare(String(a.at)));
+      const trimmed = rows.slice(0, 200);
+      return json({ ok: true, minutes, section, count: trimmed.length, rows: trimmed });
     } catch (err) {
       return json({ ok: false, error: "server-error", message: String(err) }, 500);
     }
