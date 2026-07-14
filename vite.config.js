@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import { resolve } from "path";
-import { readdirSync, existsSync, cpSync, mkdirSync } from "fs";
+import { readdirSync, existsSync, cpSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 
 function getLessonEntries() {
   const lessonsDir = resolve(__dirname, "lessons");
@@ -257,6 +257,26 @@ function copyStandaloneHtml() {
           }
         }
       }
+
+      // Post-build: auto-bust cache for all service workers in dist/
+      const buildTimestamp = Date.now();
+      function bustSwCaches(dir) {
+        if (!existsSync(dir)) return;
+        for (const entry of readdirSync(dir, { withFileTypes: true })) {
+          const full = resolve(dir, entry.name);
+          if (entry.isDirectory()) {
+            bustSwCaches(full);
+          } else if (entry.isFile() && entry.name === "sw.js") {
+            let content = readFileSync(full, "utf8");
+            content = content.replace(
+              /const CACHE = "[^"]*";/g,
+              `const CACHE = "nt-cache-${buildTimestamp}";`
+            );
+            writeFileSync(full, content);
+          }
+        }
+      }
+      bustSwCaches(resolve(__dirname, "dist"));
     },
   };
 }
