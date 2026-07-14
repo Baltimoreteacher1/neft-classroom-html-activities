@@ -5,7 +5,7 @@
    touch the rest of the site). Bump CACHE to ship new asset versions.
    Modeled on math/intervention/sw.js.
    ========================================================================== */
-const CACHE = "nt-lessons-v1";
+const CACHE = "nt-lessons-v2";
 const SCOPE = "/lessons/";
 // Shared multi-day Save/Resume widget injected on every lesson launcher. It
 // lives outside SCOPE (at /shared/), so it must be explicitly precached +

@@ -25,8 +25,8 @@ import { fileURLToPath } from "url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const MARK = "ntlp-injected";
-const LINK_TAG = '<link rel="stylesheet" href="/assets/lesson-platform.css">';
-const SCRIPT_TAG = '<script src="/assets/lesson-platform.js" defer></script>';
+const LINK_TAG = '<link rel="stylesheet" href="/assets/lesson-platform.css?v=20260714-v3">';
+const SCRIPT_TAG = '<script src="/assets/lesson-platform.js?v=20260714-v3" defer></script>';
 const BEGIN = `<!-- ${MARK}:begin (shared lesson platform — tools/inject-lesson-platform.js) -->`;
 const END = `<!-- ${MARK}:end -->`;
 

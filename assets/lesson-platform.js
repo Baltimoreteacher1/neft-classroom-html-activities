@@ -72,12 +72,14 @@
       css: "lesson-focus.css",
       global: "NTFocus",
     },
+    /*
     {
       name: "passport",
       js: "lesson-passport.js",
       css: "lesson-passport.css",
       global: "NTPassport",
     },
+    */
   ];
 
   function logWarn(msg, err) {
