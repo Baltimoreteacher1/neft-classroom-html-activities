@@ -84,7 +84,7 @@ export function initTeacherAccess() {
     }
   });
 
-  mountExitPill();
+  mountModeToggle();
 }
 
 /** Drop back to Student view and reload to re-render. */
@@ -98,19 +98,58 @@ function switchToStudent() {
   window.location.href = url.toString();
 }
 
-/** Floating "Exit to Student" pill — only shown WHEN ALREADY in teacher mode,
- *  so students never see a way to flip into teacher view. */
-function mountExitPill() {
-  if (!isTeacherMode()) return;
+/** Fixed TOP-RIGHT mode toggle — always mounted so the current mode is obvious
+ *  at a glance and one tap switches. Teacher Mode → one tap back to Student.
+ *  Student Mode → a compact control that reveals a PIN field to enter Teacher
+ *  Mode (same password gate as the login screen; students still can't get in
+ *  without it). Replaces the old bottom-left exit-only pill. */
+function mountModeToggle() {
   if (document.querySelector(".mode-toggle-pill")) return;
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = "mode-toggle-pill";
-  btn.setAttribute("aria-pressed", "true");
-  btn.textContent = "👩‍🏫 Teacher Mode · Exit";
-  btn.title = "Exit to Student view";
-  btn.addEventListener("click", switchToStudent);
-  document.body.append(btn);
+
+  if (isTeacherMode()) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "mode-toggle-pill is-teacher";
+    btn.setAttribute("aria-pressed", "true");
+    btn.innerHTML =
+      '<span class="mode-toggle-state">👩‍🏫 Teacher Mode</span>' +
+      '<span class="mode-toggle-action">Switch to Student</span>';
+    btn.title = "Switch to Student view";
+    btn.addEventListener("click", switchToStudent);
+    document.body.append(btn);
+    return;
+  }
+
+  // Student Mode: subtle control that reveals a PIN field to enter Teacher Mode.
+  const wrap = document.createElement("div");
+  wrap.className = "mode-toggle-pill is-student";
+  wrap.innerHTML =
+    '<button type="button" class="mode-toggle-enter" aria-haspopup="true" aria-expanded="false">' +
+    '<span class="mode-toggle-state">🎒 Student Mode</span>' +
+    '<span class="mode-toggle-action">Teacher →</span></button>' +
+    '<form class="mode-toggle-unlock" hidden>' +
+    '<input type="password" class="mode-toggle-pin" placeholder="Teacher password" autocomplete="off" aria-label="Teacher password" />' +
+    '<button type="submit" class="mode-toggle-go">Enter</button></form>';
+  const enterBtn = wrap.querySelector(".mode-toggle-enter");
+  const form = wrap.querySelector(".mode-toggle-unlock");
+  const pin = wrap.querySelector(".mode-toggle-pin");
+  enterBtn.addEventListener("click", () => {
+    const open = form.hidden;
+    form.hidden = !open;
+    enterBtn.setAttribute("aria-expanded", String(open));
+    if (open) pin.focus();
+  });
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (unlockTeacher(pin.value.trim())) {
+      window.location.reload();
+    } else {
+      pin.value = "";
+      pin.classList.add("is-error");
+      pin.focus();
+    }
+  });
+  document.body.append(wrap);
 }
 
 /** Password-gated Teacher button for the lesson login (identity) screen.

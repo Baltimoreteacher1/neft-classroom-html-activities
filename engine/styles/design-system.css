@@ -3476,29 +3476,94 @@ body:has(.identity-screen) .export-toolbar {
   color: var(--teal-ink);
 }
 
-/* ── Exit-to-Student pill (shown ONLY while in Teacher Mode) ──
-   Students never see this; entry to Teacher Mode is the password-gated
-   button on the lesson login screen (.identity-teacher). */
+/* ── Fixed top-right MODE TOGGLE (always visible) ──
+   Shows the current mode at a glance and switches in one tap. Teacher Mode is a
+   solid teal pill; Student Mode is a subtle outline control that reveals a PIN
+   field to enter Teacher Mode (same password gate as the login screen). */
 .mode-toggle-pill {
   position: fixed;
-  bottom: 14px;
-  left: 14px;
+  top: 12px;
+  right: 12px;
   z-index: 9600;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  font-size: 0.82rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.mode-toggle-pill.is-teacher {
+  gap: 8px;
   background: var(--teal, #128a87);
   color: #fff;
   font-weight: 800;
-  font-size: 0.82rem;
   padding: 8px 14px;
   border: 0;
-  border-radius: 999px;
-  cursor: pointer;
   box-shadow: 0 4px 14px rgba(18, 53, 91, 0.3);
 }
-.mode-toggle-pill:hover {
+.mode-toggle-pill.is-teacher:hover {
   filter: brightness(1.08);
+}
+.mode-toggle-pill .mode-toggle-action {
+  font-weight: 700;
+  opacity: 0.9;
+  border-left: 1px solid rgba(255, 255, 255, 0.45);
+  padding-left: 8px;
+}
+/* Student-mode control: quiet so it never distracts the student's work. */
+.mode-toggle-pill.is-student {
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--gray-300, #cbd5e1);
+  box-shadow: 0 2px 8px rgba(18, 53, 91, 0.12);
+  padding: 4px 6px 4px 12px;
+  color: var(--navy, #12355b);
+}
+.mode-toggle-pill.is-student .mode-toggle-enter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 2px;
+}
+.mode-toggle-pill.is-student .mode-toggle-action {
+  border-left: 1px solid var(--gray-300, #cbd5e1);
+  padding-left: 8px;
+  opacity: 0.75;
+}
+.mode-toggle-unlock {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-right: 4px;
+}
+/* [hidden] must win over the flex display above until the PIN field is revealed. */
+.mode-toggle-unlock[hidden] {
+  display: none;
+}
+.mode-toggle-pin {
+  width: 130px;
+  padding: 6px 10px;
+  border: 1px solid var(--gray-300, #cbd5e1);
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+.mode-toggle-pin.is-error {
+  border-color: #dc2626;
+}
+.mode-toggle-go {
+  background: var(--navy, #12355b);
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  font-weight: 700;
+  padding: 6px 12px;
+  cursor: pointer;
 }
 @media print {
   .mode-toggle-pill {
