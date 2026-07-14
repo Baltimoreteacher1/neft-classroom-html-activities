@@ -12,6 +12,9 @@
     />
     <title>Math Workbench — Mr. Neft's Math Class</title>
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#14223a" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -2656,6 +2659,22 @@
             <span class="i">✖️</span><span class="txt">Times Table</span>
           </button>
           <button
+            class="tbtn"
+            id="magicBtn"
+            title="Magic Ink — rough circles, lines, triangles and boxes snap into clean shapes"
+            aria-pressed="false"
+          >
+            <span class="i">✨</span><span class="txt">Magic Ink</span>
+          </button>
+          <button
+            class="tbtn"
+            id="replayBtn"
+            title="Replay — watch this page being drawn, step by step"
+            aria-pressed="false"
+          >
+            <span class="i">▶</span><span class="txt">Replay</span>
+          </button>
+          <button
             class="tbtn premium"
             id="guideBtn"
             title="Open guided problem templates and support cards"
@@ -2688,8 +2707,27 @@
           <button class="tbtn danger" id="clearBtn" title="Clear the whole board">
             <span class="i">🗑</span><span class="txt">Clear</span>
           </button>
+          <button class="tbtn premium" id="handinBtn" title="Turn in your work to Mr. Neft">
+            <span class="i">📤</span><span class="txt">Turn In</span>
+          </button>
           <button class="tbtn" id="printBtn" title="Print or save your work as a PDF">
             <span class="i">⤓</span><span class="txt">Save / Print</span>
+          </button>
+          <button
+            class="tbtn"
+            id="langBtn"
+            title="Cambiar a español — switch the Workbench voice and labels to Spanish"
+            aria-pressed="false"
+          >
+            <span class="i">🌎</span><span class="txt">Español</span>
+          </button>
+          <button
+            class="tbtn"
+            id="a11yBtn"
+            title="Access options — easy-read text, high contrast, calm mode, bigger buttons"
+            aria-pressed="false"
+          >
+            <span class="i">♿</span><span class="txt">Access</span>
           </button>
           <button
             class="tbtn"
@@ -3081,12 +3119,23 @@
           if (onDone) onDone();
           return;
         }
+        // Español mode: translate first (cached), then speak with a Spanish
+        // voice. Falls back to English if the translator is unreachable.
+        if (mwLang === "es") {
+          esTranslate(String(text)).then((tx) => {
+            rawSpeak(tx || String(text), tx ? "es-ES" : "en-US", onDone);
+          });
+          return;
+        }
+        rawSpeak(String(text), "en-US", onDone);
+      }
+      function rawSpeak(text, lang, onDone) {
         try {
           window.speechSynthesis.cancel();
           const u = new SpeechSynthesisUtterance(String(text));
           u.rate = 0.95;
           u.pitch = 1;
-          u.lang = "en-US";
+          u.lang = lang || "en-US";
           if (onDone) {
             u.onend = onDone;
             u.onerror = onDone;
@@ -3323,6 +3372,16 @@
         // 1:1, so no scroll offset is needed.
         ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
         for (const st of state.strokes) drawStroke(st);
+        // Live Board two-way ink: the teacher's ephemeral annotations ride on
+        // top of the student's own ink. Never merged into state.strokes, so
+        // they can never be saved into (or overwrite) the student's work.
+        for (const st of teacherInk) drawStroke(st);
+      }
+      // Ephemeral teacher-annotation strokes (see the Live Board module).
+      let teacherInk = [];
+      function setTeacherInk(strokes) {
+        teacherInk = Array.isArray(strokes) ? strokes : [];
+        renderCanvas();
       }
       /* --------------- Pages (tabs) + per-page vertical scroll --------------- */
       function clampPages(n) {
@@ -3523,14 +3582,37 @@
         setSnap(!snapOn);
         showToast(snapOn ? "Align on — items snap to the grid" : "Align off");
       });
-      function drawStroke(st) {
-        const pts = st.pts;
-        if (!pts.length) return;
+      function drawStroke(st, clipN) {
+        const all = st.pts;
+        if (!all.length) return;
+        // clipN (replay): draw only the first N points of the stroke.
+        const pts = clipN != null && clipN < all.length ? all.slice(0, Math.max(1, clipN)) : all;
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
         ctx.strokeStyle = st.color;
-        ctx.lineWidth = st.size;
         ctx.globalAlpha = st.tool === "highlighter" ? 0.32 : 1;
+        // Pressure path: pen strokes carry a per-point p (0..1). Render as short
+        // segments whose width follows the (smoothed) pressure so ink feels like
+        // a real pen. Finger/mouse strokes keep the fast single-path renderer.
+        if (st.hasP && pts.length > 2) {
+          let pw = widthFor(st, pts[0]);
+          for (let i = 1; i < pts.length; i++) {
+            const w = (pw + widthFor(st, pts[i])) / 2;
+            pw = widthFor(st, pts[i]);
+            ctx.lineWidth = w;
+            ctx.beginPath();
+            const mx0 = i === 1 ? pts[0].x : (pts[i - 1].x + pts[i - 2].x) / 2;
+            const my0 = i === 1 ? pts[0].y : (pts[i - 1].y + pts[i - 2].y) / 2;
+            const mx = (pts[i - 1].x + pts[i].x) / 2;
+            const my = (pts[i - 1].y + pts[i].y) / 2;
+            ctx.moveTo(mx0, my0);
+            ctx.quadraticCurveTo(pts[i - 1].x, pts[i - 1].y, mx, my);
+            ctx.stroke();
+          }
+          ctx.globalAlpha = 1;
+          return;
+        }
+        ctx.lineWidth = st.size;
         ctx.beginPath();
         ctx.moveTo(pts[0].x, pts[0].y);
         if (pts.length === 1) ctx.lineTo(pts[0].x + 0.1, pts[0].y + 0.1);
@@ -3541,6 +3623,12 @@
         }
         ctx.stroke();
         ctx.globalAlpha = 1;
+      }
+      // Width of a pressure-carrying point: 0 pressure ≈ 40% of the pen size,
+      // full pressure ≈ 160%, so light and heavy hands both stay legible.
+      function widthFor(st, pt) {
+        const p = pt.p == null ? 0.5 : pt.p;
+        return Math.max(0.6, st.size * (0.4 + p * 1.2));
       }
 
       /* ----------------------- Drawing interaction ----------------------- */
@@ -3571,6 +3659,22 @@
       function localPt(e) {
         return ptFromRect(e, workspace.getBoundingClientRect());
       }
+      // Pen-priority palm rejection: once a stylus has been seen recently, a
+      // touch contact is almost certainly the writing hand resting on the
+      // glass — ignore it entirely instead of starting a stray stroke.
+      let lastPenAt = 0;
+      // Per-point sample: document coords + when it happened (ms since the
+      // stroke began, for Replay) + pen pressure when a stylus reports one.
+      function samplePt(e, r, t0) {
+        const q = ptFromRect(e, r);
+        q.t = Math.max(0, Math.round((e.timeStamp || performance.now()) - t0));
+        if (e.pointerType === "pen") {
+          const p = e.pressure;
+          if (typeof p === "number" && p > 0 && p !== 0.5)
+            q.p = Math.min(1, Math.round(p * 100) / 100);
+        }
+        return q;
+      }
       canvas.addEventListener("pointerdown", (e) => {
         if (document.body.dataset.draw !== "1") return;
         // Palm rejection on touch hardware: once a stroke is in progress, ignore
@@ -3578,22 +3682,33 @@
         // never lay down stray ink while the student is writing. Likewise skip
         // non-primary touch points entirely.
         if (drawing) return;
+        if (e.pointerType === "pen") lastPenAt = Date.now();
         if (e.pointerType === "touch" && e.isPrimary === false) return;
+        if (e.pointerType === "touch" && Date.now() - lastPenAt < 900) return;
         canvas.setPointerCapture(e.pointerId);
         // Measure the workspace once and reuse it for the whole stroke. The
         // pointer is captured and nothing mutates layout mid-gesture, so this
         // avoids a getBoundingClientRect() (a synchronous layout query) on
         // every pointermove — and on every coalesced sample within it.
         const rect = workspace.getBoundingClientRect();
-        const p = ptFromRect(e, rect);
         if (tool === "eraser") {
-          eraseAt(p);
+          eraseAt(ptFromRect(e, rect));
           drawing = { erase: true, rect, pointerId: e.pointerId };
           return;
         }
         const color = tool === "highlighter" ? hiColor : penColor;
         const size = tool === "highlighter" ? Math.max(penSize * 3, 14) : penSize;
-        drawing = { tool, color, size, pts: [p], rect, pointerId: e.pointerId };
+        const t0 = e.timeStamp || performance.now();
+        drawing = {
+          tool,
+          color,
+          size,
+          pts: [samplePt(e, rect, t0)],
+          rect,
+          pointerId: e.pointerId,
+          t0,
+          hasP: e.pointerType === "pen",
+        };
       });
       canvas.addEventListener("pointermove", (e) => {
         if (!drawing) return;
@@ -3609,9 +3724,9 @@
         // stay smooth instead of rendering as long straight chords.
         const events = typeof e.getCoalescedEvents === "function" ? e.getCoalescedEvents() : null;
         if (events && events.length) {
-          for (const ce of events) drawing.pts.push(ptFromRect(ce, rect));
+          for (const ce of events) drawing.pts.push(samplePt(ce, rect, drawing.t0));
         } else {
-          drawing.pts.push(ptFromRect(e, rect));
+          drawing.pts.push(samplePt(e, rect, drawing.t0));
         }
         if (drawing.tool === "highlighter") {
           // A highlighter is semi-transparent: re-stroking the whole growing
@@ -3627,12 +3742,147 @@
       function endDraw() {
         if (!drawing) return;
         if (!drawing.erase && drawing.pts && drawing.pts.length) {
+          // Keep only what a saved stroke needs — the capture rect, pointer id
+          // and start time are per-gesture transients that would bloat every
+          // autosave and every Live Board frame.
+          delete drawing.rect;
+          delete drawing.pointerId;
+          delete drawing.t0;
+          if (magicInkOn && drawing.tool === "pen") beautifyStroke(drawing);
           state.strokes.push(drawing);
+          if (drawing.hasP || magicInkOn) renderCanvas();
           growToFit();
           pushHistory();
           updateEmpty();
         }
         drawing = null;
+      }
+
+      /* ----------------------- Magic Ink (shape beautify) ----------------------- */
+      // When the Magic Ink toggle is on, a rough hand-drawn line / circle /
+      // triangle / rectangle snaps to the clean figure the student meant.
+      // Point timestamps are re-spread evenly so Replay still animates it.
+      let magicInkOn = false;
+      try {
+        magicInkOn = localStorage.getItem("mw_magic") === "1";
+      } catch (e) {}
+      function setMagicInk(on) {
+        magicInkOn = !!on;
+        const b = $("#magicBtn");
+        if (b) b.setAttribute("aria-pressed", magicInkOn ? "true" : "false");
+        try {
+          localStorage.setItem("mw_magic", magicInkOn ? "1" : "0");
+        } catch (e) {}
+      }
+      // Ramer–Douglas–Peucker simplification: reduce a freehand path to its
+      // dominant corner points so we can count corners.
+      function rdp(pts, eps) {
+        if (pts.length < 3) return pts.slice();
+        let maxD = 0;
+        let idx = 0;
+        const a = pts[0];
+        const b = pts[pts.length - 1];
+        for (let i = 1; i < pts.length - 1; i++) {
+          const d = perpDist(pts[i], a, b);
+          if (d > maxD) {
+            maxD = d;
+            idx = i;
+          }
+        }
+        if (maxD <= eps) return [a, b];
+        const left = rdp(pts.slice(0, idx + 1), eps);
+        const right = rdp(pts.slice(idx), eps);
+        return left.slice(0, -1).concat(right);
+      }
+      function perpDist(p, a, b) {
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const len = Math.hypot(dx, dy) || 1;
+        return Math.abs(dy * p.x - dx * p.y + b.x * a.y - b.y * a.x) / len;
+      }
+      function beautifyStroke(st) {
+        const pts = st.pts;
+        if (pts.length < 8) return;
+        const dur = pts[pts.length - 1].t || 400;
+        const xs = pts.map((q) => q.x);
+        const ys = pts.map((q) => q.y);
+        const minX = Math.min.apply(null, xs);
+        const maxX = Math.max.apply(null, xs);
+        const minY = Math.min.apply(null, ys);
+        const maxY = Math.max.apply(null, ys);
+        const diag = Math.hypot(maxX - minX, maxY - minY);
+        if (diag < 24) return;
+        const closed =
+          Math.hypot(pts[0].x - pts[pts.length - 1].x, pts[0].y - pts[pts.length - 1].y) <
+          Math.max(20, diag * 0.18);
+        // Straight line: every point hugs the chord.
+        if (!closed) {
+          const a = pts[0];
+          const b = pts[pts.length - 1];
+          let dev = 0;
+          for (const q of pts) dev = Math.max(dev, perpDist(q, a, b));
+          if (dev < Math.max(6, diag * 0.045)) {
+            replacePts(st, [a, b], dur);
+            return;
+          }
+          return;
+        }
+        // Circle: radius from the centroid stays consistent.
+        const cx = xs.reduce((s, v) => s + v, 0) / pts.length;
+        const cy = ys.reduce((s, v) => s + v, 0) / pts.length;
+        const rs = pts.map((q) => Math.hypot(q.x - cx, q.y - cy));
+        const rMean = rs.reduce((s, v) => s + v, 0) / rs.length;
+        const rVar = Math.sqrt(rs.reduce((s, v) => s + (v - rMean) * (v - rMean), 0) / rs.length);
+        if (rMean > 12 && rVar / rMean < 0.16) {
+          const ring = [];
+          const N = 48;
+          for (let i = 0; i <= N; i++) {
+            const ang = (i / N) * Math.PI * 2;
+            ring.push({ x: cx + rMean * Math.cos(ang), y: cy + rMean * Math.sin(ang) });
+          }
+          replacePts(st, ring, dur);
+          return;
+        }
+        // Polygon: 3 corners → triangle, 4 → rectangle-ish quad.
+        const simple = rdp(pts, Math.max(8, diag * 0.04));
+        const corners = simple.slice(0, -1);
+        if (corners.length === 4) {
+          // Axis-align when the box is already close to level.
+          const quad = [
+            { x: minX, y: minY },
+            { x: maxX, y: minY },
+            { x: maxX, y: maxY },
+            { x: minX, y: maxY },
+          ];
+          let boxErr = 0;
+          for (let i = 0; i < 4; i++) {
+            let best = 1e9;
+            for (const q of quad)
+              best = Math.min(best, Math.hypot(corners[i].x - q.x, corners[i].y - q.y));
+            boxErr = Math.max(boxErr, best);
+          }
+          const shape = boxErr < diag * 0.14 ? quad : corners;
+          replacePts(st, shape.concat([shape[0]]), dur);
+          return;
+        }
+        if (corners.length === 3) {
+          replacePts(st, corners.concat([corners[0]]), dur);
+        }
+      }
+      // Swap a stroke's freehand points for the idealized outline, spreading
+      // timestamps evenly across the original drawing duration for Replay.
+      function replacePts(st, shape, dur) {
+        const out = [];
+        for (let i = 0; i < shape.length; i++) {
+          out.push({
+            x: Math.round(shape[i].x * 10) / 10,
+            y: Math.round(shape[i].y * 10) / 10,
+            t: Math.round((i / Math.max(1, shape.length - 1)) * dur),
+          });
+        }
+        st.pts = out;
+        st.hasP = false;
+        showToast("✨ Magic Ink cleaned up your shape");
       }
       canvas.addEventListener("pointerup", endDraw);
       canvas.addEventListener("pointercancel", endDraw);
@@ -8864,7 +9114,8 @@
          Reuses snapshot()/applySnap(); a student transmits nothing unless they
          opt in, and a follower's / monitor's own board is stashed and restored. */
       (function liveBoard() {
-        const WS_URL = "wss://workbench-live.neftjd.workers.dev/live";
+        // Overridable for local/integration testing (window.__mwbWsUrl).
+        const WS_URL = window.__mwbWsUrl || "wss://workbench-live.neftjd.workers.dev/live";
         const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no O/0/I/1
         const liveBtn = document.getElementById("liveBtn");
         if (!liveBtn || !("WebSocket" in window)) return;
@@ -8950,8 +9201,136 @@
           tries = 0,
           watchingSid = null,
           lastThumb = 0,
-          grid = null;
+          grid = null,
+          annotateToastAt = 0,
+          annotateOn = false,
+          annStroke = null;
         const cards = {};
+
+        // A page the teacher pushed to the class: add it as a NEW page so it
+        // can never bury or overwrite the student's own work.
+        function handlePushedPage(snap) {
+          if (notebook.boards.length >= MAX_TABS) {
+            showToast("Your teacher sent a page, but your notebook is full (" + MAX_TABS + ")");
+            return;
+          }
+          let d = null;
+          try {
+            d = JSON.parse(snap);
+          } catch (e) {
+            return;
+          }
+          const board = coerceBoard(d);
+          (board.objects || []).forEach((o) => {
+            o.id = nid();
+          });
+          notebook.boards.push(board);
+          renderTabs();
+          const n = notebook.boards.length;
+          if (liveFollowing) {
+            showToast("📬 Your teacher sent you a page — it's page " + n);
+          } else {
+            showToast("📬 Your teacher sent you a page", {
+              label: "Open it",
+              fn: () => switchBoard(n - 1),
+            });
+            persist();
+          }
+        }
+
+        // Send a copy of the teacher's CURRENT page to every connected student.
+        // Privacy guard: never while drilled into a student's board — the
+        // mirrored board is on screen then, and pushing it would broadcast one
+        // student's work to the whole class.
+        function pushCurrentPage() {
+          if (watchingSid || liveFollowing) {
+            showToast("Go “Back to class” first, then send your own page");
+            return;
+          }
+          if (!ws || ws.readyState !== 1) {
+            showToast("Not connected yet — try again in a second");
+            return;
+          }
+          try {
+            ws.send(JSON.stringify({ type: "push", snap: snapshot() }));
+            showToast("📬 Page sent — it lands as a new page in each student's notebook");
+          } catch (e) {
+            showToast("Couldn't send the page — check your connection");
+          }
+        }
+
+        // ---------- two-way ink: teacher draws on a watched board ----------
+        function setAnnotate(on) {
+          annotateOn = !!on;
+          document.body.classList.toggle("wb-annotating", annotateOn);
+          const b = document.getElementById("liveAnnBtn");
+          if (b) b.setAttribute("aria-pressed", annotateOn ? "true" : "false");
+        }
+        function sendAnnotate() {
+          if (!ws || ws.readyState !== 1 || !watchingSid) return;
+          try {
+            ws.send(
+              JSON.stringify({
+                type: "annotate",
+                sid: watchingSid,
+                strokes: teacherInk.map((st) => ({
+                  tool: st.tool,
+                  color: st.color,
+                  size: st.size,
+                  pts: st.pts.map((q) => ({ x: Math.round(q.x), y: Math.round(q.y) })),
+                })),
+              }),
+            );
+          } catch (e) {}
+        }
+        function clearAnnotate(send) {
+          setTeacherInk([]);
+          annStroke = null;
+          if (send && ws && ws.readyState === 1 && watchingSid) {
+            try {
+              ws.send(JSON.stringify({ type: "annotate-clear", sid: watchingSid }));
+            } catch (e) {}
+          }
+        }
+        // Capture-phase handlers on the workspace so annotation ink can never
+        // fall through into the (locked) student drawing pipeline.
+        workspace.addEventListener(
+          "pointerdown",
+          (e) => {
+            if (!annotateOn || !watchingSid) return;
+            e.stopPropagation();
+            e.preventDefault();
+            annStroke = {
+              tool: "pen",
+              color: "#dc2626",
+              size: 4,
+              pts: [localPt(e)],
+            };
+            teacherInk.push(annStroke);
+          },
+          true,
+        );
+        workspace.addEventListener(
+          "pointermove",
+          (e) => {
+            if (!annStroke) return;
+            e.stopPropagation();
+            annStroke.pts.push(localPt(e));
+            renderCanvas();
+          },
+          true,
+        );
+        function annotateUp(e) {
+          if (!annStroke) return;
+          if (e) e.stopPropagation();
+          annStroke = null;
+          // Cap the overlay so it always fits the worker's message limit.
+          if (teacherInk.length > 50) teacherInk = teacherInk.slice(-50);
+          renderCanvas();
+          sendAnnotate();
+        }
+        workspace.addEventListener("pointerup", annotateUp, true);
+        workspace.addEventListener("pointercancel", annotateUp, true);
 
         function genCode() {
           let s = "";
@@ -9081,14 +9460,16 @@
             code.toUpperCase() +
             "</div>" +
             '<p class="live-count" id="liveCount">Waiting for students to join…</p>' +
+            '<button type="button" class="live-btn" id="livePush">📬 Send this page to the class</button>' +
             '<button type="button" class="live-btn danger" id="liveStop">⏹ Stop broadcasting</button>' +
-            '<p class="live-note">Only your board is shared. Students follow along and can’t change your work.</p>' +
+            '<p class="live-note">Only your board is shared. Students follow along and can’t change your work. “Send this page” drops a copy into each student’s own notebook to work on.</p>' +
             '<div class="live-sec"><div class="live-sec-t">🎲 Class Play</div>' +
             '<p class="live-note">Run a lesson’s practice questions on every student screen — one at a time, live tally here.</p>' +
             '<input id="playLesson" class="live-input" maxlength="8" placeholder="Lesson (e.g. 4-2)" autocomplete="off" />' +
             '<div class="live-join"><button type="button" class="live-btn primary" id="playStart">▶ Start</button></div>' +
             '<div id="playHost"></div></div>';
           body.querySelector("#liveStop").onclick = () => stopAll();
+          body.querySelector("#livePush").onclick = pushCurrentPage;
           body.querySelector("#playStart").onclick = () =>
             playStartFromLesson(body.querySelector("#playLesson").value);
         }
@@ -9353,12 +9734,14 @@
             "</div>" +
             '<p class="live-count" id="liveCount">0 students sharing</p>' +
             '<button type="button" class="live-btn" id="liveOpenGrid">🔳 Open class grid</button>' +
+            '<button type="button" class="live-btn" id="livePushMon">📬 Send my page to the class</button>' +
             '<button type="button" class="live-btn danger" id="liveStopMon">⏹ Stop monitoring</button>' +
             '<p class="live-note">Only you see the grid. Students never see each other’s work.</p>';
           body.querySelector("#liveOpenGrid").onclick = () => {
             buildGrid();
             grid.style.display = "flex";
           };
+          body.querySelector("#livePushMon").onclick = pushCurrentPage;
           body.querySelector("#liveStopMon").onclick = () => stopAll();
         }
         function buildGrid() {
@@ -9441,6 +9824,8 @@
           showWatchBanner((cards[sid] && cards[sid].name) || "student");
         }
         function backToClass() {
+          setAnnotate(false);
+          clearAnnotate(true);
           if (watchingSid) {
             try {
               ws.send(JSON.stringify({ type: "unwatch" }));
@@ -9458,9 +9843,14 @@
             b.id = "liveWatchBanner";
             b.className = "live-banner";
             b.innerHTML =
-              '👁 Watching <b class="wb-nm"></b> — <button type="button" id="liveWatchBack">Back to class</button>';
+              '👁 Watching <b class="wb-nm"></b> — ' +
+              '<button type="button" id="liveAnnBtn" aria-pressed="false" title="Draw on this student\'s page — they see your marks live">🖊 Draw</button> ' +
+              '<button type="button" id="liveAnnClear" title="Erase your marks from their page">🧽 Clear marks</button> ' +
+              '<button type="button" id="liveWatchBack">Back to class</button>';
             document.body.appendChild(b);
             b.querySelector("#liveWatchBack").onclick = backToClass;
+            b.querySelector("#liveAnnBtn").onclick = () => setAnnotate(!annotateOn);
+            b.querySelector("#liveAnnClear").onclick = () => clearAnnotate(true);
           }
           b.querySelector(".wb-nm").textContent = nm;
           b.style.display = "flex";
@@ -9565,9 +9955,26 @@
                 applySnap(m.snap);
               } else if (m.type === "play-state") {
                 playRenderStudent(m.q || null);
+              } else if (m.type === "push" && typeof m.snap === "string") {
+                handlePushedPage(m.snap);
               } else if (m.type === "end") {
                 showToast("Your teacher ended the broadcast — your board is back");
                 stopAll();
+              }
+            } else if (role === "sharer") {
+              // Two-way ink: the teacher can draw on THIS student's page while
+              // watching it. Their marks live in a separate overlay layer —
+              // never merged into the student's own strokes or saved work.
+              if (m.type === "annotate" && Array.isArray(m.strokes)) {
+                setTeacherInk(m.strokes);
+                if (!annotateToastAt || Date.now() - annotateToastAt > 15000) {
+                  annotateToastAt = Date.now();
+                  showToast("🖊 Your teacher is drawing on your page");
+                }
+              } else if (m.type === "annotate-clear") {
+                setTeacherInk([]);
+              } else if (m.type === "push" && typeof m.snap === "string") {
+                handlePushedPage(m.snap);
               }
             } else if (role === "teacher") {
               if (m.type === "play-score") {
@@ -9635,6 +10042,9 @@
             sendTimer = null;
           }
           liveTeacherOnChange = null;
+          setAnnotate(false);
+          setTeacherInk([]);
+          annStroke = null;
           if (watchingSid) {
             try {
               ws.send(JSON.stringify({ type: "unwatch" }));
@@ -9692,7 +10102,694 @@
         if (t) makeObject("text", { text: String(t) });
       });
 
+      /* ===================== Español mode (bilingual layer) ===================== */
+      // One toggle flips the Workbench voice to Spanish: read-aloud speaks
+      // Spanish (translated on demand via the tutor API and cached locally so
+      // repeats are instant/offline), and the Math Coach replies in Spanish.
+      // Content stays visually EN so the math matches the board work.
+      let mwLang = "en";
+      try {
+        mwLang = localStorage.getItem("mw_lang") === "es" ? "es" : "en";
+      } catch (e) {}
+      window.__mwbLang = mwLang;
+      const ES_CACHE_KEY = "mw_es_cache_v1";
+      let esCache = null;
+      function esCacheLoad() {
+        if (esCache) return esCache;
+        try {
+          esCache = JSON.parse(localStorage.getItem(ES_CACHE_KEY)) || {};
+        } catch (e) {
+          esCache = {};
+        }
+        return esCache;
+      }
+      function esCacheSave() {
+        try {
+          const keys = Object.keys(esCache);
+          // Keep the cache bounded; drop oldest half when it grows too big.
+          if (keys.length > 240) for (const k of keys.slice(0, 120)) delete esCache[k];
+          localStorage.setItem(ES_CACHE_KEY, JSON.stringify(esCache));
+        } catch (e) {}
+      }
+      function esTranslate(text) {
+        const t = String(text || "").slice(0, 900);
+        if (!t) return Promise.resolve("");
+        const cache = esCacheLoad();
+        if (cache[t]) return Promise.resolve(cache[t]);
+        return fetch("/api/tutor", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mode: "translate", lang: "Spanish", itemText: t }),
+        })
+          .then((r) => (r.ok ? r.json() : null))
+          .then((d) => {
+            const tx = d && d.reply ? String(d.reply).trim() : "";
+            if (tx) {
+              cache[t] = tx;
+              esCacheSave();
+            }
+            return tx;
+          })
+          .catch(() => "");
+      }
+      function setLang(lang) {
+        mwLang = lang === "es" ? "es" : "en";
+        window.__mwbLang = mwLang;
+        try {
+          localStorage.setItem("mw_lang", mwLang);
+        } catch (e) {}
+        const b = $("#langBtn");
+        if (b) {
+          b.setAttribute("aria-pressed", mwLang === "es" ? "true" : "false");
+          b.querySelector(".txt").textContent = mwLang === "es" ? "English" : "Español";
+        }
+        document.body.classList.toggle("lang-es", mwLang === "es");
+        showToast(
+          mwLang === "es"
+            ? "🌎 Modo español: la lectura en voz alta y el Coach hablan español"
+            : "🌎 English mode on",
+        );
+      }
+      $("#langBtn").addEventListener("click", () => setLang(mwLang === "es" ? "en" : "es"));
+      if (mwLang === "es") {
+        document.body.classList.add("lang-es");
+        const lb = $("#langBtn");
+        lb.setAttribute("aria-pressed", "true");
+        lb.querySelector(".txt").textContent = "English";
+      }
+      $("#magicBtn").addEventListener("click", () => {
+        setMagicInk(!magicInkOn);
+        showToast(
+          magicInkOn
+            ? "✨ Magic Ink on — rough shapes snap into clean ones"
+            : "Magic Ink off — ink stays exactly as you draw it",
+        );
+      });
+      if (magicInkOn) $("#magicBtn").setAttribute("aria-pressed", "true");
+
+      /* ===================== Access panel (WCAG layer) ===================== */
+      // Student-facing accessibility switches. Each is a body class driven by
+      // CSS only, so they compose safely and can never break board logic.
+      const A11Y = [
+        {
+          key: "spacing",
+          label: "Easy-read text",
+          hint: "Extra letter and line spacing",
+          cls: "a11y-spacing",
+        },
+        {
+          key: "contrast",
+          label: "High contrast",
+          hint: "Darker text and stronger outlines",
+          cls: "a11y-contrast",
+        },
+        {
+          key: "bigui",
+          label: "Bigger buttons",
+          hint: "Larger toolbar buttons and labels",
+          cls: "a11y-bigui",
+        },
+        {
+          key: "calm",
+          label: "Calm mode",
+          hint: "No animations or moving effects",
+          cls: "a11y-calm",
+        },
+      ];
+      let a11yPrefs = {};
+      try {
+        a11yPrefs = JSON.parse(localStorage.getItem("mw_a11y")) || {};
+      } catch (e) {
+        a11yPrefs = {};
+      }
+      function a11yApply() {
+        for (const o of A11Y) document.body.classList.toggle(o.cls, !!a11yPrefs[o.key]);
+        try {
+          localStorage.setItem("mw_a11y", JSON.stringify(a11yPrefs));
+        } catch (e) {}
+      }
+      a11yApply();
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.body.classList.add("a11y-calm");
+      }
+      let a11yPanel = null;
+      function buildA11yPanel() {
+        if (a11yPanel) return a11yPanel;
+        a11yPanel = document.createElement("div");
+        a11yPanel.id = "a11yPanel";
+        a11yPanel.className = "a11y-panel";
+        a11yPanel.setAttribute("role", "dialog");
+        a11yPanel.setAttribute("aria-label", "Access options");
+        a11yPanel.hidden = true;
+        let inner =
+          '<div class="a11y-head"><b>♿ Access options</b><button type="button" class="a11y-x" id="a11yClose" aria-label="Close access options">✕</button></div>';
+        for (const o of A11Y) {
+          inner +=
+            '<label class="a11y-row"><input type="checkbox" data-a11y="' +
+            o.key +
+            '"' +
+            (a11yPrefs[o.key] ? " checked" : "") +
+            "/><span><b>" +
+            o.label +
+            "</b><small>" +
+            o.hint +
+            "</small></span></label>";
+        }
+        inner +=
+          '<p class="a11y-note">Tip: every tool on the board can also be moved with the keyboard — tap a tile, then use the arrow keys. Press ? for Help.</p>';
+        a11yPanel.innerHTML = inner;
+        document.body.appendChild(a11yPanel);
+        a11yPanel.querySelector("#a11yClose").addEventListener("click", () => toggleA11y(false));
+        a11yPanel.addEventListener("change", (e) => {
+          const k = e.target && e.target.getAttribute && e.target.getAttribute("data-a11y");
+          if (!k) return;
+          a11yPrefs[k] = !!e.target.checked;
+          a11yApply();
+        });
+        return a11yPanel;
+      }
+      function toggleA11y(show) {
+        const p = buildA11yPanel();
+        const want = show != null ? show : p.hidden;
+        p.hidden = !want;
+        $("#a11yBtn").setAttribute("aria-pressed", want ? "true" : "false");
+      }
+      $("#a11yBtn").addEventListener("click", () => toggleA11y());
+
+      /* ===================== Replay (see your thinking) ===================== */
+      // Every ink point carries a timestamp, so a page can be replayed exactly
+      // as it was written — for the student to review, or for the teacher to
+      // see HOW a problem was solved, not just the final page.
+      (function () {
+        const btn = $("#replayBtn");
+        let bar = null,
+          playing = false,
+          raf = 0,
+          tCur = 0,
+          speed = 1,
+          lastTick = 0;
+        const GAP = 260; // pause between strokes, ms
+        function strokeDur(st) {
+          const pts = st.pts || [];
+          const t = pts.length ? pts[pts.length - 1].t : 0;
+          return typeof t === "number" && t > 0 ? Math.min(t, 20000) : 420;
+        }
+        function timeline() {
+          let total = 0;
+          const marks = [];
+          for (const st of state.strokes) {
+            const d = strokeDur(st);
+            marks.push({ st, start: total, dur: d });
+            total += d + GAP;
+          }
+          return { marks, total: Math.max(1, total - GAP) };
+        }
+        function renderAt(tl, ms) {
+          ctx.save();
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.restore();
+          ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+          for (const m of tl.marks) {
+            if (ms >= m.start + m.dur) {
+              drawStroke(m.st);
+            } else if (ms > m.start) {
+              const local = ms - m.start;
+              const pts = m.st.pts;
+              let n = 0;
+              if (
+                pts.length &&
+                typeof pts[pts.length - 1].t === "number" &&
+                pts[pts.length - 1].t > 0
+              ) {
+                while (n < pts.length && (pts[n].t || 0) <= local) n++;
+              } else {
+                n = Math.ceil((local / m.dur) * pts.length);
+              }
+              drawStroke(m.st, Math.max(1, n));
+            }
+          }
+        }
+        let tl = null;
+        function open() {
+          if (!state.strokes.length) {
+            showToast("Draw something first, then Replay shows it being written");
+            return;
+          }
+          tl = timeline();
+          tCur = 0;
+          document.body.classList.add("wb-replaying");
+          btn.setAttribute("aria-pressed", "true");
+          if (!bar) {
+            bar = document.createElement("div");
+            bar.id = "replayBar";
+            bar.className = "replay-bar";
+            bar.setAttribute("role", "toolbar");
+            bar.setAttribute("aria-label", "Replay controls");
+            bar.innerHTML =
+              '<button type="button" id="rpPlay" class="rp-btn" aria-label="Play or pause">▶</button>' +
+              '<input type="range" id="rpSeek" min="0" max="1000" value="0" aria-label="Replay position" />' +
+              '<select id="rpSpeed" aria-label="Replay speed"><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option></select>' +
+              '<button type="button" id="rpClose" class="rp-btn" aria-label="Close replay">✕</button>';
+            document.body.appendChild(bar);
+            bar
+              .querySelector("#rpPlay")
+              .addEventListener("click", () => (playing ? pause() : play()));
+            bar.querySelector("#rpClose").addEventListener("click", close);
+            bar.querySelector("#rpSpeed").addEventListener("change", (e) => {
+              speed = Number(e.target.value) || 1;
+            });
+            bar.querySelector("#rpSeek").addEventListener("input", (e) => {
+              pause();
+              tCur = (Number(e.target.value) / 1000) * tl.total;
+              renderAt(tl, tCur);
+            });
+          }
+          bar.hidden = false;
+          renderAt(tl, 0);
+          play();
+        }
+        function play() {
+          playing = true;
+          bar.querySelector("#rpPlay").textContent = "⏸";
+          lastTick = performance.now();
+          raf = requestAnimationFrame(tick);
+        }
+        function pause() {
+          playing = false;
+          if (bar) bar.querySelector("#rpPlay").textContent = "▶";
+          cancelAnimationFrame(raf);
+        }
+        function tick(now) {
+          if (!playing) return;
+          tCur += (now - lastTick) * speed;
+          lastTick = now;
+          if (tCur >= tl.total) {
+            tCur = tl.total;
+            pause();
+          }
+          bar.querySelector("#rpSeek").value = String(Math.round((tCur / tl.total) * 1000));
+          renderAt(tl, tCur);
+          if (playing) raf = requestAnimationFrame(tick);
+        }
+        function close() {
+          pause();
+          if (bar) bar.hidden = true;
+          document.body.classList.remove("wb-replaying");
+          btn.setAttribute("aria-pressed", "false");
+          renderCanvas();
+        }
+        btn.addEventListener("click", () => {
+          document.body.classList.contains("wb-replaying") ? close() : open();
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && document.body.classList.contains("wb-replaying")) close();
+        });
+      })();
+
+      /* ===================== Turn In (hand-in to teacher) ===================== */
+      // Sends the current page (plus a small snapshot image) to the classroom
+      // progress backend so it lands in Mr. Neft's gradebook and digest — the
+      // Workbench becomes assessable evidence, not just scratch paper.
+      (function () {
+        const CODE_KEY = "mw_handin_code";
+        const WHO_KEY = "mw_handin_who";
+        function handinCode() {
+          let c = "";
+          try {
+            c = localStorage.getItem(CODE_KEY) || "";
+          } catch (e) {}
+          if (/^MWB-[A-Z0-9]{5}$/.test(c)) return c;
+          const AB = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+          let s = "";
+          const a = new Uint32Array(5);
+          if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(a);
+          for (let i = 0; i < 5; i++) s += AB[a[i] % AB.length];
+          c = "MWB-" + s;
+          try {
+            localStorage.setItem(CODE_KEY, c);
+          } catch (e) {}
+          return c;
+        }
+        function textFromBoard() {
+          const parts = [];
+          const els = document.querySelectorAll("#overlay .obj");
+          for (const el of els) {
+            const t = (el.textContent || "").replace(/\s+/g, " ").trim();
+            if (t) parts.push(t);
+          }
+          const joined = parts.join("  |  ");
+          return joined.length > 1500 ? joined.slice(0, 1500) + "…" : joined;
+        }
+        function inkThumb() {
+          try {
+            if (!canvas.width || !canvas.height) return null;
+            const scale = Math.min(1, 480 / Math.max(canvas.width, canvas.height));
+            const c = document.createElement("canvas");
+            c.width = Math.max(1, Math.round(canvas.width * scale));
+            c.height = Math.max(1, Math.round(canvas.height * scale));
+            const x = c.getContext("2d");
+            x.fillStyle = "#fff";
+            x.fillRect(0, 0, c.width, c.height);
+            x.drawImage(canvas, 0, 0, c.width, c.height);
+            return c.toDataURL("image/jpeg", 0.55);
+          } catch (e) {
+            return null;
+          }
+        }
+        let panel = null;
+        function buildPanel() {
+          if (panel) return panel;
+          let who = {};
+          try {
+            who = JSON.parse(localStorage.getItem(WHO_KEY)) || {};
+          } catch (e) {}
+          panel = document.createElement("div");
+          panel.id = "handinPanel";
+          panel.className = "handin-panel";
+          panel.setAttribute("role", "dialog");
+          panel.setAttribute("aria-label", "Turn in your work");
+          panel.hidden = true;
+          panel.innerHTML =
+            '<div class="a11y-head"><b>📤 Turn in to Mr. Neft</b><button type="button" class="a11y-x" id="hiClose" aria-label="Close turn in">✕</button></div>' +
+            '<label class="hi-row">First name<input id="hiName" maxlength="30" autocomplete="off" value="' +
+            String(who.name || "").replace(/["<>]/g, "") +
+            '" /></label>' +
+            '<label class="hi-row">Class period<input id="hiSection" maxlength="12" autocomplete="off" placeholder="e.g. 601" value="' +
+            String(who.section || "").replace(/["<>]/g, "") +
+            '" /></label>' +
+            '<label class="hi-row">Note to teacher (optional)<input id="hiNote" maxlength="120" autocomplete="off" placeholder="What did you work on?" /></label>' +
+            '<button type="button" class="live-btn primary" id="hiSend">Turn in this page</button>' +
+            '<p class="a11y-note" id="hiStatus" aria-live="polite"></p>';
+          document.body.appendChild(panel);
+          panel.querySelector("#hiClose").addEventListener("click", () => togglePanel(false));
+          panel.querySelector("#hiSend").addEventListener("click", submit);
+          return panel;
+        }
+        function togglePanel(show) {
+          const p = buildPanel();
+          p.hidden = show != null ? !show : !p.hidden;
+          if (!p.hidden) setTimeout(() => p.querySelector("#hiName").focus(), 40);
+        }
+        function submit() {
+          const p = panel;
+          const name = p.querySelector("#hiName").value.trim().slice(0, 30);
+          const section = p.querySelector("#hiSection").value.trim().slice(0, 12);
+          const note = p.querySelector("#hiNote").value.trim().slice(0, 120);
+          const status = p.querySelector("#hiStatus");
+          if (!name) {
+            status.textContent = "Type your first name so Mr. Neft knows whose work this is.";
+            p.querySelector("#hiName").focus();
+            return;
+          }
+          if (!state.strokes.length && !state.objects.length) {
+            status.textContent = "This page is empty — do some work first, then turn it in.";
+            return;
+          }
+          try {
+            localStorage.setItem(WHO_KEY, JSON.stringify({ name, section }));
+          } catch (e) {}
+          const code = handinCode();
+          status.textContent = "Sending…";
+          p.querySelector("#hiSend").disabled = true;
+          fetch("/api/progress/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              saveCode: code,
+              activityId: "math-workbench",
+              activityTitle: "Math Workbench — Turn In",
+              studentName: name,
+              section: section,
+              progressPercent: 100,
+              state: {
+                kind: "workbench-handin",
+                note: note,
+                text: textFromBoard(),
+                board: JSON.parse(snapshot()),
+                thumb: inkThumb(),
+                pageCount: notebook.boards.length,
+                page: notebook.active + 1,
+                lang: mwLang,
+              },
+            }),
+          })
+            .then((r) => (r.ok ? r.json() : Promise.reject(new Error("http " + r.status))))
+            .then(() => {
+              status.textContent =
+                "✅ Turned in! Mr. Neft can see this page now. Your code: " + code;
+              showToast("📤 Turned in to Mr. Neft — nice work!");
+            })
+            .catch(() => {
+              status.textContent =
+                "Couldn't reach the classroom server. Your work is still saved on this device — try again in a minute.";
+            })
+            .then(() => {
+              p.querySelector("#hiSend").disabled = false;
+            });
+        }
+        $("#handinBtn").addEventListener("click", () => togglePanel());
+      })();
+
+      /* ===================== Portfolio print (all pages) ===================== */
+      // Save / Print now offers the whole notebook as one clean packet — a
+      // header per page (name, date, page number) over the ink + tools — so a
+      // student can hand a conference-ready PDF to a parent or an IEP meeting.
+      (function () {
+        const printBtn = $("#printBtn");
+        let choice = null;
+        function buildChoice() {
+          if (choice) return choice;
+          choice = document.createElement("div");
+          choice.id = "printChoice";
+          choice.className = "a11y-panel";
+          choice.setAttribute("role", "dialog");
+          choice.setAttribute("aria-label", "Print options");
+          choice.hidden = true;
+          choice.innerHTML =
+            '<div class="a11y-head"><b>⤓ Save / Print</b><button type="button" class="a11y-x" id="pcClose" aria-label="Close print options">✕</button></div>' +
+            '<button type="button" class="live-btn" id="pcPage">🖨 This page</button>' +
+            '<button type="button" class="live-btn primary" id="pcAll">📚 All pages (portfolio)</button>' +
+            '<p class="a11y-note">Portfolio prints every page with your name and the date — great for conferences.</p>';
+          document.body.appendChild(choice);
+          choice.querySelector("#pcClose").addEventListener("click", () => (choice.hidden = true));
+          choice.querySelector("#pcPage").addEventListener("click", () => {
+            choice.hidden = true;
+            setTimeout(() => window.print(), 60);
+          });
+          choice.querySelector("#pcAll").addEventListener("click", () => {
+            choice.hidden = true;
+            printPortfolio();
+          });
+          return choice;
+        }
+        // Replace the plain print handler with the chooser. The original
+        // listener still runs (it only closes flyouts), which is harmless.
+        printBtn.addEventListener("click", (e) => {
+          e.stopImmediatePropagation();
+          const c = buildChoice();
+          c.hidden = !c.hidden;
+        });
+        function pageImage() {
+          // Downscaled composite of the CURRENT board's ink, trimmed to its
+          // written extent so empty tail-screens don't print as blank pages.
+          const usedH = Math.max(600, Math.min(contentBottom() + 140, canvas.height / DPR));
+          const cssW = canvas.width / DPR;
+          const scale = Math.min(1, 1100 / cssW);
+          const c = document.createElement("canvas");
+          c.width = Math.round(cssW * scale);
+          c.height = Math.round(usedH * scale);
+          const x = c.getContext("2d");
+          x.fillStyle = "#fff";
+          x.fillRect(0, 0, c.width, c.height);
+          x.drawImage(canvas, 0, 0, canvas.width, Math.round(usedH * DPR), 0, 0, c.width, c.height);
+          return { url: c.toDataURL("image/png"), cssW, usedH, scale };
+        }
+        function printPortfolio() {
+          let who = {};
+          try {
+            who = JSON.parse(localStorage.getItem("mw_handin_who")) || {};
+          } catch (e) {}
+          const original = notebook.active;
+          let view = document.getElementById("portfolioView");
+          if (!view) {
+            view = document.createElement("div");
+            view.id = "portfolioView";
+            document.body.appendChild(view);
+          }
+          view.innerHTML = "";
+          const stamp = new Date().toLocaleDateString();
+          for (let i = 0; i < notebook.boards.length; i++) {
+            switchBoard(i);
+            const img = pageImage();
+            const page = document.createElement("div");
+            page.className = "pf-page";
+            const objs = document.getElementById("overlay");
+            page.innerHTML =
+              '<div class="pf-head"><b>' +
+              (who.name ? String(who.name).replace(/[<>]/g, "") + " · " : "") +
+              "Math Workbench</b><span>" +
+              stamp +
+              " · Page " +
+              (i + 1) +
+              " of " +
+              notebook.boards.length +
+              "</span></div>";
+            const sheet = document.createElement("div");
+            sheet.className = "pf-sheet";
+            sheet.style.width = img.cssW * img.scale + "px";
+            sheet.style.height = img.usedH * img.scale + "px";
+            const bg = document.createElement("img");
+            bg.src = img.url;
+            bg.alt = "Page " + (i + 1) + " ink";
+            bg.className = "pf-ink";
+            sheet.appendChild(bg);
+            const clones = document.createElement("div");
+            clones.className = "pf-objs";
+            clones.style.transform = "scale(" + img.scale + ")";
+            clones.innerHTML = objs ? objs.innerHTML : "";
+            sheet.appendChild(clones);
+            page.appendChild(sheet);
+            view.appendChild(page);
+          }
+          switchBoard(original);
+          document.body.classList.add("pf-printing");
+          const done = () => {
+            document.body.classList.remove("pf-printing");
+            view.innerHTML = "";
+            window.removeEventListener("afterprint", done);
+          };
+          window.addEventListener("afterprint", done);
+          setTimeout(() => window.print(), 120);
+        }
+      })();
+
+      /* ===================== Lesson launch presets ===================== */
+      // Deep links from lessons open the Workbench pre-set for the skill:
+      // /curriculum/math-workbench/?preset=ratio-tables (or ?bg=coord, or
+      // ?problem=<encoded text>). Existing student work is never touched — a
+      // preset lands on a fresh page when the current one has work on it.
+      const PRESETS = {
+        "ratio-tables": {
+          title: "Ratio tables",
+          bg: "grid",
+          tools: [{ type: "ratiotable", cols: 4 }],
+          problem:
+            "A recipe uses 2 cups of flour for every 3 batches. Fill in the ratio table for 6, 9, and 12 batches.",
+        },
+        "unit-rates": {
+          title: "Unit rates",
+          bg: "grid",
+          tools: [{ type: "dblnumline", intervals: 4 }],
+          problem:
+            "3 pounds of apples cost $7.50. Use the double number line to find the cost of 1 pound.",
+        },
+        "fraction-division": {
+          title: "Dividing fractions",
+          bg: "blank",
+          tools: [{ type: "fracbar", parts: 8 }],
+          problem: "How many 1/4-cup scoops fill 2/3 of a cup? Model it with the fraction bar.",
+        },
+        decimals: {
+          title: "Decimal operations",
+          bg: "grid",
+          tools: [{ type: "placevalue" }],
+          problem: "Solve 0.45 × 3.2. Use the place-value mat to line up your work.",
+        },
+        percent: {
+          title: "Percent",
+          bg: "grid",
+          tools: [{ type: "tape", parts: 10 }],
+          problem: "What is 30% of 90? Shade the tape diagram to show your thinking.",
+        },
+        integers: {
+          title: "Integers",
+          bg: "blank",
+          tools: [{ type: "chips" }, { type: "numline" }],
+          problem: "Model -6 + 9 two ways: with integer chips and on the number line.",
+        },
+        "coordinate-plane": {
+          title: "Coordinate plane",
+          bg: "coord",
+          tools: [{ type: "coordgrid", min: -5, max: 5 }],
+          problem:
+            "Plot the points (2, 3), (-2, 3), (-2, -1), (2, -1). What shape do they make? Find its area.",
+        },
+        expressions: {
+          title: "Expressions",
+          bg: "lined",
+          tools: [],
+          problem:
+            "Evaluate 3x + 5 when x = 4. Then write your own expression that equals the same number.",
+        },
+        equations: {
+          title: "Equations",
+          bg: "lined",
+          tools: [{ type: "tape", parts: 3 }],
+          problem: "Solve x + 14 = 32. Use the tape diagram to show why your answer works.",
+        },
+        area: {
+          title: "Area & shapes",
+          bg: "grid",
+          tools: [{ type: "shape2d", shape: "triangle" }],
+          problem:
+            "A triangle has base 8 units and height 5 units. Label the sides and find its area.",
+        },
+        statistics: {
+          title: "Statistics",
+          bg: "grid",
+          tools: [{ type: "dotplot" }],
+          problem:
+            "The class scores were 4, 8, 6, 10, 8, 6, 8. Build the dot plot, then find the mean and median.",
+        },
+      };
+      function applyPresetFromUrl() {
+        let params;
+        try {
+          params = new URLSearchParams(location.search);
+        } catch (e) {
+          return;
+        }
+        const key = (params.get("preset") || "").toLowerCase();
+        const bgWant = (params.get("bg") || "").toLowerCase();
+        const problem = (params.get("problem") || "").slice(0, 400);
+        if (!key && !bgWant && !problem) return;
+        const guard = "mw_preset:" + location.search;
+        try {
+          if (sessionStorage.getItem(guard)) return;
+          sessionStorage.setItem(guard, "1");
+        } catch (e) {}
+        const preset = PRESETS[key] || null;
+        // Land on a fresh page so a launch never buries existing work.
+        if (state.strokes.length || state.objects.length) {
+          if (notebook.boards.length < MAX_TABS) addBoard();
+        }
+        const bg = (preset && preset.bg) || bgWant;
+        if (bg) {
+          state.bg = bg === "numline" ? "numberline" : bg;
+          applyBg();
+        }
+        const px = 90;
+        let py = workspace.scrollTop + 80;
+        const text = problem || (preset && preset.problem) || "";
+        if (text) {
+          makeObject("text", { text: text, x: px, y: py });
+          py += 130;
+        }
+        if (preset) {
+          for (const t of preset.tools) {
+            makeObject(t.type, Object.assign({ x: px, y: py }, t));
+            py += 210;
+          }
+          showToast("📦 " + preset.title + " workspace is set up — go!");
+        } else if (text || bg) {
+          showToast("📦 Your workspace is set up — go!");
+        }
+        persist();
+      }
+
       init();
+      applyPresetFromUrl();
     </script>
 
     <!-- ===== Floating graphing calculator (GeoGebra graphing app, no API key) ===== -->
@@ -10524,6 +11621,14 @@
           busy = false,
           checkedHealth = false,
           canSpeak = "speechSynthesis" in window;
+        // Hint ladder: each consecutive Hint tap climbs a rung — nudge (1),
+        // named next step (2), worked parallel example (3). Typing a new
+        // question or clearing the chat resets to rung 1.
+        var hintLevel = 0,
+          lastHintItem = "";
+        function coachLang() {
+          return window.__mwbLang === "es" ? "Spanish" : "";
+        }
 
         function scrollDown() {
           log.scrollTop = log.scrollHeight;
@@ -10544,7 +11649,9 @@
                 window.speechSynthesis.cancel();
                 var u = new SpeechSynthesisUtterance(text);
                 u.rate = 0.95;
-                u.lang = "en-US";
+                // Replies arrive already in the student's language, so just
+                // pick the matching voice.
+                u.lang = window.__mwbLang === "es" ? "es-ES" : "en-US";
                 window.speechSynthesis.speak(u);
               } catch (e) {}
             });
@@ -10688,6 +11795,7 @@
             image: snap.dataUrl,
             itemFallback: "Read the math I wrote by hand, then solve or check it.",
             echo: q || "Read what I wrote by hand.",
+            onReply: offerAddToPage,
           });
         }
         // Seeds so "New problem" always has a concrete example to riff on when
@@ -10765,6 +11873,8 @@
               studentWork: board,
               image: opts.image || undefined,
               history: history.slice(-MAX_HISTORY),
+              hintLevel: mode === "hint" ? Math.max(1, Math.min(3, hintLevel)) : undefined,
+              replyLang: coachLang() || undefined,
             }),
           })
             .then(function (r) {
@@ -10832,6 +11942,8 @@
         if (clearBtn)
           clearBtn.addEventListener("click", function () {
             history = [];
+            hintLevel = 0;
+            lastHintItem = "";
             log.innerHTML = "";
             lead("New chat. What are you working on?");
             input.focus();
@@ -10842,13 +11954,53 @@
             if (m === "check") sendCheck();
             else if (m === "recognize") sendRecognize();
             else if (m === "problem") sendProblem();
+            else if (m === "hint") sendHint();
             else send(m);
           });
+        }
+        // Climb the hint ladder on repeat taps about the same problem; any new
+        // problem text starts back at rung 1.
+        function sendHint() {
+          var item = (input.value || "").trim() + "|" + gatherBoardText();
+          if (item !== lastHintItem) {
+            hintLevel = 0;
+            lastHintItem = item;
+          }
+          hintLevel = Math.min(3, hintLevel + 1);
+          if (hintLevel > 1) {
+            lead(
+              hintLevel === 2
+                ? "Hint 2 of 3 — a little more help this time."
+                : "Hint 3 of 3 — here's a worked example just like yours.",
+            );
+          }
+          send("hint");
+        }
+        // Ink-to-math: after the coach reads handwriting, one tap stamps the
+        // transcription onto the page as editable math text.
+        function offerAddToPage(reply) {
+          var m = /wrote:?\s*([^\n]+)/i.exec(reply);
+          var mathText = (m ? m[1] : "").replace(/["“”]/g, "").trim();
+          if (!mathText || mathText.length > 160) return;
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "coach-mode coach-add-ink";
+          b.textContent =
+            "➕ Add “" +
+            (mathText.length > 40 ? mathText.slice(0, 40) + "…" : mathText) +
+            "” to my page";
+          b.addEventListener("click", function () {
+            window.dispatchEvent(new CustomEvent("mwb:add-text", { detail: { text: mathText } }));
+            b.disabled = true;
+            b.textContent = "✓ Added to your page";
+          });
+          log.appendChild(b);
+          scrollDown();
         }
         input.addEventListener("keydown", function (e) {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            send("hint");
+            sendHint();
           }
         });
 
@@ -11350,5 +12502,261 @@
       })();
     </script>
     <!-- mult-chart-injected:end -->
+    <!-- ===== PWA: installable + offline (network-first, so updates stay instant) ===== -->
+    <script>
+      (function () {
+        if (!("serviceWorker" in navigator) || location.protocol !== "https:") return;
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register("sw.js").catch(function () {});
+        });
+      })();
+    </script>
+    <!-- ===== Award Wave — styles for Access, Replay, Turn In, Portfolio, two-way ink ===== -->
+    <style>
+      /* Access panel + Turn In panel share one card style */
+      .a11y-panel,
+      .handin-panel {
+        position: fixed;
+        top: 92px;
+        right: 24px;
+        z-index: 10001;
+        width: 320px;
+        max-width: 92vw;
+        background: #fff;
+        border: 1px solid #cdd8e3;
+        border-radius: 14px;
+        box-shadow: 0 18px 50px rgba(18, 53, 91, 0.28);
+        padding: 0 0 12px;
+        font-family: "Atkinson Hyperlegible", "Nunito", sans-serif;
+      }
+      .a11y-panel[hidden],
+      .handin-panel[hidden] {
+        display: none !important;
+      }
+      .a11y-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        background: linear-gradient(135deg, #14532d, #1fa6a2);
+        color: #fff;
+        border-radius: 13px 13px 0 0;
+        font-size: 0.95rem;
+      }
+      .handin-panel .a11y-head {
+        background: linear-gradient(135deg, #4338a6, #7c3aed);
+      }
+      .a11y-x {
+        border: none;
+        background: rgba(255, 255, 255, 0.22);
+        color: #fff;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .a11y-row {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 10px 14px 0;
+        cursor: pointer;
+      }
+      .a11y-row input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+        margin-top: 2px;
+        accent-color: #0f766e;
+      }
+      .a11y-row small {
+        display: block;
+        color: #5b6b82;
+        font-size: 0.78rem;
+      }
+      .a11y-note {
+        margin: 12px 14px 0;
+        font-size: 0.78rem;
+        color: #5b6b82;
+      }
+      .hi-row {
+        display: block;
+        padding: 10px 14px 0;
+        font-weight: 800;
+        font-size: 0.85rem;
+        color: #14223a;
+      }
+      .hi-row input {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 4px;
+        padding: 9px 10px;
+        border: 2px solid #cdd8e3;
+        border-radius: 9px;
+        font: inherit;
+        font-weight: 600;
+      }
+      .hi-row input:focus-visible {
+        outline: 3px solid #7c3aed;
+        outline-offset: 1px;
+      }
+      .a11y-panel .live-btn,
+      .handin-panel .live-btn {
+        display: block;
+        width: calc(100% - 28px);
+        margin: 12px 14px 0;
+      }
+      /* Access modes — CSS-only so they can never break board logic */
+      body.a11y-spacing {
+        letter-spacing: 0.03em;
+        word-spacing: 0.14em;
+      }
+      body.a11y-spacing .textobj,
+      body.a11y-spacing .coach-log,
+      body.a11y-spacing .formula-card {
+        line-height: 1.65;
+      }
+      body.a11y-contrast {
+        --muted: #33415c;
+      }
+      body.a11y-contrast .tbtn,
+      body.a11y-contrast .rail button {
+        border-color: #14223a !important;
+        color: #0b1526;
+      }
+      body.a11y-contrast .obj {
+        outline: 1px solid rgba(20, 34, 58, 0.4);
+      }
+      body.a11y-bigui .tbtn {
+        font-size: 1.02rem;
+        padding: 10px 14px;
+      }
+      body.a11y-bigui .rail button {
+        transform: scale(1.12);
+      }
+      body.a11y-calm *,
+      body.a11y-calm *::before,
+      body.a11y-calm *::after {
+        animation-duration: 0.001s !important;
+        transition-duration: 0.001s !important;
+      }
+      /* Replay */
+      .replay-bar {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 18px;
+        z-index: 10002;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        background: #14223a;
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 999px;
+        box-shadow: 0 14px 40px rgba(9, 20, 38, 0.45);
+      }
+      .replay-bar[hidden] {
+        display: none !important;
+      }
+      .rp-btn {
+        border: none;
+        background: rgba(255, 255, 255, 0.16);
+        color: #fff;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+      .rp-btn:focus-visible,
+      .replay-bar select:focus-visible,
+      .replay-bar input:focus-visible {
+        outline: 3px solid #7dd3fc;
+        outline-offset: 2px;
+      }
+      .replay-bar input[type="range"] {
+        width: min(320px, 40vw);
+        accent-color: #38bdf8;
+      }
+      .replay-bar select {
+        border: none;
+        border-radius: 8px;
+        padding: 6px;
+        font-weight: 800;
+        background: #fff;
+        color: #14223a;
+      }
+      body.wb-replaying #workspace {
+        pointer-events: none;
+      }
+      body.wb-replaying #rail {
+        pointer-events: none;
+        opacity: 0.5;
+      }
+      /* Two-way ink: teacher annotate mode */
+      body.wb-annotating #workspace {
+        pointer-events: auto !important;
+        cursor: crosshair;
+      }
+      #liveWatchBanner button[aria-pressed="true"] {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+      /* Portfolio print view */
+      #portfolioView {
+        display: none;
+      }
+      .pf-page {
+        page-break-after: always;
+        break-after: page;
+      }
+      .pf-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        border-bottom: 2px solid #14223a;
+        margin-bottom: 8px;
+        padding-bottom: 4px;
+        font-family: "Atkinson Hyperlegible", "Nunito", sans-serif;
+      }
+      .pf-sheet {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+      }
+      .pf-ink {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .pf-objs {
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform-origin: top left;
+      }
+      .pf-objs .obj {
+        pointer-events: none;
+      }
+      @media print {
+        body.pf-printing .app,
+        body.pf-printing .topbar,
+        body.pf-printing .stage,
+        body.pf-printing #pageTabs,
+        body.pf-printing .coach-panel,
+        body.pf-printing .calc-panel,
+        body.pf-printing .a11y-panel,
+        body.pf-printing .handin-panel,
+        body.pf-printing .replay-bar {
+          display: none !important;
+        }
+        body.pf-printing #portfolioView {
+          display: block;
+        }
+      }
+    </style>
   </body>
 </html>
