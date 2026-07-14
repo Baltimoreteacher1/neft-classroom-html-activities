@@ -126,6 +126,8 @@
   let dialogTrigger = null;
   let liveRegion = null;
   let dictation = null; // active SpeechRecognition instance
+  let activeQuickSetup = null; // key of the active quick-setup preset (or null)
+  let quickSetupPrev = null; // in-session snapshot for one-tap revert
 
   // Shared teacher-mode contract (mirrors engine/core/teacher-mode.js and
   // assets/curriculum-enhancements.js). The "Prepare Supports" config button is
@@ -200,6 +202,7 @@
           textScale: textScale,
           colorTint: colorTint,
           highContrast: highContrast,
+          quickSetup: activeQuickSetup,
         }),
       );
     } catch (_e) {
@@ -354,6 +357,10 @@
         if (typeof stored.highContrast === "boolean") {
           highContrast = stored.highContrast;
           if (highContrast) document.body.classList.add("ewl-supports-contrast-active");
+        }
+        if (typeof stored.quickSetup === "string" && stored.quickSetup) {
+          // Re-marked + re-applied once the schema loads (bootSupportsV2).
+          activeQuickSetup = stored.quickSetup;
         }
       }
     }
@@ -905,6 +912,11 @@
       }
     });
     toolsInner.appendChild(rateBtn);
+
+    // "Quick setups" — one-tap accessibility presets (supports-schema.js
+    // PRESETS), rendered at the top of the rail. Chips populate once the
+    // shared taxonomy loads; the section removes itself if presets are absent.
+    buildQuickSetupsSection(toolsInner);
 
     studentTools.appendChild(toolsInner);
 
@@ -3020,6 +3032,161 @@
     });
   }
 
+  // =========================================================================
+  // Quick setups — one-tap accessibility presets (schema.presets).
+  // Idempotent + reversible: tapping the active chip again restores the
+  // previous state (roster assignment, or the profile-driven default view).
+  // Persists through the existing {profiles} localStorage shape (via
+  // v2SyncBridgeProfiles + saveStoredPreferences) plus a `quickSetup` marker
+  // so the active chip survives a reload.
+  // =========================================================================
+  function buildQuickSetupsSection(inner) {
+    const section = document.createElement("div");
+    section.className = "ewl-supports-quick-row";
+    section.setAttribute("role", "group");
+    section.setAttribute("aria-label", "Quick setups · Configuraciones rápidas");
+    const title = document.createElement("span");
+    title.className = "ewl-supports-quick-title";
+    title.textContent = "⚡ Quick setups · Configuraciones rápidas";
+    section.appendChild(title);
+    inner.appendChild(section);
+    loadSupportsSchema().then((schema) => {
+      if (!schema || !Array.isArray(schema.presets) || !schema.presets.length) {
+        section.remove();
+        return;
+      }
+      schema.presets.forEach((preset) => {
+        if (!preset || !preset.key || !preset.label) return;
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "ewl-supports-quick-chip";
+        chip.dataset.quickSetup = preset.key;
+        chip.textContent = preset.label.en + " · " + preset.label.es;
+        if (preset.description) {
+          chip.title = preset.description.en + " / " + preset.description.es;
+        }
+        chip.setAttribute("aria-pressed", "false");
+        chip.addEventListener("click", () => toggleQuickSetup(preset));
+        section.appendChild(chip);
+      });
+      syncQuickSetupChips();
+    });
+  }
+
+  function syncQuickSetupChips() {
+    const chips = document.querySelectorAll(".ewl-supports-quick-chip");
+    for (let i = 0; i < chips.length; i++) {
+      const on = !!activeQuickSetup && chips[i].dataset.quickSetup === activeQuickSetup;
+      chips[i].classList.toggle("is-active", on);
+      chips[i].setAttribute("aria-pressed", String(on));
+    }
+  }
+
+  // Current device identity (label + cached assigned lessons) so applying a
+  // preset never strips the "👤" / "📚 My Lessons" chips off the rail.
+  function quickSetupIdentity() {
+    const me = v2GetMe();
+    if (!me || me.skipped) return { label: undefined, lessons: undefined, cached: null };
+    const cached = v2GetCached(me.section, me.initials);
+    return {
+      label: me.initials + " · " + me.section,
+      lessons: cached && cached.lessons,
+      cached: cached,
+    };
+  }
+
+  // Core apply (no snapshot, no announce) — shared by tap and reload-restore.
+  function applyQuickSetupPreset(preset) {
+    const schema = window.EWLSupportsSchema;
+    if (!schema) return false;
+    const keys = (preset.keys || []).filter(schema.isValidKey);
+    if (!keys.length) return false;
+    activeQuickSetup = preset.key;
+    const id = quickSetupIdentity();
+    // Shows the preset's tools AND applies behavior adaptations
+    // (applyAssignedItems -> v2ApplyAdaptations -> EWLSupportsAdaptations.apply).
+    applyAssignedItems(keys, id.label, id.lessons);
+    // Persist through the existing {profiles} shape (coarse equivalents).
+    v2SyncBridgeProfiles(keys);
+    if (typeof preset.textScale === "number") {
+      textScale = Math.max(0, Math.min(2, Math.round(preset.textScale)));
+      applyTextScale();
+    }
+    saveStoredPreferences();
+    syncQuickSetupChips();
+    return true;
+  }
+
+  function toggleQuickSetup(preset) {
+    if (activeQuickSetup === preset.key) {
+      clearQuickSetup();
+      return;
+    }
+    // Snapshot once (switching preset→preset keeps the ORIGINAL baseline).
+    if (!quickSetupPrev) {
+      quickSetupPrev = {
+        profiles: Object.assign({}, activeProfiles),
+        textScale: textScale,
+      };
+    }
+    if (applyQuickSetupPreset(preset)) {
+      announce(
+        "Quick setup on: " + preset.label.en + " · Configuración activada: " + preset.label.es,
+      );
+    }
+  }
+
+  function clearQuickSetup() {
+    activeQuickSetup = null;
+    const prev = quickSetupPrev;
+    quickSetupPrev = null;
+    if (prev) {
+      activeProfiles = Object.assign({}, prev.profiles);
+      textScale = prev.textScale;
+    } else {
+      // Reload case (no in-session snapshot): clear the coarse profiles the
+      // preset synced and reset the preset's text-size extra.
+      v2SyncBridgeProfiles([]);
+      textScale = 0;
+    }
+    saveStoredPreferences();
+    // Restore the roster assignment when one is cached; otherwise fall back
+    // to the profile-driven default dock.
+    const id = quickSetupIdentity();
+    if (id.cached && Array.isArray(id.cached.items)) {
+      applyAssignedItems(id.cached.items, id.label, id.lessons);
+    } else {
+      // Clear preset adaptations (module only re-applies if already loaded).
+      if (window.EWLSupportsAdaptations) window.EWLSupportsAdaptations.apply([]);
+      const dock = document.querySelector("[data-ewl-supports-tools]");
+      if (dock) {
+        const btns = dock.querySelectorAll(".ewl-supports-tool-btn");
+        for (let i = 0; i < btns.length; i++) btns[i].style.display = "";
+      }
+      applyTextScale();
+      updateUIStates();
+    }
+    syncQuickSetupChips();
+    announce("Quick setup off · Configuración rápida desactivada");
+  }
+
+  // Re-apply the stored quick setup after the roster boot settles, so the
+  // student's explicit one-tap choice survives a reload (still reversible —
+  // toggling off returns to the roster assignment / default view).
+  function reapplyQuickSetupFromStorage() {
+    if (!activeQuickSetup) return;
+    loadSupportsSchema().then((schema) => {
+      if (!schema || !Array.isArray(schema.presets)) return;
+      const preset = schema.presets.filter((p) => p && p.key === activeQuickSetup)[0];
+      if (!preset) {
+        activeQuickSetup = null;
+        syncQuickSetupChips();
+        return;
+      }
+      applyQuickSetupPreset(preset);
+    });
+  }
+
   // ---- Student self-identification (one-time per device) -------------------
   const V2_SKIP_TTL_MS = 7 * 24 * 60 * 60 * 1000; // re-ask a "skipped" device weekly
   let v2DismissedThisView = false; // Escape on the self-pick modal — page-view scoped
@@ -3212,6 +3379,9 @@
     ].some((s) => s && Object.values(s).some(Boolean));
     if (anyUrlSupports) return;
     await v2StudentBoot(schema);
+    // A student-chosen quick setup layers on top of (and after) the roster
+    // assignment; toggling it off returns to the assignment.
+    reapplyQuickSetupFromStorage();
   }
 
   // ---- Teacher assignment surface (built into the dialog on open) ----------

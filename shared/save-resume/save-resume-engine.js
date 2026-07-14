@@ -770,6 +770,7 @@
     _dirty: false,
     _timer: null,
     _started: false,
+    _remotePending: false, // last backend mirror failed — flush on 'online'
 
     registerStateProvider: function (fn) {
       if (typeof fn === "function") this._providers.push(fn);
@@ -1040,11 +1041,13 @@
           // Mirror to remote backend.
           return self.adapter[reason === "create" ? "create" : "save"](rec).then(
             function () {
+              self._remotePending = false;
               setStatus(self, "saved");
               return { ok: true, remote: true };
             },
             function (e) {
               warn("backend save failed; local copy is safe:", e && e.message);
+              self._remotePending = true;
               setStatus(self, "offline");
               return { ok: true, local: true, remoteError: true };
             },
@@ -1108,6 +1111,20 @@
       document.addEventListener("visibilitychange", function () {
         if (document.visibilityState === "hidden" && self.record) self.save("hide");
       });
+      // Sync-on-reconnect: when the network comes back, re-mirror the record
+      // whose last backend save failed (status "offline"). Cloudflare backend
+      // only — its /save is an idempotent upsert keyed by saveCode, so a
+      // replay is safe. Debounced so flapping connectivity coalesces to one
+      // flush; NOT a retry loop — a failed flush merely re-arms
+      // _remotePending for the NEXT 'online' event.
+      var flushOffline = debounce(function () {
+        if (!self._remotePending || !self.record) return;
+        if (!self.adapter || self.adapter.name !== "cloudflare") return;
+        if (navigator.onLine === false) return;
+        self._remotePending = false; // consumed; _persist re-arms on failure
+        self.save("reconnect");
+      }, 2000);
+      window.addEventListener("online", flushOffline);
     },
 
     open: function () {

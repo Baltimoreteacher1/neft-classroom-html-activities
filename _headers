@@ -60,3 +60,13 @@
 /teacher-tools/neftos-command-center/manifest.json
   Cache-Control: public, max-age=0, must-revalidate
   Content-Type: application/manifest+json; charset=utf-8
+
+# Offline service workers (lesson launchers + practice arcade): must always
+# revalidate so a deploy replaces the worker immediately.
+/lessons/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+  Service-Worker-Allowed: /lessons/
+
+/math/games/practice-arcade/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+  Service-Worker-Allowed: /math/games/practice-arcade/

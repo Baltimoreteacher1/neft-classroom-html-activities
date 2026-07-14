@@ -35,7 +35,12 @@
       icon: "📋",
       items: [
         { key: "iep-redirect", label: "Redirect student", apply: "flag" },
-        { key: "iep-graphic-organizer", label: "Graphic organizer", apply: "interactive", tool: "organizer" },
+        {
+          key: "iep-graphic-organizer",
+          label: "Graphic organizer",
+          apply: "interactive",
+          tool: "organizer",
+        },
         { key: "iep-small-group", label: "Small group", apply: "flag" },
         { key: "break", label: "Frequent breaks", apply: "interactive", tool: "break" },
         {
@@ -85,8 +90,18 @@
           tool: "explain",
         },
         { key: "iep-chunk-text", label: "Chunking of information and text", apply: "adaptive" },
-        { key: "iep-repeat-directions", label: "Repetition of directions", apply: "interactive", tool: "directions" },
-        { key: "iep-check-understanding", label: "Check for understanding", apply: "interactive", tool: "checkin" },
+        {
+          key: "iep-repeat-directions",
+          label: "Repetition of directions",
+          apply: "interactive",
+          tool: "directions",
+        },
+        {
+          key: "iep-check-understanding",
+          label: "Check for understanding",
+          apply: "interactive",
+          tool: "checkin",
+        },
         {
           key: "iep-chunk-repeat-verbal",
           label: "Chunk and repeat all verbally presented information",
@@ -106,12 +121,14 @@
         {
           key: "iep-pictures-support",
           label: "Use pictures to support reading passages / comprehension",
-          apply: "interactive", tool: "model",
+          apply: "interactive",
+          tool: "model",
         },
         {
           key: "iep-paraphrase",
           label: "Paraphrase questions and instructions",
-          apply: "interactive", tool: "directions",
+          apply: "interactive",
+          tool: "directions",
         },
         {
           key: "iep-visual-aids",
@@ -126,7 +143,12 @@
           apply: "interactive",
           tool: "words",
         },
-        { key: "iep-highlighter", label: "Use of highlighter", apply: "interactive", tool: "highlighter" },
+        {
+          key: "iep-highlighter",
+          label: "Use of highlighter",
+          apply: "interactive",
+          tool: "highlighter",
+        },
         {
           key: "iep-manipulatives",
           label: "Use of manipulatives",
@@ -141,7 +163,8 @@
         {
           key: "iep-movement",
           label: "Opportunities for movement / changes in activity",
-          apply: "interactive", tool: "break",
+          apply: "interactive",
+          tool: "break",
         },
         {
           key: "iep-multisensory",
@@ -202,7 +225,8 @@
         {
           key: "esol-read-aloud-selected",
           label: "Read aloud selected parts of the passage / text",
-          apply: "interactive", tool: "listen",
+          apply: "interactive",
+          tool: "listen",
         },
         {
           key: "tts",
@@ -210,7 +234,12 @@
           apply: "interactive",
           tool: "listen",
         },
-        { key: "esol-graphic-organizers", label: "Graphic organizers", apply: "interactive", tool: "organizer" },
+        {
+          key: "esol-graphic-organizers",
+          label: "Graphic organizers",
+          apply: "interactive",
+          tool: "organizer",
+        },
         {
           key: "model",
           label: "Visual cues / aides and realia",
@@ -220,7 +249,8 @@
         {
           key: "esol-frequent-checks",
           label: "Frequent checks for understanding",
-          apply: "interactive", tool: "checkin",
+          apply: "interactive",
+          tool: "checkin",
         },
         { key: "esol-reduced-noise", label: "Reduced background noise", apply: "flag" },
         {
@@ -245,13 +275,20 @@
         {
           key: "esol-simplify-language",
           label: "Adapt / simplify teacher's language",
-          apply: "interactive", tool: "directions",
+          apply: "interactive",
+          tool: "directions",
         },
-        { key: "esol-model-directions", label: "Model directions", apply: "interactive", tool: "directions" },
+        {
+          key: "esol-model-directions",
+          label: "Model directions",
+          apply: "interactive",
+          tool: "directions",
+        },
         {
           key: "esol-reword-directions",
           label: "Repeat / reword multiple-step directions",
-          apply: "interactive", tool: "directions",
+          apply: "interactive",
+          tool: "directions",
         },
         {
           key: "notepad",
@@ -309,6 +346,60 @@
     return Object.prototype.hasOwnProperty.call(BY_KEY, k);
   }
 
+  // Quick-setup accessibility presets: named bundles of EXISTING item keys a
+  // student can turn on with one tap from the My Tools dock (no teacher
+  // roster needed). Labels are bilingual and access-respectful. Every entry
+  // in `keys` must be a real taxonomy key (isValidKey) — invalid keys are
+  // filtered out below so a typo can never reach applyAssignedItems.
+  // NOTE: the preset id property is deliberately NOT the first property in
+  // each object — validate-learning-supports.mjs harvests taxonomy keys with
+  // /\{\s*key:/ and presets are bundles, not taxonomy items.
+  // `textScale` (0-2) is an optional presentation extra handled by
+  // learning-supports.js (text size is a display setting, not a taxonomy key).
+  var PRESETS = [
+    {
+      label: { en: "🎯 Focus", es: "Concentración" },
+      description: {
+        en: "Checklist, highlighter, chunked steps, and a calm break.",
+        es: "Lista de tareas, resaltador, pasos divididos y una pausa tranquila.",
+      },
+      key: "focus",
+      keys: ["checklist", "iep-highlighter", "iep-chunk-text", "break"],
+    },
+    {
+      label: { en: "📖 Reading", es: "Lectura" },
+      description: {
+        en: "Read-aloud, vocabulary preview, and repeated directions.",
+        es: "Lectura en voz alta, vocabulario previo y repetición de instrucciones.",
+      },
+      key: "reading",
+      keys: ["tts", "vocab", "iep-repeat-directions"],
+    },
+    {
+      label: { en: "🌿 Calm", es: "Calma" },
+      description: {
+        en: "Breaks, movement moments, and frequent encouragement.",
+        es: "Pausas, momentos de movimiento y ánimo frecuente.",
+      },
+      key: "calm",
+      keys: ["break", "iep-movement", "iep-positive-praise"],
+    },
+    {
+      label: { en: "🔠 Big Text", es: "Texto grande" },
+      description: {
+        en: "Extra-large lesson text with read-aloud.",
+        es: "Texto de la lección extragrande con lectura en voz alta.",
+      },
+      key: "big-text",
+      keys: ["tts"],
+      textScale: 2,
+    },
+  ];
+  // Structural guarantee: presets only ever carry valid taxonomy keys.
+  PRESETS.forEach(function (p) {
+    p.keys = (p.keys || []).filter(isValidKey);
+  });
+
   window.EWLSupportsSchema = {
     version: 2,
     sections: SECTIONS,
@@ -319,5 +410,6 @@
     widaItems: widaItems,
     resolveItems: resolveItems,
     isValidKey: isValidKey,
+    presets: PRESETS,
   };
 })();

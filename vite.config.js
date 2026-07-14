@@ -63,6 +63,14 @@ function copyStandaloneHtml() {
           mkdirSync(resolve(__dirname, "dist", "lessons"), { recursive: true });
           cpSync(idx, resolve(__dirname, "dist", "lessons", "notes-index.html"));
         }
+        // Offline service worker for the lesson launchers (scope /lessons/) —
+        // plain static file, must ship at /lessons/sw.js (tools/inject-offline-sw.mjs
+        // injects its registration snippet on the launchers).
+        const lessonsSw = resolve(lessonsDir, "sw.js");
+        if (existsSync(lessonsSw)) {
+          mkdirSync(resolve(__dirname, "dist", "lessons"), { recursive: true });
+          cpSync(lessonsSw, resolve(__dirname, "dist", "lessons", "sw.js"));
+        }
         for (const dir of readdirSync(lessonsDir, { withFileTypes: true })) {
           if (!dir.isDirectory()) continue;
           const notes = resolve(lessonsDir, dir.name, "notes.html");
