@@ -10742,6 +10742,19 @@
           problem:
             "The class scores were 4, 8, 6, 10, 8, 6, 8. Build the dot plot, then find the mean and median.",
         },
+        inequalities: {
+          title: "Inequalities",
+          bg: "lined",
+          tools: [{ type: "ineqline", min: -5, max: 5, point: 2, dir: "gt" }],
+          problem:
+            "Graph x > 2 on the number line. Then write a real-world situation your inequality could describe.",
+        },
+        factors: {
+          title: "Factors & multiples",
+          bg: "grid",
+          tools: [{ type: "arraymodel", rows: 4, cols: 6 }],
+          problem: "Find the GCF of 24 and 36. Use arrays or a factor list to show your thinking.",
+        },
       };
       function applyPresetFromUrl() {
         let params;
@@ -11051,10 +11064,20 @@
           });
         }
         function fail() {
-          if (loading)
-            loading.textContent =
-              "Could not load the calculator. Check your internet connection and try again.";
           busy = false;
+          if (loading) {
+            loading.innerHTML =
+              "Graphing needs the internet the first time it loads — the <b>Basic</b> calculator below works offline. ";
+            var retry = document.createElement("button");
+            retry.type = "button";
+            retry.className = "calc-mode";
+            retry.textContent = "↻ Try again";
+            retry.addEventListener("click", function () {
+              loading.textContent = "Loading calculator…";
+              inject();
+            });
+            loading.appendChild(retry);
+          }
         }
         function inject() {
           if (ready || busy) return;

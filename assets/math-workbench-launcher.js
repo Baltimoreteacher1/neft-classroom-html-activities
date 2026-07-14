@@ -12,6 +12,112 @@
 
   var WORKBENCH_URL = "/curriculum/math-workbench/";
 
+  // Lesson-aware deep links: on /lessons/<id>/ pages the launcher reads the
+  // lesson's config.json and opens the Workbench pre-staged for that skill
+  // (?preset=<key> picks the background + manipulatives; ?problem= carries a
+  // lesson-tied prompt). Standards prefix → Workbench preset key; ordered
+  // specific-first so 6.AT.3c matches before 6.AT.3. Covers both the Reveal
+  // codes (AT/NOS/DS/GR) and CCSS codes (RP/NS/EE/G/SP) defensively.
+  var PRESET_MAP = [
+    ["6.AT.3c", "unit-rates"],
+    ["6.AT.1", "ratio-tables"],
+    ["6.AT.2", "unit-rates"],
+    ["6.AT.3", "ratio-tables"],
+    ["6.AT.4", "percent"],
+    ["6.AT.5", "expressions"],
+    ["6.AT.6", "expressions"],
+    ["6.AT.7", "expressions"],
+    ["6.AT.8", "equations"],
+    ["6.AT.9", "inequalities"],
+    ["6.DS", "statistics"],
+    ["6.GR", "area"],
+    ["6.NOS.1", "fraction-division"],
+    ["6.NOS.2", "decimals"],
+    ["6.NOS.3", "decimals"],
+    ["6.NOS.4", "factors"],
+    ["6.NOS.6", "coordinate-plane"],
+    ["6.NOS.7", "coordinate-plane"],
+    ["6.NOS.8", "integers"],
+    ["6.NOS.9", "coordinate-plane"],
+    ["6.RP.3c", "percent"],
+    ["6.RP.2", "unit-rates"],
+    ["6.RP.3b", "unit-rates"],
+    ["6.RP", "ratio-tables"],
+    ["6.NS.1", "fraction-division"],
+    ["6.NS.2", "decimals"],
+    ["6.NS.3", "decimals"],
+    ["6.NS.4", "factors"],
+    ["6.NS.8", "coordinate-plane"],
+    ["6.NS", "integers"],
+    ["6.EE.5", "equations"],
+    ["6.EE.6", "equations"],
+    ["6.EE.7", "equations"],
+    ["6.EE.8", "inequalities"],
+    ["6.EE.9", "equations"],
+    ["6.EE", "expressions"],
+    ["6.G", "area"],
+    ["6.SP", "statistics"],
+  ];
+
+  function presetFor(standard) {
+    var s = String(standard || "").toUpperCase();
+    if (!s) return "";
+    for (var i = 0; i < PRESET_MAP.length; i++) {
+      if (s.indexOf(PRESET_MAP[i][0].toUpperCase()) === 0) return PRESET_MAP[i][1];
+    }
+    return "";
+  }
+
+  // If this is a lesson page, upgrade the launcher href to a preset deep link.
+  // Fail-safe: any error leaves the plain Workbench URL in place.
+  function lessonAwareHref(a) {
+    var m = /^\/lessons\/([a-z0-9-]+)\//i.exec(location.pathname);
+    if (!m) return;
+    var key = "mwb-preset-link:" + m[1];
+    try {
+      var cached = sessionStorage.getItem(key);
+      if (cached) {
+        if (cached !== "none") applyHref(a, cached);
+        return;
+      }
+    } catch (e) {
+      /* private mode — just fetch */
+    }
+    fetch("/lessons/" + m[1] + "/config.json", { credentials: "same-origin" })
+      .then(function (r) {
+        return r.ok ? r.json() : null;
+      })
+      .then(function (cfg) {
+        var preset = cfg ? presetFor(cfg.standard) : "";
+        var url = "";
+        if (preset) {
+          var prompt = cfg.title
+            ? "Model a problem from today’s lesson: “" + String(cfg.title).slice(0, 120) + "”"
+            : "";
+          url =
+            WORKBENCH_URL +
+            "?preset=" +
+            encodeURIComponent(preset) +
+            (prompt ? "&problem=" + encodeURIComponent(prompt) : "");
+          applyHref(a, url);
+        }
+        try {
+          sessionStorage.setItem(key, url || "none");
+        } catch (e) {
+          /* best effort */
+        }
+      })
+      .catch(function () {
+        /* plain URL stays */
+      });
+  }
+
+  function applyHref(a, url) {
+    a.href = url;
+    a.setAttribute("aria-label", "Open the Math Workbench set up for today's lesson (new tab)");
+    a.setAttribute("title", "Math Workbench — set up for today's lesson (opens in a new tab)");
+  }
+
   function init() {
     // Never show the launcher on the Workbench page itself or on school planner pages/domains.
     var path = location.pathname.toLowerCase();
@@ -66,6 +172,7 @@
       '<span class="mwb-star" aria-hidden="true">✱</span>' +
       '<span class="mwb-label">Math Workbench</span>';
     document.body.appendChild(a);
+    lessonAwareHref(a);
 
     // Some pages mount a fixed, full-width bottom action bar (e.g. the
     // nt-page-enhance "Save as PDF/DOC" bar, .nt-pe-bar) at a higher z-index.

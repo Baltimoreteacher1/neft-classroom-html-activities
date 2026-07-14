@@ -8,6 +8,9 @@
  * Coach, and Live Board behave exactly as before.
  */
 const CACHE = "mwb-v1";
+// GeoGebra's web app is large but fully static+versioned: cache-first means
+// the Graphing calculator keeps working offline after one online use.
+const GGB_CACHE = "mwb-ggb-v1";
 const PRECACHE = ["./", "./index.html", "/assets/mobile-access.css", "/assets/favicon.svg"];
 
 self.addEventListener("install", (e) => {
@@ -24,7 +27,11 @@ self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) =>
+        Promise.all(
+          keys.filter((k) => k !== CACHE && k !== GGB_CACHE).map((k) => caches.delete(k)),
+        ),
+      )
       .then(() => self.clients.claim()),
   );
 });
@@ -36,6 +43,23 @@ self.addEventListener("fetch", (e) => {
   // Live data must never be served stale.
   if (url.pathname.startsWith("/api/")) return;
 
+  // GeoGebra (Graphing calculator): cache-first so it works offline after the
+  // first online use. Assets are versioned/immutable, so stale is safe.
+  if (url.hostname === "www.geogebra.org" || url.hostname === "cdn.geogebra.org") {
+    e.respondWith(
+      caches.open(GGB_CACHE).then((c) =>
+        c.match(req).then(
+          (hit) =>
+            hit ||
+            fetch(req).then((res) => {
+              if (res && (res.ok || res.type === "opaque")) c.put(req, res.clone()).catch(() => {});
+              return res;
+            }),
+        ),
+      ),
+    );
+    return;
+  }
   // Web fonts: cache-first (immutable files, and the offline page looks right).
   if (url.hostname === "fonts.gstatic.com" || url.hostname === "fonts.googleapis.com") {
     e.respondWith(
