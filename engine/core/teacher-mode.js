@@ -112,7 +112,7 @@ function mountModeToggle() {
     btn.className = "mode-toggle-pill is-teacher";
     btn.setAttribute("aria-pressed", "true");
     btn.innerHTML =
-      '<span class="mode-toggle-state">👩‍🏫 Teacher Mode</span>' +
+      '<span class="mode-toggle-state">Teacher Mode</span>' +
       '<span class="mode-toggle-action">Switch to Student</span>';
     btn.title = "Switch to Student view";
     btn.addEventListener("click", switchToStudent);
@@ -125,7 +125,7 @@ function mountModeToggle() {
   wrap.className = "mode-toggle-pill is-student";
   wrap.innerHTML =
     '<button type="button" class="mode-toggle-enter" aria-haspopup="true" aria-expanded="false">' +
-    '<span class="mode-toggle-state">🎒 Student Mode</span>' +
+    '<span class="mode-toggle-state">Student Mode</span>' +
     '<span class="mode-toggle-action">Teacher →</span></button>' +
     '<form class="mode-toggle-unlock" hidden>' +
     '<input type="password" class="mode-toggle-pin" placeholder="Teacher password" autocomplete="off" aria-label="Teacher password" />' +
@@ -161,7 +161,7 @@ export function mountIdentityTeacherButton(slot) {
   if (isTeacherMode()) {
     slot.innerHTML = `
       <div class="identity-teacher is-on">
-        <span class="identity-teacher-label">👩‍🏫 Teacher Mode is on</span>
+        <span class="identity-teacher-label">Teacher Mode is on</span>
         <button type="button" class="identity-teacher-exit">Switch to Student</button>
       </div>`;
     slot.querySelector(".identity-teacher-exit").addEventListener("click", switchToStudent);
@@ -170,7 +170,7 @@ export function mountIdentityTeacherButton(slot) {
 
   slot.innerHTML = `
     <div class="identity-teacher">
-      <button type="button" class="identity-teacher-btn">👩‍🏫 Teacher</button>
+      <button type="button" class="identity-teacher-btn">Teacher</button>
       <form class="identity-teacher-unlock" hidden>
         <input type="password" class="identity-teacher-pin" placeholder="Teacher password" autocomplete="off" aria-label="Teacher password" />
         <button type="submit" class="identity-teacher-go">Enter</button>
@@ -211,7 +211,7 @@ export function mountTeacherPanel(root, config, state) {
   panel.setAttribute("aria-label", "Teacher view");
   panel.innerHTML = `
     <button type="button" class="teacher-panel-toggle" aria-expanded="true" aria-controls="teacher-panel-body">
-      👩‍🏫 ${stackHtml(t("teacherView", "en"), t("teacherView", "es"))}
+      ${stackHtml(t("teacherView", "en"), t("teacherView", "es"))}
     </button>
     <div id="teacher-panel-body" class="teacher-panel-body">
       <div class="teacher-panel-section teacher-projection">
