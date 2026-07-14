@@ -6,6 +6,11 @@
  * (scripts/parent-updates.mjs). The live page teacher-tools/parent-updates/
  * mirrors this same phrasing inline — keep the two in sync if you change tone.
  *
+ * CONTRACT: buildWeeklyDigest() below renders one student of the
+ * GET /api/progress/digest response. The live page's inline digestHTML()
+ * mirrors its exact phrasing — any wording change here must be mirrored in
+ * teacher-tools/parent-updates/index.html (and vice versa).
+ *
  * Mastery thresholds match engine/core/grade.js:
  *   >=85 Strong | >=70 Likely Ready | >=60 Approaching | else Needs Reteach.
  */
@@ -106,6 +111,156 @@ export function buildNoteHTML(s, { date = "" } = {}) {
 
 function firstName(name) {
   return String(name || "your child").trim().split(/\s+/)[0] || "your child";
+}
+
+/* ---- Weekly bilingual digest (GET /api/progress/digest students[]) -------- */
+
+/**
+ * Match a digest activityId against the lesson family-homework map
+ * (curriculum/lesson-family-homework.js: { "4-1": { text, href }, … }).
+ * Lesson save-resume ids look like "lessons-4-1" / "lessons-4-1-flagship".
+ */
+export function familyHomeworkFor(activityId, map) {
+  if (!activityId || !map) return null;
+  const id = String(activityId);
+  if (map[id]) return map[id];
+  const stripped = id.replace(/^lessons?-/, "");
+  if (map[stripped]) return map[stripped];
+  const m = id.match(/(\d{1,2}-\d{1,2}(?:-flagship)?)$/);
+  return (m && map[m[1]]) || null;
+}
+
+const MAX_DIGEST_ACTIVITIES = 8;
+
+/**
+ * Render one student's bilingual weekly digest as an HTML fragment (same
+ * `.parent-note` / `.cols` / `.lang` markup as buildNoteHTML, so NOTE_CSS and
+ * the live page styles both apply). Pure: no I/O.
+ *
+ * @param {object} s one `students[]` entry from GET /api/progress/digest:
+ *   { studentName, section, activities:[{activityId, activityTitle,
+ *     progressPercent, scorePct}], telemetryCounts:{[type]:n}, masteryReached:[] }
+ * @param {object} opts { date, homeworkMap, site } — homeworkMap is the
+ *   LESSON_FAMILY_HOMEWORK object; site prefixes its hrefs for offline files.
+ */
+export function buildWeeklyDigest(s, { date = "", homeworkMap = null, site = "" } = {}) {
+  const acts = Array.isArray(s.activities) ? s.activities : [];
+  const scored = acts.filter((a) => a && a.scorePct != null && Number.isFinite(Number(a.scorePct)));
+  const avg = scored.length
+    ? Math.round(scored.reduce((t, a) => t + Number(a.scorePct), 0) / scored.length)
+    : null;
+  const b = bandInfo(avg);
+  const fn = firstName(s.studentName);
+  const counts = s.telemetryCounts || {};
+  const checkins = Number(counts["family-checkin"]) || 0;
+  const mastery = Array.isArray(s.masteryReached) ? s.masteryReached.filter(Boolean) : [];
+
+  // What we worked on: activity list (capped), progress/score when known.
+  const actLine = (a) => {
+    const bits = [];
+    if (a.progressPercent != null && Number.isFinite(Number(a.progressPercent)))
+      bits.push(`${Math.round(Number(a.progressPercent))}%`);
+    if (a.scorePct != null && Number.isFinite(Number(a.scorePct)))
+      bits.push(`score ${Math.round(Number(a.scorePct))}%`);
+    return `${a.activityTitle || a.activityId || "Activity"}${bits.length ? ` — ${bits.join(" · ")}` : ""}`;
+  };
+  const shown = acts.slice(0, MAX_DIGEST_ACTIVITIES);
+  const moreCount = acts.length - shown.length;
+  const workedEn = acts.length
+    ? `<ul>${li(shown.map(actLine))}</ul>${moreCount > 0 ? `<p>…and ${moreCount} more.</p>` : ""}`
+    : `<p>No logged activity this week — a fresh week starts now!</p>`;
+  const workedEs = acts.length
+    ? `<ul>${li(shown.map(actLine))}</ul>${moreCount > 0 ? `<p>…y ${moreCount} más.</p>` : ""}`
+    : `<p>No hay actividad registrada esta semana — ¡una nueva semana comienza ahora!</p>`;
+
+  // Mastery reached (standards codes from telemetry mastery events).
+  const masteryEn = mastery.length
+    ? `<p>New skills mastered this week: <strong>${esc(mastery.join(", "))}</strong> 🎉</p>`
+    : `<p>Still working toward the next mastery check — steady progress counts!</p>`;
+  const masteryEs = mastery.length
+    ? `<p>Nuevas habilidades dominadas esta semana: <strong>${esc(mastery.join(", "))}</strong> 🎉</p>`
+    : `<p>Seguimos trabajando hacia el próximo logro — ¡el progreso constante cuenta!</p>`;
+
+  // One thing to ask your child: weakest scored activity if one dipped below
+  // the practice threshold, else the strongest — always concrete and positive.
+  const byScore = [...scored].sort((a, z) => Number(a.scorePct) - Number(z.scorePct));
+  const weakest = byScore.length && Number(byScore[0].scorePct) < PRACTICE_BELOW ? byScore[0] : null;
+  const strongest = byScore.length ? byScore[byScore.length - 1] : null;
+  const askTarget = weakest || strongest;
+  let askEn;
+  let askEs;
+  if (weakest) {
+    const t = esc(weakest.activityTitle || weakest.activityId);
+    askEn = `Ask ${esc(fn)} to walk you through one problem from “${t}” — explaining it out loud is the fastest way to lock it in.`;
+    askEs = `Pídale a ${esc(fn)} que le explique un problema de “${t}” — explicarlo en voz alta es la manera más rápida de dominarlo.`;
+  } else if (strongest) {
+    const t = esc(strongest.activityTitle || strongest.activityId);
+    askEn = `Ask ${esc(fn)} to teach you something from “${t}” — they did great work there this week.`;
+    askEs = `Pídale a ${esc(fn)} que le enseñe algo de “${t}” — hizo un gran trabajo allí esta semana.`;
+  } else {
+    askEn = `Ask ${esc(fn)} what math class is about this week.`;
+    askEs = `Pregúntele a ${esc(fn)} de qué trata la clase de matemáticas esta semana.`;
+  }
+
+  // 5-minute home activity: prefer the ask-target's lesson, else the first
+  // activity with a family-homework page.
+  let hw = null;
+  let hwTitle = "";
+  for (const a of [askTarget, ...acts]) {
+    if (!a) continue;
+    const hit = familyHomeworkFor(a.activityId, homeworkMap);
+    if (hit && hit.href) {
+      hw = hit;
+      hwTitle = a.activityTitle || a.activityId || "";
+      break;
+    }
+  }
+  const hwHref = hw ? esc(`${site}${hw.href}`) : "";
+  const hwEn = hw
+    ? `<p><strong>5-minute home activity:</strong> <a href="${hwHref}">Try the family activity for “${esc(hwTitle)}”</a> — quick, hands-on, and made for families.</p>`
+    : "";
+  const hwEs = hw
+    ? `<p><strong>Actividad de 5 minutos en casa:</strong> <a href="${hwHref}">Prueben la actividad familiar de “${esc(hwTitle)}”</a> — rápida, práctica y hecha para las familias.</p>`
+    : "";
+
+  const checkinEn =
+    checkins > 0
+      ? `<p class="pn-checkin">Family practice logged ✅ ${checkins}× this week — thank you!</p>`
+      : "";
+  const checkinEs =
+    checkins > 0
+      ? `<p class="pn-checkin">Práctica en familia registrada ✅ ${checkins} veces esta semana — ¡gracias!</p>`
+      : "";
+
+  const avgText = avg == null ? "" : ` (average ${avg}%).`;
+  const avgTextEs = avg == null ? "" : ` (promedio ${avg}%).`;
+
+  return `<article class="parent-note pn-digest" data-name="${esc(s.studentName)}" data-section="${esc(s.section)}">
+  <header class="pn-head">
+    <div><strong>${esc(s.studentName || "Student")}</strong> · <span class="pn-class">${esc(s.section || "")}</span></div>
+    <div class="pn-meta">Weekly digest${date ? ` · Week of ${esc(date)}` : ""} · ${acts.length} activit${acts.length === 1 ? "y" : "ies"}</div>
+  </header>
+  <div class="cols">
+    <div class="lang">
+      <span class="flag">🇺🇸 English</span>
+      <h2>${esc(fn)}'s week in math</h2>
+      <p>${esc(fn)} ${b.en}${avgText}</p>
+      <h3>What we worked on</h3>${workedEn}
+      <h3>Mastery reached</h3>${masteryEn}
+      <h3>One thing to ask your child</h3><p>${askEn}</p>
+      ${hwEn}${checkinEn}
+    </div>
+    <div class="lang">
+      <span class="flag">🇲🇽 Español</span>
+      <h2>La semana de ${esc(fn)} en matemáticas</h2>
+      <p>${esc(fn)} ${b.es}${avgTextEs}</p>
+      <h3>En qué trabajamos</h3>${workedEs}
+      <h3>Dominio alcanzado</h3>${masteryEs}
+      <h3>Algo para preguntarle a su hijo/a</h3><p>${askEs}</p>
+      ${hwEs}${checkinEs}
+    </div>
+  </div>
+</article>`;
 }
 
 /** Compact standalone stylesheet for offline (CLI) documents. */

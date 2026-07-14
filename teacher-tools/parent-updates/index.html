@@ -243,6 +243,12 @@
             <option value="">All classes</option>
           </select>
         </div>
+        <div>
+          <label for="mode">View</label><br /><select id="mode">
+            <option value="notes">Progress notes</option>
+            <option value="weekly">Weekly digest</option>
+          </select>
+        </div>
         <div class="grow"></div>
         <button class="ghost" id="refresh">↻ Refresh from gradebook</button>
         <button id="printAll">🖨 Print all</button>
@@ -263,6 +269,7 @@
       <p id="gateMsg" class="pn-meta"></p>
     </div>
 
+    <script src="/curriculum/lesson-family-homework.js"></script>
     <script>
       const LS_KEY = "neft.teacher.key";
       const API = "/api/progress";
@@ -270,6 +277,7 @@
         PRACTICE_BELOW = 70;
       const $ = (s) => document.querySelector(s);
       let rows = [];
+      let digest = null; // GET /api/progress/digest response (weekly mode)
 
       /* ---- mastery phrasing (mirror scripts/lib/parent-note.mjs) ---- */
       function bandInfo(pct) {
@@ -352,6 +360,116 @@
         );
       }
 
+      /* ---- weekly digest (mirror buildWeeklyDigest in scripts/lib/parent-note.mjs) ---- */
+      function homeworkFor(activityId) {
+        const map = window.LESSON_FAMILY_HOMEWORK;
+        if (!activityId || !map) return null;
+        const id = String(activityId);
+        if (map[id]) return map[id];
+        const m = id.match(/(\d{1,2}-\d{1,2}(?:-flagship)?)$/);
+        return (m && map[m[1]]) || null;
+      }
+
+      function digestHTML(s) {
+        const acts = Array.isArray(s.activities) ? s.activities : [];
+        const scored = acts.filter((a) => a && num(a.scorePct) != null);
+        const avg = scored.length
+          ? Math.round(scored.reduce((t, a) => t + Number(a.scorePct), 0) / scored.length)
+          : null;
+        const b = bandInfo(avg);
+        const fn = esc(firstName(s.studentName));
+        const counts = s.telemetryCounts || {};
+        const checkins = Number(counts["family-checkin"]) || 0;
+        const mastery = Array.isArray(s.masteryReached) ? s.masteryReached.filter(Boolean) : [];
+
+        const actLine = (a) => {
+          const bits = [];
+          if (num(a.progressPercent) != null)
+            bits.push(`${Math.round(Number(a.progressPercent))}%`);
+          if (num(a.scorePct) != null) bits.push(`score ${Math.round(Number(a.scorePct))}%`);
+          return `${a.activityTitle || a.activityId || "Activity"}${bits.length ? ` — ${bits.join(" · ")}` : ""}`;
+        };
+        const shown = acts.slice(0, 8);
+        const more = acts.length - shown.length;
+        const workedEn = acts.length
+          ? `<ul>${liList(shown.map(actLine))}</ul>${more > 0 ? `<p>…and ${more} more.</p>` : ""}`
+          : "<p>No logged activity this week — a fresh week starts now!</p>";
+        const workedEs = acts.length
+          ? `<ul>${liList(shown.map(actLine))}</ul>${more > 0 ? `<p>…y ${more} más.</p>` : ""}`
+          : "<p>No hay actividad registrada esta semana — ¡una nueva semana comienza ahora!</p>";
+
+        const masteryEn = mastery.length
+          ? `<p>New skills mastered this week: <strong>${esc(mastery.join(", "))}</strong> 🎉</p>`
+          : "<p>Still working toward the next mastery check — steady progress counts!</p>";
+        const masteryEs = mastery.length
+          ? `<p>Nuevas habilidades dominadas esta semana: <strong>${esc(mastery.join(", "))}</strong> 🎉</p>`
+          : "<p>Seguimos trabajando hacia el próximo logro — ¡el progreso constante cuenta!</p>";
+
+        const byScore = [...scored].sort((a, z) => Number(a.scorePct) - Number(z.scorePct));
+        const weakest =
+          byScore.length && Number(byScore[0].scorePct) < PRACTICE_BELOW ? byScore[0] : null;
+        const strongest = byScore.length ? byScore[byScore.length - 1] : null;
+        const askTarget = weakest || strongest;
+        let askEn, askEs;
+        if (weakest) {
+          const t = esc(weakest.activityTitle || weakest.activityId);
+          askEn = `Ask ${fn} to walk you through one problem from “${t}” — explaining it out loud is the fastest way to lock it in.`;
+          askEs = `Pídale a ${fn} que le explique un problema de “${t}” — explicarlo en voz alta es la manera más rápida de dominarlo.`;
+        } else if (strongest) {
+          const t = esc(strongest.activityTitle || strongest.activityId);
+          askEn = `Ask ${fn} to teach you something from “${t}” — they did great work there this week.`;
+          askEs = `Pídale a ${fn} que le enseñe algo de “${t}” — hizo un gran trabajo allí esta semana.`;
+        } else {
+          askEn = `Ask ${fn} what math class is about this week.`;
+          askEs = `Pregúntele a ${fn} de qué trata la clase de matemáticas esta semana.`;
+        }
+
+        let hw = null,
+          hwTitle = "";
+        for (const a of [askTarget, ...acts]) {
+          if (!a) continue;
+          const hit = homeworkFor(a.activityId);
+          if (hit && hit.href) {
+            hw = hit;
+            hwTitle = a.activityTitle || a.activityId || "";
+            break;
+          }
+        }
+        const hwEn = hw
+          ? `<p><strong>5-minute home activity:</strong> <a href="${esc(hw.href)}">Try the family activity for “${esc(hwTitle)}”</a> — quick, hands-on, and made for families.</p>`
+          : "";
+        const hwEs = hw
+          ? `<p><strong>Actividad de 5 minutos en casa:</strong> <a href="${esc(hw.href)}">Prueben la actividad familiar de “${esc(hwTitle)}”</a> — rápida, práctica y hecha para las familias.</p>`
+          : "";
+        const checkinEn =
+          checkins > 0
+            ? `<p>Family practice logged ✅ ${checkins}× this week — thank you!</p>`
+            : "";
+        const checkinEs =
+          checkins > 0
+            ? `<p>Práctica en familia registrada ✅ ${checkins} veces esta semana — ¡gracias!</p>`
+            : "";
+        const avgText = avg == null ? "" : ` (average ${avg}%).`;
+        const avgTextEs = avg == null ? "" : ` (promedio ${avg}%).`;
+
+        return (
+          `<article class="parent-note"><header class="pn-head">` +
+          `<div><strong>${esc(s.studentName || "Student")}</strong> · <span class="pn-class">${esc(s.section || "")}</span>` +
+          ` <span class="pn-meta">weekly digest · ${acts.length} activit${acts.length === 1 ? "y" : "ies"}</span></div>` +
+          `<button class="pn-print" type="button">🖨 Print this</button></header>` +
+          `<div class="cols"><div class="lang"><span class="flag">🇺🇸 English</span>` +
+          `<h2>${fn}'s week in math</h2><p>${fn} ${b.en}${avgText}</p>` +
+          `<h3>What we worked on</h3>${workedEn}` +
+          `<h3>Mastery reached</h3>${masteryEn}` +
+          `<h3>One thing to ask your child</h3><p>${askEn}</p>${hwEn}${checkinEn}</div>` +
+          `<div class="lang"><span class="flag">🇲🇽 Español</span>` +
+          `<h2>La semana de ${fn} en matemáticas</h2><p>${fn} ${b.es}${avgTextEs}</p>` +
+          `<h3>En qué trabajamos</h3>${workedEs}` +
+          `<h3>Dominio alcanzado</h3>${masteryEs}` +
+          `<h3>Algo para preguntarle a su hijo/a</h3><p>${askEs}</p>${hwEs}${checkinEs}</div></div></article>`
+        );
+      }
+
       function renderSections(summaries) {
         const sel = $("#section");
         const sections = [...new Set(summaries.map((s) => s.section).filter(Boolean))].sort();
@@ -362,6 +480,17 @@
 
       function render() {
         const filter = $("#section").value;
+        if ($("#mode").value === "weekly") {
+          let list = (digest && digest.students) || [];
+          if (filter) list = list.filter((s) => String(s.section) === filter);
+          $("#notes").innerHTML = list.length
+            ? list.map(digestHTML).join("")
+            : '<p class="pn-meta">No student activity in the last 7 days for this class.</p>';
+          $("#msg").textContent =
+            `${list.length} digest(s) · last 7 days · built in your browser · not saved anywhere.`;
+          $("#msg").className = "";
+          return;
+        }
         let list = summarize({ activities: rows.activities, rows: rows.rows });
         if (filter) list = list.filter((s) => String(s.section) === filter);
         $("#notes").innerHTML = list.length
@@ -370,6 +499,42 @@
         $("#msg").textContent =
           `${list.length} note(s) · built in your browser · not saved anywhere.`;
         $("#msg").className = "";
+      }
+
+      async function loadWeekly() {
+        const key = localStorage.getItem(LS_KEY);
+        if (!key) return showGate();
+        $("#msg").textContent = "Loading weekly digest…";
+        $("#msg").className = "";
+        try {
+          const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+          const r = await fetch(`${API}/digest?since=${encodeURIComponent(since)}`, {
+            headers: { "x-teacher-key": key },
+          });
+          if (r.status === 401) {
+            localStorage.removeItem(LS_KEY);
+            return showGate("That key was rejected. Try again.");
+          }
+          if (r.status === 503) {
+            $("#msg").textContent =
+              "The digest backend isn't configured yet (no TEACHER_KEY on the server).";
+            $("#msg").className = "err";
+            return;
+          }
+          const d = await r.json();
+          if (!d.ok) throw new Error(d.error || "load failed");
+          digest = d;
+          const secs = [...new Set(d.students.map((s) => s.section).filter(Boolean))].sort();
+          const sel = $("#section");
+          if (sel.options.length <= 1)
+            sel.innerHTML =
+              '<option value="">All classes</option>' +
+              secs.map((s) => `<option>${esc(s)}</option>`).join("");
+          render();
+        } catch (e) {
+          $("#msg").textContent = "Could not load digest: " + e.message;
+          $("#msg").className = "err";
+        }
       }
 
       async function load() {
@@ -420,7 +585,14 @@
       });
       $("#gateKey").addEventListener("keydown", (e) => e.key === "Enter" && $("#gateGo").click());
       $("#section").addEventListener("change", render);
-      $("#refresh").addEventListener("click", load);
+      $("#mode").addEventListener("change", () => {
+        if ($("#mode").value === "weekly" && !digest) return loadWeekly();
+        render();
+      });
+      $("#refresh").addEventListener("click", () => {
+        if ($("#mode").value === "weekly") return loadWeekly();
+        load();
+      });
       $("#printAll").addEventListener("click", () => {
         document.body.classList.remove("printing-one");
         window.print();

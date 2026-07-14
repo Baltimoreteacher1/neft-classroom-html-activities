@@ -173,6 +173,58 @@
   }
 
   // --- 4. "We practiced together tonight" completion check -----------------
+  // Checking the box also sends one fire-and-forget "family-checkin" telemetry
+  // event (payload mirrors assets/lesson-telemetry.js buildPayload) so the
+  // weekly family digest can show "Family practice logged". Fully optional:
+  // any failure is swallowed, nothing changes for JS-off/print/offline use.
+  function familyCheckinPing() {
+    try {
+      if (typeof fetch !== "function") return;
+      var slug = "family-letter";
+      try {
+        var p = location.pathname.replace(/index\.html?$/i, "").replace(/^\/+|\/+$/g, "");
+        if (p) slug = p.replace(/[^A-Za-z0-9._/-]+/g, "-").replace(/\//g, "-");
+      } catch (e) {}
+      var nowIso = new Date().toISOString();
+      var payload = {
+        activityId: slug,
+        activityTitle: (document.title || slug).slice(0, 200),
+        standard: "",
+        kind: "telemetry",
+        events: [
+          {
+            id: Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8),
+            event: "family-checkin",
+            lessonSlug: slug,
+            standard: "",
+            ts: nowIso,
+            props: {},
+          },
+        ],
+        createdAt: nowIso,
+      };
+      // Attribute the check-in ONLY when this device already knows the student
+      // (localStorage nt_student, written by nt-page-enhance.js). A family
+      // phone/tablet usually won't have it — then the event stays anonymous.
+      try {
+        var stu = JSON.parse(localStorage.getItem("nt_student") || "{}");
+        if (stu && typeof stu === "object") {
+          if (stu.name) payload.studentName = String(stu.name).slice(0, 60);
+          if (stu.section) payload.section = String(stu.section).slice(0, 40);
+        }
+      } catch (e) {}
+      fetch("/api/progress/telemetry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        keepalive: true,
+        credentials: "omit",
+      }).catch(function () {});
+    } catch (e) {
+      /* never let telemetry break the letter */
+    }
+  }
+
   var footer = document.querySelector(".site-footer");
   if (footer) {
     var DONE_KEY = "nt-family-done:" + location.pathname;
@@ -195,6 +247,7 @@
       try {
         localStorage.setItem(DONE_KEY, cb.checked ? "1" : "0");
       } catch (e) {}
+      if (cb.checked) familyCheckinPing();
     });
     footer.parentNode.insertBefore(label, footer);
   }

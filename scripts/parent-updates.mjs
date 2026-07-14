@@ -12,6 +12,7 @@
  *
  * Usage:
  *   TEACHER_KEY=… npm run parent-updates -- --section 601
+ *   TEACHER_KEY=… npm run parent-updates -- --weekly --section 601
  *   npm run parent-updates -- --fixture ./sample-grades.json --out ~/notes
  *
  * Flags:
@@ -19,16 +20,25 @@
  *   --site <url>           site origin (default $NEFT_SITE or eduwonderlab.com)
  *   --key <k>              teacher key (default $TEACHER_KEY / $NEFT_TEACHER_KEY)
  *   --fixture <path>       JSON grades pivot for --source fixture / offline test
+ *                          (with --weekly: a digest response { students: [...] })
  *   --section <id>         only this class/period
  *   --out <dir>            output dir (default: a fresh OS-temp folder)
+ *   --weekly               weekly bilingual digests instead of progress notes:
+ *                          reads GET /api/progress/digest?since=<7 days ago>
+ *                          and renders via buildWeeklyDigest (same guardOut —
+ *                          PII never lands inside the repo)
  *   --force               allow a repo-internal --out (NOT recommended)
+ *
+ * CONTRACT: digest phrasing lives in scripts/lib/parent-note.mjs
+ * (buildWeeklyDigest) and is mirrored inline by the live page
+ * teacher-tools/parent-updates/index.html — keep the two in sync.
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildDocument, buildNoteHTML, summarizeGrades } from "./lib/parent-note.mjs";
+import { buildDocument, buildNoteHTML, buildWeeklyDigest, summarizeGrades } from "./lib/parent-note.mjs";
 
 const REPO = resolve(join(dirname(fileURLToPath(import.meta.url)), ".."));
 const DEFAULT_SITE = process.env.NEFT_SITE || "https://eduwonderlab.com";
@@ -85,11 +95,41 @@ function readFixture(path) {
   throw new Error("Fixture must be a grades pivot with { activities, rows }.");
 }
 
+async function fetchDigest(site, key, section, since) {
+  const qs = new URLSearchParams({ key, since });
+  if (section) qs.set("section", section);
+  const r = await fetch(`${site}/api/progress/digest?${qs}`, { headers: { "x-teacher-key": key } });
+  if (r.status === 401) throw new Error("Unauthorized (401): wrong teacher key.");
+  if (r.status === 503) throw new Error("Digest not configured on the server (TEACHER_KEY unset).");
+  if (!r.ok) throw new Error(`digest request failed: HTTP ${r.status}`);
+  const d = await r.json();
+  if (!d.ok) throw new Error(`digest error: ${d.error || "unknown"}`);
+  return d;
+}
+
+function readDigestFixture(path) {
+  const d = JSON.parse(readFileSync(path, "utf8"));
+  if (Array.isArray(d.students)) return d;
+  throw new Error("Weekly fixture must be a digest response with { students: [...] }.");
+}
+
+/** Load the family-homework map (a `window.LESSON_FAMILY_HOMEWORK = {...}` file). */
+function readHomeworkMap() {
+  try {
+    const src = readFileSync(join(REPO, "curriculum", "lesson-family-homework.js"), "utf8");
+    return new Function(`const window = {}; ${src}; return window.LESSON_FAMILY_HOMEWORK || null;`)();
+  } catch {
+    return null; // digest simply omits the 5-minute activity link
+  }
+}
+
 async function main() {
   const a = parseArgs(process.argv.slice(2));
   const source = a.source || (a.fixture ? "fixture" : "live");
   const site = (a.site || DEFAULT_SITE).replace(/\/$/, "");
   const date = new Date().toISOString().slice(0, 10);
+
+  if (a.flags.has("weekly")) return weeklyMain(a, source, site, date);
 
   let grades;
   if (source === "fixture") {
@@ -126,6 +166,55 @@ async function main() {
     `\n✓ ${summaries.length} bilingual parent note(s) written to:\n  ${outDir}\n\n` +
       `  • index.html  — all notes on one printable page\n` +
       `  • note-*.html — one file per student\n\n` +
+      `⚠ Contains student names + scores. Keep this folder private; it is outside the repo and never deployed.\n`,
+  );
+}
+
+/** --weekly: one bilingual digest per student from GET /api/progress/digest. */
+async function weeklyMain(a, source, site, date) {
+  let digest;
+  if (source === "fixture") {
+    if (!a.fixture) throw new Error("--source fixture requires --fixture <path>.");
+    digest = readDigestFixture(a.fixture);
+  } else {
+    const key = a.key || process.env.TEACHER_KEY || process.env.NEFT_TEACHER_KEY;
+    if (!key) throw new Error("Live mode needs a teacher key (--key or $TEACHER_KEY).");
+    const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    digest = await fetchDigest(site, key, a.section, since);
+  }
+
+  let students = Array.isArray(digest.students) ? digest.students : [];
+  if (a.section) students = students.filter((s) => String(s.section) === String(a.section));
+  if (!students.length) {
+    process.stderr.write("No students found for that scope.\n");
+    process.exit(1);
+  }
+
+  const outDir = guardOut(a.out || join(tmpdir(), `neft-weekly-digest-${date}`), a.flags.has("force"));
+  if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
+
+  const homeworkMap = readHomeworkMap();
+  const opts = { date, homeworkMap, site };
+  const title = `Weekly Family Digest${a.section ? ` — ${a.section}` : ""}`;
+  writeFileSync(
+    join(outDir, "index.html"),
+    buildDocument(students.map((s) => buildWeeklyDigest(s, opts)), { title, date }),
+  );
+  const seen = new Map();
+  for (const s of students) {
+    let base = slug(`${s.studentName}-${s.section}`);
+    seen.set(base, (seen.get(base) || 0) + 1);
+    if (seen.get(base) > 1) base += `-${seen.get(base)}`;
+    writeFileSync(
+      join(outDir, `digest-${base}.html`),
+      buildDocument([buildWeeklyDigest(s, opts)], { title: s.studentName, date }),
+    );
+  }
+
+  process.stdout.write(
+    `\n✓ ${students.length} weekly bilingual digest(s) written to:\n  ${outDir}\n\n` +
+      `  • index.html    — all digests on one printable page\n` +
+      `  • digest-*.html — one file per student\n\n` +
       `⚠ Contains student names + scores. Keep this folder private; it is outside the repo and never deployed.\n`,
   );
 }
