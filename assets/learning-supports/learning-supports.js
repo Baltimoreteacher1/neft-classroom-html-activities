@@ -1517,6 +1517,62 @@
         bodyEl.appendChild(list);
       }
 
+      // Universal math-talk stems, tiered by WIDA band so every student has an
+      // entry point into discourse (a flat frame list leaves Entering/Emerging
+      // students without a starting move). Lesson-specific frames stay above.
+      const MATH_TALK_TIERS = [
+        {
+          label: "🌱 Getting Started (WIDA 1–2)",
+          stems: [
+            ["I see ___.", "Veo ___."],
+            ["The answer is ___.", "La respuesta es ___."],
+            ["I need help with ___.", "Necesito ayuda con ___."],
+            ["Is it ___ or ___?", "¿Es ___ o ___?"],
+          ],
+        },
+        {
+          label: "🌿 Building Ideas (WIDA 3–4)",
+          stems: [
+            ["First I ___, then I ___.", "Primero yo ___, luego ___."],
+            ["I agree with ___ because ___.", "Estoy de acuerdo con ___ porque ___."],
+            ["I disagree because ___.", "No estoy de acuerdo porque ___."],
+            ["How did you get ___?", "¿Cómo obtuviste ___?"],
+          ],
+        },
+        {
+          label: "🌳 Extending Thinking (WIDA 5–6)",
+          stems: [
+            ["I'd like to build on ___'s idea: ___.", "Quiero ampliar la idea de ___: ___."],
+            ["Another strategy would be ___ because ___.", "Otra estrategia sería ___ porque ___."],
+            ["I revised my thinking when ___.", "Cambié mi razonamiento cuando ___."],
+            ["This connects to ___ because ___.", "Esto se conecta con ___ porque ___."],
+          ],
+        },
+      ];
+      const talkTitle = document.createElement("h4");
+      talkTitle.textContent = "Math Talk Moves";
+      bodyEl.appendChild(talkTitle);
+      MATH_TALK_TIERS.forEach((tier) => {
+        const wrap = document.createElement("div");
+        wrap.className = "ewl-supports-talk-tier";
+        const head = document.createElement("h5");
+        head.textContent = tier.label;
+        wrap.appendChild(head);
+        const ul = document.createElement("ul");
+        tier.stems.forEach(([en, es]) => {
+          const item = document.createElement("li");
+          item.textContent = en;
+          const esSpan = document.createElement("span");
+          esSpan.className = "ewl-supports-talk-es";
+          esSpan.lang = "es";
+          esSpan.textContent = es;
+          item.appendChild(esSpan);
+          ul.appendChild(item);
+        });
+        wrap.appendChild(ul);
+        bodyEl.appendChild(wrap);
+      });
+
       if (manifestData.wordBank && manifestData.wordBank.length > 0) {
         const bankTitle = document.createElement("h4");
         bankTitle.textContent = "Word Bank";
@@ -3090,6 +3146,35 @@
     const here = activeLessonId;
     chip.classList.toggle("is-here", !!here && list.indexOf(here) !== -1);
   }
+  // Same-device progress for an assigned lesson, read from the Save/Resume
+  // engine's local cache (nsr:*). Lesson pages get activityId "lessons-<id>"
+  // from the engine's path slugify; returns 0–100 or null (never started here).
+  function v2LessonProgress(id) {
+    try {
+      const code = localStorage.getItem("nsr:activity:lessons-" + id + ":lastCode");
+      if (!code) return null;
+      const raw = localStorage.getItem("nsr:rec:" + code);
+      if (!raw) return null;
+      const pct = Number(JSON.parse(raw).progressPercent);
+      return Number.isFinite(pct) ? Math.max(0, Math.min(100, Math.round(pct))) : null;
+    } catch (_e) {
+      return null;
+    }
+  }
+  function v2ProgressBadge(id) {
+    const pct = v2LessonProgress(id);
+    const badge = document.createElement("span");
+    badge.className = "ewl-supports-mylessons-status";
+    if (pct === null) {
+      badge.textContent = "not started";
+    } else if (pct >= 100) {
+      badge.classList.add("is-done");
+      badge.textContent = "✔ done";
+    } else {
+      badge.textContent = pct + "%";
+    }
+    return badge;
+  }
   function v2ToggleMyLessons(chip) {
     if (myLessonsPop) {
       myLessonsPop.remove();
@@ -3123,6 +3208,7 @@
         a.textContent = v2LessonTitle(id);
         li.appendChild(a);
       }
+      li.appendChild(v2ProgressBadge(id));
       ul.appendChild(li);
     });
     myLessonsPop.appendChild(ul);
