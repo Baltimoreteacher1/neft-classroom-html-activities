@@ -146,6 +146,42 @@
     }
   }
 
+  // "Compact overlays" — a teacher control that shrinks the persistent floating
+  // controls (Teacher Mode pill + the Prepare Supports / Math supports side tabs)
+  // down to small icon-only nubs so they stop covering the slide while presenting.
+  // Pure presentation state, persisted per device. Everything keys off the shared
+  // body class `nt-overlays-compact`, so the CSS can also restyle the engine-owned
+  // .mode-toggle-pill without touching the engine bundle.
+  const OVERLAYS_COMPACT_KEY = "nt-overlays-compact";
+  function isOverlaysCompact() {
+    try {
+      return localStorage.getItem(OVERLAYS_COMPACT_KEY) === "1";
+    } catch (e) {
+      return false;
+    }
+  }
+  function applyOverlaysCompact(on) {
+    document.body.classList.toggle("nt-overlays-compact", on);
+    document.querySelectorAll(".ewl-supports-min-toggle").forEach((b) => {
+      b.setAttribute("aria-pressed", String(on));
+      b.setAttribute(
+        "aria-label",
+        on ? "Show teacher controls at full size" : "Shrink teacher controls",
+      );
+      b.title = on ? "Show controls" : "Shrink controls";
+      const ic = b.querySelector(".ewl-supports-min-icon");
+      if (ic) ic.textContent = on ? "⤢" : "⤡";
+    });
+  }
+  function setOverlaysCompact(on) {
+    try {
+      localStorage.setItem(OVERLAYS_COMPACT_KEY, on ? "1" : "0");
+    } catch (e) {
+      /* storage blocked — applies for this page only */
+    }
+    applyOverlaysCompact(on);
+  }
+
   const TEXT_SCALE_LABELS = ["Text Size", "Large Text", "X-Large Text"];
 
   // Color tint overlay for visual stress / Irlen-style comfort. Index 0 = none.
@@ -448,7 +484,13 @@
 
     const configBtn = document.createElement("button");
     configBtn.className = "ewl-supports-btn-teacher";
-    configBtn.textContent = "⚙️ Prepare Supports";
+    // Emoji + label split so the label can collapse to an icon-only nub when the
+    // teacher minimizes the overlays (body.nt-overlays-compact). aria-label keeps
+    // the accessible name stable in both states.
+    configBtn.innerHTML =
+      '<span class="ewl-supports-tab-icon" aria-hidden="true">⚙️</span>' +
+      '<span class="ewl-supports-tab-label">Prepare Supports</span>';
+    configBtn.setAttribute("aria-label", "Prepare Supports");
     configBtn.setAttribute("aria-haspopup", "dialog");
     configBtn.setAttribute("aria-controls", "ewl-supports-dialog");
     configBtn.addEventListener("click", () => showDialog(true));
@@ -978,7 +1020,10 @@
         msTab.type = "button";
         msTab.className = "ewl-supports-math-tab";
         msTab.setAttribute("aria-expanded", "false");
-        msTab.innerHTML = '<span aria-hidden="true">🧮</span> Math supports';
+        msTab.setAttribute("aria-label", "Math supports");
+        msTab.innerHTML =
+          '<span class="ewl-supports-tab-icon" aria-hidden="true">🧮</span>' +
+          '<span class="ewl-supports-tab-label">Math supports</span>';
 
         const msPanel = document.createElement("div");
         msPanel.className = "ewl-supports-math-panel";
@@ -1036,6 +1081,28 @@
       // Never let the teacher-only checklist break lesson boot — degrade to the
       // plain lesson (students are unaffected: this block is Teacher-Mode only).
       console.warn("Math supports tab failed to mount:", e);
+    }
+
+    // ── Minimize toggle — teacher-only master switch that shrinks all three
+    // persistent overlays (Teacher Mode pill + Prepare Supports + Math supports)
+    // to icon-only nubs so they stop covering the slide during presentation.
+    try {
+      if (isTeacherMode()) {
+        const minToggle = document.createElement("button");
+        minToggle.type = "button";
+        minToggle.className = "ewl-supports-min-toggle";
+        minToggle.setAttribute("aria-pressed", "false");
+        minToggle.setAttribute("aria-label", "Shrink teacher controls");
+        minToggle.title = "Shrink controls";
+        minToggle.innerHTML = '<span class="ewl-supports-min-icon" aria-hidden="true">⤡</span>';
+        minToggle.addEventListener("click", () => setOverlaysCompact(!isOverlaysCompact()));
+        rootEl.appendChild(minToggle);
+        // Honor a previously-saved minimized state (also applies the body class
+        // so the side tabs + pill render compact from first paint).
+        applyOverlaysCompact(isOverlaysCompact());
+      }
+    } catch (e) {
+      console.warn("Minimize toggle failed to mount:", e);
     }
 
     // 4. Slide-out Content Panel

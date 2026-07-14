@@ -1946,6 +1946,99 @@ mark.ewl-adapt-mark {
   transform: translateX(-3px);
 }
 
+/* Split icon/label so the tabs can collapse to icon-only nubs. In normal state
+   they read as full vertical tabs (writing-mode stacks icon above label). */
+.ewl-supports-btn-teacher,
+.ewl-supports-math-tab {
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Compact / minimized (teacher taps the minimize toggle on the Teacher Mode
+   pill): drop the labels and shrink to a slim icon nub tucked at the right edge,
+   so the tabs stop covering slide content during presentation. Panels still open
+   on tap, and a hover restores full opacity. */
+body.nt-overlays-compact .ewl-supports-tab-label {
+  display: none;
+}
+body.nt-overlays-compact .ewl-supports-btn-teacher,
+body.nt-overlays-compact .ewl-supports-math-tab {
+  padding: 10px 6px;
+  min-height: 0;
+  font-size: 18px;
+  opacity: 0.68;
+}
+body.nt-overlays-compact .ewl-supports-btn-teacher:hover,
+body.nt-overlays-compact .ewl-supports-math-tab:hover {
+  opacity: 1;
+}
+/* Re-anchor the math tab just below the (now shorter) Prepare Supports nub. */
+body.nt-overlays-compact .ewl-supports-math-dock {
+  top: calc(50% + 60px);
+}
+
+/* Teacher-only minimize toggle. Sits just under the Teacher Mode pill (top-right)
+   so it reads as the control that shrinks these overlays. Rendered only in
+   Teacher Mode (mounted from learning-supports.js). */
+.ewl-supports-min-toggle {
+  position: fixed;
+  top: 54px;
+  right: 12px;
+  z-index: 9601;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--ewl-color-border, #cbd5e1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--ewl-color-primary, #1e293b);
+  box-shadow: 0 2px 8px rgba(18, 53, 91, 0.18);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    transform 0.15s,
+    background-color 0.15s;
+}
+.ewl-supports-min-toggle:hover {
+  background: #fff;
+  transform: scale(1.06);
+}
+.ewl-supports-min-toggle[aria-pressed="true"] {
+  background: var(--ewl-color-primary, #1e293b);
+  color: #fff;
+  border-color: transparent;
+}
+@media print {
+  .ewl-supports-min-toggle {
+    display: none;
+  }
+}
+
+/* Compact / minimized: cross-style the engine-owned Teacher Mode pill (rendered
+   by engine/core/teacher-mode.js) down to an icon-only capsule. The emoji and
+   label share one text node, so blank the text and re-show the emoji via ::after
+   rather than reaching into the engine markup. */
+body.nt-overlays-compact .mode-toggle-pill.is-teacher {
+  opacity: 0.8;
+}
+body.nt-overlays-compact .mode-toggle-pill.is-teacher:hover {
+  opacity: 1;
+}
+body.nt-overlays-compact .mode-toggle-pill.is-teacher .mode-toggle-action {
+  display: none;
+}
+body.nt-overlays-compact .mode-toggle-pill.is-teacher .mode-toggle-state {
+  font-size: 0;
+}
+body.nt-overlays-compact .mode-toggle-pill.is-teacher .mode-toggle-state::after {
+  content: "👩‍🏫";
+  font-size: 16px;
+}
+
 .ewl-supports-math-panel {
   position: absolute;
   right: 46px;
