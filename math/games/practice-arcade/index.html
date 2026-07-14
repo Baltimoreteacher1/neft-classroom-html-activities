@@ -104,17 +104,7 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
     <!-- uifr-injected:begin -->
     <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (math/games/practice-arcade): supports Level 4 conditions on T2, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
     <!-- uifr-injected:end -->
@@ -1216,26 +1206,63 @@
             this.layer = this.add.container(0, 0);
             this.locked = false;
 
-            // ── Reliable drag-sort pickup (registered ONCE) ──────────────────
-            // Phaser's drag events on a container nested inside another container
-            // are flaky (short/quick drags silently fail on trackpads + touch
-            // Chromebooks — the recurring "dragging doesn't work" report). So we
-            // drive the carried tile from SCENE-level pointermove/up, which fire
-            // reliably on mouse AND touch. `this.carrying` is null outside sort
-            // rounds, so these handlers are inert elsewhere.
+            // ── Reliable drag-sort pickup + carry + drop (registered ONCE) ─────
+            // Phaser's per-object drag/pointer events on a container nested inside
+            // another container are flaky: short/quick drags silently fail on
+            // trackpads + touch Chromebooks, AND a tile mid-intro (alpha 0 during
+            // its pop-in) is skipped by Phaser's hit test entirely — so tapping a
+            // just-appeared tile grabs nothing (the recurring "can't drag it in"
+            // report). So the WHOLE gesture — pickup, carry, drop — runs from
+            // SCENE-level pointer events with our own geometric hit test, which
+            // fire reliably on mouse AND touch and ignore alpha/scale/render state.
+            // `this.sortTiles` is null outside sort rounds, so these are inert
+            // elsewhere.
+            this.input.on("pointerdown", (p) => {
+              if (!this.sortTiles || this.carrying) return;
+              // Nearest tile whose box is under the pointer. Staged tiles use their
+              // full nominal size (an easy target even while popping in); tiles
+              // already dropped in a bin use their packed on-screen size. Binned
+              // tiles are pickable too, so a number can be dragged back OUT of a
+              // box or straight into the other one.
+              const wx = p.worldX,
+                wy = p.worldY;
+              let pick = null,
+                pickD = Infinity;
+              for (const t of this.sortTiles) {
+                const c = t.parts;
+                const hw = (t.assigned ? c.displayWidth : this.sortTileW || c.width) / 2 + 6;
+                const hh = (t.assigned ? c.displayHeight : this.sortTileH || c.height) / 2 + 6;
+                if (Math.abs(wx - c.x) <= hw && Math.abs(wy - c.y) <= hh) {
+                  const d = Math.hypot(wx - c.x, wy - c.y);
+                  if (d < pickD) {
+                    pickD = d;
+                    pick = t;
+                  }
+                }
+              }
+              if (pick) this.pickUpSortTile(pick, p);
+            });
             this.input.on("pointermove", (p) => {
               // Number-line marker uses the SAME reliable scene-pointer approach
               // (not Phaser's flaky nested-container drag); nlOnMove is set while
               // the dot is held (see renderNumberLine) and null otherwise.
               if (this.nlOnMove) this.nlOnMove(p);
               const t = this.carrying;
-              if (!t || t.assigned) return;
-              t.parts.x = p.worldX - (this.grabDX || 0);
-              t.parts.y = p.worldY - (this.grabDY || 0);
+              if (!t) return;
               if (Phaser.Math.Distance.Between(p.downX, p.downY, p.x, p.y) > 6) {
+                // First real movement of a tile that started INSIDE a bin: pull it
+                // out (free its slot, restore full size) and re-fit that bin so its
+                // remaining tiles grow back, so it follows the finger. A pure tap
+                // never unassigns — see pointerup.
+                if (!this.carryMoved && t.assigned) {
+                  const freed = this.unassignTile(t);
+                  if (freed >= 0) this.layoutBin(freed);
+                }
                 this.carryMoved = true;
                 this.highlightNearBin(t);
               }
+              t.parts.x = p.worldX - (this.grabDX || 0);
+              t.parts.y = p.worldY - (this.grabDY || 0);
             });
             this.input.on("pointerup", () => {
               this.nlOnMove = null; // release the number-line marker
@@ -1247,11 +1274,14 @@
               if (!JUICE.reduceMotion)
                 this.tweens.add({ targets: t.parts, scale: 1, duration: 120 });
               else t.parts.setScale(1);
-              if (t.assigned) return;
-              // A real drag → drop into the nearest bin (forgiving). A tap (no
-              // move) → just keep it selected so a bin/number tap can place it.
-              if (this.carryMoved) this.dropTile(t);
-              else this.selectSortTile(t);
+              if (this.carryMoved) {
+                // Real drag → drop into the nearest bin (forgiving) or snap home.
+                this.dropTile(t);
+              } else if (!t.assigned) {
+                // Tap on a staged tile → keep it selected for tap-to-place.
+                this.selectSortTile(t);
+              }
+              // Tap on a tile already in a bin → leave it where it is.
             });
 
             // Persistent, tier-aware "Guided Steps" helper — a calm workspace that
@@ -1926,8 +1956,10 @@
               t.data = it;
               t.assigned = null;
               this.layer.add(t.parts);
-              // The container (not its child rect) owns the pointer — disable the
-              // child so pointerdown lands on the whole tile.
+              // The child rect must NOT eat pointers — pickup/carry/drop is driven
+              // entirely by the SCENE-level pointer handlers (registered once in
+              // create) with our own geometric hit test. Container stays interactive
+              // only for the hover hand-cursor affordance.
               t.bg.disableInteractive();
               t.parts.setInteractive(
                 new Phaser.Geom.Rectangle(
@@ -1938,23 +1970,6 @@
                 ),
                 Phaser.Geom.Rectangle.Contains,
               );
-              // PICK UP on pointerdown, then the SCENE-level pointermove/up
-              // (registered once in create) carry + drop it. We do NOT use Phaser's
-              // setDraggable/drag events — on a container nested in this.layer they
-              // fire unreliably for short/quick gestures (the recurring "drag
-              // doesn't work"). A grab-offset keeps the tile under the finger with
-              // no lurch; centring is not needed because dropTile is forgiving.
-              t.parts.on("pointerdown", (p) => {
-                if (t.assigned) return;
-                this.carrying = t;
-                this.carryMoved = false;
-                this.grabDX = p.worldX - t.parts.x;
-                this.grabDY = p.worldY - t.parts.y;
-                t.parts.setDepth(20);
-                if (!JUICE.reduceMotion)
-                  this.tweens.add({ targets: t.parts, scale: 1.06, duration: 110 });
-                this.selectSortTile(t);
-              });
               this.sortTiles.push(t);
             });
             this.highlightSort();
@@ -2000,6 +2015,39 @@
             const t = this.sortTiles[this.sortHi];
             if (t && !t.assigned) this.assignTile(t, bi);
           }
+          // Grab a sort tile (staged OR already in a bin) under the pointer and
+          // start carrying it. A grab-offset keeps it under the finger with no
+          // lurch. Assigned tiles are only pulled out of their bin once the
+          // gesture becomes a real drag (see pointermove), so a tap can't
+          // accidentally empty a box.
+          pickUpSortTile(t, p) {
+            this.carrying = t;
+            this.carryMoved = false;
+            this.grabDX = p.worldX - t.parts.x;
+            this.grabDY = p.worldY - t.parts.y;
+            t.parts.setDepth(20);
+            if (!JUICE.reduceMotion)
+              this.tweens.add({ targets: t.parts, scale: 1.06, duration: 110 });
+          }
+          // Pull a tile out of whatever bin it sits in: free the slot, restore full
+          // size, and mark it unassigned. Returns the freed bin index (or -1) so the
+          // caller can re-fit that bin's remaining tiles when it's ready — callers
+          // that also send tiles home must layoutBin AFTER positioning to avoid a
+          // tween racing the home move. Shared by drag-out and the checkSort reset.
+          unassignTile(t) {
+            let bi = -1;
+            if (t.binSlot != null) {
+              bi = t.binSlot.bi;
+              const bin = this.bins[bi];
+              bin.count = Math.max(0, bin.count - 1);
+              if (bin.tiles) bin.tiles = bin.tiles.filter((x) => x !== t);
+              t.binSlot = null;
+            }
+            t.assigned = null;
+            t.bg.setFillStyle(PALETTE.tile);
+            t.parts.setScale(1);
+            return bi;
+          }
           dropTile(t) {
             // The container is positioned in absolute (layer) space while dragging.
             const gx = t.parts.x;
@@ -2040,7 +2088,6 @@
             const slot = b.count++;
             t.binSlot = { bi, slot }; // remembered so a wrong check can free it
             (b.tiles = b.tiles || []).push(t);
-            this.input.setDraggable(t.parts, false);
             this.layoutBin(bi);
             this.highlightSort();
           }
@@ -2115,29 +2162,22 @@
               return;
             }
             // Wrong: keep the correctly-placed tiles, send the misplaced (red)
-            // ones home and make them draggable again for another try.
+            // ones home for another try. unassignTile frees each slot and re-fits
+            // its bin so the tiles that stayed grow back into the freed space.
             this.resolve(false, "Move the red tiles to the right bin, then check.");
             this.time.delayedCall(720, () => {
               if (this.locked) return;
               const touched = new Set();
               this.sortTiles.forEach((t) => {
                 if (t.assigned !== t.data.category) {
-                  if (t.binSlot != null) {
-                    const bin = this.bins[t.binSlot.bi];
-                    bin.count = Math.max(0, bin.count - 1);
-                    if (bin.tiles) bin.tiles = bin.tiles.filter((x) => x !== t);
-                    touched.add(t.binSlot.bi);
-                  }
-                  t.assigned = null;
-                  t.binSlot = null;
-                  t.bg.setFillStyle(PALETTE.tile);
-                  t.parts.setScale(1); // undo any in-bin shrink before it goes home
+                  const freed = this.unassignTile(t);
+                  if (freed >= 0) touched.add(freed);
                   t.parts.x = t.homeX;
                   t.parts.y = t.homeY;
-                  this.input.setDraggable(t.parts, true);
                 }
               });
-              // Re-fit the tiles that stayed, so a freed slot lets them grow back.
+              // Re-fit the tiles that stayed AFTER homes are set, so a layoutBin
+              // tween can't race a freed tile back into the bin.
               touched.forEach((bi) => this.layoutBin(bi));
               this.highlightSort();
             });
@@ -3080,5 +3120,16 @@
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
     <script src="/assets/canvas-bridge.js" defer></script>
     <!-- canvas-bridge-injected:end -->
-  </body>
+  <!-- offline-sw-injected:begin (offline service worker — tools/inject-offline-sw.mjs) -->
+<script>
+  if ("serviceWorker" in navigator) {
+    addEventListener("load", function () {
+      navigator.serviceWorker
+        .register("/math/games/practice-arcade/sw.js", { scope: "/math/games/practice-arcade/" })
+        .catch(function () {});
+    });
+  }
+</script>
+<!-- offline-sw-injected:end -->
+</body>
 </html>
