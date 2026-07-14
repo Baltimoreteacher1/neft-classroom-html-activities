@@ -853,7 +853,7 @@
       cycleColorTint,
       "Add a calming color tint to reduce glare",
     );
-    addTool("contrast", "◐ Contrast", toggleHighContrast, "Boost text contrast");
+    // Contrast tool removed per teacher request (student + teacher versions).
     // Language access (ESOL): translate the current part into a home language.
     // The translation UI is provided by engine/core/translate.js, triggered here.
     addTool(
@@ -1334,7 +1334,6 @@
       };
       const presentation = activeProfiles["read-understand"] || activeProfiles["focus-organize"];
       show("tint", presentation);
-      show("contrast", presentation);
       show(
         "misconceptions",
         (activeProfiles["read-understand"] || activeProfiles["build-math"]) &&
