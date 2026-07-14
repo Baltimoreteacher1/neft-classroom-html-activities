@@ -4,20 +4,20 @@ import AxeBuilder from "@axe-core/playwright";
 const TEST_LESSON_PATH = "/lessons/1-1/";
 
 test.describe("Learning Supports E2E & Accessibility QA", () => {
-  // "Prepare Supports" is a teacher-only control. Enable Teacher Mode before every
-  // navigation so the config-button tests below see it. Runs before page scripts.
-  test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => localStorage.setItem("nt-teacher-mode", "1"));
-  });
+  // Teacher Mode now HIDES the student tools dock (replaced by the 🧮 Math
+  // supports teacher tab), so it must be enabled only in the teacher-panel
+  // tests below — the dock/tool tests run as a student, matching real usage.
+  const asTeacher = (page) =>
+    page.addInitScript(() => localStorage.setItem("nt-teacher-mode", "1"));
 
   test("prepare supports button is hidden for students (no teacher mode)", async ({ page }) => {
-    await page.addInitScript(() => localStorage.removeItem("nt-teacher-mode"));
     await page.goto(TEST_LESSON_PATH, { waitUntil: "networkidle" });
     await expect(page.locator(".ewl-supports-btn-teacher")).toBeHidden();
   });
 
   test("learning supports teacher panel trigger and dialog are functional", async ({ page }) => {
-    // 1. Navigate to canonical lesson
+    // 1. Navigate to canonical lesson (as a teacher — the panel is teacher-only)
+    await asTeacher(page);
     await page.goto(TEST_LESSON_PATH, { waitUntil: "networkidle" });
 
     // 2. Teacher button is present and says "Prepare Supports"
@@ -68,9 +68,9 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
     const toolsDock = page.locator("[data-ewl-supports-tools]");
     await expect(toolsDock).toBeVisible();
 
-    // Verify correct profiles are checked in the dialog
-    const teacherBtn = page.locator(".ewl-supports-btn-teacher");
-    await teacherBtn.click();
+    // The hidden legacy-bridge checkboxes mirror the active profiles (they
+    // drive Copy-Link/SCORM export). Students have no dialog button, so assert
+    // the checked state directly — visibility isn't required for isChecked.
     await expect(page.locator("#ewl-profile-read-understand")).toBeChecked();
     await expect(page.locator("#ewl-profile-focus-organize")).toBeChecked();
     await expect(page.locator("#ewl-profile-build-math")).not.toBeChecked();
@@ -97,6 +97,7 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
   test("supports dialog and panels have zero serious or critical WCAG violations", async ({
     page,
   }) => {
+    await asTeacher(page);
     await page.goto(TEST_LESSON_PATH, { waitUntil: "networkidle" });
 
     // Open dialog to expose its DOM elements
@@ -120,17 +121,12 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
   });
 
   test("multilingual ESOL language selection translates content", async ({ page }) => {
-    await page.goto(`${TEST_LESSON_PATH}#supports=language-support`, { waitUntil: "networkidle" });
-
-    // Open dialog — the ESOL home-language selector lives in the assignment surface.
-    await page.locator(".ewl-supports-btn-teacher").click();
-    await expect(page.locator("#ewl-lang-select")).toBeVisible();
-
-    // Select Spanish
-    await page.locator("#ewl-lang-select").selectOption("es");
-
-    // Close dialog
-    await page.locator(".ewl-supports-dialog-close").click();
+    // Students receive language via the personalized launch link (the teacher
+    // dialog is teacher-only and hides the student dock, so drive the real
+    // student transport: supports + lang ride the hash together).
+    await page.goto(`${TEST_LESSON_PATH}#supports=language-support&lang=es`, {
+      waitUntil: "networkidle",
+    });
 
     // Open Words panel and verify Spanish vocabulary text is shown
     await page.locator('[data-tool="words"]').click();
@@ -304,15 +300,16 @@ test.describe("Learning Supports v2 — student roster path", () => {
     await expect(dock.locator('[data-tool="listen"]')).toBeVisible();
     await expect(dock.locator('[data-tool="focus"]')).toBeHidden();
 
-    // Identity chip is present and labeled.
-    await expect(dock.locator(".ewl-supports-me-chip")).toContainText("JN · 601");
+    // The identity switch chip is intentionally disabled (v2EnsureIdentityChip
+    // no-ops) — it must NOT render.
+    await expect(dock.locator(".ewl-supports-me-chip")).toHaveCount(0);
 
     // Identity persists on the device.
     const me = await page.evaluate(() => localStorage.getItem("ewl-supports:v2:me"));
     expect(JSON.parse(me!).initials).toBe("JN");
   });
 
-  test("passive-only assignment keeps the identity chip reachable", async ({ page }) => {
+  test("passive-only assignment applies without exposing unassigned tools", async ({ page }) => {
     await stubApi(page, { ok: true, items: ["text-large", "tint"] });
     await page.addInitScript(() =>
       localStorage.setItem(
@@ -322,13 +319,13 @@ test.describe("Learning Supports v2 — student roster path", () => {
     );
     await page.goto(TEST_LESSON_PATH, { waitUntil: "networkidle" });
 
-    // Passive supports applied…
+    // Passive supports applied automatically (no button needed)…
     await expect(page.locator("body")).toHaveClass(/ewl-supports-text-lg/);
-    // …and the rail stays visible carrying ONLY the switch chip.
+    // …no unassigned interactive tools leak into the rail, and the disabled
+    // identity switch chip stays gone.
     const dock = page.locator("[data-ewl-supports-tools]");
-    await expect(dock).toBeVisible();
-    await expect(dock.locator(".ewl-supports-me-chip")).toContainText("MR · 601");
     await expect(dock.locator('[data-tool="calculator"]')).toBeHidden();
+    await expect(dock.locator(".ewl-supports-me-chip")).toHaveCount(0);
   });
 
   test("?supports= QUERY launch (SCORM transport) wins over the roster and shows no modal", async ({
