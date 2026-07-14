@@ -112,7 +112,8 @@ for (const route of ROUTES) {
           document.body?.dataset.proInit === "1" &&
           document.body?.dataset.goldInit === "1" &&
           document.body?.dataset.pubInit === "1" &&
-          document.body?.dataset.vizInit === "1",
+          document.body?.dataset.vizInit === "1" &&
+          document.body?.dataset.publicationInit === "1",
         { timeout: 10_000 },
       );
 
@@ -153,6 +154,22 @@ for (const route of ROUTES) {
         `exemplar panel missing/empty on ${route.url} (publisher.json not served?)`,
       ).toBeGreaterThan(0);
       expect(pub.saRows, `Rate My Work rows missing on ${route.url}`).toBeGreaterThan(0);
+
+      const publication = await page.evaluate(() => ({
+        researchBlocks: document.querySelectorAll(".step-research").length,
+        ledgers: document.querySelectorAll(".pps-ledger").length,
+        quality: document.querySelectorAll(".pps-quality").length,
+        studio: document.querySelectorAll(".pps-studio").length,
+        dialog: document.querySelectorAll(".pps-dialog").length,
+        live: document.querySelectorAll('.pps-ledger__status[aria-live="polite"], .pps-studio__status[aria-live="polite"]').length,
+      }));
+      expect(publication.ledgers, `publication ledgers missing on ${route.url}`).toBe(
+        publication.researchBlocks,
+      );
+      expect(publication.quality, `publication quality check missing on ${route.url}`).toBe(1);
+      expect(publication.studio, `publication studio missing on ${route.url}`).toBe(1);
+      expect(publication.dialog, `publication preview missing on ${route.url}`).toBe(1);
+      expect(publication.live, `publication live statuses missing on ${route.url}`).toBeGreaterThan(1);
 
       // Portfolio layer: each project offers a local evidence review and a
       // student-owned printable portfolio, without requiring an account.
