@@ -288,13 +288,18 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  background: var(--ewl-color-bg-glass);
+  /* Near-solid backing + height clamp (2026-07-14 audit): the glass panel let
+     lesson text bleed through, and a 15-tool rail could outgrow the viewport
+     and reach the bottom-right launcher stack. */
+  background: rgba(255, 255, 255, 0.97);
   border: 1px solid var(--ewl-color-border);
   border-right: none;
   padding: 10px 8px;
   border-radius: 16px 0 0 16px;
   box-shadow: var(--ewl-shadow);
   backdrop-filter: blur(12px);
+  max-height: min(64vh, calc(100vh - 280px));
+  overflow-y: auto;
   -webkit-backdrop-filter: blur(12px);
   overflow-y: auto;
   /* Only the rail is clickable (wrapper is pointer-events:none). */
@@ -827,14 +832,21 @@ body.ewl-supports-comfort-active [data-ewl-supports-root] {
     max-width: 100%;
   }
   .ewl-supports-tools-dock {
-    /* Phones: reclaim the reserved lane (launcher is a small corner FAB); the
-       pill spans nearly full width and scrolls internally. */
+    /* Phones: a bottom sheet, not a mid-screen float (2026-07-14 audit — the
+       centered translucent rail overlapped the whole page). Sits above the
+       Save/Resume pill and next-phase button; scrolls internally. */
+    top: auto;
+    bottom: 124px;
     left: 12px;
     right: 12px;
+    transform: none;
   }
   .ewl-supports-tools-inner {
     justify-content: flex-start;
     padding: 6px;
+    border-right: 1px solid var(--ewl-color-border);
+    border-radius: 16px;
+    max-height: 46vh;
   }
 }
 

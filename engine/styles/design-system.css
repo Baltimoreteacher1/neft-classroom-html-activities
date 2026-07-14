@@ -4587,3 +4587,130 @@ html.nt-extra-fullpage-open,
 html.nt-extra-fullpage-open body {
   overflow: hidden;
 }
+
+/* ── Utility menu — the top-right "Tools" dropdown (utility-menu.js) ─────────
+   Bottom-right dock contract (2026-07-14 visual audit): the ONLY floating
+   controls bottom-right are the Save/Resume pill (#nsr-root, bottom:16) and
+   the next-phase button (bottom:64). Everything else lives in this menu
+   (export toolbar, mode pill, Math Workbench, supports-dock trigger) or
+   bottom-left (minimap HUD). */
+.nt-utility-menu {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 9600;
+}
+.nt-utility-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--navy, #12355b);
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(18, 53, 91, 0.3);
+}
+.nt-utility-btn:hover {
+  filter: brightness(1.15);
+}
+.nt-utility-btn:focus-visible {
+  outline: 3px solid var(--gold, #ffd54a);
+  outline-offset: 2px;
+}
+.nt-utility-caret {
+  opacity: 0.75;
+  font-size: 0.75em;
+}
+.nt-utility-pop {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(340px, calc(100vw - 24px));
+  background: #fff;
+  border: 1px solid var(--gray-300, #cbd5e1);
+  border-radius: 14px;
+  box-shadow: 0 16px 44px rgba(12, 27, 42, 0.25);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.nt-utility-pop[hidden] {
+  display: none;
+}
+.nt-utility-section:empty {
+  display: none;
+}
+.nt-utility-section + .nt-utility-section {
+  border-top: 1px solid var(--gray-200, #e2e8f0);
+  padding-top: 10px;
+}
+.nt-utility-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--navy, #12355b);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.nt-utility-item:hover {
+  background: var(--gray-100, #f1f5f9);
+}
+.nt-utility-item:focus-visible {
+  outline: 3px solid var(--gold, #ffd54a);
+  outline-offset: -3px;
+}
+/* Adopted controls lose their fixed/full-width chrome inside the menu. */
+.nt-utility-pop .export-toolbar {
+  position: static;
+  padding: 0;
+  background: none;
+  backdrop-filter: none;
+  border: 0;
+  box-shadow: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 8px;
+}
+.nt-utility-pop .mode-toggle-pill {
+  position: static;
+  box-shadow: none;
+}
+/* Strays: controls that (re)mount on <body> before the next adoption pass
+   must not float behind/over the menu button. */
+body.has-nt-utility-menu > .export-toolbar,
+body.has-nt-utility-menu > .mode-toggle-pill {
+  display: none;
+}
+/* The export toolbar no longer spans the top, so no content offset. */
+body.has-nt-utility-menu .app {
+  margin-top: 0;
+}
+/* The menu is the single entry point for these on lesson pages. */
+body.has-nt-utility-menu #mwb-launcher {
+  display: none !important;
+}
+body.has-nt-utility-menu .ewl-supports-tools-dock.is-collapsed .ewl-supports-dock-reopen {
+  display: none;
+}
+
+/* Objective vocab terms: keep trailing punctuation glued to the term button
+   (buttons are atomic inline boxes, so "factor tree" + "." may otherwise
+   split across lines — seen in the 2026-07-14 visual audit). */
+.obj-nowrap {
+  white-space: nowrap;
+}

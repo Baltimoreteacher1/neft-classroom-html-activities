@@ -17,21 +17,14 @@
 body.pro-projects {
   /* Premium tokens layered on top of the page's existing palette. */
   --pro-display: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
-  --pro-shadow-sm:
-    0 1px 2px rgba(15, 43, 60, 0.06), 0 2px 8px rgba(15, 43, 60, 0.06);
-  --pro-shadow-md:
-    0 4px 14px rgba(15, 43, 60, 0.1), 0 10px 30px rgba(15, 43, 60, 0.08);
-  --pro-shadow-lg:
-    0 10px 24px rgba(15, 43, 60, 0.12), 0 24px 60px rgba(15, 43, 60, 0.14);
+  --pro-shadow-sm: 0 1px 2px rgba(15, 43, 60, 0.06), 0 2px 8px rgba(15, 43, 60, 0.06);
+  --pro-shadow-md: 0 4px 14px rgba(15, 43, 60, 0.1), 0 10px 30px rgba(15, 43, 60, 0.08);
+  --pro-shadow-lg: 0 10px 24px rgba(15, 43, 60, 0.12), 0 24px 60px rgba(15, 43, 60, 0.14);
   --pro-ring: 0 0 0 3px rgba(26, 111, 181, 0.28);
   --pro-radius: 18px;
   /* Subtle warm-paper canvas instead of flat grey — reads as "printed". */
   background:
-    radial-gradient(
-      1200px 480px at 50% -160px,
-      rgba(26, 111, 181, 0.06),
-      transparent 70%
-    ),
+    radial-gradient(1200px 480px at 50% -160px, rgba(26, 111, 181, 0.06), transparent 70%),
     var(--bg);
   background-attachment: fixed;
   text-rendering: optimizeLegibility;
@@ -58,16 +51,8 @@ body.pro-projects .hero {
   overflow: hidden;
   padding: 46px 24px 38px;
   background:
-    radial-gradient(
-      720px 320px at 14% -40%,
-      rgba(255, 255, 255, 0.22),
-      transparent 60%
-    ),
-    radial-gradient(
-      640px 300px at 92% 0%,
-      rgba(14, 138, 125, 0.55),
-      transparent 58%
-    ),
+    radial-gradient(720px 320px at 14% -40%, rgba(255, 255, 255, 0.22), transparent 60%),
+    radial-gradient(640px 300px at 92% 0%, rgba(14, 138, 125, 0.55), transparent 58%),
     linear-gradient(135deg, #0f2b3c 0%, #155fa0 58%, #0e8a7d 100%);
   box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
 }
@@ -89,11 +74,7 @@ body.pro-projects .hero::after {
     linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 38px 38px;
-  -webkit-mask-image: radial-gradient(
-    ellipse at 50% -10%,
-    #000 30%,
-    transparent 78%
-  );
+  -webkit-mask-image: radial-gradient(ellipse at 50% -10%, #000 30%, transparent 78%);
   mask-image: radial-gradient(ellipse at 50% -10%, #000 30%, transparent 78%);
   pointer-events: none;
 }
@@ -251,11 +232,7 @@ body.pro-projects .prog-fill::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.35),
-    transparent 55%
-  );
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35), transparent 55%);
   border-radius: inherit;
 }
 
@@ -265,9 +242,7 @@ body.pro-projects .card {
   border-radius: var(--pro-radius);
   border-color: rgba(226, 231, 236, 0.9);
   box-shadow: var(--pro-shadow-md);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.6), transparent 120px),
-    var(--card);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), transparent 120px), var(--card);
   transition:
     box-shadow 0.25s ease,
     transform 0.25s ease;
@@ -367,11 +342,7 @@ body.pro-projects [tabindex]:focus-visible {
 body.pro-projects .readout,
 body.pro-projects .report-box {
   background:
-    radial-gradient(
-      600px 200px at 0% 0%,
-      rgba(125, 211, 252, 0.1),
-      transparent 60%
-    ),
+    radial-gradient(600px 200px at 0% 0%, rgba(125, 211, 252, 0.1), transparent 60%),
     linear-gradient(160deg, #143247, var(--navy));
   border: 1px solid rgba(125, 211, 252, 0.18);
   box-shadow: var(--pro-shadow-md);
@@ -455,11 +426,7 @@ body.pro-projects .card.pro-reveal.pro-in {
   height: 3px;
   width: 0%;
   z-index: 9998;
-  background: linear-gradient(
-    90deg,
-    var(--gold, #c9820f),
-    var(--teal, #0e8a7d)
-  );
+  background: linear-gradient(90deg, var(--gold, #c9820f), var(--teal, #0e8a7d));
   box-shadow: 0 1px 4px rgba(14, 138, 125, 0.4);
   transition: width 0.12s linear;
   pointer-events: none;
@@ -468,8 +435,10 @@ body.pro-projects .card.pro-reveal.pro-in {
 /* --- Back-to-top affordance ----------------------------------------------- */
 .pro-totop {
   position: fixed;
-  right: 18px;
-  bottom: 18px;
+  /* Bottom-left, above the .ntf-fab summary pill — the bottom-right corner is
+     reserved for Save/Resume + workbench + coach (dock contract 2026-07-14). */
+  left: 18px;
+  bottom: 74px;
   z-index: 9997;
   width: 46px;
   height: 46px;
@@ -522,11 +491,7 @@ body.pro-projects .card.pro-reveal.pro-in {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: linear-gradient(
-    135deg,
-    var(--gold, #c9820f),
-    var(--teal, #0e8a7d)
-  );
+  background: linear-gradient(135deg, var(--gold, #c9820f), var(--teal, #0e8a7d));
 }
 
 /* --- Keyboard-nav hint chip ----------------------------------------------- */

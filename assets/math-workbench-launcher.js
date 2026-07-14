@@ -174,6 +174,13 @@
     document.body.appendChild(a);
     lessonAwareHref(a);
 
+    // Dedupe: if the Save/Resume engine mounted before this script, it
+    // rendered its own plain Math Workbench chip — remove it in favor of
+    // this lesson-aware launcher (single entry point). The engine performs
+    // the mirror-image check, so whichever mounts second wins consistently.
+    var nsrDup = document.getElementById("nsr-workbench");
+    if (nsrDup) nsrDup.remove();
+
     // Some pages mount a fixed, full-width bottom action bar (e.g. the
     // nt-page-enhance "Save as PDF/DOC" bar, .nt-pe-bar) at a higher z-index.
     // That bar would cover and click-block the lower-right launcher. Detect any

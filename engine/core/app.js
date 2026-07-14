@@ -1,6 +1,7 @@
 import { createState, normalizeStudentId, findSavedStudents } from "./state.js";
 import { createEngagement } from "../engagement/engagement.js";
 import { mountExportToolbar } from "./export.js";
+import { mountUtilityMenu } from "./utility-menu.js";
 import { mountVoiceNav } from "./voice-nav.js";
 import { mountTranslate } from "./translate.js";
 import { reportScore } from "./score-reporter.js";
@@ -744,7 +745,9 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   const minimapHUD = document.createElement("div");
   minimapHUD.className = "minimap-hud";
   minimapHUD.style.cssText =
-    "position:fixed; bottom:24px; right:24px; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border:1px solid rgba(0,0,0,0.1); border-radius:50px; padding:10px 14px; display:flex; gap:8px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.15); transition:0.3s;";
+    // Bottom-LEFT: the bottom-right corner belongs to the Save/Resume pill
+    // and the next-phase button (see the dock contract in design-system.css).
+    "position:fixed; bottom:16px; left:16px; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border:1px solid rgba(0,0,0,0.1); border-radius:50px; padding:10px 14px; display:flex; gap:8px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.15); transition:0.3s;";
   document.body.append(minimapHUD);
 
   function updateMinimap() {
@@ -1292,6 +1295,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
   // Mount the export toolbar (sticky top bar with Save / Copy buttons)
   mountExportToolbar(state, config);
+  mountUtilityMenu();
 
   app.start();
 
@@ -1317,7 +1321,9 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     nextBtn.className = "nt-next-phase-btn";
     nextBtn.setAttribute("aria-label", "Go to the next part of the lesson");
     nextBtn.style.cssText =
-      "position:fixed; right:16px; bottom:84px; z-index:9997; display:inline-flex; " +
+      // bottom:64 clears the Save/Resume pill (bottom:16, ~36px tall) with a
+      // 12px gap; the old 84px landed on the Math Workbench FAB.
+      "position:fixed; right:16px; bottom:64px; z-index:9997; display:inline-flex; " +
       "align-items:center; gap:8px; min-height:48px; padding:0 22px; border:0; " +
       "border-radius:99px; background:#12355b; color:#fff; font-weight:800; " +
       "font-size:1rem; cursor:pointer; box-shadow:0 4px 14px rgba(12,27,42,.28);";

@@ -1766,11 +1766,18 @@ export function linkifyObjectiveTerms(escapedText, vocab) {
     .map((e) => escapeRegExp(e.term))
     .join("|");
   const re = new RegExp(`\\b(?:${alt})(?:es|s)?\\b`, "gi");
-  return escapedText.replace(re, (match) => {
+  const linked = escapedText.replace(re, (match) => {
     const idx = lookup.has(norm(match)) ? lookup.get(norm(match)) : -1;
     if (idx < 0) return match;
     return `<button type="button" class="obj-term" data-term-idx="${idx}" aria-haspopup="dialog">${match}</button>`;
   });
+  // Glue trailing punctuation to the term: buttons are atomic inline boxes,
+  // so without this the browser may wrap a bare "." or "," onto its own line
+  // right after the underlined term.
+  return linked.replace(
+    /(<button[^>]*class="obj-term"[^>]*>[^<]*<\/button>)\s*([.,;:!?)’”]+)/g,
+    '<span class="obj-nowrap">$1$2</span>',
+  );
 }
 
 // Singleton glossary popup shared across all objective terms on the page.

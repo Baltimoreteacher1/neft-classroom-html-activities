@@ -991,11 +991,15 @@
     }
     collapseBtn.addEventListener("click", () => setDockCollapsed(true));
     reopenBtn.addEventListener("click", () => setDockCollapsed(false));
+    // Collapsed by default (2026-07-14 visual audit): an expanded rail on
+    // first paint covered a third of the page on Chromebooks and piled onto
+    // the bottom-right launchers on phones. It opens via its edge tab or the
+    // lesson "Tools" menu, and only stays open when a student chose that.
     try {
-      if (localStorage.getItem(DOCK_COLLAPSE_KEY) === "1")
+      if (localStorage.getItem(DOCK_COLLAPSE_KEY) !== "0")
         studentTools.classList.add("is-collapsed");
     } catch (e) {
-      /* ignore */
+      studentTools.classList.add("is-collapsed");
     }
 
     rootEl.appendChild(studentTools);

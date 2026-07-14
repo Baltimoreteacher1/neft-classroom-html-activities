@@ -859,12 +859,10 @@
           if (ok) showToast(self, "Welcome back — your work was restored.");
           else if (!isGame) openPanel(self); // session vanished; let them choose
         });
-      } else if (this.cfg.autoStart && !isGame) {
-        // First visit: do not cover the page with the panel (it overlapped
-        // ~30% of lessons/projects on first paint). Autosave is already on;
-        // nudge toward the always-visible launcher instead of auto-opening.
-        showToast(this, "Your work saves automatically. Tap the 💾 button to save with a code.");
       }
+      // First visit: no panel and no toast — autosave is already on and the
+      // launcher pill is always visible, so any popup here is pure noise
+      // (per Joel 2026-07-14: the saving-info popup should not come up).
     },
 
     _rememberLast: function (code) {
@@ -1269,15 +1267,20 @@
       else openPanel(self);
     });
 
-    // Floating Math Workbench button.
-    var workbench = el("a", {
-      id: "nsr-workbench",
-      href: "/curriculum/math-workbench/",
-      target: "_blank",
-      rel: "noopener",
-      title: "Math Workbench",
-      html: '<span class="nsr-workbench-ico" aria-hidden="true">🧮</span><span class="nsr-workbench-label">Math Workbench</span>'
-    });
+    // Floating Math Workbench button — skipped when the lesson-aware
+    // launcher (/assets/math-workbench-launcher.js, #mwb-launcher) is on the
+    // page: that FAB deep-links into the current lesson, so this plain chip
+    // would be a duplicate entry point stacked on top of it.
+    var workbench = document.getElementById("mwb-launcher")
+      ? null
+      : el("a", {
+          id: "nsr-workbench",
+          href: "/curriculum/math-workbench/",
+          target: "_blank",
+          rel: "noopener",
+          title: "Math Workbench",
+          html: '<span class="nsr-workbench-ico" aria-hidden="true">🧮</span><span class="nsr-workbench-label">Math Workbench</span>',
+        });
 
     // Panel.
     var panel = el("div", {
@@ -1287,7 +1290,7 @@
       "aria-hidden": "true",
     });
     panel.innerHTML = panelHTML();
-    root.appendChild(workbench);
+    if (workbench) root.appendChild(workbench);
     root.appendChild(launcher);
     root.appendChild(panel);
     document.body.appendChild(root);
