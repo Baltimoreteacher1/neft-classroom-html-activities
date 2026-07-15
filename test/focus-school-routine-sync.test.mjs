@@ -69,8 +69,8 @@ const at = (hour, minute = 0, day = 1) => {
 
 {
   assert.equal(api.pickRoutineForNow(at(6, 0)).name, "Morning Launch");
-  assert.equal(api.pickRoutineForNow(at(8, 0)).name, "Morning Launch");
-  assert.equal(api.pickRoutineForNow(at(8, 1)), null);
+  assert.equal(api.pickRoutineForNow(at(9, 30)).name, "Morning Launch");
+  assert.equal(api.pickRoutineForNow(at(9, 31)), null);
   assert.equal(api.pickRoutineForNow(at(15, 29)), null);
   assert.equal(api.pickRoutineForNow(at(15, 30)).name, "After-School Reset");
   assert.equal(api.pickRoutineForNow(at(18, 0)).name, "After-School Reset");
@@ -82,7 +82,7 @@ const at = (hour, minute = 0, day = 1) => {
 }
 
 {
-  let next = api.nextRoutineWindow(at(8, 1));
+  let next = api.nextRoutineWindow(at(9, 31));
   assert.equal(next.label, "After School");
   assert.equal(next.routine.name, "After-School Reset");
   assert.equal(next.startsAt.getHours(), 15);
