@@ -30,6 +30,7 @@ import { renderThemeIllustration } from "./theme-illustrations.js";
 import { deriveWorkedSteps } from "./worked-steps.js";
 import { isTeacherMode } from "./teacher-mode.js";
 import { mountStuckSupport } from "./stuck-support.js";
+import { mountDiscussionMoment } from "./discourse.js";
 import { mountReadingProgress } from "./reading-progress.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import {
@@ -2527,6 +2528,10 @@ function renderPracticePhase(el, state, ctx, config) {
   // interactive games/sorts below.
   renderSkillPractice(el, config, state);
 
+  // Opt-in discussion moment: after doing the skill, students compare and
+  // question each other's strategies. Non-graded, dismissible, never blocks.
+  mountDiscussionMoment(el, { phase: "practice", phaseId: 2, config, state, variant: "practice" });
+
   // Non-stigmatizing Level 1 / Level 2 / Adaptive selector. Changing the level
   // immediately re-serves a problem at the chosen tier — without an onChange the
   // pick only took effect on the next item, so the selector looked broken.
@@ -2927,6 +2932,10 @@ function renderReflectPhase(el, state, ctx, config) {
     });
   });
   el.append(confCard);
+
+  // Capstone discussion moment: right before the exit ticket, students convince
+  // and question a partner about their answer. Opt-in, non-graded, dismissible.
+  mountDiscussionMoment(el, { phase: "connect", phaseId: 4, config, state, variant: "capstone" });
 
   // el.append(buildPrintableSummary(state, config));
 
